@@ -29,7 +29,12 @@ module.exports = (env, { mode }) => ({
       {
         test: /\.css$/,
         use: [
-          mode === 'production' ? MiniCssExtractPlugin.loader : 'style-loader',
+          mode === 'production' ? MiniCssExtractPlugin.loader : {
+            loader: 'style-loader',
+            options: {
+              sourceMap: true,
+            },
+          },
           {
             loader: 'css-loader',
             options: {
