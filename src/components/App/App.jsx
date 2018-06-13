@@ -1,12 +1,21 @@
 import React from 'react';
+import {
+  IntlProvider,
+} from 'react-intl';
 
 
 export default class App extends React.Component {
   render() {
     return (
-      <div>
-        Hello world!
-      </div>
+      <IntlProvider
+        locale="en-US"
+        defaultLocale="en-US"
+        textComponent={React.Fragment}
+      >
+        <div>
+          Hello world!
+        </div>
+      </IntlProvider>
     );
   }
 }
