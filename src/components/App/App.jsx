@@ -10,6 +10,7 @@ import {
   BrowserRouter,
 } from 'react-router-dom';
 
+import SideMenu from '../SideMenu';
 import TitleBar from '../TitleBar';
 
 
@@ -25,6 +26,7 @@ export default class App extends React.Component {
           <MuiThemeProvider>
             <CssBaseline />
             <TitleBar />
+            <SideMenu />
           </MuiThemeProvider>
         </BrowserRouter>
       </IntlProvider>

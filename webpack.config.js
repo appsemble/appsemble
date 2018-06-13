@@ -13,6 +13,7 @@ module.exports = (env, { mode }) => ({
     extensions: ['.js', '.jsx'],
     alias: {
       '@material-ui/core': '@material-ui/core/es',
+      '@material-ui/icons': '@material-ui/icons/es',
     },
   },
   devtool: 'source-map',

@@ -12,8 +12,8 @@ import {
 } from 'redux';
 import thunk from 'redux-thunk';
 
-import * as reducers from './actions';
 import App from './components/App';
+import * as reducers from './actions';
 
 
 // eslint-disable-next-line no-underscore-dangle
