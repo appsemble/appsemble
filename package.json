@@ -12,6 +12,7 @@
     "@babel/preset-react": "^7.0.0-beta.51",
     "@babel/preset-stage-0": "^7.0.0-beta.51",
     "@babel/runtime": "^7.0.0-beta.51",
+    "@material-ui/core": "^1.2.1",
     "axios": "^0.18.0",
     "babel-eslint": "^8.2.3",
     "babel-loader": "^8.0.0-beta.3",

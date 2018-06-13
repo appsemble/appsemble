@@ -10,7 +10,6 @@ import {
 } from 'redux';
 
 import 'roboto-fontface';
-import './index.css';
 import * as reducers from './actions';
 import App from './components/App';
 

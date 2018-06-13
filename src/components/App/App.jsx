@@ -2,6 +2,12 @@ import React from 'react';
 import {
   IntlProvider,
 } from 'react-intl';
+import {
+  CssBaseline,
+  MuiThemeProvider,
+} from '@material-ui/core';
+
+import TitleBar from '../TitleBar';
 
 
 export default class App extends React.Component {
@@ -12,9 +18,10 @@ export default class App extends React.Component {
         defaultLocale="en-US"
         textComponent={React.Fragment}
       >
-        <div>
-          Hello world!
-        </div>
+        <MuiThemeProvider>
+          <CssBaseline />
+          <TitleBar />
+        </MuiThemeProvider>
       </IntlProvider>
     );
   }

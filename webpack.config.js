@@ -11,6 +11,9 @@ const webpack = require('webpack');
 module.exports = (env, { mode }) => ({
   resolve: {
     extensions: ['.js', '.jsx'],
+    alias: {
+      '@material-ui/core': '@material-ui/core/es',
+    },
   },
   devtool: 'source-map',
   module: {
