@@ -1,22 +1,24 @@
+import 'roboto-fontface';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import {
   Provider,
 } from 'react-redux';
 import {
+  applyMiddleware,
   combineReducers,
   compose,
   createStore,
 } from 'redux';
+import thunk from 'redux-thunk';
 
-import 'roboto-fontface';
 import * as reducers from './actions';
 import App from './components/App';
 
 
 // eslint-disable-next-line no-underscore-dangle
 const composeEnhancers = (process.env.NODE_ENV !== 'production' && window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__) || compose;
-const store = createStore(combineReducers(reducers), composeEnhancers());
+const store = createStore(combineReducers(reducers), composeEnhancers(applyMiddleware(thunk)));
 
 
 function render() {
