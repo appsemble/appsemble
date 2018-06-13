@@ -1,4 +1,6 @@
 import 'roboto-fontface';
+// It is important to load react-hot-loader before react.
+import { hot } from 'react-hot-loader';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import {
@@ -16,6 +18,9 @@ import App from './components/App';
 import * as reducers from './actions';
 
 
+const AppContainer = process.env.NODE_ENV === 'production' ? App : hot(module)(App);
+
+
 // eslint-disable-next-line no-underscore-dangle
 const composeEnhancers = (process.env.NODE_ENV !== 'production' && window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__) || compose;
 const store = createStore(combineReducers(reducers), composeEnhancers(applyMiddleware(thunk)));
@@ -24,7 +29,7 @@ const store = createStore(combineReducers(reducers), composeEnhancers(applyMiddl
 function render() {
   ReactDOM.render(
     <Provider store={store}>
-      <App />
+      <AppContainer />
     </Provider>,
     document.getElementById('app'),
   );
