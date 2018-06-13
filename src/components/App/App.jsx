@@ -1,11 +1,14 @@
+import {
+  CssBaseline,
+  MuiThemeProvider,
+} from '@material-ui/core';
 import React from 'react';
 import {
   IntlProvider,
 } from 'react-intl';
 import {
-  CssBaseline,
-  MuiThemeProvider,
-} from '@material-ui/core';
+  BrowserRouter,
+} from 'react-router-dom';
 
 import TitleBar from '../TitleBar';
 
@@ -18,10 +21,12 @@ export default class App extends React.Component {
         defaultLocale="en-US"
         textComponent={React.Fragment}
       >
-        <MuiThemeProvider>
-          <CssBaseline />
-          <TitleBar />
-        </MuiThemeProvider>
+        <BrowserRouter>
+          <MuiThemeProvider>
+            <CssBaseline />
+            <TitleBar />
+          </MuiThemeProvider>
+        </BrowserRouter>
       </IntlProvider>
     );
   }
