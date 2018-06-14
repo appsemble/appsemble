@@ -1,4 +1,4 @@
-image: node:10-alphine
+image: node:10-alpine
 
 
 before_script:
