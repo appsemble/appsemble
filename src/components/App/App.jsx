@@ -11,6 +11,7 @@ import {
 } from 'react-router-dom';
 
 import AppContext from '../AppContext';
+import Main from '../Main';
 import SideNavigation from '../SideNavigation';
 import TitleBar from '../TitleBar';
 
@@ -23,15 +24,16 @@ export default class App extends React.Component {
         defaultLocale="en-US"
         textComponent={React.Fragment}
       >
-        <BrowserRouter>
-          <MuiThemeProvider>
+        <MuiThemeProvider>
+          <BrowserRouter>
             <AppContext>
               <CssBaseline />
               <TitleBar />
               <SideNavigation />
+              <Main />
             </AppContext>
-          </MuiThemeProvider>
-        </BrowserRouter>
+          </BrowserRouter>
+        </MuiThemeProvider>
       </IntlProvider>
     );
   }
