@@ -1,0 +1,19 @@
+image: node:10-alpine
+
+
+before_script:
+  - npm ci
+
+
+.npm-script: &npm-script
+  script:
+    - npm run $CI_JOB_NAME
+
+
+build: *npm-script
+
+
+eslint: *npm-script
+
+
+stylelint: *npm-script
