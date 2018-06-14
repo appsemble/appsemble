@@ -63,6 +63,7 @@ module.exports = (env, { mode }) => ({
   },
   devServer: {
     disableHostCheck: true,
+    historyApiFallback: true,
     host: '0.0.0.0',
     hot: true,
     port: 1337,

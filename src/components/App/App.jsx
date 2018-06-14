@@ -11,7 +11,7 @@ import {
 } from 'react-router-dom';
 
 import AppContext from '../AppContext';
-import SideMenu from '../SideMenu';
+import SideNavigation from '../SideNavigation';
 import TitleBar from '../TitleBar';
 
 
@@ -28,7 +28,7 @@ export default class App extends React.Component {
             <AppContext>
               <CssBaseline />
               <TitleBar />
-              <SideMenu />
+              <SideNavigation />
             </AppContext>
           </MuiThemeProvider>
         </BrowserRouter>
