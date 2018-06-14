@@ -14,6 +14,7 @@ import {
 } from 'redux';
 import thunk from 'redux-thunk';
 
+import './index.css';
 import App from './components/App';
 import * as reducers from './actions';
 
