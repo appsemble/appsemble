@@ -51,6 +51,14 @@ module.exports = (env, { mode }) => ({
         test: /\.(svg|eot|ttf|woff2?)$/,
         loader: 'file-loader',
       },
+      {
+        test: /\.yaml$/,
+        include: path.join(__dirname, 'apps'),
+        use: [
+          'file-loader',
+          'yaml-loader',
+        ],
+      },
     ],
   },
   devServer: {

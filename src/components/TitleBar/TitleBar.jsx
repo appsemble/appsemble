@@ -3,19 +3,33 @@ import {
   Toolbar,
   Typography,
 } from '@material-ui/core';
+import PropTypes from 'prop-types';
 import React from 'react';
 
 import SideMenuButton from '../SideMenuButton';
 
 
 export default class TitleBar extends React.Component {
+  static propTypes = {
+    app: PropTypes.shape(),
+  };
+
+  static defaultProps = {
+    app: null,
+  };
+
   render() {
+    const {
+      app,
+    } = this.props;
+
     return (
       <AppBar>
         <Toolbar>
           <SideMenuButton />
           <Typography variant="title" color="inherit">
-            Appsemble
+            {/* eslint-disable-next-line no-restricted-globals */}
+            {app?.name || 'Appsemble'}
           </Typography>
         </Toolbar>
       </AppBar>
