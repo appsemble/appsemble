@@ -1,5 +1,7 @@
 import axios from 'axios';
 
+import appDefinition from '../../apps/unlittered/app.yaml';
+
 
 const GET_START = 'GET_START';
 const GET_SUCCESS = 'GET_SUCCESS';
@@ -43,10 +45,10 @@ export const getApp = () => async (dispatch) => {
     type: GET_START,
   });
   try {
-    const app = await axios.get('app.json');
+    const { data } = await axios.get(appDefinition);
     dispatch({
       type: GET_SUCCESS,
-      app,
+      app: data,
     });
   } catch (error) {
     dispatch({

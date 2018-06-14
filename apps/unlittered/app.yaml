@@ -1,0 +1,10 @@
+name: Waarnemingen App
+pages:
+  - name: Maak waarneming
+    blocks: []
+  - name: Verstuur waarneming
+    blocks: []
+  - name: Overzichtskaart
+    blocks: []
+  - name: Waarneming details
+    blocks: []
