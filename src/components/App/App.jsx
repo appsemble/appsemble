@@ -1,5 +1,4 @@
 import {
-  CssBaseline,
   MuiThemeProvider,
 } from '@material-ui/core';
 import React from 'react';
@@ -27,7 +26,6 @@ export default class App extends React.Component {
         <MuiThemeProvider>
           <BrowserRouter>
             <AppContext>
-              <CssBaseline />
               <TitleBar />
               <SideNavigation />
               <Main />

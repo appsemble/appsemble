@@ -1,6 +1,9 @@
 import {
   connect,
 } from 'react-redux';
+import {
+  withRouter,
+} from 'react-router-dom';
 
 import {
   getApp,
@@ -8,6 +11,6 @@ import {
 import AppContext from './AppContext';
 
 
-export default connect(null, {
+export default withRouter(connect(null, {
   getApp,
-})(AppContext);
+})(AppContext));
