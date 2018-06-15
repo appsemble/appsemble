@@ -14,8 +14,22 @@ export default class SideMenu extends React.Component {
   static propTypes = {
     children: PropTypes.node.isRequired,
     closeMenu: PropTypes.func.isRequired,
+    history: PropTypes.shape().isRequired,
     isOpen: PropTypes.bool.isRequired,
   };
+
+  componentWillMount() {
+    const {
+      closeMenu,
+      history,
+    } = this.props;
+
+    this.unlisten = history.listen(closeMenu);
+  }
+
+  componentWillUnmount() {
+    this.unlisten();
+  }
 
   render() {
     const {

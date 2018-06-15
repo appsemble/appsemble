@@ -1,6 +1,9 @@
 import {
   connect,
 } from 'react-redux';
+import {
+  withRouter,
+} from 'react-router-dom';
 
 import {
   closeMenu,
@@ -15,6 +18,6 @@ function mapStateToProps(state) {
 }
 
 
-export default connect(mapStateToProps, {
+export default withRouter(connect(mapStateToProps, {
   closeMenu,
-})(SideMenu);
+})(SideMenu));
