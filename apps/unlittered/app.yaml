@@ -1,10 +1,16 @@
 name: Waarnemingen App
 pages:
   - name: Maak waarneming
-    blocks: []
+    blocks:
+      - type: form
   - name: Verstuur waarneming
-    blocks: []
+    blocks:
+      - type: dataSubmitter
   - name: Overzichtskaart
-    blocks: []
+    blocks:
+      - type: map
+        size: 1
+      - type: actionButton
   - name: Waarneming details
-    blocks: []
+    blocks:
+      - type: cardviewer

@@ -1,3 +1,7 @@
 .root {
-  margin-top: 64px;
+  box-sizing: border-box;
+  display: flex;
+  flex-flow: column;
+  padding-top: 64px;
+  min-height: 100vh;
 }
