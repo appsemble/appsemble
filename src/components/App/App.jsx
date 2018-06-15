@@ -15,6 +15,11 @@ import SideNavigation from '../SideNavigation';
 import TitleBar from '../TitleBar';
 
 
+/**
+ * The main entry point of the React app.
+ *
+ * This configures all providers and sets up the global app structure.
+ */
 export default class App extends React.Component {
   render() {
     return (

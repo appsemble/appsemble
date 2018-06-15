@@ -2,6 +2,9 @@ import PropTypes from 'prop-types';
 import React from 'react';
 
 
+/**
+ * A wrapper which fetches the app definition and makes sure it is available to its children.
+ */
 export default class AppContext extends React.Component {
   static propTypes = {
     children: PropTypes.node.isRequired,

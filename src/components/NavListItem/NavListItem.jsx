@@ -11,10 +11,19 @@ import {
 import styles from './NavListItem.css';
 
 
+/**
+ * Display a router link wrapped in a material-ui list item.
+ *
+ * The component is styled in such a way that it looks like a normal list item, with the addition
+ * that it is highlighted if the current location matches the link.
+ */
 class NavListItem extends React.Component {
   static propTypes = {
     classes: PropTypes.shape().isRequired,
     children: PropTypes.node.isRequired,
+    /**
+     * The location to refer to.
+     */
     to: PropTypes.string.isRequired,
   };
 

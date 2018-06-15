@@ -10,6 +10,11 @@ import Page from '../Page';
 import styles from './Main.css';
 
 
+/**
+ * The main body of the loaded app.
+ *
+ * This maps the page to a route and displays a page depending on URL.
+ */
 export default class Main extends React.Component {
   static propTypes = {
     app: PropTypes.shape(),

@@ -9,6 +9,9 @@ import NavListItem from '../NavListItem';
 import SideMenu from '../SideMenu';
 
 
+/**
+ * The app navigation that is displayed in the side menu.
+ */
 export default class SideNavigation extends React.Component {
   static propTypes = {
     app: PropTypes.shape(),

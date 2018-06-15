@@ -7,6 +7,9 @@ import React from 'react';
 import styles from './SideMenu.css';
 
 
+/**
+ * A side menu whose open state is managed by the redux state.
+ */
 export default class SideMenu extends React.Component {
   static propTypes = {
     children: PropTypes.node.isRequired,
