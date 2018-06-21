@@ -4,6 +4,8 @@ module.exports = {
       'woff',
       'woff2',
     ],
-    'postcss-preset-env': {},
+    'postcss-preset-env': {
+      stage: 0,
+    },
   },
 };
