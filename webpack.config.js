@@ -9,6 +9,9 @@ const webpack = require('webpack');
 
 
 module.exports = (env, { mode }) => ({
+  output: {
+    filename: '[hash].js',
+  },
   resolve: {
     extensions: ['.js', '.jsx'],
     alias: {
@@ -80,7 +83,7 @@ module.exports = (env, { mode }) => ({
         removeScriptTypeAttributes: true,
       },
     }),
-    new MiniCssExtractPlugin(),
+    new MiniCssExtractPlugin({ filename: '[hash].css' }),
     mode === 'production' && new CleanWebpackPlugin(['dist']),
     mode === 'development' && new webpack.HotModuleReplacementPlugin(),
   ].filter(Boolean),
