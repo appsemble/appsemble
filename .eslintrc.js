@@ -1,13 +1,14 @@
 module.exports = {
   root: true,
-  extends: 'airbnb',
+  extends: [
+    'airbnb',
+    'plugin:eslint-comments/recommended',
+    'plugin:compat/recommended',
+  ],
   parser: 'babel-eslint',
   plugins: [
     'babel',
   ],
-  env: {
-    browser: true,
-  },
   rules: {
     'object-curly-newline': ['error', {
       ObjectExpression: { minProperties: 4, multiline: true, consistent: true },
@@ -27,6 +28,5 @@ module.exports = {
     semi: 'off',
     'babel/no-invalid-this': 'error',
     'babel/semi': 'error',
-    'jsx-a11y/label-has-for': 'off',
   },
 };
