@@ -13,7 +13,11 @@ export default class AppContext extends React.Component {
   };
 
   componentWillMount() {
-    this.props.getApp();
+    const {
+      getApp,
+    } = this.props;
+
+    getApp();
   }
 
   render() {
