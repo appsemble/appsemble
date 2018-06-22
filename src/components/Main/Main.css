@@ -1,0 +1,15 @@
+.root {
+  box-sizing: border-box;
+  display: flex;
+  flex-flow: column;
+  padding-top: 56px;
+  min-height: 100vh;
+
+  @media (min-width: 600px) {
+    padding-top: 64px;
+  }
+
+  @media (max-width: 599px) and (orientation: landscape) {
+    padding-top: 48px;
+  }
+}

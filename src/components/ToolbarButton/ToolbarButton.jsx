@@ -6,17 +6,16 @@ import React from 'react';
 import styles from './ToolbarButton.css';
 
 
+/**
+ * A button which is styled explicitly for use in an app bar.
+ */
 export default class ToolbarButton extends React.Component {
   render() {
-    const {
-      ...extraProps
-    } = this.props;
-
     return (
       <IconButton
         className={styles.root}
         color="inherit"
-        {...extraProps}
+        {...this.props}
       />
     );
   }

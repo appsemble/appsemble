@@ -1,5 +1,4 @@
 import {
-  CssBaseline,
   MuiThemeProvider,
 } from '@material-ui/core';
 import React from 'react';
@@ -11,10 +10,16 @@ import {
 } from 'react-router-dom';
 
 import AppContext from '../AppContext';
-import SideMenu from '../SideMenu';
+import Main from '../Main';
+import SideNavigation from '../SideNavigation';
 import TitleBar from '../TitleBar';
 
 
+/**
+ * The main entry point of the React app.
+ *
+ * This configures all providers and sets up the global app structure.
+ */
 export default class App extends React.Component {
   render() {
     return (
@@ -23,15 +28,15 @@ export default class App extends React.Component {
         defaultLocale="en-US"
         textComponent={React.Fragment}
       >
-        <BrowserRouter>
-          <MuiThemeProvider>
+        <MuiThemeProvider>
+          <BrowserRouter>
             <AppContext>
-              <CssBaseline />
               <TitleBar />
-              <SideMenu />
+              <SideNavigation />
+              <Main />
             </AppContext>
-          </MuiThemeProvider>
-        </BrowserRouter>
+          </BrowserRouter>
+        </MuiThemeProvider>
       </IntlProvider>
     );
   }

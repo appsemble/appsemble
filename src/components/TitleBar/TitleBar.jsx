@@ -9,6 +9,11 @@ import React from 'react';
 import SideMenuButton from '../SideMenuButton';
 
 
+/**
+ * The title bar on the top of the page.
+ *
+ * This displays the app name,
+ */
 export default class TitleBar extends React.Component {
   static propTypes = {
     app: PropTypes.shape(),
