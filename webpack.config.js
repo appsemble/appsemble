@@ -51,8 +51,20 @@ module.exports = (env, { mode }) => ({
         ],
       },
       {
-        test: /\.(svg|eot|ttf|woff2?)$/,
+        test: /\.woff2?$/,
         loader: 'file-loader',
+      },
+      {
+        test: /\.(gif|jpe?g|png|svg)$/,
+        use: [
+          'file-loader',
+          {
+            loader: 'image-webpack-loader',
+            options: {
+              disable: mode === 'development',
+            },
+          },
+        ],
       },
       {
         test: /\.yaml$/,
@@ -65,6 +77,7 @@ module.exports = (env, { mode }) => ({
     ],
   },
   devServer: {
+    contentBase: __dirname,
     disableHostCheck: true,
     historyApiFallback: true,
     host: '0.0.0.0',

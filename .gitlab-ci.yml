@@ -17,3 +17,18 @@ eslint: *npm-script
 
 
 stylelint: *npm-script
+
+
+block actionButton:
+  script:
+    - npm run block actionButton
+
+
+block map:
+  script:
+    - npm run block map
+
+
+block stub:
+  script:
+    - npm run block stub

@@ -9,11 +9,34 @@ import Block from '../Block';
  */
 export default class Page extends React.Component {
   static propTypes = {
+    getBlockDefs: PropTypes.func.isRequired,
     /**
      * The page definition to render
      */
     page: PropTypes.shape().isRequired,
   };
+
+  componentWillMount() {
+    const {
+      getBlockDefs,
+      page,
+    } = this.props;
+
+    getBlockDefs(page.blocks.map(({ type }) => type));
+  }
+
+  componentWillReceiveProps({
+    page: nextPage,
+  }) {
+    const {
+      getBlockDefs,
+      page,
+    } = this.props;
+
+    if (page !== nextPage) {
+      getBlockDefs(nextPage.blocks.map(({ type }) => type));
+    }
+  }
 
   render() {
     const {
