@@ -31,6 +31,7 @@ module.exports = (api) => {
     production && ['babel-plugin-transform-react-remove-prop-types', {
       removeImport: true,
     }],
+    'babel-plugin-transform-react-class-to-function',
     development && 'react-hot-loader/babel',
   ];
 

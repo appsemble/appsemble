@@ -19,6 +19,7 @@
     "babel-eslint": "^8.2.5",
     "babel-loader": "^8.0.0-beta.4",
     "babel-plugin-react-intl-auto": "^1.1.0",
+    "babel-plugin-transform-react-class-to-function": "^1.0.1",
     "babel-plugin-transform-react-remove-prop-types": "^0.4.13",
     "clean-webpack-plugin": "^0.1.19",
     "css-loader": "^0.28.11",
