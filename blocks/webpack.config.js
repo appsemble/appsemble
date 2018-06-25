@@ -8,7 +8,7 @@ const ManifestPlugin = require('webpack-manifest-plugin');
 
 
 module.exports = (env, { mode }) => ({
-  context: path.join(__dirname, env),
+  entry: path.join(__dirname, env, 'src'),
   output: {
     path: path.join(__dirname, env, 'dist'),
     filename: '[hash].js',
