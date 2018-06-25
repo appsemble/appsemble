@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 
+import makeActions from '../../utils/makeActions';
 import {
   callBootstrap,
 } from '../../utils/bootstrapper';
@@ -20,6 +21,7 @@ export default class Block extends React.Component {
      */
     block: PropTypes.shape().isRequired,
     blockDef: PropTypes.shape(),
+    history: PropTypes.shape().isRequired,
   };
 
   static defaultProps = {
@@ -30,6 +32,7 @@ export default class Block extends React.Component {
     const {
       block,
       blockDef,
+      history,
     } = this.props;
 
     if (div == null) {
@@ -42,6 +45,7 @@ export default class Block extends React.Component {
 
     this.attached = true;
     const shadow = div.attachShadow({ mode: 'closed' });
+    const actions = makeActions(blockDef, block, history);
     await Promise.all(blockDef.files
       .filter(url => url.endsWith('.css'))
       .map(url => new Promise((resolve) => {
@@ -56,7 +60,7 @@ export default class Block extends React.Component {
         link.rel = 'stylesheet';
         shadow.appendChild(link);
       })));
-    await callBootstrap(blockDef, shadow, block);
+    await callBootstrap(blockDef, shadow, block, actions);
   };
 
   render() {

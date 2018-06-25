@@ -10,7 +10,7 @@ const loadedBlocks = new Set();
  *
  * @param {HTMLScriptElement} scriptNode The script node on which to register the bootstrap
  * function.
- * @param {Function<ShadowRoot, Block>} fn The bootstrap function to register.
+ * @param {Function<ShadowRoot, Block, Actions>} fn The bootstrap function to register.
  */
 export function register(scriptNode, fn) {
   const { block } = scriptNode.dataset;
@@ -50,8 +50,9 @@ function getBootstrap(blockDefId) {
  * @param {Object} blockDef The block definition whose bootstrap function to call.
  * @param {ShadowRoot} shadow The shadow root on which the block should be loaded.
  * @param {Object} block The block which should be bootstrapped.
+ * @param {Object} actions The actions which the block may dispatch.
  */
-export async function callBootstrap(blockDef, shadow, block) {
+export async function callBootstrap(blockDef, shadow, block, actions) {
   if (!loadedBlocks.has(blockDef.id)) {
     blockDef.files
       .filter(url => url.endsWith('.js'))
@@ -64,7 +65,7 @@ export async function callBootstrap(blockDef, shadow, block) {
     loadedBlocks.add(blockDef.id);
   }
   const bootstrap = await getBootstrap(blockDef.id);
-  await bootstrap(shadow, block);
+  await bootstrap(shadow, block, actions);
 }
 
 

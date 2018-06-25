@@ -11,6 +11,10 @@ pages:
       - type: map
         size: 1
       - type: actionButton
+        actions:
+          click:
+            type: link
+            to: Verstuur waarneming
   - name: Waarneming details
     blocks:
       - type: cardviewer
