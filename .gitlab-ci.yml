@@ -2,15 +2,15 @@ image: node:10-alpine
 
 
 before_script:
-  - apk add --update --no-cache \
-      autoconf \
-      automake \
-      bash \
-      g++ \
-      gcc \
-      lcms2-dev \
-      libpng-dev \
-      make
+  - 'apk add --update --no-cache
+      autoconf
+      automake
+      bash
+      g++
+      gcc
+      lcms2-dev
+      libpng-dev
+      make'
   - npm ci
 
 
