@@ -42,14 +42,20 @@ export default class Block extends React.Component {
 
     this.attached = true;
     const shadow = div.attachShadow({ mode: 'closed' });
-    blockDef.files
+    await Promise.all(blockDef.files
       .filter(url => url.endsWith('.css'))
-      .forEach((url) => {
+      .map(url => new Promise((resolve) => {
         const link = document.createElement('link');
+        // Make sure all CSS is loaded before any JavaScript is executed on the shadow root.
+        link.addEventListener('load', resolve, {
+          capture: true,
+          once: true,
+          passive: true,
+        });
         link.href = `/blocks/${blockDef.id}/dist/${url}`;
         link.rel = 'stylesheet';
         shadow.appendChild(link);
-      });
+      })));
     await callBootstrap(blockDef, shadow, block);
   };
 
