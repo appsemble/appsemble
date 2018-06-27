@@ -15,5 +15,6 @@ module.exports = {
     semi: 'off',
     'babel/no-invalid-this': 'error',
     'babel/semi': 'error',
+    'eslint-comments/no-unused-disable': 'error',
   },
 };
