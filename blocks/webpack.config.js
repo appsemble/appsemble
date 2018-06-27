@@ -99,7 +99,7 @@ module.exports = (env, { mode }) => ({
         };
       },
     }),
-  ],
+  ].filter(Boolean),
   optimization: {
     minimizer: [
       new UglifyJsPlugin({
