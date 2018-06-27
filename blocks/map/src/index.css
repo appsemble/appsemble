@@ -1,0 +1,6 @@
+:global(.leaflet-container) {
+  height: 100%;
+  left: 0;
+  position: absolute;
+  right: 0;
+}

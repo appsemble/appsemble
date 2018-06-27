@@ -1,0 +1,8 @@
+{
+  "id": "actionButton",
+  "actions": {
+    "click": {
+      "required": true
+    }
+  }
+}

@@ -3,9 +3,9 @@ import axios from 'axios';
 import appDefinition from '../../apps/unlittered/app.yaml';
 
 
-const GET_START = 'GET_START';
-const GET_SUCCESS = 'GET_SUCCESS';
-const GET_ERROR = 'GET_ERROR';
+const GET_START = 'app/GET_START';
+const GET_SUCCESS = 'app/GET_SUCCESS';
+const GET_ERROR = 'app/GET_ERROR';
 
 
 const initialState = {
