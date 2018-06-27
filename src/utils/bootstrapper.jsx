@@ -48,11 +48,9 @@ function getBootstrap(blockDefId) {
  * Call the bootstrap function for a block definition
  *
  * @param {Object} blockDef The block definition whose bootstrap function to call.
- * @param {ShadowRoot} shadow The shadow root on which the block should be loaded.
- * @param {Object} block The block which should be bootstrapped.
- * @param {Object} actions The actions which the block may dispatch.
+ * @param {Object} params any named parameters that will be passed to the block boostrap function.
  */
-export async function callBootstrap(blockDef, shadow, block, actions) {
+export async function callBootstrap(blockDef, params) {
   if (!loadedBlocks.has(blockDef.id)) {
     blockDef.files
       .filter(url => url.endsWith('.js'))
@@ -65,7 +63,7 @@ export async function callBootstrap(blockDef, shadow, block, actions) {
     loadedBlocks.add(blockDef.id);
   }
   const bootstrap = await getBootstrap(blockDef.id);
-  await bootstrap(shadow, block, actions);
+  await bootstrap(params);
 }
 
 

@@ -1,8 +1,8 @@
 import { bootstrap } from '../../../sdk';
 
 
-bootstrap((shadow) => {
+bootstrap(({ shadowRoot }) => {
   const span = document.createElement('span');
   span.innerText = 'Stub';
-  shadow.appendChild(span);
+  shadowRoot.appendChild(span);
 });

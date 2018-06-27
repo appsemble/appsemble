@@ -2,7 +2,7 @@ import { bootstrap } from '../../../sdk';
 import './index.css';
 
 
-bootstrap((shadow, block, actions) => {
+bootstrap(({ actions, shadowRoot }) => {
   let node;
   if (actions.click.type === 'link') {
     node = document.createElement('a');
@@ -16,5 +16,5 @@ bootstrap((shadow, block, actions) => {
     event.preventDefault();
     actions.click.dispatch();
   }, true);
-  shadow.appendChild(node);
+  shadowRoot.appendChild(node);
 });

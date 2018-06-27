@@ -10,7 +10,7 @@ Register a bootstrap function.
 import { bootstrap } from '../../../sdk';
 
 
-boostrap((shadow, block, actions) => {
+boostrap(({ actions, block, shadowRoot }) => {
   const root = document.createElement('span');
   root.innerText = 'Hello world!'
   shadow.appendChild(root)
