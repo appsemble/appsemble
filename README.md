@@ -26,4 +26,4 @@ npm run block actionButton
 
 ## Contributing
 
-Please read our [contributing guidelines](./CONTRIBUTING)
+Please read our [contributing guidelines](./CONTRIBUTING.md)
