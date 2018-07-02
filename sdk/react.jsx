@@ -5,14 +5,23 @@ import {
 import retargetEvents from 'react-shadow-dom-retarget-events';
 
 
+const {
+  Consumer,
+  Provider,
+} = React.createContext();
+
+
 /**
  * Mount a React component returned by a bootstrap function in the shadow DOM of a block.
  */
-// eslint-disable-next-line import/prefer-default-export
 export function mount(Component) {
   return (params) => {
     const reactRoot = params.shadowRoot.appendChild(document.createElement('div'));
-    const component = <Component {...params} reactRoot={reactRoot} />;
+    const component = (
+      <Provider value={params}>
+        <Component {...params} reactRoot={reactRoot} />
+      </Provider>
+    );
     render(component, reactRoot);
     /**
      * React doesn’t play nice with shadow DOM. This library works around that. However, the
@@ -31,4 +40,22 @@ export function mount(Component) {
      */
     retargetEvents(params.shadowRoot);
   };
+}
+
+
+/**
+ * A HOC which passes the Appsemble block values to he wrapped React component.
+ */
+export function withBlock(Component) {
+  function Wrapper(props) {
+    return (
+      <Consumer>
+        {values => <Component {...values} {...props} />}
+      </Consumer>
+    );
+  }
+  if (process.env.NODE_ENV !== 'production') {
+    Wrapper.displayName = `withBlock(${Component.displayName || Component.name})`;
+  }
+  return Wrapper;
 }
