@@ -1,0 +1,8 @@
+{
+  "id": "form",
+  "actions": {
+    "submit": {
+      "required": true
+    }
+  }
+}
