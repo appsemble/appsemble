@@ -11,12 +11,12 @@ before_script:
       lcms2-dev
       libpng-dev
       make'
-  - npm ci
+  - yarn --pure-lockfile
 
 
 .npm-script: &npm-script
   script:
-    - npm run $CI_JOB_NAME
+    - yarn run $CI_JOB_NAME
 
 
 build: *npm-script
@@ -26,18 +26,3 @@ eslint: *npm-script
 
 
 stylelint: *npm-script
-
-
-block actionButton:
-  script:
-    - npm run block actionButton
-
-
-block map:
-  script:
-    - npm run block map
-
-
-block stub:
-  script:
-    - npm run block stub

@@ -36,7 +36,7 @@ export default (state = initialState, action) => {
     case GET_ERROR:
       return {
         ...state,
-        blockDefs: null,
+        blockDefs: [],
         error: action.error,
       };
     default:
@@ -68,9 +68,9 @@ export const getBlockDefs = blockDefIds => async (dispatch, getState) => {
     await Promise.all(blockDefIds.map(async (blockDefId) => {
       let blockDef;
       try {
-        ({ data: blockDef } = await axios.get(`/blocks/${blockDefId}/dist/manifest.json`));
+        ({ data: blockDef } = await axios.get(`${blockDefId}/manifest.json`));
       } catch (error) {
-        ({ data: blockDef } = await axios.get('/blocks/stub/dist/manifest.json'));
+        ({ data: blockDef } = await axios.get('stub/manifest.json'));
       }
       dispatch({
         type: GET_SUCCESS,

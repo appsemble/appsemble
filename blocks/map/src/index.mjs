@@ -1,7 +1,7 @@
+import { bootstrap } from '@appsemble/sdk';
 import 'leaflet/dist/leaflet.css';
 import leaflet from 'leaflet';
 
-import { bootstrap } from '../../../sdk';
 import './index.css';
 
 

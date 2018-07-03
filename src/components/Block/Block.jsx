@@ -56,7 +56,7 @@ export default class Block extends React.Component {
           once: true,
           passive: true,
         });
-        link.href = `/blocks/${blockDef.id}/dist/${url}`;
+        link.href = url;
         link.rel = 'stylesheet';
         shadowRoot.appendChild(link);
       })));

@@ -2,12 +2,18 @@
 
 > Build your own blocks
 
+## Installation
+
+```sh
+npm install @appsemble/sdk
+```
+
 ## Getting started
 
 Register a bootstrap function.
 
 ```js
-import { bootstrap } from '.';
+import { bootstrap } from '@appsemble/sdk';
 
 
 bootstrap(({ shadowRoot }) => {

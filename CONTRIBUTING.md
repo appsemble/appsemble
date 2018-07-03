@@ -12,7 +12,7 @@ The project roughly has the following file structure
 ┃   ┣━ dist/
 ┃   ┃   ┗━ manifest.json
 ┃   ┣━ src/
-┃   ┗━ block.json
+┃   ┗━ package.json
 ┣━ src/
 ┃   ┃━ actions/
 ┃   ┃   ┣━ index.jsx
@@ -27,7 +27,7 @@ The project roughly has the following file structure
 ┃   ┣━ index.css
 ┃   ┣━ index.html
 ┃   ┗━ index.jsx
-┗━ sdk/
+┗━ packages/
 ```
 
 ### apps
@@ -36,9 +36,13 @@ Each subdirectory in *apps/* contains an app definition. At the moment of writin
 
 ### blocks
 
-Each subdirectory in *blocks/* defines an Appsemble block. Each block consists of a *block.json*, which defines some metadata about the block, a *src/* directory, which holds the source code of the block, and a *dist/* directory, which holds the output of a build of the block.
+Each subdirectory in *blocks/* defines an Appsemble block. Each block consists of a *package.json*, which defines some metadata about the block, a *src/* directory, which holds the source code of the block, and a *dist/* directory, which holds the output of a build of the block.
 
 Simple blocks are written in vanilla JavaScript. However, if a block gets more complex, React is used. In this case the same directory is used as for the top level *[src/](#src)* directory.
+
+### packages
+
+The packages directory contains any reusable packages. These packages may or may not eventually be extracted into their own project.
 
 ### src
 

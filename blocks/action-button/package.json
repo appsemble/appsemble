@@ -1,0 +1,14 @@
+{
+  "name": "@appsemble/action-button",
+  "version": "1.0.0",
+  "appsemble": {
+    "actions": {
+      "click": {
+        "required": true
+      }
+    }
+  },
+  "dependencies": {
+    "@appsemble/sdk": "^1.0.0"
+  }
+}
