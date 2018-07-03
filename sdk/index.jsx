@@ -20,6 +20,11 @@
  */
 // eslint-disable-next-line import/prefer-default-export
 export function bootstrap(fn) {
-  // eslint-disable-next-line no-underscore-dangle
-  window.__appsemble.register(document.currentScript, fn);
+  const event = new CustomEvent('AppsembleBootstrap', {
+    detail: {
+      fn,
+      document,
+    },
+  });
+  document.currentScript.dispatchEvent(event);
 }

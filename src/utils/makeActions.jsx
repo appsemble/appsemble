@@ -2,6 +2,20 @@ import normalize from './normalize';
 
 
 const actionCreators = {
+  log(definition) {
+    const {
+      level = 'info',
+    } = definition;
+
+    return {
+      dispatch(...args) {
+        // eslint-disable-next-line no-console
+        console[level](...args);
+      },
+      level,
+    };
+  },
+
   link(definition, block, history) {
     const href = `/${normalize(definition.to)}`;
 

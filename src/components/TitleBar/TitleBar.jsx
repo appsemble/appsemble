@@ -33,7 +33,6 @@ export default class TitleBar extends React.Component {
         <Toolbar>
           <SideMenuButton />
           <Typography variant="title" color="inherit">
-            {/* eslint-disable-next-line no-restricted-globals */}
             {app?.name || 'Appsemble'}
           </Typography>
         </Toolbar>

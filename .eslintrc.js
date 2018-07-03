@@ -8,6 +8,7 @@ module.exports = {
   parser: 'babel-eslint',
   plugins: [
     'babel',
+    'markdown',
   ],
   rules: {
     'react/prefer-stateless-function': 'off',
@@ -15,5 +16,6 @@ module.exports = {
     semi: 'off',
     'babel/no-invalid-this': 'error',
     'babel/semi': 'error',
+    'eslint-comments/no-unused-disable': 'error',
   },
 };
