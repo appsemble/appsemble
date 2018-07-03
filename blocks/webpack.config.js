@@ -14,7 +14,7 @@ module.exports = (env, { mode }) => ({
     filename: '[hash].js',
   },
   resolve: {
-    extensions: ['.js', '.jsx'],
+    extensions: ['.mjs', '.js', '.jsx'],
     alias: {
       '@material-ui/core': '@material-ui/core/es',
       '@material-ui/icons': '@material-ui/icons/es',
