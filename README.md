@@ -18,6 +18,14 @@ The project can be served using the following command
 yarn start
 ```
 
+The project can be built using the following command
+
+```sh
+yarn build
+```
+
+The result will be output in the *dist/* directory.
+
 ## Contributing
 
 Please read our [contributing guidelines](./CONTRIBUTING.md)
