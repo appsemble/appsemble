@@ -74,6 +74,20 @@ This project follows the [Airbnb JavaScript Style Guide], with the following exc
 
 The code is linted using [ESLint] and [Stylelint].
 
+## Testing
+
+Test files are placed in the same location as the file that’s under test, except that the test file has a *.test* postfix. Not everything is tested yet. However, please make sure existing tests keep working. To run tests, simply run
+
+```sh
+yarn test
+```
+
+To run tests for a single file, run
+
+```sh
+yarn test path/to/file.test.jsx
+```
+
 ## Committing
 
 Please keep commits small and focused. Only commit the code that is relevant to the change. This will make it much more likely the change will get merged.

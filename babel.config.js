@@ -1,12 +1,14 @@
 module.exports = (api) => {
-  const production = api.env() === 'production';
-  const development = !production;
+  const env = api.env();
+  const production = env === 'production';
+  const development = env === 'development';
+  const testing = env === 'jest';
 
   const presets = [
     ['@babel/preset-env', {
       spec: false,
       loose: true,
-      modules: false,
+      modules: testing && 'commonjs',
       useBuiltIns: 'usage',
     }],
     ['@babel/preset-stage-0', {
