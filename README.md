@@ -18,12 +18,6 @@ The project can be served using the following command
 yarn start
 ```
 
-To build blocks, run the npm `block` script. For example, to build the `actionButton` block, run
-
-```sh
-yarn run block action-button
-```
-
 ## Contributing
 
 Please read our [contributing guidelines](./CONTRIBUTING.md)
