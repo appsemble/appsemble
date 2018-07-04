@@ -4,6 +4,8 @@ import {
 import PropTypes from 'prop-types';
 import React from 'react';
 
+import styles from './NumberInput.css';
+
 
 /**
  * An input element for a number type schema.
@@ -60,8 +62,8 @@ export default class NumberInput extends React.Component {
 
     return (
       <TextField
+        className={styles.root}
         fullWidth
-        helperText={<React.Fragment />}
         inputProps={inputProps}
         label={schema.title}
         name={name}
