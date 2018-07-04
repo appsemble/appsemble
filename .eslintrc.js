@@ -10,6 +10,13 @@ module.exports = {
     'babel',
     'markdown',
   ],
+  settings: {
+    'import/resolver': {
+      node: {
+        extensions: ['.mjs', '.js', '.jsx'],
+      },
+    },
+  },
   rules: {
     'react/prefer-stateless-function': 'off',
     'no-invalid-this': 'off',
