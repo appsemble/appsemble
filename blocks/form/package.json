@@ -1,0 +1,20 @@
+{
+  "name": "@appsemble/form",
+  "version": "1.0.0",
+  "appsemble": {
+    "actions": {
+      "submit": {
+        "required": true
+      }
+    }
+  },
+  "dependencies": {
+    "@appsemble/react": "^1.0.0",
+    "@material-ui/core": "^1.3.1",
+    "@material-ui/icons": "^1.1.0",
+    "prop-types": "^15.6.2",
+    "react": "^16.4.1",
+    "react-dom": "^16.4.1",
+    "react-intl": "^2.4.0"
+  }
+}

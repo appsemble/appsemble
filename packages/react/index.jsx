@@ -1,3 +1,6 @@
+import {
+  bootstrap as sdkBootstrap,
+} from '@appsemble/sdk';
 import React from 'react';
 import {
   render,
@@ -40,6 +43,11 @@ export function mount(Component) {
      */
     retargetEvents(params.shadowRoot);
   };
+}
+
+
+export function bootstrap(Component) {
+  return sdkBootstrap(mount(Component));
 }
 
 

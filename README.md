@@ -9,20 +9,22 @@ Clone and setup the project
 ```sh
 git clone git@gitlab.com:appsemble/amsterdam.git
 cd amsterdam
-npm ci
+yarn
 ```
 
 The project can be served using the following command
 
 ```sh
-npm start
+yarn start
 ```
 
-To build blocks, run the npm `block` script. For example, to build the `actionButton` block, run
+The project can be built using the following command
 
 ```sh
-npm run block actionButton
+yarn build
 ```
+
+The result will be output in the *dist/* directory.
 
 ## Contributing
 

@@ -1,4 +1,4 @@
-import { bootstrap } from '../../../sdk';
+import { bootstrap } from '@appsemble/sdk';
 
 
 bootstrap(({ shadowRoot }) => {

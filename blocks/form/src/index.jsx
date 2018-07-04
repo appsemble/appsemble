@@ -1,17 +1,14 @@
 import {
   bootstrap,
-} from '../../../sdk';
+} from '@appsemble/react';
 import {
   provideIntl,
-} from '../../../sdk/intl';
+} from '@appsemble/react/intl';
 import {
   provideMui,
-} from '../../../sdk/mui';
-import {
-  mount,
-} from '../../../sdk/react';
+} from '@appsemble/react/mui';
 
 import FormBlock from './components/FormBlock';
 
 
-bootstrap(mount(provideIntl(provideMui(FormBlock))));
+bootstrap(provideIntl(provideMui(FormBlock)));

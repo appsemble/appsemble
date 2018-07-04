@@ -59,7 +59,7 @@ export async function callBootstrap(blockDef, params) {
       .filter(url => url.endsWith('.js'))
       .forEach((url) => {
         const script = document.createElement('script');
-        script.src = `/blocks/${blockDef.id}/dist/${url}`;
+        script.src = url;
         script.addEventListener('AppsembleBootstrap', (event) => {
           event.stopImmediatePropagation();
           event.preventDefault();
