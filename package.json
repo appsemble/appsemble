@@ -5,7 +5,6 @@
     "packages/*"
   ],
   "scripts": {
-    "block": "webpack --mode development --config blocks/webpack.config.js --env",
     "build": "webpack --mode production",
     "start": "webpack-dev-server --mode development",
     "eslint": "eslint --ext js,jsx,md .",
