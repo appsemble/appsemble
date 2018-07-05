@@ -34,7 +34,6 @@ module.exports = (api) => {
       removeImport: true,
     }],
     'babel-plugin-transform-react-class-to-function',
-    development && 'react-hot-loader/babel',
   ];
 
   return {
