@@ -1,13 +1,13 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import {
+  SchemaProvider,
+} from 'react-schema-renderer';
 
 import BooleanInput from '../BooleanInput';
 import Form from '../Form';
 import EnumInput from '../EnumInput';
 import ObjectInput from '../ObjectInput';
-import {
-  SchemaProvider,
-} from '../Schema';
 import NumberInput from '../NumberInput';
 import StringInput from '../StringInput';
 

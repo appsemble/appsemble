@@ -1,7 +1,8 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-
-import SchemaRenderer from '../SchemaRenderer';
+import {
+  SchemaRenderer,
+} from 'react-schema-renderer';
 
 
 /**

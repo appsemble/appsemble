@@ -15,6 +15,7 @@
     "prop-types": "^15.6.2",
     "react": "^16.4.1",
     "react-dom": "^16.4.1",
-    "react-intl": "^2.4.0"
+    "react-intl": "^2.4.0",
+    "react-schema-renderer": "^1.0.0"
   }
 }

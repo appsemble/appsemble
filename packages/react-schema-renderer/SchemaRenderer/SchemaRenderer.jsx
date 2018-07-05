@@ -9,6 +9,9 @@ import React from 'react';
  */
 export default class SchemaRenderer extends React.Component {
   static propTypes = {
+    /**
+     * A name to pass as the fake event when populating the schema.
+     */
     name: PropTypes.string,
     populate: PropTypes.func,
     renderers: PropTypes.shape().isRequired,

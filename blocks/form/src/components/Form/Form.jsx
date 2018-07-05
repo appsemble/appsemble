@@ -6,8 +6,10 @@ import React from 'react';
 import {
   FormattedMessage,
 } from 'react-intl';
+import {
+  SchemaRenderer,
+} from 'react-schema-renderer';
 
-import SchemaRenderer from '../SchemaRenderer';
 import styles from './Form.css';
 import messages from './messages';
 
