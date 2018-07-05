@@ -65,6 +65,9 @@ pages:
           marker:
             url: 'https://localhost:9999/markers'
             query: {}
+        actions:
+          markerClick:
+            type: log
       - type: action-button
         actions:
           click:

@@ -2,6 +2,9 @@
   "name": "@appsemble/map",
   "version": "1.0.0",
   "appsemble": {
+    "actions": {
+      "markerClick": {}
+    },
     "resources": {
       "marker": {
         "schema": {
