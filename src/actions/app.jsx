@@ -1,6 +1,7 @@
 import axios from 'axios';
 
 import appDefinition from '../../apps/unlittered/app.yaml';
+import resolveJsonPointers from '../utils/resolveJsonPointers';
 
 
 const GET_START = 'app/GET_START';
@@ -46,9 +47,10 @@ export const getApp = () => async (dispatch) => {
   });
   try {
     const { data } = await axios.get(appDefinition);
+    const app = resolveJsonPointers(data);
     dispatch({
       type: GET_SUCCESS,
-      app: data,
+      app,
     });
   } catch (error) {
     dispatch({
