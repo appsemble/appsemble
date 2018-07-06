@@ -1,4 +1,4 @@
 export {
   SchemaProvider,
   withSchema,
-} from './Schema';
+} from './SchemaContext';

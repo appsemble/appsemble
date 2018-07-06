@@ -41,7 +41,7 @@ module.exports = async (env, { mode }) => {
     module: {
       rules: [
         {
-          test: /\.jsx$/,
+          test: /\.(jsx|mjs)$/,
           loader: 'babel-loader',
           options: {
             envName: mode,

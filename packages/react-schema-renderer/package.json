@@ -1,0 +1,10 @@
+{
+  "name": "react-schema-renderer",
+  "version": "1.0.0",
+  "dependencies": {
+    "prop-types": "^15.6.2"
+  },
+  "peerDependencies": {
+    "react": "^16.4.1"
+  }
+}

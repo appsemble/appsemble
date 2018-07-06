@@ -17,6 +17,9 @@ module.exports = {
       },
     },
   },
+  env: {
+    jest: true,
+  },
   rules: {
     'react/prefer-stateless-function': 'off',
     'no-invalid-this': 'off',

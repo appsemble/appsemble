@@ -1,6 +1,6 @@
 import {
   withSchema,
-} from '../Schema';
+} from '../SchemaContext';
 import SchemaRenderer from './SchemaRenderer';
 
 

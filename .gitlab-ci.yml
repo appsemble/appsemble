@@ -26,3 +26,6 @@ eslint: *npm-script
 
 
 stylelint: *npm-script
+
+
+test: *npm-script

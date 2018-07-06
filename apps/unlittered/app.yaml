@@ -1,47 +1,54 @@
 name: Waarnemingen App
+
+
+definitions:
+  report:
+    type: object
+    required:
+      - name
+    properties:
+      really:
+        type: boolean
+        title: Are you sure?
+      name:
+        title: Name
+        default: me
+        type: string
+        maxLength: 30
+      iiii meel:
+        title: Email
+        format: email
+        type: string
+      nested:
+        type: object
+        properties:
+          description:
+            title: Description
+            type: string
+            maxLength: 100
+          level:
+            title: Level
+            enum:
+              - 1
+              - 2
+              - good
+              - bad
+          age:
+            title: Age
+            type: number
+            default: 6
+            maximum: 10
+            minimum: -4
+            multipleOf: 2
+
+
 pages:
   - name: Maak waarneming
     blocks:
       - type: form
         parameters:
           schema:
-            type: object
-            required:
-              - name
-            properties:
-              really:
-                type: boolean
-                title: Are you sure?
-              name:
-                title: Name
-                default: me
-                type: string
-                maxLength: 30
-              iiii meel:
-                title: Email
-                format: email
-                type: string
-              nested:
-                type: object
-                properties:
-                  description:
-                    title: Description
-                    type: string
-                    maxLength: 100
-                  level:
-                    title: Level
-                    enum:
-                      - 1
-                      - 2
-                      - good
-                      - bad
-                  age:
-                    title: Age
-                    type: number
-                    default: 6
-                    maximum: 10
-                    minimum: -4
-                    multipleOf: 2
+            $ref: /definitions/report
         actions:
           submit:
             type: log
@@ -49,6 +56,7 @@ pages:
   - name: Verstuur waarneming
     blocks:
       - type: dataSubmitter
+
   - name: Overzichtskaart
     blocks:
       - type: map
@@ -57,11 +65,15 @@ pages:
           marker:
             url: 'https://localhost:9999/markers'
             query: {}
+        actions:
+          markerClick:
+            type: log
       - type: action-button
         actions:
           click:
             type: link
             to: Verstuur waarneming
+
   - name: Waarneming details
     blocks:
       - type: cardviewer
