@@ -2,44 +2,31 @@ name: Waarnemingen App
 
 
 definitions:
-  report:
+  waarneming:
     type: object
     required:
-      - name
+      - location
+      - process
+      - description
+      - photo
     properties:
-      really:
-        type: boolean
-        title: Are you sure?
-      name:
-        title: Name
-        default: me
+      location:
+        title: Locatie
         type: string
-        maxLength: 30
-      iiii meel:
-        title: Email
-        format: email
+      process:
+        title: Proces
+        enum:
+          - Fietsknip team
+          - Handhaving
+          - Heel en Groen
+          - Inzameling
+      description:
+        title: Beschrijving
         type: string
-      nested:
-        type: object
-        properties:
-          description:
-            title: Description
-            type: string
-            maxLength: 100
-          level:
-            title: Level
-            enum:
-              - 1
-              - 2
-              - good
-              - bad
-          age:
-            title: Age
-            type: number
-            default: 6
-            maximum: 10
-            minimum: -4
-            multipleOf: 2
+        maxLength: 100
+      photo:
+        title: Foto’s
+        type: string
 
 
 pages:
@@ -48,7 +35,7 @@ pages:
       - type: form
         parameters:
           schema:
-            $ref: /definitions/report
+            $ref: /definitions/waarneming
         actions:
           submit:
             type: log
