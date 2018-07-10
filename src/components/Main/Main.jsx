@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import {
+  Redirect,
   Route,
   Switch,
 } from 'react-router-dom';
@@ -33,17 +34,28 @@ export default class Main extends React.Component {
       return null;
     }
 
+    let defaultPath;
+    const routes = app.pages.map((page) => {
+      const path = `/${normalize(page.name)}`;
+      if (page.name === app.defaultPage) {
+        defaultPath = path;
+      }
+      return (
+        <Route
+          key={path}
+          path={path}
+          render={props => (
+            <Page page={page} {...props} />
+          )}
+        />
+      );
+    });
+
     return (
       <main className={styles.root}>
         <Switch>
-          {app.pages.map(page => (
-            <Route
-              path={`/${normalize(page.name)}`}
-              render={props => (
-                <Page page={page} {...props} />
-              )}
-            />
-          ))}
+          {routes}
+          <Redirect to={defaultPath} />
         </Switch>
       </main>
     );
