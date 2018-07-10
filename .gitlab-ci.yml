@@ -31,7 +31,7 @@ build:
 
 deploy master:
   stage: deploy
-  image: registry.gitlab.com/appsemble/docker/node
+  image: registry.gitlab.com/appsemble/docker/gcloud-deploy
   dependencies:
     - build
   only:
