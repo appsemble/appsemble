@@ -1,0 +1,21 @@
+runtime: python27
+threadsafe: true
+service: amsterdam
+
+handlers:
+# Serve static files through GAE.
+- url: /(.+\..+)
+  secure: always
+  expiration: 365d
+  static_files: dist/\1
+  upload: dist/(.*\..*)
+  login: admin
+# Otherwise let React handle it.
+- url: /(.*)
+  secure: always
+  static_files: dist/index.html
+  upload: dist/index.html
+  login: admin
+
+skip_files:
+- (?!^dist)

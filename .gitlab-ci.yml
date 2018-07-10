@@ -1,31 +1,57 @@
 image: node:10-alpine
 
 
-before_script:
-  - 'apk add --update --no-cache
-      autoconf
-      automake
-      bash
-      g++
-      gcc
-      lcms2-dev
-      libpng-dev
-      make'
-  - yarn --pure-lockfile
+stages:
+  - test
+  - deploy
 
 
-.npm-script: &npm-script
+.yarn: &yarn
+  before_script:
+    - 'apk add --update --no-cache
+        autoconf
+        automake
+        bash
+        g++
+        gcc
+        lcms2-dev
+        libpng-dev
+        make'
+    - yarn --pure-lockfile
   script:
     - yarn run $CI_JOB_NAME
 
 
-build: *npm-script
+build:
+  <<: *yarn
+  artifacts:
+    paths:
+      - dist/
 
 
-eslint: *npm-script
+deploy master:
+  stage: deploy
+  image: registry.gitlab.com/appsemble/docker/node
+  dependencies:
+    - build
+  only:
+    - master
+  environment:
+    name: staging
+    url: https://amsterdam-dot-appsemble-staging.appspot.com
+  before_script:
+    - activate-service-account
+  script:
+    - gcloud app deploy app.yaml
+        --version $CI_COMMIT_SHA
+        --promote
+        --stop-previous-version
 
 
-stylelint: *npm-script
+eslint: *yarn
 
 
-test: *npm-script
+stylelint: *yarn
+
+
+test: *yarn
