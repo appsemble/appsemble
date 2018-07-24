@@ -56,6 +56,9 @@ pages:
         actions:
           markerClick:
             type: log
+            remap:
+              process: data.process
+              description: data.description|upper
       - type: action-button
         actions:
           click:
