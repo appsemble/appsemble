@@ -11,11 +11,6 @@ module.exports = (api) => {
       modules: testing && 'commonjs',
       useBuiltIns: 'usage',
     }],
-    ['@babel/preset-stage-0', {
-      loose: true,
-      useBuiltIns: true,
-      decoratorsLegacy: true,
-    }],
     ['@babel/preset-react', {
       useBuiltIns: true,
       development,
@@ -34,6 +29,17 @@ module.exports = (api) => {
       removeImport: true,
     }],
     'babel-plugin-transform-react-class-to-function',
+    '@babel/plugin-proposal-function-bind',
+    ['@babel/plugin-proposal-optional-chaining', {
+      loose: true,
+    }],
+    ['@babel/plugin-proposal-object-rest-spread', {
+      loose: true,
+      useBuiltIns: true,
+    }],
+    ['@babel/plugin-proposal-class-properties', {
+      loose: true,
+    }],
   ];
 
   return {
