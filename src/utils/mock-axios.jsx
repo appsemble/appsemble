@@ -10,6 +10,10 @@ mock
     {
       lat: 52.3960472,
       lon: 4.8948808,
+      data: {
+        process: 'Heel en Groen',
+        description: 'Er ligt een dode vis in het water.',
+      },
     },
   ])
   .onGet(/.*\..*/).passThrough();

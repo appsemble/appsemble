@@ -1,4 +1,7 @@
 import normalize from './normalize';
+import {
+  mapData,
+} from './remapObject';
 
 
 const actionCreators = {
@@ -51,6 +54,10 @@ export default function makeActions(blockDef, block, history) {
       }
       const actionCreator = actionCreators[type];
       const action = actionCreator(definition, block, history);
+      if (definition && Object.hasOwnProperty.call(definition, 'remap')) {
+        const { dispatch } = action;
+        action.dispatch = args => dispatch(mapData(definition.remap, args));
+      }
       action.type = type;
       acc[on] = action;
       return acc;
