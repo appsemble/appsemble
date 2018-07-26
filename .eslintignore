@@ -1,3 +1,5 @@
 !.*
-dist/
+/coverage/
+/dist/
+/public/
 node_modules/

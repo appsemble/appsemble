@@ -51,7 +51,24 @@ deploy master:
 eslint: *yarn
 
 
+pages:
+  stage: deploy
+  image: alpine
+  dependencies:
+    - test
+  only:
+    - master
+  script:
+    - mv coverage/lcov-report public
+
+
 stylelint: *yarn
 
 
-test: *yarn
+test:
+  <<: *yarn
+  script:
+    - yarn test --coverage
+  artifacts:
+    paths:
+      - coverage/

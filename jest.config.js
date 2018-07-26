@@ -1,4 +1,9 @@
 module.exports = {
+  collectCoverageFrom: [
+    'blocks/**',
+    'packages/**',
+    'src/**',
+  ],
   moduleFileExtensions: ['mjs', 'js', 'jsx'],
   moduleNameMapper: {
     [/\.(gif|jpe?g|png|svg|yaml)$/.source]: '<rootDir>/__mocks__/fileMock.js',
