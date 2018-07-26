@@ -1,4 +1,6 @@
 *
 !*/
 !*.css
-/dist
+/coverage/
+/dist/
+/public/
