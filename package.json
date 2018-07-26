@@ -8,7 +8,7 @@
     "build": "webpack --mode production",
     "start": "webpack-dev-server --mode development",
     "eslint": "eslint --ext js,jsx,md,mjs .",
-    "stylelint": "stylelint 'src/**/*.css'",
+    "stylelint": "stylelint .",
     "test": "jest"
   },
   "dependencies": {
