@@ -67,4 +67,7 @@ pages:
 
   - name: Waarneming details
     blocks:
-      - type: cardviewer
+      - type: detail-viewer
+        parameters:
+          schema:
+            $ref: /definitions/waarneming
