@@ -28,6 +28,9 @@ definitions:
       photo:
         title: Foto’s
         type: string
+        appsembleFile:
+          type:
+            - image/*
 
 
 pages:

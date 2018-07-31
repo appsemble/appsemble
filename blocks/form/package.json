@@ -16,6 +16,7 @@
     "react": "^16.4.1",
     "react-dom": "^16.4.1",
     "react-intl": "^2.4.0",
-    "react-schema-renderer": "^1.0.0"
+    "react-schema-renderer": "^1.0.0",
+    "read-blob": "^1.1.0"
   }
 }
