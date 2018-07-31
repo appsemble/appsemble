@@ -18,7 +18,7 @@ module.exports = (api) => {
   ];
 
   const plugins = [
-    '@babel/plugin-transform-react-inline-elements',
+    production && '@babel/plugin-transform-react-inline-elements',
     'babel-plugin-react-intl-auto',
     ['@babel/plugin-transform-runtime', {
       helpers: true,
