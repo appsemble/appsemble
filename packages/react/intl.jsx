@@ -12,7 +12,7 @@ export function provideIntl(Component) {
   return class extends React.Component {
     render() {
       return (
-        <IntlProvider locale="en-US" defaultLocale="en-US">
+        <IntlProvider locale="en-US" defaultLocale="en-US" textComponent={React.Fragment}>
           <Component {...this.props} />
         </IntlProvider>
       );
