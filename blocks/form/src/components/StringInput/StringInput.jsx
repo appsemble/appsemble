@@ -2,6 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 
 import EmailInput from './EmailInput';
+import FileInput from './FileInput';
 import TextInput from './TextInput';
 
 
@@ -59,6 +60,9 @@ export default class StringInput extends React.Component {
       case 'idn-email':
         return <EmailInput {...this.props} />;
       default:
+        if (schema.appsembleFile) {
+          return <FileInput {...this.props} />;
+        }
         return <TextInput {...this.props} />;
     }
   }

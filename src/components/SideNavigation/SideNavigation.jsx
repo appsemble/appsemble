@@ -35,7 +35,10 @@ export default class SideNavigation extends React.Component {
         <nav>
           <List>
             {app.pages.map(page => (
-              <NavListItem to={`/${normalize(page.name)}`}>
+              <NavListItem
+                key={page.name}
+                to={`/${normalize(page.name)}`}
+              >
                 {page.name}
               </NavListItem>
             ))}

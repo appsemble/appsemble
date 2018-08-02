@@ -1,4 +1,5 @@
 import {
+  createMuiTheme,
   MuiThemeProvider,
 } from '@material-ui/core';
 import React from 'react';
@@ -28,7 +29,7 @@ export default class App extends React.Component {
         defaultLocale="en-US"
         textComponent={React.Fragment}
       >
-        <MuiThemeProvider>
+        <MuiThemeProvider theme={createMuiTheme()}>
           <BrowserRouter>
             <AppContext>
               <TitleBar />
