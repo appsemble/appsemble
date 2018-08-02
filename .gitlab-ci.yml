@@ -60,6 +60,9 @@ pages:
     - master
   script:
     - mv coverage/lcov-report public
+  artifacts:
+    paths:
+      - public/
 
 
 stylelint: *yarn
