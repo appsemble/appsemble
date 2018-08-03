@@ -1,8 +1,8 @@
 import { bootstrap } from '@appsemble/sdk';
 
 
-bootstrap(({ shadowRoot }) => {
+bootstrap(() => {
   const span = document.createElement('span');
   span.innerText = 'Stub';
-  shadowRoot.appendChild(span);
+  return span;
 });
