@@ -2,6 +2,7 @@
   "name": "@appsemble/action-button",
   "version": "1.0.0",
   "appsemble": {
+    "position": "float",
     "actions": {
       "click": {
         "required": true

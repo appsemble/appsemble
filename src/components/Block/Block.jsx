@@ -1,3 +1,6 @@
+import {
+  Portal,
+} from '@material-ui/core';
 import PropTypes from 'prop-types';
 import React from 'react';
 
@@ -79,10 +82,21 @@ export default class Block extends React.Component {
       return null;
     }
 
+    if (blockDef.position === 'float') {
+      return (
+        <Portal>
+          <div
+            ref={this.ref}
+            className={styles.float}
+          />
+        </Portal>
+      );
+    }
+
     return (
       <div
         ref={this.ref}
-        className={styles.root}
+        className={styles.main}
       />
     );
   }
