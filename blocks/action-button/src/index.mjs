@@ -1,8 +1,8 @@
-import { bootstrap } from '@appsemble/sdk';
+import { attach } from '@appsemble/sdk';
 import './index.css';
 
 
-bootstrap(({ actions, shadowRoot }) => {
+attach(({ actions }) => {
   let node;
   if (actions.click.type === 'link') {
     node = document.createElement('a');
@@ -16,5 +16,5 @@ bootstrap(({ actions, shadowRoot }) => {
     event.preventDefault();
     actions.click.dispatch();
   }, true);
-  shadowRoot.appendChild(node);
+  return node;
 });

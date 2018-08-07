@@ -18,7 +18,6 @@
  *
  * @param {Function<BootstrapParams>} fn The bootstrap function to register.
  */
-// eslint-disable-next-line import/prefer-default-export
 export function bootstrap(fn) {
   const event = new CustomEvent('AppsembleBootstrap', {
     detail: {
@@ -27,4 +26,30 @@ export function bootstrap(fn) {
     },
   });
   document.currentScript.dispatchEvent(event);
+}
+
+
+/**
+ * Attach the returned node to the shadow root.
+ *
+ * This convenience wrapper attaches nodes returned by the bootstrap function to the shadow root.
+ * This means that the initialization function for a block simply has to return a node, or an
+ * iterator yielding nodes.
+ *
+ * @param {Function<BootstrapParams>} fn The bootstrap function to register.
+ */
+export function attach(fn) {
+  return bootstrap(async (params) => {
+    const { shadowRoot } = params;
+
+    const nodes = await fn(params);
+    if (nodes[Symbol.iterator]) {
+      // eslint-disable-next-line no-restricted-syntax
+      for (const node of nodes) {
+        shadowRoot.appendChild(node);
+      }
+    } else if (nodes instanceof HTMLElement) {
+      shadowRoot.appendChild(nodes);
+    }
+  });
 }
