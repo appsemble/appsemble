@@ -22,8 +22,7 @@ module.exports = (api) => {
     'babel-plugin-react-intl-auto',
     ['@babel/plugin-transform-runtime', {
       helpers: true,
-      useBuiltIns: true,
-      useESModules: false,
+      useESModules: !testing,
     }],
     production && ['babel-plugin-transform-react-remove-prop-types', {
       removeImport: true,
