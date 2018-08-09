@@ -5,6 +5,8 @@ html(lang='en')
   link(rel='shortcut icon' href=`/${app.id}/favicon.ico`)
   link(rel='manifest' href=`/${app.id}/manifest.json`)
   title #{app.name}
+  each stylesheet in assets.filter(name => name.endsWith('.css'))
+    link(rel='stylesheet' href=stylesheet)
   div#app
     noscript
       header.header
@@ -13,3 +15,5 @@ html(lang='en')
         | JavaScript seems to be disabled.
         br
         | Please enable JavaScript in your browser settings.
+  each script in assets.filter(name => name.endsWith('.js'))
+    script(src=script)

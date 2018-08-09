@@ -2,9 +2,6 @@
   "name": "@appsemble/api",
   "version": "1.0.0",
   "private": true,
-  "scripts": {
-    "start": "./server.js"
-  },
   "dependencies": {
     "esm": "3.0.72",
     "koa": "^2.5.2",
@@ -17,5 +14,8 @@
     "pug": "^2.0.3",
     "sharp": "^0.20.5",
     "to-ico": "^1.1.5"
+  },
+  "devDependencies": {
+    "koa-webpack": "^5.1.0"
   }
 }

@@ -13,24 +13,26 @@ App:
     definitions:
       type: object
     pages:
-      type: object
-      additionalProperties: false
-      required:
-        - name
-        - blocks
-      properties:
-        name:
-          type: string
-        blocks:
-          type: array
-          items:
-            type: object
-            required:
-              - type
-            properties:
-              type:
-                type: string
-              parameters:
-                type: object
-              actions:
-                type: object
+      type: array
+      items:
+        type: object
+        additionalProperties: false
+        required:
+          - name
+          - blocks
+        properties:
+          name:
+            type: string
+          blocks:
+            type: array
+            items:
+              type: object
+              required:
+                - type
+              properties:
+                type:
+                  type: string
+                parameters:
+                  type: object
+                actions:
+                  type: object
