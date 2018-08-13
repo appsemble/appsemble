@@ -6,10 +6,14 @@ App:
   properties:
     id:
       type: number
+      minimum: 0
+      readOnly: true
     name:
       type: string
+      maxLength: 30
     defaultPage:
       type: string
+      maxLength: 50
     definitions:
       type: object
     pages:
@@ -23,6 +27,7 @@ App:
         properties:
           name:
             type: string
+            maxLength: 50
           blocks:
             type: array
             items:
@@ -32,6 +37,7 @@ App:
               properties:
                 type:
                   type: string
+                  maxLength: 30
                 parameters:
                   type: object
                 actions:
