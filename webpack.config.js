@@ -6,7 +6,6 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
-const webpack = require('webpack');
 const ManifestPlugin = require('webpack-manifest-plugin');
 
 
@@ -19,12 +18,13 @@ module.exports = async (env, { mode }) => {
   return {
     entry: blocks.reduce((acc, block) => ({
       ...acc,
-      [block]: path.join(blocksDir, block, 'src'),
+      [block]: [path.join(blocksDir, block, 'src')],
     }), {
-      app: path.join(__dirname, 'src'),
+      app: [path.join(__dirname, 'src')],
     }),
     output: {
       filename: '[name]/[hash].js',
+      publicPath: '/',
     },
     resolve: {
       extensions: ['.mjs', '.js', '.jsx'],
@@ -38,6 +38,7 @@ module.exports = async (env, { mode }) => {
       },
     },
     devtool: 'source-map',
+    mode,
     module: {
       rules: [
         {
@@ -119,14 +120,6 @@ module.exports = async (env, { mode }) => {
         },
       ],
     },
-    devServer: {
-      contentBase: __dirname,
-      disableHostCheck: true,
-      historyApiFallback: true,
-      host: '0.0.0.0',
-      hot: true,
-      port: 1337,
-    },
     plugins: [
       new HtmlWebpackPlugin({
         template: path.join(__dirname, 'src/index.html'),
@@ -142,12 +135,11 @@ module.exports = async (env, { mode }) => {
       }),
       new MiniCssExtractPlugin({ filename: '[name]/[hash].css' }),
       production && new CleanWebpackPlugin(['dist']),
-      development && new webpack.HotModuleReplacementPlugin(),
       ...blocks.map(block => new ManifestPlugin({
         fileName: `${block}/manifest.json`,
         // eslint-disable-next-line global-require, import/no-dynamic-require
         seed: require(path.join(blocksDir, block, 'package.json')),
-        filter: file => file.path.startsWith(block),
+        filter: file => file.path.startsWith(`/${block}`),
         map: file => file.path,
         generate: (pkg, files) => ({
           id: pkg.name.split('/').pop(),

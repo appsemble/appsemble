@@ -1,4 +1,4 @@
-image: node:10-alpine
+image: node:10
 
 
 stages:
@@ -8,15 +8,8 @@ stages:
 
 .yarn: &yarn
   before_script:
-    - 'apk add --update --no-cache
-        autoconf
-        automake
-        bash
-        g++
-        gcc
-        lcms2-dev
-        libpng-dev
-        make'
+    - apt-get update
+    - apt-get install nasm
     - yarn --pure-lockfile
   script:
     - yarn run $CI_JOB_NAME

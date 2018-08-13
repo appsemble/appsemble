@@ -1,0 +1,38 @@
+App:
+  type: object
+  required:
+    - name
+    - defaultPage
+  properties:
+    id:
+      type: number
+    name:
+      type: string
+    defaultPage:
+      type: string
+    definitions:
+      type: object
+    pages:
+      type: array
+      items:
+        type: object
+        additionalProperties: false
+        required:
+          - name
+          - blocks
+        properties:
+          name:
+            type: string
+          blocks:
+            type: array
+            items:
+              type: object
+              required:
+                - type
+              properties:
+                type:
+                  type: string
+                parameters:
+                  type: object
+                actions:
+                  type: object

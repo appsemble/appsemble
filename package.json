@@ -1,12 +1,13 @@
 {
   "private": true,
   "workspaces": [
+    "api",
     "blocks/*",
     "packages/*"
   ],
   "scripts": {
     "build": "webpack --mode production",
-    "start": "webpack-dev-server --mode development",
+    "start": "node -r esm api/server.mjs",
     "eslint": "eslint --ext js,jsx,md,mjs .",
     "stylelint": "stylelint .",
     "test": "jest"
@@ -72,7 +73,6 @@
     "webpack": "^4.12.2",
     "webpack-cleanup-plugin": "^0.5.1",
     "webpack-cli": "^3.0.8",
-    "webpack-dev-server": "^3.1.4",
     "webpack-manifest-plugin": "^2.0.3",
     "yaml-loader": "^0.5.0"
   }

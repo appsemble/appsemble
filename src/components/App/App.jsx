@@ -30,7 +30,7 @@ export default class App extends React.Component {
         textComponent={React.Fragment}
       >
         <MuiThemeProvider theme={createMuiTheme()}>
-          <BrowserRouter>
+          <BrowserRouter basename={new URL(document.baseURI).pathname}>
             <AppContext>
               <TitleBar />
               <SideNavigation />

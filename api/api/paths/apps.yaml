@@ -1,0 +1,38 @@
+/apps:
+  post:
+    tags: [app]
+    description: Create a new app
+    x-oai-middleware:
+      - file: apps
+        handler: create
+    parameters:
+      - name: app
+        in: body
+        description: The app to create.
+        required: true
+        schema:
+          $ref: '#/definitions/App'
+    responses:
+      201:
+        description: The app that was created.
+        schema:
+          $ref: '#/definitions/App'
+
+/apps/{id}:
+  get:
+    tags: [app]
+    description: Get a single app
+    x-oai-middleware:
+      - file: apps
+        handler: getOne
+    parameters:
+      - name: id
+        in: path
+        description: The id of the app to get.
+        required: true
+        type: integer
+    responses:
+      200:
+        description: The app that matches the given id.
+        schema:
+          $ref: '#/definitions/App'
