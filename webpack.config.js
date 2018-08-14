@@ -135,10 +135,9 @@ module.exports = async (env, { mode }) => {
       }),
       new MiniCssExtractPlugin({ filename: '[name]/[hash].css' }),
       production && new CleanWebpackPlugin(['dist']),
-      ...blocks.map(block => new ManifestPlugin({
+      ...await Promise.all(blocks.map(async block => new ManifestPlugin({
         fileName: `${block}/manifest.json`,
-        // eslint-disable-next-line global-require, import/no-dynamic-require
-        seed: require(path.join(blocksDir, block, 'package.json')),
+        seed: await import(path.join(blocksDir, block, 'package.json')),
         filter: file => file.path.startsWith(`/${block}`),
         map: file => file.path,
         generate: (pkg, files) => ({
@@ -146,7 +145,7 @@ module.exports = async (env, { mode }) => {
           ...pkg.appsemble,
           files,
         }),
-      })),
+      }))),
     ].filter(Boolean),
     optimization: {
       minimizer: [

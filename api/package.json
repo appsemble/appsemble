@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "dependencies": {
-    "esm": "3.0.72",
+    "esm": "^3.0.72",
     "js-yaml": "^3.12.0",
     "koa": "^2.5.2",
     "koa-bodyparser": "^4.2.1",
