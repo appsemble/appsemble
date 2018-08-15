@@ -13,7 +13,6 @@ import {
 import thunk from 'redux-thunk';
 
 import './index.css';
-import './utils/mock-axios';
 import App from './components/App';
 import * as reducers from './actions';
 

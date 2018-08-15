@@ -1,4 +1,5 @@
-import normalize from './normalize';
+import normalize from '@appsemble/utils/normalize';
+
 import {
   mapData,
 } from './remapObject';

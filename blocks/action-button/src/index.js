@@ -8,7 +8,6 @@ attach(({ actions }) => {
     node = document.createElement('a');
     node.href = actions.click.href;
   } else {
-    // eslint-disable-next-line react/button-has-type
     node = document.createElement('button');
     node.type = 'button';
   }

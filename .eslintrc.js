@@ -10,13 +10,6 @@ module.exports = {
     'babel',
     'markdown',
   ],
-  settings: {
-    'import/resolver': {
-      node: {
-        extensions: ['.mjs', '.js', '.jsx'],
-      },
-    },
-  },
   env: {
     jest: true,
   },
