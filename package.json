@@ -7,9 +7,9 @@
   ],
   "scripts": {
     "build": "webpack --mode production",
-    "start": "node -r esm api/server.mjs",
-    "eslint": "eslint --ext js,jsx,md,mjs .",
-    "setup-db": "node -r esm api/setup-db.mjs",
+    "start": "node -r esm api/server.js",
+    "eslint": "eslint --ext js,jsx,md .",
+    "setup-db": "node -r esm api/setup-db.js",
     "stylelint": "stylelint .",
     "test": "jest"
   },

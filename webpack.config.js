@@ -27,7 +27,7 @@ module.exports = async (env, { mode }) => {
       publicPath: '/',
     },
     resolve: {
-      extensions: ['.mjs', '.js', '.jsx'],
+      extensions: ['.js', '.jsx'],
       alias: {
         '@material-ui/core': '@material-ui/core/es',
         '@material-ui/icons': '@material-ui/icons/es',
@@ -42,8 +42,9 @@ module.exports = async (env, { mode }) => {
     module: {
       rules: [
         {
-          test: /\.(jsx|mjs)$/,
+          test: /\.jsx?$/,
           loader: 'babel-loader',
+          exclude: [/node_modules/],
           options: {
             envName: mode,
           },
