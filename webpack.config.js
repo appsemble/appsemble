@@ -111,14 +111,6 @@ module.exports = async (env, { mode }) => {
             },
           ],
         },
-        {
-          test: /\.yaml$/,
-          include: path.join(__dirname, 'apps'),
-          use: [
-            'file-loader',
-            'yaml-loader',
-          ],
-        },
       ],
     },
     plugins: [
