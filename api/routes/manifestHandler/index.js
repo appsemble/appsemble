@@ -1,3 +1,10 @@
+import normalize from '@appsemble/utils/normalize';
+
+import {
+  select,
+} from '../../utils/db';
+
+
 const iconSizes = [
   48,
   144,
@@ -14,6 +21,12 @@ export default async function manifestHandler(ctx) {
     id,
   } = ctx.params;
 
+  const apps = await select('App', { id });
+  if (apps.length === 0) {
+    ctx.throw(404);
+    return;
+  }
+  const [app] = apps;
   ctx.body = {
     background_color: '#ff8c7d',
     display: 'standalone',
@@ -22,10 +35,10 @@ export default async function manifestHandler(ctx) {
       type: 'image/png',
       sizes: `${size}x${size}`,
     })),
-    name: 'Unlittered',
+    name: app.name,
     orientation: 'any',
-    short_name: 'Unlittered',
-    start_url: `/${id}`,
+    short_name: app.name,
+    start_url: `/${id}/${normalize(app.defaultPage)}`,
     theme_color: '#ff2f15',
   };
 }

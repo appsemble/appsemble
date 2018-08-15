@@ -1,3 +1,4 @@
+import normalize from '@appsemble/utils/normalize';
 import PropTypes from 'prop-types';
 import React from 'react';
 import {
@@ -6,7 +7,6 @@ import {
   Switch,
 } from 'react-router-dom';
 
-import normalize from '../../utils/normalize';
 import Page from '../Page';
 import styles from './Main.css';
 

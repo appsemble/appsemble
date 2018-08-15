@@ -1,10 +1,10 @@
+import normalize from '@appsemble/utils/normalize';
 import {
   List,
 } from '@material-ui/core';
 import PropTypes from 'prop-types';
 import React from 'react';
 
-import normalize from '../../utils/normalize';
 import NavListItem from '../NavListItem';
 import SideMenu from '../SideMenu';
 
