@@ -2,7 +2,6 @@ const path = require('path');
 
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 const fs = require('fs-extra');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
@@ -114,18 +113,6 @@ module.exports = async (env, { mode }) => {
       ],
     },
     plugins: [
-      new HtmlWebpackPlugin({
-        template: path.join(__dirname, 'src/index.html'),
-        chunks: ['app'],
-        minify: {
-          collapseWhitespace: true,
-          removeAttributeQuotes: true,
-          removeComments: true,
-          removeOptionalTags: true,
-          removeRedundantAttributes: true,
-          removeScriptTypeAttributes: true,
-        },
-      }),
       new MiniCssExtractPlugin({ filename: '[name]/[hash].css' }),
       production && new CleanWebpackPlugin(['dist']),
       ...await Promise.all(blocks.map(async block => new ManifestPlugin({
