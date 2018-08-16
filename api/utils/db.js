@@ -1,6 +1,6 @@
 import { promisify } from 'util';
 
-import { mapValues, memoize } from 'lodash-es';
+import { isEmpty, mapValues, memoize } from 'lodash-es';
 import mysql from 'mysql';
 
 
@@ -30,7 +30,7 @@ export function insert(table, object) {
 }
 
 
-export async function select(table, query = {}) {
+export async function select(table, query = null) {
   const pool = getPool();
   const data = mapValues(query, (value) => {
     if (value instanceof Object) {
@@ -38,7 +38,7 @@ export async function select(table, query = {}) {
     }
     return value;
   });
-  return pool.query('SELECT * FROM ?? WHERE ?', [table, data]);
+  return pool.query(`SELECT * FROM ??${isEmpty(query) ? '' : ' WHERE ?'}`, [table, data]);
 }
 
 

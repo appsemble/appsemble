@@ -17,6 +17,19 @@
         description: The app that was created.
         schema:
           $ref: '#/definitions/App'
+  get:
+    tags: [app]
+    description: Get a all existing apps.
+    x-oai-middleware:
+      - file: apps
+        handler: query
+    responses:
+      200:
+        description: The list of all apps.
+        schema:
+          type: array
+          items:
+            $ref: '#/definitions/App'
 
 /apps/{id}:
   get:
