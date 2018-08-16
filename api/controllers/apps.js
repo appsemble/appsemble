@@ -1,6 +1,7 @@
 import {
   insert,
   select,
+  update as sqlUpdate,
 } from '../utils/db';
 
 
@@ -41,4 +42,16 @@ export async function getOne(ctx) {
 export async function query(ctx) {
   const apps = await select('App');
   ctx.body = apps.map(rowToJson);
+}
+
+
+export async function update(ctx) {
+  const { body } = ctx.request;
+  const { id } = ctx.params;
+  const { affectedRows } = await sqlUpdate('App', body, { id });
+  if (affectedRows === 0) {
+    ctx.throw(404);
+    return;
+  }
+  ctx.body = body;
 }

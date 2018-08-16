@@ -40,3 +40,15 @@ export async function select(table, query = {}) {
   });
   return pool.query('SELECT * FROM ?? WHERE ?', [table, data]);
 }
+
+
+export async function update(table, values, query) {
+  const pool = getPool();
+  const data = mapValues(values, (value) => {
+    if (value instanceof Object) {
+      return JSON.stringify(value);
+    }
+    return value;
+  });
+  return pool.query('UPDATE ?? SET ? WHERE ?', [table, data, query]);
+}

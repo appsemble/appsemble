@@ -36,3 +36,26 @@
         description: The app that matches the given id.
         schema:
           $ref: '#/definitions/App'
+  put:
+    tags: [app]
+    description: Update an existing app
+    x-oai-middleware:
+      - file: apps
+        handler: update
+    parameters:
+      - name: id
+        in: path
+        description: The id of the app to update.
+        required: true
+        type: integer
+      - name: app
+        in: body
+        description: The new app configuration.
+        required: true
+        schema:
+          $ref: '#/definitions/App'
+    responses:
+      200:
+        description: The updated app.
+        schema:
+          $ref: '#/definitions/App'
