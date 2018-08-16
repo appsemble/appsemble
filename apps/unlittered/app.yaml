@@ -33,6 +33,11 @@ definitions:
             - image/*
 
 
+authentication:
+  - method: email
+    url: http://oscity.nl:9808/login
+
+
 pages:
   - name: Maak waarneming
     blocks:

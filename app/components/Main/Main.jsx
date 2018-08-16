@@ -7,6 +7,7 @@ import {
   Switch,
 } from 'react-router-dom';
 
+import Login from '../Login';
 import Page from '../Page';
 import styles from './Main.css';
 
@@ -55,6 +56,7 @@ export default class Main extends React.Component {
       <main className={styles.root}>
         <Switch>
           {routes}
+          <Route exact path="/login" component={Login} />
           <Redirect to={defaultPath} />
         </Switch>
       </main>

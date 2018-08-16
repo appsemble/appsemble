@@ -16,6 +16,20 @@ App:
       maxLength: 50
     definitions:
       type: object
+    authentication:
+      type: array
+      items:
+        type: object
+        additionalProperties: false
+        required:
+          - method
+          - url
+        properties:
+          method:
+            enum: [email]
+          url:
+            type: string
+            format: uri
     pages:
       type: array
       items:
