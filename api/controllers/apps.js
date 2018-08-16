@@ -24,6 +24,7 @@ export async function create(ctx) {
     ...body,
     id: result.insertId,
   };
+  ctx.status = 201;
 }
 
 
