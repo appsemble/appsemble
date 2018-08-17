@@ -19,7 +19,7 @@ module.exports = async (env, { mode }) => {
       ...acc,
       [block]: [path.join(blocksDir, block, 'src')],
     }), {
-      app: [path.join(__dirname, 'src')],
+      app: [path.join(__dirname, 'app')],
     }),
     output: {
       filename: '[name]/[hash].js',
