@@ -22,25 +22,6 @@ build:
       - dist/
 
 
-deploy master:
-  stage: deploy
-  image: registry.gitlab.com/appsemble/docker/gcloud-deploy
-  dependencies:
-    - build
-  only:
-    - master
-  environment:
-    name: staging
-    url: https://amsterdam-dot-appsemble-staging.appspot.com
-  before_script:
-    - activate-service-account
-  script:
-    - gcloud app deploy app.yaml
-        --version $CI_COMMIT_SHA
-        --promote
-        --stop-previous-version
-
-
 eslint: *yarn
 
 
