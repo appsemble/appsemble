@@ -1,0 +1,6 @@
+*
+!/api
+!/dist
+!/package.json
+!/packages
+!/yarn.lock

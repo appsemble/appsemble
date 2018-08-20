@@ -3,7 +3,7 @@ image: node:10
 
 stages:
   - test
-  - deploy
+  - build
 
 
 .yarn: &yarn
@@ -15,11 +15,20 @@ stages:
     - yarn run $CI_JOB_NAME
 
 
-build:
+build:app:
   <<: *yarn
   artifacts:
     paths:
       - dist/
+
+
+build:docker:
+  stage: build
+  image: dind
+  dependencies:
+    - build:app
+  script:
+    - docker build .
 
 
 eslint: *yarn
