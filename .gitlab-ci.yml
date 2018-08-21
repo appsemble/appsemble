@@ -43,6 +43,8 @@ eslint: *yarn
 pages:
   stage: build
   image: busybox
+  variables:
+    GIT_STRATEGY: none
   dependencies:
     - test
   only:
