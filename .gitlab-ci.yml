@@ -1,4 +1,4 @@
-image: node:10
+image: node:10-slim
 
 
 stages:
@@ -36,7 +36,7 @@ eslint: *yarn
 
 pages:
   stage: deploy
-  image: alpine
+  image: busybox
   dependencies:
     - test
   only:
