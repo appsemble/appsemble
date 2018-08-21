@@ -33,7 +33,7 @@ build:docker:
   dependencies:
     - build:app
   before_script:
-    - echo $CI_JOB_TOKEN | docker -u gitlab-ci-token --password-stdin
+    - echo $CI_JOB_TOKEN | docker login -u gitlab-ci-token --password-stdin
   script: docker build .
 
 
