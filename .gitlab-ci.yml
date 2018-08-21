@@ -35,7 +35,7 @@ eslint: *yarn
 
 
 pages:
-  stage: deploy
+  stage: build
   image: busybox
   dependencies:
     - test
