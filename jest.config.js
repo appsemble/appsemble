@@ -2,7 +2,7 @@ module.exports = {
   collectCoverageFrom: [
     'blocks/**',
     'packages/**',
-    'src/**',
+    'app/**',
   ],
   moduleFileExtensions: ['js', 'jsx'],
   moduleNameMapper: {

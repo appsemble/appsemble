@@ -3,7 +3,7 @@ image: node:10
 
 stages:
   - test
-  - deploy
+  - build
 
 
 .yarn: &yarn
@@ -11,48 +11,45 @@ stages:
     - apt-get update
     - apt-get install nasm
     - yarn --pure-lockfile
-  script:
-    - yarn run $CI_JOB_NAME
+  script: yarn $CI_JOB_NAME
 
 
-build:
+build:app:
   <<: *yarn
+  script: yarn build
   artifacts:
     paths:
       - dist/
 
 
-deploy master:
-  stage: deploy
-  image: registry.gitlab.com/appsemble/docker/gcloud-deploy
+build:docker:
+  stage: build
+  services:
+    - docker:dind
+  image: docker
+  variables:
+    DOCKER_HOST: tcp://docker:2375
+    DOCKER_DRIVER: overlay2
   dependencies:
-    - build
-  only:
-    - master
-  environment:
-    name: staging
-    url: https://amsterdam-dot-appsemble-staging.appspot.com
+    - build:app
   before_script:
-    - activate-service-account
-  script:
-    - gcloud app deploy app.yaml
-        --version $CI_COMMIT_SHA
-        --promote
-        --stop-previous-version
+    - echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY
+  script: docker build .
 
 
 eslint: *yarn
 
 
 pages:
-  stage: deploy
-  image: alpine
+  stage: build
+  image: busybox
+  variables:
+    GIT_STRATEGY: none
   dependencies:
     - test
   only:
     - master
-  script:
-    - mv coverage/lcov-report public
+  script: mv coverage/lcov-report public
   artifacts:
     paths:
       - public/
@@ -63,8 +60,7 @@ stylelint: *yarn
 
 test:
   <<: *yarn
-  script:
-    - yarn test --coverage
+  script: yarn test --coverage
   artifacts:
     paths:
       - coverage/

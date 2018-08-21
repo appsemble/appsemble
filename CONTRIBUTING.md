@@ -13,7 +13,7 @@ The project roughly has the following file structure
 ┃   ┃   ┗━ manifest.json
 ┃   ┣━ src/
 ┃   ┗━ package.json
-┣━ src/
+┣━ app/
 ┃   ┃━ actions/
 ┃   ┃   ┣━ index.jsx
 ┃   ┃   ┗━ <action>.jsx
@@ -25,7 +25,6 @@ The project roughly has the following file structure
 ┃   ┃       ┗━ <Component>.jsx
 ┃   ┣━ utils/
 ┃   ┣━ index.css
-┃   ┣━ index.html
 ┃   ┗━ index.jsx
 ┗━ packages/
 ```
@@ -38,15 +37,15 @@ Each subdirectory in *apps/* contains an app definition. At the moment of writin
 
 Each subdirectory in *blocks/* defines an Appsemble block. Each block consists of a *package.json*, which defines some metadata about the block, a *src/* directory, which holds the source code of the block, and a *dist/* directory, which holds the output of a build of the block.
 
-Simple blocks are written in vanilla JavaScript. However, if a block gets more complex, React is used. In this case the same directory is used as for the top level *[src/](#src)* directory.
+Simple blocks are written in vanilla JavaScript. However, if a block gets more complex, React is used. In this case the same directory is used as for the top level *[app/](#app)* directory.
 
 ### packages
 
 The packages directory contains any reusable packages. These packages may or may not eventually be extracted into their own project.
 
-### src
+### app
 
-The *src/* directory holds the code of the core of the project.
+The *app/* directory holds the code of the frontend web app.
 
 #### actions
 
