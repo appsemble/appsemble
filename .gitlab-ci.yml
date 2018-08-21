@@ -24,6 +24,8 @@ build:app:
 
 build:docker:
   stage: build
+  services:
+    - docker:dind
   image: dind
   dependencies:
     - build:app
