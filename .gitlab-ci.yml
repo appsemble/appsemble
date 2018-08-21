@@ -26,9 +26,14 @@ build:docker:
   stage: build
   services:
     - docker:dind
-  image: dind
+  image: docker
+  variables:
+    DOCKER_HOST: tcp://docker:2375
+    DOCKER_DRIVER: overlay2
   dependencies:
     - build:app
+  before_script:
+    - echo $CI_JOB_TOKEN | docker -u gitlab-ci-token --password-stdin
   script: docker build .
 
 
