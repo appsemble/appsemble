@@ -24,7 +24,7 @@ import messages from './messages';
 export default class EmailLogin extends React.Component {
   static propTypes = {
     authentication: PropTypes.shape().isRequired,
-    emailLogin: PropTypes.func.isRequired,
+    passwordLogin: PropTypes.func.isRequired,
   };
 
   state = {
@@ -61,7 +61,7 @@ export default class EmailLogin extends React.Component {
     event.preventDefault();
     const {
       authentication,
-      emailLogin,
+      passwordLogin,
     } = this.props;
     const {
       values,
@@ -72,7 +72,7 @@ export default class EmailLogin extends React.Component {
       submitting: true,
     });
     try {
-      await emailLogin(authentication.url, values);
+      await passwordLogin(authentication.url, values, authentication.refreshURL);
     } catch (error) {
       this.setState({
         error: true,

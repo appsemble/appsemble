@@ -30,6 +30,9 @@ App:
           url:
             type: string
             format: uri
+          refreshURL:
+            type: string
+            format: uri
     pages:
       type: array
       items:

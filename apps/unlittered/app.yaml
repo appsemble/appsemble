@@ -36,6 +36,7 @@ definitions:
 authentication:
   - method: email
     url: http://oscity.nl:9808/login
+    refreshURL: http://oscity.nl:9808/token/refresh
 
 
 pages:
