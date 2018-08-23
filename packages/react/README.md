@@ -10,8 +10,6 @@ npm install @appsemble/react
 
 ## Hello world example
 
-<!-- eslint-disable import/no-extraneous-dependencies, react/jsx-filename-extension -->
-
 ```js
 import { bootstrap } from '@appsemble/react';
 import PropTypes from 'prop-types';
