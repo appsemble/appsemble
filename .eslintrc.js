@@ -8,11 +8,7 @@ module.exports = {
   parser: 'babel-eslint',
   plugins: [
     'babel',
-    'markdown',
   ],
-  env: {
-    jest: true,
-  },
   rules: {
     'react/prefer-stateless-function': 'off',
     'no-invalid-this': 'off',
@@ -21,4 +17,22 @@ module.exports = {
     'babel/semi': 'error',
     'eslint-comments/no-unused-disable': 'error',
   },
+  overrides: [
+    {
+      files: ['*.test.{js,jsx}'],
+      env: {
+        jest: true,
+      },
+    },
+    {
+      files: ['*.md'],
+      plugins: [
+        'markdown',
+      ],
+      rules: {
+        'import/no-extraneous-dependencies': 'off',
+        'react/jsx-filename-extension': 'off',
+      },
+    },
+  ],
 };
