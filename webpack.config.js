@@ -15,6 +15,7 @@ module.exports = async (env, { mode }) => {
   const blocks = await fs.readdir(blocksDir);
 
   return {
+    name: 'Appsemble',
     entry: blocks.reduce((acc, block) => ({
       ...acc,
       [block]: [path.join(blocksDir, block, 'src')],
