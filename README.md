@@ -2,7 +2,46 @@
 
 > The Appsemble Amsterdam project
 
-## Getting started
+## Usage
+
+A Docker image is built for each version of Appsemble.
+
+> To pull an image from our registry, a login to the GitLab registry is needed. Go to https://gitlab.com/profile/personal_access_tokens. Enter a name for your token, check the `read_registry` scope, and create the token. It is highly recommended to use a [credentials store][docker credentials store]. Now login using docker. Your GitLab username is the username, The token is the password.
+>
+> ```sh
+> docker login registry.gitlab.com
+> ```
+
+To pull the latest version, run
+
+```sh
+docker pull registry.gitlab.com/appsemble/amsterdam
+```
+
+Also a Docker image is built for each release.
+
+```sh
+docker pull registry.gitlab.com/appsemble/amsterdam:$GIT_VERSION
+```
+
+It is also possible to pull a version matching a specific git commit.
+
+```sh
+docker pull registry.gitlab.com/appsemble/amsterdam:$GIT_COMMIT_HASH
+```
+
+The Docker image uses the following environment variables
+
+| Variable              | Default value | Description
+| --------------------- | ------------- | -----------
+| `MYSQL_HOST`          | `localhost`   | The host of the MySQL database to connect to.
+| `MYSQL_DATABASE`      | `appsemble`   | The name of the MySQL database to connect to.
+| `MYSQL_USER`          | `root`        | The username of the database user.
+| `MYSQL_ROOT_PASSWORD` | `password`    | The password of the database user.
+
+## Development
+
+### Getting started
 
 Clone and setup the project
 
@@ -32,8 +71,9 @@ yarn build
 
 The result will be output in the *dist/* directory.
 
-## Contributing
+### Contributing
 
 Please read our [contributing guidelines](./CONTRIBUTING.md)
 
 [docker-compose]: https://docs.docker.com/compose
+[docker credentials store]: https://docs.docker.com/engine/reference/commandline/login/#credentials-store
