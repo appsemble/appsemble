@@ -6,6 +6,12 @@
 
 A Docker image is built for each version of Appsemble.
 
+> To pull an image from our registry, a login to the GitLab registry is needed. Go to https://gitlab.com/profile/personal_access_tokens. Enter a name for your token, check the `read_registry` scope, and create the token. It is highly recommended to use a [credentials store][docker credentials store]. Now login using docker. Your GitLab username is the username, The token is the password.
+>
+> ```sh
+> docker login registry.gitlab.com
+> ```
+
 To pull the latest version, run
 
 ```sh
@@ -70,3 +76,4 @@ The result will be output in the *dist/* directory.
 Please read our [contributing guidelines](./CONTRIBUTING.md)
 
 [docker-compose]: https://docs.docker.com/compose
+[docker credentials store]: https://docs.docker.com/engine/reference/commandline/login/#credentials-store
