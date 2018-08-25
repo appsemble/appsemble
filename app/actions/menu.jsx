@@ -23,6 +23,9 @@ export default (state = initialState, action) => {
 };
 
 
+/**
+ * Open the side menu.
+ */
 export function openMenu() {
   return (dispatch) => {
     dispatch({
@@ -32,6 +35,9 @@ export function openMenu() {
 }
 
 
+/**
+ * Close the side menu.
+ */
 export function closeMenu() {
   return (dispatch) => {
     dispatch({

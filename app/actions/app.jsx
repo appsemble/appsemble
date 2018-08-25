@@ -45,23 +45,28 @@ export default (state = initialState, action) => {
 };
 
 
-export const getApp = () => async (dispatch) => {
-  dispatch({
-    type: GET_START,
-  });
-  try {
-    const { data } = await axios.get(`/api/apps/${document.baseURI.match(/\d+$/)[0]}`);
-    const app = resolveJsonPointers(data);
-    const db = await getDB(app);
+/**
+ * Get the app for the app id in the base URI.
+ */
+export function getApp() {
+  return async (dispatch) => {
     dispatch({
-      type: GET_SUCCESS,
-      app,
-      db,
+      type: GET_START,
     });
-  } catch (error) {
-    dispatch({
-      type: GET_ERROR,
-      error,
-    });
-  }
-};
+    try {
+      const { data } = await axios.get(`/api/apps/${document.baseURI.match(/\d+$/)[0]}`);
+      const app = resolveJsonPointers(data);
+      const db = await getDB(app);
+      dispatch({
+        type: GET_SUCCESS,
+        app,
+        db,
+      });
+    } catch (error) {
+      dispatch({
+        type: GET_ERROR,
+        error,
+      });
+    }
+  };
+}
