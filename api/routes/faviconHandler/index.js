@@ -4,7 +4,7 @@ import sharp from 'sharp';
 import toIco from 'to-ico';
 
 
-const iconPath = path.resolve(new URL(import.meta.url).pathname, '../../iconHandler/icon.svg');
+const iconPath = path.resolve(__dirname, '../iconHandler/icon.svg');
 
 
 const sizes = [16, 32, 48, 64, 128, 256];

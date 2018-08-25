@@ -7,8 +7,8 @@ import {
 } from '../../utils/db';
 
 
-const render = pug.compileFile(path.resolve(new URL(import.meta.url).pathname, '../index.pug'));
-const render404 = pug.compileFile(path.resolve(new URL(import.meta.url).pathname, '../404.pug'));
+const render = pug.compileFile(path.resolve(__dirname, 'index.pug'));
+const render404 = pug.compileFile(path.resolve(__dirname, '404.pug'));
 
 
 function getAssets(ctx) {

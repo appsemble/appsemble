@@ -48,7 +48,7 @@ describe('compileFilters', () => {
 });
 
 
-fdescribe('mapData', () => {
+describe('mapData', () => {
   const fixtures = [
     {
       data: { foo: { bar: 'baz' } },
