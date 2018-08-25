@@ -45,42 +45,49 @@ export default (state = initialState, action) => {
 };
 
 
-export const getBlockDefs = blockDefIds => async (dispatch, getState) => {
-  const state = getState().blockDefs;
-  const filtered = blockDefIds
-    .filter((blockDefId, index) => {
-      if (index !== blockDefIds.indexOf(blockDefId)) {
-        return false;
-      }
-      if (state.pending.includes(blockDefId)) {
-        return false;
-      }
-      return !state.blockDefs.find(blockDef => blockDef.id === blockDefId);
-    });
-  if (filtered.length === 0) {
-    return;
-  }
-  dispatch({
-    type: GET_START,
-    pending: filtered,
-  });
-  try {
-    await Promise.all(blockDefIds.map(async (blockDefId) => {
-      let blockDef;
-      try {
-        ({ data: blockDef } = await axios.get(`${blockDefId}/manifest.json`));
-      } catch (error) {
-        ({ data: blockDef } = await axios.get('stub/manifest.json'));
-      }
-      dispatch({
-        type: GET_SUCCESS,
-        blockDef,
+/**
+ * Fetch the block definitions for the given ids.
+ *
+ * @param {string[]} blockDefIds The ids of the block definitions to fetch.
+ */
+export function getBlockDefs(blockDefIds) {
+  return async (dispatch, getState) => {
+    const state = getState().blockDefs;
+    const filtered = blockDefIds
+      .filter((blockDefId, index) => {
+        if (index !== blockDefIds.indexOf(blockDefId)) {
+          return false;
+        }
+        if (state.pending.includes(blockDefId)) {
+          return false;
+        }
+        return !state.blockDefs.find(blockDef => blockDef.id === blockDefId);
       });
-    }));
-  } catch (error) {
+    if (filtered.length === 0) {
+      return;
+    }
     dispatch({
-      type: GET_ERROR,
-      error,
+      type: GET_START,
+      pending: filtered,
     });
-  }
-};
+    try {
+      await Promise.all(blockDefIds.map(async (blockDefId) => {
+        let blockDef;
+        try {
+          ({ data: blockDef } = await axios.get(`${blockDefId}/manifest.json`));
+        } catch (error) {
+          ({ data: blockDef } = await axios.get('stub/manifest.json'));
+        }
+        dispatch({
+          type: GET_SUCCESS,
+          blockDef,
+        });
+      }));
+    } catch (error) {
+      dispatch({
+        type: GET_ERROR,
+        error,
+      });
+    }
+  };
+}

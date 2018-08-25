@@ -1,7 +1,9 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 
+import checkScope from '../../utils/checkScope';
 import Block from '../Block';
+import Login from '../Login';
 
 
 /**
@@ -15,6 +17,11 @@ export default class Page extends React.Component {
      * The page definition to render
      */
     page: PropTypes.shape().isRequired,
+    user: PropTypes.shape(),
+  };
+
+  static defaultProps = {
+    user: null,
   };
 
   componentWillMount() {
@@ -43,7 +50,14 @@ export default class Page extends React.Component {
     const {
       location,
       page,
+      user,
     } = this.props;
+
+    if (!checkScope(page.scope, user)) {
+      return (
+        <Login />
+      );
+    }
 
     return page.blocks.map((block, index) => (
       // As long as blocks are in a static list, using the index as a key should be fine.

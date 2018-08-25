@@ -7,6 +7,7 @@ import {
 
 function rowToJson(row) {
   return {
+    authentication: JSON.parse(row.authentication),
     defaultPage: row.defaultPage,
     definitions: JSON.parse(row.definitions),
     id: row.id,
