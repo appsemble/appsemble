@@ -8,8 +8,11 @@ module.exports = {
   parser: 'babel-eslint',
   plugins: [
     'babel',
+    'filenames',
   ],
   rules: {
+    'filenames/match-regex': ['error', /^\.?[a-z]+(\.config|\.test)?$/i, true],
+    'filenames/match-exported': 'error',
     'react/prefer-stateless-function': 'off',
     'no-invalid-this': 'off',
     semi: 'off',
