@@ -4,6 +4,9 @@ import React from 'react';
 import EmailLogin from '../EmailLogin';
 
 
+/**
+ * Render all different authentication methods for an app.
+ */
 export default class Login extends React.Component {
   static propTypes = {
     app: PropTypes.shape().isRequired,

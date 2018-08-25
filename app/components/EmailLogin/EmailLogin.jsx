@@ -23,6 +23,9 @@ import messages from './messages';
  */
 export default class EmailLogin extends React.Component {
   static propTypes = {
+    /**
+     * The authentication instance for which to render an email login form.
+     */
     authentication: PropTypes.shape().isRequired,
     passwordLogin: PropTypes.func.isRequired,
   };
