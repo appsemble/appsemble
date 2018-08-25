@@ -45,6 +45,10 @@ App:
           name:
             type: string
             maxLength: 50
+          scope:
+            type: array
+            items:
+              type: string
           blocks:
             type: array
             items:

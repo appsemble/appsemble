@@ -8,6 +8,13 @@ import {
 import Page from './Page';
 
 
-export default connect(null, {
+function mapStateToProps(state) {
+  return {
+    user: state.user.user,
+  };
+}
+
+
+export default connect(mapStateToProps, {
   getBlockDefs,
 })(Page);
