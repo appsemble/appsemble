@@ -19,7 +19,7 @@ import messages from './messages';
 
 
 /**
- * A form which will let the user login based an app definition.
+ * A form which will let the user login based on an app definition.
  */
 export default class EmailLogin extends React.Component {
   static propTypes = {
