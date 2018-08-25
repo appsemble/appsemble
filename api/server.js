@@ -12,17 +12,14 @@ import routes from './routes';
 import configureStatic from './utils/configureStatic';
 
 
-const dirname = path.dirname(new URL(import.meta.url).pathname);
-
-
 const PORT = 9999;
 
 
 async function main() {
   const oaiRouter = new OAIRouter({
-    apiDoc: path.join(dirname, 'api'),
+    apiDoc: path.join(__dirname, 'api'),
     options: {
-      middleware: path.join(dirname, 'controllers'),
+      middleware: path.join(__dirname, 'controllers'),
       parameters: {},
     },
   });

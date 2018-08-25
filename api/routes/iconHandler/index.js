@@ -3,7 +3,7 @@ import path from 'path';
 import sharp from 'sharp';
 
 
-const iconPath = path.resolve(new URL(import.meta.url).pathname, '../icon.svg');
+const iconPath = path.resolve(__dirname, 'icon.svg');
 
 
 export default async function iconHandler(ctx) {
