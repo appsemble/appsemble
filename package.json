@@ -10,7 +10,7 @@
     "build": "webpack --mode production",
     "start": "node -r esm api/server.js",
     "eslint": "eslint --ext js,jsx,md .",
-    "setup-db": "node -r esm api/setup-db.js",
+    "setupdb": "node -r esm api/setupdb.js",
     "stylelint": "stylelint .",
     "test": "jest"
   },
