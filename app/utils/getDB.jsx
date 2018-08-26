@@ -1,6 +1,10 @@
 import idb from 'idb';
 
 
+export const RW = 'readwrite';
+export const AUTH = 'auth';
+
+
 /**
  * Get an idb database for an app..
  *
@@ -12,7 +16,7 @@ export default function getDB(app) {
     /* eslint-disable default-case */
     switch (upgrade.oldVersion) {
       case 0:
-        upgrade.createObjectStore('auth');
+        upgrade.createObjectStore(AUTH);
     }
     /* eslint-enable default-case */
   });
