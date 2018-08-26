@@ -1,6 +1,8 @@
 import axios from 'axios';
 import jwtDecode from 'jwt-decode';
 
+import { AUTH, RW } from '../utils/getDB';
+
 
 // The buffer between the access token expiration and the refresh token request. A minute should be
 // plenty of time for the refresh token request to finish.
@@ -45,7 +47,7 @@ export default (state = initialState, action) => {
 async function doLogout(dispatch, getState, db = getState().app.db) {
   delete axios.defaults.headers.common.Authorization;
   clearTimeout(timeoutId);
-  db.transaction('auth', 'readwrite').objectStore('auth').delete(0);
+  db.transaction(AUTH, RW).objectStore(AUTH).delete(0);
   dispatch({
     type: LOGOUT,
   });
@@ -78,8 +80,8 @@ async function requestToken(url, params, db, dispatch, refreshURL) {
     access_token: accessToken,
     refresh_token: refreshToken,
   } = data;
-  const tx = db.transaction('auth', 'readwrite');
-  tx.objectStore('auth').put({
+  const tx = db.transaction(AUTH, RW);
+  tx.objectStore(AUTH).put({
     accessToken,
     refreshToken,
   }, 0);
@@ -88,7 +90,7 @@ async function requestToken(url, params, db, dispatch, refreshURL) {
 
 
 async function refreshTokenLogin(url, db, dispatch) {
-  const { refreshToken } = await db.transaction('auth').objectStore('auth').get(0);
+  const { refreshToken } = await db.transaction(AUTH).objectStore(AUTH).get(0);
   try {
     const user = await requestToken(url, {
       grant_type: 'refresh_token',
@@ -115,7 +117,7 @@ async function refreshTokenLogin(url, db, dispatch) {
 export function initAuth() {
   return async (dispatch, getState) => {
     const { app, db } = getState().app;
-    const auth = await db.transaction('auth').objectStore('auth').get(0);
+    const auth = await db.transaction(AUTH).objectStore(AUTH).get(0);
     let user = null;
     if (auth != null) {
       const authentication = app.authentication || app.authentication[0];
