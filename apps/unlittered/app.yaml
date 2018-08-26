@@ -63,14 +63,11 @@ pages:
       - type: map
         resources:
           marker:
-            url: 'https://localhost:9999/markers'
+            url: 'http://oscity.nl:9808/waarnemingen_real'
             query: {}
         actions:
           markerClick:
             type: log
-            remap:
-              process: data.process
-              description: data.description|upper
       - type: action-button
         actions:
           click:
