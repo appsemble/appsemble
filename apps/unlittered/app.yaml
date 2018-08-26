@@ -61,7 +61,6 @@ pages:
       - '*'
     blocks:
       - type: map
-        size: 1
         resources:
           marker:
             url: 'https://localhost:9999/markers'

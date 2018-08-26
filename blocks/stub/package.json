@@ -1,7 +1,0 @@
-{
-  "name": "@appsemble/stub",
-  "version": "1.0.0",
-  "dependencies": {
-    "@appsemble/sdk": "^1.0.0"
-  }
-}
