@@ -5,6 +5,7 @@ const fs = require('fs-extra');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+const { UnusedFilesWebpackPlugin } = require('unused-files-webpack-plugin');
 const ManifestPlugin = require('webpack-manifest-plugin');
 
 
@@ -114,6 +115,13 @@ module.exports = async (env, { mode }) => {
       ],
     },
     plugins: [
+      new UnusedFilesWebpackPlugin({
+        failOnUnused: true,
+        patterns: ['{app,blocks}/**/*.*'],
+        globOptions: {
+          ignore: ['**/package.json', '**/*.test.{js,jsx}'],
+        },
+      }),
       new MiniCssExtractPlugin({ filename: '[name]/[hash].css' }),
       production && new CleanWebpackPlugin(['dist']),
       ...blocks.map(block => new ManifestPlugin({
