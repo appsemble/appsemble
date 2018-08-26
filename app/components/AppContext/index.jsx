@@ -8,9 +8,20 @@ import {
 import {
   getApp,
 } from '../../actions/app';
+import {
+  initAuth,
+} from '../../actions/user';
 import AppContext from './AppContext';
 
 
-export default withRouter(connect(null, {
+function mapStateToProps(state) {
+  return {
+    ready: !!(state.app.app && state.user.initialized),
+  };
+}
+
+
+export default withRouter(connect(mapStateToProps, {
   getApp,
+  initAuth,
 })(AppContext));

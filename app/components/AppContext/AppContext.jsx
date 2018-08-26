@@ -1,5 +1,12 @@
+import {
+  AppBar,
+  CircularProgress,
+  Toolbar,
+} from '@material-ui/core';
 import PropTypes from 'prop-types';
 import React from 'react';
+
+import styles from './AppContext.css';
 
 
 /**
@@ -9,22 +16,38 @@ export default class AppContext extends React.Component {
   static propTypes = {
     children: PropTypes.node.isRequired,
     getApp: PropTypes.func.isRequired,
+    initAuth: PropTypes.func.isRequired,
     location: PropTypes.shape().isRequired,
+    ready: PropTypes.bool.isRequired,
   };
 
-  componentWillMount() {
+  async componentWillMount() {
     const {
       getApp,
+      initAuth,
     } = this.props;
 
-    getApp();
+    await getApp();
+    await initAuth();
   }
 
   render() {
     const {
       children,
       location,
+      ready,
     } = this.props;
+
+    if (!ready) {
+      return (
+        <div className={styles.loader}>
+          <AppBar>
+            <Toolbar />
+          </AppBar>
+          <CircularProgress />
+        </div>
+      );
+    }
 
     return React.Children.map(children, child => (
       React.cloneElement(child, {
