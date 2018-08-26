@@ -2,9 +2,9 @@ html,
 body {
   background-color: #fafafa;
   font-family: Roboto, Helvetica, Arial, sans-serif;
-  margin: 0;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  margin: 0;
 }
 
 noscript {
