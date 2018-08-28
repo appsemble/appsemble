@@ -14,6 +14,7 @@ export default async function configureStatic(app) {
         router.get(`/${path.relative(distDir, asset)}`, (ctx) => {
           ctx.body = fs.createReadStream(asset);
           ctx.type = path.extname(asset);
+          ctx.set('Cache-Control', 'public, max-age=31536000');
         });
         return asset;
       })
