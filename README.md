@@ -57,6 +57,11 @@ The project requires a MySQL database. This project contains a [docker-compose][
 docker-compose up -d
 ```
 
+The database can be initialized using the following command
+```sh
+yarn setupdb
+```
+
 The project can be served using the following command
 
 ```sh
