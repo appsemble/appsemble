@@ -52,10 +52,6 @@ pages:
           submit:
             type: log
 
-  - name: Verstuur waarneming
-    blocks:
-      - type: dataSubmitter
-
   - name: Overzichtskaart
     scope:
       - '*'
