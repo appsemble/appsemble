@@ -3,6 +3,7 @@ import path from 'path';
 
 import Koa from 'koa';
 import bodyParser from 'koa-bodyparser';
+import compress from 'koa-compress';
 import logger from 'koa-logger';
 import OAIRouter from 'koa-oai-router';
 import OAIRouterMiddleware from 'koa-oai-router-middleware';
@@ -30,6 +31,7 @@ async function main() {
   const server = new Koa();
   server.use(logger());
   server.use(bodyParser());
+  server.use(compress());
   server.use(oaiRouter.routes());
   await configureStatic(server);
   server.use(routes);
