@@ -31,7 +31,9 @@ async function main() {
   const server = new Koa();
   server.use(logger());
   server.use(bodyParser());
-  server.use(compress());
+  if (process.env.NODE_ENV === 'production') {
+    server.use(compress());
+  }
   server.use(oaiRouter.routes());
   await configureStatic(server);
   server.use(routes);
