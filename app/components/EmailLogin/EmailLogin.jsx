@@ -30,6 +30,8 @@ export default class EmailLogin extends React.Component {
     passwordLogin: PropTypes.func.isRequired,
   };
 
+  id = Math.random();
+
   state = {
     dirty: false,
     errors: {
@@ -132,17 +134,17 @@ export default class EmailLogin extends React.Component {
           fullWidth
           required
         >
-          <InputLabel htmlFor={`${authentication.url}-password`}>
+          <InputLabel htmlFor={this.id}>
             <FormattedMessage {...messages.passwordLabel} />
           </InputLabel>
           <PasswordField
             autoComplete="current-password"
-            id={`${authentication.url}password`}
+            id={this.id}
             name="password"
             onChange={this.onChange}
             value={values.password}
           />
-          <FormHelperText id={`${authentication.url}-password-helper-text`}>
+          <FormHelperText>
             {dirty && errors.password && (
               <FormattedMessage {...messages.passwordError} />
             )}

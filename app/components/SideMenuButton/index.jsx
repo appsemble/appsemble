@@ -1,4 +1,7 @@
 import {
+  injectIntl,
+} from 'react-intl';
+import {
   connect,
 } from 'react-redux';
 
@@ -8,6 +11,6 @@ import {
 import SideMenuButton from './SideMenuButton';
 
 
-export default connect(null, {
+export default injectIntl(connect(null, {
   openMenu,
-})(SideMenuButton);
+})(SideMenuButton));
