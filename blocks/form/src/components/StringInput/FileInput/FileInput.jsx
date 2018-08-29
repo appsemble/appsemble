@@ -19,16 +19,26 @@ export default class FileInput extends React.Component {
     value: null,
   };
 
-  onSelect = async ({ target }) => {
-    const {
-      onChange,
-    } = this.props;
+  state = {
+    // This is actually used in onSelect.
+    // eslint-disable-next-line react/no-unused-state
+    value: null,
+  };
 
-    // XXX This target extracting and checking is needed because of the shadow DOM hackery.
-    if (target != null) {
-      const value = await readBlob(target.files[0], 'dataurl');
-      onChange({ target }, value);
-    }
+  onSelect = ({ target }) => {
+    // XXX Synchronize the value to the state to prevent the same event to be fired twice because of
+    // the shadow DOM hackery.
+    this.setState(({ value }, { onChange }) => {
+      const [file] = target.files;
+      if (file === value) {
+        return undefined;
+      }
+      readBlob(file, 'dataurl')
+        .then(dataurl => onChange({ target }, dataurl));
+      return {
+        value: file,
+      };
+    });
   };
 
   render() {

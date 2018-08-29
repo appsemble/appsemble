@@ -25,12 +25,14 @@ definitions:
         title: Beschrijving
         type: string
         maxLength: 100
-      photo:
+      photos:
         title: Foto’s
-        type: string
-        appsembleFile:
-          type:
-            - image/*
+        type: array
+        items:
+          type: string
+          appsembleFile:
+            type:
+              - image/*
 
 
 authentication:
