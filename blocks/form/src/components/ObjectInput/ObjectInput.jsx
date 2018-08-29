@@ -10,10 +10,15 @@ import {
  */
 export default class ObjectInput extends React.Component {
   static propTypes = {
+    block: PropTypes.shape().isRequired,
     /**
      * Any children that are passed, are rendered below the other schema properties.
      */
     children: PropTypes.node,
+    /**
+     * Passed to the root component.
+     */
+    className: PropTypes.string,
     /**
      * The type of node to use.
      */
@@ -27,13 +32,17 @@ export default class ObjectInput extends React.Component {
      */
     name: PropTypes.string,
     /**
+     * Passed to the root component.
+     */
+    noValidate: PropTypes.bool,
+    /**
      * A callback for when the value changes.
      */
     onChange: PropTypes.func.isRequired,
     /**
-     * Wether or not a value is required.
+     * Passed to the root component.
      */
-    required: PropTypes.bool,
+    onSubmit: PropTypes.func,
     /**
      * The enum schema definition for which to render an input.
      */
@@ -46,9 +55,11 @@ export default class ObjectInput extends React.Component {
 
   static defaultProps = {
     children: null,
+    className: null,
     component: 'fieldset',
     name: null,
-    required: null,
+    noValidate: null,
+    onSubmit: null,
     value: {},
   };
 
@@ -82,28 +93,32 @@ export default class ObjectInput extends React.Component {
 
   render() {
     const {
+      block,
       children,
+      className,
       component: Component,
-      onChange,
       name,
-      required,
+      noValidate,
+      onSubmit,
       schema,
       value,
-      ...props
     } = this.props;
 
     return (
-      <Component {...props}>
-        {Object.entries(schema.properties).map(([subName, subSchema]) => (
-          <SchemaRenderer
-            key={subName}
-            name={name == null ? subName : `${name}.${subName}`}
-            onChange={this.onChange}
-            required={schema.required?.includes(subName) || false}
-            schema={subSchema}
-            value={value[subName]}
-          />
-        ))}
+      <Component className={className} noValidate={noValidate} onSubmit={onSubmit}>
+        {Object.entries(schema.properties).map(([subName, subSchema]) => {
+          const propName = name == null ? subName : `${name}.${subName}`;
+          return block.parameters.hidden?.includes(propName) || (
+            <SchemaRenderer
+              key={subName}
+              name={propName}
+              onChange={this.onChange}
+              required={schema.required?.includes(subName) || false}
+              schema={subSchema}
+              value={value[subName]}
+            />
+          );
+        })}
         {children}
       </Component>
     );

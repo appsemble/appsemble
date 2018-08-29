@@ -6,26 +6,14 @@ definitions:
   waarneming:
     type: object
     required:
-      - location
-      - process
-      - description
-      - photo
+      - onderwerp
+      - notities
+      - proces
     properties:
-      location:
-        title: Locatie
+      onderwerp:
+        title: Onderwerp
         type: string
-      process:
-        title: Proces
-        enum:
-          - Fietsknip team
-          - Handhaving
-          - Heel en Groen
-          - Inzameling
-      description:
-        title: Beschrijving
-        type: string
-        maxLength: 100
-      photos:
+      fotos:
         title: Foto’s
         type: array
         items:
@@ -33,6 +21,29 @@ definitions:
           appsembleFile:
             type:
               - image/*
+      gebied:
+        type: string
+        readOnly: true
+      notities:
+        title: Notities
+        type: string
+      id:
+        type: string
+        readOnly: true
+      proces:
+        title: Proces
+        enum:
+          - Fietsknip team
+          - Handhaving
+          - Heel en Groen
+          - Inzameling
+      locatie:
+        type: string
+        readOnly: true
+      created_at:
+        type: string
+        format: date-time
+        readOnly: true
 
 
 authentication:
@@ -50,6 +61,11 @@ pages:
         parameters:
           schema:
             $ref: /definitions/waarneming
+          hidden:
+            - gebied
+            - id
+            - locatie
+            - created_at
         actions:
           submit:
             type: log
