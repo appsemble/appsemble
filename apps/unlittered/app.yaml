@@ -10,6 +10,14 @@ definitions:
       - notities
       - proces
     properties:
+      location:
+        title: GeoCoordinates
+        type: object
+        properties:
+          latitude:
+            type: number
+          longitude:
+            type: number
       onderwerp:
         title: Onderwerp
         type: string
