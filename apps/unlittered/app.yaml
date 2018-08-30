@@ -94,7 +94,7 @@ pages:
         actions:
           click:
             type: link
-            to: Verstuur waarneming
+            to: Maak waarneming
 
   - name: Waarneming details
     blocks:
