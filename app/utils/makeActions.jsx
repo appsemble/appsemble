@@ -1,6 +1,7 @@
 import normalize from '@appsemble/utils/normalize';
 
 import {
+  compileFilters,
   mapData,
 } from './remapObject';
 
@@ -20,12 +21,32 @@ const actionCreators = {
     };
   },
 
-  link(definition, block, history) {
-    const href = `/${normalize(definition.to)}`;
+  link({ to, parameters = {} }, { pages }, block, history) {
+    const toPage = pages.find(({ name }) => name === to);
+    if (toPage == null) {
+      throw new Error(`Invalid link reference ${to}`);
+    }
+
+    const mappers = Object.entries(parameters || {})
+      .reduce((acc, [parameter, filter]) => {
+        acc[parameter] = compileFilters(filter);
+        return acc;
+      }, {});
+
+    function href(data = {}) {
+      return `/${[
+        normalize(to),
+        ...(toPage.parameters || []).map(name => (Object.hasOwnProperty.call(mappers, name) ? (
+          mappers[name](data)
+        ) : (
+          data[name]
+        ))),
+      ].join('/')}`;
+    }
 
     return {
-      dispatch() {
-        history.push(href);
+      dispatch(data) {
+        history.push(href(data));
       },
       href,
     };
@@ -39,7 +60,7 @@ const actionCreators = {
 };
 
 
-export default function makeActions(blockDef, block, history) {
+export default function makeActions(blockDef, app, block, history) {
   return Object.entries(blockDef.actions || {})
     .reduce((acc, [on, { required }]) => {
       let definition;
@@ -54,7 +75,7 @@ export default function makeActions(blockDef, block, history) {
         ({ type } = definition);
       }
       const actionCreator = actionCreators[type];
-      const action = actionCreator(definition, block, history);
+      const action = actionCreator(definition, app, block, history);
       if (definition && Object.hasOwnProperty.call(definition, 'remap')) {
         const { dispatch } = action;
         action.dispatch = args => dispatch(mapData(definition.remap, args));

@@ -89,14 +89,19 @@ pages:
             query: {}
         actions:
           markerClick:
-            type: log
+            type: link
+            to: Waarneming details
       - type: action-button
         actions:
           click:
             type: link
-            to: Verstuur waarneming
+            to: Maak waarneming
 
   - name: Waarneming details
+    scope:
+      - '*'
+    parameters:
+      - id
     blocks:
       - type: detail-viewer
         parameters:

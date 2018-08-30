@@ -20,6 +20,7 @@ import styles from './Block.css';
  */
 export default class Block extends React.Component {
   static propTypes = {
+    app: PropTypes.shape().isRequired,
     /**
      * The block to render.
      */
@@ -34,6 +35,7 @@ export default class Block extends React.Component {
 
   ref = async (div) => {
     const {
+      app,
       block,
       blockDef,
       history,
@@ -49,7 +51,7 @@ export default class Block extends React.Component {
 
     this.attached = true;
     const shadowRoot = div.attachShadow({ mode: 'closed' });
-    const actions = makeActions(blockDef, block, history);
+    const actions = makeActions(blockDef, app, block, history);
     const resources = makeResources(blockDef, block);
     await Promise.all(blockDef.files
       .filter(url => url.endsWith('.css'))
