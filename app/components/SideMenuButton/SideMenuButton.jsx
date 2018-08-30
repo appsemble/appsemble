@@ -13,7 +13,7 @@ import messages from './messages';
  */
 export default class SideMenuButton extends React.Component {
   static propTypes = {
-    intl: PropTypes.func.isRequired,
+    intl: PropTypes.shape().isRequired,
     openMenu: PropTypes.func.isRequired,
   };
 

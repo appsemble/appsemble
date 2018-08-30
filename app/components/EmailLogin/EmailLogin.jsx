@@ -30,7 +30,7 @@ export default class EmailLogin extends React.Component {
     passwordLogin: PropTypes.func.isRequired,
   };
 
-  id = Math.random();
+  id = `${Math.random()}`;
 
   state = {
     dirty: false,
