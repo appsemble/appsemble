@@ -1,6 +1,7 @@
 html(lang='en')
   meta(charset='utf-8')
   meta(name='viewport', content='initial-scale=1,minimum-scale=1,width=device-width')
+  link(rel='shortcut icon' href='/favicon.ico')
   title Appsemble — App not found
   each stylesheet in assets.filter(name => name.endsWith('.css'))
     link(rel='stylesheet' href=stylesheet)
