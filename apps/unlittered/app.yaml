@@ -98,6 +98,8 @@ pages:
             to: Maak waarneming
 
   - name: Waarneming details
+    scope:
+      - '*'
     parameters:
       - id
     blocks:
