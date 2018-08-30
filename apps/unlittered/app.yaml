@@ -6,31 +6,52 @@ definitions:
   waarneming:
     type: object
     required:
-      - location
-      - process
-      - description
-      - photo
+      - onderwerp
+      - notities
+      - proces
     properties:
       location:
-        title: Locatie
+        title: GeoCoordinates
+        type: object
+        properties:
+          latitude:
+            type: number
+          longitude:
+            type: number
+      onderwerp:
+        title: Onderwerp
         type: string
-      process:
+      fotos:
+        title: Foto’s
+        type: array
+        items:
+          type: string
+          appsembleFile:
+            type:
+              - image/*
+      gebied:
+        type: string
+        readOnly: true
+      notities:
+        title: Notities
+        type: string
+      id:
+        type: string
+        readOnly: true
+      proces:
         title: Proces
         enum:
           - Fietsknip team
           - Handhaving
           - Heel en Groen
           - Inzameling
-      description:
-        title: Beschrijving
+      locatie:
         type: string
-        maxLength: 100
-      photo:
-        title: Foto’s
+        readOnly: true
+      created_at:
         type: string
-        appsembleFile:
-          type:
-            - image/*
+        format: date-time
+        readOnly: true
 
 
 authentication:
@@ -48,6 +69,11 @@ pages:
         parameters:
           schema:
             $ref: /definitions/waarneming
+          hidden:
+            - gebied
+            - id
+            - locatie
+            - created_at
         actions:
           submit:
             type: log

@@ -4,6 +4,7 @@ import {
   SchemaProvider,
 } from 'react-schema-renderer';
 
+import ArrayInput from '../ArrayInput';
 import BooleanInput from '../BooleanInput';
 import Form from '../Form';
 import EnumInput from '../EnumInput';
@@ -15,6 +16,7 @@ import StringInput from '../StringInput';
 const schemaOptions = {
   populate: 'onChange',
   renderers: {
+    array: ArrayInput,
     boolean: BooleanInput,
     enum: EnumInput,
     integer: NumberInput,

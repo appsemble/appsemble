@@ -1,6 +1,8 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 
+import UnsupportedSchema from '../UnsupportedSchema';
+
 
 /**
  * Render a component based on a JSON schema.
@@ -67,7 +69,7 @@ export default class SchemaRenderer extends React.Component {
     const type = schema.enum ? 'enum' : schema.type;
 
     if (!Object.hasOwnProperty.call(renderers, type)) {
-      return `Schema type ${schema.type} not supported`;
+      return UnsupportedSchema;
     }
 
     return renderers[type];

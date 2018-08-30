@@ -1,5 +1,4 @@
 import {
-  MenuItem,
   TextField,
 } from '@material-ui/core';
 import PropTypes from 'prop-types';
@@ -57,12 +56,15 @@ export default class EnumInput extends React.Component {
         onChange={onChange}
         required={required}
         select
+        SelectProps={{
+          native: true,
+        }}
         value={value == null ? schema.enum[0] : value}
       >
         {schema.enum.map(choice => (
-          <MenuItem key={choice} value={choice}>
+          <option key={choice} value={choice}>
             {`${choice}`}
-          </MenuItem>
+          </option>
         ))}
       </TextField>
     );
