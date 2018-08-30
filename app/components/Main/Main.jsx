@@ -36,13 +36,17 @@ export default class Main extends React.Component {
 
     let defaultPath;
     const routes = app.pages.map((page) => {
-      const path = `/${normalize(page.name)}`;
+      const path = `/${[
+        normalize(page.name),
+        ...(page.parameters || []).map(parameter => `:${parameter}`),
+      ].join('/')}`;
       if (page.name === app.defaultPage) {
         defaultPath = path;
       }
       return (
         <Route
           key={path}
+          exact
           path={path}
           render={props => (
             <Page page={page} {...props} />
