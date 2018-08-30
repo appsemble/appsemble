@@ -6,7 +6,7 @@ attach(({ actions }) => {
   let node;
   if (actions.click.type === 'link') {
     node = document.createElement('a');
-    node.href = actions.click.href;
+    node.href = actions.click.href();
   } else {
     node = document.createElement('button');
     node.type = 'button';

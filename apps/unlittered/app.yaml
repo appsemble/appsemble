@@ -89,7 +89,8 @@ pages:
             query: {}
         actions:
           markerClick:
-            type: log
+            type: link
+            to: Waarneming details
       - type: action-button
         actions:
           click:
@@ -97,6 +98,8 @@ pages:
             to: Maak waarneming
 
   - name: Waarneming details
+    parameters:
+      - id
     blocks:
       - type: detail-viewer
         parameters:
