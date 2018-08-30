@@ -19,7 +19,7 @@ module.exports = async (env, { mode }) => {
     name: 'Appsemble',
     entry: blocks.reduce((acc, block) => ({
       ...acc,
-      [block]: [path.join(blocksDir, block, 'src')],
+      [block]: [path.join(blocksDir, block)],
     }), {
       app: [path.join(__dirname, 'app')],
     }),
