@@ -8,11 +8,6 @@ The project roughly has the following file structure
 ┣━ apps/
 ┃   ┗━ <name>/
 ┃       ┗━ app.yaml
-┣━ blocks/
-┃   ┣━ dist/
-┃   ┃   ┗━ manifest.json
-┃   ┣━ src/
-┃   ┗━ package.json
 ┣━ app/
 ┃   ┃━ actions/
 ┃   ┃   ┣━ index.jsx
@@ -25,23 +20,12 @@ The project roughly has the following file structure
 ┃   ┃       ┗━ <Component>.jsx
 ┃   ┣━ utils/
 ┃   ┣━ index.css
-┃   ┗━ index.jsx
+┃   ┣━ index.jsx
+┃   ┗━ package.json
+┣━ blocks/
+┃   ┗━ package.json
 ┗━ packages/
 ```
-
-### apps
-
-Each subdirectory in *apps/* contains an app definition. At the moment of writing, this consistes merely of an *app.yaml* file, but more files may be included in the future.
-
-### blocks
-
-Each subdirectory in *blocks/* defines an Appsemble block. Each block consists of a *package.json*, which defines some metadata about the block, a *src/* directory, which holds the source code of the block, and a *dist/* directory, which holds the output of a build of the block.
-
-Simple blocks are written in vanilla JavaScript. However, if a block gets more complex, React is used. In this case the same directory is used as for the top level *[app/](#app)* directory.
-
-### packages
-
-The packages directory contains any reusable packages. These packages may or may not eventually be extracted into their own project.
 
 ### app
 
@@ -64,6 +48,20 @@ If a component displays any user facing texts, these should be translated. The t
 #### utils
 
 The *utils/* directory contains several uncategorized utility functions. Note that many utility functions may already exist in [lodash] or in other popular packages on [npmjs].
+
+### apps
+
+Each subdirectory in *apps/* contains an app definition. At the moment of writing, this consistes merely of an *app.yaml* file, but more files may be included in the future.
+
+### blocks
+
+Each subdirectory in *blocks/* defines an Appsemble block. Each block consists of a *package.json*, which defines some metadata about the block, and the source code.
+
+Simple blocks are written in vanilla JavaScript. However, if a block gets more complex, React is used. In this case the same directory structure is used as for the top level *[app/](#app)* directory.
+
+### packages
+
+The packages directory contains any reusable packages. These packages may or may not eventually be extracted into their own project.
 
 ## Style guide
 
