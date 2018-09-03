@@ -2,13 +2,11 @@ module.exports = (api) => {
   const env = api.env();
   const production = env === 'production';
   const development = env === 'development';
-  const testing = env === 'jest';
 
   const presets = [
     ['@babel/preset-env', {
       spec: false,
       loose: true,
-      modules: testing && 'commonjs',
       useBuiltIns: 'usage',
     }],
     ['@babel/preset-react', {
@@ -23,7 +21,6 @@ module.exports = (api) => {
     'babel-plugin-react-intl-auto',
     ['@babel/plugin-transform-runtime', {
       helpers: true,
-      useESModules: !testing,
     }],
     production && ['babel-plugin-transform-react-remove-prop-types', {
       removeImport: true,
