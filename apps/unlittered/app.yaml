@@ -88,6 +88,9 @@ pages:
       - '*'
     blocks:
       - type: map
+        parameters:
+          latitude: locatie.latitude
+          longitude: locatie.longitude
         resources:
           marker:
             url: 'http://oscity.nl:9808/waarnemingen_real'

@@ -1,7 +1,7 @@
 import {
   compileFilters,
-  mapData,
-} from './remapObject';
+  remapData,
+} from './remap';
 
 
 describe('compileFilters', () => {
@@ -48,7 +48,7 @@ describe('compileFilters', () => {
 });
 
 
-describe('mapData', () => {
+describe('remapData', () => {
   const fixtures = [
     {
       data: { foo: { bar: 'baz' } },
@@ -59,7 +59,7 @@ describe('mapData', () => {
 
   fixtures.forEach(({ data, mapper, expected }) => {
     it(`should process ${JSON.stringify(mapper)}`, () => {
-      const result = mapData(mapper, data);
+      const result = remapData(mapper, data);
       expect(result).toEqual(expected);
     });
   });
