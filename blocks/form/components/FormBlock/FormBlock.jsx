@@ -52,7 +52,10 @@ export default class FormBlock extends React.Component {
       <SchemaProvider value={schemaOptions}>
         <Form
           schema={block.parameters.schema}
-          onSubmit={(event, value) => { actions.submit.dispatch(value); }}
+          onSubmit={async (event, value) => {
+            await actions.submit.dispatch(value);
+            actions.submitSuccess.dispatch(value);
+          }}
         />
       </SchemaProvider>
     );

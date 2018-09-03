@@ -7,7 +7,7 @@ import './index.css';
 import loadMarkers from './loadMarkers';
 
 
-attach(function* init({ actions, resources }) {
+attach(function* init({ actions, block, resources }) {
   const node = document.createElement('div');
   yield node;
   const map = new Map(node, { attributionControl: false }).setView([52.3960472, 4.8948808], 14);
@@ -15,5 +15,5 @@ attach(function* init({ actions, resources }) {
   map.locate({ setView: true });
   layer.addTo(map);
 
-  loadMarkers(map, actions, resources);
+  loadMarkers(map, actions, resources, block.parameters);
 });

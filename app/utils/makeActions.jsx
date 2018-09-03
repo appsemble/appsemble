@@ -1,9 +1,9 @@
 import normalize from '@appsemble/utils/normalize';
-
 import {
   compileFilters,
-  mapData,
-} from './remapObject';
+  remapData,
+} from '@appsemble/utils/remap';
+import axios from 'axios';
 
 
 const actionCreators = {
@@ -57,6 +57,16 @@ const actionCreators = {
       dispatch() {},
     };
   },
+
+  request({ method, url }) {
+    return {
+      dispatch(data) {
+        return axios({ method, url, data });
+      },
+      method,
+      url,
+    };
+  },
 };
 
 
@@ -78,7 +88,7 @@ export default function makeActions(blockDef, app, block, history) {
       const action = actionCreator(definition, app, block, history);
       if (definition && Object.hasOwnProperty.call(definition, 'remap')) {
         const { dispatch } = action;
-        action.dispatch = args => dispatch(mapData(definition.remap, args));
+        action.dispatch = args => dispatch(remapData(definition.remap, args));
       }
       action.type = type;
       acc[on] = action;

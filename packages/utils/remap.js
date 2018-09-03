@@ -84,17 +84,17 @@ export function compileFilters(mapperString) {
  * @param {*} inputData The input data which should be mapped.
  * @returns {*} The resulting data as specified by the `mapperData` argument.
  */
-export function mapData(mapperData, inputData) {
+export function remapData(mapperData, inputData) {
   if (typeof mapperData === 'string') {
     return compileFilters(mapperData)(inputData);
   }
   if (Array.isArray(mapperData)) {
-    return mapperData.map(value => mapData(value, inputData));
+    return mapperData.map(value => remapData(value, inputData));
   }
   if (mapperData instanceof Object) {
     return Object.entries(mapperData)
       .reduce((acc, [key, value]) => {
-        acc[key] = mapData(value, inputData);
+        acc[key] = remapData(value, inputData);
         return acc;
       }, {});
   }
