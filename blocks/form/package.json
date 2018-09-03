@@ -5,6 +5,9 @@
     "actions": {
       "submit": {
         "required": true
+      },
+      "submitSuccess": {
+        "required": true
       }
     }
   },

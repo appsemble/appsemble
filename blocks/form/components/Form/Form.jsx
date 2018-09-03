@@ -30,6 +30,7 @@ export default class Form extends React.Component {
   };
 
   state = {
+    submitting: false,
     value: {},
   };
 
@@ -43,14 +44,26 @@ export default class Form extends React.Component {
     const {
       onSubmit,
     } = this.props;
-    const {
-      value,
-    } = this.state;
+    event.preventDefault();
 
-    if (!event.defaultPrevented) {
-      event.preventDefault();
-      onSubmit(event, value);
-    }
+    this.setState(({ submitting, value }) => {
+      if (!submitting) {
+        onSubmit(event, value)
+          .then(() => {
+            this.setState({
+              submitting: false,
+            });
+          }, (error) => {
+            this.setState({
+              submitting: false,
+            });
+            throw error;
+          });
+      }
+      return {
+        submitting: true,
+      };
+    });
   };
 
   render() {
@@ -58,6 +71,7 @@ export default class Form extends React.Component {
       schema,
     } = this.props;
     const {
+      submitting,
       value,
     } = this.state;
 
@@ -71,7 +85,7 @@ export default class Form extends React.Component {
         schema={schema}
         value={value}
       >
-        <Button className={styles.submit} color="primary" type="submit">
+        <Button className={styles.submit} color="primary" disabled={submitting} type="submit">
           <FormattedMessage {...messages.submit} />
         </Button>
       </SchemaRenderer>

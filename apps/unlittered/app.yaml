@@ -76,7 +76,12 @@ pages:
             - created_at
         actions:
           submit:
-            type: log
+            type: request
+            method: post
+            url: 'http://oscity.nl:9808/waarnemingen_real'
+          submitSuccess:
+            type: link
+            to: Overzichtskaart
 
   - name: Overzichtskaart
     scope:

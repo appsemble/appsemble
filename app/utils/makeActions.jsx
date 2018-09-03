@@ -1,4 +1,5 @@
 import normalize from '@appsemble/utils/normalize';
+import axios from 'axios';
 
 import {
   compileFilters,
@@ -55,6 +56,16 @@ const actionCreators = {
   noop() {
     return {
       dispatch() {},
+    };
+  },
+
+  request({ method, url }) {
+    return {
+      dispatch(data) {
+        return axios({ method, url, data });
+      },
+      method,
+      url,
     };
   },
 };
