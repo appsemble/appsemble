@@ -69,7 +69,6 @@ pages:
           hidden:
             - gebied
             - id
-            - locatie
             - created_at
         actions:
           submit:
