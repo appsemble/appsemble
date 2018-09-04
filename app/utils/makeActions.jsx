@@ -103,9 +103,11 @@ export default function makeActions(blockDef, app, block, history) {
       }
       const actionCreator = actionCreators[type];
       const action = actionCreator(definition, app, block, history);
+      const { dispatch } = action;
       if (definition && Object.hasOwnProperty.call(definition, 'remap')) {
-        const { dispatch } = action;
-        action.dispatch = args => dispatch(remapData(definition.remap, args));
+        action.dispatch = async args => dispatch(remapData(definition.remap, args));
+      } else if (dispatch.constructor.name !== 'AsyncFunction') {
+        action.dipatch = async args => dispatch(args);
       }
       action.type = type;
       acc[on] = action;
