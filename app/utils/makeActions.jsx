@@ -5,6 +5,8 @@ import {
 } from '@appsemble/utils/remap';
 import axios from 'axios';
 
+import mapValues from './mapValues';
+
 
 const actionCreators = {
   log(definition) {
@@ -27,11 +29,7 @@ const actionCreators = {
       throw new Error(`Invalid link reference ${to}`);
     }
 
-    const mappers = Object.entries(parameters || {})
-      .reduce((acc, [parameter, filter]) => {
-        acc[parameter] = compileFilters(filter);
-        return acc;
-      }, {});
+    const mappers = mapValues(parameters || {}, compileFilters);
 
     function href(data = {}) {
       return `/${[
