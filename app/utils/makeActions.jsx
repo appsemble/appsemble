@@ -59,7 +59,7 @@ const actionCreators = {
   request({ method = 'GET', url }) {
     const regex = /{(.+?)}/g;
     const mappers = url.match(regex)
-      .map(match => match.substring(1, match.length - 1))
+      ?.map(match => match.substring(1, match.length - 1))
       .reduce((acc, filter) => {
         acc[filter] = compileFilters(filter);
         return acc;
