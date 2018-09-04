@@ -115,3 +115,7 @@ pages:
         parameters:
           schema:
             $ref: /definitions/waarneming
+        actions:
+          load:
+            type: request
+            url: 'http://oscity.nl:9808/waarnemingen_real/{id}'

@@ -31,21 +31,42 @@ const schemaOptions = {
 export default class DetailViewerBlock extends React.Component {
   static propTypes = {
     /**
+     * The actions as passed by the Appsemble interface.
+     */
+    actions: PropTypes.shape().isRequired,
+    /**
      * The block as passed by the Appsemble interface.
      */
     block: PropTypes.shape().isRequired,
   };
 
+  state = {
+    data: null,
+  };
+
+  async componentDidMount() {
+    const {
+      actions,
+    } = this.props;
+
+    const data = await actions.load.dispatch();
+    this.setState({ data });
+  }
+
   render() {
     const {
       block,
     } = this.props;
+    const {
+      data,
+    } = this.state;
 
     return (
       <SchemaProvider value={schemaOptions}>
         <SchemaRenderer
           className={styles.renderer}
           schema={block.parameters.schema}
+          value={data}
         />
       </SchemaProvider>
     );

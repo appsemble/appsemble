@@ -56,10 +56,29 @@ const actionCreators = {
     };
   },
 
-  request({ method, url }) {
+  request({ method = 'GET', url }) {
+    const regex = /{(.+?)}/g;
+    const mappers = url.match(regex)
+      .map(match => match.substring(1, match.length - 1))
+      .reduce((acc, filter) => {
+        acc[filter] = compileFilters(filter);
+        return acc;
+      }, {});
+
     return {
-      dispatch(data) {
-        return axios({ method, url, data });
+      async dispatch(data) {
+        const methodLower = method.toUpperCase();
+        const request = {
+          method,
+          url: url.replace(regex, (match, filter) => mappers[filter](data)),
+        };
+
+        if (methodLower === 'PUT' || methodLower === 'POST' || methodLower === 'PATCH') {
+          request.data = data;
+        }
+
+        const response = await axios(request);
+        return response.data;
       },
       method,
       url,
