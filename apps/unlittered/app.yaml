@@ -10,7 +10,7 @@ definitions:
       - notities
       - proces
     properties:
-      location:
+      locatie:
         title: GeoCoordinates
         type: object
         properties:
@@ -45,9 +45,6 @@ definitions:
           - Handhaving
           - Heel en Groen
           - Inzameling
-      locatie:
-        type: string
-        readOnly: true
       created_at:
         type: string
         format: date-time
