@@ -35,6 +35,10 @@ export default class DetailViewerBlock extends React.Component {
      */
     actions: PropTypes.shape().isRequired,
     /**
+     * The url parameters as passed by the Appsemble interface.
+     */
+    pageParameters: PropTypes.shape().isRequired,
+    /**
      * The block as passed by the Appsemble interface.
      */
     block: PropTypes.shape().isRequired,
@@ -47,9 +51,10 @@ export default class DetailViewerBlock extends React.Component {
   async componentDidMount() {
     const {
       actions,
+      pageParameters,
     } = this.props;
 
-    const data = await actions.load.dispatch();
+    const data = await actions.load.dispatch(pageParameters);
     this.setState({ data });
   }
 
@@ -60,6 +65,10 @@ export default class DetailViewerBlock extends React.Component {
     const {
       data,
     } = this.state;
+
+    if (data == null) {
+      return 'Loading…';
+    }
 
     return (
       <SchemaProvider value={schemaOptions}>
