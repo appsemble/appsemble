@@ -67,13 +67,13 @@ const actionCreators = {
 
     return {
       async dispatch(data) {
-        const methodLower = method.toUpperCase();
+        const methodUpper = method.toUpperCase();
         const request = {
-          method,
+          method: methodUpper,
           url: url.replace(regex, (match, filter) => mappers[filter](data)),
         };
 
-        if (methodLower === 'PUT' || methodLower === 'POST' || methodLower === 'PATCH') {
+        if (methodUpper === 'PUT' || methodUpper === 'POST' || methodUpper === 'PATCH') {
           request.data = data;
         }
 
