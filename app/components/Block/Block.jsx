@@ -27,6 +27,7 @@ export default class Block extends React.Component {
     block: PropTypes.shape().isRequired,
     blockDef: PropTypes.shape(),
     history: PropTypes.shape().isRequired,
+    match: PropTypes.shape().isRequired,
   };
 
   static defaultProps = {
@@ -39,6 +40,7 @@ export default class Block extends React.Component {
       block,
       blockDef,
       history,
+      match,
     } = this.props;
 
     if (div == null) {
@@ -70,6 +72,7 @@ export default class Block extends React.Component {
     await callBootstrap(blockDef, {
       actions,
       block,
+      pageParameters: match.params,
       resources,
       shadowRoot,
     });

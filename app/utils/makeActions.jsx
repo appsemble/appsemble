@@ -5,6 +5,8 @@ import {
 } from '@appsemble/utils/remap';
 import axios from 'axios';
 
+import mapValues from './mapValues';
+
 
 const actionCreators = {
   log(definition) {
@@ -27,11 +29,7 @@ const actionCreators = {
       throw new Error(`Invalid link reference ${to}`);
     }
 
-    const mappers = Object.entries(parameters || {})
-      .reduce((acc, [parameter, filter]) => {
-        acc[parameter] = compileFilters(filter);
-        return acc;
-      }, {});
+    const mappers = mapValues(parameters || {}, compileFilters);
 
     function href(data = {}) {
       return `/${[
@@ -58,10 +56,29 @@ const actionCreators = {
     };
   },
 
-  request({ method, url }) {
+  request({ method = 'GET', url }) {
+    const regex = /{(.+?)}/g;
+    const mappers = url.match(regex)
+      ?.map(match => match.substring(1, match.length - 1))
+      .reduce((acc, filter) => {
+        acc[filter] = compileFilters(filter);
+        return acc;
+      }, {});
+
     return {
-      dispatch(data) {
-        return axios({ method, url, data });
+      async dispatch(data) {
+        const methodUpper = method.toUpperCase();
+        const request = {
+          method: methodUpper,
+          url: url.replace(regex, (match, filter) => mappers[filter](data)),
+        };
+
+        if (methodUpper === 'PUT' || methodUpper === 'POST' || methodUpper === 'PATCH') {
+          request.data = data;
+        }
+
+        const response = await axios(request);
+        return response.data;
       },
       method,
       url,
@@ -86,9 +103,11 @@ export default function makeActions(blockDef, app, block, history) {
       }
       const actionCreator = actionCreators[type];
       const action = actionCreator(definition, app, block, history);
+      const { dispatch } = action;
       if (definition && Object.hasOwnProperty.call(definition, 'remap')) {
-        const { dispatch } = action;
-        action.dispatch = args => dispatch(remapData(definition.remap, args));
+        action.dispatch = async args => dispatch(remapData(definition.remap, args));
+      } else if (dispatch.constructor.name !== 'AsyncFunction') {
+        action.dipatch = async args => dispatch(args);
       }
       action.type = type;
       acc[on] = action;
