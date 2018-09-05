@@ -22,6 +22,7 @@ module.exports = async (env, { mode }) => {
       [block]: [path.join(blocksDir, block)],
     }), {
       app: [path.join(__dirname, 'app')],
+      editor: [path.join(__dirname, 'editor')],
     }),
     output: {
       filename: '[name]/[hash].js',

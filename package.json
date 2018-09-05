@@ -4,6 +4,7 @@
     "api",
     "app",
     "blocks/*",
+    "editor",
     "packages/*"
   ],
   "scripts": {
