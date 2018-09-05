@@ -7,31 +7,25 @@ body {
 
 .leftPanel {
   background-color: rgb(107, 81, 81);
-  display: inline-block;
-  height: 100%;
-  margin-bottom: 0;
-  vertical-align: top;
-  width: 50%;
+  flex: 1 1 0;
 }
 
 .rightPanel {
   background-color: rgb(124, 124, 124);
-  display: inline-block;
-  height: 100%;
-  margin-bottom: 0;
-  vertical-align: top;
-  width: 50%;
+  display: flex;
+  flex: 1 1 0;
 }
 
-form {
+.editorForm {
+  display: flex;
+  flex-flow: column;
   height: 100%;
   margin-bottom: 0;
 }
 
-iframe {
+.appFrame {
   border: none;
-  height: 100%;
-  width: 100%;
+  flex: 1;
 }
 
 .editorToolbar {
@@ -42,8 +36,14 @@ iframe {
 }
 
 .editor {
+  display: flex;
+}
+
+.editorText {
+  flex: 1;
   height: 100%;
   margin-bottom: 0;
+  /* stylelint-disable-next-line declaration-no-important */
   resize: none;
   width: 100%;
 }
