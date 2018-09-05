@@ -47,3 +47,9 @@ iframe {
   resize: none;
   width: 100%;
 }
+
+.editorError {
+  color: rgb(255, 0, 0);
+  display: inline;
+  margin-left: 5px;
+}

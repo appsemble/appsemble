@@ -39,7 +39,7 @@ module.exports = async (env, { mode }) => {
         './images/marker-icon.png$': 'leaflet/dist/images/marker-icon.png',
       },
     },
-    devtool: 'source-map',
+    devtool: 'eval',
     mode,
     module: {
       rules: [
