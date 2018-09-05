@@ -1,3 +1,7 @@
+// eslint-disable-next-line import/no-extraneous-dependencies
+const { version } = require('react/package.json');
+
+
 module.exports = {
   root: true,
   extends: [
@@ -10,6 +14,11 @@ module.exports = {
     'babel',
     'filenames',
   ],
+  settings: {
+    react: {
+      version,
+    },
+  },
   rules: {
     'filenames/match-regex': ['error', /^\.?[a-z]+(\.config|\.test)?$/i, true],
     'filenames/match-exported': 'error',
