@@ -1,3 +1,4 @@
+import axios from 'axios';
 import yaml from 'js-yaml';
 import React from 'react';
 import styles from './app.css';
@@ -9,6 +10,15 @@ export default class App extends React.Component {
   };
 
   frame = null;
+
+  componentDidMount() {
+    axios.get('/api/apps/1').then((response) => {
+      console.log(response.data);
+      const recipe = yaml.safeDump(response.data);
+
+      this.setState({ recipe });
+    });
+  }
 
   onChange = (event) => {
     this.setState({ recipe: event.target.value });
