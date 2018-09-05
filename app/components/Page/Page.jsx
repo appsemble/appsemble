@@ -24,7 +24,7 @@ export default class Page extends React.Component {
     user: null,
   };
 
-  componentWillMount() {
+  componentDidMount() {
     const {
       getBlockDefs,
       page,
@@ -33,16 +33,16 @@ export default class Page extends React.Component {
     getBlockDefs(page.blocks.map(({ type }) => type));
   }
 
-  componentWillReceiveProps({
-    page: nextPage,
+  componentDidUpdate({
+    page: prevPage,
   }) {
     const {
       getBlockDefs,
       page,
     } = this.props;
 
-    if (page !== nextPage) {
-      getBlockDefs(nextPage.blocks.map(({ type }) => type));
+    if (page !== prevPage) {
+      getBlockDefs(page.blocks.map(({ type }) => type));
     }
   }
 
