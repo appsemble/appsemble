@@ -1,7 +1,11 @@
+import AceEditor from 'react-ace';
 import axios from 'axios';
+import 'brace';
 import yaml from 'js-yaml';
 import React from 'react';
 import styles from './app.css';
+import 'brace/mode/yaml';
+import 'brace/theme/chrome';
 
 export default class App extends React.Component {
   state = {
@@ -20,7 +24,9 @@ export default class App extends React.Component {
   }
 
   onChange = (event) => {
-    this.setState({ recipe: event.target.value });
+    this.setState({ recipe: event });
+
+    // this.setState({ recipe: event.target.value });
   };
 
   onSubmit = (event) => {
@@ -54,7 +60,16 @@ export default class App extends React.Component {
                 && <p className={styles.editorError}>Invalid YAML</p>
               }
             </div>
-            <textarea className={styles.editorText} value={recipe} onChange={this.onChange} />
+            <AceEditor
+              mode="yaml"
+              theme="chrome"
+              width=""
+              height=""
+              className={styles.aceEditor}
+              tabSize={2}
+              value={recipe}
+              onChange={this.onChange}
+            />
           </form>
         </div>
 

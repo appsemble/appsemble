@@ -39,12 +39,8 @@ body {
   display: flex;
 }
 
-.editorText {
+.aceEditor {
   flex: 1;
-  height: 100%;
-  margin-bottom: 0;
-  /* stylelint-disable-next-line declaration-no-important */
-  resize: none;
   width: 100%;
 }
 
