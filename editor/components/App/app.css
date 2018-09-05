@@ -1,0 +1,49 @@
+body {
+  -moz-box-sizing: border-box;    /* Firefox, other Gecko */
+  -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
+  box-sizing: border-box;         /* Opera/IE 8+ */
+  margin: 0;
+}
+
+.leftPanel {
+  background-color: rgb(107, 81, 81);
+  display: inline-block;
+  height: 100%;
+  margin-bottom: 0;
+  vertical-align: top;
+  width: 50%;
+}
+
+.rightPanel {
+  background-color: rgb(124, 124, 124);
+  display: inline-block;
+  height: 100%;
+  margin-bottom: 0;
+  vertical-align: top;
+  width: 50%;
+}
+
+form {
+  height: 100%;
+  margin-bottom: 0;
+}
+
+iframe {
+  border: none;
+  height: 100%;
+  width: 100%;
+}
+
+.editorToolbar {
+  background-color: rgb(61, 61, 61);
+  min-height: 2.7em;
+  padding: 10px;
+  width: 100%;
+}
+
+.editor {
+  height: 100%;
+  margin-bottom: 0;
+  resize: none;
+  width: 100%;
+}
