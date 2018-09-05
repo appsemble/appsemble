@@ -7,7 +7,7 @@ import resolveJsonPointers from '../utils/resolveJsonPointers';
 const GET_START = 'app/GET_START';
 const GET_SUCCESS = 'app/GET_SUCCESS';
 const GET_ERROR = 'app/GET_ERROR';
-
+const EDIT_SUCCESS = 'editor/EDIT_SUCCESS';
 
 const initialState = {
   app: null,
@@ -38,6 +38,11 @@ export default (state = initialState, action) => {
         app: null,
         db: null,
         error: action.error,
+      };
+    case EDIT_SUCCESS:
+      return {
+        ...state,
+        app: action.app,
       };
     default:
       return state;

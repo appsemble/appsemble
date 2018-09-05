@@ -13,7 +13,6 @@ export default class App extends React.Component {
 
   componentDidMount() {
     axios.get('/api/apps/1').then((response) => {
-      console.log(response.data);
       const recipe = yaml.safeDump(response.data);
 
       this.setState({ recipe });
@@ -27,22 +26,19 @@ export default class App extends React.Component {
   onSubmit = (event) => {
     event.preventDefault();
     const { recipe } = this.state;
-    let json = null;
+    let app = null;
 
     // Attempt to parse the YAML into a JSON object
     try {
-      json = yaml.safeLoad(recipe);
+      app = yaml.safeLoad(recipe);
     } catch (e) {
-      console.log(e);
       this.setState({ valid: false });
-
       return;
     }
 
-    // Assuming the YAML is valid
+    // YAML appears to be valid, send it to the app preview iframe
     this.setState({ valid: true });
-
-    console.log(json);
+    this.frame.contentWindow.postMessage({ type: 'editor/EDIT_SUCCESS', app }, window.location.origin);
   };
 
   render() {
