@@ -2,10 +2,6 @@ import path from 'path';
 
 import pug from 'pug';
 
-import {
-  select,
-} from '../../utils/db';
-
 
 const render = pug.compileFile(path.resolve(__dirname, 'editor.pug'));
 
