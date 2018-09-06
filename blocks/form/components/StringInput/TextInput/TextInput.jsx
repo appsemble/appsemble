@@ -31,7 +31,11 @@ export default class TextInput extends React.Component {
     /**
      * The current value.
      */
-    value: PropTypes.string.isRequired,
+    value: PropTypes.string,
+  };
+
+  static defaultProps = {
+    value: '',
   };
 
   render() {
@@ -62,7 +66,7 @@ export default class TextInput extends React.Component {
         name={name}
         onChange={onChange}
         required={required}
-        value={value}
+        value={value || ''}
       />
     );
   }
