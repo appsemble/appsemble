@@ -1,3 +1,6 @@
+/**
+ * The symbol which is used as a default replacement for blobs.
+ */
 export const placeholder = Symbol('resourceFiles.placeholder');
 
 
