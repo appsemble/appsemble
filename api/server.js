@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import fs from 'fs';
 import path from 'path';
 
 import Koa from 'koa';
@@ -8,6 +9,7 @@ import logger from 'koa-logger';
 import OAIRouter from 'koa-oai-router';
 import OAIRouterMiddleware from 'koa-oai-router-middleware';
 import OAIRouterParameters from 'koa-oai-router-parameters';
+import yaml from 'js-yaml';
 
 import routes from './routes';
 import configureStatic from './utils/configureStatic';
@@ -39,9 +41,12 @@ async function main() {
   server.use(routes);
 
 
+  const { description } = yaml.safeLoad(fs.readFileSync(path.join(__dirname, 'api', 'api.yaml'))).info;
+
+
   server.listen(PORT, () => {
     // eslint-disable-next-line no-console
-    console.log(`View the API explorer at http://localhost:${PORT}/api-explorer`);
+    console.log(description);
   });
 }
 
