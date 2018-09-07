@@ -41,6 +41,13 @@ The Docker image uses the following environment variables
 
 ## Development
 
+### Requirements
+
+In order to run the Appsemble project in development mode, the following must be installed
+
+- [NodeJS 10][]
+- [Yarn][]
+
 ### Getting started
 
 Clone and setup the project
@@ -82,3 +89,5 @@ Please read our [contributing guidelines](./CONTRIBUTING.md)
 
 [docker-compose]: https://docs.docker.com/compose
 [docker credentials store]: https://docs.docker.com/engine/reference/commandline/login/#credentials-store
+[nodejs 10]: https://nodejs.org
+[yarn]: https://yarnpkg.com
