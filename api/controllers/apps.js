@@ -1,3 +1,5 @@
+import Boom from 'boom';
+
 import {
   insert,
   select,
@@ -33,8 +35,7 @@ export async function getOne(ctx) {
   const { id } = ctx.params;
   const apps = await select('App', { id });
   if (apps.length === 0) {
-    ctx.throw(404);
-    return;
+    throw Boom.notFound('App not found');
   }
   const [app] = apps;
   ctx.body = rowToJson(app);
@@ -52,8 +53,7 @@ export async function update(ctx) {
   const { id } = ctx.params;
   const { affectedRows } = await sqlUpdate('App', body, { id });
   if (affectedRows === 0) {
-    ctx.throw(404);
-    return;
+    throw Boom.notFound('App not found');
   }
   ctx.body = body;
 }

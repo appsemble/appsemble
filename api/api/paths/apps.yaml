@@ -17,6 +17,8 @@
         description: The app that was created.
         schema:
           $ref: '#/definitions/App'
+      default:
+        $ref: '#/responses/default'
   get:
     tags: [app]
     description: Get all existing apps.
@@ -30,6 +32,8 @@
           type: array
           items:
             $ref: '#/definitions/App'
+      default:
+        $ref: '#/responses/default'
 
 /apps/{id}:
   get:
@@ -49,6 +53,8 @@
         description: The app that matches the given id.
         schema:
           $ref: '#/definitions/App'
+      default:
+        $ref: '#/responses/default'
   put:
     tags: [app]
     description: Update an existing app
@@ -72,3 +78,5 @@
         description: The updated app.
         schema:
           $ref: '#/definitions/App'
+      default:
+        $ref: '#/responses/default'
