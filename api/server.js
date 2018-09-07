@@ -11,6 +11,7 @@ import OAIRouterMiddleware from 'koa-oai-router-middleware';
 import OAIRouterParameters from 'koa-oai-router-parameters';
 import yaml from 'js-yaml';
 
+import boomMiddleware from './middleware/boom';
 import routes from './routes';
 import configureStatic from './utils/configureStatic';
 
@@ -32,6 +33,7 @@ async function main() {
 
   const server = new Koa();
   server.use(logger());
+  server.use(boomMiddleware);
   server.use(bodyParser());
   if (process.env.NODE_ENV === 'production') {
     server.use(compress());
