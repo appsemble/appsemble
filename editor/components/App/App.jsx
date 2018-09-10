@@ -11,7 +11,7 @@ export default class App extends React.Component {
     valid: true,
   };
 
-  frame = null;
+  frame = React.createRef();
 
   async componentDidMount() {
     const { data } = await axios.get('/api/apps/1');
@@ -33,7 +33,7 @@ export default class App extends React.Component {
       }
 
       // YAML appears to be valid, send it to the app preview iframe
-      this.frame.contentWindow.postMessage({ type: 'editor/EDIT_SUCCESS', app }, window.location.origin);
+      this.frame.current.contentWindow.postMessage({ type: 'editor/EDIT_SUCCESS', app }, window.location.origin);
       return { valid: true };
     });
   };
@@ -67,7 +67,7 @@ export default class App extends React.Component {
         </div>
 
         <div className={styles.rightPanel}>
-          <iframe className={styles.appFrame} title="Appsemble App Preview" ref={(ref) => { this.frame = ref; }} src="/1" />
+          <iframe className={styles.appFrame} title="Appsemble App Preview" ref={this.frame} src="/1" />
         </div>
       </div>
     );
