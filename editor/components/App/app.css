@@ -1,0 +1,50 @@
+body {
+  box-sizing: border-box;
+  margin: 0;
+}
+
+.leftPanel {
+  background-color: rgb(107, 81, 81);
+  flex: 1 1 0;
+}
+
+.rightPanel {
+  background-color: rgb(124, 124, 124);
+  display: flex;
+  flex: 1 1 0;
+}
+
+.editorForm {
+  display: flex;
+  flex-flow: column;
+  height: 100%;
+  margin-bottom: 0;
+}
+
+.appFrame {
+  border: none;
+  flex: 1;
+}
+
+.editorToolbar {
+  background-color: rgb(61, 61, 61);
+  min-height: 2.7em;
+  padding: 10px;
+  width: 100%;
+}
+
+.editor {
+  display: flex;
+}
+
+.monacoEditor {
+  flex: 1;
+  width: 100%;
+}
+
+.editorError {
+  color: rgb(255, 0, 0);
+  display: inline;
+  margin-left: 5px;
+}
+

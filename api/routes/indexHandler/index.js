@@ -13,10 +13,9 @@ const render404 = pug.compileFile(path.resolve(__dirname, '404.pug'));
 
 function getAssets(ctx) {
   if (process.env.NODE_ENV === 'production') {
-    return ctx.state.assets;
+    return ctx.state.assets.app;
   }
-  const { assetsByChunkName } = ctx.state.webpackStats.toJson();
-  return assetsByChunkName.app;
+  return ctx.state.webpackStats.toJson().assetsByChunkName.app;
 }
 
 

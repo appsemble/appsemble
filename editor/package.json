@@ -1,0 +1,14 @@
+{
+  "name": "@appsemble/editor",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "axios": "^0.18.0",
+    "js-yaml": "^3.12.0",
+    "prop-types": "^15.6.2",
+    "react": "^16.5.0",
+    "react-dom": "^16.5.0",
+    "react-intl": "^2.4.0",
+    "react-monaco-editor": "^0.18.0"
+  }
+}
