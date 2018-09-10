@@ -13,19 +13,12 @@ export default class App extends React.Component {
 
   frame = null;
 
-  componentDidMount() {
-    axios.get('/api/apps/1').then((response) => {
-      const recipe = yaml.safeDump(response.data);
+  async componentDidMount() {
+    const { data } = await axios.get('/api/apps/1');
+    const recipe = yaml.safeDump(data);
 
-      this.setState({ recipe });
-    });
+    this.setState({ recipe });
   }
-
-  onChange = (event) => {
-    this.setState({ recipe: event });
-
-    // this.setState({ recipe: event.target.value });
-  };
 
   onSubmit = (event) => {
     event.preventDefault();
@@ -45,8 +38,8 @@ export default class App extends React.Component {
     this.frame.contentWindow.postMessage({ type: 'editor/EDIT_SUCCESS', app }, window.location.origin);
   };
 
-  onMonacoChange = (newValue) => {
-    this.setState({ recipe: newValue });
+  onMonacoChange = (recipe) => {
+    this.setState({ recipe });
   };
 
   render() {
