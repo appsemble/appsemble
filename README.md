@@ -35,6 +35,7 @@ The Docker image uses the following environment variables
 | Variable              | Default value | Description
 | --------------------- | ------------- | -----------
 | `MYSQL_HOST`          | `localhost`   | The host of the MySQL database to connect to.
+| `MYSQL_PORT`          | `3306`        | The port on which the MySQL database is exposed.
 | `MYSQL_DATABASE`      | `appsemble`   | The name of the MySQL database to connect to.
 | `MYSQL_USER`          | `root`        | The username of the database user.
 | `MYSQL_ROOT_PASSWORD` | `password`    | The password of the database user.
