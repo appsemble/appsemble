@@ -22,20 +22,20 @@ export default class App extends React.Component {
 
   onSubmit = (event) => {
     event.preventDefault();
-    const { recipe } = this.state;
-    let app = null;
+    this.setState(({ recipe }) => {
+      let app = null;
 
-    // Attempt to parse the YAML into a JSON object
-    try {
-      app = yaml.safeLoad(recipe);
-    } catch (e) {
-      this.setState({ valid: false });
-      return;
-    }
+      // Attempt to parse the YAML into a JSON object
+      try {
+        app = yaml.safeLoad(recipe);
+      } catch (e) {
+        return { valid: false };
+      }
 
-    // YAML appears to be valid, send it to the app preview iframe
-    this.setState({ valid: true });
-    this.frame.contentWindow.postMessage({ type: 'editor/EDIT_SUCCESS', app }, window.location.origin);
+      // YAML appears to be valid, send it to the app preview iframe
+      this.frame.contentWindow.postMessage({ type: 'editor/EDIT_SUCCESS', app }, window.location.origin);
+      return { valid: true };
+    });
   };
 
   onMonacoChange = (recipe) => {
