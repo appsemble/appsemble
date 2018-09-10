@@ -11,14 +11,6 @@ const render = pug.compileFile(path.resolve(__dirname, 'index.pug'));
 const render404 = pug.compileFile(path.resolve(__dirname, '404.pug'));
 
 
-function getAssets(ctx) {
-  if (process.env.NODE_ENV === 'production') {
-    return ctx.state.assets.app;
-  }
-  return ctx.state.webpackStats.toJson().assetsByChunkName.app;
-}
-
-
 /**
  * https://developers.google.com/web/fundamentals/web-app-manifest
  */
@@ -28,7 +20,7 @@ export default async function indexHandler(ctx) {
   } = ctx.params;
 
   const apps = await select('App', { id });
-  const assets = await getAssets(ctx);
+  const assets = await ctx.state.getAssets().app;
 
   if (apps.length === 0) {
     ctx.body = render404({ assets });
