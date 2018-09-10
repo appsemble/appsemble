@@ -18,7 +18,7 @@ export default class SideMenu extends React.Component {
     isOpen: PropTypes.bool.isRequired,
   };
 
-  componentWillMount() {
+  componentDidMount() {
     const {
       closeMenu,
       history,

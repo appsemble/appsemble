@@ -43,11 +43,14 @@ export default class StringInput extends React.Component {
     /**
      * The current value.
      */
-    value: PropTypes.string,
+    value: PropTypes.oneOfType([
+      PropTypes.instanceOf(Blob),
+      PropTypes.string,
+    ]),
   };
 
   static defaultProps = {
-    value: '',
+    value: null,
   };
 
   render() {

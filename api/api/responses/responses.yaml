@@ -1,0 +1,4 @@
+default:
+  description: The default error response.
+  schema:
+    $ref: '#/definitions/Error'

@@ -75,6 +75,11 @@ pages:
             type: request
             method: post
             url: 'http://oscity.nl:9808/waarnemingen_real'
+            blobs:
+              type: upload
+              method: post
+              url: 'http://oscity.nl:9808/upload'
+              serialize: custom
           submitSuccess:
             type: link
             to: Overzichtskaart

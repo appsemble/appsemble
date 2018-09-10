@@ -1,10 +1,27 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
-import readBlob from 'read-blob';
 
 import styles from './FileInput.css';
 import messages from './messages';
+
+
+function getDerivedStateFromProps({ value }, state) {
+  if (value === state.value) {
+    return null;
+  }
+  URL.revokeObjectURL(state.url);
+  if (value instanceof Blob) {
+    return {
+      url: URL.createObjectURL(value),
+      value,
+    };
+  }
+  return {
+    url: value,
+    value,
+  };
+}
 
 
 export default class FileInput extends React.Component {
@@ -12,32 +29,33 @@ export default class FileInput extends React.Component {
     name: PropTypes.string.isRequired,
     onChange: PropTypes.func.isRequired,
     schema: PropTypes.shape().isRequired,
-    value: PropTypes.string,
+    value: PropTypes.oneOfType([
+      PropTypes.instanceOf(Blob),
+      PropTypes.string,
+    ]),
   };
 
   static defaultProps = {
     value: null,
   };
 
-  state = {
-    // This is actually used in onSelect.
-    // eslint-disable-next-line react/no-unused-state
-    value: null,
-  };
+  state = getDerivedStateFromProps(this.props, {});
 
-  onSelect = ({ target }) => {
-    // XXX Synchronize the value to the state to prevent the same event to be fired twice because of
+  static getDerivedStateFromProps = getDerivedStateFromProps;
+
+  inputRef = (node) => {
+    if (node == null) {
+      return;
+    }
+
+    // XXX A native event listener is used, to prevent the same event to be fired twice because of
     // the shadow DOM hackery.
-    this.setState(({ value }, { onChange }) => {
+    node.addEventListener('change', ({ target }) => {
+      const {
+        onChange,
+      } = this.props;
       const [file] = target.files;
-      if (file === value) {
-        return undefined;
-      }
-      readBlob(file, 'dataurl')
-        .then(dataurl => onChange({ target }, dataurl));
-      return {
-        value: file,
-      };
+      onChange({ target }, file);
     });
   };
 
@@ -45,8 +63,10 @@ export default class FileInput extends React.Component {
     const {
       name,
       schema,
-      value,
     } = this.props;
+    const {
+      url,
+    } = this.state;
 
     const title = schema.description || schema.title || name;
     const {
@@ -55,11 +75,11 @@ export default class FileInput extends React.Component {
 
     return (
       <div className={styles.root}>
-        {value ? (
+        {url ? (
           <img
             alt={title}
             className={styles.preview}
-            src={value}
+            src={url}
           />
         ) : (
           <FormattedMessage {...messages.clickAction} />
@@ -68,7 +88,7 @@ export default class FileInput extends React.Component {
           accept={[].concat(type).toString()}
           className={styles.input}
           name={name}
-          onChange={this.onSelect}
+          ref={this.inputRef}
           title={title}
           type="file"
         />

@@ -6,6 +6,7 @@ import {
 import axios from 'axios';
 
 import mapValues from './mapValues';
+import uploadBlobs from './uploadBlobs';
 
 
 const actionCreators = {
@@ -56,7 +57,7 @@ const actionCreators = {
     };
   },
 
-  request({ method = 'GET', url }) {
+  request({ blobs = {}, method = 'GET', url }) {
     const regex = /{(.+?)}/g;
     const mappers = url.match(regex)
       ?.map(match => match.substring(1, match.length - 1))
@@ -74,7 +75,16 @@ const actionCreators = {
         };
 
         if (methodUpper === 'PUT' || methodUpper === 'POST' || methodUpper === 'PATCH') {
-          request.data = data;
+          let body;
+          switch (blobs.type) {
+            case 'upload': {
+              body = await uploadBlobs(data, blobs);
+              break;
+            }
+            default:
+              body = data;
+          }
+          request.data = body;
         }
 
         const response = await axios(request);

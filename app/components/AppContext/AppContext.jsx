@@ -21,7 +21,7 @@ export default class AppContext extends React.Component {
     ready: PropTypes.bool.isRequired,
   };
 
-  async componentWillMount() {
+  async componentDidMount() {
     const {
       getApp,
       initAuth,

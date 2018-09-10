@@ -3,7 +3,16 @@ info:
   version: '1.0.0'
   title: Appsemble API
   description: |
-    The API for the Appsemble / Amsterdam project.
+    Welcome to the Appsemble API.
+
+    The OpenAPI explorer can be found on
+    > http://localhost:9999/api-explorer
+
+    The app editor can be found on
+    > http://localhost:9999/editor
+
+    Rendered apps can be found on
+    > http://localhost:9999/:id
 basePath: /api
 schemes:
   - http

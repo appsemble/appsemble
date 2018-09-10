@@ -1,3 +1,5 @@
+import Boom from 'boom';
+
 import normalize from '@appsemble/utils/normalize';
 
 import {
@@ -23,8 +25,7 @@ export default async function manifestHandler(ctx) {
 
   const apps = await select('App', { id });
   if (apps.length === 0) {
-    ctx.throw(404);
-    return;
+    throw Boom.notFound('App not found');
   }
   const [app] = apps;
   ctx.body = {
