@@ -4,6 +4,7 @@ html(lang='en')
   meta(name='viewport', content='initial-scale=1,minimum-scale=1,width=device-width')
   link(rel='shortcut icon' href=`/${app.id}/favicon.ico`)
   link(rel='manifest' href=`/${app.id}/manifest.json`)
+  script(src='http://localhost:8097')
   title #{app.name}
   each stylesheet in assets.filter(name => name.endsWith('.css'))
     link(rel='stylesheet' href=stylesheet)
