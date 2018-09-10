@@ -1,7 +1,8 @@
 import axios from 'axios';
 import MonacoEditor from 'react-monaco-editor';
-import yaml from 'js-yaml';
 import React from 'react';
+import yaml from 'js-yaml';
+
 import styles from './app.css';
 
 export default class App extends React.Component {
