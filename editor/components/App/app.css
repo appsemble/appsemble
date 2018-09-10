@@ -1,7 +1,5 @@
 body {
-  -moz-box-sizing: border-box;    /* Firefox, other Gecko */
-  -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
-  box-sizing: border-box;         /* Opera/IE 8+ */
+  box-sizing: border-box;
   margin: 0;
 }
 
