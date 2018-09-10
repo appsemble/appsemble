@@ -39,7 +39,7 @@ body {
   display: flex;
 }
 
-.aceEditor {
+.monacoEditor {
   flex: 1;
   width: 100%;
 }
