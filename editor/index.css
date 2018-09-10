@@ -53,3 +53,7 @@ noscript {
   line-height: 1.5em;
   text-align: center;
 }
+
+:global(.monaco-editor) {
+  display: flex !important;
+}
