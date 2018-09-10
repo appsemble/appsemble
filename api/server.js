@@ -46,7 +46,7 @@ async function main() {
   const { description } = yaml.safeLoad(fs.readFileSync(path.join(__dirname, 'api', 'api.yaml'))).info;
 
 
-  server.listen(PORT, () => {
+  server.listen(PORT, '0.0.0.0', () => {
     // eslint-disable-next-line no-console
     console.log(description);
   });
