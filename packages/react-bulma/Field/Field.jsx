@@ -2,28 +2,28 @@ import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import React from 'react';
 
-import { is } from '../utils';
 
-
-export default class Title extends React.Component {
+export default class Field extends React.Component {
   static propTypes = {
     className: PropTypes.string,
-    size: PropTypes.number.isRequired,
+    component: PropTypes.oneOfType([
+      PropTypes.func,
+      PropTypes.string,
+    ]),
   };
 
   static defaultProps = {
     className: null,
+    component: 'div',
   };
 
   render() {
     const {
       className,
-      size,
+      component: Component,
       ...props
     } = this.props;
 
-    const Component = `h${size}`;
-
-    return <Component className={classNames('title', is(size), className)} {...props} />;
+    return <Component className={classNames('field', className)} {...props} />;
   }
 }

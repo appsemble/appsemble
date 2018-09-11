@@ -1,3 +1,4 @@
+import 'bulma/css/bulma.css';
 import 'roboto-fontface';
 import React from 'react';
 import ReactDOM from 'react-dom';

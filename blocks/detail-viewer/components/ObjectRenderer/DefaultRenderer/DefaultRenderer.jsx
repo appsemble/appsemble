@@ -38,7 +38,7 @@ export default class DefaultRenderer extends React.Component {
       <Container>
         {Object.entries(schema.properties).map(([subName, subSchema]) => (
           <div key={subName}>
-            <Subtitle is={6}>
+            <Subtitle size={6}>
               {subSchema.title || subName}
             </Subtitle>
             <SchemaRenderer

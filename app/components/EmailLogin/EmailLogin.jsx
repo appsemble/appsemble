@@ -1,19 +1,16 @@
 import {
   Button,
-  FormControl,
-  FormHelperText,
-  InputLabel,
-  Paper,
-  TextField,
-} from '@material-ui/core';
-import PasswordField from 'material-ui-password-field';
+  Container,
+  InputField,
+  Message,
+  MessageBody,
+} from '@appsemble/react-bulma';
 import PropTypes from 'prop-types';
 import React from 'react';
 import {
   FormattedMessage,
 } from 'react-intl';
 
-import FormError from '../FormError';
 import styles from './EmailLogin.css';
 import messages from './messages';
 
@@ -29,8 +26,6 @@ export default class EmailLogin extends React.Component {
     authentication: PropTypes.shape().isRequired,
     passwordLogin: PropTypes.func.isRequired,
   };
-
-  id = `${Math.random()}`;
 
   state = {
     dirty: false,
@@ -89,9 +84,6 @@ export default class EmailLogin extends React.Component {
 
   render() {
     const {
-      authentication,
-    } = this.props;
-    const {
       dirty,
       error,
       errors,
@@ -100,56 +92,38 @@ export default class EmailLogin extends React.Component {
     } = this.state;
 
     return (
-      <Paper
+      <Container
         className={styles.root}
         component="form"
         onSubmit={this.onSubmit}
       >
-        <FormError>
-          {error && <FormattedMessage {...messages.loginFailed} />}
-        </FormError>
-        <TextField
+        {error && (
+          <Message color="danger">
+            <MessageBody>
+              <FormattedMessage {...messages.loginFailed} />
+            </MessageBody>
+          </Message>
+        )}
+        <InputField
           autoComplete="email"
+          color={dirty && errors.username ? 'danger' : 'primary'}
           disabled={submitting}
-          error={dirty && errors.username}
-          fullWidth
-          id={`${authentication.url}-email`}
-          label={<FormattedMessage {...messages.usernameLabel} />}
-          helperText={(
-            <React.Fragment>
-              {dirty && errors.username && (
-                <FormattedMessage {...messages.usernameError} />
-              )}
-            </React.Fragment>
-          )}
           name="username"
           onChange={this.onChange}
           required
           type="email"
           value={values.username}
         />
-        <FormControl
+        <InputField
+          autoComplete="current-password"
+          color={dirty && errors.password ? 'danger' : 'primary'}
           disabled={submitting}
-          error={dirty && errors.password}
-          fullWidth
+          name="password"
+          onChange={this.onChange}
           required
-        >
-          <InputLabel htmlFor={this.id}>
-            <FormattedMessage {...messages.passwordLabel} />
-          </InputLabel>
-          <PasswordField
-            autoComplete="current-password"
-            id={this.id}
-            name="password"
-            onChange={this.onChange}
-            value={values.password}
-          />
-          <FormHelperText>
-            {dirty && errors.password && (
-              <FormattedMessage {...messages.passwordError} />
-            )}
-          </FormHelperText>
-        </FormControl>
+          type="password"
+          value={values.password}
+        />
         <Button
           className={styles.submit}
           color="primary"
@@ -158,7 +132,7 @@ export default class EmailLogin extends React.Component {
         >
           <FormattedMessage {...messages.loginButton} />
         </Button>
-      </Paper>
+      </Container>
     );
   }
 }

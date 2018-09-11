@@ -2,6 +2,8 @@ import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import React from 'react';
 
+import { is } from '../utils';
+
 
 export default class Image extends React.Component {
   static propTypes = {
@@ -38,9 +40,7 @@ export default class Image extends React.Component {
 
     return (
       <Component
-        className={classNames('image', sizeClass, {
-          'is-rounded': rounded,
-        }, className)}
+        className={classNames('image', sizeClass, is(rounded), className)}
         {...props}
       >
         <img alt={alt} src={src} />

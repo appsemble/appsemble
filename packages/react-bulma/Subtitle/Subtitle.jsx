@@ -2,11 +2,13 @@ import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import React from 'react';
 
+import { is } from '../utils';
+
 
 export default class Subtitle extends React.Component {
   static propTypes = {
     className: PropTypes.string,
-    is: PropTypes.number.isRequired,
+    size: PropTypes.number.isRequired,
   };
 
   static defaultProps = {
@@ -16,13 +18,12 @@ export default class Subtitle extends React.Component {
   render() {
     const {
       className,
-      is,
+      size,
       ...props
     } = this.props;
 
-    const Component = `h${is}`;
-    const classIs = `is-${is}`;
+    const Component = `h${size}`;
 
-    return <Component className={classNames('subtitle', classIs, className)} {...props} />;
+    return <Component className={classNames('subtitle', is(size), className)} {...props} />;
   }
 }
