@@ -1,49 +1,31 @@
-import {
-  Container,
-} from '@appsemble/react-bulma';
 import PropTypes from 'prop-types';
 import React from 'react';
-import {
-  SchemaRenderer,
-} from 'react-schema-renderer';
+
+import DefaultRenderer from './DefaultRenderer';
+import GeoCoordinatesInput from './GeoCoordinatesRenderer';
 
 
 /**
- * Render a JSON schema object as a definition list.
+ * An input element for an object type schema.
  */
 export default class ObjectRenderer extends React.Component {
   static propTypes = {
     /**
-     * The schema to render.
+     * The enum schema definition for which to render an input.
      */
     schema: PropTypes.shape().isRequired,
-    /**
-     * The current value.
-     */
-    value: PropTypes.shape(),
-  };
-
-  static defaultProps = {
-    value: {},
   };
 
   render() {
     const {
       schema,
-      value,
     } = this.props;
 
-    return (
-      <Container>
-        {Object.entries(schema.properties).map(([subName, subSchema]) => (
-          <SchemaRenderer
-            key={subName}
-            name={subName}
-            schema={subSchema}
-            value={value[subName]}
-          />
-        ))}
-      </Container>
-    );
+    switch (schema.title) {
+      case 'GeoCoordinates':
+        return <GeoCoordinatesInput {...this.props} />;
+      default:
+        return <DefaultRenderer {...this.props} />;
+    }
   }
 }
