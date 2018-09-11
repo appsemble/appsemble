@@ -60,7 +60,7 @@ export default class App extends React.Component {
               theme="vs"
               value={recipe}
               className={styles.monacoEditor}
-              options={{ tabSize: 2 }}
+              options={{ tabSize: 2, minimap: { enabled: false } }}
               onChange={this.onMonacoChange}
             />
           </form>
