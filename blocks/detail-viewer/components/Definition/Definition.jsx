@@ -1,16 +1,13 @@
 import {
-  Typography,
-} from '@material-ui/core';
+  Content,
+  Subtitle,
+} from '@appsemble/react-bulma';
 import PropTypes from 'prop-types';
 import React from 'react';
-
-import styles from './Definition.css';
 
 
 /**
  * Render a description title and definition for a JSON schema definition.
- *
- * This should be nested in a `<dl />` tag.
  */
 export default class Definition extends React.Component {
   static propTypes = {
@@ -41,14 +38,12 @@ export default class Definition extends React.Component {
     } = this.props;
 
     return (
-      <React.Fragment>
-        <Typography component="dt" variant="body2">
+      <Content>
+        <Subtitle is={6}>
           {schema.title || name}
-        </Typography>
-        <Typography component="dd" className={styles.dd}>
-          {children}
-        </Typography>
-      </React.Fragment>
+        </Subtitle>
+        {children}
+      </Content>
     );
   }
 }

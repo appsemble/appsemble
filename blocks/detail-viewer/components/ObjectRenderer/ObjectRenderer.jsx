@@ -1,3 +1,6 @@
+import {
+  Container,
+} from '@appsemble/react-bulma';
 import PropTypes from 'prop-types';
 import React from 'react';
 import {
@@ -11,10 +14,6 @@ import {
 export default class ObjectRenderer extends React.Component {
   static propTypes = {
     /**
-     * The name of the property to render.
-     */
-    name: PropTypes.string,
-    /**
      * The schema to render.
      */
     schema: PropTypes.shape().isRequired,
@@ -25,20 +24,17 @@ export default class ObjectRenderer extends React.Component {
   };
 
   static defaultProps = {
-    name: null,
     value: {},
   };
 
   render() {
     const {
-      name,
       schema,
       value,
-      ...props
     } = this.props;
 
     return (
-      <dl {...props}>
+      <Container>
         {Object.entries(schema.properties).map(([subName, subSchema]) => (
           <SchemaRenderer
             key={subName}
@@ -47,7 +43,7 @@ export default class ObjectRenderer extends React.Component {
             value={value[subName]}
           />
         ))}
-      </dl>
+      </Container>
     );
   }
 }

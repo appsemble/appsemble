@@ -3,9 +3,8 @@ import PropTypes from 'prop-types';
 import React from 'react';
 
 
-export default class WebLink extends React.Component {
+export default class Container extends React.Component {
   static propTypes = {
-    classes: PropTypes.shape().isRequired,
     className: PropTypes.string,
     component: PropTypes.oneOfType([
       PropTypes.func,
@@ -15,22 +14,16 @@ export default class WebLink extends React.Component {
 
   static defaultProps = {
     className: null,
-    component: 'a',
+    component: 'div',
   };
 
   render() {
     const {
-      classes,
       className,
       component: Component,
       ...props
     } = this.props;
 
-    return (
-      <Component
-        className={classNames(classes.root, className)}
-        {...props}
-      />
-    );
+    return <Component className={classNames('container', className)} {...props} />;
   }
 }

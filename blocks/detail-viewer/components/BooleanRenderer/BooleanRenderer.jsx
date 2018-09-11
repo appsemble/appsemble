@@ -1,15 +1,10 @@
 import {
   Icon,
-} from '@material-ui/core';
-import {
-  CheckBox,
-  CheckBoxOutlineBlank,
-} from '@material-ui/icons';
+} from '@appsemble/react-bulma';
 import PropTypes from 'prop-types';
 import React from 'react';
 
 import Definition from '../Definition';
-import messages from './messages';
 
 
 /**
@@ -17,7 +12,6 @@ import messages from './messages';
  */
 export default class BooleanRenderer extends React.Component {
   static propTypes = {
-    intl: PropTypes.shape().isRequired,
     /**
      * The current value.
      */
@@ -30,20 +24,13 @@ export default class BooleanRenderer extends React.Component {
 
   render() {
     const {
-      intl,
       value,
       ...props
     } = this.props;
 
     return (
       <Definition {...props}>
-        <Icon>
-          {value ? (
-            <CheckBox titleAccess={intl.formatMessage(messages.true)} />
-          ) : (
-            <CheckBoxOutlineBlank titleAccess={intl.formatMessage(messages.false)} />
-          )}
-        </Icon>
+        <Icon fa={value ? 'check-square' : 'square'} />
       </Definition>
     );
   }

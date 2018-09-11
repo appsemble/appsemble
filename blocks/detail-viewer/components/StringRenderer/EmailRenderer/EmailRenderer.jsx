@@ -1,6 +1,3 @@
-import {
-  WebLink,
-} from 'material-ui-extras';
 import React from 'react';
 import PropTypes from 'prop-types';
 
@@ -27,9 +24,9 @@ export default class EmailRenderer extends React.Component {
     return (
       <Definition {...props}>
         {value && (
-          <WebLink href={`mailto:${value}`} target="_blank">
+          <a href={`mailto:${value}`} target="_blank" rel="noopener noreferrer">
             {value}
-          </WebLink>
+          </a>
         )}
       </Definition>
     );

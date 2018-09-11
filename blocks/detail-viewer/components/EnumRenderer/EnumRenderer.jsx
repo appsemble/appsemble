@@ -30,7 +30,9 @@ export default class EnumRenderer extends React.Component {
 
     return (
       <Definition {...props}>
-        {value == null ? props.schema.enum[0] : value}
+        <p>
+          {value == null ? props.schema.enum[0] : value}
+        </p>
       </Definition>
     );
   }

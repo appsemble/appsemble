@@ -23,7 +23,9 @@ export default class NumberRenderer extends React.Component {
 
     return (
       <Definition {...props}>
-        {value}
+        <p>
+          {value}
+        </p>
       </Definition>
     );
   }
