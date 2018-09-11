@@ -5,6 +5,7 @@ import {
   SchemaRenderer,
 } from 'react-schema-renderer';
 
+import ArrayRenderer from '../ArrayRenderer';
 import BooleanRenderer from '../BooleanRenderer';
 import EnumRenderer from '../EnumRenderer';
 import ObjectRenderer from '../ObjectRenderer';
@@ -14,6 +15,7 @@ import StringRenderer from '../StringRenderer';
 
 const schemaOptions = {
   renderers: {
+    array: ArrayRenderer,
     boolean: BooleanRenderer,
     enum: EnumRenderer,
     integer: NumberRenderer,
