@@ -4,8 +4,6 @@ import {
 import PropTypes from 'prop-types';
 import React from 'react';
 
-import Definition from '../Definition';
-
 
 /**
  * A renderer which represents a boolean value using a checked or unchecked checkbox icon.
@@ -25,13 +23,10 @@ export default class BooleanRenderer extends React.Component {
   render() {
     const {
       value,
-      ...props
     } = this.props;
 
     return (
-      <Definition {...props}>
-        <Icon fa={value ? 'check-square' : 'square'} />
-      </Definition>
+      <Icon fa={value ? 'check-square' : 'square'} />
     );
   }
 }

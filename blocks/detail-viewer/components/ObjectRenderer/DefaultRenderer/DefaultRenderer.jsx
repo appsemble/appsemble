@@ -1,5 +1,6 @@
 import {
   Container,
+  Subtitle,
 } from '@appsemble/react-bulma';
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -36,12 +37,16 @@ export default class DefaultRenderer extends React.Component {
     return (
       <Container>
         {Object.entries(schema.properties).map(([subName, subSchema]) => (
-          <SchemaRenderer
-            key={subName}
-            name={subName}
-            schema={subSchema}
-            value={value[subName]}
-          />
+          <div key={subName}>
+            <Subtitle is={6}>
+              {subSchema.title || subName}
+            </Subtitle>
+            <SchemaRenderer
+              name={subName}
+              schema={subSchema}
+              value={value[subName]}
+            />
+          </div>
         ))}
       </Container>
     );

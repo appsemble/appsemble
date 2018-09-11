@@ -1,8 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 
-import Definition from '../Definition';
-
 
 /**
  * Render a selected enum value. The first value is used as a fallback.
@@ -29,11 +27,9 @@ export default class EnumRenderer extends React.Component {
     } = this.props;
 
     return (
-      <Definition {...props}>
-        <p>
-          {value == null ? props.schema.enum[0] : value}
-        </p>
-      </Definition>
+      <p>
+        {value == null ? props.schema.enum[0] : value}
+      </p>
     );
   }
 }

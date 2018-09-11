@@ -1,8 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 
-import Definition from '../Definition';
-
 
 /**
  * An number as is.
@@ -18,15 +16,12 @@ export default class NumberRenderer extends React.Component {
   render() {
     const {
       value,
-      ...props
     } = this.props;
 
     return (
-      <Definition {...props}>
-        <p>
-          {value}
-        </p>
-      </Definition>
+      <p>
+        {value}
+      </p>
     );
   }
 }

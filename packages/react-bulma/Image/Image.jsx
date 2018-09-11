@@ -11,16 +11,16 @@ export default class Image extends React.Component {
       PropTypes.func,
       PropTypes.string,
     ]),
-    is: PropTypes.string,
     rounded: PropTypes.bool,
+    size: PropTypes.number,
     src: PropTypes.string.isRequired,
   };
 
   static defaultProps = {
     className: null,
     component: 'figure',
-    is: null,
     rounded: false,
+    size: null,
   };
 
   render() {
@@ -28,17 +28,17 @@ export default class Image extends React.Component {
       alt,
       className,
       component: Component,
-      is,
       rounded,
+      size,
       src,
       ...props
     } = this.props;
 
-    const isClass = is == null ? null : `is-${is}x${is}`;
+    const sizeClass = size == null ? null : `is-${size}x${size}`;
 
     return (
       <Component
-        className={classNames('container', isClass, {
+        className={classNames('image', sizeClass, {
           'is-rounded': rounded,
         }, className)}
         {...props}

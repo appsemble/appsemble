@@ -8,7 +8,6 @@ import { Icon, Marker, TileLayer } from 'leaflet/src/layer';
 import { Map } from 'leaflet/src/map';
 import React from 'react';
 
-import Definition from '../../Definition';
 import styles from './GeoCoordinatesRenderer.css';
 
 
@@ -55,9 +54,7 @@ export default class GeoCoordinatesRenderer extends React.Component {
 
   render() {
     return (
-      <Definition {...this.props}>
-        <div className={styles.root} ref={this.ref} />
-      </Definition>
+      <div className={styles.root} ref={this.ref} />
     );
   }
 }
