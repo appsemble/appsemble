@@ -1,37 +1,23 @@
-import fs from 'fs';
 import path from 'path';
 
 import klawSync from 'klaw-sync';
-import Router from 'koa-router';
+import serve from 'koa-static';
 
 
 export default async function configureStatic(app) {
   if (process.env.NODE_ENV === 'production') {
     const distDir = path.resolve(__dirname, '../../dist');
-    const router = new Router();
-    const allAssets = klawSync(distDir, { nodir: true }).map(asset => asset.path)
-      .map((asset) => {
-        router.get(`/${path.relative(distDir, asset)}`, (ctx) => {
-          ctx.body = fs.createReadStream(asset);
-          ctx.type = path.extname(asset);
-          ctx.set('Cache-Control', 'public, max-age=31536000');
-        });
-        return asset;
-      })
-      .filter(asset => [distDir, path.join(distDir, 'app')].includes(path.dirname(asset)))
-      .map(asset => path.relative(distDir, asset));
-    app.use(router.routes());
-    app.use(router.allowedMethods());
-    const assets = {
-      app: allAssets
-        .filter(asset => [distDir, path.join(distDir, 'app')].includes(path.dirname(asset)))
-        .map(asset => path.relative(distDir, asset)),
-      editor: allAssets
-        .filter(asset => [distDir, path.join(distDir, 'editor')].includes(path.dirname(asset)))
-        .map(asset => path.relative(distDir, asset)),
-    };
+    app.use(serve(distDir, { maxage: 365 * 24 * 60 * 60 * 1e3 }));
+    const assets = klawSync(distDir, { nodir: true })
+      .map(file => path.relative(distDir, file.path))
+      .reduce((acc, file) => {
+        const chunk = file.split('/')[0];
+        acc[chunk] = acc[chunk] || [];
+        acc[chunk].push(file);
+        return acc;
+      }, {});
     app.use(async (ctx, next) => {
-      ctx.state.assets = assets;
+      ctx.state.getAssets = () => assets;
       await next();
     });
   } else {
@@ -46,5 +32,9 @@ export default async function configureStatic(app) {
       },
     });
     app.use(middleware);
+    app.use(async (ctx, next) => {
+      ctx.state.getAssets = () => ctx.state.webpackStats.toJson().assetsByChunkName;
+      await next();
+    });
   }
 }
