@@ -1,10 +1,8 @@
 import {
-  TextField,
-} from '@material-ui/core';
+  InputField,
+} from '@appsemble/react-bulma';
 import PropTypes from 'prop-types';
 import React from 'react';
-
-import styles from './TextInput.css';
 
 
 /**
@@ -45,28 +43,19 @@ export default class TextInput extends React.Component {
       required,
       schema,
       value,
+      ...props
     } = this.props;
 
     return (
-      <TextField
-        fullWidth
-        helperText={(
-          <React.Fragment>
-            {schema.maxLength == null || (
-              <span className={styles.count}>
-                {`${value.length}/${schema.maxLength}`}
-              </span>
-            )}
-          </React.Fragment>
-        )}
-        inputProps={{
-          maxLength: schema.maxLength,
-        }}
-        label={schema.title}
+      <InputField
+        label={schema.title || name}
+        maxLength={schema.maxLength}
         name={name}
         onChange={onChange}
         required={required}
+        readOnly={schema.readOnly}
         value={value || ''}
+        {...props}
       />
     );
   }

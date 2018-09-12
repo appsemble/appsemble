@@ -2,10 +2,10 @@ import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import React from 'react';
 
-import { is } from '../utils';
+import { is } from '../../utils';
 
 
-export default class Title extends React.Component {
+export default class Subtitle extends React.Component {
   static propTypes = {
     className: PropTypes.string,
     size: PropTypes.number.isRequired,
@@ -24,6 +24,6 @@ export default class Title extends React.Component {
 
     const Component = `h${size}`;
 
-    return <Component className={classNames('title', is(size), className)} {...props} />;
+    return <Component className={classNames('subtitle', is(size), className)} {...props} />;
   }
 }

@@ -2,35 +2,38 @@ import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import React from 'react';
 
-import { is } from '../utils';
+import { is } from '../../utils';
 
 
-export default class Message extends React.Component {
+export default class Field extends React.Component {
   static propTypes = {
     className: PropTypes.string,
-    color: PropTypes.string,
-    component: PropTypes.string,
+    component: PropTypes.oneOfType([
+      PropTypes.func,
+      PropTypes.string,
+    ]),
+    horizontal: PropTypes.bool,
   };
 
   static defaultProps = {
-    color: null,
     className: null,
-    component: 'article',
+    component: 'div',
+    horizontal: false,
   };
 
   render() {
     const {
       className,
-      color,
       component: Component,
+      horizontal,
       ...props
     } = this.props;
 
     return (
       <Component
         className={classNames(
-          'message',
-          is(color),
+          'field',
+          is('horizontal', horizontal),
           className,
         )}
         {...props}

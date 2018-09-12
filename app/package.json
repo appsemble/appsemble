@@ -5,6 +5,7 @@
   "dependencies": {
     "@appsemble/react-bulma": "^1.0.0",
     "@appsemble/utils": "^1.0.0",
+    "@fortawesome/fontawesome-free": "^5.3.1",
     "@material-ui/core": "^1.5.1",
     "@material-ui/icons": "^2.0.3",
     "axios": "^0.18.0",

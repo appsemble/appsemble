@@ -2,7 +2,7 @@ import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import React from 'react';
 
-import { is } from '../utils';
+import { is } from '../../utils';
 
 
 export default class Button extends React.Component {

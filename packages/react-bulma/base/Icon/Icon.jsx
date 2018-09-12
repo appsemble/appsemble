@@ -2,6 +2,8 @@ import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import React from 'react';
 
+import { is } from '../../utils';
+
 
 export default class Icon extends React.Component {
   static propTypes = {
@@ -11,11 +13,15 @@ export default class Icon extends React.Component {
       PropTypes.string,
     ]),
     fa: PropTypes.string.isRequired,
+    position: PropTypes.string,
+    size: PropTypes.string,
   };
 
   static defaultProps = {
     className: null,
     component: 'span',
+    position: null,
+    size: null,
   };
 
   render() {
@@ -23,11 +29,13 @@ export default class Icon extends React.Component {
       className,
       component: Component,
       fa,
+      position,
+      size,
       ...props
     } = this.props;
 
     return (
-      <Component className={classNames('container', className)} {...props}>
+      <Component className={classNames('icon', is(position), is(size), className)} {...props}>
         <i className={`fas fa-${fa}`} />
       </Component>
     );

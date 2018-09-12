@@ -1,10 +1,8 @@
 import {
-  TextField,
-} from '@material-ui/core';
+  InputField,
+} from '@appsemble/react-bulma';
 import PropTypes from 'prop-types';
 import React from 'react';
-
-import styles from './NumberInput.css';
 
 
 /**
@@ -47,28 +45,18 @@ export default class NumberInput extends React.Component {
       value,
     } = this.props;
 
-    const inputProps = {};
-    if (Number.isFinite(schema.multipleOf)) {
-      inputProps.step = schema.multipleOf;
-    }
     const max = [schema.maximum, schema.exclusiveMaximum].filter(Number.isFinite);
-    if (max.length !== 0) {
-      inputProps.max = Math.min(...max);
-    }
     const min = [schema.minimum, schema.exclusiveMinimum].filter(Number.isFinite);
-    if (min.length !== 0) {
-      inputProps.min = Math.max(...min);
-    }
 
     return (
-      <TextField
-        className={styles.root}
-        fullWidth
-        inputProps={inputProps}
+      <InputField
         label={schema.title}
+        max={max.length === 0 ? null : Math.min(...max)}
+        min={min.length === 0 ? null : Math.max(...min)}
         name={name}
         onChange={onChange}
         required={required}
+        step={schema.multipleOf}
         type="number"
         value={value}
       />

@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 
 
-export default class Control extends React.Component {
+export default class FieldBody extends React.Component {
   static propTypes = {
     className: PropTypes.string,
     component: PropTypes.oneOfType([
@@ -24,6 +24,6 @@ export default class Control extends React.Component {
       ...props
     } = this.props;
 
-    return <Component className={classNames('control', className)} {...props} />;
+    return <Component className={classNames('field-body', className)} {...props} />;
   }
 }

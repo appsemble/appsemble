@@ -1,3 +1,4 @@
+import 'bulma/css/bulma.css';
 import {
   bootstrap,
 } from '@appsemble/react';
