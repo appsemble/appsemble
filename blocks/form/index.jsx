@@ -5,11 +5,8 @@ import {
 import {
   provideIntl,
 } from '@appsemble/react/intl';
-import {
-  provideMui,
-} from '@appsemble/react/mui';
 
 import FormBlock from './components/FormBlock';
 
 
-bootstrap(provideIntl(provideMui(FormBlock)));
+bootstrap(provideIntl(FormBlock));
