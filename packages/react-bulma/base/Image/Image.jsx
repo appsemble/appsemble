@@ -36,11 +36,9 @@ export default class Image extends React.Component {
       ...props
     } = this.props;
 
-    const sizeClass = size == null ? null : `is-${size}x${size}`;
-
     return (
       <Component
-        className={classNames('image', sizeClass, is(rounded), className)}
+        className={classNames('image', is(`${size}x${size}`, size), is(rounded), className)}
         {...props}
       >
         <img alt={alt} src={src} />

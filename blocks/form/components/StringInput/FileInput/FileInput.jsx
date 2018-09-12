@@ -1,8 +1,12 @@
+import {
+  FileField,
+  FileLabel,
+  Image,
+} from '@appsemble/react-bulma';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import styles from './FileInput.css';
 import messages from './messages';
 
 
@@ -74,25 +78,25 @@ export default class FileInput extends React.Component {
     } = schema.appsembleFile;
 
     return (
-      <div className={styles.root}>
+      <FileField
+        accept={[].concat(type).toString()}
+        FileInputProps={{
+          innerRef: this.inputRef,
+        }}
+        name={name}
+      >
         {url ? (
-          <img
+          <Image
             alt={title}
-            className={styles.preview}
+            size={128}
             src={url}
           />
         ) : (
-          <FormattedMessage {...messages.clickAction} />
+          <FileLabel>
+            <FormattedMessage {...messages.clickAction} />
+          </FileLabel>
         )}
-        <input
-          accept={[].concat(type).toString()}
-          className={styles.input}
-          name={name}
-          ref={this.inputRef}
-          title={title}
-          type="file"
-        />
-      </div>
+      </FileField>
     );
   }
 }

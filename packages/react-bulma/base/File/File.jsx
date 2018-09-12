@@ -5,49 +5,40 @@ import React from 'react';
 import { is } from '../../utils';
 
 
-export default class Select extends React.Component {
+export default class File extends React.Component {
   static propTypes = {
-    children: PropTypes.node.isRequired,
+    boxed: PropTypes.bool,
     className: PropTypes.string,
+    color: PropTypes.string,
     component: PropTypes.string,
-    multiple: PropTypes.bool,
-    onChange: PropTypes.func,
-    value: PropTypes.oneOfType([
-      PropTypes.number,
-      PropTypes.string,
-    ]).isRequired,
   };
 
   static defaultProps = {
+    boxed: true,
+    color: null,
     className: null,
     component: 'div',
-    onChange: null,
-    multiple: false,
   };
 
   render() {
     const {
-      children,
+      boxed,
       className,
+      color,
       component: Component,
-      multiple,
-      onChange,
       ...props
     } = this.props;
 
     return (
       <Component
         className={classNames(
-          'select',
-          is('multiple', multiple),
+          'file',
+          is(boxed),
+          is(color),
           className,
         )}
         {...props}
-      >
-        <select multiple={multiple} onChange={onChange}>
-          {children}
-        </select>
-      </Component>
+      />
     );
   }
 }
