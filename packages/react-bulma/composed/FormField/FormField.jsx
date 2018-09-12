@@ -41,7 +41,7 @@ export default class FormField extends React.Component {
 
     const control = (
       <Control iconsLeft={!!iconLeft} iconsRight={!!iconRight}>
-        {React.cloneElement(children, { size })}
+        {React.cloneElement(React.Children.only(children), { size })}
         {iconLeft && React.cloneElement(iconLeft, { size, position: 'left' })}
         {iconRight && React.cloneElement(iconRight, { size, position: 'right' })}
       </Control>
