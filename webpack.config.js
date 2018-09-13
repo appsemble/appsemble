@@ -55,7 +55,7 @@ module.exports = async (env, { mode }) => {
           test: /\.css$/,
           oneOf: [
             {
-              test: /node_modules/,
+              test: /(node_modules|amsterdam\.css)/,
               use: [
                 MiniCssExtractPlugin.loader,
                 {
