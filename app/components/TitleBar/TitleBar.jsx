@@ -1,8 +1,8 @@
 import {
-  AppBar,
-  Toolbar,
-  Typography,
-} from '@material-ui/core';
+  Navbar,
+  NavbarBrand,
+  NavbarItem,
+} from '@appsemble/react-bulma';
 import PropTypes from 'prop-types';
 import React from 'react';
 
@@ -29,14 +29,16 @@ export default class TitleBar extends React.Component {
     } = this.props;
 
     return (
-      <AppBar>
-        <Toolbar>
-          <SideMenuButton />
-          <Typography variant="title" color="inherit">
+      <Navbar fixed="top">
+        <NavbarBrand>
+          <NavbarItem>
+            <SideMenuButton />
+          </NavbarItem>
+          <NavbarItem>
             {app?.name || 'Appsemble'}
-          </Typography>
-        </Toolbar>
-      </AppBar>
+          </NavbarItem>
+        </NavbarBrand>
+      </Navbar>
     );
   }
 }
