@@ -53,8 +53,8 @@ definitions:
 
 authentication:
   - method: email
-    url: http://oscity.nl:9808/login
-    refreshURL: http://oscity.nl:9808/token/refresh
+    url: https://api.stadswerken.amsterdam/login
+    refreshURL: https://api.stadswerken.amsterdam/token/refresh
 
 
 pages:
@@ -74,11 +74,11 @@ pages:
           submit:
             type: request
             method: post
-            url: 'http://oscity.nl:9808/waarnemingen_real'
+            url: 'https://api.stadswerken.amsterdam/waarnemingen_real'
             blobs:
               type: upload
               method: post
-              url: 'http://oscity.nl:9808/upload'
+              url: 'https://api.stadswerken.amsterdam/upload'
               serialize: custom
           submitSuccess:
             type: link
@@ -94,7 +94,7 @@ pages:
           longitude: locatie.longitude
         resources:
           marker:
-            url: 'http://oscity.nl:9808/waarnemingen_real'
+            url: 'https://api.stadswerken.amsterdam/waarnemingen_real'
             query: {}
         actions:
           markerClick:
@@ -119,4 +119,4 @@ pages:
         actions:
           load:
             type: request
-            url: 'http://oscity.nl:9808/waarnemingen_real/{id}'
+            url: 'https://api.stadswerken.amsterdam/waarnemingen_real/{id}'
