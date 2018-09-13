@@ -1,8 +1,0 @@
-.dd {
-  /*
-   * Make the min height the same as the line height.
-   *
-   * https://github.com/mui-org/material-ui/blob/v1.4.1/packages/material-ui/src/styles/createTypography.js#L113
-   */
-  min-height: calc(20.5em / 14);
-}

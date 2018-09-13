@@ -3,11 +3,7 @@
   display: flex;
   flex-flow: column;
   min-height: 100vh;
-  padding-top: 56px;
-
-  @media (min-width: 600px) {
-    padding-top: 64px;
-  }
+  padding-top: 64px;
 
   @media (max-width: 599px) and (orientation: landscape) {
     padding-top: 48px;

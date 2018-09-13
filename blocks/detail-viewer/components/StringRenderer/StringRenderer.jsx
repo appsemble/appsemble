@@ -2,6 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 
 import EmailRenderer from './EmailRenderer';
+import FileRenderer from './FileRenderer';
 import TextRenderer from './TextRenderer';
 
 
@@ -42,7 +43,10 @@ export default class StringRenderer extends React.Component {
     /**
      * The value to render
      */
-    value: PropTypes.string,
+    value: PropTypes.oneOfType([
+      PropTypes.instanceOf(Blob),
+      PropTypes.string,
+    ]),
   };
 
   static defaultProps = {
@@ -59,6 +63,9 @@ export default class StringRenderer extends React.Component {
       case 'idn-email':
         return <EmailRenderer {...this.props} />;
       default:
+        if (schema.appsembleFile) {
+          return <FileRenderer {...this.props} />;
+        }
         return <TextRenderer {...this.props} />;
     }
   }

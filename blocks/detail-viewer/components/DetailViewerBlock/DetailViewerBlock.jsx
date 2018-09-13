@@ -5,16 +5,17 @@ import {
   SchemaRenderer,
 } from 'react-schema-renderer';
 
+import ArrayRenderer from '../ArrayRenderer';
 import BooleanRenderer from '../BooleanRenderer';
 import EnumRenderer from '../EnumRenderer';
 import ObjectRenderer from '../ObjectRenderer';
 import NumberRenderer from '../NumberRenderer';
 import StringRenderer from '../StringRenderer';
-import styles from './DetailViewerBlock.css';
 
 
 const schemaOptions = {
   renderers: {
+    array: ArrayRenderer,
     boolean: BooleanRenderer,
     enum: EnumRenderer,
     integer: NumberRenderer,
@@ -73,7 +74,6 @@ export default class DetailViewerBlock extends React.Component {
     return (
       <SchemaProvider value={schemaOptions}>
         <SchemaRenderer
-          className={styles.renderer}
           schema={block.parameters.schema}
           value={data}
         />

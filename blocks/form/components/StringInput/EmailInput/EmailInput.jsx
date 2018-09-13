@@ -1,9 +1,6 @@
 import {
-  InputAdornment,
-} from '@material-ui/core';
-import {
-  Email,
-} from '@material-ui/icons';
+  Icon,
+} from '@appsemble/react-bulma';
 import React from 'react';
 
 import TextInput from '../TextInput';
@@ -17,13 +14,7 @@ export default class EmailInput extends React.Component {
     return (
       <TextInput
         {...this.props}
-        InputProps={{
-          startAdornment: (
-            <InputAdornment>
-              <Email />
-            </InputAdornment>
-          ),
-        }}
+        iconLeft={<Icon fa="envelope" />}
         type="email"
       />
     );

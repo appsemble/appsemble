@@ -1,6 +1,6 @@
 import {
   Button,
-} from '@material-ui/core';
+} from '@appsemble/react-bulma';
 import PropTypes from 'prop-types';
 import React from 'react';
 import {

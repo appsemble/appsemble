@@ -1,6 +1,6 @@
 import {
-  TextField,
-} from '@material-ui/core';
+  SelectField,
+} from '@appsemble/react-bulma';
 import PropTypes from 'prop-types';
 import React from 'react';
 
@@ -49,16 +49,11 @@ export default class EnumInput extends React.Component {
     } = this.props;
 
     return (
-      <TextField
-        fullWidth
+      <SelectField
         label={schema.title}
         name={name}
         onChange={onChange}
         required={required}
-        select
-        SelectProps={{
-          native: true,
-        }}
         value={value == null ? schema.enum[0] : value}
       >
         {schema.enum.map(choice => (
@@ -66,7 +61,7 @@ export default class EnumInput extends React.Component {
             {`${choice}`}
           </option>
         ))}
-      </TextField>
+      </SelectField>
     );
   }
 }

@@ -1,7 +1,6 @@
 import {
-  FormControlLabel,
-  Switch,
-} from '@material-ui/core';
+  CheckBox,
+} from '@appsemble/react-bulma';
 import PropTypes from 'prop-types';
 import React from 'react';
 
@@ -42,11 +41,11 @@ export default class BooleanInput extends React.Component {
     } = this.props;
 
     return (
-      <FormControlLabel
-        control={<Switch checked={value} />}
+      <CheckBox
         label={schema.title}
         name={name}
         onChange={onChange}
+        value={value}
       />
     );
   }
