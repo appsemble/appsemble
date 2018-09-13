@@ -13,7 +13,8 @@ export default class Editor extends React.Component {
 
   state = {
     recipe: '',
-    valid: true,
+    valid: false,
+    dirty: true,
   };
 
   frame = React.createRef();
@@ -27,7 +28,8 @@ export default class Editor extends React.Component {
   }
 
   onSubmit = (event) => {
-    event.preventDefault();
+    if (event) event.preventDefault();
+
     this.setState(({ recipe }) => {
       let app = null;
 
@@ -35,21 +37,32 @@ export default class Editor extends React.Component {
       try {
         app = yaml.safeLoad(recipe);
       } catch (e) {
-        return { valid: false };
+        return { valid: false, dirty: false };
       }
 
       // YAML appears to be valid, send it to the app preview iframe
       this.frame.current.contentWindow.postMessage({ type: 'editor/EDIT_SUCCESS', app }, window.location.origin);
-      return { valid: true };
+      return { valid: true, dirty: false };
     });
   };
 
+  onUpload = async () => {
+    const { id } = this.props;
+    const { recipe, valid } = this.state;
+
+    if (valid) {
+      await axios.put(`/api/apps/${id}`, yaml.safeLoad(recipe));
+    }
+
+    this.setState({ dirty: true });
+  };
+
   onMonacoChange = (recipe) => {
-    this.setState({ recipe });
+    this.setState({ recipe, dirty: true });
   };
 
   render() {
-    const { recipe, valid } = this.state;
+    const { recipe, valid, dirty } = this.state;
     const { id } = this.props;
 
     return (
@@ -57,8 +70,9 @@ export default class Editor extends React.Component {
         <div className={styles.leftPanel}>
           <form className={styles.editorForm} onSubmit={this.onSubmit}>
             <div className={styles.editorToolbar}>
-              <button type="submit">Save</button>
-              { !valid
+              <button type="submit" disabled={!dirty}>Save</button>
+              <button type="button" onClick={this.onUpload} disabled={!valid || dirty}>Upload</button>
+              { (!valid && !dirty)
                 && <p className={styles.editorError}>Invalid YAML</p>
               }
             </div>
