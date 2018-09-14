@@ -96,7 +96,7 @@ pages:
           longitude: locatie.longitude
         resources:
           marker:
-            url: 'https://api.stadswerken.amsterdam/waarnemingen_real'
+            url: 'https://api.stadswerken.amsterdam/waarnemingen_real$top=20'
             query: {}
         actions:
           markerClick:
