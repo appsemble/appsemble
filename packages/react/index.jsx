@@ -20,9 +20,13 @@ const {
 export function mount(Component) {
   return (params) => {
     const reactRoot = params.shadowRoot.appendChild(document.createElement('div'));
+    const props = {
+      ...params,
+      reactRoot,
+    };
     const component = (
-      <Provider value={params}>
-        <Component {...params} reactRoot={reactRoot} />
+      <Provider value={props}>
+        <Component {...props} />
       </Provider>
     );
     render(component, reactRoot);

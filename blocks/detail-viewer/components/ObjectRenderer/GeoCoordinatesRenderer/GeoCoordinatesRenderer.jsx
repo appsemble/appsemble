@@ -6,6 +6,7 @@ import shadowUrl from 'leaflet/dist/images/marker-shadow.png';
 import { Point } from 'leaflet/src/geometry';
 import { Icon, Marker, TileLayer } from 'leaflet/src/layer';
 import { Map } from 'leaflet/src/map';
+import { CircleMarker } from 'leaflet/src/layer/vector';
 import React from 'react';
 
 import styles from './GeoCoordinatesRenderer.css';
@@ -22,6 +23,7 @@ const MARKER_ICON_HEIGHT = 41;
  */
 export default class GeoCoordinatesRenderer extends React.Component {
   static propTypes = {
+    reactRoot: PropTypes.instanceOf(HTMLElement).isRequired,
     /**
      * The current value.
      */
@@ -34,12 +36,21 @@ export default class GeoCoordinatesRenderer extends React.Component {
 
   ref = React.createRef();
 
+  locationMarker = new CircleMarker(null, {
+    // eslint-disable-next-line react/destructuring-assignment
+    color: getComputedStyle(this.props.reactRoot).getPropertyValue('--primary-color'),
+  });
+
   componentDidMount() {
     const {
       value,
     } = this.props;
 
     const map = new Map(this.ref.current, { attributionControl: false })
+      .on('locationfound', ({ latlng }) => {
+        this.locationMarker.setLatLng(latlng).addTo(map);
+      })
+      .locate()
       .setView([value.latitude, value.longitude], 16);
     new TileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
     new Marker(null, {
