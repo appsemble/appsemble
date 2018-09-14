@@ -2,6 +2,6 @@
   "name": "@appsemble/babel-jest",
   "version": "0.0.0",
   "dependencies": {
-    "@babel/core": "^7.0.0"
+    "@babel/core": "^7.0.1"
   }
 }
