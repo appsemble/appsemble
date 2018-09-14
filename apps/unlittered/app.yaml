@@ -28,7 +28,7 @@ definitions:
           type: string
           appsembleFile:
             type:
-              - image/*
+              - image/jpeg
       gebied:
         type: string
         readOnly: true
