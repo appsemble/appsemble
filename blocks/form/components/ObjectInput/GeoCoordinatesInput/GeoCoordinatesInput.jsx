@@ -6,6 +6,7 @@ import shadowUrl from 'leaflet/dist/images/marker-shadow.png';
 import { Point } from 'leaflet/src/geometry';
 import { Icon, Marker, TileLayer } from 'leaflet/src/layer';
 import { Map } from 'leaflet/src/map';
+import { CircleMarker } from 'leaflet/src/layer/vector';
 import React from 'react';
 
 import styles from './GeoCoordinatesInput.css';
@@ -30,6 +31,7 @@ export default class GeoCoordinatesInput extends React.Component {
      * A callback for when the value changes.
      */
     onChange: PropTypes.func.isRequired,
+    reactRoot: PropTypes.instanceOf(HTMLElement).isRequired,
     /**
      * The current value.
      */
@@ -50,6 +52,11 @@ export default class GeoCoordinatesInput extends React.Component {
     }),
   });
 
+  locationMarker = new CircleMarker(null, {
+    // eslint-disable-next-line react/destructuring-assignment
+    color: getComputedStyle(this.props.reactRoot).getPropertyValue('--primary-color'),
+  });
+
   ref = React.createRef();
 
   componentDidMount() {
@@ -58,14 +65,18 @@ export default class GeoCoordinatesInput extends React.Component {
       onChange,
     } = this.props;
 
-    const map = new Map(this.ref.current, { attributionControl: false }).locate({ setView: true });
+    const map = new Map(this.ref.current, { attributionControl: false })
+      .on('locationfound', ({ latlng }) => {
+        this.locationMarker.setLatLng(latlng).addTo(map);
+      })
+      .on('click', ({ latlng }) => {
+        onChange({ target: { name } }, {
+          latitude: latlng.lat,
+          longitude: latlng.lng,
+        });
+      })
+      .locate({ setView: true });
     new TileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
-    map.on('click', ({ latlng }) => {
-      onChange({ target: { name } }, {
-        latitude: latlng.lat,
-        longitude: latlng.lng,
-      });
-    });
     this.map = map;
   }
 
