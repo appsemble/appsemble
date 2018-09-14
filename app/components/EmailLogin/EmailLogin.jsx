@@ -107,7 +107,7 @@ export default class EmailLogin extends React.Component {
         )}
         <InputField
           autoComplete="email"
-          color={dirty && errors.username ? 'danger' : 'primary'}
+          color={dirty && errors.username ? 'danger' : null}
           disabled={submitting}
           iconLeft={<Icon fa="envelope" />}
           label={<FormattedMessage {...messages.usernameLabel} />}
@@ -119,7 +119,7 @@ export default class EmailLogin extends React.Component {
         />
         <InputField
           autoComplete="current-password"
-          color={dirty && errors.password ? 'danger' : 'primary'}
+          color={dirty && errors.password ? 'danger' : null}
           disabled={submitting}
           iconLeft={<Icon fa="unlock" />}
           label={<FormattedMessage {...messages.passwordLabel} />}
