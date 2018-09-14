@@ -9,6 +9,7 @@ export default class SelectField extends React.Component {
   static propTypes = {
     children: PropTypes.node.isRequired,
     multiple: PropTypes.bool,
+    name: PropTypes.string,
     value: PropTypes.oneOfType([
       PropTypes.number,
       PropTypes.string,
@@ -17,12 +18,14 @@ export default class SelectField extends React.Component {
 
   static defaultProps = {
     multiple: false,
+    name: null,
   };
 
   render() {
     const {
       children,
       multiple,
+      name,
       value,
       ...props
     } = this.props;
@@ -31,6 +34,7 @@ export default class SelectField extends React.Component {
       <FormField {...props}>
         <Select
           multiple={multiple}
+          name={name}
           value={value}
         >
           {children}

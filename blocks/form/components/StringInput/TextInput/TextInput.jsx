@@ -52,6 +52,7 @@ export default class TextInput extends React.Component {
         maxLength={schema.maxLength}
         name={name}
         onChange={onChange}
+        placeholder={schema.title || name}
         required={required}
         readOnly={schema.readOnly}
         value={value || ''}

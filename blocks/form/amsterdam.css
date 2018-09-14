@@ -1,0 +1,22 @@
+/* stylelint-disable selector-max-specificity */
+.field-label {
+  display: none;
+}
+
+.input {
+  border-radius: var(--border-radius) !important;
+}
+
+.select {
+  & select {
+    border-radius: var(--border-radius) !important;
+  }
+}
+
+.button {
+  border-radius: var(--border-radius) !important;
+
+  &.is-primary {
+    background-color: var(--primary-color) !important;
+  }
+}

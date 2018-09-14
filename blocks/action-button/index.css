@@ -1,16 +1,21 @@
 a,
 button {
-  background-color: #fc6ff0;
+  align-items: center;
+  background-color: var(--primary-color);
   border: none;
   border-radius: 50%;
   bottom: 12px;
-  box-shadow: 0 0 12px 3px;
+  box-shadow: 0 0 12px 3px #000000;
+  color: var(--primary-color-inverse);
   cursor: pointer;
+  display: flex !important;
   font-size: 24px;
   height: 56px;
+  justify-content: center;
   outline: none;
   padding: 0;
   position: fixed;
   right: 12px;
+  text-decoration: none;
   width: 56px;
 }

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="135px" height="125px" viewBox="0 0 135 125" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 43.1 (39012) - http://www.bohemiancoding.com/sketch -->
+    <title>logo</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Symbols" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="logo">
+            <g id="Group-2" transform="translate(9.000000, -4.000000)">
+                <path d="M98.487218,52.5278195 C98.487218,52.5278195 94.8120301,38.1203008 79.5150376,38.1203008 C64.2180451,38.1203008 60.0150376,52.4789474 60.0150376,52.4789474" id="Shape" fill="#FFFFFF" fill-rule="nonzero"></path>
+                <path d="M80.2676692,52.5278195 C80.5197131,53.7452085 80.010014,54.9940658 78.9781256,55.6874403 C77.9462372,56.3808149 76.5973719,56.3808149 75.5654834,55.6874403 C74.533595,54.9940658 74.0238959,53.7452085 74.2759398,52.5278195 L69.4669173,52.5278195 C69.4669173,57.8937019 73.8168244,62.243609 79.1827068,62.243609 C84.5485891,62.243609 88.8984962,57.8937019 88.8984962,52.5278195 L80.2578947,52.5278195 L80.2676692,52.5278195 Z" id="Shape" fill="#FFFFFF" fill-rule="nonzero"></path>
+                <path d="M38.237594,85.9466165 L44.0729323,81.0007519" id="Shape" stroke="#FFFFFF" stroke-width="16.93"></path>
+                <ellipse id="Oval" stroke="#FFFFFF" stroke-width="8.47" transform="translate(79.124335, 51.340165) rotate(-40.250000) translate(-79.124335, -51.340165) " cx="79.124335" cy="51.3401655" rx="35.9503759" ry="35.9503759"></ellipse>
+                <path d="M0.0586466165,118.270677 L34.8849624,88.781203" id="Shape" stroke="#FFFFFF" stroke-width="10.78"></path>
+            </g>
+        </g>
+    </g>
+</svg>

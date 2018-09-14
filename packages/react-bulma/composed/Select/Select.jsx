@@ -11,6 +11,7 @@ export default class Select extends React.Component {
     className: PropTypes.string,
     component: PropTypes.string,
     multiple: PropTypes.bool,
+    name: PropTypes.string,
     onChange: PropTypes.func,
     value: PropTypes.oneOfType([
       PropTypes.number,
@@ -21,8 +22,9 @@ export default class Select extends React.Component {
   static defaultProps = {
     className: null,
     component: 'div',
-    onChange: null,
     multiple: false,
+    name: null,
+    onChange: null,
   };
 
   render() {
@@ -31,6 +33,7 @@ export default class Select extends React.Component {
       className,
       component: Component,
       multiple,
+      name,
       onChange,
       ...props
     } = this.props;
@@ -44,7 +47,7 @@ export default class Select extends React.Component {
         )}
         {...props}
       >
-        <select multiple={multiple} onChange={onChange}>
+        <select multiple={multiple} name={name} onChange={onChange}>
           {children}
         </select>
       </Component>

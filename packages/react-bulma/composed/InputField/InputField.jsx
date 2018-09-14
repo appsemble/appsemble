@@ -25,6 +25,7 @@ export default class InputField extends React.Component {
     minLength: PropTypes.number,
     name: PropTypes.string.isRequired,
     onChange: PropTypes.func,
+    placeholder: PropTypes.string,
     required: PropTypes.bool,
     step: PropTypes.number,
     type: PropTypes.string,
@@ -47,6 +48,7 @@ export default class InputField extends React.Component {
     min: null,
     minLength: null,
     onChange: null,
+    placeholder: null,
     required: false,
     step: null,
     type: null,
@@ -64,6 +66,7 @@ export default class InputField extends React.Component {
       minLength,
       name,
       onChange,
+      placeholder,
       required,
       step,
       type,
@@ -83,6 +86,7 @@ export default class InputField extends React.Component {
           minLength={minLength}
           name={name}
           onChange={onChange}
+          placeholder={placeholder}
           required={required}
           step={step}
           type={type}

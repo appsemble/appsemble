@@ -1,0 +1,58 @@
+/* stylelint-disable selector-max-specificity */
+:root {
+  --border-radius: 290486px;
+  --form-width: 400px;
+  --primary-color: #eb0000;
+  --primary-color-inverse: #ffffff;
+}
+
+form.container {
+  background-color: var(--primary-color) !important;
+  background-image: url(amsterdam-logo.svg);
+  background-position-x: center;
+  background-position-y: 15vh;
+  background-repeat: no-repeat;
+  display: flex;
+  flex-flow: column;
+  height: 100vh !important;
+  margin: 0 !important;
+  max-width: 100%;
+  padding-top: 40vh;
+  position: fixed !important;
+  top: 0 !important;
+  width: 100% !important;
+  z-index: 30 !important;
+}
+
+.field-label {
+  display: none;
+}
+
+.control {
+  margin: 0 auto;
+  max-width: var(--form-width) !important;
+}
+
+.input {
+  border-radius: var(--border-radius) !important;
+}
+
+.button {
+  border-radius: var(--border-radius) !important;
+  margin: 0 auto;
+  max-width: var(--form-width) !important;
+  width: 100% !important;
+
+  &.is-primary {
+    background-color: var(--primary-color) !important;
+    border-color: var(--primary-color-inverse) !important;
+  }
+}
+
+.navbar {
+  background-color: var(--primary-color) !important;
+}
+
+.navbar-item {
+  color: var(--primary-color-inverse) !important;
+}
