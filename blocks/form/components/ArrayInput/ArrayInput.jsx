@@ -4,6 +4,8 @@ import {
   SchemaRenderer,
 } from 'react-schema-renderer';
 
+import styles from './ArrayInput.css';
+
 
 /**
  * An input element for an array type schema.
@@ -58,7 +60,7 @@ export default class ArrayInput extends React.Component {
     } = this.props;
 
     return (
-      <div>
+      <div className={styles.root}>
         {value.map((v, index) => (
           <SchemaRenderer
             // eslint-disable-next-line react/no-array-index-key

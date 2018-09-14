@@ -104,21 +104,27 @@ export default class FieldsetInput extends React.Component {
       value,
     } = this.props;
 
+    const { fields } = block.parameters;
+
     return (
       <Component className={className} noValidate={noValidate} onSubmit={onSubmit}>
-        {Object.entries(schema.properties).map(([subName, subSchema]) => {
-          const propName = name == null ? subName : `${name}.${subName}`;
-          return block.parameters.hidden?.includes(propName) || (
-            <SchemaRenderer
-              key={subName}
-              name={propName}
-              onChange={this.onChange}
-              required={schema.required?.includes(subName) || false}
-              schema={subSchema}
-              value={value[subName]}
-            />
-          );
-        })}
+        {Object.entries(schema.properties)
+          .map(([subName, subSchema]) => {
+            const propName = name == null ? subName : `${name}.${subName}`;
+            return fields.includes(propName) && (
+              <SchemaRenderer
+                key={subName}
+                name={propName}
+                onChange={this.onChange}
+                required={schema.required?.includes(subName) || false}
+                schema={subSchema}
+                value={value[subName]}
+              />
+            );
+          })
+          .filter(Boolean)
+          .sort((a, b) => fields.indexOf(a.props.name) - fields.indexOf(b.props.name))
+        }
         {children}
       </Component>
     );

@@ -1,0 +1,15 @@
+.root {
+  margin: 3px;
+}
+
+.input {
+  opacity: 0;
+}
+
+.empty {
+  align-items: center;
+  background-color: #b4b4b4;
+  display: flex;
+  padding: 10px;
+  text-align: center;
+}

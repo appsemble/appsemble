@@ -3,11 +3,13 @@ import {
   FileLabel,
   Image,
 } from '@appsemble/react-bulma';
+import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
+import styles from './FileInput.css';
 
 
 function getDerivedStateFromProps({ value }, state) {
@@ -80,7 +82,9 @@ export default class FileInput extends React.Component {
     return (
       <FileField
         accept={[].concat(type).toString()}
+        className={styles.root}
         FileInputProps={{
+          className: styles.input,
           innerRef: this.inputRef,
         }}
         name={name}
@@ -92,9 +96,11 @@ export default class FileInput extends React.Component {
             src={url}
           />
         ) : (
-          <FileLabel>
-            <FormattedMessage {...messages.clickAction} />
-          </FileLabel>
+          <span className={classNames('image is-128x128', styles.empty)}>
+            <FileLabel>
+              <FormattedMessage {...messages.clickAction} />
+            </FileLabel>
+          </span>
         )}
       </FileField>
     );
