@@ -78,7 +78,7 @@ pages:
             blobs:
               type: upload
               method: post
-              url: 'https://api.stadswerken.amsterdam/upload'
+              url: 'http://oscity.nl:9808/upload'
               serialize: custom
           submitSuccess:
             type: link
