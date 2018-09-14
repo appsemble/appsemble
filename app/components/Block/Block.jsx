@@ -33,19 +33,7 @@ export default class Block extends React.Component {
     blockDef: null,
   };
 
-  container = React.createRef();
-
-  currentBlock = null;
-
-  componentDidMount = () => {
-    if (this.container.current) this.bootstrapBlock();
-  };
-
-  componentDidUpdate() {
-    if (this.container.current) this.bootstrapBlock();
-  }
-
-  async bootstrapBlock() {
+  ref = async (div) => {
     const {
       app,
       block,
@@ -54,17 +42,16 @@ export default class Block extends React.Component {
       match,
     } = this.props;
 
-    const newBlock = document.createElement('div');
-
-    if (this.currentBlock) {
-      this.container.current.replaceChild(newBlock, this.currentBlock);
-    } else {
-      this.container.current.appendChild(newBlock);
+    if (div == null) {
+      return;
     }
 
-    this.currentBlock = newBlock;
+    if (this.attached) {
+      return;
+    }
 
-    const shadowRoot = newBlock.attachShadow({ mode: 'closed' });
+    this.attached = true;
+    const shadowRoot = div.attachShadow({ mode: 'closed' });
     const actions = makeActions(blockDef, app, block, history);
     const resources = makeResources(blockDef, block);
     await Promise.all(blockDef.files
@@ -88,7 +75,7 @@ export default class Block extends React.Component {
       resources,
       shadowRoot,
     });
-  }
+  };
 
   render() {
     const {
@@ -102,13 +89,20 @@ export default class Block extends React.Component {
     if (blockDef.position === 'float') {
       return (
         <Portal>
-          <div ref={this.container} />
+          <div
+            ref={this.ref}
+            className={styles.float}
+          />
+
         </Portal>
       );
     }
 
     return (
-      <div ref={this.container} />
+      <div
+        ref={this.ref}
+        className={styles.main}
+      />
     );
   }
 }
