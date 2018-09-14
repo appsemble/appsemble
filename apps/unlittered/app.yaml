@@ -66,10 +66,12 @@ pages:
         parameters:
           schema:
             $ref: /definitions/waarneming
-          hidden:
-            - gebied
-            - id
-            - created_at
+          fields:
+            - locatie
+            - fotos
+            - proces
+            - onderwerp
+            - notities
         actions:
           submit:
             type: request
