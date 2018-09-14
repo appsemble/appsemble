@@ -1,6 +1,7 @@
 import '@fortawesome/fontawesome-free/css/all.css';
 import { attach } from '@appsemble/sdk';
 import './index.css';
+import './amsterdam.css';
 
 
 attach(({ actions }) => {
