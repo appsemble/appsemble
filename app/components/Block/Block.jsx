@@ -11,7 +11,6 @@ import {
 } from '../../utils/bootstrapper';
 import styles from './Block.css';
 
-
 /**
  * Render a block on a page.
  *
@@ -94,6 +93,7 @@ export default class Block extends React.Component {
             ref={this.ref}
             className={styles.float}
           />
+
         </Portal>
       );
     }
