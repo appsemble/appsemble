@@ -20,6 +20,8 @@ export default class Page extends React.Component {
     user: PropTypes.shape(),
   };
 
+  counter = 0;
+
   static defaultProps = {
     user: null,
   };
@@ -43,6 +45,7 @@ export default class Page extends React.Component {
 
     if (page !== prevPage) {
       getBlockDefs(page.blocks.map(({ type }) => type));
+      this.counter = this.counter + 1;
     }
   }
 
@@ -53,6 +56,8 @@ export default class Page extends React.Component {
       user,
     } = this.props;
 
+    const { counter } = this;
+
     if (!checkScope(page.scope, user)) {
       return (
         <Login />
@@ -62,7 +67,7 @@ export default class Page extends React.Component {
     return page.blocks.map((block, index) => (
       // As long as blocks are in a static list, using the index as a key should be fine.
       // eslint-disable-next-line react/no-array-index-key
-      <Block key={`${location.key}.${index}`} block={block} />
+      <Block key={`${location.key}.${index}.${counter}`} block={block} />
     ));
   }
 }

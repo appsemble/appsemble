@@ -28,7 +28,7 @@ export default class Editor extends React.Component {
   }
 
   onSubmit = (event) => {
-    if (event) event.preventDefault();
+    event.preventDefault();
 
     this.setState(({ recipe }) => {
       let app = null;
