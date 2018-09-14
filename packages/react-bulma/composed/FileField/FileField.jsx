@@ -3,7 +3,6 @@ import React from 'react';
 
 import {
   File,
-  FileCta,
   FileInput,
   FileLabel,
 } from '../../base';
@@ -43,10 +42,11 @@ export default class FileField extends React.Component {
       FileInputProps,
       name,
       onChange,
+      ...props
     } = this.props;
 
     return (
-      <File boxed={boxed}>
+      <File boxed={boxed} {...props}>
         <FileLabel component="label">
           <FileInput
             accept={accept}
@@ -54,9 +54,7 @@ export default class FileField extends React.Component {
             onChange={onChange && this.onChange}
             {...FileInputProps}
           />
-          <FileCta>
-            {children}
-          </FileCta>
+          {children}
         </FileLabel>
       </File>
     );
