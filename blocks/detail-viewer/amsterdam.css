@@ -1,1 +1,9 @@
 /* stylelint-disable selector-max-specificity */
+:not(.container) > .container > .container {
+  border-bottom: 1px solid #dedede;
+  padding: 0.8em 0.75em;
+}
+
+.locatie .title {
+  display: none !important;
+}

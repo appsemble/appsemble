@@ -4,6 +4,8 @@ import {
 import React from 'react';
 import PropTypes from 'prop-types';
 
+import styles from './FileRenderer.css';
+
 
 /**
  * Render a string as is.
@@ -41,7 +43,14 @@ export default class FileRenderer extends React.Component {
     const src = value instanceof Blob ? URL.createObjectURL(value) : value;
 
     return (
-      <Image size={64} src={src} alt={schema.title || name} />
+      <Image
+        src={src}
+        alt={schema.title || name}
+        className={styles.root}
+        imgProps={{
+          className: styles.img,
+        }}
+      />
     );
   }
 }
