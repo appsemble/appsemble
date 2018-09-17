@@ -68,10 +68,10 @@ pages:
             $ref: /definitions/waarneming
           fields:
             - locatie
-            - fotos
             - proces
             - onderwerp
             - notities
+            - fotos
         actions:
           submit:
             type: request
@@ -118,6 +118,12 @@ pages:
         parameters:
           schema:
             $ref: /definitions/waarneming
+          fields:
+            - locatie
+            - proces
+            - onderwerp
+            - notities
+            - fotos
         actions:
           load:
             type: request

@@ -1,0 +1,8 @@
+.root {
+  height: 128px;
+}
+
+.img {
+  height: 100% !important;
+  width: auto !important;
+}
