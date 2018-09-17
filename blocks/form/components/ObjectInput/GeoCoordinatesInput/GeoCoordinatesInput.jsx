@@ -76,7 +76,7 @@ export default class GeoCoordinatesInput extends React.Component {
         });
       })
       .locate({ setView: true });
-    new TileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+    new TileLayer('http://c.tiles.wmflabs.org/bw-mapnik/{z}/{x}/{y}.png').addTo(map);
     this.map = map;
   }
 

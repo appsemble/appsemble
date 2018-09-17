@@ -21,7 +21,7 @@ attach(function* init({ actions, block, resources }) {
       locationMarker.setLatLng(latlng).addTo(map);
     })
     .setView([52.3960472, 4.8948808], 14);
-  const layer = new TileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png');
+  const layer = new TileLayer('http://c.tiles.wmflabs.org/bw-mapnik/{z}/{x}/{y}.png');
   map.locate({ setView: true });
   layer.addTo(map);
 
