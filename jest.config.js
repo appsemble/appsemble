@@ -11,7 +11,4 @@ module.exports = {
     [/\.css$/.source]: 'identity-obj-proxy',
   },
   testURL: 'http://localhost',
-  transform: {
-    [/\.jsx?$/.source]: '@appsemble/babel-jest',
-  },
 };
