@@ -15,19 +15,19 @@ A Docker image is built for each version of Appsemble.
 To pull the latest version, run
 
 ```sh
-docker pull registry.gitlab.com/appsemble/amsterdam
+docker pull registry.gitlab.com/dcentralized/appsemble/appsemble
 ```
 
 Also a Docker image is built for each release.
 
 ```sh
-docker pull registry.gitlab.com/appsemble/amsterdam:$GIT_VERSION
+docker pull registry.gitlab.com/dcentralized/appsemble/appsemble:$GIT_VERSION
 ```
 
 It is also possible to pull a version matching a specific git commit.
 
 ```sh
-docker pull registry.gitlab.com/appsemble/amsterdam:$GIT_COMMIT_HASH
+docker pull registry.gitlab.com/dcentralized/appsemble/appsemble:$GIT_COMMIT_HASH
 ```
 
 The Docker image uses the following environment variables
@@ -54,8 +54,8 @@ In order to run the Appsemble project in development mode, the following must be
 Clone and setup the project
 
 ```sh
-git clone git@gitlab.com:appsemble/amsterdam.git
-cd amsterdam
+git clone git@gitlab.com:dcentralized/appsemble/appsemble.git
+cd appsemble
 yarn
 ```
 
