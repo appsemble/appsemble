@@ -1,28 +1,9 @@
 #!/usr/bin/env node
-import fs from 'fs';
-import path from 'path';
-
-import yaml from 'js-yaml';
-
-import { getPool } from './utils/db';
-import jsonSchemaToTable from './utils/jsonSchemaToTable';
-
+import { setupModels } from './models';
 
 async function main() {
-  const names = [
-    'App',
-  ];
-  const queries = names.map((name) => {
-    const fullPath = path.join(__dirname, 'api', 'definitions', `${name}.yaml`);
-    const schema = yaml.safeLoad(fs.readFileSync(fullPath))[name];
-    return [jsonSchemaToTable(schema, name)];
-  });
-  const pool = getPool();
-  await queries.reduce(async (acc, [query, values = []]) => {
-    await acc;
-    await pool.query(query, values);
-  }, null);
-  await pool.end();
+  // Drops the tables related to every model and creates them
+  setupModels(true);
 }
 
 

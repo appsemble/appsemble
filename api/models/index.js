@@ -1,113 +1,80 @@
-import Sequelize from 'sequelize';
-
 import { getSequelizePool } from '../utils/db';
 
-const db = getSequelizePool();
+function importModels(db) {
+  const App = db.import(`${__dirname}/App.js`);
+  const Snapshot = db.import(`${__dirname}/Snapshot.js`);
+  const User = db.import(`${__dirname}/User.js`);
+  const Organization = db.import(`${__dirname}/Organization.js`);
+  const EmailAuthorization = db.import(`${__dirname}/EmailAuthorization.js`);
+  const OAuthAuthorization = db.import(`${__dirname}/OAuthAuthorization.js`);
+  const Resource = db.import(`${__dirname}/Resource.js`);
+  const Asset = db.import(`${__dirname}/Asset.js`);
+  const Block = db.import(`${__dirname}/Block.js`);
+  const BlockVersion = db.import(`${__dirname}/BlockVersion.js`);
 
-// Model definitions
-const App = db.define('App', {
-  id: { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true },
-  definition: { type: Sequelize.JSON, allowNull: false },
-}, {
-  freezeTableName: true,
-  paranoid: true,
-});
+  return {
+    App,
+    Snapshot,
+    User,
+    Organization,
+    EmailAuthorization,
+    OAuthAuthorization,
+    Resource,
+    Asset,
+    Block,
+    BlockVersion,
+  };
+}
 
-const Snapshot = db.define('Snapshot', {
-  version: { type: Sequelize.STRING, primaryKey: true },
-  definition: { type: Sequelize.JSON, allowNull: false },
-}, {
-  freezeTableName: true,
-  paranoid: true,
-});
+function associateModels(models) {
+  const {
+    App,
+    Snapshot,
+    User,
+    Organization,
+    EmailAuthorization,
+    OAuthAuthorization,
+    Resource,
+    Block,
+    BlockVersion,
+  } = models;
 
-const User = db.define('User', {
-  id: { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true },
-}, {
-  freezeTableName: true,
-  paranoid: true,
-});
+  // Model relationships
+  User.belongsToMany(Organization, { through: 'UserOrganization' });
+  User.hasMany(OAuthAuthorization);
+  User.hasOne(EmailAuthorization);
 
-const Organization = db.define('Organization', {
-  id: { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true },
-  name: Sequelize.STRING,
-}, {
-  freezeTableName: true,
-  paranoid: true,
-});
+  Organization.hasOne(Organization, { as: 'parentOrganization' });
 
-const EmailAuthorization = db.define('EmailAuthorization', {
-  email: { type: Sequelize.STRING, primaryKey: true },
-  name: Sequelize.STRING,
-  password: { type: Sequelize.STRING, allowNull: false },
-  verified: { type: Sequelize.BOOLEAN, defaultValue: false, allowNull: false },
-}, {
-  freezeTableName: true,
-  paranoid: true,
-});
+  Snapshot.belongsTo(App, { foreignKey: { allowNull: false } });
 
-const OAuthAuthorization = db.define('OAuthAuthorization', {
-  id: { type: Sequelize.STRING, primaryKey: true },
-  provider: { type: Sequelize.STRING, allowNull: false },
-}, {
-  freezeTableName: true,
-  paranoid: true,
-});
+  App.hasMany(Snapshot);
 
-const Resource = db.define('Resource', {
-  id: { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true },
-  type: Sequelize.STRING,
-}, {
-  freezeTableName: true,
-  paranoid: true,
-});
+  Resource.belongsTo(User);
+  Resource.belongsTo(App);
 
-const Asset = db.define('Asset', {
-  id: { type: Sequelize.INTEGER, primaryKey: true, autoIncrement: true },
-  mime: { type: Sequelize.STRING, allowNull: false },
-  filename: { type: Sequelize.STRING, allowNull: false },
-  data: { type: Sequelize.BLOB, allowNull: false },
-}, {
-  freezeTableName: true,
-  paranoid: true,
-});
+  Block.hasMany(BlockVersion);
+  BlockVersion.belongsTo(Block, { foreignKey: { allowNull: false } });
+}
 
-const Block = db.define('Block', {
-  name: { type: Sequelize.STRING, primaryKey: true },
-  description: Sequelize.STRING,
-}, {
-  freezeTableName: true,
-  paranoid: true,
-});
+export function setupModels(force = false) {
+  const db = getSequelizePool();
+  const models = importModels(db);
+  associateModels(models);
 
-const BlockVersion = db.define('BlockVersion', {
-  name: { type: Sequelize.STRING, primaryKey: true },
-}, {
-  freezeTableName: true,
-  paranoid: true,
-});
+  db.sync({ force });
 
-// Model relationships
-User.belongsToMany(Organization, { through: 'UserOrganization' });
-User.hasMany(OAuthAuthorization);
-User.hasOne(EmailAuthorization);
+  return models;
+}
 
-Organization.hasOne(Organization, { as: 'parentOrganization' });
-
-Snapshot.belongsTo(App, { foreignKey: { allowNull: false } });
-
-App.hasMany(Snapshot);
-
-Resource.belongsTo(User);
-Resource.belongsTo(App);
-
-Block.hasMany(BlockVersion);
-BlockVersion.belongsTo(Block, { foreignKey: { allowNull: false } });
-
-// Sync / commit model to DB
-db.sync({ force: true });
-
-export {
-  App, Snapshot, User, Organization, EmailAuthorization,
-  OAuthAuthorization, Resource, Asset, Block, BlockVersion,
-};
+export const {
+  App,
+  Snapshot,
+  User,
+  Organization,
+  EmailAuthorization,
+  OAuthAuthorization,
+  Resource,
+  Block,
+  BlockVersion,
+} = setupModels();
