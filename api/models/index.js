@@ -44,7 +44,7 @@ function associateModels(models) {
   User.hasMany(OAuthAuthorization);
   User.hasOne(EmailAuthorization);
 
-  Organization.hasOne(Organization, { as: 'parentOrganization' });
+  Organization.hasOne(Organization);
 
   Snapshot.belongsTo(App, { foreignKey: { allowNull: false } });
 
@@ -57,12 +57,14 @@ function associateModels(models) {
   BlockVersion.belongsTo(Block, { foreignKey: { allowNull: false } });
 }
 
-export function setupModels(force = false) {
+export function setupModels(sync = true, force = false) {
   const db = getSequelizePool();
   const models = importModels(db);
   associateModels(models);
 
-  db.sync({ force });
+  if (sync) {
+    db.sync({ force });
+  }
 
   return models;
 }
@@ -77,4 +79,4 @@ export const {
   Resource,
   Block,
   BlockVersion,
-} = setupModels();
+} = setupModels(false);
