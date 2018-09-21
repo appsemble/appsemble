@@ -1,0 +1,70 @@
+/apps/{id}/resources:
+  get:
+    tags: [resource]
+    description: Get all resources of this app.
+    parameters:
+    - name: id
+      in: path
+      description: The id of the app.
+      required: true
+      type: integer
+    responses:
+      200:
+        description: The list of all this app's resources.
+        schema:
+          type: array
+          items:
+            $ref: '#/definitions/Resource'
+      401:
+        description: User is not logged in
+      403:
+        description: User does not have permission to view these resources
+      default:
+        $ref: '#/responses/default'
+  post:
+    tags: [resource]
+    description: Create a new resource for this app.
+    parameters:
+    - name: id
+      in: path
+      description: The id of the app this resource belongs to.
+      required: true
+      type: integer
+    - name: resource
+      in: body
+      description: The resource to create.
+      required: true
+      schema:
+        $ref: '#/definitions/Resource'
+    responses:
+      201:
+        description: The resource that was created.
+        schema:
+          $ref: '#/definitions/Resource'
+      401:
+        description: Schema of resource does not match App resource type definition.
+      default:
+        $ref: '#/responses/default'
+
+/apps/{appId}/resources/{resourceId}:
+  get:
+    tags: [resource]
+    description: Get a single app resource
+    parameters:
+    - name: appId
+      in: path
+      description: The id of the app this resource belongs to.
+      required: true
+      type: integer
+    - name: resourceId
+      in: path
+      description: The id of the resource.
+      required: true
+      type: integer
+    responses:
+      200:
+        description: The resource that matches the given id.
+        schema:
+          $ref: '#/definitions/Resource'
+      default:
+        $ref: '#/responses/default'
