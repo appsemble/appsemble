@@ -4,7 +4,7 @@ import { setupModels } from '../models';
 
 export function getSequelizePool() {
   const connectionString = process.env.DATABASE_URL || 'mysql://root:password@localhost:3306/appsemble';
-  const db = new Sequelize(connectionString);
+  const db = new Sequelize(connectionString, { logging: false });
 
   return db;
 }
