@@ -41,7 +41,7 @@ export async function update(ctx) {
   const { id } = ctx.params;
   const { App } = ctx.state.db;
 
-  const { affectedRows } = App.update({ ...body, id }, { where: { id } });
+  const { affectedRows } = App.update({ definition: { ...body, id } }, { where: { id } });
 
   if (affectedRows === 0) {
     throw Boom.notFound('App not found');
