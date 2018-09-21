@@ -1,0 +1,30 @@
+Resource:
+  type: object
+  required:
+    - type
+    - data
+  properties:
+    id:
+      type: number
+      minimum: 0
+      readOnly: true
+    type:
+      type: string
+      maxLength: 30
+    data:
+      type: object
+      additionalProperties: true
+      properties:
+        assets: 
+          type: array
+          items:
+            type: object
+            required:
+              - id
+            properties:
+              id:
+                type: number
+              mime:
+                type: string
+              filename:
+                type: string
