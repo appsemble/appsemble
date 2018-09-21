@@ -1,4 +1,4 @@
-import { getSequelizePool } from '../utils/db';
+import { getSequelizePool } from '../middleware/sequelize';
 
 function importModels(db) {
   const App = db.import(`${__dirname}/App.js`);
