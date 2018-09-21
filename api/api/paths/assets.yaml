@@ -1,0 +1,50 @@
+/assets:
+  post:
+    tags: [asset]
+    description: Uploads a new asset
+    consumes:
+      - multipart/form-data
+    parameters:
+    - in: formData
+      name: asset
+      type: file
+      description: The asset to upload.
+    responses:
+      201:
+        description: The asset that was created.
+        schema:
+          type: object
+          properties:
+            id:
+              type: integer
+              description: The asset id.
+            mime:
+              type: string
+              description: The asset MIME type.
+            filename:
+              type: string
+              description: The asset filename.
+              
+/assets/{id}:
+    get:
+      tags: [asset]
+      description: Get a single asset
+      parameters:
+        - name: id
+          in: path
+          description: The id of the asset to get.
+          required: true
+          type: integer
+      produces:
+        - application/octet-stream
+      responses:
+        200:
+          description: The asset that matches the given id.
+          schema:
+            type: file
+        400:
+          description: Bad request. Id must be an integer.
+        404:
+          description: An asset with the specified id was not found.
+        default:
+          $ref: '#/responses/default'
