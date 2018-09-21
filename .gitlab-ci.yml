@@ -39,6 +39,8 @@ build:docker:
     - echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY
   script:
     - docker build -t "$CI_REGISTRY_IMAGE:$CI_COMMIT_SHA" .
+    - docker tag "$CI_REGISTRY_IMAGE:$CI_COMMIT_SHA" "$CI_REGISTRY_IMAGE:$CI_BUILD_REF_NAME"
+    - docker push "$CI_REGISTRY_IMAGE:$CI_BUILD_REF_NAME"
     - docker push "$CI_REGISTRY_IMAGE:$CI_COMMIT_SHA"
 
 
@@ -60,7 +62,7 @@ pages:
       - public/
 
 
-publish:docker:tag:
+publish:docker:latest:
   stage: publish
   services:
     - docker:dind
@@ -70,15 +72,14 @@ publish:docker:tag:
   variables:
     DOCKER_HOST: tcp://docker:2375
     DOCKER_DRIVER: overlay2
+    GIT_STRATEGY: none
   only:
     - tags
   before_script:
     - echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY
   script:
-    - docker pull "$CI_REGISTRY_IMAGE:$CI_COMMIT_SHA"
-    - docker tag "$CI_REGISTRY_IMAGE:$CI_COMMIT_SHA" "$CI_REGISTRY_IMAGE:$CI_COMMIT_TAG"
-    - docker tag "$CI_REGISTRY_IMAGE:$CI_COMMIT_SHA" "$CI_REGISTRY_IMAGE:latest"
-    - docker push "$CI_REGISTRY_IMAGE:$CI_COMMIT_TAG"
+    - docker pull "$CI_REGISTRY_IMAGE:$CI_COMMIT_TAG"
+    - docker tag "$CI_REGISTRY_IMAGE:$CI_COMMIT_TAG" "$CI_REGISTRY_IMAGE:latest"
     - docker push "$CI_REGISTRY_IMAGE:latest"
 
 
