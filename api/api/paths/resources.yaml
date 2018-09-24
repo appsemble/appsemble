@@ -9,6 +9,7 @@
       required: true
       type: integer
     - name: resourceType
+      in: path
       description: The resource type within this app.
       required: true
       type: string
@@ -34,6 +35,11 @@
       description: The id of the app this resource belongs to.
       required: true
       type: integer
+    - name: resourceType
+      in: path
+      description: The resource type within this app.
+      required: true
+      type: string
     - name: resource
       in: body
       description: The resource to create.
@@ -61,6 +67,7 @@
       required: true
       type: integer
     - name: resourceType
+      in: path
       description: The resource type within this app.
       required: true
       type: string
