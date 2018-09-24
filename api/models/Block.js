@@ -1,4 +1,4 @@
-const Block = (sequelize, DataTypes) => sequelize.define('Block', {
+export default (sequelize, DataTypes) => sequelize.define('Block', {
   name: { type: DataTypes.STRING, primaryKey: true },
   description: DataTypes.STRING,
 }, {
@@ -8,5 +8,3 @@ const Block = (sequelize, DataTypes) => sequelize.define('Block', {
   updatedAt: 'updated',
   deletedAt: 'deleted',
 });
-
-export default Block;

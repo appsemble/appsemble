@@ -1,4 +1,4 @@
-const Resource = (sequelize, DataTypes) => sequelize.define('Resource', {
+export default (sequelize, DataTypes) => sequelize.define('Resource', {
   id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
   type: DataTypes.STRING,
 }, {
@@ -8,5 +8,3 @@ const Resource = (sequelize, DataTypes) => sequelize.define('Resource', {
   updatedAt: 'updated',
   deletedAt: 'deleted',
 });
-
-export default Resource;

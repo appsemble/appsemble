@@ -1,4 +1,4 @@
-const Asset = (sequelize, DataTypes) => sequelize.define('Asset', {
+export default (sequelize, DataTypes) => sequelize.define('Asset', {
   id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
   mime: { type: DataTypes.STRING, allowNull: false },
   filename: { type: DataTypes.STRING, allowNull: false },
@@ -10,5 +10,3 @@ const Asset = (sequelize, DataTypes) => sequelize.define('Asset', {
   updatedAt: 'updated',
   deletedAt: 'deleted',
 });
-
-export default Asset;

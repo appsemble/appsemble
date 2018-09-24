@@ -1,4 +1,4 @@
-const User = (sequelize, DataTypes) => sequelize.define('User', {
+export default (sequelize, DataTypes) => sequelize.define('User', {
   id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
 }, {
   freezeTableName: true,
@@ -7,5 +7,3 @@ const User = (sequelize, DataTypes) => sequelize.define('User', {
   updatedAt: 'updated',
   deletedAt: 'deleted',
 });
-
-export default User;

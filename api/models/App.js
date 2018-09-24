@@ -1,4 +1,4 @@
-const App = (sequelize, DataTypes) => sequelize.define('App', {
+export default (sequelize, DataTypes) => sequelize.define('App', {
   id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
   definition: { type: DataTypes.JSON, allowNull: false },
 }, {
@@ -8,5 +8,3 @@ const App = (sequelize, DataTypes) => sequelize.define('App', {
   updatedAt: 'updated',
   deletedAt: 'deleted',
 });
-
-export default App;

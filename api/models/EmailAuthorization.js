@@ -1,4 +1,4 @@
-const EmailAuthorization = (sequelize, DataTypes) => sequelize.define('EmailAuthorization', {
+export default (sequelize, DataTypes) => sequelize.define('EmailAuthorization', {
   email: { type: DataTypes.STRING, primaryKey: true },
   name: DataTypes.STRING,
   password: { type: DataTypes.STRING, allowNull: false },
@@ -10,5 +10,3 @@ const EmailAuthorization = (sequelize, DataTypes) => sequelize.define('EmailAuth
   updatedAt: 'updated',
   deletedAt: 'deleted',
 });
-
-export default EmailAuthorization;

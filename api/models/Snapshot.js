@@ -1,4 +1,4 @@
-const Snapshot = (sequelize, DataTypes) => sequelize.define('Snapshot', {
+export default (sequelize, DataTypes) => sequelize.define('Snapshot', {
   version: { type: DataTypes.STRING, primaryKey: true },
   definition: { type: DataTypes.JSON, allowNull: false },
 }, {
@@ -8,5 +8,3 @@ const Snapshot = (sequelize, DataTypes) => sequelize.define('Snapshot', {
   updatedAt: 'updated',
   deletedAt: 'deleted',
 });
-
-export default Snapshot;

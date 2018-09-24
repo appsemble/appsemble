@@ -1,4 +1,4 @@
-const OAuthAuthorization = (sequelize, DataTypes) => sequelize.define('OAuthAuthorization', {
+export default (sequelize, DataTypes) => sequelize.define('OAuthAuthorization', {
   id: { type: DataTypes.STRING, primaryKey: true },
   provider: { type: DataTypes.STRING, allowNull: false },
 }, {
@@ -8,5 +8,3 @@ const OAuthAuthorization = (sequelize, DataTypes) => sequelize.define('OAuthAuth
   updatedAt: 'updated',
   deletedAt: 'deleted',
 });
-
-export default OAuthAuthorization;

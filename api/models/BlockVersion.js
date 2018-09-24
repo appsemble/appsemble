@@ -1,4 +1,4 @@
-const BlockVersion = (sequelize, DataTypes) => sequelize.define('BlockVersion', {
+export default (sequelize, DataTypes) => sequelize.define('BlockVersion', {
   name: { type: DataTypes.STRING, primaryKey: true },
 }, {
   freezeTableName: true,
@@ -7,5 +7,3 @@ const BlockVersion = (sequelize, DataTypes) => sequelize.define('BlockVersion', 
   updatedAt: 'updated',
   deletedAt: 'deleted',
 });
-
-export default BlockVersion;
