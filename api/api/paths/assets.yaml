@@ -3,12 +3,13 @@
     tags: [asset]
     description: Upload a new asset.
     consumes:
-      - \*/*
+      - '*/*'
     parameters:
-    - in: formData
+    - in: body
       name: asset
-      type: file
       description: The asset to upload.
+      schema:
+        type: string
     responses:
       201:
         description: The asset that was created.
@@ -30,7 +31,7 @@
           required: true
           type: integer
       produces:
-        - \*/*
+        - '*/*'
       responses:
         200:
           description: The asset that matches the given id.
