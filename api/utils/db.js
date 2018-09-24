@@ -3,6 +3,15 @@ import { promisify } from 'util';
 import { isEmpty, mapValues, memoize } from 'lodash-es';
 import mysql from 'mysql';
 
+import Sequelize from 'sequelize';
+
+
+export const getSequelizePool = memoize(() => {
+  const connectionString = process.env.DATABASE_URL || 'mysql://root:password@localhost:3306/appsemble';
+  const db = new Sequelize(connectionString);
+
+  return db;
+});
 
 export const getPool = memoize(() => {
   const pool = mysql.createPool({
@@ -12,6 +21,7 @@ export const getPool = memoize(() => {
     port: process.env.MYSQL_PORT || 3306,
     user: process.env.MYSQL_USER || 'root',
   });
+
   return {
     end: promisify(pool.end.bind(pool)),
     query: promisify(pool.query.bind(pool)),
