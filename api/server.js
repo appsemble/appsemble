@@ -12,6 +12,7 @@ import OAIRouterParameters from 'koa-oai-router-parameters';
 import yaml from 'js-yaml';
 
 import boomMiddleware from './middleware/boom';
+import sequelizeMiddleware from './middleware/sequelize';
 import routes from './routes';
 import configureStatic from './utils/configureStatic';
 
@@ -34,6 +35,7 @@ async function main() {
   const server = new Koa();
   server.use(logger());
   server.use(boomMiddleware);
+  server.use(sequelizeMiddleware);
   server.use(bodyParser());
   if (process.env.NODE_ENV === 'production') {
     server.use(compress());
@@ -41,7 +43,6 @@ async function main() {
   server.use(oaiRouter.routes());
   await configureStatic(server);
   server.use(routes);
-
 
   const { description } = yaml.safeLoad(fs.readFileSync(path.join(__dirname, 'api', 'api.yaml'))).info;
 
