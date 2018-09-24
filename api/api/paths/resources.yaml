@@ -1,24 +1,28 @@
-/apps/{id}/resources:
+/apps/{appId}/{resourceType}:
   get:
     tags: [resource]
     description: Get all resources of this app.
     parameters:
-    - name: id
+    - name: appId
       in: path
       description: The id of the app.
       required: true
       type: integer
+    - name: resourceType
+      description: The resource type within this app.
+      required: true
+      type: string
     responses:
       200:
-        description: The list of all this app's resources.
+        description: The list of all this app's resources of this type.
         schema:
           type: array
           items:
             $ref: '#/definitions/Resource'
       401:
-        description: User is not logged in
+        description: User is not logged in.
       403:
-        description: User does not have permission to view these resources
+        description: User does not have permission to view these resources.
       default:
         $ref: '#/responses/default'
   post:
@@ -46,16 +50,20 @@
       default:
         $ref: '#/responses/default'
 
-/apps/{appId}/resources/{resourceId}:
+/apps/{appId}/{resourceType}/{resourceId}:
   get:
     tags: [resource]
-    description: Get a single app resource
+    description: Get a single app resource.
     parameters:
     - name: appId
       in: path
       description: The id of the app this resource belongs to.
       required: true
       type: integer
+    - name: resourceType
+      description: The resource type within this app.
+      required: true
+      type: string
     - name: resourceId
       in: path
       description: The id of the resource.
