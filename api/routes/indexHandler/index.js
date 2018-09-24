@@ -23,7 +23,7 @@ export default async function indexHandler(ctx) {
     ctx.status = 404;
   } else {
     ctx.body = render({
-      app: record.definition,
+      app: { ...record.definition, id },
       assets,
     });
   }

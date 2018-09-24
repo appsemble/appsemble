@@ -5,11 +5,12 @@ export async function create(ctx) {
   const { App } = ctx.state.db;
 
   const result = await App.create(body, { raw: true });
-  // const result = await insert('App', body);
+
   ctx.body = {
     ...body,
     id: result.id,
   };
+
   ctx.status = 201;
 }
 
@@ -24,7 +25,7 @@ export async function getOne(ctx) {
     throw Boom.notFound('App not found');
   }
 
-  ctx.body = app.definition;
+  ctx.body = { ...app.definition, id };
 }
 
 
@@ -32,20 +33,20 @@ export async function query(ctx) {
   const { App } = ctx.state.db;
 
   const apps = await App.findAll({ raw: true });
-  ctx.body = apps.map(app => app.definition);
+  ctx.body = apps.map(app => ({ ...app.definition, id: app.id }));
 }
 
 
 export async function update(ctx) {
-  const { body } = ctx.request;
+  const { id: _, ...definition } = ctx.request.body;
   const { id } = ctx.params;
   const { App } = ctx.state.db;
 
-  const { affectedRows } = App.update({ definition: { ...body, id } }, { where: { id } });
+  const { affectedRows } = App.update({ definition }, { where: { id } });
 
   if (affectedRows === 0) {
     throw Boom.notFound('App not found');
   }
 
-  ctx.body = body;
+  ctx.body = { ...definition, id };
 }

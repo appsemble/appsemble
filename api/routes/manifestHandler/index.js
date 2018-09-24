@@ -23,7 +23,7 @@ export default async function manifestHandler(ctx) {
     throw Boom.notFound('App not found');
   }
 
-  const app = record.definition;
+  const app = { ...record.definition, id };
 
   ctx.body = {
     background_color: '#ff8c7d',
