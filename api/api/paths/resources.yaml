@@ -30,7 +30,7 @@
     tags: [resource]
     description: Create a new resource for this app.
     parameters:
-    - name: id
+    - name: appId
       in: path
       description: The id of the app this resource belongs to.
       required: true
