@@ -4,6 +4,9 @@ const Snapshot = (sequelize, DataTypes) => sequelize.define('Snapshot', {
 }, {
   freezeTableName: true,
   paranoid: true,
+  createdAt: 'created',
+  updatedAt: 'updated',
+  deletedAt: 'deleted',
 });
 
 export default Snapshot;

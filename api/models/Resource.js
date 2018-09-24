@@ -4,6 +4,9 @@ const Resource = (sequelize, DataTypes) => sequelize.define('Resource', {
 }, {
   freezeTableName: true,
   paranoid: true,
+  createdAt: 'created',
+  updatedAt: 'updated',
+  deletedAt: 'deleted',
 });
 
 export default Resource;
