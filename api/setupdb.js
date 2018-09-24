@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { setupModels } from './models';
+import setupModels from './utils/setupModels';
 
 async function main() {
   // Drop the tables related to every model and create them.

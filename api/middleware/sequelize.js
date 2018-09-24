@@ -1,6 +1,6 @@
 import Sequelize from 'sequelize';
 
-import { setupModels } from '../models';
+import setupModels from '../utils/setupModels';
 
 export function getSequelizePool() {
   const connectionString = process.env.DATABASE_URL || 'mysql://root:password@localhost:3306/appsemble';

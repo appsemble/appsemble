@@ -1,16 +1,16 @@
 import { getSequelizePool } from '../middleware/sequelize';
 
 function importModels(db) {
-  const App = db.import(`${__dirname}/App`);
-  const Snapshot = db.import(`${__dirname}/Snapshot`);
-  const User = db.import(`${__dirname}/User`);
-  const Organization = db.import(`${__dirname}/Organization`);
-  const EmailAuthorization = db.import(`${__dirname}/EmailAuthorization`);
-  const OAuthAuthorization = db.import(`${__dirname}/OAuthAuthorization`);
-  const Resource = db.import(`${__dirname}/Resource`);
-  const Asset = db.import(`${__dirname}/Asset`);
-  const Block = db.import(`${__dirname}/Block`);
-  const BlockVersion = db.import(`${__dirname}/BlockVersion`);
+  const App = db.import('../models/App');
+  const Snapshot = db.import('../models/Snapshot');
+  const User = db.import('../models/User');
+  const Organization = db.import('../models/Organization');
+  const EmailAuthorization = db.import('../models/EmailAuthorization');
+  const OAuthAuthorization = db.import('../models/OAuthAuthorization');
+  const Resource = db.import('../models/Resource');
+  const Asset = db.import('../models/Asset');
+  const Block = db.import('../models/Block');
+  const BlockVersion = db.import('../models/BlockVersion');
 
   return {
     App,
@@ -57,7 +57,7 @@ function associateModels(models) {
   BlockVersion.belongsTo(Block, { foreignKey: { allowNull: false } });
 }
 
-export function setupModels(sync = true, force = false) {
+export default function setupModels(sync = true, force = false) {
   const db = getSequelizePool();
   const models = importModels(db);
   associateModels(models);
@@ -68,15 +68,3 @@ export function setupModels(sync = true, force = false) {
 
   return models;
 }
-
-export const {
-  App,
-  Snapshot,
-  User,
-  Organization,
-  EmailAuthorization,
-  OAuthAuthorization,
-  Resource,
-  Block,
-  BlockVersion,
-} = setupModels(false);
