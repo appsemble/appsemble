@@ -6,6 +6,9 @@ const Asset = (sequelize, DataTypes) => sequelize.define('Asset', {
 }, {
   freezeTableName: true,
   paranoid: true,
+  createdAt: 'created',
+  updatedAt: 'updated',
+  deletedAt: 'deleted',
 });
 
 export default Asset;

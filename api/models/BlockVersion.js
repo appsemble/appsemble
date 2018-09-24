@@ -3,6 +3,9 @@ const BlockVersion = (sequelize, DataTypes) => sequelize.define('BlockVersion', 
 }, {
   freezeTableName: true,
   paranoid: true,
+  createdAt: 'created',
+  updatedAt: 'updated',
+  deletedAt: 'deleted',
 });
 
 export default BlockVersion;

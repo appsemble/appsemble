@@ -4,6 +4,9 @@ const OAuthAuthorization = (sequelize, DataTypes) => sequelize.define('OAuthAuth
 }, {
   freezeTableName: true,
   paranoid: true,
+  createdAt: 'created',
+  updatedAt: 'updated',
+  deletedAt: 'deleted',
 });
 
 export default OAuthAuthorization;

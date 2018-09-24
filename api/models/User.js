@@ -3,6 +3,9 @@ const User = (sequelize, DataTypes) => sequelize.define('User', {
 }, {
   freezeTableName: true,
   paranoid: true,
+  createdAt: 'created',
+  updatedAt: 'updated',
+  deletedAt: 'deleted',
 });
 
 export default User;

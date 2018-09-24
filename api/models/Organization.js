@@ -4,6 +4,9 @@ const Organization = (sequelize, DataTypes) => sequelize.define('Organization', 
 }, {
   freezeTableName: true,
   paranoid: true,
+  createdAt: 'created',
+  updatedAt: 'updated',
+  deletedAt: 'deleted',
 });
 
 export default Organization;

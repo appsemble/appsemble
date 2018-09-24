@@ -2,7 +2,7 @@
 import { setupModels } from './models';
 
 async function main() {
-  // Drops the tables related to every model and creates them
+  // Drop the tables related to every model and create them.
   setupModels(true, true);
 }
 

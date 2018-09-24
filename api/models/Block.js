@@ -4,6 +4,9 @@ const Block = (sequelize, DataTypes) => sequelize.define('Block', {
 }, {
   freezeTableName: true,
   paranoid: true,
+  createdAt: 'created',
+  updatedAt: 'updated',
+  deletedAt: 'deleted',
 });
 
 export default Block;

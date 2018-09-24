@@ -6,6 +6,9 @@ const EmailAuthorization = (sequelize, DataTypes) => sequelize.define('EmailAuth
 }, {
   freezeTableName: true,
   paranoid: true,
+  createdAt: 'created',
+  updatedAt: 'updated',
+  deletedAt: 'deleted',
 });
 
 export default EmailAuthorization;

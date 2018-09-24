@@ -4,6 +4,9 @@ const App = (sequelize, DataTypes) => sequelize.define('App', {
 }, {
   freezeTableName: true,
   paranoid: true,
+  createdAt: 'created',
+  updatedAt: 'updated',
+  deletedAt: 'deleted',
 });
 
 export default App;
