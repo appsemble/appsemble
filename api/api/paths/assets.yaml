@@ -3,7 +3,7 @@
     tags: [asset]
     description: Upload a new asset.
     consumes:
-      - multipart/form-data
+      - \*/*
     parameters:
     - in: formData
       name: asset
@@ -30,7 +30,7 @@
           required: true
           type: integer
       produces:
-        - application/octet-stream
+        - \*/*
       responses:
         200:
           description: The asset that matches the given id.
