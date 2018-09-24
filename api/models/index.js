@@ -1,16 +1,16 @@
 import { getSequelizePool } from '../utils/db';
 
 function importModels(db) {
-  const App = db.import(`${__dirname}/App.js`);
-  const Snapshot = db.import(`${__dirname}/Snapshot.js`);
-  const User = db.import(`${__dirname}/User.js`);
-  const Organization = db.import(`${__dirname}/Organization.js`);
-  const EmailAuthorization = db.import(`${__dirname}/EmailAuthorization.js`);
-  const OAuthAuthorization = db.import(`${__dirname}/OAuthAuthorization.js`);
-  const Resource = db.import(`${__dirname}/Resource.js`);
-  const Asset = db.import(`${__dirname}/Asset.js`);
-  const Block = db.import(`${__dirname}/Block.js`);
-  const BlockVersion = db.import(`${__dirname}/BlockVersion.js`);
+  const App = db.import(`${__dirname}/App`);
+  const Snapshot = db.import(`${__dirname}/Snapshot`);
+  const User = db.import(`${__dirname}/User`);
+  const Organization = db.import(`${__dirname}/Organization`);
+  const EmailAuthorization = db.import(`${__dirname}/EmailAuthorization`);
+  const OAuthAuthorization = db.import(`${__dirname}/OAuthAuthorization`);
+  const Resource = db.import(`${__dirname}/Resource`);
+  const Asset = db.import(`${__dirname}/Asset`);
+  const Block = db.import(`${__dirname}/Block`);
+  const BlockVersion = db.import(`${__dirname}/BlockVersion`);
 
   return {
     App,
