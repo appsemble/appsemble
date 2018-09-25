@@ -14,12 +14,17 @@ import {
   createStore,
 } from 'redux';
 import thunk from 'redux-thunk';
+import runtime from 'serviceworker-webpack-plugin/lib/runtime';
 
 import './index.css';
 import App from './components/App';
 import * as reducers from './actions';
 
 import resolveJsonPointers from './utils/resolveJsonPointers';
+
+if ('serviceWorker' in navigator) {
+  runtime.register();
+}
 
 // eslint-disable-next-line no-underscore-dangle
 const composeEnhancers = (process.env.NODE_ENV !== 'production' && window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__) || compose;

@@ -1,5 +1,7 @@
-// eslint-disable-next-line import/no-extraneous-dependencies
+/* eslint-disable import/no-extraneous-dependencies */
 const { version } = require('react/package.json');
+const restricted = require('eslint-restricted-globals');
+/* eslint-enable import/no-extraneous-dependencies */
 
 
 module.exports = {
@@ -24,12 +26,31 @@ module.exports = {
     'filenames/match-exported': 'error',
     'react/prefer-stateless-function': 'off',
     'no-invalid-this': 'off',
+    'no-unused-expressions': 'off',
     semi: 'off',
     'babel/no-invalid-this': 'error',
+    'babel/no-unused-expressions': 'error',
     'babel/semi': 'error',
     'eslint-comments/no-unused-disable': 'error',
   },
   overrides: [
+    {
+      files: ['**/service-worker/**'],
+      env: {
+        browser: false,
+        serviceworker: true,
+        worker: true,
+      },
+      globals: {
+        // This is injected in the service worker by serviceworker-webpack-plugin
+        serviceWorkerOption: false,
+      },
+      rules: {
+        // 'self' refers to the global object in service workers, so the same restricted globals
+        // are used as in eslint-config-airbnb, except 'self' is allowed.
+        'no-restricted-globals': ['error', 'isFinite', 'isNaN', ...restricted.filter(r => r !== 'self')],
+      },
+    },
     {
       files: ['*.test.{js,jsx}'],
       plugins: [
