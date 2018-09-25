@@ -13,7 +13,7 @@
     "eslint": "eslint --ext js,jsx,md .",
     "setupdb": "node -r esm api/setupdb.js",
     "stylelint": "stylelint .",
-    "test": "DATABASE_URL=mysql://root:password@localhost:3306/testAppsemble jest --runInBand --detectOpenHandles"
+    "test": "DATABASE_URL=mysql://root:password@localhost:3306/testAppsemble jest"
   },
   "devDependencies": {
     "@babel/core": "^7.0.1",
