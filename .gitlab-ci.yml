@@ -90,11 +90,11 @@ test:
   services:
     - mysql:8.0
   variables:
-    - MYSQL_DATABASE: testAppsemble
-    - MSQL_ROOT_PASSWORD: 'yes'
-    - MYSQL_USER: appsemble
-    - MYSQL_PASSWORD: password
-    - DATABASE_URL: 'mysql://appsemble:password@localhost:3306/testAppsemble'
+    MYSQL_DATABASE: testAppsemble
+    MSQL_ROOT_PASSWORD: 'yes'
+    MYSQL_USER: appsemble
+    MYSQL_PASSWORD: password
+    DATABASE_URL: 'mysql://appsemble:password@localhost:3306/testAppsemble'
   script: yarn test --coverage
   artifacts:
     paths:
