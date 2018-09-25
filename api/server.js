@@ -20,7 +20,7 @@ import configureStatic from './utils/configureStatic';
 const PORT = 9999;
 
 
-async function main() {
+export default async function server() {
   const oaiRouter = new OAIRouter({
     apiDoc: path.join(__dirname, 'api'),
     options: {
@@ -32,30 +32,35 @@ async function main() {
   oaiRouter.mount(OAIRouterMiddleware);
 
 
-  const server = new Koa();
-  server.use(logger());
-  server.use(boomMiddleware);
-  server.use(sequelizeMiddleware);
-  server.use(bodyParser());
+  const app = new Koa();
+  app.use(logger());
+  app.use(boomMiddleware);
+  app.use(sequelizeMiddleware);
+  app.use(bodyParser());
   if (process.env.NODE_ENV === 'production') {
-    server.use(compress());
+    app.use(compress());
   }
-  server.use(oaiRouter.routes());
-  await configureStatic(server);
-  server.use(routes);
+  app.use(oaiRouter.routes());
 
-  const { description } = yaml.safeLoad(fs.readFileSync(path.join(__dirname, 'api', 'api.yaml'))).info;
+  if (process.env.NODE_ENV !== 'test') {
+    await configureStatic(app);
+  }
 
+  app.use(routes);
 
-  server.listen(PORT, '0.0.0.0', () => {
-    // eslint-disable-next-line no-console
-    console.log(description);
-  });
+  return app;
 }
 
 
 if (module === require.main) {
-  main().catch((err) => {
+  server().then((app) => {
+    const { description } = yaml.safeLoad(fs.readFileSync(path.join(__dirname, 'api', 'api.yaml'))).info;
+
+    app.listen(PORT, '0.0.0.0', () => {
+      // eslint-disable-next-line no-console
+      console.log(description);
+    });
+  }).catch((err) => {
     // eslint-disable-next-line no-console
     console.error(err);
     process.exit(1);
