@@ -3,7 +3,8 @@ import setupModels from './utils/setupModels';
 
 async function main() {
   // Drop the tables related to every model and create them.
-  setupModels(true, true);
+  const { sequelize } = await setupModels(true, true);
+  sequelize.close();
 }
 
 
