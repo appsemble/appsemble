@@ -4,7 +4,8 @@ export async function create(ctx) {
   const { body } = ctx.request;
   const { App } = ctx.state.db;
 
-  const result = await App.create(body, { raw: true });
+
+  const result = await App.create({ definition: body }, { raw: true });
 
   ctx.body = {
     ...body,
