@@ -77,6 +77,13 @@ describe('app controller', () => {
     expect(body).toBeDefined();
   });
 
+  it('should not update a non-existent app', async () => {
+    const response = await request(server).put('/api/apps/1').send({ name: 'Foobar', defaultPage: 'Test Page' });
+
+    expect(response.status).toBe(404);
+    expect(response.body.message).toBe('App not found');
+  });
+
   it('should update an app', async () => {
     const appA = await models.App.create({ definition: { name: 'Test App', defaultPage: 'Test Page' } }, { raw: true });
     const response = await request(server).put(`/api/apps/${appA.id}`).send({ name: 'Foobar', defaultPage: appA.definition.defaultPage });
