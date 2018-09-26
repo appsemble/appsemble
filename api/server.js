@@ -20,7 +20,7 @@ import configureStatic from './utils/configureStatic';
 const PORT = 9999;
 
 
-export default async function server() {
+export default async function server(app = new Koa()) {
   const oaiRouter = new OAIRouter({
     apiDoc: path.join(__dirname, 'api'),
     options: {
@@ -31,9 +31,6 @@ export default async function server() {
   oaiRouter.mount(OAIRouterParameters);
   oaiRouter.mount(OAIRouterMiddleware);
 
-
-  const app = new Koa();
-  app.use(logger());
   app.use(boomMiddleware);
   app.use(sequelizeMiddleware);
   app.use(bodyParser());
@@ -42,25 +39,28 @@ export default async function server() {
   }
   app.use(oaiRouter.routes());
 
-  if (process.env.NODE_ENV !== 'test') {
-    await configureStatic(app);
-  }
-
   app.use(routes);
 
   return app;
 }
 
+async function main() {
+  const app = new Koa();
+  app.use(logger());
+
+  await server(app);
+  const { description } = yaml.safeLoad(fs.readFileSync(path.join(__dirname, 'api', 'api.yaml'))).info;
+
+  await configureStatic(app);
+
+  app.listen(PORT, '0.0.0.0', () => {
+    // eslint-disable-next-line no-console
+    console.log(description);
+  });
+}
 
 if (module === require.main) {
-  server().then((app) => {
-    const { description } = yaml.safeLoad(fs.readFileSync(path.join(__dirname, 'api', 'api.yaml'))).info;
-
-    app.listen(PORT, '0.0.0.0', () => {
-      // eslint-disable-next-line no-console
-      console.log(description);
-    });
-  }).catch((err) => {
+  main().catch((err) => {
     // eslint-disable-next-line no-console
     console.error(err);
     process.exit(1);
