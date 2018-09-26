@@ -18,7 +18,7 @@ describe('app controller', () => {
   });
 
   afterAll(async () => {
-    models.sequelize.close();
+    await models.sequelize.close();
   });
 
   it('should be able to add an app in DB', async () => {
