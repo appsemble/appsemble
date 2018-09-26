@@ -5,7 +5,7 @@ const fs = require('fs-extra');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const ServiceWorkerWebpackPlugin = require('serviceworker-webpack-plugin');
-const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+const TerserPlugin = require('terser-webpack-plugin');
 const { UnusedFilesWebpackPlugin } = require('unused-files-webpack-plugin');
 const ManifestPlugin = require('webpack-manifest-plugin');
 
@@ -32,8 +32,6 @@ module.exports = async (env, { mode }) => {
     resolve: {
       extensions: ['.js', '.jsx'],
       alias: {
-        '@material-ui/core': '@material-ui/core/es',
-        '@material-ui/icons': '@material-ui/icons/es',
         // These are required by leaflet CSS in a way which doesn’t work with webpack by default.
         './images/layers.png$': 'leaflet/dist/images/layers.png',
         './images/layers-2x.png$': 'leaflet/dist/images/layers-2x.png',
@@ -147,7 +145,7 @@ module.exports = async (env, { mode }) => {
     ].filter(Boolean),
     optimization: {
       minimizer: [
-        new UglifyJsPlugin({
+        new TerserPlugin({
           cache: true,
           parallel: true,
           sourceMap: true,
