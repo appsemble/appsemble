@@ -5,11 +5,12 @@ import setupModels from '../utils/setupModels';
 import truncate from '../utils/test/truncate';
 
 describe('app controller', () => {
-  let models;
+  let App;
+  let sequelize;
   let server;
 
   beforeAll(async () => {
-    models = await setupModels(true);
+    ({ App, sequelize } = await setupModels(true));
     server = koaServer();
   });
 
@@ -18,11 +19,10 @@ describe('app controller', () => {
   });
 
   afterAll(async () => {
-    await models.sequelize.close();
+    await sequelize.close();
   });
 
   it('should be able to add an app in DB', async () => {
-    const { App } = models;
     let count = await App.count();
     expect(count).toBe(0);
 
@@ -46,8 +46,8 @@ describe('app controller', () => {
   });
 
   it('should return an array of apps', async () => {
-    const appA = await models.App.create({ definition: { name: 'Test App', defaultPage: 'Test Page' } }, { raw: true });
-    const appB = await models.App.create({ definition: { name: 'Another App', defaultPage: 'Another Page' } }, { raw: true });
+    const appA = await App.create({ definition: { name: 'Test App', defaultPage: 'Test Page' } }, { raw: true });
+    const appB = await App.create({ definition: { name: 'Another App', defaultPage: 'Another Page' } }, { raw: true });
     const { body } = await request(server).get('/api/apps');
 
     expect(Array.isArray(body)).toBeTruthy();
@@ -65,7 +65,7 @@ describe('app controller', () => {
   });
 
   it('should fetch an existing app', async () => {
-    const appA = await models.App.create({ definition: { name: 'Test App', defaultPage: 'Test Page' } }, { raw: true });
+    const appA = await App.create({ definition: { name: 'Test App', defaultPage: 'Test Page' } }, { raw: true });
     const { body } = await request(server).get(`/api/apps/${appA.id}`);
 
     expect(body).toEqual({ id: appA.id, ...appA.definition });
@@ -85,7 +85,7 @@ describe('app controller', () => {
   });
 
   it('should update an app', async () => {
-    const appA = await models.App.create({ definition: { name: 'Test App', defaultPage: 'Test Page' } }, { raw: true });
+    const appA = await App.create({ definition: { name: 'Test App', defaultPage: 'Test Page' } }, { raw: true });
     const response = await request(server).put(`/api/apps/${appA.id}`).send({ name: 'Foobar', defaultPage: appA.definition.defaultPage });
 
     expect(response.status).toBe(200);
@@ -102,7 +102,7 @@ describe('app controller', () => {
   });
 
   it('should validate an app on update', async () => {
-    const appA = await models.App.create({ definition: { name: 'Test App', defaultPage: 'Test Page' } }, { raw: true });
+    const appA = await App.create({ definition: { name: 'Test App', defaultPage: 'Test Page' } }, { raw: true });
     const response = await request(server).put(`/api/apps/${appA.id}`).send({ name: 'Foobar' });
 
     expect(response.status).toBe(400);
