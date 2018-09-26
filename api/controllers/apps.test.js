@@ -17,6 +17,10 @@ describe('app controller', () => {
     await truncate();
   });
 
+  afterAll(async () => {
+    models.sequelize.close();
+  });
+
   it('should be able to add an app in DB', async () => {
     const { App } = models;
     let count = await App.count();
