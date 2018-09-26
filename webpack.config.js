@@ -4,6 +4,7 @@ const CleanWebpackPlugin = require('clean-webpack-plugin');
 const fs = require('fs-extra');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
+const ServiceWorkerWebpackPlugin = require('serviceworker-webpack-plugin');
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 const { UnusedFilesWebpackPlugin } = require('unused-files-webpack-plugin');
 const ManifestPlugin = require('webpack-manifest-plugin');
@@ -116,11 +117,17 @@ module.exports = async (env, { mode }) => {
       ],
     },
     plugins: [
+      new ServiceWorkerWebpackPlugin({
+        entry: path.join(__dirname, 'app/service-worker'),
+        filename: 'service-worker.js',
+        minimize: production,
+        transformOptions: ({ assets }) => assets.filter(asset => asset.startsWith('/app/')),
+      }),
       new UnusedFilesWebpackPlugin({
-        failOnUnused: true,
+        failOnUnused: production,
         patterns: ['{app,blocks}/**/*.*'],
         globOptions: {
-          ignore: ['**/package.json', '**/*.test.{js,jsx}'],
+          ignore: ['**/package.json', '**/*.test.{js,jsx}', '**/service-worker/**'],
         },
       }),
       new MiniCssExtractPlugin({ filename: '[name]/[hash].css' }),
