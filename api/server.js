@@ -41,7 +41,7 @@ export default async function server(app = new Koa()) {
 
   app.use(routes);
 
-  return app;
+  return app.callback();
 }
 
 async function main() {
