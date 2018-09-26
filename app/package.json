@@ -24,5 +24,8 @@
     "redux-thunk": "^2.3.0",
     "roboto-fontface": "^0.10.0",
     "serviceworker-webpack-plugin": "^1.0.1"
+  },
+  "devDependencies": {
+    "service-worker-mock": "^1.9.3"
   }
 }

@@ -1,13 +1,23 @@
 import {
   cacheFirst,
   requestFirst,
-} from './utils/response';
+} from './utils';
 
 
+/**
+ * Map all requests to a caching behaviour based on the HTTP method and URL.
+ *
+ * @param {Request} request The request map.
+ * @returns {Response} The matching HTTP response.
+ */
 export function respond(request) {
+  // Pass through any non GET requests.
+  if (request.method !== 'GET') {
+    return fetch(request);
+  }
   const { origin, pathname } = new URL(request.url);
+  // This is a request to an external service This should not be cached.
   if (origin !== self.location.origin) {
-    // This is a request to an external service This should not be cached.
     return fetch(request);
   }
   // This is a request made by webpack dev server.
@@ -16,7 +26,7 @@ export function respond(request) {
   }
   // If the URL either consists of a digit, or a digit and an alphabetic child path, it should be
   // remapped to the cached url which consists of just a digit. E.g. '/1', '/1/home'.
-  const match = pathname.match(/^(\/\d+)(\/[\w/-]+)$/);
+  const match = pathname.match(/^(\/\d+)(\/[\w/-]+)*$/);
   if (match) {
     return requestFirst(new Request(`${origin}${match[1]}`));
   }
