@@ -20,7 +20,7 @@ import configureStatic from './utils/configureStatic';
 const PORT = 9999;
 
 
-export default async function server(app = new Koa()) {
+export default function server(app = new Koa()) {
   const oaiRouter = new OAIRouter({
     apiDoc: path.join(__dirname, 'api'),
     options: {
@@ -48,7 +48,7 @@ async function main() {
   const app = new Koa();
   app.use(logger());
 
-  await server(app);
+  server(app);
   const { description } = yaml.safeLoad(fs.readFileSync(path.join(__dirname, 'api', 'api.yaml'))).info;
 
   await configureStatic(app);

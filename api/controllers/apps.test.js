@@ -10,7 +10,7 @@ describe('app controller', () => {
 
   beforeAll(async () => {
     models = await setupModels(true);
-    server = await koaServer();
+    server = koaServer();
   });
 
   beforeEach(async () => {
