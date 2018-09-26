@@ -96,7 +96,7 @@ test:
     MYSQL_USER: appsemble
     MYSQL_PASSWORD: password
     DATABASE_URL: 'mysql://appsemble:password@mysql:3306/testAppsemble'
-  script: yarn test --coverage
+  script: yarn test --coverage --detectOpenHandles --forceExit # XXX: Temporary fix, see #35 for progress.
   artifacts:
     paths:
       - coverage/
