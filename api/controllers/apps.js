@@ -1,11 +1,12 @@
 import Boom from 'boom';
+import { omit } from 'lodash';
 
 export async function create(ctx) {
   const { body } = ctx.request;
   const { App } = ctx.state.db;
 
-
-  const result = await App.create({ definition: body }, { raw: true });
+  const definition = omit(body, 'id');
+  const result = await App.create({ definition }, { raw: true });
 
   ctx.body = {
     ...body,
@@ -39,7 +40,7 @@ export async function query(ctx) {
 
 
 export async function update(ctx) {
-  const { id: _, ...definition } = ctx.request.body;
+  const definition = omit(ctx.request.body, 'id');
   const { id } = ctx.params;
   const { App } = ctx.state.db;
 
