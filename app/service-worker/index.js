@@ -1,1 +1,4 @@
-console.log('Hello service worker');
+import onFetch from './onFetch';
+
+
+self.addEventListener('fetch', onFetch);
