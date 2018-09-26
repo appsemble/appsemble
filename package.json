@@ -13,7 +13,7 @@
     "eslint": "eslint --ext js,jsx,md .",
     "setupdb": "node -r esm api/setupdb.js",
     "stylelint": "stylelint .",
-    "test": "jest --detectOpenHandles"
+    "test": "jest"
   },
   "devDependencies": {
     "@babel/core": "^7.0.1",
