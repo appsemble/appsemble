@@ -103,7 +103,16 @@ stylelint: *yarn
 
 test:
   <<: *yarn
-  script: yarn test --coverage
+  services:
+    - name: mysql:8.0
+      command: [--default-authentication-plugin=mysql_native_password]
+  variables:
+    MYSQL_DATABASE: testAppsemble
+    MYSQL_RANDOM_ROOT_PASSWORD: 'yes'
+    MYSQL_USER: appsemble
+    MYSQL_PASSWORD: password
+    DATABASE_URL: 'mysql://appsemble:password@mysql:3306/testAppsemble'
+  script: yarn test --coverage --detectOpenHandles --forceExit # XXX: Temporary fix, see #35 for progress.
   artifacts:
     paths:
       - coverage/
