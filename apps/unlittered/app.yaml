@@ -2,6 +2,10 @@ name: Waarnemingen App
 defaultPage: Maak waarneming
 
 
+theme:
+  themeColor: '#eb0000'
+
+
 definitions:
   waarneming:
     type: object
