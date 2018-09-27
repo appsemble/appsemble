@@ -4,6 +4,8 @@ App:
     - name
     - defaultPage
   properties:
+    theme:
+      $ref: '#/definitions/Theme'
     id:
       type: number
       minimum: 0
