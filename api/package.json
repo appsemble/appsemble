@@ -26,7 +26,6 @@
     "to-ico": "^1.1.5"
   },
   "devDependencies": {
-    "koa-webpack": "^5.1.0",
-    "supertest": "^3.3.0"
+    "koa-webpack": "^5.1.0"
   }
 }
