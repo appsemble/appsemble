@@ -2,11 +2,6 @@ import path from 'path';
 
 import pug from 'pug';
 
-import {
-  select,
-} from '../../utils/db';
-
-
 const render = pug.compileFile(path.resolve(__dirname, 'index.pug'));
 const render404 = pug.compileFile(path.resolve(__dirname, '404.pug'));
 
@@ -18,16 +13,17 @@ export default async function indexHandler(ctx) {
   const {
     id,
   } = ctx.params;
+  const { App } = ctx.state.db;
 
-  const apps = await select('App', { id });
+  const record = await App.findById(id, { raw: true });
   const assets = await ctx.state.getAssets().app;
 
-  if (apps.length === 0) {
+  if (!record) {
     ctx.body = render404({ assets });
     ctx.status = 404;
   } else {
     ctx.body = render({
-      app: apps[0],
+      app: { ...record.definition, id },
       assets,
     });
   }

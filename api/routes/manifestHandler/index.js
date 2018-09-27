@@ -2,11 +2,6 @@ import Boom from 'boom';
 
 import normalize from '@appsemble/utils/normalize';
 
-import {
-  select,
-} from '../../utils/db';
-
-
 const iconSizes = [
   48,
   144,
@@ -19,15 +14,17 @@ const iconSizes = [
  * https://developers.google.com/web/fundamentals/web-app-manifest
  */
 export default async function manifestHandler(ctx) {
-  const {
-    id,
-  } = ctx.params;
+  const { id } = ctx.params;
+  const { App } = ctx.state.db;
 
-  const apps = await select('App', { id });
-  if (apps.length === 0) {
+  const record = await App.findById(id, { raw: true });
+
+  if (!record) {
     throw Boom.notFound('App not found');
   }
-  const [app] = apps;
+
+  const app = { ...record.definition, id };
+
   ctx.body = {
     background_color: '#ff8c7d',
     display: 'standalone',
