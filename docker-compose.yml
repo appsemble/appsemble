@@ -6,6 +6,7 @@ services:
     command: --default-authentication-plugin=mysql_native_password
     restart: always
     environment:
-      DATABASE_URL: mysql://root:password@localhost:3306/appsemble
+      MYSQL_DATABASE: appsemble
+      MYSQL_ROOT_PASSWORD: password
     ports:
       - '3306:3306'
