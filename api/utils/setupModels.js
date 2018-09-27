@@ -61,7 +61,7 @@ export default async function setupModels(sync = true, force = false) {
   const connectionString = process.env.DATABASE_URL || 'mysql://root:password@localhost:3306/appsemble';
   const db = new Sequelize(connectionString, {
     logging: false,
-    // This removes a pesky sequelize warning. Remove this when updating to sequelize@^5.
+    // XXX: This removes a pesky sequelize warning. Remove this when updating to sequelize@^5.
     operatorsAliases: Sequelize.Op.Aliases,
   });
 
