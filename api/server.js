@@ -47,11 +47,10 @@ export default function server(app = new Koa()) {
 async function main() {
   const app = new Koa();
   app.use(logger());
+  await configureStatic(app);
 
   server(app);
   const { description } = yaml.safeLoad(fs.readFileSync(path.join(__dirname, 'api', 'api.yaml'))).info;
-
-  await configureStatic(app);
 
   app.listen(PORT, '0.0.0.0', () => {
     // eslint-disable-next-line no-console
