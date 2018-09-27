@@ -1,6 +1,6 @@
-*
-!/api
-!/dist
-!/package.json
-!/packages
-!/yarn.lock
+coverage/
+dist/
+node_modules/
+public/
+*.test.*
+*.log
