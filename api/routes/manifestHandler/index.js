@@ -23,20 +23,28 @@ export default async function manifestHandler(ctx) {
     throw Boom.notFound('App not found');
   }
 
-  const app = { ...record.definition, id };
+  const {
+    defaultPage,
+    name,
+    theme,
+  } = record.definition;
+  const {
+    themeColor = '#ffffff',
+    backgroundColor = themeColor,
+  } = theme;
 
   ctx.body = {
-    background_color: '#ff8c7d',
+    background_color: backgroundColor,
     display: 'standalone',
     icons: iconSizes.map(size => ({
       src: `/${id}/icon-${size}.png`,
       type: 'image/png',
       sizes: `${size}x${size}`,
     })),
-    name: app.name,
+    name,
     orientation: 'any',
-    short_name: app.name,
-    start_url: `/${id}/${normalize(app.defaultPage)}`,
-    theme_color: '#ff2f15',
+    short_name: name,
+    start_url: `/${id}/${normalize(defaultPage)}`,
+    theme_color: themeColor,
   };
 }
