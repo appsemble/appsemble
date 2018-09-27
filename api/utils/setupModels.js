@@ -1,4 +1,4 @@
-import { getSequelizePool } from '../middleware/sequelize';
+import Sequelize from 'sequelize';
 
 function importModels(db) {
   const App = db.import('../models/App');
@@ -57,14 +57,16 @@ function associateModels(models) {
   BlockVersion.belongsTo(Block, { foreignKey: { allowNull: false } });
 }
 
-export default function setupModels(sync = true, force = false) {
-  const db = getSequelizePool();
+export default async function setupModels(sync = true, force = false) {
+  const connectionString = process.env.DATABASE_URL || 'mysql://root:password@localhost:3306/appsemble';
+  const db = new Sequelize(connectionString, { logging: false });
+
   const models = importModels(db);
   associateModels(models);
 
   if (sync) {
-    db.sync({ force });
+    await db.sync({ force });
   }
 
-  return models;
+  return { sequelize: db, Sequelize, ...models };
 }
