@@ -1,5 +1,3 @@
-import path from 'path';
-
 import Boom from 'boom';
 import sharp from 'sharp';
 
