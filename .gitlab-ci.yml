@@ -89,6 +89,8 @@ stylelint: *yarn
 
 test:
   <<: *yarn
+  tags:
+    - dind
   services:
     - name: mysql:8.0
       command: [--default-authentication-plugin=mysql_native_password]
