@@ -1,5 +1,6 @@
 import Boom from 'boom';
 import { omit } from 'lodash';
+import getRawBody from 'raw-body';
 
 export async function create(ctx) {
   const { body } = ctx.request;
@@ -51,4 +52,33 @@ export async function update(ctx) {
   }
 
   ctx.body = { ...definition, id };
+}
+
+
+export async function setAppIcon(ctx) {
+  const { id } = ctx.params;
+  const { App } = ctx.state.db;
+  const icon = await getRawBody(ctx.req);
+
+  const [affectedRows] = await App.update({ icon }, { where: { id } });
+
+  if (affectedRows === 0) {
+    throw Boom.notFound('App not found');
+  }
+
+  ctx.status = 204;
+}
+
+
+export async function deleteAppIcon(ctx) {
+  const { id } = ctx.params;
+  const { App } = ctx.state.db;
+
+  const [affectedRows] = await App.update({ icon: null }, { where: { id } });
+
+  if (affectedRows === 0) {
+    throw Boom.notFound('App not found');
+  }
+
+  ctx.status = 204;
 }
