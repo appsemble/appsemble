@@ -16,26 +16,14 @@ stages:
   script: yarn $CI_JOB_NAME
 
 
-build:app:
-  <<: *yarn
-  script: yarn build
-  artifacts:
-    paths:
-      - dist/
-
-
 build:docker:
   stage: build
   services:
     - docker:dind
   image: docker
-  tags:
-    - dind
   variables:
     DOCKER_HOST: tcp://docker:2375
     DOCKER_DRIVER: overlay2
-  dependencies:
-    - build:app
   before_script:
     - echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY
   script:
@@ -82,8 +70,6 @@ publish:docker:latest:
   services:
     - docker:dind
   image: docker
-  tags:
-    - dind
   variables:
     DOCKER_HOST: tcp://docker:2375
     DOCKER_DRIVER: overlay2
