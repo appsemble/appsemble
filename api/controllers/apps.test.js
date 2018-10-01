@@ -6,17 +6,18 @@ import truncate from '../utils/test/truncate';
 
 describe('app controller', () => {
   let App;
+  let db;
   let sequelize;
   let server;
 
   beforeAll(async () => {
-    const db = await setupModels(true);
+    db = await setupModels(true);
     server = koaServer({ db });
     ({ App, sequelize } = db);
   });
 
   beforeEach(async () => {
-    await truncate();
+    await truncate(db);
   });
 
   afterAll(async () => {
