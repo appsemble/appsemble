@@ -25,12 +25,12 @@ describe('boomMiddleware', () => {
     const ctx = {
       set: jest.fn((name, value) => {
         expect(name).toBe('WWW-Authenticate');
-        expect(value).toBe('testKey, testKey2');
+        expect(value).toBe('Basic realm="Access to test data", charset="UTF-8"');
       }),
     };
 
     const mockNext = jest.fn(() => {
-      throw Boom.unauthorized('Unauthorized error', ['testKey, testKey2']);
+      throw Boom.unauthorized('Unauthorized error', ['Basic realm="Access to test data", charset="UTF-8"']);
     });
 
     await boomMiddleware(ctx, mockNext);
@@ -47,13 +47,14 @@ describe('boomMiddleware', () => {
     const koa = new Koa();
     koa.use(boomMiddleware);
     koa.use(async () => {
-      throw Boom.unauthorized('Not authorized!', 'TestHeader');
+      throw Boom.unauthorized('Not authorized!', ['Basic realm="Access to test data", charset="UTF-8"']);
     });
 
     const response = await request(koa.callback()).get('/');
 
     expect(response.headers).toBeDefined();
-    expect(response.headers['www-authenticate']).toBe('TestHeader error="Not authorized!"');
+    expect(response.headers['www-authenticate']).toBe('Basic realm="Access to test data", charset="UTF-8"');
+    expect(response.body).toEqual({ statusCode: 401, error: 'Unauthorized', message: 'Not authorized!' });
   });
 
   it('rethrows non-boom errors', async () => {
