@@ -1,18 +1,21 @@
+import Koa from 'koa';
+import request from 'supertest';
+
 import sequelizeMiddleware from './sequelize';
 
 describe('sequelizeMiddleware', () => {
   it('should include the database in ctx', async () => {
-    const ctx = { state: {} };
+    let result;
+    const db = Symbol('db');
+    const koa = new Koa();
 
-    const mockNext = jest.fn();
+    koa.use(sequelizeMiddleware(db));
+    koa.use(async (ctx) => {
+      result = ctx.state.db;
+    });
 
-    await sequelizeMiddleware(ctx, mockNext);
-    expect(mockNext).toHaveBeenCalledTimes(1);
+    await request(koa.callback()).get('/');
 
-    expect(ctx.state.db).toBeDefined();
-    expect(ctx.state.db.sequelize).toBeDefined();
-    expect(ctx.state.db.Sequelize).toBeDefined();
-
-    await ctx.state.db.sequelize.close();
+    expect(result).toBe(db);
   });
 });
