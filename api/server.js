@@ -15,12 +15,16 @@ import boomMiddleware from './middleware/boom';
 import sequelizeMiddleware from './middleware/sequelize';
 import routes from './routes';
 import configureStatic from './utils/configureStatic';
+import setupModels from './utils/setupModels';
 
 
 const PORT = 9999;
 
 
-export default function server(app = new Koa()) {
+export default function server({
+  app = new Koa(),
+  db = setupModels(true),
+}) {
   const oaiRouter = new OAIRouter({
     apiDoc: path.join(__dirname, 'api'),
     options: {
@@ -32,7 +36,7 @@ export default function server(app = new Koa()) {
   oaiRouter.mount(OAIRouterMiddleware);
 
   app.use(boomMiddleware);
-  app.use(sequelizeMiddleware);
+  app.use(sequelizeMiddleware(db));
   app.use(bodyParser());
   if (process.env.NODE_ENV === 'production') {
     app.use(compress());

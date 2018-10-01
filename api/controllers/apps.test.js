@@ -10,8 +10,9 @@ describe('app controller', () => {
   let server;
 
   beforeAll(async () => {
-    ({ App, sequelize } = await setupModels(true));
-    server = koaServer();
+    const db = await setupModels(true);
+    server = koaServer({ db });
+    ({ App, sequelize } = db);
   });
 
   beforeEach(async () => {
