@@ -5,7 +5,7 @@ import request from 'supertest';
 import boomMiddleware from './boom';
 
 describe('boomMiddleware', () => {
-  it('catches boom errors', async () => {
+  it('should catch boom errors', async () => {
     const ctx = {};
 
     const mockNext = jest.fn(() => {
@@ -21,7 +21,7 @@ describe('boomMiddleware', () => {
     expect(mockNext).toHaveBeenCalledTimes(1);
   });
 
-  it('calls the set method if headers are present', async () => {
+  it('should call the set method if headers are present', async () => {
     const ctx = {
       set: jest.fn((name, value) => {
         expect(name).toBe('WWW-Authenticate');
@@ -43,7 +43,7 @@ describe('boomMiddleware', () => {
     expect(mockNext).toHaveBeenCalledTimes(1);
   });
 
-  it('sets Koa headers correctly', async () => {
+  it('should set Koa headers correctly', async () => {
     const koa = new Koa();
     koa.use(boomMiddleware);
     koa.use(async () => {
@@ -57,7 +57,7 @@ describe('boomMiddleware', () => {
     expect(response.body).toEqual({ statusCode: 401, error: 'Unauthorized', message: 'Not authorized!' });
   });
 
-  it('rethrows non-boom errors', async () => {
+  it('should rethrow non-boom errors', async () => {
     const ctx = {};
     const error = new Error('This is a test error');
 
