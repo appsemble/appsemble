@@ -43,8 +43,10 @@ export default async function manifestHandler(ctx) {
     })),
     name,
     orientation: 'any',
+    scope: `/${id}`,
     short_name: name,
     start_url: `/${id}/${normalize(defaultPage)}`,
     theme_color: themeColor,
   };
+  ctx.type = 'application/manifest+json';
 }
