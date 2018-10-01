@@ -53,7 +53,7 @@ async function main() {
   app.use(logger());
   await configureStatic(app);
 
-  server(app);
+  server({ app });
   const { description } = yaml.safeLoad(fs.readFileSync(path.join(__dirname, 'api', 'api.yaml'))).info;
 
   app.listen(PORT, '0.0.0.0', () => {
