@@ -9,7 +9,7 @@ import manifestHandler from './manifestHandler';
 
 const router = new Router();
 router.get('/editor/(.*)?', editorHandler);
-router.get('/:id(\\d+)?/favicon.ico', faviconHandler);
+router.get('/favicon.ico', faviconHandler);
 router.get('/:id(\\d+)?/(fav)?icon-:width(\\d+).:format(png|jpg|tiff|webp)', iconHandler);
 router.get('/:id(\\d+)?/(fav)?icon-:width(\\d+)x:height(\\d+).:format(png|jpg|tiff|webp)', iconHandler);
 router.get('/:id(\\d+)/manifest.json', manifestHandler);
