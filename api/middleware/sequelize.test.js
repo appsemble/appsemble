@@ -12,5 +12,7 @@ describe('sequelizeMiddleware', () => {
     expect(ctx.state.db).toBeDefined();
     expect(ctx.state.db.sequelize).toBeDefined();
     expect(ctx.state.db.Sequelize).toBeDefined();
+
+    await ctx.state.db.sequelize.close();
   });
 });
