@@ -11,21 +11,13 @@ import React from 'react';
 export default class EnumInput extends React.Component {
   static propTypes = {
     /**
-     * The name of the property to render.
+     * The enum field to render.
      */
-    name: PropTypes.string.isRequired,
+    field: PropTypes.shape().isRequired,
     /**
      * A callback for when the value changes.
      */
     onChange: PropTypes.func.isRequired,
-    /**
-     * Wether or not a value is required.
-     */
-    required: PropTypes.bool.isRequired,
-    /**
-     * The enum schema definition for which to render an input.
-     */
-    schema: PropTypes.shape().isRequired,
     /**
      * The current value.
      */
@@ -41,24 +33,21 @@ export default class EnumInput extends React.Component {
 
   render() {
     const {
-      name,
+      field,
       onChange,
-      required,
-      schema,
       value,
     } = this.props;
 
     return (
       <SelectField
-        label={schema.title}
-        name={name}
+        label={field.label || field.name}
+        name={field.name}
         onChange={onChange}
-        required={required}
-        value={value == null ? schema.enum[0] : value}
+        value={value}
       >
-        {schema.enum.map(choice => (
-          <option key={choice} value={choice}>
-            {`${choice}`}
+        {field.enum.map(choice => (
+          <option key={choice.value} value={choice.value}>
+            {choice.label || choice.value}
           </option>
         ))}
       </SelectField>

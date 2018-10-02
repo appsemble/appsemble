@@ -13,12 +13,13 @@ export default class SelectField extends React.Component {
     value: PropTypes.oneOfType([
       PropTypes.number,
       PropTypes.string,
-    ]).isRequired,
+    ]),
   };
 
   static defaultProps = {
     multiple: false,
     name: null,
+    value: null,
   };
 
   render() {
