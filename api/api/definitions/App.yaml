@@ -102,17 +102,3 @@ App:
               click:
                 type: link
                 to: Example Page A
-          # - type: form
-          #   parameters:
-          #     fields:
-          #       - description
-          #     schema:
-          #       $ref: '/definitions/example'
-          #   actions:
-          #     submit:
-          #       type: request
-          #       method: post
-          #       url: 'https://httpbin.org/post'
-          #     submitSuccess:
-          #       type: log
-        
