@@ -24,6 +24,9 @@
     get:
       tags: [asset]
       description: Get a single asset
+      x-oai-middleware:
+      - file: assets
+        handler: getOne
       parameters:
         - name: id
           in: path
