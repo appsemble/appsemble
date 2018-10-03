@@ -4,7 +4,8 @@ const CleanWebpackPlugin = require('clean-webpack-plugin');
 const fs = require('fs-extra');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
-const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+const ServiceWorkerWebpackPlugin = require('serviceworker-webpack-plugin');
+const TerserPlugin = require('terser-webpack-plugin');
 const { UnusedFilesWebpackPlugin } = require('unused-files-webpack-plugin');
 const ManifestPlugin = require('webpack-manifest-plugin');
 
@@ -25,14 +26,12 @@ module.exports = async (env, { mode }) => {
       editor: [path.join(__dirname, 'editor')],
     }),
     output: {
-      filename: '[name]/[hash].js',
+      filename: production ? '[name]/[name].js' : '[name]/[hash].js',
       publicPath: '/',
     },
     resolve: {
       extensions: ['.js', '.jsx'],
       alias: {
-        '@material-ui/core': '@material-ui/core/es',
-        '@material-ui/icons': '@material-ui/icons/es',
         // These are required by leaflet CSS in a way which doesn’t work with webpack by default.
         './images/layers.png$': 'leaflet/dist/images/layers.png',
         './images/layers-2x.png$': 'leaflet/dist/images/layers-2x.png',
@@ -116,14 +115,22 @@ module.exports = async (env, { mode }) => {
       ],
     },
     plugins: [
+      new ServiceWorkerWebpackPlugin({
+        entry: path.join(__dirname, 'app/service-worker'),
+        filename: 'service-worker.js',
+        minimize: production,
+        transformOptions: ({ assets }) => assets.filter(asset => asset.startsWith('/app/')),
+      }),
       new UnusedFilesWebpackPlugin({
-        failOnUnused: true,
+        failOnUnused: production,
         patterns: ['{app,blocks}/**/*.*'],
         globOptions: {
-          ignore: ['**/package.json', '**/*.test.{js,jsx}'],
+          ignore: ['**/package.json', '**/*.test.{js,jsx}', '**/service-worker/**'],
         },
       }),
-      new MiniCssExtractPlugin({ filename: '[name]/[hash].css' }),
+      new MiniCssExtractPlugin({
+        filename: production ? '[name]/[name].css' : '[name]/[hash].css',
+      }),
       production && new CleanWebpackPlugin(['dist']),
       ...blocks.map(block => new ManifestPlugin({
         fileName: `${block}/manifest.json`,
@@ -140,7 +147,7 @@ module.exports = async (env, { mode }) => {
     ].filter(Boolean),
     optimization: {
       minimizer: [
-        new UglifyJsPlugin({
+        new TerserPlugin({
           cache: true,
           parallel: true,
           sourceMap: true,

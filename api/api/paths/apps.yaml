@@ -80,3 +80,60 @@
           $ref: '#/definitions/App'
       default:
         $ref: '#/responses/default'
+
+/apps/{id}/icon:
+  post:
+    tags: [app]
+    description: |
+      Change the app icon.
+
+      If not icon has been specified, the Appsemble icon will be served.
+    consumes:
+      # These are the underlying formats that are supported by our underlying image processing library, sharp.
+      # http://sharp.pixelplumbing.com/en/stable/#formats
+      # image/gif has been excluded, because those tend to contain multiple frames.
+      - image/jpeg
+      - image/png
+      - image/tiff
+      - image/webp
+      - image/xml+svg
+    x-oai-middleware:
+      - file: apps
+        handler: setAppIcon
+    parameters:
+      - name: id
+        in: path
+        description: The id of the app whose icon to update.
+        required: true
+        type: integer
+      - name: icon
+        in: body
+        description: The new app icon.
+        required: true
+        schema:
+          type: object
+    responses:
+      204:
+        description: The icon has been updated succesfully.
+      default:
+        $ref: '#/responses/default'
+  delete:
+    tags: [app]
+    description: |
+      Delete the app icon from the database.
+
+      When the app icon has been deleted, the Appsemble icon will be served.
+    x-oai-middleware:
+      - file: apps
+        handler: deleteAppIcon
+    parameters:
+      - name: id
+        in: path
+        description: The id of the app whose icon to delete.
+        required: true
+        type: integer
+    responses:
+      204:
+        description: The icon has been deleted succesfully.
+      default:
+        $ref: '#/responses/default'

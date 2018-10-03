@@ -12,14 +12,19 @@ import OAIRouterParameters from 'koa-oai-router-parameters';
 import yaml from 'js-yaml';
 
 import boomMiddleware from './middleware/boom';
+import sequelizeMiddleware from './middleware/sequelize';
 import routes from './routes';
 import configureStatic from './utils/configureStatic';
+import setupModels from './utils/setupModels';
 
 
 const PORT = 9999;
 
 
-async function main() {
+export default function server({
+  app = new Koa(),
+  db = setupModels(true),
+}) {
   const oaiRouter = new OAIRouter({
     apiDoc: path.join(__dirname, 'api'),
     options: {
@@ -30,28 +35,32 @@ async function main() {
   oaiRouter.mount(OAIRouterParameters);
   oaiRouter.mount(OAIRouterMiddleware);
 
-
-  const server = new Koa();
-  server.use(logger());
-  server.use(boomMiddleware);
-  server.use(bodyParser());
+  app.use(boomMiddleware);
+  app.use(sequelizeMiddleware(db));
+  app.use(bodyParser());
   if (process.env.NODE_ENV === 'production') {
-    server.use(compress());
+    app.use(compress());
   }
-  server.use(oaiRouter.routes());
-  await configureStatic(server);
-  server.use(routes);
+  app.use(oaiRouter.routes());
 
+  app.use(routes);
 
+  return app.callback();
+}
+
+async function main() {
+  const app = new Koa();
+  app.use(logger());
+  await configureStatic(app);
+
+  server({ app });
   const { description } = yaml.safeLoad(fs.readFileSync(path.join(__dirname, 'api', 'api.yaml'))).info;
 
-
-  server.listen(PORT, '0.0.0.0', () => {
+  app.listen(PORT, '0.0.0.0', () => {
     // eslint-disable-next-line no-console
     console.log(description);
   });
 }
-
 
 if (module === require.main) {
   main().catch((err) => {

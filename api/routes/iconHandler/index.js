@@ -1,18 +1,56 @@
-import path from 'path';
-
+import Boom from 'boom';
 import sharp from 'sharp';
 
-
-const iconPath = path.resolve(__dirname, 'icon.svg');
+import getDefaultIcon from '../../utils/getDefaultIcon';
 
 
 export default async function iconHandler(ctx) {
   const {
+    format,
+    id,
     width,
     height = width,
   } = ctx.params;
+  const {
+    App,
+  } = ctx.state.db;
+  const opaque = 'opaque' in ctx.request.query || format === 'jpg' || format === 'tiff';
+  let icon;
+  let backgroundColor = '#ffffff';
 
-  const img = sharp(iconPath).resize(Number(width), Number(height)).png();
+  if (id != null) {
+    const app = await App.findById(id, { raw: true });
+    if (!app) {
+      throw Boom.notFound('App not found');
+    }
+    ({ icon } = app);
+    if (opaque) {
+      const {
+        themeColor = backgroundColor,
+        splashColor = themeColor,
+      } = app.definition.theme || {};
+      backgroundColor = splashColor;
+    }
+  }
+
+  icon = icon || getDefaultIcon();
+
+  let img = sharp(icon);
+  const metadata = await img.metadata();
+  // SVG images can be resized with a density much better than its metadata specified.
+  if (metadata.format === 'svg') {
+    const density = Math.max(
+      metadata.density * Math.max(width / metadata.width, height / metadata.height),
+      // This is the maximum allowed value density allowed by sharp.
+      2400,
+    );
+    img = sharp(icon, { density });
+  }
+  img.resize(Number(width), Number(height));
+  if (opaque) {
+    img.background(backgroundColor).flatten();
+  }
+  img.toFormat(format);
   ctx.body = await img.toBuffer();
-  ctx.type = 'image/png';
+  ctx.type = format;
 }

@@ -30,28 +30,24 @@ It is also possible to pull a version matching a specific git commit.
 docker pull registry.gitlab.com/dcentralized/appsemble/appsemble:$GIT_COMMIT_HASH
 ```
 
-The Docker image uses the following environment variables
+The Docker image uses the following environment variables.
 
-| Variable              | Default value | Description
-| --------------------- | ------------- | -----------
-| `MYSQL_HOST`          | `localhost`   | The host of the MySQL database to connect to.
-| `MYSQL_PORT`          | `3306`        | The port on which the MySQL database is exposed.
-| `MYSQL_DATABASE`      | `appsemble`   | The name of the MySQL database to connect to.
-| `MYSQL_USER`          | `root`        | The username of the database user.
-| `MYSQL_ROOT_PASSWORD` | `password`    | The password of the database user.
+| Variable              | Default value                                    | Description
+| --------------------- | ------------------------------------------------ | ---------------------------------------------
+| `DATABASE_URL`        | `mysql://root:password@localhost:3306/appsemble` | The URL of the MySQL database to connect to.
 
 ## Development
 
 ### Requirements
 
-In order to run the Appsemble project in development mode, the following must be installed
+In order to run the Appsemble project in development mode, the following must be installed.
 
 - [NodeJS 10][]
 - [Yarn][]
 
 ### Getting started
 
-Clone and setup the project
+Clone and setup the project.
 
 ```sh
 git clone git@gitlab.com:dcentralized/appsemble/appsemble.git
@@ -65,28 +61,40 @@ The project requires a MySQL database. This project contains a [docker-compose][
 docker-compose up -d
 ```
 
-The database can be initialized using the following command
+The database can be initialized using the following command.
 ```sh
 yarn setupdb
 ```
 
-The project can be served using the following command
+The project can be served using the following command.
 
 ```sh
 yarn start
 ```
 
-The project can be built using the following command
+The frontend project can be built using the following command.
 
 ```sh
 yarn build
 ```
 
-The result will be output in the *dist/* directory.
+The result will be output in the *dist/* directory. These will be served when the API is run in production mode.
+
+```sh
+NODE_ENV=production yarn start
+```
+
+### Building
+
+The resulting Docker image can be built using the Docker CLI.
+
+```sh
+docker build --tag appsemble .
+```
 
 ### Contributing
 
-Please read our [contributing guidelines](./CONTRIBUTING.md)
+Please read our [contributing guidelines](./CONTRIBUTING.md).
 
 [docker-compose]: https://docs.docker.com/compose
 [docker credentials store]: https://docs.docker.com/engine/reference/commandline/login/#credentials-store
