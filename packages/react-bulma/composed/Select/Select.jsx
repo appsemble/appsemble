@@ -16,7 +16,7 @@ export default class Select extends React.Component {
     value: PropTypes.oneOfType([
       PropTypes.number,
       PropTypes.string,
-    ]).isRequired,
+    ]),
   };
 
   static defaultProps = {
@@ -25,6 +25,7 @@ export default class Select extends React.Component {
     multiple: false,
     name: null,
     onChange: null,
+    value: null,
   };
 
   render() {

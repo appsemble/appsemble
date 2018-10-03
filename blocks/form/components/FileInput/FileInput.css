@@ -1,4 +1,4 @@
-.root {
+.repeatedContainer {
   display: flex;
   flex-flow: row;
   height: 128px;

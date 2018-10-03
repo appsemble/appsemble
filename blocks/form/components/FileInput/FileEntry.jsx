@@ -9,7 +9,7 @@ import React from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
-import styles from './FileInput.css';
+import styles from './FileEntry.css';
 
 
 function getDerivedStateFromProps({ value }, state) {
@@ -30,11 +30,23 @@ function getDerivedStateFromProps({ value }, state) {
 }
 
 
-export default class FileInput extends React.Component {
+export default class FileEntry extends React.Component {
   static propTypes = {
+    /**
+     * The name of the input field.
+     */
     name: PropTypes.string.isRequired,
+    /**
+     * This will be called when a new file has been selected/
+     */
     onChange: PropTypes.func.isRequired,
-    schema: PropTypes.shape().isRequired,
+    /**
+     * The enum field to render.
+     */
+    field: PropTypes.shape().isRequired,
+    /**
+     * The current value.
+     */
     value: PropTypes.oneOfType([
       PropTypes.instanceOf(Blob),
       PropTypes.string,
@@ -60,28 +72,25 @@ export default class FileInput extends React.Component {
       const {
         onChange,
       } = this.props;
-      const [file] = target.files;
-      onChange({ target }, file);
+
+      onChange({ target }, target.files[0]);
     });
   };
 
   render() {
     const {
+      field,
       name,
-      schema,
     } = this.props;
     const {
       url,
     } = this.state;
 
-    const title = schema.description || schema.title || name;
-    const {
-      type = [],
-    } = schema.appsembleFile;
+    const title = field.label || field.name;
 
     return (
       <FileField
-        accept={[].concat(type).toString()}
+        accept={(field.accept?.length && field.accept.join(',')) || undefined}
         className={styles.root}
         FileInputProps={{
           className: styles.input,

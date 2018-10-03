@@ -71,11 +71,29 @@ pages:
           schema:
             $ref: /definitions/waarneming
           fields:
-            - locatie
-            - proces
-            - onderwerp
-            - notities
-            - fotos
+            - name: locatie
+              label: Locatie
+              type: geocoordinates
+            - name: proces
+              label: Proces
+              enum:
+                - value: Fietsknip team
+                - value: Handhaving
+                - value: Heel en Groen
+                - value: Inzameling
+            - name: onderwerp
+              label: Onderwerp
+              type: string
+            - name: notities
+              label: Notities
+              type: string
+              multiline: true
+            - name: fotos
+              label: Foto’s
+              type: file
+              accept:
+                - image/jpeg
+              repeated: true
         actions:
           submit:
             type: request

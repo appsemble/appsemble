@@ -21,4 +21,5 @@ export { default as Navbar } from './Navbar';
 export { default as NavbarBrand } from './NavbarBrand';
 export { default as NavbarItem } from './NavbarItem';
 export { default as Subtitle } from './Subtitle';
+export { default as Textarea } from './Textarea';
 export { default as Title } from './Title';

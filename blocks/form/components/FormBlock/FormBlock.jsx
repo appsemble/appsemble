@@ -1,34 +1,30 @@
+import {
+  Button,
+} from '@appsemble/react-bulma';
 import PropTypes from 'prop-types';
 import React from 'react';
 import {
-  SchemaProvider,
-} from 'react-schema-renderer';
+  FormattedMessage,
+} from 'react-intl';
 
-import ArrayInput from '../ArrayInput';
-import BooleanInput from '../BooleanInput';
-import Form from '../Form';
 import EnumInput from '../EnumInput';
-import ObjectInput from '../ObjectInput';
-import NumberInput from '../NumberInput';
+import FileInput from '../FileInput';
+import GeoCoordinatesInput from '../GeoCoordinatesInput';
 import StringInput from '../StringInput';
+import styles from './FormBlock.css';
+import messages from './messages';
 
 
-const schemaOptions = {
-  populate: 'onChange',
-  renderers: {
-    array: ArrayInput,
-    boolean: BooleanInput,
-    enum: EnumInput,
-    integer: NumberInput,
-    object: ObjectInput,
-    number: NumberInput,
-    string: StringInput,
-  },
+const inputs = {
+  file: FileInput,
+  enum: EnumInput,
+  geocoordinates: GeoCoordinatesInput,
+  string: StringInput,
 };
 
 
 /**
- * The main component for the Appsemble form block.
+ * Render Material UI based a form based on a JSON schema
  */
 export default class FormBlock extends React.Component {
   static propTypes = {
@@ -42,22 +38,87 @@ export default class FormBlock extends React.Component {
     block: PropTypes.shape().isRequired,
   };
 
+  state = {
+    submitting: false,
+    values: {},
+  };
+
+  onChange = (event, value = event.target.value) => {
+    this.setState(({ values }) => ({
+      values: {
+        ...values,
+        [event.target.name]: value,
+      },
+    }));
+  };
+
+  onSubmit = (event) => {
+    event.preventDefault();
+
+    this.setState(({ submitting, values }, { actions }) => {
+      if (!submitting) {
+        actions.submit.dispatch(values)
+          .then(() => {
+            this.setState({
+              submitting: false,
+            });
+            return actions.submitSuccess.dispatch(values);
+          })
+          .catch((error) => {
+            this.setState({
+              submitting: false,
+            });
+            throw error;
+          });
+      }
+      return {
+        submitting: true,
+      };
+    });
+  };
+
   render() {
     const {
-      actions,
       block,
     } = this.props;
+    const {
+      submitting,
+      values,
+    } = this.state;
 
     return (
-      <SchemaProvider value={schemaOptions}>
-        <Form
-          schema={block.parameters.schema}
-          onSubmit={async (event, value) => {
-            await actions.submit.dispatch(value);
-            actions.submitSuccess.dispatch(value);
-          }}
-        />
-      </SchemaProvider>
+      <form
+        className={styles.root}
+        noValidate
+        onSubmit={this.onSubmit}
+      >
+        {block.parameters.fields.map((field) => {
+          const Component = field.enum ? inputs.enum : inputs[field.type];
+          if (!Component) {
+            return (
+              <FormattedMessage
+                key={field.name}
+                values={{
+                  name: field.name,
+                  type: field.type,
+                }}
+                {...messages.unsupported}
+              />
+            );
+          }
+          return (
+            <Component
+              field={field}
+              key={field.name}
+              onChange={this.onChange}
+              value={values[field.name]}
+            />
+          );
+        })}
+        <Button className={styles.submit} color="primary" disabled={submitting} type="submit">
+          <FormattedMessage {...messages.submit} />
+        </Button>
+      </form>
     );
   }
 }

@@ -1,6 +1,6 @@
 /* stylelint-disable selector-max-specificity */
 :root {
-  --border-radius: 290486px;
+  --border-radius: 24px;
   --form-width: 400px;
   --primary-color: #eb0000;
   --primary-color-inverse: #ffffff;
