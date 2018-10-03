@@ -76,16 +76,6 @@ App:
     theme:
       themeColor: '#eb0000'
 
-    definitions:
-      example:
-        type: object
-        required: 
-          - description
-        properties:
-          description:
-            title: description
-            type: string
-
     pages:
       - name: 'Example Page A'
         blocks:
