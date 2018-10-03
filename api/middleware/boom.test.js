@@ -21,25 +21,15 @@ describe('boomMiddleware', () => {
     expect(mockNext).toHaveBeenCalledTimes(1);
   });
 
-  it('should call the set method if headers are present', async () => {
-    const ctx = {
-      set: jest.fn((name, value) => {
-        expect(name).toBe('WWW-Authenticate');
-        expect(value).toBe('Basic realm="Access to test data", charset="UTF-8"');
-      }),
-    };
+  it('should rethrow non-boom errors', async () => {
+    const ctx = {};
+    const error = new Error('This is a test error');
 
     const mockNext = jest.fn(() => {
-      throw Boom.unauthorized('Unauthorized error', ['Basic realm="Access to test data", charset="UTF-8"']);
+      throw error;
     });
 
-    await boomMiddleware(ctx, mockNext);
-
-    expect(ctx.body).toBeDefined();
-    expect(ctx.body).toEqual({ statusCode: 401, error: 'Unauthorized', message: 'Unauthorized error' });
-    expect(ctx.status).toBe(401);
-
-    expect(ctx.set).toHaveBeenCalledTimes(1);
+    await expect(boomMiddleware(ctx, mockNext)).rejects.toEqual(error);
     expect(mockNext).toHaveBeenCalledTimes(1);
   });
 
@@ -55,17 +45,5 @@ describe('boomMiddleware', () => {
     expect(response.headers).toBeDefined();
     expect(response.headers['www-authenticate']).toBe('Basic realm="Access to test data", charset="UTF-8"');
     expect(response.body).toEqual({ statusCode: 401, error: 'Unauthorized', message: 'Not authorized!' });
-  });
-
-  it('should rethrow non-boom errors', async () => {
-    const ctx = {};
-    const error = new Error('This is a test error');
-
-    const mockNext = jest.fn(() => {
-      throw error;
-    });
-
-    await expect(boomMiddleware(ctx, mockNext)).rejects.toEqual(error);
-    expect(mockNext).toHaveBeenCalledTimes(1);
   });
 });
