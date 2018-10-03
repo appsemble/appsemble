@@ -4,5 +4,4 @@ Resource:
   properties:
     id:
       type: number
-      minimum: 0
       readOnly: true
