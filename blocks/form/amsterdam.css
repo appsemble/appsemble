@@ -3,7 +3,8 @@
   display: none;
 }
 
-.input {
+.input,
+.textarea {
   border-radius: var(--border-radius) !important;
 }
 

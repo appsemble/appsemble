@@ -1,5 +1,6 @@
 import {
   InputField,
+  TextareaField,
 } from '@appsemble/react-bulma';
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -35,8 +36,10 @@ export default class StringInput extends React.Component {
       value,
     } = this.props;
 
+    const Component = field.multiline ? TextareaField : InputField;
+
     return (
-      <InputField
+      <Component
         label={field.label || field.name}
         maxLength={field.maxLength}
         name={field.name}
