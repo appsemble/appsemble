@@ -39,10 +39,14 @@ export default function server({
   app.use(sequelizeMiddleware(db));
 
   app.use(async (ctx, next) => {
-    if (ctx.path === 'api/assets' && ctx.methox.toLowerCase() === 'post') {
-      // Necessary in order to be able to upload .json files to /api/assets.
+    if (ctx.path === 'api/assets') {
+      // Allow the server to manage the body and Content-Type on its own
       ctx.disableBodyParser = (ctx.path === '/api/assets' && ctx.method.toLowerCase() === 'post');
-      ctx.request.body = { };
+
+      // Necessary in order to be able to upload .json files to /api/assets.
+      if (ctx.method.toLowerCase() === 'post') {
+        ctx.request.body = { };
+      }
     }
 
     await next();
