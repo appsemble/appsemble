@@ -75,7 +75,7 @@ export default class InputField extends React.Component {
     } = this.props;
 
     return (
-      <FormField {...props}>
+      <FormField color={color} {...props}>
         <Input
           autoComplete={autoComplete}
           color={color}

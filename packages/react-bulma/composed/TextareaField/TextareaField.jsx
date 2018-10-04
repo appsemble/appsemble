@@ -63,7 +63,7 @@ export default class TextareaField extends React.Component {
     } = this.props;
 
     return (
-      <FormField {...props}>
+      <FormField color={color} {...props}>
         <Textarea
           autoComplete={autoComplete}
           color={color}
