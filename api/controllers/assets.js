@@ -1,8 +1,6 @@
 import Boom from 'boom';
+import getRawBody from 'raw-body';
 
-/**
- * @param {import('koa').Context} ctx
- */
 export async function getOne(ctx) {
   const { id } = ctx.params;
   const { Asset } = ctx.state.db;
@@ -13,14 +11,15 @@ export async function getOne(ctx) {
     throw Boom.notFound('Asset not found');
   }
 
-  ctx.set('Content-Type', asset.mime);
+  ctx.set('Content-Type', asset.mime || 'application/octet-stream');
   ctx.body = asset.data;
 }
 
-/**
- * @param {import('koa').Context} ctx
- */
 export async function create(ctx) {
-  ctx.status = 418;
-  ctx.body = 'I am a teapot.';
+  const { Asset } = ctx.state.db;
+  const data = await getRawBody(ctx.req);
+  const asset = await Asset.create({ mime: ctx.request.type, data }, { raw: true });
+
+  ctx.status = 201;
+  ctx.body = { id: asset.id };
 }

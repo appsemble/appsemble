@@ -2,6 +2,9 @@
   post:
     tags: [asset]
     description: Upload a new asset.
+    x-oai-middleware:
+      - file: assets
+        handler: create
     consumes:
       - '*/*'
     parameters:
@@ -9,7 +12,7 @@
       name: asset
       description: The asset to upload.
       schema:
-        type: string
+        type: object
     responses:
       201:
         description: The asset that was created.

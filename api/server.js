@@ -37,7 +37,15 @@ export default function server({
 
   app.use(boomMiddleware);
   app.use(sequelizeMiddleware(db));
+
+  app.use(async (ctx, next) => {
+    // Necessary in order to be able to upload .json files to /api/assets.
+    ctx.disableBodyParser = (ctx.path === '/api/assets' && ctx.method.toLowerCase() === 'post');
+    ctx.request.body = { };
+    await next();
+  });
   app.use(bodyParser());
+
   if (process.env.NODE_ENV === 'production') {
     app.use(compress());
   }
