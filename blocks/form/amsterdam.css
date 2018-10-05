@@ -9,8 +9,11 @@
 }
 
 .select {
+  width: 100%;
+
   & select {
     border-radius: var(--border-radius) !important;
+    width: 100%;
   }
 }
 
