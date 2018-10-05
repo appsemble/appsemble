@@ -2,6 +2,9 @@
   get:
     tags: [resource]
     description: Get all resources of this app.
+    x-oai-middleware:
+      - file: resources
+        handler: getAll
     parameters:
     - name: appId
       in: path
@@ -60,6 +63,9 @@
   get:
     tags: [resource]
     description: Get a single app resource.
+    x-oai-middleware:
+      - file: resources
+        handler: getOne
     parameters:
     - name: appId
       in: path
