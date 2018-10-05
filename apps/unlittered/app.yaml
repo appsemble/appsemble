@@ -68,8 +68,6 @@ pages:
     blocks:
       - type: form
         parameters:
-          schema:
-            $ref: /definitions/waarneming
           fields:
             - name: locatie
               label: Locatie
@@ -99,6 +97,8 @@ pages:
             type: request
             method: post
             url: 'https://api.stadswerken.amsterdam/waarnemingen_real'
+            schema:
+              $ref: /definitions/waarneming
             blobs:
               type: upload
               method: post

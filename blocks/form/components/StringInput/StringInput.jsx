@@ -4,6 +4,11 @@ import {
 } from '@appsemble/react-bulma';
 import PropTypes from 'prop-types';
 import React from 'react';
+import {
+  FormattedMessage,
+} from 'react-intl';
+
+import messages from './messages';
 
 
 /**
@@ -11,6 +16,10 @@ import React from 'react';
  */
 export default class StringInput extends React.Component {
   static propTypes = {
+    /**
+     * A field error object.
+     */
+    error: PropTypes.shape(),
     /**
      * The enum field to render.
      */
@@ -26,11 +35,13 @@ export default class StringInput extends React.Component {
   };
 
   static defaultProps = {
+    error: null,
     value: '',
   };
 
   render() {
     const {
+      error,
       field,
       onChange,
       value,
@@ -40,6 +51,8 @@ export default class StringInput extends React.Component {
 
     return (
       <Component
+        color={error && 'danger'}
+        help={error && <FormattedMessage {...messages.invalid} />}
         label={field.label || field.name}
         maxLength={field.maxLength}
         name={field.name}
