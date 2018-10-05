@@ -25,7 +25,7 @@ export default class Select extends React.Component {
     multiple: false,
     name: null,
     onChange: null,
-    value: null,
+    value: '',
   };
 
   render() {
@@ -36,6 +36,7 @@ export default class Select extends React.Component {
       multiple,
       name,
       onChange,
+      value,
       ...props
     } = this.props;
 
@@ -48,7 +49,7 @@ export default class Select extends React.Component {
         )}
         {...props}
       >
-        <select multiple={multiple} name={name} onChange={onChange}>
+        <select multiple={multiple} name={name} onChange={onChange} value={value}>
           {children}
         </select>
       </Component>

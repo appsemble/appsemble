@@ -28,7 +28,7 @@ export default class EnumInput extends React.Component {
   };
 
   static defaultProps = {
-    value: null,
+    value: '',
   };
 
   render() {
@@ -43,8 +43,16 @@ export default class EnumInput extends React.Component {
         label={field.label || field.name}
         name={field.name}
         onChange={onChange}
+        SelectProps={{
+          className: !value && 'empty',
+        }}
         value={value}
       >
+        {!value && (
+          <option>
+            {field.label}
+          </option>
+        )}
         {field.enum.map(choice => (
           <option key={choice.value} value={choice.value}>
             {choice.label || choice.value}
