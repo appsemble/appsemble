@@ -32,6 +32,9 @@
   post:
     tags: [resource]
     description: Create a new resource for this app.
+    x-oai-middleware:
+      - file: resources
+        handler: create
     parameters:
     - name: appId
       in: path

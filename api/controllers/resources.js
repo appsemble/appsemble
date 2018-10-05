@@ -41,10 +41,17 @@ export async function getOne(ctx) {
   ctx.body = { id: resource.id, ...resource.data };
 }
 
-
-/**
- * @param {import('koa').Context} ctx
- */
 export async function create(ctx) {
-  ctx.body = 'lol';
+  const { appId, resourceType } = ctx.params;
+  const { App } = ctx.state.db;
+
+  const app = await App.findById(appId);
+  verifyResourceDefinition(app, resourceType);
+
+  const resource = ctx.request.body;
+
+  // XXX: Verify validity.
+
+  const { id } = await app.createResource({ type: resourceType, data: resource });
+  ctx.body = { id, ...resource };
 }
