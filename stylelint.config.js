@@ -2,11 +2,9 @@ module.exports = {
   extends: [
     'stylelint-config-standard',
     'stylelint-config-css-modules',
+    'stylelint-config-prettier',
   ],
-  plugins: [
-    'stylelint-no-unsupported-browser-features',
-    'stylelint-order',
-  ],
+  plugins: ['stylelint-no-unsupported-browser-features', 'stylelint-order'],
   rules: {
     'color-hex-length': 'long',
     'color-named': 'never',
