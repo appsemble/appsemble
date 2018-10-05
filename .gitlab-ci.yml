@@ -97,7 +97,7 @@ test:
     MYSQL_RANDOM_ROOT_PASSWORD: 'yes'
     MYSQL_USER: appsemble
     MYSQL_PASSWORD: password
-    DATABASE_URL: 'mysql://appsemble:password@mysql:3306/testAppsemble'
+    DATABASE_URL: 'mysql://appsemble:password@mysql:3306'
   script: yarn test --coverage
   artifacts:
     paths:
