@@ -1,19 +1,19 @@
 import request from 'supertest';
 
 import koaServer from '../server';
-import setupModels from '../utils/setupModels';
 import truncate from '../utils/test/truncate';
+import testSchema from '../utils/test/testSchema';
 
 describe('app controller', () => {
   let App;
   let db;
-  let sequelize;
   let server;
 
   beforeAll(async () => {
-    db = await setupModels(true);
+    db = await testSchema();
+
     server = koaServer({ db });
-    ({ App, sequelize } = db);
+    ({ App } = db);
   });
 
   beforeEach(async () => {
@@ -21,7 +21,7 @@ describe('app controller', () => {
   });
 
   afterAll(async () => {
-    await sequelize.close();
+    await db.close();
   });
 
   it('should be able to add an app in DB', async () => {

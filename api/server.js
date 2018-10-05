@@ -23,7 +23,7 @@ const PORT = 9999;
 
 export default function server({
   app = new Koa(),
-  db = setupModels(true),
+  db = setupModels({ sync: true, database: process.env.DATABASE_URL || 'mysql://root:password@localhost:3306/appsemble' }),
 }) {
   const oaiRouter = new OAIRouter({
     apiDoc: path.join(__dirname, 'api'),
