@@ -23,7 +23,8 @@
     "raw-body": "^2.3.3",
     "sequelize": "^4.39.0",
     "sharp": "^0.20.8",
-    "to-ico": "^1.1.5"
+    "to-ico": "^1.1.5",
+    "uuid": "^3.3.2"
   },
   "devDependencies": {
     "koa-webpack": "^5.1.0",
