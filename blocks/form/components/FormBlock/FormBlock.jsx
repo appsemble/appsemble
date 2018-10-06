@@ -39,12 +39,15 @@ export default class FormBlock extends React.Component {
   };
 
   state = {
+    errors: {},
+    pristine: true,
     submitting: false,
     values: {},
   };
 
   onChange = (event, value = event.target.value) => {
     this.setState(({ values }) => ({
+      pristine: false,
       values: {
         ...values,
         [event.target.name]: value,
@@ -65,10 +68,16 @@ export default class FormBlock extends React.Component {
             return actions.submitSuccess.dispatch(values);
           })
           .catch((error) => {
+            if (error.message !== 'Schema Validation Failed') {
+              this.setState({
+                submitting: false,
+              });
+              throw error;
+            }
             this.setState({
+              errors: error.data,
               submitting: false,
             });
-            throw error;
           });
       }
       return {
@@ -82,6 +91,8 @@ export default class FormBlock extends React.Component {
       block,
     } = this.props;
     const {
+      errors,
+      pristine,
       submitting,
       values,
     } = this.state;
@@ -108,6 +119,7 @@ export default class FormBlock extends React.Component {
           }
           return (
             <Component
+              error={errors[field.name]}
               field={field}
               key={field.name}
               onChange={this.onChange}
@@ -115,7 +127,7 @@ export default class FormBlock extends React.Component {
             />
           );
         })}
-        <Button className={styles.submit} color="primary" disabled={submitting} type="submit">
+        <Button className={styles.submit} color="primary" disabled={pristine || submitting || Object.keys(errors).length !== 0} type="submit">
           <FormattedMessage {...messages.submit} />
         </Button>
       </form>

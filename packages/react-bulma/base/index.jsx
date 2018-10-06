@@ -11,6 +11,7 @@ export { default as FileCta } from './FileCta';
 export { default as FileIcon } from './FileIcon';
 export { default as FileInput } from './FileInput';
 export { default as FileLabel } from './FileLabel';
+export { default as Help } from './Help';
 export { default as Icon } from './Icon';
 export { default as Image } from './Image';
 export { default as Input } from './Input';
