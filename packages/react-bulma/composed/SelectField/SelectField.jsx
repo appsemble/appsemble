@@ -29,6 +29,7 @@ export default class SelectField extends React.Component {
       children,
       multiple,
       name,
+      onChange,
       SelectProps,
       value,
       ...props
@@ -39,6 +40,7 @@ export default class SelectField extends React.Component {
         <Select
           multiple={multiple}
           name={name}
+          onChange={onChange}
           value={value}
           {...SelectProps}
         >
