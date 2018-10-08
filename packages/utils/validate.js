@@ -24,7 +24,27 @@ export default function validate(schema, data) {
       }
 
       const err = new SchemaValidationError('Schema Validation Failed');
-      err.data = errors.map(error => ({ field: (error.path.join('.') || error.params).toString(), code: error.code, message: error.message }));
+      err.data = errors.reduce((acc, error) => {
+        const path = error.path.join('.');
+
+        switch (error.code) {
+          case 'OBJECT_MISSING_REQUIRED_PROPERTY':
+            error.params.forEach((param) => {
+              const paramPath = error.path.concat(param).join('.');
+              acc[paramPath] = { ...acc[path], required: true };
+            });
+            break;
+          case 'ENUM_MISMATCH':
+            acc[path] = { ...acc[path], invalidEnumValue: true };
+            break;
+          case 'INVALID_TYPE':
+            acc[path] = { ...acc[path], invalidType: true };
+            break;
+          default:
+            acc[path] = { ...acc[path] };
+        }
+        return acc;
+      }, {});
       reject(err);
     });
   });

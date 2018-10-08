@@ -11,16 +11,16 @@ describe('validate', () => {
     }
     expect(error).toBeInstanceOf(SchemaValidationError);
     expect(error.message).toBe('Schema Validation Failed');
-    expect(error.data).toEqual([{ code: 'INVALID_TYPE', field: 'object,string', message: 'Expected type object but found type string' }]);
+    expect(error.data).toEqual({ '': { invalidType: true } });
   });
 
-  it('should convertg required property errors', async () => {
+  it('should convert required property errors', async () => {
     let error;
     try {
       await validate({ required: ['skills'] }, {});
     } catch (err) {
       error = err;
     }
-    expect(error.data).toEqual([{ field: 'skills', code: 'OBJECT_MISSING_REQUIRED_PROPERTY', message: 'Missing required property: skills' }]);
+    expect(error.data).toEqual({ skills: { required: true } });
   });
 });
