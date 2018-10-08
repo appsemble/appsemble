@@ -66,5 +66,7 @@ export async function create(ctx) {
   }
 
   const { id } = await app.createResource({ type: resourceType, data: resource });
+
   ctx.body = { id, ...resource };
+  ctx.status = 201;
 }
