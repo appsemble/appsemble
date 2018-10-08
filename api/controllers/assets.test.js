@@ -4,7 +4,7 @@ import koaServer from '../server';
 import testSchema from '../utils/test/testSchema';
 import truncate from '../utils/test/truncate';
 
-describe('app controller', () => {
+describe('asset controller', () => {
   let Asset;
   let db;
   let server;
