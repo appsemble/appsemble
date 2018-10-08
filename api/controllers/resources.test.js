@@ -6,7 +6,6 @@ import truncate from '../utils/test/truncate';
 
 describe('resource controller', () => {
   let App;
-  let Resource;
   let db;
   let server;
 
@@ -28,7 +27,7 @@ describe('resource controller', () => {
     db = await testSchema();
 
     server = koaServer({ db });
-    ({ App, Resource } = db);
+    ({ App } = db);
   });
 
   beforeEach(async () => {
@@ -39,7 +38,7 @@ describe('resource controller', () => {
     await db.close();
   });
 
-  it.skip('should be able to fetch a resource', async () => {
+  it('should be able to fetch a resource', async () => {
     const app = await App.create(exampleApp);
 
     const resource = await app.createResource({ type: 'testResource', data: { foo: 'bar' } });
@@ -79,7 +78,22 @@ describe('resource controller', () => {
     const response = await request(server).post(`/api/apps/${app.id}/testResource`).send(resource);
 
     expect(response.status).toBe(400);
-    expect(response.body.foo).toBeTruthy();
-    // XXX: Expand upon this
+    expect(response.body.data.foo.required).toBeTruthy();
+  });
+
+  it('should check if an app has a specific resource definition', async () => {
+    const app = await App.create(exampleApp);
+
+    const response = await request(server).get(`/api/apps/${app.id}/thisDoesNotExist`);
+    expect(response.status).toBe(404);
+    expect(response.body.message).toBe('App does not have resources called thisDoesNotExist');
+  });
+
+  it('should check if an app has any resource definitions', async () => {
+    const app = await App.create({ definition: { name: 'Test App', defaultPage: 'Test Page' } });
+    const response = await request(server).get(`/api/apps/${app.id}/thisDoesNotExist`);
+
+    expect(response.status).toBe(404);
+    expect(response.body.message).toBe('App does not have any resources defined');
   });
 });
