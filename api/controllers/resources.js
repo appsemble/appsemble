@@ -1,5 +1,7 @@
 import Boom from 'boom';
 
+import validate, { SchemaValidationError } from '../utils/validate';
+
 function verifyResourceDefinition(app, resourceType) {
   if (!app) {
     throw Boom.notFound('App not found');
@@ -49,8 +51,19 @@ export async function create(ctx) {
   verifyResourceDefinition(app, resourceType);
 
   const resource = ctx.request.body;
+  const schema = app.definition.definitions[resourceType];
 
-  // XXX: Verify validity.
+  try {
+    await validate(schema, resource);
+  } catch (err) {
+    if (!(err instanceof SchemaValidationError)) {
+      throw err;
+    }
+
+    const boom = Boom.badRequest(err.message);
+    boom.output.payload.data = err.data;
+    throw boom;
+  }
 
   const { id } = await app.createResource({ type: resourceType, data: resource });
   ctx.body = { id, ...resource };

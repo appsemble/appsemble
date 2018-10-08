@@ -23,6 +23,8 @@
           type: array
           items:
             $ref: '#/definitions/Resource'
+      400:
+        description: Resource was not valid.
       401:
         description: User is not logged in.
       403:
