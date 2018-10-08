@@ -3,13 +3,17 @@
   display: none;
 }
 
-.input {
+.input,
+.textarea {
   border-radius: var(--border-radius) !important;
 }
 
 .select {
+  width: 100%;
+
   & select {
     border-radius: var(--border-radius) !important;
+    width: 100%;
   }
 }
 

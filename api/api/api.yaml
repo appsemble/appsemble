@@ -9,7 +9,7 @@ info:
     > http://localhost:9999/api-explorer
 
     The app editor can be found on
-    > http://localhost:9999/editor
+    > http://localhost:9999/editor/:id
 
     Rendered apps can be found on
     > http://localhost:9999/:id

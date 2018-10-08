@@ -7,6 +7,7 @@ import axios from 'axios';
 
 import mapValues from './mapValues';
 import uploadBlobs from './uploadBlobs';
+import validate from './validate';
 
 
 const actionCreators = {
@@ -57,7 +58,12 @@ const actionCreators = {
     };
   },
 
-  request({ blobs = {}, method = 'GET', url }) {
+  request({
+    blobs = {},
+    method = 'GET',
+    schema,
+    url,
+  }) {
     const regex = /{(.+?)}/g;
     const mappers = url.match(regex)
       ?.map(match => match.substring(1, match.length - 1))
@@ -84,6 +90,7 @@ const actionCreators = {
             default:
               body = data;
           }
+          await validate(schema, body);
           request.data = body;
         }
 

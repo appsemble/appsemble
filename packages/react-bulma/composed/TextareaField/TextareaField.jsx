@@ -2,33 +2,29 @@ import PropTypes from 'prop-types';
 import React from 'react';
 
 import {
-  Input,
+  Textarea,
 } from '../../base';
 import FormField from '../FormField';
 
 
-export default class InputField extends React.Component {
+export default class TextareaField extends React.Component {
   static propTypes = {
     autoComplete: PropTypes.string,
     color: PropTypes.string,
     disabled: PropTypes.bool,
     iconLeft: PropTypes.node,
     iconRight: PropTypes.node,
-    InputProps: PropTypes.shape(),
     label: PropTypes.oneOfType([
       PropTypes.node,
       PropTypes.string,
     ]),
-    max: PropTypes.number,
     maxLength: PropTypes.number,
-    min: PropTypes.number,
     minLength: PropTypes.number,
     name: PropTypes.string.isRequired,
     onChange: PropTypes.func,
     placeholder: PropTypes.string,
     required: PropTypes.bool,
-    step: PropTypes.number,
-    type: PropTypes.string,
+    TextareaProps: PropTypes.shape(),
     value: PropTypes.oneOfType([
       PropTypes.number,
       PropTypes.string,
@@ -41,17 +37,13 @@ export default class InputField extends React.Component {
     disabled: false,
     iconLeft: null,
     iconRight: null,
-    InputProps: {},
+    TextareaProps: {},
     label: null,
-    max: null,
     maxLength: null,
-    min: null,
     minLength: null,
     onChange: null,
     placeholder: null,
     required: false,
-    step: null,
-    type: null,
   };
 
   render() {
@@ -59,39 +51,31 @@ export default class InputField extends React.Component {
       autoComplete,
       color,
       disabled,
-      InputProps,
-      max,
+      TextareaProps,
       maxLength,
-      min,
       minLength,
       name,
       onChange,
       placeholder,
       required,
-      step,
-      type,
       value,
       ...props
     } = this.props;
 
     return (
       <FormField color={color} {...props}>
-        <Input
+        <Textarea
           autoComplete={autoComplete}
           color={color}
           disabled={disabled}
-          max={max}
           maxLength={maxLength}
-          min={min}
           minLength={minLength}
           name={name}
           onChange={onChange}
           placeholder={placeholder}
           required={required}
-          step={step}
-          type={type}
           value={value}
-          {...InputProps}
+          {...TextareaProps}
         />
       </FormField>
     );

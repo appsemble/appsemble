@@ -1,72 +1,67 @@
+import {
+  InputField,
+  TextareaField,
+} from '@appsemble/react-bulma';
 import PropTypes from 'prop-types';
 import React from 'react';
+import {
+  FormattedMessage,
+} from 'react-intl';
 
-import EmailInput from './EmailInput';
-import FileInput from './FileInput';
-import TextInput from './TextInput';
+import messages from './messages';
 
 
 /**
- * Render a form for a JSON schema definition whose type is `string`.
- *
- * String schemas may have a `format` property. These formats are defined by
- * http://json-schema.org/latest/json-schema-validation.html#rfc.section.7.3. The following formats
- * have specific handlers:
- *
- * - email
- * - idn-email
- *
- * The following formats have been considered and fall back to a regular string input:
- *
- * - date-time
- * - date
- * - time
- * - hostname
- * - idn-hostname
- * - ipv4
- * - ipv6
- * - uri
- * - uri-reference
- * - iri
- * - iri-reference
- * - uri-remplate
- * - json-pointer
- * - relative-json-pointer
- * - regex
+ * An input element for a text type schema.
  */
 export default class StringInput extends React.Component {
   static propTypes = {
     /**
-     * The enum schema definition for which to render an input.
+     * A field error object.
      */
-    schema: PropTypes.shape().isRequired,
+    error: PropTypes.shape(),
+    /**
+     * The enum field to render.
+     */
+    field: PropTypes.shape().isRequired,
+    /**
+     * A callback for when the value changes.
+     */
+    onChange: PropTypes.func.isRequired,
     /**
      * The current value.
      */
-    value: PropTypes.oneOfType([
-      PropTypes.instanceOf(Blob),
-      PropTypes.string,
-    ]),
+    value: PropTypes.string,
   };
 
   static defaultProps = {
-    value: null,
+    error: null,
+    value: '',
   };
 
   render() {
     const {
-      schema,
+      error,
+      field,
+      onChange,
+      value,
     } = this.props;
 
-    switch (schema.format) {
-      case 'email':
-      case 'idn-email':
-        return <EmailInput {...this.props} />;
-      default:
-        if (schema.appsembleFile) {
-          return <FileInput {...this.props} />;
-        }
-        return <TextInput {...this.props} />;
-    }
+    const Component = field.multiline ? TextareaField : InputField;
+
+    return (
+      <Component
+        color={error && 'danger'}
+        help={error && <FormattedMessage {...messages.invalid} />}
+        label={field.label || field.name}
+        maxLength={field.maxLength}
+        name={field.name}
+        onChange={onChange}
+        placeholder={field.placeholder || field.name}
+        required={field.required}
+        readOnly={field.readOnly}
+        value={value}
+      />
+    );
   }
 }

@@ -18,15 +18,13 @@ const MARKER_ICON_HEIGHT = 41;
 
 /**
  * An input element for an object type schema which implements GeoCoordinates.
- *
- * https://schema.org/GeoCoordinates
  */
 export default class GeoCoordinatesInput extends React.Component {
   static propTypes = {
     /**
      * The name of the property to render.
      */
-    name: PropTypes.string,
+    field: PropTypes.shape().isRequired,
     /**
      * A callback for when the value changes.
      */
@@ -39,7 +37,6 @@ export default class GeoCoordinatesInput extends React.Component {
   };
 
   static defaultProps = {
-    name: null,
     value: {},
   };
 
@@ -61,7 +58,7 @@ export default class GeoCoordinatesInput extends React.Component {
 
   componentDidMount() {
     const {
-      name,
+      field,
       onChange,
     } = this.props;
 
@@ -70,7 +67,7 @@ export default class GeoCoordinatesInput extends React.Component {
         this.locationMarker.setLatLng(latlng).addTo(map);
       })
       .on('click', ({ latlng }) => {
-        onChange({ target: { name } }, {
+        onChange({ target: { name: field.name } }, {
           latitude: latlng.lat,
           longitude: latlng.lng,
         });
