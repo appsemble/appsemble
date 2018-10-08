@@ -7,7 +7,7 @@ import axios from 'axios';
 
 import mapValues from './mapValues';
 import uploadBlobs from './uploadBlobs';
-import validate from './validate';
+import validate from '../../api/utils/validate';
 
 
 const actionCreators = {
