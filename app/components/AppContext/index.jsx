@@ -1,18 +1,9 @@
-import {
-  connect,
-} from 'react-redux';
-import {
-  withRouter,
-} from 'react-router-dom';
+import { connect } from 'react-redux';
+import { withRouter } from 'react-router-dom';
 
-import {
-  getApp,
-} from '../../actions/app';
-import {
-  initAuth,
-} from '../../actions/user';
+import { getApp } from '../../actions/app';
+import { initAuth } from '../../actions/user';
 import AppContext from './AppContext';
-
 
 function mapStateToProps(state) {
   return {
@@ -20,8 +11,12 @@ function mapStateToProps(state) {
   };
 }
 
-
-export default withRouter(connect(mapStateToProps, {
-  getApp,
-  initAuth,
-})(AppContext));
+export default withRouter(
+  connect(
+    mapStateToProps,
+    {
+      getApp,
+      initAuth,
+    },
+  )(AppContext),
+);

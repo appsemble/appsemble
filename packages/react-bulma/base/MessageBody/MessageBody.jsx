@@ -2,7 +2,6 @@ import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import React from 'react';
 
-
 export default class MessageBody extends React.Component {
   static propTypes = {
     className: PropTypes.string,
@@ -15,20 +14,8 @@ export default class MessageBody extends React.Component {
   };
 
   render() {
-    const {
-      className,
-      component: Component,
-      ...props
-    } = this.props;
+    const { className, component: Component, ...props } = this.props;
 
-    return (
-      <Component
-        className={classNames(
-          'message-body',
-          className,
-        )}
-        {...props}
-      />
-    );
+    return <Component className={classNames('message-body', className)} {...props} />;
   }
 }

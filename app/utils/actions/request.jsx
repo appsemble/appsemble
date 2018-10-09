@@ -4,12 +4,7 @@ import axios from 'axios';
 
 import uploadBlobs from '../uploadBlobs';
 
-export default function request({
-  blobs = {},
-  method = 'GET',
-  schema,
-  url,
-}) {
+export default function request({ blobs = {}, method = 'GET', schema, url }) {
   const regex = /{(.+?)}/g;
   const mappers = url
     .match(regex)
@@ -27,11 +22,7 @@ export default function request({
         url: url.replace(regex, (match, filter) => mappers[filter](data)),
       };
 
-      if (
-        methodUpper === 'PUT'
-        || methodUpper === 'POST'
-        || methodUpper === 'PATCH'
-      ) {
+      if (methodUpper === 'PUT' || methodUpper === 'POST' || methodUpper === 'PATCH') {
         let body;
         switch (blobs.type) {
           case 'upload': {

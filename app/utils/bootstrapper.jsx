@@ -2,7 +2,6 @@ const bootstrappers = new Map();
 const resolvers = new Map();
 const loadedBlocks = new Set();
 
-
 /**
  * Register a bootstrap function for a block.
  *
@@ -15,13 +14,19 @@ const loadedBlocks = new Set();
 export function register(scriptNode, event, blockDefId) {
   const { document, fn } = event.detail;
   if (scriptNode !== event.target || scriptNode !== document.currentScript) {
-    throw new Error('Block bootstrapper was registered from within an unhandled node. What’s going on?');
+    throw new Error(
+      'Block bootstrapper was registered from within an unhandled node. What’s going on?',
+    );
   }
   if (bootstrappers.has(blockDefId)) {
-    throw new Error('It appears this block has already been bootstrapped. Did you call bootstrap twice?');
+    throw new Error(
+      'It appears this block has already been bootstrapped. Did you call bootstrap twice?',
+    );
   }
   if (!(fn instanceof Function)) {
-    throw new Error('No function was passed to bootstrap(). It takes a function as its first argument.');
+    throw new Error(
+      'No function was passed to bootstrap(). It takes a function as its first argument.',
+    );
   }
   bootstrappers.set(blockDefId, fn);
   const callbacks = resolvers.get(blockDefId);
@@ -32,7 +37,6 @@ export function register(scriptNode, event, blockDefId) {
   callbacks.forEach(resolve => resolve(fn));
 }
 
-
 function getBootstrap(blockDefId) {
   if (bootstrappers.has(blockDefId)) {
     return bootstrappers.get(blockDefId);
@@ -41,11 +45,10 @@ function getBootstrap(blockDefId) {
     resolvers.set(blockDefId, []);
   }
   const waiting = resolvers.get(blockDefId);
-  return new Promise((resolve) => {
+  return new Promise(resolve => {
     waiting.push(resolve);
   });
 }
-
 
 /**
  * Call the bootstrap function for a block definition
@@ -55,18 +58,16 @@ function getBootstrap(blockDefId) {
  */
 export async function callBootstrap(blockDef, params) {
   if (!loadedBlocks.has(blockDef.id)) {
-    blockDef.files
-      .filter(url => url.endsWith('.js'))
-      .forEach((url) => {
-        const script = document.createElement('script');
-        script.src = url;
-        script.addEventListener('AppsembleBootstrap', (event) => {
-          event.stopImmediatePropagation();
-          event.preventDefault();
-          register(script, event, blockDef.id);
-        });
-        document.head.appendChild(script);
+    blockDef.files.filter(url => url.endsWith('.js')).forEach(url => {
+      const script = document.createElement('script');
+      script.src = url;
+      script.addEventListener('AppsembleBootstrap', event => {
+        event.stopImmediatePropagation();
+        event.preventDefault();
+        register(script, event, blockDef.id);
       });
+      document.head.appendChild(script);
+    });
     loadedBlocks.add(blockDef.id);
   }
   const bootstrap = await getBootstrap(blockDef.id);

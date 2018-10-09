@@ -2,13 +2,7 @@ import Boom from 'boom';
 
 import normalize from '@appsemble/utils/normalize';
 
-const iconSizes = [
-  48,
-  144,
-  192,
-  512,
-];
-
+const iconSizes = [48, 144, 192, 512];
 
 /**
  * https://developers.google.com/web/fundamentals/web-app-manifest
@@ -23,15 +17,8 @@ export default async function manifestHandler(ctx) {
     throw Boom.notFound('App not found');
   }
 
-  const {
-    defaultPage,
-    name,
-    theme,
-  } = record.definition;
-  const {
-    themeColor = '#ffffff',
-    backgroundColor = themeColor,
-  } = theme;
+  const { defaultPage, name, theme } = record.definition;
+  const { themeColor = '#ffffff', backgroundColor = themeColor } = theme;
 
   ctx.body = {
     background_color: backgroundColor,

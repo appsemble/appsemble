@@ -11,10 +11,8 @@ import React from 'react';
 
 import styles from './GeoCoordinatesInput.css';
 
-
 const MARKER_ICON_WIDTH = 25;
 const MARKER_ICON_HEIGHT = 41;
-
 
 /**
  * An input element for an object type schema which implements GeoCoordinates.
@@ -57,20 +55,20 @@ export default class GeoCoordinatesInput extends React.Component {
   ref = React.createRef();
 
   componentDidMount() {
-    const {
-      field,
-      onChange,
-    } = this.props;
+    const { field, onChange } = this.props;
 
     const map = new Map(this.ref.current, { attributionControl: false })
       .on('locationfound', ({ latlng }) => {
         this.locationMarker.setLatLng(latlng).addTo(map);
       })
       .on('click', ({ latlng }) => {
-        onChange({ target: { name: field.name } }, {
-          latitude: latlng.lat,
-          longitude: latlng.lng,
-        });
+        onChange(
+          { target: { name: field.name } },
+          {
+            latitude: latlng.lat,
+            longitude: latlng.lng,
+          },
+        );
       })
       .locate({ setView: true });
     new TileLayer('http://c.tiles.wmflabs.org/bw-mapnik/{z}/{x}/{y}.png').addTo(map);
@@ -78,9 +76,7 @@ export default class GeoCoordinatesInput extends React.Component {
   }
 
   componentDidUpdate() {
-    const {
-      value,
-    } = this.props;
+    const { value } = this.props;
 
     if (value?.latitude && value.longitude) {
       this.marker.setLatLng([value.latitude, value.longitude]).addTo(this.map);
@@ -90,8 +86,6 @@ export default class GeoCoordinatesInput extends React.Component {
   }
 
   render() {
-    return (
-      <div className={styles.root} ref={this.ref} />
-    );
+    return <div className={styles.root} ref={this.ref} />;
   }
 }

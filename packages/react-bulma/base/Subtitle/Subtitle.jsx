@@ -4,7 +4,6 @@ import React from 'react';
 
 import { is } from '../../utils';
 
-
 export default class Subtitle extends React.Component {
   static propTypes = {
     className: PropTypes.string,
@@ -16,11 +15,7 @@ export default class Subtitle extends React.Component {
   };
 
   render() {
-    const {
-      className,
-      size,
-      ...props
-    } = this.props;
+    const { className, size, ...props } = this.props;
 
     const Component = `h${size}`;
 

@@ -1,6 +1,5 @@
 import extractBlobs, { placeholder } from './extractBlobs';
 
-
 describe('extractBlobs', () => {
   it('should extract files from an object', () => {
     const bar = new Blob();
@@ -46,18 +45,14 @@ describe('extractBlobs', () => {
     const [result, files] = extractBlobs({
       foo: 1,
       bar,
-      nested: [
-        baz,
-      ],
+      nested: [baz],
     });
     expect(files).toContain(bar);
     expect(files).toContain(baz);
     expect(result).toEqual({
       foo: 1,
       bar: placeholder,
-      nested: [
-        placeholder,
-      ],
+      nested: [placeholder],
     });
   });
 });

@@ -1,13 +1,7 @@
-import {
-  Container,
-  Title,
-} from '@appsemble/react-bulma';
+import { Container, Title } from '@appsemble/react-bulma';
 import PropTypes from 'prop-types';
 import React from 'react';
-import {
-  SchemaRenderer,
-} from 'react-schema-renderer';
-
+import { SchemaRenderer } from 'react-schema-renderer';
 
 /**
  * Render a JSON schema object as a definition list.
@@ -35,12 +29,7 @@ export default class DefaultRenderer extends React.Component {
   };
 
   render() {
-    const {
-      block,
-      name,
-      schema,
-      value,
-    } = this.props;
+    const { block, name, schema, value } = this.props;
 
     const { fields } = block.parameters;
 
@@ -49,24 +38,19 @@ export default class DefaultRenderer extends React.Component {
         {Object.entries(schema.properties)
           .map(([subName, subSchema]) => {
             const propName = name == null ? subName : `${name}.${subName}`;
-            return fields.includes(propName) && [
-              propName,
-              <Container key={subName} className={propName.replace(/\./g, '-')}>
-                <Title size={6}>
-                  {subSchema.title || subName}
-                </Title>
-                <SchemaRenderer
-                  name={subName}
-                  schema={subSchema}
-                  value={value[subName]}
-                />
-              </Container>,
-            ];
+            return (
+              fields.includes(propName) && [
+                propName,
+                <Container key={subName} className={propName.replace(/\./g, '-')}>
+                  <Title size={6}>{subSchema.title || subName}</Title>
+                  <SchemaRenderer name={subName} schema={subSchema} value={value[subName]} />
+                </Container>,
+              ]
+            );
           })
           .filter(Boolean)
           .sort(([a], [b]) => fields.indexOf(a) - fields.indexOf(b))
-          .map(([, node]) => node)
-        }
+          .map(([, node]) => node)}
       </Container>
     );
   }

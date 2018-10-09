@@ -4,7 +4,6 @@ import React from 'react';
 
 import { is } from '../../utils';
 
-
 export default class Select extends React.Component {
   static propTypes = {
     children: PropTypes.node.isRequired,
@@ -13,10 +12,7 @@ export default class Select extends React.Component {
     multiple: PropTypes.bool,
     name: PropTypes.string,
     onChange: PropTypes.func,
-    value: PropTypes.oneOfType([
-      PropTypes.number,
-      PropTypes.string,
-    ]),
+    value: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   };
 
   static defaultProps = {
@@ -41,14 +37,7 @@ export default class Select extends React.Component {
     } = this.props;
 
     return (
-      <Component
-        className={classNames(
-          'select',
-          is('multiple', multiple),
-          className,
-        )}
-        {...props}
-      >
+      <Component className={classNames('select', is('multiple', multiple), className)} {...props}>
         <select multiple={multiple} name={name} onChange={onChange} value={value}>
           {children}
         </select>

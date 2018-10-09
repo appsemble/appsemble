@@ -4,7 +4,6 @@ import React from 'react';
 
 import { is } from '../../utils';
 
-
 export default class File extends React.Component {
   static propTypes = {
     boxed: PropTypes.bool,
@@ -21,24 +20,8 @@ export default class File extends React.Component {
   };
 
   render() {
-    const {
-      boxed,
-      className,
-      color,
-      component: Component,
-      ...props
-    } = this.props;
+    const { boxed, className, color, component: Component, ...props } = this.props;
 
-    return (
-      <Component
-        className={classNames(
-          'file',
-          is(boxed),
-          is(color),
-          className,
-        )}
-        {...props}
-      />
-    );
+    return <Component className={classNames('file', is(boxed), is(color), className)} {...props} />;
   }
 }

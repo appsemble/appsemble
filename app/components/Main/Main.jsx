@@ -1,15 +1,10 @@
 import normalize from '@appsemble/utils/normalize';
 import PropTypes from 'prop-types';
 import React from 'react';
-import {
-  Redirect,
-  Route,
-  Switch,
-} from 'react-router-dom';
+import { Redirect, Route, Switch } from 'react-router-dom';
 
 import Page from '../Page';
 import styles from './Main.css';
-
 
 /**
  * The main body of the loaded app.
@@ -26,16 +21,14 @@ export default class Main extends React.Component {
   };
 
   render() {
-    const {
-      app,
-    } = this.props;
+    const { app } = this.props;
 
     if (app == null) {
       return null;
     }
 
     let defaultPath;
-    const routes = app.pages.map((page) => {
+    const routes = app.pages.map(page => {
       const path = `/${[
         normalize(page.name),
         ...(page.parameters || []).map(parameter => `:${parameter}`),
@@ -44,14 +37,7 @@ export default class Main extends React.Component {
         defaultPath = path;
       }
       return (
-        <Route
-          key={path}
-          exact
-          path={path}
-          render={props => (
-            <Page page={page} {...props} />
-          )}
-        />
+        <Route key={path} exact path={path} render={props => <Page page={page} {...props} />} />
       );
     });
 

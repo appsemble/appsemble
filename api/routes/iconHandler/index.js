@@ -3,17 +3,9 @@ import sharp from 'sharp';
 
 import getDefaultIcon from '../../utils/getDefaultIcon';
 
-
 export default async function iconHandler(ctx) {
-  const {
-    format,
-    id,
-    width,
-    height = width,
-  } = ctx.params;
-  const {
-    App,
-  } = ctx.state.db;
+  const { format, id, width, height = width } = ctx.params;
+  const { App } = ctx.state.db;
   const opaque = 'opaque' in ctx.request.query || format === 'jpg' || format === 'tiff';
   let icon;
   let backgroundColor = '#ffffff';
@@ -25,10 +17,7 @@ export default async function iconHandler(ctx) {
     }
     ({ icon } = app);
     if (opaque) {
-      const {
-        themeColor = backgroundColor,
-        splashColor = themeColor,
-      } = app.definition.theme || {};
+      const { themeColor = backgroundColor, splashColor = themeColor } = app.definition.theme || {};
       backgroundColor = splashColor;
     }
   }

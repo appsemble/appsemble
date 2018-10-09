@@ -4,14 +4,10 @@ import React from 'react';
 
 import { is } from '../../utils';
 
-
 export default class Field extends React.Component {
   static propTypes = {
     className: PropTypes.string,
-    component: PropTypes.oneOfType([
-      PropTypes.func,
-      PropTypes.string,
-    ]),
+    component: PropTypes.oneOfType([PropTypes.func, PropTypes.string]),
     horizontal: PropTypes.bool,
   };
 
@@ -22,20 +18,11 @@ export default class Field extends React.Component {
   };
 
   render() {
-    const {
-      className,
-      component: Component,
-      horizontal,
-      ...props
-    } = this.props;
+    const { className, component: Component, horizontal, ...props } = this.props;
 
     return (
       <Component
-        className={classNames(
-          'field',
-          is('horizontal', horizontal),
-          className,
-        )}
+        className={classNames('field', is('horizontal', horizontal), className)}
         {...props}
       />
     );

@@ -3,7 +3,6 @@ import React from 'react';
 
 import UnsupportedSchema from '../UnsupportedSchema';
 
-
 /**
  * Render a component based on a JSON schema.
  *
@@ -36,11 +35,7 @@ export default class SchemaRenderer extends React.Component {
   };
 
   componentDidMount() {
-    const {
-      name,
-      populate,
-      schema,
-    } = this.props;
+    const { name, populate, schema } = this.props;
 
     if (populate == null) {
       return;
@@ -54,17 +49,14 @@ export default class SchemaRenderer extends React.Component {
     }
 
     if (value === undefined && schema.enum) {
-      ([value] = schema.enum);
+      [value] = schema.enum;
     }
 
     populate({ target: { name } }, value);
   }
 
   getComponent() {
-    const {
-      renderers,
-      schema,
-    } = this.props;
+    const { renderers, schema } = this.props;
 
     const type = schema.enum ? 'enum' : schema.type;
 
@@ -76,10 +68,7 @@ export default class SchemaRenderer extends React.Component {
   }
 
   getValue() {
-    const {
-      value,
-      schema,
-    } = this.props;
+    const { value, schema } = this.props;
 
     if (value !== undefined) {
       return value;
@@ -93,22 +82,10 @@ export default class SchemaRenderer extends React.Component {
   }
 
   render() {
-    const {
-      populate,
-      renderers,
-      schema,
-      value,
-      ...props
-    } = this.props;
+    const { populate, renderers, schema, value, ...props } = this.props;
 
     const Component = this.getComponent();
 
-    return (
-      <Component
-        schema={schema}
-        value={this.getValue()}
-        {...props}
-      />
-    );
+    return <Component schema={schema} value={this.getValue()} {...props} />;
   }
 }

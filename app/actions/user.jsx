@@ -3,23 +3,19 @@ import jwtDecode from 'jwt-decode';
 
 import { AUTH, RW } from '../utils/getDB';
 
-
 // The buffer between the access token expiration and the refresh token request. A minute should be
 // plenty of time for the refresh token request to finish.
 const REFRESH_BUFFER = 60e3;
-
 
 const INITIALIZED = 'user/INITIALIZED';
 const LOGIN_SUCCESS = 'user/LOGIN_SUCCESS';
 const LOGOUT = 'user/LOGOUT';
 let timeoutId;
 
-
 const initialState = {
   initialized: false,
   user: null,
 };
-
 
 export default (state = initialState, action) => {
   switch (action.type) {
@@ -43,22 +39,22 @@ export default (state = initialState, action) => {
   }
 };
 
-
 async function doLogout(dispatch, getState, db = getState().app.db) {
   delete axios.defaults.headers.common.Authorization;
   clearTimeout(timeoutId);
-  db.transaction(AUTH, RW).objectStore(AUTH).delete(0);
+  db.transaction(AUTH, RW)
+    .objectStore(AUTH)
+    .delete(0);
   dispatch({
     type: LOGOUT,
   });
 }
 
-
 function setupAuth(accessToken, refreshToken, url, db, dispatch) {
   const payload = jwtDecode(accessToken);
   const { exp, scopes, sub } = payload;
   if (exp) {
-    const timeout = (exp * 1e3) - REFRESH_BUFFER - new Date().getTime();
+    const timeout = exp * 1e3 - REFRESH_BUFFER - new Date().getTime();
     if (refreshToken) {
       // eslint-disable-next-line no-use-before-define
       timeoutId = setTimeout(refreshTokenLogin, timeout, url, db, dispatch);
@@ -73,29 +69,35 @@ function setupAuth(accessToken, refreshToken, url, db, dispatch) {
   };
 }
 
-
 async function requestToken(url, params, db, dispatch, refreshURL) {
   const { data } = await axios.post(url, new URLSearchParams(params));
-  const {
-    access_token: accessToken,
-    refresh_token: refreshToken,
-  } = data;
+  const { access_token: accessToken, refresh_token: refreshToken } = data;
   const tx = db.transaction(AUTH, RW);
-  tx.objectStore(AUTH).put({
-    accessToken,
-    refreshToken,
-  }, 0);
+  tx.objectStore(AUTH).put(
+    {
+      accessToken,
+      refreshToken,
+    },
+    0,
+  );
   return setupAuth(accessToken, refreshToken, refreshURL || url, db, dispatch);
 }
 
-
 async function refreshTokenLogin(url, db, dispatch) {
-  const { refreshToken } = await db.transaction(AUTH).objectStore(AUTH).get(0);
+  const { refreshToken } = await db
+    .transaction(AUTH)
+    .objectStore(AUTH)
+    .get(0);
   try {
-    const user = await requestToken(url, {
-      grant_type: 'refresh_token',
-      refresh_token: refreshToken,
-    }, db, dispatch);
+    const user = await requestToken(
+      url,
+      {
+        grant_type: 'refresh_token',
+        refresh_token: refreshToken,
+      },
+      db,
+      dispatch,
+    );
     dispatch({
       type: LOGIN_SUCCESS,
       user,
@@ -104,7 +106,6 @@ async function refreshTokenLogin(url, db, dispatch) {
     doLogout(dispatch, null, db);
   }
 }
-
 
 /**
  * Initialize all authentication.
@@ -117,7 +118,10 @@ async function refreshTokenLogin(url, db, dispatch) {
 export function initAuth() {
   return async (dispatch, getState) => {
     const { app, db } = getState().app;
-    const auth = await db.transaction(AUTH).objectStore(AUTH).get(0);
+    const auth = await db
+      .transaction(AUTH)
+      .objectStore(AUTH)
+      .get(0);
     let user = null;
     if (auth != null) {
       const authentication = app.authentication || app.authentication[0];
@@ -136,7 +140,6 @@ export function initAuth() {
   };
 }
 
-
 /**
  * Logout from the current session.
  *
@@ -146,7 +149,6 @@ export function initAuth() {
 export function logout() {
   return doLogout;
 }
-
 
 /**
  * Login using JWT / OAuth2 password grant type.
@@ -160,11 +162,18 @@ export function logout() {
 export function passwordLogin(url, { username, password }, refreshURL) {
   return async (dispatch, getState) => {
     const { db } = getState().app;
-    const user = await requestToken(url, {
-      grant_type: 'password',
-      username,
-      password,
-    }, db, dispatch, refreshURL, dispatch);
+    const user = await requestToken(
+      url,
+      {
+        grant_type: 'password',
+        username,
+        password,
+      },
+      db,
+      dispatch,
+      refreshURL,
+      dispatch,
+    );
     dispatch({
       type: LOGIN_SUCCESS,
       user,

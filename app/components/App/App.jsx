@@ -1,20 +1,12 @@
-import {
-  createMuiTheme,
-  MuiThemeProvider,
-} from '@material-ui/core';
+import { createMuiTheme, MuiThemeProvider } from '@material-ui/core';
 import React from 'react';
-import {
-  IntlProvider,
-} from 'react-intl';
-import {
-  BrowserRouter,
-} from 'react-router-dom';
+import { IntlProvider } from 'react-intl';
+import { BrowserRouter } from 'react-router-dom';
 
 import AppContext from '../AppContext';
 import Main from '../Main';
 import SideNavigation from '../SideNavigation';
 import TitleBar from '../TitleBar';
-
 
 /**
  * The main entry point of the React app.
@@ -24,11 +16,7 @@ import TitleBar from '../TitleBar';
 export default class App extends React.Component {
   render() {
     return (
-      <IntlProvider
-        locale="en-US"
-        defaultLocale="en-US"
-        textComponent={React.Fragment}
-      >
+      <IntlProvider locale="en-US" defaultLocale="en-US" textComponent={React.Fragment}>
         <MuiThemeProvider theme={createMuiTheme()}>
           <BrowserRouter basename={new URL(document.baseURI).pathname}>
             <AppContext>

@@ -1,9 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import {
-  SchemaProvider,
-  SchemaRenderer,
-} from 'react-schema-renderer';
+import { SchemaProvider, SchemaRenderer } from 'react-schema-renderer';
 
 import ArrayRenderer from '../ArrayRenderer';
 import BooleanRenderer from '../BooleanRenderer';
@@ -11,7 +8,6 @@ import EnumRenderer from '../EnumRenderer';
 import ObjectRenderer from '../ObjectRenderer';
 import NumberRenderer from '../NumberRenderer';
 import StringRenderer from '../StringRenderer';
-
 
 const schemaOptions = {
   renderers: {
@@ -24,7 +20,6 @@ const schemaOptions = {
     string: StringRenderer,
   },
 };
-
 
 /**
  * The main component for the Appsemble detail-viewer block.
@@ -50,22 +45,15 @@ export default class DetailViewerBlock extends React.Component {
   };
 
   async componentDidMount() {
-    const {
-      actions,
-      pageParameters,
-    } = this.props;
+    const { actions, pageParameters } = this.props;
 
     const data = await actions.load.dispatch(pageParameters);
     this.setState({ data });
   }
 
   render() {
-    const {
-      block,
-    } = this.props;
-    const {
-      data,
-    } = this.state;
+    const { block } = this.props;
+    const { data } = this.state;
 
     if (data == null) {
       return 'Loading…';
@@ -73,10 +61,7 @@ export default class DetailViewerBlock extends React.Component {
 
     return (
       <SchemaProvider value={schemaOptions}>
-        <SchemaRenderer
-          schema={block.parameters.schema}
-          value={data}
-        />
+        <SchemaRenderer schema={block.parameters.schema} value={data} />
       </SchemaProvider>
     );
   }

@@ -1,15 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 
-import {
-  Control,
-  Field,
-  FieldBody,
-  FieldLabel,
-  Help,
-  Label,
-} from '../../base';
-
+import { Control, Field, FieldBody, FieldLabel, Help, Label } from '../../base';
 
 export default class FormField extends React.Component {
   static propTypes = {
@@ -17,10 +9,7 @@ export default class FormField extends React.Component {
     iconLeft: PropTypes.node,
     iconRight: PropTypes.node,
     help: PropTypes.node,
-    label: PropTypes.oneOfType([
-      PropTypes.node,
-      PropTypes.string,
-    ]),
+    label: PropTypes.oneOfType([PropTypes.node, PropTypes.string]),
     size: PropTypes.string,
   };
 
@@ -33,16 +22,7 @@ export default class FormField extends React.Component {
   };
 
   render() {
-    const {
-      children,
-      color,
-      iconLeft,
-      iconRight,
-      label,
-      help,
-      size,
-      ...props
-    } = this.props;
+    const { children, color, iconLeft, iconRight, label, help, size, ...props } = this.props;
 
     const control = (
       <React.Fragment>
@@ -51,11 +31,7 @@ export default class FormField extends React.Component {
           {iconLeft && React.cloneElement(iconLeft, { size, position: 'left' })}
           {iconRight && React.cloneElement(iconRight, { size, position: 'right' })}
         </Control>
-        {help && (
-          <Help color={color}>
-            {help}
-          </Help>
-        )}
+        {help && <Help color={color}>{help}</Help>}
       </React.Fragment>
     );
 
@@ -63,14 +39,10 @@ export default class FormField extends React.Component {
       return (
         <Field color={color} horizontal {...props}>
           <FieldLabel normal>
-            <Label>
-              {label}
-            </Label>
+            <Label>{label}</Label>
           </FieldLabel>
           <FieldBody>
-            <Field>
-              {control}
-            </Field>
+            <Field>{control}</Field>
           </FieldBody>
         </Field>
       );

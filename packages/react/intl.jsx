@@ -1,8 +1,5 @@
 import React from 'react';
-import {
-  IntlProvider,
-} from 'react-intl';
-
+import { IntlProvider } from 'react-intl';
 
 /**
  * A HOC which provides `intl` in a block written in React.
