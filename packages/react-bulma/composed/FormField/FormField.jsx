@@ -6,6 +6,7 @@ import {
   Field,
   FieldBody,
   FieldLabel,
+  Help,
   Label,
 } from '../../base';
 
@@ -15,6 +16,7 @@ export default class FormField extends React.Component {
     children: PropTypes.node.isRequired,
     iconLeft: PropTypes.node,
     iconRight: PropTypes.node,
+    help: PropTypes.node,
     label: PropTypes.oneOfType([
       PropTypes.node,
       PropTypes.string,
@@ -26,30 +28,40 @@ export default class FormField extends React.Component {
     iconLeft: null,
     iconRight: null,
     label: null,
+    help: null,
     size: null,
   };
 
   render() {
     const {
       children,
+      color,
       iconLeft,
       iconRight,
       label,
+      help,
       size,
       ...props
     } = this.props;
 
     const control = (
-      <Control iconsLeft={!!iconLeft} iconsRight={!!iconRight}>
-        {React.cloneElement(React.Children.only(children), { size })}
-        {iconLeft && React.cloneElement(iconLeft, { size, position: 'left' })}
-        {iconRight && React.cloneElement(iconRight, { size, position: 'right' })}
-      </Control>
+      <React.Fragment>
+        <Control iconsLeft={!!iconLeft} iconsRight={!!iconRight}>
+          {React.cloneElement(React.Children.only(children), { size })}
+          {iconLeft && React.cloneElement(iconLeft, { size, position: 'left' })}
+          {iconRight && React.cloneElement(iconRight, { size, position: 'right' })}
+        </Control>
+        {help && (
+          <Help color={color}>
+            {help}
+          </Help>
+        )}
+      </React.Fragment>
     );
 
     if (label != null) {
       return (
-        <Field horizontal {...props}>
+        <Field color={color} horizontal {...props}>
           <FieldLabel normal>
             <Label>
               {label}
@@ -65,7 +77,7 @@ export default class FormField extends React.Component {
     }
 
     return (
-      <Field {...props}>
+      <Field color={color} {...props}>
         {control}
       </Field>
     );

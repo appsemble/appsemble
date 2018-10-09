@@ -26,6 +26,10 @@ export default class Page extends React.Component {
     user: null,
   };
 
+  state = {
+    dialog: null,
+  };
+
   componentDidMount() {
     const {
       getBlockDefs,
@@ -49,12 +53,22 @@ export default class Page extends React.Component {
     }
   }
 
+  showDialog = (dialog) => {
+    this.setState({ dialog });
+    return () => {
+      this.setState({ dialog: null });
+    };
+  };
+
   render() {
     const {
       location,
       page,
       user,
     } = this.props;
+    const {
+      dialog,
+    } = this.state;
 
     const { counter } = this;
 
@@ -64,10 +78,15 @@ export default class Page extends React.Component {
       );
     }
 
-    return page.blocks.map((block, index) => (
-      // As long as blocks are in a static list, using the index as a key should be fine.
-      // eslint-disable-next-line react/no-array-index-key
-      <Block key={`${location.key}.${index}.${counter}`} block={block} />
-    ));
+    return (
+      <React.Fragment>
+        {page.blocks.map((block, index) => (
+          // As long as blocks are in a static list, using the index as a key should be fine.
+          // eslint-disable-next-line react/no-array-index-key
+          <Block key={`${location.key}.${index}.${counter}`} block={block} showDialog={this.showDialog} />
+        ))}
+        {dialog}
+      </React.Fragment>
+    );
   }
 }

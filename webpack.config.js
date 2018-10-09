@@ -26,7 +26,7 @@ module.exports = async (env, { mode }) => {
       editor: [path.join(__dirname, 'editor')],
     }),
     output: {
-      filename: production ? '[name]/[name].js' : '[name]/[hash].js',
+      filename: production ? '[name]/[hash].js' : '[name]/[name].js',
       publicPath: '/',
     },
     resolve: {
@@ -129,7 +129,7 @@ module.exports = async (env, { mode }) => {
         },
       }),
       new MiniCssExtractPlugin({
-        filename: production ? '[name]/[name].css' : '[name]/[hash].css',
+        filename: production ? '[name]/[hash].css' : '[name]/[name].css',
       }),
       production && new CleanWebpackPlugin(['dist']),
       ...blocks.map(block => new ManifestPlugin({

@@ -7,7 +7,6 @@
         "required": true
       },
       "submitSuccess": {
-        "required": true
       }
     }
   },
@@ -21,7 +20,6 @@
     "react": "^16.5.2",
     "react-dom": "^16.5.2",
     "react-intl": "^2.6.0",
-    "react-schema-renderer": "^1.0.0",
     "read-blob": "^1.1.0"
   }
 }

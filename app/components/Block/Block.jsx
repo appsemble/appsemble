@@ -19,6 +19,7 @@ import styles from './Block.css';
  */
 export default class Block extends React.Component {
   static propTypes = {
+    actionCreators: PropTypes.shape(),
     app: PropTypes.shape().isRequired,
     /**
      * The block to render.
@@ -27,19 +28,25 @@ export default class Block extends React.Component {
     blockDef: PropTypes.shape(),
     history: PropTypes.shape().isRequired,
     match: PropTypes.shape().isRequired,
+    showDialog: PropTypes.func,
   };
 
   static defaultProps = {
+    actionCreators: null,
     blockDef: null,
+    showDialog: null,
   };
 
   ref = async (div) => {
     const {
+      actionCreators,
       app,
       block,
       blockDef,
+      data,
       history,
       match,
+      showDialog,
     } = this.props;
 
     if (div == null) {
@@ -52,7 +59,7 @@ export default class Block extends React.Component {
 
     this.attached = true;
     const shadowRoot = div.attachShadow({ mode: 'closed' });
-    const actions = makeActions(blockDef, app, block, history);
+    const actions = makeActions(blockDef, app, block, history, showDialog, actionCreators);
     const resources = makeResources(blockDef, block);
     await Promise.all(blockDef.files
       .filter(url => url.endsWith('.css'))
@@ -71,6 +78,7 @@ export default class Block extends React.Component {
     await callBootstrap(blockDef, {
       actions,
       block,
+      data,
       pageParameters: match.params,
       resources,
       shadowRoot,

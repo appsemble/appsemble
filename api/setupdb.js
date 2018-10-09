@@ -2,8 +2,10 @@
 import setupModels from './utils/setupModels';
 
 async function main() {
+  const database = process.env.DATABASE_URL || 'mysql://root:password@localhost:3306/appsemble';
+
   // Drop the tables related to every model and create them.
-  const { sequelize } = await setupModels(true, true);
+  const { sequelize } = await setupModels({ sync: true, force: true, database });
   sequelize.close();
 }
 

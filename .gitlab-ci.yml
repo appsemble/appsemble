@@ -94,10 +94,8 @@ test:
       command: [--default-authentication-plugin=mysql_native_password]
   variables:
     MYSQL_DATABASE: testAppsemble
-    MYSQL_RANDOM_ROOT_PASSWORD: 'yes'
-    MYSQL_USER: appsemble
-    MYSQL_PASSWORD: password
-    DATABASE_URL: 'mysql://appsemble:password@mysql:3306/testAppsemble'
+    MYSQL_ROOT_PASSWORD: password
+    DATABASE_URL: 'mysql://root:password@mysql:3306'
   script: yarn test --coverage
   artifacts:
     paths:
