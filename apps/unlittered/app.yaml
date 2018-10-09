@@ -1,47 +1,34 @@
 name: Waarnemingen App
 defaultPage: Maak waarneming
 
-
 theme:
   themeColor: '#eb0000'
-
 
 definitions:
   waarneming:
     type: object
     required:
-      - onderwerp
       - notities
       - proces
     properties:
       locatie:
-        title: GeoCoordinates
         type: object
+        required:
+          - latitude
+          - longitude
         properties:
           latitude:
             type: number
           longitude:
             type: number
-      onderwerp:
-        title: Onderwerp
-        type: string
       fotos:
         title: Foto’s
         type: array
         items:
           type: string
-          appsembleFile:
-            type:
-              - image/jpeg
-      gebied:
-        type: string
-        readOnly: true
       notities:
         title: Notities
         type: string
-      id:
-        type: string
-        readOnly: true
       proces:
         title: Proces
         enum:
@@ -49,17 +36,11 @@ definitions:
           - Handhaving
           - Heel en Groen
           - Inzameling
-      created_at:
-        type: string
-        format: date-time
-        readOnly: true
-
 
 authentication:
   - method: email
     url: https://api.stadswerken.amsterdam/login
     refreshURL: https://api.stadswerken.amsterdam/token/refresh
-
 
 pages:
   - name: Maak waarneming
@@ -79,9 +60,6 @@ pages:
                 - value: Handhaving
                 - value: Heel en Groen
                 - value: Inzameling
-            - name: onderwerp
-              label: Onderwerp
-              type: string
             - name: notities
               label: Notities
               type: string
@@ -94,19 +72,24 @@ pages:
               repeated: true
         actions:
           submit:
-            type: request
-            method: post
-            url: 'https://api.stadswerken.amsterdam/waarnemingen_real'
-            schema:
-              $ref: /definitions/waarneming
-            blobs:
-              type: upload
-              method: post
-              url: 'http://oscity.nl:9808/upload'
-              serialize: custom
-          submitSuccess:
-            type: link
-            to: Overzichtskaart
+            type: splash
+            blocks:
+              - type: amsterdam-splash
+                actions:
+                  load:
+                    type: request
+                    method: post
+                    url: 'https://api.stadswerken.amsterdam/waarnemingen_real'
+                    blobs:
+                      type: upload
+                      method: post
+                      url: 'http://oscity.nl:9808/upload'
+                      serialize: custom
+                  error:
+                    type: splash.error
+                  success:
+                    type: link
+                    to: Overzichtskaart
 
   - name: Overzichtskaart
     scope:
@@ -118,7 +101,8 @@ pages:
           longitude: locatie.longitude
         resources:
           marker:
-            url: 'https://api.stadswerken.amsterdam/waarnemingen_real?$top=20'
+            url:
+              'https://api.stadswerken.amsterdam/waarnemingen_real?$orderBy=created_at desc&$top=50'
             query: {}
         actions:
           markerClick:
@@ -143,7 +127,6 @@ pages:
           fields:
             - locatie
             - proces
-            - onderwerp
             - notities
             - fotos
         actions:

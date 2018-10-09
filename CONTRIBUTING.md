@@ -29,39 +29,52 @@ The project roughly has the following file structure
 
 ### app
 
-The *app/* directory holds the code of the frontend web app.
+The _app/_ directory holds the code of the frontend web app.
 
 #### actions
 
-The *actions* folder contains the [Redux] code. Each file exposes a series of action creators using named exports. The reducer is exported using the default export.
+The _actions_ folder contains the [Redux] code. Each file exposes a series of action creators using
+named exports. The reducer is exported using the default export.
 
-*index.jsx* re-exports every reducer.
+_index.jsx_ re-exports every reducer.
 
 #### components
 
-Each React component is defined in its own dedicated directory. The component itself is defined in a file named after the component itself. The component is exported through *index.jsx*. If any decorators need to be applied to the component, such as Redux’ *connect* or React Router’s *withRouter*, this is typically done in *index.jsx* as well.
+Each React component is defined in its own dedicated directory. The component itself is defined in a
+file named after the component itself. The component is exported through _index.jsx_. If any
+decorators need to be applied to the component, such as Redux’ _connect_ or React Router’s
+_withRouter_, this is typically done in _index.jsx_ as well.
 
-CSS modules are used. This allows to define CSS in a *.css* file on a component level. The CSS for each component is defined in a css file named after the component. If the top level node of a component is styled, the CSS class should be `root`.
+CSS modules are used. This allows to define CSS in a _.css_ file on a component level. The CSS for
+each component is defined in a css file named after the component. If the top level node of a
+component is styled, the CSS class should be `root`.
 
-If a component displays any user facing texts, these should be translated. The translations are defined in *messages.jsx*. The default locale is always *en-US*.
+If a component displays any user facing texts, these should be translated. The translations are
+defined in _messages.jsx_. The default locale is always _en-US_.
 
 #### utils
 
-The *utils/* directory contains several uncategorized utility functions. Note that many utility functions may already exist in [lodash] or in other popular packages on [npmjs].
+The _utils/_ directory contains several uncategorized utility functions. Note that many utility
+functions may already exist in [lodash] or in other popular packages on [npmjs].
 
 ### apps
 
-Each subdirectory in *apps/* contains an app definition. At the moment of writing, this consistes merely of an *app.yaml* file, but more files may be included in the future.
+Each subdirectory in _apps/_ contains an app definition. At the moment of writing, this consistes
+merely of an _app.yaml_ file, but more files may be included in the future.
 
 ### blocks
 
-Each subdirectory in *blocks/* defines an Appsemble block. Each block consists of a *package.json*, which defines some metadata about the block, and the source code.
+Each subdirectory in _blocks/_ defines an Appsemble block. Each block consists of a _package.json_,
+which defines some metadata about the block, and the source code.
 
-Simple blocks are written in vanilla JavaScript. However, if a block gets more complex, React is used. In this case the same directory structure is used as for the top level *[app/](#app)* directory.
+Simple blocks are written in vanilla JavaScript. However, if a block gets more complex, React is
+used. In this case the same directory structure is used as for the top level _[app/](#app)_
+directory.
 
 ### packages
 
-The packages directory contains any reusable packages. These packages may or may not eventually be extracted into their own project.
+The packages directory contains any reusable packages. These packages may or may not eventually be
+extracted into their own project.
 
 ## Style guide
 
@@ -73,7 +86,9 @@ The code is linted using [ESLint] and [Stylelint].
 
 ## Testing
 
-Test files are placed in the same location as the file that’s under test, except that the test file has a *.test* postfix. Not everything is tested yet. However, please make sure existing tests keep working. To run tests, simply run
+Test files are placed in the same location as the file that’s under test, except that the test file
+has a _.test_ postfix. Not everything is tested yet. However, please make sure existing tests keep
+working. To run tests, simply run
 
 ```sh
 yarn test
@@ -87,14 +102,17 @@ yarn test path/to/file.test.jsx
 
 ## Committing
 
-Please keep commits small and focused. Only commit the code that is relevant to the change. This will make it much more likely the change will get merged.
+Please keep commits small and focused. Only commit the code that is relevant to the change. This
+will make it much more likely the change will get merged.
 
 **Pro tip**: Use `commit add -p`.
 
-The [Angular commit message convention] is used for commit messages. GitLab will reject commits if the commit message is too far off.
+The [Angular commit message convention] is used for commit messages. GitLab will reject commits if
+the commit message is too far off.
 
 [airbnb javascript style guide]: https://github.com/airbnb/javascript
-[angular commit message convention]: https://github.com/angular/angular/blob/master/CONTRIBUTING.md#commit
+[angular commit message convention]:
+  https://github.com/angular/angular/blob/master/CONTRIBUTING.md#commit
 [css modules]: https://github.com/css-modules/css-modules
 [eslint]: https://eslint.org
 [lodash]: https://www.npmjs.com/package/lodash-es

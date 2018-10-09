@@ -1,11 +1,9 @@
 import ZSchema from 'z-schema';
 
-
 const validator = new ZSchema({
   breakOnFirstError: false,
   reportPathAsArray: true,
 });
-
 
 export class SchemaValidationError extends Error {
   constructor(message) {
@@ -13,7 +11,6 @@ export class SchemaValidationError extends Error {
     Error.captureStackTrace(this, SchemaValidationError);
   }
 }
-
 
 export default function validate(schema, data) {
   return new Promise((resolve, reject) => {
@@ -29,9 +26,9 @@ export default function validate(schema, data) {
 
         switch (error.code) {
           case 'OBJECT_MISSING_REQUIRED_PROPERTY':
-            error.params.forEach((param) => {
+            error.params.forEach(param => {
               const paramPath = error.path.concat(param).join('.');
-              acc[paramPath] = { ...acc[path], required: true };
+              acc[paramPath] = { ...acc[paramPath], required: true };
             });
             break;
           case 'ENUM_MISMATCH':

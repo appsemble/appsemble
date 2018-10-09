@@ -4,15 +4,11 @@ import React from 'react';
 
 import { is } from '../../utils';
 
-
 export default class Image extends React.Component {
   static propTypes = {
     alt: PropTypes.string.isRequired,
     className: PropTypes.string,
-    component: PropTypes.oneOfType([
-      PropTypes.func,
-      PropTypes.string,
-    ]),
+    component: PropTypes.oneOfType([PropTypes.func, PropTypes.string]),
     imgProps: PropTypes.shape(),
     rounded: PropTypes.bool,
     size: PropTypes.number,

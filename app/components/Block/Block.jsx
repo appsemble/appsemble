@@ -1,14 +1,10 @@
-import {
-  Portal,
-} from '@material-ui/core';
+import { Portal } from '@material-ui/core';
 import PropTypes from 'prop-types';
 import React from 'react';
 
 import makeActions from '../../utils/makeActions';
 import makeResources from '../../utils/makeResources';
-import {
-  callBootstrap,
-} from '../../utils/bootstrapper';
+import { callBootstrap } from '../../utils/bootstrapper';
 import styles from './Block.css';
 
 /**
@@ -19,6 +15,7 @@ import styles from './Block.css';
  */
 export default class Block extends React.Component {
   static propTypes = {
+    actionCreators: PropTypes.shape(),
     app: PropTypes.shape().isRequired,
     /**
      * The block to render.
@@ -27,20 +24,17 @@ export default class Block extends React.Component {
     blockDef: PropTypes.shape(),
     history: PropTypes.shape().isRequired,
     match: PropTypes.shape().isRequired,
+    showDialog: PropTypes.func,
   };
 
   static defaultProps = {
+    actionCreators: null,
     blockDef: null,
+    showDialog: null,
   };
 
-  ref = async (div) => {
-    const {
-      app,
-      block,
-      blockDef,
-      history,
-      match,
-    } = this.props;
+  ref = async div => {
+    const { actionCreators, app, block, blockDef, data, history, match, showDialog } = this.props;
 
     if (div == null) {
       return;
@@ -52,25 +46,29 @@ export default class Block extends React.Component {
 
     this.attached = true;
     const shadowRoot = div.attachShadow({ mode: 'closed' });
-    const actions = makeActions(blockDef, app, block, history);
+    const actions = makeActions(blockDef, app, block, history, showDialog, actionCreators);
     const resources = makeResources(blockDef, block);
-    await Promise.all(blockDef.files
-      .filter(url => url.endsWith('.css'))
-      .map(url => new Promise((resolve) => {
-        const link = document.createElement('link');
-        // Make sure all CSS is loaded before any JavaScript is executed on the shadow root.
-        link.addEventListener('load', resolve, {
-          capture: true,
-          once: true,
-          passive: true,
-        });
-        link.href = url;
-        link.rel = 'stylesheet';
-        shadowRoot.appendChild(link);
-      })));
+    await Promise.all(
+      blockDef.files.filter(url => url.endsWith('.css')).map(
+        url =>
+          new Promise(resolve => {
+            const link = document.createElement('link');
+            // Make sure all CSS is loaded before any JavaScript is executed on the shadow root.
+            link.addEventListener('load', resolve, {
+              capture: true,
+              once: true,
+              passive: true,
+            });
+            link.href = url;
+            link.rel = 'stylesheet';
+            shadowRoot.appendChild(link);
+          }),
+      ),
+    );
     await callBootstrap(blockDef, {
       actions,
       block,
+      data,
       pageParameters: match.params,
       resources,
       shadowRoot,
@@ -78,9 +76,7 @@ export default class Block extends React.Component {
   };
 
   render() {
-    const {
-      blockDef,
-    } = this.props;
+    const { blockDef } = this.props;
 
     if (blockDef == null) {
       return null;
@@ -89,20 +85,11 @@ export default class Block extends React.Component {
     if (blockDef.position === 'float') {
       return (
         <Portal>
-          <div
-            ref={this.ref}
-            className={styles.float}
-          />
-
+          <div ref={this.ref} className={styles.float} />
         </Portal>
       );
     }
 
-    return (
-      <div
-        ref={this.ref}
-        className={styles.main}
-      />
-    );
+    return <div ref={this.ref} className={styles.main} />;
   }
 }

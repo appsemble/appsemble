@@ -10,13 +10,15 @@
  * @returns {string} The normalized string.
  */
 export default function normalize(input) {
-  return input
-    // Normalize accents. https://stackoverflow.com/a/37511463/1154610
-    .normalize('NFD')
-    // Replace any white space with hyphens.
-    .replace(/\s+/g, '-')
-    // Strip off any non-word / hyphen characters.
-    .replace(/((?!([\w-]+)).)/g, '')
-    // Make it lower case.
-    .toLowerCase();
+  return (
+    input
+      // Normalize accents. https://stackoverflow.com/a/37511463/1154610
+      .normalize('NFD')
+      // Replace any white space with hyphens.
+      .replace(/\s+/g, '-')
+      // Strip off any non-word / hyphen characters.
+      .replace(/((?!([\w-]+)).)/g, '')
+      // Make it lower case.
+      .toLowerCase()
+  );
 }

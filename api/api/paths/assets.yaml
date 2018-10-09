@@ -8,11 +8,11 @@
     consumes:
       - '*/*'
     parameters:
-    - in: body
-      name: asset
-      description: The asset to upload.
-      schema:
-        type: object
+      - in: body
+        name: asset
+        description: The asset to upload.
+        schema:
+          type: object
     responses:
       201:
         description: The asset that was created.
@@ -22,30 +22,30 @@
             id:
               type: integer
               description: The asset id.
-              
+
 /assets/{id}:
-    get:
-      tags: [asset]
-      description: Get a single asset
-      x-oai-middleware:
+  get:
+    tags: [asset]
+    description: Get a single asset
+    x-oai-middleware:
       - file: assets
         handler: getOne
-      parameters:
-        - name: id
-          in: path
-          description: The id of the asset to get.
-          required: true
-          type: integer
-      produces:
-        - '*/*'
-      responses:
-        200:
-          description: The asset that matches the given id.
-          schema:
-            type: file
-        400:
-          description: Bad request. Id must be an integer.
-        404:
-          description: An asset with the specified id was not found.
-        default:
-          $ref: '#/responses/default'
+    parameters:
+      - name: id
+        in: path
+        description: The id of the asset to get.
+        required: true
+        type: integer
+    produces:
+      - '*/*'
+    responses:
+      200:
+        description: The asset that matches the given id.
+        schema:
+          type: file
+      400:
+        description: Bad request. Id must be an integer.
+      404:
+        description: An asset with the specified id was not found.
+      default:
+        $ref: '#/responses/default'

@@ -9,7 +9,6 @@ const TerserPlugin = require('terser-webpack-plugin');
 const { UnusedFilesWebpackPlugin } = require('unused-files-webpack-plugin');
 const ManifestPlugin = require('webpack-manifest-plugin');
 
-
 module.exports = async (env, { mode }) => {
   const production = mode === 'production';
   const development = !production;
@@ -18,15 +17,18 @@ module.exports = async (env, { mode }) => {
 
   return {
     name: 'Appsemble',
-    entry: blocks.reduce((acc, block) => ({
-      ...acc,
-      [block]: [path.join(blocksDir, block)],
-    }), {
-      app: [path.join(__dirname, 'app')],
-      editor: [path.join(__dirname, 'editor')],
-    }),
+    entry: blocks.reduce(
+      (acc, block) => ({
+        ...acc,
+        [block]: [path.join(blocksDir, block)],
+      }),
+      {
+        app: [path.join(__dirname, 'app')],
+        editor: [path.join(__dirname, 'editor')],
+      },
+    ),
     output: {
-      filename: production ? '[name]/[name].js' : '[name]/[hash].js',
+      filename: production ? '[name]/[hash].js' : '[name]/[name].js',
       publicPath: '/',
     },
     resolve: {
@@ -129,21 +131,24 @@ module.exports = async (env, { mode }) => {
         },
       }),
       new MiniCssExtractPlugin({
-        filename: production ? '[name]/[name].css' : '[name]/[hash].css',
+        filename: production ? '[name]/[hash].css' : '[name]/[name].css',
       }),
       production && new CleanWebpackPlugin(['dist']),
-      ...blocks.map(block => new ManifestPlugin({
-        fileName: `${block}/manifest.json`,
-        // eslint-disable-next-line global-require, import/no-dynamic-require
-        seed: require(path.join(blocksDir, block, 'package.json')),
-        filter: file => file.path.startsWith(`/${block}`),
-        map: file => file.path,
-        generate: (pkg, files) => ({
-          id: pkg.name.split('/').pop(),
-          ...pkg.appsemble,
-          files,
-        }),
-      })),
+      ...blocks.map(
+        block =>
+          new ManifestPlugin({
+            fileName: `${block}/manifest.json`,
+            // eslint-disable-next-line global-require, import/no-dynamic-require
+            seed: require(path.join(blocksDir, block, 'package.json')),
+            filter: file => file.path.startsWith(`/${block}`),
+            map: file => file.path,
+            generate: (pkg, files) => ({
+              id: pkg.name.split('/').pop(),
+              ...pkg.appsemble,
+              files,
+            }),
+          }),
+      ),
     ].filter(Boolean),
     optimization: {
       minimizer: [

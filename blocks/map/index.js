@@ -7,11 +7,9 @@ import { CircleMarker } from 'leaflet/src/layer/vector';
 import './index.css';
 import loadMarkers from './loadMarkers';
 
-
 attach(function* init({ actions, block, resources }) {
   const node = document.createElement('div');
   yield node;
-
 
   const locationMarker = new CircleMarker(null, {
     color: getComputedStyle(node).getPropertyValue('--primary-color'),

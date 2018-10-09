@@ -1,7 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 
-
 /**
  * Render a selected enum value. The first value is used as a fallback.
  */
@@ -10,10 +9,7 @@ export default class EnumRenderer extends React.Component {
     /**
      * The current value.
      */
-    value: PropTypes.oneOfType([
-      PropTypes.number,
-      PropTypes.string,
-    ]),
+    value: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   };
 
   static defaultProps = {
@@ -21,15 +17,8 @@ export default class EnumRenderer extends React.Component {
   };
 
   render() {
-    const {
-      value,
-      ...props
-    } = this.props;
+    const { value, ...props } = this.props;
 
-    return (
-      <p>
-        {value == null ? props.schema.enum[0] : value}
-      </p>
-    );
+    return <p>{value == null ? props.schema.enum[0] : value}</p>;
   }
 }

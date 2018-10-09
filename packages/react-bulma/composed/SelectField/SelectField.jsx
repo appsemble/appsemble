@@ -4,17 +4,13 @@ import React from 'react';
 import FormField from '../FormField';
 import Select from '../Select';
 
-
 export default class SelectField extends React.Component {
   static propTypes = {
     children: PropTypes.node.isRequired,
     multiple: PropTypes.bool,
     name: PropTypes.string,
     SelectProps: PropTypes.shape(),
-    value: PropTypes.oneOfType([
-      PropTypes.number,
-      PropTypes.string,
-    ]),
+    value: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   };
 
   static defaultProps = {
@@ -25,23 +21,11 @@ export default class SelectField extends React.Component {
   };
 
   render() {
-    const {
-      children,
-      multiple,
-      name,
-      SelectProps,
-      value,
-      ...props
-    } = this.props;
+    const { children, multiple, name, onChange, SelectProps, value, ...props } = this.props;
 
     return (
       <FormField {...props}>
-        <Select
-          multiple={multiple}
-          name={name}
-          value={value}
-          {...SelectProps}
-        >
+        <Select multiple={multiple} name={name} onChange={onChange} value={value} {...SelectProps}>
           {children}
         </Select>
       </FormField>

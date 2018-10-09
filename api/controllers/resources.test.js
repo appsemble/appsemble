@@ -57,14 +57,19 @@ describe('resource controller', () => {
     const response = await request(server).get(`/api/apps/${app.id}/testResource`);
 
     expect(response.status).toBe(200);
-    expect(response.body).toEqual([{ id: resourceA.id, foo: 'bar' }, { id: resourceB.id, foo: 'baz' }]);
+    expect(response.body).toEqual([
+      { id: resourceA.id, foo: 'bar' },
+      { id: resourceB.id, foo: 'baz' },
+    ]);
   });
 
   it('should be able to create a new resource', async () => {
     const app = await App.create(exampleApp);
 
     const resource = { foo: 'bar' };
-    const response = await request(server).post(`/api/apps/${app.id}/testResource`).send(resource);
+    const response = await request(server)
+      .post(`/api/apps/${app.id}/testResource`)
+      .send(resource);
 
     expect(response.status).toBe(201);
     expect(response.body.foo).toEqual(resource.foo);
@@ -75,7 +80,9 @@ describe('resource controller', () => {
     const app = await App.create(exampleApp);
 
     const resource = {};
-    const response = await request(server).post(`/api/apps/${app.id}/testResource`).send(resource);
+    const response = await request(server)
+      .post(`/api/apps/${app.id}/testResource`)
+      .send(resource);
 
     expect(response.status).toBe(400);
     expect(response.body.data.foo.required).toBeTruthy();

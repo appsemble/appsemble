@@ -4,7 +4,6 @@ import React from 'react';
 
 import { is } from '../../utils';
 
-
 export default class Input extends React.Component {
   static propTypes = {
     className: PropTypes.string,
@@ -21,24 +20,8 @@ export default class Input extends React.Component {
   };
 
   render() {
-    const {
-      className,
-      color,
-      component: Component,
-      size,
-      ...props
-    } = this.props;
+    const { className, color, component: Component, size, ...props } = this.props;
 
-    return (
-      <Component
-        className={classNames(
-          'input',
-          is(color),
-          is(size),
-          className,
-        )}
-        {...props}
-      />
-    );
+    return <Component className={classNames('input', is(color), is(size), className)} {...props} />;
   }
 }

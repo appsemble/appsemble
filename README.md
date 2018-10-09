@@ -6,7 +6,11 @@
 
 A Docker image is built for each version of Appsemble.
 
-> To pull an image from our registry, a login to the GitLab registry is needed. Go to https://gitlab.com/profile/personal_access_tokens. Enter a name for your token, check the `read_registry` scope, and create the token. It is highly recommended to use a [credentials store][docker credentials store]. Now login using docker. Your GitLab username is the username, The token is the password.
+> To pull an image from our registry, a login to the GitLab registry is needed. Go to
+> https://gitlab.com/profile/personal_access_tokens. Enter a name for your token, check the
+> `read_registry` scope, and create the token. It is highly recommended to use a [credentials
+> store][docker credentials store]. Now login using docker. Your GitLab username is the username,
+> The token is the password.
 >
 > ```sh
 > docker login registry.gitlab.com
@@ -32,9 +36,9 @@ docker pull registry.gitlab.com/dcentralized/appsemble/appsemble:$GIT_COMMIT_HAS
 
 The Docker image uses the following environment variables.
 
-| Variable              | Default value                                    | Description
-| --------------------- | ------------------------------------------------ | ---------------------------------------------
-| `DATABASE_URL`        | `mysql://root:password@localhost:3306/appsemble` | The URL of the MySQL database to connect to.
+| Variable       | Default value                                    | Description                                  |
+| -------------- | ------------------------------------------------ | -------------------------------------------- |
+| `DATABASE_URL` | `mysql://root:password@localhost:3306/appsemble` | The URL of the MySQL database to connect to. |
 
 ## Development
 
@@ -55,13 +59,15 @@ cd appsemble
 yarn
 ```
 
-The project requires a MySQL database. This project contains a [docker-compose][] configuration to spin up a preconfigured database with ease.
+The project requires a MySQL database. This project contains a [docker-compose][] configuration to
+spin up a preconfigured database with ease.
 
 ```sh
 docker-compose up -d
 ```
 
 The database can be initialized using the following command.
+
 ```sh
 yarn setupdb
 ```
@@ -78,7 +84,8 @@ The frontend project can be built using the following command.
 yarn build
 ```
 
-The result will be output in the *dist/* directory. These will be served when the API is run in production mode.
+The result will be output in the _dist/_ directory. These will be served when the API is run in
+production mode.
 
 ```sh
 NODE_ENV=production yarn start
@@ -97,6 +104,7 @@ docker build --tag appsemble .
 Please read our [contributing guidelines](./CONTRIBUTING.md).
 
 [docker-compose]: https://docs.docker.com/compose
-[docker credentials store]: https://docs.docker.com/engine/reference/commandline/login/#credentials-store
+[docker credentials store]:
+  https://docs.docker.com/engine/reference/commandline/login/#credentials-store
 [nodejs 10]: https://nodejs.org
 [yarn]: https://yarnpkg.com

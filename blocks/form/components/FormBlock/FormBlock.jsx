@@ -1,11 +1,7 @@
-import {
-  Button,
-} from '@appsemble/react-bulma';
+import { Button } from '@appsemble/react-bulma';
 import PropTypes from 'prop-types';
 import React from 'react';
-import {
-  FormattedMessage,
-} from 'react-intl';
+import { FormattedMessage } from 'react-intl';
 
 import EnumInput from '../EnumInput';
 import FileInput from '../FileInput';
@@ -14,14 +10,12 @@ import StringInput from '../StringInput';
 import styles from './FormBlock.css';
 import messages from './messages';
 
-
 const inputs = {
   file: FileInput,
   enum: EnumInput,
   geocoordinates: GeoCoordinatesInput,
   string: StringInput,
 };
-
 
 /**
  * Render Material UI based a form based on a JSON schema
@@ -55,19 +49,20 @@ export default class FormBlock extends React.Component {
     }));
   };
 
-  onSubmit = (event) => {
+  onSubmit = event => {
     event.preventDefault();
 
     this.setState(({ submitting, values }, { actions }) => {
       if (!submitting) {
-        actions.submit.dispatch(values)
+        actions.submit
+          .dispatch(values)
           .then(() => {
             this.setState({
               submitting: false,
             });
             return actions.submitSuccess.dispatch(values);
           })
-          .catch((error) => {
+          .catch(error => {
             if (error.message !== 'Schema Validation Failed') {
               this.setState({
                 submitting: false,
@@ -87,23 +82,12 @@ export default class FormBlock extends React.Component {
   };
 
   render() {
-    const {
-      block,
-    } = this.props;
-    const {
-      errors,
-      pristine,
-      submitting,
-      values,
-    } = this.state;
+    const { block } = this.props;
+    const { errors, pristine, submitting, values } = this.state;
 
     return (
-      <form
-        className={styles.root}
-        noValidate
-        onSubmit={this.onSubmit}
-      >
-        {block.parameters.fields.map((field) => {
+      <form className={styles.root} noValidate onSubmit={this.onSubmit}>
+        {block.parameters.fields.map(field => {
           const Component = field.enum ? inputs.enum : inputs[field.type];
           if (!Component) {
             return (
@@ -127,7 +111,12 @@ export default class FormBlock extends React.Component {
             />
           );
         })}
-        <Button className={styles.submit} color="primary" disabled={pristine || submitting || Object.keys(errors).length !== 0} type="submit">
+        <Button
+          className={styles.submit}
+          color="primary"
+          disabled={pristine || submitting || Object.keys(errors).length !== 0}
+          type="submit"
+        >
           <FormattedMessage {...messages.submit} />
         </Button>
       </form>

@@ -17,13 +17,14 @@ import routes from './routes';
 import configureStatic from './utils/configureStatic';
 import setupModels from './utils/setupModels';
 
-
 const PORT = 9999;
-
 
 export default function server({
   app = new Koa(),
-  db = setupModels({ sync: true, database: process.env.DATABASE_URL || 'mysql://root:password@localhost:3306/appsemble' }),
+  db = setupModels({
+    sync: true,
+    database: process.env.DATABASE_URL || 'mysql://root:password@localhost:3306/appsemble',
+  }),
 }) {
   const oaiRouter = new OAIRouter({
     apiDoc: path.join(__dirname, 'api'),
@@ -41,11 +42,11 @@ export default function server({
   app.use(async (ctx, next) => {
     if (ctx.path === 'api/assets') {
       // Allow the server to manage the body and Content-Type on its own
-      ctx.disableBodyParser = (ctx.path === '/api/assets' && ctx.method.toLowerCase() === 'post');
+      ctx.disableBodyParser = ctx.path === '/api/assets' && ctx.method.toLowerCase() === 'post';
 
       // Necessary in order to be able to upload .json files to /api/assets.
       if (ctx.method.toLowerCase() === 'post') {
-        ctx.request.body = { };
+        ctx.request.body = {};
       }
     }
 
@@ -69,7 +70,9 @@ async function main() {
   await configureStatic(app);
 
   server({ app });
-  const { description } = yaml.safeLoad(fs.readFileSync(path.join(__dirname, 'api', 'api.yaml'))).info;
+  const { description } = yaml.safeLoad(
+    fs.readFileSync(path.join(__dirname, 'api', 'api.yaml')),
+  ).info;
 
   app.listen(PORT, '0.0.0.0', () => {
     // eslint-disable-next-line no-console
@@ -78,7 +81,7 @@ async function main() {
 }
 
 if (module === require.main) {
-  main().catch((err) => {
+  main().catch(err => {
     // eslint-disable-next-line no-console
     console.error(err);
     process.exit(1);

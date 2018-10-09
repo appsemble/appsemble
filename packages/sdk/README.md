@@ -15,7 +15,6 @@ Register a bootstrap function.
 ```js
 import { bootstrap } from '@appsemble/sdk';
 
-
 bootstrap(({ shadowRoot }) => {
   const root = document.createElement('span');
   root.innerText = 'Hello world!';
@@ -28,7 +27,6 @@ Or even simpler
 ```js
 import { attach } from '@appsemble/sdk';
 
-
 attach(() => {
   const root = document.createElement('span');
   root.innerText = 'Hello world!';
@@ -36,4 +34,5 @@ attach(() => {
 });
 ```
 
-**Note**: The script will be loaded only once. The bootstrap function is then called for every instance of your block type that is loaded by the app creator.
+**Note**: The script will be loaded only once. The bootstrap function is then called for every
+instance of your block type that is loaded by the app creator.

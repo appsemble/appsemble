@@ -11,10 +11,8 @@ import React from 'react';
 
 import styles from './GeoCoordinatesRenderer.css';
 
-
 const MARKER_ICON_WIDTH = 25;
 const MARKER_ICON_HEIGHT = 41;
-
 
 /**
  * An map for an object type schema which implements GeoCoordinates.
@@ -42,9 +40,7 @@ export default class GeoCoordinatesRenderer extends React.Component {
   });
 
   componentDidMount() {
-    const {
-      value,
-    } = this.props;
+    const { value } = this.props;
 
     const map = new Map(this.ref.current, { attributionControl: false })
       .on('locationfound', ({ latlng }) => {
@@ -60,12 +56,12 @@ export default class GeoCoordinatesRenderer extends React.Component {
         iconAnchor: new Point(MARKER_ICON_WIDTH / 2, MARKER_ICON_HEIGHT),
         shadowUrl,
       }),
-    }).setLatLng([value.latitude, value.longitude]).addTo(map);
+    })
+      .setLatLng([value.latitude, value.longitude])
+      .addTo(map);
   }
 
   render() {
-    return (
-      <div className={styles.root} ref={this.ref} />
-    );
+    return <div className={styles.root} ref={this.ref} />;
   }
 }

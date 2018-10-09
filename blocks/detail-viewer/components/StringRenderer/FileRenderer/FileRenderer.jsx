@@ -1,11 +1,8 @@
-import {
-  Image,
-} from '@appsemble/react-bulma';
+import { Image } from '@appsemble/react-bulma';
 import React from 'react';
 import PropTypes from 'prop-types';
 
 import styles from './FileRenderer.css';
-
 
 /**
  * Render a string as is.
@@ -23,10 +20,7 @@ export default class FileRenderer extends React.Component {
     /**
      * The current value.
      */
-    value: PropTypes.oneOfType([
-      PropTypes.instanceOf(Blob),
-      PropTypes.string,
-    ]),
+    value: PropTypes.oneOfType([PropTypes.instanceOf(Blob), PropTypes.string]),
   };
 
   static defaultProps = {
@@ -34,11 +28,7 @@ export default class FileRenderer extends React.Component {
   };
 
   render() {
-    const {
-      name,
-      schema,
-      value,
-    } = this.props;
+    const { name, schema, value } = this.props;
 
     const src = value instanceof Blob ? URL.createObjectURL(value) : value;
 

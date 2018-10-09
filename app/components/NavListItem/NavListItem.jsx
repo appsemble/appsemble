@@ -1,15 +1,9 @@
-import {
-  ListItem,
-  withStyles,
-} from '@material-ui/core';
+import { ListItem, withStyles } from '@material-ui/core';
 import PropTypes from 'prop-types';
 import React from 'react';
-import {
-  NavLink,
-} from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 
 import styles from './NavListItem.css';
-
 
 /**
  * Display a router link wrapped in a material-ui list item.
@@ -28,11 +22,7 @@ class NavListItem extends React.Component {
   };
 
   render() {
-    const {
-      classes,
-      children,
-      to,
-    } = this.props;
+    const { classes, children, to } = this.props;
 
     return (
       <ListItem className={styles.root} button tabIndex={null} component="li">
@@ -47,7 +37,6 @@ class NavListItem extends React.Component {
     );
   }
 }
-
 
 export default withStyles(({ palette }) => ({
   active: {

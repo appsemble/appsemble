@@ -1,9 +1,6 @@
-import {
-  Icon,
-} from '@appsemble/react-bulma';
+import { Icon } from '@appsemble/react-bulma';
 import PropTypes from 'prop-types';
 import React from 'react';
-
 
 /**
  * A renderer which represents a boolean value using a checked or unchecked checkbox icon.
@@ -21,12 +18,8 @@ export default class BooleanRenderer extends React.Component {
   };
 
   render() {
-    const {
-      value,
-    } = this.props;
+    const { value } = this.props;
 
-    return (
-      <Icon fa={value ? 'check-square' : 'square'} />
-    );
+    return <Icon fa={value ? 'check-square' : 'square'} />;
   }
 }

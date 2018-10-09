@@ -28,7 +28,11 @@ describe('asset controller', () => {
     let count = await Asset.count();
     expect(count).toBe(0);
 
-    const app = await Asset.create({ mime: 'application/text', filename: 'test.txt', data: Buffer.from('foo') });
+    const app = await Asset.create({
+      mime: 'application/text',
+      filename: 'test.txt',
+      data: Buffer.from('foo'),
+    });
     expect(app).toBeTruthy();
 
     count = await Asset.count();
@@ -37,7 +41,11 @@ describe('asset controller', () => {
 
   it('should be able to fetch an asset', async () => {
     const data = Buffer.from('buffer');
-    const asset = await Asset.create({ mime: 'application/octet-stream', filename: 'test.bin', data });
+    const asset = await Asset.create({
+      mime: 'application/octet-stream',
+      filename: 'test.bin',
+      data,
+    });
     const response = await request(server).get(`/api/assets/${asset.id}`);
 
     expect(response.type).toBe('application/octet-stream');
@@ -45,7 +53,7 @@ describe('asset controller', () => {
   });
 
   it('should be able to create an asset', async () => {
-    const data = Buffer.from([0xC0, 0xFF, 0xEE, 0xBA, 0xBE]);
+    const data = Buffer.from([0xc0, 0xff, 0xee, 0xba, 0xbe]);
     const createResponse = await request(server)
       .post('/api/assets')
       .set('Content-Type', 'application/octet-stream')
@@ -72,7 +80,9 @@ describe('asset controller', () => {
 
   it('should fall back to application/octet-stream if no mime typpe is provided', async () => {
     const data = Buffer.from('test');
-    const { id } = (await request(server).post('/api/assets').send(data)).body;
+    const { id } = (await request(server)
+      .post('/api/assets')
+      .send(data)).body;
     const response = await request(server).get(`/api/assets/${id}`);
 
     expect(response.status).toBe(200);

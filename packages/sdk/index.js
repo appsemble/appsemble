@@ -10,6 +10,7 @@
  * @typedef {Object} BootstrapParams
  * @property {Object<string, Action>} actions The actions that may be dispatched by the block.
  * @property {Object} block The block as it is defined in the app definition.
+ * @property {Object} data Any kind of data that has been passed in by some context.
  * @property {ShadowRoot} shadowRoot The shadow root to which DOM elements may be appended.
  */
 
@@ -28,7 +29,6 @@ export function bootstrap(fn) {
   document.currentScript.dispatchEvent(event);
 }
 
-
 /**
  * Attach the returned node to the shadow root.
  *
@@ -39,7 +39,7 @@ export function bootstrap(fn) {
  * @param {Function<BootstrapParams>} fn The bootstrap function to register.
  */
 export function attach(fn) {
-  return bootstrap(async (params) => {
+  return bootstrap(async params => {
     const { shadowRoot } = params;
 
     const nodes = await fn(params);

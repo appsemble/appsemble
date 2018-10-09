@@ -3,19 +3,16 @@ const { version } = require('react/package.json');
 const restricted = require('eslint-restricted-globals');
 /* eslint-enable import/no-extraneous-dependencies */
 
-
 module.exports = {
   root: true,
   extends: [
     'airbnb',
     'plugin:eslint-comments/recommended',
     'plugin:compat/recommended',
+    'plugin:prettier/recommended',
   ],
   parser: 'babel-eslint',
-  plugins: [
-    'babel',
-    'filenames',
-  ],
+  plugins: ['babel', 'filenames'],
   settings: {
     react: {
       version,
@@ -27,10 +24,8 @@ module.exports = {
     'react/prefer-stateless-function': 'off',
     'no-invalid-this': 'off',
     'no-unused-expressions': 'off',
-    semi: 'off',
     'babel/no-invalid-this': 'error',
     'babel/no-unused-expressions': 'error',
-    'babel/semi': 'error',
     'eslint-comments/no-unused-disable': 'error',
   },
   overrides: [
@@ -48,19 +43,27 @@ module.exports = {
       rules: {
         // 'self' refers to the global object in service workers, so the same restricted globals
         // are used as in eslint-config-airbnb, except 'self' is allowed.
-        'no-restricted-globals': ['error', 'isFinite', 'isNaN', ...restricted.filter(r => r !== 'self')],
+        'no-restricted-globals': [
+          'error',
+          'isFinite',
+          'isNaN',
+          ...restricted.filter(r => r !== 'self'),
+        ],
       },
     },
     {
       files: ['*.test.{js,jsx}'],
-      plugins: [
-        'jest',
-      ],
+      plugins: ['jest'],
       env: {
         jest: true,
       },
       rules: {
-        'jest/consistent-test-it': ['error', { fn: 'it' }],
+        'jest/consistent-test-it': [
+          'error',
+          {
+            fn: 'it',
+          },
+        ],
         'jest/expect-expect': 'error',
         'jest/no-disabled-tests': 'error',
         'jest/no-focused-tests': 'error',
@@ -78,11 +81,10 @@ module.exports = {
     },
     {
       files: ['*.md'],
-      plugins: [
-        'markdown',
-      ],
+      plugins: ['markdown'],
       rules: {
         'import/no-extraneous-dependencies': 'off',
+        'prettier/prettier': 'off',
         'react/jsx-filename-extension': 'off',
       },
     },

@@ -1,11 +1,8 @@
-import {
-  Drawer,
-} from '@material-ui/core';
+import { Drawer } from '@material-ui/core';
 import PropTypes from 'prop-types';
 import React from 'react';
 
 import styles from './SideMenu.css';
-
 
 /**
  * A side menu whose open state is managed by the redux state.
@@ -19,10 +16,7 @@ export default class SideMenu extends React.Component {
   };
 
   componentDidMount() {
-    const {
-      closeMenu,
-      history,
-    } = this.props;
+    const { closeMenu, history } = this.props;
 
     this.unlisten = history.listen(closeMenu);
   }
@@ -32,18 +26,10 @@ export default class SideMenu extends React.Component {
   }
 
   render() {
-    const {
-      children,
-      closeMenu,
-      isOpen,
-    } = this.props;
+    const { children, closeMenu, isOpen } = this.props;
 
     return (
-      <Drawer
-        classes={{ paper: styles.paper }}
-        open={isOpen}
-        onClose={closeMenu}
-      >
+      <Drawer classes={{ paper: styles.paper }} open={isOpen} onClose={closeMenu}>
         {children}
       </Drawer>
     );

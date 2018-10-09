@@ -1,7 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 
-
 /**
  * Render a simple string to indicate a schema type is unsupported
  *
@@ -16,9 +15,7 @@ export default class UnsupportedSchema extends React.Component {
   };
 
   render() {
-    const {
-      schema,
-    } = this.props;
+    const { schema } = this.props;
 
     return `Schema type ${schema.type} not supported`;
   }

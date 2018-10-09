@@ -6,16 +6,16 @@
       - file: resources
         handler: getAll
     parameters:
-    - name: appId
-      in: path
-      description: The id of the app.
-      required: true
-      type: integer
-    - name: resourceType
-      in: path
-      description: The resource type within this app.
-      required: true
-      type: string
+      - name: appId
+        in: path
+        description: The id of the app.
+        required: true
+        type: integer
+      - name: resourceType
+        in: path
+        description: The resource type within this app.
+        required: true
+        type: string
     responses:
       200:
         description: The list of all this app's resources of this type.
@@ -38,22 +38,22 @@
       - file: resources
         handler: create
     parameters:
-    - name: appId
-      in: path
-      description: The id of the app this resource belongs to.
-      required: true
-      type: integer
-    - name: resourceType
-      in: path
-      description: The resource type within this app.
-      required: true
-      type: string
-    - name: resource
-      in: body
-      description: The resource to create.
-      required: true
-      schema:
-        $ref: '#/definitions/Resource'
+      - name: appId
+        in: path
+        description: The id of the app this resource belongs to.
+        required: true
+        type: integer
+      - name: resourceType
+        in: path
+        description: The resource type within this app.
+        required: true
+        type: string
+      - name: resource
+        in: body
+        description: The resource to create.
+        required: true
+        schema:
+          $ref: '#/definitions/Resource'
     responses:
       201:
         description: The resource that was created.
@@ -72,21 +72,21 @@
       - file: resources
         handler: getOne
     parameters:
-    - name: appId
-      in: path
-      description: The id of the app this resource belongs to.
-      required: true
-      type: integer
-    - name: resourceType
-      in: path
-      description: The resource type within this app.
-      required: true
-      type: string
-    - name: resourceId
-      in: path
-      description: The id of the resource.
-      required: true
-      type: integer
+      - name: appId
+        in: path
+        description: The id of the app this resource belongs to.
+        required: true
+        type: integer
+      - name: resourceType
+        in: path
+        description: The resource type within this app.
+        required: true
+        type: string
+      - name: resourceId
+        in: path
+        description: The id of the resource.
+        required: true
+        type: integer
     responses:
       200:
         description: The resource that matches the given id.

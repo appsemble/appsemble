@@ -1,12 +1,10 @@
 image: node:10
 
-
 stages:
   - test
   - build
   - publish
   - deploy
-
 
 .yarn: &yarn
   before_script:
@@ -14,7 +12,6 @@ stages:
     - apt-get install nasm
     - yarn --frozen-lockfile
   script: yarn $CI_JOB_NAME
-
 
 build:docker:
   stage: build
@@ -32,7 +29,6 @@ build:docker:
     - docker push "$CI_REGISTRY_IMAGE:$CI_BUILD_REF_NAME"
     - docker push "$CI_REGISTRY_IMAGE:$CI_COMMIT_SHA"
 
-
 deploy:staging:
   stage: deploy
   image: alpine
@@ -44,11 +40,10 @@ deploy:staging:
     name: staging
   script:
     - apk add --no-cache curl
-    - curl -X POST -F "token=$CI_JOB_TOKEN" -F "ref=master" -F "variables[RELEASE]=staging" https://gitlab.com/api/v4/projects/8452871/trigger/pipeline
-
+    - curl -X POST -F "token=$CI_JOB_TOKEN" -F "ref=master" -F "variables[RELEASE]=staging"
+      https://gitlab.com/api/v4/projects/8452871/trigger/pipeline
 
 eslint: *yarn
-
 
 pages:
   stage: build
@@ -64,6 +59,7 @@ pages:
     paths:
       - public/
 
+prettier: *yarn
 
 publish:docker:latest:
   stage: publish
@@ -83,9 +79,7 @@ publish:docker:latest:
     - docker tag "$CI_REGISTRY_IMAGE:$CI_COMMIT_TAG" "$CI_REGISTRY_IMAGE:latest"
     - docker push "$CI_REGISTRY_IMAGE:latest"
 
-
 stylelint: *yarn
-
 
 test:
   <<: *yarn
