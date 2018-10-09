@@ -26,6 +26,9 @@ definitions:
         type: array
         items:
           type: string
+          appsembleFile:
+            type:
+              - image/jpeg
       notities:
         title: Notities
         type: string
@@ -122,6 +125,7 @@ pages:
     blocks:
       - type: detail-viewer
         parameters:
+          fileBase: 'http://oscity.nl:9808/uploads/'
           schema:
             $ref: /definitions/waarneming
           fields:

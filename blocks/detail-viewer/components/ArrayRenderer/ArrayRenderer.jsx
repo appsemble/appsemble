@@ -34,7 +34,7 @@ export default class ArrayRenderer extends React.Component {
     const { name, schema, value } = this.props;
 
     return (
-      <Container className={styles}>
+      <Container className={styles.root}>
         {value.map((v, index) => (
           <SchemaRenderer
             // eslint-disable-next-line react/no-array-index-key
