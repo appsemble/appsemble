@@ -17,13 +17,14 @@ import routes from './routes';
 import configureStatic from './utils/configureStatic';
 import setupModels from './utils/setupModels';
 
-
 const PORT = 9999;
-
 
 export default function server({
   app = new Koa(),
-  db = setupModels({ sync: true, database: process.env.DATABASE_URL || 'mysql://root:password@localhost:3306/appsemble' }),
+  db = setupModels({
+    sync: true,
+    database: process.env.DATABASE_URL || 'mysql://root:password@localhost:3306/appsemble',
+  }),
 }) {
   const oaiRouter = new OAIRouter({
     apiDoc: path.join(__dirname, 'api'),
@@ -54,7 +55,9 @@ async function main() {
   await configureStatic(app);
 
   server({ app });
-  const { description } = yaml.safeLoad(fs.readFileSync(path.join(__dirname, 'api', 'api.yaml'))).info;
+  const { description } = yaml.safeLoad(
+    fs.readFileSync(path.join(__dirname, 'api', 'api.yaml')),
+  ).info;
 
   app.listen(PORT, '0.0.0.0', () => {
     // eslint-disable-next-line no-console
@@ -63,7 +66,7 @@ async function main() {
 }
 
 if (module === require.main) {
-  main().catch((err) => {
+  main().catch(err => {
     // eslint-disable-next-line no-console
     console.error(err);
     process.exit(1);

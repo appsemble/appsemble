@@ -17,7 +17,6 @@ export async function create(ctx) {
   ctx.status = 201;
 }
 
-
 export async function getOne(ctx) {
   const { id } = ctx.params;
   const { App } = ctx.state.db;
@@ -31,14 +30,12 @@ export async function getOne(ctx) {
   ctx.body = { ...app.definition, id };
 }
 
-
 export async function query(ctx) {
   const { App } = ctx.state.db;
 
   const apps = await App.findAll({ raw: true });
   ctx.body = apps.map(app => ({ ...app.definition, id: app.id }));
 }
-
 
 export async function update(ctx) {
   const definition = omit(ctx.request.body, 'id');
@@ -54,7 +51,6 @@ export async function update(ctx) {
   ctx.body = { ...definition, id };
 }
 
-
 export async function setAppIcon(ctx) {
   const { id } = ctx.params;
   const { App } = ctx.state.db;
@@ -68,7 +64,6 @@ export async function setAppIcon(ctx) {
 
   ctx.status = 204;
 }
-
 
 export async function deleteAppIcon(ctx) {
   const { id } = ctx.params;

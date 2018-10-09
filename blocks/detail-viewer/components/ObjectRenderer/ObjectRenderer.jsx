@@ -4,7 +4,6 @@ import React from 'react';
 import DefaultRenderer from './DefaultRenderer';
 import GeoCoordinatesInput from './GeoCoordinatesRenderer';
 
-
 /**
  * An input element for an object type schema.
  */
@@ -17,9 +16,7 @@ export default class ObjectRenderer extends React.Component {
   };
 
   render() {
-    const {
-      schema,
-    } = this.props;
+    const { schema } = this.props;
 
     switch (schema.title) {
       case 'GeoCoordinates':

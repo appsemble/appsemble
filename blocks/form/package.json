@@ -6,8 +6,7 @@
       "submit": {
         "required": true
       },
-      "submitSuccess": {
-      }
+      "submitSuccess": {}
     }
   },
   "dependencies": {

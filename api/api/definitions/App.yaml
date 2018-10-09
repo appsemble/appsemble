@@ -84,7 +84,7 @@ App:
               click:
                 type: link
                 to: Example Page B
-  
+
       - name: 'Example Page B'
         blocks:
           - type: action-button

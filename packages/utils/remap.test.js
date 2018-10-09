@@ -1,8 +1,4 @@
-import {
-  compileFilters,
-  remapData,
-} from './remap';
-
+import { compileFilters, remapData } from './remap';
 
 describe('compileFilters', () => {
   const fixtures = [
@@ -46,7 +42,6 @@ describe('compileFilters', () => {
     });
   });
 });
-
 
 describe('remapData', () => {
   const fixtures = [

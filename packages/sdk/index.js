@@ -29,7 +29,6 @@ export function bootstrap(fn) {
   document.currentScript.dispatchEvent(event);
 }
 
-
 /**
  * Attach the returned node to the shadow root.
  *
@@ -40,7 +39,7 @@ export function bootstrap(fn) {
  * @param {Function<BootstrapParams>} fn The bootstrap function to register.
  */
 export function attach(fn) {
-  return bootstrap(async (params) => {
+  return bootstrap(async params => {
     const { shadowRoot } = params;
 
     const nodes = await fn(params);

@@ -1,11 +1,6 @@
 import React from 'react';
 
-
-const {
-  Consumer,
-  Provider,
-} = React.createContext();
-
+const { Consumer, Provider } = React.createContext();
 
 /**
  * Options provided to the `<SchemaProvider />`.
@@ -23,7 +18,6 @@ const {
  * This provider takes a {@link SchemaProviderOptions} object.
  */
 export { Provider as SchemaProvider };
-
 
 /**
  * A HOC which passes schema renderes to the underlying component.

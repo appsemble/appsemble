@@ -1,7 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-
 /**
  * Render a string as is.
  */
@@ -14,14 +13,8 @@ export default class TextRenderer extends React.Component {
   };
 
   render() {
-    const {
-      value,
-    } = this.props;
+    const { value } = this.props;
 
-    return (
-      <p>
-        {value}
-      </p>
-    );
+    return <p>{value}</p>;
   }
 }

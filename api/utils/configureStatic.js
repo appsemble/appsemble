@@ -3,7 +3,6 @@ import path from 'path';
 import klawSync from 'klaw-sync';
 import serve from 'koa-static';
 
-
 export default async function configureStatic(app) {
   if (process.env.NODE_ENV === 'production') {
     const distDir = path.resolve(__dirname, '../../dist');

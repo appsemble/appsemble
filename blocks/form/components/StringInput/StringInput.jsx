@@ -1,15 +1,9 @@
-import {
-  InputField,
-  TextareaField,
-} from '@appsemble/react-bulma';
+import { InputField, TextareaField } from '@appsemble/react-bulma';
 import PropTypes from 'prop-types';
 import React from 'react';
-import {
-  FormattedMessage,
-} from 'react-intl';
+import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
-
 
 /**
  * An input element for a text type schema.
@@ -40,12 +34,7 @@ export default class StringInput extends React.Component {
   };
 
   render() {
-    const {
-      error,
-      field,
-      onChange,
-      value,
-    } = this.props;
+    const { error, field, onChange, value } = this.props;
 
     const Component = field.multiline ? TextareaField : InputField;
 

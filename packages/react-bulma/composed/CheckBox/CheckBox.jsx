@@ -2,7 +2,6 @@ import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import React from 'react';
 
-
 export default class CheckBox extends React.Component {
   static propTypes = {
     className: PropTypes.string,
@@ -37,14 +36,7 @@ export default class CheckBox extends React.Component {
     } = this.props;
 
     return (
-      <Component
-        className={classNames(
-          'checkbox',
-          className,
-        )}
-        disabled={disabled}
-        {...props}
-      >
+      <Component className={classNames('checkbox', className)} disabled={disabled} {...props}>
         <input
           checked={value}
           className="checkbox"

@@ -2,7 +2,6 @@ import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import React from 'react';
 
-
 export default class FileInput extends React.Component {
   static propTypes = {
     className: PropTypes.string,
@@ -17,19 +16,11 @@ export default class FileInput extends React.Component {
   };
 
   render() {
-    const {
-      className,
-      component: Component,
-      innerRef,
-      ...props
-    } = this.props;
+    const { className, component: Component, innerRef, ...props } = this.props;
 
     return (
       <Component
-        className={classNames(
-          'file-input',
-          className,
-        )}
+        className={classNames('file-input', className)}
         ref={innerRef}
         type="file"
         {...props}
