@@ -2,7 +2,8 @@ const property = '.';
 const filter = '|';
 
 const filters = {
-  get: name => object => (Object.hasOwnProperty.call(object, name) ? object[name] : undefined),
+  get: name => object =>
+    object != null && Object.hasOwnProperty.call(object, name) ? object[name] : undefined,
   lower: () => Function.call.bind(String.prototype.toLowerCase),
   upper: () => Function.call.bind(String.prototype.toUpperCase),
 };
