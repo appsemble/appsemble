@@ -19,7 +19,7 @@ definitions:
         type: object
         required:
           - latitude
-          - longitude 
+          - longitude
         properties:
           latitude:
             type: number
@@ -121,7 +121,7 @@ pages:
           longitude: locatie.longitude
         resources:
           marker:
-            url: 'https://api.stadswerken.amsterdam/waarnemingen_real?$top=20'
+            url: 'https://api.stadswerken.amsterdam/waarnemingen_real?$orderBy=created_at desc&$top=50'
             query: {}
         actions:
           markerClick:
