@@ -41,7 +41,9 @@ export default function request({
           default:
             body = data;
         }
-        await validate(schema, body);
+        if (schema) {
+          await validate(schema, body);
+        }
         req.data = body;
       }
 

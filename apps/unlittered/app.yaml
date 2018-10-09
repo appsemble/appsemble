@@ -76,19 +76,24 @@ pages:
               repeated: true
         actions:
           submit:
-            type: request
-            method: post
-            url: 'https://api.stadswerken.amsterdam/waarnemingen_real'
-            schema:
-              $ref: /definitions/waarneming
-            blobs:
-              type: upload
-              method: post
-              url: 'http://oscity.nl:9808/upload'
-              serialize: custom
-          submitSuccess:
-            type: link
-            to: Overzichtskaart
+            type: splash
+            blocks:
+              - type: amsterdam-splash
+                actions:
+                  load:
+                    type: request
+                    method: post
+                    url: 'https://api.stadswerken.amsterdam/waarnemingen_real'
+                    blobs:
+                      type: upload
+                      method: post
+                      url: 'http://oscity.nl:9808/upload'
+                      serialize: custom
+                  error:
+                    type: splash.error
+                  success:
+                    type: link
+                    to: Overzichtskaart
 
   - name: Overzichtskaart
     scope:

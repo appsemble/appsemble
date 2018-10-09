@@ -1,0 +1,29 @@
+.root {
+  align-items: center;
+  background-image: url('./background.svg');
+  background-position: bottom;
+  background-repeat: no-repeat;
+  display: flex;
+  height: 100vh;
+  justify-content: center;
+  text-align: center;
+  width: 100vw;
+}
+
+.circle {
+  background-color: var(--primary-color);
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  height: 30vw;
+  outline: none;
+  width: 30vw;
+}
+
+.header {
+  color: var(--primary-color);
+}
+
+.subheader {
+  color: #000000;
+}

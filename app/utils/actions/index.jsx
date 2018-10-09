@@ -1,3 +1,4 @@
+import splash from './splash';
 import link from './link';
 import log from './log';
 import noop from './noop';
@@ -9,4 +10,5 @@ export default {
   log,
   noop,
   request,
+  splash,
 };
