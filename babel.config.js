@@ -1,42 +1,63 @@
-module.exports = (api) => {
+module.exports = api => {
   const env = api.env();
   const production = env === 'production';
   const development = env === 'development';
 
   const presets = [
-    ['@babel/preset-env', {
-      spec: false,
-      loose: true,
-      useBuiltIns: 'usage',
-    }],
-    ['@babel/preset-react', {
-      useBuiltIns: true,
-      development,
-    }],
+    [
+      '@babel/preset-env',
+      {
+        spec: false,
+        loose: true,
+        useBuiltIns: 'usage',
+      },
+    ],
+    [
+      '@babel/preset-react',
+      {
+        useBuiltIns: true,
+        development,
+      },
+    ],
   ];
 
   const plugins = [
     '@babel/plugin-syntax-dynamic-import',
     production && '@babel/plugin-transform-react-inline-elements',
     'babel-plugin-react-intl-auto',
-    ['@babel/plugin-transform-runtime', {
-      helpers: true,
-    }],
-    production && ['babel-plugin-transform-react-remove-prop-types', {
-      removeImport: true,
-    }],
+    [
+      '@babel/plugin-transform-runtime',
+      {
+        helpers: true,
+      },
+    ],
+    production && [
+      'babel-plugin-transform-react-remove-prop-types',
+      {
+        removeImport: true,
+      },
+    ],
     'babel-plugin-transform-react-class-to-function',
     '@babel/plugin-proposal-function-bind',
-    ['@babel/plugin-proposal-optional-chaining', {
-      loose: true,
-    }],
-    ['@babel/plugin-proposal-object-rest-spread', {
-      loose: true,
-      useBuiltIns: true,
-    }],
-    ['@babel/plugin-proposal-class-properties', {
-      loose: true,
-    }],
+    [
+      '@babel/plugin-proposal-optional-chaining',
+      {
+        loose: true,
+      },
+    ],
+    [
+      '@babel/plugin-proposal-object-rest-spread',
+      {
+        loose: true,
+        useBuiltIns: true,
+      },
+    ],
+    [
+      '@babel/plugin-proposal-class-properties',
+      {
+        loose: true,
+      },
+    ],
   ];
 
   return {

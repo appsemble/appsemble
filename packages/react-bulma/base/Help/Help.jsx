@@ -4,7 +4,6 @@ import React from 'react';
 
 import { is } from '../../utils';
 
-
 export default class Help extends React.Component {
   static propTypes = {
     color: PropTypes.string,
@@ -17,22 +16,8 @@ export default class Help extends React.Component {
   };
 
   render() {
-    const {
-      className,
-      color,
-      component: Component,
-      ...props
-    } = this.props;
+    const { className, color, component: Component, ...props } = this.props;
 
-    return (
-      <Component
-        className={classNames(
-          'help',
-          is(color),
-          className,
-        )}
-        {...props}
-      />
-    );
+    return <Component className={classNames('help', is(color), className)} {...props} />;
   }
 }

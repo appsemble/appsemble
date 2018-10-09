@@ -1,14 +1,9 @@
-import {
-  Container,
-} from '@appsemble/react-bulma';
+import { Container } from '@appsemble/react-bulma';
 import PropTypes from 'prop-types';
 import React from 'react';
-import {
-  SchemaRenderer,
-} from 'react-schema-renderer';
+import { SchemaRenderer } from 'react-schema-renderer';
 
 import styles from './ArrayRenderer.css';
-
 
 /**
  * An input element for an array type schema.
@@ -36,11 +31,7 @@ export default class ArrayRenderer extends React.Component {
   };
 
   render() {
-    const {
-      name,
-      schema,
-      value,
-    } = this.props;
+    const { name, schema, value } = this.props;
 
     return (
       <Container className={styles}>

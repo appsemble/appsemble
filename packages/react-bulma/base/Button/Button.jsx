@@ -4,7 +4,6 @@ import React from 'react';
 
 import { is } from '../../utils';
 
-
 export default class Button extends React.Component {
   static propTypes = {
     active: PropTypes.bool,
@@ -25,14 +24,7 @@ export default class Button extends React.Component {
   };
 
   render() {
-    const {
-      active,
-      className,
-      color,
-      component: Component,
-      loading,
-      ...props
-    } = this.props;
+    const { active, className, color, component: Component, loading, ...props } = this.props;
 
     return (
       <Component

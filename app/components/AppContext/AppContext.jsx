@@ -1,13 +1,8 @@
-import {
-  AppBar,
-  CircularProgress,
-  Toolbar,
-} from '@material-ui/core';
+import { AppBar, CircularProgress, Toolbar } from '@material-ui/core';
 import PropTypes from 'prop-types';
 import React from 'react';
 
 import styles from './AppContext.css';
-
 
 /**
  * A wrapper which fetches the app definition and makes sure it is available to its children.
@@ -22,21 +17,14 @@ export default class AppContext extends React.Component {
   };
 
   async componentDidMount() {
-    const {
-      getApp,
-      initAuth,
-    } = this.props;
+    const { getApp, initAuth } = this.props;
 
     await getApp();
     await initAuth();
   }
 
   render() {
-    const {
-      children,
-      location,
-      ready,
-    } = this.props;
+    const { children, location, ready } = this.props;
 
     if (!ready) {
       return (
@@ -49,10 +37,10 @@ export default class AppContext extends React.Component {
       );
     }
 
-    return React.Children.map(children, child => (
+    return React.Children.map(children, child =>
       React.cloneElement(child, {
         location,
-      })
-    ));
+      }),
+    );
   }
 }

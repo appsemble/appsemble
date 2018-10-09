@@ -2,7 +2,6 @@ import React from 'react';
 
 import SplashAction from '../../components/SplashAction';
 
-
 export default function splash(definition, app, block, history, showDialog) {
   return {
     dispatch(data) {

@@ -1,6 +1,5 @@
 import axios from 'axios';
 
-
 function makeResource(blockDef, block, name) {
   const implementation = block.resources[name];
 
@@ -15,15 +14,13 @@ function makeResource(blockDef, block, name) {
   };
 }
 
-
 export default function makeResources(blockDef, block) {
   if (blockDef.resources == null) {
     return null;
   }
 
-  return Object.keys(blockDef.resources)
-    .reduce((acc, name) => {
-      acc[name] = makeResource(blockDef, block, name);
-      return acc;
-    }, {});
+  return Object.keys(blockDef.resources).reduce((acc, name) => {
+    acc[name] = makeResource(blockDef, block, name);
+    return acc;
+  }, {});
 }

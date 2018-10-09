@@ -1,20 +1,10 @@
-import {
-  Button,
-  Container,
-  Icon,
-  InputField,
-  Message,
-  MessageBody,
-} from '@appsemble/react-bulma';
+import { Button, Container, Icon, InputField, Message, MessageBody } from '@appsemble/react-bulma';
 import PropTypes from 'prop-types';
 import React from 'react';
-import {
-  FormattedMessage,
-} from 'react-intl';
+import { FormattedMessage } from 'react-intl';
 
 import styles from './EmailLogin.css';
 import messages from './messages';
-
 
 /**
  * A form which will let the user login based on an app definition.
@@ -41,7 +31,7 @@ export default class EmailLogin extends React.Component {
     },
   };
 
-  onChange = (event) => {
+  onChange = event => {
     const { target } = event;
 
     this.setState(({ errors, values }) => ({
@@ -58,15 +48,10 @@ export default class EmailLogin extends React.Component {
     }));
   };
 
-  onSubmit = async (event) => {
+  onSubmit = async event => {
     event.preventDefault();
-    const {
-      authentication,
-      passwordLogin,
-    } = this.props;
-    const {
-      values,
-    } = this.state;
+    const { authentication, passwordLogin } = this.props;
+    const { values } = this.state;
 
     this.setState({
       error: false,
@@ -84,20 +69,10 @@ export default class EmailLogin extends React.Component {
   };
 
   render() {
-    const {
-      dirty,
-      error,
-      errors,
-      submitting,
-      values,
-    } = this.state;
+    const { dirty, error, errors, submitting, values } = this.state;
 
     return (
-      <Container
-        className={styles.root}
-        component="form"
-        onSubmit={this.onSubmit}
-      >
+      <Container className={styles.root} component="form" onSubmit={this.onSubmit}>
         {error && (
           <Message color="danger">
             <MessageBody>

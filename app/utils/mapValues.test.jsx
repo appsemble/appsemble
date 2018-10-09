@@ -1,6 +1,5 @@
 import mapValues from './mapValues';
 
-
 describe('mapValues', () => {
   it('should call the iteratee over each own property', () => {
     const proto = {

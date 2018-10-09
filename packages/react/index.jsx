@@ -1,24 +1,15 @@
-import {
-  bootstrap as sdkBootstrap,
-} from '@appsemble/sdk';
+import { bootstrap as sdkBootstrap } from '@appsemble/sdk';
 import React from 'react';
-import {
-  render,
-} from 'react-dom';
+import { render } from 'react-dom';
 import retargetEvents from 'react-shadow-dom-retarget-events';
 
-
-const {
-  Consumer,
-  Provider,
-} = React.createContext();
-
+const { Consumer, Provider } = React.createContext();
 
 /**
  * Mount a React component returned by a bootstrap function in the shadow DOM of a block.
  */
 export function mount(Component) {
-  return (params) => {
+  return params => {
     const reactRoot = params.shadowRoot.appendChild(document.createElement('div'));
     const props = {
       ...params,
@@ -49,22 +40,16 @@ export function mount(Component) {
   };
 }
 
-
 export function bootstrap(Component) {
   return sdkBootstrap(mount(Component));
 }
-
 
 /**
  * A HOC which passes the Appsemble block values to he wrapped React component.
  */
 export function withBlock(Component) {
   function Wrapper(props) {
-    return (
-      <Consumer>
-        {values => <Component {...values} {...props} />}
-      </Consumer>
-    );
+    return <Consumer>{values => <Component {...values} {...props} />}</Consumer>;
   }
   if (process.env.NODE_ENV !== 'production') {
     Wrapper.displayName = `withBlock(${Component.displayName || Component.name})`;

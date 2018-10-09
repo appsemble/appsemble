@@ -1,13 +1,10 @@
 import normalize from '@appsemble/utils/normalize';
-import {
-  List,
-} from '@material-ui/core';
+import { List } from '@material-ui/core';
 import PropTypes from 'prop-types';
 import React from 'react';
 
 import NavListItem from '../NavListItem';
 import SideMenu from '../SideMenu';
-
 
 /**
  * The app navigation that is displayed in the side menu.
@@ -22,9 +19,7 @@ export default class SideNavigation extends React.Component {
   };
 
   render() {
-    const {
-      app,
-    } = this.props;
+    const { app } = this.props;
 
     if (app == null) {
       return null;
@@ -35,10 +30,7 @@ export default class SideNavigation extends React.Component {
         <nav>
           <List>
             {app.pages.filter(page => !page.parameters).map(page => (
-              <NavListItem
-                key={page.name}
-                to={`/${normalize(page.name)}`}
-              >
+              <NavListItem key={page.name} to={`/${normalize(page.name)}`}>
                 {page.name}
               </NavListItem>
             ))}

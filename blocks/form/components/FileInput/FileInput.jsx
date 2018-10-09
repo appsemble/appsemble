@@ -4,7 +4,6 @@ import React from 'react';
 import FileEntry from './FileEntry';
 import styles from './FileInput.css';
 
-
 export default class FileInput extends React.Component {
   static propTypes = {
     /**
@@ -21,10 +20,7 @@ export default class FileInput extends React.Component {
     value: PropTypes.oneOfType([
       PropTypes.instanceOf(Blob),
       PropTypes.string,
-      PropTypes.arrayOf(PropTypes.oneOfType([
-        PropTypes.instanceOf(Blob),
-        PropTypes.string,
-      ])),
+      PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.instanceOf(Blob), PropTypes.string])),
     ]),
   };
 
@@ -33,11 +29,7 @@ export default class FileInput extends React.Component {
   };
 
   onChange = (event, val) => {
-    const {
-      field,
-      onChange,
-      value,
-    } = this.props;
+    const { field, onChange, value } = this.props;
 
     const copy = [...value];
     copy[Number(event.target.name.split('.').pop())] = val;
@@ -45,11 +37,7 @@ export default class FileInput extends React.Component {
   };
 
   render() {
-    const {
-      field,
-      onChange,
-      value,
-    } = this.props;
+    const { field, onChange, value } = this.props;
 
     return field.repeated ? (
       <div className={styles.repeatedContainer}>
@@ -63,19 +51,10 @@ export default class FileInput extends React.Component {
             value={val}
           />
         ))}
-        <FileEntry
-          field={field}
-          name={`${field.name}.${value.length}`}
-          onChange={this.onChange}
-        />
+        <FileEntry field={field} name={`${field.name}.${value.length}`} onChange={this.onChange} />
       </div>
     ) : (
-      <FileEntry
-        field={field}
-        name={field.name}
-        onChange={onChange}
-        value={value}
-      />
+      <FileEntry field={field} name={field.name} onChange={onChange} value={value} />
     );
   }
 }

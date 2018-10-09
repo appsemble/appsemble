@@ -1,13 +1,8 @@
-import {
-  Navbar,
-  NavbarBrand,
-  NavbarItem,
-} from '@appsemble/react-bulma';
+import { Navbar, NavbarBrand, NavbarItem } from '@appsemble/react-bulma';
 import PropTypes from 'prop-types';
 import React from 'react';
 
 import SideMenuButton from '../SideMenuButton';
-
 
 /**
  * The title bar on the top of the page.
@@ -24,9 +19,7 @@ export default class TitleBar extends React.Component {
   };
 
   render() {
-    const {
-      app,
-    } = this.props;
+    const { app } = this.props;
 
     return (
       <Navbar fixed="top">
@@ -34,9 +27,7 @@ export default class TitleBar extends React.Component {
           <NavbarItem>
             <SideMenuButton />
           </NavbarItem>
-          <NavbarItem>
-            {app?.name || 'Appsemble'}
-          </NavbarItem>
+          <NavbarItem>{app?.name || 'Appsemble'}</NavbarItem>
         </NavbarBrand>
       </Navbar>
     );

@@ -4,14 +4,10 @@ import React from 'react';
 
 import { has } from '../../utils';
 
-
 export default class Control extends React.Component {
   static propTypes = {
     className: PropTypes.string,
-    component: PropTypes.oneOfType([
-      PropTypes.func,
-      PropTypes.string,
-    ]),
+    component: PropTypes.oneOfType([PropTypes.func, PropTypes.string]),
     iconsLeft: PropTypes.bool,
     iconsRight: PropTypes.bool,
   };
@@ -24,13 +20,7 @@ export default class Control extends React.Component {
   };
 
   render() {
-    const {
-      className,
-      component: Component,
-      iconsLeft,
-      iconsRight,
-      ...props
-    } = this.props;
+    const { className, component: Component, iconsLeft, iconsRight, ...props } = this.props;
 
     return (
       <Component

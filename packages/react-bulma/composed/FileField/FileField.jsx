@@ -1,12 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 
-import {
-  File,
-  FileInput,
-  FileLabel,
-} from '../../base';
-
+import { File, FileInput, FileLabel } from '../../base';
 
 export default class FileField extends React.Component {
   static propTypes = {
@@ -26,24 +21,14 @@ export default class FileField extends React.Component {
     onChange: null,
   };
 
-  onChange = (event) => {
-    const {
-      onChange,
-    } = this.props;
+  onChange = event => {
+    const { onChange } = this.props;
 
     onChange(event, event.target.files[0]);
   };
 
   render() {
-    const {
-      accept,
-      boxed,
-      children,
-      FileInputProps,
-      name,
-      onChange,
-      ...props
-    } = this.props;
+    const { accept, boxed, children, FileInputProps, name, onChange, ...props } = this.props;
 
     return (
       <File boxed={boxed} {...props}>

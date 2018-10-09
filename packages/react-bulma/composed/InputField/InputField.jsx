@@ -1,11 +1,8 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 
-import {
-  Input,
-} from '../../base';
+import { Input } from '../../base';
 import FormField from '../FormField';
-
 
 export default class InputField extends React.Component {
   static propTypes = {
@@ -15,10 +12,7 @@ export default class InputField extends React.Component {
     iconLeft: PropTypes.node,
     iconRight: PropTypes.node,
     InputProps: PropTypes.shape(),
-    label: PropTypes.oneOfType([
-      PropTypes.node,
-      PropTypes.string,
-    ]),
+    label: PropTypes.oneOfType([PropTypes.node, PropTypes.string]),
     max: PropTypes.number,
     maxLength: PropTypes.number,
     min: PropTypes.number,
@@ -29,10 +23,7 @@ export default class InputField extends React.Component {
     required: PropTypes.bool,
     step: PropTypes.number,
     type: PropTypes.string,
-    value: PropTypes.oneOfType([
-      PropTypes.number,
-      PropTypes.string,
-    ]).isRequired,
+    value: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
   };
 
   static defaultProps = {

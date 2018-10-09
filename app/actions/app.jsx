@@ -3,7 +3,6 @@ import axios from 'axios';
 import getDB from '../utils/getDB';
 import resolveJsonPointers from '../utils/resolveJsonPointers';
 
-
 const GET_START = 'app/GET_START';
 const GET_SUCCESS = 'app/GET_SUCCESS';
 const GET_ERROR = 'app/GET_ERROR';
@@ -14,7 +13,6 @@ const initialState = {
   db: null,
   error: null,
 };
-
 
 export default (state = initialState, action) => {
   switch (action.type) {
@@ -49,12 +47,11 @@ export default (state = initialState, action) => {
   }
 };
 
-
 /**
  * Get the app for the app id in the base URI.
  */
 export function getApp() {
-  return async (dispatch) => {
+  return async dispatch => {
     dispatch({
       type: GET_START,
     });
