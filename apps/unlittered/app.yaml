@@ -10,41 +10,27 @@ definitions:
   waarneming:
     type: object
     required:
-      - onderwerp
       - notities
       - proces
     properties:
       locatie:
-        title: GeoCoordinates
         type: object
         required:
           - latitude
-          - longitude 
+          - longitude
         properties:
           latitude:
             type: number
           longitude:
             type: number
-      onderwerp:
-        title: Onderwerp
-        type: string
       fotos:
         title: Foto’s
         type: array
         items:
           type: string
-          appsembleFile:
-            type:
-              - image/jpeg
-      gebied:
-        type: string
-        readOnly: true
       notities:
         title: Notities
         type: string
-      id:
-        type: string
-        readOnly: true
       proces:
         title: Proces
         enum:
@@ -52,10 +38,6 @@ definitions:
           - Handhaving
           - Heel en Groen
           - Inzameling
-      created_at:
-        type: string
-        format: date-time
-        readOnly: true
 
 
 authentication:
@@ -82,9 +64,6 @@ pages:
                 - value: Handhaving
                 - value: Heel en Groen
                 - value: Inzameling
-            - name: onderwerp
-              label: Onderwerp
-              type: string
             - name: notities
               label: Notities
               type: string
@@ -146,7 +125,6 @@ pages:
           fields:
             - locatie
             - proces
-            - onderwerp
             - notities
             - fotos
         actions:
