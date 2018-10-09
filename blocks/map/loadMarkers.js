@@ -16,6 +16,11 @@ export default async function loadMarkers(map, actions, resources, parameters) {
   const response = await resources.marker.query();
 
   response.data.forEach(data => {
+    const lat = getLatitude(data);
+    const lng = getLongitude(data);
+    if (Number.isNaN(Number(lat)) || Number.isNaN(Number(lng))) {
+      return;
+    }
     new Marker([getLatitude(data), getLongitude(data)], {
       icon: new Icon({
         iconUrl,
