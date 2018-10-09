@@ -10,6 +10,7 @@
  * @typedef {Object} BootstrapParams
  * @property {Object<string, Action>} actions The actions that may be dispatched by the block.
  * @property {Object} block The block as it is defined in the app definition.
+ * @property {Object} data Any kind of data that has been passed in by some context.
  * @property {ShadowRoot} shadowRoot The shadow root to which DOM elements may be appended.
  */
 

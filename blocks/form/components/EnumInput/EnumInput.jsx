@@ -44,7 +44,7 @@ export default class EnumInput extends React.Component {
         name={field.name}
         onChange={onChange}
         SelectProps={{
-          className: !value && 'empty',
+          className: value ? null : 'empty',
         }}
         value={value}
       >

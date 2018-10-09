@@ -1,0 +1,20 @@
+{
+  "name": "@amsterdam/amsterdam-splash",
+  "version": "1.0.0",
+  "appsemble": {
+    "actions": {
+      "load": {
+        "required": true
+      },
+      "success": {
+        "required": true
+      },
+      "error": {
+        "required": true
+      }
+    }
+  },
+  "dependencies": {
+    "@appsemble/sdk": "^1.0.0"
+  }
+}
