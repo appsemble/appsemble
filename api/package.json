@@ -24,8 +24,7 @@
     "sequelize": "^4.39.0",
     "sharp": "^0.20.8",
     "to-ico": "^1.1.5",
-    "uuid": "^3.3.2",
-    "z-schema": "^3.24.1"
+    "uuid": "^3.3.2"
   },
   "devDependencies": {
     "koa-webpack": "^5.1.0",
