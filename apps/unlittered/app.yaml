@@ -17,6 +17,9 @@ definitions:
       locatie:
         title: GeoCoordinates
         type: object
+        required:
+          - latitude
+          - longitude 
         properties:
           latitude:
             type: number
