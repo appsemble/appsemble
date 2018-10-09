@@ -1,8 +1,4 @@
-import {
-  FileField,
-  FileLabel,
-  Image,
-} from '@appsemble/react-bulma';
+import { FileField, FileLabel, Image } from '@appsemble/react-bulma';
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -10,7 +6,6 @@ import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
 import styles from './FileEntry.css';
-
 
 function getDerivedStateFromProps({ value }, state) {
   if (value === state.value) {
@@ -29,7 +24,6 @@ function getDerivedStateFromProps({ value }, state) {
   };
 }
 
-
 export default class FileEntry extends React.Component {
   static propTypes = {
     /**
@@ -47,10 +41,7 @@ export default class FileEntry extends React.Component {
     /**
      * The current value.
      */
-    value: PropTypes.oneOfType([
-      PropTypes.instanceOf(Blob),
-      PropTypes.string,
-    ]),
+    value: PropTypes.oneOfType([PropTypes.instanceOf(Blob), PropTypes.string]),
   };
 
   static defaultProps = {
@@ -61,7 +52,7 @@ export default class FileEntry extends React.Component {
 
   static getDerivedStateFromProps = getDerivedStateFromProps;
 
-  inputRef = (node) => {
+  inputRef = node => {
     if (node == null) {
       return;
     }
@@ -69,22 +60,15 @@ export default class FileEntry extends React.Component {
     // XXX A native event listener is used, to prevent the same event to be fired twice because of
     // the shadow DOM hackery.
     node.addEventListener('change', ({ target }) => {
-      const {
-        onChange,
-      } = this.props;
+      const { onChange } = this.props;
 
       onChange({ target }, target.files[0]);
     });
   };
 
   render() {
-    const {
-      field,
-      name,
-    } = this.props;
-    const {
-      url,
-    } = this.state;
+    const { field, name } = this.props;
+    const { url } = this.state;
 
     const title = field.label || field.name;
 
@@ -99,11 +83,7 @@ export default class FileEntry extends React.Component {
         name={name}
       >
         {url ? (
-          <Image
-            alt={title}
-            size={128}
-            src={url}
-          />
+          <Image alt={title} size={128} src={url} />
         ) : (
           <span className={classNames('image is-128x128', styles.empty)}>
             <FileLabel>

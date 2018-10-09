@@ -1,6 +1,5 @@
 import resolveJsonPointers from './resolveJsonPointers';
 
-
 const fixtures = [
   {
     name: 'convert an empty object to an empty object',
@@ -77,10 +76,7 @@ const fixtures = [
       ],
     },
     expected: {
-      top: [
-        'value',
-        'value',
-      ],
+      top: ['value', 'value'],
     },
   },
   {
@@ -131,7 +127,6 @@ const fixtures = [
     },
   },
 ];
-
 
 describe('resolveJsonPointers', () => {
   fixtures.forEach(({ actual, expected, name }) => {

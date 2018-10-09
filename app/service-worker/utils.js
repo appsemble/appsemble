@@ -8,7 +8,6 @@ async function put(request, response, fallback) {
   return fallback();
 }
 
-
 async function tryCached(request, fallback) {
   const cached = await caches.match(request);
   if (cached) {
@@ -16,7 +15,6 @@ async function tryCached(request, fallback) {
   }
   return fallback();
 }
-
 
 /**
  * Try returning a response from the cache first.
@@ -32,7 +30,6 @@ export async function cacheFirst(request) {
     return put(request, response, () => response);
   });
 }
-
 
 /**
  * Try returning a response from a request first.

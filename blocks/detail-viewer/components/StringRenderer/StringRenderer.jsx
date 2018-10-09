@@ -5,7 +5,6 @@ import EmailRenderer from './EmailRenderer';
 import FileRenderer from './FileRenderer';
 import TextRenderer from './TextRenderer';
 
-
 /**
  * Render a property for a JSON schema definition whose type is `string`.
  *
@@ -43,10 +42,7 @@ export default class StringRenderer extends React.Component {
     /**
      * The value to render
      */
-    value: PropTypes.oneOfType([
-      PropTypes.instanceOf(Blob),
-      PropTypes.string,
-    ]),
+    value: PropTypes.oneOfType([PropTypes.instanceOf(Blob), PropTypes.string]),
   };
 
   static defaultProps = {
@@ -54,9 +50,7 @@ export default class StringRenderer extends React.Component {
   };
 
   render() {
-    const {
-      schema,
-    } = this.props;
+    const { schema } = this.props;
 
     switch (schema.format) {
       case 'email':

@@ -1,13 +1,11 @@
 const property = '.';
 const filter = '|';
 
-
 const filters = {
   get: name => object => (Object.hasOwnProperty.call(object, name) ? object[name] : undefined),
   lower: () => Function.call.bind(String.prototype.toLowerCase),
   upper: () => Function.call.bind(String.prototype.toUpperCase),
 };
-
 
 /**
  * Compile a filter string into a function.
@@ -63,7 +61,6 @@ export function compileFilters(mapperString) {
   return value => result.reduce((acc, fn) => fn(acc), value);
 }
 
-
 /**
  * Map data given a set of mapping specifications.
  *
@@ -92,11 +89,10 @@ export function remapData(mapperData, inputData) {
     return mapperData.map(value => remapData(value, inputData));
   }
   if (mapperData instanceof Object) {
-    return Object.entries(mapperData)
-      .reduce((acc, [key, value]) => {
-        acc[key] = remapData(value, inputData);
-        return acc;
-      }, {});
+    return Object.entries(mapperData).reduce((acc, [key, value]) => {
+      acc[key] = remapData(value, inputData);
+      return acc;
+    }, {});
   }
   throw new Error('Invalid mapper data');
 }

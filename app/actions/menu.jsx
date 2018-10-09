@@ -1,11 +1,9 @@
 const OPEN = 'menu/OPEN';
 const CLOSE = 'menu/CLOSE';
 
-
 const initialState = {
   isOpen: false,
 };
-
 
 export default (state = initialState, action) => {
   switch (action.type) {
@@ -22,24 +20,22 @@ export default (state = initialState, action) => {
   }
 };
 
-
 /**
  * Open the side menu.
  */
 export function openMenu() {
-  return (dispatch) => {
+  return dispatch => {
     dispatch({
       type: OPEN,
     });
   };
 }
 
-
 /**
  * Close the side menu.
  */
 export function closeMenu() {
-  return (dispatch) => {
+  return dispatch => {
     dispatch({
       type: CLOSE,
     });

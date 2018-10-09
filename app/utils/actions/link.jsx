@@ -15,9 +15,7 @@ export default function link({ to, parameters = {} }, { pages }, block, history)
     return `/${[
       normalize(to),
       ...(toPage.parameters || []).map(
-        name => (Object.hasOwnProperty.call(mappers, name)
-          ? mappers[name](data)
-          : data[name]),
+        name => (Object.hasOwnProperty.call(mappers, name) ? mappers[name](data) : data[name]),
       ),
     ].join('/')}`;
   }

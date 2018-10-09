@@ -4,7 +4,6 @@ import React from 'react';
 import Block from '../Block';
 import styles from './SplashAction.css';
 
-
 /**
  * Render an app page definition.
  */
@@ -24,20 +23,13 @@ export default class SplashAction extends React.Component {
   };
 
   componentDidMount() {
-    const {
-      definition,
-      getBlockDefs,
-    } = this.props;
+    const { definition, getBlockDefs } = this.props;
 
     getBlockDefs(definition.blocks.map(({ type }) => type));
   }
 
   render() {
-    const {
-      actionCreators,
-      data,
-      definition,
-    } = this.props;
+    const { actionCreators, data, definition } = this.props;
 
     return (
       <div className={styles.root}>

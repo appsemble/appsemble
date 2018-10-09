@@ -3,11 +3,9 @@
  */
 export const placeholder = Symbol('resourceFiles.placeholder');
 
-
 function defaultReplacer() {
   return placeholder;
 }
-
 
 /**
  * Extract blobs from an object.
@@ -28,19 +26,18 @@ export default function extractBlobs(object, replacer = defaultReplacer) {
     files.push(object);
     result = replacer(object);
   } else if (Array.isArray(object)) {
-    result = object.map((value) => {
+    result = object.map(value => {
       const [nestedResult, nestedFiles] = extractBlobs(value, replacer);
       files.push(...nestedFiles);
       return nestedResult;
     });
   } else if (object instanceof Object) {
-    result = Object.entries(object)
-      .reduce((acc, [key, value]) => {
-        const [nestedResult, nestedFiles] = extractBlobs(value, replacer);
-        files.push(...nestedFiles);
-        acc[key] = nestedResult;
-        return acc;
-      }, {});
+    result = Object.entries(object).reduce((acc, [key, value]) => {
+      const [nestedResult, nestedFiles] = extractBlobs(value, replacer);
+      files.push(...nestedFiles);
+      acc[key] = nestedResult;
+      return acc;
+    }, {});
   } else {
     result = object;
   }

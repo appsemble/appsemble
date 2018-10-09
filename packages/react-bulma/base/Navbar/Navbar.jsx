@@ -4,7 +4,6 @@ import React from 'react';
 
 import { is } from '../../utils';
 
-
 export default class Navbar extends React.Component {
   static propTypes = {
     className: PropTypes.string,
@@ -19,12 +18,7 @@ export default class Navbar extends React.Component {
   };
 
   render() {
-    const {
-      className,
-      component: Component,
-      fixed,
-      ...props
-    } = this.props;
+    const { className, component: Component, fixed, ...props } = this.props;
 
     return (
       <Component

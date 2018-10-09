@@ -1,7 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-
 /**
  * Render an email address as a clickable link.
  */
@@ -18,14 +17,14 @@ export default class EmailRenderer extends React.Component {
   };
 
   render() {
-    const {
-      value,
-    } = this.props;
+    const { value } = this.props;
 
-    return value && (
-      <a href={`mailto:${value}`} target="_blank" rel="noopener noreferrer">
-        {value}
-      </a>
+    return (
+      value && (
+        <a href={`mailto:${value}`} target="_blank" rel="noopener noreferrer">
+          {value}
+        </a>
+      )
     );
   }
 }

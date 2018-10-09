@@ -1,9 +1,6 @@
-import {
-  SelectField,
-} from '@appsemble/react-bulma';
+import { SelectField } from '@appsemble/react-bulma';
 import PropTypes from 'prop-types';
 import React from 'react';
-
 
 /**
  * Render a select box which offers choices a JSON schema enum.
@@ -21,10 +18,7 @@ export default class EnumInput extends React.Component {
     /**
      * The current value.
      */
-    value: PropTypes.oneOfType([
-      PropTypes.number,
-      PropTypes.string,
-    ]),
+    value: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   };
 
   static defaultProps = {
@@ -32,11 +26,7 @@ export default class EnumInput extends React.Component {
   };
 
   render() {
-    const {
-      field,
-      onChange,
-      value,
-    } = this.props;
+    const { field, onChange, value } = this.props;
 
     return (
       <SelectField
@@ -48,11 +38,7 @@ export default class EnumInput extends React.Component {
         }}
         value={value}
       >
-        {!value && (
-          <option>
-            {field.label}
-          </option>
-        )}
+        {!value && <option>{field.label}</option>}
         {field.enum.map(choice => (
           <option key={choice.value} value={choice.value}>
             {choice.label || choice.value}

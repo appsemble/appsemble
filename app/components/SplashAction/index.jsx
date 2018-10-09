@@ -1,12 +1,7 @@
-import {
-  connect,
-} from 'react-redux';
+import { connect } from 'react-redux';
 
-import {
-  getBlockDefs,
-} from '../../actions/blockDefs';
+import { getBlockDefs } from '../../actions/blockDefs';
 import SplashAction from './SplashAction';
-
 
 function mapStateToProps(state) {
   return {
@@ -14,7 +9,9 @@ function mapStateToProps(state) {
   };
 }
 
-
-export default connect(mapStateToProps, {
-  getBlockDefs,
-})(SplashAction);
+export default connect(
+  mapStateToProps,
+  {
+    getBlockDefs,
+  },
+)(SplashAction);

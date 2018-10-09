@@ -1,8 +1,4 @@
-import {
-  cacheFirst,
-  requestFirst,
-} from './utils';
-
+import { cacheFirst, requestFirst } from './utils';
 
 /**
  * Map all requests to a caching behaviour based on the HTTP method and URL.
@@ -49,7 +45,6 @@ export function respond(request) {
   // static asset. Let’s cache it.
   return cacheFirst(request);
 }
-
 
 export default function onFetch(event) {
   event.respondWith(respond(event.request));

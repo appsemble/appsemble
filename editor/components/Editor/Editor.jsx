@@ -27,7 +27,7 @@ export default class Editor extends React.Component {
     this.setState({ recipe });
   }
 
-  onSubmit = (event) => {
+  onSubmit = event => {
     event.preventDefault();
 
     this.setState(({ recipe }) => {
@@ -41,7 +41,10 @@ export default class Editor extends React.Component {
       }
 
       // YAML appears to be valid, send it to the app preview iframe
-      this.frame.current.contentWindow.postMessage({ type: 'editor/EDIT_SUCCESS', app }, window.location.origin);
+      this.frame.current.contentWindow.postMessage(
+        { type: 'editor/EDIT_SUCCESS', app },
+        window.location.origin,
+      );
       return { valid: true, dirty: false };
     });
   };
@@ -57,7 +60,7 @@ export default class Editor extends React.Component {
     this.setState({ dirty: true });
   };
 
-  onMonacoChange = (recipe) => {
+  onMonacoChange = recipe => {
     this.setState({ recipe, dirty: true });
   };
 
@@ -70,11 +73,13 @@ export default class Editor extends React.Component {
         <div className={styles.leftPanel}>
           <form className={styles.editorForm} onSubmit={this.onSubmit}>
             <div className={styles.editorToolbar}>
-              <button type="submit" disabled={!dirty}>Save</button>
-              <button type="button" onClick={this.onUpload} disabled={!valid || dirty}>Upload</button>
-              { (!valid && !dirty)
-                && <p className={styles.editorError}>Invalid YAML</p>
-              }
+              <button type="submit" disabled={!dirty}>
+                Save
+              </button>
+              <button type="button" onClick={this.onUpload} disabled={!valid || dirty}>
+                Upload
+              </button>
+              {!valid && !dirty && <p className={styles.editorError}>Invalid YAML</p>}
             </div>
             <MonacoEditor
               language="yaml"
@@ -88,7 +93,14 @@ export default class Editor extends React.Component {
         </div>
 
         <div className={styles.rightPanel}>
-          { id && <iframe className={styles.appFrame} title="Appsemble App Preview" ref={this.frame} src={`/${id}`} /> }
+          {id && (
+            <iframe
+              className={styles.appFrame}
+              title="Appsemble App Preview"
+              ref={this.frame}
+              src={`/${id}`}
+            />
+          )}
         </div>
       </div>
     );

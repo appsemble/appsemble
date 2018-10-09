@@ -2,9 +2,7 @@ import path from 'path';
 
 import pug from 'pug';
 
-
 const render = pug.compileFile(path.resolve(__dirname, 'editor.pug'));
-
 
 /**
  * https://developers.google.com/web/fundamentals/web-app-manifest

@@ -3,7 +3,6 @@ import { attach } from '@appsemble/sdk';
 import './index.css';
 import './amsterdam.css';
 
-
 attach(({ actions }) => {
   let node;
   if (actions.click.type === 'link') {
@@ -14,9 +13,13 @@ attach(({ actions }) => {
     node.type = 'button';
   }
   node.classList.add('fas', 'fa-plus');
-  node.addEventListener('click', (event) => {
-    event.preventDefault();
-    actions.click.dispatch();
-  }, true);
+  node.addEventListener(
+    'click',
+    event => {
+      event.preventDefault();
+      actions.click.dispatch();
+    },
+    true,
+  );
   return node;
 });

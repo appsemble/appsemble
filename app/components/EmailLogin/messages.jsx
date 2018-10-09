@@ -1,6 +1,5 @@
 import { defineMessages } from 'react-intl';
 
-
 export default defineMessages({
   loginButton: 'Login',
   loginFailed: 'Login failed',
