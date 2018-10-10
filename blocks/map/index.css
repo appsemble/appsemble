@@ -1,3 +1,7 @@
+* {
+  font-family: var(--font-family) !important;
+}
+
 :global(.leaflet-container) {
   height: 100%;
   left: 0;

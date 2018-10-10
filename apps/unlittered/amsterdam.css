@@ -4,6 +4,32 @@
   --form-width: 400px;
   --primary-color: #eb0000;
   --primary-color-inverse: #ffffff;
+  --font-family: avernirnext, -apple-system, blinkmacsystemfont, 'Open Sans', 'Helvetica Neue',
+    sans-serif !important;
+}
+
+@font-face {
+  font-family: 'avernirnext';
+  src: url('./font/avenirnext/avenirnextltpro-regular.woff'),
+    url('./font/avenirnext/avenirnextltpro-regular.woff2');
+}
+
+@font-face {
+  font-family: 'avernirnext';
+  font-weight: 400;
+  src: url('./font/avenirnext/avenirnextltpro-medium.woff'),
+    url('./font/avenirnext/avenirnextltpro-medium.woff2');
+}
+
+@font-face {
+  font-family: 'avernirnext';
+  font-weight: 500;
+  src: url('./font/avenirnext/avenirnextltpro-bold.woff'),
+    url('./font/avenirnext/avenirnextltpro-bold.woff2');
+}
+
+* {
+  font-family: var(--font-family) !important;
 }
 
 form.container {

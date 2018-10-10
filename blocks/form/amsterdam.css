@@ -1,4 +1,8 @@
 /* stylelint-disable selector-max-specificity */
+* {
+  font-family: var(--font-family) !important;
+}
+
 .field-label {
   display: none;
 }
@@ -37,7 +41,7 @@
     background-color: var(--primary-color) !important;
 
     &:hover {
-      background-color: #EB6E6E !important;
+      background-color: #eb6e6e !important;
       border-color: transparent !important;
     }
 

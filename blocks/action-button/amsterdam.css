@@ -1,1 +1,4 @@
 /* stylelint-disable selector-max-specificity */
+* {
+  font-family: var(--font-family) !important;
+}
