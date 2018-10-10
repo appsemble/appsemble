@@ -50,6 +50,12 @@ form.container {
   z-index: 1100 !important;
 }
 
+.navbar-item.title {
+  font-size: 1rem;
+  font-weight: normal;
+  line-height: 1.5;
+}
+
 .side-menu {
   background-image: url(../../blocks/amsterdam-splash/background.svg);
   background-position-x: center;

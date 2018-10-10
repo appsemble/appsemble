@@ -13040,7 +13040,7 @@ ylru@^1.2.0:
   resolved "https://registry.yarnpkg.com/ylru/-/ylru-1.2.1.tgz#f576b63341547989c1de7ba288760923b27fe84f"
   integrity sha512-faQrqNMzcPCHGVC2aaOINk13K+aaBDUPjGWl0teOXywElLjyVAB6Oe2jj62jHYtwsU49jXhScYbvPENK+6zAvQ==
 
-z-schema@^3.16.1, z-schema@^3.24.1:
+z-schema@^3.16.1:
   version "3.24.1"
   resolved "https://registry.yarnpkg.com/z-schema/-/z-schema-3.24.1.tgz#07a3643c8e061ec1af32e823c9f9e5e5e56e3c8d"
   integrity sha512-2eR8eq/v1coNqyBc5HzswEcoLbw+S33RMnR326uiuOIr97ve5vwPNMDrKS1IRCB12bZ3a8BrfGxrRwuSXUyPvw==

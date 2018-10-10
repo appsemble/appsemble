@@ -39,6 +39,7 @@
 
   & select {
     border-radius: var(--border-radius) !important;
+    font-size: 0.875rem !important;
     height: 2.5em !important;
     padding-left: 1em !important;
     width: 100% !important;
@@ -65,12 +66,12 @@
   border-radius: var(--border-radius) !important;
   font-size: 0.875rem !important;
   margin-bottom: 2.5em !important;
-  margin-right: 2em !important;
   margin-top: 2em !important;
   width: 35% !important;
 
   &.is-primary {
     background-color: var(--primary-color) !important;
+    text-transform: uppercase;
 
     &:hover {
       background-color: #eb6e6e !important;
