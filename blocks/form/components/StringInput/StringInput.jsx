@@ -46,7 +46,7 @@ export default class StringInput extends React.Component {
         maxLength={field.maxLength}
         name={field.name}
         onChange={onChange}
-        placeholder={field.placeholder || field.name}
+        placeholder={field.placeholder || field.label || field.name}
         required={field.required}
         readOnly={field.readOnly}
         value={value}
