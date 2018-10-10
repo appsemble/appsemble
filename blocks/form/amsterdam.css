@@ -3,6 +3,11 @@
   font-family: var(--font-family) !important;
 }
 
+.leaflet-container {
+  box-shadow: 0 8px 20px 0 rgba(10, 10, 10, 0.1);
+  margin: 6px 0 0;
+}
+
 .field-label {
   display: none;
 }
@@ -11,6 +16,7 @@
 .textarea {
   border-radius: var(--border-radius) !important;
   font-size: 0.875rem !important;
+  padding: 1em;
 
   &:focus,
   &:active {
@@ -56,7 +62,10 @@ form {
   padding: 0 !important;
 }
 
-.field {
+.field.is-horizontal {
+  box-sizing: border-box;
   margin: 0 auto;
+  max-width: 100vw;
+  padding: 6px;
   width: 480px;
 }

@@ -1,0 +1,9 @@
+- [x] Map z-index
+- [x] Fix custom font
+- [ ] Hide empty select option
+- [x] image background should be styled
+- [x] Center title
+- [ ] Fix form margins
+- [ ] Image delete icon
+- [ ] Style the menu
+- [ ] add icons for the form

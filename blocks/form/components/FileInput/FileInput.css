@@ -3,5 +3,6 @@
   display: flex;
   flex-flow: row;
   height: 128px;
+  margin-top: 2rem;
   overflow-x: auto;
 }
