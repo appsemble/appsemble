@@ -24,3 +24,19 @@
         description: The account that was created.
       default:
         $ref: '#/responses/default'
+/email/verify:
+  get:
+    description: Verify the email address of a registered user.
+    x-oai-middleware:
+      - file: auth
+        handler: verifyEmail
+    parameters:
+      - name: key
+        in: query
+        type: string
+        description: The verification key.
+    responses:
+      200:
+        description: The account was successfully verified.
+      default:
+        $ref: '#/responses/default'

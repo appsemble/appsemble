@@ -6,6 +6,7 @@ export default (sequelize, DataTypes) =>
       name: DataTypes.STRING,
       password: { type: DataTypes.STRING, allowNull: false },
       verified: { type: DataTypes.BOOLEAN, defaultValue: false, allowNull: false },
+      key: DataTypes.STRING,
     },
     {
       freezeTableName: true,
