@@ -1,0 +1,26 @@
+/email:
+  post:
+    description: Register a new account using an email address and a password.
+    x-oai-middleware:
+      - file: auth
+        handler: registerEmail
+    parameters:
+      - name: user
+        in: body
+        description: The user account to register.
+        schema:
+          type: object
+          required: 
+            - email
+            - password
+          properties:
+            email:
+              type: string
+            password:
+              type: string
+          format: email
+    responses:
+      201: 
+        description: The account that was created.
+      default:
+        $ref: '#/responses/default'
