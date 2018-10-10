@@ -1,4 +1,9 @@
 .root {
+  box-shadow: 0 5px 11px 0 rgba(10, 10, 10, 0.25);
+  padding: 6px 0;
+}
+
+.map {
   height: 160px;
   left: 0;
   position: relative;

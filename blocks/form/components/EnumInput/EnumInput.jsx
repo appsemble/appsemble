@@ -2,6 +2,8 @@ import { SelectField } from '@appsemble/react-bulma';
 import PropTypes from 'prop-types';
 import React from 'react';
 
+import styles from './EnumInput.css';
+
 /**
  * Render a select box which offers choices a JSON schema enum.
  */
@@ -38,7 +40,7 @@ export default class EnumInput extends React.Component {
         }}
         value={value}
       >
-        {!value && <option>{field.label}</option>}
+        {!value && <option className={styles.hidden}>{field.label}</option>}
         {field.enum.map(choice => (
           <option key={choice.value} value={choice.value}>
             {choice.label || choice.value}

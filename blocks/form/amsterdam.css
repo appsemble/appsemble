@@ -1,26 +1,97 @@
 /* stylelint-disable selector-max-specificity */
+* {
+  font-family: var(--font-family) !important;
+}
+
 .field-label {
   display: none;
+}
+
+.input {
+  height: 2.5em !important;
+  line-height: 1.25 !important;
+  padding-left: 1em !important;
+}
+
+.textarea {
+  margin-bottom: 2em !important;
+  padding-left: 1em !important;
 }
 
 .input,
 .textarea {
   border-radius: var(--border-radius) !important;
+  font-size: 0.875rem !important;
+
+  &:focus,
+  &:active {
+    border-color: #787878 !important;
+    box-shadow: 0 0 0 0.125em rgba(78, 78, 78, 0.1) !important;
+  }
 }
 
 .select {
-  width: 100%;
+  border-radius: var(--border-radius) !important;
+  font-size: 0.875rem !important;
+  height: 2.5em !important;
+  margin-top: 2em !important;
+  width: 100% !important;
 
   & select {
     border-radius: var(--border-radius) !important;
-    width: 100%;
+    height: 2.5em !important;
+    padding-left: 1em !important;
+    width: 100% !important;
+  }
+
+  &:not(.is-multiple)::after {
+    border: 1px solid #787878 !important;
+    border-right: 0 !important;
+    border-top: 0 !important;
+  }
+
+  & select:focus,
+  & select:active {
+    border-color: #787878 !important;
+    box-shadow: 0 0 0 0.125em rgba(78, 78, 78, 0.1) !important;
+  }
+
+  &:hover::after {
+    border-color: #787878 !important;
   }
 }
 
 .button {
   border-radius: var(--border-radius) !important;
+  font-size: 0.875rem !important;
+  margin-bottom: 2.5em !important;
+  margin-right: 2em !important;
+  margin-top: 2em !important;
+  width: 35% !important;
 
   &.is-primary {
     background-color: var(--primary-color) !important;
+
+    &:hover {
+      background-color: #eb6e6e !important;
+      border-color: transparent !important;
+    }
+
+    &:focus:not(:active) {
+      box-shadow: 0 0 0 0 !important;
+    }
   }
+}
+
+form {
+  max-width: initial !important;
+  padding: 0 !important;
+}
+
+.field.is-horizontal {
+  box-sizing: border-box;
+  margin: 0 auto;
+  max-width: 100vw;
+  padding: 6px;
+  width: 480px;
 }
