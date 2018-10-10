@@ -28,7 +28,9 @@ export default class TitleBar extends React.Component {
           <NavbarItem>
             <SideMenuButton />
           </NavbarItem>
-          <NavbarItem>{app?.name || 'Appsemble'}</NavbarItem>
+          <NavbarItem className="title" component="h2">
+            {app?.name || 'Appsemble'}
+          </NavbarItem>
         </NavbarBrand>
       </Navbar>
     );
