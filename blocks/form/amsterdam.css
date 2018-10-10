@@ -6,12 +6,21 @@
 .input,
 .textarea {
   border-radius: var(--border-radius) !important;
+  font-size:0.875rem !important;
+}
+
+.input:focus, .input.is-focused, .input:active, .input.is-active, .textarea:focus,
+.textarea.is-focused, .textarea:active, .textarea.is-active {
+      border-color: #787878;
 }
 
 .select {
-  width: 100%;
+  width:100% !important;
+  font-size:0.875rem !important;
+  border-radius: var(--border-radius) !important;
 
   & select {
+    width:100% !important;
     border-radius: var(--border-radius) !important;
     width: 100%;
   }
@@ -19,8 +28,34 @@
 
 .button {
   border-radius: var(--border-radius) !important;
+  width: 35% !important;
+  font-size: 0.875rem !important;
+  margin-top:2em !important;
+  margin-bottom:2.5em !important;
+  margin-right: 2em !important;
 
   &.is-primary {
-    background-color: var(--primary-color) !important;
-  }
+    background-color: var(--primary-color) !important;}
 }
+  .button.is-primary:hover, .button.is-primary.is-hovered {
+    background-color: #EB6E6E !important;
+    border-color: transparent !important; }
+  .button.is-primary:focus:not(:active), .button.is-primary.is-focused:not(:active) {
+    box-shadow: 0 0 0 0 !important; }
+  .button .is-primary:hover, .button.is-primary.is-hovered {
+    background-color: #EB6E6E !important;
+    border-color: transparent !important;}
+ 
+.blocks-form-components-FormBlock-FormBlock_root {
+  padding: 0 !important;
+}
+
+.blocks-form-components-FileInput-FileEntry_root {
+    margin: 0px !important;
+}
+ 
+ .field-label {
+  margin-top: 0.75rem !important;
+  margin-left: 1em !important;
+  margin-right: 1em !important;
+ }
