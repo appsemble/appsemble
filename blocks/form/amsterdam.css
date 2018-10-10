@@ -6,25 +6,45 @@
 .input,
 .textarea {
   border-radius: var(--border-radius) !important;
-  font-size:0.875rem !important;
-}
+  font-size:0.875rem !important;}
 
-.input:focus, .input.is-focused, .input:active, .input.is-active, .textarea:focus,
-.textarea.is-focused, .textarea:active, .textarea.is-active {
-      border-color: #787878;
-}
+.input{
+  height:2.5em !important;
+  line-height:1.25 !important;
+  padding-left: 1em !important;}
+  .input:focus, .input.is-focused, .input:active, .input.is-active, .textarea:focus,
+  .textarea.is-focused, .textarea:active, .textarea.is-active {
+      border-color: #787878 !important;
+      box-shadow: 0 0 0 0.125em rgba(78, 78, 78, 0.1) !important;}
+
+.textarea {
+  margin-bottom: 2em !important;
+  padding-left: 1em !important;}
 
 .select {
+  margin-top: 2em !important;
   width:100% !important;
+  height:2.5em !important;
   font-size:0.875rem !important;
   border-radius: var(--border-radius) !important;
 
   & select {
     width:100% !important;
-    border-radius: var(--border-radius) !important;
-    width: 100%;
+    border-radius: var(--border-radius) !important; 
+    height:2.5em !important;
+    padding-left: 1em !important; 
   }
 }
+  .select:not(.is-multiple)::after {
+    border: 1px solid #787878 !important;
+    border-right: 0 !important;
+    border-top: 0 !important;}
+  .select select:focus, .select select.is-focused, .select select:active, .select select.is-active {
+    border-color: #787878 !important;
+    box-shadow: 0 0 0 0.125em rgba(78, 78, 78, 0.1) !important; }
+  .select:hover::after {
+    border-color: #787878 !important;}
+
 
 .button {
   border-radius: var(--border-radius) !important;
@@ -54,8 +74,8 @@
     margin: 0px !important;
 }
  
- .field-label {
+.field-body {
   margin-top: 0.75rem !important;
-  margin-left: 1em !important;
-  margin-right: 1em !important;
- }
+  margin-left: 2em !important;
+  margin-right: 2em !important;
+}
