@@ -27,24 +27,17 @@ export default function validate(schema, data) {
           case 'OBJECT_MISSING_REQUIRED_PROPERTY':
             error.params.forEach(param => {
               const paramPath = error.path.concat(param).join('.');
-              acc[paramPath] = { ...acc[paramPath],
-                required: true
-              };
+              acc[paramPath] = { ...acc[paramPath], required: true };
             });
             break;
           case 'ENUM_MISMATCH':
-            acc[path] = { ...acc[path],
-              invalidEnumValue: true
-            };
+            acc[path] = { ...acc[path], invalidEnumValue: true };
             break;
           case 'INVALID_TYPE':
-            acc[path] = { ...acc[path],
-              invalidType: true
-            };
+            acc[path] = { ...acc[path], invalidType: true };
             break;
           default:
-            acc[path] = { ...acc[path]
-            };
+            acc[path] = { ...acc[path] };
         }
         return acc;
       }, {});
