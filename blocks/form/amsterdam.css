@@ -1,5 +1,5 @@
 /* stylelint-disable selector-max-specificity */
-* {
+:not(.fas) {
   font-family: var(--font-family) !important;
 }
 

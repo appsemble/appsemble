@@ -28,7 +28,7 @@
     url('./font/avenirnext/avenirnextltpro-bold.woff2');
 }
 
-* {
+:not(.fas) {
   font-family: var(--font-family) !important;
 }
 
