@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" version="1.1" viewBox="0 0 24 24">
+<!--Generator: Sketch 43.1 (39012) - http://www.bohemiancoding.com/sketch-->
+    <title>
+        Icons/System/Cross
+    </title>
+    <desc>
+        Created with Sketch.
+    </desc>
+    <defs>
+        <path id="path-1" d="M13.2907561,2.10924387 C13.6824607,1.7175393 13.6892946,1.08929462 13.291797,0.691797042 L13.308203,0.708202958 C12.9170733,0.317073265 12.2828746,0.317125416 11.8907561,0.70924387 L7,5.6 L2.10924387,0.70924387 C1.7175393,0.317539297 1.08929462,0.310705376 0.691797042,0.708202958 L0.708202958,0.691797042 C0.317073265,1.08292674 0.317125416,1.71712542 0.70924387,2.10924387 L5.6,7 L0.70924387,11.8907561 C0.317539297,12.2824607 0.310705376,12.9107054 0.708202958,13.308203 L0.691797042,13.291797 C1.08292674,13.6829267 1.71712542,13.6828746 2.10924387,13.2907561 L7,8.4 L11.8907561,13.2907561 C12.2824607,13.6824607 12.9107054,13.6892946 13.308203,13.291797 L13.291797,13.308203 C13.6829267,12.9170733 13.6828746,12.2828746 13.2907561,11.8907561 L8.4,7 L13.2907561,2.10924387 Z"/>
+    </defs>
+    <g id="Symbols" fill="none" fill-rule="evenodd" stroke="none" stroke-width="1">
+        <g id="Icons/System/Cross">
+            <g id="Color/Rood" transform="translate(5.000000, 5.000000)">
+                <mask id="mask-2" fill="white">
+                    <use xlink:href="#path-1"/>
+                </mask>
+                <use id="Mask" fill="#000000" xlink:href="#path-1"/>
+                <g id="Color/Wit" fill="#FFFFFF" mask="url(#mask-2)">
+                    <g id="Rectangle-Copy" transform="translate(-5.000000, -5.000000)">
+                        <rect width="24" height="24" x="0" y="0"/>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>
