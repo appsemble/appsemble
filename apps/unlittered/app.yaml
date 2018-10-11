@@ -87,7 +87,7 @@ pages:
                     blobs:
                       type: upload
                       method: post
-                      url: 'http://oscity.nl:9808/upload'
+                      url: 'https://api.stadswerken.amsterdam/upload'
                       serialize: custom
                   error:
                     type: splash.error
