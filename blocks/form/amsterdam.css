@@ -71,6 +71,7 @@
 
   &.is-primary {
     background-color: var(--primary-color) !important;
+    float: right;
     text-transform: uppercase;
 
     &:hover {

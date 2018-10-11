@@ -19,9 +19,15 @@
   border: none;
   border-radius: 50%;
   cursor: pointer;
+  display: flex;
   height: 30vw;
+  justify-content: center;
   outline: none;
   width: 30vw;
+}
+
+.icon {
+  width: 60%;
 }
 
 .header {
