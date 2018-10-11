@@ -12,6 +12,7 @@ definitions:
       - proces
     properties:
       locatie:
+        title: GeoCoordinates
         type: object
         required:
           - latitude
