@@ -48,7 +48,9 @@ export default class GeoCoordinatesRenderer extends React.Component {
       })
       .locate()
       .setView([value.latitude, value.longitude], 16);
-    new TileLayer('http://c.tiles.wmflabs.org/bw-mapnik/{z}/{x}/{y}.png').addTo(map);
+    new TileLayer(
+      'https://cartodb-basemaps-c.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png',
+    ).addTo(map);
     new Marker(null, {
       icon: new Icon({
         iconUrl,

@@ -71,7 +71,9 @@ export default class GeoCoordinatesInput extends React.Component {
         );
       })
       .locate({ setView: true });
-    new TileLayer('http://c.tiles.wmflabs.org/bw-mapnik/{z}/{x}/{y}.png').addTo(map);
+    new TileLayer(
+      'https://cartodb-basemaps-c.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png',
+    ).addTo(map);
     this.map = map;
   }
 
