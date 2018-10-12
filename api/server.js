@@ -41,6 +41,7 @@ export default function server({
   oaiRouter.mount(OAIRouterParameters);
   oaiRouter.mount(OAIRouterMiddleware);
 
+  // eslint-disable-next-line no-param-reassign
   app.keys = [process.env.OAUTH_SECRET || 'appsemble'];
   app.use(session(app));
 
@@ -51,12 +52,15 @@ export default function server({
   const oauth = new OAuthServer({
     model,
     requireClientAuthentication: false,
-    grants: ['password'],
+    grants: ['password', 'refresh_token'],
     useErrorHandler: true,
     debug: true,
   });
   const oauthRouter = new Router();
   oauthRouter.post('/oauth/authorize', oauth.authorize());
+  oauthRouter.get('/authTest', ctx => {
+    ctx.body = ctx.state.oauth;
+  });
   oauthRouter.post(
     '/oauth/token',
     async (ctx, next) => {
@@ -78,7 +82,7 @@ export default function server({
 
     ctx.session.userId = user.id;
 
-    if (ctx.session.hasOwnProperty('query')) {
+    if (Object.prototype.hasOwnProperty.call(ctx.session, 'query')) {
       ctx.redirect('/oauth/authorize');
       return;
     }
@@ -128,7 +132,7 @@ export default function server({
     (ctx, next) => {
       if (!ctx.session.userId) {
         ctx.redirect('/login');
-        return;
+        return null;
       }
 
       ctx.request.body = ctx.session.query;
@@ -139,7 +143,7 @@ export default function server({
     },
     oauth.authorize({
       authenticateHandler: {
-        handle: async (req, res) => db.User.find({ where: { id: req.body.user_id } }),
+        handle: async req => db.User.find({ where: { id: req.body.user_id } }),
       },
     }),
   );
@@ -149,6 +153,7 @@ export default function server({
     app.use(compress());
   }
 
+  app.use(oauth.authenticate());
   app.use(oauthRouter.routes());
   app.use(oaiRouter.routes());
   app.use(routes);

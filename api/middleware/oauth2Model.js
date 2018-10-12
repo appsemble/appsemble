@@ -12,7 +12,6 @@ function generateToken(client, user, scope, expiresIn) {
     {
       expiresIn: expiresIn || 3600, // expires in an hour
       issuer: 'appsemble-api',
-      subject: user.email,
     },
   );
 
@@ -28,9 +27,30 @@ export default function oauth2Model(db) {
       const { OAuthAuthorization } = await db;
       const token = await OAuthAuthorization.find({ where: { token: accessToken } });
 
+      if (!token) {
+        return null;
+      }
+
       return {
         accessToken: token.token,
         accessTokenExpiresAt: token.tokenExpires,
+        scope: token.scope,
+        client: { id: token.clientId },
+        user: { id: token.UserId },
+      };
+    },
+
+    getRefreshToken: async refreshToken => {
+      const { OAuthAuthorization } = await db;
+      const token = await OAuthAuthorization.find({ where: { refreshToken } });
+
+      if (!token) {
+        return null;
+      }
+
+      return {
+        refreshToken: token.refreshToken,
+        refreshTokenExpiresAt: token.refreshTokenExpires,
         scope: token.scope,
         client: { id: token.clientId },
         user: { id: token.UserId },
@@ -47,7 +67,12 @@ export default function oauth2Model(db) {
         return false;
       }
 
-      return { id: client.clientId, secret: client.clientSecret, grants: ['password'] };
+      return {
+        id: client.clientId,
+        secret: client.clientSecret,
+        redirect_uris: [client.redirectUri],
+        grants: ['password', 'refresh_token'],
+      };
     },
 
     getUser: async (username, password) => {
@@ -79,6 +104,17 @@ export default function oauth2Model(db) {
         user,
         client,
       };
+    },
+
+    revokeToken: async token => {
+      const { OAuthAuthorization } = await db;
+
+      try {
+        await OAuthAuthorization.destroy({ where: { refreshToken: token.refreshToken } });
+        return true;
+      } catch (e) {
+        return false;
+      }
     },
 
     // XXX: Implement when implementing scopes
