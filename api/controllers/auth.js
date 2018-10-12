@@ -40,7 +40,3 @@ export async function verifyEmail(ctx) {
 
   ctx.status = 200;
 }
-
-export async function auth(ctx) {
-  ctx.body = 'ok';
-}
