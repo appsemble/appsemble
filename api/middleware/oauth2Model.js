@@ -71,7 +71,7 @@ export default function oauth2Model(db) {
         refreshToken: token.refreshToken,
         refreshTokenExpires: token.refreshTokenExpiresAt,
         scope: token.scope,
-        userId: user.id,
+        UserId: user.id,
       });
 
       return {
