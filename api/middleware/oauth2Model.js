@@ -33,7 +33,7 @@ export default function oauth2Model(db) {
         accessTokenExpiresAt: token.tokenExpires,
         scope: token.scope,
         client: { id: token.clientId },
-        user: { id: token.userId },
+        user: { id: token.UserId },
       };
     },
 
