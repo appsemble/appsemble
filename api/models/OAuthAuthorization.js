@@ -8,7 +8,7 @@ export default (sequelize, DataTypes) =>
       clientId: { type: DataTypes.STRING, allowNull: false },
       refreshToken: { type: DataTypes.STRING, allowNull: false },
       refreshTokenExpires: { type: DataTypes.DATE, allowNull: false },
-      provider: { type: DataTypes.STRING, allowNull: false },
+      scope: { type: DataTypes.STRING },
     },
     {
       freezeTableName: true,
