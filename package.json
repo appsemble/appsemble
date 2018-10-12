@@ -12,7 +12,6 @@
     "start": "node -r esm api/server.js",
     "eslint": "eslint --ext js,jsx,md .",
     "prettier": "prettier --list-different '{**/,}*.{css,json,md,yaml,yml}'",
-    "setupdb": "node -r esm api/setupdb.js",
     "stylelint": "stylelint .",
     "test": "jest"
   },

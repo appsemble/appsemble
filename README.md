@@ -4,43 +4,8 @@
 
 ## Usage
 
-A Docker image is built for each version of Appsemble.
-
-> To pull an image from our registry, a login to the GitLab registry is needed. Go to
-> https://gitlab.com/profile/personal_access_tokens. Enter a name for your token, check the
-> `read_registry` scope, and create the token. It is highly recommended to use a [credentials
-> store][docker credentials store]. Now login using docker. Your GitLab username is the username,
-> The token is the password.
->
-> ```sh
-> docker login registry.gitlab.com
-> ```
-
-To pull the latest version, run
-
-```sh
-docker pull registry.gitlab.com/dcentralized/appsemble/appsemble
-```
-
-Also a Docker image is built for each release.
-
-```sh
-docker pull registry.gitlab.com/dcentralized/appsemble/appsemble:$GIT_VERSION
-```
-
-It is also possible to pull a version matching a specific git commit.
-
-```sh
-docker pull registry.gitlab.com/dcentralized/appsemble/appsemble:$GIT_COMMIT_HASH
-```
-
-The Docker image uses the following environment variables.
-
-| Variable       | Default value                                    | Description                                  |
-| -------------- | ------------------------------------------------ | -------------------------------------------- |
-| `DATABASE_URL` | `mysql://root:password@localhost:3306/appsemble` | The URL of the MySQL database to connect to. |
-
-## Development
+These are instructions for developing the Appsemble core platform. Production setup instructions can
+be found in the [API readme](api/README.md).
 
 ### Requirements
 
@@ -69,13 +34,19 @@ docker-compose up -d
 The database can be initialized using the following command.
 
 ```sh
-yarn setupdb
+yarn start --initialize-database
 ```
 
 The project can be served using the following command.
 
 ```sh
 yarn start
+```
+
+To see additional options, run the following command.
+
+```sh
+yarn start --help
 ```
 
 The frontend project can be built using the following command.

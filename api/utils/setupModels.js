@@ -57,11 +57,28 @@ function associateModels(models) {
   BlockVersion.belongsTo(Block, { foreignKey: { allowNull: false } });
 }
 
-export default async function setupModels({ sync = true, force = false, database }) {
-  const db = new Sequelize(database, {
-    logging: false,
+export default async function setupModels({
+  sync = true,
+  force = false,
+  logging = false,
+  host,
+  port,
+  username,
+  password,
+  database,
+  uri,
+}) {
+  const db = new Sequelize({
+    logging,
     // XXX: This removes a pesky sequelize warning. Remove this when updating to sequelize@^5.
     operatorsAliases: Sequelize.Op.Aliases,
+    dialect: 'mysql',
+    host,
+    port,
+    username,
+    password,
+    database,
+    uri,
   });
   const models = importModels(db);
   associateModels(models);
