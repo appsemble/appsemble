@@ -68,7 +68,7 @@ export function processArgv() {
       ],
     })
     .option('initialize-database', {
-      desc: 'Initialize the database, then exit.',
+      desc: 'Initialize the database, then exit. This wipes any existing data.',
       type: 'boolean',
     })
     .alias('i', 'init-database')
