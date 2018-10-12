@@ -17,7 +17,7 @@ export default async function testSchema() {
     .replace(/-/g, '_');
 
   await root.query(`CREATE SCHEMA IF NOT EXISTS ${dbName}`);
-  const db = await setupModels({ sync: true, database: `${database}/${dbName}` });
+  const db = await setupModels({ sync: true, uri: `${database}/${dbName}` });
 
   return {
     ...db,
