@@ -62,6 +62,25 @@ production mode.
 NODE_ENV=production yarn start
 ```
 
+### Tests
+
+Tests can be run using the following command.
+
+```sh
+yarn test
+```
+
+The tests are ran using jest, meaning all [jest CLI options][] can be passed.
+
+By default, database tests are run against the database as specified in
+[docker-compose.yml](docker-compose.yml). The database can be overridden by setting the
+`DATABASE_URL` environment variable. Note that this should **not** include the database name.
+Multiple test databases are created at runtime.
+
+```sh
+DATABASE_URL=mysql://root:password@localhost:3306 yarn test
+```
+
 ### Building
 
 The resulting Docker image can be built using the Docker CLI.
@@ -77,5 +96,6 @@ Please read our [contributing guidelines](./CONTRIBUTING.md).
 [docker-compose]: https://docs.docker.com/compose
 [docker credentials store]:
   https://docs.docker.com/engine/reference/commandline/login/#credentials-store
+[jest cli options]: https://jestjs.io/docs/en/cli
 [nodejs 10]: https://nodejs.org
 [yarn]: https://yarnpkg.com

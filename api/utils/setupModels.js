@@ -68,18 +68,27 @@ export default async function setupModels({
   database,
   uri,
 }) {
-  const db = new Sequelize({
+  const options = {
     logging,
     // XXX: This removes a pesky sequelize warning. Remove this when updating to sequelize@^5.
     operatorsAliases: Sequelize.Op.Aliases,
-    dialect: 'mysql',
-    host,
-    port,
-    username,
-    password,
-    database,
-    uri,
-  });
+  };
+  let args;
+  if (uri) {
+    args = [uri, options];
+  } else {
+    args = [
+      Object.assign(options, {
+        dialect: 'mysql',
+        host,
+        port,
+        username,
+        password,
+        database,
+      }),
+    ];
+  }
+  const db = new Sequelize(...args);
   const models = importModels(db);
   associateModels(models);
 
