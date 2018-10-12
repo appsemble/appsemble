@@ -10,10 +10,9 @@ import OAuthServer from 'koa2-oauth-server';
 import OAIRouter from 'koa-oai-router';
 import OAIRouterMiddleware from 'koa-oai-router-middleware';
 import OAIRouterParameters from 'koa-oai-router-parameters';
+import Router from 'koa-router';
 import session from 'koa-session';
 import yaml from 'js-yaml';
-
-import Router from 'koa-router';
 
 import boomMiddleware from './middleware/boom';
 import sequelizeMiddleware from './middleware/sequelize';
@@ -56,11 +55,9 @@ export default function server({
     useErrorHandler: true,
     debug: true,
   });
+
   const oauthRouter = new Router();
   oauthRouter.post('/oauth/authorize', oauth.authorize());
-  oauthRouter.get('/authTest', ctx => {
-    ctx.body = ctx.state.oauth;
-  });
   oauthRouter.post(
     '/oauth/token',
     async (ctx, next) => {
@@ -71,81 +68,6 @@ export default function server({
       await next();
     },
     oauth.token(),
-  );
-  oauthRouter.post('/login', async ctx => {
-    const user = await model.getUser(ctx.request.body.username, ctx.request.body.password);
-
-    if (!user) {
-      ctx.body = 'invalid login';
-      return;
-    }
-
-    ctx.session.userId = user.id;
-
-    if (Object.prototype.hasOwnProperty.call(ctx.session, 'query')) {
-      ctx.redirect('/oauth/authorize');
-      return;
-    }
-    ctx.redirect('/');
-  });
-
-  oauthRouter.get('/login', ctx => {
-    ctx.response.body =
-      '<html><body><form action="/login" method="post">' +
-      '<h1>Ye olde login form</h1>' +
-      '<p>Sign in as wessel@d-centralize.nl:password</p>' +
-      '<input type="email" name="username" value="wessel@d-centralize.nl">' +
-      '<input type="password" name="password" value="password">' +
-      '<input type="submit" value="Sign in">' +
-      '</form></body></html>';
-  });
-
-  oauthRouter.get('/oauth/authorize', ctx => {
-    if (!ctx.session.userId) {
-      ctx.session.query = {
-        state: ctx.request.query.state,
-        scope: ctx.request.query.scope,
-        client_id: ctx.request.query.client_id,
-        redirect_uri: ctx.request.query.redirect_uri,
-        response_type: ctx.request.query.response_type,
-      };
-
-      ctx.redirect('/login');
-      return;
-    }
-
-    const client = model.getClient(ctx.session.query.client_id);
-
-    if (!client) {
-      ctx.throw(401, 'No such client');
-    }
-
-    ctx.response.body =
-      `<html><body><h1>Grant access to "${client.id}"?</h1>` +
-      `<p>The application requests access to ${ctx.session.query.scope}</p>` +
-      '<form action="/oauth/authorize" method="post">' +
-      '<input type="submit" value="Grant access"></form></body></html>';
-  });
-
-  oauthRouter.post(
-    '/oauth/authorize',
-    (ctx, next) => {
-      if (!ctx.session.userId) {
-        ctx.redirect('/login');
-        return null;
-      }
-
-      ctx.request.body = ctx.session.query;
-      ctx.request.body.user_id = ctx.session.userId;
-      ctx.session.query = null;
-
-      return next();
-    },
-    oauth.authorize({
-      authenticateHandler: {
-        handle: async req => db.User.find({ where: { id: req.body.user_id } }),
-      },
-    }),
   );
 
   app.use(bodyParser());
