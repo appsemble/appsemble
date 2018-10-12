@@ -4,7 +4,7 @@ import Boom from 'boom';
 
 export async function registerEmail(ctx) {
   const { body } = ctx.request;
-  const { User, EmailAuthorization } = ctx.state.db;
+  const { EmailAuthorization } = ctx.state.db;
 
   try {
     const password = await bcrypt.hash(body.password, 10);

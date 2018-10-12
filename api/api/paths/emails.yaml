@@ -10,7 +10,7 @@
         description: The user account to register.
         schema:
           type: object
-          required: 
+          required:
             - email
             - password
           properties:
@@ -20,7 +20,7 @@
               type: string
           format: email
     responses:
-      201: 
+      201:
         description: The account that was created.
       default:
         $ref: '#/responses/default'
