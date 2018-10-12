@@ -52,6 +52,7 @@ export default function server({
     model,
     requireClientAuthentication: false,
     grants: ['password'],
+    useErrorHandler: true,
     debug: true,
   });
   const oauthRouter = new Router();
