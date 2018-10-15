@@ -12,6 +12,7 @@ function generateToken(client, user, scope, expiresIn) {
     {
       expiresIn: expiresIn || 3600, // expires in an hour
       issuer: 'appsemble-api',
+      ...(user.email && { subject: user.email }),
     },
   );
 

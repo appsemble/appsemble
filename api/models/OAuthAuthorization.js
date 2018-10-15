@@ -3,10 +3,10 @@ export default (sequelize, DataTypes) =>
     'OAuthAuthorization',
     {
       id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-      token: { type: DataTypes.STRING },
+      token: { type: DataTypes.TEXT, allowNull: false },
       tokenExpires: { type: DataTypes.DATE, allowNull: false },
       clientId: { type: DataTypes.STRING, allowNull: false },
-      refreshToken: { type: DataTypes.STRING, allowNull: false },
+      refreshToken: { type: DataTypes.TEXT, allowNull: false },
       refreshTokenExpires: { type: DataTypes.DATE, allowNull: false },
       scope: { type: DataTypes.STRING },
     },
