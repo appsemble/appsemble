@@ -158,8 +158,10 @@ export function logout() {
  * @param {string} credentials.username The username to login with.
  * @param {string} credentials.password The password to login with.
  * @param {string} [refreshURL] A refresh token URL. If this is unused, the url is used instead.
+ * @param {string} clientId Client ID of application to authenticate to.
+ * @param {string} scope Requested permission scope(s), separated by spaces.
  */
-export function passwordLogin(url, { username, password }, refreshURL) {
+export function passwordLogin(url, { username, password }, refreshURL, clientId, scope) {
   return async (dispatch, getState) => {
     const { db } = getState().app;
     const user = await requestToken(
@@ -168,6 +170,8 @@ export function passwordLogin(url, { username, password }, refreshURL) {
         grant_type: 'password',
         username,
         password,
+        ...(clientId && { client_id: clientId }),
+        ...(scope && { scope }),
       },
       db,
       dispatch,
