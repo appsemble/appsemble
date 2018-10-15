@@ -25,7 +25,7 @@ export async function verifyEmail(ctx) {
   const { EmailAuthorization } = ctx.state.db;
 
   if (!key) {
-    throw Boom.badRequest('Key is required.');
+    throw Boom.badRequest('Key must not be empty.');
   }
 
   const email = await EmailAuthorization.findOne({ where: { key } });
