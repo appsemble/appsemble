@@ -50,7 +50,7 @@ export default function server({
   const model = oauth2Model(db);
   const oauth = new OAuthServer({
     model,
-    requireClientAuthentication: false,
+    requireClientAuthentication: { password: false },
     grants: ['password', 'refresh_token'],
     useErrorHandler: true,
     debug: true,
