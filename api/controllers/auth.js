@@ -16,7 +16,9 @@ export async function registerEmail(ctx) {
   } catch (e) {
     if (e.name === 'SequelizeUniqueConstraintError') {
       throw Boom.badRequest('User with this email address already exists.');
-    } else throw e;
+    }
+
+    throw e;
   }
 }
 
