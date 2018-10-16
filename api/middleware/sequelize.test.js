@@ -10,7 +10,7 @@ describe('sequelizeMiddleware', () => {
     const koa = new Koa();
 
     koa.use(sequelizeMiddleware(db));
-    koa.use(async (ctx) => {
+    koa.use(async ctx => {
       result = ctx.state.db;
     });
 
