@@ -81,7 +81,7 @@ export function processArgv() {
   return parser.argv;
 }
 
-export default function server({ app = new Koa(), db }) {
+export default async function server({ app = new Koa(), db }) {
   const oaiRouter = new OAIRouter({
     apiDoc: path.join(__dirname, 'api'),
     options: {
@@ -89,8 +89,14 @@ export default function server({ app = new Koa(), db }) {
       parameters: {},
     },
   });
-  oaiRouter.mount(OAIRouterParameters);
-  oaiRouter.mount(OAIRouterMiddleware);
+
+  const oaiRouterStatus = new Promise((resolve, reject) => {
+    oaiRouter.on('ready', resolve);
+    oaiRouter.on('error', reject);
+  });
+
+  await oaiRouter.mount(OAIRouterParameters);
+  await oaiRouter.mount(OAIRouterMiddleware);
 
   app.use(boomMiddleware);
   app.use(sequelizeMiddleware(db));
@@ -101,6 +107,7 @@ export default function server({ app = new Koa(), db }) {
   app.use(oaiRouter.routes());
 
   app.use(routes);
+  await oaiRouterStatus;
 
   return app.callback();
 }
