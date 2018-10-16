@@ -37,13 +37,21 @@ describe('boomMiddleware', () => {
     const koa = new Koa();
     koa.use(boomMiddleware);
     koa.use(async () => {
-      throw Boom.unauthorized('Not authorized!', ['Basic realm="Access to test data", charset="UTF-8"']);
+      throw Boom.unauthorized('Not authorized!', [
+        'Basic realm="Access to test data", charset="UTF-8"',
+      ]);
     });
 
     const response = await request(koa.callback()).get('/');
 
     expect(response.headers).toBeDefined();
-    expect(response.headers['www-authenticate']).toBe('Basic realm="Access to test data", charset="UTF-8"');
-    expect(response.body).toEqual({ statusCode: 401, error: 'Unauthorized', message: 'Not authorized!' });
+    expect(response.headers['www-authenticate']).toBe(
+      'Basic realm="Access to test data", charset="UTF-8"',
+    );
+    expect(response.body).toEqual({
+      statusCode: 401,
+      error: 'Unauthorized',
+      message: 'Not authorized!',
+    });
   });
 });
