@@ -15,14 +15,7 @@ export async function getOne(ctx) {
   ctx.body = asset.data;
 }
 
-/**
- * @param {import('koa').Context} ctx
- */
 export async function create(ctx) {
-  if (!ctx.request.length) {
-    throw Boom.badRequest('No file found');
-  }
-
   const { Asset } = ctx.state.db;
   const data = await getRawBody(ctx.req);
   const asset = await Asset.create({ mime: ctx.request.type, data }, { raw: true });

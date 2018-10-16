@@ -56,11 +56,9 @@ describe('asset controller', () => {
     expect(getResponse.body).toEqual(data);
   });
 
-  it('should not accept empty files', async () => {
+  it('should accept empty files', async () => {
     const response = await request(server).post('/api/assets');
-
-    expect(response.status).toBe(400);
-    expect(response.body.message).toBe('No file found');
+    expect(response.status).toBe(201);
   });
 
   it('should fall back to application/octet-stream if no mime type is provided', async () => {
