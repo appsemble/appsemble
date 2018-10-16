@@ -51,6 +51,7 @@ function associateModels(models) {
   Snapshot.belongsTo(App, { foreignKey: { allowNull: false } });
 
   App.hasMany(Snapshot);
+  App.hasMany(Resource);
 
   Resource.belongsTo(User);
   Resource.belongsTo(App);

@@ -24,22 +24,6 @@ describe('app controller', () => {
     await db.close();
   });
 
-  it('should be able to add an app in DB', async () => {
-    let count = await App.count();
-    expect(count).toBe(0);
-
-    const app = await App.create({ definition: { name: 'Test App', defaultPage: 'Test Page' } });
-    expect(app).toBeTruthy();
-
-    count = await App.count();
-    expect(count).toBe(1);
-  });
-
-  it('should call the API', async () => {
-    const response = await request(server).get('/api/');
-    expect(response.text).toEqual('Not Found');
-  });
-
   it('should return an empty array of apps', async () => {
     const { body } = await request(server).get('/api/apps');
 
