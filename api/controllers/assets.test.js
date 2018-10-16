@@ -24,21 +24,6 @@ describe('asset controller', () => {
     await db.close();
   });
 
-  it('should be able to add an asset in DB', async () => {
-    let count = await Asset.count();
-    expect(count).toBe(0);
-
-    const app = await Asset.create({
-      mime: 'application/text',
-      filename: 'test.txt',
-      data: Buffer.from('foo'),
-    });
-    expect(app).toBeTruthy();
-
-    count = await Asset.count();
-    expect(count).toBe(1);
-  });
-
   it('should be able to fetch an asset', async () => {
     const data = Buffer.from('buffer');
     const asset = await Asset.create({
