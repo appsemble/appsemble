@@ -10,6 +10,7 @@ import OAIRouter from 'koa-oai-router';
 import OAIRouterMiddleware from 'koa-oai-router-middleware';
 import OAIRouterParameters from 'koa-oai-router-parameters';
 import yaml from 'js-yaml';
+import yargs from 'yargs';
 
 import boomMiddleware from './middleware/boom';
 import sequelizeMiddleware from './middleware/sequelize';
@@ -17,15 +18,70 @@ import routes from './routes';
 import configureStatic from './utils/configureStatic';
 import setupModels from './utils/setupModels';
 
-const PORT = 9999;
+export function processArgv() {
+  const production = process.env.NODE_ENV === 'production';
+  const parser = yargs
+    .usage(
+      `Usage:\n  ${
+        production
+          ? 'docker run -ti registry.gitlab.com/dcentralized/appsemble/appsemble'
+          : 'yarn start'
+      }`,
+    )
+    .help('help', 'Show this help message.')
+    .alias('h', 'help')
+    .env()
+    .wrap(Math.min(180, yargs.terminalWidth()))
+    .option('database-host', {
+      desc: 'The host of the database to connect to.',
+      default: production ? 'mysql' : 'localhost',
+    })
+    .option('database-port', {
+      desc: 'The port of the database to connect to.',
+      type: 'number',
+      default: 3306,
+    })
+    .option('database-name', {
+      desc: 'The name of the database to connect to.',
+      default: production ? undefined : 'appsemble',
+      implies: ['database-user', 'database-password'],
+    })
+    .option('database-user', {
+      desc: 'The user to use to login to the database.',
+      default: production ? undefined : 'root',
+      implies: ['database-name', 'database-password'],
+    })
+    .option('database-password', {
+      desc: 'The password to use to login to the database.',
+      default: production ? undefined : 'password',
+      implies: ['database-name', 'database-user'],
+    })
+    .option('database-url', {
+      desc:
+        'A connection string for the database to connect to. This is an alternative to the separate database related variables.',
+      conflicts: [
+        'database-host',
+        'database-name',
+        'database-user',
+        'database-password',
+        'database-url',
+      ],
+    })
+    .option('initialize-database', {
+      desc: 'Initialize the database, then exit. This wipes any existing data.',
+      type: 'boolean',
+    })
+    .alias('i', 'init-database')
+    .option('port', {
+      desc: 'The HTTP server port to use. (Development only)',
+      type: 'number',
+      default: 9999,
+      hidden: production,
+    });
+  return parser.argv;
+}
 
-export default async function server({
-  app = new Koa(),
-  db = setupModels({
-    sync: true,
-    database: process.env.DATABASE_URL || 'mysql://root:password@localhost:3306/appsemble',
-  }),
-}) {
+export default async function server({ app = new Koa(), db }) {
   const oaiRouter = new OAIRouter({
     apiDoc: path.join(__dirname, 'api'),
     options: {
@@ -36,9 +92,7 @@ export default async function server({
 
   const oaiRouterStatus = new Promise((resolve, reject) => {
     oaiRouter.on('ready', resolve);
-    oaiRouter.on('error', error => {
-      reject(error);
-    });
+    oaiRouter.on('error', reject);
   });
 
   await oaiRouter.mount(OAIRouterParameters);
@@ -53,6 +107,7 @@ export default async function server({
 
   app.use(oaiRouter.routes());
   app.use(routes);
+  await oaiRouterStatus;
 
   await oaiRouterStatus;
 
@@ -60,16 +115,40 @@ export default async function server({
 }
 
 async function main() {
+  const args = processArgv();
+  if (args.initDatabase) {
+    const { sequelize } = await setupModels({
+      sync: true,
+      force: true,
+      logging: true,
+      host: args.databaseHost,
+      port: args.databasePort,
+      username: args.databaseUser,
+      password: args.databasePassword,
+      database: args.databaseName,
+      uri: args.databaseUrl,
+    });
+    await sequelize.close();
+    return;
+  }
+  const db = await setupModels({
+    host: args.databaseHost,
+    port: args.databasePort,
+    username: args.databaseUser,
+    password: args.databasePassword,
+    database: args.databaseName,
+    uri: args.databaseUrl,
+  });
   const app = new Koa();
   app.use(logger());
   await configureStatic(app);
 
-  await server({ app });
+  await server({ app, db });
   const { description } = yaml.safeLoad(
     fs.readFileSync(path.join(__dirname, 'api', 'api.yaml')),
   ).info;
 
-  app.listen(PORT, '0.0.0.0', () => {
+  app.listen(args.port, '0.0.0.0', () => {
     // eslint-disable-next-line no-console
     console.log(description);
   });

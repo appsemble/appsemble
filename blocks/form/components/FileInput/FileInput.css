@@ -1,6 +1,8 @@
 .repeatedContainer {
+  box-shadow: 0 -5px 11px 0 rgba(10, 10, 10, 0.07), 0 5px 11px 0 rgba(10, 10, 10, 0.07);
   display: flex;
   flex-flow: row;
   height: 128px;
-  overflow-x: scroll;
+  margin-top: 2rem;
+  overflow-x: auto;
 }

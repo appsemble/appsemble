@@ -1,18 +1,16 @@
 import 'leaflet/dist/leaflet.css';
 import PropTypes from 'prop-types';
-import iconUrl from 'leaflet/dist/images/marker-icon.png';
-import iconRetinaUrl from 'leaflet/dist/images/marker-icon-2x.png';
-import shadowUrl from 'leaflet/dist/images/marker-shadow.png';
 import { Point } from 'leaflet/src/geometry';
 import { Icon, Marker, TileLayer } from 'leaflet/src/layer';
 import { Map } from 'leaflet/src/map';
 import { CircleMarker } from 'leaflet/src/layer/vector';
 import React from 'react';
 
+import iconUrl from '../../../../../apps/unlittered/marker.svg';
 import styles from './GeoCoordinatesRenderer.css';
 
-const MARKER_ICON_WIDTH = 25;
-const MARKER_ICON_HEIGHT = 41;
+const MARKER_ICON_WIDTH = 39;
+const MARKER_ICON_HEIGHT = 39;
 
 /**
  * An map for an object type schema which implements GeoCoordinates.
@@ -48,13 +46,13 @@ export default class GeoCoordinatesRenderer extends React.Component {
       })
       .locate()
       .setView([value.latitude, value.longitude], 16);
-    new TileLayer('http://c.tiles.wmflabs.org/bw-mapnik/{z}/{x}/{y}.png').addTo(map);
+    new TileLayer(
+      'https://cartodb-basemaps-c.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png',
+    ).addTo(map);
     new Marker(null, {
       icon: new Icon({
         iconUrl,
-        iconRetinaUrl,
         iconAnchor: new Point(MARKER_ICON_WIDTH / 2, MARKER_ICON_HEIGHT),
-        shadowUrl,
       }),
     })
       .setLatLng([value.latitude, value.longitude])

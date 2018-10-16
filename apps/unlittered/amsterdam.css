@@ -4,6 +4,32 @@
   --form-width: 400px;
   --primary-color: #eb0000;
   --primary-color-inverse: #ffffff;
+  --font-family: avernirnext, -apple-system, blinkmacsystemfont, 'Open Sans', 'Helvetica Neue',
+    sans-serif !important;
+}
+
+@font-face {
+  font-family: 'avernirnext';
+  src: url('./font/avenirnext/avenirnextltpro-regular.woff'),
+    url('./font/avenirnext/avenirnextltpro-regular.woff2');
+}
+
+@font-face {
+  font-family: 'avernirnext';
+  font-weight: 400;
+  src: url('./font/avenirnext/avenirnextltpro-medium.woff'),
+    url('./font/avenirnext/avenirnextltpro-medium.woff2');
+}
+
+@font-face {
+  font-family: 'avernirnext';
+  font-weight: 500;
+  src: url('./font/avenirnext/avenirnextltpro-bold.woff'),
+    url('./font/avenirnext/avenirnextltpro-bold.woff2');
+}
+
+:not(.fas) {
+  font-family: var(--font-family) !important;
 }
 
 form.container {
@@ -21,7 +47,20 @@ form.container {
   position: fixed !important;
   top: 0 !important;
   width: 100% !important;
-  z-index: 30 !important;
+  z-index: 1100 !important;
+}
+
+.navbar-item.title {
+  font-size: 1rem;
+  font-weight: normal;
+  line-height: 1.5;
+}
+
+.side-menu {
+  background-image: url(../../blocks/amsterdam-splash/background.svg);
+  background-position-x: center;
+  background-position-y: bottom;
+  background-repeat: no-repeat;
 }
 
 .field-label {

@@ -6,6 +6,13 @@
   padding: 8px;
 }
 
+.buttonWrapper {
+  margin: 0 auto;
+  max-width: 480px;
+  text-align: end;
+  width: 100%;
+}
+
 .submit {
   align-self: flex-end;
 }
