@@ -1907,7 +1907,7 @@ bluebird@^2.10.0:
   resolved "https://registry.yarnpkg.com/bluebird/-/bluebird-2.11.0.tgz#534b9033c022c9579c56ba3b3e5a5caafbb650e1"
   integrity sha1-U0uQM8AiyVecVro7Plpcqvu2UOE=
 
-bluebird@^3.0.5, bluebird@^3.4.6, bluebird@^3.5.0, bluebird@^3.5.1:
+bluebird@^3.4.6, bluebird@^3.5.0, bluebird@^3.5.1:
   version "3.5.2"
   resolved "https://registry.yarnpkg.com/bluebird/-/bluebird-3.5.2.tgz#1be0908e054a751754549c270489c1505d4ab15a"
   integrity sha512-dhHTWMI7kMx5whMQntl7Vr9C6BvV10lFXDAasnqnrMYhXVCzzk6IO9Fo2L75jXHT07WrOngL1WDXOp+yYS91Yg==
@@ -7284,16 +7284,7 @@ koa-webpack@^5.1.0:
     webpack-hot-client "^4.1.0"
     webpack-log "^1.1.1"
 
-koa2-oauth-server@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/koa2-oauth-server/-/koa2-oauth-server-1.0.0.tgz#0e373a8dd308623bf4190b5a79f78650627ed478"
-  integrity sha512-MsLHCOhtOEeLEQsyko2IeGwSwhzXf8DXDYohJlMaPeb12J+xYq0cp9t9r9aQuKpO+KeEtuxDFVcT24fG1Rbcdg==
-  dependencies:
-    bluebird "^3.0.5"
-    koa "^2.3.0"
-    oauth2-server "git://github.com/oauthjs/node-oauth2-server.git#dev"
-
-koa@^2.3.0, koa@^2.5.3:
+koa@^2.5.3:
   version "2.5.3"
   resolved "https://registry.yarnpkg.com/koa/-/koa-2.5.3.tgz#0b0c37eee3aac807a0a6ad36bc0b8660f12d83f1"
   integrity sha512-U6rgy2kwlfO+3P1phAidDrRZpGfwcpHCxl33wFe+fHXalpzEshHGnMaSU7I/ZeDFpGRQkbQOYsXkXfUjn+AtdQ==
@@ -8549,9 +8540,10 @@ oauth-sign@~0.9.0:
   resolved "https://registry.yarnpkg.com/oauth-sign/-/oauth-sign-0.9.0.tgz#47a7b016baa68b5fa0ecf3dee08a85c679ac6455"
   integrity sha512-fexhUFFPTGV8ybAtSIGbV6gOkSv8UtRbDBnAyLQw4QPKkgNlsH2ByPGtMUqdWkos6YCRmAqViwgZrJc/mRDzZQ==
 
-"oauth2-server@git://github.com/oauthjs/node-oauth2-server.git#dev":
-  version "4.0.0-dev.2"
-  resolved "git://github.com/oauthjs/node-oauth2-server.git#45b508afa2f7b6272df54d324b95bc3f7528cdbb"
+oauth2-server@^3.0.1:
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/oauth2-server/-/oauth2-server-3.0.1.tgz#8fdb7eb78f107832f75c554cb42e59a3f37e41ea"
+  integrity sha512-LFAT4MeTaOgdW+b8YMVMsPhJ8LrbSfVkYZRPgRmELJEJoXcchb/L4b9/lEmgpeNtjH8PlFiqof+YwI+y/oJuOg==
   dependencies:
     basic-auth "^2.0.0"
     bluebird "^3.5.1"

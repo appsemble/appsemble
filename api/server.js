@@ -6,7 +6,6 @@ import Koa from 'koa';
 import bodyParser from 'koa-bodyparser';
 import compress from 'koa-compress';
 import logger from 'koa-logger';
-import OAuthServer from 'koa2-oauth-server';
 import OAIRouter from 'koa-oai-router';
 import OAIRouterMiddleware from 'koa-oai-router-middleware';
 import OAIRouterParameters from 'koa-oai-router-parameters';
@@ -17,6 +16,7 @@ import yaml from 'js-yaml';
 import boomMiddleware from './middleware/boom';
 import sequelizeMiddleware from './middleware/sequelize';
 import oauth2Model from './middleware/oauth2Model';
+import OAuth2Server from './middleware/oauth2Server';
 import routes from './routes';
 import configureStatic from './utils/configureStatic';
 import setupModels from './utils/setupModels';
@@ -48,7 +48,7 @@ export default function server({
   app.use(sequelizeMiddleware(db));
 
   const model = oauth2Model(db);
-  const oauth = new OAuthServer({
+  const oauth = new OAuth2Server({
     model,
     requireClientAuthentication: { password: false },
     grants: ['password', 'refresh_token'],
