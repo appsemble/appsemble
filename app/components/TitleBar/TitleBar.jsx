@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 
 import SideMenuButton from '../SideMenuButton';
+import styles from './TitleBar.css';
 
 /**
  * The title bar on the top of the page.
@@ -22,12 +23,14 @@ export default class TitleBar extends React.Component {
     const { app } = this.props;
 
     return (
-      <Navbar fixed="top">
+      <Navbar className={styles.root} fixed="top">
         <NavbarBrand>
           <NavbarItem>
             <SideMenuButton />
           </NavbarItem>
-          <NavbarItem>{app?.name || 'Appsemble'}</NavbarItem>
+          <NavbarItem className="title" component="h2">
+            {app?.name || 'Appsemble'}
+          </NavbarItem>
         </NavbarBrand>
       </Navbar>
     );

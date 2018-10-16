@@ -11,6 +11,6 @@
   },
   "dependencies": {
     "@appsemble/sdk": "^1.0.0",
-    "@fortawesome/fontawesome-free": "^5.3.1"
+    "@fortawesome/fontawesome-free": "^5.4.1"
   }
 }

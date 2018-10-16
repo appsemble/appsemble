@@ -111,14 +111,16 @@ export default class FormBlock extends React.Component {
             />
           );
         })}
-        <Button
-          className={styles.submit}
-          color="primary"
-          disabled={pristine || submitting || Object.keys(errors).length !== 0}
-          type="submit"
-        >
-          <FormattedMessage {...messages.submit} />
-        </Button>
+        <div className={styles.buttonWrapper}>
+          <Button
+            className={styles.submit}
+            color="primary"
+            disabled={pristine || submitting || Object.keys(errors).length !== 0}
+            type="submit"
+          >
+            <FormattedMessage {...messages.submit} />
+          </Button>
+        </div>
       </form>
     );
   }

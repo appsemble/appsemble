@@ -14,6 +14,10 @@ export default class FileRenderer extends React.Component {
      */
     name: PropTypes.string.isRequired,
     /**
+     * The parameters passed in by the Appsemble block.
+     */
+    block: PropTypes.shape().isRequired,
+    /**
      * The schema of the property to render.
      */
     schema: PropTypes.shape().isRequired,
@@ -28,9 +32,16 @@ export default class FileRenderer extends React.Component {
   };
 
   render() {
-    const { name, schema, value } = this.props;
+    const { block, name, schema, value } = this.props;
 
-    const src = value instanceof Blob ? URL.createObjectURL(value) : value;
+    let src;
+    if (value instanceof Blob) {
+      src = URL.createObjectURL(value);
+    } else if (block?.parameters?.fileBase) {
+      src = `${new URL(value, block.parameters.fileBase)}`;
+    } else {
+      src = value;
+    }
 
     return (
       <Image
