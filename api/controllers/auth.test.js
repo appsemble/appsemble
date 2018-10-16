@@ -83,7 +83,7 @@ describe('auth controller', () => {
     const responseC = await request(server).get('/api/email/verify?key=invalidkey');
 
     expect(responseA.status).toBe(400);
-    expect(responseB.status).toBe(400);
+    expect(responseB.status).toBe(404);
     expect(responseC.status).toBe(404);
   });
 });
