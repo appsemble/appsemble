@@ -26,7 +26,7 @@ describe('resource controller', () => {
   beforeAll(async () => {
     db = await testSchema();
 
-    server = koaServer({ db });
+    server = await koaServer({ db });
     ({ App } = db);
   });
 

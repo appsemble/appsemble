@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-
 import fs from 'fs';
 import path from 'path';
 
@@ -20,7 +19,7 @@ import setupModels from './utils/setupModels';
 
 const PORT = 9999;
 
-export default function server({
+export default async function server({
   app = new Koa(),
   db = setupModels({
     sync: true,
@@ -34,32 +33,28 @@ export default function server({
       parameters: {},
     },
   });
-  oaiRouter.mount(OAIRouterParameters);
-  oaiRouter.mount(OAIRouterMiddleware);
+
+  const oaiRouterStatus = new Promise((resolve, reject) => {
+    oaiRouter.on('ready', resolve);
+    oaiRouter.on('error', error => {
+      reject(error);
+    });
+  });
+
+  await oaiRouter.mount(OAIRouterParameters);
+  await oaiRouter.mount(OAIRouterMiddleware);
 
   app.use(boomMiddleware);
   app.use(sequelizeMiddleware(db));
-
-  app.use(async (ctx, next) => {
-    if (ctx.path === 'api/assets') {
-      // Allow the server to manage the body and Content-Type on its own
-      ctx.disableBodyParser = ctx.path === '/api/assets' && ctx.method.toLowerCase() === 'post';
-
-      // Necessary in order to be able to upload .json files to /api/assets.
-      if (ctx.method.toLowerCase() === 'post') {
-        ctx.request.body = {};
-      }
-    }
-
-    await next();
-  });
   app.use(bodyParser());
   if (process.env.NODE_ENV === 'production') {
     app.use(compress());
   }
-  app.use(oaiRouter.routes());
 
+  app.use(oaiRouter.routes());
   app.use(routes);
+
+  await oaiRouterStatus;
 
   return app.callback();
 }
@@ -69,9 +64,7 @@ async function main() {
   app.use(logger());
   await configureStatic(app);
 
-  server({
-    app,
-  });
+  await server({ app });
   const { description } = yaml.safeLoad(
     fs.readFileSync(path.join(__dirname, 'api', 'api.yaml')),
   ).info;
