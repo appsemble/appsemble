@@ -43,9 +43,5 @@
         description: The asset that matches the given id.
         schema:
           type: file
-      400:
-        description: Bad request. Id must be an integer.
-      404:
-        description: An asset with the specified id was not found.
       default:
         $ref: '#/responses/default'

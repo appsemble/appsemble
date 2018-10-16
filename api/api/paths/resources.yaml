@@ -23,12 +23,6 @@
           type: array
           items:
             $ref: '#/definitions/Resource'
-      400:
-        description: Resource was not valid.
-      401:
-        description: User is not logged in.
-      403:
-        description: User does not have permission to view these resources.
       default:
         $ref: '#/responses/default'
   post:
@@ -59,8 +53,6 @@
         description: The resource that was created.
         schema:
           $ref: '#/definitions/Resource'
-      401:
-        description: Schema of resource does not match App resource type definition.
       default:
         $ref: '#/responses/default'
 
