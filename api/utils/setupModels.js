@@ -44,6 +44,8 @@ function associateModels(models) {
   User.hasMany(OAuthAuthorization);
   User.hasOne(EmailAuthorization);
 
+  EmailAuthorization.belongsTo(User);
+
   Organization.hasOne(Organization);
 
   Snapshot.belongsTo(App, { foreignKey: { allowNull: false } });
