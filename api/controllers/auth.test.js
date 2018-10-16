@@ -14,7 +14,7 @@ describe('auth controller', () => {
   beforeAll(async () => {
     db = await testSchema();
 
-    server = koaServer({ db });
+    server = await koaServer({ db });
     ({ User, EmailAuthorization } = db);
   });
 

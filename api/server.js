@@ -19,7 +19,7 @@ import setupModels from './utils/setupModels';
 
 const PORT = 9999;
 
-export default function server({
+export default async function server({
   app = new Koa(),
   db = setupModels({
     sync: true,
@@ -33,8 +33,16 @@ export default function server({
       parameters: {},
     },
   });
-  oaiRouter.mount(OAIRouterParameters);
-  oaiRouter.mount(OAIRouterMiddleware);
+
+  const oaiRouterStatus = new Promise((resolve, reject) => {
+    oaiRouter.on('ready', resolve);
+    oaiRouter.on('error', error => {
+      reject(error);
+    });
+  });
+
+  await oaiRouter.mount(OAIRouterParameters);
+  await oaiRouter.mount(OAIRouterMiddleware);
 
   app.use(boomMiddleware);
   app.use(sequelizeMiddleware(db));
@@ -42,9 +50,11 @@ export default function server({
   if (process.env.NODE_ENV === 'production') {
     app.use(compress());
   }
-  app.use(oaiRouter.routes());
 
+  app.use(oaiRouter.routes());
   app.use(routes);
+
+  await oaiRouterStatus;
 
   return app.callback();
 }
@@ -54,7 +64,7 @@ async function main() {
   app.use(logger());
   await configureStatic(app);
 
-  server({ app });
+  await server({ app });
   const { description } = yaml.safeLoad(
     fs.readFileSync(path.join(__dirname, 'api', 'api.yaml')),
   ).info;
