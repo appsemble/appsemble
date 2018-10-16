@@ -5,6 +5,7 @@ export default (sequelize, DataTypes) =>
       id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
       definition: { type: DataTypes.JSON, allowNull: false },
       icon: { type: DataTypes.BLOB('long') },
+      url: { type: DataTypes.STRING, unique: true, allowNull: false },
     },
     {
       freezeTableName: true,

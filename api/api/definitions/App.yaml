@@ -12,7 +12,18 @@ App:
       readOnly: true
     name:
       type: string
+      minLength: 1
       maxLength: 30
+    url:
+      type: string
+      minLength: 1
+      maxLength: 30
+      pattern: ^[a-z\d-]$
+      description: |
+        The URL path segment on which this app is reachable.
+
+        This may only contain lower case characters, numbers, and hyphens. By default this is a
+        normalized version of the app name.
     defaultPage:
       type: string
       maxLength: 50

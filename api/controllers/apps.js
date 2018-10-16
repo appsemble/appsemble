@@ -1,17 +1,19 @@
+import normalize from '@appsemble/utils/normalize';
 import Boom from 'boom';
-import { omit } from 'lodash';
 import getRawBody from 'raw-body';
 
 export async function create(ctx) {
   const { body } = ctx.request;
+  const { name } = body;
+  const { id, url = normalize(name), ...definition } = body;
   const { App } = ctx.state.db;
 
-  const definition = omit(body, 'id');
-  const result = await App.create({ definition }, { raw: true });
+  const result = await App.create({ definition, url }, { raw: true });
 
   ctx.body = {
     ...body,
     id: result.id,
+    url,
   };
 
   ctx.status = 201;
@@ -27,28 +29,30 @@ export async function getOne(ctx) {
     throw Boom.notFound('App not found');
   }
 
-  ctx.body = { ...app.definition, id };
+  ctx.body = { ...app.definition, id, url: app.url };
 }
 
 export async function query(ctx) {
   const { App } = ctx.state.db;
 
   const apps = await App.findAll({ raw: true });
-  ctx.body = apps.map(app => ({ ...app.definition, id: app.id }));
+  ctx.body = apps.map(app => ({ ...app.definition, id: app.id, url: app.url }));
 }
 
 export async function update(ctx) {
-  const definition = omit(ctx.request.body, 'id');
+  const { body } = ctx.request;
+  const { name } = body;
+  const { id: _, url = normalize(name), ...definition } = body;
   const { id } = ctx.params;
   const { App } = ctx.state.db;
 
-  const [affectedRows] = await App.update({ definition }, { where: { id } });
+  const [affectedRows] = await App.update({ definition, url }, { where: { id } });
 
   if (affectedRows === 0) {
     throw Boom.notFound('App not found');
   }
 
-  ctx.body = { ...definition, id };
+  ctx.body = { ...definition, id, url };
 }
 
 export async function setAppIcon(ctx) {

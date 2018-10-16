@@ -24,17 +24,6 @@ describe('app controller', () => {
     await db.close();
   });
 
-  it('should be able to add an app in DB', async () => {
-    let count = await App.count();
-    expect(count).toBe(0);
-
-    const app = await App.create({ definition: { name: 'Test App', defaultPage: 'Test Page' } });
-    expect(app).toBeTruthy();
-
-    count = await App.count();
-    expect(count).toBe(1);
-  });
-
   it('should call the API', async () => {
     const response = await request(server).get('/api/');
     expect(response.text).toEqual('Not Found');
@@ -49,19 +38,19 @@ describe('app controller', () => {
 
   it('should return an array of apps', async () => {
     const appA = await App.create(
-      { definition: { name: 'Test App', defaultPage: 'Test Page' } },
+      { url: 'test-app', definition: { name: 'Test App', defaultPage: 'Test Page' } },
       { raw: true },
     );
     const appB = await App.create(
-      { definition: { name: 'Another App', defaultPage: 'Another Page' } },
+      { url: 'another-app', definition: { name: 'Another App', defaultPage: 'Another Page' } },
       { raw: true },
     );
     const { body } = await request(server).get('/api/apps');
 
     expect(Array.isArray(body)).toBeTruthy();
     expect(body).toHaveLength(2);
-    expect(body).toContainEqual({ id: appA.id, ...appA.definition });
-    expect(body).toContainEqual({ id: appB.id, ...appB.definition });
+    expect(body).toContainEqual({ id: appA.id, url: 'test-app', ...appA.definition });
+    expect(body).toContainEqual({ id: appB.id, url: 'another-app', ...appB.definition });
   });
 
   it('should return 404 when fetching a non-existent app', async () => {
@@ -74,12 +63,12 @@ describe('app controller', () => {
 
   it('should fetch an existing app', async () => {
     const appA = await App.create(
-      { definition: { name: 'Test App', defaultPage: 'Test Page' } },
+      { url: 'test-app', definition: { name: 'Test App', defaultPage: 'Test Page' } },
       { raw: true },
     );
     const { body } = await request(server).get(`/api/apps/${appA.id}`);
 
-    expect(body).toEqual({ id: appA.id, ...appA.definition });
+    expect(body).toEqual({ id: appA.id, url: 'test-app', ...appA.definition });
   });
 
   it('should create an app', async () => {
@@ -101,7 +90,7 @@ describe('app controller', () => {
 
   it('should update an app', async () => {
     const appA = await App.create(
-      { definition: { name: 'Test App', defaultPage: 'Test Page' } },
+      { url: 'test-app', definition: { name: 'Test App', defaultPage: 'Test Page' } },
       { raw: true },
     );
     const response = await request(server)
@@ -113,6 +102,7 @@ describe('app controller', () => {
     expect(response.body).toEqual({
       id: appA.id,
       name: 'Foobar',
+      url: 'foobar',
       defaultPage: appA.definition.defaultPage,
     });
   });
@@ -129,7 +119,7 @@ describe('app controller', () => {
 
   it('should validate an app on update', async () => {
     const appA = await App.create(
-      { definition: { name: 'Test App', defaultPage: 'Test Page' } },
+      { url: 'foo', definition: { name: 'Test App', defaultPage: 'Test Page' } },
       { raw: true },
     );
     const response = await request(server)
