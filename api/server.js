@@ -141,7 +141,7 @@ async function main() {
   app.use(logger());
   await configureStatic(app);
 
-  server({ app, db });
+  await server({ app, db });
   const { description } = yaml.safeLoad(
     fs.readFileSync(path.join(__dirname, 'api', 'api.yaml')),
   ).info;
