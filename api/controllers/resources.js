@@ -34,7 +34,7 @@ export async function getOne(ctx) {
   const app = await App.findById(appId);
   verifyResourceDefinition(app, resourceType);
 
-  const resource = (await app.getResources({ where: { id: resourceId } })).shift();
+  const [resource] = await app.getResources({ where: { id: resourceId } });
 
   if (!resource) {
     throw Boom.notFound('Resource not found');

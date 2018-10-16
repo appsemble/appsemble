@@ -47,7 +47,7 @@ describe('asset controller', () => {
     const { id } = createResponse.body;
 
     expect(createResponse.status).toBe(201);
-    expect(Number.isInteger(id)).toBeTruthy();
+    expect(id).toEqual(expect.any(Number));
 
     const getResponse = await request(server).get(`/api/assets/${id}`);
 
@@ -63,11 +63,14 @@ describe('asset controller', () => {
     expect(response.body.message).toBe('No file found');
   });
 
-  it('should fall back to application/octet-stream if no mime typpe is provided', async () => {
+  it('should fall back to application/octet-stream if no mime type is provided', async () => {
     const data = Buffer.from('test');
-    const { id } = (await request(server)
+    const {
+      body: { id },
+    } = await request(server)
       .post('/api/assets')
-      .send(data)).body;
+      .send(data);
+
     const response = await request(server).get(`/api/assets/${id}`);
 
     expect(response.status).toBe(200);
