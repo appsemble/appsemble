@@ -15,7 +15,7 @@ async function getStore() {
     // eslint-disable-next-line no-underscore-dangle
     (process.env.NODE_ENV !== 'production' && window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__) ||
     compose;
-  return createStore(user, { app: { db } }, composeEnhancers(applyMiddleware(thunk)));
+  return createStore(user, { db }, composeEnhancers(applyMiddleware(thunk)));
 }
 
 getStore().then(store => {

@@ -39,7 +39,7 @@ export default (state = initialState, action) => {
   }
 };
 
-async function doLogout(dispatch, getState, db = getState().app.db) {
+async function doLogout(dispatch, getState, db = getState().db) {
   delete axios.defaults.headers.common.Authorization;
   clearTimeout(timeoutId);
   db.transaction(AUTH, RW)
@@ -117,7 +117,10 @@ async function refreshTokenLogin(url, db, dispatch) {
  */
 export function initAuth() {
   return async (dispatch, getState) => {
-    const { app, db } = getState().app;
+    const {
+      app: { app },
+      db,
+    } = getState();
     const auth = await db
       .transaction(AUTH)
       .objectStore(AUTH)
@@ -163,7 +166,7 @@ export function logout() {
  */
 export function passwordLogin(url, { username, password }, refreshURL, clientId, scope) {
   return async (dispatch, getState) => {
-    const { db } = getState().app;
+    const { db } = getState();
     const user = await requestToken(
       url,
       {

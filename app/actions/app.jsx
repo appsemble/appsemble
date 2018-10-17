@@ -10,7 +10,6 @@ const EDIT_SUCCESS = 'editor/EDIT_SUCCESS';
 
 const initialState = {
   app: null,
-  db: null,
   error: null,
 };
 
@@ -20,21 +19,18 @@ export default (state = initialState, action) => {
       return {
         ...state,
         app: null,
-        db: null,
         error: null,
       };
     case GET_SUCCESS:
       return {
         ...state,
         app: action.app,
-        db: action.db,
         error: null,
       };
     case GET_ERROR:
       return {
         ...state,
         app: null,
-        db: null,
         error: action.error,
       };
     case EDIT_SUCCESS:
