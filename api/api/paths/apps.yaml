@@ -19,6 +19,9 @@
           $ref: '#/definitions/App'
       default:
         $ref: '#/responses/default'
+    security:
+      - oauthPassword:
+          - apps:write
   get:
     tags: [app]
     description: Get all existing apps.
@@ -34,6 +37,9 @@
             $ref: '#/definitions/App'
       default:
         $ref: '#/responses/default'
+    security:
+      - oauthPassword:
+          - apps:read
 
 /apps/{id}:
   get:
@@ -55,6 +61,9 @@
           $ref: '#/definitions/App'
       default:
         $ref: '#/responses/default'
+    security:
+      - oauthPassword:
+          - apps:read
   put:
     tags: [app]
     description: Update an existing app
@@ -80,6 +89,9 @@
           $ref: '#/definitions/App'
       default:
         $ref: '#/responses/default'
+    security:
+      - oauthPassword:
+          - apps:write
 
 /apps/{id}/icon:
   post:
@@ -117,6 +129,9 @@
         description: The icon has been updated succesfully.
       default:
         $ref: '#/responses/default'
+    security:
+      - oauthPassword:
+          - apps:write
   delete:
     tags: [app]
     description: |
@@ -137,3 +152,6 @@
         description: The icon has been deleted succesfully.
       default:
         $ref: '#/responses/default'
+    security:
+      - oauthPassword:
+          - apps:write
