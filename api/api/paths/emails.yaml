@@ -16,9 +16,9 @@
           properties:
             email:
               type: string
+              format: email
             password:
               type: string
-          format: email
     responses:
       201:
         description: The account that was created.
@@ -33,6 +33,7 @@
     parameters:
       - name: key
         in: query
+        required: true
         type: string
         description: The verification key.
     responses:

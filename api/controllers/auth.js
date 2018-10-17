@@ -15,18 +15,16 @@ export async function registerEmail(ctx) {
     ctx.status = 201;
   } catch (e) {
     if (e.name === 'SequelizeUniqueConstraintError') {
-      throw Boom.badRequest('User with this email address already exists.');
-    } else throw e;
+      throw Boom.conflict('User with this email address already exists.');
+    }
+
+    throw e;
   }
 }
 
 export async function verifyEmail(ctx) {
   const { key } = ctx.request.query;
   const { EmailAuthorization } = ctx.state.db;
-
-  if (!key) {
-    throw Boom.badRequest('Key is required.');
-  }
 
   const email = await EmailAuthorization.findOne({ where: { key } });
 
@@ -39,8 +37,4 @@ export async function verifyEmail(ctx) {
   await email.save();
 
   ctx.status = 200;
-}
-
-export async function auth(ctx) {
-  ctx.body = 'ok';
 }

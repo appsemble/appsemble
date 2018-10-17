@@ -12,6 +12,7 @@ definitions:
       - proces
     properties:
       locatie:
+        title: GeoCoordinates
         type: object
         required:
           - latitude
@@ -26,6 +27,9 @@ definitions:
         type: array
         items:
           type: string
+          appsembleFile:
+            type:
+              - image/jpeg
       notities:
         title: Notities
         type: string
@@ -83,7 +87,7 @@ pages:
                     blobs:
                       type: upload
                       method: post
-                      url: 'http://oscity.nl:9808/upload'
+                      url: 'https://api.stadswerken.amsterdam/upload'
                       serialize: custom
                   error:
                     type: splash.error
@@ -122,6 +126,7 @@ pages:
     blocks:
       - type: detail-viewer
         parameters:
+          fileBase: 'http://oscity.nl:9808/uploads/'
           schema:
             $ref: /definitions/waarneming
           fields:

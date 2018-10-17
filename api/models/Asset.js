@@ -3,9 +3,9 @@ export default (sequelize, DataTypes) =>
     'Asset',
     {
       id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-      mime: { type: DataTypes.STRING, allowNull: false },
-      filename: { type: DataTypes.STRING, allowNull: false },
-      data: { type: DataTypes.BLOB, allowNull: false },
+      mime: { type: DataTypes.STRING, allowNull: true },
+      filename: { type: DataTypes.STRING, allowNull: true },
+      data: { type: DataTypes.BLOB('long'), allowNull: false },
     },
     {
       freezeTableName: true,

@@ -1,6 +1,8 @@
 /** @jsx createElement */
 import { attach } from '@appsemble/sdk';
 
+import check from './check.svg';
+import cross from './cross.svg';
 import styles from './index.css';
 
 function createElement(tagName, props, ...children) {
@@ -18,7 +20,9 @@ attach(({ actions, data }) => {
     () => {
       root.replaceChild(
         <header className={styles.content}>
-          <div className={styles.circle} />
+          <div className={styles.circle}>
+            <img className={styleMedia.icon} src={check} alt="Success" />
+          </div>
           <h2 className={styles.header}>Gelukt</h2>
           <span className={styles.subheader}>Dankjewel</span>
         </header>,
@@ -29,7 +33,11 @@ attach(({ actions, data }) => {
       }, 2e3);
     },
     () => {
-      const button = <button className={styles.circle} type="button" />;
+      const button = (
+        <button className={styles.circle} type="button">
+          <img className={styleMedia.icon} src={cross} alt="Action failed" />
+        </button>
+      );
       const header = (
         <header className={styles.content}>
           {button}

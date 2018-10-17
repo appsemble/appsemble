@@ -6,21 +6,24 @@ import { is } from '../../utils';
 
 export default class Select extends React.Component {
   static propTypes = {
-    children: PropTypes.node.isRequired,
+    children: PropTypes.node,
     className: PropTypes.string,
     component: PropTypes.string,
     multiple: PropTypes.bool,
     name: PropTypes.string,
     onChange: PropTypes.func,
+    select: PropTypes.node,
     value: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   };
 
   static defaultProps = {
+    children: null,
     className: null,
     component: 'div',
     multiple: false,
     name: null,
     onChange: null,
+    select: null,
     value: '',
   };
 
@@ -32,15 +35,18 @@ export default class Select extends React.Component {
       multiple,
       name,
       onChange,
+      select,
       value,
       ...props
     } = this.props;
 
     return (
       <Component className={classNames('select', is('multiple', multiple), className)} {...props}>
-        <select multiple={multiple} name={name} onChange={onChange} value={value}>
-          {children}
-        </select>
+        {select || (
+          <select multiple={multiple} name={name} onChange={onChange} value={value}>
+            {children}
+          </select>
+        )}
       </Component>
     );
   }

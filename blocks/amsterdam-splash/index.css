@@ -1,3 +1,7 @@
+:not(.fas) {
+  font-family: var(--font-family) !important;
+}
+
 .root {
   align-items: center;
   background-image: url('./background.svg');
@@ -15,9 +19,15 @@
   border: none;
   border-radius: 50%;
   cursor: pointer;
+  display: flex;
   height: 30vw;
+  justify-content: center;
   outline: none;
   width: 30vw;
+}
+
+.icon {
+  width: 60%;
 }
 
 .header {

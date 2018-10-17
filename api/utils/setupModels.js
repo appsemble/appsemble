@@ -53,6 +53,7 @@ function associateModels(models) {
   Snapshot.belongsTo(App, { foreignKey: { allowNull: false } });
 
   App.hasMany(Snapshot);
+  App.hasMany(Resource);
 
   Resource.belongsTo(User);
   Resource.belongsTo(App);
@@ -61,12 +62,38 @@ function associateModels(models) {
   BlockVersion.belongsTo(Block, { foreignKey: { allowNull: false } });
 }
 
-export default async function setupModels({ sync = true, force = false, database }) {
-  const db = new Sequelize(database, {
-    logging: false,
+export default async function setupModels({
+  sync = true,
+  force = false,
+  logging = false,
+  host,
+  port,
+  username,
+  password,
+  database,
+  uri,
+}) {
+  const options = {
+    logging,
     // XXX: This removes a pesky sequelize warning. Remove this when updating to sequelize@^5.
     operatorsAliases: Sequelize.Op.Aliases,
-  });
+  };
+  let args;
+  if (uri) {
+    args = [uri, options];
+  } else {
+    args = [
+      Object.assign(options, {
+        dialect: 'mysql',
+        host,
+        port,
+        username,
+        password,
+        database,
+      }),
+    ];
+  }
+  const db = new Sequelize(...args);
   const models = importModels(db);
   associateModels(models);
 
