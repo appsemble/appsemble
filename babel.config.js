@@ -10,6 +10,7 @@ module.exports = api => {
 
   const plugins = [
     '@babel/plugin-syntax-dynamic-import',
+    '@babel/plugin-transform-react-jsx',
     production && '@babel/plugin-transform-react-inline-elements',
     'babel-plugin-react-intl-auto',
     ['@babel/plugin-transform-runtime', { helpers: true }],
