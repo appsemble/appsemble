@@ -29,7 +29,7 @@ module.exports = async (env, { mode }) => {
     ),
     output: {
       filename: production ? '[name]/[hash].js' : '[name]/[name].js',
-      publicPath: '/',
+      publicPath: '/_/static/',
     },
     resolve: {
       extensions: ['.js', '.jsx'],
@@ -92,7 +92,7 @@ module.exports = async (env, { mode }) => {
             {
               loader: 'file-loader',
               options: {
-                publicPath: '/',
+                publicPath: '/_/static/',
               },
             },
           ],
@@ -103,7 +103,7 @@ module.exports = async (env, { mode }) => {
             {
               loader: 'file-loader',
               options: {
-                publicPath: '/',
+                publicPath: '/_/static/',
               },
             },
             {
@@ -137,10 +137,13 @@ module.exports = async (env, { mode }) => {
       ...blocks.map(
         block =>
           new ManifestPlugin({
-            fileName: `${block}/manifest.json`,
+            fileName: `${block}/block.json`,
             // eslint-disable-next-line global-require, import/no-dynamic-require
             seed: require(path.join(blocksDir, block, 'package.json')),
-            filter: file => file.path.startsWith(`/${block}`),
+            filter: file => {
+              console.log(file.path);
+              return file.path.startsWith(`/_/static/${block}`);
+            },
             map: file => file.path,
             generate: (pkg, files) => ({
               id: pkg.name.split('/').pop(),

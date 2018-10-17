@@ -1,12 +1,13 @@
 import path from 'path';
 
 import klawSync from 'klaw-sync';
+import mount from 'koa-mount';
 import serve from 'koa-static';
 
 export default async function configureStatic(app) {
   if (process.env.NODE_ENV === 'production') {
     const distDir = path.resolve(__dirname, '../../dist');
-    app.use(serve(distDir, { maxage: 365 * 24 * 60 * 60 * 1e3 }));
+    app.use(mount('/_/static', serve(distDir, { maxage: 365 * 24 * 60 * 60 * 1e3 })));
     const assets = klawSync(distDir, { nodir: true })
       .map(file => path.relative(distDir, file.path))
       .reduce((acc, file) => {

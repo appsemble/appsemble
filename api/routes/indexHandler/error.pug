@@ -20,8 +20,8 @@ html(lang='en')
   title Appsemble — App not found
   each stylesheet in assets.filter(name => name.endsWith('.css'))
     link(rel='stylesheet' href=stylesheet)
-  div#app
+  div
     header.header
       h1.title Appsemble
     p.message
-      | The app you are looking for could not be found.
+      | #{message}
