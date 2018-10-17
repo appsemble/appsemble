@@ -79,6 +79,18 @@ describe('app controller', () => {
     expect(body).toBeDefined();
   });
 
+  it('should handle app url conflicts on create', async () => {
+    await request(server)
+      .post('/api/apps')
+      .send({ url: 'a', name: 'Test App', defaultPage: 'Test Page' });
+    const response = await request(server)
+      .post('/api/apps')
+      .send({ url: 'a', name: 'Test App', defaultPage: 'Test Page' });
+
+    expect(response.status).toBe(409);
+    expect(response.body).toBeDefined();
+  });
+
   it('should not update a non-existent app', async () => {
     const response = await request(server)
       .put('/api/apps/1')
@@ -128,5 +140,21 @@ describe('app controller', () => {
 
     expect(response.status).toBe(400);
     expect(response.body[0].message).toBe("should have required property 'defaultPage'");
+  });
+
+  it('should prevent url conflicts when updating an app', async () => {
+    await App.create(
+      { url: 'foo', definition: { name: 'Test App', defaultPage: 'Test Page' } },
+      { raw: true },
+    );
+    const appA = await App.create(
+      { url: 'bar', definition: { name: 'Test App', defaultPage: 'Test Page' } },
+      { raw: true },
+    );
+    const response = await request(server)
+      .put(`/api/apps/${appA.id}`)
+      .send({ url: 'foo', name: 'Foobar', defaultPage: appA.definition.defaultPage });
+
+    expect(response.status).toBe(409);
   });
 });

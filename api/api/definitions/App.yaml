@@ -18,7 +18,7 @@ App:
       type: string
       minLength: 1
       maxLength: 30
-      pattern: ^[a-z\d-]$
+      pattern: '^[a-z\d-]+$'
       description: |
         The URL path segment on which this app is reachable.
 

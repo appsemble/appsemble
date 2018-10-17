@@ -1,6 +1,7 @@
 import normalize from '@appsemble/utils/normalize';
 import Boom from 'boom';
 import getRawBody from 'raw-body';
+import { UniqueConstraintError } from 'sequelize';
 
 export async function create(ctx) {
   const { body } = ctx.request;
@@ -8,7 +9,15 @@ export async function create(ctx) {
   const { id, url = normalize(name), ...definition } = body;
   const { App } = ctx.state.db;
 
-  const result = await App.create({ definition, url }, { raw: true });
+  let result;
+  try {
+    result = await App.create({ definition, url }, { raw: true });
+  } catch (error) {
+    if (error instanceof UniqueConstraintError) {
+      throw Boom.conflict(`Another app with url “${url}” already exists`);
+    }
+    throw error;
+  }
 
   ctx.body = {
     ...body,
@@ -46,7 +55,15 @@ export async function update(ctx) {
   const { id } = ctx.params;
   const { App } = ctx.state.db;
 
-  const [affectedRows] = await App.update({ definition, url }, { where: { id } });
+  let affectedRows;
+  try {
+    [affectedRows] = await App.update({ definition, url }, { where: { id } });
+  } catch (error) {
+    if (error instanceof UniqueConstraintError) {
+      throw Boom.conflict(`Another app with url “${url}” already exists`);
+    }
+    throw error;
+  }
 
   if (affectedRows === 0) {
     throw Boom.notFound('App not found');
