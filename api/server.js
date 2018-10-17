@@ -58,17 +58,7 @@ export default function server({
 
   const oauthRouter = new Router();
   oauthRouter.post('/oauth/authorize', oauth.authorize());
-  oauthRouter.post(
-    '/oauth/token',
-    async (ctx, next) => {
-      if (ctx.request.type === 'application/json') {
-        // Allow the server to support both JSON and x-www-form-urlencoded methods
-        ctx.request.headers['Content-Type'] = 'application/x-www-form-urlencoded';
-      }
-      await next();
-    },
-    oauth.token(),
-  );
+  oauthRouter.post('/oauth/token', oauth.token());
 
   app.use(bodyParser());
   if (process.env.NODE_ENV === 'production') {
