@@ -17,6 +17,7 @@ import boomMiddleware from './middleware/boom';
 import sequelizeMiddleware from './middleware/sequelize';
 import oauth2Model from './middleware/oauth2Model';
 import OAuth2Server from './middleware/oauth2Server';
+import OAuth2Plugin from './middleware/OAuth2Plugin';
 import routes from './routes';
 import configureStatic from './utils/configureStatic';
 import setupModels from './utils/setupModels';
@@ -35,9 +36,11 @@ export default function server({
     options: {
       middleware: path.join(__dirname, 'controllers'),
       parameters: {},
+      oauth: {},
     },
   });
   oaiRouter.mount(OAIRouterParameters);
+  oaiRouter.mount(OAuth2Plugin);
   oaiRouter.mount(OAIRouterMiddleware);
 
   // eslint-disable-next-line no-param-reassign
