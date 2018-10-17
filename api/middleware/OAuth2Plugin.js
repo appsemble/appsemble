@@ -3,7 +3,6 @@ import { Plugin } from 'koa-oai-router';
 
 export default class OAuth2Plugin extends Plugin {
   constructor(args) {
-    console.log('oauth2plugin constructor', args);
     super(args);
 
     this.args = args;
