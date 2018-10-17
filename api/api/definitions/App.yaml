@@ -14,7 +14,7 @@ App:
       type: string
       minLength: 1
       maxLength: 30
-    url:
+    path:
       type: string
       minLength: 1
       maxLength: 30

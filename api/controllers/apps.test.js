@@ -38,19 +38,19 @@ describe('app controller', () => {
 
   it('should return an array of apps', async () => {
     const appA = await App.create(
-      { url: 'test-app', definition: { name: 'Test App', defaultPage: 'Test Page' } },
+      { path: 'test-app', definition: { name: 'Test App', defaultPage: 'Test Page' } },
       { raw: true },
     );
     const appB = await App.create(
-      { url: 'another-app', definition: { name: 'Another App', defaultPage: 'Another Page' } },
+      { path: 'another-app', definition: { name: 'Another App', defaultPage: 'Another Page' } },
       { raw: true },
     );
     const { body } = await request(server).get('/api/apps');
 
     expect(Array.isArray(body)).toBeTruthy();
     expect(body).toHaveLength(2);
-    expect(body).toContainEqual({ id: appA.id, url: 'test-app', ...appA.definition });
-    expect(body).toContainEqual({ id: appB.id, url: 'another-app', ...appB.definition });
+    expect(body).toContainEqual({ id: appA.id, path: 'test-app', ...appA.definition });
+    expect(body).toContainEqual({ id: appB.id, path: 'another-app', ...appB.definition });
   });
 
   it('should return 404 when fetching a non-existent app', async () => {
@@ -63,12 +63,12 @@ describe('app controller', () => {
 
   it('should fetch an existing app', async () => {
     const appA = await App.create(
-      { url: 'test-app', definition: { name: 'Test App', defaultPage: 'Test Page' } },
+      { path: 'test-app', definition: { name: 'Test App', defaultPage: 'Test Page' } },
       { raw: true },
     );
     const { body } = await request(server).get(`/api/apps/${appA.id}`);
 
-    expect(body).toEqual({ id: appA.id, url: 'test-app', ...appA.definition });
+    expect(body).toEqual({ id: appA.id, path: 'test-app', ...appA.definition });
   });
 
   it('should create an app', async () => {
@@ -79,13 +79,13 @@ describe('app controller', () => {
     expect(body).toBeDefined();
   });
 
-  it('should handle app url conflicts on create', async () => {
+  it('should handle app path conflicts on create', async () => {
     await request(server)
       .post('/api/apps')
-      .send({ url: 'a', name: 'Test App', defaultPage: 'Test Page' });
+      .send({ path: 'a', name: 'Test App', defaultPage: 'Test Page' });
     const response = await request(server)
       .post('/api/apps')
-      .send({ url: 'a', name: 'Test App', defaultPage: 'Test Page' });
+      .send({ path: 'a', name: 'Test App', defaultPage: 'Test Page' });
 
     expect(response.status).toBe(409);
     expect(response.body).toBeDefined();
@@ -102,7 +102,7 @@ describe('app controller', () => {
 
   it('should update an app', async () => {
     const appA = await App.create(
-      { url: 'test-app', definition: { name: 'Test App', defaultPage: 'Test Page' } },
+      { path: 'test-app', definition: { name: 'Test App', defaultPage: 'Test Page' } },
       { raw: true },
     );
     const response = await request(server)
@@ -114,7 +114,7 @@ describe('app controller', () => {
     expect(response.body).toEqual({
       id: appA.id,
       name: 'Foobar',
-      url: 'foobar',
+      path: 'foobar',
       defaultPage: appA.definition.defaultPage,
     });
   });
@@ -131,7 +131,7 @@ describe('app controller', () => {
 
   it('should validate an app on update', async () => {
     const appA = await App.create(
-      { url: 'foo', definition: { name: 'Test App', defaultPage: 'Test Page' } },
+      { path: 'foo', definition: { name: 'Test App', defaultPage: 'Test Page' } },
       { raw: true },
     );
     const response = await request(server)
@@ -142,18 +142,18 @@ describe('app controller', () => {
     expect(response.body[0].message).toBe("should have required property 'defaultPage'");
   });
 
-  it('should prevent url conflicts when updating an app', async () => {
+  it('should prevent path conflicts when updating an app', async () => {
     await App.create(
-      { url: 'foo', definition: { name: 'Test App', defaultPage: 'Test Page' } },
+      { path: 'foo', definition: { name: 'Test App', defaultPage: 'Test Page' } },
       { raw: true },
     );
     const appA = await App.create(
-      { url: 'bar', definition: { name: 'Test App', defaultPage: 'Test Page' } },
+      { path: 'bar', definition: { name: 'Test App', defaultPage: 'Test Page' } },
       { raw: true },
     );
     const response = await request(server)
       .put(`/api/apps/${appA.id}`)
-      .send({ url: 'foo', name: 'Foobar', defaultPage: appA.definition.defaultPage });
+      .send({ path: 'foo', name: 'Foobar', defaultPage: appA.definition.defaultPage });
 
     expect(response.status).toBe(409);
   });
