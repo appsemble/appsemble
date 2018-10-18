@@ -124,7 +124,8 @@ export function initAuth(authentication) {
       .get(0);
     let user = null;
     if (token != null) {
-      const auth = authentication || state.app.authentication || state.app.authentication[0];
+      const auth =
+        authentication || state.app.app.authentication || state.app.app.authentication[0];
       user = setupAuth(
         token.accessToken,
         token.refreshToken,
