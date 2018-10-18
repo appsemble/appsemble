@@ -61,9 +61,6 @@
           $ref: '#/definitions/App'
       default:
         $ref: '#/responses/default'
-    security:
-      - oauthPassword:
-          - apps:read
   put:
     tags: [app]
     description: Update an existing app
