@@ -24,11 +24,6 @@ describe('app controller', () => {
     await db.close();
   });
 
-  it('should call the API', async () => {
-    const response = await request(server).get('/api/');
-    expect(response.text).toEqual('Not Found');
-  });
-
   it('should return an empty array of apps', async () => {
     const { body } = await request(server).get('/api/apps');
 
