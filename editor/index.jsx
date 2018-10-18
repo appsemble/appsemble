@@ -6,29 +6,19 @@ import thunk from 'redux-thunk';
 
 import App from './components/App';
 import getDb from '../app/utils/getDB';
-import * as reducers from '../app/actions';
+import { user, db } from '../app/actions';
 
 async function getStore() {
-  const db = await getDb({ id: 'appsemble-editor' });
+  const idb = await getDb({ id: 'appsemble-editor' });
 
   const composeEnhancers =
     // eslint-disable-next-line no-underscore-dangle
     (process.env.NODE_ENV !== 'production' && window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__) ||
     compose;
   return createStore(
-    combineReducers(reducers),
+    combineReducers({ user, db }),
     {
-      app: {
-        app: {
-          authentication: {
-            url: `${window.location.origin}/oauth/token`,
-            refreshURL: `${window.location.origin}/oauth/token`,
-            clientId: 'appsemble-editor',
-            scope: 'apps:read apps:write',
-          },
-        },
-      },
-      db,
+      db: idb,
     },
     composeEnhancers(applyMiddleware(thunk)),
   );
@@ -37,7 +27,14 @@ async function getStore() {
 getStore().then(store => {
   ReactDOM.render(
     <Provider store={store}>
-      <App />
+      <App
+        authentication={{
+          url: `${window.location.origin}/oauth/token`,
+          refreshURL: `${window.location.origin}/oauth/token`,
+          clientId: 'appsemble-editor',
+          scope: 'apps:read apps:write',
+        }}
+      />
     </Provider>,
     document.getElementById('app'),
   );

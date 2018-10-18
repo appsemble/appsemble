@@ -115,23 +115,20 @@ async function refreshTokenLogin(url, db, dispatch) {
  * - Axios is configured.
  * - The user is restored.
  */
-export function initAuth() {
+export function initAuth(authentication) {
   return async (dispatch, getState) => {
-    const {
-      app: { app },
-      db,
-    } = getState();
-    const auth = await db
+    const { db, ...state } = getState();
+    const token = await db
       .transaction(AUTH)
       .objectStore(AUTH)
       .get(0);
     let user = null;
-    if (auth != null) {
-      const authentication = app.authentication || app.authentication[0];
+    if (token != null) {
+      const auth = authentication || state.app.authentication || state.app.authentication[0];
       user = setupAuth(
-        auth.accessToken,
-        auth.refreshToken,
-        authentication.refreshURL || authentication.url,
+        token.accessToken,
+        token.refreshToken,
+        auth.refreshURL || auth.url,
         db,
         dispatch,
       );

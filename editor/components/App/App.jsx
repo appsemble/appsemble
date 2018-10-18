@@ -9,8 +9,8 @@ import EmailLogin from '../../../app/components/EmailLogin';
 
 export class App extends React.Component {
   async componentDidMount() {
-    const { initAuth: authenticate } = this.props;
-    await authenticate();
+    const { initAuth: authenticate, authentication } = this.props;
+    await authenticate(authentication);
   }
 
   render() {
@@ -48,7 +48,6 @@ export class App extends React.Component {
 
 export default connect(
   state => ({
-    authentication: state.app.app.authentication,
     user: state.user,
   }),
   { initAuth },
