@@ -22,7 +22,7 @@ export default function splash(definition, app, block, history, showDialog) {
           }),
         };
         close = showDialog(
-          <SplashAction definition={definition} actionCreators={actionCreators} data={data} />,
+          <SplashAction actionCreators={actionCreators} data={data} definition={definition} />,
         );
       });
     },

@@ -73,21 +73,21 @@ export default class Editor extends React.Component {
         <div className={styles.leftPanel}>
           <form className={styles.editorForm} onSubmit={this.onSubmit}>
             <div className={styles.editorToolbar}>
-              <button type="submit" disabled={!dirty}>
+              <button disabled={!dirty} type="submit">
                 Save
               </button>
-              <button type="button" onClick={this.onUpload} disabled={!valid || dirty}>
+              <button disabled={!valid || dirty} onClick={this.onUpload} type="button">
                 Upload
               </button>
               {!valid && !dirty && <p className={styles.editorError}>Invalid YAML</p>}
             </div>
             <MonacoEditor
+              className={styles.monacoEditor}
               language="yaml"
+              onChange={this.onMonacoChange}
+              options={{ tabSize: 2, minimap: { enabled: false } }}
               theme="vs"
               value={recipe}
-              className={styles.monacoEditor}
-              options={{ tabSize: 2, minimap: { enabled: false } }}
-              onChange={this.onMonacoChange}
             />
           </form>
         </div>
@@ -95,10 +95,10 @@ export default class Editor extends React.Component {
         <div className={styles.rightPanel}>
           {id && (
             <iframe
-              className={styles.appFrame}
-              title="Appsemble App Preview"
               ref={this.frame}
+              className={styles.appFrame}
               src={`/${id}`}
+              title="Appsemble App Preview"
             />
           )}
         </div>

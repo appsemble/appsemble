@@ -10,7 +10,7 @@
   "scripts": {
     "build": "webpack --mode production",
     "start": "node -r esm api/server.js",
-    "eslint": "eslint --ext js,jsx,md .",
+    "eslint": "eslint --max-warnings 0 --ext js,jsx,md .",
     "prettier": "prettier --list-different '{**/,}*.{css,json,md,yaml,yml}'",
     "stylelint": "stylelint .",
     "test": "jest"

@@ -16,7 +16,7 @@ import TitleBar from '../TitleBar';
 export default class App extends React.Component {
   render() {
     return (
-      <IntlProvider locale="en-US" defaultLocale="en-US" textComponent={React.Fragment}>
+      <IntlProvider defaultLocale="en-US" locale="en-US" textComponent={React.Fragment}>
         <MuiThemeProvider theme={createMuiTheme()}>
           <BrowserRouter basename={new URL(document.baseURI).pathname}>
             <AppContext>
