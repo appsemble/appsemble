@@ -41,6 +41,12 @@ export function processArgv() {
       type: 'number',
       default: 3306,
     })
+    .option('database-dialect', {
+      desc: 'The dialect of the database.',
+      type: 'string',
+      default: 'mysql',
+      choices: ['mysql', 'postgres'],
+    })
     .option('database-name', {
       desc: 'The name of the database to connect to.',
       default: production ? undefined : 'appsemble',
@@ -61,6 +67,7 @@ export function processArgv() {
         'A connection string for the database to connect to. This is an alternative to the separate database related variables.',
       conflicts: [
         'database-host',
+        'database-dialect',
         'database-name',
         'database-user',
         'database-password',
@@ -120,6 +127,7 @@ async function main() {
       force: true,
       logging: true,
       host: args.databaseHost,
+      dialect: args.databaseDialect,
       port: args.databasePort,
       username: args.databaseUser,
       password: args.databasePassword,
@@ -131,6 +139,7 @@ async function main() {
   }
   const db = await setupModels({
     host: args.databaseHost,
+    dialect: args.databaseDialect,
     port: args.databasePort,
     username: args.databaseUser,
     password: args.databasePassword,
