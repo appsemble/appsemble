@@ -55,10 +55,10 @@ describe('respond', () => {
   });
 
   it('should remap nested app URLs', async () => {
-    const request = new Request('http://localhost/34/foo/bar-1');
+    const request = new Request('http://localhost/asd/foo/bar-1');
     const response = await respond(request);
     expect(requestFirst).toHaveBeenCalled();
-    expect(requestFirst.mock.calls[0][0].url).toBe('http://localhost/34');
+    expect(requestFirst.mock.calls[0][0].url).toBe('http://localhost/asd');
     expect(response).toBe(fakeResponse);
   });
 
@@ -84,7 +84,7 @@ describe('respond', () => {
   });
 
   it('should try to get static assets from the cache first', async () => {
-    const request = new Request('http://localhost/app/76fade46f4eac.js');
+    const request = new Request('http://localhost/_/static/app/76fade46f4eac.js');
     const response = await respond(request);
     expect(cacheFirst).toHaveBeenCalledWith(request);
     expect(response).toBe(cachedResponse);

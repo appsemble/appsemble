@@ -15,6 +15,6 @@ router.get(
   iconHandler,
 );
 router.get('/:id(\\d+)/manifest.json', manifestHandler);
-router.get('/:id(\\d+)/(.*)?', indexHandler);
+router.get('/:path([a-z\\d-]+)/(.*)?', indexHandler);
 
 export default router.routes();
