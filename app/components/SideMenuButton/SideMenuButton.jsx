@@ -24,7 +24,7 @@ export default class SideMenuButton extends React.Component {
     const { intl } = this.props;
 
     return (
-      <ToolbarButton onClick={this.onClick} aria-label={intl.formatMessage(messages.label)}>
+      <ToolbarButton aria-label={intl.formatMessage(messages.label)} onClick={this.onClick}>
         <Menu />
       </ToolbarButton>
     );

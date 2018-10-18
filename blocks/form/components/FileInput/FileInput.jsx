@@ -43,9 +43,9 @@ export default class FileInput extends React.Component {
       <div className={styles.repeatedContainer}>
         {value.map((val, index) => (
           <FileEntry
-            field={field}
-            // eslint-disable-next-line react/no-array-index-key
             key={index}
+            // eslint-disable-next-line react/no-array-index-key
+            field={field}
             name={`${field.name}.${index}`}
             onChange={this.onChange}
             value={val}

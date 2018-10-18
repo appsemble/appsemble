@@ -21,7 +21,7 @@ attach(({ actions, data }) => {
       root.replaceChild(
         <header className={styles.content}>
           <div className={styles.circle}>
-            <img className={styleMedia.icon} src={check} alt="Success" />
+            <img alt="Success" className={styleMedia.icon} src={check} />
           </div>
           <h2 className={styles.header}>Gelukt</h2>
           <span className={styles.subheader}>Dankjewel</span>
@@ -35,7 +35,7 @@ attach(({ actions, data }) => {
     () => {
       const button = (
         <button className={styles.circle} type="button">
-          <img className={styleMedia.icon} src={cross} alt="Action failed" />
+          <img alt="Action failed" className={styleMedia.icon} src={cross} />
         </button>
       );
       const header = (

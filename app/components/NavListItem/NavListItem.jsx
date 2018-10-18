@@ -25,10 +25,10 @@ class NavListItem extends React.Component {
     const { classes, children, to } = this.props;
 
     return (
-      <ListItem className={styles.root} button tabIndex={null} component="li">
+      <ListItem button className={styles.root} component="li" tabIndex={null}>
         <NavLink
-          className={`${classes.anchor} ${styles.anchor}`}
           activeClassName={classes.active}
+          className={`${classes.anchor} ${styles.anchor}`}
           to={to}
         >
           {children}
