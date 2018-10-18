@@ -4,18 +4,24 @@ import { connect } from 'react-redux';
 import { IntlProvider } from 'react-intl';
 
 import Editor from '../Editor';
+import { initAuth } from '../../../app/actions/user';
 import EmailLogin from '../../../app/components/EmailLogin';
 
-const authentication = {
-  url: `${window.location.origin}/oauth/token`,
-  refreshURL: `${window.location.origin}/oauth/token`,
-  clientId: 'appsemble-editor',
-  scope: 'editor',
-};
-
 export class App extends React.Component {
+  async componentDidMount() {
+    const { initAuth: authenticate } = this.props;
+    await authenticate();
+  }
+
   render() {
-    const { user } = this.props;
+    const {
+      user: { user, initialized },
+      authentication,
+    } = this.props;
+
+    if (!initialized) {
+      return 'Loading...';
+    }
 
     return (
       <IntlProvider locale="en-US" defaultLocale="en-US" textComponent={React.Fragment}>
@@ -40,4 +46,10 @@ export class App extends React.Component {
   }
 }
 
-export default connect(state => ({ user: state.user }))(App);
+export default connect(
+  state => ({
+    authentication: state.app.app.authentication,
+    user: state.user,
+  }),
+  { initAuth },
+)(App);
