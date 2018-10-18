@@ -1,4 +1,5 @@
 import 'bulma/css/bulma.css';
+import getDb from '@appsemble/utils/getDB';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
@@ -6,7 +7,6 @@ import { applyMiddleware, compose, createStore, combineReducers } from 'redux';
 import thunk from 'redux-thunk';
 
 import App from './components/App';
-import getDb from '../app/utils/getDB';
 import { user, db } from '../app/actions';
 
 async function getStore() {

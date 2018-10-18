@@ -1,7 +1,7 @@
 import axios from 'axios';
 import jwtDecode from 'jwt-decode';
 
-import { AUTH, RW } from '../utils/getDB';
+import { AUTH, RW } from '@appsemble/utils/getDB';
 
 // The buffer between the access token expiration and the refresh token request. A minute should be
 // plenty of time for the refresh token request to finish.
