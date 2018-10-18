@@ -10,8 +10,8 @@ function generateToken(client, user, scope, expiresIn) {
     },
     secret,
     {
-      expiresIn: expiresIn || 3600, // expires in an hour
       issuer: 'appsemble-api',
+      ...(expiresIn && expiresIn),
       ...(user.email && { subject: user.email }),
     },
   );
@@ -21,8 +21,8 @@ function generateToken(client, user, scope, expiresIn) {
 
 export default function oauth2Model(db) {
   return {
-    generateAccessToken: async (client, user, scope) => generateToken(client, user, scope),
-    generateRefreshToken: async (client, user, scope) => generateToken(client, user, scope, 259200), // expires in 3 days
+    generateAccessToken: async (client, user, scope) => generateToken(client, user, scope, 10800), // expires in 3 hours
+    generateRefreshToken: async (client, user, scope) => generateToken(client, user, scope),
 
     getAccessToken: async accessToken => {
       const { OAuthAuthorization } = await db;

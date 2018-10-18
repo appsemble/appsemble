@@ -7,8 +7,7 @@ export default (sequelize, DataTypes) =>
       tokenExpires: { type: DataTypes.DATE, allowNull: false },
       clientId: { type: DataTypes.STRING, allowNull: false },
       refreshToken: { type: DataTypes.TEXT, allowNull: false },
-      refreshTokenExpires: { type: DataTypes.DATE, allowNull: false },
-      scope: { type: DataTypes.STRING },
+      scope: { type: DataTypes.STRING(1024) },
     },
     {
       freezeTableName: true,
