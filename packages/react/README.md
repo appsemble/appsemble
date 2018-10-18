@@ -24,7 +24,7 @@ class MyBlock extends React.Component {
     const { actions } = this.props;
 
     return (
-      <button type="button" onClick={actions.click.dispatch}>
+      <button onClick={actions.click.dispatch} type="button">
         Hello world!
       </button>
     );

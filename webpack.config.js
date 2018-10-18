@@ -140,10 +140,7 @@ module.exports = async (env, { mode }) => {
             fileName: `${block}/block.json`,
             // eslint-disable-next-line global-require, import/no-dynamic-require
             seed: require(path.join(blocksDir, block, 'package.json')),
-            filter: file => {
-              console.log(file.path);
-              return file.path.startsWith(`/_/static/${block}`);
-            },
+            filter: file => file.path.startsWith(`/_/static/${block}`),
             map: file => file.path,
             generate: (pkg, files) => ({
               id: pkg.name.split('/').pop(),
