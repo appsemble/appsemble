@@ -51,7 +51,6 @@ export default function oauth2Model(db) {
 
       return {
         refreshToken: token.refreshToken,
-        refreshTokenExpiresAt: token.refreshTokenExpires,
         scope: token.scope,
         client: { id: token.clientId },
         user: { id: token.UserId },
@@ -95,7 +94,6 @@ export default function oauth2Model(db) {
         tokenExpires: token.accessTokenExpiresAt,
         clientId: client.id,
         refreshToken: token.refreshToken,
-        refreshTokenExpires: token.refreshTokenExpiresAt,
         scope: token.scope,
         UserId: user.id,
       });
