@@ -100,7 +100,7 @@ export default class Editor extends React.Component {
               </button>
               <input
                 ref={this.file}
-                accept="image/jpeg, image/png, image/tiff, image/webp, ,image/xml+svg"
+                accept="image/jpeg, image/png, image/tiff, image/webp, image/xml+svg"
                 className="button"
                 name="icon"
                 onChange={this.onIconChange}
