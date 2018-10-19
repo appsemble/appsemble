@@ -96,7 +96,6 @@ export default class Editor extends React.Component {
                 Upload
               </button>
               <input
-                ref={this.file}
                 accept="image/jpeg, image/png, image/tiff, image/webp, image/xml+svg"
                 className="button"
                 name="icon"
