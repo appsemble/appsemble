@@ -9,6 +9,8 @@ const TerserPlugin = require('terser-webpack-plugin');
 const { UnusedFilesWebpackPlugin } = require('unused-files-webpack-plugin');
 const ManifestPlugin = require('webpack-manifest-plugin');
 
+const publicPath = '/_/static/';
+
 module.exports = async (env, { mode }) => {
   const production = mode === 'production';
   const development = !production;
@@ -29,7 +31,7 @@ module.exports = async (env, { mode }) => {
     ),
     output: {
       filename: production ? '[name]/[hash].js' : '[name]/[name].js',
-      publicPath: '/_/static/',
+      publicPath,
     },
     resolve: {
       extensions: ['.js', '.jsx'],
@@ -92,7 +94,7 @@ module.exports = async (env, { mode }) => {
             {
               loader: 'file-loader',
               options: {
-                publicPath: '/_/static/',
+                publicPath,
               },
             },
           ],
@@ -103,7 +105,7 @@ module.exports = async (env, { mode }) => {
             {
               loader: 'file-loader',
               options: {
-                publicPath: '/_/static/',
+                publicPath,
               },
             },
             {
@@ -121,6 +123,7 @@ module.exports = async (env, { mode }) => {
         entry: path.join(__dirname, 'app/service-worker'),
         filename: 'service-worker.js',
         minimize: production,
+        publicPath,
         transformOptions: ({ assets }) => assets.filter(asset => asset.startsWith('/app/')),
       }),
       new UnusedFilesWebpackPlugin({
@@ -140,7 +143,7 @@ module.exports = async (env, { mode }) => {
             fileName: `${block}/block.json`,
             // eslint-disable-next-line global-require, import/no-dynamic-require
             seed: require(path.join(blocksDir, block, 'package.json')),
-            filter: file => file.path.startsWith(`/_/static/${block}`),
+            filter: file => file.path.startsWith(`${publicPath}${block}`),
             map: file => file.path,
             generate: (pkg, files) => ({
               id: pkg.name.split('/').pop(),
