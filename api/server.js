@@ -33,8 +33,8 @@ export function processArgv() {
     .env()
     .wrap(Math.min(180, yargs.terminalWidth()))
     .option('database-host', {
-      desc: 'The host of the database to connect to.',
-      default: production ? 'mysql' : 'localhost',
+      desc:
+        'The host of the database to connect to. This defaults to the connected database container.',
     })
     .option('database-port', {
       desc: 'The port of the database to connect to.',
@@ -61,11 +61,10 @@ export function processArgv() {
         'A connection string for the database to connect to. This is an alternative to the separate database related variables.',
       conflicts: [
         'database-host',
-        'database-name',
-        'database-user',
-        'database-password',
-        'database-url',
-      ],
+        production && 'database-name',
+        production && 'database-user',
+        production && 'database-password',
+      ].filter(Boolean),
     })
     .option('initialize-database', {
       desc: 'Initialize the database, then exit. This wipes any existing data.',
