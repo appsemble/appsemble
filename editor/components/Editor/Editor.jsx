@@ -19,8 +19,6 @@ export default class Editor extends React.Component {
 
   frame = React.createRef();
 
-  file = React.createRef();
-
   async componentDidMount() {
     const { id } = this.props;
     const { data } = await axios.get(`/api/apps/${id}`);
@@ -66,8 +64,7 @@ export default class Editor extends React.Component {
       });
     }
 
-    this.setState({ dirty: true, icon: null });
-    this.file.current.value = '';
+    this.setState({ dirty: true });
   };
 
   onMonacoChange = recipe => {
