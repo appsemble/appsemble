@@ -1,9 +1,10 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
+const secret = process.env.OAUTH_SECRET || 'appsemble';
+
 function generateToken(client, user, scope, expiresIn) {
-  const secret = process.env.OAUTH_SECRET || 'appsemble';
-  const token = jwt.sign(
+  return jwt.sign(
     {
       scopes: scope,
       client_id: client.id,
@@ -11,20 +12,23 @@ function generateToken(client, user, scope, expiresIn) {
     secret,
     {
       issuer: 'appsemble-api',
-      ...(expiresIn && expiresIn),
-      ...(user.email && { subject: user.email }),
+      subject: `${user.id}`,
+      ...(expiresIn && { expiresIn }),
     },
   );
-
-  return token;
 }
 
 export default function oauth2Model(db) {
   return {
-    generateAccessToken: async (client, user, scope) => generateToken(client, user, scope, 10800), // expires in 3 hours
-    generateRefreshToken: async (client, user, scope) => generateToken(client, user, scope),
+    async generateAccessToken(client, user, scope) {
+      return generateToken(client, user, scope, 10800); // expires in 3 hours
+    },
 
-    getAccessToken: async accessToken => {
+    async generateRefreshToken(client, user, scope) {
+      generateToken(client, user, scope);
+    },
+
+    async getAccessToken(accessToken) {
       const { OAuthAuthorization } = await db;
       const token = await OAuthAuthorization.find({ where: { token: accessToken } });
 
@@ -32,16 +36,21 @@ export default function oauth2Model(db) {
         return null;
       }
 
-      return {
-        accessToken: token.token,
-        accessTokenExpiresAt: token.tokenExpires,
-        scope: token.scope,
-        client: { id: token.clientId },
-        user: { id: token.UserId },
-      };
+      try {
+        const dec = jwt.verify(accessToken, secret);
+        return {
+          accessToken,
+          accessTokenExpiresAt: new Date(dec.exp * 1000),
+          scope: dec.scopes,
+          client: { id: dec.client_id },
+          user: { id: dec.sub },
+        };
+      } catch (err) {
+        return null;
+      }
     },
 
-    getRefreshToken: async refreshToken => {
+    async getRefreshToken(refreshToken) {
       const { OAuthAuthorization } = await db;
       const token = await OAuthAuthorization.find({ where: { refreshToken } });
 
@@ -49,15 +58,20 @@ export default function oauth2Model(db) {
         return null;
       }
 
-      return {
-        refreshToken: token.refreshToken,
-        scope: token.scope,
-        client: { id: token.clientId },
-        user: { id: token.UserId },
-      };
+      try {
+        const dec = jwt.verify(refreshToken, secret);
+        return {
+          refreshToken,
+          scope: dec.scopes,
+          client: { id: dec.client_id },
+          user: { id: dec.sub },
+        };
+      } catch (err) {
+        return null;
+      }
     },
 
-    getClient: async (clientId, clientSecret) => {
+    async getClient(clientId, clientSecret) {
       const { OAuthClient } = await db;
 
       const clause = clientSecret ? { clientId, clientSecret } : { clientId };
@@ -75,7 +89,7 @@ export default function oauth2Model(db) {
       };
     },
 
-    getUser: async (username, password) => {
+    async getUser(username, password) {
       const { EmailAuthorization } = await db;
       const user = await EmailAuthorization.find({ where: { email: username } }, { raw: true });
 
@@ -86,15 +100,12 @@ export default function oauth2Model(db) {
       return { id: user.UserId, verified: user.verified, email: user.email, name: user.name };
     },
 
-    saveToken: async (token, client, user) => {
+    async saveToken(token, client, user) {
       const { OAuthAuthorization } = await db;
 
       await OAuthAuthorization.create({
         token: token.accessToken,
-        tokenExpires: token.accessTokenExpiresAt,
-        clientId: client.id,
         refreshToken: token.refreshToken,
-        scope: token.scope,
         UserId: user.id,
       });
 
@@ -105,7 +116,7 @@ export default function oauth2Model(db) {
       };
     },
 
-    revokeToken: async token => {
+    async revokeToken(token) {
       const { OAuthAuthorization } = await db;
 
       try {
@@ -117,7 +128,7 @@ export default function oauth2Model(db) {
     },
 
     // XXX: Implement when implementing scopes
-    // validateScope: async (user, client, scope) => {
+    // async validateScope(user, client, scope) {
     // },
   };
 }
