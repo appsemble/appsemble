@@ -18,6 +18,7 @@ html(lang='en')
   //- This *must* be the bottom one.
   link(rel='apple-touch-icon' href='/icon-57.png?opaque')
   title Appsemble — App not found
+  link(rel='stylesheet' href=bulmaURL)
   each stylesheet in assets.filter(name => name.endsWith('.css'))
     link(rel='stylesheet' href=stylesheet)
   div
