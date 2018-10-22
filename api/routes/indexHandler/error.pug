@@ -21,8 +21,8 @@ html(lang='en')
   link(rel='stylesheet' href=bulmaURL)
   each stylesheet in assets.filter(name => name.endsWith('.css'))
     link(rel='stylesheet' href=stylesheet)
-  div
-    header.header
-      h1.title Appsemble
-    p.message
-      | #{message}
+  div.is-primary.navbar
+    header.navbar-brand
+      h1.navbar-item.title Appsemble
+  section.section
+    p.container #{message}
