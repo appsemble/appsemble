@@ -2,15 +2,23 @@ import bcrypt from 'bcrypt';
 import crypto from 'crypto';
 import Boom from 'boom';
 
+import { sendWelcomeEmail } from '../utils/email';
+
 export async function registerEmail(ctx) {
   const { body } = ctx.request;
   const { EmailAuthorization } = ctx.state.db;
 
   try {
     const password = await bcrypt.hash(body.password, 10);
-    const key = crypto.randomBytes(80).toString('hex');
-    const email = await EmailAuthorization.create({ ...body, password, key });
-    await email.createUser();
+    const key = crypto.randomBytes(40).toString('hex');
+    const record = await EmailAuthorization.create({ ...body, password, key });
+    await record.createUser();
+
+    await sendWelcomeEmail({
+      email: record.email,
+      name: record.name,
+      url: `${ctx.origin}/api/email/verify?key=${key}`,
+    });
 
     ctx.status = 201;
   } catch (e) {
