@@ -1,9 +1,14 @@
 /** @jsx createElement */
 import { attach } from '@appsemble/sdk';
 
+import animationLoop from './animation-loop.gif';
+import animationStart from './animation-start.gif';
 import check from './check.svg';
 import cross from './cross.svg';
 import styles from './index.css';
+
+// Length of the opening animation of the spinning wheel in milliseconds.
+const ANIMATION_LENGTH = 2190;
 
 function createElement(tagName, props, ...children) {
   const node = Object.assign(document.createElement(tagName), props);
@@ -14,7 +19,10 @@ function createElement(tagName, props, ...children) {
 }
 
 attach(({ actions, data }) => {
-  const loading = <span className={styles.subheader}>Loading…</span>;
+  const loading = <img alt="Loading…" className={styles.loading} src={animationStart} />;
+  setTimeout(() => {
+    loading.src = animationLoop;
+  }, ANIMATION_LENGTH);
   const root = <div className={styles.root}>{loading}</div>;
   actions.load.dispatch(data).then(
     () => {
