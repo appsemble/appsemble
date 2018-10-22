@@ -2,6 +2,9 @@ import path from 'path';
 
 import pug from 'pug';
 
+import makeCSP from '../../utils/makeCSP';
+import sentryDsnToReportUri from '../../utils/sentryDsnToReportUri';
+
 const render = pug.compileFile(path.join(__dirname, 'index.pug'));
 const renderError = pug.compileFile(path.join(__dirname, 'error.pug'));
 
@@ -13,6 +16,20 @@ export default async function indexHandler(ctx) {
   const { App } = ctx.state.db;
   ctx.type = 'text/html';
   const assets = await ctx.state.getAssets().app;
+  const { sentryDsn } = ctx.state;
+  const reportUri = sentryDsnToReportUri(sentryDsn);
+  const csp = makeCSP({
+    'report-uri': [reportUri],
+    'connect-src': ['*'],
+    'default-src': [
+      "'self'",
+      // This is needed for Webpack.
+      process.env.NODE_ENV !== 'production' && "'unsafe-eval'",
+    ],
+    'img-src': ['*', 'data:'],
+    'style-src': ["'self'", "'unsafe-inline'"],
+  });
+  ctx.set('Content-Security-Policy', csp);
 
   try {
     const app = await App.findOne({ where: { path: p } });
@@ -26,6 +43,7 @@ export default async function indexHandler(ctx) {
       ctx.body = render({
         app,
         assets,
+        sentryDsn,
       });
     }
   } catch (error) {
