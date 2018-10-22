@@ -79,7 +79,7 @@ export async function sendEmail({ to, from, cc, bcc, subject }, message) {
   return result;
 }
 
-export async function sendWelcomeEmail({ to, name, url }) {
+export async function sendWelcomeEmail({ email, name, url }) {
   const welcome = fs.readFileSync(path.join(__dirname, '../templates/welcome.md'), 'utf8');
   const { params, filtered } = getCommentVariables(welcome);
   const { subject } = params || 'Welcome to Appsemble';
@@ -89,7 +89,7 @@ export async function sendWelcomeEmail({ to, name, url }) {
     ...(name && { name }),
     url,
   };
-
+  const to = name ? `"${name}" <${email}>` : email;
   const content = template(filtered)(replacements);
   const result = await sendEmail({ to, from: 'appsemble@d-centralize.nl', subject }, content);
 
