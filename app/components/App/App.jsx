@@ -4,6 +4,7 @@ import { IntlProvider } from 'react-intl';
 import { BrowserRouter } from 'react-router-dom';
 
 import AppContext from '../AppContext';
+import ErrorHandler from '../ErrorHandler';
 import Main from '../Main';
 import SideNavigation from '../SideNavigation';
 import TitleBar from '../TitleBar';
@@ -17,15 +18,17 @@ export default class App extends React.Component {
   render() {
     return (
       <IntlProvider defaultLocale="en-US" locale="en-US" textComponent={React.Fragment}>
-        <MuiThemeProvider theme={createMuiTheme()}>
-          <BrowserRouter basename={new URL(document.baseURI).pathname}>
-            <AppContext>
-              <TitleBar />
-              <SideNavigation />
-              <Main />
-            </AppContext>
-          </BrowserRouter>
-        </MuiThemeProvider>
+        <ErrorHandler>
+          <MuiThemeProvider theme={createMuiTheme()}>
+            <BrowserRouter basename={new URL(document.baseURI).pathname}>
+              <AppContext>
+                <TitleBar />
+                <SideNavigation />
+                <Main />
+              </AppContext>
+            </BrowserRouter>
+          </MuiThemeProvider>
+        </ErrorHandler>
       </IntlProvider>
     );
   }
