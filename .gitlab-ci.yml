@@ -85,7 +85,7 @@ stylelint:
     - yarn --frozen-lockfile
     - yarn stylelint
 
-test:
+test:mysql:
   services:
     - name: mysql:8.0
       command: [--default-authentication-plugin=mysql_native_password]
@@ -99,3 +99,15 @@ test:
   artifacts:
     paths:
       - coverage/
+
+test:postgres:
+  services:
+    - postgres:10.0
+  variables:
+    POSTGRES_DB: testAppsemble
+    POSTGRES_USER: root
+    POSTGRES_PASSWORD: password
+    DATABASE_URL: 'postgresql://root:password@postgres:5432/testAppsemble'
+  script:
+    - yarn --frozen-lockfile
+    - yarn test
