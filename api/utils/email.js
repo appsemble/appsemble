@@ -51,6 +51,7 @@ async function getTransport(smtp) {
     const account = await nodemailer.createTestAccount();
     transport = nodemailer.createTransport({
       ...account.smtp,
+      pool: true,
       auth: { user: account.user, pass: account.pass },
     });
   }
