@@ -24,7 +24,7 @@ export default class Editor extends React.Component {
     const { data } = await axios.get(`/api/apps/${id}`);
     const recipe = yaml.safeDump(data);
 
-    this.setState({ recipe });
+    this.setState({ recipe, path: data.path });
   }
 
   onSubmit = event => {
@@ -45,16 +45,23 @@ export default class Editor extends React.Component {
         { type: 'editor/EDIT_SUCCESS', app },
         window.location.origin,
       );
+
       return { valid: true, dirty: false };
     });
   };
 
   onUpload = async () => {
     const { id } = this.props;
-    const { recipe, valid } = this.state;
+    const { recipe, valid, icon } = this.state;
 
     if (valid) {
       await axios.put(`/api/apps/${id}`, yaml.safeLoad(recipe));
+    }
+
+    if (icon) {
+      await axios.post(`/api/apps/${id}/icon`, icon, {
+        headers: { 'Content-Type': icon.type },
+      });
     }
 
     this.setState({ dirty: true });
@@ -64,8 +71,12 @@ export default class Editor extends React.Component {
     this.setState({ recipe, dirty: true });
   };
 
+  onIconChange = e => {
+    this.setState({ icon: e.target.files[0], dirty: true });
+  };
+
   render() {
-    const { recipe, valid, dirty } = this.state;
+    const { recipe, path, valid, dirty } = this.state;
     const { id } = this.props;
 
     return (
@@ -73,12 +84,24 @@ export default class Editor extends React.Component {
         <div className={styles.leftPanel}>
           <form className={styles.editorForm} onSubmit={this.onSubmit}>
             <div className={styles.editorToolbar}>
-              <button disabled={!dirty} type="submit">
+              <button className="button" disabled={!dirty} type="submit">
                 Save
               </button>
-              <button disabled={!valid || dirty} onClick={this.onUpload} type="button">
+              <button
+                className="button"
+                disabled={!valid || dirty}
+                onClick={this.onUpload}
+                type="button"
+              >
                 Upload
               </button>
+              <input
+                accept="image/jpeg, image/png, image/tiff, image/webp, image/xml+svg"
+                className="button"
+                name="icon"
+                onChange={this.onIconChange}
+                type="file"
+              />
               {!valid && !dirty && <p className={styles.editorError}>Invalid YAML</p>}
             </div>
             <MonacoEditor
@@ -93,14 +116,15 @@ export default class Editor extends React.Component {
         </div>
 
         <div className={styles.rightPanel}>
-          {id && (
-            <iframe
-              ref={this.frame}
-              className={styles.appFrame}
-              src={`/${id}`}
-              title="Appsemble App Preview"
-            />
-          )}
+          {id &&
+            path && (
+              <iframe
+                ref={this.frame}
+                className={styles.appFrame}
+                src={`/${path}`}
+                title="Appsemble App Preview"
+              />
+            )}
         </div>
       </div>
     );
