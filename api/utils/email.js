@@ -34,6 +34,14 @@ function getCommentVariables(input) {
   return { params, filtered };
 }
 
+function processTemplate(templateName, replacements) {
+  const temp = fs.readFileSync(path.join(__dirname, `../templates/${templateName}.md`), 'utf8');
+  const { params, filtered } = getCommentVariables(temp);
+
+  const content = template(filtered)({ ...params, ...replacements });
+  return { params: { ...params, ...replacements }, content };
+}
+
 async function getTransport() {
   let transport;
 
@@ -80,18 +88,14 @@ export async function sendEmail({ to, from, cc, bcc, subject }, message) {
 }
 
 export async function sendWelcomeEmail({ email, name, url }) {
-  const welcome = fs.readFileSync(path.join(__dirname, '../templates/welcome.md'), 'utf8');
-  const { params, filtered } = getCommentVariables(welcome);
-  const { subject } = params || 'Welcome to Appsemble';
-
   const replacements = {
-    ...params,
     ...(name && { name }),
     url,
   };
-  const to = name ? `"${name}" <${email}>` : email;
-  const content = template(filtered)(replacements);
-  const result = await sendEmail({ to, from: 'appsemble@d-centralize.nl', subject }, content);
 
-  return result;
+  const { params, content } = processTemplate('welcome', replacements);
+  const { subject } = params || 'Welcome to Appsemble';
+
+  const to = name ? `"${name}" <${email}>` : email;
+  return sendEmail({ to, from: 'appsemble@d-centralize.nl', subject }, content);
 }
