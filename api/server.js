@@ -110,9 +110,6 @@ export default async function server({ app = new Koa(), db }) {
   app.use(boomMiddleware);
   app.use(sequelizeMiddleware(db));
   app.use(bodyParser());
-  if (process.env.NODE_ENV === 'production') {
-    app.use(compress());
-  }
   app.use(oaiRouter.routes());
 
   app.use(routes);
@@ -150,6 +147,9 @@ async function main() {
   });
   const app = new Koa();
   app.use(logger());
+  if (process.env.NODE_ENV === 'production') {
+    app.use(compress());
+  }
   await configureStatic(app);
   if (args.sentryDsn) {
     Sentry.init({ dsn: args.sentryDsn });
