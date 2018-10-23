@@ -85,7 +85,7 @@ stylelint:
     - yarn --frozen-lockfile
     - yarn stylelint
 
-test:mysql:
+test:
   services:
     - name: mysql:8.0
       command: [--default-authentication-plugin=mysql_native_password]
