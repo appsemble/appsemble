@@ -75,6 +75,8 @@ export async function sendEmail({ to, from, cc, bcc, subject }, message, smtp) {
     console.log(`Mail sent: ${nodemailer.getTestMessageUrl(result)}`);
   }
 
+  transport.close();
+
   return result;
 }
 
