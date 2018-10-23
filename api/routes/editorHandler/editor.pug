@@ -5,7 +5,7 @@ html(lang='en')
   link(rel='shortcut icon' href='/favicon.ico')
   title Appsemble Editor
   each stylesheet in assets.filter(name => name.endsWith('.css'))
-    link(rel='stylesheet' href=stylesheet)
+    link(rel='stylesheet' href=`/_/static/${stylesheet}`)
   div#app
     noscript
       header.header
@@ -15,4 +15,4 @@ html(lang='en')
         br
         | Please enable JavaScript in your browser settings.
   each script in assets.filter(name => name.endsWith('.js'))
-    script(src=script)
+    script(src=`/_/static/${script}`)

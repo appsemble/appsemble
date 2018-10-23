@@ -62,7 +62,7 @@ export default async function setupModels({
   sync = true,
   force = false,
   logging = false,
-  host,
+  host = process.env.NODE_ENV === 'production' ? 'mysql' : 'localhost',
   port,
   username,
   password,

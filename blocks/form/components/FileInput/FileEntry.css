@@ -13,3 +13,9 @@
   padding: 10px;
   text-align: center;
 }
+
+.removeButton {
+  position: absolute;
+  right: 8px;
+  top: 8px;
+}

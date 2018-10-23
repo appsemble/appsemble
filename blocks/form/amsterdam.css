@@ -62,26 +62,23 @@
   }
 }
 
-.button {
+.button.is-primary {
+  background-color: var(--primary-color) !important;
   border-radius: var(--border-radius) !important;
+  float: right;
   font-size: 0.875rem !important;
   margin-bottom: 2.5em !important;
   margin-top: 2em !important;
+  text-transform: uppercase;
   width: 35% !important;
 
-  &.is-primary {
-    background-color: var(--primary-color) !important;
-    float: right;
-    text-transform: uppercase;
+  &:hover {
+    background-color: #eb6e6e !important;
+    border-color: transparent !important;
+  }
 
-    &:hover {
-      background-color: #eb6e6e !important;
-      border-color: transparent !important;
-    }
-
-    &:focus:not(:active) {
-      box-shadow: 0 0 0 0 !important;
-    }
+  &:focus:not(:active) {
+    box-shadow: 0 0 0 0 !important;
   }
 }
 

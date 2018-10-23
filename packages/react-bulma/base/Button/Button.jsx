@@ -11,6 +11,7 @@ export default class Button extends React.Component {
     color: PropTypes.string,
     component: PropTypes.string,
     loading: PropTypes.bool,
+    size: PropTypes.string,
     type: PropTypes.string,
   };
 
@@ -20,11 +21,12 @@ export default class Button extends React.Component {
     className: null,
     component: 'button',
     loading: false,
+    size: null,
     type: 'button',
   };
 
   render() {
-    const { active, className, color, component: Component, loading, ...props } = this.props;
+    const { active, className, color, component: Component, loading, size, ...props } = this.props;
 
     return (
       <Component
@@ -33,6 +35,7 @@ export default class Button extends React.Component {
           is(color),
           is('active', active),
           is('loading', loading),
+          is(size),
           className,
         )}
         {...props}
