@@ -2,6 +2,7 @@
 import fs from 'fs';
 import path from 'path';
 
+import * as Sentry from '@sentry/node';
 import Koa from 'koa';
 import bodyParser from 'koa-bodyparser';
 import compress from 'koa-compress';
@@ -69,6 +70,10 @@ export function processArgv() {
     .option('initialize-database', {
       desc: 'Initialize the database, then exit. This wipes any existing data.',
       type: 'boolean',
+    })
+    .option('sentry-dsn', {
+      desc: 'The Sentry DSN to use for error reporting. See https://sentry.io for details.',
+      hidden: !production,
     })
     .alias('i', 'init-database')
     .option('port', {
@@ -139,6 +144,25 @@ async function main() {
   const app = new Koa();
   app.use(logger());
   await configureStatic(app);
+  if (args.sentryDsn) {
+    Sentry.init({ dsn: args.sentryDsn });
+    app.use(async (ctx, next) => {
+      ctx.state.sentryDsn = args.sentryDsn;
+      await next();
+    });
+  }
+  app.on('error', (err, ctx) => {
+    // eslint-disable-next-line no-console
+    console.error(err);
+    Sentry.withScope(scope => {
+      scope.setTag('ip', ctx.ip);
+      scope.setTag('level', 'error');
+      scope.setTag('method', ctx.method);
+      scope.setTag('url', `${ctx.URL}`);
+      scope.setTag('User-Agent', ctx.headers['user-agent']);
+      Sentry.captureException(err);
+    });
+  });
 
   await server({ app, db });
   const { description } = yaml.safeLoad(

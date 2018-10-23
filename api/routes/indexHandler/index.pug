@@ -1,9 +1,9 @@
 doctype html
-html(lang='en' data-app-id=(app.id))
+html(lang='en' data-app-id=(app.id) data-sentry-dsn=sentryDsn)
   base(href=`/${app.path}`)
   meta(charset='utf-8')
   meta(name='viewport', content='initial-scale=1,minimum-scale=1,width=device-width')
-  meta(name='theme-color' content=(app.theme && app.theme.themeColor || '#ffffff'))
+  meta(name='theme-color' content=(app.definition.theme && app.definition.theme.themeColor || '#ffffff'))
   link(rel='icon' sizes='16x16' href=`/${app.id}/icon-16.png`)
   link(rel='icon' sizes='32x32' href=`/${app.id}/icon-32.png`)
   link(rel='icon' sizes='96x96' href=`/${app.id}/icon-96.png`)
@@ -19,16 +19,19 @@ html(lang='en' data-app-id=(app.id))
   //- This *must* be the bottom one.
   link(rel='apple-touch-icon' href=`/${app.id}/icon-57.png?opaque`)
   link(rel='manifest' href=`/${app.id}/manifest.json`)
-  title #{app.name}
+  title #{app.definition.name}
+  link(rel='stylesheet' href=bulmaURL)
   each stylesheet in assets.filter(name => name.endsWith('.css'))
     link(rel='stylesheet' href=`/_/static/${stylesheet}`)
   div#app
     noscript
-      header.header
-        h1.title #{app.name}
-      p.message
-        | JavaScript seems to be disabled.
-        br
-        | Please enable JavaScript in your browser settings.
+      div.is-primary.navbar
+        header.navbar-brand
+          h1.navbar-item.title #{app.definition.name}
+      section.section
+        p.container
+          | JavaScript seems to be disabled.
+          br
+          | Please enable JavaScript in your browser settings.
   each script in assets.filter(name => name.endsWith('.js'))
     script(src=`/_/static/${script}`)
