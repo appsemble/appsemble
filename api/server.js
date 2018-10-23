@@ -66,7 +66,6 @@ export function processArgv() {
         'A connection string for the database to connect to. This is an alternative to the separate database related variables.',
       conflicts: [
         'database-host',
-        production && 'database-dialect',
         production && 'database-name',
         production && 'database-user',
         production && 'database-password',
