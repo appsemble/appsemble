@@ -89,7 +89,7 @@ module.exports = async (env, { mode }) => {
           ],
         },
         {
-          test: /\.(gif|jpe?g|png|svg|woff2?)$/,
+          test: /\.(gif|jpe?g|png|woff2?)$/,
           use: [
             {
               loader: 'file-loader',
@@ -97,6 +97,18 @@ module.exports = async (env, { mode }) => {
                 publicPath,
               },
             },
+          ],
+        },
+        {
+          test: /\.svg$/,
+          use: [
+            {
+              loader: 'file-loader',
+              options: {
+                publicPath,
+              },
+            },
+            'svgo-loader',
           ],
         },
       ],
