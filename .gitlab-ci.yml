@@ -6,11 +6,6 @@ stages:
   - publish
   - deploy
 
-.yarn: &yarn
-  before_script:
-    - yarn --frozen-lockfile
-  script: yarn $CI_JOB_NAME
-
 build:docker:
   stage: build
   services:
@@ -43,7 +38,10 @@ deploy:staging:
     - curl -X POST -F "token=$CI_JOB_TOKEN" -F "ref=master" -F "variables[RELEASE]=staging"
       https://gitlab.com/api/v4/projects/8452871/trigger/pipeline
 
-eslint: *yarn
+eslint:
+  script:
+    - yarn --frozen-lockfile
+    - yarn eslint
 
 pages:
   stage: build
@@ -59,7 +57,10 @@ pages:
     paths:
       - public/
 
-prettier: *yarn
+prettier:
+  script:
+    - yarn --frozen-lockfile
+    - yarn prettier
 
 publish:docker:latest:
   stage: publish
@@ -81,10 +82,12 @@ publish:docker:latest:
     - docker tag "$CI_REGISTRY_IMAGE:$CI_COMMIT_TAG" "$CI_REGISTRY_IMAGE:latest"
     - docker push "$CI_REGISTRY_IMAGE:latest"
 
-stylelint: *yarn
+stylelint:
+  script:
+    - yarn --frozen-lockfile
+    - yarn stylelint
 
 test:
-  <<: *yarn
   services:
     - name: mysql:8.0
       command: [--default-authentication-plugin=mysql_native_password]
@@ -92,7 +95,9 @@ test:
     MYSQL_DATABASE: testAppsemble
     MYSQL_ROOT_PASSWORD: password
     DATABASE_URL: 'mysql://root:password@mysql:3306'
-  script: yarn test --coverage
+  script:
+    - yarn --frozen-lockfile
+    - yarn test --coverage
   artifacts:
     paths:
       - coverage/
