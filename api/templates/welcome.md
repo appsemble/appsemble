@@ -2,7 +2,7 @@
 subject=Welcome to Appsemble
 -->
 
-<%= (typeof(name) !== "undefined") ? `Hello ${name},` : 'Hello,'%>
+<%= (typeof(Name) !== "undefined") ? `Hello ${Name},` : 'Hello,'%>
 
 Thank you for registering your account.  
 Before you can use your account, we need to verify your email address.
