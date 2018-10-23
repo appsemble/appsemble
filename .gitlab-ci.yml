@@ -1,17 +1,10 @@
-image: node:10
+image: node:10-slim
 
 stages:
   - test
   - build
   - publish
   - deploy
-
-.yarn: &yarn
-  before_script:
-    - apt-get update
-    - apt-get install nasm
-    - yarn --frozen-lockfile
-  script: yarn $CI_JOB_NAME
 
 build:docker:
   stage: build
@@ -23,9 +16,8 @@ build:docker:
   variables:
     DOCKER_HOST: tcp://docker:2375
     DOCKER_DRIVER: overlay2
-  before_script:
-    - echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY
   script:
+    - echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY
     - docker build -t "$CI_REGISTRY_IMAGE:$CI_COMMIT_SHA" .
     - docker tag "$CI_REGISTRY_IMAGE:$CI_COMMIT_SHA" "$CI_REGISTRY_IMAGE:$CI_BUILD_REF_NAME"
     - docker push "$CI_REGISTRY_IMAGE:$CI_BUILD_REF_NAME"
@@ -45,7 +37,10 @@ deploy:staging:
     - curl -X POST -F "token=$CI_JOB_TOKEN" -F "ref=master" -F "variables[RELEASE]=staging"
       https://gitlab.com/api/v4/projects/8452871/trigger/pipeline
 
-eslint: *yarn
+eslint:
+  script:
+    - yarn --frozen-lockfile
+    - yarn eslint
 
 pages:
   stage: build
@@ -61,7 +56,10 @@ pages:
     paths:
       - public/
 
-prettier: *yarn
+prettier:
+  script:
+    - yarn --frozen-lockfile
+    - yarn prettier
 
 publish:docker:latest:
   stage: publish
@@ -76,17 +74,18 @@ publish:docker:latest:
     GIT_STRATEGY: none
   only:
     - tags
-  before_script:
-    - echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY
   script:
+    - echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY
     - docker pull "$CI_REGISTRY_IMAGE:$CI_COMMIT_TAG"
     - docker tag "$CI_REGISTRY_IMAGE:$CI_COMMIT_TAG" "$CI_REGISTRY_IMAGE:latest"
     - docker push "$CI_REGISTRY_IMAGE:latest"
 
-stylelint: *yarn
+stylelint:
+  script:
+    - yarn --frozen-lockfile
+    - yarn stylelint
 
 test:
-  <<: *yarn
   services:
     - name: mysql:8.0
       command: [--default-authentication-plugin=mysql_native_password]
@@ -94,13 +93,14 @@ test:
     MYSQL_DATABASE: testAppsemble
     MYSQL_ROOT_PASSWORD: password
     DATABASE_URL: 'mysql://root:password@mysql:3306'
-  script: yarn test --coverage
+  script:
+    - yarn --frozen-lockfile
+    - yarn test --coverage
   artifacts:
     paths:
       - coverage/
 
 test:postgres:
-  <<: *yarn
   services:
     - postgres:10.0
   variables:
@@ -108,4 +108,6 @@ test:postgres:
     POSTGRES_USER: root
     POSTGRES_PASSWORD: password
     DATABASE_URL: 'postgresql://root:password@postgres:5432/testAppsemble'
-  script: yarn test
+  script:
+    - yarn --frozen-lockfile
+    - yarn test

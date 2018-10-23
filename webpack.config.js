@@ -13,7 +13,6 @@ const publicPath = '/_/static/';
 
 module.exports = async (env, { mode }) => {
   const production = mode === 'production';
-  const development = !production;
   const blocksDir = path.join(__dirname, 'blocks');
   const blocks = await fs.readdir(blocksDir);
 
@@ -89,7 +88,7 @@ module.exports = async (env, { mode }) => {
           ],
         },
         {
-          test: /\.woff2?$/,
+          test: /\.(gif|jpe?g|png|woff2?)$/,
           use: [
             {
               loader: 'file-loader',
@@ -100,7 +99,7 @@ module.exports = async (env, { mode }) => {
           ],
         },
         {
-          test: /\.(gif|jpe?g|png|svg)$/,
+          test: /\.svg$/,
           use: [
             {
               loader: 'file-loader',
@@ -108,12 +107,7 @@ module.exports = async (env, { mode }) => {
                 publicPath,
               },
             },
-            {
-              loader: 'image-webpack-loader',
-              options: {
-                disable: development,
-              },
-            },
+            'svgo-loader',
           ],
         },
       ],
