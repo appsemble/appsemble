@@ -7,6 +7,7 @@ import { sendWelcomeEmail, resendVerificationEmail } from '../utils/email';
 export async function registerEmail(ctx) {
   const { body } = ctx.request;
   const { EmailAuthorization } = ctx.state.db;
+  const { smtp } = ctx.state;
 
   try {
     const password = await bcrypt.hash(body.password, 10);
@@ -14,11 +15,14 @@ export async function registerEmail(ctx) {
     const record = await EmailAuthorization.create({ ...body, password, key });
     await record.createUser();
 
-    await sendWelcomeEmail({
-      email: record.email,
-      name: record.name,
-      url: `${ctx.origin}/api/email/verify?key=${key}`,
-    });
+    await sendWelcomeEmail(
+      {
+        email: record.email,
+        name: record.name,
+        url: `${ctx.origin}/api/email/verify?key=${key}`,
+      },
+      smtp,
+    );
 
     ctx.status = 201;
   } catch (e) {
@@ -50,15 +54,19 @@ export async function verifyEmail(ctx) {
 export async function resendVerification(ctx) {
   const { email } = ctx.request.body;
   const { EmailAuthorization } = ctx.state.db;
+  const { smtp } = ctx.state;
 
   const record = await EmailAuthorization.findById(email);
   if (record) {
     const { name, key } = record;
-    await resendVerificationEmail({
-      email,
-      name,
-      url: `${ctx.origin}/api/email/verify?key=${key}`,
-    });
+    await resendVerificationEmail(
+      {
+        email,
+        name,
+        url: `${ctx.origin}/api/email/verify?key=${key}`,
+      },
+      smtp,
+    );
   }
 
   ctx.status = 204;

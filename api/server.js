@@ -77,11 +77,32 @@ export function processArgv() {
       type: 'number',
       default: 9999,
       hidden: production,
+    })
+    .option('smtp-host', {
+      desc: 'The host of the SMTP server to connect to.',
+      default: 'localhost',
+    })
+    .option('smtp-port', {
+      desc: 'The port of the SMTP server to connect to.',
+      type: 'number',
+    })
+    .option('smtp-secure', {
+      desc: 'Use TLS when connecting to the SMTP server.',
+      type: 'boolean',
+      default: false,
+    })
+    .option('smtp-user', {
+      desc: 'The user to use to login to the SMTP server.',
+      implies: ['smtp-pass'],
+    })
+    .option('smtp-pass', {
+      desc: 'The password to use to login to the SMTP server.',
+      implies: ['smtp-user'],
     });
   return parser.argv;
 }
 
-export default async function server({ app = new Koa(), db }) {
+export default async function server({ app = new Koa(), db, smtp }) {
   const oaiRouter = new OAIRouter({
     apiDoc: path.join(__dirname, 'api'),
     options: {
@@ -101,6 +122,10 @@ export default async function server({ app = new Koa(), db }) {
   app.use(boomMiddleware);
   app.use(sequelizeMiddleware(db));
   app.use(bodyParser());
+  app.use((ctx, next) => {
+    ctx.state.smtp = smtp;
+    return next();
+  });
   if (process.env.NODE_ENV === 'production') {
     app.use(compress());
   }
@@ -131,6 +156,7 @@ async function main() {
     await sequelize.close();
     return;
   }
+
   const db = await setupModels({
     host: args.databaseHost,
     port: args.databasePort,
@@ -139,11 +165,19 @@ async function main() {
     database: args.databaseName,
     uri: args.databaseUrl,
   });
+
+  const smtp = {
+    port: args.smtpPort || args.smtpSecure ? 587 : 465,
+    host: args.smtpHost,
+    secure: args.smtpSecure,
+    ...(args.smtpUser && args.smtpPass && { auth: { user: args.smtpUser, pass: args.smtpPass } }),
+  };
+
   const app = new Koa();
   app.use(logger());
   await configureStatic(app);
 
-  await server({ app, db });
+  await server({ app, db, smtp });
   const { description } = yaml.safeLoad(
     fs.readFileSync(path.join(__dirname, 'api', 'api.yaml')),
   ).info;

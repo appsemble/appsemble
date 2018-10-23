@@ -42,20 +42,11 @@ function processTemplate(templateName, replacements) {
   return { params: { ...params, ...replacements }, content };
 }
 
-async function getTransport() {
+async function getTransport(smtp) {
   let transport;
 
-  if (process.env.NODE_ENV === 'production') {
-    transport = nodemailer.createTransport({
-      host: 'smtp.gmail.com',
-      port: 465,
-      secure: true,
-      auth: {
-        type: 'OAuth2',
-        user: 'appsemble@d-centralize.nl',
-        accessToken: '',
-      },
-    });
+  if (smtp) {
+    transport = nodemailer.createTransport(smtp);
   } else {
     const account = await nodemailer.createTestAccount();
     transport = nodemailer.createTransport({
@@ -68,8 +59,8 @@ async function getTransport() {
   return transport;
 }
 
-export async function sendEmail({ to, from, cc, bcc, subject }, message) {
-  const transport = await getTransport();
+export async function sendEmail({ to, from, cc, bcc, subject }, message, smtp) {
+  const transport = await getTransport(smtp);
   const result = await transport.sendMail({
     from,
     to,
@@ -87,7 +78,7 @@ export async function sendEmail({ to, from, cc, bcc, subject }, message) {
   return result;
 }
 
-export async function sendWelcomeEmail({ email, name, url }) {
+export async function sendWelcomeEmail({ email, name, url }, smtp) {
   const replacements = {
     ...(name && { name }),
     url,
@@ -97,10 +88,10 @@ export async function sendWelcomeEmail({ email, name, url }) {
   const { subject } = params || 'Welcome to Appsemble';
 
   const to = name ? `"${name}" <${email}>` : email;
-  return sendEmail({ to, from: 'appsemble@d-centralize.nl', subject }, content);
+  return sendEmail({ to, from: 'appsemble@d-centralize.nl', subject }, content, smtp);
 }
 
-export async function resendVerificationEmail({ email, name, url }) {
+export async function resendVerificationEmail({ email, name, url }, smtp) {
   const replacements = {
     ...(name && { name }),
     url,
@@ -110,5 +101,5 @@ export async function resendVerificationEmail({ email, name, url }) {
   const { subject } = params || 'Confirm account registration';
 
   const to = name ? `"${name}" <${email}>` : email;
-  return sendEmail({ to, from: 'appsemble@d-centralize.nl', subject }, content);
+  return sendEmail({ to, from: 'appsemble@d-centralize.nl', subject }, content, smtp);
 }
