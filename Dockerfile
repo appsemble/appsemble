@@ -1,7 +1,5 @@
 # Build the frontend
 FROM node:10 AS build
-RUN apt-get update \
- && apt-get install --yes nasm
 WORKDIR /build
 COPY . .
 RUN yarn --frozen-lockfile \

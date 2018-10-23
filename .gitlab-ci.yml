@@ -8,8 +8,6 @@ stages:
 
 .yarn: &yarn
   before_script:
-    - apt-get update
-    - apt-get install nasm
     - yarn --frozen-lockfile
   script: yarn $CI_JOB_NAME
 

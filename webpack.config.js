@@ -89,29 +89,12 @@ module.exports = async (env, { mode }) => {
           ],
         },
         {
-          test: /\.woff2?$/,
+          test: /\.(gif|jpe?g|png|svg|woff2?)$/,
           use: [
             {
               loader: 'file-loader',
               options: {
                 publicPath,
-              },
-            },
-          ],
-        },
-        {
-          test: /\.(gif|jpe?g|png|svg)$/,
-          use: [
-            {
-              loader: 'file-loader',
-              options: {
-                publicPath,
-              },
-            },
-            {
-              loader: 'image-webpack-loader',
-              options: {
-                disable: development,
               },
             },
           ],
