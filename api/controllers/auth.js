@@ -2,7 +2,7 @@ import bcrypt from 'bcrypt';
 import crypto from 'crypto';
 import Boom from 'boom';
 
-import { sendWelcomeEmail } from '../utils/email';
+import { sendWelcomeEmail, resendVerificationEmail } from '../utils/email';
 
 export async function registerEmail(ctx) {
   const { body } = ctx.request;
@@ -45,4 +45,21 @@ export async function verifyEmail(ctx) {
   await email.save();
 
   ctx.status = 200;
+}
+
+export async function resendVerification(ctx) {
+  const { email } = ctx.request.body;
+  const { EmailAuthorization } = ctx.state.db;
+
+  const record = await EmailAuthorization.findById(email);
+  if (record) {
+    const { name, key } = record;
+    await resendVerificationEmail({
+      email,
+      name,
+      url: `${ctx.origin}/api/email/verify?key=${key}`,
+    });
+  }
+
+  ctx.status = 204;
 }

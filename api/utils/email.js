@@ -99,3 +99,16 @@ export async function sendWelcomeEmail({ email, name, url }) {
   const to = name ? `"${name}" <${email}>` : email;
   return sendEmail({ to, from: 'appsemble@d-centralize.nl', subject }, content);
 }
+
+export async function resendVerificationEmail({ email, name, url }) {
+  const replacements = {
+    ...(name && { name }),
+    url,
+  };
+
+  const { params, content } = processTemplate('resend', replacements);
+  const { subject } = params || 'Confirm account registration';
+
+  const to = name ? `"${name}" <${email}>` : email;
+  return sendEmail({ to, from: 'appsemble@d-centralize.nl', subject }, content);
+}
