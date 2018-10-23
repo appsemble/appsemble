@@ -43,7 +43,6 @@ export function processArgv() {
     })
     .option('database-dialect', {
       desc: 'The dialect of the database.',
-      type: 'string',
       default: 'mysql',
       choices: ['mysql', 'postgres'],
     })
