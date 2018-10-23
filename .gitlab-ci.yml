@@ -98,3 +98,14 @@ test:
   artifacts:
     paths:
       - coverage/
+
+test:postgres:
+  <<: *yarn
+  services:
+    - postgres:10.0
+  variables:
+    POSTGRES_DB: testAppsemble
+    POSTGRES_USER: root
+    POSTGRES_PASSWORD: password
+    DATABASE_URL: 'postgresql://root:password@postgres:5432/testAppsemble'
+  script: yarn test
