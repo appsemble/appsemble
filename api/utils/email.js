@@ -90,7 +90,7 @@ export async function sendWelcomeEmail({ email, name, url }, smtp) {
   const { subject } = params || 'Welcome to Appsemble';
 
   const to = name ? `"${name}" <${email}>` : email;
-  return sendEmail({ to, from: 'appsemble@d-centralize.nl', subject }, content, smtp);
+  await sendEmail({ to, from: 'appsemble@d-centralize.nl', subject }, content, smtp);
 }
 
 export async function resendVerificationEmail({ email, name, url }, smtp) {
@@ -103,5 +103,5 @@ export async function resendVerificationEmail({ email, name, url }, smtp) {
   const { subject } = params || 'Confirm account registration';
 
   const to = name ? `"${name}" <${email}>` : email;
-  return sendEmail({ to, from: 'appsemble@d-centralize.nl', subject }, content, smtp);
+  await sendEmail({ to, from: 'appsemble@d-centralize.nl', subject }, content, smtp);
 }
