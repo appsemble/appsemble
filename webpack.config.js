@@ -13,7 +13,6 @@ const publicPath = '/_/static/';
 
 module.exports = async (env, { mode }) => {
   const production = mode === 'production';
-  const development = !production;
   const blocksDir = path.join(__dirname, 'blocks');
   const blocks = await fs.readdir(blocksDir);
 
