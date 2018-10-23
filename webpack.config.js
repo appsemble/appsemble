@@ -9,7 +9,7 @@ const TerserPlugin = require('terser-webpack-plugin');
 const { UnusedFilesWebpackPlugin } = require('unused-files-webpack-plugin');
 const ManifestPlugin = require('webpack-manifest-plugin');
 
-const publicPath = '/_/static/';
+const publicPath = '/';
 
 module.exports = async (env, { mode }) => {
   const production = mode === 'production';

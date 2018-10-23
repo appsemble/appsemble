@@ -62,7 +62,7 @@ export function getBlockDefs(blockDefIds) {
     try {
       await Promise.all(
         blockDefIds.map(async blockDefId => {
-          const { data: blockDef } = await axios.get(`/_/static/${blockDefId}/block.json`);
+          const { data: blockDef } = await axios.get(`${blockDefId}/block.json`);
           dispatch({
             type: GET_SUCCESS,
             blockDef,

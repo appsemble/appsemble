@@ -6,7 +6,7 @@ html(lang='en')
   title Appsemble Editor
   link(rel='stylesheet' href=bulmaURL)
   each stylesheet in assets.filter(name => name.endsWith('.css'))
-    link(rel='stylesheet' href=`/_/static/${stylesheet}`)
+    link(rel='stylesheet' href=stylesheet)
   div#app
     noscript
       div.is-primary.navbar
@@ -18,4 +18,4 @@ html(lang='en')
           br
           | Please enable JavaScript in your browser settings.
   each script in assets.filter(name => name.endsWith('.js'))
-    script(src=`/_/static/${script}`)
+    script(src=script)
