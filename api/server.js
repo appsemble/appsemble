@@ -80,7 +80,7 @@ export function processArgv() {
     })
     .option('smtp-host', {
       desc: 'The host of the SMTP server to connect to.',
-      default: 'localhost',
+      default: production ? 'localhost' : undefined,
     })
     .option('smtp-port', {
       desc: 'The port of the SMTP server to connect to.',
@@ -166,12 +166,15 @@ async function main() {
     uri: args.databaseUrl,
   });
 
-  const smtp = {
-    port: args.smtpPort || args.smtpSecure ? 587 : 465,
-    host: args.smtpHost,
-    secure: args.smtpSecure,
-    ...(args.smtpUser && args.smtpPass && { auth: { user: args.smtpUser, pass: args.smtpPass } }),
-  };
+  const smtp = args.smtpHost
+    ? {
+        port: args.smtpPort || args.smtpSecure ? 587 : 465,
+        host: args.smtpHost,
+        secure: args.smtpSecure,
+        ...(args.smtpUser &&
+          args.smtpPass && { auth: { user: args.smtpUser, pass: args.smtpPass } }),
+      }
+    : undefined;
 
   const app = new Koa();
   app.use(logger());
