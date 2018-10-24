@@ -56,8 +56,9 @@ async function getTransport(smtp) {
   return transport;
 }
 
-export async function sendEmail({ to, from, cc, bcc, subject }, message, smtp) {
+export async function sendEmail({ to, cc, bcc, subject }, message, smtp) {
   const transport = await getTransport(smtp);
+  const { from } = smtp || '';
   const result = await transport.sendMail({
     from,
     to,
@@ -85,10 +86,9 @@ export async function sendWelcomeEmail({ email, name, url }, smtp) {
 
   const { params, content } = processTemplate('welcome', replacements);
   const { subject } = params;
-
   const to = name ? `"${name}" <${email}>` : email;
-  const { from } = smtp || '';
-  await sendEmail({ to, from, subject }, content, smtp);
+
+  return sendEmail({ to, subject }, content, smtp);
 }
 
 export async function resendVerificationEmail({ email, name, url }, smtp) {
@@ -99,8 +99,7 @@ export async function resendVerificationEmail({ email, name, url }, smtp) {
 
   const { params, content } = processTemplate('resend', replacements);
   const { subject } = params;
-
   const to = name ? `"${name}" <${email}>` : email;
-  const { from } = smtp || '';
-  await sendEmail({ to, from, subject }, content, smtp);
+
+  return sendEmail({ to, subject }, content, smtp);
 }
