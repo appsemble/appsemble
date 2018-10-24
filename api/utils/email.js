@@ -2,6 +2,7 @@ import fs from 'fs';
 
 import { template } from 'lodash';
 import nodemailer from 'nodemailer';
+import stubTransport from 'nodemailer-stub-transport';
 import { markdown } from 'nodemailer-markdown';
 import path from 'path';
 
@@ -48,12 +49,7 @@ async function getTransport(smtp) {
   if (smtp) {
     transport = nodemailer.createTransport(smtp);
   } else {
-    const account = await nodemailer.createTestAccount();
-    transport = nodemailer.createTransport({
-      ...account.smtp,
-      pool: true,
-      auth: { user: account.user, pass: account.pass },
-    });
+    transport = nodemailer.createTransport(stubTransport());
   }
 
   transport.use('compile', markdown());
@@ -71,9 +67,9 @@ export async function sendEmail({ to, from, cc, bcc, subject }, message, smtp) {
     markdown: message,
   });
 
-  if (process.env.NODE_ENV !== 'production' && transport.options.host === 'smtp.ethereal.email') {
+  if (process.env.NODE_ENV !== 'production' || !smtp) {
     // eslint-disable-next-line no-console
-    console.log(`Mail sent: ${nodemailer.getTestMessageUrl(result)}`);
+    console.log(`Mail not sent: ${result.response}`);
   }
 
   transport.close();
