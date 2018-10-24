@@ -84,7 +84,7 @@ export async function sendWelcomeEmail({ email, name, url }, smtp) {
   };
 
   const { params, content } = processTemplate('welcome', replacements);
-  const { subject } = params || 'Welcome to Appsemble';
+  const { subject } = params;
 
   const to = name ? `"${name}" <${email}>` : email;
   await sendEmail({ to, from: 'appsemble@d-centralize.nl', subject }, content, smtp);
@@ -97,7 +97,7 @@ export async function resendVerificationEmail({ email, name, url }, smtp) {
   };
 
   const { params, content } = processTemplate('resend', replacements);
-  const { subject } = params || 'Confirm account registration';
+  const { subject } = params;
 
   const to = name ? `"${name}" <${email}>` : email;
   await sendEmail({ to, from: 'appsemble@d-centralize.nl', subject }, content, smtp);
