@@ -93,11 +93,15 @@ export function processArgv() {
     })
     .option('smtp-user', {
       desc: 'The user to use to login to the SMTP server.',
-      implies: ['smtp-pass'],
+      implies: ['smtp-pass', 'smtp-from'],
     })
     .option('smtp-pass', {
       desc: 'The password to use to login to the SMTP server.',
-      implies: ['smtp-user'],
+      implies: ['smtp-user', 'smtp-from'],
+    })
+    .option('smtp-from', {
+      desc: 'The address to use when sending emails.',
+      implies: ['smtp-user', 'smtp-pass'],
     });
   return parser.argv;
 }
@@ -173,6 +177,7 @@ async function main() {
         secure: args.smtpSecure,
         ...(args.smtpUser &&
           args.smtpPass && { auth: { user: args.smtpUser, pass: args.smtpPass } }),
+        from: args.smtpFrom,
       }
     : undefined;
 

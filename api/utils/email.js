@@ -100,5 +100,6 @@ export async function resendVerificationEmail({ email, name, url }, smtp) {
   const { subject } = params;
 
   const to = name ? `"${name}" <${email}>` : email;
-  await sendEmail({ to, from: 'appsemble@d-centralize.nl', subject }, content, smtp);
+  const { from } = smtp || '';
+  await sendEmail({ to, from, subject }, content, smtp);
 }
