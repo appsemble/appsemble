@@ -3,6 +3,7 @@ import { Point } from 'leaflet/src/geometry';
 import { Icon, Marker } from 'leaflet/src/layer';
 import iconUrl from '../../apps/unlittered/marker.svg';
 
+const fetched = new Set();
 const MARKER_ICON_WIDTH = 39;
 const MARKER_ICON_HEIGHT = 39;
 
@@ -34,6 +35,10 @@ export default async function loadMarkers(map, actions, resources, parameters, b
     if (Number.isNaN(Number(lat)) || Number.isNaN(Number(lng))) {
       return;
     }
+    if (fetched.has(data.id)) {
+      return;
+    }
+    fetched.add(data.id);
     new Marker([getLatitude(data), getLongitude(data)], {
       icon: new Icon({
         iconUrl,
