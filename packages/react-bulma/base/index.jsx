@@ -20,6 +20,7 @@ export { default as Message } from './Message';
 export { default as MessageBody } from './MessageBody';
 export { default as Navbar } from './Navbar';
 export { default as NavbarBrand } from './NavbarBrand';
+export { default as NavbarBurger } from './NavbarBurger';
 export { default as NavbarItem } from './NavbarItem';
 export { default as Subtitle } from './Subtitle';
 export { default as Textarea } from './Textarea';
