@@ -12,11 +12,10 @@ describe('email', () => {
     );
 
     const {
-      envelope: { from, to },
+      envelope: { to },
     } = result;
     const converted = result.response.toString();
 
-    expect(from).toBeFalsy();
     expect(to).toEqual(['test@example.com']);
     expect(converted).toMatch('Content-Type: multipart/alternative;');
     expect(converted).toMatch('Content-Type: text/plain');
