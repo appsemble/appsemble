@@ -44,8 +44,13 @@ export async function sendEmail({ to, cc, bcc, subject }, message, smtp) {
   });
 
   if (process.env.NODE_ENV !== 'production' || !smtp) {
+    // Filter out fields that are unique for snapshot testing
+    result.response = result.response
+      .toString()
+      .replace(/(Message-ID: <|Date: |----_NmP| boundary="--_NmP).+/g, '');
+
     // eslint-disable-next-line no-console
-    console.log(`Mail not sent: ${result.response}`);
+    console.log(`Mail not sent:\n${result.response}`);
   }
 
   transport.close();
