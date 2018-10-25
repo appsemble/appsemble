@@ -23,12 +23,9 @@ attach(function* init({ actions, block, resources }) {
   map.on('moveend', () => {
     const bounds = map.getBounds();
     loadMarkers(map, actions, resources, block.parameters, bounds);
-    console.dir(bounds);
   });
   const layer = new TileLayer(
     'https://cartodb-basemaps-c.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png',
   );
   layer.addTo(map);
-
-  // loadMarkers(map, actions, resources, block.parameters);
 });
