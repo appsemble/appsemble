@@ -2,23 +2,21 @@
 
 exports[`resendVerificationEmail should match its snapshot 1`] = `
 "Content-Type: multipart/alternative;
- boundary=\\"--_NmP-10deed6af1238920-Part_1\\"
+
 To: John Doe <test@example.com>
 Subject: Confirm account registration
-Message-ID: <64202e59-71b2-b646-5670-edadfdf0cf20@wessel-Inspiron-7559>
-Date: Thu, 25 Oct 2018 10:29:47 +0000
+
+
 MIME-Version: 1.0
 
-----_NmP-10deed6af1238920-Part_1
+
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
 
-
-
 Hello John Doe,
 
-Someone has requested to resend the verification key for=
- your account. =20
+Someone has requested to resend the verification key for =
+your account. =20
 Before you can use your account, we need to verify your =
 email address.
 
@@ -35,7 +33,7 @@ Kind regards,
 
 _The Appsemble Team_
 
-----_NmP-10deed6af1238920-Part_1
+
 Content-Type: text/html; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
 
@@ -53,48 +51,46 @@ nothing further will happen.</p>
 <p>Kind regards,</p>
 <p><em>The Appsemble Team</em></p>
 
-----_NmP-10deed6af1238920-Part_1--
+
 "
 `;
 
 exports[`sendMail should convert markdown to text and html 1`] = `
 "Content-Type: multipart/alternative;
- boundary=\\"--_NmP-12619ac231c52df3-Part_1\\"
+
 To: test@example.com
 Subject: Test
-Message-ID: <1f33044d-e7a2-56d0-91da-d0ad166f18b8@wessel-Inspiron-7559>
-Date: Thu, 25 Oct 2018 10:29:47 +0000
+
+
 MIME-Version: 1.0
 
-----_NmP-12619ac231c52df3-Part_1
+
 Content-Type: text/plain
 Content-Transfer-Encoding: 7bit
 
 **Bold Text** Regular text
-----_NmP-12619ac231c52df3-Part_1
+
 Content-Type: text/html
 Content-Transfer-Encoding: 7bit
 
 <p><strong>Bold Text</strong> Regular text</p>
 
-----_NmP-12619ac231c52df3-Part_1--
+
 "
 `;
 
 exports[`sendWelcomeEmail should match its snapshot 1`] = `
 "Content-Type: multipart/alternative;
- boundary=\\"--_NmP-9d855d6c9bfe326b-Part_1\\"
+
 To: John Doe <test@example.com>
 Subject: Welcome to Appsemble
-Message-ID: <855889f9-e613-8208-a5df-2e354e8ca211@wessel-Inspiron-7559>
-Date: Thu, 25 Oct 2018 10:29:47 +0000
+
+
 MIME-Version: 1.0
 
-----_NmP-9d855d6c9bfe326b-Part_1
+
 Content-Type: text/plain
 Content-Transfer-Encoding: 7bit
-
-
 
 Hello John Doe,
 
@@ -108,7 +104,7 @@ Kind regards,
 
 _The Appsemble Team_
 
-----_NmP-9d855d6c9bfe326b-Part_1
+
 Content-Type: text/html
 Content-Transfer-Encoding: quoted-printable
 
@@ -120,6 +116,6 @@ href=3D\\"https://example.com/test\\">https://example.com/test</a></p>
 <p>Kind regards,</p>
 <p><em>The Appsemble Team</em></p>
 
-----_NmP-9d855d6c9bfe326b-Part_1--
+
 "
 `;
