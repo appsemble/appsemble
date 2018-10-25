@@ -80,7 +80,6 @@ export function processArgv() {
     })
     .option('smtp-host', {
       desc: 'The host of the SMTP server to connect to.',
-      default: production ? 'localhost' : undefined,
     })
     .option('smtp-port', {
       desc: 'The port of the SMTP server to connect to.',
