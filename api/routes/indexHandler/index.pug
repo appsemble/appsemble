@@ -23,11 +23,11 @@ html(lang='en' data-app-id=(app.id) data-sentry-dsn=sentryDsn)
   link(rel='stylesheet' href=bulmaURL)
   each stylesheet in assets.filter(name => name.endsWith('.css'))
     link(rel='stylesheet' href=`/${stylesheet}`)
+  div.is-fixed-top.is-primary.navbar
+    header.navbar-brand
+      h1.navbar-item.title #{app.definition.name}
   div#app
     noscript
-      div.is-primary.navbar
-        header.navbar-brand
-          h1.navbar-item.title #{app.definition.name}
       section.section
         p.container
           | JavaScript seems to be disabled.
