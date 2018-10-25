@@ -6,12 +6,27 @@ import iconUrl from '../../apps/unlittered/marker.svg';
 const MARKER_ICON_WIDTH = 39;
 const MARKER_ICON_HEIGHT = 39;
 
-export default async function loadMarkers(map, actions, resources, parameters) {
+function makeFilter(fields, bounds) {
+  const [lon, lat] = fields;
+  const east = bounds.getEast();
+  const north = bounds.getNorth();
+  const south = bounds.getSouth();
+  const west = bounds.getWest();
+
+  return `${lon} gt ${west} and ${lon} lt ${east} and ${lat} gt ${south} and ${lat} lt ${north}`;
+}
+
+export default async function loadMarkers(map, actions, resources, parameters, bounds) {
   const getLatitude =
     parameters.latitude == null ? data => data.latitude : compileFilters(parameters.latitude);
   const getLongitude =
     parameters.longitude == null ? data => data.longitude : compileFilters(parameters.longitude);
-  const response = await resources.marker.query();
+  const response = await resources.marker.query({
+    $filter: makeFilter(
+      [parameters.latitude || 'latitude', parameters.longitude || 'longitude'],
+      bounds,
+    ),
+  });
 
   response.data.forEach(data => {
     const lat = getLatitude(data);

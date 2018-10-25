@@ -4,11 +4,12 @@ function makeResource(blockDef, block, name) {
   const implementation = block.resources[name];
 
   return {
-    query() {
+    query(data) {
       return axios.request({
         baseURL: implementation.url,
         method: implementation.query.method || 'get',
         url: implementation.query.url || '',
+        params: data,
       });
     },
   };
