@@ -48,7 +48,7 @@ export async function sendEmail({ to, cc, bcc, subject }, message, smtp) {
     result.response = result.response
       .toString()
       .replace(
-        /(Message-ID: <|<\w{8}-\w{4}-\w{4}-\w{4}-\w{12}@(.+)>|Date: |----_NmP| boundary="--_NmP).+/g,
+        /(Message-ID:\r?\n? <\w{8}-\w{4}-\w{4}-\w{4}-\w{12}@(.+)>$|Date: .+$|----_NmP.+$|boundary="--_NmP.+$)/gm,
         '',
       );
 

@@ -2,7 +2,7 @@
 
 exports[`resendVerificationEmail should match its snapshot 1`] = `
 "Content-Type: multipart/alternative;
-
+ 
 To: John Doe <test@example.com>
 Subject: Confirm account registration
 
@@ -57,7 +57,7 @@ nothing further will happen.</p>
 
 exports[`sendMail should convert markdown to text and html 1`] = `
 "Content-Type: multipart/alternative;
-
+ 
 To: test@example.com
 Subject: Test
 
@@ -81,7 +81,7 @@ Content-Transfer-Encoding: 7bit
 
 exports[`sendWelcomeEmail should match its snapshot 1`] = `
 "Content-Type: multipart/alternative;
-
+ 
 To: John Doe <test@example.com>
 Subject: Welcome to Appsemble
 
