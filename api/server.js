@@ -172,7 +172,7 @@ async function main() {
 
   const smtp = args.smtpHost
     ? {
-        port: args.smtpPort || args.smtpSecure ? 587 : 465,
+        port: args.smtpPort || args.smtpSecure ? 465 : 587,
         host: args.smtpHost,
         secure: args.smtpSecure,
         ...(args.smtpUser &&
