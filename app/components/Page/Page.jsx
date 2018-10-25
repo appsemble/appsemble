@@ -1,10 +1,13 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import { FormattedMessage } from 'react-intl';
 
 import checkScope from '../../utils/checkScope';
 import Block from '../Block';
 import Login from '../Login';
 import TitleBar from '../TitleBar';
+import messages from './messages';
+import styles from './Page.css';
 
 /**
  * Render an app page definition.
@@ -53,7 +56,7 @@ export default class Page extends React.Component {
   };
 
   render() {
-    const { location, page, user } = this.props;
+    const { hasErrors, location, page, user } = this.props;
     const { dialog } = this.state;
 
     const { counter } = this;
@@ -64,6 +67,14 @@ export default class Page extends React.Component {
           <TitleBar>{page.name}</TitleBar>
           <Login />
         </React.Fragment>
+      );
+    }
+
+    if (hasErrors) {
+      return (
+        <p className={styles.error}>
+          <FormattedMessage {...messages.error} />
+        </p>
       );
     }
 
