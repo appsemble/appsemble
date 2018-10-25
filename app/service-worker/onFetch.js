@@ -33,15 +33,15 @@ export function respond(request) {
   if (pathname.startsWith('/api-explorer')) {
     return requestFirst(request);
   }
-  // This is a static file. Let’s cache it.
-  if (pathname.startsWith('/_/static/')) {
-    return cacheFirst(request);
-  }
   // This is a generated app file. It should be attempted to use the most recent version, but it is
   // acceptable to fallback to the cache, so the app works offline. E.g. '/1/manifest.json',
   // '/1/icon.png'.
   if (/^\/\d+\//.test(pathname)) {
     return requestFirst(request);
+  }
+  // This is a static file. Let’s cache it.
+  if (pathname.includes('.')) {
+    return cacheFirst(request);
   }
   // If the URL either consists of a normalized path, it should be remapped to the cached url which
   // consists of the client URL path. E.g. '/my-app', '/my-app/home'.

@@ -84,7 +84,7 @@ describe('respond', () => {
   });
 
   it('should try to get static assets from the cache first', async () => {
-    const request = new Request('http://localhost/_/static/app/76fade46f4eac.js');
+    const request = new Request('http://localhost/app/76fade46f4eac.js');
     const response = await respond(request);
     expect(cacheFirst).toHaveBeenCalledWith(request);
     expect(response).toBe(cachedResponse);
