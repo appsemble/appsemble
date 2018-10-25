@@ -47,7 +47,10 @@ export async function sendEmail({ to, cc, bcc, subject }, message, smtp) {
     // Filter out fields that are unique for snapshot testing
     result.response = result.response
       .toString()
-      .replace(/(Message-ID: <|Date: |----_NmP| boundary="--_NmP).+/g, '');
+      .replace(
+        /(Message-ID: <|<\w{8}-\w{4}-\w{4}-\w{4}-\w{12}@(.+)>|Date: |----_NmP| boundary="--_NmP).+/g,
+        '',
+      );
 
     // eslint-disable-next-line no-console
     console.log(`Mail not sent:\n${result.response}`);
