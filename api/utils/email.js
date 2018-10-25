@@ -1,46 +1,21 @@
 import fs from 'fs';
+import path from 'path';
 
+import frontmatter from 'front-matter';
 import { template } from 'lodash';
 import nodemailer from 'nodemailer';
 import stubTransport from 'nodemailer-stub-transport';
 import { markdown } from 'nodemailer-markdown';
-import path from 'path';
 
-/**
- * Extract template variables into an object
- * @param {String} input Markdown to process
- * @return {{params: object, filtered: String}} Object containing params object and filtered input string
- */
-function getCommentVariables(input) {
-  const regex = /^<!--[\s\S]*?-->/g;
-  const comment = input.match(regex)[0];
-  const params = {};
-
-  if (comment) {
-    comment
-      .replace(/<!--(-*)|(-*)-->/g, '')
-      .split(/\r?\n/)
-      .forEach(line => {
-        if (!line) {
-          return;
-        }
-
-        const [key, value] = line.split('=');
-        params[key] = value;
-      });
-  }
-
-  const filtered = input.replace(regex, '');
-
-  return { params, filtered };
+function readTemplate(templateName) {
+  return fs.readFileSync(path.join(__dirname, `../templates/${templateName}.md`), 'utf8');
 }
 
-function processTemplate(templateName, replacements) {
-  const temp = fs.readFileSync(path.join(__dirname, `../templates/${templateName}.md`), 'utf8');
-  const { params, filtered } = getCommentVariables(temp);
+export function processTemplate(temp, replacements) {
+  const { attributes, body } = frontmatter(temp);
 
-  const content = template(filtered)({ ...params, ...replacements });
-  return { params: { ...params, ...replacements }, content };
+  const content = template(body)({ ...attributes, ...replacements });
+  return { attributes: { ...attributes, ...replacements }, content };
 }
 
 async function getTransport(smtp) {
@@ -84,8 +59,8 @@ export async function sendWelcomeEmail({ email, name, url }, smtp) {
     url,
   };
 
-  const { params, content } = processTemplate('welcome', replacements);
-  const { subject } = params;
+  const { attributes, content } = processTemplate(readTemplate('welcome'), replacements);
+  const { subject } = attributes;
   const to = name ? `"${name}" <${email}>` : email;
 
   return sendEmail({ to, subject }, content, smtp);
@@ -97,8 +72,8 @@ export async function resendVerificationEmail({ email, name, url }, smtp) {
     url,
   };
 
-  const { params, content } = processTemplate('resend', replacements);
-  const { subject } = params;
+  const { attributes, content } = processTemplate(readTemplate('resend'), replacements);
+  const { subject } = attributes;
   const to = name ? `"${name}" <${email}>` : email;
 
   return sendEmail({ to, subject }, content, smtp);

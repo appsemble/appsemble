@@ -1,6 +1,6 @@
-<!--
-subject=Welcome to Appsemble
--->
+---
+subject: Welcome to Appsemble
+---
 
 <%= greeting %>,
 
@@ -12,4 +12,4 @@ Please follow the link below to verify your email address:
 
 Kind regards,
 
-<%= (typeof(sender) !== "undefined") ? sender : '_The Appsemble Team_' %>
+_The Appsemble Team_

@@ -1,7 +1,4 @@
-import fs from 'fs';
-import path from 'path';
-
-import { sendEmail, sendWelcomeEmail, resendVerificationEmail } from './email';
+import { processTemplate, sendEmail, sendWelcomeEmail, resendVerificationEmail } from './email';
 
 describe('sendMail', () => {
   it('should convert markdown to text and html', async () => {
@@ -24,32 +21,23 @@ describe('sendMail', () => {
     expect(converted).toMatch('<p><strong>Bold Text</strong> Regular text</p>');
     expect(converted).toMatchSnapshot();
   });
+});
 
+describe('processTemplate', () => {
   it('should insert template variables', async () => {
-    const result = await sendWelcomeEmail(
-      { email: 'test@example.com', name: 'John Doe', url: 'https://example.com/test' },
-      null,
-    );
+    const template = 'Hello **<%= name %>**';
+    const { attributes, content } = processTemplate(template, { name: 'John Doe' });
 
-    const converted = result.response.toString();
-
-    expect(converted).toMatch('Hello John Doe');
-    expect(converted).toMatch('https://example.com/test');
-    expect(converted).not.toMatch('<%= url %>');
+    expect(attributes).toEqual({ name: 'John Doe' });
+    expect(content).toBe('Hello **John Doe**');
   });
 
   it('should extract template variables', async () => {
-    const result = await sendWelcomeEmail(
-      { email: 'test@example.com', name: 'John Doe', url: 'https://example.com/test' },
-      null,
-    );
+    const template = `---\nsubject: Test\n---\nTest Message`;
+    const { attributes, content } = processTemplate(template, {});
 
-    const template = fs.readFileSync(path.join(__dirname, '../templates/welcome.md'), 'utf8');
-    const [subject] = template.match(/^subject=.+$/m);
-    const converted = result.response.toString();
-
-    expect(subject).toBeTruthy();
-    expect(converted).toMatch(`Subject: ${subject.split('=')[1]}`);
+    expect(attributes).toEqual({ subject: 'Test' });
+    expect(content).toBe('Test Message');
   });
 });
 

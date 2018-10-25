@@ -1,6 +1,6 @@
-<!--
-subject=Confirm account registration
--->
+---
+subject: Confirm account registration
+---
 
 <%= greeting %>,
 
@@ -16,4 +16,4 @@ nothing further will happen.
 
 Kind regards,
 
-<%= (typeof(sender) !== "undefined") ? sender : '_The Appsemble Team_' %>
+_The Appsemble Team_
