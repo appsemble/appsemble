@@ -1,3 +1,7 @@
 html {
   overflow-y: auto;
 }
+
+:global(.navbar) {
+  z-index: 1000;
+}
