@@ -2,7 +2,7 @@
 subject=Welcome to Appsemble
 -->
 
-<%= (typeof(Name) !== "undefined") ? `Hello ${Name},` : 'Hello,'%>
+<%= greeting %>,
 
 Thank you for registering your account.  
 Before you can use your account, we need to verify your email address.
@@ -12,4 +12,4 @@ Please follow the link below to verify your email address:
 
 Kind regards,
 
-<%= (typeof(sender) !== "undefined") ? sender : 'Appsemble' %>
+<%= (typeof(sender) !== "undefined") ? sender : '_The Appsemble Team_' %>

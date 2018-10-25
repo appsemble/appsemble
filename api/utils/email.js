@@ -80,7 +80,7 @@ export async function sendEmail({ to, cc, bcc, subject }, message, smtp) {
 
 export async function sendWelcomeEmail({ email, name, url }, smtp) {
   const replacements = {
-    ...(name && { Name: name }),
+    greeting: name ? `Hello ${name}` : 'Hello',
     url,
   };
 
@@ -93,7 +93,7 @@ export async function sendWelcomeEmail({ email, name, url }, smtp) {
 
 export async function resendVerificationEmail({ email, name, url }, smtp) {
   const replacements = {
-    ...(name && { Name: name }),
+    greeting: name ? `Hello ${name}` : 'Hello',
     url,
   };
 

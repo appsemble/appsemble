@@ -2,7 +2,7 @@
 subject=Confirm account registration
 -->
 
-<%= (typeof(Name) !== "undefined") ? `Hello ${Name},` : 'Hello,'%>
+<%= greeting %>,
 
 Someone has requested to resend the verification key for your account.  
 Before you can use your account, we need to verify your email address.
@@ -16,4 +16,4 @@ nothing further will happen.
 
 Kind regards,
 
-<%= (typeof(sender) !== "undefined") ? sender : 'Appsemble' %>
+<%= (typeof(sender) !== "undefined") ? sender : '_The Appsemble Team_' %>
