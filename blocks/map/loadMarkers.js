@@ -13,7 +13,7 @@ function makeFilter(fields, bounds) {
   const south = bounds.getSouth();
   const west = bounds.getWest();
 
-  return `${lon} gt ${west} and ${lon} lt ${east} and ${lat} gt ${south} and ${lat} lt ${north}`;
+  return `${lat} gt ${west} and ${lat} lt ${east} and ${lon} gt ${south} and ${lon} lt ${north}`;
 }
 
 export default async function loadMarkers(map, actions, resources, parameters, bounds) {
