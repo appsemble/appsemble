@@ -7,6 +7,10 @@ import makeResources from '../../utils/makeResources';
 import { callBootstrap } from '../../utils/bootstrapper';
 import styles from './Block.css';
 
+const BULMA_URL = Array.prototype.find.call(document.styleSheets, sheet =>
+  sheet.href.startsWith(`${window.location.origin}/bulma/`),
+).href;
+
 /**
  * Render a block on a page.
  *
@@ -49,7 +53,7 @@ export default class Block extends React.Component {
     const actions = makeActions(blockDef, app, block, history, showDialog, actionCreators);
     const resources = makeResources(blockDef, block);
     await Promise.all(
-      blockDef.files.filter(url => url.endsWith('.css')).map(
+      [BULMA_URL, ...blockDef.files.filter(url => url.endsWith('.css'))].map(
         url =>
           new Promise(resolve => {
             const link = document.createElement('link');

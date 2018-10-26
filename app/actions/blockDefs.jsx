@@ -62,12 +62,7 @@ export function getBlockDefs(blockDefIds) {
     try {
       await Promise.all(
         blockDefIds.map(async blockDefId => {
-          let blockDef;
-          try {
-            ({ data: blockDef } = await axios.get(`${blockDefId}/manifest.json`));
-          } catch (error) {
-            ({ data: blockDef } = await axios.get('stub/manifest.json'));
-          }
+          const { data: blockDef } = await axios.get(`${blockDefId}/block.json`);
           dispatch({
             type: GET_SUCCESS,
             blockDef,

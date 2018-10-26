@@ -16,15 +16,18 @@ export default async function testSchema() {
     .replace(/'/g, '')
     .replace(/-/g, '_');
 
-  await root.query(`CREATE SCHEMA IF NOT EXISTS ${dbName}`);
-  const db = await setupModels({ sync: true, uri: `${database}/${dbName}` });
+  await root.query(`CREATE DATABASE ${dbName}`);
+  const db = await setupModels({
+    sync: true,
+    uri: `${database.replace(/\/\w+$/, '')}/${dbName}`,
+  });
 
   return {
     ...db,
     async close() {
       await db.sequelize.close();
 
-      await root.query(`DROP SCHEMA IF EXISTS ${dbName}`);
+      await root.query(`DROP DATABASE ${dbName}`);
       await root.close();
     },
   };

@@ -110,11 +110,17 @@ will make it much more likely the change will get merged.
 The [Angular commit message convention] is used for commit messages. GitLab will reject commits if
 the commit message is too far off.
 
+## Changelog
+
+A changelog is kept following the [keep a changelog] format. Please update it for any notable
+changes.
+
 [airbnb javascript style guide]: https://github.com/airbnb/javascript
 [angular commit message convention]:
   https://github.com/angular/angular/blob/master/CONTRIBUTING.md#commit
 [css modules]: https://github.com/css-modules/css-modules
 [eslint]: https://eslint.org
+[keep a changelog]: https://keepachangelog.com/en/1.0.0
 [lodash]: https://www.npmjs.com/package/lodash-es
 [npmjs]: https://www.npmjs.com
 [redux]: https://redux.js.org

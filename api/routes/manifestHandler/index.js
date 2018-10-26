@@ -17,6 +17,7 @@ export default async function manifestHandler(ctx) {
     throw Boom.notFound('App not found');
   }
 
+  const { path } = record;
   const { defaultPage, name, theme } = record.definition;
   const { themeColor = '#ffffff', backgroundColor = themeColor } = theme;
 
@@ -30,9 +31,9 @@ export default async function manifestHandler(ctx) {
     })),
     name,
     orientation: 'any',
-    scope: `/${id}`,
+    scope: `/${path}`,
     short_name: name,
-    start_url: `/${id}/${normalize(defaultPage)}`,
+    start_url: `/${path}/${normalize(defaultPage)}`,
     theme_color: themeColor,
   };
   ctx.type = 'application/manifest+json';
