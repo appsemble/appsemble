@@ -96,11 +96,7 @@ export default class FileEntry extends React.Component {
             </Button>
           </React.Fragment>
         ) : (
-          <span className={classNames('image is-128x128', styles.empty)}>
-            <FileLabel>
-              <FormattedMessage {...messages.clickAction} />
-            </FileLabel>
-          </span>
+          <span className={classNames('image is-108x108', styles.empty)}></span>
         )}
       </FileField>
     );

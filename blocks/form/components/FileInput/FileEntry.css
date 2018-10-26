@@ -1,5 +1,6 @@
 .root {
-  margin: 0.375em;
+  border-radius: var(--border-radius) !important;
+  margin: 0.375em 0.375em 0.375em 0;
 }
 
 .input {
@@ -8,10 +9,13 @@
 
 .empty {
   align-items: center;
-  background-color: #b4b4b4;
+  background-color: #e8e8e8;
+  border-radius: 11px !important;
   display: flex;
+  height: 6.75em !important;
   padding: 10px;
   text-align: center;
+  width: 6.75em !important;
 }
 
 .removeButton {

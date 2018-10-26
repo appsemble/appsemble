@@ -9,8 +9,8 @@ import React from 'react';
 import iconUrl from '../../../../apps/unlittered/marker.svg';
 import styles from './GeoCoordinatesInput.css';
 
-const MARKER_ICON_WIDTH = 39;
-const MARKER_ICON_HEIGHT = 39;
+const MARKER_ICON_WIDTH = 40;
+const MARKER_ICON_HEIGHT = 40;
 
 /**
  * An input element for an object type schema which implements GeoCoordinates.
