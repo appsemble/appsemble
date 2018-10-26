@@ -20,8 +20,8 @@ export default class FileInput extends React.Component {
 
     return (
       <Component
-        className={classNames('file-input', className)}
         ref={innerRef}
+        className={classNames('file-input', className)}
         type="file"
         {...props}
       />

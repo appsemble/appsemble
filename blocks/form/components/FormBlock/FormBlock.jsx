@@ -103,9 +103,9 @@ export default class FormBlock extends React.Component {
           }
           return (
             <Component
+              key={field.name}
               error={errors[field.name]}
               field={field}
-              key={field.name}
               onChange={this.onChange}
               value={values[field.name]}
             />

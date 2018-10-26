@@ -18,10 +18,11 @@ html(lang='en')
   //- This *must* be the bottom one.
   link(rel='apple-touch-icon' href='/icon-57.png?opaque')
   title Appsemble — App not found
+  link(rel='stylesheet' href=bulmaURL)
   each stylesheet in assets.filter(name => name.endsWith('.css'))
-    link(rel='stylesheet' href=stylesheet)
-  div#app
-    header.header
-      h1.title Appsemble
-    p.message
-      | The app you are looking for could not be found.
+    link(rel='stylesheet' href=`/${stylesheet}`)
+  div.is-primary.navbar
+    header.navbar-brand
+      h1.navbar-item.title Appsemble
+  section.section
+    p.container #{message}

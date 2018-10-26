@@ -4,15 +4,18 @@ html(lang='en')
   meta(name='viewport', content='initial-scale=1,minimum-scale=1,width=device-width')
   link(rel='shortcut icon' href='/favicon.ico')
   title Appsemble Editor
+  link(rel='stylesheet' href=bulmaURL)
   each stylesheet in assets.filter(name => name.endsWith('.css'))
     link(rel='stylesheet' href=stylesheet)
   div#app
     noscript
-      header.header
-        h1.title Appsemble
-      p.message
-        | JavaScript seems to be disabled.
-        br
-        | Please enable JavaScript in your browser settings.
+      div.is-primary.navbar
+        header.navbar-brand
+          h1.navbar-item.title #{app.definition.name}
+      section.section
+        p.container
+          | JavaScript seems to be disabled.
+          br
+          | Please enable JavaScript in your browser settings.
   each script in assets.filter(name => name.endsWith('.js'))
     script(src=script)

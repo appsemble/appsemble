@@ -1,7 +1,7 @@
-import 'bulma/css/bulma.css';
 import '@fortawesome/fontawesome-free/css/all.css';
 import 'roboto-fontface';
 import '../apps/unlittered/amsterdam.css';
+import { init } from '@sentry/browser';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
@@ -14,6 +14,9 @@ import App from './components/App';
 import * as reducers from './actions';
 
 import resolveJsonPointers from './utils/resolveJsonPointers';
+
+const { sentryDsn } = document.documentElement.dataset;
+init({ dsn: sentryDsn });
 
 if ('serviceWorker' in navigator) {
   runtime.register();

@@ -20,30 +20,37 @@ export function respond(request) {
   if (process.env.NODE_ENV !== 'production' && pathname.endsWith('.hot-update.json')) {
     return fetch(request);
   }
-  // If the URL either consists of a digit, or a digit and an alphabetic child path, it should be
-  // remapped to the cached url which consists of just a digit. E.g. '/1', '/1/home'.
-  const match = pathname.match(/^(\/\d+)(\/[\w/-]+)*$/);
-  if (match) {
-    return requestFirst(new Request(`${origin}${match[1]}`));
-  }
-  // If a URL starts with a digit, it’s related to generated app files. It should be attempted to
-  // use the most recent version, but it is acceptable to fallback to the cache, so the app works
-  // offline. E.g. '/1/manifest.json', '/1/icon.png'.
-  if (/^\/\d+\//.test(pathname)) {
-    return requestFirst(request);
-  }
   // These are requests that fetch an app definition. The latest app definition is preferred, but it
   // is acceptable to fallback to the cache, so the app works offline.
   if (/^\/api\/apps\/\d+$/.test(pathname)) {
     return requestFirst(request);
   }
   // Other requests made to the Appsemble API should not be cached.
-  if (/^\/api\//.test(pathname)) {
+  if (pathname.startsWith('/api/')) {
     return fetch(request);
   }
-  // This is a request which is made to the Appsemble server, but not to the API. This is probably a
-  // static asset. Let’s cache it.
-  return cacheFirst(request);
+  // It’s ok to cache the API explorer.
+  if (pathname.startsWith('/api-explorer')) {
+    return requestFirst(request);
+  }
+  // This is a generated app file. It should be attempted to use the most recent version, but it is
+  // acceptable to fallback to the cache, so the app works offline. E.g. '/1/manifest.json',
+  // '/1/icon.png'.
+  if (/^\/\d+\//.test(pathname)) {
+    return requestFirst(request);
+  }
+  // This is a static file. Let’s cache it.
+  if (pathname.includes('.')) {
+    return cacheFirst(request);
+  }
+  // If the URL either consists of a normalized path, it should be remapped to the cached url which
+  // consists of the client URL path. E.g. '/my-app', '/my-app/home'.
+  const match = pathname.match(/^(\/[a-z\d-]+)(\/[a-z\d/-]+)*$/);
+  if (match) {
+    return requestFirst(new Request(`${origin}${match[1]}`));
+  }
+  // This is unhandled. Let’s just use the default browser behaviour to be safe.
+  return fetch(request);
 }
 
 export default function onFetch(event) {

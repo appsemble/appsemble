@@ -1,17 +1,28 @@
+import normalize from '@appsemble/utils/normalize';
 import Boom from 'boom';
-import { omit } from 'lodash';
 import getRawBody from 'raw-body';
+import { UniqueConstraintError } from 'sequelize';
 
 export async function create(ctx) {
   const { body } = ctx.request;
+  const { name } = body;
+  const { id, path = normalize(name), ...definition } = body;
   const { App } = ctx.state.db;
 
-  const definition = omit(body, 'id');
-  const result = await App.create({ definition }, { raw: true });
+  let result;
+  try {
+    result = await App.create({ definition, path }, { raw: true });
+  } catch (error) {
+    if (error instanceof UniqueConstraintError) {
+      throw Boom.conflict(`Another app with path “${path}” already exists`);
+    }
+    throw error;
+  }
 
   ctx.body = {
     ...body,
     id: result.id,
+    path,
   };
 
   ctx.status = 201;
@@ -27,28 +38,38 @@ export async function getOne(ctx) {
     throw Boom.notFound('App not found');
   }
 
-  ctx.body = { ...app.definition, id };
+  ctx.body = { ...app.definition, id, path: app.path };
 }
 
 export async function query(ctx) {
   const { App } = ctx.state.db;
 
   const apps = await App.findAll({ raw: true });
-  ctx.body = apps.map(app => ({ ...app.definition, id: app.id }));
+  ctx.body = apps.map(app => ({ ...app.definition, id: app.id, path: app.path }));
 }
 
 export async function update(ctx) {
-  const definition = omit(ctx.request.body, 'id');
+  const { body } = ctx.request;
+  const { name } = body;
+  const { id: _, path = normalize(name), ...definition } = body;
   const { id } = ctx.params;
   const { App } = ctx.state.db;
 
-  const [affectedRows] = await App.update({ definition }, { where: { id } });
+  let affectedRows;
+  try {
+    [affectedRows] = await App.update({ definition, path }, { where: { id } });
+  } catch (error) {
+    if (error instanceof UniqueConstraintError) {
+      throw Boom.conflict(`Another app with path “${path}” already exists`);
+    }
+    throw error;
+  }
 
   if (affectedRows === 0) {
     throw Boom.notFound('App not found');
   }
 
-  ctx.body = { ...definition, id };
+  ctx.body = { ...definition, id, path };
 }
 
 export async function setAppIcon(ctx) {

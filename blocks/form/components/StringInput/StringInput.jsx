@@ -47,8 +47,8 @@ export default class StringInput extends React.Component {
         name={field.name}
         onChange={onChange}
         placeholder={field.placeholder || field.label || field.name}
-        required={field.required}
         readOnly={field.readOnly}
+        required={field.required}
         value={value}
       />
     );

@@ -10,7 +10,7 @@
   "scripts": {
     "build": "webpack --mode production",
     "start": "node -r esm api/server.js",
-    "eslint": "eslint --ext js,jsx,md .",
+    "eslint": "eslint --max-warnings 0 --ext js,jsx,md .",
     "prettier": "prettier --list-different '{**/,}*.{css,json,md,yaml,yml}'",
     "stylelint": "stylelint .",
     "test": "jest"
@@ -52,7 +52,6 @@
     "file-loader": "^2.0.0",
     "fs-extra": "^7.0.0",
     "identity-obj-proxy": "^3.0.0",
-    "image-webpack-loader": "^4.4.0",
     "jest": "^23.6.0",
     "mini-css-extract-plugin": "^0.4.4",
     "optimize-css-assets-webpack-plugin": "^5.0.1",
@@ -67,6 +66,7 @@
     "stylelint-config-standard": "^18.2.0",
     "stylelint-no-unsupported-browser-features": "^3.0.2",
     "stylelint-order": "^1.0.0",
+    "svgo-loader": "^2.2.0",
     "terser-webpack-plugin": "^1.1.0",
     "unused-files-webpack-plugin": "^3.4.0",
     "webpack": "^4.20.2",

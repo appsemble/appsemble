@@ -9,9 +9,10 @@ const TerserPlugin = require('terser-webpack-plugin');
 const { UnusedFilesWebpackPlugin } = require('unused-files-webpack-plugin');
 const ManifestPlugin = require('webpack-manifest-plugin');
 
+const publicPath = '/';
+
 module.exports = async (env, { mode }) => {
   const production = mode === 'production';
-  const development = !production;
   const blocksDir = path.join(__dirname, 'blocks');
   const blocks = await fs.readdir(blocksDir);
 
@@ -29,7 +30,7 @@ module.exports = async (env, { mode }) => {
     ),
     output: {
       filename: production ? '[name]/[hash].js' : '[name]/[name].js',
-      publicPath: '/',
+      publicPath,
     },
     resolve: {
       extensions: ['.js', '.jsx'],
@@ -87,31 +88,26 @@ module.exports = async (env, { mode }) => {
           ],
         },
         {
-          test: /\.woff2?$/,
+          test: /\.(gif|jpe?g|png|woff2?)$/,
           use: [
             {
               loader: 'file-loader',
               options: {
-                publicPath: '/',
+                publicPath,
               },
             },
           ],
         },
         {
-          test: /\.(gif|jpe?g|png|svg)$/,
+          test: /\.svg$/,
           use: [
             {
               loader: 'file-loader',
               options: {
-                publicPath: '/',
+                publicPath,
               },
             },
-            {
-              loader: 'image-webpack-loader',
-              options: {
-                disable: development,
-              },
-            },
+            'svgo-loader',
           ],
         },
       ],
@@ -121,6 +117,7 @@ module.exports = async (env, { mode }) => {
         entry: path.join(__dirname, 'app/service-worker'),
         filename: 'service-worker.js',
         minimize: production,
+        publicPath,
         transformOptions: ({ assets }) => assets.filter(asset => asset.startsWith('/app/')),
       }),
       new UnusedFilesWebpackPlugin({
@@ -137,10 +134,10 @@ module.exports = async (env, { mode }) => {
       ...blocks.map(
         block =>
           new ManifestPlugin({
-            fileName: `${block}/manifest.json`,
+            fileName: `${block}/block.json`,
             // eslint-disable-next-line global-require, import/no-dynamic-require
             seed: require(path.join(blocksDir, block, 'package.json')),
-            filter: file => file.path.startsWith(`/${block}`),
+            filter: file => file.path.startsWith(`${publicPath}${block}`),
             map: file => file.path,
             generate: (pkg, files) => ({
               id: pkg.name.split('/').pop(),
