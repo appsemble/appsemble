@@ -21,6 +21,7 @@ describe('resource controller', () => {
         },
       },
     },
+    path: 'test-app',
   };
 
   beforeAll(async () => {
@@ -97,7 +98,10 @@ describe('resource controller', () => {
   });
 
   it('should check if an app has any resource definitions', async () => {
-    const app = await App.create({ definition: { name: 'Test App', defaultPage: 'Test Page' } });
+    const app = await App.create({
+      definition: { name: 'Test App', defaultPage: 'Test Page' },
+      path: 'test-app',
+    });
     const response = await request(server).get(`/api/apps/${app.id}/thisDoesNotExist`);
 
     expect(response.status).toBe(404);
