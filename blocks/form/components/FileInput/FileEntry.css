@@ -1,6 +1,6 @@
 .root {
   border-radius: var(--border-radius) !important;
-  margin: 0.375em 0.375em 0.375em 0;
+  margin: 4px 4px 4px 0;
 }
 
 .input {
