@@ -1,0 +1,121 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`resendVerificationEmail should match its snapshot 1`] = `
+"Content-Type: multipart/alternative;
+ 
+To: John Doe <test@example.com>
+Subject: Confirm account registration
+
+
+MIME-Version: 1.0
+
+
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+
+Hello John Doe,
+
+Someone has requested to resend the verification key for =
+your account. =20
+Before you can use your account, we need to verify your =
+email address.
+
+Please follow the link below to verify your email address: =
+=20
+https://example.com/test
+
+**Didn=E2=80=99t request this email?** =20
+No worries! Your address may have been entered by mistake. If you ignore or=
+ delete this email,
+nothing further will happen.
+
+Kind regards,
+
+_The Appsemble Team_
+
+
+Content-Type: text/html; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+
+<p>Hello John Doe,</p>
+<p>Someone has requested to resend the verification =
+key for your account.<br>Before you can use your account, we need to verify=
+ your email address.</p>
+<p>Please follow the link below to verify your =
+email address:<br><a href=3D\\"https://example.com/test\\">https://example.=
+com/test</a></p>
+<p><strong>Didn=E2=80=99t request this email?=
+</strong><br>No worries! Your address may have been entered by mistake. If =
+you ignore or delete this email,
+nothing further will happen.</p>
+<p>Kind regards,</p>
+<p><em>The Appsemble Team</em></p>
+
+
+"
+`;
+
+exports[`sendMail should convert markdown to text and html 1`] = `
+"Content-Type: multipart/alternative;
+ 
+To: test@example.com
+Subject: Test
+
+
+MIME-Version: 1.0
+
+
+Content-Type: text/plain
+Content-Transfer-Encoding: 7bit
+
+**Bold Text** Regular text
+
+Content-Type: text/html
+Content-Transfer-Encoding: 7bit
+
+<p><strong>Bold Text</strong> Regular text</p>
+
+
+"
+`;
+
+exports[`sendWelcomeEmail should match its snapshot 1`] = `
+"Content-Type: multipart/alternative;
+ 
+To: John Doe <test@example.com>
+Subject: Welcome to Appsemble
+
+
+MIME-Version: 1.0
+
+
+Content-Type: text/plain
+Content-Transfer-Encoding: 7bit
+
+Hello John Doe,
+
+Thank you for registering your account.  
+Before you can use your account, we need to verify your email address.
+
+Please follow the link below to verify your email address:  
+https://example.com/test
+
+Kind regards,
+
+_The Appsemble Team_
+
+
+Content-Type: text/html
+Content-Transfer-Encoding: quoted-printable
+
+<p>Hello John Doe,</p>
+<p>Thank you for registering your account.<br>Before=
+ you can use your account, we need to verify your email address.</p>
+<p>Please follow the link below to verify your email address:<br><a =
+href=3D\\"https://example.com/test\\">https://example.com/test</a></p>
+<p>Kind regards,</p>
+<p><em>The Appsemble Team</em></p>
+
+
+"
+`;
