@@ -12,7 +12,6 @@ attach(({ actions }) => {
     node = document.createElement('button');
     node.type = 'button';
   }
-  // Add the svg icon instead auto size.
   node.classList.add('fas', 'fa-plus');
   node.addEventListener(
     'click',

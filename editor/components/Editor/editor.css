@@ -4,12 +4,12 @@ body {
 }
 
 .leftPanel {
-  background-color: rgb(107, 81, 81);
+  background-color: #6b5151;
   flex: 1 1 0;
 }
 
 .rightPanel {
-  background-color: rgb(124, 124, 124);
+  background-color: #7c7c7c;
   display: flex;
   flex: 1 1 0;
 }
@@ -27,7 +27,7 @@ body {
 }
 
 .editorToolbar {
-  background-color: rgb(61, 61, 61);
+  background-color: #3d3d3d;
   min-height: 2.7em;
   padding: 10px;
   width: 100%;
@@ -43,7 +43,7 @@ body {
 }
 
 .editorError {
-  color: rgb(255, 0, 0);
+  color: #ff0000;
   display: inline;
   margin-left: 5px;
 }
