@@ -60,6 +60,6 @@ export default class GeoCoordinatesRenderer extends React.Component {
   }
 
   render() {
-    return <div className={styles.root} ref={this.ref} />;
+    return <div ref={this.ref} className={styles.root} />;
   }
 }

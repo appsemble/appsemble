@@ -1,4 +1,4 @@
-import { FileField, FileLabel, Image } from '@appsemble/react-bulma';
+import { Button, FileField, FileLabel, Icon, Image } from '@appsemble/react-bulma';
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -66,6 +66,12 @@ export default class FileEntry extends React.Component {
     });
   };
 
+  onRemove = () => {
+    const { onChange, name } = this.props;
+
+    onChange({ target: { name } }, null);
+  };
+
   render() {
     const { field, name } = this.props;
     const { url } = this.state;
@@ -83,7 +89,12 @@ export default class FileEntry extends React.Component {
         name={name}
       >
         {url ? (
-          <Image alt={title} size={128} src={url} />
+          <React.Fragment>
+            <Image alt={title} size={128} src={url} />
+            <Button className={styles.removeButton} onClick={this.onRemove} size="small">
+              <Icon fa="heading" />
+            </Button>
+          </React.Fragment>
         ) : (
           <span className={classNames('image is-128x128', styles.empty)}>
             <FileLabel>

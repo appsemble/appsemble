@@ -37,6 +37,7 @@ passed as a command line parameter instead, if desired.
 | `DATABASE_USER`     |         | The user to use to login to the database.                                                                              |
 | `DATABASE_PASSWORD` |         | The password to use to login to the database.                                                                          |
 | `DATABASE_URL`      |         | A connection string for the database to connect to. This is an alternative to the separate database related variables. |
+| `SENTRY_DSN`        |         | The Sentry DSN to use for error reporting. See [Sentry](https://sentry.io) for details.                                |
 
 ## Initializing the Database
 

@@ -21,7 +21,7 @@ export default class EmailRenderer extends React.Component {
 
     return (
       value && (
-        <a href={`mailto:${value}`} target="_blank" rel="noopener noreferrer">
+        <a href={`mailto:${value}`} rel="noopener noreferrer" target="_blank">
           {value}
         </a>
       )

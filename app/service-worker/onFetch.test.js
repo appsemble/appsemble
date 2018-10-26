@@ -55,10 +55,10 @@ describe('respond', () => {
   });
 
   it('should remap nested app URLs', async () => {
-    const request = new Request('http://localhost/34/foo/bar-1');
+    const request = new Request('http://localhost/asd/foo/bar-1');
     const response = await respond(request);
     expect(requestFirst).toHaveBeenCalled();
-    expect(requestFirst.mock.calls[0][0].url).toBe('http://localhost/34');
+    expect(requestFirst.mock.calls[0][0].url).toBe('http://localhost/asd');
     expect(response).toBe(fakeResponse);
   });
 

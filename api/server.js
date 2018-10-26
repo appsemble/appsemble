@@ -2,6 +2,7 @@
 import fs from 'fs';
 import path from 'path';
 
+import * as Sentry from '@sentry/node';
 import Koa from 'koa';
 import bodyParser from 'koa-bodyparser';
 import compress from 'koa-compress';
@@ -33,13 +34,18 @@ export function processArgv() {
     .env()
     .wrap(Math.min(180, yargs.terminalWidth()))
     .option('database-host', {
-      desc: 'The host of the database to connect to.',
-      default: production ? 'mysql' : 'localhost',
+      desc:
+        'The host of the database to connect to. This defaults to the connected database container.',
     })
     .option('database-port', {
       desc: 'The port of the database to connect to.',
       type: 'number',
       default: 3306,
+    })
+    .option('database-dialect', {
+      desc: 'The dialect of the database.',
+      default: 'mysql',
+      choices: ['mysql', 'postgres'],
     })
     .option('database-name', {
       desc: 'The name of the database to connect to.',
@@ -61,15 +67,18 @@ export function processArgv() {
         'A connection string for the database to connect to. This is an alternative to the separate database related variables.',
       conflicts: [
         'database-host',
-        'database-name',
-        'database-user',
-        'database-password',
-        'database-url',
-      ],
+        production && 'database-name',
+        production && 'database-user',
+        production && 'database-password',
+      ].filter(Boolean),
     })
     .option('initialize-database', {
       desc: 'Initialize the database, then exit. This wipes any existing data.',
       type: 'boolean',
+    })
+    .option('sentry-dsn', {
+      desc: 'The Sentry DSN to use for error reporting. See https://sentry.io for details.',
+      hidden: !production,
     })
     .alias('i', 'init-database')
     .option('port', {
@@ -132,6 +141,7 @@ export default async function server({ app = new Koa(), db, smtp }) {
   if (process.env.NODE_ENV === 'production') {
     app.use(compress());
   }
+  app.use(oaiRouter.routes());
 
   app.use(oaiRouter.routes());
   app.use(routes);
@@ -150,6 +160,7 @@ async function main() {
       force: true,
       logging: true,
       host: args.databaseHost,
+      dialect: args.databaseDialect,
       port: args.databasePort,
       username: args.databaseUser,
       password: args.databasePassword,
@@ -162,6 +173,7 @@ async function main() {
 
   const db = await setupModels({
     host: args.databaseHost,
+    dialect: args.databaseDialect,
     port: args.databasePort,
     username: args.databaseUser,
     password: args.databasePassword,
@@ -182,7 +194,29 @@ async function main() {
 
   const app = new Koa();
   app.use(logger());
+  if (process.env.NODE_ENV === 'production') {
+    app.use(compress());
+  }
   await configureStatic(app);
+  if (args.sentryDsn) {
+    Sentry.init({ dsn: args.sentryDsn });
+    app.use(async (ctx, next) => {
+      ctx.state.sentryDsn = args.sentryDsn;
+      await next();
+    });
+  }
+  app.on('error', (err, ctx) => {
+    // eslint-disable-next-line no-console
+    console.error(err);
+    Sentry.withScope(scope => {
+      scope.setTag('ip', ctx.ip);
+      scope.setTag('level', 'error');
+      scope.setTag('method', ctx.method);
+      scope.setTag('url', `${ctx.URL}`);
+      scope.setTag('User-Agent', ctx.headers['user-agent']);
+      Sentry.captureException(err);
+    });
+  });
 
   await server({ app, db, smtp });
   const { description } = yaml.safeLoad(

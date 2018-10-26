@@ -1,4 +1,3 @@
-import { AppBar, CircularProgress, Toolbar } from '@material-ui/core';
 import PropTypes from 'prop-types';
 import React from 'react';
 
@@ -27,14 +26,7 @@ export default class AppContext extends React.Component {
     const { children, location, ready } = this.props;
 
     if (!ready) {
-      return (
-        <div className={styles.loader}>
-          <AppBar>
-            <Toolbar />
-          </AppBar>
-          <CircularProgress />
-        </div>
-      );
+      return <div className={styles.loader} />;
     }
 
     return React.Children.map(children, child =>

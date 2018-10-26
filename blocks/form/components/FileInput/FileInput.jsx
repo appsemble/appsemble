@@ -32,7 +32,12 @@ export default class FileInput extends React.Component {
     const { field, onChange, value } = this.props;
 
     const copy = [...value];
-    copy[Number(event.target.name.split('.').pop())] = val;
+    const index = Number(event.target.name.split('.').pop());
+    if (val == null) {
+      copy.splice(index, 1);
+    } else {
+      copy[index] = val;
+    }
     onChange({ target: { name: field.name } }, copy);
   };
 
@@ -43,9 +48,9 @@ export default class FileInput extends React.Component {
       <div className={styles.repeatedContainer}>
         {value.map((val, index) => (
           <FileEntry
-            field={field}
             // eslint-disable-next-line react/no-array-index-key
             key={index}
+            field={field}
             name={`${field.name}.${index}`}
             onChange={this.onChange}
             value={val}
