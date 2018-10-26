@@ -6,7 +6,7 @@ const GET_ERROR = 'blockDefs/GET_ERROR';
 
 const initialState = {
   blockDefs: [],
-  error: null,
+  errored: new Set(),
   pending: [],
 };
 
@@ -28,7 +28,7 @@ export default (state = initialState, action) => {
       return {
         ...state,
         blockDefs: [],
-        error: action.error,
+        errored: new Set([...state.errored, action.blockDefId]),
       };
     default:
       return state;
@@ -59,21 +59,19 @@ export function getBlockDefs(blockDefIds) {
       type: GET_START,
       pending: filtered,
     });
-    try {
-      await Promise.all(
-        blockDefIds.map(async blockDefId => {
-          const { data: blockDef } = await axios.get(`${blockDefId}/block.json`);
-          dispatch({
-            type: GET_SUCCESS,
-            blockDef,
-          });
-        }),
-      );
-    } catch (error) {
-      dispatch({
-        type: GET_ERROR,
-        error,
-      });
-    }
+    blockDefIds.map(async blockDefId => {
+      try {
+        const { data: blockDef } = await axios.get(`${blockDefId}/block.json`);
+        dispatch({
+          type: GET_SUCCESS,
+          blockDef,
+        });
+      } catch (error) {
+        dispatch({
+          type: GET_ERROR,
+          blockDefId,
+        });
+      }
+    });
   };
 }
