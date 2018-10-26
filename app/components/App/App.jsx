@@ -7,7 +7,6 @@ import AppContext from '../AppContext';
 import ErrorHandler from '../ErrorHandler';
 import Main from '../Main';
 import SideNavigation from '../SideNavigation';
-import TitleBar from '../TitleBar';
 
 /**
  * The main entry point of the React app.
@@ -22,7 +21,6 @@ export default class App extends React.Component {
           <MuiThemeProvider theme={createMuiTheme()}>
             <BrowserRouter basename={new URL(document.baseURI).pathname}>
               <AppContext>
-                <TitleBar />
                 <SideNavigation />
                 <Main />
               </AppContext>

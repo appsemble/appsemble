@@ -4,6 +4,7 @@ import React from 'react';
 import checkScope from '../../utils/checkScope';
 import Block from '../Block';
 import Login from '../Login';
+import TitleBar from '../TitleBar';
 
 /**
  * Render an app page definition.
@@ -58,11 +59,17 @@ export default class Page extends React.Component {
     const { counter } = this;
 
     if (!checkScope(page.scope, user)) {
-      return <Login />;
+      return (
+        <React.Fragment>
+          <TitleBar>{page.name}</TitleBar>
+          <Login />
+        </React.Fragment>
+      );
     }
 
     return (
       <React.Fragment>
+        <TitleBar>{page.name}</TitleBar>
         {page.blocks.map((block, index) => (
           <Block
             // As long as blocks are in a static list, using the index as a key should be fine.

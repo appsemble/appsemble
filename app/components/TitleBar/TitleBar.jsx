@@ -12,15 +12,18 @@ import SideMenuButton from '../SideMenuButton';
  */
 export default class TitleBar extends React.Component {
   static propTypes = {
-    app: PropTypes.shape(),
+    /**
+     * The title to render.
+     */
+    children: PropTypes.node,
   };
 
   static defaultProps = {
-    app: null,
+    children: 'Appsemble',
   };
 
   render() {
-    const { app } = this.props;
+    const { children } = this.props;
 
     return (
       <Portal element={document.getElementsByClassName('navbar')[0]}>
@@ -29,7 +32,7 @@ export default class TitleBar extends React.Component {
             <SideMenuButton />
           </NavbarItem>
           <NavbarItem className="title" component="h2">
-            {app?.name || 'Appsemble'}
+            {children}
           </NavbarItem>
         </NavbarBrand>
       </Portal>

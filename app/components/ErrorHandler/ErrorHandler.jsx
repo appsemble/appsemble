@@ -1,9 +1,10 @@
-import { Container, Navbar, NavbarBrand, NavbarItem } from '@appsemble/react-bulma';
+import { Container } from '@appsemble/react-bulma';
 import { captureException, withScope } from '@sentry/browser';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 
+import TitleBar from '../TitleBar';
 import styles from './ErrorHandler.css';
 import messages from './messages';
 
@@ -34,13 +35,9 @@ export default class ErrorHandler extends React.Component {
     if (error) {
       return (
         <React.Fragment>
-          <Navbar>
-            <NavbarBrand>
-              <NavbarItem className="title" component="h1">
-                <FormattedMessage {...messages.title} />
-              </NavbarItem>
-            </NavbarBrand>
-          </Navbar>
+          <TitleBar>
+            <FormattedMessage {...messages.title} />
+          </TitleBar>
           <Container className={styles.container} role="alert">
             <FormattedMessage {...messages.message} />
           </Container>
