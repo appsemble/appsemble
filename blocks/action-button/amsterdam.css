@@ -2,3 +2,10 @@
 :not(.fas) {
   font-family: var(--font-family) !important;
 }
+
+a,
+button {
+  bottom: 0.5em !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5) !important;
+  right: 0.5em !important;
+}

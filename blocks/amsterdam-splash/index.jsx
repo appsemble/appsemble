@@ -26,19 +26,21 @@ attach(({ actions, data }) => {
   const root = <div className={styles.root}>{loading}</div>;
   actions.load.dispatch(data).then(
     () => {
-      root.replaceChild(
-        <header className={styles.content}>
-          <div className={styles.circle}>
-            <img alt="Success" className={styleMedia.icon} src={check} />
-          </div>
-          <h2 className={styles.header}>Gelukt</h2>
-          <span className={styles.subheader}>Dankjewel</span>
-        </header>,
-        loading,
-      );
       setTimeout(() => {
-        actions.success.dispatch(data);
-      }, 2e3);
+        root.replaceChild(
+          <header className={styles.content}>
+            <div className={styles.circle}>
+              <img alt="Success" className={styleMedia.icon} src={check} />
+            </div>
+            <h2 className={styles.header}>Gelukt</h2>
+            <span className={styles.subheader}>Dankjewel</span>
+          </header>,
+          loading,
+        );
+        setTimeout(() => {
+          actions.success.dispatch(data);
+        }, 2e3);
+      }, 4e3);
     },
     () => {
       const button = (

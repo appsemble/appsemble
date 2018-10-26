@@ -1,11 +1,40 @@
 .root {
+  background-color: #ffffff;
   box-shadow: 0 5px 11px 0 rgba(10, 10, 10, 0.07);
+  margin-bottom: 0.5em;
   padding: 6px 0;
+  position: relative;
 }
 
 .map {
-  height: 160px;
+  height: 188px;
   left: 0;
   position: relative;
   right: 0;
+  z-index: 1;
+}
+
+.crossHairsOverlay {
+  align-items: center;
+  display: flex;
+  height: 100%;
+  justify-content: center;
+  position: absolute;
+  top: 0;
+  width: 100%;
+}
+
+.crossHairs {
+  background-image: url(./central-picker.svg);
+  background-repeat: no-repeat;
+  background-size: contain;
+  height: 64px;
+  pointer-events: none;
+  width: 64px;
+  z-index: 2;
+}
+
+.iconUrl {
+  height: 2.5em;
+  width: 2.5em;
 }

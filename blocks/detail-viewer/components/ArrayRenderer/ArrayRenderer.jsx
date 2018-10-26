@@ -35,7 +35,7 @@ export default class ArrayRenderer extends React.Component {
 
     return (
       <Container className={styles.root}>
-        {value.map((v, index) => (
+        {(value || []).map((v, index) => (
           <SchemaRenderer
             // eslint-disable-next-line react/no-array-index-key
             key={index}

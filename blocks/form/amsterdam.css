@@ -1,8 +1,13 @@
-/* stylelint-disable selector-max-specificity */
+/* stylelint-disable no-descending-specificity, selector-max-specificity */
 :not(.fas) {
   font-family: var(--font-family) !important;
 }
 
+.field:not(:last-child) {
+  margin: 0;
+}
+
+.image .file-label,
 .field-label {
   display: none;
 }
@@ -14,31 +19,36 @@
 }
 
 .textarea {
-  margin-bottom: 2em !important;
+  border-radius: 0 !important;
   padding-left: 1em !important;
+  &:not([rows]) {
+    min-height: 100px;
+  }
 }
 
 .input,
 .textarea {
-  border-radius: var(--border-radius) !important;
+  border-color: transparent !important;
+  box-shadow: 0 0 0 !important;
   font-size: 0.875rem !important;
 
   &:focus,
   &:active {
-    border-color: #787878 !important;
+    border-color: transparent !important;
     box-shadow: 0 0 0 0.125em rgba(78, 78, 78, 0.1) !important;
   }
 }
 
 .select {
-  border-radius: var(--border-radius) !important;
+  border-color: transparent !important;
+  border-radius: 0 !important;
   font-size: 0.875rem !important;
   height: 2.5em !important;
-  margin-top: 2em !important;
   width: 100% !important;
 
   & select {
-    border-radius: var(--border-radius) !important;
+    border-color: transparent !important;
+    border-radius: 0 !important;
     font-size: 0.875rem !important;
     height: 2.5em !important;
     padding-left: 1em !important;
@@ -53,24 +63,20 @@
 
   & select:focus,
   & select:active {
-    border-color: #787878 !important;
+    border-color: transparent !important;
     box-shadow: 0 0 0 0.125em rgba(78, 78, 78, 0.1) !important;
-  }
-
-  &:hover::after {
-    border-color: #787878 !important;
   }
 }
 
 .button.is-primary {
   background-color: var(--primary-color) !important;
   border-radius: var(--border-radius) !important;
-  float: right;
+  display: block;
   font-size: 0.875rem !important;
-  margin-bottom: 2.5em !important;
-  margin-top: 2em !important;
+  font-weight: 100;
+  margin: 2em auto 2em auto !important;
   text-transform: uppercase;
-  width: 35% !important;
+  width: 50% !important;
 
   &:hover {
     background-color: #eb6e6e !important;
@@ -89,8 +95,6 @@ form {
 
 .field.is-horizontal {
   box-sizing: border-box;
-  margin: 0 auto;
   max-width: 100vw;
-  padding: 6px;
-  width: 480px;
+  padding: 0.5em 0;
 }

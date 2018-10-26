@@ -19,9 +19,8 @@
 }
 
 .circle {
-  background-color: var(--primary-color);
+  background-color: transparent;
   border: none;
-  border-radius: 50%;
   cursor: pointer;
   display: flex;
   height: 30vw;
@@ -31,11 +30,14 @@
 }
 
 .icon {
-  width: 60%;
+  width: 50%;
 }
 
 .header {
   color: var(--primary-color);
+  font-size: 1.5rem;
+  font-weight: 400;
+  text-transform: uppercase;
 }
 
 .subheader {

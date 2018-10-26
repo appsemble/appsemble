@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="54px" height="55px" viewBox="0 0 54 55" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 43.1 (39012) - http://www.bohemiancoding.com/sketch -->
+    <title>Icon/Line/central picker</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="WAARNEMINGEN" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="New-Observation--Copy-4" transform="translate(-153.000000, -153.000000)">
+            <g id="Icon/Line/central-picker" transform="translate(154.000000, 154.000000)">
+                <ellipse id="Oval-3" stroke="#EC0000" stroke-width="4" cx="25.8084211" cy="26.3047368" rx="17.5684211" ry="17.9447368"></ellipse>
+                <path d="M26,0 L26,53" id="Line" stroke="#EC0000" stroke-width="1" stroke-linecap="round"></path>
+                <path d="M26,-1.1492543e-17 L26,53" id="Line-Copy-3" stroke="#EC0000" stroke-width="1" stroke-linecap="round" transform="translate(26.000000, 26.500000) rotate(90.000000) translate(-26.000000, -26.500000) "></path>
+                <ellipse id="Oval-8" fill="#EC0000" fill-rule="evenodd" cx="26" cy="26.5" rx="3.12" ry="3.18"></ellipse>
+            </g>
+        </g>
+    </g>
+</svg>

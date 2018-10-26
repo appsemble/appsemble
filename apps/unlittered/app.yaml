@@ -2,6 +2,7 @@ name: Waarnemingen App
 defaultPage: Maak waarneming
 
 theme:
+  splashColor: '#FFFFFF'
   themeColor: '#eb0000'
 
 definitions:
