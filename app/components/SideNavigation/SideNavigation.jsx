@@ -1,9 +1,9 @@
+import { MenuList } from '@appsemble/react-bulma';
 import normalize from '@appsemble/utils/normalize';
-import { List } from '@material-ui/core';
 import PropTypes from 'prop-types';
 import React from 'react';
+import { NavLink } from 'react-router-dom';
 
-import NavListItem from '../NavListItem';
 import SideMenu from '../SideMenu';
 
 /**
@@ -28,13 +28,13 @@ export default class SideNavigation extends React.Component {
     return (
       <SideMenu>
         <nav>
-          <List>
+          <MenuList>
             {app.pages.filter(page => !page.parameters).map(page => (
-              <NavListItem key={page.name} to={`/${normalize(page.name)}`}>
-                {page.name}
-              </NavListItem>
+              <li key={page.name}>
+                <NavLink to={`/${normalize(page.name)}`}>{page.name}</NavLink>
+              </li>
             ))}
-          </List>
+          </MenuList>
         </nav>
       </SideMenu>
     );
