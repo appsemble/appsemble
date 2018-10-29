@@ -131,8 +131,8 @@ export default async function server({ app = new Koa(), db }) {
   });
 
   const oauthRouter = new Router();
-  oauthRouter.post('/oauth/authorize', oauth.authorize());
-  oauthRouter.post('/oauth/token', oauth.token());
+  oauthRouter.post('/api/oauth/authorize', oauth.authorize());
+  oauthRouter.post('/api/oauth/token', oauth.token());
 
   app.use(bodyParser());
   if (process.env.NODE_ENV === 'production') {
