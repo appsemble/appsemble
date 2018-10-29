@@ -2,15 +2,27 @@ import bcrypt from 'bcrypt';
 import crypto from 'crypto';
 import Boom from 'boom';
 
+import { sendWelcomeEmail, resendVerificationEmail } from '../utils/email';
+
 export async function registerEmail(ctx) {
   const { body } = ctx.request;
   const { EmailAuthorization } = ctx.state.db;
+  const { smtp } = ctx.state;
 
   try {
     const password = await bcrypt.hash(body.password, 10);
-    const key = crypto.randomBytes(80).toString('hex');
-    const email = await EmailAuthorization.create({ ...body, password, key });
-    await email.createUser();
+    const key = crypto.randomBytes(40).toString('hex');
+    const record = await EmailAuthorization.create({ ...body, password, key });
+    await record.createUser();
+
+    await sendWelcomeEmail(
+      {
+        email: record.email,
+        name: record.name,
+        url: `${ctx.origin}/api/email/verify?key=${key}`,
+      },
+      smtp,
+    );
 
     ctx.status = 201;
   } catch (e) {
@@ -37,4 +49,25 @@ export async function verifyEmail(ctx) {
   await email.save();
 
   ctx.status = 200;
+}
+
+export async function resendVerification(ctx) {
+  const { email } = ctx.request.body;
+  const { EmailAuthorization } = ctx.state.db;
+  const { smtp } = ctx.state;
+
+  const record = await EmailAuthorization.findById(email);
+  if (record && !record.verified) {
+    const { name, key } = record;
+    await resendVerificationEmail(
+      {
+        email,
+        name,
+        url: `${ctx.origin}/api/email/verify?key=${key}`,
+      },
+      smtp,
+    );
+  }
+
+  ctx.status = 204;
 }

@@ -41,3 +41,25 @@
         description: The account was successfully verified.
       default:
         $ref: '#/responses/default'
+/email/resend:
+  post:
+    description: Resend the verification code for a registered email.
+    x-oai-middleware:
+      - file: auth
+        handler: resendVerification
+    parameters:
+      - name: email
+        in: body
+        schema:
+          type: object
+          required:
+            - email
+          properties:
+            email:
+              type: string
+              format: email
+    responses:
+      204:
+        description: The verification email was sent if an account was found in the database.
+      default:
+        $ref: '#/responses/default'
