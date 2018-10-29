@@ -91,11 +91,35 @@ export function processArgv() {
       type: 'number',
       default: 9999,
       hidden: production,
+    })
+    .option('smtp-host', {
+      desc: 'The host of the SMTP server to connect to.',
+    })
+    .option('smtp-port', {
+      desc: 'The port of the SMTP server to connect to.',
+      type: 'number',
+    })
+    .option('smtp-secure', {
+      desc: 'Use TLS when connecting to the SMTP server.',
+      type: 'boolean',
+      default: false,
+    })
+    .option('smtp-user', {
+      desc: 'The user to use to login to the SMTP server.',
+      implies: ['smtp-pass', 'smtp-from'],
+    })
+    .option('smtp-pass', {
+      desc: 'The password to use to login to the SMTP server.',
+      implies: ['smtp-user', 'smtp-from'],
+    })
+    .option('smtp-from', {
+      desc: 'The address to use when sending emails.',
+      implies: ['smtp-user', 'smtp-pass'],
     });
   return parser.argv;
 }
 
-export default async function server({ app = new Koa(), db }) {
+export default async function server({ app = new Koa(), db, smtp }) {
   const oaiRouter = new OAIRouter({
     apiDoc: path.join(__dirname, 'api'),
     options: {
@@ -135,12 +159,18 @@ export default async function server({ app = new Koa(), db }) {
   oauthRouter.post('/api/oauth/token', oauth.token());
 
   app.use(bodyParser());
+  app.use((ctx, next) => {
+    ctx.state.smtp = smtp;
+    return next();
+  });
   if (process.env.NODE_ENV === 'production') {
     app.use(compress());
   }
 
   app.use(oauth.authenticate());
   app.use(oauthRouter.routes());
+  app.use(oaiRouter.routes());
+
   app.use(oaiRouter.routes());
   app.use(routes);
 
@@ -167,6 +197,7 @@ async function main() {
     await sequelize.close();
     return;
   }
+
   const db = await setupModels({
     host: args.databaseHost,
     dialect: args.databaseDialect,
@@ -176,11 +207,20 @@ async function main() {
     database: args.databaseName,
     uri: args.databaseUrl,
   });
+
+  const smtp = args.smtpHost
+    ? {
+        port: args.smtpPort || args.smtpSecure ? 465 : 587,
+        host: args.smtpHost,
+        secure: args.smtpSecure,
+        ...(args.smtpUser &&
+          args.smtpPass && { auth: { user: args.smtpUser, pass: args.smtpPass } }),
+        from: args.smtpFrom,
+      }
+    : undefined;
+
   const app = new Koa();
   app.use(logger());
-  if (process.env.NODE_ENV === 'production') {
-    app.use(compress());
-  }
   await configureStatic(app);
   if (args.sentryDsn) {
     Sentry.init({ dsn: args.sentryDsn });
@@ -202,7 +242,7 @@ async function main() {
     });
   });
 
-  await server({ app, db });
+  await server({ app, db, smtp });
   const { description } = yaml.safeLoad(
     fs.readFileSync(path.join(__dirname, 'api', 'api.yaml')),
   ).info;
