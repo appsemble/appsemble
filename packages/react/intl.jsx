@@ -10,8 +10,8 @@ export function provideIntl(Component, intlProviderProps) {
     render() {
       return (
         <IntlProvider
-          locale="en-US"
           defaultLocale="en-US"
+          locale="en-US"
           {...intlProviderProps}
           textComponent={React.Fragment}
         >

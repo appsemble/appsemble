@@ -27,6 +27,7 @@ module.exports = {
     'babel/no-invalid-this': 'error',
     'babel/no-unused-expressions': 'error',
     'eslint-comments/no-unused-disable': 'error',
+    'react/jsx-sort-props': 'error',
   },
   overrides: [
     {

@@ -14,16 +14,18 @@ attach(function* init({ actions, block, resources }) {
   const locationMarker = new CircleMarker(null, {
     color: getComputedStyle(node).getPropertyValue('--primary-color'),
   });
-  const map = new Map(node, { attributionControl: false })
-    .on('locationfound', ({ latlng }) => {
-      locationMarker.setLatLng(latlng).addTo(map);
-    })
-    .setView([52.3960472, 4.8948808], 14);
+  const map = new Map(node, { attributionControl: false }).locate({ setView: true });
+  map.on('locationfound', ({ latlng }) => {
+    locationMarker.setLatLng(latlng).addTo(map);
+    const bounds = map.getBounds();
+    loadMarkers(map, actions, resources, block.parameters, bounds);
+  });
+  map.on('moveend', () => {
+    const bounds = map.getBounds();
+    loadMarkers(map, actions, resources, block.parameters, bounds);
+  });
   const layer = new TileLayer(
     'https://cartodb-basemaps-c.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png',
   );
-  map.locate({ setView: true });
   layer.addTo(map);
-
-  loadMarkers(map, actions, resources, block.parameters);
 });

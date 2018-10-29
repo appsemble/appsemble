@@ -45,12 +45,12 @@ export default class FileRenderer extends React.Component {
 
     return (
       <Image
-        src={src}
         alt={schema.title || name}
         className={styles.root}
         imgProps={{
           className: styles.img,
         }}
+        src={src}
       />
     );
   }

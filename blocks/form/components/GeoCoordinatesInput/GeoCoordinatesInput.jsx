@@ -86,7 +86,7 @@ export default class GeoCoordinatesInput extends React.Component {
   render() {
     return (
       <div className={styles.root}>
-        <div className={styles.map} ref={this.ref} />
+        <div ref={this.ref} className={styles.map} />
       </div>
     );
   }

@@ -6,6 +6,7 @@ import { Provider } from 'react-redux';
 import { applyMiddleware, compose, createStore, combineReducers } from 'redux';
 import thunk from 'redux-thunk';
 
+import './index.css';
 import App from './components/App';
 import { user, db } from '../app/actions';
 

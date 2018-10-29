@@ -36,7 +36,7 @@ export default class SplashAction extends React.Component {
         {definition.blocks.map((block, index) => (
           // As long as blocks are in a static list, using the index as a key should be fine.
           // eslint-disable-next-line react/no-array-index-key
-          <Block key={index} block={block} actionCreators={actionCreators} data={data} />
+          <Block key={index} actionCreators={actionCreators} block={block} data={data} />
         ))}
       </div>
     );

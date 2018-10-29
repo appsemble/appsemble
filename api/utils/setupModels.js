@@ -63,10 +63,11 @@ function associateModels(models) {
 }
 
 export default async function setupModels({
+  dialect = 'mysql',
   sync = true,
   force = false,
   logging = false,
-  host,
+  host = process.env.NODE_ENV === 'production' ? 'mysql' : 'localhost',
   port,
   username,
   password,
@@ -84,7 +85,7 @@ export default async function setupModels({
   } else {
     args = [
       Object.assign(options, {
-        dialect: 'mysql',
+        dialect,
         host,
         port,
         username,

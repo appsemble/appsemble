@@ -52,7 +52,7 @@ export function getApp() {
       type: GET_START,
     });
     try {
-      const { data } = await axios.get(`/api/apps/${document.baseURI.match(/\d+$/)[0]}`);
+      const { data } = await axios.get(`/api/apps/${document.documentElement.dataset.appId}`);
       const app = resolveJsonPointers(data);
       const db = await getDB(app);
       dispatch({
