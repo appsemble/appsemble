@@ -24,7 +24,7 @@ export class App extends React.Component {
     }
 
     return (
-      <IntlProvider locale="en-US" defaultLocale="en-US" textComponent={React.Fragment}>
+      <IntlProvider defaultLocale="en-US" locale="en-US" textComponent={React.Fragment}>
         {!user ? (
           <EmailLogin
             key="appsemble-editor-email-login"
