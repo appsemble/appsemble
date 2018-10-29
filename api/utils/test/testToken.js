@@ -11,7 +11,7 @@ export default async function testToken(request, server, db, scope) {
   const {
     body: { access_token: token },
   } = await request(server)
-    .post('/oauth/token')
+    .post('/api/oauth/token')
     .send({
       grant_type: 'password',
       username: 'test',

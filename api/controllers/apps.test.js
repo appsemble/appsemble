@@ -89,10 +89,12 @@ describe('app controller', () => {
   it('should handle app path conflicts on create', async () => {
     await request(server)
       .post('/api/apps')
-      .send({ path: 'a', name: 'Test App', defaultPage: 'Test Page' });
+      .send({ path: 'a', name: 'Test App', defaultPage: 'Test Page' })
+      .set('Authorization', token);
     const response = await request(server)
       .post('/api/apps')
-      .send({ path: 'a', name: 'Test App', defaultPage: 'Test Page' });
+      .send({ path: 'a', name: 'Test App', defaultPage: 'Test Page' })
+      .set('Authorization', token);
 
     expect(response.status).toBe(409);
     expect(response.body).toBeDefined();
@@ -164,7 +166,8 @@ describe('app controller', () => {
     );
     const response = await request(server)
       .put(`/api/apps/${appA.id}`)
-      .send({ path: 'foo', name: 'Foobar', defaultPage: appA.definition.defaultPage });
+      .send({ path: 'foo', name: 'Foobar', defaultPage: appA.definition.defaultPage })
+      .set('Authorization', token);
 
     expect(response.status).toBe(409);
   });
