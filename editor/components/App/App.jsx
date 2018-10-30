@@ -1,8 +1,9 @@
 import { BrowserRouter as Router, Route } from 'react-router-dom';
 import React from 'react';
 import { connect } from 'react-redux';
-import { IntlProvider } from 'react-intl';
+import { IntlProvider, FormattedMessage } from 'react-intl';
 
+import messages from './messages';
 import Editor from '../Editor';
 import { initAuth } from '../../../app/actions/user';
 import EmailLogin from '../../../app/components/EmailLogin';
@@ -26,13 +27,23 @@ export class App extends React.Component {
     return (
       <IntlProvider defaultLocale="en-US" locale="en-US" textComponent={React.Fragment}>
         {!user ? (
-          <EmailLogin
-            key="appsemble-editor-email-login"
-            authentication={{
-              method: 'email',
-              ...authentication,
-            }}
-          />
+          <div>
+            <EmailLogin
+              key="appsemble-editor-email-login"
+              authentication={{
+                method: 'email',
+                ...authentication,
+              }}
+            />
+            <div>
+              <a href="/api/oauth/connect/google">
+                <FormattedMessage {...messages.login} values={{ provider: <span>Google</span> }} />
+              </a>
+              <a href="/api/oauth/connect/gitlab">
+                <FormattedMessage {...messages.login} values={{ provider: <span>GitLab</span> }} />
+              </a>
+            </div>
+          </div>
         ) : (
           <Router>
             <Route
