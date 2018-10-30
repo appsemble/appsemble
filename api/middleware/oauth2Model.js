@@ -29,8 +29,8 @@ export default function oauth2Model(db) {
     },
 
     async getAccessToken(accessToken) {
-      const { OAuthAuthorization } = await db;
-      const token = await OAuthAuthorization.find({ where: { token: accessToken } });
+      const { OAuthToken } = await db;
+      const token = await OAuthToken.find({ where: { token: accessToken } });
 
       if (!token) {
         return null;
@@ -51,8 +51,8 @@ export default function oauth2Model(db) {
     },
 
     async getRefreshToken(refreshToken) {
-      const { OAuthAuthorization } = await db;
-      const token = await OAuthAuthorization.find({ where: { refreshToken } });
+      const { OAuthToken } = await db;
+      const token = await OAuthToken.find({ where: { refreshToken } });
 
       if (!token) {
         return null;
@@ -101,9 +101,9 @@ export default function oauth2Model(db) {
     },
 
     async saveToken(token, client, user) {
-      const { OAuthAuthorization } = await db;
+      const { OAuthToken } = await db;
 
-      await OAuthAuthorization.create({
+      await OAuthToken.create({
         token: token.accessToken,
         refreshToken: token.refreshToken,
         UserId: user.id,
@@ -117,10 +117,10 @@ export default function oauth2Model(db) {
     },
 
     async revokeToken(token) {
-      const { OAuthAuthorization } = await db;
+      const { OAuthToken } = await db;
 
       try {
-        await OAuthAuthorization.destroy({ where: { refreshToken: token.refreshToken } });
+        await OAuthToken.destroy({ where: { refreshToken: token.refreshToken } });
         return true;
       } catch (e) {
         return false;

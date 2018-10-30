@@ -6,6 +6,7 @@ function importModels(db) {
   const User = db.import('../models/User');
   const Organization = db.import('../models/Organization');
   const EmailAuthorization = db.import('../models/EmailAuthorization');
+  const OAuthToken = db.import('../models/OAuthToken');
   const OAuthAuthorization = db.import('../models/OAuthAuthorization');
   const OAuthClient = db.import('../models/OAuthClient');
   const Resource = db.import('../models/Resource');
@@ -19,6 +20,7 @@ function importModels(db) {
     User,
     Organization,
     EmailAuthorization,
+    OAuthToken,
     OAuthAuthorization,
     OAuthClient,
     Resource,
@@ -35,6 +37,7 @@ function associateModels(models) {
     User,
     Organization,
     EmailAuthorization,
+    OAuthToken,
     OAuthAuthorization,
     Resource,
     Block,
@@ -43,6 +46,7 @@ function associateModels(models) {
 
   // Model relationships
   User.belongsToMany(Organization, { through: 'UserOrganization' });
+  User.hasMany(OAuthToken);
   User.hasMany(OAuthAuthorization);
   User.hasOne(EmailAuthorization);
 
