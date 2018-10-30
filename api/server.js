@@ -7,6 +7,8 @@ import Koa from 'koa';
 import bodyParser from 'koa-bodyparser';
 import compress from 'koa-compress';
 import logger from 'koa-logger';
+import Grant from 'grant-koa';
+import mount from 'koa-mount';
 import OAIRouter from 'koa-oai-router';
 import OAIRouterMiddleware from 'koa-oai-router-middleware';
 import OAIRouterParameters from 'koa-oai-router-parameters';
@@ -17,6 +19,7 @@ import yargs from 'yargs';
 
 import boomMiddleware from './middleware/boom';
 import sequelizeMiddleware from './middleware/sequelize';
+import oauth2Handlers from './middleware/oauth2Handlers';
 import oauth2Model from './middleware/oauth2Model';
 import OAuth2Server from './middleware/oauth2Server';
 import OAuth2Plugin from './middleware/OAuth2Plugin';
@@ -158,7 +161,60 @@ export default async function server({ app = new Koa(), db, smtp }) {
   oauthRouter.post('/api/oauth/authorize', oauth.authorize());
   oauthRouter.post('/api/oauth/token', oauth.token());
 
+  const grant = new Grant({
+    server: {
+      protocol: 'http',
+      host: 'localhost:9999',
+      path: '/api/oauth',
+      callback: '/api/oauth/callback',
+    },
+    google: {
+      key: '328658672097-0dojgerr78nlo7uah4jbh7lvb66oiln0.apps.googleusercontent.com',
+      secret: 'YzQSWf0K_IFDOeZNQ4BOSZZS',
+      scope: ['email', 'profile', 'openid'],
+      callback: '/api/oauth/callback/google',
+      custom_params: { access_type: 'offline' },
+    },
+    gitlab: {
+      key: 'cc855744ffde5b2cb22b500285eac75d8be5e0d0d7f55739854e697463120c79',
+      secret: '188768ccaaf0049919096916fc962773d3f7289b1d443f3a7cfb33c7c5e1849c',
+      scope: ['read_user'],
+      callback: '/api/oauth/callback/gitlab',
+    },
+  });
+
+  oauthRouter.get('/api/oauth/callback/:provider', async ctx => {
+    const code = ctx.query;
+    const { provider } = ctx.params;
+    const { OAuthAuthorization } = ctx.state.db;
+    const config = grant.config[provider];
+
+    const handler = oauth2Handlers[provider];
+    if (!handler) {
+      // unsupported provider
+      ctx.body = 500;
+      return;
+    }
+
+    const data = await handler(code, config);
+
+    if (!data) {
+      ctx.status = 500;
+    } else {
+      await OAuthAuthorization.create({
+        id: data.id,
+        provider,
+        token: code.access_token,
+        expiresAt: code.raw.expires,
+        refreshToken: code.refresh_token,
+      });
+
+      ctx.redirect('/editor/1'); // XXX: Figure out a good way to handle redirecting back to the original page
+    }
+  });
+
   app.use(bodyParser());
+  app.use(mount('/api/oauth', grant));
   app.use((ctx, next) => {
     ctx.state.smtp = smtp;
     return next();

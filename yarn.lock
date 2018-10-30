@@ -3153,6 +3153,11 @@ decompress-response@^3.3.0:
   dependencies:
     mimic-response "^1.0.0"
 
+deep-copy@^1.4.2:
+  version "1.4.2"
+  resolved "https://registry.yarnpkg.com/deep-copy/-/deep-copy-1.4.2.tgz#0622719257e4bd60240e401ea96718211c5c4697"
+  integrity sha512-VxZwQ/1+WGQPl5nE67uLhh7OqdrmqI1OazrraO9Bbw/M8Bt6Mol/RxzDA6N6ZgRXpsG/W9PgUj8E1LHHBEq2GQ==
+
 deep-equal@~1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/deep-equal/-/deep-equal-1.0.1.tgz#f5d260292b660e084eff4cdbc9f08ad3247448b5"
@@ -4538,6 +4543,23 @@ graceful-fs@^4.1.11, graceful-fs@^4.1.2, graceful-fs@^4.1.6:
   version "4.1.11"
   resolved "https://registry.yarnpkg.com/graceful-fs/-/graceful-fs-4.1.11.tgz#0e8bdfe4d1ddb8854d64e04ea7c00e2a026e5658"
   integrity sha1-Dovf5NHduIVNZOBOp8AOKgJuVlg=
+
+grant-koa@^4.1.2:
+  version "4.1.2"
+  resolved "https://registry.yarnpkg.com/grant-koa/-/grant-koa-4.1.2.tgz#8f287e4a4435176c5446eafad80a22a001717fdb"
+  integrity sha512-2OhilTq2q/HTPEl0wvQsY8rlbQ4QVHQBWLYQKb6ZSTm6ATTcovLR7ZrFKLfY0zal+2Mu3dObi02CQC+wrVVN9A==
+  dependencies:
+    grant "4.1.2"
+
+grant@4.1.2:
+  version "4.1.2"
+  resolved "https://registry.yarnpkg.com/grant/-/grant-4.1.2.tgz#31b357ef9bc155594e460df3944e07ee3766e783"
+  integrity sha512-J+Cb0m8vDYU3tvcA47AbcD4KMioWeN6RDPxnPbcqpqAuHrn/J61YZZO4nx2B1qDQEhSahW3NwQCM1PZov4uMyw==
+  dependencies:
+    deep-copy "^1.4.2"
+    qs "^6.5.1"
+    request-compose "0.0.19"
+    request-oauth "0.0.3"
 
 growly@^1.3.0:
   version "1.3.0"
@@ -7504,6 +7526,11 @@ nwsapi@^2.0.7:
   resolved "https://registry.yarnpkg.com/nwsapi/-/nwsapi-2.0.9.tgz#77ac0cdfdcad52b6a1151a84e73254edc33ed016"
   integrity sha512-nlWFSCTYQcHk/6A9FFnfhKc14c3aFhfdNBXgo8Qgi9QTBu/qg3Ww+Uiz9wMzXd1T8GFxPc2QIHB6Qtf2XFryFQ==
 
+oauth-sign@^0.8.2:
+  version "0.8.2"
+  resolved "https://registry.yarnpkg.com/oauth-sign/-/oauth-sign-0.8.2.tgz#46a6ab7f0aead8deae9ec0565780b7d4efeb9d43"
+  integrity sha1-Rqarfwrq2N6unsBWV4C31O/rnUM=
+
 oauth-sign@~0.9.0:
   version "0.9.0"
   resolved "https://registry.yarnpkg.com/oauth-sign/-/oauth-sign-0.9.0.tgz#47a7b016baa68b5fa0ecf3dee08a85c679ac6455"
@@ -9677,6 +9704,20 @@ replace-ext@1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/replace-ext/-/replace-ext-1.0.0.tgz#de63128373fcbf7c3ccfa4de5a480c45a67958eb"
   integrity sha1-3mMSg3P8v3w8z6TeWkgMRaZ5WOs=
+
+request-compose@0.0.19:
+  version "0.0.19"
+  resolved "https://registry.yarnpkg.com/request-compose/-/request-compose-0.0.19.tgz#b33bbf484a6518e9d162cc20cedf5db598cb9e8e"
+  integrity sha512-BBMilZ4uReMzOCXvysw6l8nT5WwQDo/H8vaYNQ4BXPa7/0OJIaJskk4Ozzfpd2bmLb5ZQLpxJf/FMCeTX5QrkQ==
+
+request-oauth@0.0.3:
+  version "0.0.3"
+  resolved "https://registry.yarnpkg.com/request-oauth/-/request-oauth-0.0.3.tgz#b3ea1ff857b9add3b0d49e42993a88e256d791ab"
+  integrity sha512-q7WdJlpIcPaIDac0FZSy/yH37FO3UkUuPDIsiLALiLjuC6vzvuKIU14YIC3Lm0wtQRXS9GqvSo/fCYj8n75xSw==
+  dependencies:
+    oauth-sign "^0.8.2"
+    qs "^6.5.1"
+    uuid "^3.2.1"
 
 request-promise-core@1.1.1:
   version "1.1.1"
