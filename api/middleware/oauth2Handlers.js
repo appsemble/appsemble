@@ -1,7 +1,8 @@
 import axios from 'axios';
 
+/* eslint no-unused-vars: 0 */
 const oauth2Handlers = {
-  async gitlab(token, config) {
+  async gitlab(token) {
     const { data } = await axios.get('https://gitlab.com/api/v4/user', {
       headers: { Authorization: `Bearer ${token.access_token}` },
     });
@@ -13,7 +14,7 @@ const oauth2Handlers = {
     return null;
   },
 
-  async google(token, config) {
+  async google(token) {
     const { data } = await axios.get('https://www.googleapis.com/userinfo/v2/me', {
       headers: { Authorization: `Bearer ${token.access_token}` },
     });
