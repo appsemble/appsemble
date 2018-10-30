@@ -27,6 +27,7 @@ export default class Block extends React.Component {
     block: PropTypes.shape().isRequired,
     blockDef: PropTypes.shape(),
     history: PropTypes.shape().isRequired,
+    location: PropTypes.shape().isRequired,
     match: PropTypes.shape().isRequired,
     showDialog: PropTypes.func,
   };
@@ -38,7 +39,17 @@ export default class Block extends React.Component {
   };
 
   ref = async div => {
-    const { actionCreators, app, block, blockDef, data, history, match, showDialog } = this.props;
+    const {
+      actionCreators,
+      app,
+      block,
+      blockDef,
+      history,
+      location,
+      data = location.state,
+      match,
+      showDialog,
+    } = this.props;
 
     if (div == null) {
       return;

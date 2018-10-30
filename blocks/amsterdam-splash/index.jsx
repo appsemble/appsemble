@@ -25,7 +25,7 @@ attach(({ actions, data }) => {
   }, ANIMATION_LENGTH);
   const root = <div className={styles.root}>{loading}</div>;
   actions.load.dispatch(data).then(
-    () => {
+    response => {
       setTimeout(() => {
         root.replaceChild(
           <header className={styles.content}>
@@ -38,7 +38,7 @@ attach(({ actions, data }) => {
           loading,
         );
         setTimeout(() => {
-          actions.success.dispatch(data);
+          actions.success.dispatch(response);
         }, 2e3);
       }, 4e3);
     },
