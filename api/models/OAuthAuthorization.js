@@ -7,6 +7,7 @@ export default (sequelize, DataTypes) =>
       token: { type: DataTypes.TEXT, allowNull: false },
       expiresAt: { type: DataTypes.DATE, allowNull: true },
       refreshToken: { type: DataTypes.TEXT, allowNull: true },
+      verified: { type: DataTypes.BOOLEAN, default: false },
     },
     {
       freezeTableName: true,
