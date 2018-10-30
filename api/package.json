@@ -23,6 +23,7 @@
     "koa-oai-router": "^2.0.3",
     "koa-oai-router-middleware": "^1.1.2",
     "koa-oai-router-parameters": "^1.1.2",
+    "koa-qs": "^2.0.0",
     "koa-router": "^7.4.0",
     "koa-session": "^5.9.0",
     "koa-static": "^5.0.0",

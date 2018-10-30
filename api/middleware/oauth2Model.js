@@ -18,13 +18,17 @@ function generateToken(client, user, scope, expiresIn) {
   );
 }
 
-export default function oauth2Model(db) {
+export default function oauth2Model(db, grant) {
   return {
     async generateAccessToken(client, user, scope) {
       return generateToken(client, user, scope, 10800); // expires in 3 hours
     },
 
     async generateRefreshToken(client, user, scope) {
+      generateToken(client, user, scope);
+    },
+
+    async generateAuthorizationCode(client, user, scope) {
       generateToken(client, user, scope);
     },
 
@@ -71,22 +75,50 @@ export default function oauth2Model(db) {
       }
     },
 
+    async getAuthorizationCode(authorizationCode) {
+      const { OAuthAuthorization } = await db;
+      const token = await OAuthAuthorization.find({ where: { token: authorizationCode } });
+
+      if (!token) {
+        return null;
+      }
+
+      const config = grant.config[token.provider];
+
+      return {
+        code: authorizationCode,
+        expiresAt: new Date(token.expiresAt * 1000),
+        user: { id: token.UserId },
+        client: { id: config.key, secret: config.secret },
+        scope: 'apps:read apps:write',
+      };
+    },
+
     async getClient(clientId, clientSecret) {
       const { OAuthClient } = await db;
 
       const clause = clientSecret ? { clientId, clientSecret } : { clientId };
       const client = await OAuthClient.find({ where: clause });
+      const config = Object.values(grant.config).find(
+        entry => entry.key === clientId && entry.secret === clientSecret,
+      );
 
-      if (!client) {
+      if (!client && !config) {
         return false;
       }
 
-      return {
-        id: client.clientId,
-        secret: client.clientSecret,
-        redirect_uris: [client.redirectUri],
-        grants: ['password', 'refresh_token'],
-      };
+      return config
+        ? {
+            id: config.key,
+            secret: config.secret,
+            grants: ['authorization_code', 'refresh_token'],
+          }
+        : {
+            id: client.clientId,
+            secret: client.clientSecret,
+            redirect_uris: [client.redirectUri],
+            grants: ['password', 'refresh_token'],
+          };
     },
 
     async getUser(username, password) {
@@ -116,6 +148,10 @@ export default function oauth2Model(db) {
       };
     },
 
+    async saveAuthorizationCode(code, client, user) {
+      return this.saveToken(code, client, user);
+    },
+
     async revokeToken(token) {
       const { OAuthToken } = await db;
 
@@ -125,6 +161,11 @@ export default function oauth2Model(db) {
       } catch (e) {
         return false;
       }
+    },
+
+    async revokeAuthorizationCode() {
+      // we want to manage these manually.
+      return true;
     },
 
     // XXX: Implement when implementing scopes

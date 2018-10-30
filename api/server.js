@@ -9,6 +9,7 @@ import compress from 'koa-compress';
 import logger from 'koa-logger';
 import Grant from 'grant-koa';
 import mount from 'koa-mount';
+import querystring from 'koa-qs';
 import OAIRouter from 'koa-oai-router';
 import OAIRouterMiddleware from 'koa-oai-router-middleware';
 import OAIRouterParameters from 'koa-oai-router-parameters';
@@ -148,20 +149,7 @@ export default async function server({ app = new Koa(), db, smtp }) {
   app.use(boomMiddleware);
   app.use(sequelizeMiddleware(db));
 
-  const model = oauth2Model(db);
-  const oauth = new OAuth2Server({
-    model,
-    requireClientAuthentication: { password: false },
-    grants: ['password', 'refresh_token'],
-    useErrorHandler: true,
-    debug: true,
-  });
-
-  const oauthRouter = new Router();
-  oauthRouter.post('/api/oauth/authorize', oauth.authorize());
-  oauthRouter.post('/api/oauth/token', oauth.token());
-
-  const grant = new Grant({
+  const grantConfig = {
     server: {
       protocol: 'http',
       host: 'localhost:9999',
@@ -181,7 +169,22 @@ export default async function server({ app = new Koa(), db, smtp }) {
       scope: ['read_user'],
       callback: '/api/oauth/callback/gitlab',
     },
+  };
+
+  const grant = new Grant(grantConfig);
+
+  const model = oauth2Model(db, grant);
+  const oauth = new OAuth2Server({
+    model,
+    requireClientAuthentication: { password: false },
+    grants: ['password', 'refresh_token', 'authorization_code'],
+    useErrorHandler: true,
+    debug: true,
   });
+
+  const oauthRouter = new Router();
+  oauthRouter.post('/api/oauth/authorize', oauth.authorize());
+  oauthRouter.post('/api/oauth/token', oauth.token());
 
   oauthRouter.get('/api/oauth/callback/:provider', async ctx => {
     const code = ctx.query;
@@ -201,19 +204,24 @@ export default async function server({ app = new Koa(), db, smtp }) {
     if (!data) {
       ctx.status = 500;
     } else {
-      await OAuthAuthorization.create({
-        id: data.id,
-        provider,
-        token: code.access_token,
-        expiresAt: code.raw.expires,
-        refreshToken: code.refresh_token,
-      });
+      const auth = await OAuthAuthorization.find({ where: { provider, id: data.id } });
+      if (!auth) {
+        await OAuthAuthorization.create({
+          id: data.id,
+          provider,
+          token: code.access_token,
+          expiresAt: code.raw.expires_in ? code.raw.expires_in : null,
+          refreshToken: code.refresh_token,
+          verified: data.verified,
+        });
+      }
 
       ctx.redirect('/editor/1'); // XXX: Figure out a good way to handle redirecting back to the original page
     }
   });
 
   app.use(bodyParser());
+  querystring(app);
   app.use(mount('/api/oauth', grant));
   app.use((ctx, next) => {
     ctx.state.smtp = smtp;
