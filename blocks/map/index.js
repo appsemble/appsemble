@@ -24,12 +24,12 @@ attach(function* init({ actions, block, data, resources }) {
     .on('locationfound', ({ latlng }) => {
       locationMarker.setLatLng(latlng).addTo(map);
     });
-  const lat = get.lat(data);
-  const lng = get.lng(data);
-  if (Number.isNaN(Number(lat)) && Number.isNaN(Number(lng))) {
-    map.locate().setView([lat, lng]);
-  } else {
+  const lat = Number(get.lat(data));
+  const lng = Number(get.lng(data));
+  if (Number.isNaN(lat) || Number.isNaN(lng)) {
     map.locate({ setView: true });
+  } else {
+    map.locate().setView([lat, lng], 18);
   }
   const layer = new TileLayer(
     'https://cartodb-basemaps-c.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png',
