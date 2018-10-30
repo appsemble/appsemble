@@ -1,5 +1,7 @@
 import { connect } from 'react-redux';
 
+import { closeMenu } from '../../actions/menu';
+import { logout } from '../../actions/user';
 import SideNavigation from './SideNavigation';
 
 function mapStateToProps(state) {
@@ -8,4 +10,10 @@ function mapStateToProps(state) {
   };
 }
 
-export default connect(mapStateToProps)(SideNavigation);
+export default connect(
+  mapStateToProps,
+  {
+    closeMenu,
+    logout,
+  },
+)(SideNavigation);
