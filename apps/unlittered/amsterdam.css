@@ -28,6 +28,10 @@
     url('./font/avenirnext/avenirnextltpro-bold.woff2');
 }
 
+body: {
+  background-color: rgba(232, 232, 232, 0.6);
+}
+
 :not(.fas) {
   font-family: var(--font-family) !important;
 }
