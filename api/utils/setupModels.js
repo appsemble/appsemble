@@ -51,6 +51,7 @@ function associateModels(models) {
   User.hasOne(EmailAuthorization);
 
   EmailAuthorization.belongsTo(User);
+  OAuthAuthorization.belongsTo(User);
 
   Organization.hasOne(Organization);
 

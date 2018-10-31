@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import fs from 'fs';
 import path from 'path';
+import querystring from 'querystring';
 
 import * as Sentry from '@sentry/node';
 import Koa from 'koa';
@@ -9,7 +10,7 @@ import compress from 'koa-compress';
 import logger from 'koa-logger';
 import Grant from 'grant-koa';
 import mount from 'koa-mount';
-import querystring from 'koa-qs';
+import koaQuerystring from 'koa-qs';
 import OAIRouter from 'koa-oai-router';
 import OAIRouterMiddleware from 'koa-oai-router-middleware';
 import OAIRouterParameters from 'koa-oai-router-parameters';
@@ -216,12 +217,19 @@ export default async function server({ app = new Koa(), db, smtp }) {
         });
       }
 
-      ctx.redirect('/editor/1'); // XXX: Figure out a good way to handle redirecting back to the original page
+      const qs = querystring.stringify({
+        access_token: code.access_token,
+        refresh_token: code.refresh_token,
+        provider,
+        ...data,
+      });
+
+      ctx.redirect(`/editor/1?${qs}`); // XXX: Figure out a good way to handle redirecting back to the original page
     }
   });
 
   app.use(bodyParser());
-  querystring(app);
+  koaQuerystring(app);
   app.use(mount('/api/oauth', grant));
   app.use((ctx, next) => {
     ctx.state.smtp = smtp;

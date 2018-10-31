@@ -185,3 +185,19 @@ export function passwordLogin(url, { username, password }, refreshURL, clientId,
     });
   };
 }
+
+export function oauthLogin(url, token, refreshToken, refreshURL, clientId, scope) {
+  return async (dispatch, getState) => {
+    const { db } = getState();
+    const user = await requestToken(
+      url,
+      { grant_type: 'authorization_code', access_token: token },
+      db,
+      dispatch,
+      refreshURL,
+      dispatch,
+    );
+
+    dispatch({ type: LOGIN_SUCCESS, user });
+  };
+}

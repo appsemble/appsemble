@@ -77,17 +77,22 @@ export default function oauth2Model(db, grant) {
 
     async getAuthorizationCode(authorizationCode) {
       const { OAuthAuthorization } = await db;
-      const token = await OAuthAuthorization.find({ where: { token: authorizationCode } });
+      const token = await OAuthAuthorization.find(
+        { where: { token: authorizationCode } },
+        { raw: true },
+      );
 
       if (!token) {
         return null;
       }
 
       const config = grant.config[token.provider];
+      const expiresAt = new Date();
+      expiresAt.setTime(expiresAt.getTime() + 60 * 60 * 1000); // XXX: Find a good way to properly store expiresAt.
 
       return {
         code: authorizationCode,
-        expiresAt: new Date(token.expiresAt * 1000),
+        expiresAt,
         user: { id: token.UserId },
         client: { id: config.key, secret: config.secret },
         scope: 'apps:read apps:write',
@@ -117,7 +122,7 @@ export default function oauth2Model(db, grant) {
             id: client.clientId,
             secret: client.clientSecret,
             redirect_uris: [client.redirectUri],
-            grants: ['password', 'refresh_token'],
+            grants: ['password', 'refresh_token', 'authorization_code'],
           };
     },
 
