@@ -1,13 +1,11 @@
 .root {
-  background-color: #ffffff;
   box-shadow: 0 5px 11px 0 rgba(10, 10, 10, 0.07);
-  margin-bottom: 0.5em;
-  padding: 6px 0;
+  margin-bottom: 2em;
   position: relative;
 }
 
 .map {
-  height: 188px;
+  height: 240px;
   left: 0;
   position: relative;
   right: 0;

@@ -2,6 +2,7 @@ import { compileFilters } from '@appsemble/utils/remap';
 import { Point } from 'leaflet/src/geometry';
 import { Icon, Marker } from 'leaflet/src/layer';
 import iconUrl from '../../apps/unlittered/marker.svg';
+import './index.css';
 
 const fetched = new Set();
 const MARKER_ICON_WIDTH = 39;

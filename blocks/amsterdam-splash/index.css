@@ -3,19 +3,21 @@
 }
 
 .root {
-  align-items: center;
-  background-image: url('./background.svg');
-  background-position: bottom;
-  background-repeat: no-repeat;
-  display: flex;
-  height: 100vh;
-  justify-content: center;
-  text-align: center;
-  width: 100vw;
+  align-items: center !important;
+  background-image: url('./background.svg') !important;
+  background-position: bottom !important;
+  background-repeat: no-repeat !important;
+  display: flex !important;
+  height: 100vh !important;
+  justify-content: center !important;
+  text-align: center !important;
+  width: 100vw !important;
 }
 
 .loading {
-  max-width: 60vw;
+  max-width: 80vw;
+  position: absolute;
+  top: 13%;
 }
 
 .circle {
@@ -23,10 +25,16 @@
   border: none;
   cursor: pointer;
   display: flex;
-  height: 30vw;
+  height: 4em;
   justify-content: center;
+  margin: auto auto 2em auto;
   outline: none;
-  width: 30vw;
+  width: 4em;
+}
+
+.content {
+  position: absolute;
+  top: 22%;
 }
 
 .icon {
@@ -37,9 +45,11 @@
   color: var(--primary-color);
   font-size: 1.5rem;
   font-weight: 400;
+  margin-bottom: 0.2em;
   text-transform: uppercase;
 }
 
 .subheader {
   color: #000000;
+  font-size: 0.875rem;
 }

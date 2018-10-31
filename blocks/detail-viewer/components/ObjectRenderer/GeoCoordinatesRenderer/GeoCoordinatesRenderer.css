@@ -1,6 +1,16 @@
 .root {
-  height: 160px;
+  box-shadow: 0 5px 11px 0 rgba(10, 10, 10, 0.07);
+  margin-bottom: 2em;
+}
+
+.map {
+  height: 240px;
   left: 0;
   position: relative;
   right: 0;
+}
+
+:global(.leaflet-interactive) {
+  cursor: pointer;
+  height: 50px;
 }

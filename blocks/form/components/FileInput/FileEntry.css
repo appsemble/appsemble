@@ -1,25 +1,51 @@
 .root {
-  border-radius: var(--border-radius) !important;
-  margin: 4px 4px 4px 0;
+  height: 6.75em !important;
+  margin-right: 12px;
+  overflow: hidden;
+  position: relative;
+  width: 6.75em !important;
 }
 
 .input {
   opacity: 0;
 }
 
+.image.is-128x128 {
+  height: auto;
+  left: 50%;
+  margin: auto;
+  position: absolute;
+  top: 50%;
+  -webkit-transform: translate(-50%, -50%);
+  -ms-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+  width: 100%;
+}
+
 .empty {
-  align-items: center;
-  background-color: #e8e8e8;
+  align-items: flex-end !important;
+  background-color: var(--primary-color) !important;
+  background-image: url('./addpicture.svg') !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+  background-size: 60px !important;
   border-radius: 11px !important;
-  display: flex;
+  color: white !important;
+  display: flex !important;
   height: 6.75em !important;
-  padding: 10px;
-  text-align: center;
+  padding: 6px !important;
+  text-align: center !important;
   width: 6.75em !important;
 }
 
 .removeButton {
+  background-color: transparent;
+  background-image: url('./cross.svg') !important;
+  background-repeat: no-repeat !important;
+  background-size: contain;
+  border-color: transparent;
+  border-radius: 0;
   position: absolute;
-  right: 8px;
-  top: 8px;
+  right: 5px;
+  top: 5px;
 }
