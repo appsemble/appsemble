@@ -1,8 +1,6 @@
 .root {
-  background-color: rgba(232, 232, 232, 0.6);
   display: flex;
   flex-flow: column;
-  height: 100vh;
   margin: 0 auto;
   max-width: 480px;
   padding: 8px;
