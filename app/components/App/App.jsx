@@ -6,6 +6,7 @@ import { BrowserRouter } from 'react-router-dom';
 import AppContext from '../AppContext';
 import ErrorHandler from '../ErrorHandler';
 import Main from '../Main';
+import Message from '../Message';
 import SideNavigation from '../SideNavigation';
 
 /**
@@ -23,6 +24,7 @@ export default class App extends React.Component {
               <AppContext>
                 <SideNavigation />
                 <Main />
+                <Message />
               </AppContext>
             </BrowserRouter>
           </MuiThemeProvider>
