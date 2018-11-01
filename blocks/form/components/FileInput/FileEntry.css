@@ -1,6 +1,7 @@
 .root {
-  border-radius: var(--border-radius) !important;
-  margin: 4px 4px 4px 0;
+  height: 108px;
+  margin: 4px 8px 4px 0;
+  width: 108px;
 }
 
 .input {
