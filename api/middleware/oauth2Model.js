@@ -86,15 +86,14 @@ export default function oauth2Model(db, grant) {
         return null;
       }
 
-      const config = grant.config[token.provider];
       const expiresAt = new Date();
-      expiresAt.setTime(expiresAt.getTime() + 60 * 60 * 1000); // XXX: Find a good way to properly store expiresAt.
+      expiresAt.setTime(expiresAt.getTime() + 3 * 60 * 60 * 1000); // The duration of the generated JWT.
 
       return {
         code: authorizationCode,
         expiresAt,
         user: { id: token.UserId },
-        client: { id: config.key, secret: config.secret },
+        client: { id: 'appsemble-editor' }, // XXX: Figure out how to determine the client ID properly.
         scope: 'apps:read apps:write',
       };
     },

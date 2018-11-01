@@ -1,6 +1,7 @@
 import querystring from 'querystring';
 
 import axios from 'axios';
+import PropTypes from 'prop-types';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 
@@ -10,8 +11,15 @@ import EmailLogin from '../../../app/components/EmailLogin';
 export default class Login extends React.Component {
   state = {};
 
-  async handleOAuthRegister(accessToken, provider, refreshToken, id) {
-    const { authentication, oauthLogin } = this.props;
+  static propTypes = {
+    oauthLogin: PropTypes.func.isRequired,
+  };
+
+  async handleOAuthRegister() {
+    const { authentication, oauthLogin, location, history } = this.props;
+    const qs = querystring.parse(location.search.substr(1));
+    const { provider, access_token: accessToken, refresh_token: refreshToken, id } = qs;
+
     const result = await axios.post('/api/oauth/register', {
       accessToken,
       provider,
@@ -20,15 +28,25 @@ export default class Login extends React.Component {
     });
 
     if (result.status === 201) {
-      // XXX: Implement dispatch logic
       oauthLogin(
         authentication.url,
         accessToken,
         refreshToken,
         authentication.refreshURL,
         authentication.clientId,
+        authentication.clientSecret,
         authentication.scope,
       );
+
+      // Remove all login-related parameters in the query string but keep all the other values it might have.
+      delete qs.name;
+      delete qs.id;
+      delete qs.email;
+      delete qs.access_token;
+      delete qs.refresh_token;
+      delete qs.provider;
+      delete qs.verified;
+      history.replace({ ...location, search: querystring.stringify(qs) });
     }
 
     return result;
@@ -41,24 +59,16 @@ export default class Login extends React.Component {
       user: { initialized },
     } = this.props;
 
-    const {
-      provider,
-      access_token: accessToken,
-      refresh_token: refreshToken,
-      id,
-      name,
-      email,
-    } = querystring.parse(location.search.substr(1));
+    const { provider, access_token: accessToken, id, name, email } = querystring.parse(
+      location.search.substr(1),
+    );
 
     return accessToken && provider && initialized ? (
       <div>
         <FormattedMessage {...messages.greeting} values={{ id, name, email }} />
         <br />
         <FormattedMessage {...messages.registerPrompt} values={{ provider }} />
-        <button
-          onClick={() => this.handleOAuthRegister(accessToken, provider, refreshToken, id)}
-          type="button"
-        >
+        <button onClick={() => this.handleOAuthRegister()} type="button">
           <FormattedMessage {...messages.register} />
         </button>
       </div>

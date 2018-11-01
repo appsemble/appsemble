@@ -186,12 +186,18 @@ export function passwordLogin(url, { username, password }, refreshURL, clientId,
   };
 }
 
-export function oauthLogin(url, token, refreshToken, refreshURL, clientId, scope) {
+export function oauthLogin(url, token, refreshToken, refreshURL, clientId, clientSecret, scope) {
   return async (dispatch, getState) => {
     const { db } = getState();
     const user = await requestToken(
       url,
-      { grant_type: 'authorization_code', access_token: token },
+      {
+        grant_type: 'authorization_code',
+        code: token,
+        client_id: clientId,
+        client_secret: clientSecret,
+        scope,
+      },
       db,
       dispatch,
       refreshURL,

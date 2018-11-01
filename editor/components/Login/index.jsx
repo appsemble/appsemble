@@ -1,3 +1,12 @@
+import { connect } from 'react-redux';
 import '../../index.css';
 
-export { default } from './Login';
+import { oauthLogin } from '../../../app/actions/user';
+import Login from './Login';
+
+export default connect(
+  null,
+  {
+    oauthLogin,
+  },
+)(Login);
