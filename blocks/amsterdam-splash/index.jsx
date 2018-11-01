@@ -37,6 +37,8 @@ attach(({ actions, data }) => {
           </header>,
           loading,
         );
+        root.classList.add(styles.done);
+
         setTimeout(() => {
           actions.success.dispatch(response);
         }, 2e3);
