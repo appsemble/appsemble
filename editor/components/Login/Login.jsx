@@ -1,3 +1,4 @@
+import '@fortawesome/fontawesome-free/css/all.css';
 import querystring from 'querystring';
 
 import axios from 'axios';
@@ -5,6 +6,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 
+import styles from './login.css';
 import messages from './messages';
 import EmailLogin from '../../../app/components/EmailLogin';
 
@@ -105,12 +107,22 @@ export default class Login extends React.Component {
             ...authentication,
           }}
         />
-        <div>
-          <a href="/api/oauth/connect/google">
-            <FormattedMessage {...messages.login} values={{ provider: <span>Google</span> }} />
+        <div className={styles.socialLogins}>
+          <a className={`button ${styles.socialButton}`} href="/api/oauth/connect/google">
+            <span className="icon">
+              <i className="fab fa-google" />
+            </span>
+            <span>
+              <FormattedMessage {...messages.login} values={{ provider: <span>Google</span> }} />
+            </span>
           </a>
-          <a href="/api/oauth/connect/gitlab">
-            <FormattedMessage {...messages.login} values={{ provider: <span>GitLab</span> }} />
+          <a className={`button ${styles.socialButton}`} href="/api/oauth/connect/gitlab">
+            <span className="icon">
+              <i className="fab fa-gitlab" />
+            </span>
+            <span>
+              <FormattedMessage {...messages.login} values={{ provider: <span>GitLab</span> }} />
+            </span>
           </a>
         </div>
       </div>
