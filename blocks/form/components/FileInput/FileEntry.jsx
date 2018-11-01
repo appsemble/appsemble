@@ -61,8 +61,11 @@ export default class FileEntry extends React.Component {
     // the shadow DOM hackery.
     node.addEventListener('change', ({ target }) => {
       const { onChange } = this.props;
+      const [value] = target.files;
+      // eslint-disable-next-line no-param-reassign
+      node.value = null;
 
-      onChange({ target }, target.files[0]);
+      onChange({ target }, value);
     });
   };
 
