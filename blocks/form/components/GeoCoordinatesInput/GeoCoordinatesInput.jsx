@@ -1,5 +1,5 @@
 import 'leaflet/dist/leaflet.css';
-import { Fas } from '@appsemble/react-bulma';
+import { Button, Icon, Fas } from '@appsemble/react-bulma';
 import PropTypes from 'prop-types';
 import { TileLayer } from 'leaflet/src/layer';
 import { Map } from 'leaflet/src/map';
@@ -62,6 +62,10 @@ export default class GeoCoordinatesInput extends React.Component {
     this.map = map;
   }
 
+  onReset = () => {
+    this.map.setView(this.locationMarker.getLatLng());
+  };
+
   render() {
     return (
       <div className={styles.root}>
@@ -69,6 +73,9 @@ export default class GeoCoordinatesInput extends React.Component {
         <div className={styles.crossHairsOverlay}>
           <Fas className={styles.crossHairs} fa="crosshairs" />
         </div>
+        <Button className={styles.resetButton} onClick={this.onReset}>
+          <Icon className={styles.crossHairs} fa="crosshairs" />
+        </Button>
       </div>
     );
   }

@@ -38,3 +38,10 @@
   height: 2.5em;
   width: 2.5em;
 }
+
+.resetButton {
+  bottom: 10px;
+  position: absolute;
+  right: 10px;
+  z-index: 1;
+}
