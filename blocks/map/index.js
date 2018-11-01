@@ -8,7 +8,7 @@ import './index.css';
 import createGetters from './createGetters';
 import loadMarkers from './loadMarkers';
 
-attach(function* init({ actions, block, data, resources }) {
+attach(function* init({ actions, block, data, resources, utils }) {
   const node = document.createElement('div');
   const fetched = new Set();
   yield node;
@@ -20,6 +20,12 @@ attach(function* init({ actions, block, data, resources }) {
   const map = new Map(node, { attributionControl: false })
     .on('moveend', () => {
       loadMarkers(map, actions, resources, block.parameters, fetched, get, data);
+    })
+    .once('locationerror', () => {
+      utils.showMessage({
+        // XXX Implement i18n.
+        body: 'Locatie kon niet worden gevonden. Is de locatievoorziening ingeschakeld?',
+      });
     })
     .on('locationfound', ({ latlng }) => {
       locationMarker.setLatLng(latlng).addTo(map);

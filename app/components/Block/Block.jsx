@@ -49,6 +49,7 @@ export default class Block extends React.Component {
       data = location.state,
       match,
       showDialog,
+      showMessage,
     } = this.props;
 
     if (div == null) {
@@ -80,6 +81,9 @@ export default class Block extends React.Component {
           }),
       ),
     );
+    const utils = {
+      showMessage,
+    };
     await callBootstrap(blockDef, {
       actions,
       block,
@@ -87,6 +91,7 @@ export default class Block extends React.Component {
       pageParameters: match.params,
       resources,
       shadowRoot,
+      utils,
     });
   };
 

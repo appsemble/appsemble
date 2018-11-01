@@ -22,6 +22,7 @@ export default class GeoCoordinatesInput extends React.Component {
      */
     onChange: PropTypes.func.isRequired,
     reactRoot: PropTypes.instanceOf(HTMLElement).isRequired,
+    utils: PropTypes.shape().isRequired,
   };
 
   locationMarker = new CircleMarker(null, {
@@ -32,9 +33,15 @@ export default class GeoCoordinatesInput extends React.Component {
   ref = React.createRef();
 
   componentDidMount() {
-    const { field, onChange } = this.props;
+    const { field, onChange, utils } = this.props;
 
     const map = new Map(this.ref.current, { attributionControl: false })
+      .once('locationerror', () => {
+        utils.showMessage({
+          // XXX Implement i18n.
+          body: 'Locatie kon niet worden gevonden. Is de locatievoorziening ingeschakeld?',
+        });
+      })
       .on('locationfound', ({ latlng }) => {
         this.locationMarker.setLatLng(latlng).addTo(map);
       })
