@@ -24,7 +24,7 @@ attach(function* init({ actions, block, data, resources, utils }) {
     .once('locationerror', () => {
       utils.showMessage({
         // XXX Implement i18n.
-        body: 'Locatie kon niet worden gevonden',
+        body: 'Locatie kon niet worden gevonden. Is de locatievoorziening ingeschakeld?',
       });
     })
     .on('locationfound', ({ latlng }) => {
