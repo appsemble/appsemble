@@ -17,7 +17,6 @@ export default class Login extends React.Component {
 
   async componentDidMount() {
     const { location } = this.props;
-    console.log(this.props);
 
     if (location.search) {
       const { access_token: accessToken, verified, userId } = querystring.parse(
@@ -35,7 +34,6 @@ export default class Login extends React.Component {
   async handleOAuthLogin() {
     const { authentication, location, history, oauthLogin } = this.props;
     const qs = querystring.parse(location.search.substr(1));
-    console.log(qs);
 
     oauthLogin(
       authentication.url,
