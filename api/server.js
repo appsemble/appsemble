@@ -205,9 +205,9 @@ export default async function server({ app = new Koa(), db, smtp }) {
     if (!data) {
       ctx.status = 500;
     } else {
-      const auth = await OAuthAuthorization.find({ where: { provider, id: data.id } });
+      let auth = await OAuthAuthorization.find({ where: { provider, id: data.id } });
       if (!auth) {
-        await OAuthAuthorization.create({
+        auth = await OAuthAuthorization.create({
           id: data.id,
           provider,
           token: code.access_token,
@@ -217,12 +217,20 @@ export default async function server({ app = new Koa(), db, smtp }) {
         });
       }
 
-      const qs = querystring.stringify({
-        access_token: code.access_token,
-        refresh_token: code.refresh_token,
-        provider,
-        ...data,
-      });
+      const qs =
+        auth.verified && auth.UserId
+          ? querystring.stringify({
+              access_token: code.access_token,
+              refresh_token: code.refresh_token,
+              verified: auth.verified,
+              userId: auth.UserId,
+            })
+          : querystring.stringify({
+              access_token: code.access_token,
+              refresh_token: code.refresh_token,
+              provider,
+              ...data,
+            });
 
       ctx.redirect(`/editor/1?${qs}`); // XXX: Figure out a good way to handle redirecting back to the original page
     }

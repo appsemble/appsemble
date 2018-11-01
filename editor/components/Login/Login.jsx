@@ -15,8 +15,52 @@ export default class Login extends React.Component {
     oauthLogin: PropTypes.func.isRequired,
   };
 
+  async componentDidMount() {
+    const { location } = this.props;
+    console.log(this.props);
+
+    if (location.search) {
+      const { access_token: accessToken, verified, userId } = querystring.parse(
+        location.search.substr(1),
+      );
+
+      if (!accessToken || !verified || !userId) {
+        return;
+      }
+
+      this.handleOAuthLogin();
+    }
+  }
+
+  async handleOAuthLogin() {
+    const { authentication, location, history, oauthLogin } = this.props;
+    const qs = querystring.parse(location.search.substr(1));
+    console.log(qs);
+
+    oauthLogin(
+      authentication.url,
+      qs.access_token,
+      qs.refresh_token,
+      authentication.refreshURL,
+      authentication.clientId,
+      authentication.clientSecret,
+      authentication.scope,
+    );
+
+    // Remove all login-related parameters in the query string but keep all the other values it might have.
+    delete qs.name;
+    delete qs.id;
+    delete qs.email;
+    delete qs.access_token;
+    delete qs.refresh_token;
+    delete qs.provider;
+    delete qs.verified;
+    delete qs.userId;
+    history.replace({ ...location, search: querystring.stringify(qs) });
+  }
+
   async handleOAuthRegister() {
-    const { authentication, oauthLogin, location, history } = this.props;
+    const { location } = this.props;
     const qs = querystring.parse(location.search.substr(1));
     const { provider, access_token: accessToken, refresh_token: refreshToken, id } = qs;
 
@@ -28,25 +72,7 @@ export default class Login extends React.Component {
     });
 
     if (result.status === 201) {
-      oauthLogin(
-        authentication.url,
-        accessToken,
-        refreshToken,
-        authentication.refreshURL,
-        authentication.clientId,
-        authentication.clientSecret,
-        authentication.scope,
-      );
-
-      // Remove all login-related parameters in the query string but keep all the other values it might have.
-      delete qs.name;
-      delete qs.id;
-      delete qs.email;
-      delete qs.access_token;
-      delete qs.refresh_token;
-      delete qs.provider;
-      delete qs.verified;
-      history.replace({ ...location, search: querystring.stringify(qs) });
+      this.handleOAuthLogin();
     }
 
     return result;
