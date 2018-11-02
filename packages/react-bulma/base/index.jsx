@@ -16,6 +16,8 @@ export { default as Icon } from './Icon';
 export { default as Image } from './Image';
 export { default as Input } from './Input';
 export { default as Label } from './Label';
+export { default as Menu } from './Menu';
+export { default as MenuList } from './MenuList';
 export { default as Message } from './Message';
 export { default as MessageBody } from './MessageBody';
 export { default as Navbar } from './Navbar';

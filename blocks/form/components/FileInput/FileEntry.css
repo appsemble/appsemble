@@ -1,25 +1,11 @@
 .root {
-  height: 6.75em !important;
+  height: 108px;
   margin-right: 12px;
-  overflow: hidden;
-  position: relative;
-  width: 6.75em !important;
+  width: 108px;
 }
 
 .input {
   opacity: 0;
-}
-
-.image.is-128x128 {
-  height: auto;
-  left: 50%;
-  margin: auto;
-  position: absolute;
-  top: 50%;
-  -webkit-transform: translate(-50%, -50%);
-  -ms-transform: translate(-50%, -50%);
-  transform: translate(-50%, -50%);
-  width: 100%;
 }
 
 .empty {
@@ -30,7 +16,7 @@
   background-repeat: no-repeat !important;
   background-size: 60px !important;
   border-radius: 11px !important;
-  color: white !important;
+  color: #ffffff !important;
   display: flex !important;
   height: 6.75em !important;
   padding: 6px !important;

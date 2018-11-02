@@ -1,6 +1,7 @@
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 
+import { push } from '../../actions/message';
 import Block from './Block';
 
 function mapStateToProps(state, ownProps) {
@@ -10,4 +11,9 @@ function mapStateToProps(state, ownProps) {
   };
 }
 
-export default withRouter(connect(mapStateToProps)(Block));
+export default withRouter(
+  connect(
+    mapStateToProps,
+    { showMessage: push },
+  )(Block),
+);

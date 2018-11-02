@@ -27,7 +27,7 @@ export default async function indexHandler(ctx) {
       // This is needed for Webpack.
       process.env.NODE_ENV !== 'production' && "'unsafe-eval'",
     ],
-    'img-src': ['*', 'data:'],
+    'img-src': ['*', 'blob:', 'data:'],
     'style-src': ["'self'", "'unsafe-inline'"],
   });
   ctx.set('Content-Security-Policy', csp);

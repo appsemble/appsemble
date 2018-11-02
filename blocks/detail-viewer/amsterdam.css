@@ -1,16 +1,4 @@
 /* stylelint-disable selector-max-specificity */
-:not(.container) > .container > .container {
-  background-color: #ffffff;
-  background-position: 1em 1.3em;
-  background-repeat: no-repeat;
-  padding: 1.5em 0.75em 1.5em 4em;
-  position: initial;
-}
-
-.title:not(:last-child) {
-  margin-bottom: 0;
-}
-
 .locatie {
   padding: 0 !important;
 
@@ -37,6 +25,10 @@
   border-bottom: 1px solid #bebebe8c;
 }
 
+.title:not(:last-child) {
+  margin-bottom: 0;
+}
+
 .fotos .container {
   background-color: #ffffff;
   background-image: url('./background.svg');
@@ -50,4 +42,12 @@
   padding: 6px 0;
   position: absolute;
   width: 100%;
+}
+
+:not(.container) > .container > .container {
+  background-color: #ffffff;
+  background-position: 1em 1.3em;
+  background-repeat: no-repeat;
+  padding: 1.5em 0.75em 1.5em 4em;
+  position: initial;
 }

@@ -1,12 +1,11 @@
-import { compileFilters } from '@appsemble/utils/remap';
 import { Point } from 'leaflet/src/geometry';
 import { Icon, Marker } from 'leaflet/src/layer';
 import iconUrl from '../../apps/unlittered/marker.svg';
-import './index.css';
 
-const fetched = new Set();
 const MARKER_ICON_WIDTH = 39;
 const MARKER_ICON_HEIGHT = 39;
+const ACTIVE_MARKER_ICON_WIDTH = 64;
+const ACTIVE_MARKER_ICON_HEIGHT = 64;
 
 function makeFilter(fields, bounds) {
   const [lon, lat] = fields;
@@ -18,35 +17,39 @@ function makeFilter(fields, bounds) {
   return `${lat} gt ${west} and ${lat} lt ${east} and ${lon} gt ${south} and ${lon} lt ${north}`;
 }
 
-export default async function loadMarkers(map, actions, resources, parameters, bounds) {
-  const getLatitude =
-    parameters.latitude == null ? data => data.latitude : compileFilters(parameters.latitude);
-  const getLongitude =
-    parameters.longitude == null ? data => data.longitude : compileFilters(parameters.longitude);
+export default async function loadMarkers(map, actions, resources, parameters, fetched, get, data) {
   const response = await resources.marker.query({
     $filter: makeFilter(
       [parameters.latitude || 'latitude', parameters.longitude || 'longitude'],
-      bounds,
+      map.getBounds(),
     ),
   });
 
-  response.data.forEach(data => {
-    const lat = getLatitude(data);
-    const lng = getLongitude(data);
+  response.data.forEach(marker => {
+    if (fetched.has(marker.id)) {
+      return;
+    }
+    fetched.add(marker.id);
+    const lat = get.lat(marker);
+    const lng = get.lng(marker);
     if (Number.isNaN(Number(lat)) || Number.isNaN(Number(lng))) {
       return;
     }
-    if (fetched.has(data.id)) {
-      return;
-    }
-    fetched.add(data.id);
-    new Marker([getLatitude(data), getLongitude(data)], {
-      icon: new Icon({
-        iconUrl,
-        iconAnchor: new Point(MARKER_ICON_WIDTH / 2, MARKER_ICON_HEIGHT),
-      }),
+    new Marker([lat, lng], {
+      icon:
+        data && data.id === marker.id
+          ? new Icon({
+              iconUrl,
+              iconSize: new Point(ACTIVE_MARKER_ICON_WIDTH, ACTIVE_MARKER_ICON_HEIGHT),
+              iconAnchor: new Point(ACTIVE_MARKER_ICON_WIDTH / 2, ACTIVE_MARKER_ICON_HEIGHT),
+            })
+          : new Icon({
+              iconUrl,
+              iconSize: new Point(MARKER_ICON_WIDTH, MARKER_ICON_HEIGHT),
+              iconAnchor: new Point(MARKER_ICON_WIDTH / 2, MARKER_ICON_HEIGHT),
+            }),
     })
-      .on('click', actions.markerClick.dispatch.bind(null, data))
+      .on('click', actions.markerClick.dispatch.bind(null, marker))
       .addTo(map);
   });
 }

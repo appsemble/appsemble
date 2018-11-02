@@ -1,6 +1,6 @@
-import { Portal } from '@material-ui/core';
 import PropTypes from 'prop-types';
 import React from 'react';
+import ReactDOM from 'react-dom';
 
 import makeActions from '../../utils/makeActions';
 import makeResources from '../../utils/makeResources';
@@ -27,6 +27,7 @@ export default class Block extends React.Component {
     block: PropTypes.shape().isRequired,
     blockDef: PropTypes.shape(),
     history: PropTypes.shape().isRequired,
+    location: PropTypes.shape().isRequired,
     match: PropTypes.shape().isRequired,
     showDialog: PropTypes.func,
   };
@@ -38,7 +39,18 @@ export default class Block extends React.Component {
   };
 
   ref = async div => {
-    const { actionCreators, app, block, blockDef, data, history, match, showDialog } = this.props;
+    const {
+      actionCreators,
+      app,
+      block,
+      blockDef,
+      history,
+      location,
+      data = location.state,
+      match,
+      showDialog,
+      showMessage,
+    } = this.props;
 
     if (div == null) {
       return;
@@ -69,6 +81,9 @@ export default class Block extends React.Component {
           }),
       ),
     );
+    const utils = {
+      showMessage,
+    };
     await callBootstrap(blockDef, {
       actions,
       block,
@@ -76,6 +91,7 @@ export default class Block extends React.Component {
       pageParameters: match.params,
       resources,
       shadowRoot,
+      utils,
     });
   };
 
@@ -87,11 +103,7 @@ export default class Block extends React.Component {
     }
 
     if (blockDef.position === 'float') {
-      return (
-        <Portal>
-          <div ref={this.ref} className={styles.float} />
-        </Portal>
-      );
+      return ReactDOM.createPortal(<div ref={this.ref} className={styles.float} />, document.body);
     }
 
     return <div ref={this.ref} className={styles.main} />;

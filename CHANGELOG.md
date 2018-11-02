@@ -9,6 +9,7 @@ All notable changes to this project will be documented in this file.
 - API: Implement error reporting using Sentry.
 - Editor: Add support for uploading app icons.
 - Frontend: Implement error reporting using Sentry.
+- Frontend: Add logout button in the side menu
 
 ### Changed
 

@@ -1,4 +1,4 @@
-name: Waarnemingen App
+name: Waarnemingen
 defaultPage: Maak waarneming
 
 theme:
@@ -127,7 +127,7 @@ pages:
     blocks:
       - type: detail-viewer
         parameters:
-          fileBase: 'http://oscity.nl:9808/uploads/'
+          fileBase: 'https://api.stadswerken.amsterdam/uploads/'
           schema:
             $ref: /definitions/waarneming
           fields:

@@ -22,7 +22,7 @@ export default function link({ to, parameters = {} }, { pages }, block, history)
 
   return {
     dispatch(data) {
-      history.push(href(data));
+      history.push(href(data), data);
     },
     href,
   };

@@ -28,12 +28,12 @@
     url('./font/avenirnext/avenirnextltpro-bold.woff2');
 }
 
-:not(.fas) {
-  font-family: var(--font-family) !important;
+body {
+  background-color: #efefef;
 }
 
-body {
-  background-color: rgba(232, 232, 232, 0.6);
+:not(.fas) {
+  font-family: var(--font-family) !important;
 }
 
 form.container {
@@ -71,6 +71,11 @@ form.container {
   background-repeat: no-repeat;
 }
 
+.menu-list a.is-active {
+  background-color: inherit;
+  color: var(--primary-color);
+}
+
 .field-label {
   display: none;
 }
@@ -78,6 +83,15 @@ form.container {
 .control {
   margin: 0 auto;
   max-width: var(--form-width) !important;
+}
+
+.input {
+  border-radius: var(--border-radius) !important;
+
+  &:focus,
+  &:active {
+    border-color: #787878;
+  }
 }
 
 .control.has-icons-left .icon {
@@ -97,6 +111,10 @@ form.container {
   font-family: none;
   height: 1.5em;
   width: 5em;
+
+  &::before {
+    display: none;
+  }
 }
 
 .fas.fa-unlock {
@@ -107,21 +125,10 @@ form.container {
   font-family: none;
   height: 1.5em;
   width: 5em;
-}
 
-.input {
-  border-radius: var(--border-radius) !important;
-}
-
-.input:focus,
-.input.is-focused,
-.input:active,
-.input.is-active,
-.textarea:focus,
-.textarea.is-focused,
-.textarea:active,
-.textarea.is-active {
-  border-color: #787878;
+  &::before {
+    display: none;
+  }
 }
 
 .button {
@@ -144,8 +151,4 @@ form.container {
 .navbar-item {
   color: var(--primary-color-inverse) !important;
   padding: 0 !important;
-}
-
-.MuiIconButton-root-50 {
-  padding: 14px !important;
 }
