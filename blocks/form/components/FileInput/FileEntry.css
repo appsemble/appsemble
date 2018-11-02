@@ -1,6 +1,7 @@
 .root {
   height: 108px;
   margin-right: 12px;
+  min-width: 108px;
   width: 108px;
 }
 
@@ -34,4 +35,17 @@
   position: absolute;
   right: 5px;
   top: 5px;
+}
+
+.image {
+  position: relative;
+
+  /* stylelint-disable-next-line selector-max-specificity */
+  & .img {
+    height: 100% !important;
+
+    /* The way we use this, it is supported by all browsers. */
+    /* stylelint-disable-next-line plugin/no-unsupported-browser-features */
+    object-fit: cover;
+  }
 }
