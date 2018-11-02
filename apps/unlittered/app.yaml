@@ -32,15 +32,18 @@ definitions:
             type:
               - image/jpeg
       notities:
-        title: Notities
+        title: Bijv. Er ligt een fiets in de bosjes.
         type: string
       proces:
-        title: Proces
+        title: Afdeling
         enum:
           - Fietsknip team
           - Handhaving
           - Heel en Groen
           - Inzameling
+          - Monitoren
+          - Plusteam
+          - Veegdienst
 
 authentication:
   - method: email
