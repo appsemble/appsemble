@@ -40,7 +40,7 @@ form.container {
   background-color: var(--primary-color) !important;
   background-image: url(amsterdam-logo.svg);
   background-position-x: center;
-  background-position-y: 15vh;
+  background-position-y: calc(25vh - 76px);
   background-repeat: no-repeat;
   display: flex;
   flex-flow: column;
