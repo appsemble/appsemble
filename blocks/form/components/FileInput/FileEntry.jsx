@@ -93,7 +93,12 @@ export default class FileEntry extends React.Component {
       >
         {url ? (
           <React.Fragment>
-            <Image alt={title} size={128} src={url} />
+            <Image
+              alt={title}
+              className={styles.image}
+              imgProps={{ className: styles.img }}
+              src={url}
+            />
             <Button className={styles.removeButton} onClick={this.onRemove} size="small">
               <Icon fa="heading" />
             </Button>
