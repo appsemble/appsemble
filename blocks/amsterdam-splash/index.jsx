@@ -55,7 +55,7 @@ attach(({ actions, data }) => {
           {button}
           <h2 className={styles.header}>Fout</h2>
           <span className={styles.subheader}>
-            Click op de bovenstaande knop om het opnieuw te proberen
+            Druk op de bovenstaande knop om het opnieuw te proberen
           </span>
         </header>
       );
