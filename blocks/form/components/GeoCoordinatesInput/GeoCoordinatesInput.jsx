@@ -71,10 +71,10 @@ export default class GeoCoordinatesInput extends React.Component {
       <div className={styles.root}>
         <div ref={this.ref} className={styles.map} />
         <div className={styles.crossHairsOverlay}>
-          <Fas className={styles.currentlocation} fa="currentlocation" />
+          <Fas className={styles.crossHairs} fa="crosshairs" />
         </div>
         <Button className={styles.resetButton} onClick={this.onReset}>
-          <Icon className={styles.currentlocation} fa="currentlocation" />
+          <Icon className={styles.currentlocation} fa="crosshairs" />
         </Button>
       </div>
     );
