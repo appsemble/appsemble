@@ -7,6 +7,7 @@ All notable changes to this project will be documented in this file.
 ### Added
 
 - API: Implement error reporting using Sentry.
+- Docker: Publish the appsemble/appsemble image on the public Docker Hub.
 - Editor: Add support for uploading app icons.
 - Frontend: Implement error reporting using Sentry.
 - Frontend: Add logout button in the side menu

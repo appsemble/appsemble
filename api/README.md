@@ -2,26 +2,16 @@
 
 The Appsemble API is distributed as a Docker image.
 
-> To pull an image from our registry, a login to the GitLab registry is needed. Go to
-> https://gitlab.com/profile/personal_access_tokens. Enter a name for your token, check the
-> `read_registry` scope, and create the token. It is highly recommended to use a [credentials
-> store][docker credentials store]. Now login using docker. Your GitLab username is the username,
-> The token is the password.
->
-> ```sh
-> docker login registry.gitlab.com
-> ```
-
 To pull the latest version, run
 
 ```sh
-docker pull registry.gitlab.com/dcentralized/appsemble/appsemble
+docker pull appsemble/appsemble
 ```
 
 Also a Docker image is built for each release.
 
 ```sh
-docker pull registry.gitlab.com/dcentralized/appsemble/appsemble:$VERSION
+docker pull appsemble/appsemble:$VERSION
 ```
 
 ## Variables
@@ -44,5 +34,5 @@ passed as a command line parameter instead, if desired.
 A database can be initialized using the following command.
 
 ```sh
-docker run -ti registry.gitlab.com/dcentralized/appsemble/appsemble:$VERSION --initialize-database
+docker run -ti appsemble/appsemble --initialize-database
 ```
