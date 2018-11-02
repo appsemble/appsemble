@@ -167,10 +167,6 @@ export default async function server({ app = new Koa(), db, smtp, grantConfig })
     grant = new Grant(grantConfig);
   }
 
-  console.log(!!grantConfig);
-  console.log(grantConfig);
-  console.log(grant);
-
   const model = oauth2Model(db, grant);
   const oauth = new OAuth2Server({
     model,
