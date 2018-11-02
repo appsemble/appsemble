@@ -65,7 +65,7 @@ form.container {
 }
 
 .side-menu {
-  background-image: url(../../blocks/amsterdam-splash/background.svg);
+  background-image: url(./menu-background.svg);
   background-position-x: center;
   background-position-y: bottom;
   background-repeat: no-repeat;
