@@ -69,11 +69,18 @@ form.container {
   background-position-x: center;
   background-position-y: bottom;
   background-repeat: no-repeat;
+  padding-top: 50px;
 }
 
-.menu-list a.is-active {
-  background-color: inherit;
-  color: var(--primary-color);
+.menu-list {
+  & > li > * {
+    padding: 1em;
+
+    &.is-active {
+      background-color: inherit;
+      color: var(--primary-color);
+    }
+  }
 }
 
 .field-label {
