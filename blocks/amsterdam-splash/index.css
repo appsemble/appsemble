@@ -50,6 +50,7 @@
 .content {
   position: absolute;
   top: 22%;
+  z-index: 1;
 }
 
 .icon {
