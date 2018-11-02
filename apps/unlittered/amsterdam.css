@@ -28,8 +28,8 @@
     url('./font/avenirnext/avenirnextltpro-bold.woff2');
 }
 
-body: {
-  background-color: rgba(232, 232, 232, 0.6);
+body {
+  background-color: #efefef;
 }
 
 :not(.fas) {
@@ -47,7 +47,7 @@ form.container {
   height: 100vh !important;
   margin: 0 !important;
   max-width: 100%;
-  padding-top: 40vh;
+  padding: 50vh 2em 0 2em !important;
   position: fixed !important;
   top: 0 !important;
   width: 100% !important;
@@ -57,6 +57,11 @@ form.container {
 .navbar-item.title {
   font-size: 1rem;
   font-weight: normal;
+  margin: auto;
+}
+
+.navbar-burger {
+  position: absolute;
 }
 
 .side-menu {
@@ -82,6 +87,48 @@ form.container {
 
 .input {
   border-radius: var(--border-radius) !important;
+
+  &:focus,
+  &:active {
+    border-color: #787878;
+  }
+}
+
+.control.has-icons-left .icon {
+  color: transparent;
+}
+
+.control.has-icons-left .input,
+.control.has-icons-left .select select {
+  padding-left: 3em;
+}
+
+.fas.fa-envelope {
+  background-image: url(./email.svg);
+  background-position: 10px;
+  background-repeat: no-repeat;
+  background-size: contain;
+  font-family: none;
+  height: 1.5em;
+  width: 5em;
+
+  &::before {
+    display: none;
+  }
+}
+
+.fas.fa-unlock {
+  background-image: url(./password.svg);
+  background-position: 10px;
+  background-repeat: no-repeat;
+  background-size: contain;
+  font-family: none;
+  height: 1.5em;
+  width: 5em;
+
+  &::before {
+    display: none;
+  }
 }
 
 .button {
@@ -93,6 +140,7 @@ form.container {
   &.is-primary {
     background-color: var(--primary-color) !important;
     border-color: var(--primary-color-inverse) !important;
+    top: 10vh !important;
   }
 }
 
@@ -102,9 +150,5 @@ form.container {
 
 .navbar-item {
   color: var(--primary-color-inverse) !important;
-  padding: 0 0 0 0.6rem;
-}
-
-.MuiIconButton-root-50 {
-  padding: 14px !important;
+  padding: 0 !important;
 }

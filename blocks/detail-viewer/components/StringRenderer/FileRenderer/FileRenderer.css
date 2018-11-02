@@ -1,8 +1,18 @@
 .root {
-  height: 128px;
+  border-radius: 12px !important;
+  height: 6.75em !important;
+  margin-right: 12px;
+  overflow: hidden;
+  position: relative;
+  width: 6.75em !important;
 }
 
 .img {
-  height: 100% !important;
-  width: auto !important;
+  height: auto;
+  left: 50%;
+  margin: auto;
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
 }

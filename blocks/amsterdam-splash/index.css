@@ -30,7 +30,9 @@
 }
 
 .loading {
-  max-width: 60vw;
+  max-width: 80vw;
+  position: absolute;
+  top: 13%;
 }
 
 .circle {
@@ -38,10 +40,16 @@
   border: none;
   cursor: pointer;
   display: flex;
-  height: 30vw;
+  height: 4em;
   justify-content: center;
+  margin: auto auto 2em auto;
   outline: none;
-  width: 30vw;
+  width: 4em;
+}
+
+.content {
+  position: absolute;
+  top: 22%;
 }
 
 .icon {
@@ -52,9 +60,11 @@
   color: var(--primary-color);
   font-size: 1.5rem;
   font-weight: 400;
+  margin-bottom: 0.2em;
   text-transform: uppercase;
 }
 
 .subheader {
   color: #000000;
+  font-size: 0.875rem;
 }

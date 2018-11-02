@@ -1,4 +1,4 @@
-/* stylelint-disable no-descending-specificity, selector-max-specificity */
+/* stylelint-disable selector-max-specificity, no-descending-specificity */
 :not(.fas) {
   font-family: var(--font-family) !important;
 }
@@ -7,7 +7,6 @@
   margin: 0;
 }
 
-.image .file-label,
 .field-label {
   display: none;
 }
@@ -19,8 +18,8 @@
 }
 
 .textarea {
-  border-radius: 0 !important;
-  padding-left: 1em !important;
+  border-radius: var(--border-radius) !important;
+  padding: 0.9em 1em 1em 3.5em !important;
   &:not([rows]) {
     min-height: 100px;
   }
@@ -28,6 +27,9 @@
 
 .input,
 .textarea {
+  background-image: url(./description.svg) !important;
+  background-position: 10px 10px !important;
+  background-repeat: no-repeat !important;
   border-color: transparent !important;
   box-shadow: 0 0 0 !important;
   font-size: 0.875rem !important;
@@ -41,24 +43,35 @@
 
 .select {
   border-color: transparent !important;
-  border-radius: 0 !important;
+  border-radius: var(--border-radius) !important;
   font-size: 0.875rem !important;
   height: 2.5em !important;
   width: 100% !important;
 
   & select {
+    background-image: url(./process.svg) !important;
+    background-position: 10px 4px !important;
+    background-repeat: no-repeat !important;
     border-color: transparent !important;
-    border-radius: 0 !important;
+    border-radius: var(--border-radius) !important;
     font-size: 0.875rem !important;
     height: 2.5em !important;
-    padding-left: 1em !important;
+    padding-left: 3.5em !important;
     width: 100% !important;
   }
 
   &:not(.is-multiple)::after {
-    border: 1px solid #787878 !important;
+    background-image: url(./arrow.svg) !important;
+    background-repeat: no-repeat !important;
+    background-size: contain !important;
+    border: 0 !important;
     border-right: 0 !important;
     border-top: 0 !important;
+    height: 24px !important;
+    top: 35% !important;
+    -webkit-transform: none !important;
+    transform: none !important;
+    width: 24px !important;
   }
 
   & select:focus,
@@ -72,10 +85,7 @@
   background-color: var(--primary-color) !important;
   border-radius: var(--border-radius) !important;
   display: block;
-  font-size: 0.875rem !important;
-  font-weight: 100;
   margin: 2em auto 2em auto !important;
-  text-transform: uppercase;
   width: 50% !important;
 
   &:hover {
@@ -96,5 +106,5 @@ form {
 .field.is-horizontal {
   box-sizing: border-box;
   max-width: 100vw;
-  padding: 0.5em 0;
+  padding: 0.5em 1em;
 }

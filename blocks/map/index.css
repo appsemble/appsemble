@@ -8,3 +8,8 @@
   position: absolute;
   right: 0;
 }
+
+:global(.leaflet-interactive) {
+  cursor: pointer;
+  height: 50px;
+}
