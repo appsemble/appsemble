@@ -32,14 +32,27 @@
   z-index: 2;
 }
 
+.currentlocation {
+  background-image: url(./current-location.svg);
+  background-repeat: no-repeat;
+  background-size: contain;
+  pointer-events: none;
+  z-index: 2;
+}
+
 .iconUrl {
   height: 2.5em;
   width: 2.5em;
 }
 
 .resetButton {
+  background-color: var(--primary-color);
+  border: none;
+  border-radius: 50%;
   bottom: 10px;
+  height: 36px;
   position: absolute;
   right: 10px;
+  width: 36px;
   z-index: 1;
 }
