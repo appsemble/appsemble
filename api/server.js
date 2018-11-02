@@ -120,11 +120,21 @@ export function processArgv() {
     .option('smtp-from', {
       desc: 'The address to use when sending emails.',
       implies: ['smtp-user', 'smtp-pass'],
+    })
+    .option('oauth-google', {
+      desc: 'The settings to be used for Google OAuth2. Format: [key] [secret]',
+      type: 'array',
+      nargs: 2,
+    })
+    .option('oauth-gitlab', {
+      desc: 'The settings to be used for GitLab OAuth2. Format: [key] [secret]',
+      type: 'array',
+      nargs: 2,
     });
   return parser.argv;
 }
 
-export default async function server({ app = new Koa(), db, smtp }) {
+export default async function server({ app = new Koa(), db, smtp, grantConfig }) {
   const oaiRouter = new OAIRouter({
     apiDoc: path.join(__dirname, 'api'),
     options: {
@@ -150,29 +160,16 @@ export default async function server({ app = new Koa(), db, smtp }) {
   app.use(boomMiddleware);
   app.use(sequelizeMiddleware(db));
 
-  const grantConfig = {
-    server: {
-      protocol: 'http',
-      host: 'localhost:9999',
-      path: '/api/oauth',
-      callback: '/api/oauth/callback',
-    },
-    google: {
-      key: '328658672097-0dojgerr78nlo7uah4jbh7lvb66oiln0.apps.googleusercontent.com',
-      secret: 'YzQSWf0K_IFDOeZNQ4BOSZZS',
-      scope: ['email', 'profile', 'openid'],
-      callback: '/api/oauth/callback/google',
-      custom_params: { access_type: 'offline' },
-    },
-    gitlab: {
-      key: 'cc855744ffde5b2cb22b500285eac75d8be5e0d0d7f55739854e697463120c79',
-      secret: '188768ccaaf0049919096916fc962773d3f7289b1d443f3a7cfb33c7c5e1849c',
-      scope: ['read_user'],
-      callback: '/api/oauth/callback/gitlab',
-    },
-  };
+  const oauthRouter = new Router();
+  let grant;
 
-  const grant = new Grant(grantConfig);
+  if (grantConfig) {
+    grant = new Grant(grantConfig);
+  }
+
+  console.log(!!grantConfig);
+  console.log(grantConfig);
+  console.log(grant);
 
   const model = oauth2Model(db, grant);
   const oauth = new OAuth2Server({
@@ -183,62 +180,66 @@ export default async function server({ app = new Koa(), db, smtp }) {
     debug: true,
   });
 
-  const oauthRouter = new Router();
   oauthRouter.post('/api/oauth/authorize', oauth.authorize());
   oauthRouter.post('/api/oauth/token', oauth.token());
 
-  oauthRouter.get('/api/oauth/callback/:provider', async ctx => {
-    const code = ctx.query;
-    const { provider } = ctx.params;
-    const { OAuthAuthorization } = ctx.state.db;
-    const config = grant.config[provider];
-
-    const handler = oauth2Handlers[provider];
-    if (!handler) {
-      // unsupported provider
-      ctx.body = 500;
-      return;
-    }
-
-    const data = await handler(code, config);
-
-    if (!data) {
-      ctx.status = 500;
-    } else {
-      let auth = await OAuthAuthorization.find({ where: { provider, id: data.id } });
-      if (!auth) {
-        auth = await OAuthAuthorization.create({
-          id: data.id,
-          provider,
-          token: code.access_token,
-          expiresAt: code.raw.expires_in ? code.raw.expires_in : null,
-          refreshToken: code.refresh_token,
-          verified: data.verified,
-        });
+  if (grantConfig) {
+    oauthRouter.get('/api/oauth/callback/:provider', async ctx => {
+      const code = ctx.query;
+      const { provider } = ctx.params;
+      const { OAuthAuthorization } = ctx.state.db;
+      const config = grant.config[provider];
+      const handler = oauth2Handlers[provider];
+      if (!handler) {
+        // unsupported provider
+        ctx.body = 500;
+        return;
       }
 
-      const qs =
-        auth.verified && auth.UserId
-          ? querystring.stringify({
-              access_token: code.access_token,
-              refresh_token: code.refresh_token,
-              verified: auth.verified,
-              userId: auth.UserId,
-            })
-          : querystring.stringify({
-              access_token: code.access_token,
-              refresh_token: code.refresh_token,
-              provider,
-              ...data,
-            });
+      const data = await handler(code, config);
 
-      ctx.redirect(`/editor/1?${qs}`); // XXX: Figure out a good way to handle redirecting back to the original page
-    }
-  });
+      if (!data) {
+        ctx.status = 500;
+      } else {
+        let auth = await OAuthAuthorization.find({ where: { provider, id: data.id } });
+        if (!auth) {
+          auth = await OAuthAuthorization.create({
+            id: data.id,
+            provider,
+            token: code.access_token,
+            expiresAt: code.raw.expires_in ? code.raw.expires_in : null,
+            refreshToken: code.refresh_token,
+            verified: data.verified,
+          });
+        }
+
+        const qs =
+          auth.verified && auth.UserId
+            ? querystring.stringify({
+                access_token: code.access_token,
+                refresh_token: code.refresh_token,
+                verified: auth.verified,
+                userId: auth.UserId,
+              })
+            : querystring.stringify({
+                access_token: code.access_token,
+                refresh_token: code.refresh_token,
+                provider,
+                ...data,
+              });
+
+        ctx.redirect(`/editor/1?${qs}`); // XXX: Figure out a good way to handle redirecting back to the original page
+      }
+    });
+  }
 
   app.use(bodyParser());
   koaQuerystring(app);
-  app.use(mount('/api/oauth', grant));
+
+  if (grantConfig) {
+    app.use(mount('/api/oauth', grant));
+  }
+
   app.use((ctx, next) => {
     ctx.state.smtp = smtp;
     return next();
@@ -322,7 +323,36 @@ async function main() {
     });
   });
 
-  await server({ app, db, smtp });
+  let grantConfig;
+  if (args.oauthGitlab || args.oauthGoogle) {
+    grantConfig = {
+      server: {
+        protocol: 'http',
+        host: 'localhost:9999',
+        path: '/api/oauth',
+        callback: '/api/oauth/callback',
+      },
+      ...(args.oauthGitlab && {
+        gitlab: {
+          key: args.oauthGitlab[0],
+          secret: args.oauthGitlab[1],
+          scope: ['read_user'],
+          callback: '/api/oauth/callback/gitlab',
+        },
+      }),
+      ...(args.oauthGoogle && {
+        github: {
+          key: args.oauthGoogle[0],
+          secret: args.oauthGoogle[1],
+          scope: ['email', 'profile', 'openid'],
+          callback: '/api/oauth/callback/google',
+          custom_params: { access_type: 'offline' },
+        },
+      }),
+    };
+  }
+
+  await server({ app, db, smtp, grantConfig });
   const { description } = yaml.safeLoad(
     fs.readFileSync(path.join(__dirname, 'api', 'api.yaml')),
   ).info;

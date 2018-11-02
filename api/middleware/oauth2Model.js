@@ -18,7 +18,7 @@ function generateToken(client, user, scope, expiresIn) {
   );
 }
 
-export default function oauth2Model(db, grant) {
+export default function oauth2Model(db, grant = { config: {} }) {
   return {
     async generateAccessToken(client, user, scope) {
       return generateToken(client, user, scope, 10800); // expires in 3 hours
