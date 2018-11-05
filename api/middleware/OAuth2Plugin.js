@@ -10,7 +10,7 @@ export default class OAuth2Plugin extends Plugin {
     this.field = 'security';
   }
 
-  /* eslint-disable class-methods-use-this */
+  // eslint-disable-next-line class-methods-use-this
   handler({ fieldValue }) {
     return async (ctx, next) => {
       const { error, token } = ctx.state.oauth;
@@ -31,5 +31,4 @@ export default class OAuth2Plugin extends Plugin {
       await next();
     };
   }
-  /* eslint-enable class-methods-use-this */
 }
