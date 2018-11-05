@@ -103,11 +103,6 @@ export default class oauth2Server {
    */
   token(options) {
     return async (ctx, next) => {
-      if (ctx.request.type === 'application/json') {
-        // Allow the server to support both JSON and x-www-form-urlencoded methods
-        ctx.request.headers['Content-Type'] = 'application/x-www-form-urlencoded';
-      }
-
       const request = new Request(ctx.request);
       const response = new Response(ctx.response);
       let token;
