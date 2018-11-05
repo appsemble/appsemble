@@ -1,6 +1,4 @@
-const GET_START = 'app/GET_START';
-const GET_SUCCESS = 'app/GET_SUCCESS';
-const GET_ERROR = 'app/GET_ERROR';
+import { GET_START, GET_SUCCESS, GET_ERROR } from './app';
 
 const initialState = null;
 
