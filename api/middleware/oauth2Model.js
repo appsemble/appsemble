@@ -37,13 +37,13 @@ export default function oauth2Model(db) {
       }
 
       try {
-        const dec = jwt.verify(accessToken, secret);
+        const payload = jwt.verify(accessToken, secret);
         return {
           accessToken,
-          accessTokenExpiresAt: new Date(dec.exp * 1000),
-          scope: dec.scopes,
-          client: { id: dec.client_id },
-          user: { id: dec.sub },
+          accessTokenExpiresAt: new Date(payload.exp * 1000),
+          scope: payload.scopes,
+          client: { id: payload.client_id },
+          user: { id: payload.sub },
         };
       } catch (err) {
         return null;
