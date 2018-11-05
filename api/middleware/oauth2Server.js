@@ -37,13 +37,13 @@ async function handleError(e, ctx, response, next, useErrorHandler) {
 }
 
 export default class oauth2Server {
-  constructor(options = {}) {
+  constructor({ continueMiddleware, useErrorHandler, ...options } = {}) {
     if (!options.model) {
       throw new InvalidArgumentError('Missing parameter: `model`');
     }
 
-    this.useErrorHandler = !!options.useErrorHandler;
-    this.continueMiddleware = !!options.continueMiddleware;
+    this.useErrorHandler = !!useErrorHandler;
+    this.continueMiddleware = !!continueMiddleware;
 
     this.server = new NodeOAuthServer(omit(options, ['useErrorHandler', 'continueMiddleware']));
   }
