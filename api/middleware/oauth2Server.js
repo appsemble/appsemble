@@ -76,10 +76,9 @@ export default class oauth2Server {
     return async (ctx, next) => {
       const request = new Request(ctx.request);
       const response = new Response(ctx.request);
-      let code;
 
       try {
-        code = await this.server.authorize(request, response, options);
+        const code = await this.server.authorize(request, response, options);
         ctx.state.oauth = { code };
       } catch (e) {
         await handleError.call(this, e, ctx, response, next, this.useErrorHandler);
