@@ -89,6 +89,8 @@ export default class Login extends React.Component {
       location.search.substr(1),
     );
 
+    const returnUri = `?returnUri=${location.pathname}`;
+
     return accessToken && provider && initialized ? (
       <div>
         <FormattedMessage {...messages.greeting} values={{ id, name, email }} />
@@ -108,7 +110,10 @@ export default class Login extends React.Component {
           }}
         />
         <div className={styles.socialLogins}>
-          <a className={`button ${styles.socialButton}`} href="/api/oauth/connect/google">
+          <a
+            className={`button ${styles.socialButton}`}
+            href={`/api/oauth/connect/google${returnUri}`}
+          >
             <span className="icon">
               <i className="fab fa-google" />
             </span>
@@ -116,7 +121,10 @@ export default class Login extends React.Component {
               <FormattedMessage {...messages.login} values={{ provider: <span>Google</span> }} />
             </span>
           </a>
-          <a className={`button ${styles.socialButton}`} href="/api/oauth/connect/gitlab">
+          <a
+            className={`button ${styles.socialButton}`}
+            href={`/api/oauth/connect/gitlab${returnUri}`}
+          >
             <span className="icon">
               <i className="fab fa-gitlab" />
             </span>

@@ -180,6 +180,17 @@ export default async function server({ app = new Koa(), db, smtp, grantConfig })
   oauthRouter.post('/api/oauth/token', oauth.token());
 
   if (grantConfig) {
+    oauthRouter.get('/api/oauth/connect/:provider', (ctx, next) => {
+      const { returnUri, ...query } = ctx.query;
+      if (returnUri) {
+        ctx.session.returnUri = returnUri;
+        delete query.returnUri;
+        ctx.query = query;
+      }
+
+      next();
+    });
+
     oauthRouter.get('/api/oauth/callback/:provider', async ctx => {
       const code = ctx.query;
       const { provider } = ctx.params;
@@ -224,17 +235,15 @@ export default async function server({ app = new Koa(), db, smtp, grantConfig })
                 ...data,
               });
 
-        ctx.redirect(`/editor/1?${qs}`); // XXX: Figure out a good way to handle redirecting back to the original page
+        const returnUri = ctx.session.returnUri ? `${ctx.session.returnUri}?${qs}` : `/?${qs}`;
+        ctx.session.returnUri = null;
+        ctx.redirect(returnUri);
       }
     });
   }
 
   app.use(bodyParser());
   koaQuerystring(app);
-
-  if (grantConfig) {
-    app.use(mount('/api/oauth', grant));
-  }
 
   app.use((ctx, next) => {
     ctx.state.smtp = smtp;
@@ -248,7 +257,10 @@ export default async function server({ app = new Koa(), db, smtp, grantConfig })
   app.use(oauthRouter.routes());
   app.use(oaiRouter.routes());
 
-  app.use(oaiRouter.routes());
+  if (grantConfig) {
+    app.use(mount('/api/oauth', grant));
+  }
+
   app.use(routes);
 
   await oaiRouterStatus;
