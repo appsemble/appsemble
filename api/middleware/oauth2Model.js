@@ -25,7 +25,7 @@ export default function oauth2Model(db) {
     },
 
     async generateRefreshToken(client, user, scope) {
-      generateToken(client, user, scope);
+      return generateToken(client, user, scope);
     },
 
     async getAccessToken(accessToken) {
