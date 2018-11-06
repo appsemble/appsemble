@@ -58,7 +58,13 @@ export default class EmailLogin extends React.Component {
       submitting: true,
     });
     try {
-      await passwordLogin(authentication.url, values, authentication.refreshURL);
+      await passwordLogin(
+        authentication.url,
+        values,
+        authentication.refreshURL,
+        authentication.clientId,
+        authentication.scope,
+      );
     } catch (error) {
       this.setState({
         error: true,

@@ -1,10 +1,10 @@
 export default (sequelize, DataTypes) =>
   sequelize.define(
-    'Resource',
+    'OAuthClient',
     {
-      id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-      type: DataTypes.STRING,
-      data: DataTypes.JSON,
+      clientId: { type: DataTypes.STRING, primaryKey: true },
+      clientSecret: { type: DataTypes.STRING, primaryKey: true },
+      redirectUri: { type: DataTypes.STRING, allowNull: false },
     },
     {
       freezeTableName: true,

@@ -1,0 +1,47 @@
+/assets:
+  post:
+    tags: [asset]
+    description: Upload a new asset.
+    x-oai-middleware:
+      - file: assets
+        handler: create
+    consumes:
+      - '*/*'
+    parameters:
+      - in: body
+        name: asset
+        description: The asset to upload.
+        schema:
+          type: object
+    responses:
+      201:
+        description: The asset that was created.
+        schema:
+          type: object
+          properties:
+            id:
+              type: integer
+              description: The asset id.
+
+/assets/{id}:
+  get:
+    tags: [asset]
+    description: Get a single asset
+    x-oai-middleware:
+      - file: assets
+        handler: getOne
+    parameters:
+      - name: id
+        in: path
+        description: The id of the asset to get.
+        required: true
+        type: integer
+    produces:
+      - '*/*'
+    responses:
+      200:
+        description: The asset that matches the given id.
+        schema:
+          type: file
+      default:
+        $ref: '#/responses/default'

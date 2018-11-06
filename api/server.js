@@ -10,11 +10,16 @@ import logger from 'koa-logger';
 import OAIRouter from 'koa-oai-router';
 import OAIRouterMiddleware from 'koa-oai-router-middleware';
 import OAIRouterParameters from 'koa-oai-router-parameters';
+import Router from 'koa-router';
+import session from 'koa-session';
 import yaml from 'js-yaml';
 import yargs from 'yargs';
 
 import boomMiddleware from './middleware/boom';
 import sequelizeMiddleware from './middleware/sequelize';
+import oauth2Model from './middleware/oauth2Model';
+import OAuth2Server from './middleware/oauth2Server';
+import OAuth2Plugin from './middleware/OAuth2Plugin';
 import routes from './routes';
 import configureStatic from './utils/configureStatic';
 import setupModels from './utils/setupModels';
@@ -86,16 +91,45 @@ export function processArgv() {
       type: 'number',
       default: 9999,
       hidden: production,
+    })
+    .option('smtp-host', {
+      desc: 'The host of the SMTP server to connect to.',
+    })
+    .option('smtp-port', {
+      desc: 'The port of the SMTP server to connect to.',
+      type: 'number',
+    })
+    .option('smtp-secure', {
+      desc: 'Use TLS when connecting to the SMTP server.',
+      type: 'boolean',
+      default: false,
+    })
+    .option('smtp-user', {
+      desc: 'The user to use to login to the SMTP server.',
+      implies: ['smtp-pass', 'smtp-from'],
+    })
+    .option('smtp-pass', {
+      desc: 'The password to use to login to the SMTP server.',
+      implies: ['smtp-user', 'smtp-from'],
+    })
+    .option('smtp-from', {
+      desc: 'The address to use when sending emails.',
+      implies: ['smtp-user', 'smtp-pass'],
+    })
+    .option('oauth-secret', {
+      desc: 'Secret key used to sign JWTs and cookies',
+      default: 'appsemble',
     });
   return parser.argv;
 }
 
-export default async function server({ app = new Koa(), db }) {
+export default async function server({ app = new Koa(), db, smtp, secret = 'appsemble' }) {
   const oaiRouter = new OAIRouter({
     apiDoc: path.join(__dirname, 'api'),
     options: {
       middleware: path.join(__dirname, 'controllers'),
       parameters: {},
+      oauth: {},
     },
   });
 
@@ -105,14 +139,45 @@ export default async function server({ app = new Koa(), db }) {
   });
 
   await oaiRouter.mount(OAIRouterParameters);
+  await oaiRouter.mount(OAuth2Plugin);
   await oaiRouter.mount(OAIRouterMiddleware);
+
+  // eslint-disable-next-line no-param-reassign
+  app.keys = [secret];
+  app.use(session(app));
 
   app.use(boomMiddleware);
   app.use(sequelizeMiddleware(db));
+
+  const model = oauth2Model({ db, secret });
+  const oauth = new OAuth2Server({
+    model,
+    requireClientAuthentication: { password: false },
+    grants: ['password', 'refresh_token'],
+    useErrorHandler: true,
+    debug: true,
+  });
+
+  const oauthRouter = new Router();
+  oauthRouter.post('/api/oauth/authorize', oauth.authorize());
+  oauthRouter.post('/api/oauth/token', oauth.token());
+
   app.use(bodyParser());
+  app.use((ctx, next) => {
+    ctx.state.smtp = smtp;
+    return next();
+  });
+  if (process.env.NODE_ENV === 'production') {
+    app.use(compress());
+  }
+
+  app.use(oauth.authenticate());
+  app.use(oauthRouter.routes());
   app.use(oaiRouter.routes());
 
+  app.use(oaiRouter.routes());
   app.use(routes);
+
   await oaiRouterStatus;
 
   return app.callback();
@@ -136,6 +201,7 @@ async function main() {
     await sequelize.close();
     return;
   }
+
   const db = await setupModels({
     host: args.databaseHost,
     dialect: args.databaseDialect,
@@ -145,11 +211,20 @@ async function main() {
     database: args.databaseName,
     uri: args.databaseUrl,
   });
+
+  const smtp = args.smtpHost
+    ? {
+        port: args.smtpPort || args.smtpSecure ? 465 : 587,
+        host: args.smtpHost,
+        secure: args.smtpSecure,
+        ...(args.smtpUser &&
+          args.smtpPass && { auth: { user: args.smtpUser, pass: args.smtpPass } }),
+        from: args.smtpFrom,
+      }
+    : undefined;
+
   const app = new Koa();
   app.use(logger());
-  if (process.env.NODE_ENV === 'production') {
-    app.use(compress());
-  }
   await configureStatic(app);
   if (args.sentryDsn) {
     Sentry.init({ dsn: args.sentryDsn });
@@ -171,7 +246,7 @@ async function main() {
     });
   });
 
-  await server({ app, db });
+  await server({ app, db, smtp, secret: args.oauthSecret });
   const { description } = yaml.safeLoad(
     fs.readFileSync(path.join(__dirname, 'api', 'api.yaml')),
   ).info;

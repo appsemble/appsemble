@@ -7,6 +7,7 @@ function importModels(db) {
   const Organization = db.import('../models/Organization');
   const EmailAuthorization = db.import('../models/EmailAuthorization');
   const OAuthAuthorization = db.import('../models/OAuthAuthorization');
+  const OAuthClient = db.import('../models/OAuthClient');
   const Resource = db.import('../models/Resource');
   const Asset = db.import('../models/Asset');
   const Block = db.import('../models/Block');
@@ -19,6 +20,7 @@ function importModels(db) {
     Organization,
     EmailAuthorization,
     OAuthAuthorization,
+    OAuthClient,
     Resource,
     Asset,
     Block,
@@ -44,11 +46,14 @@ function associateModels(models) {
   User.hasMany(OAuthAuthorization);
   User.hasOne(EmailAuthorization);
 
+  EmailAuthorization.belongsTo(User);
+
   Organization.hasOne(Organization);
 
   Snapshot.belongsTo(App, { foreignKey: { allowNull: false } });
 
   App.hasMany(Snapshot);
+  App.hasMany(Resource);
 
   Resource.belongsTo(User);
   Resource.belongsTo(App);
