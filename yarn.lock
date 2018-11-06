@@ -1715,11 +1715,6 @@ basic-auth@^2.0.0:
   dependencies:
     safe-buffer "5.1.2"
 
-basic-auth@~0.0.1:
-  version "0.0.1"
-  resolved "https://registry.yarnpkg.com/basic-auth/-/basic-auth-0.0.1.tgz#31ddb65843f6c35c6fea7beb46a987cb8ce18924"
-  integrity sha1-Md22WEP2w1xv6nvrRqmHy4zhiSQ=
-
 bcrypt-pbkdf@^1.0.0:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/bcrypt-pbkdf/-/bcrypt-pbkdf-1.0.2.tgz#a4301d389b6a43f9b67ff3ca11a3f6637e360e9e"
@@ -7252,13 +7247,6 @@ node-notifier@^5.2.1:
     semver "^5.5.0"
     shellwords "^0.1.1"
     which "^1.3.0"
-
-node-oauth2-server@^2.4.0:
-  version "2.4.0"
-  resolved "https://registry.yarnpkg.com/node-oauth2-server/-/node-oauth2-server-2.4.0.tgz#2893eb0c118c3f05fc7fbeace4a33e3bf4ec69de"
-  integrity sha1-KJPrDBGMPwX8f76s5KM+O/Tsad4=
-  dependencies:
-    basic-auth "~0.0.1"
 
 node-pre-gyp@0.11.0:
   version "0.11.0"
