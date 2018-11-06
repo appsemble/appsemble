@@ -64,7 +64,7 @@ export default class oauth2Server {
         const token = await this.server.authenticate(request, response, options);
         ctx.state.oauth = { token };
       } catch (e) {
-        await handleError.call(this, e, ctx, null, next, this.useErrorHandler);
+        await handleError(e, ctx, null, next, this.useErrorHandler);
         return;
       }
 
@@ -81,7 +81,7 @@ export default class oauth2Server {
         const code = await this.server.authorize(request, response, options);
         ctx.state.oauth = { code };
       } catch (e) {
-        await handleError.call(this, e, ctx, response, next, this.useErrorHandler);
+        await handleError(e, ctx, response, next, this.useErrorHandler);
         return;
       }
 
@@ -89,7 +89,7 @@ export default class oauth2Server {
         await next();
       }
 
-      await handleResponse.call(this, ctx, response);
+      await handleResponse(ctx, response);
     };
   }
 
@@ -110,7 +110,7 @@ export default class oauth2Server {
         token = await this.server.token(request, response, options);
         ctx.state.oauth = { token };
       } catch (e) {
-        await handleError.call(this, e, ctx, response, next, this.useErrorHandler);
+        await handleError(e, ctx, response, next, this.useErrorHandler);
         return;
       }
 
@@ -118,7 +118,7 @@ export default class oauth2Server {
         await next();
       }
 
-      await handleResponse.call(this, ctx, response);
+      await handleResponse(ctx, response);
     };
   }
 }
