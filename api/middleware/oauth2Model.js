@@ -3,27 +3,21 @@ import crypto from 'crypto';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
-const secret = process.env.OAUTH_SECRET || 'appsemble';
-
-function generateToken(client, user, scope, expiresIn) {
-  return jwt.sign(
-    {
-      scopes: scope,
-      client_id: client.id,
-    },
-    secret,
-    {
-      issuer: 'appsemble-api',
-      subject: `${user.id}`,
-      ...(expiresIn && { expiresIn }),
-    },
-  );
-}
-
-export default function oauth2Model(db) {
+export default function oauth2Model({ db, secret }) {
   return {
     async generateAccessToken(client, user, scope) {
-      return generateToken(client, user, scope, 10800); // expires in 3 hours
+      return jwt.sign(
+        {
+          scopes: scope,
+          client_id: client.id,
+        },
+        secret,
+        {
+          issuer: 'appsemble-api',
+          subject: `${user.id}`,
+          expiresIn: 10800, // expires in 3 hours
+        },
+      );
     },
 
     async generateRefreshToken() {
