@@ -1,3 +1,5 @@
+import crypto from 'crypto';
+
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
@@ -24,8 +26,8 @@ export default function oauth2Model(db) {
       return generateToken(client, user, scope, 10800); // expires in 3 hours
     },
 
-    async generateRefreshToken(client, user, scope) {
-      return generateToken(client, user, scope);
+    async generateRefreshToken() {
+      return crypto.randomBytes(40).toString('hex');
     },
 
     async getAccessToken(accessToken) {
