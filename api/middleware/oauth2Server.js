@@ -4,6 +4,7 @@ import UnauthorizedRequestError from 'oauth2-server/lib/errors/unauthorized-requ
 import { omit } from 'lodash';
 
 async function handleResponse(ctx, response) {
+  // XXX: Test whether this explicit redirect response is necessary to stay RFC 6749 compliant
   if (response.status === 302) {
     const { location } = response.headers;
     delete response.headers.location;
@@ -20,30 +21,31 @@ async function handleError(e, ctx, response, next, useErrorHandler) {
   if (useErrorHandler) {
     ctx.state.oauth = { error: e };
     await next();
-  } else {
-    if (response) {
-      ctx.set(response.headers);
-    }
-
-    ctx.status = e.code;
-
-    if (e instanceof UnauthorizedRequestError) {
-      ctx.body = '';
-      return;
-    }
-
-    ctx.body = { error: e.name, error_description: e.message };
+    return;
   }
+
+  if (response) {
+    ctx.set(response.headers);
+  }
+
+  ctx.status = e.code;
+
+  if (e instanceof UnauthorizedRequestError) {
+    ctx.body = '';
+    return;
+  }
+
+  ctx.body = { error: e.name, error_description: e.message };
 }
 
 export default class oauth2Server {
-  constructor(options = {}) {
+  constructor({ continueMiddleware, useErrorHandler, ...options } = {}) {
     if (!options.model) {
       throw new InvalidArgumentError('Missing parameter: `model`');
     }
 
-    this.useErrorHandler = !!options.useErrorHandler;
-    this.continueMiddleware = !!options.continueMiddleware;
+    this.useErrorHandler = !!useErrorHandler;
+    this.continueMiddleware = !!continueMiddleware;
 
     this.server = new NodeOAuthServer(omit(options, ['useErrorHandler', 'continueMiddleware']));
   }
@@ -59,13 +61,12 @@ export default class oauth2Server {
     return async (ctx, next) => {
       const request = new Request(ctx.request);
       const response = new Response(ctx.response);
-      let token;
 
       try {
-        token = await this.server.authenticate(request, response, options);
+        const token = await this.server.authenticate(request, response, options);
         ctx.state.oauth = { token };
       } catch (e) {
-        await handleError.call(this, e, ctx, null, next, this.useErrorHandler);
+        await handleError(e, ctx, null, next, this.useErrorHandler);
         return;
       }
 
@@ -77,13 +78,12 @@ export default class oauth2Server {
     return async (ctx, next) => {
       const request = new Request(ctx.request);
       const response = new Response(ctx.request);
-      let code;
 
       try {
-        code = await this.server.authorize(request, response, options);
+        const code = await this.server.authorize(request, response, options);
         ctx.state.oauth = { code };
       } catch (e) {
-        await handleError.call(this, e, ctx, response, next, this.useErrorHandler);
+        await handleError(e, ctx, response, next, this.useErrorHandler);
         return;
       }
 
@@ -91,7 +91,7 @@ export default class oauth2Server {
         await next();
       }
 
-      await handleResponse.call(this, ctx, response);
+      await handleResponse(ctx, response);
     };
   }
 
@@ -104,11 +104,6 @@ export default class oauth2Server {
    */
   token(options) {
     return async (ctx, next) => {
-      if (ctx.request.type === 'application/json') {
-        // Allow the server to support both JSON and x-www-form-urlencoded methods
-        ctx.request.headers['Content-Type'] = 'application/x-www-form-urlencoded';
-      }
-
       const request = new Request(ctx.request);
       const response = new Response(ctx.response);
       let token;
@@ -117,7 +112,7 @@ export default class oauth2Server {
         token = await this.server.token(request, response, options);
         ctx.state.oauth = { token };
       } catch (e) {
-        await handleError.call(this, e, ctx, response, next, this.useErrorHandler);
+        await handleError(e, ctx, response, next, this.useErrorHandler);
         return;
       }
 
@@ -125,7 +120,7 @@ export default class oauth2Server {
         await next();
       }
 
-      await handleResponse.call(this, ctx, response);
+      await handleResponse(ctx, response);
     };
   }
 }

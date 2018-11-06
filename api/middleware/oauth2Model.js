@@ -1,35 +1,36 @@
+import crypto from 'crypto';
+
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
-const secret = process.env.OAUTH_SECRET || 'appsemble';
-
-function generateToken(client, user, scope, expiresIn) {
-  return jwt.sign(
-    {
-      scopes: scope,
-      client_id: client.id,
-    },
-    secret,
-    {
-      issuer: 'appsemble-api',
-      subject: `${user.id}`,
-      ...(expiresIn && { expiresIn }),
-    },
-  );
-}
-
-export default function oauth2Model(db, grant = { config: {} }) {
+export default function oauth2Model({ db, grant, secret }) {
   return {
-    async generateAccessToken(client, user, scope) {
-      return generateToken(client, user, scope, 10800); // expires in 3 hours
+    async generateToken(client, user, scope, expiresIn = 10800) {
+      // expires in 3 hours by default
+      return jwt.sign(
+        {
+          scopes: scope,
+          client_id: client.id,
+        },
+        secret,
+        {
+          issuer: 'appsemble-api',
+          subject: `${user.id}`,
+          expiresIn,
+        },
+      );
     },
 
-    async generateRefreshToken(client, user, scope) {
-      generateToken(client, user, scope);
+    async generateAccessToken(client, user, scope) {
+      return this.generateToken(client, user, scope);
+    },
+
+    async generateRefreshToken() {
+      return crypto.randomBytes(40).toString('hex');
     },
 
     async generateAuthorizationCode(client, user, scope) {
-      generateToken(client, user, scope);
+      return this.generateToken(client, user, scope);
     },
 
     async getAccessToken(accessToken) {
@@ -41,13 +42,13 @@ export default function oauth2Model(db, grant = { config: {} }) {
       }
 
       try {
-        const dec = jwt.verify(accessToken, secret);
+        const payload = jwt.verify(accessToken, secret);
         return {
           accessToken,
-          accessTokenExpiresAt: new Date(dec.exp * 1000),
-          scope: dec.scopes,
-          client: { id: dec.client_id },
-          user: { id: dec.sub },
+          accessTokenExpiresAt: new Date(payload.exp * 1000),
+          scope: payload.scopes,
+          client: { id: payload.client_id },
+          user: { id: payload.sub },
         };
       } catch (err) {
         return null;
@@ -103,9 +104,11 @@ export default function oauth2Model(db, grant = { config: {} }) {
 
       const clause = clientSecret ? { clientId, clientSecret } : { clientId };
       const client = await OAuthClient.find({ where: clause });
-      const config = Object.values(grant.config).find(
-        entry => entry.key === clientId && entry.secret === clientSecret,
-      );
+      const config = grant
+        ? Object.values(grant.config).find(
+            entry => entry.key === clientId && entry.secret === clientSecret,
+          )
+        : undefined;
 
       if (!client && !config) {
         return false;

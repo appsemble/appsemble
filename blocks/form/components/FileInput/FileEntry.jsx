@@ -61,8 +61,11 @@ export default class FileEntry extends React.Component {
     // the shadow DOM hackery.
     node.addEventListener('change', ({ target }) => {
       const { onChange } = this.props;
+      const [value] = target.files;
+      // eslint-disable-next-line no-param-reassign
+      node.value = null;
 
-      onChange({ target }, target.files[0]);
+      onChange({ target }, value);
     });
   };
 
@@ -90,7 +93,12 @@ export default class FileEntry extends React.Component {
       >
         {url ? (
           <React.Fragment>
-            <Image alt={title} size={128} src={url} />
+            <Image
+              alt={title}
+              className={styles.image}
+              imgProps={{ className: styles.img }}
+              src={url}
+            />
             <Button className={styles.removeButton} onClick={this.onRemove} size="small">
               <Icon fa="heading" />
             </Button>

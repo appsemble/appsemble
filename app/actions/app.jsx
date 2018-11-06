@@ -3,9 +3,9 @@ import axios from 'axios';
 import getDB from '@appsemble/utils/getDB';
 import resolveJsonPointers from '../utils/resolveJsonPointers';
 
-const GET_START = 'app/GET_START';
-const GET_SUCCESS = 'app/GET_SUCCESS';
-const GET_ERROR = 'app/GET_ERROR';
+export const GET_START = 'app/GET_START';
+export const GET_SUCCESS = 'app/GET_SUCCESS';
+export const GET_ERROR = 'app/GET_ERROR';
 const EDIT_SUCCESS = 'editor/EDIT_SUCCESS';
 
 const initialState = {

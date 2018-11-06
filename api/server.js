@@ -130,11 +130,21 @@ export function processArgv() {
       desc: 'The settings to be used for GitLab OAuth2. Format: [key] [secret]',
       type: 'array',
       nargs: 2,
+    })
+    .option('oauth-secret', {
+      desc: 'Secret key used to sign JWTs and cookies',
+      default: 'appsemble',
     });
   return parser.argv;
 }
 
-export default async function server({ app = new Koa(), db, smtp, grantConfig }) {
+export default async function server({
+  app = new Koa(),
+  db,
+  smtp,
+  grantConfig,
+  secret = 'appsemble',
+}) {
   const oaiRouter = new OAIRouter({
     apiDoc: path.join(__dirname, 'api'),
     options: {
@@ -154,7 +164,7 @@ export default async function server({ app = new Koa(), db, smtp, grantConfig })
   await oaiRouter.mount(OAIRouterMiddleware);
 
   // eslint-disable-next-line no-param-reassign
-  app.keys = [process.env.OAUTH_SECRET || 'appsemble'];
+  app.keys = [secret];
   app.use(session(app));
 
   app.use(boomMiddleware);
@@ -167,7 +177,7 @@ export default async function server({ app = new Koa(), db, smtp, grantConfig })
     grant = new Grant(grantConfig);
   }
 
-  const model = oauth2Model(db, grant);
+  const model = oauth2Model({ db, grant, secret });
   const oauth = new OAuth2Server({
     model,
     requireClientAuthentication: { password: false },
@@ -360,7 +370,7 @@ async function main() {
     };
   }
 
-  await server({ app, db, smtp, grantConfig });
+  await server({ app, db, smtp, grantConfig, secret: args.oauthSecret });
   const { description } = yaml.safeLoad(
     fs.readFileSync(path.join(__dirname, 'api', 'api.yaml')),
   ).info;

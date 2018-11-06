@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="24px" height="24px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 43.1 (39012) - http://www.bohemiancoding.com/sketch -->
+    <title>Icons/System/Add</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <path d="M7,0 C6.44771525,0 6,0.45097518 6,0.990777969 L6,6 L0.990777969,6 C0.443586406,6 0,6.44386482 0,7 L0,7 C0,7.55228475 0.45097518,8 0.990777969,8 L6,8 L6,13.009222 C6,13.5564136 6.44386482,14 7,14 L7,14 C7.55228475,14 8,13.5490248 8,13.009222 L8,8 L13.009222,8 C13.5564136,8 14,7.55613518 14,7 L14,7 C14,6.44771525 13.5490248,6 13.009222,6 L8,6 L8,0.990777969 C8,0.443586406 7.55613518,0 7,0 L7,0 Z" id="path-1"></path>
+    </defs>
+    <g id="Symbols" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Icons/System/Add">
+            <g id="Color/Rood" transform="translate(5.000000, 5.000000)">
+                <mask id="mask-2" fill="white">
+                    <use xlink:href="#path-1"></use>
+                </mask>
+                <use id="Mask" fill="#000000" xlink:href="#path-1"></use>
+                <g id="Color/Wit" mask="url(#mask-2)" fill="#FFFFFF">
+                    <g transform="translate(-5.000000, -5.000000)" id="Rectangle-Copy">
+                        <rect x="0" y="0" width="24" height="24"></rect>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

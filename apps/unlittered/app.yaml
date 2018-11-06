@@ -1,7 +1,8 @@
-name: Waarnemingen App
+name: Waarnemingen
 defaultPage: Maak waarneming
 
 theme:
+  splashColor: '#FFFFFF'
   themeColor: '#eb0000'
 
 definitions:
@@ -31,15 +32,18 @@ definitions:
             type:
               - image/jpeg
       notities:
-        title: Notities
+        title: Bijv. Er ligt een fiets in de bosjes.
         type: string
       proces:
-        title: Proces
+        title: Afdeling
         enum:
           - Fietsknip team
           - Handhaving
           - Heel en Groen
           - Inzameling
+          - Monitoren
+          - Plusteam
+          - Veegdienst
 
 authentication:
   - method: email
@@ -126,7 +130,7 @@ pages:
     blocks:
       - type: detail-viewer
         parameters:
-          fileBase: 'http://oscity.nl:9808/uploads/'
+          fileBase: 'https://api.stadswerken.amsterdam/uploads/'
           schema:
             $ref: /definitions/waarneming
           fields:

@@ -9,8 +9,8 @@ import React from 'react';
 import iconUrl from '../../../../../apps/unlittered/marker.svg';
 import styles from './GeoCoordinatesRenderer.css';
 
-const MARKER_ICON_WIDTH = 39;
-const MARKER_ICON_HEIGHT = 39;
+const MARKER_ICON_WIDTH = 40;
+const MARKER_ICON_HEIGHT = 40;
 
 /**
  * An map for an object type schema which implements GeoCoordinates.
@@ -60,6 +60,10 @@ export default class GeoCoordinatesRenderer extends React.Component {
   }
 
   render() {
-    return <div ref={this.ref} className={styles.root} />;
+    return (
+      <div className={styles.root}>
+        <div ref={this.ref} className={styles.map} />
+      </div>
+    );
   }
 }

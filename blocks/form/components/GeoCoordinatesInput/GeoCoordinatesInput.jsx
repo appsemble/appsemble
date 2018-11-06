@@ -1,16 +1,12 @@
 import 'leaflet/dist/leaflet.css';
+import { Button, Icon, Fas } from '@appsemble/react-bulma';
 import PropTypes from 'prop-types';
-import { Point } from 'leaflet/src/geometry';
-import { Icon, Marker, TileLayer } from 'leaflet/src/layer';
+import { TileLayer } from 'leaflet/src/layer';
 import { Map } from 'leaflet/src/map';
 import { CircleMarker } from 'leaflet/src/layer/vector';
 import React from 'react';
 
-import iconUrl from '../../../../apps/unlittered/marker.svg';
 import styles from './GeoCoordinatesInput.css';
-
-const MARKER_ICON_WIDTH = 39;
-const MARKER_ICON_HEIGHT = 39;
 
 /**
  * An input element for an object type schema which implements GeoCoordinates.
@@ -26,22 +22,8 @@ export default class GeoCoordinatesInput extends React.Component {
      */
     onChange: PropTypes.func.isRequired,
     reactRoot: PropTypes.instanceOf(HTMLElement).isRequired,
-    /**
-     * The current value.
-     */
-    value: PropTypes.shape(),
+    utils: PropTypes.shape().isRequired,
   };
-
-  static defaultProps = {
-    value: {},
-  };
-
-  marker = new Marker(null, {
-    icon: new Icon({
-      iconUrl,
-      iconAnchor: new Point(MARKER_ICON_WIDTH / 2, MARKER_ICON_HEIGHT),
-    }),
-  });
 
   locationMarker = new CircleMarker(null, {
     // eslint-disable-next-line react/destructuring-assignment
@@ -51,18 +33,25 @@ export default class GeoCoordinatesInput extends React.Component {
   ref = React.createRef();
 
   componentDidMount() {
-    const { field, onChange } = this.props;
+    const { field, onChange, utils } = this.props;
 
     const map = new Map(this.ref.current, { attributionControl: false })
+      .once('locationerror', () => {
+        utils.showMessage({
+          // XXX Implement i18n.
+          body: 'Locatie kon niet worden gevonden. Is de locatievoorziening ingeschakeld?',
+        });
+      })
       .on('locationfound', ({ latlng }) => {
         this.locationMarker.setLatLng(latlng).addTo(map);
       })
-      .on('click', ({ latlng }) => {
+      .on('move', () => {
+        const { lng, lat } = map.getCenter();
         onChange(
           { target: { name: field.name } },
           {
-            latitude: latlng.lat,
-            longitude: latlng.lng,
+            latitude: lat,
+            longitude: lng,
           },
         );
       })
@@ -73,20 +62,20 @@ export default class GeoCoordinatesInput extends React.Component {
     this.map = map;
   }
 
-  componentDidUpdate() {
-    const { value } = this.props;
-
-    if (value?.latitude && value.longitude) {
-      this.marker.setLatLng([value.latitude, value.longitude]).addTo(this.map);
-    } else {
-      this.marker.remove();
-    }
-  }
+  onReset = () => {
+    this.map.setView(this.locationMarker.getLatLng());
+  };
 
   render() {
     return (
       <div className={styles.root}>
         <div ref={this.ref} className={styles.map} />
+        <div className={styles.crossHairsOverlay}>
+          <Fas className={styles.crossHairs} fa="crosshairs" />
+        </div>
+        <Button className={styles.resetButton} onClick={this.onReset}>
+          <Icon className={styles.currentlocation} fa="crosshairs" />
+        </Button>
       </div>
     );
   }
