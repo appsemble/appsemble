@@ -7,6 +7,7 @@ function importModels(db) {
   const Organization = db.import('../models/Organization');
   const EmailAuthorization = db.import('../models/EmailAuthorization');
   const OAuthAuthorization = db.import('../models/OAuthAuthorization');
+  const OAuthClient = db.import('../models/OAuthClient');
   const Resource = db.import('../models/Resource');
   const Asset = db.import('../models/Asset');
   const Block = db.import('../models/Block');
@@ -19,6 +20,7 @@ function importModels(db) {
     Organization,
     EmailAuthorization,
     OAuthAuthorization,
+    OAuthClient,
     Resource,
     Asset,
     Block,

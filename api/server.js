@@ -10,11 +10,16 @@ import logger from 'koa-logger';
 import OAIRouter from 'koa-oai-router';
 import OAIRouterMiddleware from 'koa-oai-router-middleware';
 import OAIRouterParameters from 'koa-oai-router-parameters';
+import Router from 'koa-router';
+import session from 'koa-session';
 import yaml from 'js-yaml';
 import yargs from 'yargs';
 
 import boomMiddleware from './middleware/boom';
 import sequelizeMiddleware from './middleware/sequelize';
+import oauth2Model from './middleware/oauth2Model';
+import OAuth2Server from './middleware/oauth2Server';
+import OAuth2Plugin from './middleware/OAuth2Plugin';
 import routes from './routes';
 import configureStatic from './utils/configureStatic';
 import setupModels from './utils/setupModels';
@@ -110,16 +115,21 @@ export function processArgv() {
     .option('smtp-from', {
       desc: 'The address to use when sending emails.',
       implies: ['smtp-user', 'smtp-pass'],
+    })
+    .option('oauth-secret', {
+      desc: 'Secret key used to sign JWTs and cookies',
+      default: 'appsemble',
     });
   return parser.argv;
 }
 
-export default async function server({ app = new Koa(), db, smtp }) {
+export default async function server({ app = new Koa(), db, smtp, secret = 'appsemble' }) {
   const oaiRouter = new OAIRouter({
     apiDoc: path.join(__dirname, 'api'),
     options: {
       middleware: path.join(__dirname, 'controllers'),
       parameters: {},
+      oauth: {},
     },
   });
 
@@ -129,10 +139,29 @@ export default async function server({ app = new Koa(), db, smtp }) {
   });
 
   await oaiRouter.mount(OAIRouterParameters);
+  await oaiRouter.mount(OAuth2Plugin);
   await oaiRouter.mount(OAIRouterMiddleware);
+
+  // eslint-disable-next-line no-param-reassign
+  app.keys = [secret];
+  app.use(session(app));
 
   app.use(boomMiddleware);
   app.use(sequelizeMiddleware(db));
+
+  const model = oauth2Model({ db, secret });
+  const oauth = new OAuth2Server({
+    model,
+    requireClientAuthentication: { password: false },
+    grants: ['password', 'refresh_token'],
+    useErrorHandler: true,
+    debug: true,
+  });
+
+  const oauthRouter = new Router();
+  oauthRouter.post('/api/oauth/authorize', oauth.authorize());
+  oauthRouter.post('/api/oauth/token', oauth.token());
+
   app.use(bodyParser());
   app.use((ctx, next) => {
     ctx.state.smtp = smtp;
@@ -141,11 +170,13 @@ export default async function server({ app = new Koa(), db, smtp }) {
   if (process.env.NODE_ENV === 'production') {
     app.use(compress());
   }
+
+  app.use(oauth.authenticate());
+  app.use(oauthRouter.routes());
   app.use(oaiRouter.routes());
 
   app.use(oaiRouter.routes());
   app.use(routes);
-  await oaiRouterStatus;
 
   await oaiRouterStatus;
 
@@ -215,7 +246,7 @@ async function main() {
     });
   });
 
-  await server({ app, db, smtp });
+  await server({ app, db, smtp, secret: args.oauthSecret });
   const { description } = yaml.safeLoad(
     fs.readFileSync(path.join(__dirname, 'api', 'api.yaml')),
   ).info;

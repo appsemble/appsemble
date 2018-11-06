@@ -1,7 +1,7 @@
 import axios from 'axios';
 import jwtDecode from 'jwt-decode';
 
-import { AUTH, RW } from '../utils/getDB';
+import { AUTH, RW } from '@appsemble/utils/getDB';
 
 // The buffer between the access token expiration and the refresh token request. A minute should be
 // plenty of time for the refresh token request to finish.
@@ -39,7 +39,7 @@ export default (state = initialState, action) => {
   }
 };
 
-async function doLogout(dispatch, getState, db = getState().app.db) {
+async function doLogout(dispatch, getState, db = getState().db) {
   delete axios.defaults.headers.common.Authorization;
   clearTimeout(timeoutId);
   db.transaction(AUTH, RW)
@@ -115,20 +115,21 @@ async function refreshTokenLogin(url, db, dispatch) {
  * - Axios is configured.
  * - The user is restored.
  */
-export function initAuth() {
+export function initAuth(authentication) {
   return async (dispatch, getState) => {
-    const { app, db } = getState().app;
-    const auth = await db
+    const { db, ...state } = getState();
+    const token = await db
       .transaction(AUTH)
       .objectStore(AUTH)
       .get(0);
     let user = null;
-    if (auth != null) {
-      const authentication = app.authentication || app.authentication[0];
+    if (token != null) {
+      const auth =
+        authentication || state.app.app.authentication || state.app.app.authentication[0];
       user = setupAuth(
-        auth.accessToken,
-        auth.refreshToken,
-        authentication.refreshURL || authentication.url,
+        token.accessToken,
+        token.refreshToken,
+        auth.refreshURL || auth.url,
         db,
         dispatch,
       );
@@ -158,16 +159,20 @@ export function logout() {
  * @param {string} credentials.username The username to login with.
  * @param {string} credentials.password The password to login with.
  * @param {string} [refreshURL] A refresh token URL. If this is unused, the url is used instead.
+ * @param {string} clientId Client ID of application to authenticate to.
+ * @param {string} scope Requested permission scope(s), separated by spaces.
  */
-export function passwordLogin(url, { username, password }, refreshURL) {
+export function passwordLogin(url, { username, password }, refreshURL, clientId, scope) {
   return async (dispatch, getState) => {
-    const { db } = getState().app;
+    const { db } = getState();
     const user = await requestToken(
       url,
       {
         grant_type: 'password',
         username,
         password,
+        ...(clientId && { client_id: clientId }),
+        ...(scope && { scope }),
       },
       db,
       dispatch,

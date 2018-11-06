@@ -1,16 +1,15 @@
 import axios from 'axios';
 
-import getDB from '../utils/getDB';
+import getDB from '@appsemble/utils/getDB';
 import resolveJsonPointers from '../utils/resolveJsonPointers';
 
-const GET_START = 'app/GET_START';
-const GET_SUCCESS = 'app/GET_SUCCESS';
-const GET_ERROR = 'app/GET_ERROR';
+export const GET_START = 'app/GET_START';
+export const GET_SUCCESS = 'app/GET_SUCCESS';
+export const GET_ERROR = 'app/GET_ERROR';
 const EDIT_SUCCESS = 'editor/EDIT_SUCCESS';
 
 const initialState = {
   app: null,
-  db: null,
   error: null,
 };
 
@@ -20,21 +19,18 @@ export default (state = initialState, action) => {
       return {
         ...state,
         app: null,
-        db: null,
         error: null,
       };
     case GET_SUCCESS:
       return {
         ...state,
         app: action.app,
-        db: action.db,
         error: null,
       };
     case GET_ERROR:
       return {
         ...state,
         app: null,
-        db: null,
         error: action.error,
       };
     case EDIT_SUCCESS:

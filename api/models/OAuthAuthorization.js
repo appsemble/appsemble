@@ -2,14 +2,13 @@ export default (sequelize, DataTypes) =>
   sequelize.define(
     'OAuthAuthorization',
     {
-      id: { type: DataTypes.STRING, primaryKey: true },
-      provider: { type: DataTypes.STRING, allowNull: false },
+      id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+      token: { type: DataTypes.TEXT, allowNull: false },
+      refreshToken: { type: DataTypes.TEXT, allowNull: false },
     },
     {
       freezeTableName: true,
-      paranoid: true,
       createdAt: 'created',
       updatedAt: 'updated',
-      deletedAt: 'deleted',
     },
   );
