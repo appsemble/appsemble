@@ -20,20 +20,21 @@ async function handleError(e, ctx, response, next, useErrorHandler) {
   if (useErrorHandler) {
     ctx.state.oauth = { error: e };
     await next();
-  } else {
-    if (response) {
-      ctx.set(response.headers);
-    }
-
-    ctx.status = e.code;
-
-    if (e instanceof UnauthorizedRequestError) {
-      ctx.body = '';
-      return;
-    }
-
-    ctx.body = { error: e.name, error_description: e.message };
+    return;
   }
+
+  if (response) {
+    ctx.set(response.headers);
+  }
+
+  ctx.status = e.code;
+
+  if (e instanceof UnauthorizedRequestError) {
+    ctx.body = '';
+    return;
+  }
+
+  ctx.body = { error: e.name, error_description: e.message };
 }
 
 export default class oauth2Server {
