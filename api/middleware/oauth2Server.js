@@ -4,6 +4,7 @@ import UnauthorizedRequestError from 'oauth2-server/lib/errors/unauthorized-requ
 import { omit } from 'lodash';
 
 async function handleResponse(ctx, response) {
+  // XXX: Test whether this explicit redirect response is necessary to stay RFC 6749 compliant
   if (response.status === 302) {
     const { location } = response.headers;
     delete response.headers.location;
