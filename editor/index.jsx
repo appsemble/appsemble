@@ -31,8 +31,8 @@ getStore().then(store => {
     <Provider store={store}>
       <App
         authentication={{
-          url: `${window.location.origin}/oauth/token`,
-          refreshURL: `${window.location.origin}/oauth/token`,
+          url: `${window.location.origin}/api/oauth/token`,
+          refreshURL: `${window.location.origin}/api/oauth/token`,
           clientId: 'appsemble-editor',
           scope: 'apps:read apps:write',
         }}
