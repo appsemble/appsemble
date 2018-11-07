@@ -6,6 +6,7 @@ import { IntlProvider } from 'react-intl';
 import Editor from '../Editor';
 import { initAuth } from '../../../app/actions/user';
 import EmailLogin from '../../../app/components/EmailLogin';
+import Message from '../../../app/components/Message';
 
 export class App extends React.Component {
   async componentDidMount() {
@@ -25,22 +26,25 @@ export class App extends React.Component {
 
     return (
       <IntlProvider defaultLocale="en-US" locale="en-US" textComponent={React.Fragment}>
-        {!user ? (
-          <EmailLogin
-            key="appsemble-editor-email-login"
-            authentication={{
-              method: 'email',
-              ...authentication,
-            }}
-          />
-        ) : (
-          <Router>
-            <Route
-              path="/editor/:id"
-              render={props => <Editor id={props.match.params.id} {...props} />}
+        <div>
+          {!user ? (
+            <EmailLogin
+              key="appsemble-editor-email-login"
+              authentication={{
+                method: 'email',
+                ...authentication,
+              }}
             />
-          </Router>
-        )}
+          ) : (
+            <Router>
+              <Route
+                path="/editor/:id"
+                render={props => <Editor id={props.match.params.id} {...props} />}
+              />
+            </Router>
+          )}
+          <Message />
+        </div>
       </IntlProvider>
     );
   }

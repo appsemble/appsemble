@@ -1,3 +1,10 @@
-import '../../index.css';
+import { connect } from 'react-redux';
 
-export { default } from './Editor';
+import '../../index.css';
+import { push } from '../../../app/actions/message';
+import Editor from './Editor';
+
+export default connect(
+  null,
+  { push },
+)(Editor);

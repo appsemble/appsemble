@@ -9,6 +9,7 @@ import styles from './editor.css';
 export default class Editor extends React.Component {
   static propTypes = {
     id: PropTypes.string.isRequired,
+    push: PropTypes.func.isRequired,
   };
 
   state = {
@@ -20,15 +21,28 @@ export default class Editor extends React.Component {
   frame = React.createRef();
 
   async componentDidMount() {
-    const { id } = this.props;
-    const { data } = await axios.get(`/api/apps/${id}`);
-    const recipe = yaml.safeDump(data);
+    const { id, history, push } = this.props;
 
-    this.setState({ recipe, path: data.path });
+    try {
+      const request = await axios.get(`/api/apps/${id}`);
+      const { data } = request;
+      const recipe = yaml.safeDump(data);
+
+      this.setState({ recipe, path: data.path });
+    } catch (e) {
+      if (e.response && (e.response.status === 404 || e.response.status === 401)) {
+        push('App does not exist');
+      } else {
+        push('Something went wrong trying to load this app');
+      }
+
+      history.push('/editor');
+    }
   }
 
   onSubmit = event => {
     event.preventDefault();
+    const { push } = this.props;
 
     this.setState(({ recipe }) => {
       let app = null;
@@ -37,6 +51,7 @@ export default class Editor extends React.Component {
       try {
         app = yaml.safeLoad(recipe);
       } catch (e) {
+        push('Invalid YAML');
         return { valid: false, dirty: false };
       }
 
@@ -51,17 +66,26 @@ export default class Editor extends React.Component {
   };
 
   onUpload = async () => {
-    const { id } = this.props;
+    const { id, push } = this.props;
     const { recipe, valid, icon } = this.state;
 
     if (valid) {
-      await axios.put(`/api/apps/${id}`, yaml.safeLoad(recipe));
+      try {
+        await axios.put(`/api/apps/${id}`, yaml.safeLoad(recipe));
+        push({ body: 'Successfully updated app definition', color: 'success' });
+      } catch (e) {
+        push('Something went wrong trying to update the app definition');
+      }
     }
 
     if (icon) {
-      await axios.post(`/api/apps/${id}/icon`, icon, {
-        headers: { 'Content-Type': icon.type },
-      });
+      try {
+        await axios.post(`/api/apps/${id}/icon`, icon, {
+          headers: { 'Content-Type': icon.type },
+        });
+      } catch (e) {
+        push('Something went wrong trying to update the app icon');
+      }
     }
 
     this.setState({ dirty: true });
@@ -102,7 +126,6 @@ export default class Editor extends React.Component {
                 onChange={this.onIconChange}
                 type="file"
               />
-              {!valid && !dirty && <p className={styles.editorError}>Invalid YAML</p>}
             </div>
             <MonacoEditor
               className={styles.monacoEditor}
