@@ -26,6 +26,7 @@ export { default as NavbarBurger } from './NavbarBurger';
 export { default as NavbarEnd } from './NavbarEnd';
 export { default as NavbarItem } from './NavbarItem';
 export { default as NavbarMenu } from './NavbarMenu';
+export { default as NavbarStart } from './NavbarStart';
 export { default as Subtitle } from './Subtitle';
 export { default as Textarea } from './Textarea';
 export { default as Title } from './Title';
