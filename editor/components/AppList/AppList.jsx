@@ -1,8 +1,21 @@
 import '@fortawesome/fontawesome-free/css/all.css';
 
+import {
+  Navbar,
+  NavbarBrand,
+  NavbarEnd,
+  NavbarMenu,
+  NavbarItem,
+  Button,
+  Icon,
+} from '@appsemble/react-bulma';
 import axios from 'axios';
+import { FormattedMessage } from 'react-intl';
 import { Link } from 'react-router-dom';
 import React from 'react';
+
+import styles from './applist.css';
+import messages from '../App/messages';
 
 function chunkArray(items, size) {
   const results = [];
@@ -24,6 +37,11 @@ export default class AppList extends React.Component {
 
     this.setState({ apps });
   }
+
+  onLogout = () => {
+    const { logout } = this.props;
+    logout();
+  };
 
   render() {
     const { apps } = this.state;
@@ -66,6 +84,31 @@ export default class AppList extends React.Component {
       </div>
     ));
 
-    return <div className="is-half">{chunkTiles}</div>;
+    return (
+      <div>
+        <Navbar className="is-dark">
+          <NavbarBrand>
+            <NavbarItem>
+              <Link className={styles.navbarTitle} to="/editor">
+                Appsemble
+              </Link>
+            </NavbarItem>
+          </NavbarBrand>
+          <NavbarMenu className="is-active">
+            <NavbarEnd>
+              <NavbarItem>
+                <Button onClick={this.onLogout}>
+                  <Icon fa="sign-out-alt" />
+                  <span>
+                    <FormattedMessage {...messages.logoutButton} />
+                  </span>
+                </Button>
+              </NavbarItem>
+            </NavbarEnd>
+          </NavbarMenu>
+        </Navbar>
+        <div className={styles.appTiles}>{chunkTiles}</div>
+      </div>
+    );
   }
 }

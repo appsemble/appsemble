@@ -17,7 +17,7 @@ import React from 'react';
 import yaml from 'js-yaml';
 
 import styles from './editor.css';
-import messages from './messages';
+import messages from '../App/messages';
 
 export default class Editor extends React.Component {
   static propTypes = {
@@ -106,7 +106,7 @@ export default class Editor extends React.Component {
             <Navbar className="is-dark">
               <NavbarBrand>
                 <NavbarItem>
-                  <Link className={styles.title} to="/editor">
+                  <Link className={styles.navbarTitle} to="/editor">
                     Editor
                   </Link>
                 </NavbarItem>
