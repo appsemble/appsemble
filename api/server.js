@@ -3,6 +3,7 @@ import fs from 'fs';
 import path from 'path';
 import querystring from 'querystring';
 
+import bcrypt from 'bcrypt';
 import * as Sentry from '@sentry/node';
 import Koa from 'koa';
 import bodyParser from 'koa-bodyparser';
@@ -281,7 +282,7 @@ export default async function server({
 async function main() {
   const args = processArgv();
   if (args.initDatabase) {
-    const { sequelize } = await setupModels({
+    const { sequelize, OAuthClient, EmailAuthorization } = await setupModels({
       sync: true,
       force: true,
       logging: true,
@@ -293,6 +294,18 @@ async function main() {
       database: args.databaseName,
       uri: args.databaseUrl,
     });
+    await OAuthClient.create({
+      clientId: 'appsemble-editor',
+      clientSecret: 'appsemble-editor-secret',
+      redirectUri: '/editor',
+    });
+    const email = await EmailAuthorization.create({
+      email: 'test@example.com',
+      name: 'Test Account',
+      password: bcrypt.hashSync('test', 10),
+      verified: true,
+    });
+    await email.createUser();
     await sequelize.close();
     return;
   }
