@@ -1,5 +1,15 @@
-import { Navbar, NavbarBrand, NavbarItem, Button, Fas } from '@appsemble/react-bulma';
+import {
+  Navbar,
+  NavbarBrand,
+  NavbarEnd,
+  NavbarMenu,
+  NavbarItem,
+  Button,
+  Fas,
+  Icon,
+} from '@appsemble/react-bulma';
 import axios from 'axios';
+import { FormattedMessage } from 'react-intl';
 import { Link } from 'react-router-dom';
 import MonacoEditor from 'react-monaco-editor';
 import PropTypes from 'prop-types';
@@ -7,6 +17,7 @@ import React from 'react';
 import yaml from 'js-yaml';
 
 import styles from './editor.css';
+import messages from './messages';
 
 export default class Editor extends React.Component {
   static propTypes = {
@@ -70,6 +81,11 @@ export default class Editor extends React.Component {
     this.setState({ dirty: true });
   };
 
+  onLogout = () => {
+    const { logout } = this.props;
+    logout();
+  };
+
   onMonacoChange = recipe => {
     this.setState({ recipe, dirty: true });
   };
@@ -126,6 +142,18 @@ export default class Editor extends React.Component {
                   </div>
                 </NavbarItem>
               </NavbarBrand>
+              <NavbarMenu>
+                <NavbarEnd>
+                  <NavbarItem>
+                    <Button onClick={this.onLogout}>
+                      <Icon fa="sign-out-alt" />
+                      <span>
+                        <FormattedMessage {...messages.logoutButton} />
+                      </span>
+                    </Button>
+                  </NavbarItem>
+                </NavbarEnd>
+              </NavbarMenu>
             </Navbar>
             <MonacoEditor
               className={styles.monacoEditor}
