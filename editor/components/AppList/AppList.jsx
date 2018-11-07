@@ -3,6 +3,7 @@ import '@fortawesome/fontawesome-free/css/all.css';
 import {
   Navbar,
   NavbarBrand,
+  NavbarBurger,
   NavbarEnd,
   NavbarMenu,
   NavbarItem,
@@ -30,6 +31,7 @@ function chunkArray(items, size) {
 export default class AppList extends React.Component {
   state = {
     apps: [],
+    openMenu: false,
   };
 
   async componentDidMount() {
@@ -44,7 +46,7 @@ export default class AppList extends React.Component {
   };
 
   render() {
-    const { apps } = this.state;
+    const { apps, openMenu } = this.state;
     if (!apps) {
       return <p>Loading...</p>;
     }
@@ -93,8 +95,12 @@ export default class AppList extends React.Component {
                 Appsemble
               </Link>
             </NavbarItem>
+            <NavbarBurger
+              active={openMenu}
+              onClick={() => this.setState({ openMenu: !openMenu })}
+            />
           </NavbarBrand>
-          <NavbarMenu className="is-active">
+          <NavbarMenu className={`${openMenu && 'is-active'}`}>
             <NavbarEnd>
               <NavbarItem>
                 <Button onClick={this.onLogout}>

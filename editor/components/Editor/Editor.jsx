@@ -1,9 +1,11 @@
 import {
   Navbar,
   NavbarBrand,
+  NavbarBurger,
   NavbarEnd,
   NavbarMenu,
   NavbarItem,
+  NavbarStart,
   Button,
   Fas,
   Icon,
@@ -29,6 +31,7 @@ export default class Editor extends React.Component {
     valid: false,
     dirty: true,
     icon: undefined,
+    openMenu: false,
   };
 
   frame = React.createRef();
@@ -95,7 +98,7 @@ export default class Editor extends React.Component {
   };
 
   render() {
-    const { recipe, path, valid, dirty, icon } = this.state;
+    const { recipe, path, valid, dirty, icon, openMenu } = this.state;
     const { id } = this.props;
     const filename = icon ? icon.name : 'Icon';
 
@@ -120,29 +123,35 @@ export default class Editor extends React.Component {
                     Upload
                   </Button>
                 </NavbarItem>
-                <NavbarItem>
-                  <div className={`file ${icon && 'has-name'}`}>
-                    <label className="file-label" htmlFor="icon-upload">
-                      <input
-                        accept="image/jpeg, image/png, image/tiff, image/webp, image/xml+svg"
-                        className="file-input"
-                        id="icon-upload"
-                        name="icon"
-                        onChange={this.onIconChange}
-                        type="file"
-                      />
-                      <span className="file-cta">
-                        <span className="file-icon">
-                          <Fas fa="upload" />
-                        </span>
-                        <span className="file-label">Icon</span>
-                      </span>
-                      {icon && <span className="file-name">{filename}</span>}
-                    </label>
-                  </div>
-                </NavbarItem>
+                <NavbarBurger
+                  active={openMenu}
+                  onClick={() => this.setState({ openMenu: !openMenu })}
+                />
               </NavbarBrand>
-              <NavbarMenu>
+              <NavbarMenu className={`${openMenu && 'is-active'}`}>
+                <NavbarStart>
+                  <NavbarItem>
+                    <div className={`file ${icon && 'has-name'}`}>
+                      <label className="file-label" htmlFor="icon-upload">
+                        <input
+                          accept="image/jpeg, image/png, image/tiff, image/webp, image/xml+svg"
+                          className="file-input"
+                          id="icon-upload"
+                          name="icon"
+                          onChange={this.onIconChange}
+                          type="file"
+                        />
+                        <span className="file-cta">
+                          <span className="file-icon">
+                            <Fas fa="upload" />
+                          </span>
+                          <span className="file-label">Icon</span>
+                        </span>
+                        {icon && <span className="file-name">{filename}</span>}
+                      </label>
+                    </div>
+                  </NavbarItem>
+                </NavbarStart>
                 <NavbarEnd>
                   <NavbarItem>
                     <Button onClick={this.onLogout}>
