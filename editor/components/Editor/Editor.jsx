@@ -1,4 +1,4 @@
-import { Navbar, NavbarBrand, NavbarItem, Button } from '@appsemble/react-bulma';
+import { Navbar, NavbarBrand, NavbarItem, Button, Fas } from '@appsemble/react-bulma';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 import MonacoEditor from 'react-monaco-editor';
@@ -117,7 +117,7 @@ export default class Editor extends React.Component {
                       />
                       <span className="file-cta">
                         <span className="file-icon">
-                          <i className="fas fa-upload" />
+                          <Fas fa="upload" />
                         </span>
                         <span className="file-label">Icon</span>
                       </span>
