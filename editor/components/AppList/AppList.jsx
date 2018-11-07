@@ -1,6 +1,7 @@
 import '@fortawesome/fontawesome-free/css/all.css';
 
 import axios from 'axios';
+import { Link } from 'react-router-dom';
 import React from 'react';
 
 function chunkArray(items, size) {
@@ -35,7 +36,7 @@ export default class AppList extends React.Component {
     }
 
     const appTiles = apps.map(app => (
-      <div key={app.id} className="tile is-parent is-4">
+      <div key={`app-${app.id}`} className="tile is-parent is-4">
         <div className="card is-child tile">
           <header className="card-header">
             <p className="card-header-title">{app.name}</p>
@@ -51,16 +52,16 @@ export default class AppList extends React.Component {
             <a className="card-footer-item" href={`/${app.path}`}>
               View
             </a>
-            <a className="card-footer-item" href={`/editor/${app.id}`}>
+            <Link className="card-footer-item" to={`/editor/${app.id}`}>
               Edit
-            </a>
+            </Link>
           </footer>
         </div>
       </div>
     ));
 
     const chunkTiles = chunkArray(appTiles, 3).map(chunk => (
-      <div key={`chunk-${chunk[0].name}`} className="tile is-ancestor">
+      <div key={`chunk-${chunk[0].key}`} className="tile is-ancestor">
         {chunk}
       </div>
     ));
