@@ -1,4 +1,6 @@
+import { Navbar, NavbarBrand, NavbarItem, Button } from '@appsemble/react-bulma';
 import axios from 'axios';
+import { Link } from 'react-router-dom';
 import MonacoEditor from 'react-monaco-editor';
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -15,6 +17,7 @@ export default class Editor extends React.Component {
     recipe: '',
     valid: false,
     dirty: true,
+    icon: undefined,
   };
 
   frame = React.createRef();
@@ -76,34 +79,54 @@ export default class Editor extends React.Component {
   };
 
   render() {
-    const { recipe, path, valid, dirty } = this.state;
+    const { recipe, path, valid, dirty, icon } = this.state;
     const { id } = this.props;
+    const filename = icon ? icon.name : 'Icon';
 
     return (
       <div className={styles.editor}>
         <div className={styles.leftPanel}>
           <form className={styles.editorForm} onSubmit={this.onSubmit}>
-            <div className={styles.editorToolbar}>
-              <button className="button" disabled={!dirty} type="submit">
-                Save
-              </button>
-              <button
-                className="button"
-                disabled={!valid || dirty}
-                onClick={this.onUpload}
-                type="button"
-              >
-                Upload
-              </button>
-              <input
-                accept="image/jpeg, image/png, image/tiff, image/webp, image/xml+svg"
-                className="button"
-                name="icon"
-                onChange={this.onIconChange}
-                type="file"
-              />
-              {!valid && !dirty && <p className={styles.editorError}>Invalid YAML</p>}
-            </div>
+            <Navbar className="is-dark">
+              <NavbarBrand>
+                <NavbarItem>
+                  <Link className={styles.title} to="/editor">
+                    Editor
+                  </Link>
+                </NavbarItem>
+                <NavbarItem>
+                  <Button disabled={!dirty} type="submit">
+                    Save
+                  </Button>
+                </NavbarItem>
+                <NavbarItem>
+                  <Button disabled={!valid || dirty} onClick={this.onUpload}>
+                    Upload
+                  </Button>
+                </NavbarItem>
+                <NavbarItem>
+                  <div className={`file ${icon && 'has-name'}`}>
+                    <label className="file-label" htmlFor="icon-upload">
+                      <input
+                        accept="image/jpeg, image/png, image/tiff, image/webp, image/xml+svg"
+                        className="file-input"
+                        id="icon-upload"
+                        name="icon"
+                        onChange={this.onIconChange}
+                        type="file"
+                      />
+                      <span className="file-cta">
+                        <span className="file-icon">
+                          <i className="fas fa-upload" />
+                        </span>
+                        <span className="file-label">Icon</span>
+                      </span>
+                      {icon && <span className="file-name">{filename}</span>}
+                    </label>
+                  </div>
+                </NavbarItem>
+              </NavbarBrand>
+            </Navbar>
             <MonacoEditor
               className={styles.monacoEditor}
               language="yaml"
