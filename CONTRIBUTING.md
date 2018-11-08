@@ -78,11 +78,17 @@ extracted into their own project.
 
 ## Style guide
 
-This project follows the [Airbnb JavaScript Style Guide], with the following exceptions:
+### JavaScript
+
+This project uses Prettier. The code is linted using [ESLint]. Apart from that it follows the
+[Airbnb JavaScript Style Guide] as closely as possible, with the following exceptions:
 
 - React components should always be defined using classes.
 
-The code is linted using [ESLint] and [Stylelint].
+### CSS
+
+This project uses Prettier. The code is linted using [Stylelint]. For a detailed view of the
+ruleset, see [stylelint.config.js](./stylelint.config.js).
 
 ## Testing
 

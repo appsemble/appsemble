@@ -5,7 +5,7 @@ button {
   border: none;
   border-radius: 50%;
   bottom: 12px;
-  box-shadow: 0 0 12px 3px #000000;
+  box-shadow: 0 0 12px 3px hsl(0, 0%, 0%);
   color: var(--primary-color-inverse);
   cursor: pointer;
   display: flex !important;

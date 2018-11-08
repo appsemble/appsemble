@@ -10401,6 +10401,13 @@ stylehacks@^4.0.0:
     postcss "^7.0.0"
     postcss-selector-parser "^3.0.0"
 
+stylelint-color-format@^0.2.0:
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/stylelint-color-format/-/stylelint-color-format-0.2.0.tgz#b0bb2ce504d66da98564bead3f6c170d8d7b1284"
+  integrity sha512-DXe7TZUahf2MENrRc3mT3qEGGYlQtuns/u8d+EC7oFnzIghEKvY/9Y6u7epkTGmpxgBRm534mi5LIgj9pWDPCQ==
+  dependencies:
+    color "^3.0.0"
+
 stylelint-config-css-modules@^1.3.0:
   version "1.3.0"
   resolved "https://registry.yarnpkg.com/stylelint-config-css-modules/-/stylelint-config-css-modules-1.3.0.tgz#4de8c9445ba15150e21cfe61cee16298aba60c23"
@@ -10440,6 +10447,13 @@ stylelint-order@^1.0.0:
     lodash "^4.17.10"
     postcss "^7.0.2"
     postcss-sorting "^4.0.0"
+
+stylelint-prettier@^1.0.3:
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/stylelint-prettier/-/stylelint-prettier-1.0.3.tgz#d7b1e8c331045dc1fd9d792dd8a1a5afc5304018"
+  integrity sha512-yzlhOKg2AmzGmKfWN9LPONr7/8O15QkGLtofhDsbpiEHCXMS5fZbQ0lcjopOAm6iU7vzETRFbOSHrDNJCRepbA==
+  dependencies:
+    prettier-linter-helpers "^1.0.0"
 
 stylelint@^9.7.1:
   version "9.7.1"

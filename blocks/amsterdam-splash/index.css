@@ -12,7 +12,7 @@
 
   /* stylelint-disable-next-line selector-max-specificity */
   &::after {
-    background-image: url('./background.svg');
+    background-image: url(./background.svg);
     background-position: bottom;
     background-repeat: no-repeat;
     content: '';
@@ -42,7 +42,7 @@
   display: flex;
   height: 4em;
   justify-content: center;
-  margin: auto auto 2em auto;
+  margin: auto auto 2em;
   outline: none;
   width: 4em;
 }
@@ -66,6 +66,6 @@
 }
 
 .subheader {
-  color: #000000;
+  color: hsl(0, 0%, 0%);
   font-size: 0.875rem;
 }
