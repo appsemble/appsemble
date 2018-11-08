@@ -32,7 +32,7 @@ export async function getOne(ctx) {
   const { id } = ctx.params;
   const { App } = ctx.state.db;
 
-  const app = await App.findById(id, { raw: true });
+  const app = await App.findByPk(id, { raw: true });
 
   if (!app) {
     throw Boom.notFound('App not found');

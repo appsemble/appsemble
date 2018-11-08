@@ -1,23 +1,23 @@
-import { BrowserRouter as Router, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import React from 'react';
-import { connect } from 'react-redux';
 import { IntlProvider } from 'react-intl';
 
+import AppList from '../AppList';
 import Editor from '../Editor';
-import { initAuth } from '../../../app/actions/user';
 import EmailLogin from '../../../app/components/EmailLogin';
 import Message from '../../../app/components/Message';
 
-export class App extends React.Component {
+export default class App extends React.Component {
   async componentDidMount() {
-    const { initAuth: authenticate, authentication } = this.props;
-    await authenticate(authentication);
+    const { initAuth, authentication } = this.props;
+    await initAuth(authentication);
   }
 
   render() {
     const {
       user: { user, initialized },
       authentication,
+      logout,
     } = this.props;
 
     if (!initialized) {
@@ -37,10 +37,13 @@ export class App extends React.Component {
             />
           ) : (
             <Router>
-              <Route
-                path="/editor/:id"
-                render={props => <Editor id={props.match.params.id} {...props} />}
-              />
+              <Switch>
+                <Route
+                  path="/editor/:id"
+                  render={props => <Editor id={props.match.params.id} {...props} logout={logout} />}
+                />
+                <Route path="/editor" render={props => <AppList {...props} logout={logout} />} />
+              </Switch>
             </Router>
           )}
           <Message />
@@ -49,10 +52,3 @@ export class App extends React.Component {
     );
   }
 }
-
-export default connect(
-  state => ({
-    user: state.user,
-  }),
-  { initAuth },
-)(App);

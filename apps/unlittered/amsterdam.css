@@ -2,34 +2,34 @@
 :root {
   --border-radius: 24px;
   --form-width: 400px;
-  --primary-color: #eb0000;
-  --primary-color-inverse: #ffffff;
+  --primary-color: hsl(0, 100%, 46%);
+  --primary-color-inverse: hsl(0, 0%, 100%);
   --font-family: avernirnext, -apple-system, blinkmacsystemfont, 'Open Sans', 'Helvetica Neue',
     sans-serif !important;
 }
 
 @font-face {
   font-family: 'avernirnext';
-  src: url('./font/avenirnext/avenirnextltpro-regular.woff'),
-    url('./font/avenirnext/avenirnextltpro-regular.woff2');
+  src: url(font/avenirnext/avenirnextltpro-regular.woff),
+    url(font/avenirnext/avenirnextltpro-regular.woff2);
 }
 
 @font-face {
   font-family: 'avernirnext';
   font-weight: 400;
-  src: url('./font/avenirnext/avenirnextltpro-medium.woff'),
-    url('./font/avenirnext/avenirnextltpro-medium.woff2');
+  src: url(font/avenirnext/avenirnextltpro-medium.woff),
+    url(font/avenirnext/avenirnextltpro-medium.woff2);
 }
 
 @font-face {
   font-family: 'avernirnext';
   font-weight: 500;
-  src: url('./font/avenirnext/avenirnextltpro-bold.woff'),
-    url('./font/avenirnext/avenirnextltpro-bold.woff2');
+  src: url(font/avenirnext/avenirnextltpro-bold.woff),
+    url(font/avenirnext/avenirnextltpro-bold.woff2);
 }
 
 body {
-  background-color: #efefef;
+  background-color: hsl(0, 0%, 94%);
 }
 
 :not(.fas) {
@@ -47,7 +47,7 @@ form.container {
   height: 100vh !important;
   margin: 0 !important;
   max-width: 100%;
-  padding: 50vh 2em 0 2em !important;
+  padding: 50vh 2em 0 !important;
   position: fixed !important;
   top: 0 !important;
   width: 100% !important;
@@ -65,7 +65,7 @@ form.container {
 }
 
 .side-menu {
-  background-image: url(./menu-background.svg);
+  background-image: url(menu-background.svg);
   background-position-x: center;
   background-position-y: bottom;
   background-repeat: no-repeat;
@@ -97,7 +97,7 @@ form.container {
 
   &:focus,
   &:active {
-    border-color: #787878;
+    border-color: hsl(0, 0%, 47.1%);
   }
 }
 
@@ -111,7 +111,7 @@ form.container {
 }
 
 .fas.fa-envelope {
-  background-image: url(./email.svg);
+  background-image: url(email.svg);
   background-position: 10px;
   background-repeat: no-repeat;
   background-size: contain;
@@ -125,7 +125,7 @@ form.container {
 }
 
 .fas.fa-unlock {
-  background-image: url(./password.svg);
+  background-image: url(password.svg);
   background-position: 10px;
   background-repeat: no-repeat;
   background-size: contain;

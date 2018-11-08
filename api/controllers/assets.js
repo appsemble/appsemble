@@ -5,7 +5,7 @@ export async function getOne(ctx) {
   const { id } = ctx.params;
   const { Asset } = ctx.state.db;
 
-  const asset = await Asset.findById(id);
+  const asset = await Asset.findByPk(id);
 
   if (!asset) {
     throw Boom.notFound('Asset not found');

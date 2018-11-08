@@ -1,0 +1,15 @@
+.appList {
+  display: grid;
+  grid-gap: 10px;
+  /* stylelint-disable-next-line plugin/no-unsupported-browser-features */
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  padding: 10px;
+}
+
+/* stylelint-disable-next-line selector-max-specificity */
+.navbarTitle,
+.navbarTitle:visited,
+.navbarTitle:hover {
+  color: inherit;
+  text-decoration: none;
+}

@@ -8,21 +8,21 @@
 }
 
 .fotos {
-  background-image: url(./amsterdam/camera.svg);
+  background-image: url(amsterdam/camera.svg);
 }
 
 .proces {
-  background-image: url(./amsterdam/process.svg);
-  border-bottom: 1px solid #bebebe8c;
+  background-image: url(amsterdam/process.svg);
+  border-bottom: 1px solid hsla(0, 0%, 75%, 0.549);
 }
 
 .onderwerp {
-  background-image: url(./amsterdam/description.svg);
+  background-image: url(amsterdam/description.svg);
 }
 
 .notities {
-  background-image: url(./amsterdam/description.svg);
-  border-bottom: 1px solid #bebebe8c;
+  background-image: url(amsterdam/description.svg);
+  border-bottom: 1px solid hsla(0, 0%, 75%, 0.549);
 }
 
 .title:not(:last-child) {
@@ -30,9 +30,9 @@
 }
 
 .fotos .container {
-  background-color: #ffffff;
-  background-image: url('./background.svg');
-  box-shadow: 0 -5px 11px 0 rgba(10, 10, 10, 0.07), 0 5px 11px 0 rgba(10, 10, 10, 0.07);
+  background-color: hsl(0, 0%, 100%);
+  background-image: url(background.svg);
+  box-shadow: 0 -5px 11px 0 hsla(0, 0%, 4%, 0.07), 0 5px 11px 0 hsla(0, 0%, 4%, 0.07);
   display: flex;
   flex-flow: row;
   height: 7.5em;
@@ -45,7 +45,7 @@
 }
 
 :not(.container) > .container > .container {
-  background-color: #ffffff;
+  background-color: hsl(0, 0%, 100%);
   background-position: 1em 1.3em;
   background-repeat: no-repeat;
   padding: 1.5em 0.75em 1.5em 4em;

@@ -11,7 +11,7 @@ export default async function manifestHandler(ctx) {
   const { id } = ctx.params;
   const { App } = ctx.state.db;
 
-  const record = await App.findById(id, { raw: true });
+  const record = await App.findByPk(id, { raw: true });
 
   if (!record) {
     throw Boom.notFound('App not found');

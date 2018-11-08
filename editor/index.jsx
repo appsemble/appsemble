@@ -1,4 +1,5 @@
-import 'bulma/css/bulma.css';
+import '@fortawesome/fontawesome-free/css/all.css';
+
 import getDb from '@appsemble/utils/getDB';
 import React from 'react';
 import ReactDOM from 'react-dom';
@@ -31,8 +32,8 @@ getStore().then(store => {
     <Provider store={store}>
       <App
         authentication={{
-          url: `${window.location.origin}/oauth/token`,
-          refreshURL: `${window.location.origin}/oauth/token`,
+          url: `${window.location.origin}/api/oauth/token`,
+          refreshURL: `${window.location.origin}/api/oauth/token`,
           clientId: 'appsemble-editor',
           scope: 'apps:read apps:write',
         }}
