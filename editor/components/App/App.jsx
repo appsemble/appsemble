@@ -29,7 +29,6 @@ export default class App extends React.Component {
         <div>
           {!user ? (
             <EmailLogin
-              key="appsemble-editor-email-login"
               authentication={{
                 method: 'email',
                 ...authentication,
