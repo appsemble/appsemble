@@ -1,3 +1,1 @@
-import '../../index.css';
-
-export { default } from './AppList';
+export { default } from './components/AppList';
