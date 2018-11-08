@@ -11,7 +11,7 @@ export default async function iconHandler(ctx) {
   let backgroundColor = '#ffffff';
 
   if (id != null) {
-    const app = await App.findById(id, { raw: true });
+    const app = await App.findByPk(id, { raw: true });
     if (!app) {
       throw Boom.notFound('App not found');
     }
