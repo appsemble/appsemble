@@ -1,4 +1,10 @@
 export { default as Button } from './Button';
+export { default as Card } from './Card';
+export { default as CardContent } from './CardContent';
+export { default as CardFooter } from './CardFooter';
+export { default as CardFooterItem } from './CardFooterItem';
+export { default as CardHeader } from './CardHeader';
+export { default as CardHeaderTitle } from './CardHeaderTitle';
 export { default as Content } from './Content';
 export { default as Container } from './Container';
 export { default as Control } from './Control';
@@ -11,6 +17,7 @@ export { default as FileCta } from './FileCta';
 export { default as FileIcon } from './FileIcon';
 export { default as FileInput } from './FileInput';
 export { default as FileLabel } from './FileLabel';
+export { default as FileName } from './FileName';
 export { default as Help } from './Help';
 export { default as Icon } from './Icon';
 export { default as Image } from './Image';

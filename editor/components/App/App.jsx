@@ -1,8 +1,9 @@
-import { BrowserRouter as Router, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import React from 'react';
 import { connect } from 'react-redux';
 import { IntlProvider } from 'react-intl';
 
+import AppList from '../AppList';
 import Editor from '../Editor';
 import { initAuth } from '../../../app/actions/user';
 import EmailLogin from '../../../app/components/EmailLogin';
@@ -35,10 +36,13 @@ export class App extends React.Component {
           />
         ) : (
           <Router>
-            <Route
-              path="/editor/:id"
-              render={props => <Editor id={props.match.params.id} {...props} />}
-            />
+            <Switch>
+              <Route
+                path="/editor/:id"
+                render={props => <Editor id={props.match.params.id} {...props} />}
+              />
+              <Route path="/editor" render={props => <AppList {...props} />} />
+            </Switch>
           </Router>
         )}
       </IntlProvider>
