@@ -3,7 +3,6 @@ import {
   NavbarBrand,
   NavbarItem,
   Button,
-  Fas,
   File,
   FileCta,
   FileLabel,

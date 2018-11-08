@@ -1,0 +1,7 @@
+.createAppCard {
+  border: 1px dashed #cccccc;
+  box-shadow: none;
+  color: #cccccc;
+  cursor: pointer;
+  user-select: none;
+}

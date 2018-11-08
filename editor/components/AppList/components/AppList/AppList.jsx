@@ -3,6 +3,7 @@ import React from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import AppCard from '../AppCard';
+import CreateAppCard from '../CreateAppCard';
 import messages from './messages';
 import styles from './applist.css';
 
@@ -39,6 +40,7 @@ export default class AppList extends React.Component {
         {apps.map(app => (
           <AppCard key={app.id} app={app} />
         ))}
+        <CreateAppCard />
       </div>
     );
   }
