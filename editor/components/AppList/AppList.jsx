@@ -2,6 +2,8 @@ import axios from 'axios';
 import { Link } from 'react-router-dom';
 import React from 'react';
 
+import styles from './applist.css';
+
 function chunkArray(items, size) {
   const results = [];
 
@@ -42,7 +44,7 @@ export default class AppList extends React.Component {
           <div className="card-content">
             <div className="content has-text-centered is-centered">
               <figure className="image is-64x64">
-                <img alt="Logo" src={`/${app.id}/icon-64.png`} style={{ margin: '0 auto' }} />
+                <img alt="Logo" className={styles.appTileLogo} src={`/${app.id}/icon-64.png`} />
               </figure>
             </div>
           </div>
