@@ -1,6 +1,19 @@
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardFooterItem,
+  CardHeader,
+  CardHeaderTitle,
+  Content,
+  Image,
+} from '@appsemble/react-bulma';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import React from 'react';
+import { FormattedMessage } from 'react-intl';
+
+import messages from './messages';
 
 export default class AppCard extends React.Component {
   static propTypes = {
@@ -11,26 +24,28 @@ export default class AppCard extends React.Component {
     const { app } = this.props;
 
     return (
-      <div className="card">
-        <header className="card-header">
-          <p className="card-header-title">{app.name}</p>
-        </header>
-        <div className="card-content">
-          <div className="content has-text-centered is-centered">
-            <figure className="image is-64x64">
-              <img alt="Logo" className="content" src={`/${app.id}/icon-64.png`} />
-            </figure>
-          </div>
-        </div>
-        <footer className="card-footer">
-          <a className="card-footer-item" href={`/${app.path}`}>
-            View
-          </a>
-          <Link className="card-footer-item" to={`/editor/${app.id}`}>
-            Edit
-          </Link>
-        </footer>
-      </div>
+      <Card>
+        <CardHeader>
+          <CardHeaderTitle>{app.name}</CardHeaderTitle>
+        </CardHeader>
+        <CardContent>
+          <Content>
+            <Image alt="Logo" size={64} src={`/${app.id}/icon-64.png`} />
+          </Content>
+        </CardContent>
+        <CardFooter>
+          <CardFooterItem>
+            <a href={`/${app.path}`}>
+              <FormattedMessage {...messages.view} />
+            </a>
+          </CardFooterItem>
+          <CardFooterItem>
+            <Link to={`/editor/${app.id}`}>
+              <FormattedMessage {...messages.edit} />
+            </Link>
+          </CardFooterItem>
+        </CardFooter>
+      </Card>
     );
   }
 }
