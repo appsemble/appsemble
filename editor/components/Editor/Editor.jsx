@@ -7,8 +7,13 @@ import {
   NavbarItem,
   NavbarStart,
   Button,
-  Fas,
   Icon,
+  File,
+  FileCta,
+  FileLabel,
+  FileIcon,
+  FileInput,
+  FileName,
 } from '@appsemble/react-bulma';
 import axios from 'axios';
 import { FormattedMessage } from 'react-intl';
@@ -131,25 +136,21 @@ export default class Editor extends React.Component {
               <NavbarMenu className={`${openMenu && 'is-active'}`}>
                 <NavbarStart>
                   <NavbarItem>
-                    <div className={`file ${icon && 'has-name'}`}>
-                      <label className="file-label" htmlFor="icon-upload">
-                        <input
+                    <File className={`${icon && 'has-name'}`}>
+                      <FileLabel component="label" htmlFor="icon-upload">
+                        <FileInput
                           accept="image/jpeg, image/png, image/tiff, image/webp, image/xml+svg"
-                          className="file-input"
                           id="icon-upload"
                           name="icon"
                           onChange={this.onIconChange}
-                          type="file"
                         />
-                        <span className="file-cta">
-                          <span className="file-icon">
-                            <Fas fa="upload" />
-                          </span>
-                          <span className="file-label">Icon</span>
-                        </span>
-                        {icon && <span className="file-name">{filename}</span>}
-                      </label>
-                    </div>
+                        <FileCta>
+                          <FileIcon fa="upload" />
+                          <FileLabel>Icon</FileLabel>
+                        </FileCta>
+                        {icon && <FileName>{filename}</FileName>}
+                      </FileLabel>
+                    </File>
                   </NavbarItem>
                 </NavbarStart>
                 <NavbarEnd>
