@@ -1,5 +1,3 @@
-import '@fortawesome/fontawesome-free/css/all.css';
-
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 import React from 'react';
