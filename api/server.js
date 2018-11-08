@@ -86,7 +86,7 @@ export function processArgv() {
       desc: 'The Sentry DSN to use for error reporting. See https://sentry.io for details.',
       hidden: !production,
     })
-    .alias('i', 'init-database')
+    .alias('i', 'initialize-database')
     .option('port', {
       desc: 'The HTTP server port to use. (Development only)',
       type: 'number',
@@ -186,7 +186,7 @@ export default async function server({ app = new Koa(), db, smtp, secret = 'apps
 
 async function main() {
   const args = processArgv();
-  if (args.initDatabase) {
+  if (args.initializeDatabase) {
     const { sequelize, OAuthClient, EmailAuthorization } = await setupModels({
       sync: true,
       force: true,
