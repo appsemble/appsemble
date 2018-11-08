@@ -1,9 +1,13 @@
 import {
   Navbar,
   NavbarBrand,
+  NavbarBurger,
+  NavbarEnd,
+  NavbarMenu,
   NavbarItem,
+  NavbarStart,
   Button,
-  Fas,
+  Icon,
   File,
   FileCta,
   FileLabel,
@@ -12,6 +16,7 @@ import {
   FileName,
 } from '@appsemble/react-bulma';
 import axios from 'axios';
+import { FormattedMessage } from 'react-intl';
 import { Link } from 'react-router-dom';
 import MonacoEditor from 'react-monaco-editor';
 import PropTypes from 'prop-types';
@@ -19,6 +24,7 @@ import React from 'react';
 import yaml from 'js-yaml';
 
 import styles from './editor.css';
+import messages from '../App/messages';
 
 export default class Editor extends React.Component {
   static propTypes = {
@@ -30,6 +36,7 @@ export default class Editor extends React.Component {
     valid: false,
     dirty: true,
     icon: undefined,
+    openMenu: false,
   };
 
   frame = React.createRef();
@@ -82,6 +89,11 @@ export default class Editor extends React.Component {
     this.setState({ dirty: true });
   };
 
+  onLogout = () => {
+    const { logout } = this.props;
+    logout();
+  };
+
   onMonacoChange = recipe => {
     this.setState({ recipe, dirty: true });
   };
@@ -91,7 +103,7 @@ export default class Editor extends React.Component {
   };
 
   render() {
-    const { recipe, path, valid, dirty, icon } = this.state;
+    const { recipe, path, valid, dirty, icon, openMenu } = this.state;
     const { id } = this.props;
     const filename = icon ? icon.name : 'Icon';
 
@@ -102,7 +114,7 @@ export default class Editor extends React.Component {
             <Navbar className="is-dark">
               <NavbarBrand>
                 <NavbarItem>
-                  <Link className={styles.title} to="/editor">
+                  <Link className={styles.navbarTitle} to="/editor">
                     Editor
                   </Link>
                 </NavbarItem>
@@ -116,24 +128,42 @@ export default class Editor extends React.Component {
                     Upload
                   </Button>
                 </NavbarItem>
-                <NavbarItem>
-                  <File className={`${icon && 'has-name'}`}>
-                    <FileLabel component="label" htmlFor="icon-upload">
-                      <FileInput
-                        accept="image/jpeg, image/png, image/tiff, image/webp, image/xml+svg"
-                        id="icon-upload"
-                        name="icon"
-                        onChange={this.onIconChange}
-                      />
-                      <FileCta>
-                        <FileIcon fa="upload" />
-                        <FileLabel>Icon</FileLabel>
-                      </FileCta>
-                      {icon && <FileName>{filename}</FileName>}
-                    </FileLabel>
-                  </File>
-                </NavbarItem>
+                <NavbarBurger
+                  active={openMenu}
+                  onClick={() => this.setState({ openMenu: !openMenu })}
+                />
               </NavbarBrand>
+              <NavbarMenu className={`${openMenu && 'is-active'}`}>
+                <NavbarStart>
+                  <NavbarItem>
+                    <File className={`${icon && 'has-name'}`}>
+                      <FileLabel component="label" htmlFor="icon-upload">
+                        <FileInput
+                          accept="image/jpeg, image/png, image/tiff, image/webp, image/xml+svg"
+                          id="icon-upload"
+                          name="icon"
+                          onChange={this.onIconChange}
+                        />
+                        <FileCta>
+                          <FileIcon fa="upload" />
+                          <FileLabel>Icon</FileLabel>
+                        </FileCta>
+                        {icon && <FileName>{filename}</FileName>}
+                      </FileLabel>
+                    </File>
+                  </NavbarItem>
+                </NavbarStart>
+                <NavbarEnd>
+                  <NavbarItem>
+                    <Button onClick={this.onLogout}>
+                      <Icon fa="sign-out-alt" />
+                      <span>
+                        <FormattedMessage {...messages.logoutButton} />
+                      </span>
+                    </Button>
+                  </NavbarItem>
+                </NavbarEnd>
+              </NavbarMenu>
             </Navbar>
             <MonacoEditor
               className={styles.monacoEditor}
