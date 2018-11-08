@@ -1,7 +1,9 @@
 import axios from 'axios';
 import React from 'react';
+import { FormattedMessage } from 'react-intl';
 
 import AppCard from '../AppCard';
+import messages from './messages';
 import styles from './applist.css';
 
 export default class AppList extends React.Component {
@@ -17,11 +19,19 @@ export default class AppList extends React.Component {
   render() {
     const { apps } = this.state;
     if (!apps) {
-      return <p>Loading...</p>;
+      return (
+        <p>
+          <FormattedMessage {...messages.loading} />
+        </p>
+      );
     }
 
     if (!apps.length) {
-      return <p>No apps!</p>;
+      return (
+        <p>
+          <FormattedMessage {...messages.noApps} />
+        </p>
+      );
     }
 
     return (
