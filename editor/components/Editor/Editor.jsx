@@ -53,8 +53,10 @@ export default class Editor extends React.Component {
       this.setState({ recipe, path: data.path });
     } catch (e) {
       if (e.response && (e.response.status === 404 || e.response.status === 401)) {
+        // XXX implement i18n
         push('App does not exist');
       } else {
+        // XXX implement i18n
         push('Something went wrong trying to load this app');
       }
 
@@ -73,6 +75,7 @@ export default class Editor extends React.Component {
       try {
         app = yaml.safeLoad(recipe);
       } catch (e) {
+        // XXX implement i18n
         push('Invalid YAML');
         return { valid: false, dirty: false };
       }
@@ -94,8 +97,10 @@ export default class Editor extends React.Component {
     if (valid) {
       try {
         await axios.put(`/api/apps/${id}`, yaml.safeLoad(recipe));
+        // XXX implement i18n
         push({ body: 'Successfully updated app definition', color: 'success' });
       } catch (e) {
+        // XXX implement i18n
         push('Something went wrong trying to update the app definition');
       }
     }
@@ -106,6 +111,7 @@ export default class Editor extends React.Component {
           headers: { 'Content-Type': icon.type },
         });
       } catch (e) {
+        // XXX implement i18n
         push('Something went wrong trying to update the app icon');
       }
     }
