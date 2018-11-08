@@ -6,13 +6,13 @@
 a,
 button {
   bottom: 16px !important;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5) !important;
+  box-shadow: 0 2px 4px hsla(0, 0%, 0%, 0.5) !important;
   font-size: 0 !important;
   right: 16px !important;
 }
 
 .fas {
-  background-image: url(./add.svg) !important;
+  background-image: url(add.svg) !important;
   background-position: 13px 13px !important;
   background-repeat: no-repeat !important;
   background-size: 30px !important;

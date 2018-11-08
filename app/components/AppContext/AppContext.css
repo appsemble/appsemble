@@ -16,7 +16,7 @@
   /* stylelint-disable-next-line selector-max-specificity */
   &::after {
     animation: spinAround 0.5s infinite linear;
-    border: 8px solid #dbdbdb;
+    border: 8px solid hsl(0, 0%, 85.9%);
     border-radius: 50%;
     border-right-color: transparent;
     border-top-color: transparent;
