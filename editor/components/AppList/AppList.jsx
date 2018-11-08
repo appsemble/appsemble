@@ -4,6 +4,8 @@ import axios from 'axios';
 import { Link } from 'react-router-dom';
 import React from 'react';
 
+import styles from './applist.css';
+
 function chunkArray(items, size) {
   const results = [];
 
@@ -59,6 +61,18 @@ export default class AppList extends React.Component {
         </div>
       </div>
     ));
+
+    appTiles.push(
+      <div key="create-app" className="tile is-parent is-4">
+        <div className={`card is-child tile ${styles.createAppTile}`}>
+          <div className="card-content">
+            <div className="content">
+              <p>Click here to create a new app</p>
+            </div>
+          </div>
+        </div>
+      </div>,
+    );
 
     const chunkTiles = chunkArray(appTiles, 3).map(chunk => (
       <div key={`chunk-${chunk[0].key}`} className="tile is-ancestor">

@@ -1,4 +1,3 @@
-import 'bulma/css/bulma.css';
 import getDb from '@appsemble/utils/getDB';
 import React from 'react';
 import ReactDOM from 'react-dom';
