@@ -1,0 +1,62 @@
+/blocks:
+  post:
+    tags: [block]
+    description: Register a new block.
+    x-oai-middleware:
+      - file: blocks
+        handler: createBlockDefinition
+    parameters:
+      - name: block
+        in: body
+        description: The block definition to create.
+        required: true
+        schema:
+          $ref: '#/definitions/BlockDefinition'
+    responses:
+      201:
+        description: The block definition that was created.
+        schema:
+          $ref: '#/definitions/BlockDefinition'
+      default:
+        $ref: '#/responses/default'
+  get:
+    tags: [block]
+    description: Get all existing block definitions.
+    x-oai-middleware:
+      - file: blocks
+        handler: queryBlockDefinitions
+    responses:
+      200:
+        description: The list of all block definitions.
+        schema:
+          type: array
+          items:
+            $ref: '#/definitions/BlockDefinition'
+      default:
+        $ref: '#/responses/default'
+
+/blocks/{organization}/{id}:
+  get:
+    tags: [block]
+    description: Get a single block
+    x-oai-middleware:
+      - file: blocks
+        handler: getBlockDefinition
+    parameters:
+      - name: organization
+        in: path
+        description: The organization of the block definition to get.
+        required: true
+        type: string
+      - name: id
+        in: path
+        description: The id of the block definition to get.
+        required: true
+        type: string
+    responses:
+      200:
+        description: The app that matches the given id.
+        schema:
+          $ref: '#/definitions/App'
+      default:
+        $ref: '#/responses/default'

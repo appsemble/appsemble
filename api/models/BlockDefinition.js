@@ -1,8 +1,8 @@
 export default (sequelize, DataTypes) =>
   sequelize.define(
-    'Block',
+    'BlockDefinition',
     {
-      name: { type: DataTypes.STRING, primaryKey: true },
+      id: { type: DataTypes.STRING, primaryKey: true },
       description: DataTypes.STRING,
     },
     {

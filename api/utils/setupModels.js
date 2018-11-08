@@ -27,7 +27,7 @@ function associateModels(models) {
     ResetPasswordToken,
     OAuthAuthorization,
     Resource,
-    Block,
+    BlockDefinition,
     BlockVersion,
   } = models;
 
@@ -56,8 +56,8 @@ function associateModels(models) {
   Resource.belongsTo(User);
   Resource.belongsTo(App);
 
-  Block.hasMany(BlockVersion);
-  BlockVersion.belongsTo(Block, { foreignKey: { allowNull: false } });
+  BlockDefinition.hasMany(BlockVersion);
+  BlockVersion.belongsTo(BlockDefinition, { foreignKey: { allowNull: false } });
 }
 
 export default async function setupModels({
