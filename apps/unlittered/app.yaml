@@ -32,7 +32,7 @@ definitions:
             type:
               - image/jpeg
       notities:
-        title: Bijv. Er ligt een fiets in de bosjes.
+        title: Notities
         type: string
       proces:
         title: Afdeling
@@ -70,6 +70,7 @@ pages:
                 - value: Inzameling
             - name: notities
               label: Notities
+              placeholder: Bijv. Er ligt een fiets in de bosjes.
               type: string
               multiline: true
             - name: fotos
