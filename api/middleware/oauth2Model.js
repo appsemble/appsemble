@@ -26,7 +26,7 @@ export default function oauth2Model({ db, secret }) {
 
     async getAccessToken(accessToken) {
       const { OAuthAuthorization } = await db;
-      const token = await OAuthAuthorization.find({ where: { token: accessToken } });
+      const token = await OAuthAuthorization.findOne({ where: { token: accessToken } });
 
       if (!token) {
         return null;
@@ -48,7 +48,7 @@ export default function oauth2Model({ db, secret }) {
 
     async getRefreshToken(refreshToken) {
       const { OAuthAuthorization } = await db;
-      const token = await OAuthAuthorization.find({ where: { refreshToken } });
+      const token = await OAuthAuthorization.findOne({ where: { refreshToken } });
 
       if (!token) {
         return null;
@@ -71,7 +71,7 @@ export default function oauth2Model({ db, secret }) {
       const { OAuthClient } = await db;
 
       const clause = clientSecret ? { clientId, clientSecret } : { clientId };
-      const client = await OAuthClient.find({ where: clause });
+      const client = await OAuthClient.findOne({ where: clause });
 
       if (!client) {
         return false;
@@ -87,7 +87,7 @@ export default function oauth2Model({ db, secret }) {
 
     async getUser(username, password) {
       const { EmailAuthorization } = await db;
-      const user = await EmailAuthorization.find({ where: { email: username } }, { raw: true });
+      const user = await EmailAuthorization.findOne({ where: { email: username } }, { raw: true });
 
       if (!(user || bcrypt.compareSync(password, user.password))) {
         return false;

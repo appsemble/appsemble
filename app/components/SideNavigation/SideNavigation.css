@@ -3,7 +3,7 @@
   background-color: transparent;
   border: none;
   border-radius: 2px;
-  color: #4a4a4a;
+  color: hsl(0, 0%, 29%);
   cursor: pointer;
   display: block;
   font-size: 1rem;
@@ -16,7 +16,7 @@
   width: 100%;
 
   &:hover {
-    background-color: #f5f5f5;
-    color: #363636;
+    background-color: hsl(0, 0%, 96.1%);
+    color: hsl(0, 0%, 21.2%);
   }
 }

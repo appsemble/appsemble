@@ -27,7 +27,7 @@
 
 .input,
 .textarea {
-  background-image: url(./description.svg) !important;
+  background-image: url(description.svg) !important;
   background-position: 10px 10px !important;
   background-repeat: no-repeat !important;
   border-color: transparent !important;
@@ -37,7 +37,7 @@
   &:focus,
   &:active {
     border-color: transparent !important;
-    box-shadow: 0 0 0 0.125em rgba(78, 78, 78, 0.1) !important;
+    box-shadow: 0 0 0 0.125em hsla(0, 0%, 30.6%, 0.1) !important;
   }
 }
 
@@ -49,7 +49,7 @@
   width: 100% !important;
 
   & select {
-    background-image: url(./process.svg) !important;
+    background-image: url(process.svg) !important;
     background-position: 10px 4px !important;
     background-repeat: no-repeat !important;
     border-color: transparent !important;
@@ -61,7 +61,7 @@
   }
 
   &:not(.is-multiple)::after {
-    background-image: url(./arrow.svg) !important;
+    background-image: url(arrow.svg) !important;
     background-repeat: no-repeat !important;
     background-size: contain !important;
     border: 0 !important;
@@ -69,7 +69,6 @@
     border-top: 0 !important;
     height: 24px !important;
     top: 35% !important;
-    -webkit-transform: none !important;
     transform: none !important;
     width: 24px !important;
   }
@@ -77,7 +76,7 @@
   & select:focus,
   & select:active {
     border-color: transparent !important;
-    box-shadow: 0 0 0 0.125em rgba(78, 78, 78, 0.1) !important;
+    box-shadow: 0 0 0 0.125em hsla(0, 0%, 30.6%, 0.1) !important;
   }
 }
 
@@ -85,11 +84,11 @@
   background-color: var(--primary-color) !important;
   border-radius: var(--border-radius) !important;
   display: block;
-  margin: 2em auto 2em auto !important;
+  margin: 2em auto !important;
   width: 50% !important;
 
   &:hover {
-    background-color: #eb6e6e !important;
+    background-color: hsl(0, 75.9%, 67.7%) !important;
     border-color: transparent !important;
   }
 

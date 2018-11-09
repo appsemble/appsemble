@@ -56,7 +56,7 @@ export async function resendVerification(ctx) {
   const { EmailAuthorization } = ctx.state.db;
   const { smtp } = ctx.state;
 
-  const record = await EmailAuthorization.findById(email);
+  const record = await EmailAuthorization.findByPk(email);
   if (record && !record.verified) {
     const { name, key } = record;
     await resendVerificationEmail(
