@@ -78,6 +78,8 @@ export default class CreateAppCard extends React.Component {
               <CardContent>
                 <InputField
                   label="Name" // XXX implement i18n
+                  maxLength={30}
+                  minLength={1}
                   name="name"
                   onChange={e => this.setState({ appName: e.target.value })}
                   placeholder="Name" // XXX implement i18n
