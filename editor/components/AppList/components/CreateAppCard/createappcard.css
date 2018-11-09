@@ -3,8 +3,8 @@
   box-shadow: none;
   color: #cccccc;
   cursor: pointer;
-  user-select: none;
   height: 100%;
+  user-select: none;
 }
 
 .createAppCardContainer {
