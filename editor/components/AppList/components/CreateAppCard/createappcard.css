@@ -10,3 +10,17 @@
 .createAppCardContainer {
   height: 100%;
 }
+
+.cardFooterButton {
+  background: none !important;
+  border: none;
+  color: #3273dc;
+  cursor: pointer;
+  font: inherit;
+  padding: 0 !important;
+}
+
+/* stylelint-disable-next-line selector-max-specificity */
+.cardFooterButton:hover {
+  color: #363636;
+}

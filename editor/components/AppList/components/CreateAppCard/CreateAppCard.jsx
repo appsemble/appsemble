@@ -103,10 +103,12 @@ export default class CreateAppCard extends React.Component {
                 <CardFooterItem className="is-link" component="a" onClick={this.onClose}>
                   <FormattedMessage {...messages.cancel} />
                 </CardFooterItem>
-                <CardFooterItem>
-                  <Button className="is-link" type="submit">
-                    <FormattedMessage {...messages.create} />
-                  </Button>
+                <CardFooterItem
+                  className={styles.cardFooterButton}
+                  component="button"
+                  type="submit"
+                >
+                  <FormattedMessage {...messages.create} />
                 </CardFooterItem>
               </CardFooter>
             </Card>
