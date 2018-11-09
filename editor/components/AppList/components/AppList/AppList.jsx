@@ -8,17 +8,13 @@ import messages from './messages';
 import styles from './applist.css';
 
 export default class AppList extends React.Component {
-  state = {
-    apps: [],
-  };
-
   async componentDidMount() {
-    const { data: apps } = await axios.get(`/api/apps/`);
-    this.setState({ apps });
+    const { getApps } = this.props;
+    getApps();
   }
 
   render() {
-    const { apps } = this.state;
+    const { apps, history } = this.props;
     if (!apps) {
       return (
         <p>
@@ -40,7 +36,7 @@ export default class AppList extends React.Component {
         {apps.map(app => (
           <AppCard key={app.id} app={app} />
         ))}
-        <CreateAppCard />
+        <CreateAppCard history={history} />
       </div>
     );
   }
