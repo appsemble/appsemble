@@ -1,7 +1,7 @@
 .createAppCard {
-  border: 1px dashed #cccccc;
+  border: 1px dashed hsl(0, 0%, 80%);
   box-shadow: none;
-  color: #cccccc;
+  color: hsl(0, 0%, 80%);
   cursor: pointer;
   height: 100%;
   user-select: none;
@@ -14,7 +14,7 @@
 .cardFooterButton {
   background: none !important;
   border: none;
-  color: #3273dc;
+  color: hsl(217, 71%, 53%);
   cursor: pointer;
   font: inherit;
   padding: 0 !important;
@@ -22,5 +22,5 @@
 
 /* stylelint-disable-next-line selector-max-specificity */
 .cardFooterButton:hover {
-  color: #363636;
+  color: hsl(0, 0%, 21%);
 }
