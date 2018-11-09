@@ -9,7 +9,6 @@ import {
   Modal,
   SelectField,
   InputField,
-  Button,
 } from '@appsemble/react-bulma';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
