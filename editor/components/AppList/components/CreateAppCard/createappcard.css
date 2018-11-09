@@ -4,4 +4,9 @@
   color: #cccccc;
   cursor: pointer;
   user-select: none;
+  height: 100%;
+}
+
+.createAppCardContainer {
+  height: 100%;
 }

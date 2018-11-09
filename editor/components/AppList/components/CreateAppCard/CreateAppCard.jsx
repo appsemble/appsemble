@@ -1,4 +1,12 @@
-import { Card, CardContent, Modal, CardHeader, CardHeaderTitle } from '@appsemble/react-bulma';
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardFooterItem,
+  CardHeader,
+  CardHeaderTitle,
+  Modal,
+} from '@appsemble/react-bulma';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 
@@ -21,7 +29,7 @@ export default class CreateAppCard extends React.Component {
   render() {
     const { modalOpen } = this.state;
     return (
-      <div>
+      <div className={styles.createAppCardContainer}>
         <Card className={styles.createAppCard} onClick={this.onClick}>
           <CardContent>
             <span>
@@ -33,7 +41,7 @@ export default class CreateAppCard extends React.Component {
           <Card>
             <CardHeader>
               <CardHeaderTitle>
-                <span>Create a new app</span>
+                <FormattedMessage {...messages.createAppTitle} />
               </CardHeaderTitle>
             </CardHeader>
             <CardContent>
@@ -41,6 +49,18 @@ export default class CreateAppCard extends React.Component {
                 <FormattedMessage {...messages.createApp} />
               </span>
             </CardContent>
+            <CardFooter>
+              <CardFooterItem>
+                <span>
+                  <FormattedMessage {...messages.cancel} />
+                </span>
+              </CardFooterItem>
+              <CardFooterItem>
+                <span>
+                  <FormattedMessage {...messages.create} />
+                </span>
+              </CardFooterItem>
+            </CardFooter>
           </Card>
         </Modal>
       </div>
