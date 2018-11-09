@@ -23,14 +23,6 @@ export default class AppList extends React.Component {
       );
     }
 
-    if (!apps.length) {
-      return (
-        <p>
-          <FormattedMessage {...messages.noApps} />
-        </p>
-      );
-    }
-
     return (
       <div className={styles.appList}>
         {apps.map(app => (
