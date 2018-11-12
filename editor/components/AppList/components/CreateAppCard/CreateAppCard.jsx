@@ -16,7 +16,7 @@ import { FormattedMessage } from 'react-intl';
 import messages from './messages';
 import styles from './createappcard.css';
 import templates from '../../../../templates';
-import { push } from '../../../../../app/actions/message';
+import { push } from '../../../../actions/message';
 
 export default class CreateAppCard extends React.Component {
   state = {

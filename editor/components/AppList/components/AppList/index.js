@@ -1,6 +1,6 @@
 import { connect } from 'react-redux';
 
-import { getApps } from '../../../../actions/app';
+import { getApps } from '../../../../actions/apps';
 import AppList from './AppList';
 
 export default connect(

@@ -9,8 +9,7 @@ import thunk from 'redux-thunk';
 
 import './index.css';
 import App from './components/App';
-import { user, db } from '../app/actions';
-import { app } from './actions';
+import { apps, db, user } from './actions';
 
 async function getStore() {
   const idb = await getDb({ id: 'appsemble-editor' });
@@ -20,7 +19,7 @@ async function getStore() {
     (process.env.NODE_ENV !== 'production' && window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__) ||
     compose;
   return createStore(
-    combineReducers({ user, db, apps: app }),
+    combineReducers({ user, db, apps }),
     {
       db: idb,
     },

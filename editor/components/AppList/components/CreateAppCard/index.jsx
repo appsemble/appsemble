@@ -1,7 +1,7 @@
 import { connect } from 'react-redux';
 
-import { createApp } from '../../../../actions/app';
-import { push } from '../../../../../app/actions/message';
+import { createApp } from '../../../../actions/apps';
+import { push } from '../../../../actions/message';
 import CreateAppCard from './CreateAppCard';
 
 export default connect(
