@@ -1,7 +1,7 @@
 import { connect } from 'react-redux';
 
+import { Message } from '@appsemble/react-components';
 import { shift } from '../../actions/message';
-import Message from './Message';
 
 function mapStateToProps(state) {
   return {

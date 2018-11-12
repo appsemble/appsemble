@@ -1,7 +1,7 @@
 import { connect } from 'react-redux';
 
+import { EmailLogin } from '@appsemble/react-components';
 import { passwordLogin } from '../../actions/user';
-import EmailLogin from './EmailLogin';
 
 export default connect(
   null,
