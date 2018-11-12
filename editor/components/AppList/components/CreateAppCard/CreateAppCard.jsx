@@ -61,9 +61,7 @@ export default class CreateAppCard extends React.Component {
       <div className={styles.createAppCardContainer}>
         <Card className={styles.createAppCard} onClick={this.onClick}>
           <CardContent>
-            <span>
-              <FormattedMessage {...messages.createApp} />
-            </span>
+            <FormattedMessage {...messages.createApp} />
           </CardContent>
         </Card>
         <Container component="form" onSubmit={this.onCreate}>
