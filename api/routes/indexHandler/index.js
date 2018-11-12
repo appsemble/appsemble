@@ -14,7 +14,7 @@ const renderError = pug.compileFile(path.join(__dirname, 'error.pug'));
  */
 export default async function indexHandler(ctx) {
   const { path: p } = ctx.params;
-  const { App } = ctx.state.db;
+  const { App } = ctx.db.models;
   ctx.type = 'text/html';
   const assets = await ctx.state.getAssets().app;
   const { sentryDsn } = ctx.state;

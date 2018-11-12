@@ -9,7 +9,7 @@ const iconSizes = [48, 144, 192, 512];
  */
 export default async function manifestHandler(ctx) {
   const { id } = ctx.params;
-  const { App } = ctx.state.db;
+  const { App } = ctx.db.models;
 
   const record = await App.findByPk(id, { raw: true });
 

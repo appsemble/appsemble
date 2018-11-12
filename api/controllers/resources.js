@@ -18,7 +18,7 @@ function verifyResourceDefinition(app, resourceType) {
 
 export async function getAll(ctx) {
   const { appId, resourceType } = ctx.params;
-  const { App } = ctx.state.db;
+  const { App } = ctx.db.models;
 
   const app = await App.findByPk(appId);
   verifyResourceDefinition(app, resourceType);
@@ -29,7 +29,7 @@ export async function getAll(ctx) {
 
 export async function getOne(ctx) {
   const { appId, resourceType, resourceId } = ctx.params;
-  const { App } = ctx.state.db;
+  const { App } = ctx.db.models;
 
   const app = await App.findByPk(appId);
   verifyResourceDefinition(app, resourceType);
@@ -45,7 +45,7 @@ export async function getOne(ctx) {
 
 export async function create(ctx) {
   const { appId, resourceType } = ctx.params;
-  const { App } = ctx.state.db;
+  const { App } = ctx.db.models;
 
   const app = await App.findByPk(appId);
   verifyResourceDefinition(app, resourceType);

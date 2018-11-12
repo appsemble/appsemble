@@ -5,7 +5,7 @@ import getDefaultIcon from '../../utils/getDefaultIcon';
 
 export default async function iconHandler(ctx) {
   const { format, id, width, height = width } = ctx.params;
-  const { App } = ctx.state.db;
+  const { App } = ctx.db.models;
   const opaque = 'opaque' in ctx.request.query || format === 'jpg' || format === 'tiff';
   let icon;
   let backgroundColor = '#ffffff';
