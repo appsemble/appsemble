@@ -65,7 +65,7 @@ export default class CreateAppCard extends React.Component {
           </CardContent>
         </Card>
         <Container component="form" onSubmit={this.onCreate}>
-          <Modal active={modalOpen} onClose={this.onClose}>
+          <Modal active={modalOpen} ModalCloseProps={{ size: 'large' }} onClose={this.onClose}>
             <Card>
               <CardHeader>
                 <CardHeaderTitle>

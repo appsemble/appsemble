@@ -1,0 +1,24 @@
+import classNames from 'classnames';
+import PropTypes from 'prop-types';
+import React from 'react';
+
+export default class ModalContent extends React.Component {
+  static propTypes = {
+    className: PropTypes.string,
+    component: PropTypes.string,
+  };
+
+  static defaultProps = {
+    className: null,
+    component: 'div',
+  };
+
+  render() {
+    const { children, className, component: Component, ...props } = this.props;
+    return (
+      <Component className={classNames('modal-content', className)} {...props}>
+        {children}
+      </Component>
+    );
+  }
+}
