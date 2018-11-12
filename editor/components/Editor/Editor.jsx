@@ -101,9 +101,12 @@ export default class Editor extends React.Component {
   };
 
   onIconChange = e => {
+    const { id } = this.props;
+    const file = e.target.files[0];
+
     this.setState({
-      icon: e.target.files[0],
-      iconURL: URL.createObjectURL(e.target.files[0]),
+      icon: file,
+      iconURL: file ? URL.createObjectURL(e.target.files[0]) : `/${id}/icon-original`,
       dirty: true,
     });
   };
