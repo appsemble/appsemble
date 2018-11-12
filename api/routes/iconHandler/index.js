@@ -4,8 +4,9 @@ import sharp from 'sharp';
 import getDefaultIcon from '../../utils/getDefaultIcon';
 
 export default async function iconHandler(ctx) {
-  const { format, id, width, height = width } = ctx.params;
+  const { format, id, width, height = width, original } = ctx.params;
   const { App } = ctx.state.db;
+
   const opaque = 'opaque' in ctx.request.query || format === 'jpg' || format === 'tiff';
   let icon;
   let backgroundColor = '#ffffff';
@@ -35,11 +36,16 @@ export default async function iconHandler(ctx) {
     );
     img = sharp(icon, { density });
   }
-  img.resize(Number(width), Number(height));
-  if (opaque) {
-    img.background(backgroundColor).flatten();
+
+  if (!original) {
+    img.resize(Number(width), Number(height));
+    if (opaque) {
+      img.background(backgroundColor).flatten();
+    }
+
+    img.toFormat(format);
   }
-  img.toFormat(format);
+
   ctx.body = await img.toBuffer();
-  ctx.type = format;
+  ctx.type = format || metadata.format;
 }
