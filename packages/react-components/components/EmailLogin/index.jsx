@@ -1,1 +1,1 @@
-export default from './EmailLogin';
+export { default } from './EmailLogin';
