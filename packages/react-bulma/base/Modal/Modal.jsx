@@ -16,7 +16,7 @@ export default class Modal extends React.Component {
     active: false,
     className: null,
     component: 'div',
-    onClose: undefined,
+    onClose: null,
   };
 
   render() {
