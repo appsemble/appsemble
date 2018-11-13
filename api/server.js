@@ -187,7 +187,7 @@ export default async function server({ app = new Koa(), db, smtp, secret = 'apps
 async function main() {
   const args = processArgv();
   if (args.initializeDatabase) {
-    const { sequelize, OAuthClient, EmailAuthorization } = await setupModels({
+    const db = await setupModels({
       sync: true,
       force: true,
       logging: true,
@@ -199,6 +199,7 @@ async function main() {
       database: args.databaseName,
       uri: args.databaseUrl,
     });
+    const { OAuthClient, EmailAuthorization } = db.models;
     await OAuthClient.create({
       clientId: 'appsemble-editor',
       clientSecret: 'appsemble-editor-secret',
@@ -211,7 +212,7 @@ async function main() {
       verified: true,
     });
     await email.createUser();
-    await sequelize.close();
+    await db.close();
     return;
   }
 
