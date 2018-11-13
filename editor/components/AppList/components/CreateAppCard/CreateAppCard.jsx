@@ -25,6 +25,10 @@ export default class CreateAppCard extends React.Component {
     appName: '',
   };
 
+  onChange = event => {
+    this.setState({ [event.target.name]: event.target.value });
+  };
+
   onClick = async () => {
     this.setState({ modalOpen: true });
   };
@@ -77,18 +81,16 @@ export default class CreateAppCard extends React.Component {
                   label="Name" // XXX implement i18n
                   maxLength={30}
                   minLength={1}
-                  name="name"
-                  onChange={e => this.setState({ appName: e.target.value })}
+                  name="appName"
+                  onChange={this.onChange}
                   placeholder="Name" // XXX implement i18n
                   required
                   value={appName}
                 />
                 <SelectField
                   label="Template" // XXX implement i18n
-                  name="template"
-                  onChange={e => {
-                    this.setState({ selectedTemplate: e.target.value });
-                  }}
+                  name="selectedTemplate"
+                  onChange={this.onChange}
                   value={selectedTemplate}
                 >
                   {templates.map((template, index) => (
