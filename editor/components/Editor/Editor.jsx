@@ -25,11 +25,12 @@ import React from 'react';
 import yaml from 'js-yaml';
 
 import styles from './editor.css';
-import messages from '../App/messages';
+import messages from './messages';
 
 export default class Editor extends React.Component {
   static propTypes = {
     id: PropTypes.string.isRequired,
+    push: PropTypes.func.isRequired,
   };
 
   state = {
@@ -44,15 +45,36 @@ export default class Editor extends React.Component {
   frame = React.createRef();
 
   async componentDidMount() {
-    const { id } = this.props;
-    const { data } = await axios.get(`/api/apps/${id}`);
-    const recipe = yaml.safeDump(data);
+    const {
+      id,
+      history,
+      push,
+      intl: { formatMessage },
+    } = this.props;
 
-    this.setState({ recipe, path: data.path, iconURL: `/api/apps/${id}/icon` });
+    try {
+      const request = await axios.get(`/api/apps/${id}`);
+      const { data } = request;
+      const recipe = yaml.safeDump(data);
+
+      this.setState({ recipe, path: data.path, iconURL: `/api/apps/${id}/icon` });
+    } catch (e) {
+      if (e.response && (e.response.status === 404 || e.response.status === 401)) {
+        push(formatMessage(messages.appNotFound));
+      } else {
+        push(formatMessage(messages.error));
+      }
+
+      history.push('/editor');
+    }
   }
 
   onSubmit = event => {
     event.preventDefault();
+    const {
+      push,
+      intl: { formatMessage },
+    } = this.props;
 
     this.setState(({ recipe }) => {
       let app = null;
@@ -61,6 +83,7 @@ export default class Editor extends React.Component {
       try {
         app = yaml.safeLoad(recipe);
       } catch (e) {
+        push(formatMessage(messages.invalidYaml));
         return { valid: false, dirty: false };
       }
 
@@ -75,17 +98,30 @@ export default class Editor extends React.Component {
   };
 
   onUpload = async () => {
-    const { id } = this.props;
+    const {
+      id,
+      push,
+      intl: { formatMessage },
+    } = this.props;
     const { recipe, valid, icon } = this.state;
 
     if (valid) {
-      await axios.put(`/api/apps/${id}`, yaml.safeLoad(recipe));
+      try {
+        await axios.put(`/api/apps/${id}`, yaml.safeLoad(recipe));
+        push({ body: formatMessage(messages.updateSuccess), color: 'success' });
+      } catch (e) {
+        push(formatMessage(messages.errorUpdate));
+      }
     }
 
     if (icon) {
-      await axios.post(`/api/apps/${id}/icon`, icon, {
-        headers: { 'Content-Type': icon.type },
-      });
+      try {
+        await axios.post(`/api/apps/${id}/icon`, icon, {
+          headers: { 'Content-Type': icon.type },
+        });
+      } catch (e) {
+        push(formatMessage(messages.errorUpdateIcon));
+      }
     }
 
     this.setState({ dirty: true });
