@@ -29,7 +29,7 @@ export default class Message extends React.Component {
     return (
       <BulmaMessage
         className={classNames(styles.root, { [styles.hidden]: !message })}
-        color="danger"
+        color={(message && message.color) || 'danger'}
       >
         <MessageBody className={styles.content}>{message?.body}</MessageBody>
       </BulmaMessage>

@@ -55,3 +55,7 @@ body {
   color: inherit;
   text-decoration: none;
 }
+
+.iconPreview {
+  margin-left: 10px;
+}

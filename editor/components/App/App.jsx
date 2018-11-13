@@ -4,7 +4,8 @@ import { IntlProvider } from 'react-intl';
 
 import AppList from '../AppList';
 import Editor from '../Editor';
-import EmailLogin from '../../../app/components/EmailLogin';
+import EmailLogin from '../EmailLogin';
+import Message from '../Message';
 
 export default class App extends React.Component {
   async componentDidMount() {
@@ -25,25 +26,27 @@ export default class App extends React.Component {
 
     return (
       <IntlProvider defaultLocale="en-US" locale="en-US" textComponent={React.Fragment}>
-        {!user ? (
-          <EmailLogin
-            key="appsemble-editor-email-login"
-            authentication={{
-              method: 'email',
-              ...authentication,
-            }}
-          />
-        ) : (
-          <Router>
-            <Switch>
-              <Route
-                path="/editor/:id"
-                render={props => <Editor id={props.match.params.id} {...props} logout={logout} />}
-              />
-              <Route path="/editor" render={props => <AppList {...props} logout={logout} />} />
-            </Switch>
-          </Router>
-        )}
+        <div>
+          {!user ? (
+            <EmailLogin
+              authentication={{
+                method: 'email',
+                ...authentication,
+              }}
+            />
+          ) : (
+            <Router>
+              <Switch>
+                <Route
+                  path="/editor/:id"
+                  render={props => <Editor id={props.match.params.id} {...props} logout={logout} />}
+                />
+                <Route path="/editor" render={props => <AppList {...props} logout={logout} />} />
+              </Switch>
+            </Router>
+          )}
+          <Message />
+        </div>
       </IntlProvider>
     );
   }

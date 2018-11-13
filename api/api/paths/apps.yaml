@@ -91,12 +91,30 @@
           - apps:write
 
 /apps/{id}/icon:
+  get:
+    tags: [app]
+    description: Get the current app Icon.
+    x-oai-middleware:
+      - file: apps
+        handler: getAppIcon
+    parameters:
+      - name: id
+        in: path
+        description: The id of the app whose icon to update.
+        required: true
+        type: integer
+    responses:
+      200:
+        description: The icon of the app that matches the given id.
+      default:
+        $ref: '#/responses/default'
+
   post:
     tags: [app]
     description: |
       Change the app icon.
 
-      If not icon has been specified, the Appsemble icon will be served.
+      If no icon has been specified, the Appsemble icon will be served.
     consumes:
       # These are the underlying formats that are supported by our underlying image processing library, sharp.
       # http://sharp.pixelplumbing.com/en/stable/#formats
