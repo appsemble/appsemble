@@ -22,6 +22,7 @@ import MonacoEditor from 'react-monaco-editor';
 import PropTypes from 'prop-types';
 import React from 'react';
 import yaml from 'js-yaml';
+import validate, { SchemaValidationError } from '@appsemble/utils/validate';
 
 import styles from './editor.css';
 import messages from '../App/messages';
@@ -32,6 +33,7 @@ export default class Editor extends React.Component {
   };
 
   state = {
+    appSchema: {},
     recipe: '',
     valid: false,
     dirty: true,
@@ -44,21 +46,36 @@ export default class Editor extends React.Component {
   async componentDidMount() {
     const { id } = this.props;
     const { data } = await axios.get(`/api/apps/${id}`);
+    const {
+      data: {
+        definitions: { App: appSchema },
+      },
+    } = await axios.get('/api.json');
     const recipe = yaml.safeDump(data);
 
-    this.setState({ recipe, path: data.path });
+    this.setState({ appSchema, recipe, path: data.path });
   }
 
-  onSubmit = event => {
+  onSave = event => {
     event.preventDefault();
+    const { appSchema } = this.state;
 
-    this.setState(({ recipe }) => {
+    this.setState(async ({ recipe }) => {
       let app = null;
 
       // Attempt to parse the YAML into a JSON object
       try {
         app = yaml.safeLoad(recipe);
+        await validate(appSchema, app);
       } catch (e) {
+        if (e instanceof SchemaValidationError) {
+          const errors = e.data;
+          console.log(
+            `App schema validation failed. Please check if the following properties are correct: ${Object.keys(
+              errors,
+            ).join(', ')}`,
+          );
+        }
         return { valid: false, dirty: false };
       }
 
@@ -110,7 +127,7 @@ export default class Editor extends React.Component {
     return (
       <div className={styles.editor}>
         <div className={styles.leftPanel}>
-          <form className={styles.editorForm} onSubmit={this.onSubmit}>
+          <form className={styles.editorForm} onSubmit={this.onSave}>
             <Navbar className="is-dark">
               <NavbarBrand>
                 <NavbarItem>
