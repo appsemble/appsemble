@@ -20,7 +20,7 @@ export default class ModalClose extends React.Component {
   };
 
   render() {
-    const { active, className, component: Component, size, onClose, ...props } = this.props;
+    const { className, component: Component, size, onClose, ...props } = this.props;
 
     return (
       <Component
