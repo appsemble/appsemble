@@ -8,6 +8,7 @@ import {
   NavbarStart,
   Button,
   Icon,
+  Image,
   File,
   FileCta,
   FileLabel,
@@ -37,6 +38,7 @@ export default class Editor extends React.Component {
     valid: false,
     dirty: true,
     icon: undefined,
+    iconURL: undefined,
     openMenu: false,
   };
 
@@ -50,7 +52,7 @@ export default class Editor extends React.Component {
       const { data } = request;
       const recipe = yaml.safeDump(data);
 
-      this.setState({ recipe, path: data.path });
+      this.setState({ recipe, path: data.path, iconURL: `/api/apps/${id}/icon` });
     } catch (e) {
       if (e.response && (e.response.status === 404 || e.response.status === 401)) {
         // XXX implement i18n
@@ -129,11 +131,18 @@ export default class Editor extends React.Component {
   };
 
   onIconChange = e => {
-    this.setState({ icon: e.target.files[0], dirty: true });
+    const { id } = this.props;
+    const file = e.target.files[0];
+
+    this.setState({
+      icon: file,
+      iconURL: file ? URL.createObjectURL(file) : `/api/apps/${id}/icon`,
+      dirty: true,
+    });
   };
 
   render() {
-    const { recipe, path, valid, dirty, icon, openMenu } = this.state;
+    const { recipe, path, valid, dirty, icon, iconURL, openMenu } = this.state;
     const { id } = this.props;
     const filename = icon ? icon.name : 'Icon';
 
@@ -181,6 +190,9 @@ export default class Editor extends React.Component {
                         {icon && <FileName>{filename}</FileName>}
                       </FileLabel>
                     </File>
+                    {iconURL && (
+                      <Image alt="Icon" className={styles.iconPreview} size={32} src={iconURL} />
+                    )}
                   </NavbarItem>
                 </NavbarStart>
                 <NavbarEnd>
