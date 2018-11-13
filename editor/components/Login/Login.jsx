@@ -8,7 +8,7 @@ import { FormattedMessage } from 'react-intl';
 
 import styles from './login.css';
 import messages from './messages';
-import EmailLogin from '../../../app/components/EmailLogin';
+import EmailLogin from '../EmailLogin';
 
 export default class Login extends React.Component {
   state = {};
