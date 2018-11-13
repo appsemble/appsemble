@@ -1,0 +1,13 @@
+{
+  "name": "@appsemble/react-components",
+  "version": "1.0.0",
+  "dependencies": {
+    "@appsemble/react-bulma": "^1.0.0",
+    "classnames": "^2.2.6",
+    "prop-types": "^15.6.2",
+    "react-intl": "^2.7.2"
+  },
+  "peerDependencies": {
+    "react": "^16.5.0"
+  }
+}

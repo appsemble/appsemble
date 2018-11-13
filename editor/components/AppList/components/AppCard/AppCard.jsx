@@ -34,15 +34,11 @@ export default class AppCard extends React.Component {
           </Content>
         </CardContent>
         <CardFooter>
-          <CardFooterItem>
-            <a href={`/${app.path}`}>
-              <FormattedMessage {...messages.view} />
-            </a>
+          <CardFooterItem component="a" href={`/${app.path}`}>
+            <FormattedMessage {...messages.view} />
           </CardFooterItem>
-          <CardFooterItem>
-            <Link to={`/editor/${app.id}`}>
-              <FormattedMessage {...messages.edit} />
-            </Link>
+          <CardFooterItem component={Link} to={`/editor/${app.id}`}>
+            <FormattedMessage {...messages.edit} />
           </CardFooterItem>
         </CardFooter>
       </Card>
