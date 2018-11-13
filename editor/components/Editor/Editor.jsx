@@ -106,7 +106,7 @@ export default class Editor extends React.Component {
 
     this.setState({
       icon: file,
-      iconURL: file ? URL.createObjectURL(e.target.files[0]) : `/${id}/icon-original`,
+      iconURL: file ? URL.createObjectURL(file) : `/${id}/icon-original`,
       dirty: true,
     });
   };
