@@ -1,5 +1,4 @@
 import Sequelize from 'sequelize';
-import SqlString from 'sequelize/lib/sql-string';
 import uuid from 'uuid/v4';
 
 import setupModels from '../setupModels';
@@ -12,7 +11,8 @@ export default async function testSchema() {
     operatorsAliases: Sequelize.Op.Aliases,
   });
 
-  const dbName = SqlString.escape(`appsemble-test-${uuid()}`)
+  const dbName = root
+    .escape(`appsemble-test-${uuid()}`)
     .replace(/'/g, '')
     .replace(/-/g, '_');
 
@@ -25,7 +25,7 @@ export default async function testSchema() {
   return {
     ...db,
     async close() {
-      await db.sequelize.close();
+      await db.close();
 
       await root.query(`DROP DATABASE ${dbName}`);
       await root.close();

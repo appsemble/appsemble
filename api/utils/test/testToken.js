@@ -1,5 +1,5 @@
 export default async function testToken(request, server, db, scope) {
-  const { User, EmailAuthorization, OAuthClient } = db;
+  const { User, EmailAuthorization, OAuthClient } = db.models;
   const user = await User.create();
   await EmailAuthorization.create({
     email: 'test',

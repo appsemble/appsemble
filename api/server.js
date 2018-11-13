@@ -17,7 +17,6 @@ import yaml from 'js-yaml';
 import yargs from 'yargs';
 
 import boomMiddleware from './middleware/boom';
-import sequelizeMiddleware from './middleware/sequelize';
 import oauth2Model from './middleware/oauth2Model';
 import OAuth2Server from './middleware/oauth2Server';
 import OAuth2Plugin from './middleware/OAuth2Plugin';
@@ -86,7 +85,7 @@ export function processArgv() {
       desc: 'The Sentry DSN to use for error reporting. See https://sentry.io for details.',
       hidden: !production,
     })
-    .alias('i', 'init-database')
+    .alias('i', 'initialize-database')
     .option('port', {
       desc: 'The HTTP server port to use. (Development only)',
       type: 'number',
@@ -148,7 +147,8 @@ export default async function server({ app = new Koa(), db, smtp, secret = 'apps
   app.use(session(app));
 
   app.use(boomMiddleware);
-  app.use(sequelizeMiddleware(db));
+  // eslint-disable-next-line no-param-reassign
+  app.context.db = db;
 
   const model = oauth2Model({ db, secret });
   const oauth = new OAuth2Server({
@@ -186,8 +186,8 @@ export default async function server({ app = new Koa(), db, smtp, secret = 'apps
 
 async function main() {
   const args = processArgv();
-  if (args.initDatabase) {
-    const { sequelize, OAuthClient, EmailAuthorization } = await setupModels({
+  if (args.initializeDatabase) {
+    const db = await setupModels({
       sync: true,
       force: true,
       logging: true,
@@ -199,6 +199,7 @@ async function main() {
       database: args.databaseName,
       uri: args.databaseUrl,
     });
+    const { OAuthClient, EmailAuthorization } = db.models;
     await OAuthClient.create({
       clientId: 'appsemble-editor',
       clientSecret: 'appsemble-editor-secret',
@@ -211,7 +212,7 @@ async function main() {
       verified: true,
     });
     await email.createUser();
-    await sequelize.close();
+    await db.close();
     return;
   }
 

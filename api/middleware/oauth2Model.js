@@ -4,6 +4,8 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
 export default function oauth2Model({ db, secret }) {
+  const { EmailAuthorization, OAuthAuthorization, OAuthClient } = db.models;
+
   return {
     async generateAccessToken(client, user, scope) {
       return jwt.sign(
@@ -25,7 +27,6 @@ export default function oauth2Model({ db, secret }) {
     },
 
     async getAccessToken(accessToken) {
-      const { OAuthAuthorization } = await db;
       const token = await OAuthAuthorization.findOne({ where: { token: accessToken } });
 
       if (!token) {
@@ -47,7 +48,6 @@ export default function oauth2Model({ db, secret }) {
     },
 
     async getRefreshToken(refreshToken) {
-      const { OAuthAuthorization } = await db;
       const token = await OAuthAuthorization.findOne({ where: { refreshToken } });
 
       if (!token) {
@@ -68,8 +68,6 @@ export default function oauth2Model({ db, secret }) {
     },
 
     async getClient(clientId, clientSecret) {
-      const { OAuthClient } = await db;
-
       const clause = clientSecret ? { clientId, clientSecret } : { clientId };
       const client = await OAuthClient.findOne({ where: clause });
 
@@ -86,7 +84,6 @@ export default function oauth2Model({ db, secret }) {
     },
 
     async getUser(username, password) {
-      const { EmailAuthorization } = await db;
       const user = await EmailAuthorization.findOne({ where: { email: username } }, { raw: true });
 
       if (!(user || bcrypt.compareSync(password, user.password))) {
@@ -97,8 +94,6 @@ export default function oauth2Model({ db, secret }) {
     },
 
     async saveToken(token, client, user) {
-      const { OAuthAuthorization } = await db;
-
       await OAuthAuthorization.create({
         token: token.accessToken,
         refreshToken: token.refreshToken,
@@ -113,8 +108,6 @@ export default function oauth2Model({ db, secret }) {
     },
 
     async revokeToken(token) {
-      const { OAuthAuthorization } = await db;
-
       try {
         await OAuthAuthorization.destroy({ where: { refreshToken: token.refreshToken } });
         return true;
