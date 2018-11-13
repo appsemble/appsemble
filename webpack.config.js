@@ -1,5 +1,6 @@
 const path = require('path');
 
+const CaseSensitivePathsPlugin = require('case-sensitive-paths-webpack-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 const fs = require('fs-extra');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
@@ -113,6 +114,7 @@ module.exports = async (env, { mode }) => {
       ],
     },
     plugins: [
+      new CaseSensitivePathsPlugin(),
       new ServiceWorkerWebpackPlugin({
         entry: path.join(__dirname, 'app/service-worker'),
         filename: 'service-worker.js',
