@@ -40,7 +40,11 @@ export default class CreateAppCard extends React.Component {
   onCreate = async event => {
     event.preventDefault();
 
-    const { createApp, history } = this.props;
+    const {
+      createApp,
+      history,
+      intl: { formatMessage },
+    } = this.props;
     const { appName, selectedTemplate } = this.state;
 
     try {
@@ -50,16 +54,17 @@ export default class CreateAppCard extends React.Component {
       history.push(`/editor/${app.id}`);
     } catch (e) {
       if (e.response && e.response.status === 409) {
-        // XXX implement i18n
-        push({ body: `An app with the name "${appName}" already exists.` });
+        push({ body: formatMessage(messages.nameConflict, { name: appName }) });
       } else {
-        // XXX implement i18n
-        push({ body: 'Something went wrong when creating this app.' });
+        push({ body: formatMessage(messages.error) });
       }
     }
   };
 
   render() {
+    const {
+      intl: { formatMessage },
+    } = this.props;
     const { modalOpen, selectedTemplate, appName } = this.state;
     return (
       <div className={styles.createAppCardContainer}>
@@ -78,17 +83,17 @@ export default class CreateAppCard extends React.Component {
               </CardHeader>
               <CardContent>
                 <InputField
-                  label="Name" // XXX implement i18n
+                  label={formatMessage(messages.name)}
                   maxLength={30}
                   minLength={1}
                   name="appName"
                   onChange={this.onChange}
-                  placeholder="Name" // XXX implement i18n
+                  placeholder={formatMessage(messages.name)}
                   required
                   value={appName}
                 />
                 <SelectField
-                  label="Template" // XXX implement i18n
+                  label={formatMessage(messages.template)}
                   name="selectedTemplate"
                   onChange={this.onChange}
                   value={selectedTemplate}
