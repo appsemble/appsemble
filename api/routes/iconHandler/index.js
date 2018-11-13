@@ -47,5 +47,5 @@ export default async function iconHandler(ctx) {
   }
 
   ctx.body = await img.toBuffer();
-  ctx.type = format || (metadata.format === 'svg' ? 'svg+xml' : metadata.format);
+  ctx.type = format || (metadata.format === 'svg' ? 'svg+xml' : metadata.format); // Type svg resolves to text/xml instead of image/svg+xml unless svg+xml is explicitly specified.
 }
