@@ -25,7 +25,7 @@ import React from 'react';
 import yaml from 'js-yaml';
 
 import styles from './editor.css';
-import messages from '../App/messages';
+import messages from './messages';
 
 export default class Editor extends React.Component {
   static propTypes = {
@@ -45,7 +45,12 @@ export default class Editor extends React.Component {
   frame = React.createRef();
 
   async componentDidMount() {
-    const { id, history, push } = this.props;
+    const {
+      id,
+      history,
+      push,
+      intl: { formatMessage },
+    } = this.props;
 
     try {
       const request = await axios.get(`/api/apps/${id}`);
@@ -55,11 +60,9 @@ export default class Editor extends React.Component {
       this.setState({ recipe, path: data.path, iconURL: `/api/apps/${id}/icon` });
     } catch (e) {
       if (e.response && (e.response.status === 404 || e.response.status === 401)) {
-        // XXX implement i18n
-        push('App does not exist');
+        push(formatMessage(messages.appNotFound));
       } else {
-        // XXX implement i18n
-        push('Something went wrong trying to load this app');
+        push(formatMessage(messages.error));
       }
 
       history.push('/editor');
@@ -68,7 +71,10 @@ export default class Editor extends React.Component {
 
   onSubmit = event => {
     event.preventDefault();
-    const { push } = this.props;
+    const {
+      push,
+      intl: { formatMessage },
+    } = this.props;
 
     this.setState(({ recipe }) => {
       let app = null;
@@ -77,8 +83,7 @@ export default class Editor extends React.Component {
       try {
         app = yaml.safeLoad(recipe);
       } catch (e) {
-        // XXX implement i18n
-        push('Invalid YAML');
+        push(formatMessage(messages.invalidYaml));
         return { valid: false, dirty: false };
       }
 
@@ -93,17 +98,19 @@ export default class Editor extends React.Component {
   };
 
   onUpload = async () => {
-    const { id, push } = this.props;
+    const {
+      id,
+      push,
+      intl: { formatMessage },
+    } = this.props;
     const { recipe, valid, icon } = this.state;
 
     if (valid) {
       try {
         await axios.put(`/api/apps/${id}`, yaml.safeLoad(recipe));
-        // XXX implement i18n
-        push({ body: 'Successfully updated app definition', color: 'success' });
+        push({ body: formatMessage(messages.updateSuccess), color: 'success' });
       } catch (e) {
-        // XXX implement i18n
-        push('Something went wrong trying to update the app definition');
+        push(formatMessage(messages.errorUpdate));
       }
     }
 
@@ -113,8 +120,7 @@ export default class Editor extends React.Component {
           headers: { 'Content-Type': icon.type },
         });
       } catch (e) {
-        // XXX implement i18n
-        push('Something went wrong trying to update the app icon');
+        push(formatMessage(messages.errorUpdateIcon));
       }
     }
 
