@@ -4,8 +4,8 @@ import { IntlProvider } from 'react-intl';
 
 import AppList from '../AppList';
 import Editor from '../Editor';
-import EmailLogin from '../../../app/components/EmailLogin';
-import Message from '../../../app/components/Message';
+import EmailLogin from '../EmailLogin';
+import Message from '../Message';
 
 export default class App extends React.Component {
   async componentDidMount() {
