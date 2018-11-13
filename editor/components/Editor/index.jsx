@@ -1,7 +1,6 @@
 import { connect } from 'react-redux';
 
-import '../../index.css';
-import { push } from '../../../app/actions/message';
+import { push } from '../../actions/message';
 import Editor from './Editor';
 
 export default connect(
