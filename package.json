@@ -50,6 +50,7 @@
     "babel-plugin-react-intl-auto": "^1.1.1",
     "babel-plugin-transform-react-class-to-function": "^1.2.0",
     "babel-plugin-transform-react-remove-prop-types": "^0.4.19",
+    "case-sensitive-paths-webpack-plugin": "^2.1.2",
     "clean-webpack-plugin": "^0.1.19",
     "css-loader": "^1.0.1",
     "eslint": "^5.8.0",

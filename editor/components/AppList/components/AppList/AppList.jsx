@@ -8,24 +8,23 @@ import {
   Button,
   Icon,
 } from '@appsemble/react-bulma';
-import axios from 'axios';
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { FormattedMessage } from 'react-intl';
 
 import AppCard from '../AppCard';
+import CreateAppCard from '../CreateAppCard';
 import messages from './messages';
 import styles from './applist.css';
 
 export default class AppList extends React.Component {
   state = {
-    apps: [],
     openMenu: false,
   };
 
   async componentDidMount() {
-    const { data: apps } = await axios.get(`/api/apps/`);
-    this.setState({ apps });
+    const { getApps } = this.props;
+    getApps();
   }
 
   onLogout = () => {
@@ -34,20 +33,13 @@ export default class AppList extends React.Component {
   };
 
   render() {
-    const { apps, openMenu } = this.state;
+    const { apps, history } = this.props;
+    const { openMenu } = this.state;
 
     if (!apps) {
       return (
         <p>
           <FormattedMessage {...messages.loading} />
-        </p>
-      );
-    }
-
-    if (!apps.length) {
-      return (
-        <p>
-          <FormattedMessage {...messages.noApps} />
         </p>
       );
     }
@@ -83,6 +75,7 @@ export default class AppList extends React.Component {
           {apps.map(app => (
             <AppCard key={app.id} app={app} />
           ))}
+          <CreateAppCard history={history} />
         </div>
       </div>
     );
