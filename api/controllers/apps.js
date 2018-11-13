@@ -2,6 +2,9 @@ import normalize from '@appsemble/utils/normalize';
 import Boom from 'boom';
 import getRawBody from 'raw-body';
 import { UniqueConstraintError } from 'sequelize';
+import sharp from 'sharp';
+
+import getDefaultIcon from '../utils/getDefaultIcon';
 
 export async function create(ctx) {
   const { body } = ctx.request;
@@ -70,6 +73,23 @@ export async function update(ctx) {
   }
 
   ctx.body = { ...definition, id, path };
+}
+
+export async function getAppIcon(ctx) {
+  const { id } = ctx.params;
+  const { App } = ctx.db.models;
+  const app = await App.findByPk(id, { raw: true });
+
+  if (!app) {
+    throw Boom.notFound('App not found');
+  }
+
+  const icon = app.icon || getDefaultIcon();
+  const metadata = await sharp(icon).metadata();
+
+  ctx.body = icon;
+  // Type svg resolves to text/xml instead of image/svg+xml.
+  ctx.type = metadata.format === 'svg' ? 'image/svg+xml' : metadata.format;
 }
 
 export async function setAppIcon(ctx) {
