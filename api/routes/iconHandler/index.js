@@ -4,7 +4,7 @@ import sharp from 'sharp';
 import getDefaultIcon from '../../utils/getDefaultIcon';
 
 export default async function iconHandler(ctx) {
-  const { format, id, width, height = width, original } = ctx.params;
+  const { format, id, width = 256, height = width, original } = ctx.params;
   const { App } = ctx.state.db;
 
   const opaque = 'opaque' in ctx.request.query || format === 'jpg' || format === 'tiff';
@@ -47,5 +47,5 @@ export default async function iconHandler(ctx) {
   }
 
   ctx.body = await img.toBuffer();
-  ctx.type = format || metadata.format;
+  ctx.type = format || (metadata.format === 'svg' ? 'svg+xml' : metadata.format);
 }
