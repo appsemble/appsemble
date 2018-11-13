@@ -14,11 +14,8 @@ export default class ModalContent extends React.Component {
   };
 
   render() {
-    const { children, className, component: Component, ...props } = this.props;
-    return (
-      <Component className={classNames('modal-content', className)} {...props}>
-        {children}
-      </Component>
-    );
+    const { className, component: Component, ...props } = this.props;
+
+    return <Component className={classNames('modal-content', className)} {...props} />;
   }
 }
