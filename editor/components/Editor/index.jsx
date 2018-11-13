@@ -1,3 +1,5 @@
-import '../../index.css';
+import { injectIntl } from 'react-intl';
 
-export { default } from './Editor';
+import Editor from './Editor';
+
+export default injectIntl(Editor);

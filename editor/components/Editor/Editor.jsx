@@ -25,7 +25,7 @@ import yaml from 'js-yaml';
 import validate, { SchemaValidationError } from '@appsemble/utils/validate';
 
 import styles from './editor.css';
-import messages from '../App/messages';
+import messages from './messages';
 
 export default class Editor extends React.Component {
   static propTypes = {
@@ -58,6 +58,10 @@ export default class Editor extends React.Component {
 
   onSave = event => {
     event.preventDefault();
+    const {
+      push,
+      intl: { formatMessage },
+    } = this.props;
     const { appSchema } = this.state;
 
     this.setState(async ({ recipe }) => {
@@ -70,11 +74,11 @@ export default class Editor extends React.Component {
       } catch (e) {
         if (e instanceof SchemaValidationError) {
           const errors = e.data;
-          console.log(
-            `App schema validation failed. Please check if the following properties are correct: ${Object.keys(
-              errors,
-            ).join(', ')}`,
-          );
+          push({
+            body: formatMessage(messages.schemaValidationFailed, {
+              properties: Object.keys(errors).join(', '),
+            }),
+          });
         }
         return { valid: false, dirty: false };
       }
