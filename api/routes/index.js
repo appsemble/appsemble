@@ -12,7 +12,6 @@ const router = new Router();
 router.get(bulmaURL, bulmaHandler);
 router.get('/editor/(.*)?', editorHandler);
 router.get('/favicon.ico', faviconHandler);
-router.get('/:id(\\d+)?/icon-:original(original)', iconHandler);
 router.get('/:id(\\d+)?/(fav)?icon-:width(\\d+).:format(png|jpg|tiff|webp)', iconHandler);
 router.get(
   '/:id(\\d+)?/(fav)?icon-:width(\\d+)x:height(\\d+).:format(png|jpg|tiff|webp)',

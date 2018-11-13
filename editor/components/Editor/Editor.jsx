@@ -48,7 +48,7 @@ export default class Editor extends React.Component {
     const { data } = await axios.get(`/api/apps/${id}`);
     const recipe = yaml.safeDump(data);
 
-    this.setState({ recipe, path: data.path, iconURL: `/${id}/icon-original` });
+    this.setState({ recipe, path: data.path, iconURL: `/api/apps/${id}/icon` });
   }
 
   onSubmit = event => {
@@ -106,7 +106,7 @@ export default class Editor extends React.Component {
 
     this.setState({
       icon: file,
-      iconURL: file ? URL.createObjectURL(file) : `/${id}/icon-original`,
+      iconURL: file ? URL.createObjectURL(file) : `/api/apps/${id}/icon`,
       dirty: true,
     });
   };

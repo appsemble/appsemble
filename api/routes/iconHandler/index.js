@@ -4,7 +4,7 @@ import sharp from 'sharp';
 import getDefaultIcon from '../../utils/getDefaultIcon';
 
 export default async function iconHandler(ctx) {
-  const { format, id, width = 256, height = width, original } = ctx.params;
+  const { format, id, width = 256, height = width } = ctx.params;
   const { App } = ctx.db.models;
 
   const opaque = 'opaque' in ctx.request.query || format === 'jpg' || format === 'tiff';
@@ -37,15 +37,13 @@ export default async function iconHandler(ctx) {
     img = sharp(icon, { density });
   }
 
-  if (!original) {
-    img.resize(Number(width), Number(height));
-    if (opaque) {
-      img.background(backgroundColor).flatten();
-    }
-
-    img.toFormat(format);
+  img.resize(Number(width), Number(height));
+  if (opaque) {
+    img.background(backgroundColor).flatten();
   }
 
+  img.toFormat(format);
+
   ctx.body = await img.toBuffer();
-  ctx.type = format || (metadata.format === 'svg' ? 'svg+xml' : metadata.format); // Type svg resolves to text/xml instead of image/svg+xml unless svg+xml is explicitly specified.
+  ctx.type = format;
 }
