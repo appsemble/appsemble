@@ -85,21 +85,11 @@ export async function getAppIcon(ctx) {
   }
 
   const icon = app.icon || getDefaultIcon();
-  let img = sharp(icon);
-  const metadata = await img.metadata();
+  const metadata = await sharp(icon).metadata();
 
-  // SVG images can be resized with a density much better than its metadata specified.
-  if (metadata.format === 'svg') {
-    const density = Math.max(
-      metadata.density * Math.max(256 / metadata.width, 256 / metadata.height),
-      // This is the maximum allowed value density allowed by sharp.
-      2400,
-    );
-    img = sharp(icon, { density });
-  }
-
-  ctx.body = await img.toBuffer();
-  ctx.type = metadata.format === 'svg' ? 'svg+xml' : metadata.format; // Type svg resolves to text/xml instead of image/svg+xml unless svg+xml is explicitly specified.
+  ctx.body = icon;
+  // Type svg resolves to text/xml instead of image/svg+xml.
+  ctx.type = metadata.format === 'svg' ? 'image/svg+xml' : metadata.format;
 }
 
 export async function setAppIcon(ctx) {
