@@ -3,9 +3,9 @@ import getRawBody from 'raw-body';
 
 export async function getOne(ctx) {
   const { id } = ctx.params;
-  const { Asset } = ctx.state.db;
+  const { Asset } = ctx.db.models;
 
-  const asset = await Asset.findById(id);
+  const asset = await Asset.findByPk(id);
 
   if (!asset) {
     throw Boom.notFound('Asset not found');
@@ -16,7 +16,7 @@ export async function getOne(ctx) {
 }
 
 export async function create(ctx) {
-  const { Asset } = ctx.state.db;
+  const { Asset } = ctx.db.models;
   const data = await getRawBody(ctx.req);
   const asset = await Asset.create({ mime: ctx.request.type, data }, { raw: true });
 

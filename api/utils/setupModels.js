@@ -1,33 +1,18 @@
 import Sequelize from 'sequelize';
 
 function importModels(db) {
-  const App = db.import('../models/App');
-  const Snapshot = db.import('../models/Snapshot');
-  const User = db.import('../models/User');
-  const Organization = db.import('../models/Organization');
-  const EmailAuthorization = db.import('../models/EmailAuthorization');
-  const OAuthToken = db.import('../models/OAuthToken');
-  const OAuthAuthorization = db.import('../models/OAuthAuthorization');
-  const OAuthClient = db.import('../models/OAuthClient');
-  const Resource = db.import('../models/Resource');
-  const Asset = db.import('../models/Asset');
-  const Block = db.import('../models/Block');
-  const BlockVersion = db.import('../models/BlockVersion');
-
-  return {
-    App,
-    Snapshot,
-    User,
-    Organization,
-    EmailAuthorization,
-    OAuthToken,
-    OAuthAuthorization,
-    OAuthClient,
-    Resource,
-    Asset,
-    Block,
-    BlockVersion,
-  };
+  db.import('../models/App');
+  db.import('../models/Snapshot');
+  db.import('../models/User');
+  db.import('../models/Organization');
+  db.import('../models/EmailAuthorization');
+  db.import('../models/OAuthAuthorization');
+  db.import('../models/OAuthClient');
+  db.import('../models/OAuthToken');
+  db.import('../models/Resource');
+  db.import('../models/Asset');
+  db.import('../models/Block');
+  db.import('../models/BlockVersion');
 }
 
 function associateModels(models) {
@@ -100,12 +85,12 @@ export default async function setupModels({
     ];
   }
   const db = new Sequelize(...args);
-  const models = importModels(db);
-  associateModels(models);
+  importModels(db);
+  associateModels(db.models);
 
   if (sync) {
     await db.sync({ force });
   }
 
-  return { sequelize: db, Sequelize, ...models };
+  return db;
 }

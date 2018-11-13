@@ -6,7 +6,7 @@ import { sendWelcomeEmail, resendVerificationEmail } from '../utils/email';
 
 export async function registerEmail(ctx) {
   const { body } = ctx.request;
-  const { EmailAuthorization } = ctx.state.db;
+  const { EmailAuthorization } = ctx.db.models;
   const { smtp } = ctx.state;
 
   try {
@@ -70,7 +70,7 @@ export async function connectOAuth(ctx) {
 
 export async function verifyEmail(ctx) {
   const { key } = ctx.request.query;
-  const { EmailAuthorization } = ctx.state.db;
+  const { EmailAuthorization } = ctx.db.models;
 
   const email = await EmailAuthorization.findOne({ where: { key } });
 
@@ -87,10 +87,10 @@ export async function verifyEmail(ctx) {
 
 export async function resendVerification(ctx) {
   const { email } = ctx.request.body;
-  const { EmailAuthorization } = ctx.state.db;
+  const { EmailAuthorization } = ctx.db.models;
   const { smtp } = ctx.state;
 
-  const record = await EmailAuthorization.findById(email);
+  const record = await EmailAuthorization.findByPk(email);
   if (record && !record.verified) {
     const { name, key } = record;
     await resendVerificationEmail(

@@ -7,7 +7,7 @@ export async function create(ctx) {
   const { body } = ctx.request;
   const { name } = body;
   const { id, path = normalize(name), ...definition } = body;
-  const { App } = ctx.state.db;
+  const { App } = ctx.db.models;
 
   let result;
   try {
@@ -30,9 +30,9 @@ export async function create(ctx) {
 
 export async function getOne(ctx) {
   const { id } = ctx.params;
-  const { App } = ctx.state.db;
+  const { App } = ctx.db.models;
 
-  const app = await App.findById(id, { raw: true });
+  const app = await App.findByPk(id, { raw: true });
 
   if (!app) {
     throw Boom.notFound('App not found');
@@ -42,7 +42,7 @@ export async function getOne(ctx) {
 }
 
 export async function query(ctx) {
-  const { App } = ctx.state.db;
+  const { App } = ctx.db.models;
 
   const apps = await App.findAll({ raw: true });
   ctx.body = apps.map(app => ({ ...app.definition, id: app.id, path: app.path }));
@@ -53,7 +53,7 @@ export async function update(ctx) {
   const { name } = body;
   const { id: _, path = normalize(name), ...definition } = body;
   const { id } = ctx.params;
-  const { App } = ctx.state.db;
+  const { App } = ctx.db.models;
 
   let affectedRows;
   try {
@@ -74,7 +74,7 @@ export async function update(ctx) {
 
 export async function setAppIcon(ctx) {
   const { id } = ctx.params;
-  const { App } = ctx.state.db;
+  const { App } = ctx.db.models;
   const icon = await getRawBody(ctx.req);
 
   const [affectedRows] = await App.update({ icon }, { where: { id } });
@@ -88,7 +88,7 @@ export async function setAppIcon(ctx) {
 
 export async function deleteAppIcon(ctx) {
   const { id } = ctx.params;
-  const { App } = ctx.state.db;
+  const { App } = ctx.db.models;
 
   const [affectedRows] = await App.update({ icon: null }, { where: { id } });
 

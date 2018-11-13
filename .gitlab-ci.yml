@@ -63,7 +63,7 @@ pages:
 prettier:
   only:
     changes:
-      - '**/*.{css,json,md,yaml,yml}'
+      - '**/*.{json,md,yaml,yml}'
       - yarn.lock
   script:
     - yarn --frozen-lockfile

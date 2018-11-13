@@ -4,6 +4,8 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
 export default function oauth2Model({ db, grant, secret }) {
+  const { EmailAuthorization, OAuthToken, OAuthAuthorization, OAuthClient } = db.models;
+
   return {
     async generateToken(client, user, scope, expiresIn = 10800) {
       // expires in 3 hours by default
@@ -34,8 +36,7 @@ export default function oauth2Model({ db, grant, secret }) {
     },
 
     async getAccessToken(accessToken) {
-      const { OAuthToken } = await db;
-      const token = await OAuthToken.find({ where: { token: accessToken } });
+      const token = await OAuthToken.findOne({ where: { token: accessToken } });
 
       if (!token) {
         return null;
@@ -56,8 +57,7 @@ export default function oauth2Model({ db, grant, secret }) {
     },
 
     async getRefreshToken(refreshToken) {
-      const { OAuthToken } = await db;
-      const token = await OAuthToken.find({ where: { refreshToken } });
+      const token = await OAuthToken.findOne({ where: { refreshToken } });
 
       if (!token) {
         return null;
@@ -77,8 +77,7 @@ export default function oauth2Model({ db, grant, secret }) {
     },
 
     async getAuthorizationCode(authorizationCode) {
-      const { OAuthAuthorization } = await db;
-      const token = await OAuthAuthorization.find(
+      const token = await OAuthAuthorization.findOne(
         { where: { token: authorizationCode } },
         { raw: true },
       );
@@ -100,12 +99,10 @@ export default function oauth2Model({ db, grant, secret }) {
     },
 
     async getClient(clientId, clientSecret) {
-      const { OAuthClient } = await db;
-
       const clause = clientSecret ? { clientId, clientSecret } : { clientId };
-      const client = await OAuthClient.find({ where: clause });
+      const client = await OAuthClient.findOne({ where: clause });
       const config = grant
-        ? Object.values(grant.config).find(
+        ? Object.values(grant.config).findOne(
             entry => entry.key === clientId && entry.secret === clientSecret,
           )
         : undefined;
@@ -129,8 +126,7 @@ export default function oauth2Model({ db, grant, secret }) {
     },
 
     async getUser(username, password) {
-      const { EmailAuthorization } = await db;
-      const user = await EmailAuthorization.find({ where: { email: username } }, { raw: true });
+      const user = await EmailAuthorization.findOne({ where: { email: username } }, { raw: true });
 
       if (!(user || bcrypt.compareSync(password, user.password))) {
         return false;
@@ -140,8 +136,6 @@ export default function oauth2Model({ db, grant, secret }) {
     },
 
     async saveToken(token, client, user) {
-      const { OAuthToken } = await db;
-
       await OAuthToken.create({
         token: token.accessToken,
         refreshToken: token.refreshToken,
@@ -160,8 +154,6 @@ export default function oauth2Model({ db, grant, secret }) {
     },
 
     async revokeToken(token) {
-      const { OAuthToken } = await db;
-
       try {
         await OAuthToken.destroy({ where: { refreshToken: token.refreshToken } });
         return true;

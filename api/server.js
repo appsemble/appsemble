@@ -21,7 +21,6 @@ import yaml from 'js-yaml';
 import yargs from 'yargs';
 
 import boomMiddleware from './middleware/boom';
-import sequelizeMiddleware from './middleware/sequelize';
 import oauth2Handlers from './middleware/oauth2Handlers';
 import oauth2Model from './middleware/oauth2Model';
 import OAuth2Server from './middleware/oauth2Server';
@@ -91,7 +90,7 @@ export function processArgv() {
       desc: 'The Sentry DSN to use for error reporting. See https://sentry.io for details.',
       hidden: !production,
     })
-    .alias('i', 'init-database')
+    .alias('i', 'initialize-database')
     .option('port', {
       desc: 'The HTTP server port to use. (Development only)',
       type: 'number',
@@ -169,7 +168,8 @@ export default async function server({
   app.use(session(app));
 
   app.use(boomMiddleware);
-  app.use(sequelizeMiddleware(db));
+  // eslint-disable-next-line no-param-reassign
+  app.context.db = db;
 
   const oauthRouter = new Router();
   let grant;
@@ -281,7 +281,7 @@ export default async function server({
 
 async function main() {
   const args = processArgv();
-  if (args.initDatabase) {
+  if (args.initializeDatabase) {
     const { sequelize, OAuthClient, EmailAuthorization } = await setupModels({
       sync: true,
       force: true,
