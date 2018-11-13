@@ -17,7 +17,6 @@ import yaml from 'js-yaml';
 import yargs from 'yargs';
 
 import boomMiddleware from './middleware/boom';
-import sequelizeMiddleware from './middleware/sequelize';
 import oauth2Model from './middleware/oauth2Model';
 import OAuth2Server from './middleware/oauth2Server';
 import OAuth2Plugin from './middleware/OAuth2Plugin';
@@ -148,7 +147,8 @@ export default async function server({ app = new Koa(), db, smtp, secret = 'apps
   app.use(session(app));
 
   app.use(boomMiddleware);
-  app.use(sequelizeMiddleware(db));
+  // eslint-disable-next-line no-param-reassign
+  app.context.db = db;
 
   const model = oauth2Model({ db, secret });
   const oauth = new OAuth2Server({
