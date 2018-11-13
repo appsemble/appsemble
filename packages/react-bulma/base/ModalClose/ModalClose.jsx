@@ -6,28 +6,24 @@ import { is } from '../../utils';
 
 export default class ModalClose extends React.Component {
   static propTypes = {
-    onClose: PropTypes.func,
     size: PropTypes.string,
     className: PropTypes.string,
     component: PropTypes.string,
+    type: PropTypes.string,
   };
 
   static defaultProps = {
-    onClose: null,
     size: null,
     className: null,
     component: 'button',
+    type: 'button',
   };
 
   render() {
-    const { className, component: Component, size, onClose, ...props } = this.props;
+    const { className, component: Component, size, ...props } = this.props;
 
     return (
-      <Component
-        className={classNames('modal-close', is(size, size), className)}
-        onClick={onClose}
-        {...props}
-      />
+      <Component className={classNames('modal-close', is(size, size), className)} {...props} />
     );
   }
 }
