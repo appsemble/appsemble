@@ -205,7 +205,7 @@ export default async function server({
     oauthRouter.get('/api/oauth/callback/:provider', async ctx => {
       const code = ctx.query;
       const { provider } = ctx.params;
-      const { OAuthAuthorization } = ctx.state.db;
+      const { OAuthAuthorization } = ctx.db.models;
       const config = grant.config[provider];
       const handler = oauth2Handlers[provider];
       if (!handler) {
@@ -266,11 +266,10 @@ export default async function server({
 
   app.use(oauth.authenticate());
   app.use(oauthRouter.routes());
-  app.use(oaiRouter.routes());
-
   if (grantConfig) {
     app.use(mount('/api/oauth', grant));
   }
+  app.use(oaiRouter.routes());
 
   app.use(routes);
 

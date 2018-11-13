@@ -38,8 +38,8 @@ export async function registerOAuth(ctx) {
   const {
     body: { provider, id, accessToken },
   } = ctx.request;
-  const { OAuthAuthorization } = ctx.state.db;
-  const auth = await OAuthAuthorization.find({ where: { provider, id, token: accessToken } });
+  const { OAuthAuthorization } = ctx.db.models;
+  const auth = await OAuthAuthorization.findOne({ where: { provider, id, token: accessToken } });
 
   if (!auth) {
     throw Boom.notFound('Could not find any matching credentials.');
@@ -55,8 +55,8 @@ export async function connectOAuth(ctx) {
     body: { provider, id, accessToken, userId },
   } = ctx.request;
 
-  const { OAuthAuthorization, User } = ctx.state.db;
-  const auth = await OAuthAuthorization.find({ where: { provider, id, token: accessToken } });
+  const { OAuthAuthorization, User } = ctx.db.models;
+  const auth = await OAuthAuthorization.findOne({ where: { provider, id, token: accessToken } });
   const user = await User.findById(userId);
 
   if (!auth || !user) {

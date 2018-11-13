@@ -102,7 +102,7 @@ export default function oauth2Model({ db, grant, secret }) {
       const clause = clientSecret ? { clientId, clientSecret } : { clientId };
       const client = await OAuthClient.findOne({ where: clause });
       const config = grant
-        ? Object.values(grant.config).findOne(
+        ? Object.values(grant.config).find(
             entry => entry.key === clientId && entry.secret === clientSecret,
           )
         : undefined;
