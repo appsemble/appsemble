@@ -12,7 +12,7 @@ describe('app controller', () => {
   let token;
 
   beforeAll(async () => {
-    db = await testSchema();
+    db = await testSchema('apps');
 
     server = await koaServer({ db });
     ({ App } = db.models);
