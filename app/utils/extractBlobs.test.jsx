@@ -11,7 +11,7 @@ describe('extractBlobs', () => {
     });
     expect(files).toContain(bar);
     expect(files).toContain(baz);
-    expect(result).toEqual({
+    expect(result).toStrictEqual({
       foo: 1,
       bar: placeholder,
       baz: placeholder,
@@ -30,7 +30,7 @@ describe('extractBlobs', () => {
     });
     expect(files).toContain(bar);
     expect(files).toContain(baz);
-    expect(result).toEqual({
+    expect(result).toStrictEqual({
       foo: 1,
       bar: placeholder,
       nested: {
@@ -49,7 +49,7 @@ describe('extractBlobs', () => {
     });
     expect(files).toContain(bar);
     expect(files).toContain(baz);
-    expect(result).toEqual({
+    expect(result).toStrictEqual({
       foo: 1,
       bar: placeholder,
       nested: [placeholder],

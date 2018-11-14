@@ -15,6 +15,7 @@ describe('respond', () => {
     cachedResponse = new Response();
     fakeResponse = new Response();
     fetchResponse = new Response();
+    // eslint-disable-next-line jest/prefer-spy-on
     global.fetch = jest.fn(async () => fetchResponse);
     cacheFirst = jest.spyOn(utils, 'cacheFirst').mockResolvedValue(cachedResponse);
     requestFirst = jest.spyOn(utils, 'requestFirst').mockResolvedValue(fakeResponse);

@@ -39,13 +39,15 @@ export default class SideNavigation extends React.Component {
       <SideMenu>
         <nav>
           <MenuList>
-            {app.pages.filter(page => !page.parameters).map(page => (
-              <li key={page.name}>
-                <NavLink activeClassName="is-active" to={`/${normalize(page.name)}`}>
-                  {page.name}
-                </NavLink>
-              </li>
-            ))}
+            {app.pages
+              .filter(page => !page.parameters)
+              .map(page => (
+                <li key={page.name}>
+                  <NavLink activeClassName="is-active" to={`/${normalize(page.name)}`}>
+                    {page.name}
+                  </NavLink>
+                </li>
+              ))}
           </MenuList>
           <MenuList>
             <li>

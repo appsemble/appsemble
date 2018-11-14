@@ -46,7 +46,7 @@ describe('resource controller', () => {
     const response = await request(server).get(`/api/apps/${app.id}/testResource/${resource.id}`);
 
     expect(response.status).toBe(200);
-    expect(response.body).toEqual({ id: resource.id, foo: 'bar' });
+    expect(response.body).toStrictEqual({ id: resource.id, foo: 'bar' });
   });
 
   it('should be able to fetch all resources of a type', async () => {
@@ -58,7 +58,7 @@ describe('resource controller', () => {
     const response = await request(server).get(`/api/apps/${app.id}/testResource`);
 
     expect(response.status).toBe(200);
-    expect(response.body).toEqual([
+    expect(response.body).toStrictEqual([
       { id: resourceA.id, foo: 'bar' },
       { id: resourceB.id, foo: 'baz' },
     ]);
@@ -73,7 +73,7 @@ describe('resource controller', () => {
       .send(resource);
 
     expect(response.status).toBe(201);
-    expect(response.body.foo).toEqual(resource.foo);
+    expect(response.body.foo).toStrictEqual(resource.foo);
     expect(response.body.id).toBeTruthy();
   });
 

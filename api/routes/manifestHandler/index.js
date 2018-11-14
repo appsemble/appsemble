@@ -1,5 +1,4 @@
 import Boom from 'boom';
-
 import normalize from '@appsemble/utils/normalize';
 
 const iconSizes = [48, 144, 192, 512];

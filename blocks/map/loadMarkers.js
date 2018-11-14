@@ -1,5 +1,6 @@
 import { Point } from 'leaflet/src/geometry';
 import { Icon, Marker } from 'leaflet/src/layer';
+
 import iconUrl from '../../apps/unlittered/marker.svg';
 
 const MARKER_ICON_WIDTH = 39;

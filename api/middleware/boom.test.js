@@ -15,7 +15,11 @@ describe('boomMiddleware', () => {
     await boomMiddleware(ctx, mockNext);
 
     expect(ctx.body).toBeDefined();
-    expect(ctx.body).toEqual({ statusCode: 404, error: 'Not Found', message: 'Error not found' });
+    expect(ctx.body).toStrictEqual({
+      statusCode: 404,
+      error: 'Not Found',
+      message: 'Error not found',
+    });
     expect(ctx.status).toBe(404);
 
     expect(mockNext).toHaveBeenCalledTimes(1);
@@ -48,7 +52,7 @@ describe('boomMiddleware', () => {
     expect(response.headers['www-authenticate']).toBe(
       'Basic realm="Access to test data", charset="UTF-8"',
     );
-    expect(response.body).toEqual({
+    expect(response.body).toStrictEqual({
       statusCode: 401,
       error: 'Unauthorized',
       message: 'Not authorized!',

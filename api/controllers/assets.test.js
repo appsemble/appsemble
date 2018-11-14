@@ -34,7 +34,7 @@ describe('asset controller', () => {
     const response = await request(server).get(`/api/assets/${asset.id}`);
 
     expect(response.type).toBe('application/octet-stream');
-    expect(response.body).toEqual(data);
+    expect(response.body).toStrictEqual(data);
   });
 
   it('should be able to create an asset', async () => {
@@ -47,13 +47,13 @@ describe('asset controller', () => {
     const { id } = createResponse.body;
 
     expect(createResponse.status).toBe(201);
-    expect(id).toEqual(expect.any(Number));
+    expect(id).toStrictEqual(expect.any(Number));
 
     const getResponse = await request(server).get(`/api/assets/${id}`);
 
     expect(getResponse.status).toBe(200);
     expect(getResponse.type).toBe('application/octet-stream');
-    expect(getResponse.body).toEqual(data);
+    expect(getResponse.body).toStrictEqual(data);
   });
 
   it('should accept empty files', async () => {

@@ -132,7 +132,7 @@ describe('resolveJsonPointers', () => {
   fixtures.forEach(({ actual, expected, name }) => {
     it(`should ${name}`, () => {
       const result = resolveJsonPointers(actual);
-      expect(result).toEqual(expected);
+      expect(result).toStrictEqual(expected);
     });
   });
 });
