@@ -5,6 +5,7 @@ import { IntlProvider } from 'react-intl';
 import AppList from '../AppList';
 import Editor from '../Editor';
 import Login from '../Login';
+import Message from '../Message';
 
 export default class App extends React.Component {
   async componentDidMount() {
@@ -18,17 +19,19 @@ export default class App extends React.Component {
       logout,
     } = this.props;
 
+    console.log(user);
+
     if (!initialized) {
       return 'Loading...';
     }
 
     return (
       <IntlProvider defaultLocale="en-US" locale="en-US" textComponent={React.Fragment}>
-        <Router>
-          {!user ? (
-            <Route render={props => <Login {...props} {...this.props} />} />
-          ) : (
-            <Router>
+        <div>
+          <Router>
+            {!user ? (
+              <Route render={props => <Login {...props} {...this.props} />} />
+            ) : (
               <Switch>
                 <Route
                   path="/editor/:id"
@@ -36,9 +39,10 @@ export default class App extends React.Component {
                 />
                 <Route path="/editor" render={props => <AppList {...props} logout={logout} />} />
               </Switch>
-            </Router>
-          )}
-        </Router>
+            )}
+          </Router>
+          <Message />
+        </div>
       </IntlProvider>
     );
   }

@@ -8,6 +8,7 @@ import {
   NavbarStart,
   Button,
   Icon,
+  Image,
   File,
   FileCta,
   FileLabel,
@@ -24,11 +25,12 @@ import React from 'react';
 import yaml from 'js-yaml';
 
 import styles from './editor.css';
-import messages from '../App/messages';
+import messages from './messages';
 
 export default class Editor extends React.Component {
   static propTypes = {
     id: PropTypes.string.isRequired,
+    push: PropTypes.func.isRequired,
   };
 
   state = {
@@ -36,21 +38,43 @@ export default class Editor extends React.Component {
     valid: false,
     dirty: true,
     icon: undefined,
+    iconURL: undefined,
     openMenu: false,
   };
 
   frame = React.createRef();
 
   async componentDidMount() {
-    const { id } = this.props;
-    const { data } = await axios.get(`/api/apps/${id}`);
-    const recipe = yaml.safeDump(data);
+    const {
+      id,
+      history,
+      push,
+      intl: { formatMessage },
+    } = this.props;
 
-    this.setState({ recipe, path: data.path });
+    try {
+      const request = await axios.get(`/api/apps/${id}`);
+      const { data } = request;
+      const recipe = yaml.safeDump(data);
+
+      this.setState({ recipe, path: data.path, iconURL: `/api/apps/${id}/icon` });
+    } catch (e) {
+      if (e.response && (e.response.status === 404 || e.response.status === 401)) {
+        push(formatMessage(messages.appNotFound));
+      } else {
+        push(formatMessage(messages.error));
+      }
+
+      history.push('/editor');
+    }
   }
 
   onSubmit = event => {
     event.preventDefault();
+    const {
+      push,
+      intl: { formatMessage },
+    } = this.props;
 
     this.setState(({ recipe }) => {
       let app = null;
@@ -59,6 +83,7 @@ export default class Editor extends React.Component {
       try {
         app = yaml.safeLoad(recipe);
       } catch (e) {
+        push(formatMessage(messages.invalidYaml));
         return { valid: false, dirty: false };
       }
 
@@ -73,17 +98,30 @@ export default class Editor extends React.Component {
   };
 
   onUpload = async () => {
-    const { id } = this.props;
+    const {
+      id,
+      push,
+      intl: { formatMessage },
+    } = this.props;
     const { recipe, valid, icon } = this.state;
 
     if (valid) {
-      await axios.put(`/api/apps/${id}`, yaml.safeLoad(recipe));
+      try {
+        await axios.put(`/api/apps/${id}`, yaml.safeLoad(recipe));
+        push({ body: formatMessage(messages.updateSuccess), color: 'success' });
+      } catch (e) {
+        push(formatMessage(messages.errorUpdate));
+      }
     }
 
     if (icon) {
-      await axios.post(`/api/apps/${id}/icon`, icon, {
-        headers: { 'Content-Type': icon.type },
-      });
+      try {
+        await axios.post(`/api/apps/${id}/icon`, icon, {
+          headers: { 'Content-Type': icon.type },
+        });
+      } catch (e) {
+        push(formatMessage(messages.errorUpdateIcon));
+      }
     }
 
     this.setState({ dirty: true });
@@ -99,11 +137,18 @@ export default class Editor extends React.Component {
   };
 
   onIconChange = e => {
-    this.setState({ icon: e.target.files[0], dirty: true });
+    const { id } = this.props;
+    const file = e.target.files[0];
+
+    this.setState({
+      icon: file,
+      iconURL: file ? URL.createObjectURL(file) : `/api/apps/${id}/icon`,
+      dirty: true,
+    });
   };
 
   render() {
-    const { recipe, path, valid, dirty, icon, openMenu } = this.state;
+    const { recipe, path, valid, dirty, icon, iconURL, openMenu } = this.state;
     const { id } = this.props;
     const filename = icon ? icon.name : 'Icon';
 
@@ -151,6 +196,9 @@ export default class Editor extends React.Component {
                         {icon && <FileName>{filename}</FileName>}
                       </FileLabel>
                     </File>
+                    {iconURL && (
+                      <Image alt="Icon" className={styles.iconPreview} size={32} src={iconURL} />
+                    )}
                   </NavbarItem>
                 </NavbarStart>
                 <NavbarEnd>
@@ -177,15 +225,14 @@ export default class Editor extends React.Component {
         </div>
 
         <div className={styles.rightPanel}>
-          {id &&
-            path && (
-              <iframe
-                ref={this.frame}
-                className={styles.appFrame}
-                src={`/${path}`}
-                title="Appsemble App Preview"
-              />
-            )}
+          {id && path && (
+            <iframe
+              ref={this.frame}
+              className={styles.appFrame}
+              src={`/${path}`}
+              title="Appsemble App Preview"
+            />
+          )}
         </div>
       </div>
     );

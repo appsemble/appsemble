@@ -21,10 +21,12 @@ export default (state = initialState, action) => {
 };
 
 export function push(message) {
+  const payload = typeof message === 'string' ? { body: message } : message;
+
   return dispatch => {
     dispatch({
       type: PUSH,
-      message,
+      message: payload,
     });
   };
 }

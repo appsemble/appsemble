@@ -1,5 +1,6 @@
-import bcrypt from 'bcrypt';
 import crypto from 'crypto';
+
+import bcrypt from 'bcrypt';
 import Boom from 'boom';
 
 import { sendWelcomeEmail, resendVerificationEmail } from '../utils/email';

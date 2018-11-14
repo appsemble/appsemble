@@ -11,11 +11,10 @@ export const AUTH = 'auth';
  */
 export default function getDB(app) {
   return idb.open(`appsemble-${app.id}`, 1, upgrade => {
-    /* eslint-disable default-case */
+    // eslint-disable-next-line default-case
     switch (upgrade.oldVersion) {
       case 0:
         upgrade.createObjectStore(AUTH);
     }
-    /* eslint-enable default-case */
   });
 }

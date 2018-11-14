@@ -12,7 +12,7 @@ describe('app controller', () => {
   let token;
 
   beforeAll(async () => {
-    db = await testSchema();
+    db = await testSchema('apps');
 
     server = await koaServer({ db });
     ({ App } = db.models);
@@ -74,7 +74,7 @@ describe('app controller', () => {
       .get(`/api/apps/${appA.id}`)
       .set('Authorization', token);
 
-    expect(body).toEqual({ id: appA.id, path: 'test-app', ...appA.definition });
+    expect(body).toStrictEqual({ id: appA.id, path: 'test-app', ...appA.definition });
   });
 
   it('should create an app', async () => {
@@ -122,7 +122,7 @@ describe('app controller', () => {
 
     expect(response.status).toBe(200);
     expect(response.body.name).toBe('Foobar');
-    expect(response.body).toEqual({
+    expect(response.body).toStrictEqual({
       id: appA.id,
       name: 'Foobar',
       path: 'foobar',

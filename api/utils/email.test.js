@@ -13,7 +13,7 @@ describe('sendMail', () => {
     } = result;
     const converted = result.response.toString();
 
-    expect(to).toEqual(['test@example.com']);
+    expect(to).toStrictEqual(['test@example.com']);
     expect(converted).toMatch('Content-Type: multipart/alternative;');
     expect(converted).toMatch('Content-Type: text/plain');
     expect(converted).toMatch('Content-Type: text/html');
@@ -28,7 +28,7 @@ describe('processTemplate', () => {
     const template = 'Hello **<%= name %>**';
     const { attributes, content } = processTemplate(template, { name: 'John Doe' });
 
-    expect(attributes).toEqual({ name: 'John Doe' });
+    expect(attributes).toStrictEqual({ name: 'John Doe' });
     expect(content).toBe('Hello **John Doe**');
   });
 
@@ -36,7 +36,7 @@ describe('processTemplate', () => {
     const template = `---\nsubject: Test\n---\nTest Message`;
     const { attributes, content } = processTemplate(template, {});
 
-    expect(attributes).toEqual({ subject: 'Test' });
+    expect(attributes).toStrictEqual({ subject: 'Test' });
     expect(content).toBe('Test Message');
   });
 });

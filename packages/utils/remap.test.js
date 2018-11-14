@@ -38,7 +38,7 @@ describe('compileFilters', () => {
     it(`should process ${mapper}`, () => {
       const fn = compileFilters(mapper);
       const result = fn(data);
-      expect(result).toEqual(expected);
+      expect(result).toStrictEqual(expected);
     });
   });
 });
@@ -55,7 +55,7 @@ describe('remapData', () => {
   fixtures.forEach(({ data, mapper, expected }) => {
     it(`should process ${JSON.stringify(mapper)}`, () => {
       const result = remapData(mapper, data);
-      expect(result).toEqual(expected);
+      expect(result).toStrictEqual(expected);
     });
   });
 });

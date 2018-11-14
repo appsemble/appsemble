@@ -14,8 +14,8 @@ export default function link({ to, parameters = {} }, { pages }, block, history)
   function href(data = {}) {
     return `/${[
       normalize(to),
-      ...(toPage.parameters || []).map(
-        name => (Object.hasOwnProperty.call(mappers, name) ? mappers[name](data) : data[name]),
+      ...(toPage.parameters || []).map(name =>
+        Object.hasOwnProperty.call(mappers, name) ? mappers[name](data) : data[name],
       ),
     ].join('/')}`;
   }

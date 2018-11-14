@@ -58,16 +58,18 @@ function getBootstrap(blockDefId) {
  */
 export async function callBootstrap(blockDef, params) {
   if (!loadedBlocks.has(blockDef.id)) {
-    blockDef.files.filter(url => url.endsWith('.js')).forEach(url => {
-      const script = document.createElement('script');
-      script.src = url;
-      script.addEventListener('AppsembleBootstrap', event => {
-        event.stopImmediatePropagation();
-        event.preventDefault();
-        register(script, event, blockDef.id);
+    blockDef.files
+      .filter(url => url.endsWith('.js'))
+      .forEach(url => {
+        const script = document.createElement('script');
+        script.src = url;
+        script.addEventListener('AppsembleBootstrap', event => {
+          event.stopImmediatePropagation();
+          event.preventDefault();
+          register(script, event, blockDef.id);
+        });
+        document.head.appendChild(script);
       });
-      document.head.appendChild(script);
-    });
     loadedBlocks.add(blockDef.id);
   }
   const bootstrap = await getBootstrap(blockDef.id);

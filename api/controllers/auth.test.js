@@ -12,7 +12,7 @@ describe('auth controller', () => {
   let server;
 
   beforeAll(async () => {
-    db = await testSchema();
+    db = await testSchema('auth');
 
     server = await koaServer({ db });
     ({ User, EmailAuthorization } = db.models);
@@ -34,8 +34,8 @@ describe('auth controller', () => {
 
     expect(response.status).toBe(201);
 
-    const email = await EmailAuthorization.findByPrimary('test@example.com');
-    const user = await User.findByPrimary(email.UserId);
+    const email = await EmailAuthorization.findByPk('test@example.com');
+    const user = await User.findByPk(email.UserId);
 
     expect(user).toBeTruthy();
     expect(email).toBeTruthy();
@@ -64,7 +64,7 @@ describe('auth controller', () => {
     await request(server)
       .post('/api/email')
       .send({ email: 'test@example.com', password: 'password' });
-    const email = await EmailAuthorization.findByPrimary('test@example.com');
+    const email = await EmailAuthorization.findByPk('test@example.com');
 
     expect(email.verified).toBe(false);
     expect(email.key).toBeTruthy();
