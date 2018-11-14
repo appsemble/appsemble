@@ -13,7 +13,9 @@ export default async function testSchema(spec) {
   const dbName = root
     .escape(`appsemble_test_${spec}_${new Date().toISOString()}`)
     .replace(/'/g, '')
-    .replace(/\W+/g, '_');
+    .replace(/\W+/g, '_')
+    .substring(0, 63)
+    .toLowerCase();
 
   await root.query(`CREATE DATABASE ${dbName}`);
   const db = await setupModels({
