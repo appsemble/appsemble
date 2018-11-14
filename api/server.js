@@ -372,7 +372,7 @@ async function main() {
         },
       }),
       ...(args.oauthGoogle && {
-        github: {
+        google: {
           key: args.oauthGoogle[0],
           secret: args.oauthGoogle[1],
           scope: ['email', 'profile', 'openid'],

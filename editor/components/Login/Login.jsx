@@ -33,7 +33,7 @@ export default class Login extends React.Component {
     }
   }
 
-  async handleOAuthLogin() {
+  handleOAuthLogin = async () => {
     const { authentication, location, history, oauthLogin } = this.props;
     const qs = querystring.parse(location.search.substr(1));
 
@@ -57,9 +57,9 @@ export default class Login extends React.Component {
     delete qs.verified;
     delete qs.userId;
     history.replace({ ...location, search: querystring.stringify(qs) });
-  }
+  };
 
-  async handleOAuthRegister() {
+  handleOAuthRegister = async () => {
     const { location } = this.props;
     const qs = querystring.parse(location.search.substr(1));
     const { provider, access_token: accessToken, refresh_token: refreshToken, id } = qs;
@@ -76,7 +76,7 @@ export default class Login extends React.Component {
     }
 
     return result;
-  }
+  };
 
   render() {
     const {
@@ -96,7 +96,7 @@ export default class Login extends React.Component {
         <FormattedMessage {...messages.greeting} values={{ id, name, email }} />
         <br />
         <FormattedMessage {...messages.registerPrompt} values={{ provider }} />
-        <button onClick={() => this.handleOAuthRegister()} type="button">
+        <button onClick={this.handleOAuthRegister} type="button">
           <FormattedMessage {...messages.register} />
         </button>
       </div>

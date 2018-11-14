@@ -19,8 +19,6 @@ export default class App extends React.Component {
       logout,
     } = this.props;
 
-    console.log(user);
-
     if (!initialized) {
       return 'Loading...';
     }
