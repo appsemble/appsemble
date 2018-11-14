@@ -16,6 +16,7 @@ import {
   FileInput,
   FileName,
 } from '@appsemble/react-bulma';
+import { Loader } from '@appsemble/react-components';
 import axios from 'axios';
 import { FormattedMessage } from 'react-intl';
 import { Link } from 'react-router-dom';
@@ -53,6 +54,7 @@ export default class Editor extends React.Component {
       push,
       intl: { formatMessage },
     } = this.props;
+
     const {
       data: {
         definitions: { App: appSchema },
@@ -171,6 +173,10 @@ export default class Editor extends React.Component {
     const { recipe, path, valid, dirty, icon, iconURL, openMenu } = this.state;
     const { id } = this.props;
     const filename = icon ? icon.name : 'Icon';
+
+    if (!recipe) {
+      return <Loader />;
+    }
 
     return (
       <div className={styles.editor}>
