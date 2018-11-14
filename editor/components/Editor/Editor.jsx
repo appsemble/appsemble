@@ -19,12 +19,12 @@ import {
 import axios from 'axios';
 import { FormattedMessage } from 'react-intl';
 import { Link } from 'react-router-dom';
-import MonacoEditor from 'react-monaco-editor';
 import PropTypes from 'prop-types';
 import React from 'react';
 import yaml from 'js-yaml';
 import validate, { SchemaValidationError } from '@appsemble/utils/validate';
 
+import MonacoEditor from './components/MonacoEditor';
 import styles from './editor.css';
 import messages from './messages';
 
@@ -78,19 +78,28 @@ export default class Editor extends React.Component {
 
   onSave = event => {
     event.preventDefault();
+
     const {
       push,
       intl: { formatMessage },
     } = this.props;
     const { appSchema } = this.state;
 
-    this.setState(async ({ recipe }) => {
-      let app = null;
-
-      // Attempt to parse the YAML into a JSON object
+    this.setState(({ recipe }) => {
       try {
-        app = yaml.safeLoad(recipe);
-        await validate(appSchema, app);
+        // Attempt to parse the YAML into a JSON object
+        const app = yaml.safeLoad(recipe);
+        validate(appSchema, app).catch(error => {
+          throw error;
+        });
+
+        // YAML and schema appear to be valid, send it to the app preview iframe
+        this.frame.current.contentWindow.postMessage(
+          { type: 'editor/EDIT_SUCCESS', app },
+          window.location.origin,
+        );
+
+        return { valid: true, dirty: false };
       } catch (e) {
         if (e instanceof SchemaValidationError) {
           const errors = e.data;
@@ -102,16 +111,9 @@ export default class Editor extends React.Component {
         } else {
           push(formatMessage(messages.invalidYaml));
         }
+
         return { valid: false, dirty: false };
       }
-
-      // YAML appears to be valid, send it to the app preview iframe
-      this.frame.current.contentWindow.postMessage(
-        { type: 'editor/EDIT_SUCCESS', app },
-        window.location.origin,
-      );
-
-      return { valid: true, dirty: false };
     });
   };
 
@@ -234,9 +236,7 @@ export default class Editor extends React.Component {
             <MonacoEditor
               className={styles.monacoEditor}
               language="yaml"
-              onChange={this.onMonacoChange}
-              options={{ tabSize: 2, minimap: { enabled: false } }}
-              theme="vs"
+              onValueChange={this.onMonacoChange}
               value={recipe}
             />
           </form>
