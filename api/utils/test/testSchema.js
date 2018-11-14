@@ -1,9 +1,8 @@
 import Sequelize from 'sequelize';
-import uuid from 'uuid/v4';
 
 import setupModels from '../setupModels';
 
-export default async function testSchema() {
+export default async function testSchema(spec) {
   const database = process.env.DATABASE_URL || 'mysql://root:password@localhost:3306';
   const root = new Sequelize(database, {
     logging: false,
@@ -12,9 +11,11 @@ export default async function testSchema() {
   });
 
   const dbName = root
-    .escape(`appsemble-test-${uuid()}`)
+    .escape(`appsemble_test_${spec}_${new Date().toISOString()}`)
     .replace(/'/g, '')
-    .replace(/-/g, '_');
+    .replace(/\W+/g, '_')
+    .substring(0, 63)
+    .toLowerCase();
 
   await root.query(`CREATE DATABASE ${dbName}`);
   const db = await setupModels({

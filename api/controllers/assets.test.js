@@ -10,7 +10,7 @@ describe('asset controller', () => {
   let server;
 
   beforeAll(async () => {
-    db = await testSchema();
+    db = await testSchema('assets');
 
     server = await koaServer({ db });
     ({ Asset } = db.models);
