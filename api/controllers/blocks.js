@@ -1,8 +1,9 @@
+import Busboy from 'busboy';
 import Boom from 'boom';
 import { UniqueConstraintError } from 'sequelize';
 
 export async function createBlockDefinition(ctx) {
-  const { BlockDefinition } = ctx.state.db;
+  const { BlockDefinition } = ctx.db.models;
   const { body } = ctx.request;
   const { id, description } = body;
   const blockDefinition = { description, id };
@@ -21,7 +22,7 @@ export async function createBlockDefinition(ctx) {
 
 export async function getBlockDefinition(ctx) {
   const { organization, id } = ctx.params;
-  const { BlockDefinition } = ctx.state.db;
+  const { BlockDefinition } = ctx.db.models;
 
   const blockDefinition = await BlockDefinition.findByPk(`${organization}/${id}`, { raw: true });
 
@@ -36,9 +37,133 @@ export async function getBlockDefinition(ctx) {
 }
 
 export async function queryBlockDefinitions(ctx) {
-  const { BlockDefinition } = ctx.state.db;
+  const { BlockDefinition } = ctx.db.models;
 
   const blockDefinitions = await BlockDefinition.findAll({ raw: true });
 
   ctx.body = blockDefinitions.map(({ id, description }) => ({ id, description }));
+}
+
+export async function createBlockVersion(ctx) {
+  const { organization, id } = ctx.params;
+  const { db } = ctx;
+  const { BlockAsset, BlockDefinition, BlockVersion } = db.models;
+  const name = `${organization}/${id}`;
+
+  const blockDefinition = await BlockDefinition.findByPk(name, { raw: true });
+
+  if (!blockDefinition) {
+    throw Boom.notFound('Block definition not found');
+  }
+
+  ctx.body = await db.transaction(
+    transaction =>
+      new Promise((resolve, reject) => {
+        const busboy = new Busboy(ctx.req);
+        const promises = [];
+        let result;
+        let resultDeferred;
+        const resultPromise = new Promise((res, rej) => {
+          resultDeferred = { resolve: res, reject: rej };
+        }).then(r => {
+          result = r;
+          return r;
+        });
+
+        function onError(error) {
+          reject(error);
+          busboy.removeAllListeners();
+        }
+
+        async function onSuccess() {
+          try {
+            await Promise.all(promises);
+          } catch (error) {
+            onError(error);
+            return;
+          }
+          resolve(resultPromise);
+          busboy.removeAllListeners();
+        }
+
+        busboy.on('file', (fieldname, stream, filename, encoding, mime) => {
+          const bufs = [];
+          stream.on('data', data => {
+            bufs.push(data);
+          });
+          stream.on('end', () => {
+            if (result) {
+              promises.push(
+                BlockAsset.create(
+                  {
+                    name,
+                    version: result.version,
+                    filename,
+                    mime,
+                    content: Buffer.concat(bufs),
+                  },
+                  { transaction },
+                ),
+              );
+            } else {
+              promises.push(
+                BlockAsset.create(
+                  {
+                    filename,
+                    mime,
+                    content: Buffer.concat(bufs),
+                  },
+                  { transaction },
+                ).then(async row => {
+                  bufs.splice(0, bufs.length);
+                  await resultPromise;
+                  await row.update(
+                    { name, version: result.version },
+                    { fields: ['name', 'version'], transaction },
+                  );
+                }),
+              );
+            }
+          });
+        });
+        busboy.on('field', async (fieldname, content) => {
+          try {
+            if (fieldname !== 'data') {
+              throw new Error(`Unexpected field: ${fieldname}`);
+            }
+            const versionData = {
+              ...JSON.parse(content),
+              name,
+            };
+            // XXX validate
+            await BlockVersion.create(versionData, { transaction });
+            resultDeferred.resolve(versionData);
+          } catch (error) {
+            busboy.emit('error', error);
+          }
+        });
+        busboy.on('finish', onSuccess);
+        busboy.on('error', onError);
+        busboy.on('partsLimit', onError);
+        busboy.on('filesLimit', onError);
+        busboy.on('fieldsLimit', onError);
+        ctx.req.pipe(busboy);
+      }),
+  );
+  ctx.status = 201;
+}
+
+export async function getBlockAsset(ctx) {
+  const { organization, id, version, path } = ctx.params;
+  const name = `${organization}/${id}`;
+  const { BlockAsset } = ctx.db.models;
+  const asset = await BlockAsset.findOne({
+    where: { name, version, filename: path },
+  });
+  if (asset == null) {
+    ctx.status = 404;
+    return;
+  }
+  ctx.type = asset.mime;
+  ctx.body = asset.content;
 }

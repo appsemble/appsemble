@@ -57,6 +57,79 @@
       200:
         description: The app that matches the given id.
         schema:
-          $ref: '#/definitions/App'
+          $ref: '#/definitions/BlockDefinition'
+      default:
+        $ref: '#/responses/default'
+
+/blocks/{organization}/{id}/versions:
+  post:
+    tags: [block version]
+    description: Publish a version of a block definition
+    operationId: createBlockVersion
+    consumes:
+      - multipart/form-data
+    x-oai-middleware:
+      - file: blocks
+        handler: createBlockVersion
+    parameters:
+      - name: organization
+        in: path
+        description: The organization of the block definition.
+        required: true
+        type: string
+      - name: id
+        in: path
+        description: The id of the block definition.
+        required: true
+        type: string
+      - name: version
+        in: formData
+        type: string
+        description: The block version description in a JSON format.
+      # OpenAPI 2.0 doesn’t support repeated form data parameters. This will look significantly
+      # more clean after updating to OpenAPI 3.0
+      - name: files
+        in: formData
+        type: file
+    responses:
+      200:
+        description: The app that matches the given id.
+        schema:
+          $ref: '#/definitions/BlockVersion'
+      default:
+        $ref: '#/responses/default'
+
+/blocks/{organization}/{id}/versions/{version}/{path}:
+  get:
+    tags: [block version]
+    description: Get an asset of a block version.
+    # operationId: getBlockAsset
+    x-oai-middleware:
+      - file: blocks
+        handler: getBlockAsset
+    parameters:
+      - name: organization
+        in: path
+        description: The organization of the block definition.
+        required: true
+        type: string
+      - name: id
+        in: path
+        description: The id of the block definition.
+        required: true
+        type: string
+      - name: version
+        in: path
+        type: string
+        required: true
+        description: The block version description in a JSON format.
+      - name: path
+        in: path
+        description: The path segments of the asset to get.
+        required: true
+        type: string
+    responses:
+      200:
+        description: The Block asset.
       default:
         $ref: '#/responses/default'
