@@ -12,7 +12,6 @@ import runtime from 'serviceworker-webpack-plugin/lib/runtime';
 import './index.css';
 import App from './components/App';
 import * as reducers from './actions';
-
 import resolveJsonPointers from './utils/resolveJsonPointers';
 
 const { sentryDsn } = document.documentElement.dataset;

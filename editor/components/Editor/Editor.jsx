@@ -225,15 +225,14 @@ export default class Editor extends React.Component {
         </div>
 
         <div className={styles.rightPanel}>
-          {id &&
-            path && (
-              <iframe
-                ref={this.frame}
-                className={styles.appFrame}
-                src={`/${path}`}
-                title="Appsemble App Preview"
-              />
-            )}
+          {id && path && (
+            <iframe
+              ref={this.frame}
+              className={styles.appFrame}
+              src={`/${path}`}
+              title="Appsemble App Preview"
+            />
+          )}
         </div>
       </div>
     );

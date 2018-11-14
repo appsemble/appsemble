@@ -1,6 +1,6 @@
 import axios from 'axios';
-
 import getDB from '@appsemble/utils/getDB';
+
 import resolveJsonPointers from '../utils/resolveJsonPointers';
 
 export const GET_START = 'app/GET_START';

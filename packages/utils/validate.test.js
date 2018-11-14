@@ -10,7 +10,7 @@ describe('validate', () => {
     }
     expect(error).toBeInstanceOf(SchemaValidationError);
     expect(error.message).toBe('Schema Validation Failed');
-    expect(error.data).toEqual({ '': { invalidType: true } });
+    expect(error.data).toStrictEqual({ '': { invalidType: true } });
   });
 
   it('should convert required property errors', async () => {
@@ -20,6 +20,6 @@ describe('validate', () => {
     } catch (err) {
       error = err;
     }
-    expect(error.data).toEqual({ skills: { required: true } });
+    expect(error.data).toStrictEqual({ skills: { required: true } });
   });
 });
