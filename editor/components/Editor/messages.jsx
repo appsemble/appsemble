@@ -10,4 +10,5 @@ export default defineMessages({
   errorUpdateIcon: 'Something went wrong trying to update the app icon',
   invalidYaml: 'Invalid YAML',
   updateSuccess: 'Successfully updated app recipe',
+  unexpected: 'Something went wrong when validating the app recipe',
 });

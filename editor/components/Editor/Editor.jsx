@@ -66,7 +66,12 @@ export default class Editor extends React.Component {
       const { data } = request;
       const recipe = yaml.safeDump(data);
 
-      this.setState({ appSchema, recipe, path: data.path, iconURL: `/api/apps/${id}/icon` });
+      this.setState({
+        appSchema,
+        recipe,
+        path: data.path,
+        iconURL: `/api/apps/${id}/icon`,
+      });
     } catch (e) {
       if (e.response && (e.response.status === 404 || e.response.status === 401)) {
         push(formatMessage(messages.appNotFound));
@@ -81,41 +86,42 @@ export default class Editor extends React.Component {
   onSave = event => {
     event.preventDefault();
 
-    const {
-      push,
-      intl: { formatMessage },
-    } = this.props;
-    const { appSchema } = this.state;
-
-    this.setState(({ recipe }) => {
+    this.setState(({ appSchema, recipe }, { intl: { formatMessage }, push }) => {
+      let app;
+      // Attempt to parse the YAML into a JSON object
       try {
-        // Attempt to parse the YAML into a JSON object
-        const app = yaml.safeLoad(recipe);
-        validate(appSchema, app).catch(error => {
-          throw error;
-        });
-
-        // YAML and schema appear to be valid, send it to the app preview iframe
-        this.frame.current.contentWindow.postMessage(
-          { type: 'editor/EDIT_SUCCESS', app },
-          window.location.origin,
-        );
-
-        return { valid: true, dirty: false };
-      } catch (e) {
-        if (e instanceof SchemaValidationError) {
-          const errors = e.data;
-          push({
-            body: formatMessage(messages.schemaValidationFailed, {
-              properties: Object.keys(errors).join(', '),
-            }),
-          });
-        } else {
-          push(formatMessage(messages.invalidYaml));
-        }
-
+        app = yaml.safeLoad(recipe);
+      } catch (error) {
+        push(formatMessage(messages.invalidYaml));
         return { valid: false, dirty: false };
       }
+      validate(appSchema, app)
+        .then(() => {
+          this.setState({ valid: true, dirty: false });
+
+          // YAML and schema appear to be valid, send it to the app preview iframe
+          this.frame.current.contentWindow.postMessage(
+            { type: 'editor/EDIT_SUCCESS', app },
+            window.location.origin,
+          );
+        })
+        .catch(error => {
+          this.setState(() => {
+            if (error instanceof SchemaValidationError) {
+              const errors = error.data;
+              push({
+                body: formatMessage(messages.schemaValidationFailed, {
+                  properties: Object.keys(errors).join(', '),
+                }),
+              });
+            } else {
+              push(formatMessage(messages.unexpected));
+            }
+
+            return { valid: false, dirty: false };
+          });
+        });
+      return null;
     });
   };
 
@@ -249,15 +255,14 @@ export default class Editor extends React.Component {
         </div>
 
         <div className={styles.rightPanel}>
-          {id &&
-            path && (
-              <iframe
-                ref={this.frame}
-                className={styles.appFrame}
-                src={`/${path}`}
-                title="Appsemble App Preview"
-              />
-            )}
+          {id && path && (
+            <iframe
+              ref={this.frame}
+              className={styles.appFrame}
+              src={`/${path}`}
+              title="Appsemble App Preview"
+            />
+          )}
         </div>
       </div>
     );
