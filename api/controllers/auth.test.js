@@ -12,7 +12,7 @@ describe('auth controller', () => {
   let server;
 
   beforeAll(async () => {
-    db = await testSchema();
+    db = await testSchema('auth');
 
     server = await koaServer({ db });
     ({ User, EmailAuthorization } = db.models);

@@ -1,5 +1,4 @@
 import Boom from 'boom';
-
 import validate, { SchemaValidationError } from '@appsemble/utils/validate';
 
 function verifyResourceDefinition(app, resourceType) {

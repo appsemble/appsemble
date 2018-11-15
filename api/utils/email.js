@@ -52,8 +52,10 @@ export async function sendEmail({ to, cc, bcc, subject }, message, smtp) {
         '',
       );
 
-    // eslint-disable-next-line no-console
-    console.log(`Mail not sent:\n${result.response}`);
+    if (process.env.NODE_ENV !== 'test') {
+      // eslint-disable-next-line no-console
+      console.log(`Mail not sent:\n${result.response}`);
+    }
   }
 
   transport.close();
