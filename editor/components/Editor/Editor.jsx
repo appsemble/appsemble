@@ -36,6 +36,7 @@ export default class Editor extends React.Component {
   };
 
   state = {
+    // eslint-disable-next-line react/no-unused-state
     appSchema: {},
     recipe: '',
     valid: false,
@@ -67,6 +68,7 @@ export default class Editor extends React.Component {
       const recipe = yaml.safeDump(data);
 
       this.setState({
+        // eslint-disable-next-line react/no-unused-state
         appSchema,
         recipe,
         path: data.path,
