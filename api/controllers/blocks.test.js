@@ -104,7 +104,11 @@ describe('blocks', () => {
       .field('data', JSON.stringify({ version: '1.32.9' }))
       .attach('build/standing.png', path.join(__dirname, '__fixtures__/standing.png'))
       .attach('build/testblock.js', path.join(__dirname, '__fixtures__/testblock.js'));
-    expect(body).toStrictEqual({ name: '@xkcd/standing', version: '1.32.9' });
+    expect(body).toStrictEqual({
+      files: ['standing.png', 'testblock.js'],
+      name: '@xkcd/standing',
+      version: '1.32.9',
+    });
     expect(status).toBe(201);
   });
 
@@ -117,8 +121,28 @@ describe('blocks', () => {
       .attach('build/standing.png', path.join(__dirname, '__fixtures__/standing.png'))
       .attach('build/testblock.js', path.join(__dirname, '__fixtures__/testblock.js'))
       .field('data', JSON.stringify({ version: '1.32.9' }));
-    expect(body).toStrictEqual({ name: '@xkcd/standing', version: '1.32.9' });
+    expect(body).toStrictEqual({
+      files: ['standing.png', 'testblock.js'],
+      name: '@xkcd/standing',
+      version: '1.32.9',
+    });
     expect(status).toBe(201);
+  });
+
+  it('should be possible to retrieve block versions', async () => {
+    await request(server)
+      .post('/api/blocks')
+      .send({ id: '@xkcd/standing' });
+    const { body: created } = await request(server)
+      .post('/api/blocks/@xkcd/standing/versions')
+      .attach('build/standing.png', path.join(__dirname, '__fixtures__/standing.png'))
+      .attach('build/testblock.js', path.join(__dirname, '__fixtures__/testblock.js'))
+      .field('data', JSON.stringify({ version: '1.32.9' }));
+    const { body: retrieved, status } = await request(server).get(
+      '/api/blocks/@xkcd/standing/versions/1.32.9',
+    );
+    expect(retrieved).toStrictEqual(created);
+    expect(status).toBe(200);
   });
 
   it('should be possible to download block assets', async () => {

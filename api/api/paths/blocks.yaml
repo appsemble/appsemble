@@ -99,11 +99,41 @@
       default:
         $ref: '#/responses/default'
 
+/blocks/{organization}/{id}/versions/{version}:
+  get:
+    tags: [block]
+    description: Retrieve a single block version.
+    operationId: getBlockVersion
+    x-oai-middleware:
+      - file: blocks
+        handler: getBlockVersion
+    parameters:
+      - name: organization
+        in: path
+        description: The organization of the block definition.
+        required: true
+        type: string
+      - name: id
+        in: path
+        description: The id of the block definition.
+        required: true
+        type: string
+      - name: version
+        in: path
+        type: string
+        required: true
+        description: The block version as a semantic version.
+    responses:
+      200:
+        description: The Block version instance that matches the version in the URL.
+      default:
+        $ref: '#/responses/default'
+
 /blocks/{organization}/{id}/versions/{version}/{path}:
   get:
     tags: [block version]
     description: Get an asset of a block version.
-    # operationId: getBlockAsset
+    operationId: getBlockAsset
     x-oai-middleware:
       - file: blocks
         handler: getBlockAsset
@@ -127,6 +157,7 @@
         in: path
         description: The path segments of the asset to get.
         required: true
+        # XXX This should be array, but that’s not supported by koa-oai-router.
         type: string
     responses:
       200:

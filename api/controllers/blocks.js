@@ -76,13 +76,21 @@ export async function createBlockVersion(ctx) {
         }
 
         async function onSuccess() {
+          let files;
           try {
-            await Promise.all(promises);
+            files = await Promise.all(promises);
           } catch (error) {
             onError(error);
             return;
           }
-          resolve(resultPromise);
+          if (files.length === 0) {
+            onError(new Error('At least one file should be uploaded'));
+            return;
+          }
+          resolve({
+            ...result,
+            files,
+          });
           busboy.removeAllListeners();
         }
 
@@ -103,7 +111,7 @@ export async function createBlockVersion(ctx) {
                     content: Buffer.concat(bufs),
                   },
                   { transaction },
-                ),
+                ).then(() => filename),
               );
             } else {
               promises.push(
@@ -121,6 +129,7 @@ export async function createBlockVersion(ctx) {
                     { name, version: result.version },
                     { fields: ['name', 'version'], transaction },
                   );
+                  return filename;
                 }),
               );
             }
@@ -135,7 +144,6 @@ export async function createBlockVersion(ctx) {
               ...JSON.parse(content),
               name,
             };
-            // XXX validate
             await BlockVersion.create(versionData, { transaction });
             resultDeferred.resolve(versionData);
           } catch (error) {
@@ -151,6 +159,25 @@ export async function createBlockVersion(ctx) {
       }),
   );
   ctx.status = 201;
+}
+
+export async function getBlockVersion(ctx) {
+  const { organization, id, version } = ctx.params;
+  const name = `${organization}/${id}`;
+  const { BlockAsset, BlockVersion } = ctx.db.models;
+
+  const blockVersion = await BlockVersion.findOne({ name, version });
+
+  if (!blockVersion) {
+    throw Boom.notFound('Block version not found');
+  }
+
+  const files = await BlockAsset.findAll(
+    { name, version },
+    { attributes: ['filename'], raw: true },
+  );
+
+  ctx.body = { files: files.map(f => f.filename), name, version };
 }
 
 export async function getBlockAsset(ctx) {
