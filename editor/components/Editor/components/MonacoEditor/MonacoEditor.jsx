@@ -5,13 +5,11 @@ import 'monaco-editor/esm/vs/basic-languages/javascript/javascript.contribution'
 import 'monaco-editor/esm/vs/basic-languages/yaml/yaml.contribution';
 import 'monaco-editor/esm/vs/language/css/monaco.contribution';
 
-// import 'monaco-yaml/esm/yamlMode';
-// import 'monaco-yaml/esm/monaco.contribution';
-
-import * as monaco from 'monaco-editor/esm/vs/editor/edcore.main';
-
-import * as React from 'react';
+import { editor } from 'monaco-editor/esm/vs/editor/edcore.main';
+import React from 'react';
 import PropTypes from 'prop-types';
+
+import styles from './monacoeditor.css';
 
 export default class MonacoEditor extends React.Component {
   static propTypes = {
@@ -37,10 +35,10 @@ export default class MonacoEditor extends React.Component {
   componentDidMount() {
     const { path, value, language, onValueChange, options } = this.props;
     const model = path
-      ? monaco.editor.createModel(value, language, path)
-      : monaco.editor.createModel(value, language);
+      ? editor.createModel(value, language, path)
+      : editor.createModel(value, language);
 
-    this.editor = monaco.editor.create(this.node.current, options);
+    this.editor = editor.create(this.node.current, options);
     this.editor.setModel(model);
 
     this.subscription = model.onDidChangeContent(() => {
@@ -55,7 +53,7 @@ export default class MonacoEditor extends React.Component {
     const model = this.editor.getModel();
 
     if (prevProps.theme !== theme) {
-      monaco.editor.setTheme(theme);
+      editor.setTheme(theme);
     }
 
     if (value !== model.getValue()) {
@@ -82,6 +80,6 @@ export default class MonacoEditor extends React.Component {
   }
 
   render() {
-    return <div ref={this.node} style={{ height: '100%' }} />;
+    return <div ref={this.node} className={styles.editor} />;
   }
 }
