@@ -141,7 +141,7 @@ export default class Editor extends React.Component {
       }
     }
 
-    this.setState({ dirty: true, warningDialog: false });
+    this.setState({ dirty: true, warningDialog: false, initialRecipe: recipe });
   };
 
   onUpload = async () => {
