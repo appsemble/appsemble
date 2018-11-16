@@ -9,6 +9,9 @@ All notable changes to this project will be documented in this file.
 - API: Add a user API, including email registration.
 - API: Secure the app API using OAuth2 / JWT.
 - API: Add a basic resource API.
+- API: Add new block API.
+- API: Add new block version API.
+- CLI: Add `@appsemble/cli` for block developers.
 - Editor: Implement login functionality.
 
 ## [0.2.0] - 2018-11-02
