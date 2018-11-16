@@ -13,18 +13,15 @@ import styles from './monacoeditor.css';
 
 export default class MonacoEditor extends React.Component {
   static propTypes = {
-    path: PropTypes.string,
     value: PropTypes.string,
-    language: PropTypes.string,
+    language: PropTypes.string.isRequired,
     theme: PropTypes.string,
     onValueChange: PropTypes.func,
     options: PropTypes.shape(),
   };
 
   static defaultProps = {
-    path: '',
     value: '',
-    language: 'javascript',
     onValueChange: null,
     theme: 'vs',
     options: { tabSize: 2, minimap: { enabled: false } },
@@ -33,10 +30,8 @@ export default class MonacoEditor extends React.Component {
   node = React.createRef();
 
   componentDidMount() {
-    const { path, value, language, onValueChange, options } = this.props;
-    const model = path
-      ? editor.createModel(value, language, path)
-      : editor.createModel(value, language);
+    const { value, language, onValueChange, options } = this.props;
+    const model = editor.createModel(value, language);
 
     this.editor = editor.create(this.node.current, options);
     this.editor.setModel(model);
@@ -47,7 +42,7 @@ export default class MonacoEditor extends React.Component {
   }
 
   componentDidUpdate(prevProps) {
-    const { path, value, language, onValueChange, theme, ...options } = this.props;
+    const { value, language, onValueChange, theme, ...options } = this.props;
 
     this.editor.updateOptions(options);
     const model = this.editor.getModel();
