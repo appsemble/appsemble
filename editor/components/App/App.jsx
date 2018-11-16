@@ -30,8 +30,8 @@ export default class App extends React.Component {
     return (
       <IntlProvider defaultLocale="en-US" locale="en-US" textComponent={React.Fragment}>
         <div>
-          {!user ? (
-            <Router>
+          <Router>
+            {!user ? (
               <Switch>
                 <Route path="/editor/register" render={() => <Register />} />
                 <Route
@@ -51,9 +51,7 @@ export default class App extends React.Component {
                   )}
                 />
               </Switch>
-            </Router>
-          ) : (
-            <Router>
+            ) : (
               <Switch>
                 <Route
                   path="/editor/:id"
@@ -61,8 +59,8 @@ export default class App extends React.Component {
                 />
                 <Route path="/editor" render={props => <AppList {...props} logout={logout} />} />
               </Switch>
-            </Router>
-          )}
+            )}
+          </Router>
           <Message />
         </div>
       </IntlProvider>
