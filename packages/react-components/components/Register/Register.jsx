@@ -16,6 +16,7 @@ export default class Register extends React.Component {
     password: '',
     error: false,
     submitting: false,
+    success: false,
   };
 
   onChange = event => {
@@ -34,16 +35,24 @@ export default class Register extends React.Component {
 
     try {
       await register(email, password);
-      this.setState({ submitting: true });
+      this.setState({ submitting: false, success: true });
     } catch (error) {
-      this.setState({ error: true, submitting: false });
+      this.setState({ error: true, submitting: false, success: false });
     }
   };
 
   render() {
-    const { email, password, error, submitting } = this.state;
+    const { email, password, error, submitting, success } = this.state;
 
-    return (
+    return success ? (
+      <Container className={styles.root}>
+        <Message color="success">
+          <MessageBody>
+            <FormattedMessage {...messages.registerSuccess} />
+          </MessageBody>
+        </Message>
+      </Container>
+    ) : (
       <Container className={styles.root} component="form" onSubmit={this.onSubmit}>
         {error && (
           <Message color="danger">

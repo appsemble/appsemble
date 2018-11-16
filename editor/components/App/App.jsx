@@ -6,6 +6,7 @@ import AppList from '../AppList';
 import Editor from '../Editor';
 import EmailLogin from '../EmailLogin';
 import Message from '../Message';
+import Register from '../Register';
 
 export default class App extends React.Component {
   async componentDidMount() {
@@ -28,12 +29,22 @@ export default class App extends React.Component {
       <IntlProvider defaultLocale="en-US" locale="en-US" textComponent={React.Fragment}>
         <div>
           {!user ? (
-            <EmailLogin
-              authentication={{
-                method: 'email',
-                ...authentication,
-              }}
-            />
+            <Router>
+              <Switch>
+                <Route path="/editor/register" render={() => <Register />} />
+                <Route
+                  path="/editor"
+                  render={() => (
+                    <EmailLogin
+                      authentication={{
+                        method: 'email',
+                        ...authentication,
+                      }}
+                    />
+                  )}
+                />
+              </Switch>
+            </Router>
           ) : (
             <Router>
               <Switch>
