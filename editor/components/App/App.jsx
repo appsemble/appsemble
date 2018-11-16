@@ -1,12 +1,13 @@
-import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Switch, Link } from 'react-router-dom';
 import React from 'react';
-import { IntlProvider } from 'react-intl';
+import { IntlProvider, FormattedMessage } from 'react-intl';
 
 import AppList from '../AppList';
 import Editor from '../Editor';
 import EmailLogin from '../EmailLogin';
 import Message from '../Message';
 import Register from '../Register';
+import messages from './messages';
 
 export default class App extends React.Component {
   async componentDidMount() {
@@ -35,12 +36,17 @@ export default class App extends React.Component {
                 <Route
                   path="/editor"
                   render={() => (
-                    <EmailLogin
-                      authentication={{
-                        method: 'email',
-                        ...authentication,
-                      }}
-                    />
+                    <div>
+                      <EmailLogin
+                        authentication={{
+                          method: 'email',
+                          ...authentication,
+                        }}
+                      />
+                      <Link to="/editor/register">
+                        <FormattedMessage {...messages.registerLink} />
+                      </Link>
+                    </div>
                   )}
                 />
               </Switch>
