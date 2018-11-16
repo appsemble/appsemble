@@ -23,14 +23,13 @@ export default class Page extends React.Component {
     user: PropTypes.shape(),
   };
 
-  counter = 0;
-
   static defaultProps = {
     user: null,
   };
 
   state = {
     dialog: null,
+    counter: 0,
   };
 
   componentDidMount() {
@@ -39,12 +38,19 @@ export default class Page extends React.Component {
     getBlockDefs(page.blocks.map(({ type }) => type));
   }
 
+  static getDerivedStateFromProps(props, state) {
+    if (state.prevPage !== props.page) {
+      return { ...state, prevPage: props.page, counter: state.counter + 1 };
+    }
+
+    // Nothing to update.
+    return null;
+  }
+
   componentDidUpdate({ page: prevPage }) {
     const { getBlockDefs, page } = this.props;
-
     if (page !== prevPage) {
       getBlockDefs(page.blocks.map(({ type }) => type));
-      this.counter = this.counter + 1;
     }
   }
 
@@ -57,9 +63,7 @@ export default class Page extends React.Component {
 
   render() {
     const { hasErrors, location, page, user } = this.props;
-    const { dialog } = this.state;
-
-    const { counter } = this;
+    const { dialog, counter } = this.state;
 
     if (!checkScope(page.scope, user)) {
       return (

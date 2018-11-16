@@ -11,4 +11,9 @@ export default defineMessages({
   invalidYaml: 'Invalid YAML',
   updateSuccess: 'Successfully updated app recipe',
   unexpected: 'Something went wrong when validating the app recipe',
+  resourceWarningTitle: 'Resource warning',
+  resourceWarning:
+    'The resource definitions in this app recipe contain different data from the original. This may cause unexpected results when using older data.',
+  upload: 'Upload',
+  cancel: 'Cancel',
 });

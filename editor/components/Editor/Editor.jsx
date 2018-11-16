@@ -1,4 +1,10 @@
 import {
+  Card,
+  CardHeader,
+  CardHeaderTitle,
+  CardContent,
+  CardFooter,
+  CardFooterItem,
   Navbar,
   NavbarBrand,
   NavbarBurger,
@@ -7,6 +13,7 @@ import {
   NavbarItem,
   NavbarStart,
   Button,
+  Modal,
   Icon,
   Image,
   File,
@@ -18,6 +25,7 @@ import {
 } from '@appsemble/react-bulma';
 import { Loader } from '@appsemble/react-components';
 import axios from 'axios';
+import isEqual from 'lodash.isequal';
 import { FormattedMessage } from 'react-intl';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
@@ -39,11 +47,13 @@ export default class Editor extends React.Component {
     // eslint-disable-next-line react/no-unused-state
     appSchema: {},
     recipe: '',
+    initialRecipe: '',
     valid: false,
     dirty: true,
     icon: undefined,
     iconURL: undefined,
     openMenu: false,
+    warningDialog: false,
   };
 
   frame = React.createRef();
@@ -71,6 +81,7 @@ export default class Editor extends React.Component {
         // eslint-disable-next-line react/no-unused-state
         appSchema,
         recipe,
+        initialRecipe: recipe,
         path: data.path,
         iconURL: `/api/apps/${id}/icon`,
       });
@@ -127,21 +138,23 @@ export default class Editor extends React.Component {
     });
   };
 
-  onUpload = async () => {
+  uploadApp = async () => {
     const {
       id,
       push,
       intl: { formatMessage },
     } = this.props;
-    const { recipe, valid, icon } = this.state;
+    const { recipe, icon, valid } = this.state;
 
-    if (valid) {
-      try {
-        await axios.put(`/api/apps/${id}`, yaml.safeLoad(recipe));
-        push({ body: formatMessage(messages.updateSuccess), color: 'success' });
-      } catch (e) {
-        push(formatMessage(messages.errorUpdate));
-      }
+    if (!valid) {
+      return;
+    }
+
+    try {
+      await axios.put(`/api/apps/${id}`, yaml.safeLoad(recipe));
+      push({ body: formatMessage(messages.updateSuccess), color: 'success' });
+    } catch (e) {
+      push(formatMessage(messages.errorUpdate));
     }
 
     if (icon) {
@@ -154,7 +167,23 @@ export default class Editor extends React.Component {
       }
     }
 
-    this.setState({ dirty: true });
+    this.setState({ dirty: true, warningDialog: false, initialRecipe: recipe });
+  };
+
+  onUpload = async () => {
+    const { recipe, initialRecipe, valid } = this.state;
+
+    if (valid) {
+      const app = yaml.safeLoad(recipe);
+      const originalApp = yaml.safeLoad(initialRecipe);
+
+      if (!isEqual(app.definitions, originalApp.definitions)) {
+        this.setState({ warningDialog: true });
+        return;
+      }
+
+      await this.uploadApp();
+    }
   };
 
   onLogout = () => {
@@ -177,8 +206,12 @@ export default class Editor extends React.Component {
     });
   };
 
+  onClose = () => {
+    this.setState({ warningDialog: false });
+  };
+
   render() {
-    const { recipe, path, valid, dirty, icon, iconURL, openMenu } = this.state;
+    const { recipe, path, valid, dirty, icon, iconURL, openMenu, warningDialog } = this.state;
     const { id } = this.props;
     const filename = icon ? icon.name : 'Icon';
 
@@ -253,6 +286,35 @@ export default class Editor extends React.Component {
               onValueChange={this.onMonacoChange}
               value={recipe}
             />
+            <Modal
+              active={warningDialog}
+              ModalCloseProps={{ size: 'large' }}
+              onClose={this.onClose}
+            >
+              <Card>
+                <CardHeader>
+                  <CardHeaderTitle>
+                    <FormattedMessage {...messages.resourceWarningTitle} />
+                  </CardHeaderTitle>
+                </CardHeader>
+                <CardContent>
+                  <FormattedMessage {...messages.resourceWarning} />
+                </CardContent>
+                <CardFooter>
+                  <CardFooterItem className="is-link" component="a" onClick={this.onClose}>
+                    <FormattedMessage {...messages.cancel} />
+                  </CardFooterItem>
+                  <CardFooterItem
+                    className={`${styles.cardFooterButton} button is-warning`}
+                    component="button"
+                    onClick={this.uploadApp}
+                    type="button"
+                  >
+                    <FormattedMessage {...messages.upload} />
+                  </CardFooterItem>
+                </CardFooter>
+              </Card>
+            </Modal>
           </form>
         </div>
 
