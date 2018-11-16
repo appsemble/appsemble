@@ -8,4 +8,9 @@ export default defineMessages({
   errorUpdateIcon: 'Something went wrong trying to update the app icon',
   invalidYaml: 'Invalid YAML',
   updateSuccess: 'Successfully updated app recipe',
+  resourceWarningTitle: 'Resource warning',
+  resourceWarning:
+    'The resource definitions in this app recipe contain different data from the original. This may cause unexpected results when using older data.',
+  upload: 'Upload',
+  cancel: 'Cancel',
 });
