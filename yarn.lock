@@ -7303,6 +7303,11 @@ monaco-editor@^0.15.1:
   resolved "https://registry.yarnpkg.com/monaco-editor/-/monaco-editor-0.15.2.tgz#424bcb9c0593b034f0bd4f8c14ce45329508e249"
   integrity sha512-N+zuKyxS6NQ0EJO/HMNp6gMWj2g5C0fCeSVXkGVf6eARS0Viblz/0aPXfCZRmhnkstKX+xgczvSQj72pW9OJCg==
 
+monaco-yaml@^1.1.1:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/monaco-yaml/-/monaco-yaml-1.2.0.tgz#6b652b3e5518f8fccc3f8a7226784ef441b73704"
+  integrity sha512-jabW288YmsSsCGNAvjC4QJgoSeFzJd07dWcIkvbWHGKhp574mTkQYMkEfu6Vj6jBXfCSi054UxqAF7FKS8g8bQ==
+
 move-concurrently@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/move-concurrently/-/move-concurrently-1.0.1.tgz#be2c005fda32e0b29af1f05d7c4b33214c701f92"
@@ -9447,15 +9452,6 @@ react-lifecycles-compat@^3.0.0, react-lifecycles-compat@^3.0.2, react-lifecycles
   version "3.0.4"
   resolved "https://registry.yarnpkg.com/react-lifecycles-compat/-/react-lifecycles-compat-3.0.4.tgz#4f1a273afdfc8f3488a8c516bfda78f872352362"
   integrity sha512-fBASbA6LnOU9dOU2eW7aQ8xmYBSXUIWr+UmF9b1efZBazGNO+rcXT/icdKnYm2pTwcRylVUYwW7H1PHfLekVzA==
-
-react-monaco-editor@^0.21.0:
-  version "0.21.0"
-  resolved "https://registry.yarnpkg.com/react-monaco-editor/-/react-monaco-editor-0.21.0.tgz#43f9abf3341491ca445e62f0a4ddfea26b679947"
-  integrity sha512-bFzwP7avp5unoHrUjKDJo8hYQDOkVz/SL83NWmDrfO0j8/nV1Zb4zw5OhFFhhupYWUrcUPkWyGMxtRIuFM07DA==
-  dependencies:
-    "@types/react" "*"
-    monaco-editor "^0.15.1"
-    prop-types "^15.6.2"
 
 react-redux@^5.1.1:
   version "5.1.1"

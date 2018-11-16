@@ -1,3 +1,4 @@
+import { Loader } from '@appsemble/react-components';
 import {
   Navbar,
   NavbarBrand,
@@ -37,11 +38,7 @@ export default class AppList extends React.Component {
     const { openMenu } = this.state;
 
     if (!apps) {
-      return (
-        <p>
-          <FormattedMessage {...messages.loading} />
-        </p>
-      );
+      return <Loader />;
     }
 
     return (

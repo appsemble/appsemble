@@ -1,7 +1,6 @@
+import { Loader } from '@appsemble/react-components';
 import PropTypes from 'prop-types';
 import React from 'react';
-
-import styles from './AppContext.css';
 
 /**
  * A wrapper which fetches the app definition and makes sure it is available to its children.
@@ -26,7 +25,7 @@ export default class AppContext extends React.Component {
     const { children, location, ready } = this.props;
 
     if (!ready) {
-      return <div className={styles.loader} />;
+      return <Loader />;
     }
 
     return React.Children.map(children, child =>
