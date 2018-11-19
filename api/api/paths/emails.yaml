@@ -65,7 +65,7 @@
         $ref: '#/responses/default'
 /email/reset/request:
   post:
-    description: Request a reset code for resetting passwords.
+    description: Request a reset token for resetting passwords.
     x-oai-middleware:
       - file: auth
         handler: requestForgetPassword
