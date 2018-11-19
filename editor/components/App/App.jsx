@@ -33,7 +33,7 @@ export default class App extends React.Component {
           <Router>
             {!user ? (
               <Switch>
-                <Route path="/editor/register" render={() => <Register />} />
+                <Route component={Register} path="/editor/register" />
                 <Route
                   path="/editor"
                   render={() => (
