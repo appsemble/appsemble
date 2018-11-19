@@ -88,3 +88,16 @@ export async function resendVerificationEmail({ email, name, url }, smtp) {
 
   return sendEmail({ to, subject }, content, smtp);
 }
+
+export async function sendForgetPasswordEmail({ email, name, url }, smtp) {
+  const replacements = {
+    greeting: name ? `Hello ${name}` : 'Hello',
+    url,
+  };
+
+  const { attributes, content } = processTemplate(readTemplate('foret'), replacements);
+  const { subject } = attributes;
+  const to = name ? `"${name}" <${email}>` : email;
+
+  return sendEmail({ to, subject }, content, smtp);
+}

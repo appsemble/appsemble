@@ -1,13 +1,12 @@
 ---
-subject: Confirm account registration
+subject: Forgot password
 ---
 
 <%= greeting %>,
 
-Someone has requested to resend the verification key for your account.  
-Before you can use your account, we need to verify your email address.
+We heard you lost your password.
 
-Please follow the link below to verify your email address:  
+You can use the following link to reset your password:  
 <%= url %>
 
 **Didn’t request this email?**  
