@@ -27,7 +27,7 @@ https://example.com/test
 **Didn=E2=80=99t request this email?** =20
 No worries! Your address may have been entered by mistake. If you ignore or=
  delete this email,
-nothing further will happen.
+nothing will happen to your account.
 
 Kind regards,
 
@@ -47,7 +47,56 @@ com/test</a></p>
 <p><strong>Didn=E2=80=99t request this email?=
 </strong><br>No worries! Your address may have been entered by mistake. If =
 you ignore or delete this email,
-nothing further will happen.</p>
+nothing will happen to your account.</p>
+<p>Kind regards,</p>
+<p><em>The Appsemble Team</em></p>
+
+
+"
+`;
+
+exports[`sendForgetPasswordEmail should match its snapshot 1`] = `
+"Content-Type: multipart/alternative;
+ 
+To: John Doe <test@example.com>
+Subject: Forgot password
+
+
+MIME-Version: 1.0
+
+
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+
+Hello John Doe,
+
+We heard you lost your password.
+
+You can use the =
+following link to reset your password: =20
+https://example.com/test
+
+**Didn=E2=80=99t request this email?** =20
+No worries! Your address may =
+have been entered by mistake. If you ignore or delete this email,
+nothing will happen to your account.
+
+Kind regards,
+
+_The Appsemble Team_
+
+
+Content-Type: text/html; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+
+<p>Hello John Doe,</p>
+<p>We heard you lost your password.</p>
+<p>You can use the following link to reset your password:<br><a =
+href=3D\\"https://example.com/test\\">https://example.com/test</a></p>
+<p><strong>Didn=E2=80=99t request this email?</strong><br>No worries! Your =
+address may have been entered by mistake. If you ignore or delete this =
+email,
+nothing will happen to your account.</p>
 <p>Kind regards,</p>
 <p><em>The Appsemble Team</em></p>
 
