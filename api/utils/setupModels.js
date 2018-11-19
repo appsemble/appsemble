@@ -6,6 +6,7 @@ function importModels(db) {
   db.import('../models/User');
   db.import('../models/Organization');
   db.import('../models/EmailAuthorization');
+  db.import('../models/ForgotPasswordToken');
   db.import('../models/OAuthAuthorization');
   db.import('../models/OAuthClient');
   db.import('../models/Resource');
@@ -21,6 +22,7 @@ function associateModels(models) {
     User,
     Organization,
     EmailAuthorization,
+    ForgotPasswordToken,
     OAuthAuthorization,
     Resource,
     Block,
@@ -33,6 +35,14 @@ function associateModels(models) {
   User.hasOne(EmailAuthorization);
 
   EmailAuthorization.belongsTo(User);
+  EmailAuthorization.hasMany(ForgotPasswordToken, {
+    foreignKey: { allowNull: false },
+    onDelete: 'CASCADE',
+  });
+  ForgotPasswordToken.belongsTo(EmailAuthorization, {
+    foreignKey: { allowNull: false },
+    onDelete: 'CASCADE',
+  });
 
   Organization.hasOne(Organization);
 
