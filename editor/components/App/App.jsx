@@ -7,6 +7,7 @@ import AppList from '../AppList';
 import Editor from '../Editor';
 import EmailLogin from '../EmailLogin';
 import ForgotPassword from '../ForgotPassword';
+import ResetPassword from '../ResetPassword';
 import Message from '../Message';
 import Register from '../Register';
 import messages from './messages';
@@ -35,6 +36,7 @@ export default class App extends React.Component {
             {!user ? (
               <Switch>
                 <Route component={Register} path="/editor/register" />
+                <Route component={ResetPassword} path="/editor/resetPassword" />
                 <Route component={ForgotPassword} path="/editor/forgotPassword" />
                 <Route
                   path="/editor"
