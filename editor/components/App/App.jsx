@@ -11,6 +11,7 @@ import ResetPassword from '../ResetPassword';
 import Message from '../Message';
 import Register from '../Register';
 import messages from './messages';
+import styles from './app.css';
 
 export default class App extends React.Component {
   async componentDidMount() {
@@ -48,12 +49,14 @@ export default class App extends React.Component {
                           ...authentication,
                         }}
                       />
-                      <Link to="/editor/register">
-                        <FormattedMessage {...messages.registerLink} />
-                      </Link>
-                      <Link to="/editor/forgotPassword">
-                        <FormattedMessage {...messages.forgotPasswordLink} />
-                      </Link>
+                      <div className={styles.links}>
+                        <Link to="/editor/register">
+                          <FormattedMessage {...messages.registerLink} />
+                        </Link>
+                        <Link to="/editor/forgotPassword">
+                          <FormattedMessage {...messages.forgotPasswordLink} />
+                        </Link>
+                      </div>
                     </div>
                   )}
                 />
