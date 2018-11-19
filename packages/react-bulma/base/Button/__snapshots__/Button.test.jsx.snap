@@ -1,0 +1,50 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Button should be possible to override the button type 1`] = `
+<button
+  className="button"
+  type="submit"
+/>
+`;
+
+exports[`Button should be possible to pass custom class names 1`] = `
+<button
+  className="button custom"
+  type="button"
+/>
+`;
+
+exports[`Button should be possible to specify a color 1`] = `
+<button
+  className="button is-primary"
+  type="button"
+/>
+`;
+
+exports[`Button should be possible to specify a custom component 1`] = `
+<a
+  className="button"
+  type="button"
+/>
+`;
+
+exports[`Button should be possible to specify the button as active using a boolean prop 1`] = `
+<button
+  className="button is-active"
+  type="button"
+/>
+`;
+
+exports[`Button should be possible to specify the button is loading using a boolean prop 1`] = `
+<button
+  className="button is-loading"
+  type="button"
+/>
+`;
+
+exports[`Button should render a button 1`] = `
+<button
+  className="button"
+  type="button"
+/>
+`;

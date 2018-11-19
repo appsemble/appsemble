@@ -5,5 +5,7 @@ module.exports = {
     [/\.(gif|jpe?g|png|svg|yaml)$/.source]: '<rootDir>/__mocks__/fileMock.js',
     [/\.css$/.source]: 'identity-obj-proxy',
   },
+  snapshotSerializers: ['enzyme-to-json/serializer'],
+  setupTestFrameworkScriptFile: '<rootDir>/test-setup.js',
   testURL: 'http://localhost',
 };
