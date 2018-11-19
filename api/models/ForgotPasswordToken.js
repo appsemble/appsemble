@@ -6,7 +6,6 @@ export default (sequelize, DataTypes) =>
     },
     {
       freezeTableName: true,
-      paranoid: true,
       createdAt: 'created',
       updatedAt: 'updated',
     },
