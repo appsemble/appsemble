@@ -56,9 +56,7 @@ describe('app controller', () => {
   });
 
   it('should return 404 when fetching a non-existent app', async () => {
-    const response = await request(server)
-      .get('/api/apps/1')
-      .set('Authorization', token);
+    const response = await request(server).get('/api/apps/1');
 
     expect(response.ok).toBeFalsy();
     expect(response.status).toBe(404);
@@ -70,9 +68,7 @@ describe('app controller', () => {
       { path: 'test-app', definition: { name: 'Test App', defaultPage: 'Test Page' } },
       { raw: true },
     );
-    const { body } = await request(server)
-      .get(`/api/apps/${appA.id}`)
-      .set('Authorization', token);
+    const { body } = await request(server).get(`/api/apps/${appA.id}`);
 
     expect(body).toStrictEqual({ id: appA.id, path: 'test-app', ...appA.definition });
   });
@@ -80,8 +76,8 @@ describe('app controller', () => {
   it('should create an app', async () => {
     const { body: created } = await request(server)
       .post('/api/apps')
-      .send({ name: 'Test App', defaultPage: 'Test Page' })
-      .set('Authorization', token);
+      .set('Authorization', token)
+      .send({ name: 'Test App', defaultPage: 'Test Page' });
 
     const { body: retrieved } = await request(server).get(`/api/apps/${created.id}`);
     expect(retrieved).toStrictEqual(created);
@@ -90,12 +86,12 @@ describe('app controller', () => {
   it('should handle app path conflicts on create', async () => {
     await request(server)
       .post('/api/apps')
-      .send({ path: 'a', name: 'Test App', defaultPage: 'Test Page' })
-      .set('Authorization', token);
+      .set('Authorization', token)
+      .send({ path: 'a', name: 'Test App', defaultPage: 'Test Page' });
     const response = await request(server)
       .post('/api/apps')
-      .send({ path: 'a', name: 'Test App', defaultPage: 'Test Page' })
-      .set('Authorization', token);
+      .set('Authorization', token)
+      .send({ path: 'a', name: 'Test App', defaultPage: 'Test Page' });
 
     expect(response.status).toBe(409);
     expect(response.body).toStrictEqual({
@@ -108,8 +104,8 @@ describe('app controller', () => {
   it('should not update a non-existent app', async () => {
     const response = await request(server)
       .put('/api/apps/1')
-      .send({ name: 'Foobar', defaultPage: 'Test Page' })
-      .set('Authorization', token);
+      .set('Authorization', token)
+      .send({ name: 'Foobar', defaultPage: 'Test Page' });
 
     expect(response.status).toBe(404);
     expect(response.body.message).toBe('App not found');
@@ -122,8 +118,8 @@ describe('app controller', () => {
     );
     const response = await request(server)
       .put(`/api/apps/${appA.id}`)
-      .send({ name: 'Foobar', defaultPage: appA.definition.defaultPage })
-      .set('Authorization', token);
+      .set('Authorization', token)
+      .send({ name: 'Foobar', defaultPage: appA.definition.defaultPage });
 
     expect(response.status).toBe(200);
     expect(response.body.name).toBe('Foobar');
@@ -138,8 +134,8 @@ describe('app controller', () => {
   it('should validate an app on creation', async () => {
     const response = await request(server)
       .post('/api/apps')
-      .send({ foo: 'bar' })
-      .set('Authorization', token);
+      .set('Authorization', token)
+      .send({ foo: 'bar' });
 
     expect(response.ok).toBeFalsy();
     expect(response.status).toBe(400);
@@ -153,8 +149,8 @@ describe('app controller', () => {
     );
     const response = await request(server)
       .put(`/api/apps/${appA.id}`)
-      .send({ name: 'Foobar' })
-      .set('Authorization', token);
+      .set('Authorization', token)
+      .send({ name: 'Foobar' });
 
     expect(response.status).toBe(400);
     expect(response.body[0].message).toBe("should have required property 'defaultPage'");
@@ -171,8 +167,8 @@ describe('app controller', () => {
     );
     const response = await request(server)
       .put(`/api/apps/${appA.id}`)
-      .send({ path: 'foo', name: 'Foobar', defaultPage: appA.definition.defaultPage })
-      .set('Authorization', token);
+      .set('Authorization', token)
+      .send({ path: 'foo', name: 'Foobar', defaultPage: appA.definition.defaultPage });
 
     expect(response.status).toBe(409);
   });
