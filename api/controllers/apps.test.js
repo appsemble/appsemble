@@ -78,12 +78,13 @@ describe('app controller', () => {
   });
 
   it('should create an app', async () => {
-    const { body } = await request(server)
+    const { body: created } = await request(server)
       .post('/api/apps')
       .send({ name: 'Test App', defaultPage: 'Test Page' })
       .set('Authorization', token);
 
-    expect(body).toBeDefined();
+    const { body: retrieved } = await request(server).get(`/api/apps/${created.id}`);
+    expect(retrieved).toStrictEqual(created);
   });
 
   it('should handle app path conflicts on create', async () => {
@@ -97,7 +98,11 @@ describe('app controller', () => {
       .set('Authorization', token);
 
     expect(response.status).toBe(409);
-    expect(response.body).toBeDefined();
+    expect(response.body).toStrictEqual({
+      error: 'Conflict',
+      message: 'Another app with path “a” already exists',
+      statusCode: 409,
+    });
   });
 
   it('should not update a non-existent app', async () => {
