@@ -78,12 +78,12 @@ export async function requestForgetPassword(ctx) {
   const { EmailAuthorization } = ctx.db.models;
   const { smtp } = ctx.state;
 
-  const record = await EmailAuthorization.findByPk(email, { raw: true });
+  const record = await EmailAuthorization.findByPk(email);
 
   if (record) {
     const { name } = record;
     const token = crypto.randomBytes(40).toString('hex');
-    await record.createForgetPasswordToken({ token });
+    await record.createForgotPasswordToken({ token });
     await sendForgetPasswordEmail(
       { email, name, url: `${ctx.origin}/editor/resetPassword?token=${token}` },
       smtp,
@@ -94,20 +94,21 @@ export async function requestForgetPassword(ctx) {
 }
 
 export async function resetPassword(ctx) {
-  const { token, password } = ctx;
-  const { ForgetPasswordToken } = ctx.db.models;
+  const { token } = ctx.request.body;
+  const { ForgotPasswordToken } = ctx.db.models;
 
-  const tokenRecord = await ForgetPasswordToken.findByPk(token);
+  const tokenRecord = await ForgotPasswordToken.findByPk(token);
 
   if (!tokenRecord) {
     ctx.status = 404;
     return;
   }
 
+  const password = await bcrypt.hash(ctx.request.body.password, 10);
   const email = await tokenRecord.getEmailAuthorization();
-  email.password = password;
-  await email.save();
-  await token.destroy();
+
+  await email.update({ password });
+  await tokenRecord.destroy();
 
   ctx.status = 204;
 }
