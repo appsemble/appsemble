@@ -73,6 +73,7 @@ export default class Register extends React.Component {
           value={email}
         />
         <InputField
+          autoComplete="new-password"
           disabled={submitting}
           iconLeft={<Icon fa="unlock" />}
           label={<FormattedMessage {...messages.passwordLabel} />}
