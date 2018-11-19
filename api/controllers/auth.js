@@ -85,7 +85,7 @@ export async function requestForgetPassword(ctx) {
     const token = crypto.randomBytes(40).toString('hex');
     await record.createForgotPasswordToken({ token });
     await sendForgetPasswordEmail(
-      { email, name, url: `${ctx.origin}/editor/resetPassword?token=${token}` },
+      { email, name, url: `${ctx.origin}/editor/forgotPassword?token=${token}` },
       smtp,
     );
   }

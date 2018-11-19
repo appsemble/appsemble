@@ -6,6 +6,7 @@ import { IntlProvider, FormattedMessage } from 'react-intl';
 import AppList from '../AppList';
 import Editor from '../Editor';
 import EmailLogin from '../EmailLogin';
+import ForgotPassword from '../ForgotPassword';
 import Message from '../Message';
 import Register from '../Register';
 import messages from './messages';
@@ -34,6 +35,7 @@ export default class App extends React.Component {
             {!user ? (
               <Switch>
                 <Route component={Register} path="/editor/register" />
+                <Route component={ForgotPassword} path="/editor/forgotPassword" />
                 <Route
                   path="/editor"
                   render={() => (
@@ -46,6 +48,9 @@ export default class App extends React.Component {
                       />
                       <Link to="/editor/register">
                         <FormattedMessage {...messages.registerLink} />
+                      </Link>
+                      <Link to="/editor/forgotPassword">
+                        <FormattedMessage {...messages.forgotPasswordLink} />
                       </Link>
                     </div>
                   )}
