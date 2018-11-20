@@ -1,5 +1,7 @@
 import Sequelize from 'sequelize';
 
+import logSQL from './logSQL';
+
 function importModels(db) {
   db.import('../models/App');
   db.import('../models/Snapshot');
@@ -61,7 +63,7 @@ export default async function setupModels({
   uri,
 }) {
   const options = {
-    logging,
+    logging: logging && logSQL,
     // XXX: This removes a pesky sequelize warning. Remove this when updating to sequelize@^5.
     operatorsAliases: Sequelize.Op.Aliases,
   };
