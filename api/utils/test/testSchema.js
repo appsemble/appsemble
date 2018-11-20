@@ -2,10 +2,18 @@ import Sequelize from 'sequelize';
 
 import setupModels from '../setupModels';
 
-export default async function testSchema(spec) {
+/**
+ * Create a temporary test database.
+ *
+ * The database will be deleted when it is closed.
+ *
+ * @param {string} spec The name of the test case.
+ * @param {Object} options Additional sequelize options.
+ */
+export default async function testSchema(spec, options = {}) {
   const database = process.env.DATABASE_URL || 'mysql://root:password@localhost:3306';
   const root = new Sequelize(database, {
-    logging: false,
+    ...options,
     // XXX: This removes a pesky sequelize warning. Remove this when updating to sequelize@^5.
     operatorsAliases: Sequelize.Op.Aliases,
   });
@@ -19,6 +27,7 @@ export default async function testSchema(spec) {
 
   await root.query(`CREATE DATABASE ${dbName}`);
   const db = await setupModels({
+    ...options,
     sync: true,
     uri: `${database.replace(/\/\w+$/, '')}/${dbName}`,
   });
