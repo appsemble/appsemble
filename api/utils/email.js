@@ -95,7 +95,7 @@ export async function sendForgetPasswordEmail({ email, name, url }, smtp) {
     url,
   };
 
-  const { attributes, content } = processTemplate(readTemplate('forget'), replacements);
+  const { attributes, content } = processTemplate(readTemplate('reset'), replacements);
   const { subject } = attributes;
   const to = name ? `"${name}" <${email}>` : email;
 
