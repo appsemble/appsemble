@@ -197,14 +197,17 @@ In short, this means a commit message should use the following layout:
 
 Type must be one of the following:
 
-- build: Changes that affect the build system or external dependencies.
-- ci: Changes to our CI configuration files and scripts.
-- docs: Documentation only changes.
+- build: Changes that affect the build system or external dependencies. (For example changes to
+  Webpack configurations)
+- ci: Changes to our CI configuration files and scripts. (For example changes to _.gitlab-ci.yml_)
+- docs: Documentation only changes. (For example updates to _README.md_)
 - feat: A new feature.
 - fix: A bug fix.
 - perf: A code change that improves performance.
-- refactor: A code change that neither fixes a bug nor adds a feature.
-- style: Changes that do not affect the meaning of the code.
+- refactor: A code change that neither fixes a bug nor adds a feature. (For example if code is moved
+  to another file, or split into smaller chunks.)
+- style: Changes that do not affect the meaning of the code. (For example if code formatting has
+  changed.)
 - test: Adding missing tests or correcting existing tests.
 
 ### Scope
@@ -216,7 +219,7 @@ Scope should be one of the following:
 - **block**
 - **editor**
 
-If the change doesn’t fit in one of these scopes, it should be omitted.
+If the change doesn’t fit in one of these scopes, or the scope is unclear, it should be omitted.
 
 ### Subject
 
