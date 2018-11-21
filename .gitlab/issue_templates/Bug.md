@@ -3,16 +3,6 @@
 <!-- Add a textual description of the bug. -->
 <!-- If this is a graphical bug, please add screenshots. 🙂  -->
 
-### Scope
-
-<!-- Remove the ones that don’t apply. -->
-
-- API
-- App frontend
-- Editor
-- Docker image
-- Block
-
 ### Steps to reproduce
 
 <!-- Add a step by step guide describing how to trigger this bug. -->
@@ -25,3 +15,18 @@
 
 ```js
 ```
+
+### Scope
+
+<!-- Remove the ones that don’t apply. -->
+
+- API /label ~API
+- App /label ~App
+- Block /label ~Block
+- CLI /label ~CLI
+- Docker /label ~Docker
+- Editor /label ~Editor
+
+/label ~Bug
+
+/estimate 1d
