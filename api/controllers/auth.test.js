@@ -88,7 +88,7 @@ describe('auth controller', () => {
     expect(responseC.status).toBe(404);
   });
 
-  it('should reset passwords', async () => {
+  it('should create a password reset token', async () => {
     const data = { email: 'test@example.com', password: 'password' };
     await request(server)
       .post('/api/email')
