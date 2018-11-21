@@ -1,9 +1,9 @@
-import { Register } from '@appsemble/react-components';
-import axios from 'axios';
-import React from 'react';
+import { connect } from 'react-redux';
 
-async function registerEmail(email, password) {
-  return axios.post('/api/email', { email, password });
-}
+import { registerEmail } from '../../actions/user';
+import Register from './Register';
 
-export default () => <Register register={registerEmail} />;
+export default connect(
+  null,
+  { register: registerEmail },
+)(Register);
