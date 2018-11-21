@@ -1,5 +1,3 @@
-import querystring from 'querystring';
-
 import { Button, Container, Icon, InputField, Message, MessageBody } from '@appsemble/react-bulma';
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -10,12 +8,11 @@ import messages from './messages';
 
 export default class ResetPassword extends React.Component {
   static propTypes = {
-    reset: PropTypes.func.isRequired,
-    location: PropTypes.shape().isRequired,
+    request: PropTypes.func.isRequired,
   };
 
   state = {
-    password: '',
+    email: '',
     error: false,
     submitting: false,
     success: false,
@@ -30,14 +27,13 @@ export default class ResetPassword extends React.Component {
   onSubmit = async event => {
     event.preventDefault();
 
-    const { password } = this.state;
-    const { reset, location } = this.props;
-    const { token } = querystring.parse(location.search.substr(1));
+    const { email } = this.state;
+    const { request } = this.props;
 
     this.setState({ submitting: true, error: false });
 
     try {
-      await reset(token, password);
+      await request(email);
       this.setState({ submitting: false, success: true });
     } catch (error) {
       this.setState({ error: true, submitting: false, success: false });
@@ -45,7 +41,7 @@ export default class ResetPassword extends React.Component {
   };
 
   render() {
-    const { password, error, submitting, success } = this.state;
+    const { email, error, submitting, success } = this.state;
 
     return success ? (
       <Container className={styles.root}>
@@ -65,15 +61,15 @@ export default class ResetPassword extends React.Component {
           </Message>
         )}
         <InputField
-          autoComplete="new-password"
+          autoComplete="email"
           disabled={submitting}
-          iconLeft={<Icon fa="unlock" />}
-          label={<FormattedMessage {...messages.passwordLabel} />}
-          name="password"
+          iconLeft={<Icon fa="envelope" />}
+          label={<FormattedMessage {...messages.usernameLabel} />}
+          name="email"
           onChange={this.onChange}
           required
-          type="password"
-          value={password}
+          type="email"
+          value={email}
         />
 
         <Button className={styles.submit} color="primary" disabled={submitting} type="submit">

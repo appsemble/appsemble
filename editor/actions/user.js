@@ -184,3 +184,11 @@ export function passwordLogin(url, { username, password }, refreshURL, clientId,
     });
   };
 }
+
+export function resetPassword(token, password) {
+  return async () => axios.post('/api/email/reset', { token, password });
+}
+
+export function requestResetPassword(email) {
+  return async () => axios.post('/api/email/reset/request', { email });
+}

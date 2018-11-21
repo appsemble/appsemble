@@ -1,9 +1,9 @@
-import { ResetPassword } from '@appsemble/react-components';
-import axios from 'axios';
-import React from 'react';
+import { connect } from 'react-redux';
 
-async function resetPassword(token, password) {
-  return axios.post('/api/email/reset', { token, password });
-}
+import { requestResetPassword } from '../../actions/user';
+import ResetPassword from './ResetPassword';
 
-export default props => <ResetPassword {...props} reset={resetPassword} />;
+export default connect(
+  null,
+  { request: requestResetPassword },
+)(ResetPassword);

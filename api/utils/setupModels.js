@@ -6,7 +6,7 @@ function importModels(db) {
   db.import('../models/User');
   db.import('../models/Organization');
   db.import('../models/EmailAuthorization');
-  db.import('../models/ForgotPasswordToken');
+  db.import('../models/ResetPasswordToken');
   db.import('../models/OAuthAuthorization');
   db.import('../models/OAuthClient');
   db.import('../models/Resource');
@@ -22,7 +22,7 @@ function associateModels(models) {
     User,
     Organization,
     EmailAuthorization,
-    ForgotPasswordToken,
+    ResetPasswordToken,
     OAuthAuthorization,
     Resource,
     Block,
@@ -35,11 +35,11 @@ function associateModels(models) {
   User.hasOne(EmailAuthorization);
 
   EmailAuthorization.belongsTo(User);
-  EmailAuthorization.hasMany(ForgotPasswordToken, {
+  EmailAuthorization.hasMany(ResetPasswordToken, {
     foreignKey: { allowNull: false },
     onDelete: 'CASCADE',
   });
-  ForgotPasswordToken.belongsTo(EmailAuthorization, {
+  ResetPasswordToken.belongsTo(EmailAuthorization, {
     foreignKey: { allowNull: false },
     onDelete: 'CASCADE',
   });

@@ -1,18 +1,21 @@
+import querystring from 'querystring';
+
 import { Button, Container, Icon, InputField, Message, MessageBody } from '@appsemble/react-bulma';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import styles from './forgotpassword.css';
+import styles from './editpassword.css';
 import messages from './messages';
 
-export default class ForgotPassword extends React.Component {
+export default class EditPassword extends React.Component {
   static propTypes = {
-    request: PropTypes.func.isRequired,
+    reset: PropTypes.func.isRequired,
+    location: PropTypes.shape().isRequired,
   };
 
   state = {
-    email: '',
+    password: '',
     error: false,
     submitting: false,
     success: false,
@@ -27,13 +30,14 @@ export default class ForgotPassword extends React.Component {
   onSubmit = async event => {
     event.preventDefault();
 
-    const { email } = this.state;
-    const { request } = this.props;
+    const { password } = this.state;
+    const { reset, location } = this.props;
+    const { token } = querystring.parse(location.search.substr(1));
 
     this.setState({ submitting: true, error: false });
 
     try {
-      await request(email);
+      await reset(token, password);
       this.setState({ submitting: false, success: true });
     } catch (error) {
       this.setState({ error: true, submitting: false, success: false });
@@ -41,7 +45,7 @@ export default class ForgotPassword extends React.Component {
   };
 
   render() {
-    const { email, error, submitting, success } = this.state;
+    const { password, error, submitting, success } = this.state;
 
     return success ? (
       <Container className={styles.root}>
@@ -61,15 +65,15 @@ export default class ForgotPassword extends React.Component {
           </Message>
         )}
         <InputField
-          autoComplete="email"
+          autoComplete="new-password"
           disabled={submitting}
-          iconLeft={<Icon fa="envelope" />}
-          label={<FormattedMessage {...messages.usernameLabel} />}
-          name="email"
+          iconLeft={<Icon fa="unlock" />}
+          label={<FormattedMessage {...messages.passwordLabel} />}
+          name="password"
           onChange={this.onChange}
           required
-          type="email"
-          value={email}
+          type="password"
+          value={password}
         />
 
         <Button className={styles.submit} color="primary" disabled={submitting} type="submit">

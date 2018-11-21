@@ -68,7 +68,7 @@
     description: Request a reset token for resetting passwords.
     x-oai-middleware:
       - file: auth
-        handler: requestForgetPassword
+        handler: requestResetPassword
     parameters:
       - name: email
         in: body
@@ -106,6 +106,6 @@
               type: string
     responses:
       204:
-        description: The password has been register.
+        description: The password has been reset.
       default:
         $ref: '#/responses/default'

@@ -8,7 +8,7 @@ import testSchema from '../utils/test/testSchema';
 describe('auth controller', () => {
   let User;
   let EmailAuthorization;
-  let ForgotPasswordToken;
+  let ResetPasswordToken;
   let db;
   let server;
 
@@ -16,7 +16,7 @@ describe('auth controller', () => {
     db = await testSchema('auth');
 
     server = await koaServer({ db });
-    ({ User, ForgotPasswordToken, EmailAuthorization } = db.models);
+    ({ User, ResetPasswordToken, EmailAuthorization } = db.models);
   });
 
   beforeEach(async () => {
@@ -98,7 +98,7 @@ describe('auth controller', () => {
       .post('/api/email/reset/request')
       .send({ email: data.email });
 
-    const token = await ForgotPasswordToken.findOne({
+    const token = await ResetPasswordToken.findOne({
       where: { EmailAuthorizationEmail: data.email },
     });
 

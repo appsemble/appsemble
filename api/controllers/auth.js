@@ -3,7 +3,7 @@ import crypto from 'crypto';
 import bcrypt from 'bcrypt';
 import Boom from 'boom';
 
-import { sendForgetPasswordEmail, sendWelcomeEmail, resendVerificationEmail } from '../utils/email';
+import { sendResetPasswordEmail, sendWelcomeEmail, resendVerificationEmail } from '../utils/email';
 
 export async function registerEmail(ctx) {
   const { body } = ctx.request;
@@ -73,7 +73,7 @@ export async function resendVerification(ctx) {
   ctx.status = 204;
 }
 
-export async function requestForgetPassword(ctx) {
+export async function requestResetPassword(ctx) {
   const { email } = ctx.request.body;
   const { EmailAuthorization } = ctx.db.models;
   const { smtp } = ctx.state;
@@ -83,9 +83,9 @@ export async function requestForgetPassword(ctx) {
   if (record) {
     const { name } = record;
     const token = crypto.randomBytes(40).toString('hex');
-    await record.createForgotPasswordToken({ token });
-    await sendForgetPasswordEmail(
-      { email, name, url: `${ctx.origin}/editor/forgotPassword?token=${token}` },
+    await record.createResetPasswordToken({ token });
+    await sendResetPasswordEmail(
+      { email, name, url: `${ctx.origin}/editor/edit-password?token=${token}` },
       smtp,
     );
   }
@@ -95,9 +95,9 @@ export async function requestForgetPassword(ctx) {
 
 export async function resetPassword(ctx) {
   const { token } = ctx.request.body;
-  const { ForgotPasswordToken } = ctx.db.models;
+  const { ResetPasswordToken } = ctx.db.models;
 
-  const tokenRecord = await ForgotPasswordToken.findByPk(token);
+  const tokenRecord = await ResetPasswordToken.findByPk(token);
 
   if (!tokenRecord) {
     ctx.status = 404;

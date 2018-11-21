@@ -6,8 +6,8 @@ import { IntlProvider, FormattedMessage } from 'react-intl';
 import AppList from '../AppList';
 import Editor from '../Editor';
 import EmailLogin from '../EmailLogin';
-import ForgotPassword from '../ForgotPassword';
 import ResetPassword from '../ResetPassword';
+import EditPassword from '../EditPassword';
 import Message from '../Message';
 import Register from '../Register';
 import messages from './messages';
@@ -37,8 +37,8 @@ export default class App extends React.Component {
             {!user ? (
               <Switch>
                 <Route component={Register} path="/editor/register" />
-                <Route component={ResetPassword} path="/editor/resetPassword" />
-                <Route component={ForgotPassword} path="/editor/forgotPassword" />
+                <Route component={ResetPassword} path="/editor/reset-password" />
+                <Route component={EditPassword} path="/editor/edit-password" />
                 <Route
                   path="/editor"
                   render={() => (
@@ -53,7 +53,7 @@ export default class App extends React.Component {
                         <Link to="/editor/register">
                           <FormattedMessage {...messages.registerLink} />
                         </Link>
-                        <Link to="/editor/forgotPassword">
+                        <Link to="/editor/reset-password">
                           <FormattedMessage {...messages.forgotPasswordLink} />
                         </Link>
                       </div>
