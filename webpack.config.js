@@ -9,6 +9,7 @@ const ServiceWorkerWebpackPlugin = require('serviceworker-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
 const { UnusedFilesWebpackPlugin } = require('unused-files-webpack-plugin');
 const ManifestPlugin = require('webpack-manifest-plugin');
+const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin');
 
 const publicPath = '/';
 
@@ -114,6 +115,7 @@ module.exports = async (env, { mode }) => {
       ],
     },
     plugins: [
+      new MonacoWebpackPlugin({ languages: ['css', 'yaml'] }),
       new CaseSensitivePathsPlugin(),
       new ServiceWorkerWebpackPlugin({
         entry: path.join(__dirname, 'app/service-worker'),
