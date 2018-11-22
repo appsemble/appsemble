@@ -59,3 +59,11 @@ body {
 .iconPreview {
   margin-left: 10px;
 }
+
+.cardFooterButton {
+  border: none;
+  cursor: pointer;
+  font: inherit;
+  height: auto;
+  padding: 0 !important;
+}

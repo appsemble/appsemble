@@ -1,6 +1,5 @@
 import axios from 'axios';
 
-/* eslint no-unused-vars: 0 */
 const oauth2Handlers = {
   async gitlab(token) {
     const { data } = await axios.get('https://gitlab.com/api/v4/user', {

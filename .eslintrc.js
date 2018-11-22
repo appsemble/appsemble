@@ -19,7 +19,7 @@ module.exports = {
     },
   },
   rules: {
-    'filenames/match-regex': ['error', /^\.?[a-z]+(\.config|\.test)?$/i, true],
+    'filenames/match-regex': ['error', /^(test-)?\.?[a-z]+(\.config|\.test)?$/i, true],
     'filenames/match-exported': 'error',
     'react/prefer-stateless-function': 'off',
     'no-invalid-this': 'off',

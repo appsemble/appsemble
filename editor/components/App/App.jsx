@@ -1,3 +1,4 @@
+import { Loader } from '@appsemble/react-components';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import React from 'react';
 import { IntlProvider } from 'react-intl';
@@ -20,7 +21,7 @@ export default class App extends React.Component {
     } = this.props;
 
     if (!initialized) {
-      return 'Loading...';
+      return <Loader />;
     }
 
     return (

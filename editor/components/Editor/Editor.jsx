@@ -1,4 +1,10 @@
 import {
+  Card,
+  CardHeader,
+  CardHeaderTitle,
+  CardContent,
+  CardFooter,
+  CardFooterItem,
   Navbar,
   NavbarBrand,
   NavbarBurger,
@@ -7,6 +13,7 @@ import {
   NavbarItem,
   NavbarStart,
   Button,
+  Modal,
   Icon,
   Image,
   File,
@@ -16,14 +23,17 @@ import {
   FileInput,
   FileName,
 } from '@appsemble/react-bulma';
+import { Loader } from '@appsemble/react-components';
 import axios from 'axios';
+import isEqual from 'lodash.isequal';
 import { FormattedMessage } from 'react-intl';
 import { Link } from 'react-router-dom';
-import MonacoEditor from 'react-monaco-editor';
 import PropTypes from 'prop-types';
 import React from 'react';
 import yaml from 'js-yaml';
+import validate, { SchemaValidationError } from '@appsemble/utils/validate';
 
+import MonacoEditor from './components/MonacoEditor';
 import styles from './editor.css';
 import messages from './messages';
 
@@ -34,12 +44,16 @@ export default class Editor extends React.Component {
   };
 
   state = {
+    // eslint-disable-next-line react/no-unused-state
+    appSchema: {},
     recipe: '',
+    initialRecipe: '',
     valid: false,
     dirty: true,
     icon: undefined,
     iconURL: undefined,
     openMenu: false,
+    warningDialog: false,
   };
 
   frame = React.createRef();
@@ -52,12 +66,25 @@ export default class Editor extends React.Component {
       intl: { formatMessage },
     } = this.props;
 
+    const {
+      data: {
+        definitions: { App: appSchema },
+      },
+    } = await axios.get('/api.json');
+
     try {
       const request = await axios.get(`/api/apps/${id}`);
       const { data } = request;
       const recipe = yaml.safeDump(data);
 
-      this.setState({ recipe, path: data.path, iconURL: `/api/apps/${id}/icon` });
+      this.setState({
+        // eslint-disable-next-line react/no-unused-state
+        appSchema,
+        recipe,
+        initialRecipe: recipe,
+        path: data.path,
+        iconURL: `/api/apps/${id}/icon`,
+      });
     } catch (e) {
       if (e.response && (e.response.status === 404 || e.response.status === 401)) {
         push(formatMessage(messages.appNotFound));
@@ -69,49 +96,65 @@ export default class Editor extends React.Component {
     }
   }
 
-  onSubmit = event => {
+  onSave = event => {
     event.preventDefault();
-    const {
-      push,
-      intl: { formatMessage },
-    } = this.props;
 
-    this.setState(({ recipe }) => {
-      let app = null;
-
+    this.setState(({ appSchema, recipe }, { intl: { formatMessage }, push }) => {
+      let app;
       // Attempt to parse the YAML into a JSON object
       try {
         app = yaml.safeLoad(recipe);
-      } catch (e) {
+      } catch (error) {
         push(formatMessage(messages.invalidYaml));
         return { valid: false, dirty: false };
       }
+      validate(appSchema, app)
+        .then(() => {
+          this.setState({ valid: true, dirty: false });
 
-      // YAML appears to be valid, send it to the app preview iframe
-      this.frame.current.contentWindow.postMessage(
-        { type: 'editor/EDIT_SUCCESS', app },
-        window.location.origin,
-      );
+          // YAML and schema appear to be valid, send it to the app preview iframe
+          this.frame.current.contentWindow.postMessage(
+            { type: 'editor/EDIT_SUCCESS', app },
+            window.location.origin,
+          );
+        })
+        .catch(error => {
+          this.setState(() => {
+            if (error instanceof SchemaValidationError) {
+              const errors = error.data;
+              push({
+                body: formatMessage(messages.schemaValidationFailed, {
+                  properties: Object.keys(errors).join(', '),
+                }),
+              });
+            } else {
+              push(formatMessage(messages.unexpected));
+            }
 
-      return { valid: true, dirty: false };
+            return { valid: false, dirty: false };
+          });
+        });
+      return null;
     });
   };
 
-  onUpload = async () => {
+  uploadApp = async () => {
     const {
       id,
       push,
       intl: { formatMessage },
     } = this.props;
-    const { recipe, valid, icon } = this.state;
+    const { recipe, icon, valid } = this.state;
 
-    if (valid) {
-      try {
-        await axios.put(`/api/apps/${id}`, yaml.safeLoad(recipe));
-        push({ body: formatMessage(messages.updateSuccess), color: 'success' });
-      } catch (e) {
-        push(formatMessage(messages.errorUpdate));
-      }
+    if (!valid) {
+      return;
+    }
+
+    try {
+      await axios.put(`/api/apps/${id}`, yaml.safeLoad(recipe));
+      push({ body: formatMessage(messages.updateSuccess), color: 'success' });
+    } catch (e) {
+      push(formatMessage(messages.errorUpdate));
     }
 
     if (icon) {
@@ -124,7 +167,23 @@ export default class Editor extends React.Component {
       }
     }
 
-    this.setState({ dirty: true });
+    this.setState({ dirty: true, warningDialog: false, initialRecipe: recipe });
+  };
+
+  onUpload = async () => {
+    const { recipe, initialRecipe, valid } = this.state;
+
+    if (valid) {
+      const app = yaml.safeLoad(recipe);
+      const originalApp = yaml.safeLoad(initialRecipe);
+
+      if (!isEqual(app.definitions, originalApp.definitions)) {
+        this.setState({ warningDialog: true });
+        return;
+      }
+
+      await this.uploadApp();
+    }
   };
 
   onLogout = () => {
@@ -147,15 +206,23 @@ export default class Editor extends React.Component {
     });
   };
 
+  onClose = () => {
+    this.setState({ warningDialog: false });
+  };
+
   render() {
-    const { recipe, path, valid, dirty, icon, iconURL, openMenu } = this.state;
+    const { recipe, path, valid, dirty, icon, iconURL, openMenu, warningDialog } = this.state;
     const { id } = this.props;
     const filename = icon ? icon.name : 'Icon';
+
+    if (!recipe) {
+      return <Loader />;
+    }
 
     return (
       <div className={styles.editor}>
         <div className={styles.leftPanel}>
-          <form className={styles.editorForm} onSubmit={this.onSubmit}>
+          <form className={styles.editorForm} onSubmit={this.onSave}>
             <Navbar className="is-dark">
               <NavbarBrand>
                 <NavbarItem>
@@ -216,11 +283,38 @@ export default class Editor extends React.Component {
             <MonacoEditor
               className={styles.monacoEditor}
               language="yaml"
-              onChange={this.onMonacoChange}
-              options={{ tabSize: 2, minimap: { enabled: false } }}
-              theme="vs"
+              onValueChange={this.onMonacoChange}
               value={recipe}
             />
+            <Modal
+              active={warningDialog}
+              ModalCloseProps={{ size: 'large' }}
+              onClose={this.onClose}
+            >
+              <Card>
+                <CardHeader>
+                  <CardHeaderTitle>
+                    <FormattedMessage {...messages.resourceWarningTitle} />
+                  </CardHeaderTitle>
+                </CardHeader>
+                <CardContent>
+                  <FormattedMessage {...messages.resourceWarning} />
+                </CardContent>
+                <CardFooter>
+                  <CardFooterItem className="is-link" component="a" onClick={this.onClose}>
+                    <FormattedMessage {...messages.cancel} />
+                  </CardFooterItem>
+                  <CardFooterItem
+                    className={`${styles.cardFooterButton} button is-warning`}
+                    component="button"
+                    onClick={this.uploadApp}
+                    type="button"
+                  >
+                    <FormattedMessage {...messages.upload} />
+                  </CardFooterItem>
+                </CardFooter>
+              </Card>
+            </Modal>
           </form>
         </div>
 

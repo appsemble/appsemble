@@ -7,5 +7,8 @@
   },
   "peerDependencies": {
     "react": "^16.5.0"
+  },
+  "devDependencies": {
+    "enzyme": "^3.7.0"
   }
 }
