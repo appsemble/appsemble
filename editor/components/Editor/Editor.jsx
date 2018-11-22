@@ -22,6 +22,8 @@ import {
   FileIcon,
   FileInput,
   FileName,
+  Tab,
+  TabItem,
 } from '@appsemble/react-bulma';
 import { Loader } from '@appsemble/react-components';
 import axios from 'axios';
@@ -41,12 +43,14 @@ export default class Editor extends React.Component {
   static propTypes = {
     id: PropTypes.string.isRequired,
     push: PropTypes.func.isRequired,
+    location: PropTypes.shape().isRequired,
   };
 
   state = {
     // eslint-disable-next-line react/no-unused-state
     appSchema: {},
     recipe: '',
+    style: '',
     initialRecipe: '',
     valid: false,
     dirty: true,
@@ -63,8 +67,13 @@ export default class Editor extends React.Component {
       id,
       history,
       push,
+      location,
       intl: { formatMessage },
     } = this.props;
+
+    if (!location.hash) {
+      history.push('#editor');
+    }
 
     const {
       data: {
@@ -195,6 +204,10 @@ export default class Editor extends React.Component {
     this.setState({ recipe, dirty: true });
   };
 
+  onStyleChange = style => {
+    this.setState({ style, dirty: true });
+  };
+
   onIconChange = e => {
     const { id } = this.props;
     const file = e.target.files[0];
@@ -211,8 +224,21 @@ export default class Editor extends React.Component {
   };
 
   render() {
-    const { recipe, path, valid, dirty, icon, iconURL, openMenu, warningDialog } = this.state;
-    const { id } = this.props;
+    const {
+      recipe,
+      style,
+      path,
+      valid,
+      dirty,
+      icon,
+      iconURL,
+      openMenu,
+      warningDialog,
+    } = this.state;
+    const {
+      id,
+      location: { hash: tab },
+    } = this.props;
     const filename = icon ? icon.name : 'Icon';
 
     if (!recipe) {
@@ -280,12 +306,36 @@ export default class Editor extends React.Component {
                 </NavbarEnd>
               </NavbarMenu>
             </Navbar>
-            <MonacoEditor
-              className={styles.monacoEditor}
-              language="yaml"
-              onValueChange={this.onMonacoChange}
-              value={recipe}
-            />
+            <Tab boxed className={styles.editorTabs}>
+              <TabItem active={tab === '#editor'} value="editor">
+                <Link to="#editor">
+                  <Icon fa="file-code" />
+                  Recipe
+                </Link>
+              </TabItem>
+              <TabItem active={tab === '#style'} onClick={this.onTabChange} value="style">
+                <Link to="#style">
+                  <Icon fa="brush" />
+                  Style
+                </Link>
+              </TabItem>
+            </Tab>
+            {tab === '#editor' && (
+              <MonacoEditor
+                className={styles.monacoEditor}
+                language="yaml"
+                onValueChange={this.onMonacoChange}
+                value={recipe}
+              />
+            )}
+            {tab === '#style' && (
+              <MonacoEditor
+                className={styles.monacoEditor}
+                language="css"
+                onValueChange={this.onStyleChange}
+                value={style}
+              />
+            )}
             <Modal
               active={warningDialog}
               ModalCloseProps={{ size: 'large' }}

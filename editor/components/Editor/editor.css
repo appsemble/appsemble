@@ -4,7 +4,6 @@ body {
 }
 
 .leftPanel {
-  background-color: hsl(0, 14%, 37%);
   flex: 1 1 0;
 }
 
@@ -31,6 +30,10 @@ body {
   min-height: 2.7em;
   padding: 10px;
   width: 100%;
+}
+
+.editorTabs {
+  margin-bottom: 0 !important;
 }
 
 .editor {
