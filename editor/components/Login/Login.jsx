@@ -86,8 +86,7 @@ export default class Login extends React.Component {
     } = this.props;
 
     const { searchParams: params } = new URL(window.location);
-
-    const returnUri = `?returnUri=${location.pathname}`;
+    const returnUri = new URLSearchParams(`?returnUri=${location.pathname}`).toString();
 
     return params.has('access_token') && params.has('provider') && initialized ? (
       <div>
