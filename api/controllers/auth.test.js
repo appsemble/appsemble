@@ -114,7 +114,7 @@ describe('auth controller', () => {
     expect(bcrypt.compareSync('newPassword', email.password)).toBeTruthy();
 
     // Sequelize throws errors when trying to load in null objects.
-    expect(token.reload()).rejects.toThrow();
+    await expect(token.reload()).rejects.toThrow();
   });
 
   it('should not reveal existing emails', async () => {
