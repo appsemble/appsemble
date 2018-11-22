@@ -10,6 +10,7 @@ All notable changes to this project will be documented in this file.
 - API: Secure the app API using OAuth2 / JWT.
 - API: Add a basic resource API.
 - Editor: Implement login functionality.
+- Editor: Implement social login functionality.
 
 ## [0.2.0] - 2018-11-02
 
