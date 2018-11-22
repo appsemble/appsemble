@@ -224,17 +224,17 @@ export default async function server({
       if (!data) {
         ctx.status = 500;
       } else {
-        let auth = await OAuthAuthorization.find({ where: { provider, id: data.id } });
-        if (!auth) {
-          auth = await OAuthAuthorization.create({
+        const auth = await OAuthAuthorization.findOrCreate({
+          where: { provider, id: data.id },
+          defaults: {
             id: data.id,
             provider,
             token: code.access_token,
             expiresAt: code.raw.expires_in ? code.raw.expires_in : null,
             refreshToken: code.refresh_token,
             verified: data.verified,
-          });
-        }
+          },
+        });
 
         const qs =
           auth.verified && auth.UserId
