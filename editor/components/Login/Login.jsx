@@ -1,5 +1,4 @@
 import '@fortawesome/fontawesome-free/css/all.css';
-import querystring from 'querystring';
 
 import axios from 'axios';
 import PropTypes from 'prop-types';
@@ -21,11 +20,13 @@ export default class Login extends React.Component {
     const { location } = this.props;
 
     if (location.search) {
-      const { access_token: accessToken, verified, userId } = querystring.parse(
-        location.search.substr(1),
-      );
+      const { searchParams } = new URL(window.location);
 
-      if (!accessToken || !verified || !userId) {
+      if (
+        !searchParams.has('access_token') ||
+        !searchParams.has('verified') ||
+        !searchParams.has('userId')
+      ) {
         return;
       }
 
@@ -35,12 +36,13 @@ export default class Login extends React.Component {
 
   handleOAuthLogin = async () => {
     const { authentication, location, history, oauthLogin } = this.props;
-    const qs = querystring.parse(location.search.substr(1));
+    const url = new URL(window.location);
+    const { searchParams: params } = url;
 
     oauthLogin(
       authentication.url,
-      qs.access_token,
-      qs.refresh_token,
+      params.get('access_token'),
+      params.get('refresh_token'),
       authentication.refreshURL,
       authentication.clientId,
       authentication.clientSecret,
@@ -48,27 +50,25 @@ export default class Login extends React.Component {
     );
 
     // Remove all login-related parameters in the query string but keep all the other values it might have.
-    delete qs.name;
-    delete qs.id;
-    delete qs.email;
-    delete qs.access_token;
-    delete qs.refresh_token;
-    delete qs.provider;
-    delete qs.verified;
-    delete qs.userId;
-    history.replace({ ...location, search: querystring.stringify(qs) });
+    params.delete('name');
+    params.delete('id');
+    params.delete('email');
+    params.delete('access_token');
+    params.delete('refresh_token');
+    params.delete('provider');
+    params.delete('verified');
+    params.delete('userId');
+
+    history.replace({ ...location, search: url.search });
   };
 
   handleOAuthRegister = async () => {
-    const { location } = this.props;
-    const qs = querystring.parse(location.search.substr(1));
-    const { provider, access_token: accessToken, refresh_token: refreshToken, id } = qs;
-
+    const params = new URL(window.location).searchParams;
     const result = await axios.post('/api/oauth/register', {
-      accessToken,
-      provider,
-      refreshToken,
-      id,
+      accessToken: params.get('access_token'),
+      provider: params.get('provider'),
+      refreshToken: params.get('refresh_token'),
+      id: params.get('id'),
     });
 
     if (result.status === 201) {
@@ -85,17 +85,21 @@ export default class Login extends React.Component {
       user: { initialized },
     } = this.props;
 
-    const { provider, access_token: accessToken, id, name, email } = querystring.parse(
-      location.search.substr(1),
-    );
+    const { searchParams: params } = new URL(window.location);
 
     const returnUri = `?returnUri=${location.pathname}`;
 
-    return accessToken && provider && initialized ? (
+    return params.has('access_token') && params.has('provider') && initialized ? (
       <div>
-        <FormattedMessage {...messages.greeting} values={{ id, name, email }} />
+        <FormattedMessage
+          {...messages.greeting}
+          values={{ id: params.get('id'), name: params.get('name'), email: params.get('email') }}
+        />
         <br />
-        <FormattedMessage {...messages.registerPrompt} values={{ provider }} />
+        <FormattedMessage
+          {...messages.registerPrompt}
+          values={{ provider: params.get('provider') }}
+        />
         <button onClick={this.handleOAuthRegister} type="button">
           <FormattedMessage {...messages.register} />
         </button>

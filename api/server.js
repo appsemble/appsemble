@@ -195,7 +195,6 @@ export default async function server({
       const { returnUri, ...query } = ctx.query;
       if (returnUri) {
         ctx.session.returnUri = returnUri;
-        delete query.returnUri;
         ctx.query = query;
       }
 
