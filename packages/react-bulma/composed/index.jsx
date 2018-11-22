@@ -4,4 +4,5 @@ export { default as InputField } from './InputField';
 export { default as Modal } from './Modal';
 export { default as Select } from './Select';
 export { default as SelectField } from './SelectField';
+export { default as SocialLoginButton } from './SocialLoginButton';
 export { default as TextareaField } from './TextareaField';

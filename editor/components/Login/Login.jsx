@@ -1,5 +1,6 @@
 import '@fortawesome/fontawesome-free/css/all.css';
 
+import { SocialLoginButton } from '@appsemble/react-bulma';
 import axios from 'axios';
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -110,28 +111,20 @@ export default class Login extends React.Component {
           }}
         />
         <div className={styles.socialLogins}>
-          <a
-            className={`button ${styles.socialButton}`}
-            href={`/api/oauth/connect/google${returnUri}`}
+          <SocialLoginButton
+            className={styles.socialButton}
+            iconClass="google"
+            providerUri={`/api/oauth/connect/google?${returnUri}`}
           >
-            <span className="icon">
-              <i className="fab fa-google" />
-            </span>
-            <span>
-              <FormattedMessage {...messages.login} values={{ provider: 'Google' }} />
-            </span>
-          </a>
-          <a
-            className={`button ${styles.socialButton}`}
-            href={`/api/oauth/connect/gitlab${returnUri}`}
+            <FormattedMessage {...messages.login} values={{ provider: 'Google' }} />
+          </SocialLoginButton>
+          <SocialLoginButton
+            className={styles.socialButton}
+            iconClass="gitlab"
+            providerUri={`/api/oauth/connect/gitlab?${returnUri}`}
           >
-            <span className="icon">
-              <i className="fab fa-gitlab" />
-            </span>
-            <span>
-              <FormattedMessage {...messages.login} values={{ provider: 'GitLab' }} />
-            </span>
-          </a>
+            <FormattedMessage {...messages.login} values={{ provider: 'GitLab' }} />
+          </SocialLoginButton>
         </div>
       </div>
     );
