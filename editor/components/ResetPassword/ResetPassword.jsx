@@ -8,7 +8,7 @@ import messages from './messages';
 
 export default class ResetPassword extends React.Component {
   static propTypes = {
-    request: PropTypes.func.isRequired,
+    requestResetPassword: PropTypes.func.isRequired,
   };
 
   state = {
@@ -28,12 +28,12 @@ export default class ResetPassword extends React.Component {
     event.preventDefault();
 
     const { email } = this.state;
-    const { request } = this.props;
+    const { requestResetPassword } = this.props;
 
     this.setState({ submitting: true, error: false });
 
     try {
-      await request(email);
+      await requestResetPassword(email);
       this.setState({ submitting: false, success: true });
     } catch (error) {
       this.setState({ error: true, submitting: false, success: false });

@@ -5,5 +5,5 @@ import ResetPassword from './ResetPassword';
 
 export default connect(
   null,
-  { request: requestResetPassword },
+  { requestResetPassword },
 )(ResetPassword);
