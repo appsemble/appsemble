@@ -11,16 +11,9 @@
 - Docker imags usage
 - etc…
 
-### Scope
+<!-- Remove the labels that don’t apply. -->
 
-<!-- Remove the ones that don’t apply. -->
-
-- API /label ~API
-- App /label ~App
-- Block /label ~Block
-- CLI /label ~CLI
-- Docker /label ~Docker
-- Editor /label ~Editor
+/label ~API ~App ~Block ~CLI ~Docker ~Editor
 
 /label ~Documentation
 
