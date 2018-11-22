@@ -64,7 +64,7 @@ export default class ResetPassword extends React.Component {
           autoComplete="email"
           disabled={submitting}
           iconLeft={<Icon fa="envelope" />}
-          label={<FormattedMessage {...messages.usernameLabel} />}
+          label={<FormattedMessage {...messages.emailLabel} />}
           name="email"
           onChange={this.onChange}
           required
