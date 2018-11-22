@@ -72,7 +72,7 @@ export default class Login extends React.Component {
     });
 
     if (result.status === 201) {
-      this.handleOAuthLogin();
+      await this.handleOAuthLogin();
     }
 
     return result;
