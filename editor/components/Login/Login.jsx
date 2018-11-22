@@ -74,8 +74,6 @@ export default class Login extends React.Component {
     if (result.status === 201) {
       await this.handleOAuthLogin();
     }
-
-    return result;
   };
 
   render() {
@@ -120,7 +118,7 @@ export default class Login extends React.Component {
               <i className="fab fa-google" />
             </span>
             <span>
-              <FormattedMessage {...messages.login} values={{ provider: <span>Google</span> }} />
+              <FormattedMessage {...messages.login} values={{ provider: 'Google' }} />
             </span>
           </a>
           <a
@@ -131,7 +129,7 @@ export default class Login extends React.Component {
               <i className="fab fa-gitlab" />
             </span>
             <span>
-              <FormattedMessage {...messages.login} values={{ provider: <span>GitLab</span> }} />
+              <FormattedMessage {...messages.login} values={{ provider: 'GitLab' }} />
             </span>
           </a>
         </div>
