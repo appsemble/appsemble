@@ -10,7 +10,7 @@ import messages from './messages';
 
 export default class EditPassword extends React.Component {
   static propTypes = {
-    reset: PropTypes.func.isRequired,
+    resetPassword: PropTypes.func.isRequired,
     location: PropTypes.shape().isRequired,
   };
 
@@ -31,13 +31,13 @@ export default class EditPassword extends React.Component {
     event.preventDefault();
 
     const { password } = this.state;
-    const { reset, location } = this.props;
+    const { resetPassword, location } = this.props;
     const { token } = querystring.parse(location.search.substr(1));
 
     this.setState({ submitting: true, error: false });
 
     try {
-      await reset(token, password);
+      await resetPassword(token, password);
       this.setState({ submitting: false, success: true });
     } catch (error) {
       this.setState({ error: true, submitting: false, success: false });
