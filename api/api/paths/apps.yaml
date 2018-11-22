@@ -170,3 +170,21 @@
     security:
       - oauthPassword:
           - apps:write
+/apps/{id}/style/core:
+  get:
+    tags: [app]
+    description: Get the core style for this app.
+    x-oai-middleware:
+      - file: apps
+        handler: getAppStyle
+    parameters:
+      - name: id
+        in: path
+        description: The id of the app.
+        required: true
+        type: integer
+    responses:
+      200:
+        description: The core stylesheet associated with this app.
+      default:
+        $ref: '#/responses/default'

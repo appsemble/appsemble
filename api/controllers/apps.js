@@ -118,3 +118,18 @@ export async function deleteAppIcon(ctx) {
 
   ctx.status = 204;
 }
+
+export async function getAppStyle(ctx) {
+  const { id } = ctx.params;
+  const { App } = ctx.db.models;
+
+  const app = await App.findByPk(id, { raw: true });
+
+  if (!app) {
+    throw Boom.notFound('App not found');
+  }
+
+  ctx.body = app.style;
+  ctx.type = 'css';
+  ctx.status = 200;
+}
