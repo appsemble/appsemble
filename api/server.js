@@ -222,39 +222,39 @@ export default async function server({
       const data = await handler(code, config);
 
       if (!data) {
-        ctx.status = 500;
-      } else {
-        const auth = await OAuthAuthorization.findOrCreate({
-          where: { provider, id: data.id },
-          defaults: {
-            id: data.id,
-            provider,
-            token: code.access_token,
-            expiresAt: code.raw.expires_in ? code.raw.expires_in : null,
-            refreshToken: code.refresh_token,
-            verified: data.verified,
-          },
-        });
-
-        const qs =
-          auth.verified && auth.UserId
-            ? querystring.stringify({
-                access_token: code.access_token,
-                refresh_token: code.refresh_token,
-                verified: auth.verified,
-                userId: auth.UserId,
-              })
-            : querystring.stringify({
-                access_token: code.access_token,
-                refresh_token: code.refresh_token,
-                provider,
-                ...data,
-              });
-
-        const returnUri = ctx.session.returnUri ? `${ctx.session.returnUri}?${qs}` : `/?${qs}`;
-        ctx.session.returnUri = null;
-        ctx.redirect(returnUri);
+        throw boom.internal('Unsupported provider');
       }
+
+      const auth = await OAuthAuthorization.findOrCreate({
+        where: { provider, id: data.id },
+        defaults: {
+          id: data.id,
+          provider,
+          token: code.access_token,
+          expiresAt: code.raw.expires_in ? code.raw.expires_in : null,
+          refreshToken: code.refresh_token,
+          verified: data.verified,
+        },
+      });
+
+      const qs =
+        auth.verified && auth.UserId
+          ? querystring.stringify({
+              access_token: code.access_token,
+              refresh_token: code.refresh_token,
+              verified: auth.verified,
+              userId: auth.UserId,
+            })
+          : querystring.stringify({
+              access_token: code.access_token,
+              refresh_token: code.refresh_token,
+              provider,
+              ...data,
+            });
+
+      const returnUri = ctx.session.returnUri ? `${ctx.session.returnUri}?${qs}` : `/?${qs}`;
+      ctx.session.returnUri = null;
+      ctx.redirect(returnUri);
     });
   }
 
