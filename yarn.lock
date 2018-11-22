@@ -7457,11 +7457,6 @@ moment-timezone@^0.5.14:
   resolved "https://registry.yarnpkg.com/moment/-/moment-2.22.2.tgz#3c257f9839fc0e93ff53149632239eb90783ff66"
   integrity sha1-PCV/mDn8DpP/UxSWMiOeuQeD/2Y=
 
-monaco-editor-webpack-plugin@^1.6.0:
-  version "1.6.0"
-  resolved "https://registry.yarnpkg.com/monaco-editor-webpack-plugin/-/monaco-editor-webpack-plugin-1.6.0.tgz#90cb6062c23d1bdbc8496773eab920482fd802e1"
-  integrity sha512-VoiJc6pWutAHtGVQtfYpJwg/dC7R4W6yXXj+OAr/q66miXSnBNKrroq7zYJAJi6y0cM1zT6eS2/IzIDs6Ouz3w==
-
 monaco-editor@^0.15.1:
   version "0.15.2"
   resolved "https://registry.yarnpkg.com/monaco-editor/-/monaco-editor-0.15.2.tgz#424bcb9c0593b034f0bd4f8c14ce45329508e249"

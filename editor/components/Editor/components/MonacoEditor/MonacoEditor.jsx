@@ -1,5 +1,9 @@
 import 'monaco-editor/min/vs/editor/editor.main.css';
 
+import 'monaco-editor/esm/vs/basic-languages/javascript/javascript.contribution';
+import 'monaco-editor/esm/vs/basic-languages/yaml/yaml.contribution';
+import 'monaco-editor/esm/vs/basic-languages/css/css.contribution';
+
 import { editor } from 'monaco-editor/esm/vs/editor/edcore.main';
 import React from 'react';
 import PropTypes from 'prop-types';
