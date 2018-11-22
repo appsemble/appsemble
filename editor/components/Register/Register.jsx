@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import styles from './register.css';
+import styles from './Register.css';
 import messages from './messages';
 
 export default class Register extends React.Component {

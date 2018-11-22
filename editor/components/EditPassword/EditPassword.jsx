@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import styles from './editpassword.css';
+import styles from './EditPassword.css';
 import messages from './messages';
 
 export default class EditPassword extends React.Component {

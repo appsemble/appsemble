@@ -11,7 +11,7 @@ import EditPassword from '../EditPassword';
 import Message from '../Message';
 import Register from '../Register';
 import messages from './messages';
-import styles from './app.css';
+import styles from './App.css';
 
 export default class App extends React.Component {
   async componentDidMount() {
