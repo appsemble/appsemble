@@ -121,15 +121,21 @@ export function processArgv() {
       desc: 'The address to use when sending emails.',
       implies: ['smtp-user', 'smtp-pass'],
     })
-    .option('oauth-google', {
-      desc: 'The settings to be used for Google OAuth2. Format: [key] [secret]',
-      type: 'array',
-      nargs: 2,
+    .option('oauth-google-key', {
+      desc: 'The application key to be used for Google OAuth2.',
+      implies: 'oauth-google-secret',
     })
-    .option('oauth-gitlab', {
-      desc: 'The settings to be used for GitLab OAuth2. Format: [key] [secret]',
-      type: 'array',
-      nargs: 2,
+    .option('oauth-google-secret', {
+      desc: 'The secret key to be used for Google OAuth2.',
+      implies: 'oauth-google-key',
+    })
+    .option('oauth-gitlab-key', {
+      desc: 'The application key to be used for GitLab OAuth2.',
+      implies: 'oauth-gitlab-secret',
+    })
+    .option('oauth-gitlab-secret', {
+      desc: 'The secret key to be used for GitLab OAuth2.',
+      implies: 'oauth-gitlab-key',
     })
     .option('oauth-secret', {
       desc: 'Secret key used to sign JWTs and cookies',
@@ -354,7 +360,7 @@ async function main() {
   });
 
   let grantConfig;
-  if (args.oauthGitlab || args.oauthGoogle) {
+  if (args.oauthGitlabKey || args.oauthGoogleKey) {
     grantConfig = {
       server: {
         protocol: 'http',
@@ -362,18 +368,18 @@ async function main() {
         path: '/api/oauth',
         callback: '/api/oauth/callback',
       },
-      ...(args.oauthGitlab && {
+      ...(args.oauthGitlabKey && {
         gitlab: {
-          key: args.oauthGitlab[0],
-          secret: args.oauthGitlab[1],
+          key: args.oauthGitlabKey,
+          secret: args.oauthGitlabSecret,
           scope: ['read_user'],
           callback: '/api/oauth/callback/gitlab',
         },
       }),
-      ...(args.oauthGoogle && {
+      ...(args.oauthGoogleKey && {
         google: {
-          key: args.oauthGoogle[0],
-          secret: args.oauthGoogle[1],
+          key: args.oauthGoogleKey,
+          secret: args.oauthGoogleKeySecret,
           scope: ['email', 'profile', 'openid'],
           callback: '/api/oauth/callback/google',
           custom_params: { access_type: 'offline' },
