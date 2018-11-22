@@ -4,6 +4,7 @@ import path from 'path';
 import querystring from 'querystring';
 
 import bcrypt from 'bcrypt';
+import boom from 'boom';
 import * as Sentry from '@sentry/node';
 import Koa from 'koa';
 import bodyParser from 'koa-bodyparser';
@@ -215,8 +216,7 @@ export default async function server({
       const handler = oauth2Handlers[provider];
       if (!handler) {
         // unsupported provider
-        ctx.body = 500;
-        return;
+        throw boom.notFound('Unsupported provider');
       }
 
       const data = await handler(code, config);
