@@ -1,12 +1,17 @@
 import { Loader } from '@appsemble/react-components';
-import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Switch, Link } from 'react-router-dom';
 import React from 'react';
-import { IntlProvider } from 'react-intl';
+import { IntlProvider, FormattedMessage } from 'react-intl';
 
 import AppList from '../AppList';
 import Editor from '../Editor';
 import EmailLogin from '../EmailLogin';
+import ResetPassword from '../ResetPassword';
+import EditPassword from '../EditPassword';
 import Message from '../Message';
+import Register from '../Register';
+import messages from './messages';
+import styles from './app.css';
 
 export default class App extends React.Component {
   async componentDidMount() {
@@ -28,15 +33,35 @@ export default class App extends React.Component {
     return (
       <IntlProvider defaultLocale="en-US" locale="en-US" textComponent={React.Fragment}>
         <div>
-          {!user ? (
-            <EmailLogin
-              authentication={{
-                method: 'email',
-                ...authentication,
-              }}
-            />
-          ) : (
-            <Router>
+          <Router>
+            {!user ? (
+              <Switch>
+                <Route component={Register} path="/editor/register" />
+                <Route component={ResetPassword} path="/editor/reset-password" />
+                <Route component={EditPassword} path="/editor/edit-password" />
+                <Route
+                  path="/editor"
+                  render={() => (
+                    <div>
+                      <EmailLogin
+                        authentication={{
+                          method: 'email',
+                          ...authentication,
+                        }}
+                      />
+                      <div className={styles.links}>
+                        <Link to="/editor/register">
+                          <FormattedMessage {...messages.registerLink} />
+                        </Link>
+                        <Link to="/editor/reset-password">
+                          <FormattedMessage {...messages.forgotPasswordLink} />
+                        </Link>
+                      </div>
+                    </div>
+                  )}
+                />
+              </Switch>
+            ) : (
               <Switch>
                 <Route
                   path="/editor/:id"
@@ -44,8 +69,8 @@ export default class App extends React.Component {
                 />
                 <Route path="/editor" render={props => <AppList {...props} logout={logout} />} />
               </Switch>
-            </Router>
-          )}
+            )}
+          </Router>
           <Message />
         </div>
       </IntlProvider>
