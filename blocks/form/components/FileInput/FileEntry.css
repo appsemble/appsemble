@@ -40,7 +40,6 @@
 .image {
   position: relative;
 
-  /* stylelint-disable-next-line selector-max-specificity */
   & .img {
     height: 100% !important;
 

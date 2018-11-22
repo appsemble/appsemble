@@ -13,7 +13,6 @@
   height: 100vh;
   justify-content: center;
 
-  /* stylelint-disable-next-line selector-max-specificity */
   &::after {
     animation: spinAround 0.5s infinite linear;
     border: 8px solid hsl(0, 0%, 85.9%);

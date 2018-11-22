@@ -48,7 +48,6 @@ body {
   margin-left: 5px;
 }
 
-/* stylelint-disable-next-line selector-max-specificity */
 .navbarTitle,
 .navbarTitle:visited,
 .navbarTitle:hover {
