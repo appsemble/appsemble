@@ -72,7 +72,9 @@ export async function create(ctx) {
     const { App: appSchema } = ctx.api.definitions;
     await validate(appSchema, result.definition);
 
-    result.path = normalize(result.definition.name);
+    result.path = result.definition.path
+      ? normalize(result.definition.path)
+      : normalize(result.definition.name);
 
     const { id } = await App.create(result, { raw: true });
 
