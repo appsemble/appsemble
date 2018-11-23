@@ -1,8 +1,8 @@
 import normalize from '@appsemble/utils/normalize';
 import validate, { SchemaValidationError } from '@appsemble/utils/validate';
+import validateStyle, { StyleValidationError } from '@appsemble/utils/validateStyle';
 import Busboy from 'busboy';
 import Boom from 'boom';
-import postcss from 'postcss';
 import getRawBody from 'raw-body';
 import { UniqueConstraintError } from 'sequelize';
 import sharp from 'sharp';
@@ -71,11 +71,11 @@ function handleAppValidationError(error, app) {
     throw Boom.badRequest('App recipe is invalid.', error.data);
   }
 
-  if (error.name === 'CssSyntaxError') {
+  if (error instanceof StyleValidationError) {
     throw Boom.badRequest('Provided CSS was invalid.');
   }
 
-  throw error;
+  throw Boom.internal(error);
 }
 
 export async function create(ctx) {
@@ -90,7 +90,7 @@ export async function create(ctx) {
     }
 
     if (result.style) {
-      result.style = postcss.parse(result.style).toString();
+      result.style = validateStyle(result.style);
     }
 
     const { App: appSchema } = ctx.api.definitions;
@@ -143,7 +143,7 @@ export async function update(ctx) {
     }
 
     if (result.style) {
-      result.style = postcss.parse(result.style).toString();
+      result.style = validateStyle(result.style);
     }
 
     const { App: appSchema } = ctx.api.definitions;

@@ -1,5 +1,9 @@
 {
   "name": "@appsemble/utils",
   "version": "1.0.0",
-  "private": true
+  "private": true,
+  "dependencies": {
+    "postcss": "^7.0.6",
+    "z-schema": "^3.24.1"
+  }
 }
