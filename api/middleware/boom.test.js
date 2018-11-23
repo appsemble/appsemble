@@ -9,7 +9,7 @@ describe('boomMiddleware', () => {
     const ctx = {};
 
     const mockNext = jest.fn(() => {
-      throw Boom.notFound('Error not found');
+      throw Boom.notFound('Error not found', "It's nowhere to be seen!");
     });
 
     await boomMiddleware(ctx, mockNext);
@@ -19,6 +19,7 @@ describe('boomMiddleware', () => {
       statusCode: 404,
       error: 'Not Found',
       message: 'Error not found',
+      data: "It's nowhere to be seen!",
     });
     expect(ctx.status).toBe(404);
 

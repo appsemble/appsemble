@@ -11,6 +11,9 @@ export default async function boom(ctx, next) {
     const { output } = err;
     ctx.status = output.statusCode;
     ctx.body = output.payload;
+    if (err.data) {
+      ctx.body.data = err.data;
+    }
     Object.entries(output.headers).forEach(([name, value]) => {
       ctx.set(name, value);
     });
