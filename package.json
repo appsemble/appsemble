@@ -12,7 +12,8 @@
     "start": "node -r esm api/server.js",
     "eslint": "eslint --max-warnings 0 --ext js,jsx,md .",
     "prettier": "prettier --list-different '{**/,}*.{json,md,yaml,yml}'",
-    "stylelint": "stylelint --report-needless-disables .",
+    "stylelint": "stylelint .",
+    "stylelint:rd": "stylelint . --report-needless-disables",
     "test": "jest"
   },
   "husky": {
