@@ -1,5 +1,8 @@
 import normalize from '@appsemble/utils/normalize';
+import validate, { SchemaValidationError } from '@appsemble/utils/validate';
+import Busboy from 'busboy';
 import Boom from 'boom';
+import postcss from 'postcss';
 import getRawBody from 'raw-body';
 import { UniqueConstraintError } from 'sequelize';
 import sharp from 'sharp';
@@ -7,28 +10,85 @@ import sharp from 'sharp';
 import getDefaultIcon from '../utils/getDefaultIcon';
 
 export async function create(ctx) {
-  const { body } = ctx.request;
-  const { name } = body;
-  const { id, path = normalize(name), ...definition } = body;
   const { App } = ctx.db.models;
 
-  let result;
+  const result = await new Promise((resolve, reject) => {
+    const busboy = new Busboy(ctx.req);
+    const res = {};
+
+    const onError = error => {
+      reject(error);
+      busboy.removeAllListeners();
+    };
+
+    busboy.on('file', (fieldname, stream, filename, encoding, mime) => {
+      if (fieldname !== 'style' && mime !== 'text/css') {
+        onError(new Error('Expected file ´style´ to be css'));
+      }
+
+      let buffer;
+      stream.on('data', data => {
+        buffer = data;
+      });
+
+      stream.on('end', () => {
+        res.style = buffer;
+      });
+    });
+
+    busboy.on('field', async (fieldname, content) => {
+      if (fieldname !== 'app') {
+        throw new Error(`Unexpected field: ${fieldname}`);
+      }
+
+      res.definition = JSON.parse(content);
+    });
+
+    busboy.on('finish', () => {
+      busboy.removeAllListeners();
+      resolve(res);
+    });
+    busboy.on('error', onError);
+    busboy.on('partsLimit', onError);
+    busboy.on('filesLimit', onError);
+    busboy.on('fieldsLimit', onError);
+    ctx.req.pipe(busboy);
+  });
+
   try {
-    result = await App.create({ definition, path }, { raw: true });
+    if (!result.definition) {
+      throw Boom.badRequest('App recipe is required.');
+    }
+
+    if (result.style) {
+      const { css } = await postcss().process(result.style, { from: undefined });
+      result.style = css;
+    }
+
+    const { App: appSchema } = ctx.api.definitions;
+    await validate(appSchema, result.definition);
+
+    result.path = normalize(result.definition.name);
+
+    const { id } = await App.create(result, { raw: true });
+
+    ctx.body = { ...result.definition, id, path: result.path };
+    ctx.status = 201;
   } catch (error) {
     if (error instanceof UniqueConstraintError) {
-      throw Boom.conflict(`Another app with path “${path}” already exists`);
+      throw Boom.conflict(`Another app with path “${result.path}” already exists`);
     }
+
+    if (error instanceof SchemaValidationError) {
+      throw Boom.badRequest('App recipe is invalid.', error.data);
+    }
+
+    if (error.name === 'CssSyntaxError') {
+      throw Boom.badRequest('Provided CSS was invalid.');
+    }
+
     throw error;
   }
-
-  ctx.body = {
-    ...body,
-    id: result.id,
-    path,
-  };
-
-  ctx.status = 201;
 }
 
 export async function getOne(ctx) {

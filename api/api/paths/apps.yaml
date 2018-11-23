@@ -2,16 +2,22 @@
   post:
     tags: [app]
     description: Create a new app
+    consumes:
+      - multipart/form-data
     x-oai-middleware:
       - file: apps
         handler: create
     parameters:
       - name: app
-        in: body
+        in: formData
+        type: string
         description: The app to create.
-        required: true
-        schema:
-          $ref: '#/definitions/App'
+        required: false # oai-router does not properly validate this for multipart
+      - name: style
+        in: formData
+        type: file
+        description: The custom style to apply to the app.
+        required: false
     responses:
       201:
         description: The app that was created.
