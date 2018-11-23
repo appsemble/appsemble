@@ -76,16 +76,19 @@ describe('app controller', () => {
     const { body: created } = await request(server)
       .post('/api/apps')
       .set('Authorization', token)
-      .send({
-        name: 'Test App',
-        defaultPage: 'Test Page',
-        pages: [
-          {
-            name: 'Test page',
-            blocks: [{ type: 'testblock' }],
-          },
-        ],
-      });
+      .field(
+        'app',
+        JSON.stringify({
+          name: 'Test App',
+          defaultPage: 'Test Page',
+          pages: [
+            {
+              name: 'Test page',
+              blocks: [{ type: 'testblock' }],
+            },
+          ],
+        }),
+      );
 
     const { body: retrieved } = await request(server).get(`/api/apps/${created.id}`);
     expect(retrieved).toStrictEqual(created);
@@ -95,31 +98,37 @@ describe('app controller', () => {
     await request(server)
       .post('/api/apps')
       .set('Authorization', token)
-      .send({
-        name: 'Test App',
-        defaultPage: 'Test Page',
-        path: 'a',
-        pages: [
-          {
-            name: 'Test page',
-            blocks: [{ type: 'testblock' }],
-          },
-        ],
-      });
+      .field(
+        'app',
+        JSON.stringify({
+          name: 'Test App',
+          defaultPage: 'Test Page',
+          path: 'a',
+          pages: [
+            {
+              name: 'Test page',
+              blocks: [{ type: 'testblock' }],
+            },
+          ],
+        }),
+      );
     const response = await request(server)
       .post('/api/apps')
       .set('Authorization', token)
-      .send({
-        name: 'Test App',
-        defaultPage: 'Test Page',
-        path: 'a',
-        pages: [
-          {
-            name: 'Test page',
-            blocks: [{ type: 'testblock' }],
-          },
-        ],
-      });
+      .field(
+        'app',
+        JSON.stringify({
+          name: 'Test App',
+          defaultPage: 'Test Page',
+          path: 'a',
+          pages: [
+            {
+              name: 'Test page',
+              blocks: [{ type: 'testblock' }],
+            },
+          ],
+        }),
+      );
 
     expect(response.status).toBe(409);
     expect(response.body).toStrictEqual({
@@ -187,7 +196,7 @@ describe('app controller', () => {
     const response = await request(server)
       .post('/api/apps')
       .set('Authorization', token)
-      .send({ foo: 'bar' });
+      .field('app', JSON.stringify({ foo: 'bar' }));
 
     expect(response.status).toBe(400);
   });
