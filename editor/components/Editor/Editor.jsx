@@ -34,6 +34,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import yaml from 'js-yaml';
 import validate, { SchemaValidationError } from '@appsemble/utils/validate';
+import validateStyle from '@appsemble/utils/validateStyle';
 
 import MonacoEditor from './components/MonacoEditor';
 import styles from './editor.css';
@@ -108,7 +109,7 @@ export default class Editor extends React.Component {
   onSave = event => {
     event.preventDefault();
 
-    this.setState(({ appSchema, recipe }, { intl: { formatMessage }, push }) => {
+    this.setState(({ appSchema, recipe, style }, { intl: { formatMessage }, push }) => {
       let app;
       // Attempt to parse the YAML into a JSON object
       try {
@@ -117,13 +118,19 @@ export default class Editor extends React.Component {
         push(formatMessage(messages.invalidYaml));
         return { valid: false, dirty: false };
       }
+      try {
+        validateStyle(style);
+      } catch (error) {
+        push(formatMessage(messages.invalidStyle));
+        return { valid: false, dirty: false };
+      }
       validate(appSchema, app)
         .then(() => {
           this.setState({ valid: true, dirty: false });
 
           // YAML and schema appear to be valid, send it to the app preview iframe
           this.frame.current.contentWindow.postMessage(
-            { type: 'editor/EDIT_SUCCESS', app },
+            { type: 'editor/EDIT_SUCCESS', app, style },
             window.location.origin,
           );
         })
@@ -153,14 +160,17 @@ export default class Editor extends React.Component {
       push,
       intl: { formatMessage },
     } = this.props;
-    const { recipe, icon, valid } = this.state;
+    const { recipe, style, icon, valid } = this.state;
 
     if (!valid) {
       return;
     }
 
     try {
-      await axios.put(`/api/apps/${id}`, yaml.safeLoad(recipe));
+      const formData = new FormData();
+      formData.append('app', JSON.stringify(yaml.safeLoad(recipe)));
+      formData.append('style', new Blob([style], { type: 'text/css' }));
+      await axios.put(`/api/apps/${id}`, formData);
       push({ body: formatMessage(messages.updateSuccess), color: 'success' });
     } catch (e) {
       push(formatMessage(messages.errorUpdate));
