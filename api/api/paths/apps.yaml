@@ -70,6 +70,8 @@
   put:
     tags: [app]
     description: Update an existing app
+    consumes:
+      - multipart/form-data
     x-oai-middleware:
       - file: apps
         handler: update
@@ -80,11 +82,15 @@
         required: true
         type: integer
       - name: app
-        in: body
-        description: The new app configuration.
-        required: true
-        schema:
-          $ref: '#/definitions/App'
+        in: formData
+        type: string
+        description: The app to create.
+        required: false # oai-router does not properly validate this for multipart
+      - name: style
+        in: formData
+        type: file
+        description: The custom style to apply to the app.
+        required: false
     responses:
       200:
         description: The updated app.
