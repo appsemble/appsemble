@@ -13,7 +13,7 @@ import setupModels from '../setupModels';
 export default async function testSchema(spec, options = {}) {
   const database = process.env.DATABASE_URL || 'mysql://root:password@localhost:3306';
   const root = new Sequelize(database, {
-    ...options,
+    logging: false,
     // XXX: This removes a pesky sequelize warning. Remove this when updating to sequelize@^5.
     operatorsAliases: Sequelize.Op.Aliases,
   });
