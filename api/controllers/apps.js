@@ -11,57 +11,62 @@ import getDefaultIcon from '../utils/getDefaultIcon';
 
 export async function create(ctx) {
   const { App } = ctx.db.models;
-
-  const result = await new Promise((resolve, reject) => {
-    const busboy = new Busboy(ctx.req);
-    const res = {};
-
-    const onError = error => {
-      reject(error);
-      busboy.removeAllListeners();
-    };
-
-    busboy.on('file', (fieldname, stream, filename, encoding, mime) => {
-      if (fieldname !== 'style' && mime !== 'text/css') {
-        onError(new Error('Expected file ´style´ to be css'));
-      }
-
-      let buffer;
-      stream.on('data', data => {
-        buffer = data;
-      });
-
-      stream.on('end', () => {
-        res.style = buffer;
-      });
-    });
-
-    busboy.on('field', async (fieldname, content) => {
-      if (fieldname !== 'app') {
-        throw new Error(`Unexpected field: ${fieldname}`);
-      }
-
-      res.definition = JSON.parse(content);
-    });
-
-    busboy.on('finish', () => {
-      busboy.removeAllListeners();
-      resolve(res);
-    });
-    busboy.on('error', onError);
-    busboy.on('partsLimit', onError);
-    busboy.on('filesLimit', onError);
-    busboy.on('fieldsLimit', onError);
-    ctx.req.pipe(busboy);
-  });
+  let result;
 
   try {
+    result = await new Promise((resolve, reject) => {
+      const busboy = new Busboy(ctx.req);
+      const res = {};
+
+      const onError = error => {
+        reject(error);
+        busboy.removeAllListeners();
+      };
+
+      busboy.on('file', (fieldname, stream, filename, encoding, mime) => {
+        if (fieldname !== 'style' && mime !== 'text/css') {
+          onError(new Error('Expected file ´style´ to be css'));
+        }
+
+        let buffer;
+        stream.on('data', data => {
+          buffer = data;
+        });
+
+        stream.on('end', () => {
+          res.style = buffer;
+        });
+      });
+
+      busboy.on('field', (fieldname, content) => {
+        if (fieldname !== 'app') {
+          throw new Error(`Unexpected field: ${fieldname}`);
+        }
+
+        try {
+          res.definition = JSON.parse(content);
+        } catch (error) {
+          onError(error);
+        }
+      });
+
+      busboy.on('finish', () => {
+        busboy.removeAllListeners();
+        resolve(res);
+      });
+      busboy.on('error', onError);
+      busboy.on('partsLimit', onError);
+      busboy.on('filesLimit', onError);
+      busboy.on('fieldsLimit', onError);
+      ctx.req.pipe(busboy);
+    });
+
     if (!result.definition) {
       throw Boom.badRequest('App recipe is required.');
     }
 
     if (result.style) {
-      const { css } = await postcss().process(result.style, { from: undefined });
+      const { css } = postcss.parse(result.style);
       result.style = css;
     }
 
@@ -77,6 +82,10 @@ export async function create(ctx) {
   } catch (error) {
     if (error instanceof UniqueConstraintError) {
       throw Boom.conflict(`Another app with path “${result.path}” already exists`);
+    }
+
+    if (error instanceof SyntaxError) {
+      throw Boom.badRequest('App recipe must be valid JSON.');
     }
 
     if (error instanceof SchemaValidationError) {
