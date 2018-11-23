@@ -75,7 +75,7 @@ function handleAppValidationError(error, app) {
     throw Boom.badRequest('Provided CSS was invalid.');
   }
 
-  throw Boom.internal(error);
+  throw error;
 }
 
 export async function create(ctx) {
