@@ -86,11 +86,13 @@ export default class Editor extends React.Component {
       const request = await axios.get(`/api/apps/${id}`);
       const { data } = request;
       const recipe = yaml.safeDump(data);
+      const { data: style } = await axios.get(`/api/apps/${id}/style/core`);
 
       this.setState({
         // eslint-disable-next-line react/no-unused-state
         appSchema,
         recipe,
+        style,
         initialRecipe: recipe,
         path: data.path,
         iconURL: `/api/apps/${id}/icon`,
