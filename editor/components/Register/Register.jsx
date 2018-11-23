@@ -3,12 +3,12 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import styles from './register.css';
+import styles from './Register.css';
 import messages from './messages';
 
 export default class Register extends React.Component {
   static propTypes = {
-    register: PropTypes.func.isRequired,
+    registerEmail: PropTypes.func.isRequired,
   };
 
   state = {
@@ -29,12 +29,12 @@ export default class Register extends React.Component {
     event.preventDefault();
 
     const { email, password } = this.state;
-    const { register } = this.props;
+    const { registerEmail } = this.props;
 
     this.setState({ submitting: true, error: false });
 
     try {
-      await register(email, password);
+      await registerEmail(email, password);
       this.setState({ submitting: false, success: true });
     } catch (error) {
       this.setState({ error: true, submitting: false, success: false });

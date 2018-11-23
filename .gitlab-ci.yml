@@ -101,6 +101,9 @@ stylelint:
   script:
     - yarn --frozen-lockfile
     - yarn stylelint
+      # This replaces the regular stylelint behaviour, instead of enhancing it.
+      # https://github.com/stylelint/stylelint/issues/2369
+    - yarn stylelint:rd
 
 test:
   services:

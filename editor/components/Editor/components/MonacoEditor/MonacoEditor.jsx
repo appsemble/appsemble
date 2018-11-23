@@ -9,7 +9,7 @@ import { editor } from 'monaco-editor/esm/vs/editor/edcore.main';
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import styles from './monacoeditor.css';
+import styles from './MonacoEditor.css';
 
 export default class MonacoEditor extends React.Component {
   static propTypes = {

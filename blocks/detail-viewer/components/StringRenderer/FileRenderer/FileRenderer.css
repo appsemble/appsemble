@@ -8,7 +8,6 @@
   width: 108px;
 }
 
-/* stylelint-disable-next-line selector-max-specificity */
 .img {
   height: 100% !important;
 

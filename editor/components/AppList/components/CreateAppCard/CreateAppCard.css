@@ -21,7 +21,6 @@
   padding: 0 !important;
 }
 
-/* stylelint-disable-next-line selector-max-specificity */
 .cardFooterButton:hover {
   color: hsl(0, 0%, 21%);
 }

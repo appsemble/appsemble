@@ -5,5 +5,5 @@ import Register from './Register';
 
 export default connect(
   null,
-  { register: registerEmail },
+  { registerEmail },
 )(Register);

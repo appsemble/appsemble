@@ -8,7 +8,6 @@
   width: calc(100vw - 20px);
   z-index: 1000;
 
-  /* stylelint-disable-next-line selector-max-specificity */
   &.hidden {
     bottom: -100px;
   }

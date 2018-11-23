@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import styles from './resetpassword.css';
+import styles from './ResetPassword.css';
 import messages from './messages';
 
 export default class ResetPassword extends React.Component {

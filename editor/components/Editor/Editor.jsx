@@ -34,7 +34,7 @@ import yaml from 'js-yaml';
 import validate, { SchemaValidationError } from '@appsemble/utils/validate';
 
 import MonacoEditor from './components/MonacoEditor';
-import styles from './editor.css';
+import styles from './Editor.css';
 import messages from './messages';
 
 export default class Editor extends React.Component {

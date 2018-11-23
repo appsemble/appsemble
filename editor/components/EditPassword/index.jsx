@@ -5,5 +5,5 @@ import EditPassword from './EditPassword';
 
 export default connect(
   null,
-  { reset: resetPassword },
+  { resetPassword },
 )(EditPassword);
