@@ -66,8 +66,7 @@ export async function create(ctx) {
     }
 
     if (result.style) {
-      const { css } = postcss.parse(result.style);
-      result.style = css;
+      result.style = postcss.parse(result.style).toString();
     }
 
     const { App: appSchema } = ctx.api.definitions;
