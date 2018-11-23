@@ -3,6 +3,7 @@ import path from 'path';
 
 import FormData from 'form-data';
 import klaw from 'klaw';
+import { pick } from 'lodash';
 import logging from 'winston';
 
 /**
@@ -18,11 +19,7 @@ export default async function makePayload({ config, path: p }) {
   const form = new FormData();
   form.append(
     'data',
-    JSON.stringify({
-      actions: config.actions,
-      resources: config.resources,
-      version: config.version,
-    }),
+    JSON.stringify(pick(config, ['actions', 'position', 'resources', 'version'])),
   );
   return new Promise((resolve, reject) => {
     klaw(fullPath)
