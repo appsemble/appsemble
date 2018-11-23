@@ -142,16 +142,19 @@ describe('app controller', () => {
     const response = await request(server)
       .put('/api/apps/1')
       .set('Authorization', token)
-      .send({
-        name: 'Foobar',
-        defaultPage: 'Test Page',
-        pages: [
-          {
-            name: 'Test page',
-            blocks: [{ type: 'testblock' }],
-          },
-        ],
-      });
+      .field(
+        'app',
+        JSON.stringify({
+          name: 'Foobar',
+          defaultPage: 'Test Page',
+          pages: [
+            {
+              name: 'Test page',
+              blocks: [{ type: 'testblock' }],
+            },
+          ],
+        }),
+      );
 
     expect(response.status).toBe(404);
     expect(response.body.message).toBe('App not found');
@@ -165,16 +168,19 @@ describe('app controller', () => {
     const response = await request(server)
       .put(`/api/apps/${appA.id}`)
       .set('Authorization', token)
-      .send({
-        name: 'Foobar',
-        defaultPage: appA.definition.defaultPage,
-        pages: [
-          {
-            name: 'Test page',
-            blocks: [{ type: 'testblock' }],
-          },
-        ],
-      });
+      .field(
+        'app',
+        JSON.stringify({
+          name: 'Foobar',
+          defaultPage: appA.definition.defaultPage,
+          pages: [
+            {
+              name: 'Test page',
+              blocks: [{ type: 'testblock' }],
+            },
+          ],
+        }),
+      );
 
     expect(response.status).toBe(200);
     expect(response.body.name).toBe('Foobar');
@@ -209,7 +215,7 @@ describe('app controller', () => {
     const response = await request(server)
       .put(`/api/apps/${appA.id}`)
       .set('Authorization', token)
-      .send({ name: 'Foobar' });
+      .field('app', JSON.stringify({ name: 'Foobar' }));
 
     expect(response.status).toBe(400);
   });
@@ -226,17 +232,20 @@ describe('app controller', () => {
     const response = await request(server)
       .put(`/api/apps/${appA.id}`)
       .set('Authorization', token)
-      .send({
-        path: 'foo',
-        name: 'Foobar',
-        defaultPage: appA.definition.defaultPage,
-        pages: [
-          {
-            name: 'Test page',
-            blocks: [{ type: 'testblock' }],
-          },
-        ],
-      });
+      .field(
+        'app',
+        JSON.stringify({
+          path: 'foo',
+          name: 'Foobar',
+          defaultPage: appA.definition.defaultPage,
+          pages: [
+            {
+              name: 'Test page',
+              blocks: [{ type: 'testblock' }],
+            },
+          ],
+        }),
+      );
 
     expect(response.status).toBe(409);
   });
