@@ -225,7 +225,7 @@ export default async function server({
         throw boom.internal('Unsupported provider');
       }
 
-      const auth = await OAuthAuthorization.findOrCreate({
+      const [auth] = await OAuthAuthorization.findOrCreate({
         where: { provider, id: data.id },
         defaults: {
           id: data.id,
