@@ -85,17 +85,16 @@ export default class Block extends React.Component {
           }),
       ),
       new Promise(resolve => {
-        const link = document.createElement('link');
-        link.addEventListener('load', resolve, {
-          capture: true,
-          once: true,
-          passive: true,
-        });
-        link.href = `/api/apps/${app.id}/style/shared`;
-        link.rel = 'stylesheet';
-        shadowRoot.appendChild(link);
+        const sharedStyle = document.getElementById('appsemble-editor-preview-style-shared');
+
+        if (sharedStyle) {
+          shadowRoot.appendChild(sharedStyle.cloneNode(true));
+        }
+
+        resolve();
       }),
     );
+
     const utils = {
       showMessage,
     };
