@@ -112,49 +112,52 @@ export default class Editor extends React.Component {
   onSave = event => {
     event.preventDefault();
 
-    this.setState(({ appSchema, recipe, style }, { intl: { formatMessage }, push }) => {
-      let app;
-      // Attempt to parse the YAML into a JSON object
-      try {
-        app = yaml.safeLoad(recipe);
-      } catch (error) {
-        push(formatMessage(messages.invalidYaml));
-        return { valid: false, dirty: false };
-      }
-      try {
-        validateStyle(style);
-      } catch (error) {
-        push(formatMessage(messages.invalidStyle));
-        return { valid: false, dirty: false };
-      }
-      validate(appSchema, app)
-        .then(() => {
-          this.setState({ valid: true, dirty: false });
+    this.setState(
+      ({ appSchema, recipe, style, sharedStyle }, { intl: { formatMessage }, push }) => {
+        let app;
+        // Attempt to parse the YAML into a JSON object
+        try {
+          app = yaml.safeLoad(recipe);
+        } catch (error) {
+          push(formatMessage(messages.invalidYaml));
+          return { valid: false, dirty: false };
+        }
+        try {
+          validateStyle(style);
+          validateStyle(sharedStyle);
+        } catch (error) {
+          push(formatMessage(messages.invalidStyle));
+          return { valid: false, dirty: false };
+        }
+        validate(appSchema, app)
+          .then(() => {
+            this.setState({ valid: true, dirty: false });
 
-          // YAML and schema appear to be valid, send it to the app preview iframe
-          this.frame.current.contentWindow.postMessage(
-            { type: 'editor/EDIT_SUCCESS', app, style },
-            window.location.origin,
-          );
-        })
-        .catch(error => {
-          this.setState(() => {
-            if (error instanceof SchemaValidationError) {
-              const errors = error.data;
-              push({
-                body: formatMessage(messages.schemaValidationFailed, {
-                  properties: Object.keys(errors).join(', '),
-                }),
-              });
-            } else {
-              push(formatMessage(messages.unexpected));
-            }
+            // YAML and schema appear to be valid, send it to the app preview iframe
+            this.frame.current.contentWindow.postMessage(
+              { type: 'editor/EDIT_SUCCESS', app, style, sharedStyle },
+              window.location.origin,
+            );
+          })
+          .catch(error => {
+            this.setState(() => {
+              if (error instanceof SchemaValidationError) {
+                const errors = error.data;
+                push({
+                  body: formatMessage(messages.schemaValidationFailed, {
+                    properties: Object.keys(errors).join(', '),
+                  }),
+                });
+              } else {
+                push(formatMessage(messages.unexpected));
+              }
 
-            return { valid: false, dirty: false };
+              return { valid: false, dirty: false };
+            });
           });
-        });
-      return null;
-    });
+        return null;
+      },
+    );
   };
 
   uploadApp = async () => {
