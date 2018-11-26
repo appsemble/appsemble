@@ -1,11 +1,13 @@
 import axios from 'axios';
 
+import { blockToString, normalizeBlockName } from '../utils/blockUtils';
+
 const GET_START = 'blockDefs/GET_START';
 const GET_SUCCESS = 'blockDefs/GET_SUCCESS';
 const GET_ERROR = 'blockDefs/GET_ERROR';
 
 const initialState = {
-  blockDefs: [],
+  blockDefs: {},
   errored: new Set(),
   pending: [],
 };
@@ -21,7 +23,10 @@ export default (state = initialState, action) => {
     case GET_SUCCESS:
       return {
         ...state,
-        blockDefs: [...state.blockDefs, action.blockDef],
+        blockDefs: {
+          ...state.blockDefs,
+          [`${action.blockDef.name}@${action.blockDef.version}`]: action.blockDef,
+        },
         error: null,
       };
     case GET_ERROR:
@@ -40,18 +45,12 @@ export default (state = initialState, action) => {
  *
  * @param {string[]} blockDefIds The ids of the block definitions to fetch.
  */
-export function getBlockDefs(blockDefIds) {
+export function getBlockDefs(blocks) {
   return async (dispatch, getState) => {
     const state = getState().blockDefs;
-    const filtered = blockDefIds.filter((blockDefId, index) => {
-      if (index !== blockDefIds.indexOf(blockDefId)) {
-        return false;
-      }
-      if (state.pending.includes(blockDefId)) {
-        return false;
-      }
-      return !state.blockDefs.find(blockDef => blockDef.id === blockDefId);
-    });
+    const filtered = blocks.filter(
+      block => !Object.prototype.hasOwnProperty.call(state.blockDefs, blockToString(block)),
+    );
     if (filtered.length === 0) {
       return;
     }
@@ -59,9 +58,11 @@ export function getBlockDefs(blockDefIds) {
       type: GET_START,
       pending: filtered,
     });
-    blockDefIds.map(async blockDefId => {
+    filtered.forEach(async block => {
       try {
-        const { data: blockDef } = await axios.get(`${blockDefId}/block.json`);
+        const { data: blockDef } = await axios.get(
+          `/api/blocks/${normalizeBlockName(block.type)}/versions/${block.version}`,
+        );
         dispatch({
           type: GET_SUCCESS,
           blockDef,
@@ -69,7 +70,7 @@ export function getBlockDefs(blockDefIds) {
       } catch (error) {
         dispatch({
           type: GET_ERROR,
-          blockDefId,
+          blockDefId: blockToString(block),
         });
       }
     });

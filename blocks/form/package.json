@@ -1,13 +1,15 @@
 {
   "name": "@appsemble/form",
   "version": "1.0.0",
+  "private": true,
   "appsemble": {
     "actions": {
       "submit": {
         "required": true
       },
       "submitSuccess": {}
-    }
+    },
+    "output": "dist"
   },
   "dependencies": {
     "@appsemble/react": "^1.0.0",
