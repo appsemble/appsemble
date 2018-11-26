@@ -5,6 +5,8 @@ import cosmiconfig from 'cosmiconfig';
 import fs from 'fs-extra';
 import logging from 'winston';
 
+import AppsembleError from './AppsembleError';
+
 const explorer = cosmiconfig('appsemble');
 
 /**
@@ -14,7 +16,11 @@ const explorer = cosmiconfig('appsemble');
  * @returns {Object} The block configuration.
  */
 export default async function getConfig(dir) {
-  const { config, filepath } = await explorer.search(dir, { stopDir: dir });
+  const found = await explorer.search(dir, { stopDir: dir });
+  if (!found) {
+    throw new AppsembleError('No Appsemble configuration file found.');
+  }
+  const { config, filepath } = found;
   logging.info(`Found configuration file: ${filepath}`);
   const pkg = await fs.readJSON(path.resolve(filepath, '../package.json'));
   if (!pkg.private) {

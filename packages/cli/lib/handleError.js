@@ -2,6 +2,8 @@ import { EOL } from 'os';
 
 import logging from 'winston';
 
+import AppsembleError from './AppsembleError';
+
 /**
  * Handle a fatal error.
  *
@@ -11,7 +13,14 @@ import logging from 'winston';
  * @param {Error} error The error that was thrown.
  */
 export default function handleError(message, error) {
+  if (typeof error === 'string') {
+    logging.error(error);
+    return;
+  }
   logging.error(error.message);
+  if (error instanceof AppsembleError) {
+    return;
+  }
   const trace = error.stack.split(EOL).slice(1);
   const lines = error.response
     ? trace.concat(
