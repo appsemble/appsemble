@@ -51,8 +51,13 @@ export default class MonacoEditor extends React.Component {
       editor.setTheme(theme);
     }
 
-    if (prevProps.language !== language) {
+    if (prevProps.language !== language || prevProps.onValueChange !== onValueChange) {
       editor.setModelLanguage(model, language);
+      this.subscription.dispose();
+      model.setValue(value);
+      this.subscription = model.onDidChangeContent(() => {
+        onValueChange(model.getValue());
+      });
     }
 
     if (value !== model.getValue()) {
