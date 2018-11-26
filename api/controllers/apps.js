@@ -3,7 +3,7 @@ import validate, { SchemaValidationError } from '@appsemble/utils/validate';
 import validateStyle, { StyleValidationError } from '@appsemble/utils/validateStyle';
 import Busboy from 'busboy';
 import Boom from 'boom';
-import { isEqual, uniqBy } from 'lodash';
+import { isEqual, uniqWith } from 'lodash';
 import getRawBody from 'raw-body';
 import { Op, UniqueConstraintError } from 'sequelize';
 import sharp from 'sharp';
@@ -17,7 +17,7 @@ async function checkBlocks(app, db) {
     attributes: ['name', 'version'],
     raw: true,
     where: {
-      [Op.or]: uniqBy(
+      [Op.or]: uniqWith(
         Object.values(blocks).map(({ type, version }) => ({
           name: type.startsWith('@') ? type : `@appsemble/${type}`,
           version,
