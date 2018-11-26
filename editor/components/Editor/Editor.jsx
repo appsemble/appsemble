@@ -52,6 +52,7 @@ export default class Editor extends React.Component {
     appSchema: {},
     recipe: '',
     style: '',
+    sharedStyle: '',
     initialRecipe: '',
     valid: false,
     dirty: true,
@@ -216,8 +217,12 @@ export default class Editor extends React.Component {
     this.setState({ recipe, dirty: true });
   };
 
-  onStyleChange = style => {
+  onCoreStyleChange = style => {
     this.setState({ style, dirty: true });
+  };
+
+  onSharedStyleChange = style => {
+    this.setState({ sharedStyle: style, dirty: true });
   };
 
   onIconChange = e => {
@@ -239,6 +244,7 @@ export default class Editor extends React.Component {
     const {
       recipe,
       style,
+      sharedStyle,
       path,
       valid,
       dirty,
@@ -255,6 +261,28 @@ export default class Editor extends React.Component {
 
     if (!recipe) {
       return <Loader />;
+    }
+
+    let value;
+    let onValueChange;
+    let language;
+
+    switch (tab) {
+      case '#style-core':
+        value = style;
+        onValueChange = this.onCoreStyleChange;
+        language = 'css';
+        break;
+      case '#style-shared':
+        value = sharedStyle;
+        onValueChange = this.onSharedStyleChange;
+        language = 'css';
+        break;
+      case '#editor':
+      default:
+        value = recipe;
+        onValueChange = this.onMonacoChange;
+        language = 'yaml';
     }
 
     return (
@@ -325,29 +353,29 @@ export default class Editor extends React.Component {
                   Recipe
                 </Link>
               </TabItem>
-              <TabItem active={tab === '#style'} onClick={this.onTabChange} value="style">
-                <Link to="#style">
+              <TabItem active={tab === '#style-core'} onClick={this.onTabChange} value="style-core">
+                <Link to="#style-core">
                   <Icon fa="brush" />
-                  Style
+                  Core Style
+                </Link>
+              </TabItem>
+              <TabItem
+                active={tab === '#style-shared'}
+                onClick={this.onTabChange}
+                value="style-shared"
+              >
+                <Link to="#style-shared">
+                  <Icon fa="brush" />
+                  Shared Style
                 </Link>
               </TabItem>
             </Tab>
-            {tab === '#editor' && (
-              <MonacoEditor
-                className={styles.monacoEditor}
-                language="yaml"
-                onValueChange={this.onMonacoChange}
-                value={recipe}
-              />
-            )}
-            {tab === '#style' && (
-              <MonacoEditor
-                className={styles.monacoEditor}
-                language="css"
-                onValueChange={this.onStyleChange}
-                value={style}
-              />
-            )}
+            <MonacoEditor
+              className={styles.monacoEditor}
+              language={language}
+              onValueChange={onValueChange}
+              value={value}
+            />
             <Modal
               active={warningDialog}
               ModalCloseProps={{ size: 'large' }}
