@@ -102,9 +102,9 @@ export async function create(ctx) {
     }
 
     const { App: appSchema } = ctx.api.definitions;
-    result.path = result.definition.path || normalize(result.definition.name);
-
     await validate(appSchema, result.definition);
+
+    result.path = result.definition.path || normalize(result.definition.name);
 
     const { id } = await App.create(result, { raw: true });
 
@@ -153,9 +153,9 @@ export async function update(ctx) {
     }
 
     const { App: appSchema } = ctx.api.definitions;
-    result.path = result.definition.path || normalize(result.definition.name);
-
     await validate(appSchema, result.definition);
+
+    result.path = result.definition.path || normalize(result.definition.name);
 
     const [affectedRows] = await App.update(result, { where: { id } });
 
