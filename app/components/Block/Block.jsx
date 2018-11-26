@@ -84,6 +84,17 @@ export default class Block extends React.Component {
             shadowRoot.appendChild(link);
           }),
       ),
+      new Promise(resolve => {
+        const link = document.createElement('link');
+        link.addEventListener('load', resolve, {
+          capture: true,
+          once: true,
+          passive: true,
+        });
+        link.href = `/api/apps/${app.id}/style/shared`;
+        link.rel = 'stylesheet';
+        shadowRoot.appendChild(link);
+      }),
     );
     const utils = {
       showMessage,

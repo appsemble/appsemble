@@ -268,3 +268,18 @@ export async function getAppStyle(ctx) {
   ctx.type = 'css';
   ctx.status = 200;
 }
+
+export async function getSharedAppStyle(ctx) {
+  const { id } = ctx.params;
+  const { App } = ctx.db.models;
+
+  const app = await App.findByPk(id, { raw: true });
+
+  if (!app) {
+    throw Boom.notFound('App not found');
+  }
+
+  ctx.body = app.sharedStyle || 'a, button { filter: invert(100%); }';
+  ctx.type = 'css';
+  ctx.status = 200;
+}

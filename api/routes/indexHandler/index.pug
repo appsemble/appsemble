@@ -24,7 +24,9 @@ html(lang='en' data-app-id=(app.id) data-sentry-dsn=sentryDsn)
   each stylesheet in assets.filter(name => name.endsWith('.css'))
     link(rel='stylesheet' href=`/${stylesheet}`)
   if app.style
-    link(rel='stylesheet' href=`/api/apps/${app.id}/style/core` id='appsemble-editor-preview-style-core')
+    link(rel='stylesheet' href=`/api/apps/${app.id}/style/core`)
+  if app.shared
+    link(rel='stylesheet' href=`/api/apps/${app.id}/style/shared`)
   div.is-fixed-top.is-primary.navbar
     header.navbar-brand
       h1.navbar-item.title #{app.definition.name}
