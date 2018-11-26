@@ -168,7 +168,7 @@ export default class Editor extends React.Component {
       push,
       intl: { formatMessage },
     } = this.props;
-    const { recipe, style, icon, valid } = this.state;
+    const { recipe, style, sharedStyle, icon, valid } = this.state;
 
     if (!valid) {
       return;
@@ -178,6 +178,7 @@ export default class Editor extends React.Component {
       const formData = new FormData();
       formData.append('app', JSON.stringify(yaml.safeLoad(recipe)));
       formData.append('style', new Blob([style], { type: 'text/css' }));
+      formData.append('sharedStyle', new Blob([sharedStyle], { type: 'text/css' }));
       await axios.put(`/api/apps/${id}`, formData);
       push({ body: formatMessage(messages.updateSuccess), color: 'success' });
     } catch (e) {
