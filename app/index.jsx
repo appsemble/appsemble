@@ -32,9 +32,10 @@ window.addEventListener('message', event => {
     const app = resolveJsonPointers(event.data.app);
     store.dispatch({ type: event.data.type, app });
 
-    const style = document.getElementById('appsemble-editor-preview-style');
+    const style = document.getElementById('appsemble-editor-preview-style-core');
     const newStyle = document.createElement('style');
     newStyle.appendChild(document.createTextNode(event.data.style));
+    newStyle.id = 'appsemble-editor-preview-style-core';
 
     if (!style) {
       document.head.appendChild(newStyle);
