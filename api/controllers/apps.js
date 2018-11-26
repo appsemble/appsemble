@@ -227,7 +227,7 @@ export async function getAppStyle(ctx) {
     throw Boom.notFound('App not found');
   }
 
-  ctx.body = app.style;
+  ctx.body = app.style || '';
   ctx.type = 'css';
   ctx.status = 200;
 }
