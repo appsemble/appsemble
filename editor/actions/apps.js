@@ -61,7 +61,10 @@ export function getApps() {
 
 export function createApp(recipe) {
   return async dispatch => {
-    const { data: app } = await axios.post('/api/apps', recipe);
+    const formData = new FormData();
+    formData.append('app', JSON.stringify(recipe));
+
+    const { data: app } = await axios.post('/api/apps', formData);
     dispatch({
       type: CREATE_SUCCESS,
       app,

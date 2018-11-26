@@ -31,6 +31,17 @@ window.addEventListener('message', event => {
   if (event.data.type === 'editor/EDIT_SUCCESS') {
     const app = resolveJsonPointers(event.data.app);
     store.dispatch({ type: event.data.type, app });
+
+    const style = document.getElementById('appsemble-editor-preview-style-core');
+    const newStyle = document.createElement('style');
+    newStyle.appendChild(document.createTextNode(event.data.style));
+    newStyle.id = 'appsemble-editor-preview-style-core';
+
+    if (!style) {
+      document.head.appendChild(newStyle);
+    } else {
+      document.head.replaceChild(newStyle, style);
+    }
   }
 });
 

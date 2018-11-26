@@ -1,4 +1,7 @@
 import normalize from '@appsemble/utils/normalize';
+import validate, { SchemaValidationError } from '@appsemble/utils/validate';
+import validateStyle, { StyleValidationError } from '@appsemble/utils/validateStyle';
+import Busboy from 'busboy';
 import Boom from 'boom';
 import getRawBody from 'raw-body';
 import { UniqueConstraintError } from 'sequelize';
@@ -6,29 +9,110 @@ import sharp from 'sharp';
 
 import getDefaultIcon from '../utils/getDefaultIcon';
 
-export async function create(ctx) {
-  const { body } = ctx.request;
-  const { name } = body;
-  const { id, path = normalize(name), ...definition } = body;
-  const { App } = ctx.db.models;
+async function parseAppMultipart(ctx) {
+  return new Promise((resolve, reject) => {
+    const busboy = new Busboy(ctx.req);
+    const res = {};
 
-  let result;
-  try {
-    result = await App.create({ definition, path }, { raw: true });
-  } catch (error) {
-    if (error instanceof UniqueConstraintError) {
-      throw Boom.conflict(`Another app with path “${path}” already exists`);
-    }
-    throw error;
+    const onError = error => {
+      reject(error);
+      busboy.removeAllListeners();
+    };
+
+    busboy.on('file', (fieldname, stream, filename, encoding, mime) => {
+      if (fieldname !== 'style' || mime !== 'text/css') {
+        onError(new Error('Expected file ´style´ to be css'));
+      }
+
+      let buffer;
+      stream.on('data', data => {
+        buffer = data;
+      });
+
+      stream.on('end', () => {
+        res.style = buffer;
+      });
+    });
+
+    busboy.on('field', (fieldname, content) => {
+      if (fieldname !== 'app') {
+        throw new Error(`Unexpected field: ${fieldname}`);
+      }
+
+      try {
+        res.definition = JSON.parse(content);
+      } catch (error) {
+        onError(error);
+      }
+    });
+
+    busboy.on('finish', () => {
+      busboy.removeAllListeners();
+      resolve(res);
+    });
+    busboy.on('error', onError);
+    busboy.on('partsLimit', onError);
+    busboy.on('filesLimit', onError);
+    busboy.on('fieldsLimit', onError);
+    ctx.req.pipe(busboy);
+  });
+}
+
+function handleAppValidationError(error, app) {
+  if (error instanceof UniqueConstraintError) {
+    throw Boom.conflict(`Another app with path “${app.path}” already exists`);
   }
 
-  ctx.body = {
-    ...body,
-    id: result.id,
-    path,
-  };
+  if (error instanceof SyntaxError) {
+    throw Boom.badRequest('App recipe must be valid JSON.');
+  }
 
-  ctx.status = 201;
+  if (error instanceof SchemaValidationError) {
+    throw Boom.badRequest('App recipe is invalid.', error.data);
+  }
+
+  if (error instanceof StyleValidationError) {
+    throw Boom.badRequest('Provided CSS was invalid.');
+  }
+
+  if (error.message === 'Expected file ´style´ to be css') {
+    throw Boom.badRequest(error.message);
+  }
+
+  if (error.message.startsWith('Unexpected field: ')) {
+    throw Boom.badRequest(error.message);
+  }
+
+  throw error;
+}
+
+export async function create(ctx) {
+  const { App } = ctx.db.models;
+  let result;
+
+  try {
+    result = await parseAppMultipart(ctx);
+
+    if (!result.definition) {
+      throw Boom.badRequest('App recipe is required.');
+    }
+
+    if (result.style) {
+      result.style = validateStyle(result.style);
+    }
+
+    const { App: appSchema } = ctx.api.definitions;
+    await validate(appSchema, result.definition);
+
+    result.path = result.definition.path || normalize(result.definition.name);
+
+    const { id } = await App.create(result, { raw: true });
+
+    ctx.body = { ...result.definition, id, path: result.path };
+    ctx.status = 201;
+  } catch (error) {
+    handleAppValidationError(error, result);
+  }
 }
 
 export async function getOne(ctx) {
@@ -52,27 +136,37 @@ export async function query(ctx) {
 }
 
 export async function update(ctx) {
-  const { body } = ctx.request;
-  const { name } = body;
-  const { id: _, path = normalize(name), ...definition } = body;
   const { id } = ctx.params;
   const { App } = ctx.db.models;
 
-  let affectedRows;
+  let result;
+
   try {
-    [affectedRows] = await App.update({ definition, path }, { where: { id } });
-  } catch (error) {
-    if (error instanceof UniqueConstraintError) {
-      throw Boom.conflict(`Another app with path “${path}” already exists`);
+    result = await parseAppMultipart(ctx);
+
+    if (!result.definition) {
+      throw Boom.badRequest('App recipe is required.');
     }
-    throw error;
-  }
 
-  if (affectedRows === 0) {
-    throw Boom.notFound('App not found');
-  }
+    if (result.style) {
+      result.style = validateStyle(result.style);
+    }
 
-  ctx.body = { ...definition, id, path };
+    const { App: appSchema } = ctx.api.definitions;
+    await validate(appSchema, result.definition);
+
+    result.path = result.definition.path || normalize(result.definition.name);
+
+    const [affectedRows] = await App.update(result, { where: { id } });
+
+    if (affectedRows === 0) {
+      throw Boom.notFound('App not found');
+    }
+
+    ctx.body = { ...result.definition, id, path: result.path };
+  } catch (error) {
+    handleAppValidationError(error, result);
+  }
 }
 
 export async function getAppIcon(ctx) {
@@ -117,4 +211,19 @@ export async function deleteAppIcon(ctx) {
   }
 
   ctx.status = 204;
+}
+
+export async function getAppStyle(ctx) {
+  const { id } = ctx.params;
+  const { App } = ctx.db.models;
+
+  const app = await App.findByPk(id, { raw: true });
+
+  if (!app) {
+    throw Boom.notFound('App not found');
+  }
+
+  ctx.body = app.style || '';
+  ctx.type = 'css';
+  ctx.status = 200;
 }

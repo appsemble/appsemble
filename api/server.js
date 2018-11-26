@@ -175,6 +175,8 @@ export default async function server({ app = new Koa(), db, smtp, secret = 'apps
   app.use(routes);
 
   await oaiRouterStatus;
+  // eslint-disable-next-line no-param-reassign
+  app.context.api = oaiRouter.api;
 
   return app.callback();
 }

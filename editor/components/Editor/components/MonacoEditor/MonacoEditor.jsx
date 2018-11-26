@@ -3,7 +3,7 @@ import 'monaco-editor/min/vs/editor/editor.main.css';
 import 'monaco-editor/esm/vs/language/json/monaco.contribution';
 import 'monaco-editor/esm/vs/basic-languages/javascript/javascript.contribution';
 import 'monaco-editor/esm/vs/basic-languages/yaml/yaml.contribution';
-import 'monaco-editor/esm/vs/language/css/monaco.contribution';
+import 'monaco-editor/esm/vs/basic-languages/css/css.contribution';
 
 import { editor } from 'monaco-editor/esm/vs/editor/edcore.main';
 import React from 'react';
@@ -24,7 +24,7 @@ export default class MonacoEditor extends React.Component {
     value: '',
     onValueChange: null,
     theme: 'vs',
-    options: { tabSize: 2, minimap: { enabled: false } },
+    options: { insertSpaces: true, tabSize: 2, minimap: { enabled: false } },
   };
 
   node = React.createRef();
