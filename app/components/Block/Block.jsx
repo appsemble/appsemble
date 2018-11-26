@@ -84,16 +84,12 @@ export default class Block extends React.Component {
             shadowRoot.appendChild(link);
           }),
       ),
-      new Promise(resolve => {
-        const sharedStyle = document.getElementById('appsemble-editor-preview-style-shared');
-
-        if (sharedStyle) {
-          shadowRoot.appendChild(sharedStyle.cloneNode(true));
-        }
-
-        resolve();
-      }),
     );
+
+    const sharedStyle = document.getElementById('appsemble-editor-preview-style-shared');
+    if (sharedStyle) {
+      shadowRoot.appendChild(sharedStyle.cloneNode(true));
+    }
 
     const utils = {
       showMessage,
