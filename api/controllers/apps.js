@@ -20,7 +20,7 @@ async function parseAppMultipart(ctx) {
     };
 
     busboy.on('file', (fieldname, stream, filename, encoding, mime) => {
-      if (fieldname !== 'style' && mime !== 'text/css') {
+      if (fieldname !== 'style' || mime !== 'text/css') {
         onError(new Error('Expected file ´style´ to be css'));
       }
 
@@ -73,6 +73,14 @@ function handleAppValidationError(error, app) {
 
   if (error instanceof StyleValidationError) {
     throw Boom.badRequest('Provided CSS was invalid.');
+  }
+
+  if (error.message === 'Expected file ´style´ to be css') {
+    throw Boom.badRequest(error.message);
+  }
+
+  if (error.message.startsWith('Unexpected field: ')) {
+    throw Boom.badRequest(error.message);
   }
 
   throw error;
