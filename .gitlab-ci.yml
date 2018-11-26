@@ -101,6 +101,9 @@ stylelint:
   script:
     - yarn --frozen-lockfile
     - yarn stylelint
+      # This replaces the regular stylelint behaviour, instead of enhancing it.
+      # https://github.com/stylelint/stylelint/issues/2369
+    - yarn stylelint:rd
 
 test:
   services:
@@ -112,10 +115,12 @@ test:
     DATABASE_URL: 'mysql://root:password@mysql:3306'
   script:
     - yarn --frozen-lockfile
-    - yarn test --coverage
+    - yarn test --coverage --reporters default --reporters jest-junit
   artifacts:
     paths:
       - coverage/
+    reports:
+      junit: junit.xml
 
 test:postgres:
   services:
@@ -131,4 +136,7 @@ test:postgres:
       - yarn.lock
   script:
     - yarn --frozen-lockfile
-    - yarn test
+    - yarn test --reporters default --reporters jest-junit
+  artifacts:
+    reports:
+      junit: junit.xml

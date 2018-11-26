@@ -13,6 +13,7 @@
     "eslint": "eslint --max-warnings 0 --ext js,jsx,md .",
     "prettier": "prettier --list-different '{**/,}*.{json,md,yaml,yml}'",
     "stylelint": "stylelint .",
+    "stylelint:rd": "stylelint . --report-needless-disables",
     "test": "jest"
   },
   "husky": {
@@ -74,6 +75,7 @@
     "husky": "^1.1.4",
     "identity-obj-proxy": "^3.0.0",
     "jest": "^23.6.0",
+    "jest-junit": "^5.2.0",
     "lint-staged": "^8.0.4",
     "mini-css-extract-plugin": "^0.4.4",
     "optimize-css-assets-webpack-plugin": "^5.0.1",

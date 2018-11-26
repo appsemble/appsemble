@@ -37,7 +37,7 @@ import validate, { SchemaValidationError } from '@appsemble/utils/validate';
 import validateStyle from '@appsemble/utils/validateStyle';
 
 import MonacoEditor from './components/MonacoEditor';
-import styles from './editor.css';
+import styles from './Editor.css';
 import messages from './messages';
 
 export default class Editor extends React.Component {

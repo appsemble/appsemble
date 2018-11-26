@@ -63,3 +63,49 @@
         description: The verification email was sent if an account was found in the database.
       default:
         $ref: '#/responses/default'
+/email/reset/request:
+  post:
+    description: Request a reset token for resetting passwords.
+    x-oai-middleware:
+      - file: auth
+        handler: requestResetPassword
+    parameters:
+      - name: email
+        in: body
+        schema:
+          type: object
+          required:
+            - email
+          properties:
+            email:
+              type: string
+              format: email
+    responses:
+      204:
+        description: The request has been received and an email was sent if it exists.
+      default:
+        $ref: '#/responses/default'
+/email/reset:
+  post:
+    description: Reset a password using a password reset token.
+    x-oai-middleware:
+      - file: auth
+        handler: resetPassword
+    parameters:
+      - name: request
+        in: body
+        schema:
+          type: object
+          required:
+            - password
+            - token
+          properties:
+            password:
+              type: string
+            token:
+              type: string
+    responses:
+      204:
+        description: The password has been reset.
+      default:
+        $ref: '#/responses/default'

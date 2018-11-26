@@ -1,7 +1,12 @@
+const path = require('path');
+
 // eslint-disable-next-line import/no-extraneous-dependencies
 const { version } = require('react/package.json');
 // eslint-disable-next-line import/no-extraneous-dependencies
 const restricted = require('eslint-restricted-globals');
+
+const configs = [path.join(__dirname, 'config/**'), '*.config.js', '.*rc.js'];
+const tests = ['**/*.test.{js,jsx}'];
 
 module.exports = {
   root: true,
@@ -19,7 +24,7 @@ module.exports = {
     },
   },
   rules: {
-    'filenames/match-regex': ['error', /^(test-)?\.?[a-z]+(\.config|\.test)?$/i, true],
+    'filenames/match-regex': ['error', /^\.?[a-z]+(\.config|\.test)?$/i, true],
     'filenames/match-exported': 'error',
     'react/prefer-stateless-function': 'off',
     'no-invalid-this': 'off',
@@ -28,6 +33,7 @@ module.exports = {
     'babel/no-unused-expressions': 'error',
     'eslint-comments/no-unused-disable': 'error',
     'eslint-comments/no-use': ['error', { allow: ['eslint-disable-next-line'] }],
+    'import/no-extraneous-dependencies': ['error', { devDependencies: [...configs, ...tests] }],
     'import/order': [
       'error',
       {
@@ -61,7 +67,7 @@ module.exports = {
       },
     },
     {
-      files: ['*.test.{js,jsx}'],
+      files: tests,
       plugins: ['jest'],
       env: {
         jest: true,

@@ -9,7 +9,6 @@
   padding: 10px;
 }
 
-/* stylelint-disable-next-line selector-max-specificity */
 .navbarTitle,
 .navbarTitle:visited,
 .navbarTitle:hover {

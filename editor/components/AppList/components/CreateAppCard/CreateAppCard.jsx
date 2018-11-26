@@ -14,7 +14,7 @@ import React from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
-import styles from './createappcard.css';
+import styles from './CreateAppCard.css';
 import templates from '../../../../templates';
 import { push } from '../../../../actions/message';
 

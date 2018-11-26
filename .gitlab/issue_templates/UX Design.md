@@ -11,13 +11,9 @@ Also add any relevant files: screenshots, videos, etc.
 
 - https://
 
-### Scope
+<!-- Remove the labels that don’t apply. -->
 
-<!-- Remove the ones that don’t apply. -->
-
-- App /label ~App
-- Block /label ~Block
-- Editor /label ~Editor
+/label ~App ~Block ~Editor
 
 /label ~UX
 

@@ -1,0 +1,6 @@
+.links {
+  display: grid;
+  justify-content: right;
+  margin-top: -25px;
+  padding-right: 20px;
+}

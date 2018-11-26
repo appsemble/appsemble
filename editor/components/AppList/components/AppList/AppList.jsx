@@ -16,7 +16,7 @@ import { FormattedMessage } from 'react-intl';
 import AppCard from '../AppCard';
 import CreateAppCard from '../CreateAppCard';
 import messages from './messages';
-import styles from './applist.css';
+import styles from './AppList.css';
 
 export default class AppList extends React.Component {
   state = {

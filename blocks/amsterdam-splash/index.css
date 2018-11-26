@@ -10,7 +10,6 @@
   text-align: center;
   width: 100vw;
 
-  /* stylelint-disable-next-line selector-max-specificity */
   &::after {
     background-image: url(./background.svg);
     background-position: bottom;
@@ -23,7 +22,6 @@
     width: 100%;
   }
 
-  /* stylelint-disable-next-line selector-max-specificity */
   &.done::after {
     opacity: 0.56;
   }
