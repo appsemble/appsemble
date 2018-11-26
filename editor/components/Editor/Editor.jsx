@@ -219,16 +219,24 @@ export default class Editor extends React.Component {
     logout();
   };
 
-  onMonacoChange = recipe => {
-    this.setState({ recipe, dirty: true });
-  };
+  onMonacoChange = value => {
+    const {
+      location: { hash: tab },
+    } = this.props;
 
-  onCoreStyleChange = style => {
-    this.setState({ style, dirty: true });
-  };
-
-  onSharedStyleChange = style => {
-    this.setState({ sharedStyle: style, dirty: true });
+    switch (tab) {
+      case '#editor':
+        this.setState({ recipe: value, dirty: true });
+        break;
+      case '#style-core':
+        this.setState({ style: value, dirty: true });
+        break;
+      case '#style-shared':
+        this.setState({ sharedStyle: value, dirty: true });
+        break;
+      default:
+        break;
+    }
   };
 
   onIconChange = e => {
@@ -269,25 +277,22 @@ export default class Editor extends React.Component {
       return <Loader />;
     }
 
+    const onValueChange = this.onMonacoChange;
     let value;
-    let onValueChange;
     let language;
 
     switch (tab) {
       case '#style-core':
         value = style;
-        onValueChange = this.onCoreStyleChange;
         language = 'css';
         break;
       case '#style-shared':
         value = sharedStyle;
-        onValueChange = this.onSharedStyleChange;
         language = 'css';
         break;
       case '#editor':
       default:
         value = recipe;
-        onValueChange = this.onMonacoChange;
         language = 'yaml';
     }
 
