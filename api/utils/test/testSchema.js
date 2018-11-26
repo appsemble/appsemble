@@ -16,6 +16,7 @@ export default async function testSchema(spec, options = {}) {
     logging: false,
     // XXX: This removes a pesky sequelize warning. Remove this when updating to sequelize@^5.
     operatorsAliases: Sequelize.Op.Aliases,
+    retry: { max: 3 },
   });
 
   const dbName = root
