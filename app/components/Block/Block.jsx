@@ -88,7 +88,9 @@ export default class Block extends React.Component {
 
     const sharedStyle = document.getElementById('appsemble-editor-preview-style-shared');
     if (sharedStyle) {
-      shadowRoot.appendChild(sharedStyle.cloneNode(true));
+      const cloneNode = sharedStyle.cloneNode(true);
+      cloneNode.removeAttribute('id');
+      shadowRoot.appendChild(cloneNode);
     }
 
     const utils = {
