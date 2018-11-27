@@ -267,15 +267,23 @@ describe('app controller', () => {
       .attach('style', Buffer.from('body { color: blue; }'), {
         contentType: 'text/css',
         filename: 'test.css',
+      })
+      .attach('sharedStyle', Buffer.from(':root { --primary-color: purple; }'), {
+        contentType: 'text/css',
+        filename: 'test.css',
       });
+
     const style = await request(server).get(`/api/apps/${response.body.id}/style/core`);
+    const sharedStyle = await request(server).get(`/api/apps/${response.body.id}/style/shared`);
 
     expect(response.status).toBe(201);
     expect(style.status).toBe(200);
     expect(style.text).toStrictEqual('body { color: blue; }');
+    expect(sharedStyle.status).toBe(200);
+    expect(sharedStyle.text).toStrictEqual(':root { --primary-color: purple; }');
   });
 
-  it('should not allow invalid stylesheets when creating an app', async () => {
+  it('should not allow invalid core stylesheets when creating an app', async () => {
     const responseA = await request(server)
       .post('/api/apps')
       .set('Authorization', token)
@@ -316,6 +324,55 @@ describe('app controller', () => {
         }),
       )
       .attach('style', Buffer.from('.foo { margin: 0 auto; }'), {
+        contentType: 'application/json',
+        filename: 'test.css',
+      });
+
+    expect(responseA.status).toBe(400);
+    expect(responseB.status).toBe(400);
+  });
+
+  it('should not allow invalid shared stylesheets when creating an app', async () => {
+    const responseA = await request(server)
+      .post('/api/apps')
+      .set('Authorization', token)
+      .field(
+        'app',
+        JSON.stringify({
+          name: 'Test App',
+          defaultPage: 'Test Page',
+          path: 'a',
+          pages: [
+            {
+              name: 'Test page',
+              blocks: [{ type: 'testblock' }],
+            },
+          ],
+        }),
+      )
+      .attach('sharedStyle', Buffer.from('this is invalid css'), {
+        contentType: 'text/css',
+        filename: 'test.css',
+      });
+
+    const responseB = await request(server)
+      .post('/api/apps')
+      .set('Authorization', token)
+      .field(
+        'app',
+        JSON.stringify({
+          name: 'Test App',
+          defaultPage: 'Test Page',
+          path: 'a',
+          pages: [
+            {
+              name: 'Test page',
+              blocks: [{ type: 'testblock' }],
+            },
+          ],
+        }),
+      )
+      .attach('sharedStyle', Buffer.from('.foo { margin: 0 auto; }'), {
         contentType: 'application/json',
         filename: 'test.css',
       });
@@ -478,16 +535,23 @@ describe('app controller', () => {
       .attach('style', Buffer.from('body { color: yellow; }'), {
         contentType: 'text/css',
         filename: 'style.css',
+      })
+      .attach('sharedStyle', Buffer.from('body { color: blue; }'), {
+        contentType: 'text/css',
+        filename: 'style.css',
       });
 
     const style = await request(server).get(`/api/apps/${response.body.id}/style/core`);
+    const sharedStyle = await request(server).get(`/api/apps/${response.body.id}/style/shared`);
 
     expect(response.status).toBe(200);
     expect(style.status).toBe(200);
     expect(style.text).toStrictEqual('body { color: yellow; }');
+    expect(sharedStyle.status).toBe(200);
+    expect(sharedStyle.text).toStrictEqual('body { color: blue; }');
   });
 
-  it('should not allow invalid stylesheets when updating an app', async () => {
+  it('should not allow invalid core stylesheets when updating an app', async () => {
     const app = await App.create(
       { path: 'bar', definition: { name: 'Test App', defaultPage: 'Test Page' } },
       { raw: true },
@@ -533,6 +597,60 @@ describe('app controller', () => {
         }),
       )
       .attach('style', Buffer.from('.foo { margin: 0 auto; }'), {
+        contentType: 'application/json',
+        filename: 'style.json',
+      });
+
+    expect(responseA.status).toBe(400);
+    expect(responseB.status).toBe(400);
+  });
+
+  it('should not allow invalid shared stylesheets when updating an app', async () => {
+    const app = await App.create(
+      { path: 'bar', definition: { name: 'Test App', defaultPage: 'Test Page' } },
+      { raw: true },
+    );
+
+    const responseA = await request(server)
+      .put(`/api/apps/${app.id}`)
+      .set('Authorization', token)
+      .field(
+        'app',
+        JSON.stringify({
+          name: 'Test App',
+          defaultPage: 'Test Page',
+          path: 'a',
+          pages: [
+            {
+              name: 'Test page',
+              blocks: [{ type: 'testblock' }],
+            },
+          ],
+        }),
+      )
+      .attach('sharedStyle', Buffer.from('this is invalid css'), {
+        contentType: 'text/css',
+        filename: 'style.css',
+      });
+
+    const responseB = await request(server)
+      .put(`/api/apps/${app.id}`)
+      .set('Authorization', token)
+      .field(
+        'app',
+        JSON.stringify({
+          name: 'Test App',
+          defaultPage: 'Test Page',
+          path: 'a',
+          pages: [
+            {
+              name: 'Test page',
+              blocks: [{ type: 'testblock' }],
+            },
+          ],
+        }),
+      )
+      .attach('sharedStyle', Buffer.from('.foo { margin: 0 auto; }'), {
         contentType: 'application/json',
         filename: 'style.json',
       });
