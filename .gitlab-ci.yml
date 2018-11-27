@@ -11,6 +11,8 @@ build:docker:
   services:
     - docker:dind
   image: docker
+  tags:
+    - dind
   variables:
     DOCKER_HOST: tcp://docker:2375
     DOCKER_DRIVER: overlay2
@@ -72,6 +74,8 @@ publish:docker:latest:
   services:
     - docker:dind
   image: docker
+  tags:
+    - dind
   variables:
     DOCKER_HOST: tcp://docker:2375
     DOCKER_DRIVER: overlay2
