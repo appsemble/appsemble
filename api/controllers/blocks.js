@@ -141,6 +141,9 @@ export async function createBlockVersion(ctx) {
               throw new Error(`Unexpected field: ${fieldname}`);
             }
             const versionData = {
+              actions: null,
+              position: null,
+              resources: null,
               ...JSON.parse(content),
               name,
             };

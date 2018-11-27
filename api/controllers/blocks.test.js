@@ -105,8 +105,11 @@ describe('blocks', () => {
       .attach('build/standing.png', path.join(__dirname, '__fixtures__/standing.png'))
       .attach('build/testblock.js', path.join(__dirname, '__fixtures__/testblock.js'));
     expect(body).toStrictEqual({
+      actions: null,
       files: ['standing.png', 'testblock.js'],
       name: '@xkcd/standing',
+      position: null,
+      resources: null,
       version: '1.32.9',
     });
     expect(status).toBe(201);
@@ -122,8 +125,11 @@ describe('blocks', () => {
       .attach('build/testblock.js', path.join(__dirname, '__fixtures__/testblock.js'))
       .field('data', JSON.stringify({ version: '1.32.9' }));
     expect(body).toStrictEqual({
+      actions: null,
       files: ['standing.png', 'testblock.js'],
       name: '@xkcd/standing',
+      position: null,
+      resources: null,
       version: '1.32.9',
     });
     expect(status).toBe(201);
