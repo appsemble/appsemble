@@ -32,27 +32,21 @@ window.addEventListener('message', event => {
     const app = resolveJsonPointers(event.data.app);
     store.dispatch({ type: event.data.type, app });
 
-    const coreStyle = document.getElementById('appsemble-editor-preview-style-core');
-    const newCoreStyle = document.createElement('style');
-    newCoreStyle.appendChild(document.createTextNode(event.data.style));
-    newCoreStyle.id = 'appsemble-editor-preview-style-core';
+    const replaceStyle = (id, style) => {
+      const oldNode = document.getElementById(id);
+      const newNode = document.createElement('style');
+      newNode.appendChild(document.createTextNode(style));
+      newNode.id = id;
 
-    if (!coreStyle) {
-      document.head.appendChild(newCoreStyle);
-    } else {
-      document.head.replaceChild(newCoreStyle, coreStyle);
-    }
+      if (oldNode) {
+        document.head.replaceChild(newNode, oldNode);
+      } else {
+        document.head.appendChild(newNode);
+      }
+    };
 
-    const sharedStyle = document.getElementById('appsemble-editor-preview-style-shared');
-    const newSharedStyle = document.createElement('style');
-    newSharedStyle.appendChild(document.createTextNode(event.data.sharedStyle));
-    newSharedStyle.id = 'appsemble-editor-preview-style-shared';
-
-    if (!sharedStyle) {
-      document.head.appendChild(newSharedStyle);
-    } else {
-      document.head.replaceChild(newSharedStyle, sharedStyle);
-    }
+    replaceStyle('appsemble-editor-preview-style-core', event.data.style);
+    replaceStyle('appsemble-editor-preview-style-shared', event.data.sharedStyle);
   }
 });
 
