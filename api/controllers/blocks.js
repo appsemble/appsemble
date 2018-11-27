@@ -70,6 +70,12 @@ export async function createBlockVersion(ctx) {
           return r;
         });
 
+        function handleTransactionFinished(err) {
+          if (!transaction.finished) {
+            throw err;
+          }
+        }
+
         function onError(error) {
           reject(error);
           busboy.removeAllListeners();
@@ -84,7 +90,7 @@ export async function createBlockVersion(ctx) {
             return;
           }
           if (files.length === 0) {
-            onError(new Error('At least one file should be uploaded'));
+            onError(Boom.badRequest('At least one file should be uploaded'));
             return;
           }
           resolve({
@@ -111,7 +117,7 @@ export async function createBlockVersion(ctx) {
                     content: Buffer.concat(bufs),
                   },
                   { transaction },
-                ).then(() => filename),
+                ).then(() => filename, handleTransactionFinished),
               );
             } else {
               promises.push(
@@ -122,15 +128,17 @@ export async function createBlockVersion(ctx) {
                     content: Buffer.concat(bufs),
                   },
                   { transaction },
-                ).then(async row => {
-                  bufs.splice(0, bufs.length);
-                  await resultPromise;
-                  await row.update(
-                    { name, version: result.version },
-                    { fields: ['name', 'version'], transaction },
-                  );
-                  return filename;
-                }),
+                )
+                  .then(async row => {
+                    bufs.splice(0, bufs.length);
+                    await resultPromise;
+                    await row.update(
+                      { name, version: result.version },
+                      { fields: ['name', 'version'], transaction },
+                    );
+                    return filename;
+                  })
+                  .catch(handleTransactionFinished),
               );
             }
           });
@@ -138,7 +146,7 @@ export async function createBlockVersion(ctx) {
         busboy.on('field', async (fieldname, content) => {
           try {
             if (fieldname !== 'data') {
-              throw new Error(`Unexpected field: ${fieldname}`);
+              throw Boom.badRequest(`Unexpected field: ${fieldname}`);
             }
             const versionData = {
               actions: null,
@@ -147,7 +155,9 @@ export async function createBlockVersion(ctx) {
               ...JSON.parse(content),
               name,
             };
-            await BlockVersion.create(versionData, { transaction });
+            await BlockVersion.create(versionData, { transaction }).catch(
+              handleTransactionFinished,
+            );
             resultDeferred.resolve(versionData);
           } catch (error) {
             busboy.emit('error', error);

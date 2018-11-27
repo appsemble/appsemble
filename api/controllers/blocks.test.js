@@ -135,6 +135,39 @@ describe('blocks', () => {
     expect(status).toBe(201);
   });
 
+  it('should not accept invalid form fields', async () => {
+    await request(server)
+      .post('/api/blocks')
+      .send({ id: '@xkcd/standing' });
+    const { body, status } = await request(server)
+      .post('/api/blocks/@xkcd/standing/versions')
+      .attach('build/standing.png', path.join(__dirname, '__fixtures__/standing.png'))
+      .attach('build/testblock.js', path.join(__dirname, '__fixtures__/testblock.js'))
+      .field('invalid', '')
+      .field('data', JSON.stringify({ version: '1.32.9' }));
+    expect(body).toStrictEqual({
+      error: 'Bad Request',
+      message: 'Unexpected field: invalid',
+      statusCode: 400,
+    });
+    expect(status).toBe(400);
+  });
+
+  it('should require at least one file', async () => {
+    await request(server)
+      .post('/api/blocks')
+      .send({ id: '@xkcd/standing' });
+    const { body, status } = await request(server)
+      .post('/api/blocks/@xkcd/standing/versions')
+      .field('data', JSON.stringify({ version: '1.32.9' }));
+    expect(body).toStrictEqual({
+      error: 'Bad Request',
+      message: 'At least one file should be uploaded',
+      statusCode: 400,
+    });
+    expect(status).toBe(400);
+  });
+
   it('should be possible to retrieve block versions', async () => {
     await request(server)
       .post('/api/blocks')
@@ -149,6 +182,16 @@ describe('blocks', () => {
     );
     expect(retrieved).toStrictEqual(created);
     expect(status).toBe(200);
+  });
+
+  it('should respond with 404 when trying to fetch a non existing block version', async () => {
+    const { body, status } = await request(server).get('/api/blocks/@xkcd/standing/versions/3.1.4');
+    expect(status).toBe(404);
+    expect(body).toStrictEqual({
+      error: 'Not Found',
+      message: 'Block version not found',
+      statusCode: 404,
+    });
   });
 
   it('should be possible to download block assets', async () => {
@@ -174,5 +217,13 @@ describe('blocks', () => {
     expect(js.text).toStrictEqual(
       await fs.readFile(path.join(__dirname, '__fixtures__/testblock.js'), 'utf-8'),
     );
+  });
+
+  it('should respond with 404 when trying to fetch a non existing block asset', async () => {
+    const { body, status } = await request(server).get(
+      '/api/blocks/@xkcd/standing/versions/3.1.4/sitting.png',
+    );
+    expect(status).toBe(404);
+    expect(body).toStrictEqual({});
   });
 });
