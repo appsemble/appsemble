@@ -2,8 +2,8 @@ BlockVersion:
   type: object
   description: A version of a block definition
 
-    Block versions can’t be updated or deleted, except for the `deprecated` field. This ensures apps
-    that use a block version can never be broken by alterations of block definitions.
+    Block versions can’t be updated or deleted. This ensures apps that use a block version can never
+    be broken by alterations of block definitions.
   properties:
     block:
       $ref: '#/definitions/BlockDefinition/properties/id'
