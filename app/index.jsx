@@ -45,8 +45,8 @@ window.addEventListener('message', event => {
       }
     };
 
-    replaceStyle('appsemble-editor-preview-style-core', event.data.style);
-    replaceStyle('appsemble-editor-preview-style-shared', event.data.sharedStyle);
+    replaceStyle('appsemble-style-core', event.data.style);
+    replaceStyle('appsemble-style-shared', event.data.sharedStyle);
   }
 });
 
