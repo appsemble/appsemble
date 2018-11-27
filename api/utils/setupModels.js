@@ -59,7 +59,6 @@ function associateModels(models) {
   Resource.belongsTo(App);
 
   BlockDefinition.hasMany(BlockVersion, { foreignKey: 'name', sourceKey: 'id' });
-  // BlockVersion.belongsTo(BlockDefinition, { foreignKey: 'name', targetKey: 'id' });
   BlockVersion.hasMany(BlockAsset, { foreignKey: 'name', sourceKey: 'name' });
   BlockVersion.hasMany(BlockAsset, { foreignKey: 'version', sourceKey: 'version' });
 }
