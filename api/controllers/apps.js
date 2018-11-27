@@ -297,7 +297,7 @@ export async function getSharedAppStyle(ctx) {
     throw Boom.notFound('App not found');
   }
 
-  ctx.body = app.sharedStyle || 'a, button { filter: invert(100%); }';
+  ctx.body = app.sharedStyle || '';
   ctx.type = 'css';
   ctx.status = 200;
 }
