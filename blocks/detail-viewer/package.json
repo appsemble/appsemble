@@ -1,12 +1,14 @@
 {
   "name": "@appsemble/detail-viewer",
   "version": "1.0.0",
+  "private": true,
   "appsemble": {
     "actions": {
       "load": {
         "required": true
       }
-    }
+    },
+    "output": "dist"
   },
   "dependencies": {
     "@appsemble/react": "^1.0.0",

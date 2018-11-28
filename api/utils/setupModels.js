@@ -13,7 +13,8 @@ function importModels(db) {
   db.import('../models/OAuthClient');
   db.import('../models/Resource');
   db.import('../models/Asset');
-  db.import('../models/Block');
+  db.import('../models/BlockAsset');
+  db.import('../models/BlockDefinition');
   db.import('../models/BlockVersion');
 }
 
@@ -27,8 +28,9 @@ function associateModels(models) {
     ResetPasswordToken,
     OAuthAuthorization,
     Resource,
-    Block,
+    BlockDefinition,
     BlockVersion,
+    BlockAsset,
   } = models;
 
   // Model relationships
@@ -56,8 +58,9 @@ function associateModels(models) {
   Resource.belongsTo(User);
   Resource.belongsTo(App);
 
-  Block.hasMany(BlockVersion);
-  BlockVersion.belongsTo(Block, { foreignKey: { allowNull: false } });
+  BlockDefinition.hasMany(BlockVersion, { foreignKey: 'name', sourceKey: 'id' });
+  BlockVersion.hasMany(BlockAsset, { foreignKey: 'name', sourceKey: 'name' });
+  BlockVersion.hasMany(BlockAsset, { foreignKey: 'version', sourceKey: 'version' });
 }
 
 export default async function setupModels({

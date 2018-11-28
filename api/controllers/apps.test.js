@@ -7,6 +7,8 @@ import testToken from '../utils/test/testToken';
 
 describe('app controller', () => {
   let App;
+  let BlockDefinition;
+  let BlockVersion;
   let db;
   let server;
   let token;
@@ -15,12 +17,19 @@ describe('app controller', () => {
     db = await testSchema('apps');
 
     server = await koaServer({ db });
-    ({ App } = db.models);
+    ({ App, BlockDefinition, BlockVersion } = db.models);
   });
 
   beforeEach(async () => {
     await truncate(db);
     token = await testToken(request, server, db, 'apps:write apps:read');
+    await BlockDefinition.create({
+      id: '@appsemble/test',
+    });
+    await BlockVersion.create({
+      name: '@appsemble/test',
+      version: '0.0.0',
+    });
   });
 
   afterAll(async () => {
@@ -81,16 +90,37 @@ describe('app controller', () => {
         JSON.stringify({
           name: 'Test App',
           defaultPage: 'Test Page',
-          path: 'a',
           pages: [
             {
               name: 'Test page',
-              blocks: [{ type: 'testblock' }],
+              blocks: [
+                {
+                  type: 'test',
+                  version: '0.0.0',
+                },
+              ],
             },
           ],
         }),
       );
 
+    expect(created).toStrictEqual({
+      id: expect.any(Number),
+      name: 'Test App',
+      defaultPage: 'Test Page',
+      path: 'test-app',
+      pages: [
+        {
+          name: 'Test page',
+          blocks: [
+            {
+              type: 'test',
+              version: '0.0.0',
+            },
+          ],
+        },
+      ],
+    });
     const { body: retrieved } = await request(server).get(`/api/apps/${created.id}`);
     expect(retrieved).toStrictEqual(created);
   });
@@ -107,6 +137,72 @@ describe('app controller', () => {
     expect(response.status).toBe(400);
   });
 
+  it('should not allow to create an app using non-existent blocks', async () => {
+    const { body } = await request(server)
+      .post('/api/apps')
+      .set('Authorization', token)
+      .field(
+        'app',
+        JSON.stringify({
+          name: 'Test App',
+          defaultPage: 'Test Page',
+          pages: [
+            {
+              name: 'Test page',
+              blocks: [
+                {
+                  type: '@non/existent',
+                  version: '0.0.0',
+                },
+              ],
+            },
+          ],
+        }),
+      );
+
+    expect(body).toStrictEqual({
+      data: {
+        'pages.0.blocks.0': 'Unknown block version “@non/existent@0.0.0”',
+      },
+      error: 'Bad Request',
+      message: 'Unknown blocks or block versions found',
+      statusCode: 400,
+    });
+  });
+
+  it('should not allow to create an app using non-existent block versions', async () => {
+    const { body } = await request(server)
+      .post('/api/apps')
+      .set('Authorization', token)
+      .field(
+        'app',
+        JSON.stringify({
+          name: 'Test App',
+          defaultPage: 'Test Page',
+          pages: [
+            {
+              name: 'Test page',
+              blocks: [
+                {
+                  type: 'test',
+                  version: '0.0.1',
+                },
+              ],
+            },
+          ],
+        }),
+      );
+
+    expect(body).toStrictEqual({
+      data: {
+        'pages.0.blocks.0': 'Unknown block version “@appsemble/test@0.0.1”',
+      },
+      error: 'Bad Request',
+      message: 'Unknown blocks or block versions found',
+      statusCode: 400,
+    });
+  });
+
   it('should handle app path conflicts on create', async () => {
     await request(server)
       .post('/api/apps')
@@ -120,7 +216,7 @@ describe('app controller', () => {
           pages: [
             {
               name: 'Test page',
-              blocks: [{ type: 'testblock' }],
+              blocks: [{ type: 'test', version: '0.0.0' }],
             },
           ],
         }),
@@ -137,7 +233,7 @@ describe('app controller', () => {
           pages: [
             {
               name: 'Test page',
-              blocks: [{ type: 'testblock' }],
+              blocks: [{ type: 'test', version: '0.0.0' }],
             },
           ],
         }),
@@ -163,7 +259,7 @@ describe('app controller', () => {
           pages: [
             {
               name: 'Test page',
-              blocks: [{ type: 'testblock' }],
+              blocks: [{ type: 'test', version: '0.0.0' }],
             },
           ],
         }),
@@ -192,7 +288,7 @@ describe('app controller', () => {
           pages: [
             {
               name: 'Test page',
-              blocks: [{ type: 'testblock' }],
+              blocks: [{ type: 'test', version: '0.0.0' }],
             },
           ],
         }),
@@ -214,7 +310,7 @@ describe('app controller', () => {
           pages: [
             {
               name: 'Test page',
-              blocks: [{ type: 'testblock' }],
+              blocks: [{ type: 'test' }],
             },
           ],
         }),
@@ -240,7 +336,7 @@ describe('app controller', () => {
           pages: [
             {
               name: 'Test page',
-              blocks: [{ type: 'testblock' }],
+              blocks: [{ type: 'test', version: '0.0.0' }],
             },
           ],
         }),
@@ -266,14 +362,13 @@ describe('app controller', () => {
           pages: [
             {
               name: 'Test page',
-              blocks: [{ type: 'testblock' }],
+              blocks: [{ type: 'test', version: '0.0.0' }],
             },
           ],
         }),
       );
 
     expect(response.status).toBe(200);
-    expect(response.body.name).toBe('Foobar');
     expect(response.body).toStrictEqual({
       id: appA.id,
       name: 'Foobar',
@@ -282,7 +377,7 @@ describe('app controller', () => {
       pages: [
         {
           name: 'Test page',
-          blocks: [{ type: 'testblock' }],
+          blocks: [{ type: 'test', version: '0.0.0' }],
         },
       ],
     });
@@ -348,7 +443,7 @@ describe('app controller', () => {
           pages: [
             {
               name: 'Test page',
-              blocks: [{ type: 'testblock' }],
+              blocks: [{ type: 'test', version: '0.0.0' }],
             },
           ],
         }),
@@ -375,7 +470,7 @@ describe('app controller', () => {
           pages: [
             {
               name: 'Test page',
-              blocks: [{ type: 'testblock' }],
+              blocks: [{ type: 'test', version: '0.0.0' }],
             },
           ],
         }),
@@ -410,7 +505,7 @@ describe('app controller', () => {
           pages: [
             {
               name: 'Test page',
-              blocks: [{ type: 'testblock' }],
+              blocks: [{ type: 'test', version: '0.0.0' }],
             },
           ],
         }),
@@ -432,7 +527,7 @@ describe('app controller', () => {
           pages: [
             {
               name: 'Test page',
-              blocks: [{ type: 'testblock' }],
+              blocks: [{ type: 'test', version: '0.0.0' }],
             },
           ],
         }),
@@ -444,5 +539,71 @@ describe('app controller', () => {
 
     expect(responseA.status).toBe(400);
     expect(responseB.status).toBe(400);
+  });
+
+  it('should not allow to update an app using non-existent blocks', async () => {
+    const { body } = await request(server)
+      .put('/api/apps/1')
+      .set('Authorization', token)
+      .field(
+        'app',
+        JSON.stringify({
+          name: 'Test App',
+          defaultPage: 'Test Page',
+          pages: [
+            {
+              name: 'Test page',
+              blocks: [
+                {
+                  type: '@non/existent',
+                  version: '0.0.0',
+                },
+              ],
+            },
+          ],
+        }),
+      );
+
+    expect(body).toStrictEqual({
+      data: {
+        'pages.0.blocks.0': 'Unknown block version “@non/existent@0.0.0”',
+      },
+      error: 'Bad Request',
+      message: 'Unknown blocks or block versions found',
+      statusCode: 400,
+    });
+  });
+
+  it('should not allow to update an app using non-existent block versions', async () => {
+    const { body } = await request(server)
+      .put('/api/apps/1')
+      .set('Authorization', token)
+      .field(
+        'app',
+        JSON.stringify({
+          name: 'Test App',
+          defaultPage: 'Test Page',
+          pages: [
+            {
+              name: 'Test page',
+              blocks: [
+                {
+                  type: 'test',
+                  version: '0.0.1',
+                },
+              ],
+            },
+          ],
+        }),
+      );
+
+    expect(body).toStrictEqual({
+      data: {
+        'pages.0.blocks.0': 'Unknown block version “@appsemble/test@0.0.1”',
+      },
+      error: 'Bad Request',
+      message: 'Unknown blocks or block versions found',
+      statusCode: 400,
+    });
   });
 });

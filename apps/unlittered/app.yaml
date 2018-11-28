@@ -56,6 +56,7 @@ pages:
       - '*'
     blocks:
       - type: form
+        version: 1.0.0
         parameters:
           fields:
             - name: locatie
@@ -83,7 +84,8 @@ pages:
           submit:
             type: splash
             blocks:
-              - type: amsterdam-splash
+              - type: '@amsterdam/splash'
+                version: 1.0.0
                 actions:
                   load:
                     type: request
@@ -105,6 +107,7 @@ pages:
       - '*'
     blocks:
       - type: map
+        version: 1.0.0
         parameters:
           latitude: locatie.latitude
           longitude: locatie.longitude
@@ -118,6 +121,7 @@ pages:
             type: link
             to: Waarneming details
       - type: action-button
+        version: 1.0.0
         actions:
           click:
             type: link
@@ -130,6 +134,7 @@ pages:
       - id
     blocks:
       - type: detail-viewer
+        version: 1.0.0
         parameters:
           fileBase: 'https://api.stadswerken.amsterdam/uploads/'
           schema:

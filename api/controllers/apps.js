@@ -3,11 +3,47 @@ import validate, { SchemaValidationError } from '@appsemble/utils/validate';
 import validateStyle, { StyleValidationError } from '@appsemble/utils/validateStyle';
 import Busboy from 'busboy';
 import Boom from 'boom';
+import { isEqual, uniqWith } from 'lodash';
 import getRawBody from 'raw-body';
-import { UniqueConstraintError } from 'sequelize';
+import { Op, UniqueConstraintError } from 'sequelize';
 import sharp from 'sharp';
 
 import getDefaultIcon from '../utils/getDefaultIcon';
+import getAppBlocks from '../utils/getAppBlocks';
+
+async function checkBlocks(app, db) {
+  const blocks = getAppBlocks(app);
+  const blockVersions = await db.models.BlockVersion.findAll({
+    attributes: ['name', 'version'],
+    raw: true,
+    where: {
+      [Op.or]: uniqWith(
+        Object.values(blocks).map(({ type, version }) => ({
+          name: type.startsWith('@') ? type : `@appsemble/${type}`,
+          version,
+        })),
+        isEqual,
+      ),
+    },
+  });
+  const blockVersionMap = blockVersions.reduce((acc, { name: blockName, version }) => {
+    if (!Object.prototype.hasOwnProperty.call(acc, blockName)) {
+      acc[blockName] = new Set();
+    }
+    acc[blockName].add(version);
+    return acc;
+  }, {});
+  const errors = Object.entries(blocks).reduce((acc, [loc, { type, version }]) => {
+    const fullType = type.startsWith('@') ? type : `@appsemble/${type}`;
+    if (!(blockVersionMap[fullType] && blockVersionMap[fullType].has(version))) {
+      return { ...acc, [loc]: `Unknown block version “${fullType}@${version}”` };
+    }
+    return acc;
+  }, null);
+  if (errors) {
+    throw Boom.badRequest('Unknown blocks or block versions found', errors);
+  }
+}
 
 async function parseAppMultipart(ctx) {
   return new Promise((resolve, reject) => {
@@ -87,7 +123,9 @@ function handleAppValidationError(error, app) {
 }
 
 export async function create(ctx) {
-  const { App } = ctx.db.models;
+  const { db } = ctx;
+  const { App } = db.models;
+
   let result;
 
   try {
@@ -103,6 +141,7 @@ export async function create(ctx) {
 
     const { App: appSchema } = ctx.api.definitions;
     await validate(appSchema, result.definition);
+    await checkBlocks(result.definition, db);
 
     result.path = result.definition.path || normalize(result.definition.name);
 
@@ -136,8 +175,9 @@ export async function query(ctx) {
 }
 
 export async function update(ctx) {
+  const { db } = ctx;
   const { id } = ctx.params;
-  const { App } = ctx.db.models;
+  const { App } = db.models;
 
   let result;
 
@@ -154,6 +194,7 @@ export async function update(ctx) {
 
     const { App: appSchema } = ctx.api.definitions;
     await validate(appSchema, result.definition);
+    await checkBlocks(result.definition, db);
 
     result.path = result.definition.path || normalize(result.definition.name);
 

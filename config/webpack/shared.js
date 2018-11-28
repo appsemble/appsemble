@@ -1,38 +1,12 @@
-const path = require('path');
-
 const CaseSensitivePathsPlugin = require('case-sensitive-paths-webpack-plugin');
-const CleanWebpackPlugin = require('clean-webpack-plugin');
-const fs = require('fs-extra');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
-const ServiceWorkerWebpackPlugin = require('serviceworker-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
-const { UnusedFilesWebpackPlugin } = require('unused-files-webpack-plugin');
-const ManifestPlugin = require('webpack-manifest-plugin');
 
-const publicPath = '/';
-
-module.exports = async (env, { mode }) => {
+module.exports = (env, { mode, publicPath }) => {
   const production = mode === 'production';
-  const blocksDir = path.join(__dirname, 'blocks');
-  const blocks = await fs.readdir(blocksDir);
 
   return {
-    name: 'Appsemble',
-    entry: blocks.reduce(
-      (acc, block) => ({
-        ...acc,
-        [block]: [path.join(blocksDir, block)],
-      }),
-      {
-        app: [path.join(__dirname, 'app')],
-        editor: [path.join(__dirname, 'editor')],
-      },
-    ),
-    output: {
-      filename: production ? '[name]/[hash].js' : '[name]/[name].js',
-      publicPath,
-    },
     resolve: {
       extensions: ['.js', '.jsx'],
       alias: {
@@ -113,42 +87,7 @@ module.exports = async (env, { mode }) => {
         },
       ],
     },
-    plugins: [
-      new CaseSensitivePathsPlugin(),
-      new ServiceWorkerWebpackPlugin({
-        entry: path.join(__dirname, 'app/service-worker'),
-        filename: 'service-worker.js',
-        minimize: production,
-        publicPath,
-        transformOptions: ({ assets }) => assets.filter(asset => asset.startsWith('/app/')),
-      }),
-      new UnusedFilesWebpackPlugin({
-        failOnUnused: production,
-        patterns: ['{app,blocks}/**/*.*'],
-        globOptions: {
-          ignore: ['**/package.json', '**/*.test.{js,jsx}', '**/service-worker/**'],
-        },
-      }),
-      new MiniCssExtractPlugin({
-        filename: production ? '[name]/[hash].css' : '[name]/[name].css',
-      }),
-      production && new CleanWebpackPlugin(['dist']),
-      ...blocks.map(
-        block =>
-          new ManifestPlugin({
-            fileName: `${block}/block.json`,
-            // eslint-disable-next-line global-require, import/no-dynamic-require
-            seed: require(path.join(blocksDir, block, 'package.json')),
-            filter: file => file.path.startsWith(`${publicPath}${block}`),
-            map: file => file.path,
-            generate: (pkg, files) => ({
-              id: pkg.name.split('/').pop(),
-              ...pkg.appsemble,
-              files,
-            }),
-          }),
-      ),
-    ].filter(Boolean),
+    plugins: [new CaseSensitivePathsPlugin()],
     optimization: {
       minimizer: [
         new TerserPlugin({

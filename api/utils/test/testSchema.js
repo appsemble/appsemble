@@ -33,13 +33,14 @@ export default async function testSchema(spec, options = {}) {
     uri: `${database.replace(/\/\w+$/, '')}/${dbName}`,
   });
 
-  return {
-    ...db,
-    async close() {
-      await db.close();
-
-      await root.query(`DROP DATABASE ${dbName}`);
-      await root.close();
-    },
+  // Stub db.close(), so also the test database is dropped and the root database connection is
+  // closed.
+  const { close } = db;
+  db.close = async (...args) => {
+    await close.apply(db, args);
+    await root.query(`DROP DATABASE ${dbName}`);
+    await root.close();
   };
+
+  return db;
 }

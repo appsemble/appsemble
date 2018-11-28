@@ -1,13 +1,15 @@
 {
   "name": "@appsemble/action-button",
   "version": "1.0.0",
+  "private": true,
   "appsemble": {
     "position": "float",
     "actions": {
       "click": {
         "required": true
       }
-    }
+    },
+    "output": "dist"
   },
   "dependencies": {
     "@appsemble/sdk": "^1.0.0",

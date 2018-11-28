@@ -1,7 +1,9 @@
-import InvalidArgumentError from 'oauth2-server/lib/errors/invalid-argument-error';
-import NodeOAuthServer, { Request, Response } from 'oauth2-server';
-import UnauthorizedRequestError from 'oauth2-server/lib/errors/unauthorized-request-error';
-import { omit } from 'lodash';
+import NodeOAuthServer, {
+  InvalidArgumentError,
+  Request,
+  Response,
+  UnauthorizedRequestError,
+} from 'oauth2-server';
 
 async function handleResponse(ctx, response) {
   // XXX: Test whether this explicit redirect response is necessary to stay RFC 6749 compliant
@@ -47,7 +49,7 @@ export default class oauth2Server {
     this.useErrorHandler = !!useErrorHandler;
     this.continueMiddleware = !!continueMiddleware;
 
-    this.server = new NodeOAuthServer(omit(options, ['useErrorHandler', 'continueMiddleware']));
+    this.server = new NodeOAuthServer(options);
   }
 
   /**
@@ -60,7 +62,7 @@ export default class oauth2Server {
   authenticate(options) {
     return async (ctx, next) => {
       const request = new Request(ctx.request);
-      const response = new Response(ctx.response);
+      const response = new Response(ctx.res);
 
       try {
         const token = await this.server.authenticate(request, response, options);
@@ -77,7 +79,7 @@ export default class oauth2Server {
   authorize(options) {
     return async (ctx, next) => {
       const request = new Request(ctx.request);
-      const response = new Response(ctx.request);
+      const response = new Response(ctx.res);
 
       try {
         const code = await this.server.authorize(request, response, options);
@@ -105,7 +107,7 @@ export default class oauth2Server {
   token(options) {
     return async (ctx, next) => {
       const request = new Request(ctx.request);
-      const response = new Response(ctx.response);
+      const response = new Response(ctx.res);
       let token;
 
       try {
