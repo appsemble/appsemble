@@ -128,7 +128,7 @@ test:postgres:
     DATABASE_URL: 'postgresql://root:password@postgres:5432/testAppsemble'
   only:
     changes:
-      - 'api/**/*.js'
+      - 'server/**/*.js'
       - yarn.lock
   script:
     - yarn --frozen-lockfile
