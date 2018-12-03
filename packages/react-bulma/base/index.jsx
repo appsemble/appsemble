@@ -8,6 +8,7 @@ export { default as CardHeaderTitle } from './CardHeaderTitle';
 export { default as Content } from './Content';
 export { default as Container } from './Container';
 export { default as Control } from './Control';
+export { default as Fab } from './Fab';
 export { default as Fas } from './Fas';
 export { default as Field } from './Field';
 export { default as FieldBody } from './FieldBody';

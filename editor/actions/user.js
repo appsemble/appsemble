@@ -185,6 +185,28 @@ export function passwordLogin(url, { username, password }, refreshURL, clientId,
   };
 }
 
+export function oauthLogin(url, token, refreshToken, refreshURL, clientId, clientSecret, scope) {
+  return async (dispatch, getState) => {
+    const { db } = getState();
+    const user = await requestToken(
+      url,
+      {
+        grant_type: 'authorization_code',
+        code: token,
+        client_id: clientId,
+        client_secret: clientSecret,
+        scope,
+      },
+      db,
+      dispatch,
+      refreshURL,
+      dispatch,
+    );
+
+    dispatch({ type: LOGIN_SUCCESS, user });
+  };
+}
+
 export function resetPassword(token, password) {
   return async () => axios.post('/api/email/reset', { token, password });
 }

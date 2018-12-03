@@ -13,6 +13,7 @@ All notable changes to this project will be documented in this file.
 - API: Add new block version API.
 - CLI: Add `@appsemble/cli` for block developers.
 - Editor: Implement login functionality.
+- Editor: Implement social login functionality.
 
 ## [0.2.0] - 2018-11-02
 

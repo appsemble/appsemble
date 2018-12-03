@@ -11,6 +11,7 @@ function importModels(db) {
   db.import('../models/ResetPasswordToken');
   db.import('../models/OAuthAuthorization');
   db.import('../models/OAuthClient');
+  db.import('../models/OAuthToken');
   db.import('../models/Resource');
   db.import('../models/Asset');
   db.import('../models/BlockAsset');
@@ -25,6 +26,7 @@ function associateModels(models) {
     User,
     Organization,
     EmailAuthorization,
+    OAuthToken,
     ResetPasswordToken,
     OAuthAuthorization,
     Resource,
@@ -35,6 +37,7 @@ function associateModels(models) {
 
   // Model relationships
   User.belongsToMany(Organization, { through: 'UserOrganization' });
+  User.hasMany(OAuthToken);
   User.hasMany(OAuthAuthorization);
   User.hasOne(EmailAuthorization);
 
@@ -43,6 +46,8 @@ function associateModels(models) {
     foreignKey: { allowNull: false },
     onDelete: 'CASCADE',
   });
+
+  OAuthAuthorization.belongsTo(User);
   ResetPasswordToken.belongsTo(EmailAuthorization, {
     foreignKey: { allowNull: false },
     onDelete: 'CASCADE',

@@ -35,6 +35,7 @@ getStore().then(store => {
           url: `${window.location.origin}/api/oauth/token`,
           refreshURL: `${window.location.origin}/api/oauth/token`,
           clientId: 'appsemble-editor',
+          clientSecret: 'appsemble-editor-secret',
           scope: 'apps:read apps:write',
         }}
       />

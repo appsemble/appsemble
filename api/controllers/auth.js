@@ -35,6 +35,40 @@ export async function registerEmail(ctx) {
   }
 }
 
+export async function registerOAuth(ctx) {
+  const {
+    body: { provider, id, accessToken },
+  } = ctx.request;
+  const { OAuthAuthorization } = ctx.db.models;
+  const auth = await OAuthAuthorization.findOne({ where: { provider, id, token: accessToken } });
+
+  if (!auth) {
+    throw Boom.notFound('Could not find any matching credentials.');
+  }
+
+  await auth.createUser();
+
+  ctx.status = 201;
+}
+
+export async function connectOAuth(ctx) {
+  const {
+    body: { provider, id, accessToken, userId },
+  } = ctx.request;
+
+  const { OAuthAuthorization, User } = ctx.db.models;
+  const auth = await OAuthAuthorization.findOne({ where: { provider, id, token: accessToken } });
+  const user = await User.findById(userId);
+
+  if (!auth || !user) {
+    throw Boom.notFound("User or credential doesn't exist.");
+  }
+
+  await user.addOAuthAuthorization(auth);
+
+  ctx.status = 200;
+}
+
 export async function verifyEmail(ctx) {
   const { key } = ctx.request.query;
   const { EmailAuthorization } = ctx.db.models;
