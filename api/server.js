@@ -139,8 +139,8 @@ export function processArgv() {
     })
     .option('oauth-server', {
       desc:
-        'The URL used for oauth callbacks. This must include the protocol, defaults to localhost',
-      default: 'http://localhost',
+        'The URL used for oauth callbacks. This must include the protocol, defaults to http://localhost:9999',
+      default: 'http://localhost:9999',
     });
   return parser.argv;
 }
@@ -363,7 +363,7 @@ async function main() {
 
   let grantConfig;
   if (args.oauthGitlabKey || args.oauthGoogleKey) {
-    const { protocol, host } = new URL(`${args.oauthServer}${args.port ? `:${args.port}` : ''}`);
+    const { protocol, host } = new URL(args.oauthServer);
     grantConfig = {
       server: {
         protocol: protocol.replace(':', ''), // URL.protocol leaves a ´:´ in.
