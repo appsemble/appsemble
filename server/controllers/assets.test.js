@@ -1,6 +1,6 @@
 import request from 'supertest';
 
-import koaServer from '../server';
+import createServer from '../utils/createServer';
 import testSchema from '../utils/test/testSchema';
 import truncate from '../utils/test/truncate';
 
@@ -12,7 +12,7 @@ describe('asset controller', () => {
   beforeAll(async () => {
     db = await testSchema('assets');
 
-    server = await koaServer({ db });
+    server = await createServer({ db });
     ({ Asset } = db.models);
   });
 

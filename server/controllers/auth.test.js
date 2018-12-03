@@ -1,7 +1,7 @@
 import bcrypt from 'bcrypt';
 import request from 'supertest';
 
-import koaServer from '../server';
+import createServer from '../utils/createServer';
 import truncate from '../utils/test/truncate';
 import testSchema from '../utils/test/testSchema';
 
@@ -15,7 +15,7 @@ describe('auth controller', () => {
   beforeAll(async () => {
     db = await testSchema('auth');
 
-    server = await koaServer({ db });
+    server = await createServer({ db });
     ({ User, ResetPasswordToken, EmailAuthorization } = db.models);
   });
 

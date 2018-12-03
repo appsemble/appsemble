@@ -1,6 +1,6 @@
 import request from 'supertest';
 
-import koaServer from '../server';
+import createServer from '../utils/createServer';
 import testSchema from '../utils/test/testSchema';
 import truncate from '../utils/test/truncate';
 
@@ -27,7 +27,7 @@ describe('resource controller', () => {
   beforeAll(async () => {
     db = await testSchema('resources');
 
-    server = await koaServer({ db });
+    server = await createServer({ db });
     ({ App } = db.models);
   });
 

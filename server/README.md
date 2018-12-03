@@ -35,10 +35,11 @@ passed as a command line parameter instead, if desired.
 
 ## Initializing the Database
 
-A database can be initialized using the following command.
+Before the Appsemble server can run, the database needs to be initialized. This can be done by
+running the following command.
 
 ```sh
-docker run -ti appsemble/appsemble --initialize-database
+docker run -ti appsemble/appsemble initialize
 ```
 
 ## Setting up Social Login
