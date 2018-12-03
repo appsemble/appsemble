@@ -50,9 +50,30 @@ export function builder(yargs) {
       desc: 'The address to use when sending emails.',
       implies: ['smtp-user', 'smtp-pass'],
     })
+    .option('oauth-google-key', {
+      desc: 'The application key to be used for Google OAuth2.',
+      implies: 'oauth-google-secret',
+    })
+    .option('oauth-google-secret', {
+      desc: 'The secret key to be used for Google OAuth2.',
+      implies: 'oauth-google-key',
+    })
+    .option('oauth-gitlab-key', {
+      desc: 'The application key to be used for GitLab OAuth2.',
+      implies: 'oauth-gitlab-secret',
+    })
+    .option('oauth-gitlab-secret', {
+      desc: 'The secret key to be used for GitLab OAuth2.',
+      implies: 'oauth-gitlab-key',
+    })
     .option('oauth-secret', {
       desc: 'Secret key used to sign JWTs and cookies',
       default: 'appsemble',
+    })
+    .option('oauth-server', {
+      desc:
+        'The URL used for oauth callbacks. This must include the protocol, defaults to http://localhost:9999',
+      default: 'http://localhost:9999',
     });
 }
 
