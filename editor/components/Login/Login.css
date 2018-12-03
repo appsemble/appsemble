@@ -16,3 +16,15 @@
   margin-top: -25px;
   padding-right: 20px;
 }
+
+.oauthRegisterPrompt {
+  box-sizing: border-box;
+  flex-flow: column;
+  margin: 10px auto;
+  max-width: 480px;
+  padding: 10px;
+}
+
+.oauthRegisterButton {
+  margin-top: 10px;
+}

@@ -1,6 +1,6 @@
 import '@fortawesome/fontawesome-free/css/all.css';
 
-import { SocialLoginButton } from '@appsemble/react-bulma';
+import { Button, SocialLoginButton } from '@appsemble/react-bulma';
 import axios from 'axios';
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -92,19 +92,27 @@ export default class Login extends React.Component {
     const returnUri = new URLSearchParams(`?returnUri=${location.pathname}`).toString();
 
     return params.has('access_token') && params.has('provider') && initialized ? (
-      <div>
-        <FormattedMessage
-          {...messages.greeting}
-          values={{ id: params.get('id'), name: params.get('name'), email: params.get('email') }}
-        />
-        <br />
-        <FormattedMessage
-          {...messages.registerPrompt}
-          values={{ provider: params.get('provider') }}
-        />
-        <button onClick={this.handleOAuthRegister} type="button">
+      <div className={styles.oauthRegisterPrompt}>
+        <p>
+          <FormattedMessage
+            {...messages.greeting}
+            values={{ id: params.get('id'), name: params.get('name'), email: params.get('email') }}
+          />
+        </p>
+        <p>
+          <FormattedMessage
+            {...messages.registerPrompt}
+            values={{ provider: params.get('provider') }}
+          />
+        </p>
+        <Button
+          className={styles.oauthRegisterButton}
+          color="primary"
+          onClick={this.handleOAuthRegister}
+          type="button"
+        >
           <FormattedMessage {...messages.register} />
-        </button>
+        </Button>
       </div>
     ) : (
       <Router>
