@@ -2,6 +2,7 @@ import fs from 'fs';
 import path from 'path';
 
 import * as Sentry from '@sentry/node';
+import yaml from 'js-yaml';
 import Koa from 'koa';
 import logger from 'koa-logger';
 
@@ -122,8 +123,38 @@ export async function handler(argv) {
     });
   });
 
-  await createServer({ app, db, smtp, secret: argv.oauthSecret });
-  const { info } = argv.safeLoad(fs.readFileSync(path.join(__dirname, 'api', 'api.yaml')));
+  let grantConfig;
+  if (argv.oauthGitlabKey || argv.oauthGoogleKey) {
+    const { protocol, host } = new URL(argv.oauthServer);
+    grantConfig = {
+      server: {
+        protocol: protocol.replace(':', ''), // URL.protocol leaves a ´:´ in.
+        host,
+        path: '/api/oauth',
+        callback: '/api/oauth/callback',
+      },
+      ...(argv.oauthGitlabKey && {
+        gitlab: {
+          key: argv.oauthGitlabKey,
+          secret: argv.oauthGitlabSecret,
+          scope: ['read_user'],
+          callback: '/api/oauth/callback/gitlab',
+        },
+      }),
+      ...(argv.oauthGoogleKey && {
+        google: {
+          key: argv.oauthGoogleKey,
+          secret: argv.oauthGoogleKeySecret,
+          scope: ['email', 'profile', 'openid'],
+          callback: '/api/oauth/callback/google',
+          custom_params: { access_type: 'offline' },
+        },
+      }),
+    };
+  }
+
+  await createServer({ app, db, grantConfig, smtp, secret: argv.oauthSecret });
+  const { info } = yaml.safeLoad(fs.readFileSync(path.resolve(__dirname, '../api/api.yaml')));
 
   app.listen(argv.port, '0.0.0.0', () => {
     // eslint-disable-next-line no-console
