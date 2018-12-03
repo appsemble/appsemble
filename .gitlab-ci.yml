@@ -43,6 +43,9 @@ eslint:
   script:
     - yarn --frozen-lockfile
     - yarn eslint
+  artifacts:
+    reports:
+      codequality: gl-codequality.json
 
 pages:
   stage: build
