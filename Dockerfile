@@ -10,7 +10,7 @@ FROM node:10-slim
 ENV NODE_ENV production
 WORKDIR /app
 COPY --from=build /build/dist dist
-COPY api api
+COPY server server
 COPY packages/utils packages/utils
 COPY package.json package.json
 COPY yarn.lock yarn.lock
@@ -19,5 +19,5 @@ RUN npm uninstall --global npm \
  && yarn cache clean \
  && rm -r yarn.lock /opt/yarn*
 USER node
-ENTRYPOINT ["node", "-r", "esm", "api/server.js"]
+ENTRYPOINT ["node", "-r", "esm", "server/server.js"]
 EXPOSE 9999

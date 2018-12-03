@@ -8,7 +8,7 @@ The project roughly has the following file structure
 ┣━ apps/
 ┃   ┗━ <name>/
 ┃       ┗━ app.yaml
-┣━ api/
+┣━ server/
 ┃   ┃━ api/
 ┃   ┃━ controllers/
 ┃   ┃━ middleware/
@@ -49,39 +49,40 @@ The project roughly has the following file structure
 ┗━ packages/
 ```
 
-### api
+### server
 
-The _api/_ directory holds the code of the backend API. The backend API uses [OpenAPI 2.0][openapi].
+The _server/_ directory holds the code of the server backend. The backend includes an API that uses
+[OpenAPI 2.0][openapi] and logic for the required server side rendering.
 
-#### api/api
+#### server/api
 
 This directory contains the [OpenAPI] specification, split into managable chunks.
 
-#### api/controllers
+#### server/controllers
 
 The _controllers/_ directoy contains the business logic for each API call. The calls are categorized
 by the resource they apply to.
 
-#### api/middleware
+#### server/middleware
 
 This directory holds miscellaneous Koa middlewares.
 
-#### api/models
+#### server/models
 
 This directory contains all database model definitions.
 
-#### api/routes
+#### server/routes
 
 The _routes/_ directory contains any route definitions that are not related to the REST API. For
 example the loading of browser related app assets.
 
-#### api/templates
+#### server/templates
 
 <!-- XXX make this more general purpose -->
 
 This directory contains email templates.
 
-#### api/utils
+#### server/utils
 
 The _utils/_ directory contains several uncategorized utility functions. Note that many utility
 functions may already exist in [lodash] or in other popular packages on [npmjs].

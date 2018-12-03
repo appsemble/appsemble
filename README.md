@@ -5,7 +5,7 @@
 ## Usage
 
 These are instructions for developing the Appsemble core platform. Production setup instructions can
-be found in the [API readme](api/README.md).
+be found in the [server readme](server/README.md).
 
 ### Requirements
 
@@ -55,7 +55,7 @@ The frontend project can be built using the following command.
 yarn build
 ```
 
-The result will be output in the _dist/_ directory. These will be served when the API is run in
+The result will be output in the _dist/_ directory. These will be served when the server is run in
 production mode.
 
 ```sh

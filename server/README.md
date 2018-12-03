@@ -1,6 +1,6 @@
-# Appsemble API
+# Appsemble Server
 
-The Appsemble API is distributed as a Docker image.
+The Appsemble server is distributed as a Docker image.
 
 To pull the latest version, run
 

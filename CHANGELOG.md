@@ -6,24 +6,28 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
-- API: Add a user API, including email registration.
-- API: Secure the app API using OAuth2 / JWT.
-- API: Add a basic resource API.
-- API: Add new block API.
-- API: Add new block version API.
 - CLI: Add `@appsemble/cli` for block developers.
 - Editor: Implement login functionality.
 - Editor: Implement social login functionality.
+- Server: Add a user API, including email registration.
+- Server: Secure the app API using OAuth2 / JWT.
+- Server: Add a basic resource API.
+- Server: Add new block API.
+- Server: Add new block version API.
+
+### Changed
+
+- Server: API was renamed to server.
 
 ## [0.2.0] - 2018-11-02
 
 ### Added
 
-- API: Implement error reporting using Sentry.
 - Docker: Publish the appsemble/appsemble image on the public Docker Hub.
 - Editor: Add support for uploading app icons.
 - Frontend: Implement error reporting using Sentry.
 - Frontend: Add logout button in the side menu
+- Server: Implement error reporting using Sentry.
 
 ### Changed
 
