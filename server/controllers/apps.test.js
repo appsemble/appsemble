@@ -1,6 +1,6 @@
 import request from 'supertest';
 
-import koaServer from '../server';
+import createServer from '../utils/createServer';
 import truncate from '../utils/test/truncate';
 import testSchema from '../utils/test/testSchema';
 import testToken from '../utils/test/testToken';
@@ -16,7 +16,7 @@ describe('app controller', () => {
   beforeAll(async () => {
     db = await testSchema('apps');
 
-    server = await koaServer({ db });
+    server = await createServer({ db });
     ({ App, BlockDefinition, BlockVersion } = db.models);
   });
 

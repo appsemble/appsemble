@@ -19,5 +19,6 @@ RUN npm uninstall --global npm \
  && yarn cache clean \
  && rm -r yarn.lock /opt/yarn*
 USER node
-ENTRYPOINT ["node", "-r", "esm", "server/server.js"]
+ENTRYPOINT ["node", "-r", "esm", "server"]
+CMD ["start"]
 EXPOSE 9999

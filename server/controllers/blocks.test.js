@@ -3,7 +3,7 @@ import path from 'path';
 import fs from 'fs-extra';
 import request from 'supertest';
 
-import koaServer from '../server';
+import createServer from '../utils/createServer';
 import truncate from '../utils/test/truncate';
 import testSchema from '../utils/test/testSchema';
 
@@ -14,7 +14,7 @@ describe('blocks', () => {
   beforeAll(async () => {
     db = await testSchema('blocks');
 
-    server = await koaServer({ db });
+    server = await createServer({ db });
   });
 
   beforeEach(async () => {

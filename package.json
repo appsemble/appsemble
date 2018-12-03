@@ -10,7 +10,8 @@
   "scripts": {
     "block": "webpack --config config/webpack/block.js --mode production --env",
     "build": "webpack --config config/webpack/core.js --mode production",
-    "start": "node -r esm server/server.js",
+    "start": "node -r esm server",
+    "initialize": "node -r esm server initialize",
     "eslint": "eslint --max-warnings 0 --ext js,jsx,md .",
     "prettier": "prettier --list-different '{**/,}*.{json,md,yaml,yml}'",
     "stylelint": "stylelint .",
