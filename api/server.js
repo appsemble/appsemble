@@ -33,13 +33,8 @@ import setupModels from './utils/setupModels';
 export function processArgv() {
   const production = process.env.NODE_ENV === 'production';
   const parser = yargs
-    .usage(
-      `Usage:\n  ${
-        production
-          ? 'docker run -ti registry.gitlab.com/dcentralized/appsemble/appsemble'
-          : 'yarn start'
-      }`,
-    )
+    .usage('Usage:\n  $0')
+    .scriptName(production ? 'docker run -ti appsemble/appsemble' : 'yarn start')
     .help('help', 'Show this help message.')
     .alias('h', 'help')
     .env()
@@ -279,6 +274,8 @@ export default async function server({
   app.use(routes);
 
   await oaiRouterStatus;
+  // eslint-disable-next-line no-param-reassign
+  app.context.api = oaiRouter.api;
 
   return app.callback();
 }

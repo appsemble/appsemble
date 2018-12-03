@@ -206,3 +206,15 @@ export function oauthLogin(url, token, refreshToken, refreshURL, clientId, clien
     dispatch({ type: LOGIN_SUCCESS, user });
   };
 }
+
+export function resetPassword(token, password) {
+  return async () => axios.post('/api/email/reset', { token, password });
+}
+
+export function requestResetPassword(email) {
+  return async () => axios.post('/api/email/reset/request', { email });
+}
+
+export function registerEmail(email, password) {
+  return async () => axios.post('/api/email', { email, password });
+}

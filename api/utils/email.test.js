@@ -1,4 +1,10 @@
-import { processTemplate, sendEmail, sendWelcomeEmail, resendVerificationEmail } from './email';
+import {
+  processTemplate,
+  sendEmail,
+  sendWelcomeEmail,
+  sendResetPasswordEmail,
+  resendVerificationEmail,
+} from './email';
 
 describe('sendMail', () => {
   it('should convert markdown to text and html', async () => {
@@ -76,6 +82,28 @@ describe('resendVerificationEmail', () => {
 
   it('should combine name and email', async () => {
     const result = await resendVerificationEmail(
+      { email: 'test@example.com', name: 'John Doe', url: 'https://example.com/test' },
+      null,
+    );
+
+    const converted = result.response.toString();
+    expect(converted).toMatch('John Doe <test@example.com>');
+  });
+});
+
+describe('sendForgetPasswordEmail', () => {
+  it('should match its snapshot', async () => {
+    const result = await sendResetPasswordEmail(
+      { email: 'test@example.com', name: 'John Doe', url: 'https://example.com/test' },
+      null,
+    );
+
+    const converted = result.response.toString();
+    expect(converted).toMatchSnapshot();
+  });
+
+  it('should combine name and email', async () => {
+    const result = await sendResetPasswordEmail(
       { email: 'test@example.com', name: 'John Doe', url: 'https://example.com/test' },
       null,
     );

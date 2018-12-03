@@ -13,9 +13,10 @@ import setupModels from '../setupModels';
 export default async function testSchema(spec, options = {}) {
   const database = process.env.DATABASE_URL || 'mysql://root:password@localhost:3306';
   const root = new Sequelize(database, {
-    ...options,
+    logging: false,
     // XXX: This removes a pesky sequelize warning. Remove this when updating to sequelize@^5.
     operatorsAliases: Sequelize.Op.Aliases,
+    retry: { max: 3 },
   });
 
   const dbName = root
@@ -32,13 +33,14 @@ export default async function testSchema(spec, options = {}) {
     uri: `${database.replace(/\/\w+$/, '')}/${dbName}`,
   });
 
-  return {
-    ...db,
-    async close() {
-      await db.close();
-
-      await root.query(`DROP DATABASE ${dbName}`);
-      await root.close();
-    },
+  // Stub db.close(), so also the test database is dropped and the root database connection is
+  // closed.
+  const { close } = db;
+  db.close = async (...args) => {
+    await close.apply(db, args);
+    await root.query(`DROP DATABASE ${dbName}`);
+    await root.close();
   };
+
+  return db;
 }

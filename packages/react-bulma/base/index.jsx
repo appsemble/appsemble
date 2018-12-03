@@ -40,5 +40,7 @@ export { default as NavbarItem } from './NavbarItem';
 export { default as NavbarMenu } from './NavbarMenu';
 export { default as NavbarStart } from './NavbarStart';
 export { default as Subtitle } from './Subtitle';
+export { default as Tab } from './Tab';
+export { default as TabItem } from './TabItem';
 export { default as Textarea } from './Textarea';
 export { default as Title } from './Title';

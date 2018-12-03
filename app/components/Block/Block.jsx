@@ -4,6 +4,7 @@ import ReactDOM from 'react-dom';
 
 import makeActions from '../../utils/makeActions';
 import makeResources from '../../utils/makeResources';
+import { prefixURL } from '../../utils/blockUtils';
 import { callBootstrap } from '../../utils/bootstrapper';
 import styles from './Block.css';
 
@@ -65,7 +66,10 @@ export default class Block extends React.Component {
     const actions = makeActions(blockDef, app, block, history, showDialog, actionCreators);
     const resources = makeResources(blockDef, block);
     await Promise.all(
-      [BULMA_URL, ...blockDef.files.filter(url => url.endsWith('.css'))].map(
+      [
+        BULMA_URL,
+        ...blockDef.files.filter(url => url.endsWith('.css')).map(url => prefixURL(block, url)),
+      ].map(
         url =>
           new Promise(resolve => {
             const link = document.createElement('link');
@@ -81,6 +85,14 @@ export default class Block extends React.Component {
           }),
       ),
     );
+
+    const sharedStyle = document.getElementById('appsemble-style-shared');
+    if (sharedStyle) {
+      const cloneNode = sharedStyle.cloneNode(true);
+      cloneNode.removeAttribute('id');
+      shadowRoot.appendChild(cloneNode);
+    }
+
     const utils = {
       showMessage,
     };

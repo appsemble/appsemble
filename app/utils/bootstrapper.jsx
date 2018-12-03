@@ -1,3 +1,5 @@
+import { prefixURL } from './blockUtils';
+
 const bootstrappers = new Map();
 const resolvers = new Map();
 const loadedBlocks = new Set();
@@ -57,21 +59,21 @@ function getBootstrap(blockDefId) {
  * @param {Object} params any named parameters that will be passed to the block boostrap function.
  */
 export async function callBootstrap(blockDef, params) {
-  if (!loadedBlocks.has(blockDef.id)) {
+  if (!loadedBlocks.has(blockDef.name)) {
     blockDef.files
       .filter(url => url.endsWith('.js'))
       .forEach(url => {
         const script = document.createElement('script');
-        script.src = url;
+        script.src = prefixURL({ type: blockDef.name, version: blockDef.version }, url);
         script.addEventListener('AppsembleBootstrap', event => {
           event.stopImmediatePropagation();
           event.preventDefault();
-          register(script, event, blockDef.id);
+          register(script, event, blockDef.name);
         });
         document.head.appendChild(script);
       });
-    loadedBlocks.add(blockDef.id);
+    loadedBlocks.add(blockDef.name);
   }
-  const bootstrap = await getBootstrap(blockDef.id);
+  const bootstrap = await getBootstrap(blockDef.name);
   await bootstrap(params);
 }

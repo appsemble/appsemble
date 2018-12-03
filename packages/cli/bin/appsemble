@@ -1,0 +1,6 @@
+#!/usr/bin/env node
+const esm = require('esm')(module);
+
+if (module === require.main) {
+  esm('../main').default(process.argv.slice(2));
+}

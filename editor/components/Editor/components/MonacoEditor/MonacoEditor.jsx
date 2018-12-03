@@ -3,13 +3,13 @@ import 'monaco-editor/min/vs/editor/editor.main.css';
 import 'monaco-editor/esm/vs/language/json/monaco.contribution';
 import 'monaco-editor/esm/vs/basic-languages/javascript/javascript.contribution';
 import 'monaco-editor/esm/vs/basic-languages/yaml/yaml.contribution';
-import 'monaco-editor/esm/vs/language/css/monaco.contribution';
+import 'monaco-editor/esm/vs/basic-languages/css/css.contribution';
 
 import { editor } from 'monaco-editor/esm/vs/editor/edcore.main';
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import styles from './monacoeditor.css';
+import styles from './MonacoEditor.css';
 
 export default class MonacoEditor extends React.Component {
   static propTypes = {
@@ -24,7 +24,7 @@ export default class MonacoEditor extends React.Component {
     value: '',
     onValueChange: null,
     theme: 'vs',
-    options: { tabSize: 2, minimap: { enabled: false } },
+    options: { insertSpaces: true, tabSize: 2, minimap: { enabled: false } },
   };
 
   node = React.createRef();
@@ -49,6 +49,15 @@ export default class MonacoEditor extends React.Component {
 
     if (prevProps.theme !== theme) {
       editor.setTheme(theme);
+    }
+
+    if (prevProps.language !== language || prevProps.onValueChange !== onValueChange) {
+      editor.setModelLanguage(model, language);
+      this.subscription.dispose();
+      model.setValue(value);
+      this.subscription = model.onDidChangeContent(() => {
+        onValueChange(model.getValue());
+      });
     }
 
     if (value !== model.getValue()) {

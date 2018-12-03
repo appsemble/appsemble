@@ -1,5 +1,6 @@
 *.log
 /coverage/
-/dist/
 /public/
+dist/
 node_modules/
+junit.xml

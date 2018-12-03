@@ -21,8 +21,8 @@ export default async function configureStatic(app) {
     });
   } else {
     const { default: koaWebpack } = await import('koa-webpack');
-    const { default: webpackConfig } = await import('../../webpack.config');
-    const config = await webpackConfig(null, { mode: 'development' });
+    const { default: webpackConfig } = await import('../../config/webpack/core');
+    const config = webpackConfig(null, { mode: 'development' });
     const middleware = await koaWebpack({
       config,
       devMiddleware: {

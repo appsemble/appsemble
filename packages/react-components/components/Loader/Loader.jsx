@@ -2,7 +2,7 @@ import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import React from 'react';
 
-import styles from './loader.css';
+import styles from './Loader.css';
 
 export default class Loader extends React.Component {
   static propTypes = {

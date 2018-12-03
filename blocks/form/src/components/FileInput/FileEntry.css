@@ -1,0 +1,50 @@
+.root {
+  height: 108px;
+  margin-right: 12px;
+  min-width: 108px;
+  width: 108px;
+}
+
+.input {
+  opacity: 0;
+}
+
+.empty {
+  align-items: flex-end !important;
+  background-color: var(--primary-color) !important;
+  background-image: url(./addpicture.svg) !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+  background-size: 60px !important;
+  border-radius: 11px !important;
+  color: hsl(0, 0%, 100%) !important;
+  display: flex !important;
+  height: 6.75em !important;
+  padding: 6px !important;
+  text-align: center !important;
+  width: 6.75em !important;
+}
+
+.removeButton {
+  background-color: transparent;
+  background-image: url(./cross.svg) !important;
+  background-repeat: no-repeat !important;
+  background-size: contain;
+  border-color: transparent;
+  border-radius: 0;
+  position: absolute;
+  right: 5px;
+  top: 5px;
+}
+
+.image {
+  position: relative;
+
+  & .img {
+    height: 100% !important;
+
+    /* The way we use this, it is supported by all browsers. */
+    /* stylelint-disable-next-line plugin/no-unsupported-browser-features */
+    object-fit: cover;
+  }
+}

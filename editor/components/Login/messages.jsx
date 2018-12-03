@@ -5,4 +5,6 @@ export default defineMessages({
   register: 'Register',
   greeting: 'Hello {name}',
   registerPrompt: 'Would you like to register an account using your {provider} credentials?',
+  registerLink: 'Register a new account',
+  forgotPasswordLink: 'Forgot your password?',
 });

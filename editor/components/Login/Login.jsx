@@ -4,11 +4,15 @@ import { SocialLoginButton } from '@appsemble/react-bulma';
 import axios from 'axios';
 import PropTypes from 'prop-types';
 import React from 'react';
+import { BrowserRouter as Router, Route, Switch, Link } from 'react-router-dom';
 import { FormattedMessage } from 'react-intl';
 
-import styles from './login.css';
+import styles from './Login.css';
 import messages from './messages';
 import EmailLogin from '../EmailLogin';
+import EditPassword from '../EditPassword';
+import Register from '../Register';
+import ResetPassword from '../ResetPassword';
 
 export default class Login extends React.Component {
   state = {};
@@ -103,30 +107,50 @@ export default class Login extends React.Component {
         </button>
       </div>
     ) : (
-      <div>
-        <EmailLogin
-          authentication={{
-            method: 'email',
-            ...authentication,
-          }}
-        />
-        <div className={styles.socialLogins}>
-          <SocialLoginButton
-            className={styles.socialButton}
-            iconClass="google"
-            providerUri={`/api/oauth/connect/google?${returnUri}`}
-          >
-            <FormattedMessage {...messages.login} values={{ provider: 'Google' }} />
-          </SocialLoginButton>
-          <SocialLoginButton
-            className={styles.socialButton}
-            iconClass="gitlab"
-            providerUri={`/api/oauth/connect/gitlab?${returnUri}`}
-          >
-            <FormattedMessage {...messages.login} values={{ provider: 'GitLab' }} />
-          </SocialLoginButton>
-        </div>
-      </div>
+      <Router>
+        <Switch>
+          <Route component={Register} path="/editor/register" />
+          <Route component={ResetPassword} path="/editor/reset-password" />
+          <Route component={EditPassword} path="/editor/edit-password" />
+          <Route
+            path="/editor"
+            render={() => (
+              <div>
+                <EmailLogin
+                  authentication={{
+                    method: 'email',
+                    ...authentication,
+                  }}
+                />
+                <div className={styles.links}>
+                  <Link to="/editor/register">
+                    <FormattedMessage {...messages.registerLink} />
+                  </Link>
+                  <Link to="/editor/reset-password">
+                    <FormattedMessage {...messages.forgotPasswordLink} />
+                  </Link>
+                </div>
+                <div className={styles.socialLogins}>
+                  <SocialLoginButton
+                    className={styles.socialButton}
+                    iconClass="google"
+                    providerUri={`/api/oauth/connect/google?${returnUri}`}
+                  >
+                    <FormattedMessage {...messages.login} values={{ provider: 'Google' }} />
+                  </SocialLoginButton>
+                  <SocialLoginButton
+                    className={styles.socialButton}
+                    iconClass="gitlab"
+                    providerUri={`/api/oauth/connect/gitlab?${returnUri}`}
+                  >
+                    <FormattedMessage {...messages.login} values={{ provider: 'GitLab' }} />
+                  </SocialLoginButton>
+                </div>
+              </div>
+            )}
+          />
+        </Switch>
+      </Router>
     );
   }
 }

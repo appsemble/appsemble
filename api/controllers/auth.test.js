@@ -8,6 +8,7 @@ import testSchema from '../utils/test/testSchema';
 describe('auth controller', () => {
   let User;
   let EmailAuthorization;
+  let ResetPasswordToken;
   let db;
   let server;
 
@@ -15,7 +16,7 @@ describe('auth controller', () => {
     db = await testSchema('auth');
 
     server = await koaServer({ db });
-    ({ User, EmailAuthorization } = db.models);
+    ({ User, ResetPasswordToken, EmailAuthorization } = db.models);
   });
 
   beforeEach(async () => {
@@ -85,5 +86,50 @@ describe('auth controller', () => {
     expect(responseA.status).toBe(400);
     expect(responseB.status).toBe(404);
     expect(responseC.status).toBe(404);
+  });
+
+  it('should create a password reset token', async () => {
+    const data = { email: 'test@example.com', password: 'password' };
+    await request(server)
+      .post('/api/email')
+      .send(data);
+
+    const responseA = await request(server)
+      .post('/api/email/reset/request')
+      .send({ email: data.email });
+
+    const token = await ResetPasswordToken.findOne({
+      where: { EmailAuthorizationEmail: data.email },
+    });
+
+    const responseB = await request(server)
+      .post('/api/email/reset')
+      .send({ token: token.token, password: 'newPassword' });
+
+    const email = await token.getEmailAuthorization();
+    email.reload();
+
+    expect(responseA.status).toBe(204);
+    expect(responseB.status).toBe(204);
+    expect(bcrypt.compareSync('newPassword', email.password)).toBeTruthy();
+
+    // Sequelize throws errors when trying to load in null objects.
+    await expect(token.reload()).rejects.toThrow();
+  });
+
+  it('should not reveal existing emails', async () => {
+    const response = await request(server)
+      .post('/api/email/reset/request')
+      .send({ email: 'idonotexist@example.com' });
+
+    expect(response.status).toBe(204);
+  });
+
+  it('should return not found when resetting using a non-existant token', async () => {
+    const response = await request(server)
+      .post('/api/email/reset')
+      .send({ token: 'idontexist', password: 'whatever' });
+
+    expect(response.status).toBe(404);
   });
 });

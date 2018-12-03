@@ -12,7 +12,7 @@ Please follow the link below to verify your email address:
 
 **Didn’t request this email?**  
 No worries! Your address may have been entered by mistake. If you ignore or delete this email,
-nothing further will happen.
+nothing will happen to your account.
 
 Kind regards,
 

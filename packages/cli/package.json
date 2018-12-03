@@ -1,0 +1,23 @@
+{
+  "name": "@appsemble/cli",
+  "version": "1.0.0",
+  "author": "Appsemble <support@appsemble.com> (https://appsemble.com)",
+  "license": "MIT",
+  "directories": {
+    "bin": "bin"
+  },
+  "main": "main.js",
+  "dependencies": {
+    "axios": "^0.18.0",
+    "chalk": "^2.4.1",
+    "cosmiconfig": "^5.0.7",
+    "esm": "^3.0.84",
+    "form-data": "^2.3.3",
+    "fs-extra": "^7.0.1",
+    "json-stringify-safe": "^5.0.1",
+    "klaw": "^3.0.0",
+    "lodash": "^4.17.11",
+    "winston": "^3.1.0",
+    "yargs": "^12.0.2"
+  }
+}

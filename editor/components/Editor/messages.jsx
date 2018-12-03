@@ -9,6 +9,7 @@ export default defineMessages({
   errorUpdate: 'Something went wrong trying to update the app recipe',
   errorUpdateIcon: 'Something went wrong trying to update the app icon',
   invalidYaml: 'Invalid YAML',
+  invalidStyle: 'Invalid CSS',
   updateSuccess: 'Successfully updated app recipe',
   unexpected: 'Something went wrong when validating the app recipe',
   resourceWarningTitle: 'Resource warning',

@@ -31,6 +31,22 @@ window.addEventListener('message', event => {
   if (event.data.type === 'editor/EDIT_SUCCESS') {
     const app = resolveJsonPointers(event.data.app);
     store.dispatch({ type: event.data.type, app });
+
+    const replaceStyle = (id, style) => {
+      const oldNode = document.getElementById(id);
+      const newNode = document.createElement('style');
+      newNode.appendChild(document.createTextNode(style));
+      newNode.id = id;
+
+      if (oldNode) {
+        document.head.replaceChild(newNode, oldNode);
+      } else {
+        document.head.appendChild(newNode);
+      }
+    };
+
+    replaceStyle('appsemble-style-core', event.data.style);
+    replaceStyle('appsemble-style-shared', event.data.sharedStyle);
   }
 });
 

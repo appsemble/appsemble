@@ -33,7 +33,8 @@ export default async function indexHandler(ctx) {
   ctx.set('Content-Security-Policy', csp);
 
   try {
-    const app = await App.findOne({ where: { path: p } });
+    const app = await App.findOne({ where: { path: p } }, { raw: true });
+
     if (app == null) {
       ctx.body = renderError({
         assets,

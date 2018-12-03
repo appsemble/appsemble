@@ -35,7 +35,7 @@ export default class Page extends React.Component {
   componentDidMount() {
     const { getBlockDefs, page } = this.props;
 
-    getBlockDefs(page.blocks.map(({ type }) => type));
+    getBlockDefs(page.blocks);
   }
 
   static getDerivedStateFromProps(props, state) {

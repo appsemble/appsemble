@@ -3,6 +3,10 @@ export default (sequelize, DataTypes) =>
     'BlockVersion',
     {
       name: { type: DataTypes.STRING, primaryKey: true },
+      version: { type: DataTypes.STRING, primaryKey: true },
+      position: { type: DataTypes.STRING },
+      actions: { type: DataTypes.JSON },
+      resources: { type: DataTypes.JSON },
     },
     {
       freezeTableName: true,
