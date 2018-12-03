@@ -52,6 +52,7 @@ export default class Editor extends React.Component {
     appSchema: {},
     recipe: '',
     style: '',
+    sharedStyle: '',
     initialRecipe: '',
     valid: false,
     dirty: true,
@@ -87,12 +88,14 @@ export default class Editor extends React.Component {
       const { data } = request;
       const recipe = yaml.safeDump(data);
       const { data: style } = await axios.get(`/api/apps/${id}/style/core`);
+      const { data: sharedStyle } = await axios.get(`/api/apps/${id}/style/shared`);
 
       this.setState({
         // eslint-disable-next-line react/no-unused-state
         appSchema,
         recipe,
         style,
+        sharedStyle,
         initialRecipe: recipe,
         path: data.path,
         iconURL: `/api/apps/${id}/icon`,
@@ -111,49 +114,52 @@ export default class Editor extends React.Component {
   onSave = event => {
     event.preventDefault();
 
-    this.setState(({ appSchema, recipe, style }, { intl: { formatMessage }, push }) => {
-      let app;
-      // Attempt to parse the YAML into a JSON object
-      try {
-        app = yaml.safeLoad(recipe);
-      } catch (error) {
-        push(formatMessage(messages.invalidYaml));
-        return { valid: false, dirty: false };
-      }
-      try {
-        validateStyle(style);
-      } catch (error) {
-        push(formatMessage(messages.invalidStyle));
-        return { valid: false, dirty: false };
-      }
-      validate(appSchema, app)
-        .then(() => {
-          this.setState({ valid: true, dirty: false });
+    this.setState(
+      ({ appSchema, recipe, style, sharedStyle }, { intl: { formatMessage }, push }) => {
+        let app;
+        // Attempt to parse the YAML into a JSON object
+        try {
+          app = yaml.safeLoad(recipe);
+        } catch (error) {
+          push(formatMessage(messages.invalidYaml));
+          return { valid: false, dirty: false };
+        }
+        try {
+          validateStyle(style);
+          validateStyle(sharedStyle);
+        } catch (error) {
+          push(formatMessage(messages.invalidStyle));
+          return { valid: false, dirty: false };
+        }
+        validate(appSchema, app)
+          .then(() => {
+            this.setState({ valid: true, dirty: false });
 
-          // YAML and schema appear to be valid, send it to the app preview iframe
-          this.frame.current.contentWindow.postMessage(
-            { type: 'editor/EDIT_SUCCESS', app, style },
-            window.location.origin,
-          );
-        })
-        .catch(error => {
-          this.setState(() => {
-            if (error instanceof SchemaValidationError) {
-              const errors = error.data;
-              push({
-                body: formatMessage(messages.schemaValidationFailed, {
-                  properties: Object.keys(errors).join(', '),
-                }),
-              });
-            } else {
-              push(formatMessage(messages.unexpected));
-            }
+            // YAML and schema appear to be valid, send it to the app preview iframe
+            this.frame.current.contentWindow.postMessage(
+              { type: 'editor/EDIT_SUCCESS', app, style, sharedStyle },
+              window.location.origin,
+            );
+          })
+          .catch(error => {
+            this.setState(() => {
+              if (error instanceof SchemaValidationError) {
+                const errors = error.data;
+                push({
+                  body: formatMessage(messages.schemaValidationFailed, {
+                    properties: Object.keys(errors).join(', '),
+                  }),
+                });
+              } else {
+                push(formatMessage(messages.unexpected));
+              }
 
-            return { valid: false, dirty: false };
+              return { valid: false, dirty: false };
+            });
           });
-        });
-      return null;
-    });
+        return null;
+      },
+    );
   };
 
   uploadApp = async () => {
@@ -162,7 +168,7 @@ export default class Editor extends React.Component {
       push,
       intl: { formatMessage },
     } = this.props;
-    const { recipe, style, icon, valid } = this.state;
+    const { recipe, style, sharedStyle, icon, valid } = this.state;
 
     if (!valid) {
       return;
@@ -172,6 +178,7 @@ export default class Editor extends React.Component {
       const formData = new FormData();
       formData.append('app', JSON.stringify(yaml.safeLoad(recipe)));
       formData.append('style', new Blob([style], { type: 'text/css' }));
+      formData.append('sharedStyle', new Blob([sharedStyle], { type: 'text/css' }));
       await axios.put(`/api/apps/${id}`, formData);
       push({ body: formatMessage(messages.updateSuccess), color: 'success' });
     } catch (e) {
@@ -212,12 +219,24 @@ export default class Editor extends React.Component {
     logout();
   };
 
-  onMonacoChange = recipe => {
-    this.setState({ recipe, dirty: true });
-  };
+  onMonacoChange = value => {
+    const {
+      location: { hash: tab },
+    } = this.props;
 
-  onStyleChange = style => {
-    this.setState({ style, dirty: true });
+    switch (tab) {
+      case '#editor':
+        this.setState({ recipe: value, dirty: true });
+        break;
+      case '#style-core':
+        this.setState({ style: value, dirty: true });
+        break;
+      case '#style-shared':
+        this.setState({ sharedStyle: value, dirty: true });
+        break;
+      default:
+        break;
+    }
   };
 
   onIconChange = e => {
@@ -239,6 +258,7 @@ export default class Editor extends React.Component {
     const {
       recipe,
       style,
+      sharedStyle,
       path,
       valid,
       dirty,
@@ -255,6 +275,25 @@ export default class Editor extends React.Component {
 
     if (!recipe) {
       return <Loader />;
+    }
+
+    const onValueChange = this.onMonacoChange;
+    let value;
+    let language;
+
+    switch (tab) {
+      case '#style-core':
+        value = style;
+        language = 'css';
+        break;
+      case '#style-shared':
+        value = sharedStyle;
+        language = 'css';
+        break;
+      case '#editor':
+      default:
+        value = recipe;
+        language = 'yaml';
     }
 
     return (
@@ -325,29 +364,29 @@ export default class Editor extends React.Component {
                   Recipe
                 </Link>
               </TabItem>
-              <TabItem active={tab === '#style'} onClick={this.onTabChange} value="style">
-                <Link to="#style">
+              <TabItem active={tab === '#style-core'} onClick={this.onTabChange} value="style-core">
+                <Link to="#style-core">
                   <Icon fa="brush" />
-                  Style
+                  Core Style
+                </Link>
+              </TabItem>
+              <TabItem
+                active={tab === '#style-shared'}
+                onClick={this.onTabChange}
+                value="style-shared"
+              >
+                <Link to="#style-shared">
+                  <Icon fa="brush" />
+                  Shared Style
                 </Link>
               </TabItem>
             </Tab>
-            {tab === '#editor' && (
-              <MonacoEditor
-                className={styles.monacoEditor}
-                language="yaml"
-                onValueChange={this.onMonacoChange}
-                value={recipe}
-              />
-            )}
-            {tab === '#style' && (
-              <MonacoEditor
-                className={styles.monacoEditor}
-                language="css"
-                onValueChange={this.onStyleChange}
-                value={style}
-              />
-            )}
+            <MonacoEditor
+              className={styles.monacoEditor}
+              language={language}
+              onValueChange={onValueChange}
+              value={value}
+            />
             <Modal
               active={warningDialog}
               ModalCloseProps={{ size: 'large' }}

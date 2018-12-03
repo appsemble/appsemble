@@ -32,16 +32,21 @@ window.addEventListener('message', event => {
     const app = resolveJsonPointers(event.data.app);
     store.dispatch({ type: event.data.type, app });
 
-    const style = document.getElementById('appsemble-editor-preview-style-core');
-    const newStyle = document.createElement('style');
-    newStyle.appendChild(document.createTextNode(event.data.style));
-    newStyle.id = 'appsemble-editor-preview-style-core';
+    const replaceStyle = (id, style) => {
+      const oldNode = document.getElementById(id);
+      const newNode = document.createElement('style');
+      newNode.appendChild(document.createTextNode(style));
+      newNode.id = id;
 
-    if (!style) {
-      document.head.appendChild(newStyle);
-    } else {
-      document.head.replaceChild(newStyle, style);
-    }
+      if (oldNode) {
+        document.head.replaceChild(newNode, oldNode);
+      } else {
+        document.head.appendChild(newNode);
+      }
+    };
+
+    replaceStyle('appsemble-style-core', event.data.style);
+    replaceStyle('appsemble-style-shared', event.data.sharedStyle);
   }
 });
 

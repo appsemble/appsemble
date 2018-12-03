@@ -85,6 +85,14 @@ export default class Block extends React.Component {
           }),
       ),
     );
+
+    const sharedStyle = document.getElementById('appsemble-style-shared');
+    if (sharedStyle) {
+      const cloneNode = sharedStyle.cloneNode(true);
+      cloneNode.removeAttribute('id');
+      shadowRoot.appendChild(cloneNode);
+    }
+
     const utils = {
       showMessage,
     };

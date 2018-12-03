@@ -200,3 +200,21 @@
         description: The core stylesheet associated with this app.
       default:
         $ref: '#/responses/default'
+/apps/{id}/style/shared:
+  get:
+    tags: [app]
+    description: Get the shared style for this app.
+    x-oai-middleware:
+      - file: apps
+        handler: getSharedAppStyle
+    parameters:
+      - name: id
+        in: path
+        description: The id of the app.
+        required: true
+        type: integer
+    responses:
+      200:
+        description: The shared stylesheet associated with this app.
+      default:
+        $ref: '#/responses/default'

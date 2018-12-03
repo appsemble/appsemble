@@ -56,8 +56,8 @@ async function parseAppMultipart(ctx) {
     };
 
     busboy.on('file', (fieldname, stream, filename, encoding, mime) => {
-      if (fieldname !== 'style' || mime !== 'text/css') {
-        onError(new Error('Expected file ´style´ to be css'));
+      if (!(fieldname === 'style' || fieldname === 'sharedStyle') || mime !== 'text/css') {
+        onError(new Error(`Expected file ´${fieldname}´ to be css`));
       }
 
       let buffer;
@@ -66,7 +66,13 @@ async function parseAppMultipart(ctx) {
       });
 
       stream.on('end', () => {
-        res.style = buffer;
+        if (fieldname === 'style') {
+          res.style = buffer;
+        }
+
+        if (fieldname === 'sharedStyle') {
+          res.sharedStyle = buffer;
+        }
       });
     });
 
@@ -115,6 +121,10 @@ function handleAppValidationError(error, app) {
     throw Boom.badRequest(error.message);
   }
 
+  if (error.message === 'Expected file ´sharedStyle´ to be css') {
+    throw Boom.badRequest(error.message);
+  }
+
   if (error.message.startsWith('Unexpected field: ')) {
     throw Boom.badRequest(error.message);
   }
@@ -137,6 +147,10 @@ export async function create(ctx) {
 
     if (result.style) {
       result.style = validateStyle(result.style);
+    }
+
+    if (result.sharedStyle) {
+      result.sharedStyle = validateStyle(result.sharedStyle);
     }
 
     const { App: appSchema } = ctx.api.definitions;
@@ -190,6 +204,10 @@ export async function update(ctx) {
 
     if (result.style) {
       result.style = validateStyle(result.style);
+    }
+
+    if (result.sharedStyle) {
+      result.sharedStyle = validateStyle(result.sharedStyle);
     }
 
     const { App: appSchema } = ctx.api.definitions;
@@ -265,6 +283,21 @@ export async function getAppStyle(ctx) {
   }
 
   ctx.body = app.style || '';
+  ctx.type = 'css';
+  ctx.status = 200;
+}
+
+export async function getSharedAppStyle(ctx) {
+  const { id } = ctx.params;
+  const { App } = ctx.db.models;
+
+  const app = await App.findByPk(id, { raw: true });
+
+  if (!app) {
+    throw Boom.notFound('App not found');
+  }
+
+  ctx.body = app.sharedStyle || '';
   ctx.type = 'css';
   ctx.status = 200;
 }
