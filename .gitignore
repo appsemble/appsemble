@@ -1,6 +1,7 @@
 *.log
 /coverage/
 /public/
+/gl-*
 dist/
 node_modules/
 junit.xml
