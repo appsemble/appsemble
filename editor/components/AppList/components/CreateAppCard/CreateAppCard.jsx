@@ -10,6 +10,7 @@ import {
   SelectField,
   InputField,
 } from '@appsemble/react-bulma';
+import uniq from 'lodash.uniq';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 
@@ -53,8 +54,18 @@ export default class CreateAppCard extends React.Component {
 
       history.push(`/editor/${app.id}`);
     } catch (e) {
-      if (e.response && e.response.status === 409) {
-        push({ body: formatMessage(messages.nameConflict, { name: appName }) });
+      if (e.response) {
+        if (e.response.status === 409) {
+          push({ body: formatMessage(messages.nameConflict, { name: appName }) });
+        }
+
+        if (e.response.data.message === 'Unknown blocks or block versions found') {
+          const blocks = uniq(Object.values(e.response.data.data)).join(', ');
+
+          push({
+            body: formatMessage(messages.missingBlocks, { blocks }),
+          });
+        }
       } else {
         push({ body: formatMessage(messages.error) });
       }
