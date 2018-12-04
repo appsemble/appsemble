@@ -16,7 +16,6 @@ import { FormattedMessage } from 'react-intl';
 import messages from './messages';
 import styles from './CreateAppCard.css';
 import templates from '../../../../templates';
-import { push } from '../../../../actions/message';
 
 export default class CreateAppCard extends React.Component {
   state = {
@@ -43,6 +42,7 @@ export default class CreateAppCard extends React.Component {
     const {
       createApp,
       history,
+      push,
       intl: { formatMessage },
     } = this.props;
     const { appName, selectedTemplate } = this.state;
@@ -53,8 +53,18 @@ export default class CreateAppCard extends React.Component {
 
       history.push(`/editor/${app.id}`);
     } catch (e) {
-      if (e.response && e.response.status === 409) {
-        push({ body: formatMessage(messages.nameConflict, { name: appName }) });
+      if (e.response) {
+        if (e.response.status === 409) {
+          push({ body: formatMessage(messages.nameConflict, { name: appName }) });
+        }
+
+        if (e.response.data.message === 'Unknown blocks or block versions found') {
+          const blocks = Array.from(new Set(Object.values(e.response.data.data)));
+
+          push({
+            body: formatMessage(messages.missingBlocks, { blockCount: blocks.length, blocks }),
+          });
+        }
       } else {
         push({ body: formatMessage(messages.error) });
       }
