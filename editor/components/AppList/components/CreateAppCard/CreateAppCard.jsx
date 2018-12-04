@@ -10,7 +10,6 @@ import {
   SelectField,
   InputField,
 } from '@appsemble/react-bulma';
-import uniq from 'lodash.uniq';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 
@@ -60,10 +59,10 @@ export default class CreateAppCard extends React.Component {
         }
 
         if (e.response.data.message === 'Unknown blocks or block versions found') {
-          const blocks = uniq(Object.values(e.response.data.data)).join(', ');
+          const blocks = Array.from(new Set(Object.values(e.response.data.data)));
 
           push({
-            body: formatMessage(messages.missingBlocks, { blocks }),
+            body: formatMessage(messages.missingBlocks, { blockCount: blocks.length, blocks }),
           });
         }
       } else {
