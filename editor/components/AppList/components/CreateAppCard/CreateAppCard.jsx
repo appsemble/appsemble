@@ -16,7 +16,6 @@ import { FormattedMessage } from 'react-intl';
 import messages from './messages';
 import styles from './CreateAppCard.css';
 import templates from '../../../../templates';
-import { push } from '../../../../actions/message';
 
 export default class CreateAppCard extends React.Component {
   state = {
@@ -43,6 +42,7 @@ export default class CreateAppCard extends React.Component {
     const {
       createApp,
       history,
+      push,
       intl: { formatMessage },
     } = this.props;
     const { appName, selectedTemplate } = this.state;
