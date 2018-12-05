@@ -1,3 +1,5 @@
+import discoverBlocks from '../lib/discoverBlocks';
+import loadWebpackConfig from '../lib/loadWebpackConfig';
 import serverImport from '../lib/serverImport';
 
 export const command = 'start';
@@ -51,5 +53,14 @@ export function builder(yargs) {
 
 export async function handler(argv) {
   const start = await serverImport('start');
-  return start(argv);
+  const blocks = await discoverBlocks(process.cwd());
+  const webpackConfigs = await Promise.all(
+    blocks.map(block =>
+      loadWebpackConfig(argv.webpackConfig, block.id, {
+        mode: 'development',
+        publicPath: `/api/blocks/${block.id}/versions/${block.version}`,
+      }),
+    ),
+  );
+  return start(argv, webpackConfigs);
 }

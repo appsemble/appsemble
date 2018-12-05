@@ -3,7 +3,7 @@ import path from 'path';
 import klawSync from 'klaw-sync';
 import serve from 'koa-static';
 
-export default async function configureStatic(app) {
+export default async function configureStatic(app, webpackConfigs) {
   if (process.env.NODE_ENV === 'production') {
     const distDir = path.resolve(__dirname, '../../dist');
     app.use(serve(distDir, { immutable: true, maxage: 365 * 24 * 60 * 60 * 1e3 }));
@@ -21,18 +21,23 @@ export default async function configureStatic(app) {
     });
   } else {
     const { default: koaWebpack } = await import('koa-webpack');
+    const { default: webpack } = await import('webpack');
     const { default: webpackConfig } = await import('../../config/webpack/core');
     const config = webpackConfig(null, { mode: 'development' });
+    config.output.path = config.output.publicPath;
+    const compiler = webpack([config, ...webpackConfigs]);
     const middleware = await koaWebpack({
-      config,
+      compiler,
+      config: null,
       devMiddleware: {
         logLevel: 'warn',
+        publicPath: '/',
         serverSideRender: true,
       },
     });
     app.use(middleware);
     app.use(async (ctx, next) => {
-      ctx.state.getAssets = () => ctx.state.webpackStats.toJson().assetsByChunkName;
+      ctx.state.getAssets = () => ctx.state.webpackStats.toJson().children[0].assetsByChunkName;
       await next();
     });
   }

@@ -30,7 +30,13 @@ export default async function getConfig(dir) {
       )}: ${chalk.cyan('true')}” in package.json`,
     );
   }
-  const result = { description: pkg.description, id: pkg.name, version: pkg.version, ...config };
+  const result = {
+    description: pkg.description,
+    id: pkg.name,
+    version: pkg.version,
+    ...config,
+    dir,
+  };
   logging.debug('Resolved configuration:', result);
   return result;
 }

@@ -4,11 +4,24 @@ import yargs from 'yargs';
 import * as initialize from './commands/initialize';
 import * as start from './commands/start';
 
+/**
+ * These are exported, so @appsemble/cli can wrap them.
+ */
+const startHandler = start.handler;
+const initializeHandler = initialize.handler;
+
+export { initializeHandler as initialize };
+export { startHandler as start };
+
+/**
+ * The main entry point for the Appsemble production server.
+ *
+ * @param {string[]} argv The argument vector passed in from the command line.
+ */
 function main(argv) {
-  const production = process.env.NODE_ENV === 'production';
   yargs
     .usage('Usage:\n  $0 [command]')
-    .scriptName(production ? 'docker run -ti appsemble/appsemble' : 'yarn')
+    .scriptName(`docker run -p ${start.PORT} -ti appsemble/appsemble`)
     .command(start)
     .command(initialize)
     .help('help', 'Show this help message.')
