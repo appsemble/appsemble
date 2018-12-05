@@ -1,5 +1,3 @@
-import discoverBlocks from '../lib/discoverBlocks';
-import loadWebpackConfig from '../lib/loadWebpackConfig';
 import serverImport from '../lib/serverImport';
 
 export const command = 'start';
