@@ -38,10 +38,6 @@ deploy:staging:
       https://gitlab.com/api/v4/projects/8452871/trigger/pipeline
 
 eslint:
-  only:
-    changes:
-      - '**/*.{js,jsx,md}'
-      - yarn.lock
   script:
     - yarn --frozen-lockfile
     - yarn eslint
@@ -64,10 +60,6 @@ pages:
       - public/
 
 prettier:
-  only:
-    changes:
-      - '**/*.{json,md,yaml,yml}'
-      - yarn.lock
   script:
     - yarn --frozen-lockfile
     - yarn prettier
@@ -97,10 +89,6 @@ publish:docker:latest:
     - docker push "appsemble/appsemble:$CI_COMMIT_TAG"
 
 stylelint:
-  only:
-    changes:
-      - '**/*.css'
-      - yarn.lock
   script:
     - yarn --frozen-lockfile
     - yarn stylelint
@@ -133,10 +121,6 @@ test:postgres:
     POSTGRES_USER: root
     POSTGRES_PASSWORD: password
     DATABASE_URL: 'postgresql://root:password@postgres:5432/testAppsemble'
-  only:
-    changes:
-      - 'server/**/*.js'
-      - yarn.lock
   script:
     - yarn --frozen-lockfile
     - yarn test --reporters default --reporters jest-junit
