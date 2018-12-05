@@ -56,11 +56,11 @@ The _server/_ directory holds the code of the server backend. The backend includ
 
 #### server/api
 
-This directory contains the [OpenAPI] specification, split into managable chunks.
+This directory contains the [OpenAPI] specification, split into manageable chunks.
 
 #### server/controllers
 
-The _controllers/_ directoy contains the business logic for each API call. The calls are categorized
+The _controllers/_ directory contains the business logic for each API call. The calls are categorized
 by the resource they apply to.
 
 #### server/middleware
@@ -229,7 +229,7 @@ should be lower case and the subject should not use punctuation.
 
 ### Body
 
-A detailed describtion of the change. It is recommended to use markdown syntax.
+A detailed description of the change. It is recommended to use markdown syntax.
 
 ## Changelog
 
