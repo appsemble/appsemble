@@ -15,17 +15,9 @@ export const command = 'start';
 export const description = 'Start the Appsemble server';
 
 export function builder(yargs) {
-  const production = process.env.NODE_ENV === 'production';
   return databaseBuilder(yargs)
     .option('sentry-dsn', {
       desc: 'The Sentry DSN to use for error reporting. See https://sentry.io for details.',
-      hidden: !production,
-    })
-    .option('port', {
-      desc: 'The HTTP server port to use. (Development only)',
-      type: 'number',
-      default: 9999,
-      hidden: production,
     })
     .option('smtp-host', {
       desc: 'The host of the SMTP server to connect to.',
