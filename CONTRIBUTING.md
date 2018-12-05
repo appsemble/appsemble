@@ -60,8 +60,8 @@ This directory contains the [OpenAPI] specification, split into manageable chunk
 
 #### server/controllers
 
-The _controllers/_ directory contains the business logic for each API call. The calls are categorized
-by the resource they apply to.
+The _controllers/_ directory contains the business logic for each API call. The calls are
+categorized by the resource they apply to.
 
 #### server/middleware
 
