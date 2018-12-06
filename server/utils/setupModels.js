@@ -60,7 +60,7 @@ function associateModels(models) {
 
   App.hasMany(Snapshot);
   App.hasMany(Resource);
-  App.belongsTo(Organization);
+  App.belongsTo(Organization, { foreignKey: { allowNull: false } });
 
   Resource.belongsTo(User);
   Resource.belongsTo(App);
