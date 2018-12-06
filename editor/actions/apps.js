@@ -59,10 +59,11 @@ export function getApps() {
   };
 }
 
-export function createApp(recipe) {
+export function createApp(recipe, organization) {
   return async dispatch => {
     const formData = new FormData();
     formData.append('app', JSON.stringify(recipe));
+    formData.append('organizationId', organization.id);
 
     const { data: app } = await axios.post('/api/apps', formData);
     dispatch({

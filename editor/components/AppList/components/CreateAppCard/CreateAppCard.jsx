@@ -21,6 +21,7 @@ export default class CreateAppCard extends React.Component {
   state = {
     modalOpen: false,
     selectedTemplate: 0,
+    selectedOrganization: 0,
     appName: '',
   };
 
@@ -44,12 +45,16 @@ export default class CreateAppCard extends React.Component {
       history,
       push,
       intl: { formatMessage },
+      user,
     } = this.props;
-    const { appName, selectedTemplate } = this.state;
+    const { appName, selectedTemplate, selectedOrganization } = this.state;
 
     try {
       const template = templates[selectedTemplate].recipe;
-      const app = await createApp({ ...template, name: appName });
+      const app = await createApp(
+        { ...template, name: appName },
+        user.organizations[selectedOrganization],
+      );
 
       history.push(`/editor/${app.id}`);
     } catch (e) {
@@ -74,8 +79,9 @@ export default class CreateAppCard extends React.Component {
   render() {
     const {
       intl: { formatMessage },
+      user,
     } = this.props;
-    const { modalOpen, selectedTemplate, appName } = this.state;
+    const { modalOpen, selectedTemplate, selectedOrganization, appName } = this.state;
     return (
       <div className={styles.createAppCardContainer}>
         <Card className={styles.createAppCard} onClick={this.onClick}>
@@ -102,6 +108,19 @@ export default class CreateAppCard extends React.Component {
                   required
                   value={appName}
                 />
+                <SelectField
+                  disabled={user.organizations.length === 1}
+                  label={formatMessage(messages.organization)}
+                  name="selectedOrganization"
+                  onChange={this.onChange}
+                  value={selectedOrganization}
+                >
+                  {user.organizations.map((organization, index) => (
+                    <option key={organization.id} value={index}>
+                      {organization.name}
+                    </option>
+                  ))}
+                </SelectField>
                 <SelectField
                   label={formatMessage(messages.template)}
                   name="selectedTemplate"
