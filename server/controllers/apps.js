@@ -206,6 +206,9 @@ export async function query(ctx) {
 export async function update(ctx) {
   const { db } = ctx;
   const { id } = ctx.params;
+  const {
+    user: { organizations },
+  } = ctx.state.oauth.token;
   const { App } = db.models;
 
   let result;
@@ -230,12 +233,17 @@ export async function update(ctx) {
     await checkBlocks(result.definition, db);
 
     result.path = result.definition.path || normalize(result.definition.name);
+    const app = await App.findOne({ where: { id } });
 
-    const [affectedRows] = await App.update(result, { where: { id } });
-
-    if (affectedRows === 0) {
+    if (!app) {
       throw Boom.notFound('App not found');
     }
+
+    if (!organizations.some(organization => organization.id === app.OrganizationId)) {
+      throw Boom.forbidden("User does not belong in this App's organization.");
+    }
+
+    await app.update(result, { where: { id } });
 
     ctx.body = { ...result.definition, id, path: result.path };
   } catch (error) {
@@ -263,26 +271,43 @@ export async function getAppIcon(ctx) {
 export async function setAppIcon(ctx) {
   const { id } = ctx.params;
   const { App } = ctx.db.models;
+  const {
+    user: { organizations },
+  } = ctx.state.oauth.token;
   const icon = await getRawBody(ctx.req);
 
-  const [affectedRows] = await App.update({ icon }, { where: { id } });
+  const app = await App.findOne({ where: { id } });
 
-  if (affectedRows === 0) {
+  if (!app) {
     throw Boom.notFound('App not found');
   }
 
+  if (!organizations.some(organization => organization.id === app.OrganizationId)) {
+    throw Boom.forbidden("User does not belong in this App's organization.");
+  }
+
+  await app.update({ icon });
   ctx.status = 204;
 }
 
 export async function deleteAppIcon(ctx) {
   const { id } = ctx.params;
   const { App } = ctx.db.models;
+  const {
+    user: { organizations },
+  } = ctx.state.oauth.token;
 
-  const [affectedRows] = await App.update({ icon: null }, { where: { id } });
+  const app = await App.findOne({ where: { id } });
 
-  if (affectedRows === 0) {
+  if (!app) {
     throw Boom.notFound('App not found');
   }
+
+  if (!organizations.some(organization => organization.id === app.OrganizationId)) {
+    throw Boom.forbidden("User does not belong in this App's organization.");
+  }
+
+  await app.update({ icon: null });
 
   ctx.status = 204;
 }
