@@ -10,6 +10,7 @@ describe('app controller', () => {
   let App;
   let BlockDefinition;
   let BlockVersion;
+  let Organization;
   let db;
   let server;
   let token;
@@ -19,7 +20,7 @@ describe('app controller', () => {
     db = await testSchema('apps');
 
     server = await createServer({ db });
-    ({ App, BlockDefinition, BlockVersion } = db.models);
+    ({ App, BlockDefinition, BlockVersion, Organization } = db.models);
   });
 
   beforeEach(async () => {
@@ -476,7 +477,11 @@ describe('app controller', () => {
 
   it('should update an app', async () => {
     const appA = await App.create(
-      { path: 'test-app', definition: { name: 'Test App', defaultPage: 'Test Page' } },
+      {
+        path: 'test-app',
+        definition: { name: 'Test App', defaultPage: 'Test Page' },
+        OrganizationId: organizationId,
+      },
       { raw: true },
     );
     const response = await request(server)
@@ -508,6 +513,41 @@ describe('app controller', () => {
           blocks: [{ type: 'test', version: '0.0.0' }],
         },
       ],
+    });
+  });
+
+  it('should not update an app of another organization', async () => {
+    const newOrganization = await Organization.create({ name: 'Test Organization 2' });
+    const appA = await App.create(
+      {
+        path: 'test-app',
+        definition: { name: 'Test App', defaultPage: 'Test Page' },
+        OrganizationId: newOrganization.id,
+      },
+      { raw: true },
+    );
+
+    const response = await request(server)
+      .put(`/api/apps/${appA.id}`)
+      .set('Authorization', token)
+      .field(
+        'app',
+        JSON.stringify({
+          name: 'Foobar',
+          defaultPage: appA.definition.defaultPage,
+          pages: [
+            {
+              name: 'Test page',
+              blocks: [{ type: 'test', version: '0.0.0' }],
+            },
+          ],
+        }),
+      );
+
+    expect(response.body).toStrictEqual({
+      statusCode: 403,
+      error: 'Forbidden',
+      message: "User does not belong in this App's organization.",
     });
   });
 
@@ -552,11 +592,19 @@ describe('app controller', () => {
 
   it('should prevent path conflicts when updating an app', async () => {
     await App.create(
-      { path: 'foo', definition: { name: 'Test App', defaultPage: 'Test Page' } },
+      {
+        path: 'foo',
+        definition: { name: 'Test App', defaultPage: 'Test Page' },
+        OrganizationId: organizationId,
+      },
       { raw: true },
     );
     const appA = await App.create(
-      { path: 'bar', definition: { name: 'Test App', defaultPage: 'Test Page' } },
+      {
+        path: 'bar',
+        definition: { name: 'Test App', defaultPage: 'Test Page' },
+        OrganizationId: organizationId,
+      },
       { raw: true },
     );
     const response = await request(server)
@@ -582,7 +630,11 @@ describe('app controller', () => {
 
   it('should validate and update css when updating an app', async () => {
     const app = await App.create(
-      { path: 'bar', definition: { name: 'Test App', defaultPage: 'Test Page' } },
+      {
+        path: 'bar',
+        definition: { name: 'Test App', defaultPage: 'Test Page' },
+        OrganizationId: organizationId,
+      },
       { raw: true },
     );
 
