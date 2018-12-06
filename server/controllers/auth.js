@@ -5,6 +5,12 @@ import Boom from 'boom';
 
 import { sendResetPasswordEmail, sendWelcomeEmail, resendVerificationEmail } from '../utils/email';
 
+async function registerUser(associatedModel) {
+  await associatedModel.createUser();
+  const user = await associatedModel.getUser();
+  await user.createOrganization({ name: 'My Organization' });
+}
+
 export async function registerEmail(ctx) {
   const { body } = ctx.request;
   const { EmailAuthorization } = ctx.db.models;
@@ -14,7 +20,7 @@ export async function registerEmail(ctx) {
     const password = await bcrypt.hash(body.password, 10);
     const key = crypto.randomBytes(40).toString('hex');
     const record = await EmailAuthorization.create({ ...body, password, key });
-    await record.createUser();
+    await registerUser(record);
 
     await sendWelcomeEmail(
       {
@@ -46,7 +52,7 @@ export async function registerOAuth(ctx) {
     throw Boom.notFound('Could not find any matching credentials.');
   }
 
-  await auth.createUser();
+  await registerUser(auth);
 
   ctx.status = 201;
 }
