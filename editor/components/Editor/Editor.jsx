@@ -182,7 +182,13 @@ export default class Editor extends React.Component {
       await axios.put(`/api/apps/${id}`, formData);
       push({ body: formatMessage(messages.updateSuccess), color: 'success' });
     } catch (e) {
-      push(formatMessage(messages.errorUpdate));
+      if (e.response && e.response.status === 403) {
+        push(formatMessage(messages.forbidden));
+      } else {
+        push(formatMessage(messages.errorUpdate));
+      }
+
+      return;
     }
 
     if (icon) {
