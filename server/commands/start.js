@@ -144,7 +144,7 @@ export async function handler(argv) {
       ...(argv.oauthGoogleKey && {
         google: {
           key: argv.oauthGoogleKey,
-          secret: argv.oauthGoogleKeySecret,
+          secret: argv.oauthGoogleSecret,
           scope: ['email', 'profile', 'openid'],
           callback: '/api/oauth/callback/google',
           custom_params: { access_type: 'offline' },
