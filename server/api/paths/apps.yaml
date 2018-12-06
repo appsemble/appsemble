@@ -50,6 +50,25 @@
     security:
       - oauthPassword:
           - apps:read
+/apps/me:
+  get:
+    tags: [app]
+    description: Get all apps that are editable by the user.
+    x-oai-middleware:
+      - file: apps
+        handler: queryMyApps
+    responses:
+      200:
+        description: The list of all editable apps.
+        schema:
+          type: array
+          items:
+            $ref: '#/definitions/App'
+      default:
+        $ref: '#/responses/default'
+    security:
+      - oauthPassword:
+          - apps:read
 
 /apps/{id}:
   get:

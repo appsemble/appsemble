@@ -203,6 +203,19 @@ export async function query(ctx) {
   ctx.body = apps.map(app => ({ ...app.definition, id: app.id, path: app.path }));
 }
 
+export async function queryMyApps(ctx) {
+  const { App } = ctx.db.models;
+  const {
+    user: { organizations },
+  } = ctx.state.oauth.token;
+
+  const apps = await App.findAll({
+    where: { OrganizationId: { [Op.in]: organizations.map(o => o.id) } },
+  });
+
+  ctx.body = apps.map(app => ({ ...app.definition, id: app.id, path: app.path }));
+}
+
 export async function update(ctx) {
   const { db } = ctx;
   const { id } = ctx.params;
