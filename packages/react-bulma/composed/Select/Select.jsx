@@ -9,6 +9,7 @@ export default class Select extends React.Component {
     children: PropTypes.node,
     className: PropTypes.string,
     component: PropTypes.string,
+    disabled: PropTypes.bool,
     multiple: PropTypes.bool,
     name: PropTypes.string,
     onChange: PropTypes.func,
@@ -20,6 +21,7 @@ export default class Select extends React.Component {
     children: null,
     className: null,
     component: 'div',
+    disabled: false,
     multiple: false,
     name: null,
     onChange: null,
@@ -32,6 +34,7 @@ export default class Select extends React.Component {
       children,
       className,
       component: Component,
+      disabled,
       multiple,
       name,
       onChange,
@@ -43,7 +46,13 @@ export default class Select extends React.Component {
     return (
       <Component className={classNames('select', is('multiple', multiple), className)} {...props}>
         {select || (
-          <select multiple={multiple} name={name} onChange={onChange} value={value}>
+          <select
+            disabled={disabled}
+            multiple={multiple}
+            name={name}
+            onChange={onChange}
+            value={value}
+          >
             {children}
           </select>
         )}

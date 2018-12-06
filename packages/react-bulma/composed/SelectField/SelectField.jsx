@@ -7,6 +7,7 @@ import Select from '../Select';
 export default class SelectField extends React.Component {
   static propTypes = {
     children: PropTypes.node.isRequired,
+    disabled: PropTypes.bool,
     multiple: PropTypes.bool,
     name: PropTypes.string,
     select: PropTypes.node,
@@ -15,6 +16,7 @@ export default class SelectField extends React.Component {
   };
 
   static defaultProps = {
+    disabled: false,
     multiple: false,
     name: null,
     select: null,
@@ -23,11 +25,22 @@ export default class SelectField extends React.Component {
   };
 
   render() {
-    const { children, multiple, name, onChange, select, SelectProps, value, ...props } = this.props;
+    const {
+      children,
+      disabled,
+      multiple,
+      name,
+      onChange,
+      select,
+      SelectProps,
+      value,
+      ...props
+    } = this.props;
 
     return (
       <FormField {...props}>
         <Select
+          disabled={disabled}
           multiple={multiple}
           name={name}
           onChange={onChange}
