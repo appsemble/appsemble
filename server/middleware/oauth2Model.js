@@ -4,7 +4,14 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
 export default function oauth2Model({ db, grant, secret }) {
-  const { EmailAuthorization, OAuthToken, OAuthAuthorization, OAuthClient } = db.models;
+  const {
+    EmailAuthorization,
+    Organization,
+    OAuthToken,
+    OAuthAuthorization,
+    OAuthClient,
+    User,
+  } = db.models;
 
   return {
     async generateToken(client, user, scope, expiresIn = 10800) {
@@ -13,6 +20,7 @@ export default function oauth2Model({ db, grant, secret }) {
         {
           scopes: scope,
           client_id: client.id,
+          user,
         },
         secret,
         {
@@ -21,6 +29,17 @@ export default function oauth2Model({ db, grant, secret }) {
           expiresIn,
         },
       );
+    },
+
+    async getOrganizations(UserId) {
+      return Organization.findAll({
+        include: {
+          model: User,
+          through: { where: { UserId } },
+          required: true,
+          attributes: [],
+        },
+      }).map(organization => organization.id);
     },
 
     async generateAccessToken(client, user, scope) {
@@ -44,12 +63,14 @@ export default function oauth2Model({ db, grant, secret }) {
 
       try {
         const payload = jwt.verify(accessToken, secret);
+        const organizations = await this.getOrganizations(payload.sub);
+
         return {
           accessToken,
           accessTokenExpiresAt: new Date(payload.exp * 1000),
           scope: payload.scopes,
           client: { id: payload.client_id },
-          user: { id: payload.sub },
+          user: { id: payload.sub, organizations },
         };
       } catch (err) {
         return null;
@@ -65,11 +86,13 @@ export default function oauth2Model({ db, grant, secret }) {
 
       try {
         const dec = jwt.verify(refreshToken, secret);
+        const organizations = await this.getOrganizations(dec.sub);
+
         return {
           refreshToken,
           scope: dec.scopes,
           client: { id: dec.client_id },
-          user: { id: dec.sub },
+          user: { id: dec.sub, organizations },
         };
       } catch (err) {
         return null;
@@ -89,10 +112,12 @@ export default function oauth2Model({ db, grant, secret }) {
       const expiresAt = new Date();
       expiresAt.setTime(expiresAt.getTime() + 3 * 60 * 60 * 1000); // The duration of the generated JWT.
 
+      const organizations = await this.getOrganizations(token.UserId);
+
       return {
         code: authorizationCode,
         expiresAt,
-        user: { id: token.UserId },
+        user: { id: token.UserId, organizations },
         client: { id: 'appsemble-editor' }, // XXX: Figure out how to determine the client ID properly.
         scope: 'apps:read apps:write',
       };
@@ -126,13 +151,21 @@ export default function oauth2Model({ db, grant, secret }) {
     },
 
     async getUser(username, password) {
-      const user = await EmailAuthorization.findOne({ where: { email: username } }, { raw: true });
+      const email = await EmailAuthorization.findOne({ where: { email: username } });
 
-      if (!(user || bcrypt.compareSync(password, user.password))) {
+      if (!(email || bcrypt.compareSync(password, email.password))) {
         return false;
       }
 
-      return { id: user.UserId, verified: user.verified, email: user.email, name: user.name };
+      const organizations = await this.getOrganizations(email.UserId);
+
+      return {
+        id: email.UserId,
+        verified: email.verified,
+        email: email.email,
+        name: email.name,
+        organizations,
+      };
     },
 
     async saveToken(token, client, user) {

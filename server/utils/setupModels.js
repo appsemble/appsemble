@@ -55,6 +55,7 @@ function associateModels(models) {
 
   Organization.hasOne(Organization);
   Organization.hasMany(App);
+  Organization.belongsToMany(User, { through: 'UserOrganization' });
 
   Snapshot.belongsTo(App, { foreignKey: { allowNull: false } });
 
