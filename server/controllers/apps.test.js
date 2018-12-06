@@ -11,6 +11,7 @@ describe('app controller', () => {
   let BlockDefinition;
   let BlockVersion;
   let Organization;
+  let User;
   let db;
   let server;
   let token;
@@ -20,7 +21,7 @@ describe('app controller', () => {
     db = await testSchema('apps');
 
     server = await createServer({ db });
-    ({ App, BlockDefinition, BlockVersion, Organization } = db.models);
+    ({ App, BlockDefinition, BlockVersion, Organization, User } = db.models);
   });
 
   beforeEach(async () => {
@@ -84,6 +85,44 @@ describe('app controller', () => {
     const { body } = await request(server).get(`/api/apps/${appA.id}`);
 
     expect(body).toStrictEqual({ id: appA.id, path: 'test-app', ...appA.definition });
+  });
+
+  it('should be able to fetch filtered apps', async () => {
+    const appA = await App.create(
+      {
+        path: 'test-app',
+        definition: { name: 'Test App', defaultPage: 'Test Page' },
+        OrganizationId: organizationId,
+      },
+      { raw: true },
+    );
+
+    const organizationB = await Organization.create({ name: 'Test Organization B' });
+    const appB = await App.create(
+      {
+        path: 'test-app-b',
+        definition: { name: 'Test App B', defaultPage: 'Test Page' },
+        OrganizationId: organizationB.id,
+      },
+      { raw: true },
+    );
+
+    const requestA = await request(server)
+      .get('/api/apps/me')
+      .set('Authorization', token);
+
+    const users = await User.findAll();
+    await users[0].addOrganization(organizationB);
+
+    const requestB = await request(server)
+      .get('/api/apps/me')
+      .set('Authorization', token);
+
+    expect(requestA.body).toStrictEqual([{ ...appA.definition, id: appA.id, path: appA.path }]);
+    expect(requestB.body).toStrictEqual([
+      { ...appA.definition, id: appA.id, path: appA.path },
+      { ...appB.definition, id: appB.id, path: appB.path },
+    ]);
   });
 
   it('should create an app', async () => {
