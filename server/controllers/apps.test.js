@@ -1,3 +1,4 @@
+import jwt from 'jsonwebtoken';
 import request from 'supertest';
 
 import createServer from '../utils/createServer';
@@ -12,6 +13,7 @@ describe('app controller', () => {
   let db;
   let server;
   let token;
+  let organizationId;
 
   beforeAll(async () => {
     db = await testSchema('apps');
@@ -23,6 +25,8 @@ describe('app controller', () => {
   beforeEach(async () => {
     await truncate(db);
     token = await testToken(request, server, db, 'apps:write apps:read');
+    organizationId = jwt.decode(token.substring(7)).user.organizations[0].id;
+
     await BlockDefinition.create({
       id: '@appsemble/test',
     });
@@ -102,7 +106,8 @@ describe('app controller', () => {
             },
           ],
         }),
-      );
+      )
+      .field('organizationId', organizationId);
 
     expect(created).toStrictEqual({
       id: expect.any(Number),
@@ -137,6 +142,67 @@ describe('app controller', () => {
     expect(response.status).toBe(400);
   });
 
+  it('should not allow apps to be created without an organizationId', async () => {
+    const { body } = await request(server)
+      .post('/api/apps')
+      .set('Authorization', token)
+      .field(
+        'app',
+        JSON.stringify({
+          name: 'Test App',
+          defaultPage: 'Test Page',
+          pages: [
+            {
+              name: 'Test page',
+              blocks: [
+                {
+                  type: 'test',
+                  version: '0.0.1',
+                },
+              ],
+            },
+          ],
+        }),
+      );
+
+    expect(body).toStrictEqual({
+      error: 'Bad Request',
+      message: 'organizationId is required.',
+      statusCode: 400,
+    });
+  });
+
+  it('should not allow apps to be created for organizations the user does not belong to', async () => {
+    const { body } = await request(server)
+      .post('/api/apps')
+      .set('Authorization', token)
+      .field(
+        'app',
+        JSON.stringify({
+          name: 'Test App',
+          defaultPage: 'Test Page',
+          pages: [
+            {
+              name: 'Test page',
+              blocks: [
+                {
+                  type: 'test',
+                  version: '0.0.1',
+                },
+              ],
+            },
+          ],
+        }),
+      )
+      .field('organizationId', organizationId + 1);
+
+    expect(body).toStrictEqual({
+      error: 'Forbidden',
+      message: 'User does not belong in this organization.',
+      statusCode: 403,
+    });
+  });
+
   it('should not allow to create an app using non-existent blocks', async () => {
     const { body } = await request(server)
       .post('/api/apps')
@@ -158,7 +224,8 @@ describe('app controller', () => {
             },
           ],
         }),
-      );
+      )
+      .field('organizationId', organizationId);
 
     expect(body).toStrictEqual({
       data: {
@@ -191,7 +258,8 @@ describe('app controller', () => {
             },
           ],
         }),
-      );
+      )
+      .field('organizationId', organizationId);
 
     expect(body).toStrictEqual({
       data: {
@@ -220,7 +288,8 @@ describe('app controller', () => {
             },
           ],
         }),
-      );
+      )
+      .field('organizationId', organizationId);
     const response = await request(server)
       .post('/api/apps')
       .set('Authorization', token)
@@ -237,7 +306,8 @@ describe('app controller', () => {
             },
           ],
         }),
-      );
+      )
+      .field('organizationId', organizationId);
 
     expect(response.status).toBe(409);
     expect(response.body).toStrictEqual({
@@ -264,6 +334,7 @@ describe('app controller', () => {
           ],
         }),
       )
+      .field('organizationId', organizationId)
       .attach('style', Buffer.from('body { color: blue; }'), {
         contentType: 'text/css',
         filename: 'test.css',
@@ -680,7 +751,8 @@ describe('app controller', () => {
             },
           ],
         }),
-      );
+      )
+      .field('organizationId', organizationId);
 
     expect(body).toStrictEqual({
       data: {
