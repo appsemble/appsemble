@@ -39,7 +39,7 @@ export default function oauth2Model({ db, grant, secret }) {
           required: true,
           attributes: [],
         },
-      }).map(organization => organization.id);
+      }).map(organization => ({ id: organization.id, name: organization.name }));
     },
 
     async generateAccessToken(client, user, scope) {

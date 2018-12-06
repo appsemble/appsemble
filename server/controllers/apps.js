@@ -77,14 +77,20 @@ async function parseAppMultipart(ctx) {
     });
 
     busboy.on('field', (fieldname, content) => {
-      if (fieldname !== 'app') {
+      if (fieldname !== 'app' && fieldname !== 'organizationId') {
         throw new Error(`Unexpected field: ${fieldname}`);
       }
 
-      try {
-        res.definition = JSON.parse(content);
-      } catch (error) {
-        onError(error);
+      if (fieldname === 'app') {
+        try {
+          res.definition = JSON.parse(content);
+        } catch (error) {
+          onError(error);
+        }
+      }
+
+      if (fieldname === 'organizationId') {
+        res.OrganizationId = Number(content);
       }
     });
 
@@ -135,6 +141,7 @@ function handleAppValidationError(error, app) {
 export async function create(ctx) {
   const { db } = ctx;
   const { App } = db.models;
+  const { user } = ctx.state.oauth.token;
 
   let result;
 
@@ -143,6 +150,14 @@ export async function create(ctx) {
 
     if (!result.definition) {
       throw Boom.badRequest('App recipe is required.');
+    }
+
+    if (!result.OrganizationId) {
+      throw Boom.badRequest('organizationId is required.');
+    }
+
+    if (!user.organizations.some(organization => organization.id === result.OrganizationId)) {
+      throw Boom.forbidden('User does not belong in this organization.');
     }
 
     if (result.style) {

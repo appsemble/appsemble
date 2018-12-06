@@ -13,6 +13,10 @@
         type: string
         description: The app to create.
         required: false # oai-router does not properly validate this for multipart
+      - name: organizationId
+        in: formData
+        type: number
+        required: false
       - name: style
         in: formData
         type: file
