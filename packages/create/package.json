@@ -1,7 +1,9 @@
 {
   "name": "@appsemble/create",
   "version": "1.0.0",
-  "bin": "bin/create-appsemble",
+  "bin": {
+    "create-appsemble": "./bin/create-appsemble"
+  },
   "dependencies": {
     "@appsemble/create": "^1.0.0",
     "esm": "^3.0.84",

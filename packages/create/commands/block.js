@@ -15,7 +15,7 @@ export async function handler() {
       name: 'type',
       choices: ['vanilla'],
       default: 'vanilla',
-      message: 'Should the project bootstrapped block contain React boilerplate?',
+      message: 'What kind of block project should be bootstrapped?',
     },
   ]);
   const outputPath = path.join(process.cwd(), 'blocks', answers.name);

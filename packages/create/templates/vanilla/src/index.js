@@ -1,9 +1,10 @@
-import { bootstrap } from '@appsemble/sdk';
+import { attach } from '@appsemble/sdk';
 
-bootstrap(({ actions }) => {
+attach(({ actions }) => {
   const button = document.createElement('button');
-  button.type = button;
-  button.classList.add('fas', 'fa-plus');
+  button.type = 'button';
+  button.innerText = 'Click me!';
+  button.classList.add('button');
   button.addEventListener(
     'click',
     event => {
