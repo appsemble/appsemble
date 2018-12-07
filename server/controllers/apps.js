@@ -77,14 +77,20 @@ async function parseAppMultipart(ctx) {
     });
 
     busboy.on('field', (fieldname, content) => {
-      if (fieldname !== 'app') {
+      if (fieldname !== 'app' && fieldname !== 'organizationId') {
         throw new Error(`Unexpected field: ${fieldname}`);
       }
 
-      try {
-        res.definition = JSON.parse(content);
-      } catch (error) {
-        onError(error);
+      if (fieldname === 'app') {
+        try {
+          res.definition = JSON.parse(content);
+        } catch (error) {
+          onError(error);
+        }
+      }
+
+      if (fieldname === 'organizationId') {
+        res.OrganizationId = Number(content);
       }
     });
 
@@ -135,6 +141,7 @@ function handleAppValidationError(error, app) {
 export async function create(ctx) {
   const { db } = ctx;
   const { App } = db.models;
+  const { user } = ctx.state.oauth.token;
 
   let result;
 
@@ -143,6 +150,14 @@ export async function create(ctx) {
 
     if (!result.definition) {
       throw Boom.badRequest('App recipe is required.');
+    }
+
+    if (!result.OrganizationId) {
+      throw Boom.badRequest('organizationId is required.');
+    }
+
+    if (!user.organizations.some(organization => organization.id === result.OrganizationId)) {
+      throw Boom.forbidden('User does not belong in this organization.');
     }
 
     if (result.style) {
@@ -188,9 +203,25 @@ export async function query(ctx) {
   ctx.body = apps.map(app => ({ ...app.definition, id: app.id, path: app.path }));
 }
 
+export async function queryMyApps(ctx) {
+  const { App } = ctx.db.models;
+  const {
+    user: { organizations },
+  } = ctx.state.oauth.token;
+
+  const apps = await App.findAll({
+    where: { OrganizationId: { [Op.in]: organizations.map(o => o.id) } },
+  });
+
+  ctx.body = apps.map(app => ({ ...app.definition, id: app.id, path: app.path }));
+}
+
 export async function update(ctx) {
   const { db } = ctx;
   const { id } = ctx.params;
+  const {
+    user: { organizations },
+  } = ctx.state.oauth.token;
   const { App } = db.models;
 
   let result;
@@ -215,12 +246,17 @@ export async function update(ctx) {
     await checkBlocks(result.definition, db);
 
     result.path = result.definition.path || normalize(result.definition.name);
+    const app = await App.findOne({ where: { id } });
 
-    const [affectedRows] = await App.update(result, { where: { id } });
-
-    if (affectedRows === 0) {
+    if (!app) {
       throw Boom.notFound('App not found');
     }
+
+    if (!organizations.some(organization => organization.id === app.OrganizationId)) {
+      throw Boom.forbidden("User does not belong in this App's organization.");
+    }
+
+    await app.update(result, { where: { id } });
 
     ctx.body = { ...result.definition, id, path: result.path };
   } catch (error) {
@@ -248,26 +284,43 @@ export async function getAppIcon(ctx) {
 export async function setAppIcon(ctx) {
   const { id } = ctx.params;
   const { App } = ctx.db.models;
+  const {
+    user: { organizations },
+  } = ctx.state.oauth.token;
   const icon = await getRawBody(ctx.req);
 
-  const [affectedRows] = await App.update({ icon }, { where: { id } });
+  const app = await App.findOne({ where: { id } });
 
-  if (affectedRows === 0) {
+  if (!app) {
     throw Boom.notFound('App not found');
   }
 
+  if (!organizations.some(organization => organization.id === app.OrganizationId)) {
+    throw Boom.forbidden("User does not belong in this App's organization.");
+  }
+
+  await app.update({ icon });
   ctx.status = 204;
 }
 
 export async function deleteAppIcon(ctx) {
   const { id } = ctx.params;
   const { App } = ctx.db.models;
+  const {
+    user: { organizations },
+  } = ctx.state.oauth.token;
 
-  const [affectedRows] = await App.update({ icon: null }, { where: { id } });
+  const app = await App.findOne({ where: { id } });
 
-  if (affectedRows === 0) {
+  if (!app) {
     throw Boom.notFound('App not found');
   }
+
+  if (!organizations.some(organization => organization.id === app.OrganizationId)) {
+    throw Boom.forbidden("User does not belong in this App's organization.");
+  }
+
+  await app.update({ icon: null });
 
   ctx.status = 204;
 }

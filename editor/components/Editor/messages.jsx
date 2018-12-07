@@ -8,6 +8,7 @@ export default defineMessages({
   error: 'Something went wrong trying to load this app',
   errorUpdate: 'Something went wrong trying to update the app recipe',
   errorUpdateIcon: 'Something went wrong trying to update the app icon',
+  forbidden: 'User is not allowed to update this app',
   invalidYaml: 'Invalid YAML',
   invalidStyle: 'Invalid CSS',
   updateSuccess: 'Successfully updated app recipe',

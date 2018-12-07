@@ -36,5 +36,7 @@ export async function handler(argv) {
     verified: true,
   });
   await email.createUser();
+  const user = await email.getUser();
+  await user.createOrganization({ name: 'Test User Organization' });
   await db.close();
 }

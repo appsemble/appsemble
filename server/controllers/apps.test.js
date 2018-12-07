@@ -1,3 +1,4 @@
+import jwt from 'jsonwebtoken';
 import request from 'supertest';
 
 import createServer from '../utils/createServer';
@@ -9,20 +10,25 @@ describe('app controller', () => {
   let App;
   let BlockDefinition;
   let BlockVersion;
+  let Organization;
+  let User;
   let db;
   let server;
   let token;
+  let organizationId;
 
   beforeAll(async () => {
     db = await testSchema('apps');
 
     server = await createServer({ db });
-    ({ App, BlockDefinition, BlockVersion } = db.models);
+    ({ App, BlockDefinition, BlockVersion, Organization, User } = db.models);
   });
 
   beforeEach(async () => {
     await truncate(db);
     token = await testToken(request, server, db, 'apps:write apps:read');
+    organizationId = jwt.decode(token.substring(7)).user.organizations[0].id;
+
     await BlockDefinition.create({
       id: '@appsemble/test',
     });
@@ -81,6 +87,44 @@ describe('app controller', () => {
     expect(body).toStrictEqual({ id: appA.id, path: 'test-app', ...appA.definition });
   });
 
+  it('should be able to fetch filtered apps', async () => {
+    const appA = await App.create(
+      {
+        path: 'test-app',
+        definition: { name: 'Test App', defaultPage: 'Test Page' },
+        OrganizationId: organizationId,
+      },
+      { raw: true },
+    );
+
+    const organizationB = await Organization.create({ name: 'Test Organization B' });
+    const appB = await App.create(
+      {
+        path: 'test-app-b',
+        definition: { name: 'Test App B', defaultPage: 'Test Page' },
+        OrganizationId: organizationB.id,
+      },
+      { raw: true },
+    );
+
+    const requestA = await request(server)
+      .get('/api/apps/me')
+      .set('Authorization', token);
+
+    const users = await User.findAll();
+    await users[0].addOrganization(organizationB);
+
+    const requestB = await request(server)
+      .get('/api/apps/me')
+      .set('Authorization', token);
+
+    expect(requestA.body).toStrictEqual([{ ...appA.definition, id: appA.id, path: appA.path }]);
+    expect(requestB.body).toStrictEqual([
+      { ...appA.definition, id: appA.id, path: appA.path },
+      { ...appB.definition, id: appB.id, path: appB.path },
+    ]);
+  });
+
   it('should create an app', async () => {
     const { body: created } = await request(server)
       .post('/api/apps')
@@ -102,7 +146,8 @@ describe('app controller', () => {
             },
           ],
         }),
-      );
+      )
+      .field('organizationId', organizationId);
 
     expect(created).toStrictEqual({
       id: expect.any(Number),
@@ -137,6 +182,67 @@ describe('app controller', () => {
     expect(response.status).toBe(400);
   });
 
+  it('should not allow apps to be created without an organizationId', async () => {
+    const { body } = await request(server)
+      .post('/api/apps')
+      .set('Authorization', token)
+      .field(
+        'app',
+        JSON.stringify({
+          name: 'Test App',
+          defaultPage: 'Test Page',
+          pages: [
+            {
+              name: 'Test page',
+              blocks: [
+                {
+                  type: 'test',
+                  version: '0.0.1',
+                },
+              ],
+            },
+          ],
+        }),
+      );
+
+    expect(body).toStrictEqual({
+      error: 'Bad Request',
+      message: 'organizationId is required.',
+      statusCode: 400,
+    });
+  });
+
+  it('should not allow apps to be created for organizations the user does not belong to', async () => {
+    const { body } = await request(server)
+      .post('/api/apps')
+      .set('Authorization', token)
+      .field(
+        'app',
+        JSON.stringify({
+          name: 'Test App',
+          defaultPage: 'Test Page',
+          pages: [
+            {
+              name: 'Test page',
+              blocks: [
+                {
+                  type: 'test',
+                  version: '0.0.1',
+                },
+              ],
+            },
+          ],
+        }),
+      )
+      .field('organizationId', organizationId + 1);
+
+    expect(body).toStrictEqual({
+      error: 'Forbidden',
+      message: 'User does not belong in this organization.',
+      statusCode: 403,
+    });
+  });
+
   it('should not allow to create an app using non-existent blocks', async () => {
     const { body } = await request(server)
       .post('/api/apps')
@@ -158,7 +264,8 @@ describe('app controller', () => {
             },
           ],
         }),
-      );
+      )
+      .field('organizationId', organizationId);
 
     expect(body).toStrictEqual({
       data: {
@@ -191,7 +298,8 @@ describe('app controller', () => {
             },
           ],
         }),
-      );
+      )
+      .field('organizationId', organizationId);
 
     expect(body).toStrictEqual({
       data: {
@@ -220,7 +328,8 @@ describe('app controller', () => {
             },
           ],
         }),
-      );
+      )
+      .field('organizationId', organizationId);
     const response = await request(server)
       .post('/api/apps')
       .set('Authorization', token)
@@ -237,7 +346,8 @@ describe('app controller', () => {
             },
           ],
         }),
-      );
+      )
+      .field('organizationId', organizationId);
 
     expect(response.status).toBe(409);
     expect(response.body).toStrictEqual({
@@ -264,6 +374,7 @@ describe('app controller', () => {
           ],
         }),
       )
+      .field('organizationId', organizationId)
       .attach('style', Buffer.from('body { color: blue; }'), {
         contentType: 'text/css',
         filename: 'test.css',
@@ -405,7 +516,11 @@ describe('app controller', () => {
 
   it('should update an app', async () => {
     const appA = await App.create(
-      { path: 'test-app', definition: { name: 'Test App', defaultPage: 'Test Page' } },
+      {
+        path: 'test-app',
+        definition: { name: 'Test App', defaultPage: 'Test Page' },
+        OrganizationId: organizationId,
+      },
       { raw: true },
     );
     const response = await request(server)
@@ -437,6 +552,41 @@ describe('app controller', () => {
           blocks: [{ type: 'test', version: '0.0.0' }],
         },
       ],
+    });
+  });
+
+  it('should not update an app of another organization', async () => {
+    const newOrganization = await Organization.create({ name: 'Test Organization 2' });
+    const appA = await App.create(
+      {
+        path: 'test-app',
+        definition: { name: 'Test App', defaultPage: 'Test Page' },
+        OrganizationId: newOrganization.id,
+      },
+      { raw: true },
+    );
+
+    const response = await request(server)
+      .put(`/api/apps/${appA.id}`)
+      .set('Authorization', token)
+      .field(
+        'app',
+        JSON.stringify({
+          name: 'Foobar',
+          defaultPage: appA.definition.defaultPage,
+          pages: [
+            {
+              name: 'Test page',
+              blocks: [{ type: 'test', version: '0.0.0' }],
+            },
+          ],
+        }),
+      );
+
+    expect(response.body).toStrictEqual({
+      statusCode: 403,
+      error: 'Forbidden',
+      message: "User does not belong in this App's organization.",
     });
   });
 
@@ -481,11 +631,19 @@ describe('app controller', () => {
 
   it('should prevent path conflicts when updating an app', async () => {
     await App.create(
-      { path: 'foo', definition: { name: 'Test App', defaultPage: 'Test Page' } },
+      {
+        path: 'foo',
+        definition: { name: 'Test App', defaultPage: 'Test Page' },
+        OrganizationId: organizationId,
+      },
       { raw: true },
     );
     const appA = await App.create(
-      { path: 'bar', definition: { name: 'Test App', defaultPage: 'Test Page' } },
+      {
+        path: 'bar',
+        definition: { name: 'Test App', defaultPage: 'Test Page' },
+        OrganizationId: organizationId,
+      },
       { raw: true },
     );
     const response = await request(server)
@@ -511,7 +669,11 @@ describe('app controller', () => {
 
   it('should validate and update css when updating an app', async () => {
     const app = await App.create(
-      { path: 'bar', definition: { name: 'Test App', defaultPage: 'Test Page' } },
+      {
+        path: 'bar',
+        definition: { name: 'Test App', defaultPage: 'Test Page' },
+        OrganizationId: organizationId,
+      },
       { raw: true },
     );
 
@@ -680,7 +842,8 @@ describe('app controller', () => {
             },
           ],
         }),
-      );
+      )
+      .field('organizationId', organizationId);
 
     expect(body).toStrictEqual({
       data: {

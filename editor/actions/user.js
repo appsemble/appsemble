@@ -51,7 +51,12 @@ async function doLogout(dispatch, getState, db = getState().db) {
 
 function setupAuth(accessToken, refreshToken, url, db, dispatch) {
   const payload = jwtDecode(accessToken);
-  const { exp, scopes, sub } = payload;
+  const {
+    exp,
+    scopes,
+    sub,
+    user: { organizations },
+  } = payload;
   if (exp) {
     const timeout = exp * 1e3 - REFRESH_BUFFER - new Date().getTime();
     if (refreshToken) {
@@ -65,6 +70,7 @@ function setupAuth(accessToken, refreshToken, url, db, dispatch) {
   return {
     id: sub,
     scope: scopes,
+    organizations,
   };
 }
 

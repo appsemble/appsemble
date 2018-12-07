@@ -17,4 +17,5 @@ export default defineMessages({
   } found: {blocks}
   `,
   template: 'Template',
+  organization: 'Organization',
 });
