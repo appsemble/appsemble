@@ -10,13 +10,19 @@
   "scripts": {
     "block": "webpack --config config/webpack/block.js --mode production --env",
     "build": "webpack --config config/webpack/core.js --mode production",
-    "start": "node -r esm server start",
-    "initialize": "node -r esm server initialize",
+    "start": "appsemble start",
+    "initialize": "node -r esm server initialize --database-url mysql://root:password@localhost:3306/appsemble",
     "eslint": "eslint --format gitlab --max-warnings 0 --ext js,jsx,md .",
     "prettier": "prettier --list-different '{**/,}*.{json,md,yaml,yml}'",
     "stylelint": "stylelint .",
     "stylelint:rd": "stylelint . --report-needless-disables",
     "test": "jest"
+  },
+  "appsembleServer": {
+    "webpackConfig": "config/webpack/block",
+    "database-name": "appsemble",
+    "database-user": "root",
+    "database-password": "password"
   },
   "husky": {
     "hooks": {

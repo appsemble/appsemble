@@ -17,17 +17,14 @@ export default function database(yargs) {
     })
     .option('database-name', {
       desc: 'The name of the database to connect to.',
-      default: production ? undefined : 'appsemble',
       implies: ['database-user', 'database-password'],
     })
     .option('database-user', {
       desc: 'The user to use to login to the database.',
-      default: production ? undefined : 'root',
       implies: ['database-name', 'database-password'],
     })
     .option('database-password', {
       desc: 'The password to use to login to the database.',
-      default: production ? undefined : 'password',
       implies: ['database-name', 'database-user'],
     })
     .option('database-url', {

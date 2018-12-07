@@ -23,6 +23,7 @@ export default async function main(argv) {
       default: 'http://localhost:9999',
       // process.env.NODE_ENV === 'development' ? 'http://localhost:9999' : 'https://appsemble.com',
     })
+    .pkgConf('appsembleServer')
     .middleware([initLogging, initAxios])
     .commandDir(path.join(__dirname, 'commands'))
     .demandCommand(1)
