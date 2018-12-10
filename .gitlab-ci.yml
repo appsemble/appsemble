@@ -45,18 +45,27 @@ eslint:
     reports:
       codequality: gl-codequality.json
 
+docs:
+  script:
+    - yarn global add gitbook-cli
+    - gitbook install
+    - gitbook build . public
+  artifacts:
+    paths:
+      - public/
+
 pages:
   stage: build
-  image: node:10-alpine
+  image: busybox
+  variables:
+    GIT_STRATEGY: none
   dependencies:
     - test
+    - docs
   # only:
   #   - master
   script:
     - mv coverage/lcov-report public/coverage
-    - npm install gitbook-cli -g
-    - gitbook install
-    - gitbook build . public
   artifacts:
     paths:
       - public/
