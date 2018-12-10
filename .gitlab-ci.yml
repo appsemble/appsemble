@@ -48,14 +48,12 @@ eslint:
 pages:
   stage: build
   image: node:10-alpine
-  variables:
-    GIT_STRATEGY: none
   dependencies:
     - test
   # only:
   #   - master
   script:
-    - mv coverage/lcov-report public
+    - mv coverage/lcov-report public/coverage
     - npm install gitbook-cli -g
     - gitbook install
     - gitbook build . public
