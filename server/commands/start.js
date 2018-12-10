@@ -11,21 +11,14 @@ import createServer from '../utils/createServer';
 import setupModels from '../utils/setupModels';
 import databaseBuilder from './builder/database';
 
+export const PORT = 9999;
 export const command = 'start';
 export const description = 'Start the Appsemble server';
 
 export function builder(yargs) {
-  const production = process.env.NODE_ENV === 'production';
   return databaseBuilder(yargs)
     .option('sentry-dsn', {
       desc: 'The Sentry DSN to use for error reporting. See https://sentry.io for details.',
-      hidden: !production,
-    })
-    .option('port', {
-      desc: 'The HTTP server port to use. (Development only)',
-      type: 'number',
-      default: 9999,
-      hidden: production,
     })
     .option('smtp-host', {
       desc: 'The host of the SMTP server to connect to.',
@@ -78,7 +71,7 @@ export function builder(yargs) {
     });
 }
 
-export async function handler(argv) {
+export async function handler(argv, webpackConfigs) {
   const db = await setupModels({
     host: argv.databaseHost,
     dialect: argv.databaseDialect,
@@ -102,7 +95,7 @@ export async function handler(argv) {
 
   const app = new Koa();
   app.use(logger());
-  await configureStatic(app);
+  await configureStatic(app, webpackConfigs);
   if (argv.sentryDsn) {
     Sentry.init({ dsn: argv.sentryDsn });
     app.use(async (ctx, next) => {
@@ -156,7 +149,7 @@ export async function handler(argv) {
   await createServer({ app, db, grantConfig, smtp, secret: argv.oauthSecret });
   const { info } = yaml.safeLoad(fs.readFileSync(path.resolve(__dirname, '../api/api.yaml')));
 
-  app.listen(argv.port, '0.0.0.0', () => {
+  app.listen(argv.port || PORT, '0.0.0.0', () => {
     // eslint-disable-next-line no-console
     console.log(info.description);
   });

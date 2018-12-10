@@ -34,7 +34,7 @@ docker-compose up -d
 The database can be initialized using the following command.
 
 ```sh
-yarn start initialize
+yarn initialize
 ```
 
 The project can be served using the following command.

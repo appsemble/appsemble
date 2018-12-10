@@ -3,10 +3,9 @@ import path from 'path';
 import yargs from 'yargs';
 
 import handleError from './lib/handleError';
-import initAxios from './lib/initAxios';
 import initLogging from './lib/initLogging';
 
-export default async function main(argv) {
+export default async argv => {
   yargs
     .option('verbose', {
       alias: 'v',
@@ -18,17 +17,11 @@ export default async function main(argv) {
       describe: 'Decrease verbosity',
       type: 'count',
     })
-    .option('remote', {
-      description: 'The Appsemble host that should be used.',
-      default: 'http://localhost:9999',
-      // process.env.NODE_ENV === 'development' ? 'http://localhost:9999' : 'https://appsemble.com',
-    })
-    .pkgConf('appsembleServer')
-    .middleware([initLogging, initAxios])
+    .middleware([initLogging])
     .commandDir(path.join(__dirname, 'commands'))
     .demandCommand(1)
     .fail(handleError)
     .help()
     .completion()
     .parse(argv);
-}
+};
