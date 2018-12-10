@@ -50,6 +50,9 @@ docs:
     - yarn global add gitbook-cli
     - gitbook install
     - gitbook build . public
+    - yarn global add surge
+    - surge --domain appsemble.surge.sh --project ./public
+    # publish to surge, replace with GitLab Pages when https://gitlab.com/gitlab-org/gitlab-ce/issues/30548 is resolved.
   artifacts:
     paths:
       - public/
