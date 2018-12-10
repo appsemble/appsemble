@@ -52,9 +52,14 @@ pages:
     GIT_STRATEGY: none
   dependencies:
     - test
-  only:
-    - master
-  script: mv coverage/lcov-report public
+  # only:
+  #   - master
+  script:
+    - mv coverage/lcov-report public
+    - npm install gitbook-cli -g
+    - gitbook fetch latest
+    - gitbook install
+    - gitbook build . public
   artifacts:
     paths:
       - public/
