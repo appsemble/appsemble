@@ -53,6 +53,8 @@ docs:
     - yarn global add surge
     - surge --domain appsemble.surge.sh --project ./public
     # publish to surge, replace with GitLab Pages when https://gitlab.com/gitlab-org/gitlab-ce/issues/30548 is resolved.
+  only:
+    - master
   artifacts:
     paths:
       - public/
@@ -65,8 +67,8 @@ pages:
   dependencies:
     - test
     - docs
-  # only:
-  #   - master
+  only:
+    - master
   script:
     - mv coverage/lcov-report public/coverage
   artifacts:
