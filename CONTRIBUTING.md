@@ -136,6 +136,10 @@ Simple blocks are written in vanilla JavaScript. However, if a block gets more c
 used. In this case the same directory structure is used as for the top level _[app/](#app)_
 directory.
 
+### docs
+
+The _docs_ directory contains documentation that will be rendered on [dev.appsemble.io].
+
 ### editor
 
 This folder holds the source code for the app editor. Since this is another React app, it follows
@@ -240,6 +244,7 @@ changes.
 [angular commit message convention]:
   https://github.com/angular/angular/blob/master/CONTRIBUTING.md#commit
 [css modules]: https://github.com/css-modules/css-modules
+[dev.appsemble.io]: https://dev.appsemble.io
 [eslint]: https://eslint.org
 [keep a changelog]: https://keepachangelog.com/en/1.0.0
 [lodash]: https://www.npmjs.com/package/lodash-es

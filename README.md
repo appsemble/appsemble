@@ -62,6 +62,32 @@ production mode.
 NODE_ENV=production yarn start
 ```
 
+### Blocks
+
+#### Building Blocks
+
+The current blocks can be built using the following commands.
+
+```sh
+yarn block action-button
+yarn block detail-viewer
+yarn block form
+yarn block map
+yarn block splash
+```
+
+#### Publishing Blocks
+
+The blocks can be published using the Appsemble CLI.
+
+```sh
+yarn appsemble register blocks/action-button
+yarn appsemble register blocks/detail-viewer
+yarn appsemble register blocks/form
+yarn appsemble register blocks/map
+yarn appsemble register blocks/splash
+```
+
 ### Tests
 
 Tests can be run using the following command.
