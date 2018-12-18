@@ -38,7 +38,7 @@ export default class FileRenderer extends React.Component {
     if (value instanceof Blob) {
       src = URL.createObjectURL(value);
     } else if (block?.parameters?.fileBase) {
-      src = `${new URL(value, block.parameters.fileBase)}`;
+      src = `${new URL(`${block.parameters.fileBase}/${value}`)}`;
     } else {
       src = value;
     }
