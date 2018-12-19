@@ -52,14 +52,12 @@ const deepRename = (object, keys) => {
 
 export async function getAll(ctx) {
   const query = generateQuery(ctx);
-  console.log(query);
   const { appId, resourceType } = ctx.params;
   const { App } = ctx.db.models;
 
   const app = await App.findByPk(appId);
   const keys = Object.keys(verifyResourceDefinition(app, resourceType).properties);
   const renamedQuery = deepRename(query, keys);
-  console.log(renamedQuery);
 
   try {
     const resources = await app.getResources({
