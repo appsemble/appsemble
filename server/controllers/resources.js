@@ -30,6 +30,11 @@ function generateQuery(ctx) {
   return {};
 }
 
+/**
+ * Iterates through all keys in an object and preprends matched keys with ´data.´
+ * @param {Object} object Object to iterate through
+ * @param {string[]} keys Keys to match with
+ */
 const deepRename = (object, keys) => {
   if (!object) {
     return {};
@@ -57,7 +62,7 @@ export async function getAll(ctx) {
 
   const app = await App.findByPk(appId);
   const keys = Object.keys(verifyResourceDefinition(app, resourceType).properties);
-  const renamedQuery = deepRename(query, keys);
+  const renamedQuery = deepRename(query, keys); // the data is stored in the ´data´ column as json
 
   try {
     const resources = await app.getResources({
