@@ -7116,7 +7116,7 @@ lodash.upperfirst@4.3.1:
   resolved "https://registry.yarnpkg.com/lodash.upperfirst/-/lodash.upperfirst-4.3.1.tgz#1365edf431480481ef0d1c68957a5ed99d49f7ce"
   integrity sha1-E2Xt9DFIBIHvDRxolXpe2Z1J984=
 
-lodash@^4.13.1, lodash@^4.15.0, lodash@^4.17.1, lodash@^4.17.10, lodash@^4.17.11, lodash@^4.17.4, lodash@^4.17.5:
+lodash@^4.13.1, lodash@^4.15.0, lodash@^4.17.1, lodash@^4.17.10, lodash@^4.17.11, lodash@^4.17.4, lodash@^4.17.5, lodash@~4.17.11:
   version "4.17.11"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.11.tgz#b39ea6229ef607ecd89e2c8df12536891cac9b8d"
   integrity sha512-cQKh8igo5QUhZ7lg38DYWAxMvjSAKG0A8wGSVimP07SIUEK2UO+arSRKbRZWtelMtN5V0Hkwh5ryOto/SshYIg==
@@ -8112,6 +8112,16 @@ object.values@^1.0.4:
     es-abstract "^1.6.1"
     function-bind "^1.1.0"
     has "^1.0.1"
+
+odata-parser@^1.4.1:
+  version "1.4.1"
+  resolved "https://registry.yarnpkg.com/odata-parser/-/odata-parser-1.4.1.tgz#a2224bc749e76a6205bd47f47acd50eb1e71ed99"
+  integrity sha1-oiJLx0nnamIFvUf0es1Q6x5x7Zk=
+
+odata-sequelize@^1.0.6:
+  version "1.0.6"
+  resolved "https://registry.yarnpkg.com/odata-sequelize/-/odata-sequelize-1.0.6.tgz#879581355510dbf1096b03a1d487cec761a4377e"
+  integrity sha512-erS2bP6bnrmV6ZBoyt7PzMWuZ3uU+TH7S2xzAEhz+i7YdreRcQ/AzEiHjlT+IDarEaFrg+qcYBmeeQWVn3n3yw==
 
 on-finished@^2.3.0:
   version "2.3.0"
