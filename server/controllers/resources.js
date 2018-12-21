@@ -47,7 +47,7 @@ const deepRename = (object, keys) => {
       delete obj[key];
     }
 
-    if (!!object[key] && (object[key] instanceof Object || Array.isArray(object[key]))) {
+    if (!!obj[key] && (obj[key] instanceof Object || Array.isArray(obj[key]))) {
       obj[key] = deepRename(obj[key], keys);
     }
   });
