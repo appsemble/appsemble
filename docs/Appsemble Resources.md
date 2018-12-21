@@ -102,3 +102,11 @@ The following OData syntaxes are supported:
 - [x] filter
 - [x] skip
 - [ ] expand
+
+## Assets
+
+Some resources may also include files such as images or documents.  
+To support this, Appsemble provides the Asset API. The asset API accepts file uploads and returns
+the corresponding ID which can be referenced to within a resource.
+
+The Asset API can be found at `/assets/{id?}`.
