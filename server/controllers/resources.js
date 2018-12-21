@@ -40,9 +40,15 @@ const deepRename = (object, keys) => {
     return {};
   }
 
-  const obj = Array.isArray(object) ? [...object] : { ...object };
+  const isArray = Array.isArray(object);
+  const obj = isArray ? [...object] : { ...object };
+
   Object.entries(obj).forEach(([key, value]) => {
-    if (keys.some(k => k === key)) {
+    if (isArray) {
+      if (keys.some(k => k === value)) {
+        obj[key] = `data.${value}`;
+      }
+    } else if (keys.some(k => k === key)) {
       obj[`data.${key}`] = value;
       delete obj[key];
     }
