@@ -107,6 +107,21 @@ Multiple test databases are created at runtime.
 DATABASE_URL=mysql://root:password@localhost:3306 yarn test
 ```
 
+### Documentation
+
+The Appsemble documentation can be built using GitBook. The documentation can be previewed by
+running the following command.
+
+```sh
+yarn gitbook serve
+```
+
+The documentation can be compiled by running the following command.
+
+```sh
+yarn gitbook build . public
+```
+
 ### Building
 
 The resulting Docker image can be built using the Docker CLI.
