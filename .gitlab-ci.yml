@@ -46,12 +46,12 @@ eslint:
       codequality: gl-codequality.json
 
 pages:
+  only:
+    - master
   script:
     - yarn gitbook build . public
     - yarn surge --domain appsemble.surge.sh --project ./public
     # publish to surge, replace with GitLab Pages when https://gitlab.com/gitlab-org/gitlab-ce/issues/30548 is resolved.
-  only:
-    - master
   artifacts:
     paths:
       - public/
