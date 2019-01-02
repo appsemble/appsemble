@@ -45,32 +45,13 @@ eslint:
     reports:
       codequality: gl-codequality.json
 
-docs:
+pages:
   script:
-    - yarn global add gitbook-cli
-    - gitbook install
     - gitbook build . public
-    - yarn global add surge
     - surge --domain appsemble.surge.sh --project ./public
     # publish to surge, replace with GitLab Pages when https://gitlab.com/gitlab-org/gitlab-ce/issues/30548 is resolved.
   only:
     - master
-  artifacts:
-    paths:
-      - public/
-
-pages:
-  stage: build
-  image: busybox
-  variables:
-    GIT_STRATEGY: none
-  dependencies:
-    - test
-    - docs
-  only:
-    - master
-  script:
-    - mv coverage/lcov-report public/coverage
   artifacts:
     paths:
       - public/
