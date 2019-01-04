@@ -1,3 +1,4 @@
+import './index.css';
 import './amsterdam.css';
 import { bootstrap } from '@appsemble/react';
 
