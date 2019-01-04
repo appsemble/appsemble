@@ -40,7 +40,7 @@ Make sure the local Appsemble server is running, then run the following to publi
 block.
 
 ```sh
-yarn appsemble register blocks/test
+yarn appsemble block register blocks/test
 ```
 
 ## Testing the block
