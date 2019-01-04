@@ -12,7 +12,7 @@ import AppsembleError from './AppsembleError';
  * @param {string} message Unused.
  * @param {Error} error The error that was thrown.
  */
-export default function handleError(message, error) {
+export default function handleError(message, error = message) {
   if (typeof error === 'string') {
     logging.error(error);
     return;
