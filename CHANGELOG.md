@@ -19,6 +19,7 @@ All notable changes to this project will be documented in this file.
 
 - Server: API was renamed to server.
 - Server: The `--initialize-database` flag was changed to the `initialize` subcommand.
+- CLI: The `publish` and `register` commands are now subcommands of `block`.
 
 ## [0.2.0] - 2018-11-02
 
