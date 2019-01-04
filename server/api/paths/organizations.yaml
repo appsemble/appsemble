@@ -1,0 +1,88 @@
+/organizations/{id}/style/shared:
+  get:
+    tags: [organization]
+    description: Get the shared style for this organization.
+    x-oai-middleware:
+      - file: organizations
+        handler: getSharedStyle
+    parameters:
+      - name: id
+        in: path
+        description: The id of the organization.
+        required: true
+        type: integer
+    produces:
+      - text/css
+    responses:
+      200:
+        description: The shared stylesheet associated with this organization.
+      default:
+        $ref: '#/responses/default'
+  post:
+    tags: [organization]
+    description: Upload a shared stylesheet for this organization.
+    x-oai-middleware:
+      - file: organizations
+        handler: setSharedStyle
+    consumes:
+      - multipart/form-data
+    parameters:
+      - name: id
+        in: path
+        description: The id of the organization.
+        required: true
+        type: integer
+      - name: style
+        in: formData
+        description: The new organization shared stylesheet.
+        required: false # oai-router does not properly validate this for multipart
+        type: file
+    responses:
+      204:
+        description: The shared style has been updated succesfully.
+      default:
+        $ref: '#/responses/default'
+/organizations/{id}/style/core:
+  get:
+    tags: [organization]
+    description: Get the core style for this organization.
+    x-oai-middleware:
+      - file: organizations
+        handler: getCoreStyle
+    parameters:
+      - name: id
+        in: path
+        description: The id of the organization.
+        required: true
+        type: integer
+    produces:
+      - text/css
+    responses:
+      200:
+        description: The core stylesheet associated with this organization.
+      default:
+        $ref: '#/responses/default'
+  post:
+    tags: [organization]
+    description: Upload a core stylesheet for this organization.
+    x-oai-middleware:
+      - file: organizations
+        handler: setCoreStyle
+    consumes:
+      - multipart/form-data
+    parameters:
+      - name: id
+        in: path
+        description: The id of the organization.
+        required: true
+        type: integer
+      - name: style
+        in: formData
+        description: The new organization core stylesheet.
+        required: false # oai-router does not properly validate this for multipart
+        type: file
+    responses:
+      204:
+        description: The core style has been updated succesfully.
+      default:
+        $ref: '#/responses/default'
