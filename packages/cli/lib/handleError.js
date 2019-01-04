@@ -13,8 +13,6 @@ import AppsembleError from './AppsembleError';
  * @param {Error} error The error that was thrown.
  */
 export default function handleError(message, error) {
-  console.log(error);
-  console.log(message);
   if (typeof error === 'string') {
     logging.error(error);
     return;

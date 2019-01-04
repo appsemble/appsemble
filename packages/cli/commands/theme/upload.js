@@ -1,6 +1,8 @@
 import logging from 'winston';
 import FormData from 'form-data';
 import fs from 'fs-extra';
+import postcss from 'postcss';
+import postcssrc from 'postcss-load-config';
 
 import { post } from '../../lib/request';
 
@@ -28,9 +30,11 @@ export function builder(yargs) {
 export async function handler({ path, organization, type }) {
   logging.info(`Upload ${type} stylesheet for organization ${organization}`);
 
-  const data = await fs.readFile(path);
+  const data = await fs.readFile(path, 'utf8');
+  const postcssConfig = await postcssrc();
+  const { css } = await postcss(postcssConfig).process(data, { from: null, to: null });
   const formData = new FormData();
-  formData.append('style', data, 'style.css');
+  formData.append('style', Buffer.from(css), 'style.css');
 
   await post(`/api/organizations/${organization}/style/${type}`, formData);
   logging.info(`Upload of ${type} stylesheet successful! 🎉`);
