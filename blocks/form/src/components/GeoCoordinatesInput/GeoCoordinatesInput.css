@@ -26,6 +26,7 @@
   background-image: url(./central-picker.svg);
   background-repeat: no-repeat;
   background-size: contain;
+  font-size: 7vw;
   height: 64px;
   pointer-events: none;
   width: 64px;
