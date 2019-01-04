@@ -34,9 +34,6 @@
 }
 
 .currentlocation {
-  background-image: url(./current-location.svg);
-  background-repeat: no-repeat;
-  background-size: contain;
   pointer-events: none;
   z-index: 2;
 }
@@ -51,6 +48,7 @@
   border: none;
   border-radius: 50%;
   bottom: 10px;
+  box-shadow: 0 1px 1px 0 hsl(0, 0%, 0%);
   height: 36px;
   position: absolute;
   right: 10px;
