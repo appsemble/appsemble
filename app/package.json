@@ -26,6 +26,6 @@
     "serviceworker-webpack-plugin": "^1.0.1"
   },
   "devDependencies": {
-    "service-worker-mock": "^1.10.2"
+    "service-worker-mock": "^1.11.1"
   }
 }
