@@ -4,11 +4,9 @@ import logSQL from './logSQL';
 
 function importModels(db) {
   db.import('../models/App');
-  db.import('../models/AppBlockStyle');
   db.import('../models/Snapshot');
   db.import('../models/User');
   db.import('../models/Organization');
-  db.import('../models/OrganizationBlockStyle');
   db.import('../models/EmailAuthorization');
   db.import('../models/ResetPasswordToken');
   db.import('../models/OAuthAuthorization');
@@ -19,6 +17,8 @@ function importModels(db) {
   db.import('../models/BlockAsset');
   db.import('../models/BlockDefinition');
   db.import('../models/BlockVersion');
+  db.import('../models/AppBlockStyle');
+  db.import('../models/OrganizationBlockStyle');
 }
 
 function associateModels(models) {
@@ -62,17 +62,17 @@ function associateModels(models) {
   Organization.belongsToMany(User, { through: 'UserOrganization' });
   Organization.hasMany(OrganizationBlockStyle);
 
-  OrganizationBlockStyle.belongsTo(Organization);
-  OrganizationBlockStyle.belongsTo(BlockDefinition);
+  OrganizationBlockStyle.belongsTo(Organization, { foreignKey: 'OrganizationId' });
+  OrganizationBlockStyle.belongsTo(BlockDefinition, { foreignKey: 'BlockDefinitionId' });
 
   Snapshot.belongsTo(App, { foreignKey: { allowNull: false } });
 
   App.hasMany(Snapshot);
   App.hasMany(Resource);
   App.belongsTo(Organization, { foreignKey: { allowNull: false } });
-  App.hasMany(AppBlockStyle);
 
-  AppBlockStyle.belongsTo(App);
+  AppBlockStyle.belongsTo(App, { foreignKey: 'AppId' });
+  AppBlockStyle.belongsTo(BlockDefinition, { foreignKey: 'BlockDefinitionId' });
 
   Resource.belongsTo(User);
   Resource.belongsTo(App);
