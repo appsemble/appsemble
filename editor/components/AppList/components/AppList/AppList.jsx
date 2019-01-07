@@ -1,13 +1,13 @@
 import { Loader } from '@appsemble/react-components';
 import {
+  Button,
+  Icon,
   Navbar,
   NavbarBrand,
   NavbarBurger,
   NavbarEnd,
-  NavbarMenu,
   NavbarItem,
-  Button,
-  Icon,
+  NavbarMenu,
 } from '@appsemble/react-bulma';
 import React from 'react';
 import { Link } from 'react-router-dom';

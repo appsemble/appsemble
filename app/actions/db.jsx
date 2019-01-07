@@ -1,4 +1,4 @@
-import { GET_START, GET_SUCCESS, GET_ERROR } from './app';
+import { GET_ERROR, GET_START, GET_SUCCESS } from './app';
 
 const initialState = null;
 

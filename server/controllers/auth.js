@@ -3,7 +3,7 @@ import crypto from 'crypto';
 import bcrypt from 'bcrypt';
 import Boom from 'boom';
 
-import { sendResetPasswordEmail, sendWelcomeEmail, resendVerificationEmail } from '../utils/email';
+import { resendVerificationEmail, sendResetPasswordEmail, sendWelcomeEmail } from '../utils/email';
 
 async function registerUser(associatedModel) {
   await associatedModel.createUser();

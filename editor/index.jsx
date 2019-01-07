@@ -4,12 +4,12 @@ import getDb from '@appsemble/utils/getDB';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
-import { applyMiddleware, compose, createStore, combineReducers } from 'redux';
+import { applyMiddleware, combineReducers, compose, createStore } from 'redux';
 import thunk from 'redux-thunk';
 
 import './index.css';
 import App from './components/App';
-import { apps, db, user, message } from './actions';
+import { apps, db, message, user } from './actions';
 
 async function getStore() {
   const idb = await getDb({ id: 'appsemble-editor' });
