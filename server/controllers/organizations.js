@@ -132,3 +132,61 @@ export async function setSharedStyle(ctx) {
     throw e;
   }
 }
+
+export async function getBlockStyle(ctx) {
+  const { organizationId, organizationName, blockName } = ctx.params;
+  const { OrganizationBlockStyle } = ctx.db.models;
+
+  const blockId = `${organizationName}/${blockName}`;
+  const blockStyle = await OrganizationBlockStyle.findOne({
+    where: {
+      OrganizationId: organizationId,
+      BlockDefinitionId: blockId,
+    },
+  });
+
+  ctx.body = blockStyle && blockStyle.style ? blockStyle.style : '';
+  ctx.type = 'css';
+  ctx.status = 200;
+}
+
+export async function setBlockStyle(ctx) {
+  const { organizationId, organizationName, blockName } = ctx.params;
+  const { db } = ctx;
+  const { Organization, OrganizationBlockStyle, BlockDefinition } = db.models;
+
+  const blockId = `${organizationName}/${blockName}`;
+
+  try {
+    const { style } = await parseStyleMultipart(ctx);
+    if (!style) {
+      throw Boom.badRequest('Stylesheet not found.');
+    }
+
+    validateStyle(style);
+
+    const organization = await Organization.findByPk(organizationId);
+    if (!organization) {
+      throw Boom.notFound('Organization not found.');
+    }
+
+    const block = await BlockDefinition.findByPk(blockId);
+    if (!block) {
+      throw Boom.notFound('Block not found.');
+    }
+
+    await OrganizationBlockStyle.upsert({
+      style: /\S/.test(style.toString()) ? style.toString() : null,
+      OrganizationId: organization.id,
+      BlockDefinitionId: block.id,
+    });
+
+    ctx.status = 204;
+  } catch (e) {
+    if (e instanceof StyleValidationError) {
+      throw Boom.badRequest('Provided CSS was invalid.');
+    }
+
+    throw e;
+  }
+}
