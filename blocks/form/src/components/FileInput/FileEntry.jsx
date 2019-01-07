@@ -100,7 +100,7 @@ export default class FileEntry extends React.Component {
               src={url}
             />
             <Button className={styles.removeButton} onClick={this.onRemove} size="small">
-              <Icon fa="heading" />
+              <Icon fa="times" />
             </Button>
           </React.Fragment>
         ) : (
