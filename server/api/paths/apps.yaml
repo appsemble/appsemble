@@ -241,3 +241,67 @@
         description: The shared stylesheet associated with this app.
       default:
         $ref: '#/responses/default'
+/apps/{appId}/style/block/{organizationName}/{blockName}:
+  get:
+    tags: [app]
+    description: Get the app style for a block.
+    x-oai-middleware:
+      - file: apps
+        handler: getBlockStyle
+    parameters:
+      - name: appId
+        in: path
+        description: The id of the app.
+        required: true
+        type: integer
+      - name: organizationName
+        in: path
+        description: The organization name of the block.
+        required: true
+        type: string
+      - name: blockName
+        in: path
+        description: The name of the block.
+        required: true
+        type: string
+    produces:
+      - text/css
+    responses:
+      200:
+        description: The stylesheet associated with this block for this app.
+      default:
+        $ref: '#/responses/default'
+  post:
+    tags: [app]
+    description: Upload a block stylesheet for this app.
+    x-oai-middleware:
+      - file: apps
+        handler: setBlockStyle
+    consumes:
+      - multipart/form-data
+    parameters:
+      - name: appId
+        in: path
+        description: The id of the app.
+        required: true
+        type: integer
+      - name: organizationName
+        in: path
+        description: The organization name of the block.
+        required: true
+        type: string
+      - name: blockName
+        in: path
+        description: The name of the block.
+        required: true
+        type: string
+      - name: style
+        in: formData
+        description: The new app block stylesheet.
+        required: false # oai-router does not properly validate this for multipart
+        type: file
+    responses:
+      204:
+        description: The block style has been updated succesfully.
+      default:
+        $ref: '#/responses/default'
