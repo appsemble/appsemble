@@ -193,7 +193,7 @@ export async function getOne(ctx) {
     throw Boom.notFound('App not found');
   }
 
-  ctx.body = { ...app.definition, id, path: app.path };
+  ctx.body = { ...app.definition, id, path: app.path, organizationId: app.OrganizationId };
 }
 
 export async function query(ctx) {
