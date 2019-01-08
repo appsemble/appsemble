@@ -24,6 +24,7 @@ module.exports = {
     },
   },
   rules: {
+    'sort-imports': ['error', { ignoreDeclarationSort: true }],
     'filenames/match-regex': ['error', /^\.?[a-z]+(\.config|\.test)?$/i, true],
     'filenames/match-exported': 'error',
     'react/prefer-stateless-function': 'off',

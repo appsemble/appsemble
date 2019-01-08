@@ -1,6 +1,6 @@
 import { connect } from 'react-redux';
 
-import { logout, initAuth } from '../../actions/user';
+import { initAuth, logout } from '../../actions/user';
 import App from './App';
 
 export default connect(

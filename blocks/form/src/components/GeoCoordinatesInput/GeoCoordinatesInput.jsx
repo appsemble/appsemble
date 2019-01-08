@@ -1,5 +1,5 @@
 import 'leaflet/dist/leaflet.css';
-import { Button, Icon, Fas } from '@appsemble/react-bulma';
+import { Button, Fas, Icon } from '@appsemble/react-bulma';
 import PropTypes from 'prop-types';
 import { TileLayer } from 'leaflet/src/layer';
 import { Map } from 'leaflet/src/map';
