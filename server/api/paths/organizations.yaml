@@ -142,11 +142,11 @@
         type: string
       - name: style
         in: formData
-        description: The new organization core stylesheet.
+        description: The new organization block stylesheet.
         required: false # oai-router does not properly validate this for multipart
         type: file
     responses:
       204:
-        description: The core style has been updated succesfully.
+        description: The block style has been updated succesfully.
       default:
         $ref: '#/responses/default'
