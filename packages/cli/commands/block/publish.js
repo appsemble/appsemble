@@ -1,7 +1,7 @@
 import logging from 'winston';
 
-import getConfig from '../lib/getConfig';
-import publish from '../lib/publish';
+import getConfig from '../../lib/getConfig';
+import publish from '../../lib/publish';
 
 export const command = 'publish <path>';
 export const description = 'Publish a new version of an existing block.';

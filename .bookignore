@@ -1,0 +1,17 @@
+*.js
+*.jsx
+*.css
+*.html
+*.yml
+Dockerfile
+**/package.json
+yarn.lock
+browserslist
+.*
+*.svg
+*.gif
+*.snap
+*.sh
+*.yaml
+*.woff
+*.woff2

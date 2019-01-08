@@ -1,8 +1,8 @@
 import logging from 'winston';
 
-import getConfig from '../lib/getConfig';
-import publish from '../lib/publish';
-import { post } from '../lib/request';
+import getConfig from '../../lib/getConfig';
+import publish from '../../lib/publish';
+import { post } from '../../lib/request';
 
 export const command = 'register <path>';
 export const description = 'Register a new Appsemble block.';
