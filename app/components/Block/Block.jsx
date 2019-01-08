@@ -74,6 +74,7 @@ export default class Block extends React.Component {
         BULMA_URL,
         FA_URL,
         ...blockDef.files.filter(url => url.endsWith('.css')).map(url => prefixURL(block, url)),
+        `${window.location.origin}/api/organizations/${app.organizationId}/style/shared`,
         `${window.location.origin}/api/organizations/${app.organizationId}/style/block/${
           blockDef.name
         }`,
