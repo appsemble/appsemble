@@ -260,11 +260,6 @@ describe('organization controller', () => {
   });
 
   it('should not allow uploading block stylesheets for non-existant blocks', async () => {
-    await BlockDefinition.create({
-      id: '@appsemble/testblock',
-      description: 'This is a test block for testing purposes.',
-    });
-
     const response = await request(server)
       .post(`/api/organizations/${organizationId}/style/block/@appsemble/doesntexist`)
       .attach('style', Buffer.from('body { color: red; }'), {
