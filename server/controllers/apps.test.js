@@ -79,12 +79,21 @@ describe('app controller', () => {
 
   it('should fetch an existing app', async () => {
     const appA = await App.create(
-      { path: 'test-app', definition: { name: 'Test App', defaultPage: 'Test Page' } },
+      {
+        path: 'test-app',
+        definition: { name: 'Test App', defaultPage: 'Test Page' },
+        OrganizationId: organizationId,
+      },
       { raw: true },
     );
     const { body } = await request(server).get(`/api/apps/${appA.id}`);
 
-    expect(body).toStrictEqual({ id: appA.id, path: 'test-app', ...appA.definition });
+    expect(body).toStrictEqual({
+      id: appA.id,
+      path: 'test-app',
+      ...appA.definition,
+      organizationId,
+    });
   });
 
   it('should be able to fetch filtered apps', async () => {
@@ -167,7 +176,7 @@ describe('app controller', () => {
       ],
     });
     const { body: retrieved } = await request(server).get(`/api/apps/${created.id}`);
-    expect(retrieved).toStrictEqual(created);
+    expect(retrieved).toStrictEqual({ ...created, organizationId });
   });
 
   it('should not allow an upload without an app when creating an app', async () => {
