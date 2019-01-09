@@ -78,6 +78,7 @@ export default class Block extends React.Component {
         `${window.location.origin}/api/organizations/${app.organizationId}/style/block/${
           blockDef.name
         }`,
+        `${window.location.origin}/api/apps/${app.id}/style/block/${blockDef.name}`,
       ].map(
         url =>
           new Promise(resolve => {
