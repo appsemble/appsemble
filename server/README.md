@@ -32,6 +32,12 @@ passed as a command line parameter instead, if desired.
 | `OAUTH_GITLAB_SECRET` |         | The secret key to be used for GitLab OAuth2.                                                                           |
 | `OAUTH_GOOGLE_KEY`    |         | The application key to be used for Google OAuth2.                                                                      |
 | `OAUTH_GOOGLE_SECRET` |         | The secret key to be used for Google OAuth2.                                                                           |
+| `SMTP_HOST`           |         | The host of the SMTP server to connect to.                                                                             |
+| `SMTP_PORT`           |         | The port of the SMTP server to connect to.                                                                             |
+| `SMTP_SECURE`         | `false` | Use TLS when connecting to the SMTP server.                                                                            |
+| `SMTP_USER`           |         | The user to use to login to the SMTP server.                                                                           |
+| `SMTP_PASS`           |         | The password to use to login to the SMTP server.                                                                       |
+| `SMTP_FROM`           |         | The address to use when sending emails.                                                                                |
 
 ## Initializing the Database
 
