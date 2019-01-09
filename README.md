@@ -81,11 +81,11 @@ yarn block splash
 The blocks can be published using the Appsemble CLI.
 
 ```sh
-yarn block appsemble register blocks/action-button
-yarn block appsemble register blocks/detail-viewer
-yarn block appsemble register blocks/form
-yarn block appsemble register blocks/map
-yarn block appsemble register blocks/splash
+yarn appsemble block register blocks/action-button
+yarn appsemble block register blocks/detail-viewer
+yarn appsemble block register blocks/form
+yarn appsemble block register blocks/map
+yarn appsemble block register blocks/splash
 ```
 
 ### Tests
