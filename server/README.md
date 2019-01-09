@@ -31,7 +31,7 @@ passed as a command line parameter instead, if desired.
 | `OAUTH_GITLAB_KEY`    |         | The application key to be used for GitLab OAuth2.                                                                      |
 | `OAUTH_GITLAB_SECRET` |         | The secret key to be used for GitLab OAuth2.                                                                           |
 | `OAUTH_GOOGLE_KEY`    |         | The application key to be used for Google OAuth2.                                                                      |
-| `OAUTH_GITLAB_SECRET` |         | The secret key to be used for Google OAuth2.                                                                           |
+| `OAUTH_GOOGLE_SECRET` |         | The secret key to be used for Google OAuth2.                                                                           |
 
 ## Initializing the Database
 
