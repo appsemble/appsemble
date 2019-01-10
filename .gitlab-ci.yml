@@ -129,11 +129,11 @@ provision:blocks:
     - deploy:staging
   script:
     - yarn --frozen-lockfile
-    - yarn appsemble block register blocks/action-button
-    - yarn appsemble block register blocks/detail-viewer
-    - yarn appsemble block register blocks/form
-    - yarn appsemble block register blocks/map
-    - yarn appsemble block register blocks/splash
+    - yarn appsemble block register --ignore-conflict blocks/action-button
+    - yarn appsemble block register --ignore-conflict blocks/detail-viewer
+    - yarn appsemble block register --ignore-conflict blocks/form
+    - yarn appsemble block register --ignore-conflict blocks/map
+    - yarn appsemble block register --ignore-conflict blocks/splash
 
 stylelint:
   script:
