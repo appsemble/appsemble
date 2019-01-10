@@ -25,7 +25,6 @@ build:docker:
 
 deploy:staging:
   stage: deploy
-  image: node:10-slim
   environment:
     name: review/$CI_COMMIT_REF_NAME
     url: https://$CI_ENVIRONMENT_SLUG.appsemble.app
