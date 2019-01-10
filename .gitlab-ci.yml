@@ -36,7 +36,11 @@ build:blocks:
   artifacts:
     expire_in: 3 days
     paths:
-      - blocks/*/dist/
+      - blocks/action-button/dist/
+      - blocks/detail-viewer/dist/
+      - blocks/form/dist/
+      - blocks/map/dist/
+      - blocks/splash/dist/
 
 deploy:staging:
   stage: deploy
