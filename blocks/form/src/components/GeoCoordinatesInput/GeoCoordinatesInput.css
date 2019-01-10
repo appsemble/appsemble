@@ -26,7 +26,7 @@
   background-image: url(./central-picker.svg);
   background-repeat: no-repeat;
   background-size: contain;
-  font-size: 64px;
+  font-size: 0; /* XXX: Replace with 64px; when removing central-picker.svg */
   height: 64px;
   pointer-events: none;
   width: 64px;
