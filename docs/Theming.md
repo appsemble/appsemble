@@ -10,7 +10,7 @@ at **three different levels** and can be injected at **three different points** 
 
 ## Hierarchy
 
-![](images/theming-hierarchy.png) <!-- XXX: This should probably be oriented horizontally -->
+<img src="images/theming-hierarchy.svg" style="float: right;" />
 
 Applications can be styled at a **server** level, **organization** level as well as the
 **app-specific** level.  
@@ -38,10 +38,80 @@ the core modules _do not_ get applied to blocks.
 
 **Block**-module styling gets applied to a specific block.
 
+**Shared**-module styling gets applied to each individual block as well as the Appsemble core
+modules. This is useful for applying styles to elements that can appear in both the core modules as
+well as blocks, such as input fields. It can also be used to apply [CSS variables](css-variables)
+
 ## Applying themes for an application
+
+Open the Appsemble editor on http://localhost:9999/editor. Login, and create your first app.  
+Within the editor, tabs for `shared` and `core` are available. These tabs contain the current
+styling for these modules. Tabs containing styling for specific blocks are automatically added and
+removed depending on which blocks are used within the app recipe.
+
+To preview a style change, simply enter CSS in the corresponding tabs and press the `Save` button.
+If the styling is satisfactory, it can be uploaded to the application by pressing the `Upload`
+button.
+
+Example shared styling:
+
+```css
+.input,
+.button {
+  border-radius: 0;
+  box-shadow: 5px 5px #888888;
+  font-family: serif;
+}
+```
+
+Example core styling:
+
+```css
+.navbar {
+  background-color: var(--primary-color) !important;
+}
+
+.navbar-item {
+  color: var(--primary-color-inverse) !important;
+  padding: 0 !important;
+}
+```
+
+Example block styling for `@appsemble/form`:
+
+```css
+form {
+  max-width: initial !important;
+  padding: 0 !important;
+}
+
+.field.is-horizontal {
+  box-sizing: border-box;
+  max-width: 100vw;
+  padding: 0.5em 1em;
+}
+```
 
 ## Applying themes for an organization
 
-## Applything themes for server
+Organization themes can be uploaded using the [CLI](cli).  
+The command for uploading themes is as follows:
+
+```sh
+yarn appsemble theme upload [path-to-theme-css] --organization [organization-id] [--shared|--core|--block @organization/blockname]
+```
+
+More detailed information about the meaning of each parameter can be found using the following
+command:
+
+```sh
+yarn appsemble theme upload --help
+```
+
+## Applying themes for server
+
+Not yet implemented.
 
 [bulma]: https://bulma.io/
+[cli]: ../packages/cli
+[css-variables]: https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_variables
