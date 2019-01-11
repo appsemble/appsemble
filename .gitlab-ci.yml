@@ -42,12 +42,12 @@ build:blocks:
       - blocks/map/dist/
       - blocks/splash/dist/
 
-deploy:staging:
+deploy:review:
   stage: deploy
   environment:
     name: review/$CI_COMMIT_REF_NAME
     url: https://$CI_ENVIRONMENT_SLUG.appsemble.app
-    on_stop: deploy:staging:stop
+    on_stop: deploy:review:stop
   script:
     - yarn --frozen-lockfile
     - ./config/bin/deploy.js
@@ -58,7 +58,7 @@ deploy:staging:
     paths:
       - package.json
 
-deploy:staging:stop:
+deploy:review:stop:
   stage: deploy
   image: alpine
   variables:
@@ -126,7 +126,7 @@ provision:blocks:
   stage: provision
   dependencies:
     - build:blocks
-    - deploy:staging
+    - deploy:review
   script:
     - yarn --frozen-lockfile
     - yarn appsemble block register --ignore-conflict blocks/action-button
