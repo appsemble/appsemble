@@ -143,7 +143,7 @@ stylelint:
 
 test:
   services:
-    - name: mysql:8.0
+    - name: mysql:8
       command: [--default-authentication-plugin=mysql_native_password]
   variables:
     MYSQL_DATABASE: testAppsemble
@@ -164,7 +164,7 @@ test:
 # Postgres support is not worth blocking that commit, so Postgres tests have been excluded for now.
 .test:postgres:
   services:
-    - postgres:10.0
+    - postgres:10
   variables:
     POSTGRES_DB: testAppsemble
     POSTGRES_USER: root
