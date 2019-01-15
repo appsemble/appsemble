@@ -2,7 +2,6 @@ html {
   overflow-y: auto;
 }
 
-:global(.navbar),
 :global(.navbar.is-fixed-top) {
   z-index: 1000;
 }

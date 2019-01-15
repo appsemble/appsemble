@@ -110,7 +110,7 @@ yarn appsemble theme upload --help
 
 ## Applying themes for server
 
-Not yet implemented.
+Not yet implemented. <!-- XXX -->
 
 [bulma]: https://bulma.io/
 [cli]: ../packages/cli
