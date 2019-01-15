@@ -1,23 +1,26 @@
 # Build the frontend
-FROM node:10-slim AS build
-WORKDIR /build
+FROM node:10-slim AS frontend
+WORKDIR /app
 COPY . .
 RUN yarn --frozen-lockfile \
  && yarn build
 
-# Setup the real docker image.
-FROM node:10-slim
-ENV NODE_ENV production
+# Setup the backend
+FROM node:10-slim AS backend
 WORKDIR /app
-COPY --from=build /build/dist dist
 COPY server server
 COPY packages/utils packages/utils
 COPY package.json package.json
 COPY yarn.lock yarn.lock
-RUN npm uninstall --global npm \
- && yarn --frozen-lockfile --production \
- && yarn cache clean \
- && rm -r yarn.lock /opt/yarn*
+RUN yarn --frozen-lockfile --production \
+ && rm -r yarn.lock
+
+# Setup the production docker image.
+FROM node:10-slim
+COPY --from=backend /app /app
+COPY --from=frontend /app/dist /app/dist
+WORKDIR /app
+ENV NODE_ENV production
 USER node
 ENTRYPOINT ["node", "-r", "esm", "server"]
 CMD ["start"]
