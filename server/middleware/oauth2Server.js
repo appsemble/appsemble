@@ -1,4 +1,10 @@
-import NodeOAuthServer, { InvalidArgumentError, Request, Response } from 'oauth2-server';
+import NodeOAuthServer, {
+  InvalidArgumentError,
+  InvalidGrantError,
+  Request,
+  Response,
+} from 'oauth2-server';
+import boom from 'boom';
 
 async function handleResponse(ctx, response) {
   // XXX: Test whether this explicit redirect response is necessary to stay RFC 6749 compliant
@@ -16,6 +22,10 @@ async function handleResponse(ctx, response) {
 
 async function handleError(e, ctx, response, next, useErrorHandler) {
   if (useErrorHandler) {
+    if (e instanceof InvalidGrantError) {
+      throw boom.unauthorized(e.message);
+    }
+
     ctx.state.oauth = { error: e };
     await next();
     return;
