@@ -71,6 +71,15 @@ function associateModels(models) {
   BlockVersion.hasMany(BlockAsset, { foreignKey: 'version', sourceKey: 'version' });
 }
 
+async function seedModels(models) {
+  const { OAuthClient } = models;
+
+  OAuthClient.findOrCreate({
+    where: { clientId: 'appsemble-editor' },
+    defaults: { clientSecret: 'appsemble-editor-secret', redirectUri: '/editor' },
+  });
+}
+
 export default async function setupModels({
   dialect = 'mysql',
   sync = true,
@@ -111,6 +120,8 @@ export default async function setupModels({
   if (sync) {
     await db.sync({ force });
   }
+
+  await seedModels(db.models);
 
   return db;
 }
