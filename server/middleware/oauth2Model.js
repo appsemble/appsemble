@@ -151,9 +151,9 @@ export default function oauth2Model({ db, grant, secret }) {
     },
 
     async getUser(username, password) {
-      const email = await EmailAuthorization.findOne({ where: { email: username } });
+      const email = await EmailAuthorization.findOne({ where: { email: username }, raw: true });
 
-      if (!(email || bcrypt.compareSync(password, email.password))) {
+      if (!(email && bcrypt.compareSync(password, email.password))) {
         return false;
       }
 
