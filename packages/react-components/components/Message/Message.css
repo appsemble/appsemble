@@ -4,12 +4,16 @@
   margin-left: 10px;
   margin-right: 10px;
   position: fixed;
-  transition: linear bottom 0.3s;
   width: calc(100vw - 20px);
   z-index: 1000;
+}
+
+.rootMessage {
+  opacity: 1;
+  transition: opacity 0.3s ease-in-out;
 
   &.hidden {
-    bottom: -100px;
+    opacity: 0;
   }
 }
 

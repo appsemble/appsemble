@@ -1,19 +1,22 @@
 const PUSH = 'message/PUSH';
-const SHIFT = 'message/SHIFT';
+const REMOVE = 'message/REMOVE';
 
 const initialState = {
   queue: [],
+  counter: 0,
 };
 
 export default (state = initialState, action) => {
   switch (action.type) {
     case PUSH:
       return {
-        queue: [...state.queue, action.message],
+        queue: [...state.queue, { ...action.message, id: state.counter + 1 }],
+        counter: state.counter + 1,
       };
-    case SHIFT:
+    case REMOVE:
       return {
-        queue: state.queue.slice(0, state.queue.length - 1),
+        queue: state.queue.filter(message => message.id !== action.message.id),
+        counter: state.counter,
       };
     default:
       return state;
@@ -31,10 +34,11 @@ export function push(message) {
   };
 }
 
-export function shift() {
+export function remove(message) {
   return dispatch => {
     dispatch({
-      type: SHIFT,
+      type: REMOVE,
+      message,
     });
   };
 }
