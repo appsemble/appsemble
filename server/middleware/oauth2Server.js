@@ -1,9 +1,4 @@
-import NodeOAuthServer, {
-  InvalidArgumentError,
-  Request,
-  Response,
-  UnauthorizedRequestError,
-} from 'oauth2-server';
+import NodeOAuthServer, { InvalidArgumentError, Request, Response } from 'oauth2-server';
 
 async function handleResponse(ctx, response) {
   // XXX: Test whether this explicit redirect response is necessary to stay RFC 6749 compliant
@@ -31,12 +26,6 @@ async function handleError(e, ctx, response, next, useErrorHandler) {
   }
 
   ctx.status = e.code;
-
-  if (e instanceof UnauthorizedRequestError) {
-    ctx.body = '';
-    return;
-  }
-
   ctx.body = { error: e.name, error_description: e.message };
 }
 
