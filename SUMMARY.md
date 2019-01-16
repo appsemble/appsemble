@@ -5,6 +5,7 @@
 ## development
 
 - [Block Development](docs/Developing-Blocks.md)
+- [Theming](docs/Theming.md)
 
 ## server
 

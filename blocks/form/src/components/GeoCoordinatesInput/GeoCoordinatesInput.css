@@ -26,6 +26,7 @@
   background-image: url(./central-picker.svg);
   background-repeat: no-repeat;
   background-size: contain;
+  font-size: 0; /* XXX: Replace with 64px; when removing central-picker.svg */
   height: 64px;
   pointer-events: none;
   width: 64px;
@@ -50,9 +51,15 @@
   border: none;
   border-radius: 50%;
   bottom: 10px;
+  box-shadow: 0 1px 1px 0 hsl(0, 0%, 0%);
+  color: transparent; /* Replace with ´var(--primary-color-inverse);´ when removing current-location.svg */
   height: 36px;
   position: absolute;
   right: 10px;
   width: 36px;
   z-index: 1;
+
+  &:hover {
+    color: transparent; /* Replace with ´var(--primary-color-inverse);´ when removing current-location.svg */
+  }
 }

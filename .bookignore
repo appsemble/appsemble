@@ -8,7 +8,6 @@ Dockerfile
 yarn.lock
 browserslist
 .*
-*.svg
 *.gif
 *.snap
 *.sh

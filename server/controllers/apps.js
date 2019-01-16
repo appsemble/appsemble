@@ -106,6 +106,45 @@ async function parseAppMultipart(ctx) {
   });
 }
 
+async function parseStyleMultipart(ctx) {
+  return new Promise((resolve, reject) => {
+    const busboy = new Busboy(ctx.req);
+    const res = {};
+
+    const onError = error => {
+      reject(error);
+      busboy.removeAllListeners();
+    };
+
+    busboy.on('file', (fieldname, stream, filename, encoding, mime) => {
+      if (!(fieldname === 'style' || mime !== 'text/css')) {
+        onError(new Error(`Expected file ´${fieldname}´ to be css`));
+      }
+
+      const buffer = [];
+      stream.on('data', data => {
+        buffer.push(data);
+      });
+
+      stream.on('end', () => {
+        if (fieldname === 'style') {
+          res.style = Buffer.concat(buffer);
+        }
+      });
+    });
+
+    busboy.on('finish', () => {
+      busboy.removeAllListeners();
+      resolve(res);
+    });
+    busboy.on('error', onError);
+    busboy.on('partsLimit', onError);
+    busboy.on('filesLimit', onError);
+    busboy.on('fieldsLimit', onError);
+    ctx.req.pipe(busboy);
+  });
+}
+
 function handleAppValidationError(error, app) {
   if (error instanceof UniqueConstraintError) {
     throw Boom.conflict(`Another app with path “${app.path}” already exists`);
@@ -193,7 +232,7 @@ export async function getOne(ctx) {
     throw Boom.notFound('App not found');
   }
 
-  ctx.body = { ...app.definition, id, path: app.path };
+  ctx.body = { ...app.definition, id, path: app.path, organizationId: app.OrganizationId };
 }
 
 export async function query(ctx) {
@@ -353,4 +392,62 @@ export async function getSharedAppStyle(ctx) {
   ctx.body = app.sharedStyle || '';
   ctx.type = 'css';
   ctx.status = 200;
+}
+
+export async function getBlockStyle(ctx) {
+  const { appId, organizationName, blockName } = ctx.params;
+  const { AppBlockStyle } = ctx.db.models;
+
+  const blockId = `${organizationName}/${blockName}`;
+  const blockStyle = await AppBlockStyle.findOne({
+    where: {
+      AppId: appId,
+      BlockDefinitionId: blockId,
+    },
+  });
+
+  ctx.body = blockStyle && blockStyle.style ? blockStyle.style : '';
+  ctx.type = 'css';
+  ctx.status = 200;
+}
+
+export async function setBlockStyle(ctx) {
+  const { appId, organizationName, blockName } = ctx.params;
+  const { db } = ctx;
+  const { App, AppBlockStyle, BlockDefinition } = db.models;
+
+  const blockId = `${organizationName}/${blockName}`;
+
+  try {
+    const { style } = await parseStyleMultipart(ctx);
+    if (!style) {
+      throw Boom.badRequest('Stylesheet not found.');
+    }
+
+    validateStyle(style);
+
+    const app = await App.findByPk(appId);
+    if (!app) {
+      throw Boom.notFound('App not found.');
+    }
+
+    const block = await BlockDefinition.findByPk(blockId);
+    if (!block) {
+      throw Boom.notFound('Block not found.');
+    }
+
+    await AppBlockStyle.upsert({
+      style: /\S/.test(style.toString()) ? style.toString() : null,
+      AppId: app.id,
+      BlockDefinitionId: block.id,
+    });
+
+    ctx.status = 204;
+  } catch (e) {
+    if (e instanceof StyleValidationError) {
+      throw Boom.badRequest('Provided CSS was invalid.');
+    }
+
+    throw e;
+  }
 }

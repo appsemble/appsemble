@@ -8,6 +8,7 @@ import testToken from '../utils/test/testToken';
 
 describe('app controller', () => {
   let App;
+  let AppBlockStyle;
   let BlockDefinition;
   let BlockVersion;
   let Organization;
@@ -21,7 +22,7 @@ describe('app controller', () => {
     db = await testSchema('apps');
 
     server = await createServer({ db });
-    ({ App, BlockDefinition, BlockVersion, Organization, User } = db.models);
+    ({ App, AppBlockStyle, BlockDefinition, BlockVersion, Organization, User } = db.models);
   });
 
   beforeEach(async () => {
@@ -79,12 +80,21 @@ describe('app controller', () => {
 
   it('should fetch an existing app', async () => {
     const appA = await App.create(
-      { path: 'test-app', definition: { name: 'Test App', defaultPage: 'Test Page' } },
+      {
+        path: 'test-app',
+        definition: { name: 'Test App', defaultPage: 'Test Page' },
+        OrganizationId: organizationId,
+      },
       { raw: true },
     );
     const { body } = await request(server).get(`/api/apps/${appA.id}`);
 
-    expect(body).toStrictEqual({ id: appA.id, path: 'test-app', ...appA.definition });
+    expect(body).toStrictEqual({
+      id: appA.id,
+      path: 'test-app',
+      ...appA.definition,
+      organizationId,
+    });
   });
 
   it('should be able to fetch filtered apps', async () => {
@@ -167,7 +177,7 @@ describe('app controller', () => {
       ],
     });
     const { body: retrieved } = await request(server).get(`/api/apps/${created.id}`);
-    expect(retrieved).toStrictEqual(created);
+    expect(retrieved).toStrictEqual({ ...created, organizationId });
   });
 
   it('should not allow an upload without an app when creating an app', async () => {
@@ -819,6 +829,116 @@ describe('app controller', () => {
 
     expect(responseA.status).toBe(400);
     expect(responseB.status).toBe(400);
+  });
+
+  it('should set block stylesheets to null when uploading empty stylesheets for an app', async () => {
+    await BlockDefinition.create({
+      id: '@appsemble/testblock',
+      description: 'This is a test block for testing purposes.',
+    });
+
+    const { id } = await App.create(
+      { path: 'bar', definition: { name: 'Test App', defaultPage: 'Test Page' } },
+      { raw: true },
+    );
+
+    const responseA = await request(server)
+      .post(`/api/apps/${id}/style/block/@appsemble/testblock`)
+      .attach('style', Buffer.from('body { color: blue; }'), {
+        contentType: 'text/css',
+        filename: 'style.css',
+      });
+
+    const responseB = await request(server)
+      .post(`/api/apps/${id}/style/block/@appsemble/testblock`)
+      .attach('style', Buffer.from(' '), {
+        contentType: 'text/css',
+        filename: 'style.css',
+      });
+
+    const style = await AppBlockStyle.findOne({
+      where: { AppId: id, BlockDefinitionId: '@appsemble/testblock' },
+    });
+
+    expect(responseA.status).toBe(204);
+    expect(responseB.status).toBe(204);
+    expect(style.style).toBeNull();
+  });
+
+  it('should not allow invalid stylesheets when uploading block stylesheets to an app', async () => {
+    await BlockDefinition.create({
+      id: '@appsemble/testblock',
+      description: 'This is a test block for testing purposes.',
+    });
+
+    const { id } = await App.create(
+      { path: 'bar', definition: { name: 'Test App', defaultPage: 'Test Page' } },
+      { raw: true },
+    );
+
+    const response = await request(server)
+      .post(`/api/apps/${id}/style/block/@appsemble/testblock`)
+      .attach('style', Buffer.from('invalidCss'));
+    expect(response.body).toStrictEqual({
+      statusCode: 400,
+      error: 'Bad Request',
+      message: 'Provided CSS was invalid.',
+    });
+  });
+
+  it('should not allow uploading block stylesheets to non-existant apps', async () => {
+    await BlockDefinition.create({
+      id: '@appsemble/testblock',
+      description: 'This is a test block for testing purposes.',
+    });
+
+    const response = await request(server)
+      .post(`/api/apps/0/style/block/@appsemble/testblock`)
+      .attach('style', Buffer.from('body { color: red; }'), {
+        contentType: 'text/css',
+        filename: 'style.css',
+      });
+
+    expect(response.body).toStrictEqual({
+      statusCode: 404,
+      error: 'Not Found',
+      message: 'App not found.',
+    });
+  });
+
+  it('should not allow uploading block stylesheets for non-existant blocks', async () => {
+    const { id } = await App.create(
+      { path: 'bar', definition: { name: 'Test App', defaultPage: 'Test Page' } },
+      { raw: true },
+    );
+
+    const response = await request(server)
+      .post(`/api/apps/${id}/style/block/@appsemble/doesntexist`)
+      .attach('style', Buffer.from('body { color: red; }'), {
+        contentType: 'text/css',
+        filename: 'style.css',
+      });
+
+    expect(response.body).toStrictEqual({
+      statusCode: 404,
+      error: 'Not Found',
+      message: 'Block not found.',
+    });
+  });
+
+  it('should return an empty response on non-existant block stylesheets', async () => {
+    const { id } = await App.create(
+      { path: 'bar', definition: { name: 'Test App', defaultPage: 'Test Page' } },
+      { raw: true },
+    );
+
+    const response = await request(server).get(
+      `/api/apps/${id}/style/block/@appsemble/doesntexist`,
+    );
+
+    expect(response.text).toBe('');
+    expect(response.type).toBe('text/css');
+    expect(response.status).toBe(200);
   });
 
   it('should not allow to update an app using non-existent blocks', async () => {
