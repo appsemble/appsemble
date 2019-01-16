@@ -52,6 +52,8 @@
     "@babel/preset-env": "^7.2.3",
     "@babel/preset-react": "^7.0.0",
     "@babel/runtime": "^7.2.0",
+    "@kubernetes/client-node": "^0.7.2",
+    "axios": "^0.18.0",
     "babel-core": "^7.0.0-bridge.0",
     "babel-eslint": "^10.0.1",
     "babel-jest": "^23.6.0",
@@ -65,7 +67,7 @@
     "enzyme": "^3.8.0",
     "enzyme-adapter-react-16": "^1.7.1",
     "enzyme-to-json": "^3.3.5",
-    "eslint": "^5.11.1",
+    "eslint": "^5.12.0",
     "eslint-config-airbnb": "^17.1.0",
     "eslint-config-prettier": "^3.3.0",
     "eslint-formatter-gitlab": "^1.0.2",
@@ -102,14 +104,14 @@
     "stylelint-config-standard": "^18.2.0",
     "stylelint-no-unsupported-browser-features": "^3.0.2",
     "stylelint-order": "^2.0.0",
-    "stylelint-prettier": "^1.0.5",
+    "stylelint-prettier": "^1.0.6",
     "surge": "^0.20.1",
     "svgo": "^1.1.1",
     "svgo-loader": "^2.2.0",
     "terser-webpack-plugin": "^1.2.1",
     "unused-files-webpack-plugin": "^3.4.0",
     "webpack": "^4.28.3",
-    "webpack-cli": "^3.2.0",
-    "webpack-merge": "^4.1.5"
+    "webpack-cli": "^3.2.1",
+    "webpack-merge": "^4.2.1"
   }
 }

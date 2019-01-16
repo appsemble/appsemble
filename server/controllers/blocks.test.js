@@ -153,6 +153,30 @@ describe('blocks', () => {
     expect(status).toBe(400);
   });
 
+  it('should not be possible to register the same block version twice', async () => {
+    await request(server)
+      .post('/api/blocks')
+      .send({
+        id: '@xkcd/standing',
+        description: 'This block has been uploaded for the purpose of unit testing.',
+      });
+    await request(server)
+      .post('/api/blocks/@xkcd/standing/versions')
+      .field('data', JSON.stringify({ version: '1.32.9' }))
+      .attach('build/standing.png', path.join(__dirname, '__fixtures__/standing.png'))
+      .attach('build/testblock.js', path.join(__dirname, '__fixtures__/testblock.js'));
+    const { body } = await request(server)
+      .post('/api/blocks/@xkcd/standing/versions')
+      .field('data', JSON.stringify({ version: '1.32.9' }))
+      .attach('build/standing.png', path.join(__dirname, '__fixtures__/standing.png'))
+      .attach('build/testblock.js', path.join(__dirname, '__fixtures__/testblock.js'));
+    expect(body).toStrictEqual({
+      error: 'Conflict',
+      message: 'Block version “@xkcd/standing@1.32.9” already exists',
+      statusCode: 409,
+    });
+  });
+
   it('should require at least one file', async () => {
     await request(server)
       .post('/api/blocks')

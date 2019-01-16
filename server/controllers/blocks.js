@@ -63,6 +63,7 @@ export async function createBlockVersion(ctx) {
         const promises = [];
         let result;
         let resultDeferred;
+        let version;
         const resultPromise = new Promise((res, rej) => {
           resultDeferred = { resolve: res, reject: rej };
         }).then(r => {
@@ -71,9 +72,13 @@ export async function createBlockVersion(ctx) {
         });
 
         function handleTransactionFinished(err) {
-          if (!transaction.finished) {
-            throw err;
+          if (transaction.finished) {
+            return;
           }
+          if (err instanceof UniqueConstraintError) {
+            throw Boom.conflict(`Block version “${name}@${version}” already exists`);
+          }
+          throw err;
         }
 
         function onError(error) {
@@ -155,6 +160,7 @@ export async function createBlockVersion(ctx) {
               ...JSON.parse(content),
               name,
             };
+            ({ version } = versionData);
             await BlockVersion.create(versionData, { transaction }).catch(
               handleTransactionFinished,
             );

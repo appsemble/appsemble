@@ -1,11 +1,8 @@
 {
-  "name": "@appsemble/create",
+  "name": "create-appsemble",
   "version": "1.0.0",
-  "bin": {
-    "create-appsemble": "./bin/create-appsemble"
-  },
+  "bin": "./bin/create-appsemble",
   "dependencies": {
-    "@appsemble/create": "^1.0.0",
     "esm": "^3.0.84",
     "fs-extra": "^7.0.1",
     "inquirer": "^6.2.1",

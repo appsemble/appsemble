@@ -7,10 +7,15 @@ export const command = 'publish <path>';
 export const description = 'Publish a new version of an existing block.';
 
 export function builder(yargs) {
-  return yargs.positional('path', {
-    describe: 'The path to the block to register',
-    normalize: true,
-  });
+  return yargs
+    .positional('path', {
+      describe: 'The path to the block to register',
+      normalize: true,
+    })
+    .option('ignore-conflict', {
+      describe: 'If specified, conflicts with an existing block version are ignored.',
+      type: 'boolean',
+    });
 }
 
 export async function handler({ path }) {

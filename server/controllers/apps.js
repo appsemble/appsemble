@@ -60,18 +60,18 @@ async function parseAppMultipart(ctx) {
         onError(new Error(`Expected file ´${fieldname}´ to be css`));
       }
 
-      let buffer;
+      const buffer = [];
       stream.on('data', data => {
-        buffer = data;
+        buffer.push(data);
       });
 
       stream.on('end', () => {
         if (fieldname === 'style') {
-          res.style = buffer;
+          res.style = Buffer.concat(buffer);
         }
 
         if (fieldname === 'sharedStyle') {
-          res.sharedStyle = buffer;
+          res.sharedStyle = Buffer.concat(buffer);
         }
       });
     });
