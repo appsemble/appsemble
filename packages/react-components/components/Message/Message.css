@@ -8,13 +8,22 @@
   z-index: 1000;
 }
 
-.rootMessage {
-  opacity: 1;
-  transition: opacity 0.3s ease-in-out;
+.messageEnter {
+  opacity: 0.01;
+}
 
-  &.hidden {
-    opacity: 0;
-  }
+.messageEnterActive {
+  opacity: 1;
+  transition: opacity 300ms ease-in;
+}
+
+.messageLeave {
+  opacity: 1;
+}
+
+.messageLeaveActive {
+  opacity: 0.01;
+  transition: opacity 300ms ease-in;
 }
 
 .content {

@@ -1,7 +1,7 @@
 import { Message as BulmaMessage, MessageBody } from '@appsemble/react-bulma';
-import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import React from 'react';
+import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 
 import styles from './Message.css';
 
@@ -32,15 +32,22 @@ export default class Message extends React.Component {
 
     return (
       <ul className={styles.root}>
-        {messages.map(message => (
-          <BulmaMessage
-            key={message.id}
-            className={classNames(styles.rootMessage)}
-            color={(message && message.color) || 'danger'}
-          >
-            <MessageBody className={styles.content}>{message?.body}</MessageBody>
-          </BulmaMessage>
-        ))}
+        <ReactCSSTransitionGroup
+          transitionEnterTimeout={300}
+          transitionLeaveTimeout={300}
+          transitionName={{
+            enter: styles.messageEnter,
+            enterActive: styles.messageEnterActive,
+            leave: styles.messageLeave,
+            leaveActive: styles.messageLeaveActive,
+          }}
+        >
+          {messages.map(message => (
+            <BulmaMessage key={message.id} color={(message && message.color) || 'danger'}>
+              <MessageBody className={styles.content}>{message?.body}</MessageBody>
+            </BulmaMessage>
+          ))}
+        </ReactCSSTransitionGroup>
       </ul>
     );
   }
