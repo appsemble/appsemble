@@ -1,32 +1,54 @@
 #!/usr/bin/env node
-const querystring = require('querystring');
-
+const k8s = require('@kubernetes/client-node');
 const axios = require('axios');
 
-const {
-  CI_COMMIT_REF_NAME,
-  CI_ENVIRONMENT_SLUG,
-  CI_ENVIRONMENT_URL,
-  CI_REGISTRY_IMAGE,
-  CI_JOB_TOKEN,
-} = process.env;
+const appsembleDeployment = require('../kubernetes/appsembleDeployment');
+const appsembleService = require('../kubernetes/appsembleService');
+const ingress = require('../kubernetes/ingress');
+const mysqlDeployment = require('../kubernetes/mysqlDeployment');
+const mysqlService = require('../kubernetes/mysqlService');
 
-const GITLAB_DEPLOY_URL = 'https://gitlab.com/api/v4/projects/8452871/trigger/pipeline';
+const { CI_ENVIRONMENT_URL, KUBE_NAMESPACE } = process.env;
 
 /**
- * Trigger the GitLab pipeline that creates a review deployment.
+ * Deploy the newly built Appsemble Docker image to Kubernetes.
  */
 async function deploy() {
-  await axios.post(
-    GITLAB_DEPLOY_URL,
-    querystring.stringify({
-      token: CI_JOB_TOKEN,
-      ref: 'master',
-      'variables[TRIGGER]': 'deploy',
-      'variables[ENVIRONMENT]': CI_ENVIRONMENT_SLUG,
-      'variables[IMAGE]': `${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_NAME}`,
-    }),
-  );
+  const kc = new k8s.KubeConfig();
+  kc.loadFromDefault();
+  const apps = kc.makeApiClient(k8s.Extensions_v1beta1Api);
+  const core = kc.makeApiClient(k8s.Core_v1Api);
+  try {
+    await apps.createNamespacedDeployment(KUBE_NAMESPACE, mysqlDeployment);
+    await core.createNamespacedService(KUBE_NAMESPACE, mysqlService);
+  } catch (err) {
+    if (err.response.statusCode === 409) {
+      await apps.replaceNamespacedDeployment(
+        mysqlDeployment.metadata.name,
+        KUBE_NAMESPACE,
+        mysqlDeployment,
+      );
+    }
+  }
+  try {
+    await apps.createNamespacedDeployment(KUBE_NAMESPACE, appsembleDeployment);
+    await core.createNamespacedService(KUBE_NAMESPACE, appsembleService);
+  } catch (err) {
+    if (err.response.statusCode === 409) {
+      await apps.replaceNamespacedDeployment(
+        appsembleDeployment.metadata.name,
+        KUBE_NAMESPACE,
+        appsembleDeployment,
+      );
+    }
+  }
+  try {
+    await apps.createNamespacedIngress(KUBE_NAMESPACE, ingress);
+  } catch (err) {
+    if (err.response.statusCode !== 409) {
+      throw err;
+    }
+  }
 }
 
 /**
