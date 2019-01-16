@@ -34,6 +34,9 @@
 }
 
 .currentlocation {
+  background-image: url(./current-location.svg);
+  background-repeat: no-repeat;
+  background-size: contain;
   pointer-events: none;
   z-index: 2;
 }
@@ -49,10 +52,14 @@
   border-radius: 50%;
   bottom: 10px;
   box-shadow: 0 1px 1px 0 hsl(0, 0%, 0%);
-  color: var(--primary-color-inverse);
+  color: transparent; /* Replace with ´var(--primary-color-inverse);´ when removing current-location.svg */
   height: 36px;
   position: absolute;
   right: 10px;
   width: 36px;
   z-index: 1;
+
+  &:hover {
+    color: transparent; /* Replace with ´var(--primary-color-inverse);´ when removing current-location.svg */
+  }
 }
