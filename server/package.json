@@ -35,6 +35,8 @@
     "nodemailer-markdown": "^1.0.2",
     "nodemailer-stub-transport": "^1.1.0",
     "oauth2-server": "^3.0.1",
+    "odata-parser": "^1.4.1",
+    "odata-sequelize": "^1.0.6",
     "pg": "^7.7.1",
     "pg-hstore": "^2.3.2",
     "pug": "^2.0.3",

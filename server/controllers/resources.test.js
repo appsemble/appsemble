@@ -64,6 +64,53 @@ describe('resource controller', () => {
     ]);
   });
 
+  it('should be able to limit the amount of resources', async () => {
+    const app = await App.create(exampleApp);
+
+    const resourceA = await app.createResource({ type: 'testResource', data: { foo: 'bar' } });
+    await app.createResource({ type: 'testResource', data: { foo: 'baz' } });
+
+    const response = await request(server).get(`/api/apps/${app.id}/testResource?$top=1`);
+
+    expect(response.status).toBe(200);
+    expect(response.body).toStrictEqual([{ id: resourceA.id, foo: 'bar' }]);
+  });
+
+  it('should be able to sort fetched resources', async () => {
+    const app = await App.create(exampleApp);
+
+    const resourceA = await app.createResource({ type: 'testResource', data: { foo: 'bar' } });
+    const resourceB = await app.createResource({ type: 'testResource', data: { foo: 'baz' } });
+
+    const responseA = await request(server).get(
+      `/api/apps/${app.id}/testResource?$orderby=foo asc`,
+    );
+    const responseB = await request(server).get(
+      `/api/apps/${app.id}/testResource?$orderby=foo desc`,
+    );
+
+    expect(responseA.status).toBe(200);
+    expect(responseA.body).toStrictEqual([
+      { id: resourceA.id, foo: 'bar' },
+      { id: resourceB.id, foo: 'baz' },
+    ]);
+    expect(responseB.status).toBe(200);
+    expect(responseB.body).toStrictEqual([
+      { id: resourceB.id, foo: 'baz' },
+      { id: resourceA.id, foo: 'bar' },
+    ]);
+  });
+
+  it('should be able to select fields when fetching resources', async () => {
+    const app = await App.create(exampleApp);
+
+    const resource = await app.createResource({ type: 'testResource', data: { foo: 'bar' } });
+    const response = await request(server).get(`/api/apps/${app.id}/testResource?$select=id`);
+
+    expect(response.status).toBe(200);
+    expect(response.body).toStrictEqual([{ id: resource.id }]);
+  });
+
   it('should be able to create a new resource', async () => {
     const app = await App.create(exampleApp);
 

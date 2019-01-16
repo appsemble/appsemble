@@ -9641,6 +9641,16 @@ object.values@^1.0.4:
     function-bind "^1.1.1"
     has "^1.0.3"
 
+odata-parser@^1.4.1:
+  version "1.4.1"
+  resolved "https://registry.yarnpkg.com/odata-parser/-/odata-parser-1.4.1.tgz#a2224bc749e76a6205bd47f47acd50eb1e71ed99"
+  integrity sha1-oiJLx0nnamIFvUf0es1Q6x5x7Zk=
+
+odata-sequelize@^1.0.6:
+  version "1.0.6"
+  resolved "https://registry.yarnpkg.com/odata-sequelize/-/odata-sequelize-1.0.6.tgz#879581355510dbf1096b03a1d487cec761a4377e"
+  integrity sha512-erS2bP6bnrmV6ZBoyt7PzMWuZ3uU+TH7S2xzAEhz+i7YdreRcQ/AzEiHjlT+IDarEaFrg+qcYBmeeQWVn3n3yw==
+
 on-finished@^2.3.0:
   version "2.3.0"
   resolved "https://registry.yarnpkg.com/on-finished/-/on-finished-2.3.0.tgz#20f1336481b083cd75337992a16971aa2d906947"
