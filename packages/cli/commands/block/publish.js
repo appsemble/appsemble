@@ -18,8 +18,8 @@ export function builder(yargs) {
     });
 }
 
-export async function handler({ path }) {
+export async function handler({ ignoreConflict, path }) {
   const config = await getConfig(path);
   logging.info(`Publishing ${config.id}@${config.version}`);
-  await publish({ config, path });
+  await publish({ config, ignoreConflict, path });
 }
