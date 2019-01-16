@@ -17,11 +17,23 @@ async function main() {
   kc.loadFromDefault();
   const apps = kc.makeApiClient(k8s.Extensions_v1beta1Api);
   const core = kc.makeApiClient(k8s.Core_v1Api);
-  await apps.deleteNamespacedIngress(ingress.metadata.name, KUBE_NAMESPACE);
-  await core.deleteNamespacedService(appsembleService.metadata.name, KUBE_NAMESPACE);
-  await core.deleteNamespacedService(mysqlService.metadata.name, KUBE_NAMESPACE);
-  await apps.deleteNamespacedDeployment(appsembleDeployment.metadata.name, KUBE_NAMESPACE);
-  await apps.deleteNamespacedDeployment(mysqlDeployment.metadata.name, KUBE_NAMESPACE);
+  await apps.deleteNamespacedIngress(ingress.metadata.name, KUBE_NAMESPACE, ingress);
+  await core.deleteNamespacedService(
+    appsembleService.metadata.name,
+    KUBE_NAMESPACE,
+    appsembleService,
+  );
+  await core.deleteNamespacedService(mysqlService.metadata.name, KUBE_NAMESPACE, mysqlService);
+  await apps.deleteNamespacedDeployment(
+    appsembleDeployment.metadata.name,
+    KUBE_NAMESPACE,
+    appsembleDeployment,
+  );
+  await apps.deleteNamespacedDeployment(
+    mysqlDeployment.metadata.name,
+    KUBE_NAMESPACE,
+    mysqlService,
+  );
 }
 
 main().catch(err => {
