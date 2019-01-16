@@ -4,7 +4,7 @@ import { Button, SocialLoginButton } from '@appsemble/react-bulma';
 import axios from 'axios';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { BrowserRouter as Router, Route, Switch, Link } from 'react-router-dom';
+import { Link, Route, BrowserRouter as Router, Switch } from 'react-router-dom';
 import { FormattedMessage } from 'react-intl';
 
 import styles from './Login.css';

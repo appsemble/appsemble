@@ -1,9 +1,9 @@
 import {
   processTemplate,
-  sendEmail,
-  sendWelcomeEmail,
-  sendResetPasswordEmail,
   resendVerificationEmail,
+  sendEmail,
+  sendResetPasswordEmail,
+  sendWelcomeEmail,
 } from './email';
 
 describe('sendMail', () => {

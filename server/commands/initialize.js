@@ -23,12 +23,7 @@ export async function handler(argv) {
     database: argv.databaseName,
     uri: argv.databaseUrl,
   });
-  const { OAuthClient, EmailAuthorization } = db.models;
-  await OAuthClient.create({
-    clientId: 'appsemble-editor',
-    clientSecret: 'appsemble-editor-secret',
-    redirectUri: '/editor',
-  });
+  const { EmailAuthorization } = db.models;
   const email = await EmailAuthorization.create({
     email: 'test@example.com',
     name: 'Test Account',

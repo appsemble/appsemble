@@ -81,11 +81,11 @@ yarn block splash
 The blocks can be published using the Appsemble CLI.
 
 ```sh
-yarn appsemble register blocks/action-button
-yarn appsemble register blocks/detail-viewer
-yarn appsemble register blocks/form
-yarn appsemble register blocks/map
-yarn appsemble register blocks/splash
+yarn appsemble block register blocks/action-button
+yarn appsemble block register blocks/detail-viewer
+yarn appsemble block register blocks/form
+yarn appsemble block register blocks/map
+yarn appsemble block register blocks/splash
 ```
 
 ### Tests
@@ -105,6 +105,21 @@ Multiple test databases are created at runtime.
 
 ```sh
 DATABASE_URL=mysql://root:password@localhost:3306 yarn test
+```
+
+### Documentation
+
+The Appsemble documentation can be built using GitBook. The documentation can be previewed by
+running the following command.
+
+```sh
+yarn gitbook serve
+```
+
+The documentation can be compiled by running the following command.
+
+```sh
+yarn gitbook build . public
 ```
 
 ### Building

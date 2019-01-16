@@ -12,6 +12,10 @@ const BULMA_URL = Array.prototype.find.call(document.styleSheets, sheet =>
   sheet.href.startsWith(`${window.location.origin}/bulma/`),
 ).href;
 
+const FA_URL = Array.prototype.find.call(document.styleSheets, sheet =>
+  sheet.href.startsWith(`${window.location.origin}/app/app.css`),
+).href;
+
 /**
  * Render a block on a page.
  *
@@ -68,7 +72,13 @@ export default class Block extends React.Component {
     await Promise.all(
       [
         BULMA_URL,
+        FA_URL,
         ...blockDef.files.filter(url => url.endsWith('.css')).map(url => prefixURL(block, url)),
+        `${window.location.origin}/api/organizations/${app.organizationId}/style/shared`,
+        `${window.location.origin}/api/organizations/${app.organizationId}/style/block/${
+          blockDef.name
+        }`,
+        `${window.location.origin}/api/apps/${app.id}/style/block/${blockDef.name}`,
       ].map(
         url =>
           new Promise(resolve => {

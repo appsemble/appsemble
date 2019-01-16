@@ -4,13 +4,26 @@
   margin-left: 10px;
   margin-right: 10px;
   position: fixed;
-  transition: linear bottom 0.3s;
   width: calc(100vw - 20px);
   z-index: 1000;
+}
 
-  &.hidden {
-    bottom: -100px;
-  }
+.messageEnter {
+  opacity: 0.01;
+}
+
+.messageEnterActive {
+  opacity: 1;
+  transition: opacity 300ms ease-in;
+}
+
+.messageLeave {
+  opacity: 1;
+}
+
+.messageLeaveActive {
+  opacity: 0.01;
+  transition: opacity 300ms ease-in;
 }
 
 .content {

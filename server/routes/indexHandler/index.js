@@ -29,6 +29,7 @@ export default async function indexHandler(ctx) {
     ],
     'img-src': ['*', 'blob:', 'data:'],
     'style-src': ["'self'", "'unsafe-inline'"],
+    'font-src': ["'self'", 'data:'],
   });
   ctx.set('Content-Security-Policy', csp);
 

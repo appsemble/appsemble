@@ -44,6 +44,74 @@ describe('auth controller', () => {
     expect(bcrypt.compareSync(data.password, email.password)).toBeTruthy();
   });
 
+  it('should allow users to log in using valid email credentials', async () => {
+    await db.models.OAuthClient.create({
+      clientId: 'test',
+      clientSecret: 'test',
+      redirectUri: '/',
+    });
+    const response = await request(server)
+      .post('/api/email')
+      .send({ email: 'test@example.com', password: 'password' });
+
+    expect(response.status).toBe(201);
+
+    const { body: token } = await request(server)
+      .post('/api/oauth/token')
+      .type('form')
+      .send({
+        grant_type: 'password',
+        username: 'test@example.com',
+        password: 'password',
+        client_id: 'test',
+      });
+    expect(token.access_token).toMatch(/^[a-zA-Z0-9\-_]+?\.[a-zA-Z0-9\-_]+?\.([a-zA-Z0-9\-_]+)?$/);
+  });
+
+  it('should not allow users to log in using an invalid password', async () => {
+    await db.models.OAuthClient.create({
+      clientId: 'test',
+      clientSecret: 'test',
+      redirectUri: '/',
+    });
+
+    await request(server)
+      .post('/api/email')
+      .send({ email: 'test@example.com', password: 'password' });
+
+    const response = await request(server)
+      .post('/api/oauth/token')
+      .type('form')
+      .send({
+        grant_type: 'password',
+        username: 'test@example.com',
+        password: 'notPassword',
+        client_id: 'test',
+      });
+
+    expect(response.status).toBe(401);
+  });
+
+  it('should not allow users to log in using invalid credentials', async () => {
+    await db.models.OAuthClient.create({
+      clientId: 'test',
+      clientSecret: 'test',
+      redirectUri: '/',
+    });
+
+    const response = await request(server)
+      .post('/api/oauth/token')
+      .type('form')
+      .send({
+        grant_type: 'password',
+        username: 'test@example.com',
+        password: 'notPassword',
+        client_id: 'test',
+      });
+
+    expect(response.status).toBe(401);
+  });
+
   it('should not register invalid email addresses', async () => {
     const response = await request(server)
       .post('/api/email')

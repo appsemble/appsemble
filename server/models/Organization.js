@@ -4,6 +4,8 @@ export default (sequelize, DataTypes) =>
     {
       id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
       name: DataTypes.STRING,
+      coreStyle: { type: DataTypes.TEXT('long') },
+      sharedStyle: { type: DataTypes.TEXT('long') },
     },
     {
       freezeTableName: true,

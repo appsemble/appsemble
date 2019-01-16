@@ -17,14 +17,18 @@ function importModels(db) {
   db.import('../models/BlockAsset');
   db.import('../models/BlockDefinition');
   db.import('../models/BlockVersion');
+  db.import('../models/AppBlockStyle');
+  db.import('../models/OrganizationBlockStyle');
 }
 
 function associateModels(models) {
   const {
     App,
+    AppBlockStyle,
     Snapshot,
     User,
     Organization,
+    OrganizationBlockStyle,
     EmailAuthorization,
     OAuthToken,
     ResetPasswordToken,
@@ -56,12 +60,19 @@ function associateModels(models) {
   Organization.hasOne(Organization);
   Organization.hasMany(App);
   Organization.belongsToMany(User, { through: 'UserOrganization' });
+  Organization.hasMany(OrganizationBlockStyle);
+
+  OrganizationBlockStyle.belongsTo(Organization, { foreignKey: 'OrganizationId' });
+  OrganizationBlockStyle.belongsTo(BlockDefinition, { foreignKey: 'BlockDefinitionId' });
 
   Snapshot.belongsTo(App, { foreignKey: { allowNull: false } });
 
   App.hasMany(Snapshot);
   App.hasMany(Resource);
   App.belongsTo(Organization, { foreignKey: { allowNull: false } });
+
+  AppBlockStyle.belongsTo(App, { foreignKey: 'AppId' });
+  AppBlockStyle.belongsTo(BlockDefinition, { foreignKey: 'BlockDefinitionId' });
 
   Resource.belongsTo(User);
   Resource.belongsTo(App);
