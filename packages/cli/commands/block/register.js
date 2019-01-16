@@ -33,5 +33,5 @@ export async function handler({ ignoreConflict, path }) {
     logging.warn(`${config.id} was already registered.`);
   }
   logging.info(`Publishing ${config.id}@${config.version}…`);
-  await publish({ config, path });
+  await publish({ config, ignoreConflict, path });
 }
