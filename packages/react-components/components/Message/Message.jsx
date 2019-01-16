@@ -31,7 +31,7 @@ export default class Message extends React.Component {
     const { messages } = this.props;
 
     return (
-      <ul className={styles.root}>
+      <div className={styles.root}>
         <ReactCSSTransitionGroup
           transitionEnterTimeout={300}
           transitionLeaveTimeout={300}
@@ -48,7 +48,7 @@ export default class Message extends React.Component {
             </BulmaMessage>
           ))}
         </ReactCSSTransitionGroup>
-      </ul>
+      </div>
     );
   }
 }
