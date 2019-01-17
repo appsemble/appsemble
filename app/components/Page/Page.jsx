@@ -50,7 +50,7 @@ export default class Page extends React.Component {
   componentDidUpdate({ page: prevPage }) {
     const { getBlockDefs, page } = this.props;
     if (page !== prevPage) {
-      getBlockDefs(page.blocks.map(({ type }) => type));
+      getBlockDefs(page.blocks);
     }
   }
 
