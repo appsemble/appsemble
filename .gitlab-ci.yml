@@ -43,6 +43,8 @@ build:blocks:
 deploy:review:
   stage: deploy
   when: manual
+  except:
+    - master@dcentralized/appsemble/appsemble
   allow_failure: false
   environment:
     name: review/$CI_COMMIT_REF_NAME
@@ -61,8 +63,40 @@ deploy:review:
 deploy:review:stop:
   stage: deploy
   when: manual
+  except:
+    - master@dcentralized/appsemble/appsemble
   environment:
     name: review/$CI_COMMIT_REF_NAME
+    action: stop
+  script:
+    - yarn --frozen-lockfile
+    - ./config/bin/stop.js
+
+deploy:staging:
+  stage: deploy
+  only:
+    - master@dcentralized/appsemble/appsemble
+  environment:
+    name: review/master
+    url: https://staging.appsemble.app
+    on_stop: deploy:staging:stop
+  script:
+    - yarn --frozen-lockfile
+    - ./config/bin/deploy.js
+    # This allows passing the CI_ENVIRONMENT_URL for use in later stages.
+    - yarn appsemble config set remote "$CI_ENVIRONMENT_URL"
+  artifacts:
+    expire_in: 1 day
+    paths:
+      - package.json
+
+deploy:staging:stop:
+  stage: deploy
+  when: manual
+  only:
+    - master@dcentralized/appsemble/appsemble
+  environment:
+    name: review/master
     action: stop
   script:
     - yarn --frozen-lockfile
@@ -122,6 +156,7 @@ provision:blocks:
   dependencies:
     - build:blocks
     - deploy:review
+    - deploy:staging
   script:
     - yarn --frozen-lockfile
     - yarn appsemble block register --ignore-conflict blocks/action-button
