@@ -106,7 +106,7 @@ export async function handler({ path, organization, shared, core, block }) {
       return;
     }
 
-    const styleDir = await fs.readdir(`${path}/${subDir}`);
+    const styleDir = await fs.readdir(join(path, subDir));
 
     if (subDir.toLowerCase() === 'core' || subDir.toLowerCase() === 'shared') {
       const indexCss = styleDir.find(fname => fname.toLowerCase() === 'index.css');
@@ -115,16 +115,16 @@ export async function handler({ path, organization, shared, core, block }) {
         return;
       }
 
-      await handleUpload(`${path}/${subDir}/${indexCss}`, organization, subDir.toLowerCase());
+      await handleUpload(join(path, subDir, indexCss), organization, subDir.toLowerCase());
       return;
     }
 
     // Subdirectory is an @organization directory
     await styleDir
-      .filter(styleSub => fs.lstatSync(`${path}/${subDir}/${styleSub}`).isDirectory())
+      .filter(styleSub => fs.lstatSync(join(path, subDir, styleSub)).isDirectory())
       .reduce(async (accumulator, styleSubDir) => {
         await accumulator;
-        const blockStyleDir = await fs.readdir(`${path}/${subDir}/${styleSubDir}`);
+        const blockStyleDir = await fs.readdir(join(path, subDir, styleSubDir));
         const subIndexCss = blockStyleDir.find(fname => fname.toLowerCase() === 'index.css');
         if (!subIndexCss) {
           logging.warn(`No index.css found, skipping directory ${join(path, subDir, styleSubDir)}`);
@@ -132,7 +132,7 @@ export async function handler({ path, organization, shared, core, block }) {
         }
 
         await handleUpload(
-          `${path}/${subDir}/${styleSubDir}/${subIndexCss}`,
+          join(path, subDir, styleSubDir, subIndexCss),
           organization,
           'block',
           `${subDir}/${styleSubDir}`,
