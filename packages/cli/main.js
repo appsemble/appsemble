@@ -1,10 +1,10 @@
 import path from 'path';
 
+import { configureLogger } from '@appsemble/node-utils';
 import yargs from 'yargs';
 
 import handleError from './lib/handleError';
 import initAxios from './lib/initAxios';
-import initLogging from './lib/initLogging';
 
 export default async function main(argv) {
   yargs
@@ -24,7 +24,7 @@ export default async function main(argv) {
       // process.env.NODE_ENV === 'development' ? 'http://localhost:9999' : 'https://appsemble.com',
     })
     .pkgConf('appsembleServer')
-    .middleware([initLogging, initAxios])
+    .middleware([configureLogger, initAxios])
     .commandDir(path.join(__dirname, 'commands'))
     .demandCommand(1)
     .fail(handleError)

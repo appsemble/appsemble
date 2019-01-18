@@ -1,4 +1,4 @@
-import logging from 'winston';
+import { logger } from '@appsemble/node-utils';
 
 import getConfig from '../../lib/getConfig';
 import publish from '../../lib/publish';
@@ -20,6 +20,6 @@ export function builder(yargs) {
 
 export async function handler({ ignoreConflict, path }) {
   const config = await getConfig(path);
-  logging.info(`Publishing ${config.id}@${config.version}`);
+  logger.info(`Publishing ${config.id}@${config.version}`);
   await publish({ config, ignoreConflict, path });
 }

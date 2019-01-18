@@ -1,6 +1,6 @@
 import { EOL } from 'os';
 
-import logging from 'winston';
+import { logger } from '@appsemble/node-utils';
 
 import AppsembleError from './AppsembleError';
 
@@ -14,11 +14,11 @@ import AppsembleError from './AppsembleError';
  */
 export default function handleError(message, error = message) {
   if (typeof error === 'string') {
-    logging.error(error);
+    logger.error(error);
     process.exit(1);
     return;
   }
-  logging.error(error.message);
+  logger.error(error.message);
   if (error instanceof AppsembleError) {
     return;
   }

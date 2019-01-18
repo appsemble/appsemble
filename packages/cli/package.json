@@ -8,6 +8,7 @@
   },
   "main": "main.js",
   "dependencies": {
+    "@appsemble/node-utils": "^1.0.0",
     "axios": "^0.18.0",
     "chalk": "^2.4.2",
     "cosmiconfig": "^5.0.7",
@@ -15,14 +16,12 @@
     "fast-glob": "^2.2.4",
     "form-data": "^2.3.3",
     "fs-extra": "^7.0.1",
-    "json-stringify-safe": "^5.0.1",
     "klaw": "^3.0.0",
     "lodash": "^4.17.11",
     "postcss": "^7.0.7",
     "postcss-load-config": "^2.0.0",
     "postcss-url": "^8.0.0",
     "read-pkg-up": "^4.0.0",
-    "winston": "^3.1.0",
     "yargs": "^12.0.5"
   }
 }

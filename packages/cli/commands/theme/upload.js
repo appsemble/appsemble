@@ -1,4 +1,4 @@
-import logging from 'winston';
+import { logger } from '@appsemble/node-utils';
 import FormData from 'form-data';
 import fs from 'fs-extra';
 import postcss from 'postcss';
@@ -59,7 +59,7 @@ export async function handler({ path, organization, shared, core, block }) {
     type = 'block';
   }
 
-  logging.info(`Upload ${type} stylesheet for organization ${organization}`);
+  logger.info(`Upload ${type} stylesheet for organization ${organization}`);
 
   const data = await fs.readFile(path, 'utf8');
   const postcssConfig = await postcssrc();
@@ -75,5 +75,5 @@ export async function handler({ path, organization, shared, core, block }) {
     await post(`/api/organizations/${organization}/style/${type}`, formData);
   }
 
-  logging.info(`Upload of ${type} stylesheet successful! 🎉`);
+  logger.info(`Upload of ${type} stylesheet successful! 🎉`);
 }
