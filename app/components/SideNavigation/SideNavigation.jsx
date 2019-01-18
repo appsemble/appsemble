@@ -38,7 +38,7 @@ export default class SideNavigation extends React.Component {
     return (
       <SideMenu>
         <nav>
-          <MenuList>
+          <MenuList className={styles.menuList}>
             {app.pages
               .filter(page => !page.parameters)
               .map(page => (
