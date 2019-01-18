@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "dependencies": {
+    "@appsemble/node-utils": "^1.0.0",
     "@appsemble/utils": "^1.0.0",
     "@sentry/node": "^4.4.2",
     "axios": "^0.18.0",
@@ -20,7 +21,6 @@
     "koa": "^2.6.2",
     "koa-bodyparser": "^4.2.1",
     "koa-compress": "^3.0.0",
-    "koa-logger": "^3.2.0",
     "koa-mount": "^4.0.0",
     "koa-oai-router": "^2.0.3",
     "koa-oai-router-middleware": "^1.1.2",

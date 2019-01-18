@@ -4,8 +4,8 @@ import path from 'path';
 import * as Sentry from '@sentry/node';
 import yaml from 'js-yaml';
 import Koa from 'koa';
-import logger from 'koa-logger';
 
+import logger from '../middleware/logger';
 import configureStatic from '../utils/configureStatic';
 import createServer from '../utils/createServer';
 import setupModels from '../utils/setupModels';
