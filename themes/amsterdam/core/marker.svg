@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="24px" height="24px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 43.1 (39012) - http://www.bohemiancoding.com/sketch -->
+    <title>Icons/Bold/Pick location</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <path d="M5.69975881,17.2731178 C5.69975881,17.2731178 0,11.1062422 0,7.15477118 C0,3.20330017 3.13400675,0 7,0 C10.8659932,0 14,3.20330017 14,7.15477118 C14,11.1062422 8.30024119,17.2731178 8.30024119,17.2731178 C7.59681606,18.1039803 6.41786219,18.1060497 5.69975881,17.2731178 Z M7,11 C9.209139,11 11,9.209139 11,7 C11,4.790861 9.209139,3 7,3 C4.790861,3 3,4.790861 3,7 C3,9.209139 4.790861,11 7,11 Z" id="path-1"></path>
+    </defs>
+    <g id="Symbols" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Icons/Bold/Pick-location">
+            <g id="Color/Rood" transform="translate(5.000000, 3.000000)">
+                <mask id="mask-2" fill="white">
+                    <use xlink:href="#path-1"></use>
+                </mask>
+                <use id="Mask" fill="#9B9B9B" xlink:href="#path-1"></use>
+                <g mask="url(#mask-2)" id="Rectangle" fill="#EC0000">
+                    <g transform="translate(-5.000000, -3.000000)">
+                        <rect x="0" y="0" width="24" height="24"></rect>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

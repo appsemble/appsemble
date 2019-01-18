@@ -1,0 +1,109 @@
+/* stylelint-disable selector-max-specificity, no-descending-specificity */
+:not(.fas) {
+  font-family: var(--font-family) !important;
+}
+
+.field:not(:last-child) {
+  margin: 0;
+}
+
+.field-label {
+  display: none;
+}
+
+.input {
+  height: 2.5em !important;
+  line-height: 1.25 !important;
+  padding-left: 1em !important;
+}
+
+.textarea {
+  border-radius: var(--border-radius) !important;
+  padding: 0.9em 1em 1em 3.5em !important;
+  &:not([rows]) {
+    min-height: 100px;
+  }
+}
+
+.input,
+.textarea {
+  background-image: url(description.svg) !important;
+  background-position: 10px 10px !important;
+  background-repeat: no-repeat !important;
+  border-color: transparent !important;
+  box-shadow: 0 0 0 !important;
+  font-size: 0.875rem !important;
+
+  &:focus,
+  &:active {
+    border-color: transparent !important;
+    box-shadow: 0 0 0 0.125em hsla(0, 0%, 30.6%, 0.1) !important;
+  }
+}
+
+.select {
+  border-color: transparent !important;
+  border-radius: var(--border-radius) !important;
+  font-size: 0.875rem !important;
+  height: 2.5em !important;
+  width: 100% !important;
+
+  & select {
+    background-image: url(process.svg) !important;
+    background-position: 10px 4px !important;
+    background-repeat: no-repeat !important;
+    border-color: transparent !important;
+    border-radius: var(--border-radius) !important;
+    font-size: 0.875rem !important;
+    height: 2.5em !important;
+    padding-left: 3.5em !important;
+    width: 100% !important;
+  }
+
+  &:not(.is-multiple)::after {
+    background-image: url(arrow.svg) !important;
+    background-repeat: no-repeat !important;
+    background-size: contain !important;
+    border: 0 !important;
+    border-right: 0 !important;
+    border-top: 0 !important;
+    height: 24px !important;
+    top: 35% !important;
+    transform: none !important;
+    width: 24px !important;
+  }
+
+  & select:focus,
+  & select:active {
+    border-color: transparent !important;
+    box-shadow: 0 0 0 0.125em hsla(0, 0%, 30.6%, 0.1) !important;
+  }
+}
+
+.button.is-primary {
+  background-color: var(--primary-color) !important;
+  border-radius: var(--border-radius) !important;
+  display: block;
+  margin: 2em auto !important;
+  width: 50% !important;
+
+  &:hover {
+    background-color: hsl(0, 75.9%, 67.7%) !important;
+    border-color: transparent !important;
+  }
+
+  &:focus:not(:active) {
+    box-shadow: 0 0 0 0 !important;
+  }
+}
+
+form {
+  max-width: initial !important;
+  padding: 0 !important;
+}
+
+.field.is-horizontal {
+  box-sizing: border-box;
+  max-width: 100vw;
+  padding: 0.5em 1em;
+}
