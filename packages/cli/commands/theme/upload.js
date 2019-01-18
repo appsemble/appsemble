@@ -1,3 +1,5 @@
+import { join } from 'path';
+
 import logging from 'winston';
 import FormData from 'form-data';
 import fs from 'fs-extra';
@@ -125,7 +127,7 @@ export async function handler({ path, organization, shared, core, block }) {
         const blockStyleDir = await fs.readdir(`${path}/${subDir}/${styleSubDir}`);
         const subIndexCss = blockStyleDir.find(fname => fname.toLowerCase() === 'index.css');
         if (!subIndexCss) {
-          logging.warn(`No index.css found, skipping directory ${subDir}`);
+          logging.warn(`No index.css found, skipping directory ${join(path, subDir, styleSubDir)}`);
           return;
         }
 
