@@ -47,12 +47,12 @@
 }
 
 .resetButton {
-  background-color: var(--primary-color);
+  background-color: var(--primary-color, hsl(171, 100%, 41%));
   border: none;
   border-radius: 50%;
   bottom: 10px;
   box-shadow: 0 1px 1px 0 hsl(0, 0%, 0%);
-  color: transparent; /* Replace with ´var(--primary-color-inverse);´ when removing current-location.svg */
+  color: transparent; /* XXX: Replace with ´var(--primary-color-inverse);´ when removing current-location.svg */
   height: 36px;
   position: absolute;
   right: 10px;
@@ -60,6 +60,6 @@
   z-index: 1;
 
   &:hover {
-    color: transparent; /* Replace with ´var(--primary-color-inverse);´ when removing current-location.svg */
+    color: transparent; /* XXX: Replace with ´var(--primary-color-inverse);´ when removing current-location.svg */
   }
 }
