@@ -59,86 +59,84 @@ async function handleUpload(file, organization, type, block) {
 }
 
 function determineType(shared, core, block) {
-  let type;
-
   if (shared) {
-    type = 'shared';
+    return 'shared';
   }
 
   if (core) {
-    type = 'core';
+    return 'core';
   }
 
   if (block) {
-    type = 'block';
+    return 'block';
   }
 
-  return type;
+  return null;
 }
 
 export async function handler({ path, organization, shared, core, block }) {
   const themeDir = await fs.stat(path);
 
-  if (themeDir.isDirectory()) {
-    logging.info('Traversing directory for themes 🕵');
+  if (themeDir.isFile()) {
+    // Path was not a directory, assume it's a file
+    const type = determineType(shared, core, block);
+    if (!type) {
+      throw Error(
+        'When uploading individual themes, at least one of the following options must be provided: shared / core / block.',
+      );
+    }
 
-    const dir = await fs.readdir(path);
-    dir.forEach(async subDir => {
-      if (
-        !subDir.startsWith('@') &&
-        subDir.toLowerCase() !== 'core' &&
-        subDir.toLowerCase() !== 'shared'
-      ) {
-        logging.warn(`Skipping directory ${subDir}`);
+    await handleUpload(path, organization, determineType(shared, core, block), block);
+    return;
+  }
+
+  logging.info('Traversing directory for themes 🕵');
+
+  const dir = await fs.readdir(path);
+  await dir.reduce(async (acc, subDir) => {
+    await acc;
+    if (
+      !subDir.startsWith('@') &&
+      subDir.toLowerCase() !== 'core' &&
+      subDir.toLowerCase() !== 'shared'
+    ) {
+      logging.warn(`Skipping directory ${subDir}`);
+      return;
+    }
+
+    const styleDir = await fs.readdir(`${path}/${subDir}`);
+
+    if (subDir.toLowerCase() === 'core' || subDir.toLowerCase() === 'shared') {
+      const indexCss = styleDir.find(fname => fname.toLowerCase() === 'index.css');
+      if (!indexCss) {
+        logging.warn(`No index.css found, skipping directory ${subDir}`);
         return;
       }
 
-      const styleDir = await fs.readdir(`${path}/${subDir}`);
+      await handleUpload(`${path}/${subDir}/${indexCss}`, organization, subDir.toLowerCase());
+      return;
+    }
 
-      if (subDir.toLowerCase() === 'core' || subDir.toLowerCase() === 'shared') {
-        if (!styleDir.some(styleSubDir => styleSubDir.toLowerCase() === 'index.css')) {
+    // Subdirectory is an @organization directory
+    await styleDir
+      .filter(styleSub => fs.lstatSync(`${path}/${subDir}/${styleSub}`).isDirectory())
+      .reduce(async (accumulator, styleSubDir) => {
+        await accumulator;
+        const blockStyleDir = await fs.readdir(`${path}/${subDir}/${styleSubDir}`);
+        const subIndexCss = blockStyleDir.find(fname => fname.toLowerCase() === 'index.css');
+        if (!subIndexCss) {
           logging.warn(`No index.css found, skipping directory ${subDir}`);
           return;
         }
 
-        await handleUpload(`${path}/${subDir}/index.css`, organization, subDir.toLowerCase());
-        return;
-      }
+        await handleUpload(
+          `${path}/${subDir}/${styleSubDir}/${subIndexCss}`,
+          organization,
+          'block',
+          `${subDir}/${styleSubDir}`,
+        );
+      }, null);
+  }, null);
 
-      // Subdirectory is an @organization directory
-      styleDir
-        .filter(styleSub => fs.lstatSync(`${path}/${subDir}/${styleSub}`).isDirectory())
-        .forEach(async styleSubDir => {
-          const blockStyleDir = await fs.readdir(`${path}/${subDir}/${styleSubDir}`);
-          if (
-            !blockStyleDir.some(
-              blockStyleDirFile => blockStyleDirFile.toLowerCase() === 'index.css',
-            )
-          ) {
-            logging.warn(`No index.css found, skipping directory ${subDir}`);
-            return;
-          }
-
-          await handleUpload(
-            `${path}/${subDir}/${styleSubDir}/index.css`,
-            organization,
-            'block',
-            `${subDir}/${styleSubDir}`,
-          );
-        });
-    });
-
-    logging.info('All done! 👋');
-    return;
-  }
-
-  // Path was not a directory, assume it's a file
-  const type = determineType(shared, core, block);
-  if (!type) {
-    throw Error(
-      'When uploading individual themes, at least one of the following options must be provided: shared / core / block.',
-    );
-  }
-
-  await handleUpload(path, organization, determineType(shared, core, block), block);
+  logging.info('All done! 👋');
 }
