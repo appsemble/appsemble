@@ -1,4 +1,5 @@
-const { CI_ENVIRONMENT_SLUG } = process.env;
+const { CI_ENVIRONMENT_URL, CI_ENVIRONMENT_SLUG } = process.env;
+const { hostname } = new URL(CI_ENVIRONMENT_URL);
 
 module.exports = {
   apiVersion: 'extensions/v1beta1',
@@ -17,13 +18,13 @@ module.exports = {
   spec: {
     tls: [
       {
-        hosts: [`${CI_ENVIRONMENT_SLUG}.appsemble.app`],
+        hosts: [hostname],
         secretName: `${CI_ENVIRONMENT_SLUG}-prod`,
       },
     ],
     rules: [
       {
-        host: `${CI_ENVIRONMENT_SLUG}.appsemble.app`,
+        host: hostname,
         http: {
           paths: [
             {
