@@ -1,0 +1,17 @@
+{
+  "name": "@appsemble/list",
+  "version": "1.0.0",
+  "private": true,
+  "appsemble": {
+    "actions": {
+      "click": {},
+      "load": {
+        "required": true
+      }
+    },
+    "output": "dist"
+  },
+  "dependencies": {
+    "@appsemble/sdk": "^1.0.0"
+  }
+}
