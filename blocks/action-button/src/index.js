@@ -1,6 +1,5 @@
 import { attach } from '@appsemble/sdk';
 import './index.css';
-import './amsterdam.css';
 
 attach(({ actions }) => {
   let node;

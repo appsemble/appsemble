@@ -1,6 +1,5 @@
 import '@fortawesome/fontawesome-free/css/all.css';
 import 'roboto-fontface';
-import '../apps/unlittered/amsterdam.css';
 import { init } from '@sentry/browser';
 import React from 'react';
 import ReactDOM from 'react-dom';

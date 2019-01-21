@@ -6,7 +6,7 @@ import { Map } from 'leaflet/src/map';
 import { CircleMarker } from 'leaflet/src/layer/vector';
 import React from 'react';
 
-import iconUrl from '../../../../../../apps/unlittered/marker.svg';
+import iconUrl from '../../../../../../themes/amsterdam/core/marker.svg';
 import styles from './GeoCoordinatesRenderer.css';
 
 const MARKER_ICON_WIDTH = 40;

@@ -19,3 +19,14 @@
     color: hsl(0, 0%, 21.2%);
   }
 }
+
+.menuList {
+  & > li > * {
+    padding: 1em;
+
+    &.is-active {
+      background-color: inherit;
+      color: var(--primary-color);
+    }
+  }
+}
