@@ -52,7 +52,7 @@ deploy:review:
     on_stop: deploy:review:stop
   script:
     - yarn --frozen-lockfile
-    - ./config/bin/deploy.js
+    - node -r esm config/bin/deploy.js
     # This allows passing the CI_ENVIRONMENT_URL for use in later stages.
     - yarn appsemble config set remote "$CI_ENVIRONMENT_URL"
   artifacts:
@@ -70,7 +70,7 @@ deploy:review:stop:
     action: stop
   script:
     - yarn --frozen-lockfile
-    - ./config/bin/stop.js
+    - node -r esm config/bin/stop.js
 
 deploy:staging:
   stage: deploy
@@ -82,7 +82,7 @@ deploy:staging:
     on_stop: deploy:staging:stop
   script:
     - yarn --frozen-lockfile
-    - ./config/bin/deploy.js
+    - node -r esm config/bin/deploy.js
     # This allows passing the CI_ENVIRONMENT_URL for use in later stages.
     - yarn appsemble config set remote "$CI_ENVIRONMENT_URL"
   artifacts:
@@ -100,7 +100,7 @@ deploy:staging:stop:
     action: stop
   script:
     - yarn --frozen-lockfile
-    - ./config/bin/stop.js
+    - node -r esm config/bin/stop.js
 
 eslint:
   script:

@@ -1,12 +1,11 @@
-#!/usr/bin/env node
-const k8s = require('@kubernetes/client-node');
-const axios = require('axios');
+import k8s from '@kubernetes/client-node';
+import axios from 'axios';
 
-const appsembleDeployment = require('../kubernetes/appsembleDeployment');
-const appsembleService = require('../kubernetes/appsembleService');
-const ingress = require('../kubernetes/ingress');
-const mysqlDeployment = require('../kubernetes/mysqlDeployment');
-const mysqlService = require('../kubernetes/mysqlService');
+import appsembleDeployment from '../kubernetes/appsembleDeployment';
+import appsembleService from '../kubernetes/appsembleService';
+import ingress from '../kubernetes/ingress';
+import mysqlDeployment from '../kubernetes/mysqlDeployment';
+import mysqlService from '../kubernetes/mysqlService';
 
 const { CI_ENVIRONMENT_URL, KUBE_NAMESPACE } = process.env;
 

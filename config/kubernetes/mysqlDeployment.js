@@ -1,6 +1,6 @@
 const { CI_ENVIRONMENT_SLUG } = process.env;
 
-module.exports = {
+export default {
   apiVersion: 'extensions/v1beta1',
   kind: 'Deployment',
   metadata: {
