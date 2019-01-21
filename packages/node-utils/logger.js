@@ -1,6 +1,6 @@
 import winston from 'winston';
 
-const levels = ['critical', 'error', 'warn', 'info', 'verbose', 'silly'];
+const levels = ['crit', 'error', 'warn', 'info', 'verbose', 'silly'];
 const DEFAULT_LEVEL = levels.findIndex(level => level === 'info');
 
 /**
