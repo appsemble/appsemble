@@ -15,13 +15,14 @@ import AppsembleError from './AppsembleError';
 export default function handleError(message, error = message) {
   if (typeof error === 'string') {
     logger.error(error);
+    process.exit(1);
     return;
   }
-  logger.error(error.message);
   if (error instanceof AppsembleError) {
+    logger.error(error.message);
     return;
   }
-  const trace = error.stack.split(EOL).slice(1);
+  const trace = error.stack.split(EOL);
   const lines = error.response
     ? trace.concat(
         [
@@ -32,7 +33,6 @@ export default function handleError(message, error = message) {
         ].map(line => `< ${line}`),
       )
     : trace;
-  // eslint-disable-next-line no-console
-  console.error(lines.join(EOL));
+  logger.error(lines.join(EOL));
   process.exit(1);
 }
