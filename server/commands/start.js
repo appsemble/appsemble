@@ -105,8 +105,7 @@ export async function handler(argv, webpackConfigs) {
     });
   }
   app.on('error', (err, ctx) => {
-    // eslint-disable-next-line no-console
-    console.error(err);
+    logger.error(err);
     Sentry.withScope(scope => {
       scope.setTag('ip', ctx.ip);
       scope.setTag('level', 'error');
