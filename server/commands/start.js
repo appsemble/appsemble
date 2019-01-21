@@ -1,11 +1,12 @@
 import fs from 'fs';
 import path from 'path';
 
+import { logger } from '@appsemble/node-utils';
 import * as Sentry from '@sentry/node';
 import yaml from 'js-yaml';
 import Koa from 'koa';
 
-import logger from '../middleware/logger';
+import loggerMiddleware from '../middleware/logger';
 import configureStatic from '../utils/configureStatic';
 import createServer from '../utils/createServer';
 import setupModels from '../utils/setupModels';
@@ -94,7 +95,7 @@ export async function handler(argv, webpackConfigs) {
     : undefined;
 
   const app = new Koa();
-  app.use(logger());
+  app.use(loggerMiddleware());
   await configureStatic(app, webpackConfigs);
   if (argv.sentryDsn) {
     Sentry.init({ dsn: argv.sentryDsn });
@@ -150,7 +151,6 @@ export async function handler(argv, webpackConfigs) {
   const { info } = yaml.safeLoad(fs.readFileSync(path.resolve(__dirname, '../api/api.yaml')));
 
   app.listen(argv.port || PORT, '0.0.0.0', () => {
-    // eslint-disable-next-line no-console
-    console.log(info.description);
+    logger.info(info.description);
   });
 }

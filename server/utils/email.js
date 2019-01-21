@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 
+import { logger } from '@appsemble/node-utils';
 import frontmatter from 'front-matter';
 import { template } from 'lodash';
 import nodemailer from 'nodemailer';
@@ -53,8 +54,7 @@ export async function sendEmail({ to, cc, bcc, subject }, message, smtp) {
       );
 
     if (process.env.NODE_ENV !== 'test') {
-      // eslint-disable-next-line no-console
-      console.log(`Mail not sent:\n${result.response}`);
+      logger.warn(`Mail not sent:\n${result.response}`);
     }
   }
 
