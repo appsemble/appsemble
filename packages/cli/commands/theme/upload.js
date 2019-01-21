@@ -1,3 +1,5 @@
+import { join } from 'path';
+
 import logging from 'winston';
 import FormData from 'form-data';
 import fs from 'fs-extra';
@@ -35,37 +37,17 @@ export function builder(yargs) {
       desc: 'The block to upload the stylesheet for.',
       type: 'string',
       conflicts: ['shared', 'core'],
-    })
-    .check(argv => {
-      if (!(argv.shared || argv.core || argv.block)) {
-        return 'At least one of the following options must be provided: shared / core / block.';
-      }
-      return true;
     });
 }
 
-export async function handler({ path, organization, shared, core, block }) {
-  let type;
-
-  if (shared) {
-    type = 'shared';
-  }
-
-  if (core) {
-    type = 'core';
-  }
-
-  if (block) {
-    type = 'block';
-  }
-
+async function handleUpload(file, organization, type, block) {
   logging.info(`Upload ${type} stylesheet for organization ${organization}`);
 
-  const data = await fs.readFile(path, 'utf8');
+  const data = await fs.readFile(file, 'utf8');
   const postcssConfig = await postcssrc();
   const postCss = postcss(postcssConfig).use(postcssUrl({ url: 'inline' }));
 
-  const { css } = await postCss.process(data, { from: path, to: null });
+  const { css } = await postCss.process(data, { from: file, to: null });
   const formData = new FormData();
   formData.append('style', Buffer.from(css), 'style.css');
 
@@ -76,4 +58,87 @@ export async function handler({ path, organization, shared, core, block }) {
   }
 
   logging.info(`Upload of ${type} stylesheet successful! 🎉`);
+}
+
+function determineType(shared, core, block) {
+  if (shared) {
+    return 'shared';
+  }
+
+  if (core) {
+    return 'core';
+  }
+
+  if (block) {
+    return 'block';
+  }
+
+  return null;
+}
+
+export async function handler({ path, organization, shared, core, block }) {
+  const themeDir = await fs.stat(path);
+
+  if (themeDir.isFile()) {
+    // Path was not a directory, assume it's a file
+    const type = determineType(shared, core, block);
+    if (!type) {
+      throw Error(
+        'When uploading individual themes, at least one of the following options must be provided: shared / core / block.',
+      );
+    }
+
+    await handleUpload(path, organization, determineType(shared, core, block), block);
+    return;
+  }
+
+  logging.info('Traversing directory for themes 🕵');
+
+  const dir = await fs.readdir(path);
+  await dir.reduce(async (acc, subDir) => {
+    await acc;
+    if (
+      !subDir.startsWith('@') &&
+      subDir.toLowerCase() !== 'core' &&
+      subDir.toLowerCase() !== 'shared'
+    ) {
+      logging.warn(`Skipping directory ${subDir}`);
+      return;
+    }
+
+    const styleDir = await fs.readdir(join(path, subDir));
+
+    if (subDir.toLowerCase() === 'core' || subDir.toLowerCase() === 'shared') {
+      const indexCss = styleDir.find(fname => fname.toLowerCase() === 'index.css');
+      if (!indexCss) {
+        logging.warn(`No index.css found, skipping directory ${subDir}`);
+        return;
+      }
+
+      await handleUpload(join(path, subDir, indexCss), organization, subDir.toLowerCase());
+      return;
+    }
+
+    // Subdirectory is an @organization directory
+    await styleDir
+      .filter(styleSub => fs.lstatSync(join(path, subDir, styleSub)).isDirectory())
+      .reduce(async (accumulator, styleSubDir) => {
+        await accumulator;
+        const blockStyleDir = await fs.readdir(join(path, subDir, styleSubDir));
+        const subIndexCss = blockStyleDir.find(fname => fname.toLowerCase() === 'index.css');
+        if (!subIndexCss) {
+          logging.warn(`No index.css found, skipping directory ${join(path, subDir, styleSubDir)}`);
+          return;
+        }
+
+        await handleUpload(
+          join(path, subDir, styleSubDir, subIndexCss),
+          organization,
+          'block',
+          `${subDir}/${styleSubDir}`,
+        );
+      }, null);
+  }, null);
+
+  logging.info('All done! 👋');
 }
