@@ -1,4 +1,4 @@
-import logging from 'winston';
+import { logger } from '@appsemble/node-utils';
 
 import makePayload from './makePayload';
 import { post } from './request';
@@ -11,15 +11,15 @@ import { post } from './request';
  * @param {string} params.path The path in which the block project is located.
  */
 export default async function publish({ ignoreConflict, path, config }) {
-  logging.info(`Publishing ${config.id}@${config.version}…`);
+  logger.info(`Publishing ${config.id}@${config.version}…`);
   const form = await makePayload({ config, path });
   try {
     await post(`/api/blocks/${config.id}/versions`, form);
-    logging.info(`Successfully published ${config.id}@${config.version} 🎉`);
+    logger.info(`Successfully published ${config.id}@${config.version} 🎉`);
   } catch (err) {
     if (!ignoreConflict || !err.request || err.response.status !== 409) {
       throw err;
     }
-    logging.warn(`${config.id}@${config.version} was already published.`);
+    logger.warn(`${config.id}@${config.version} was already published.`);
   }
 }

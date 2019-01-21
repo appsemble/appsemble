@@ -54,7 +54,7 @@ deploy:review:
     on_stop: deploy:review:stop
   script:
     - yarn --frozen-lockfile
-    - ./config/bin/deploy.js
+    - node -r esm config/bin/deploy.js
     # This allows passing the CI_ENVIRONMENT_URL for use in later stages.
     - yarn appsemble config set remote "$CI_ENVIRONMENT_URL"
   artifacts:
@@ -72,7 +72,7 @@ deploy:review:stop:
     action: stop
   script:
     - yarn --frozen-lockfile
-    - ./config/bin/stop.js
+    - node -r esm config/bin/stop.js
 
 deploy:staging:
   stage: deploy
@@ -84,7 +84,7 @@ deploy:staging:
     on_stop: deploy:staging:stop
   script:
     - yarn --frozen-lockfile
-    - ./config/bin/deploy.js
+    - node -r esm config/bin/deploy.js
     # This allows passing the CI_ENVIRONMENT_URL for use in later stages.
     - yarn appsemble config set remote "$CI_ENVIRONMENT_URL"
   artifacts:
@@ -102,7 +102,7 @@ deploy:staging:stop:
     action: stop
   script:
     - yarn --frozen-lockfile
-    - ./config/bin/stop.js
+    - node -r esm config/bin/stop.js
 
 eslint:
   script:
@@ -118,7 +118,7 @@ pages:
   script:
     - yarn --frozen-lockfile
     - yarn gitbook build . public
-    - yarn surge --domain appsemble.surge.sh --project ./public
+    - yarn surge --domain https://appsemble.surge.sh --project ./public
     # publish to surge, replace with GitLab Pages when https://gitlab.com/gitlab-org/gitlab-ce/issues/30548 is resolved.
   artifacts:
     paths:

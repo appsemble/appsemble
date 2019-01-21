@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { configureLogger } from '@appsemble/node-utils';
 import yargs from 'yargs';
 
 import * as initialize from './commands/initialize';
@@ -22,6 +23,17 @@ function main(argv) {
   yargs
     .usage('Usage:\n  $0 [command]')
     .scriptName(`docker run -p ${start.PORT} -ti appsemble/appsemble`)
+    .option('verbose', {
+      alias: 'v',
+      describe: 'Increase verbosity',
+      type: 'count',
+    })
+    .option('quiet', {
+      alias: 'q',
+      describe: 'Decrease verbosity',
+      type: 'count',
+    })
+    .middleware([configureLogger])
     .command(start)
     .command(initialize)
     .help('help', 'Show this help message.')

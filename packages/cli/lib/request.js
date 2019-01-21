@@ -1,6 +1,6 @@
+import { logger } from '@appsemble/node-utils';
 import axios from 'axios';
 import FormData from 'form-data';
-import logging from 'winston';
 
 /**
  * Make an HTTP request using Axios.
@@ -8,11 +8,11 @@ import logging from 'winston';
  * @param {Request} req The Axios request.
  */
 export default async function request(req) {
-  logging.info(`Start ${req.method.toUpperCase()} ${req.url}`);
-  logging.silly('Request body:', req.body);
+  logger.info(`Start ${req.method.toUpperCase()} ${req.url}`);
+  logger.silly(`Request body: ${JSON.stringify(req.body)}`);
   const { data } = await axios(req);
-  logging.info(`Success ${req.method.toUpperCase()} ${req.url}`);
-  logging.debug('Response body:', data);
+  logger.info(`Success ${req.method.toUpperCase()} ${req.url}`);
+  logger.verbose(`Response body: ${JSON.stringify(data)}`);
   return data;
 }
 

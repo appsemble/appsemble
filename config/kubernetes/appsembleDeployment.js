@@ -1,6 +1,6 @@
 const { CI_COMMIT_REF_NAME, CI_ENVIRONMENT_SLUG, CI_REGISTRY_IMAGE } = process.env;
 
-module.exports = {
+export default {
   apiVersion: 'extensions/v1beta1',
   kind: 'Deployment',
   metadata: {

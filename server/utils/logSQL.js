@@ -1,3 +1,4 @@
+import { logger } from '@appsemble/node-utils';
 import highlight from 'cli-highlight';
 
 /**
@@ -6,6 +7,5 @@ import highlight from 'cli-highlight';
  * @param {string} statement The SQL statement to log.
  */
 export default function logSQL(statement) {
-  // eslint-disable-next-line no-console
-  console.log(highlight(statement, { language: 'sql', ignoreIllegals: true }));
+  logger.silly(highlight(statement, { language: 'sql', ignoreIllegals: true }));
 }

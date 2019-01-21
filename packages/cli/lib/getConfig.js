@@ -1,9 +1,9 @@
 import path from 'path';
 
+import { logger } from '@appsemble/node-utils';
 import chalk from 'chalk';
 import cosmiconfig from 'cosmiconfig';
 import fs from 'fs-extra';
-import logging from 'winston';
 
 import AppsembleError from './AppsembleError';
 
@@ -21,10 +21,10 @@ export default async function getConfig(dir) {
     throw new AppsembleError('No Appsemble configuration file found.');
   }
   const { config, filepath } = found;
-  logging.info(`Found configuration file: ${filepath}`);
+  logger.info(`Found configuration file: ${filepath}`);
   const pkg = await fs.readJSON(path.resolve(filepath, '../package.json'));
   if (!pkg.private) {
-    logging.warn(
+    logger.warn(
       `It is ${chalk.underline.yellow('highly recommended')} to set “${chalk.green(
         '"private"',
       )}: ${chalk.cyan('true')}” in package.json`,
@@ -37,6 +37,6 @@ export default async function getConfig(dir) {
     ...config,
     dir,
   };
-  logging.debug('Resolved configuration:', result);
+  logger.verbose('Resolved configuration:', result);
   return result;
 }
