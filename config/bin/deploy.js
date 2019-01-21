@@ -1,4 +1,5 @@
-import k8s from '@kubernetes/client-node';
+import { logger } from '@appsemble/node-utils';
+import * as k8s from '@kubernetes/client-node';
 import axios from 'axios';
 
 import appsembleDeployment from '../kubernetes/appsembleDeployment';
@@ -76,20 +77,17 @@ async function check() {
 async function waitForServer({ tries, interval }) {
   for (let i = 0; i < tries; i += 1) {
     try {
-      // eslint-disable-next-line no-console
-      console.log(`Checking for API status. Try ${i}.`);
+      logger.info(`Checking for API status. Try ${i}.`);
       // eslint-disable-next-line no-await-in-loop
       await check();
     } catch (err) {
-      // eslint-disable-next-line no-console
-      console.log(`The API is down. Retrying in ${interval} milliseconds…`);
+      logger.info(`The API is down. Retrying in ${interval} milliseconds…`);
       // eslint-disable-next-line no-await-in-loop
       await sleep(interval);
       // eslint-disable-next-line no-continue
       continue;
     }
-    // eslint-disable-next-line no-console
-    console.log('The API is up!');
+    logger.info('The API is up!');
     break;
   }
 }
@@ -100,7 +98,6 @@ async function main() {
 }
 
 main().catch(err => {
-  // eslint-disable-next-line no-console
-  console.error(err);
+  logger.error(err);
   process.exit(1);
 });

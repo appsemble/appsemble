@@ -1,4 +1,5 @@
-import k8s from '@kubernetes/client-node';
+import { logger } from '@appsemble/node-utils';
+import * as k8s from '@kubernetes/client-node';
 
 import appsembleDeployment from '../kubernetes/appsembleDeployment';
 import appsembleService from '../kubernetes/appsembleService';
@@ -24,7 +25,6 @@ async function main() {
 }
 
 main().catch(err => {
-  // eslint-disable-next-line no-console
-  console.error(err);
+  logger.error(err);
   process.exit(1);
 });
