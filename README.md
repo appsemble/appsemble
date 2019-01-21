@@ -75,6 +75,7 @@ The current blocks can be built using the following commands.
 ```sh
 yarn block action-button
 yarn block detail-viewer
+yarn block list
 yarn block form
 yarn block map
 yarn block splash

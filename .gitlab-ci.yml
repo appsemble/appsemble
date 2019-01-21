@@ -28,6 +28,7 @@ build:blocks:
     - yarn --frozen-lockfile
     - yarn block action-button
     - yarn block detail-viewer
+    - yarn block list
     - yarn block form
     - yarn block map
     - yarn block splash
@@ -36,6 +37,7 @@ build:blocks:
     paths:
       - blocks/action-button/dist/
       - blocks/detail-viewer/dist/
+      - blocks/list/dist/
       - blocks/form/dist/
       - blocks/map/dist/
       - blocks/splash/dist/
