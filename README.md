@@ -9,7 +9,7 @@ be found in the [server readme](server/README.md).
 
 A live deployment is made for each branch. Each deployment has their own subdomain of
 _appsemble.app_. The live preview for the master branch can be found on
-https://review-master-ul2m7c.appsemble.app.
+https://staging.appsemble.app.
 
 ### Requirements
 
