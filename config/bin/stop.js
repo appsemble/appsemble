@@ -17,11 +17,21 @@ async function main() {
   kc.loadFromDefault();
   const apps = kc.makeApiClient(k8s.Extensions_v1beta1Api);
   const core = kc.makeApiClient(k8s.Core_v1Api);
+  logger.info(`Stopping ingress: ${ingress.metadata.name}`);
   await apps.deleteNamespacedIngress(ingress.metadata.name, KUBE_NAMESPACE, {});
+  logger.info(`Stopped ingress: ${ingress.metadata.name}`);
+  logger.info(`Stopping service: ${appsembleService.metadata.name}`);
   await core.deleteNamespacedService(appsembleService.metadata.name, KUBE_NAMESPACE, {});
+  logger.info(`Stopped service: ${appsembleService.metadata.name}`);
+  logger.info(`Stopping service: ${mysqlService.metadata.name}`);
   await core.deleteNamespacedService(mysqlService.metadata.name, KUBE_NAMESPACE, {});
+  logger.info(`Stopped service: ${mysqlService.metadata.name}`);
+  logger.info(`Stopping deployment: ${appsembleDeployment.metadata.name}`);
   await apps.deleteNamespacedDeployment(appsembleDeployment.metadata.name, KUBE_NAMESPACE, {});
+  logger.info(`Stopped deployment: ${appsembleDeployment.metadata.name}`);
+  logger.info(`Stopping deployment: ${mysqlDeployment.metadata.name}`);
   await apps.deleteNamespacedDeployment(mysqlDeployment.metadata.name, KUBE_NAMESPACE, {});
+  logger.info(`Stopped deployment: ${mysqlDeployment.metadata.name}`);
 }
 
 main().catch(err => {
