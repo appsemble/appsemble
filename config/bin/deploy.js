@@ -66,7 +66,9 @@ async function deploy() {
     if (err.response.statusCode !== 409) {
       throw err;
     }
-    logger.warn(`Ingress ${ingress.metadata.name} Already exists… Skipping.`);
+    logger.warn(`Ingress ${ingress.metadata.name} Already exists… Replacing instead.`);
+    await apps.replaceNamespacedIngress(ingress.metadata.name, KUBE_NAMESPACE, ingress);
+    logger.info(`Replaced ingress: ${ingress.metadata.name}`);
   }
 }
 
