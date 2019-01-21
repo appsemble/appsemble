@@ -1,6 +1,6 @@
+import { logger } from '@appsemble/node-utils';
 import fs from 'fs-extra';
 import readPkgUp from 'read-pkg-up';
-import logging from 'winston';
 
 export const command = 'set <key> <value>';
 export const description = 'Set an Appsemble configuration option in package.json.';
@@ -22,5 +22,5 @@ export async function handler({ key, value }) {
   }
   pkg.appsembleServer[key] = value;
   await fs.writeJson(path, pkg, { spaces: 2 });
-  logging.info(`Set option "appsembleServer.${key}" to "${value}" in ${path}`);
+  logger.info(`Set option "appsembleServer.${key}" to "${value}" in ${path}`);
 }

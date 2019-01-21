@@ -1,7 +1,7 @@
 const { CI_ENVIRONMENT_URL, CI_ENVIRONMENT_SLUG } = process.env;
 const { hostname } = new URL(CI_ENVIRONMENT_URL);
 
-module.exports = {
+export default {
   apiVersion: 'extensions/v1beta1',
   kind: 'Ingress',
   metadata: {

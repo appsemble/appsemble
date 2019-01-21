@@ -1,9 +1,9 @@
 import path from 'path';
 
+import { configureLogger } from '@appsemble/node-utils';
 import yargs from 'yargs';
 
 import handleError from './lib/handleError';
-import initLogging from './lib/initLogging';
 
 export default async argv => {
   yargs
@@ -17,7 +17,7 @@ export default async argv => {
       describe: 'Decrease verbosity',
       type: 'count',
     })
-    .middleware([initLogging])
+    .middleware([configureLogger])
     .commandDir(path.join(__dirname, 'commands'))
     .demandCommand(1)
     .fail(handleError)

@@ -9,6 +9,7 @@ RUN yarn --frozen-lockfile \
 FROM node:10-slim AS backend
 WORKDIR /app
 COPY server server
+COPY packages/node-utils packages/node-utils
 COPY packages/utils packages/utils
 COPY package.json package.json
 COPY yarn.lock yarn.lock

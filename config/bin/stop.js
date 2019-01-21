@@ -1,11 +1,11 @@
-#!/usr/bin/env node
-const k8s = require('@kubernetes/client-node');
+import { logger } from '@appsemble/node-utils';
+import * as k8s from '@kubernetes/client-node';
 
-const appsembleDeployment = require('../kubernetes/appsembleDeployment');
-const appsembleService = require('../kubernetes/appsembleService');
-const ingress = require('../kubernetes/ingress');
-const mysqlDeployment = require('../kubernetes/mysqlDeployment');
-const mysqlService = require('../kubernetes/mysqlService');
+import appsembleDeployment from '../kubernetes/appsembleDeployment';
+import appsembleService from '../kubernetes/appsembleService';
+import ingress from '../kubernetes/ingress';
+import mysqlDeployment from '../kubernetes/mysqlDeployment';
+import mysqlService from '../kubernetes/mysqlService';
 
 const { KUBE_NAMESPACE } = process.env;
 
@@ -17,15 +17,24 @@ async function main() {
   kc.loadFromDefault();
   const apps = kc.makeApiClient(k8s.Extensions_v1beta1Api);
   const core = kc.makeApiClient(k8s.Core_v1Api);
+  logger.info(`Stopping ingress: ${ingress.metadata.name}`);
   await apps.deleteNamespacedIngress(ingress.metadata.name, KUBE_NAMESPACE, {});
+  logger.info(`Stopped ingress: ${ingress.metadata.name}`);
+  logger.info(`Stopping service: ${appsembleService.metadata.name}`);
   await core.deleteNamespacedService(appsembleService.metadata.name, KUBE_NAMESPACE, {});
+  logger.info(`Stopped service: ${appsembleService.metadata.name}`);
+  logger.info(`Stopping service: ${mysqlService.metadata.name}`);
   await core.deleteNamespacedService(mysqlService.metadata.name, KUBE_NAMESPACE, {});
+  logger.info(`Stopped service: ${mysqlService.metadata.name}`);
+  logger.info(`Stopping deployment: ${appsembleDeployment.metadata.name}`);
   await apps.deleteNamespacedDeployment(appsembleDeployment.metadata.name, KUBE_NAMESPACE, {});
+  logger.info(`Stopped deployment: ${appsembleDeployment.metadata.name}`);
+  logger.info(`Stopping deployment: ${mysqlDeployment.metadata.name}`);
   await apps.deleteNamespacedDeployment(mysqlDeployment.metadata.name, KUBE_NAMESPACE, {});
+  logger.info(`Stopped deployment: ${mysqlDeployment.metadata.name}`);
 }
 
 main().catch(err => {
-  // eslint-disable-next-line no-console
-  console.error(err);
+  logger.error(err);
   process.exit(1);
 });

@@ -1,5 +1,5 @@
+import { logger } from '@appsemble/node-utils';
 import axios from 'axios';
-import logging from 'winston';
 
 /**
  * Configure the default axios URL.
@@ -9,5 +9,5 @@ import logging from 'winston';
  */
 export default function initAxios({ remote }) {
   axios.defaults.baseURL = remote;
-  logging.debug(`Request remote set to ${remote}`);
+  logger.verbose(`Request remote set to ${remote}`);
 }

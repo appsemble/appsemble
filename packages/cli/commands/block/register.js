@@ -1,4 +1,4 @@
-import logging from 'winston';
+import { logger } from '@appsemble/node-utils';
 
 import getConfig from '../../lib/getConfig';
 import publish from '../../lib/publish';
@@ -21,17 +21,17 @@ export function builder(yargs) {
 
 export async function handler({ ignoreConflict, path }) {
   const config = await getConfig(path);
-  logging.info(`Registering block ${config.id}`);
+  logger.info(`Registering block ${config.id}`);
   const { description: desc, id } = config;
   try {
     await post('/api/blocks', { description: desc, id });
-    logging.info(`Registration of ${config.id} successful! 🎉`);
+    logger.info(`Registration of ${config.id} successful! 🎉`);
   } catch (err) {
     if (!ignoreConflict || !err.request || err.response.status !== 409) {
       throw err;
     }
-    logging.warn(`${config.id} was already registered.`);
+    logger.warn(`${config.id} was already registered.`);
   }
-  logging.info(`Publishing ${config.id}@${config.version}…`);
+  logger.info(`Publishing ${config.id}@${config.version}…`);
   await publish({ config, ignoreConflict, path });
 }

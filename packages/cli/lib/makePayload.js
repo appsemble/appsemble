@@ -1,10 +1,10 @@
 import fs from 'fs';
 import path from 'path';
 
+import { logger } from '@appsemble/node-utils';
 import FormData from 'form-data';
 import klaw from 'klaw';
 import { pick } from 'lodash';
-import logging from 'winston';
 
 /**
  * Configure the payload for a new block version upload.
@@ -29,7 +29,7 @@ export default async function makePayload({ config, path: p }) {
         }
         const key = path.relative(fullPath, file.path);
         const realPath = path.relative(process.cwd(), file.path);
-        logging.info(`Adding file: “${realPath}” as “${key}”`);
+        logger.info(`Adding file: “${realPath}” as “${key}”`);
         form.append(key, fs.createReadStream(file.path));
       })
       .on('error', reject)

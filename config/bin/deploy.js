@@ -1,12 +1,12 @@
-#!/usr/bin/env node
-const k8s = require('@kubernetes/client-node');
-const axios = require('axios');
+import { logger } from '@appsemble/node-utils';
+import * as k8s from '@kubernetes/client-node';
+import axios from 'axios';
 
-const appsembleDeployment = require('../kubernetes/appsembleDeployment');
-const appsembleService = require('../kubernetes/appsembleService');
-const ingress = require('../kubernetes/ingress');
-const mysqlDeployment = require('../kubernetes/mysqlDeployment');
-const mysqlService = require('../kubernetes/mysqlService');
+import appsembleDeployment from '../kubernetes/appsembleDeployment';
+import appsembleService from '../kubernetes/appsembleService';
+import ingress from '../kubernetes/ingress';
+import mysqlDeployment from '../kubernetes/mysqlDeployment';
+import mysqlService from '../kubernetes/mysqlService';
 
 const { CI_ENVIRONMENT_URL, KUBE_NAMESPACE } = process.env;
 
@@ -19,35 +19,54 @@ async function deploy() {
   const apps = kc.makeApiClient(k8s.Extensions_v1beta1Api);
   const core = kc.makeApiClient(k8s.Core_v1Api);
   try {
+    logger.info(`Creating deployment: ${mysqlDeployment.metadata.name}`);
     await apps.createNamespacedDeployment(KUBE_NAMESPACE, mysqlDeployment);
+    logger.info(`Created deployment: ${mysqlDeployment.metadata.name}`);
+    logger.info(`Creating service: ${mysqlService.metadata.name}`);
     await core.createNamespacedService(KUBE_NAMESPACE, mysqlService);
-  } catch (err) {
-    if (err.response.statusCode === 409) {
-      await apps.replaceNamespacedDeployment(
-        mysqlDeployment.metadata.name,
-        KUBE_NAMESPACE,
-        mysqlDeployment,
-      );
-    }
-  }
-  try {
-    await apps.createNamespacedDeployment(KUBE_NAMESPACE, appsembleDeployment);
-    await core.createNamespacedService(KUBE_NAMESPACE, appsembleService);
-  } catch (err) {
-    if (err.response.statusCode === 409) {
-      await apps.replaceNamespacedDeployment(
-        appsembleDeployment.metadata.name,
-        KUBE_NAMESPACE,
-        appsembleDeployment,
-      );
-    }
-  }
-  try {
-    await apps.createNamespacedIngress(KUBE_NAMESPACE, ingress);
+    logger.info(`Created service: ${mysqlService.metadata.name}`);
   } catch (err) {
     if (err.response.statusCode !== 409) {
       throw err;
     }
+    logger.warn(`Deployment ${mysqlDeployment.metadata.name} Already exists… Replacing instead.`);
+    await apps.replaceNamespacedDeployment(
+      mysqlDeployment.metadata.name,
+      KUBE_NAMESPACE,
+      mysqlDeployment,
+    );
+    logger.info(`Replaced deployment: ${mysqlDeployment.metadata.name}`);
+  }
+  try {
+    logger.info(`Creating deployment: ${appsembleDeployment.metadata.name}`);
+    await apps.createNamespacedDeployment(KUBE_NAMESPACE, appsembleDeployment);
+    logger.info(`Created deployment: ${appsembleDeployment.metadata.name}`);
+    logger.info(`Creating service: ${appsembleService.metadata.name}`);
+    await core.createNamespacedService(KUBE_NAMESPACE, appsembleService);
+    logger.info(`Created service: ${appsembleService.metadata.name}`);
+  } catch (err) {
+    if (err.response.statusCode !== 409) {
+      throw err;
+    }
+    logger.warn(
+      `Deployment ${appsembleDeployment.metadata.name} Already exists… Replacing instead.`,
+    );
+    await apps.replaceNamespacedDeployment(
+      appsembleDeployment.metadata.name,
+      KUBE_NAMESPACE,
+      appsembleDeployment,
+    );
+    logger.info(`Replaced deployment: ${appsembleDeployment.metadata.name}`);
+  }
+  try {
+    logger.info(`Creating ingress: ${ingress.metadata.name}`);
+    await apps.createNamespacedIngress(KUBE_NAMESPACE, ingress);
+    logger.info(`Created ingress: ${ingress.metadata.name}`);
+  } catch (err) {
+    if (err.response.statusCode !== 409) {
+      throw err;
+    }
+    logger.warn(`Ingress ${ingress.metadata.name} Already exists… Skipping.`);
   }
 }
 
@@ -77,20 +96,17 @@ async function check() {
 async function waitForServer({ tries, interval }) {
   for (let i = 0; i < tries; i += 1) {
     try {
-      // eslint-disable-next-line no-console
-      console.log(`Checking for API status. Try ${i}.`);
+      logger.info(`Checking for API status. Try ${i}.`);
       // eslint-disable-next-line no-await-in-loop
       await check();
     } catch (err) {
-      // eslint-disable-next-line no-console
-      console.log(`The API is down. Retrying in ${interval} milliseconds…`);
+      logger.info(`The API is down. Retrying in ${interval} milliseconds…`);
       // eslint-disable-next-line no-await-in-loop
       await sleep(interval);
       // eslint-disable-next-line no-continue
       continue;
     }
-    // eslint-disable-next-line no-console
-    console.log('The API is up!');
+    logger.info('The API is up!');
     break;
   }
 }
@@ -101,7 +117,6 @@ async function main() {
 }
 
 main().catch(err => {
-  // eslint-disable-next-line no-console
-  console.error(err);
+  logger.error(err);
   process.exit(1);
 });

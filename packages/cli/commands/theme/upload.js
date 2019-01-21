@@ -1,6 +1,6 @@
 import { join } from 'path';
 
-import logging from 'winston';
+import { logger } from '@appsemble/node-utils';
 import FormData from 'form-data';
 import fs from 'fs-extra';
 import postcss from 'postcss';
@@ -41,7 +41,7 @@ export function builder(yargs) {
 }
 
 async function handleUpload(file, organization, type, block) {
-  logging.info(`Upload ${type} stylesheet for organization ${organization}`);
+  logger.info(`Upload ${type} stylesheet for organization ${organization}`);
 
   const data = await fs.readFile(file, 'utf8');
   const postcssConfig = await postcssrc();
@@ -57,7 +57,7 @@ async function handleUpload(file, organization, type, block) {
     await post(`/api/organizations/${organization}/style/${type}`, formData);
   }
 
-  logging.info(`Upload of ${type} stylesheet successful! 🎉`);
+  logger.info(`Upload of ${type} stylesheet successful! 🎉`);
 }
 
 function determineType(shared, core, block) {
@@ -92,7 +92,7 @@ export async function handler({ path, organization, shared, core, block }) {
     return;
   }
 
-  logging.info('Traversing directory for themes 🕵');
+  logger.info('Traversing directory for themes 🕵');
 
   const dir = await fs.readdir(path);
   await dir.reduce(async (acc, subDir) => {
@@ -102,7 +102,7 @@ export async function handler({ path, organization, shared, core, block }) {
       subDir.toLowerCase() !== 'core' &&
       subDir.toLowerCase() !== 'shared'
     ) {
-      logging.warn(`Skipping directory ${subDir}`);
+      logger.warn(`Skipping directory ${subDir}`);
       return;
     }
 
@@ -111,7 +111,7 @@ export async function handler({ path, organization, shared, core, block }) {
     if (subDir.toLowerCase() === 'core' || subDir.toLowerCase() === 'shared') {
       const indexCss = styleDir.find(fname => fname.toLowerCase() === 'index.css');
       if (!indexCss) {
-        logging.warn(`No index.css found, skipping directory ${subDir}`);
+        logger.warn(`No index.css found, skipping directory ${subDir}`);
         return;
       }
 
@@ -127,7 +127,7 @@ export async function handler({ path, organization, shared, core, block }) {
         const blockStyleDir = await fs.readdir(join(path, subDir, styleSubDir));
         const subIndexCss = blockStyleDir.find(fname => fname.toLowerCase() === 'index.css');
         if (!subIndexCss) {
-          logging.warn(`No index.css found, skipping directory ${join(path, subDir, styleSubDir)}`);
+          logger.warn(`No index.css found, skipping directory ${join(path, subDir, styleSubDir)}`);
           return;
         }
 
@@ -140,5 +140,5 @@ export async function handler({ path, organization, shared, core, block }) {
       }, null);
   }, null);
 
-  logging.info('All done! 👋');
+  logger.info('All done! 👋');
 }
