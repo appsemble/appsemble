@@ -1,7 +1,10 @@
+import os from 'os';
+
 import winston from 'winston';
 
 const levels = ['crit', 'error', 'warn', 'info', 'verbose', 'silly'];
 const DEFAULT_LEVEL = levels.findIndex(level => level === 'info');
+const padding = Math.max(...levels.map(({ length }) => length));
 
 /**
  * The default logger for NodeJS Appsemble projects.
@@ -10,10 +13,17 @@ export const logger = winston.createLogger({
   level: levels[DEFAULT_LEVEL],
   levels: levels.reduce((acc, level, index) => ({ ...acc, [level]: index }), {}),
   format: winston.format.combine(
+    winston.format(info => ({
+      ...info,
+      lines: (typeof info.message === 'string' ? info.message.split(/\r?\n/) : [info.message]).map(
+        line => `${''.padEnd(padding - info.level.length)}${line}`,
+      ),
+    }))(),
     winston.format.colorize(),
     winston.format.timestamp({ format: 'HH:mm:ss' }),
-    winston.format.align(),
-    winston.format.printf(({ timestamp, level, message }) => `${timestamp} [${level}]: ${message}`),
+    winston.format.printf(({ timestamp, level, lines }) =>
+      lines.map(line => `${timestamp} [${level}]: ${line}`).join(os.EOL),
+    ),
   ),
   transports: [new winston.transports.Console()],
 });
