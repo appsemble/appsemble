@@ -47,28 +47,27 @@ export function builder(yargs) {
     })
     .option('oauth-google-key', {
       desc: 'The application key to be used for Google OAuth2.',
-      implies: 'oauth-google-secret',
+      implies: ['host', 'oauth-google-secret'],
     })
     .option('oauth-google-secret', {
       desc: 'The secret key to be used for Google OAuth2.',
-      implies: 'oauth-google-key',
+      implies: ['host', 'oauth-google-key'],
     })
     .option('oauth-gitlab-key', {
       desc: 'The application key to be used for GitLab OAuth2.',
-      implies: 'oauth-gitlab-secret',
+      implies: ['host', 'oauth-gitlab-secret'],
     })
     .option('oauth-gitlab-secret', {
       desc: 'The secret key to be used for GitLab OAuth2.',
-      implies: 'oauth-gitlab-key',
+      implies: ['host', 'oauth-gitlab-key'],
     })
     .option('oauth-secret', {
       desc: 'Secret key used to sign JWTs and cookies',
       default: 'appsemble',
     })
-    .option('oauth-server', {
+    .option('host', {
       desc:
-        'The URL used for oauth callbacks. This must include the protocol, defaults to http://localhost:9999',
-      default: 'http://localhost:9999',
+        'The external host on which the server is available. This should include the protocol, hostname, and optionally port.',
     });
 }
 
@@ -118,7 +117,7 @@ export async function handler(argv, webpackConfigs) {
 
   let grantConfig;
   if (argv.oauthGitlabKey || argv.oauthGoogleKey) {
-    const { protocol, host } = new URL(argv.oauthServer);
+    const { protocol, host } = new URL(argv.host);
     grantConfig = {
       server: {
         protocol: protocol.replace(':', ''), // URL.protocol leaves a ´:´ in.
