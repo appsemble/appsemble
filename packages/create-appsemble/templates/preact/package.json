@@ -1,0 +1,10 @@
+{
+  "appsemble": {
+    "actions": {},
+    "output": "dist"
+  },
+  "dependencies": {
+    "@appsemble/react": "^1.0.0",
+    "preact": "^8.4.2"
+  }
+}
