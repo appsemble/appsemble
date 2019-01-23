@@ -66,9 +66,7 @@ export function builder(yargs) {
       default: 'appsemble',
     })
     .option('oauth-server', {
-      desc:
-        'The URL used for oauth callbacks. This must include the protocol, defaults to http://localhost:9999',
-      default: 'http://localhost:9999',
+      desc: 'The URL used for oauth callbacks. This must include the protocol.',
     });
 }
 
