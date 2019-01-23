@@ -65,8 +65,9 @@ export function builder(yargs) {
       desc: 'Secret key used to sign JWTs and cookies',
       default: 'appsemble',
     })
-    .option('oauth-server', {
-      desc: 'The URL used for oauth callbacks. This must include the protocol.',
+    .option('host', {
+      desc:
+        'The external host on which the server is available. This should include the protocol, hostname, and optionally port.',
     });
 }
 
@@ -116,7 +117,7 @@ export async function handler(argv, webpackConfigs) {
 
   let grantConfig;
   if (argv.oauthGitlabKey || argv.oauthGoogleKey) {
-    const { protocol, host } = new URL(argv.oauthServer);
+    const { protocol, host } = new URL(argv.host);
     grantConfig = {
       server: {
         protocol: protocol.replace(':', ''), // URL.protocol leaves a ´:´ in.

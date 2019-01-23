@@ -93,8 +93,9 @@ export function builder(yargs) {
       desc: 'Secret key used to sign JWTs and cookies',
       default: 'appsemble',
     })
-    .option('oauth-server', {
-      desc: 'The URL used for oauth callbacks. This must include the protocol.',
+    .option('host', {
+      desc:
+        'The external host on which the server is available. This should include the protocol, hostname, and optionally the port.',
       default: 'http://localhost:9999',
     });
 }

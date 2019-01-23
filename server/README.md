@@ -39,6 +39,7 @@ passed as a command line parameter instead, if desired.
 | `SMTP_USER`           |         | The user to use to login to the SMTP server.                                                                              |
 | `SMTP_PASS`           |         | The password to use to login to the SMTP server.                                                                          |
 | `SMTP_FROM`           |         | The address to use when sending emails.                                                                                   |
+| `HOST`                |         | The external host on which the server is available. This should include the protocol, hostname, and optionally port.      |
 
 ## Initializing the Database
 
