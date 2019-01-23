@@ -47,19 +47,19 @@ export function builder(yargs) {
     })
     .option('oauth-google-key', {
       desc: 'The application key to be used for Google OAuth2.',
-      implies: 'oauth-google-secret',
+      implies: ['host', 'oauth-google-secret'],
     })
     .option('oauth-google-secret', {
       desc: 'The secret key to be used for Google OAuth2.',
-      implies: 'oauth-google-key',
+      implies: ['host', 'oauth-google-key'],
     })
     .option('oauth-gitlab-key', {
       desc: 'The application key to be used for GitLab OAuth2.',
-      implies: 'oauth-gitlab-secret',
+      implies: ['host', 'oauth-gitlab-secret'],
     })
     .option('oauth-gitlab-secret', {
       desc: 'The secret key to be used for GitLab OAuth2.',
-      implies: 'oauth-gitlab-key',
+      implies: ['host', 'oauth-gitlab-key'],
     })
     .option('oauth-secret', {
       desc: 'Secret key used to sign JWTs and cookies',
