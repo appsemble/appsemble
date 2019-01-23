@@ -52,8 +52,43 @@ docker run -ti appsemble/appsemble initialize
 
 ## Setting up Social Login
 
-In order to use social logins using third parties like Google or GitLab, an _application key_ and an
-_application secret_ must be provided. These can be created
-[here](https://console.cloud.google.com/apis/credentials) for Google and
-[here](https://gitlab.com/profile/applications) for GitLab. The expected scopes are `email` and
-`profile` for Google and `read_user` for GitLab.
+In order to use social logins using third parties such as Google or GitLab, an _application key_ and
+an _application secret_ must be provided. Follow instructions below to enable login using these
+services.
+
+When using social login, the `HOST` variable is required. This should be the full host on which the
+Appsemble server is available.
+
+### GitLab
+
+Go to your [GitLab profile applications page](https://gitlab.com/profile/applications).
+
+Add the following redirect URI, where `HOST` is the actual value `HOST` variable.
+
+```
+{HOST}/api/oauth/connect/gitlab/callback
+```
+
+**Example**: `https://example.com/api/oauth/connect/gitlab/callback`.
+
+Check the `read_user` scope, and click _Save application_.
+
+### Google
+
+Go to the
+[Google Cloud console OAuth consent screen](https://console.cloud.google.com/apis/credentials/consent)
+Add the scopes `email` and `profile`. Under _**Authorized domains**_, add the `HOST` variable. Fill
+in any missing information and click _Save_.
+
+Now go to the
+[Google Cloud console credentials page](https://console.cloud.google.com/apis/credentials). Click
+_Create credentials_ → _OAuth client ID_ → _Web application_. Add the `HOST` variable under
+_**Authorized JavaScript origins**_. Under _**Authorized redirect URIs**_, add the following URI.
+
+```
+{HOST}/api/oauth/connect/google/callback
+```
+
+**Example**: `https://example.com/api/oauth/connect/google/callback`.
+
+Check the `read_user` scope, and click _Save application_.
