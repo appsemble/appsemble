@@ -1,4 +1,9 @@
-const { CI_COMMIT_REF_NAME, CI_ENVIRONMENT_SLUG, CI_REGISTRY_IMAGE } = process.env;
+const {
+  CI_COMMIT_REF_NAME,
+  CI_ENVIRONMENT_SLUG,
+  CI_ENVIRONMENT_URL,
+  CI_REGISTRY_IMAGE,
+} = process.env;
 
 export default {
   apiVersion: 'extensions/v1beta1',
@@ -72,6 +77,10 @@ export default {
               {
                 name: 'SMTP_FROM',
                 valueFrom: { secretKeyRef: { name: 'smtp', key: 'from' } },
+              },
+              {
+                name: 'HOST',
+                value: CI_ENVIRONMENT_URL,
               },
             ],
             ports: [{ containerPort: 9999 }],
