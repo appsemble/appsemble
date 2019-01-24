@@ -4,13 +4,12 @@ import fs from 'fs-extra';
 import sortPackageJson from 'sort-package-json';
 
 export default async function react(outputPath, pkg) {
-  const { appsemble, dependencies } = await fs.readJSON(
+  const { dependencies } = await fs.readJSON(
     path.resolve(__dirname, '../../templates/react/package.json'),
   );
 
   const outPkg = sortPackageJson({
     ...pkg,
-    appsemble: { ...pkg.appsemble, ...appsemble },
     dependencies: { ...pkg.dependencies, ...dependencies },
   });
 

@@ -1,12 +1,4 @@
 {
-  "appsemble": {
-    "actions": {
-      "load": {
-        "required": true
-      }
-    },
-    "output": "dist"
-  },
   "dependencies": {
     "@appsemble/react-bulma": "^1.0.0",
     "@appsemble/react": "^1.0.0",
