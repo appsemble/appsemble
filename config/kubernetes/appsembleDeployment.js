@@ -88,7 +88,7 @@ export default {
                 CI_COMMIT_REF_NAME === 'master'
                 ? [
                     {
-                      name: 'OAUTH_KEY_SECRET',
+                      name: 'OAUTH_GITLAB_KEY',
                       valueFrom: { secretKeyRef: { name: 'gitlab', key: 'key' } },
                     },
                     {
@@ -100,7 +100,7 @@ export default {
                       valueFrom: { secretKeyRef: { name: 'google', key: 'key' } },
                     },
                     {
-                      name: 'OAUTH_GOOGLE_KEY',
+                      name: 'OAUTH_GOOGLE_SECRET',
                       valueFrom: { secretKeyRef: { name: 'google', key: 'secret' } },
                     },
                   ]
