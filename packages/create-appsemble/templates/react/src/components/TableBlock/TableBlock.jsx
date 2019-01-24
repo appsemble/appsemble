@@ -49,7 +49,13 @@ export default class TableBlock extends React.Component {
           </TableRow>
         </TableHead>
         <TableBody>
-          {data.map(item => fields.map(field => <TableCell>{item[field]}</TableCell>))}
+          {data.map(item => (
+            <TableRow>
+              {fields.map(field => (
+                <TableCell>{item[field]}</TableCell>
+              ))}
+            </TableRow>
+          ))}
         </TableBody>
       </Table>
     );
