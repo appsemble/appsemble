@@ -45,6 +45,7 @@ export default class Table extends React.Component {
           is('narrow', narrow),
           is('hoverable', hoverable),
           is('fullwidth', fullwidth),
+          'table',
           className,
         )}
         {...props}
