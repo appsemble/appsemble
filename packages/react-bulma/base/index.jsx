@@ -42,6 +42,7 @@ export { default as NavbarStart } from './NavbarStart';
 export { default as Subtitle } from './Subtitle';
 export { default as Tab } from './Tab';
 export { default as Table } from './Table';
+export { default as TableBody } from './TableBody';
 export { default as TableCell } from './TableCell';
 export { default as TableHead } from './TableHead';
 export { default as TableHeaderCell } from './TableHeaderCell';
