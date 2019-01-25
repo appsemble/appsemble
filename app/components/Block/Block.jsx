@@ -13,7 +13,7 @@ const BULMA_URL = Array.prototype.find.call(document.styleSheets, sheet =>
 ).href;
 
 const FA_URL = Array.prototype.find.call(document.styleSheets, sheet =>
-  sheet.href.startsWith(`${window.location.origin}/app/app.css`),
+  sheet.href.startsWith(`${window.location.origin}/fa/`),
 ).href;
 
 /**
