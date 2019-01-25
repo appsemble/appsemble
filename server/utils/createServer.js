@@ -2,6 +2,7 @@
 import path from 'path';
 import querystring from 'querystring';
 
+import faPkg from '@fortawesome/fontawesome-free/package.json';
 import boom from 'boom';
 import Koa from 'koa';
 import bodyParser from 'koa-bodyparser';
@@ -154,7 +155,7 @@ export default async function createServer({
 
   app.use(
     mount(
-      '/fa',
+      `/fa/${faPkg.version}`,
       serve(path.resolve(__dirname, '../../node_modules/@fortawesome/fontawesome-free')),
     ),
   );
