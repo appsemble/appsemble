@@ -1,4 +1,5 @@
 actions:
-  load: { required: true }
+  load:
+    required: true
 
 output: dist
