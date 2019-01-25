@@ -41,6 +41,8 @@ export { default as NavbarMenu } from './NavbarMenu';
 export { default as NavbarStart } from './NavbarStart';
 export { default as Subtitle } from './Subtitle';
 export { default as Tab } from './Tab';
+export { default as Table } from './Table';
+export { default as TableRow } from './TableRow';
 export { default as TabItem } from './TabItem';
 export { default as Textarea } from './Textarea';
 export { default as Title } from './Title';
