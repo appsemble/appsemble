@@ -6,7 +6,6 @@
     "@appsemble/react-bulma": "1.0.0",
     "@appsemble/react-components": "1.0.0",
     "@appsemble/utils": "1.0.0",
-    "@fortawesome/fontawesome-free": "^5.6.3",
     "axios": "^0.18.0",
     "js-yaml": "^3.12.1",
     "jwt-decode": "^2.2.0",

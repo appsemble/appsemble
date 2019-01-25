@@ -19,6 +19,7 @@ html(lang='en')
   link(rel='apple-touch-icon' href='/icon-57.png?opaque')
   title Appsemble — App not found
   link(rel='stylesheet' href=bulmaURL)
+  link(rel='stylesheet' href=faURL)
   each stylesheet in assets.filter(name => name.endsWith('.css'))
     link(rel='stylesheet' href=`/${stylesheet}`)
   div.is-primary.navbar

@@ -1,5 +1,3 @@
-import '@fortawesome/fontawesome-free/css/all.css';
-
 import getDb from '@appsemble/utils/getDB';
 import React from 'react';
 import ReactDOM from 'react-dom';
