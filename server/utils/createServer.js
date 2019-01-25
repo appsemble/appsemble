@@ -13,6 +13,7 @@ import OAIRouter from 'koa-oai-router';
 import OAIRouterMiddleware from 'koa-oai-router-middleware';
 import OAIRouterParameters from 'koa-oai-router-parameters';
 import Router from 'koa-router';
+import serve from 'koa-static';
 import session from 'koa-session';
 
 import boomMiddleware from '../middleware/boom';
@@ -150,6 +151,14 @@ export default async function createServer({
   if (grantConfig) {
     app.use(mount('/api/oauth', grant));
   }
+
+  app.use(
+    mount(
+      '/fa',
+      serve(path.resolve(__dirname, '../../node_modules/@fortawesome/fontawesome-free')),
+    ),
+  );
+
   app.use(oaiRouter.routes());
   app.use(routes);
 
