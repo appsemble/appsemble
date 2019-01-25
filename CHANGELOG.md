@@ -7,6 +7,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.3.0] - 2019-01-25
+
 ### Added
 
 - CLI: Add `@appsemble/cli` for block developers.
