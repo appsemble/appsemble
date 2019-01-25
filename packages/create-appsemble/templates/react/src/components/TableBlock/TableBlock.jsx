@@ -1,13 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeaderCell,
-  TableRow,
-} from '@appsemble/react-bulma';
+import { Table, TableRow } from '@appsemble/react-bulma';
 
 export default class TableBlock extends React.Component {
   static propTypes = {
@@ -41,22 +34,22 @@ export default class TableBlock extends React.Component {
 
     return (
       <Table>
-        <TableHead>
+        <thead>
           <TableRow>
             {fields.map(field => (
-              <TableHeaderCell key={`header-${field}`}>{field}</TableHeaderCell>
+              <th key={`header-${field}`}>{field}</th>
             ))}
           </TableRow>
-        </TableHead>
-        <TableBody>
+        </thead>
+        <tbody>
           {data.map((item, dataIndex) => (
             <TableRow key={item.id || dataIndex}>
               {fields.map(field => (
-                <TableCell key={`data-${item.id || dataIndex}-${field}`}>{item[field]}</TableCell>
+                <td key={`data-${item.id || dataIndex}-${field}`}>{item[field]}</td>
               ))}
             </TableRow>
           ))}
-        </TableBody>
+        </tbody>
       </Table>
     );
   }
