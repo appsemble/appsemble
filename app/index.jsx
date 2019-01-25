@@ -1,4 +1,3 @@
-import '@fortawesome/fontawesome-free/css/all.css';
 import 'roboto-fontface';
 import { init } from '@sentry/browser';
 import React from 'react';

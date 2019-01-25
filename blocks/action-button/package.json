@@ -12,7 +12,6 @@
     "output": "dist"
   },
   "dependencies": {
-    "@appsemble/sdk": "^1.0.0",
-    "@fortawesome/fontawesome-free": "^5.6.3"
+    "@appsemble/sdk": "^1.0.0"
   }
 }
