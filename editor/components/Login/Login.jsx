@@ -1,5 +1,3 @@
-import '@fortawesome/fontawesome-free/css/all.css';
-
 import { Button, SocialLoginButton } from '@appsemble/react-bulma';
 import axios from 'axios';
 import PropTypes from 'prop-types';

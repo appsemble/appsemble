@@ -5,6 +5,7 @@
   "dependencies": {
     "@appsemble/node-utils": "^1.0.0",
     "@appsemble/utils": "^1.0.0",
+    "@fortawesome/fontawesome-free": "^5.6.3",
     "@sentry/node": "^4.4.2",
     "axios": "^0.18.0",
     "bcrypt": "3.0.2",

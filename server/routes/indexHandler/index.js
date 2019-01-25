@@ -2,7 +2,7 @@ import path from 'path';
 
 import pug from 'pug';
 
-import bulmaURL from '../../utils/bulmaURL';
+import { bulmaURL, faURL } from '../../utils/styleURL';
 import makeCSP from '../../utils/makeCSP';
 import sentryDsnToReportUri from '../../utils/sentryDsnToReportUri';
 
@@ -40,6 +40,7 @@ export default async function indexHandler(ctx) {
       ctx.body = renderError({
         assets,
         bulmaURL,
+        faURL,
         message: 'The app you are looking for could not be found.',
       });
       ctx.status = 404;
@@ -48,6 +49,7 @@ export default async function indexHandler(ctx) {
         app,
         assets,
         bulmaURL,
+        faURL,
         sentryDsn,
       });
     }
@@ -55,6 +57,7 @@ export default async function indexHandler(ctx) {
     ctx.body = renderError({
       assets,
       bulmaURL,
+      faURL,
       message: 'There was a problem loading the app. Please try again later.',
     });
     ctx.status = 500;
