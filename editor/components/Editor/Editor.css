@@ -1,6 +1,6 @@
-body {
-  box-sizing: border-box;
-  margin: 0;
+.root {
+  display: flex;
+  flex: 1;
 }
 
 .leftPanel {
@@ -8,9 +8,13 @@ body {
 }
 
 .rightPanel {
-  background-color: hsl(0, 0%, 49%);
+  background-color: hsl(0, 0%, 7%);
+  border-radius: 22px;
+  box-sizing: border-box;
   display: flex;
   flex: 1 1 0;
+  margin: 4px;
+  padding: 22px;
 }
 
 .editorForm {
@@ -21,6 +25,7 @@ body {
 }
 
 .appFrame {
+  background-color: hsl(0, 0%, 100%);
   border: none;
   flex: 1;
 }
@@ -36,19 +41,9 @@ body {
   margin-bottom: 0 !important;
 }
 
-.editor {
-  display: flex;
-}
-
 .monacoEditor {
   flex: 1;
   width: 100%;
-}
-
-.editorError {
-  color: hsl(0, 100%, 50%);
-  display: inline;
-  margin-left: 5px;
 }
 
 .navbarTitle,

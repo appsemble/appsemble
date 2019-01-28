@@ -5,3 +5,9 @@ html {
 :global(.monaco-editor) {
   display: flex !important;
 }
+
+:global(#app) {
+  display: flex;
+  flex-flow: column;
+  height: 100vh;
+}

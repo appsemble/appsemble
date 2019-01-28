@@ -1,10 +1,10 @@
 const path = require('path');
 
-const CleanWebpackPlugin = require('clean-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const ServiceWorkerWebpackPlugin = require('serviceworker-webpack-plugin');
 const { UnusedFilesWebpackPlugin } = require('unused-files-webpack-plugin');
 const merge = require('webpack-merge');
+const { StatsWriterPlugin } = require('webpack-stats-plugin');
 
 const shared = require('./shared');
 
@@ -14,16 +14,12 @@ module.exports = (env, argv) => {
   const { mode } = argv;
   const production = mode === 'production';
   const appEntry = path.resolve(__dirname, '../../app');
-  const editorEntry = path.resolve(__dirname, '../../editor');
 
   return merge.smart(shared(env, argv), {
-    name: 'Appsemble',
-    entry: {
-      app: [appEntry],
-      editor: [editorEntry],
-    },
+    name: 'Appsemble App',
+    entry: [appEntry],
     output: {
-      filename: production ? '[name]/[hash].js' : '[name]/[name].js',
+      filename: production ? '_/[hash].js' : '_/app/[name].js',
       publicPath,
     },
     plugins: [
@@ -32,19 +28,29 @@ module.exports = (env, argv) => {
         filename: 'service-worker.js',
         minimize: production,
         publicPath,
-        transformOptions: ({ assets }) => assets.filter(asset => asset.startsWith('/app/')),
+        transformOptions: ({ assets }) => assets /* .filter(asset => asset.startsWith('/app/')) */,
       }),
       new UnusedFilesWebpackPlugin({
         failOnUnused: production,
         patterns: ['app/**/*.*'],
         globOptions: {
-          ignore: ['**/package.json', '**/*.test.{js,jsx}', '**/service-worker/**'],
+          ignore: [
+            '**/node_modules/**',
+            '**/package.json',
+            '**/*.test.{js,jsx}',
+            '**/service-worker/**',
+          ],
         },
       }),
       new MiniCssExtractPlugin({
-        filename: production ? '[name]/[hash].css' : '[name]/[name].css',
+        filename: production ? '_/[hash].css' : '_/app/[name].css',
       }),
-      production && new CleanWebpackPlugin(['dist']),
+      production &&
+        new StatsWriterPlugin({
+          transform({ assetsByChunkName }) {
+            return JSON.stringify(assetsByChunkName.main.filter(name => !name.endsWith('.map')));
+          },
+        }),
     ].filter(Boolean),
   });
 };

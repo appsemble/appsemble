@@ -120,24 +120,16 @@ async function refreshTokenLogin(url, db, dispatch) {
  * - Axios is configured.
  * - The user is restored.
  */
-export function initAuth(authentication) {
+export function initAuth() {
   return async (dispatch, getState) => {
-    const { db, ...state } = getState();
+    const { db } = getState();
     const token = await db
       .transaction(AUTH)
       .objectStore(AUTH)
       .get(0);
     let user = null;
     if (token != null) {
-      const auth =
-        authentication || state.app.app.authentication || state.app.app.authentication[0];
-      user = setupAuth(
-        token.accessToken,
-        token.refreshToken,
-        auth.refreshURL || auth.url,
-        db,
-        dispatch,
-      );
+      user = setupAuth(token.accessToken, token.refreshToken, '/api/oauth/token', db, dispatch);
     }
     dispatch({
       type: INITIALIZED,
@@ -191,21 +183,19 @@ export function passwordLogin(url, { username, password }, refreshURL, clientId,
   };
 }
 
-export function oauthLogin(url, token, refreshToken, refreshURL, clientId, clientSecret, scope) {
+export function oauthLogin(token) {
   return async (dispatch, getState) => {
     const { db } = getState();
     const user = await requestToken(
-      url,
+      '/api/oauth/token',
       {
         grant_type: 'authorization_code',
         code: token,
-        client_id: clientId,
-        client_secret: clientSecret,
-        scope,
+        client_id: 'appsemble-editor',
+        client_secret: 'appsemble-editor-secret',
+        scope: 'apps:read apps:write',
       },
       db,
-      dispatch,
-      refreshURL,
       dispatch,
     );
 

@@ -18,7 +18,6 @@
     "grant-koa": "^4.3.1",
     "js-yaml": "^3.12.1",
     "jsonwebtoken": "^8.4.0",
-    "klaw-sync": "^6.0.0",
     "koa": "^2.6.2",
     "koa-bodyparser": "^4.2.1",
     "koa-compress": "^3.0.0",
