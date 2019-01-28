@@ -7,6 +7,10 @@
 - [Block Development](docs/Developing-Blocks.md)
 - [Theming](docs/Theming.md)
 
+## Deployment
+
+- [Docker Compose](docs/Deployment Using Docker Compose.md)
+
 ## server
 
 - [server](server/README.md)
