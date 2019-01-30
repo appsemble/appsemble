@@ -5,44 +5,44 @@ http://localhost:9999/editor.
 After logging in a list of apps you can manage will appear, providing direct links to the app itself
 as well as the corresponding editor pages.
 
-From this screen new apps can be created by clicking on the greyed out ’Create new app’ card.  
+From this screen new apps can be created by clicking on the greyed out _”Create new app”_ card.  
 By clicking on the create app card, a form is presented in which the following attributes can be
 filled in:
 
 **App Name**: This is the name of the app. It determines the url at which the app will be made
 available as well as the name that shows up when installing it. Note that app names must be unique.
 
-**Organization**: Apps belong to organizations, which is used to determine the which rights users
-have for certain apps such as the ability to modify them. By default every user belongs to their own
-organization. Ff the user is in multiple organizations, the organization can be selected using a
-dropdown menu.
+**Organization**: Each app belongs to an organization. This is used to determine the which rights
+users have for certain apps such as the ability to modify them. By default every user belongs to
+their own organization. If the user is in multiple organizations, the organization can be selected
+using a dropdown menu.
 
 **App Template**: The template determines what the initial app looks like. This can range from a
 very simple app that does not do very much to a more complex app that is provided with
 authentication, uploading files, et cetera.
 
-After filling in these fields and clicking the ’Create App’ button, Appsemble redirects to the
+After filling in these fields and clicking the _”Create App”_ button, Appsemble redirects to the
 editor page corresponding to the newly created app.
 
 ## App editor
 
-The app editor is an environment where apps can be modified, previewed and updated. On the left-hand
-side it displays the definitions that make up an app and the right-hand side displays a preview of
-what the app will look like based on these definitions.
+The app editor is an environment where apps can be modified, previewed, and updated. On the
+left-hand side it displays the definitions that make up an app and the right-hand side displays a
+preview of what the app will look like based on these definitions.
 
 Apps are defined using a data serialization language called `YAML`. To learn more about how YAML
 works, please refer to [this page](yaml).
 
-The ’Recipe’ tab contains the app definition in YAML. Changes can be made to the app definition by
-editing them in this tab and pressing the ’Save’ button. Doing so will replace the app definition in
-the right-hand panel with the new one, serving as a preview of the changes that have been made. Note
-that some functionality such as the [resource API](Appsemble%20Resources.md) when defining new
+The _”Recipe”_ tab contains the app definition in YAML. Changes can be made to the app definition by
+editing them in this tab and pressing the _”Save”_ button. Doing so will replace the app definition
+in the right-hand panel with the new one, serving as a preview of the changes that have been made.
+Note that some functionality such as the [resource API](Appsemble%20Resources.md) when defining new
 resources might not be available unless the new app definition has been uploaded to the server.
 
-The other tabs that are available such as the ’Core’ and ’Shared’ tabs refer to the Theming API. For
-more information about this, please refer to [this page](Theming.md).
+The other tabs that are available such as the _”Core”_ and _”Shared”_ tabs refer to the Theming API.
+For more information about this, please refer to [this page](Theming.md).
 
-Provided the app definition and styles successfully validated, the ’Upload’ button will upload all
+Provided the app definition and styles successfully validated, the _”Upload”_ button will upload all
 this data to the server, effectively updating the app.
 
 ## Example app
@@ -82,8 +82,8 @@ resources:
         type: string
 ```
 
-This creates a ’person’ resource which contains a first name, a last name, an email address, an age
-and a description. For more information about how resources work, please refer to
+This creates a _”person”_ resource which contains a first name, a last name, an email address, an
+age, and a description. For more information about how resources work, please refer to
 [this page](Appsemble%20Resources.md).
 
 Next, add a new page containing `list` block used to display all the resources that are available:
@@ -147,9 +147,10 @@ Let's follow up by adding a page in which resources can be registered.
 
 To summarize this page: It contains a `form` block in which various fields of specific types are
 defined. These fields match up with the resource definition defined before. The form block contains
-two actions. The first action is ’submit’ which describes where the resource will be submitted to.
+two actions. The first action is _”submit”_ which describes where the resource will be submitted to.
 This can be sent to any API, but in this case it's being sent to Appsemble's resource API. Upon a
-succesful submit, the page will link back to the ’Person List’ page as described in ’submitSuccess’.
+succesful submit, the page will link back to the _”Person List”_ page as described in
+\_”submitSuccess”.
 
 At this point it might become noticable how navigating through these pages can be cumbersome. One
 way to make this easier is to add an `action-button` block to both pages that refer to each other.
@@ -196,7 +197,7 @@ The `detail-viewer` block is able to display various types of fields based on th
 the resource definition. In this example it simply displays every available field, but other fields
 may also be hidden by removing it from the `fields` parameter.
 
-Finally, in order to link the `list` block to the ’Person Details’ page, add a click action to its
+Finally, in order to link the `list` block to the _”Person Details”_ page, add a click action to its
 list of actions:
 
 ```yaml
