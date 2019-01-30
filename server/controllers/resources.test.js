@@ -121,7 +121,7 @@ describe('resource controller', () => {
 
     expect(response.status).toBe(201);
     expect(response.body.foo).toStrictEqual(resource.foo);
-    expect(response.body.id).toBeTruthy();
+    expect(response.body.id).toBeDefined();
   });
 
   it('should validate resources', async () => {
@@ -133,7 +133,7 @@ describe('resource controller', () => {
       .send(resource);
 
     expect(response.status).toBe(400);
-    expect(response.body.data.foo.required).toBeTruthy();
+    expect(response.body.data.foo.required).toBe(true);
   });
 
   it('should check if an app has a specific resource definition', async () => {

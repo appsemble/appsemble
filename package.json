@@ -16,7 +16,7 @@
     "eslint": "eslint --format gitlab --max-warnings 0 --ext js,jsx,md .",
     "prettier": "prettier --check '**/*.{html,json,md,yaml,yml}'",
     "stylelint": "stylelint .",
-    "stylelint:rd": "stylelint . --report-needless-disables",
+    "stylelint:rd": "stylelint --report-needless-disables .",
     "test": "jest"
   },
   "appsembleServer": {

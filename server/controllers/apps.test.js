@@ -48,7 +48,6 @@ describe('app controller', () => {
       .get('/api/apps')
       .set('Authorization', token);
 
-    expect(Array.isArray(body)).toBeTruthy();
     expect(body).toHaveLength(0);
   });
 
@@ -65,7 +64,6 @@ describe('app controller', () => {
       .get('/api/apps')
       .set('Authorization', token);
 
-    expect(Array.isArray(body)).toBeTruthy();
     expect(body).toHaveLength(2);
     expect(body).toContainEqual({ id: appA.id, path: 'test-app', ...appA.definition });
     expect(body).toContainEqual({ id: appB.id, path: 'another-app', ...appB.definition });

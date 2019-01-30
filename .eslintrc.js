@@ -74,12 +74,7 @@ module.exports = {
         jest: true,
       },
       rules: {
-        'jest/consistent-test-it': [
-          'error',
-          {
-            fn: 'it',
-          },
-        ],
+        'jest/consistent-test-it': ['error', { fn: 'it' }],
         'jest/expect-expect': 'error',
         'jest/no-alias-methods': 'error',
         'jest/no-disabled-tests': 'error',
@@ -89,10 +84,12 @@ module.exports = {
         'jest/no-jest-import': 'error',
         'jest/no-test-callback': 'error',
         'jest/no-test-return-statement': 'error',
+        'jest/no-truthy-falsy': 'error',
         'jest/prefer-to-be-null': 'error',
         'jest/prefer-to-be-undefined': 'error',
         'jest/prefer-to-contain': 'error',
         'jest/prefer-to-have-length': 'error',
+        'jest/prefer-todo': 'error',
         'jest/prefer-spy-on': 'error',
         'jest/prefer-strict-equal': 'error',
         'jest/valid-describe': 'error',
