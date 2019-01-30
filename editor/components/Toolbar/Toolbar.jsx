@@ -2,6 +2,7 @@ import { Button, Icon, Navbar, NavbarBrand, NavbarItem } from '@appsemble/react-
 import PropTypes from 'prop-types';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
+import { Link } from 'react-router-dom';
 
 import messages from './messages';
 import styles from './Toolbar.css';
@@ -17,7 +18,7 @@ export default class Toolbar extends React.Component {
 
     return (
       <Navbar className={`is-fixed-top ${styles.root}`} color="dark">
-        <NavbarBrand>
+        <NavbarBrand component={Link} to="/">
           <NavbarItem className="title" component="header">
             <img
               alt={intl.formatMessage(messages.iconAlt)}
