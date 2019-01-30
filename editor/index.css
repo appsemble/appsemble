@@ -2,12 +2,14 @@ html {
   overflow-y: auto;
 }
 
+body {
+  height: 100vh;
+}
+
 :global(.monaco-editor) {
   display: flex !important;
 }
 
 :global(#app) {
-  display: flex;
-  flex-flow: column;
-  height: 100vh;
+  height: 100%;
 }
