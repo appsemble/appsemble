@@ -68,7 +68,7 @@ module.exports = (env, { mode, publicPath }) => {
             {
               loader: 'file-loader',
               options: {
-                name: production ? '/_/[hash].[ext]' : '/_/[name].[ext]',
+                name: production ? '_/[hash].[ext]' : '_/[name].[ext]',
                 publicPath,
               },
             },
@@ -80,7 +80,7 @@ module.exports = (env, { mode, publicPath }) => {
             {
               loader: 'file-loader',
               options: {
-                name: production ? '/_/[hash].[ext]' : '/_/[name].[ext]',
+                name: production ? '_/[hash].[ext]' : '_/[name].[ext]',
                 publicPath,
               },
             },
