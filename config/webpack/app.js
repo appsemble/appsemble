@@ -28,7 +28,7 @@ module.exports = (env, argv) => {
         filename: 'service-worker.js',
         minimize: production,
         publicPath,
-        transformOptions: ({ assets }) => assets /* .filter(asset => asset.startsWith('/app/')) */,
+        transformOptions: ({ assets }) => assets,
       }),
       new UnusedFilesWebpackPlugin({
         failOnUnused: production,
