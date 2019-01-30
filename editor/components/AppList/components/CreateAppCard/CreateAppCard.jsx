@@ -56,7 +56,7 @@ export default class CreateAppCard extends React.Component {
         user.organizations[selectedOrganization],
       );
 
-      history.push(`/editor/${app.id}`);
+      history.push(`/_/edit/${app.id}`);
     } catch (e) {
       if (e.response) {
         if (e.response.status === 409) {
