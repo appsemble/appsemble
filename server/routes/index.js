@@ -11,7 +11,7 @@ import manifestHandler from './manifestHandler';
 const router = new Router();
 router.get(bulmaURL, bulmaHandler);
 router.get(faURL, faHandler);
-router.get('/editor/(.*)?', editorHandler);
+router.get('/_/([a-z\\d/-]+)?', editorHandler);
 router.get('/favicon.ico', faviconHandler);
 router.get('/:id(\\d+)?/(fav)?icon-:width(\\d+).:format(png|jpg|tiff|webp)', iconHandler);
 router.get(

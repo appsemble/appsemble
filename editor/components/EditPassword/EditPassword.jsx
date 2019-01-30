@@ -1,5 +1,3 @@
-import querystring from 'querystring';
-
 import { Button, Container, Icon, InputField, Message, MessageBody } from '@appsemble/react-bulma';
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -32,7 +30,7 @@ export default class EditPassword extends React.Component {
 
     const { password } = this.state;
     const { resetPassword, location } = this.props;
-    const { token } = querystring.parse(location.search.substr(1));
+    const token = new URLSearchParams(location.search).get('token');
 
     this.setState({ submitting: true, error: false });
 

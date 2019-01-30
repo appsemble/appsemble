@@ -28,15 +28,7 @@ async function getStore() {
 getStore().then(store => {
   ReactDOM.render(
     <Provider store={store}>
-      <App
-        authentication={{
-          url: `${window.location.origin}/api/oauth/token`,
-          refreshURL: `${window.location.origin}/api/oauth/token`,
-          clientId: 'appsemble-editor',
-          clientSecret: 'appsemble-editor-secret',
-          scope: 'apps:read apps:write',
-        }}
-      />
+      <App />
     </Provider>,
     document.getElementById('app'),
   );

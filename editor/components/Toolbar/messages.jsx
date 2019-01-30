@@ -1,7 +1,6 @@
 import { defineMessages } from 'react-intl';
 
 export default defineMessages({
+  iconAlt: 'Appsemble logo',
   logoutButton: 'Logout',
-  registerLink: 'Register a new account',
-  forgotPasswordLink: 'Forgot your password?',
 });

@@ -1,8 +1,7 @@
+import { Fab } from '@appsemble/react-bulma';
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import React from 'react';
-
-import { Fab } from '../../index';
 
 export default class SocialLoginButton extends React.Component {
   static propTypes = {
