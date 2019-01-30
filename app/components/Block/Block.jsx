@@ -31,15 +31,18 @@ export default class Block extends React.Component {
      */
     block: PropTypes.shape().isRequired,
     blockDef: PropTypes.shape(),
+    data: PropTypes.shape(),
     history: PropTypes.shape().isRequired,
     location: PropTypes.shape().isRequired,
     match: PropTypes.shape().isRequired,
     showDialog: PropTypes.func,
+    showMessage: PropTypes.func.isRequired,
   };
 
   static defaultProps = {
     actionCreators: null,
     blockDef: null,
+    data: undefined,
     showDialog: null,
   };
 

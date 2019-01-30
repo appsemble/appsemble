@@ -38,8 +38,14 @@ import messages from './messages';
 
 export default class Editor extends React.Component {
   static propTypes = {
-    push: PropTypes.func.isRequired,
+    createApp: PropTypes.func.isRequired,
+    history: PropTypes.shape().isRequired,
+    intl: PropTypes.shape().isRequired,
     location: PropTypes.shape().isRequired,
+    logout: PropTypes.func.isRequired,
+    match: PropTypes.shape().isRequired,
+    push: PropTypes.func.isRequired,
+    user: PropTypes.shape().isRequired,
   };
 
   state = {
@@ -131,6 +137,7 @@ export default class Editor extends React.Component {
             this.setState({ valid: true, dirty: false });
 
             // YAML and schema appear to be valid, send it to the app preview iframe
+            // eslint-disable-next-line react/prop-types
             this.frame.current.contentWindow.postMessage(
               { type: 'editor/EDIT_SUCCESS', app, style, sharedStyle },
               window.location.origin,
@@ -239,7 +246,8 @@ export default class Editor extends React.Component {
   };
 
   onIconChange = e => {
-    const { id } = this.props;
+    const { match } = this.props;
+    const { id } = match.params;
     const file = e.target.files[0];
 
     this.setState({

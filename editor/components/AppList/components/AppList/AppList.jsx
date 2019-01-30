@@ -9,6 +9,7 @@ import styles from './AppList.css';
 export default class AppList extends React.Component {
   static propTypes = {
     apps: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+    getApps: PropTypes.func.isRequired,
     history: PropTypes.shape().isRequired,
   };
 

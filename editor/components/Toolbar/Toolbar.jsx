@@ -11,6 +11,7 @@ export default class Toolbar extends React.Component {
   static propTypes = {
     intl: PropTypes.shape().isRequired,
     isLoggedIn: PropTypes.bool.isRequired,
+    logout: PropTypes.func.isRequired,
   };
 
   render() {
