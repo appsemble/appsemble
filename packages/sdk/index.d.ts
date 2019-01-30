@@ -47,8 +47,13 @@ export interface Block {
    * A mapping of actions that can be fired by the block to action handlers.
    *
    * The exact meaning of the parameters depends on the block type.
-   * */
-  actions?: { type: Function };
+   */
+  actions?: {
+    [action: string]: {
+      type: string;
+      [additionalProperty: string]: any;
+    };
+  };
 }
 
 /**
