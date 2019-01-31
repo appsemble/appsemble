@@ -1,11 +1,12 @@
 # App Development
 
-Apps can be created and modified using the Appsemble editor located at
-http://localhost:9999/editor.  
+Apps can be created and modified using the Appsemble editor located at http://localhost:9999/editor.
+
 After logging in a list of apps you can manage will appear, providing direct links to the app itself
 as well as the corresponding editor pages.
 
-From this screen new apps can be created by clicking on the greyed out _”Create new app”_ card.  
+From this screen new apps can be created by clicking on the greyed out _”Create new app”_ card.
+
 By clicking on the create app card, a form is presented in which the following attributes can be
 filled in:
 
@@ -48,8 +49,10 @@ this data to the server, effectively updating the app.
 ## Example app
 
 An app definition at the very least contains a name, the path it has been assigned to and a list of
-`pages`.  
-Each `page` is provided with a name as well as a list of `blocks`.  
+`pages`.
+
+Each `page` is provided with a name as well as a list of `blocks`.
+
 A `block` is specified by a type as well as a version. The type follows the format of
 `@organization/name`. If the organization is _appsemble_, it may be omitted. A `block` may also have
 other properties such as named parameters and actions. The significance of these fields depends on
@@ -107,7 +110,8 @@ pages:
 ```
 
 Saving and uploading the app at this point will result in no resources being displayed due to the
-fact that there aren't any available.  
+fact that there aren't any available.
+
 Let's follow up by adding a page in which resources can be registered.
 
 ```yaml
@@ -192,7 +196,8 @@ that is able to display a resource.
 ```
 
 The structure of this page is the same as any other page with the exception of the `id` parameter.
-This is used to determine which resource to load.  
+This is used to determine which resource to load.
+
 The `detail-viewer` block is able to display various types of fields based on the type specified in
 the resource definition. In this example it simply displays every available field, but other fields
 may also be hidden by removing it from the `fields` parameter.
