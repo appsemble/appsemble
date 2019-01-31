@@ -45,7 +45,7 @@ yarn appsemble block register blocks/test
 
 ## Testing the block
 
-Open the Appsemble editor on http://localhost:9999/editor. Login, and create your first app. This
+Open the Appsemble editor on at the base URL of Appsemble. Login, and create your first app. This
 following example app will display your new block.
 
 ```yaml

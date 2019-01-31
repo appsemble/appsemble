@@ -1,6 +1,7 @@
 # App Development
 
-Apps can be created and modified using the Appsemble editor located at http://localhost:9999/editor.
+Apps can be created and modified using the Appsemble editor. This can be found at the base URL of
+Appsemble.
 
 After logging in a list of apps you can manage will appear, providing direct links to the app itself
 as well as the corresponding editor pages.
