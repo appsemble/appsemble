@@ -4,10 +4,12 @@ import React from 'react';
 
 export default class MenuList extends React.Component {
   static propTypes = {
+    className: PropTypes.string,
     component: PropTypes.string,
   };
 
   static defaultProps = {
+    className: null,
     component: 'ul',
   };
 

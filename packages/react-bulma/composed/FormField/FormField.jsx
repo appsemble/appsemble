@@ -6,6 +6,7 @@ import { Control, Field, FieldBody, FieldLabel, Help, Label } from '../../base';
 export default class FormField extends React.Component {
   static propTypes = {
     children: PropTypes.node.isRequired,
+    color: PropTypes.node,
     iconLeft: PropTypes.node,
     iconRight: PropTypes.node,
     help: PropTypes.node,
@@ -14,6 +15,7 @@ export default class FormField extends React.Component {
   };
 
   static defaultProps = {
+    color: null,
     iconLeft: null,
     iconRight: null,
     label: null,

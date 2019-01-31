@@ -10,6 +10,7 @@ import {
   Modal,
   SelectField,
 } from '@appsemble/react-bulma';
+import PropTypes from 'prop-types';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 
@@ -18,6 +19,14 @@ import styles from './CreateAppCard.css';
 import templates from '../../../../templates';
 
 export default class CreateAppCard extends React.Component {
+  static propTypes = {
+    createApp: PropTypes.func.isRequired,
+    history: PropTypes.shape().isRequired,
+    intl: PropTypes.shape().isRequired,
+    push: PropTypes.func.isRequired,
+    user: PropTypes.shape().isRequired,
+  };
+
   state = {
     modalOpen: false,
     selectedTemplate: 0,
@@ -56,7 +65,7 @@ export default class CreateAppCard extends React.Component {
         user.organizations[selectedOrganization],
       );
 
-      history.push(`/editor/${app.id}`);
+      history.push(`/_/edit/${app.id}`);
     } catch (e) {
       if (e.response) {
         if (e.response.status === 409) {

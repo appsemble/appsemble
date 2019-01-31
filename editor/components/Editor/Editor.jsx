@@ -17,11 +17,7 @@ import {
   Modal,
   Navbar,
   NavbarBrand,
-  NavbarBurger,
-  NavbarEnd,
   NavbarItem,
-  NavbarMenu,
-  NavbarStart,
   Tab,
   TabItem,
 } from '@appsemble/react-bulma';
@@ -42,9 +38,14 @@ import messages from './messages';
 
 export default class Editor extends React.Component {
   static propTypes = {
-    id: PropTypes.string.isRequired,
-    push: PropTypes.func.isRequired,
+    createApp: PropTypes.func.isRequired,
+    history: PropTypes.shape().isRequired,
+    intl: PropTypes.shape().isRequired,
     location: PropTypes.shape().isRequired,
+    logout: PropTypes.func.isRequired,
+    match: PropTypes.shape().isRequired,
+    push: PropTypes.func.isRequired,
+    user: PropTypes.shape().isRequired,
   };
 
   state = {
@@ -58,7 +59,6 @@ export default class Editor extends React.Component {
     dirty: true,
     icon: undefined,
     iconURL: undefined,
-    openMenu: false,
     warningDialog: false,
     // eslint-disable-next-line react/no-unused-state
     organizationId: undefined,
@@ -68,12 +68,13 @@ export default class Editor extends React.Component {
 
   async componentDidMount() {
     const {
-      id,
       history,
+      match,
       push,
       location,
       intl: { formatMessage },
     } = this.props;
+    const { id } = match.params;
 
     if (!location.hash) {
       history.push('#editor');
@@ -121,14 +122,14 @@ export default class Editor extends React.Component {
     this.setState(
       (
         { appSchema, recipe, style, sharedStyle, organizationId },
-        { id, intl: { formatMessage }, push },
+        { intl: { formatMessage }, match, push },
       ) => {
         let app;
         // Attempt to parse the YAML into a JSON object
         try {
           app = yaml.safeLoad(recipe);
           app.organizationId = Number(organizationId);
-          app.id = Number(id);
+          app.id = Number(match.params.id);
         } catch (error) {
           push(formatMessage(messages.invalidYaml));
           return { valid: false, dirty: false };
@@ -145,6 +146,7 @@ export default class Editor extends React.Component {
             this.setState({ valid: true, dirty: false });
 
             // YAML and schema appear to be valid, send it to the app preview iframe
+            // eslint-disable-next-line react/prop-types
             this.frame.current.contentWindow.postMessage(
               { type: 'editor/EDIT_SUCCESS', app, style, sharedStyle },
               window.location.origin,
@@ -172,16 +174,14 @@ export default class Editor extends React.Component {
   };
 
   uploadApp = async () => {
-    const {
-      id,
-      push,
-      intl: { formatMessage },
-    } = this.props;
+    const { intl, match, push } = this.props;
     const { recipe, style, sharedStyle, icon, valid } = this.state;
 
     if (!valid) {
       return;
     }
+
+    const { id } = match.params;
 
     try {
       const formData = new FormData();
@@ -189,12 +189,12 @@ export default class Editor extends React.Component {
       formData.append('style', new Blob([style], { type: 'text/css' }));
       formData.append('sharedStyle', new Blob([sharedStyle], { type: 'text/css' }));
       await axios.put(`/api/apps/${id}`, formData);
-      push({ body: formatMessage(messages.updateSuccess), color: 'success' });
+      push({ body: intl.formatMessage(messages.updateSuccess), color: 'success' });
     } catch (e) {
       if (e.response && e.response.status === 403) {
-        push(formatMessage(messages.forbidden));
+        push(intl.formatMessage(messages.forbidden));
       } else {
-        push(formatMessage(messages.errorUpdate));
+        push(intl.formatMessage(messages.errorUpdate));
       }
 
       return;
@@ -206,7 +206,7 @@ export default class Editor extends React.Component {
           headers: { 'Content-Type': icon.type },
         });
       } catch (e) {
-        push(formatMessage(messages.errorUpdateIcon));
+        push(intl.formatMessage(messages.errorUpdateIcon));
       }
     }
 
@@ -255,7 +255,8 @@ export default class Editor extends React.Component {
   };
 
   onIconChange = e => {
-    const { id } = this.props;
+    const { match } = this.props;
+    const { id } = match.params;
     const file = e.target.files[0];
 
     this.setState({
@@ -279,11 +280,9 @@ export default class Editor extends React.Component {
       dirty,
       icon,
       iconURL,
-      openMenu,
       warningDialog,
     } = this.state;
     const {
-      id,
       location: { hash: tab },
     } = this.props;
     const filename = icon ? icon.name : 'Icon';
@@ -312,16 +311,11 @@ export default class Editor extends React.Component {
     }
 
     return (
-      <div className={styles.editor}>
+      <div className={styles.root}>
         <div className={styles.leftPanel}>
           <form className={styles.editorForm} onSubmit={this.onSave}>
-            <Navbar className="is-dark">
+            <Navbar>
               <NavbarBrand>
-                <NavbarItem>
-                  <Link className={styles.navbarTitle} to="/editor">
-                    Editor
-                  </Link>
-                </NavbarItem>
                 <NavbarItem>
                   <Button disabled={!dirty} type="submit">
                     Save
@@ -332,45 +326,26 @@ export default class Editor extends React.Component {
                     Upload
                   </Button>
                 </NavbarItem>
-                <NavbarBurger
-                  active={openMenu}
-                  onClick={() => this.setState({ openMenu: !openMenu })}
-                />
+                <NavbarItem>
+                  <File className={`${icon && 'has-name'}`}>
+                    <FileLabel component="label">
+                      <FileInput
+                        accept="image/jpeg, image/png, image/tiff, image/webp, image/xml+svg"
+                        name="icon"
+                        onChange={this.onIconChange}
+                      />
+                      <FileCta>
+                        <FileIcon fa="upload" />
+                        <FileLabel>Icon</FileLabel>
+                      </FileCta>
+                      {icon && <FileName>{filename}</FileName>}
+                    </FileLabel>
+                  </File>
+                  {iconURL && (
+                    <Image alt="Icon" className={styles.iconPreview} size={32} src={iconURL} />
+                  )}
+                </NavbarItem>
               </NavbarBrand>
-              <NavbarMenu className={`${openMenu && 'is-active'}`}>
-                <NavbarStart>
-                  <NavbarItem>
-                    <File className={`${icon && 'has-name'}`}>
-                      <FileLabel component="label" htmlFor="icon-upload">
-                        <FileInput
-                          accept="image/jpeg, image/png, image/tiff, image/webp, image/xml+svg"
-                          id="icon-upload"
-                          name="icon"
-                          onChange={this.onIconChange}
-                        />
-                        <FileCta>
-                          <FileIcon fa="upload" />
-                          <FileLabel>Icon</FileLabel>
-                        </FileCta>
-                        {icon && <FileName>{filename}</FileName>}
-                      </FileLabel>
-                    </File>
-                    {iconURL && (
-                      <Image alt="Icon" className={styles.iconPreview} size={32} src={iconURL} />
-                    )}
-                  </NavbarItem>
-                </NavbarStart>
-                <NavbarEnd>
-                  <NavbarItem>
-                    <Button onClick={this.onLogout}>
-                      <Icon fa="sign-out-alt" />
-                      <span>
-                        <FormattedMessage {...messages.logoutButton} />
-                      </span>
-                    </Button>
-                  </NavbarItem>
-                </NavbarEnd>
-              </NavbarMenu>
             </Navbar>
             <Tab boxed className={styles.editorTabs}>
               <TabItem active={tab === '#editor'} value="editor">
@@ -435,7 +410,7 @@ export default class Editor extends React.Component {
         </div>
 
         <div className={styles.rightPanel}>
-          {id && path && (
+          {path && (
             <iframe
               ref={this.frame}
               className={styles.appFrame}

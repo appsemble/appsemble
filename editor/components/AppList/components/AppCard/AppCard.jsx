@@ -13,15 +13,17 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 
+import styles from './AppCard.css';
 import messages from './messages';
 
 export default class AppCard extends React.Component {
   static propTypes = {
     app: PropTypes.shape().isRequired,
+    intl: PropTypes.shape().isRequired,
   };
 
   render() {
-    const { app } = this.props;
+    const { app, intl } = this.props;
 
     return (
       <Card>
@@ -30,14 +32,19 @@ export default class AppCard extends React.Component {
         </CardHeader>
         <CardContent>
           <Content>
-            <Image alt="Logo" size={64} src={`/${app.id}/icon-64.png`} />
+            <Image
+              alt={intl.formatMessage(messages.icon)}
+              className={styles.image}
+              size={64}
+              src={`/${app.id}/icon-64.png`}
+            />
           </Content>
         </CardContent>
         <CardFooter>
-          <CardFooterItem component="a" href={`/${app.path}`}>
+          <CardFooterItem component="a" href={`/${app.path}`} target="_blank">
             <FormattedMessage {...messages.view} />
           </CardFooterItem>
-          <CardFooterItem component={Link} to={`/editor/${app.id}`}>
+          <CardFooterItem component={Link} to={`/_/edit/${app.id}`}>
             <FormattedMessage {...messages.edit} />
           </CardFooterItem>
         </CardFooter>

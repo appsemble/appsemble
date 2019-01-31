@@ -3,7 +3,8 @@ FROM node:10-slim AS frontend
 WORKDIR /app
 COPY . .
 RUN yarn --frozen-lockfile \
- && yarn build
+ && yarn build:app \
+ && yarn build:editor
 
 # Setup the backend
 FROM node:10-slim AS backend
