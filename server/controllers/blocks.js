@@ -204,6 +204,24 @@ export async function getBlockVersion(ctx) {
   ctx.body = { files: files.map(f => f.filename), name, version, ...blockVersion };
 }
 
+export async function getBlockVersions(ctx) {
+  const { organization, id } = ctx.params;
+  const name = `${organization}/${id}`;
+  const { BlockVersion } = ctx.db.models;
+
+  const blockVersions = await BlockVersion.findAll({
+    attributes: ['version', 'actions', 'position', 'resources'],
+    raw: true,
+    where: { name },
+  });
+
+  if (!blockVersions) {
+    throw Boom.notFound('Block version not found');
+  }
+
+  ctx.body = blockVersions;
+}
+
 export async function getBlockAsset(ctx) {
   const { organization, id, version, path } = ctx.params;
   const name = `${organization}/${id}`;
