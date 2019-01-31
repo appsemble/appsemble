@@ -2,6 +2,6 @@
   "name": "@appsemble/node-utils",
   "version": "1.0.0",
   "dependencies": {
-    "winston": "^3.1.0"
+    "winston": "^3.2.1"
   }
 }

@@ -5,6 +5,6 @@ module.exports = {
     [/\.css$/.source]: 'identity-obj-proxy',
   },
   snapshotSerializers: ['enzyme-to-json/serializer'],
-  setupTestFrameworkScriptFile: '<rootDir>/config/jest/setupTestFramework',
+  setupFiles: ['<rootDir>/config/jest/setupTestFramework'],
   testURL: 'http://localhost',
 };

@@ -8,6 +8,7 @@ export default class Tab extends React.Component {
   static propTypes = {
     boxed: PropTypes.bool,
     centered: PropTypes.bool,
+    children: PropTypes.node,
     className: PropTypes.string,
     component: PropTypes.string,
     fullWidth: PropTypes.bool,
@@ -21,6 +22,7 @@ export default class Tab extends React.Component {
     boxed: false,
     centered: false,
     className: null,
+    children: null,
     component: 'div',
     fullWidth: false,
     right: false,

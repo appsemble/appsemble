@@ -17,7 +17,7 @@ describe('organization controller', () => {
 
     server = await createServer({ db });
     ({ BlockDefinition, Organization, OrganizationBlockStyle } = db.models);
-  });
+  }, 10e3);
 
   beforeEach(async () => {
     await truncate(db);

@@ -5,6 +5,7 @@ import { ModalBackground, ModalClose, ModalContainer, ModalContent } from '../..
 
 export default class Modal extends React.Component {
   static propTypes = {
+    children: PropTypes.node,
     ModalProps: PropTypes.shape(),
     ModalBackgroundProps: PropTypes.shape(),
     ModalCloseProps: PropTypes.shape(),
@@ -14,6 +15,7 @@ export default class Modal extends React.Component {
   };
 
   static defaultProps = {
+    children: null,
     ModalProps: {},
     ModalBackgroundProps: {},
     ModalCloseProps: {},

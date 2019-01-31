@@ -14,7 +14,7 @@ export default class FileName extends React.Component {
   };
 
   render() {
-    const { boxed, className, color, component: Component, ...props } = this.props;
+    const { className, component: Component, ...props } = this.props;
 
     return <Component className={classNames('file-name', className)} {...props} />;
   }

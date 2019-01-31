@@ -24,7 +24,6 @@ export default class CheckBox extends React.Component {
 
   render() {
     const {
-      children,
       className,
       component: Component,
       disabled,
