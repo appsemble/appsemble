@@ -2,9 +2,7 @@
   "private": true,
   "workspaces": [
     "server",
-    "app",
     "blocks/*",
-    "editor",
     "packages/*"
   ],
   "scripts": {

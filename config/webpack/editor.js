@@ -17,7 +17,7 @@ const publicPath = '/';
 module.exports = (env, argv) => {
   const { mode } = argv;
   const production = mode === 'production';
-  const editorEntry = path.resolve(__dirname, '../../editor');
+  const editorEntry = path.resolve(__dirname, '../../packages/editor');
 
   return merge.smart(shared(env, argv), {
     name: 'Appsemble Editor',
