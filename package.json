@@ -1,7 +1,6 @@
 {
   "private": true,
   "workspaces": [
-    "server",
     "blocks/*",
     "packages/*"
   ],
@@ -10,7 +9,7 @@
     "build:app": "webpack --config config/webpack/app.js --mode production",
     "build:editor": "webpack --config config/webpack/editor.js --mode production",
     "start": "appsemble start",
-    "initialize": "node -r esm server initialize --database-url mysql://root:password@localhost:3306/appsemble",
+    "initialize": "node -r esm packages/server initialize --database-url mysql://root:password@localhost:3306/appsemble",
     "eslint": "eslint --format gitlab --max-warnings 0 --ext js,jsx,md,ts,tsx .",
     "prettier": "prettier --check '**/*.{html,json,md,yaml,yml}'",
     "stylelint": "stylelint .",

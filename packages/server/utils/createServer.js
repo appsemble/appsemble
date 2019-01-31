@@ -156,7 +156,7 @@ export default async function createServer({
   app.use(
     mount(
       `/fa/${faPkg.version}`,
-      serve(path.resolve(__dirname, '../../node_modules/@fortawesome/fontawesome-free')),
+      serve(path.dirname(require.resolve('@fortawesome/fontawesome-free/package.json'))),
     ),
   );
 
