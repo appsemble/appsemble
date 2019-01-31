@@ -44,7 +44,7 @@ well as blocks, such as input fields. It can also be used to apply [CSS variable
 
 ## Applying themes for an application
 
-Open the Appsemble editor on http://localhost:9999/editor. Login, and create your first app.  
+Open the Appsemble editor located at the base URL of Appsemble. Login, and create your first app.  
 Within the editor, tabs for `shared` and `core` are available. These tabs contain the current
 styling for these modules. Tabs containing styling for specific blocks are automatically added and
 removed depending on which blocks are used within the app recipe.
