@@ -4,4 +4,3 @@ dist/
 /public/
 node_modules/
 _book/
-/packages/create-appsemble/templates/**
