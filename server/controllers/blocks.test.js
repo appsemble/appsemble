@@ -115,6 +115,23 @@ describe('blocks', () => {
     expect(status).toBe(201);
   });
 
+  it('should be possible to fetch uploaded block versions', async () => {
+    await request(server)
+      .post('/api/blocks')
+      .send({ id: '@xkcd/standing' });
+
+    await request(server)
+      .post('/api/blocks/@xkcd/standing/versions')
+      .attach('build/standing.png', path.join(__dirname, '__fixtures__/standing.png'))
+      .attach('build/testblock.js', path.join(__dirname, '__fixtures__/testblock.js'))
+      .field('data', JSON.stringify({ version: '1.32.9' }));
+
+    const { body } = await request(server).get('/api/blocks/@xkcd/standing/versions');
+    expect(body).toStrictEqual([
+      { actions: null, position: null, resources: null, version: '1.32.9' },
+    ]);
+  });
+
   it('should be possible to upload block versions where data is sent as the last parameter', async () => {
     await request(server)
       .post('/api/blocks')
