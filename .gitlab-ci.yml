@@ -208,3 +208,8 @@ test:
   artifacts:
     reports:
       junit: junit.xml
+
+tsc:
+  script:
+    - yarn --frozen-lockfile
+    - yarn tsc

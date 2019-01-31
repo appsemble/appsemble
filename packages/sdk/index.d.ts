@@ -1,11 +1,11 @@
 /**
  * An action that can be called from within a block.
- * @typedef {Actions} Action
- * @property {Function} dispatch A function which can be called to dispatch the action.
- * @property {string} type The type of the action.
  */
 export interface Action {
+  /** A function which can be called to dispatch the action. */
   dispatch: Function;
+
+  /** The type of the action. */
   type: string;
 }
 
@@ -41,7 +41,7 @@ export interface Block {
    *
    * The exact meaning of the parameters depends on the block type.
    */
-  parameters?: Object;
+  parameters?: {};
 
   /**
    * A mapping of actions that can be fired by the block to action handlers.
@@ -67,18 +67,20 @@ export interface BootstrapParams {
   block: Block;
 
   /** Any kind of data that has been passed in by some context. */
-  data: Object;
+  data: {};
 
   /** The shadow root to which DOM elements may be appended. */
   shadowRoot: ShadowRoot;
 }
+
+type Awaitable<T> = T | Promise<T>
 
 /**
  * Register a boostrap function.
  *
  * @param fn The bootstrap function to register
  */
-export function bootstrap(fn: Function<BootstrapParams>): void;
+export function bootstrap(fn: (params: BootstrapParams) => Awaitable<void>): void;
 
 /**
  * Attach the returned node to the shadow root.
@@ -89,4 +91,4 @@ export function bootstrap(fn: Function<BootstrapParams>): void;
  *
  * @param fn The bootstrap function to register.
  */
-export function attach(fn: (_: BootstrapParams) => void): void;
+export function attach(fn: (params: BootstrapParams) => Awaitable<HTMLElement | void>): void;
