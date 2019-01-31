@@ -60,6 +60,8 @@ export default class Editor extends React.Component {
     icon: undefined,
     iconURL: undefined,
     warningDialog: false,
+    // eslint-disable-next-line react/no-unused-state
+    organizationId: undefined,
   };
 
   frame = React.createRef();
@@ -100,6 +102,8 @@ export default class Editor extends React.Component {
         initialRecipe: recipe,
         path: data.path,
         iconURL: `/api/apps/${id}/icon`,
+        // eslint-disable-next-line react/no-unused-state
+        organizationId: data.organizationId,
       });
     } catch (e) {
       if (e.response && (e.response.status === 404 || e.response.status === 401)) {
@@ -116,11 +120,16 @@ export default class Editor extends React.Component {
     event.preventDefault();
 
     this.setState(
-      ({ appSchema, recipe, style, sharedStyle }, { intl: { formatMessage }, push }) => {
+      (
+        { appSchema, recipe, style, sharedStyle, organizationId },
+        { intl: { formatMessage }, match, push },
+      ) => {
         let app;
         // Attempt to parse the YAML into a JSON object
         try {
           app = yaml.safeLoad(recipe);
+          app.organizationId = Number(organizationId);
+          app.id = Number(match.params.id);
         } catch (error) {
           push(formatMessage(messages.invalidYaml));
           return { valid: false, dirty: false };
