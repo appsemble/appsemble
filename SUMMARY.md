@@ -4,6 +4,7 @@
 
 ## development
 
+- [App Development](docs/App-Development.md)
 - [Block Development](docs/Developing-Blocks.md)
 - [Theming](docs/Theming.md)
 

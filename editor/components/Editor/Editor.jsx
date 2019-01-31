@@ -38,8 +38,14 @@ import messages from './messages';
 
 export default class Editor extends React.Component {
   static propTypes = {
-    push: PropTypes.func.isRequired,
+    createApp: PropTypes.func.isRequired,
+    history: PropTypes.shape().isRequired,
+    intl: PropTypes.shape().isRequired,
     location: PropTypes.shape().isRequired,
+    logout: PropTypes.func.isRequired,
+    match: PropTypes.shape().isRequired,
+    push: PropTypes.func.isRequired,
+    user: PropTypes.shape().isRequired,
   };
 
   state = {
@@ -54,6 +60,8 @@ export default class Editor extends React.Component {
     icon: undefined,
     iconURL: undefined,
     warningDialog: false,
+    // eslint-disable-next-line react/no-unused-state
+    organizationId: undefined,
   };
 
   frame = React.createRef();
@@ -94,6 +102,8 @@ export default class Editor extends React.Component {
         initialRecipe: recipe,
         path: data.path,
         iconURL: `/api/apps/${id}/icon`,
+        // eslint-disable-next-line react/no-unused-state
+        organizationId: data.organizationId,
       });
     } catch (e) {
       if (e.response && (e.response.status === 404 || e.response.status === 401)) {
@@ -110,11 +120,16 @@ export default class Editor extends React.Component {
     event.preventDefault();
 
     this.setState(
-      ({ appSchema, recipe, style, sharedStyle }, { intl: { formatMessage }, push }) => {
+      (
+        { appSchema, recipe, style, sharedStyle, organizationId },
+        { intl: { formatMessage }, match, push },
+      ) => {
         let app;
         // Attempt to parse the YAML into a JSON object
         try {
           app = yaml.safeLoad(recipe);
+          app.organizationId = Number(organizationId);
+          app.id = Number(match.params.id);
         } catch (error) {
           push(formatMessage(messages.invalidYaml));
           return { valid: false, dirty: false };
@@ -131,6 +146,7 @@ export default class Editor extends React.Component {
             this.setState({ valid: true, dirty: false });
 
             // YAML and schema appear to be valid, send it to the app preview iframe
+            // eslint-disable-next-line react/prop-types
             this.frame.current.contentWindow.postMessage(
               { type: 'editor/EDIT_SUCCESS', app, style, sharedStyle },
               window.location.origin,
@@ -239,7 +255,8 @@ export default class Editor extends React.Component {
   };
 
   onIconChange = e => {
-    const { id } = this.props;
+    const { match } = this.props;
+    const { id } = match.params;
     const file = e.target.files[0];
 
     this.setState({

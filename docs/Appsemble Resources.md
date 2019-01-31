@@ -23,22 +23,15 @@ person:
     - email
   properties:
     firstName:
-      title: First Name
       type: string
     lastName:
-      title: Last Name
       type: string
     email:
-      title: Email Address
       type: string
       format: email
     age:
-      title: Notities
       type: integer
-      placeholder: 0
-      minimum: 18
     description:
-      title: Description
       type: string
 ```
 
