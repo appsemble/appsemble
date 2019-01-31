@@ -73,7 +73,7 @@ export interface BootstrapParams {
   shadowRoot: ShadowRoot;
 }
 
-type Awaitable<T> = T | Promise<T>
+type Awaitable<T> = T | Promise<T>;
 
 /**
  * Register a boostrap function.
