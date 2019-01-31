@@ -6,6 +6,7 @@ const bulmaPkg = require('bulma/package.json');
 const faPkg = require('@fortawesome/fontawesome-free/package.json');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin');
 const { UnusedFilesWebpackPlugin } = require('unused-files-webpack-plugin');
 const merge = require('webpack-merge');
 
@@ -41,6 +42,7 @@ module.exports = (env, argv) => {
       new MiniCssExtractPlugin({
         filename: production ? '_/[hash].css' : '_/editor/[name].css',
       }),
+      new MonacoWebpackPlugin({ languages: ['css', 'json', 'yaml'] }),
     ],
   });
 };
