@@ -4,7 +4,7 @@ import serve from 'koa-static';
 
 export default async function configureStatic(app, webpackConfigs) {
   if (process.env.NODE_ENV === 'production') {
-    const distDir = path.resolve(__dirname, '../../dist');
+    const distDir = path.resolve(__dirname, '../../../dist');
     app.use(serve(distDir, { immutable: true, maxage: 365 * 24 * 60 * 60 * 1e3 }));
     const { default: assets } = await import(path.join(distDir, 'stats.json'));
     app.use(async (ctx, next) => {
@@ -14,8 +14,8 @@ export default async function configureStatic(app, webpackConfigs) {
   } else {
     const { default: koaWebpack } = await import('koa-webpack');
     const { default: webpack } = await import('webpack');
-    const { default: webpackConfigApp } = await import('../../config/webpack/app');
-    const { default: webpackConfigEditor } = await import('../../config/webpack/editor');
+    const { default: webpackConfigApp } = await import('../../../config/webpack/app');
+    const { default: webpackConfigEditor } = await import('../../../config/webpack/editor');
     const configApp = webpackConfigApp(null, { mode: 'development' });
     const configEditor = webpackConfigEditor(null, { mode: 'development' });
     configApp.output.path = configApp.output.publicPath;

@@ -13,7 +13,7 @@ const publicPath = '/';
 module.exports = (env, argv) => {
   const { mode } = argv;
   const production = mode === 'production';
-  const appEntry = path.resolve(__dirname, '../../app');
+  const appEntry = path.resolve(__dirname, '../../packages/app');
 
   return merge.smart(shared(env, argv), {
     name: 'Appsemble App',
