@@ -15,6 +15,8 @@ import styles from './SideNavigation.css';
 export default class SideNavigation extends React.Component {
   static propTypes = {
     app: PropTypes.shape(),
+    closeMenu: PropTypes.func.isRequired,
+    logout: PropTypes.func.isRequired,
   };
 
   static defaultProps = {

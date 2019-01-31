@@ -6,17 +6,17 @@
     "@appsemble/react-bulma": "^1.0.0",
     "@appsemble/react-components": "^1.0.0",
     "@appsemble/utils": "^1.0.0",
-    "@material-ui/core": "^3.8.1",
-    "@sentry/browser": "^4.4.2",
+    "@material-ui/core": "^3.9.1",
+    "@sentry/browser": "^4.5.3",
     "axios": "^0.18.0",
     "classnames": "^2.2.6",
-    "idb": "^2.1.3",
+    "idb": "^3.0.2",
     "jsonpointer": "^4.0.1",
     "jwt-decode": "^2.2.0",
     "prop-types": "^15.6.2",
     "react": "^16.7.0",
     "react-dom": "^16.7.0",
-    "react-intl": "^2.7.2",
+    "react-intl": "^2.8.0",
     "react-redux": "^6.0.0",
     "react-router-dom": "^4.3.1",
     "redux": "^4.0.1",
@@ -25,6 +25,6 @@
     "serviceworker-webpack-plugin": "^1.0.1"
   },
   "devDependencies": {
-    "service-worker-mock": "^1.11.1"
+    "service-worker-mock": "^2.0.0"
   }
 }

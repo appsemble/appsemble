@@ -1,16 +1,24 @@
+import fs from 'fs';
 import path from 'path';
 
-import pug from 'pug';
-
-import { bulmaURL, faURL } from '../../utils/styleURL';
-
-const render = pug.compileFile(path.join(__dirname, 'editor.pug'));
-
 /**
- * https://developers.google.com/web/fundamentals/web-app-manifest
+ * Serve `index.html` for editor related routes.
  */
 export default async function editorHandler(ctx) {
-  const assets = ctx.state.getAssets().editor;
-  ctx.body = render({ assets, bulmaURL, faURL });
+  let filesystem = fs;
+  let filename = path.resolve(__dirname, '../../../dist/index.html');
+  if (process.env.NODE_ENV !== 'production') {
+    filesystem = ctx.state.fs;
+    filename = '/index.html';
+  }
+  ctx.body = await new Promise((resolve, reject) => {
+    filesystem.readFile(filename, (err, buffer) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(buffer);
+      }
+    });
+  });
   ctx.type = 'text/html';
 }

@@ -23,7 +23,7 @@ describe('app controller', () => {
 
     server = await createServer({ db });
     ({ App, AppBlockStyle, BlockDefinition, BlockVersion, Organization, User } = db.models);
-  });
+  }, 10e3);
 
   beforeEach(async () => {
     await truncate(db);
@@ -48,7 +48,6 @@ describe('app controller', () => {
       .get('/api/apps')
       .set('Authorization', token);
 
-    expect(Array.isArray(body)).toBeTruthy();
     expect(body).toHaveLength(0);
   });
 
@@ -65,7 +64,6 @@ describe('app controller', () => {
       .get('/api/apps')
       .set('Authorization', token);
 
-    expect(Array.isArray(body)).toBeTruthy();
     expect(body).toHaveLength(2);
     expect(body).toContainEqual({ id: appA.id, path: 'test-app', ...appA.definition });
     expect(body).toContainEqual({ id: appB.id, path: 'another-app', ...appB.definition });

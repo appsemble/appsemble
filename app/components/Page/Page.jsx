@@ -15,6 +15,7 @@ import styles from './Page.css';
 export default class Page extends React.Component {
   static propTypes = {
     getBlockDefs: PropTypes.func.isRequired,
+    hasErrors: PropTypes.bool.isRequired,
     location: PropTypes.shape().isRequired,
     /**
      * The page definition to render

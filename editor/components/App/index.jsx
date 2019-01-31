@@ -5,7 +5,8 @@ import App from './App';
 
 export default connect(
   state => ({
-    user: state.user,
+    initialized: state.user.initialized,
+    user: state.user.user,
   }),
   { logout, initAuth },
 )(App);
