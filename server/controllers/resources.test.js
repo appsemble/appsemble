@@ -29,7 +29,7 @@ describe('resource controller', () => {
 
     server = await createServer({ db });
     ({ App } = db.models);
-  });
+  }, 10e3);
 
   beforeEach(async () => {
     await truncate(db);

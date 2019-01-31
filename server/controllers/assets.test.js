@@ -14,7 +14,7 @@ describe('asset controller', () => {
 
     server = await createServer({ db });
     ({ Asset } = db.models);
-  });
+  }, 10e3);
 
   beforeEach(async () => {
     await truncate(db);

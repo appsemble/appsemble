@@ -17,7 +17,7 @@ describe('auth controller', () => {
 
     server = await createServer({ db });
     ({ User, ResetPasswordToken, EmailAuthorization } = db.models);
-  });
+  }, 10e3);
 
   beforeEach(async () => {
     await truncate(db);

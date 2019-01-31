@@ -15,7 +15,7 @@ describe('blocks', () => {
     db = await testSchema('blocks');
 
     server = await createServer({ db });
-  });
+  }, 10e3);
 
   beforeEach(async () => {
     await truncate(db);

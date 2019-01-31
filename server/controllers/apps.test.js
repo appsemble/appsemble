@@ -23,7 +23,7 @@ describe('app controller', () => {
 
     server = await createServer({ db });
     ({ App, AppBlockStyle, BlockDefinition, BlockVersion, Organization, User } = db.models);
-  });
+  }, 10e3);
 
   beforeEach(async () => {
     await truncate(db);
