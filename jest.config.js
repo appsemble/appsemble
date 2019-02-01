@@ -1,5 +1,5 @@
 module.exports = {
-  collectCoverageFrom: ['app/**', 'blocks/**', 'packages/**', 'server/**'],
+  collectCoverageFrom: ['blocks/**', 'packages/**'],
   moduleFileExtensions: ['js', 'jsx'],
   moduleNameMapper: {
     [/\.css$/.source]: 'identity-obj-proxy',
