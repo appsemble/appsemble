@@ -173,7 +173,7 @@ provision:blocks:
   stage: provision
   dependencies:
     - build:blocks
-    - build:pack
+    - pack
     - deploy:review
     - deploy:staging
   variables:
