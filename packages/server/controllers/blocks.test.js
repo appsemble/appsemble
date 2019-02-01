@@ -106,7 +106,7 @@ describe('blocks', () => {
       .attach('build/testblock.js', path.join(__dirname, '__fixtures__/testblock.js'));
     expect(body).toStrictEqual({
       actions: null,
-      files: ['standing.png', 'testblock.js'],
+      files: ['build/standing.png', 'build/testblock.js'],
       name: '@xkcd/standing',
       position: null,
       resources: null,
@@ -152,31 +152,13 @@ describe('blocks', () => {
       .field('data', JSON.stringify({ version: '1.32.9' }));
     expect(body).toStrictEqual({
       actions: null,
-      files: ['standing.png', 'testblock.js'],
+      files: ['build/standing.png', 'build/testblock.js'],
       name: '@xkcd/standing',
       position: null,
       resources: null,
       version: '1.32.9',
     });
     expect(status).toBe(201);
-  });
-
-  it('should not accept invalid form fields', async () => {
-    await request(server)
-      .post('/api/blocks')
-      .send({ id: '@xkcd/standing' });
-    const { body, status } = await request(server)
-      .post('/api/blocks/@xkcd/standing/versions')
-      .attach('build/standing.png', path.join(__dirname, '__fixtures__/standing.png'))
-      .attach('build/testblock.js', path.join(__dirname, '__fixtures__/testblock.js'))
-      .field('invalid', '')
-      .field('data', JSON.stringify({ version: '1.32.9' }));
-    expect(body).toStrictEqual({
-      error: 'Bad Request',
-      message: 'Unexpected field: invalid',
-      statusCode: 400,
-    });
-    expect(status).toBe(400);
   });
 
   it('should not be possible to register the same block version twice', async () => {

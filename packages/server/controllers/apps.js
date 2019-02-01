@@ -1,7 +1,6 @@
 import normalize from '@appsemble/utils/normalize';
-import validate, { SchemaValidationError } from '@appsemble/utils/validate';
+import { SchemaValidationError } from '@appsemble/utils/validate';
 import validateStyle, { StyleValidationError } from '@appsemble/utils/validateStyle';
-import Busboy from 'busboy';
 import Boom from 'boom';
 import { isEqual, uniqWith } from 'lodash';
 import getRawBody from 'raw-body';
@@ -45,106 +44,6 @@ async function checkBlocks(app, db) {
   }
 }
 
-async function parseAppMultipart(ctx) {
-  return new Promise((resolve, reject) => {
-    const busboy = new Busboy(ctx.req);
-    const res = {};
-
-    const onError = error => {
-      reject(error);
-      busboy.removeAllListeners();
-    };
-
-    busboy.on('file', (fieldname, stream, filename, encoding, mime) => {
-      if (!(fieldname === 'style' || fieldname === 'sharedStyle') || mime !== 'text/css') {
-        onError(new Error(`Expected file ´${fieldname}´ to be css`));
-      }
-
-      const buffer = [];
-      stream.on('data', data => {
-        buffer.push(data);
-      });
-
-      stream.on('end', () => {
-        if (fieldname === 'style') {
-          res.style = Buffer.concat(buffer);
-        }
-
-        if (fieldname === 'sharedStyle') {
-          res.sharedStyle = Buffer.concat(buffer);
-        }
-      });
-    });
-
-    busboy.on('field', (fieldname, content) => {
-      if (fieldname !== 'app' && fieldname !== 'organizationId') {
-        throw new Error(`Unexpected field: ${fieldname}`);
-      }
-
-      if (fieldname === 'app') {
-        try {
-          res.definition = JSON.parse(content);
-        } catch (error) {
-          onError(error);
-        }
-      }
-
-      if (fieldname === 'organizationId') {
-        res.OrganizationId = content;
-      }
-    });
-
-    busboy.on('finish', () => {
-      busboy.removeAllListeners();
-      resolve(res);
-    });
-    busboy.on('error', onError);
-    busboy.on('partsLimit', onError);
-    busboy.on('filesLimit', onError);
-    busboy.on('fieldsLimit', onError);
-    ctx.req.pipe(busboy);
-  });
-}
-
-async function parseStyleMultipart(ctx) {
-  return new Promise((resolve, reject) => {
-    const busboy = new Busboy(ctx.req);
-    const res = {};
-
-    const onError = error => {
-      reject(error);
-      busboy.removeAllListeners();
-    };
-
-    busboy.on('file', (fieldname, stream, filename, encoding, mime) => {
-      if (!(fieldname === 'style' || mime !== 'text/css')) {
-        onError(new Error(`Expected file ´${fieldname}´ to be css`));
-      }
-
-      const buffer = [];
-      stream.on('data', data => {
-        buffer.push(data);
-      });
-
-      stream.on('end', () => {
-        if (fieldname === 'style') {
-          res.style = Buffer.concat(buffer);
-        }
-      });
-    });
-
-    busboy.on('finish', () => {
-      busboy.removeAllListeners();
-      resolve(res);
-    });
-    busboy.on('error', onError);
-    busboy.on('partsLimit', onError);
-    busboy.on('filesLimit', onError);
-    busboy.on('fieldsLimit', onError);
-    ctx.req.pipe(busboy);
-  });
-}
-
 function handleAppValidationError(error, app) {
   if (error instanceof UniqueConstraintError) {
     throw Boom.conflict(`Another app with path “${app.path}” already exists`);
@@ -170,48 +69,35 @@ function handleAppValidationError(error, app) {
     throw Boom.badRequest(error.message);
   }
 
-  if (error.message.startsWith('Unexpected field: ')) {
-    throw Boom.badRequest(error.message);
+  if (Array.isArray(error)) {
+    throw Boom.badRequest('Schema validation failed');
   }
 
   throw error;
 }
 
-export async function create(ctx) {
+export async function createApp(ctx) {
   const { db } = ctx;
   const { App } = db.models;
-  const { user } = ctx.state.oauth.token;
+  const { user } = ctx.state;
+  const { app, organizationId, style, sharedStyle } = ctx.request.body;
 
   let result;
 
   try {
-    result = await parseAppMultipart(ctx);
+    result = {
+      definition: app,
+      OrganizationId: organizationId,
+      style: validateStyle(style),
+      sharedStyle: validateStyle(sharedStyle),
+      path: app.path || normalize(app.name),
+    };
 
-    if (!result.definition) {
-      throw Boom.badRequest('App recipe is required.');
-    }
-
-    if (!result.OrganizationId) {
-      throw Boom.badRequest('organizationId is required.');
-    }
-
-    if (!user.organizations.some(organization => organization.id === result.OrganizationId)) {
+    if (!user.organizations.some(organization => organization.id === organizationId)) {
       throw Boom.forbidden('User does not belong in this organization.');
     }
 
-    if (result.style) {
-      result.style = validateStyle(result.style);
-    }
-
-    if (result.sharedStyle) {
-      result.sharedStyle = validateStyle(result.sharedStyle);
-    }
-
-    const { App: appSchema } = ctx.api.definitions;
-    await validate(appSchema, result.definition);
-    await checkBlocks(result.definition, db);
-
-    result.path = result.definition.path || normalize(result.definition.name);
+    await checkBlocks(app, db);
 
     const { id } = await App.create(result, { raw: true });
 
@@ -222,7 +108,7 @@ export async function create(ctx) {
   }
 }
 
-export async function getOne(ctx) {
+export async function getAppById(ctx) {
   const { id } = ctx.params;
   const { App } = ctx.db.models;
 
@@ -240,7 +126,7 @@ export async function getOne(ctx) {
   };
 }
 
-export async function query(ctx) {
+export async function queryApps(ctx) {
   const { App } = ctx.db.models;
 
   const apps = await App.findAll({ raw: true });
@@ -255,7 +141,7 @@ export async function queryMyApps(ctx) {
   const { App } = ctx.db.models;
   const {
     user: { organizations },
-  } = ctx.state.oauth.token;
+  } = ctx.state;
 
   const apps = await App.findAll({
     where: { OrganizationId: { [Op.in]: organizations.map(o => o.id) } },
@@ -268,36 +154,28 @@ export async function queryMyApps(ctx) {
   }));
 }
 
-export async function update(ctx) {
+export async function updateApp(ctx) {
   const { db } = ctx;
   const { id } = ctx.params;
   const {
     user: { organizations },
-  } = ctx.state.oauth.token;
+  } = ctx.state;
   const { App } = db.models;
+  const { app: definition, organizationId, style, sharedStyle } = ctx.request.body;
 
   let result;
 
   try {
-    result = await parseAppMultipart(ctx);
+    result = {
+      definition,
+      OrganizationId: organizationId,
+      style: validateStyle(style && style.contents),
+      sharedStyle: validateStyle(sharedStyle && sharedStyle.contents),
+      path: definition.path || normalize(definition.name),
+    };
 
-    if (!result.definition) {
-      throw Boom.badRequest('App recipe is required.');
-    }
-
-    if (result.style) {
-      result.style = validateStyle(result.style);
-    }
-
-    if (result.sharedStyle) {
-      result.sharedStyle = validateStyle(result.sharedStyle);
-    }
-
-    const { App: appSchema } = ctx.api.definitions;
-    await validate(appSchema, result.definition);
     await checkBlocks(result.definition, db);
 
-    result.path = result.definition.path || normalize(result.definition.name);
     const app = await App.findOne({ where: { id } });
 
     if (!app) {
@@ -338,7 +216,8 @@ export async function setAppIcon(ctx) {
   const { App } = ctx.db.models;
   const {
     user: { organizations },
-  } = ctx.state.oauth.token;
+  } = ctx.state;
+  // XXX
   const icon = await getRawBody(ctx.req);
 
   const app = await App.findOne({ where: { id } });
@@ -360,7 +239,7 @@ export async function deleteAppIcon(ctx) {
   const { App } = ctx.db.models;
   const {
     user: { organizations },
-  } = ctx.state.oauth.token;
+  } = ctx.state;
 
   const app = await App.findOne({ where: { id } });
 
@@ -377,7 +256,7 @@ export async function deleteAppIcon(ctx) {
   ctx.status = 204;
 }
 
-export async function getAppStyle(ctx) {
+export async function getAppCoreStyle(ctx) {
   const { id } = ctx.params;
   const { App } = ctx.db.models;
 
@@ -392,7 +271,7 @@ export async function getAppStyle(ctx) {
   ctx.status = 200;
 }
 
-export async function getSharedAppStyle(ctx) {
+export async function getAppSharedStyle(ctx) {
   const { id } = ctx.params;
   const { App } = ctx.db.models;
 
@@ -407,7 +286,7 @@ export async function getSharedAppStyle(ctx) {
   ctx.status = 200;
 }
 
-export async function getBlockStyle(ctx) {
+export async function getAppBlockStyle(ctx) {
   const { appId, organizationName, blockName } = ctx.params;
   const { AppBlockStyle } = ctx.db.models;
 
@@ -424,20 +303,17 @@ export async function getBlockStyle(ctx) {
   ctx.status = 200;
 }
 
-export async function setBlockStyle(ctx) {
+export async function setAppBlockStyle(ctx) {
   const { appId, organizationName, blockName } = ctx.params;
   const { db } = ctx;
   const { App, AppBlockStyle, BlockDefinition } = db.models;
+  const { style } = ctx.request.body;
+  const css = style.toString().trim();
 
   const blockId = `${organizationName}/${blockName}`;
 
   try {
-    const { style } = await parseStyleMultipart(ctx);
-    if (!style) {
-      throw Boom.badRequest('Stylesheet not found.');
-    }
-
-    validateStyle(style);
+    validateStyle(css);
 
     const app = await App.findByPk(appId);
     if (!app) {
@@ -450,7 +326,7 @@ export async function setBlockStyle(ctx) {
     }
 
     await AppBlockStyle.upsert({
-      style: /\S/.test(style.toString()) ? style.toString() : null,
+      style: css.length ? css.toString() : null,
       AppId: app.id,
       BlockDefinitionId: block.id,
     });

@@ -8,6 +8,9 @@ export class StyleValidationError extends Error {
 }
 
 export default function validateStyle(css) {
+  if (!css) {
+    return null;
+  }
   try {
     return postcss.parse(css).toString();
   } catch (error) {

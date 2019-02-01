@@ -1,47 +1,7 @@
 import Boom from 'boom';
-import Busboy from 'busboy';
 import validateStyle, { StyleValidationError } from '@appsemble/utils/validateStyle';
 
-async function parseStyleMultipart(ctx) {
-  return new Promise((resolve, reject) => {
-    const busboy = new Busboy(ctx.req);
-    const res = {};
-
-    const onError = error => {
-      reject(error);
-      busboy.removeAllListeners();
-    };
-
-    busboy.on('file', (fieldname, stream, filename, encoding, mime) => {
-      if (!(fieldname === 'style' || mime !== 'text/css')) {
-        onError(new Error(`Expected file ´${fieldname}´ to be css`));
-      }
-
-      const buffer = [];
-      stream.on('data', data => {
-        buffer.push(data);
-      });
-
-      stream.on('end', () => {
-        if (fieldname === 'style') {
-          res.style = Buffer.concat(buffer);
-        }
-      });
-    });
-
-    busboy.on('finish', () => {
-      busboy.removeAllListeners();
-      resolve(res);
-    });
-    busboy.on('error', onError);
-    busboy.on('partsLimit', onError);
-    busboy.on('filesLimit', onError);
-    busboy.on('fieldsLimit', onError);
-    ctx.req.pipe(busboy);
-  });
-}
-
-export async function getCoreStyle(ctx) {
+export async function getOrganizationCoreStyle(ctx) {
   const { id } = ctx.params;
   const { Organization } = ctx.db.models;
   const organization = await Organization.findByPk(id, { raw: true });
@@ -55,25 +15,22 @@ export async function getCoreStyle(ctx) {
   ctx.status = 200;
 }
 
-export async function setCoreStyle(ctx) {
+export async function setOrganizationCoreStyle(ctx) {
   const { id } = ctx.params;
   const { db } = ctx;
   const { Organization } = db.models;
+  const { style } = ctx.request.body;
+  const css = style.toString().trim();
 
   try {
-    const { style } = await parseStyleMultipart(ctx);
-    if (!style) {
-      throw Boom.badRequest('Stylesheet not found.');
-    }
-
-    validateStyle(style);
+    validateStyle(css);
 
     const organization = await Organization.findByPk(id);
     if (!organization) {
       throw Boom.notFound('Organization not found.');
     }
 
-    organization.coreStyle = /\S/.test(style.toString()) ? style.toString() : null;
+    organization.coreStyle = css.length ? css.toString() : null;
     await organization.save();
 
     ctx.status = 204;
@@ -86,7 +43,7 @@ export async function setCoreStyle(ctx) {
   }
 }
 
-export async function getSharedStyle(ctx) {
+export async function getOrganizationSharedStyle(ctx) {
   const { id } = ctx.params;
   const { Organization } = ctx.db.models;
   const organization = await Organization.findByPk(id, { raw: true });
@@ -100,25 +57,22 @@ export async function getSharedStyle(ctx) {
   ctx.status = 200;
 }
 
-export async function setSharedStyle(ctx) {
+export async function setOrganizationSharedStyle(ctx) {
   const { id } = ctx.params;
   const { db } = ctx;
   const { Organization } = db.models;
+  const { style } = ctx.request.body;
+  const css = style.toString().trim();
 
   try {
-    const { style } = await parseStyleMultipart(ctx);
-    if (!style) {
-      throw Boom.badRequest('Stylesheet not found.');
-    }
-
-    validateStyle(style);
+    validateStyle(css);
 
     const organization = await Organization.findByPk(id);
     if (!organization) {
       throw Boom.notFound('Organization not found.');
     }
 
-    organization.sharedStyle = /\S/.test(style.toString()) ? style.toString() : null;
+    organization.sharedStyle = css.length ? css.toString() : null;
     await organization.save();
 
     ctx.status = 204;
@@ -131,7 +85,7 @@ export async function setSharedStyle(ctx) {
   }
 }
 
-export async function getBlockStyle(ctx) {
+export async function getOrganizationBlockStyle(ctx) {
   const { organizationId, organizationName, blockName } = ctx.params;
   const { OrganizationBlockStyle } = ctx.db.models;
 
@@ -148,20 +102,17 @@ export async function getBlockStyle(ctx) {
   ctx.status = 200;
 }
 
-export async function setBlockStyle(ctx) {
+export async function setOrganizationBlockStyle(ctx) {
   const { organizationId, organizationName, blockName } = ctx.params;
   const { db } = ctx;
   const { Organization, OrganizationBlockStyle, BlockDefinition } = db.models;
+  const { style } = ctx.request.body;
+  const css = style.toString().trim();
 
   const blockId = `${organizationName}/${blockName}`;
 
   try {
-    const { style } = await parseStyleMultipart(ctx);
-    if (!style) {
-      throw Boom.badRequest('Stylesheet not found.');
-    }
-
-    validateStyle(style);
+    validateStyle(css);
 
     const organization = await Organization.findByPk(organizationId);
     if (!organization) {
@@ -174,7 +125,7 @@ export async function setBlockStyle(ctx) {
     }
 
     await OrganizationBlockStyle.upsert({
-      style: /\S/.test(style.toString()) ? style.toString() : null,
+      style: css.length ? css.toString() : null,
       OrganizationId: organization.id,
       BlockDefinitionId: block.id,
     });

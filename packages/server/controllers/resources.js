@@ -61,7 +61,7 @@ const deepRename = (object, keys) => {
   return obj;
 };
 
-export async function getAll(ctx) {
+export async function queryResources(ctx) {
   const query = generateQuery(ctx);
   const { appId, resourceType } = ctx.params;
   const { App } = ctx.db.models;
@@ -87,7 +87,7 @@ export async function getAll(ctx) {
   }
 }
 
-export async function getOne(ctx) {
+export async function getResourceById(ctx) {
   const { appId, resourceType, resourceId } = ctx.params;
   const { App } = ctx.db.models;
 
@@ -103,7 +103,7 @@ export async function getOne(ctx) {
   ctx.body = { id: resource.id, ...resource.data };
 }
 
-export async function create(ctx) {
+export async function createResource(ctx) {
   const { appId, resourceType } = ctx.params;
   const { App } = ctx.db.models;
 

@@ -58,7 +58,9 @@ export default class Editor extends React.Component {
 
     const {
       data: {
-        definitions: { App: appSchema },
+        components: {
+          schemas: { App: appSchema },
+        },
       },
     } = await axios.get('/api.json');
 
