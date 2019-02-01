@@ -1,4 +1,5 @@
 *.log
+*.tgz
 /coverage/
 /public/
 /gl-*
