@@ -35,10 +35,15 @@ build:blocks:
     expire_in: 3 days
     paths:
       - blocks/action-button/dist/
+      - blocks/action-button/package.json
       - blocks/detail-viewer/dist/
+      - blocks/detail-viewer/package.json
       - blocks/form/dist/
+      - blocks/form/package.json
       - blocks/map/dist/
+      - blocks/map/package.json
       - blocks/splash/dist/
+      - blocks/splash/package.json
 
 deploy:review:
   stage: deploy
@@ -110,6 +115,19 @@ eslint:
     reports:
       codequality: gl-codequality.json
 
+pack:
+  stage: build
+  script:
+    - yarn workspace @appsemble/cli pack
+    - yarn workspace @appsemble/node-utils pack
+    - yarn workspace @appsemble/react pack
+    - yarn workspace @appsemble/sdk pack
+    - yarn workspace @appsemble/server pack
+    - yarn workspace create-appsemble pack
+  artifacts:
+    paths:
+      - packages/**/*.tgz
+
 pages:
   only:
     - master
@@ -155,10 +173,14 @@ provision:blocks:
   stage: provision
   dependencies:
     - build:blocks
+    - pack
     - deploy:review
     - deploy:staging
+  variables:
+    GIT_STRATEGY: none
   script:
-    - yarn --frozen-lockfile
+    - npm install ./packages/node-utils/*.tgz
+    - npm install ./packages/cli/*.tgz
     - yarn appsemble block register --ignore-conflict blocks/action-button
     - yarn appsemble block register --ignore-conflict blocks/detail-viewer
     - yarn appsemble block register --ignore-conflict blocks/form
