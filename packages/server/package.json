@@ -5,7 +5,7 @@
   "dependencies": {
     "@appsemble/node-utils": "^1.0.0",
     "@appsemble/utils": "^1.0.0",
-    "@fortawesome/fontawesome-free": "^5.7.0",
+    "@fortawesome/fontawesome-free": "^5.7.1",
     "@sentry/node": "^4.5.3",
     "axios": "^0.18.0",
     "bcrypt": "3.0.2",
@@ -13,7 +13,7 @@
     "bulma": "^0.7.2",
     "busboy": "^0.3.0",
     "cli-highlight": "^2.0.0",
-    "esm": "^3.2.0",
+    "esm": "^3.2.1",
     "front-matter": "^3.0.1",
     "grant-koa": "^4.4.1",
     "js-yaml": "^3.12.1",
