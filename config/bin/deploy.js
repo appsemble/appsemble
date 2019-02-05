@@ -16,8 +16,10 @@ const { CI_ENVIRONMENT_URL, KUBE_NAMESPACE } = process.env;
 async function deploy() {
   const kc = new k8s.KubeConfig();
   kc.loadFromDefault();
-  const apps = kc.makeApiClient(k8s.Extensions_v1beta1Api);
+  const apps = kc.makeApiClient(k8s.Apps_v1Api);
+  const beta = kc.makeApiClient(k8s.Extensions_v1beta1Api);
   const core = kc.makeApiClient(k8s.Core_v1Api);
+
   try {
     logger.info(`Creating deployment: ${mysqlDeployment.metadata.name}`);
     await apps.createNamespacedDeployment(KUBE_NAMESPACE, mysqlDeployment);
@@ -60,7 +62,7 @@ async function deploy() {
   }
   try {
     logger.info(`Creating ingress: ${ingress.metadata.name}`);
-    await apps.createNamespacedIngress(KUBE_NAMESPACE, ingress);
+    await beta.createNamespacedIngress(KUBE_NAMESPACE, ingress);
     logger.info(`Created ingress: ${ingress.metadata.name}`);
   } catch (err) {
     if (err.response.statusCode !== 409) {
