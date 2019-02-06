@@ -1,4 +1,4 @@
-const { CI_ENVIRONMENT_URL, CI_ENVIRONMENT_SLUG } = process.env;
+const { CI_COMMIT_SHA, CI_ENVIRONMENT_URL, CI_ENVIRONMENT_SLUG } = process.env;
 const { hostname } = new URL(CI_ENVIRONMENT_URL);
 
 export default {
@@ -6,6 +6,7 @@ export default {
   kind: 'Ingress',
   metadata: {
     name: `${CI_ENVIRONMENT_SLUG}-ingress`,
+    resourceVersion: CI_COMMIT_SHA,
     labels: {
       app: CI_ENVIRONMENT_SLUG,
     },
