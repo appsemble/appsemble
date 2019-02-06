@@ -56,21 +56,65 @@ export interface Block {
   };
 }
 
+export interface Message {
+  /**
+   * The content of the message to display.
+   */
+  body: string;
+}
+
+export interface PageParameters {
+  [parameter: string]: string;
+}
+
+export interface Utils {
+  /**
+   * Show a bulma style message.
+   */
+  showMessage: (message: Message) => void;
+}
+
 /**
  * The parameters that get passed to the bootstrap function.
  */
 export interface BootstrapParams {
-  /** The actions that may be dispatched by the block. */
+  /**
+   * The actions that may be dispatched by the block.
+   */
   actions: { [key: string]: Action };
 
-  /** The block as it is defined in the app definition. */
+  /**
+   * The block as it is defined in the app definition.
+   */
   block: Block;
 
-  /** Any kind of data that has been passed in by some context. */
+  /**
+   * Any kind of data that has been passed in by some context.
+   */
   data: {};
 
-  /** The shadow root to which DOM elements may be appended. */
+  /**
+   * URL parameters of the current route.
+   *
+   * If the page on which the block is rendered, has parameters specified on a page level, the
+   * parameter keys and values of the page will be extracted and set as this object.
+   */
+  pageParameters?: PageParameters;
+
+  /**
+   * @deprecated
+   */
+  resources?: {};
+
+  /**
+   * The shadow root to which DOM elements may be appended.
+   */
   shadowRoot: ShadowRoot;
+
+  /**
+   * Some utility functions provided by the Appsemble app framework.
+   */
+  utils: Utils;
 }
 
 type Awaitable<T> = T | Promise<T>;
@@ -86,8 +130,7 @@ export function bootstrap(fn: (params: BootstrapParams) => Awaitable<void>): voi
  * Attach the returned node to the shadow root.
  *
  * This convenience wrapper attaches nodes returned by the bootstrap function to the shadow root.
- * This means that the initialization function for a block simply has to return a node, or an
- * iterator yielding nodes.
+ * This means that the initialization function for a block simply has to return a node.
  *
  * @param fn The bootstrap function to register.
  */
