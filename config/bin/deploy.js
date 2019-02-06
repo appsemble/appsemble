@@ -39,17 +39,29 @@ async function deploy() {
 
   await noConflict(
     mysqlDeployment,
-    apps.createNamespacedDeployment,
-    apps.replaceNamespacedDeployment,
+    apps.createNamespacedDeployment.bind(apps),
+    apps.replaceNamespacedDeployment.bind(apps),
   );
-  await noConflict(mysqlService, core.createNamespacedService, core.replaceNamespacedService);
+  await noConflict(
+    mysqlService,
+    core.createNamespacedService.bind(core),
+    core.replaceNamespacedService.bind(core),
+  );
   await noConflict(
     appsembleDeployment,
-    apps.createNamespacedDeployment,
-    apps.replaceNamespacedDeployment,
+    apps.createNamespacedDeployment.bind(apps),
+    apps.replaceNamespacedDeployment.bind(apps),
   );
-  await noConflict(appsembleService, core.createNamespacedService, core.replaceNamespacedService);
-  await noConflict(ingress, beta.createNamespacedIngress, beta.replaceNamespacedIngress);
+  await noConflict(
+    appsembleService,
+    core.createNamespacedService.bind(core),
+    core.replaceNamespacedService.bind(core),
+  );
+  await noConflict(
+    ingress,
+    beta.createNamespacedIngress.bind(beta),
+    beta.replaceNamespacedIngress.bind(beta),
+  );
 }
 
 /**
