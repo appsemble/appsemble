@@ -18,28 +18,28 @@ const resourceVersion = `${Date.now()}`;
  * At first, an attempt is made to create a resource. If this fails due to a conflict, the resource
  * is replaced instead.
  *
- * @param {Object} body The resource to create or replace.
+ * @param {Object} resource The resource to create or replace.
  * @param {Function} create The function to use for creating the resource.
  * @param {Function} replace The function to use for replacing the resource.
  */
 async function noConflict(resource, create, replace) {
   const { kind, metadata } = resource;
   const { name } = resource.metadata;
-  const body = {
-    ...resource,
-    metadata: {
-      ...metadata,
-      resourceVersion,
-    },
-  };
   try {
     logger.info(`Creating ${kind.toLowerCase()}: ${name}`);
-    await create(KUBE_NAMESPACE, body);
+    await create(KUBE_NAMESPACE, resource);
     logger.info(`Created ${kind.toLowerCase()}: ${name}`);
   } catch (err) {
     if (err.response.statusCode !== 409) {
       throw err;
     }
+    const body = {
+      ...resource,
+      metadata: {
+        ...metadata,
+        resourceVersion,
+      },
+    };
     logger.warn(`${kind} ${name} already exists… Replacing instead.`);
     await replace(name, KUBE_NAMESPACE, body);
     logger.info(`Replaced ${kind.toLowerCase()}: ${name}`);
