@@ -1,6 +1,5 @@
 const {
   CI_COMMIT_REF_NAME,
-  CI_COMMIT_SHA,
   CI_ENVIRONMENT_SLUG,
   CI_ENVIRONMENT_URL,
   CI_PROJECT_PATH,
@@ -12,7 +11,6 @@ export default {
   kind: 'Deployment',
   metadata: {
     name: `${CI_ENVIRONMENT_SLUG}-frontend`,
-    resourceVersion: CI_COMMIT_SHA,
     labels: {
       app: CI_ENVIRONMENT_SLUG,
       tier: 'frontend',

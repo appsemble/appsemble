@@ -10,6 +10,8 @@ import mysqlService from '../kubernetes/mysqlService';
 
 const { CI_ENVIRONMENT_URL, KUBE_NAMESPACE } = process.env;
 
+const resourceVersion = `${Date.now()}`;
+
 /**
  * Create or replace a Kubernetes resource.
  *
@@ -20,9 +22,16 @@ const { CI_ENVIRONMENT_URL, KUBE_NAMESPACE } = process.env;
  * @param {Function} create The function to use for creating the resource.
  * @param {Function} replace The function to use for replacing the resource.
  */
-async function noConflict(body, create, replace) {
-  const { kind } = body;
-  const { name } = body.metadata;
+async function noConflict(resource, create, replace) {
+  const { kind, metadata } = resource;
+  const { name } = resource.metadata;
+  const body = {
+    ...resource,
+    metadata: {
+      ...metadata,
+      resourceVersion,
+    },
+  };
   try {
     logger.info(`Creating ${kind.toLowerCase()}: ${name}`);
     await create(KUBE_NAMESPACE, body);
