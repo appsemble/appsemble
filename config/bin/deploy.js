@@ -10,6 +10,23 @@ import mysqlService from '../kubernetes/mysqlService';
 
 const { CI_ENVIRONMENT_URL, KUBE_NAMESPACE } = process.env;
 
+async function noConflict(body, create, replace) {
+  const { kind } = body;
+  const { name } = body.metadata;
+  try {
+    logger.info(`Creating ${kind.toLowerCase()}: ${name}`);
+    await create(KUBE_NAMESPACE, body);
+    logger.info(`Created ${kind.toLowerCase()}: ${name}`);
+  } catch (err) {
+    if (err.response.statusCode !== 409) {
+      throw err;
+    }
+    logger.warn(`${kind} ${name} already exists… Replacing instead.`);
+    await replace(name, KUBE_NAMESPACE, body);
+    logger.info(`Replaced ${kind.toLowerCase()}: ${name}`);
+  }
+}
+
 /**
  * Deploy the newly built Appsemble Docker image to Kubernetes.
  */
@@ -20,58 +37,19 @@ async function deploy() {
   const beta = kc.makeApiClient(k8s.Extensions_v1beta1Api);
   const core = kc.makeApiClient(k8s.Core_v1Api);
 
-  try {
-    logger.info(`Creating deployment: ${mysqlDeployment.metadata.name}`);
-    await apps.createNamespacedDeployment(KUBE_NAMESPACE, mysqlDeployment);
-    logger.info(`Created deployment: ${mysqlDeployment.metadata.name}`);
-    logger.info(`Creating service: ${mysqlService.metadata.name}`);
-    await core.createNamespacedService(KUBE_NAMESPACE, mysqlService);
-    logger.info(`Created service: ${mysqlService.metadata.name}`);
-  } catch (err) {
-    if (err.response.statusCode !== 409) {
-      throw err;
-    }
-    logger.warn(`Deployment ${mysqlDeployment.metadata.name} Already exists… Replacing instead.`);
-    await apps.replaceNamespacedDeployment(
-      mysqlDeployment.metadata.name,
-      KUBE_NAMESPACE,
-      mysqlDeployment,
-    );
-    logger.info(`Replaced deployment: ${mysqlDeployment.metadata.name}`);
-  }
-  try {
-    logger.info(`Creating deployment: ${appsembleDeployment.metadata.name}`);
-    await apps.createNamespacedDeployment(KUBE_NAMESPACE, appsembleDeployment);
-    logger.info(`Created deployment: ${appsembleDeployment.metadata.name}`);
-    logger.info(`Creating service: ${appsembleService.metadata.name}`);
-    await core.createNamespacedService(KUBE_NAMESPACE, appsembleService);
-    logger.info(`Created service: ${appsembleService.metadata.name}`);
-  } catch (err) {
-    if (err.response.statusCode !== 409) {
-      throw err;
-    }
-    logger.warn(
-      `Deployment ${appsembleDeployment.metadata.name} Already exists… Replacing instead.`,
-    );
-    await apps.replaceNamespacedDeployment(
-      appsembleDeployment.metadata.name,
-      KUBE_NAMESPACE,
-      appsembleDeployment,
-    );
-    logger.info(`Replaced deployment: ${appsembleDeployment.metadata.name}`);
-  }
-  try {
-    logger.info(`Creating ingress: ${ingress.metadata.name}`);
-    await beta.createNamespacedIngress(KUBE_NAMESPACE, ingress);
-    logger.info(`Created ingress: ${ingress.metadata.name}`);
-  } catch (err) {
-    if (err.response.statusCode !== 409) {
-      throw err;
-    }
-    logger.warn(`Ingress ${ingress.metadata.name} Already exists… Replacing instead.`);
-    await apps.replaceNamespacedIngress(ingress.metadata.name, KUBE_NAMESPACE, ingress);
-    logger.info(`Replaced ingress: ${ingress.metadata.name}`);
-  }
+  await noConflict(
+    mysqlDeployment,
+    apps.createNamespacedDeployment,
+    apps.replaceNamespacedDeployment,
+  );
+  await noConflict(mysqlService, core.createNamespacedService, core.replaceNamespacedService);
+  await noConflict(
+    appsembleDeployment,
+    apps.createNamespacedDeployment,
+    apps.replaceNamespacedDeployment,
+  );
+  await noConflict(appsembleService, core.createNamespacedService, core.replaceNamespacedService);
+  await noConflict(ingress, beta.createNamespacedIngress, beta.replaceNamespacedIngress);
 }
 
 /**
