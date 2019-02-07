@@ -20,8 +20,8 @@ const { CI_ENVIRONMENT_URL, KUBE_NAMESPACE } = process.env;
  * @param {Function} create The function to use for creating the resource.
  * @param {Function} replace The function to use for replacing the resource.
  */
-async function noConflict(resource, create, get, replace) {
-  const { kind, metadata } = resource;
+async function noConflict(resource, create, replace) {
+  const { kind } = resource;
   const { name } = resource.metadata;
   try {
     logger.info(`Creating ${kind.toLowerCase()}: ${name}`);
@@ -32,19 +32,7 @@ async function noConflict(resource, create, get, replace) {
       throw err;
     }
     logger.warn(`${kind} ${name} already exists… Replacing instead.`);
-    const {
-      body: {
-        metadata: { resourceVersion },
-      },
-    } = await get(name, KUBE_NAMESPACE);
-    const body = {
-      ...resource,
-      metadata: {
-        ...metadata,
-        resourceVersion,
-      },
-    };
-    await replace(name, KUBE_NAMESPACE, body);
+    await replace(name, KUBE_NAMESPACE, resource);
     logger.info(`Replaced ${kind.toLowerCase()}: ${name}`);
   }
 }
@@ -62,31 +50,26 @@ async function deploy() {
   await noConflict(
     mysqlDeployment,
     apps.createNamespacedDeployment.bind(apps),
-    apps.readNamespacedDeployment.bind(apps),
     apps.replaceNamespacedDeployment.bind(apps),
   );
   await noConflict(
     mysqlService,
     core.createNamespacedService.bind(core),
-    core.readNamespacedService.bind(core),
     core.replaceNamespacedService.bind(core),
   );
   await noConflict(
     appsembleDeployment,
     apps.createNamespacedDeployment.bind(apps),
-    apps.readNamespacedDeployment.bind(apps),
     apps.replaceNamespacedDeployment.bind(apps),
   );
   await noConflict(
     appsembleService,
     core.createNamespacedService.bind(core),
-    core.readNamespacedService.bind(core),
     core.replaceNamespacedService.bind(core),
   );
   await noConflict(
     ingress,
     beta.createNamespacedIngress.bind(beta),
-    beta.readNamespacedIngress.bind(beta),
     beta.replaceNamespacedIngress.bind(beta),
   );
 }
