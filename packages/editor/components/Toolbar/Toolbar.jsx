@@ -29,8 +29,20 @@ export default class Toolbar extends React.Component {
             <h1 className="has-text-white title">Appsemble</h1>
           </NavbarItem>
         </NavbarBrand>
-        {isLoggedIn && (
-          <NavbarBrand>
+        <NavbarBrand>
+          <NavbarItem>
+            <a
+              className="button"
+              href="https://appsemble.surge.sh"
+              rel="noopener noreferrer"
+              target="_blank"
+            >
+              <FormattedMessage {...messages.docsLink} />
+            </a>
+          </NavbarItem>
+        </NavbarBrand>
+        <NavbarBrand>
+          {isLoggedIn && (
             <NavbarItem>
               <Button onClick={logout}>
                 <Icon fa="sign-out-alt" />
@@ -39,8 +51,8 @@ export default class Toolbar extends React.Component {
                 </span>
               </Button>
             </NavbarItem>
-          </NavbarBrand>
-        )}
+          )}
+        </NavbarBrand>
       </Navbar>
     );
   }
