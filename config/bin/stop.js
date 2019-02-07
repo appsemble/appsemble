@@ -15,10 +15,12 @@ const { KUBE_NAMESPACE } = process.env;
 async function main() {
   const kc = new k8s.KubeConfig();
   kc.loadFromDefault();
-  const apps = kc.makeApiClient(k8s.Extensions_v1beta1Api);
+  const apps = kc.makeApiClient(k8s.Apps_v1Api);
+  const beta = kc.makeApiClient(k8s.Extensions_v1beta1Api);
   const core = kc.makeApiClient(k8s.Core_v1Api);
+
   logger.info(`Stopping ingress: ${ingress.metadata.name}`);
-  await apps.deleteNamespacedIngress(ingress.metadata.name, KUBE_NAMESPACE, {});
+  await beta.deleteNamespacedIngress(ingress.metadata.name, KUBE_NAMESPACE, {});
   logger.info(`Stopped ingress: ${ingress.metadata.name}`);
   logger.info(`Stopping service: ${appsembleService.metadata.name}`);
   await core.deleteNamespacedService(appsembleService.metadata.name, KUBE_NAMESPACE, {});
