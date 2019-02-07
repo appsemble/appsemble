@@ -16,7 +16,6 @@ import ConnectOAuth from '../ConnectOAuth';
 
 export default class App extends React.Component {
   static propTypes = {
-    authentication: PropTypes.shape().isRequired,
     initAuth: PropTypes.func.isRequired,
     initialized: PropTypes.bool.isRequired,
     user: PropTypes.shape(),
@@ -27,8 +26,8 @@ export default class App extends React.Component {
   };
 
   async componentDidMount() {
-    const { initAuth, authentication } = this.props;
-    await initAuth(authentication);
+    const { initAuth } = this.props;
+    await initAuth();
   }
 
   render() {
