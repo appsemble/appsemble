@@ -3,9 +3,5 @@
   display: flex;
   flex-flow: column;
   min-height: 100vh;
-  padding-top: 52px;
-
-  @media (max-width: 599px) and (orientation: landscape) {
-    padding-top: 48px;
-  }
+  padding-top: 68px;
 }
