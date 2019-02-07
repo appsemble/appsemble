@@ -38,14 +38,11 @@ import messages from './messages';
 
 export default class Editor extends React.Component {
   static propTypes = {
-    createApp: PropTypes.func.isRequired,
     history: PropTypes.shape().isRequired,
     intl: PropTypes.shape().isRequired,
     location: PropTypes.shape().isRequired,
-    logout: PropTypes.func.isRequired,
     match: PropTypes.shape().isRequired,
     push: PropTypes.func.isRequired,
-    user: PropTypes.shape().isRequired,
   };
 
   state = {
@@ -227,11 +224,6 @@ export default class Editor extends React.Component {
 
       await this.uploadApp();
     }
-  };
-
-  onLogout = () => {
-    const { logout } = this.props;
-    logout();
   };
 
   onMonacoChange = value => {
