@@ -1,6 +1,6 @@
 import { attach } from '@appsemble/sdk';
 
-attach(({ actions, block, data, shadowRoot }) => {
+attach(({ actions, block, data, pageParameters, shadowRoot, utils }) => {
   const button = document.createElement('button');
   button.type = 'button';
   button.innerText = 'Click me!';
