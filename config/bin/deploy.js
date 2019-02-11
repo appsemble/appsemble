@@ -1,6 +1,7 @@
 import { logger } from '@appsemble/node-utils';
 import * as k8s from '@kubernetes/client-node';
 import axios from 'axios';
+import { merge } from 'lodash';
 
 import appsembleDeployment from '../kubernetes/appsembleDeployment';
 import appsembleService from '../kubernetes/appsembleService';
@@ -18,9 +19,10 @@ const { CI_ENVIRONMENT_URL, KUBE_NAMESPACE } = process.env;
  *
  * @param {Object} resource The resource to create or replace.
  * @param {Function} create The function to use for creating the resource.
+ * @param {Function} read The function to use for reading the resource.
  * @param {Function} replace The function to use for replacing the resource.
  */
-async function noConflict(resource, create, replace) {
+async function noConflict(resource, create, read, replace) {
   const { kind } = resource;
   const { name } = resource.metadata;
   try {
@@ -32,7 +34,8 @@ async function noConflict(resource, create, replace) {
       throw err;
     }
     logger.warn(`${kind} ${name} already exists… Replacing instead.`);
-    await replace(name, KUBE_NAMESPACE, resource);
+    const { body: existing } = await read(name, KUBE_NAMESPACE);
+    await replace(name, KUBE_NAMESPACE, merge(existing, resource));
     logger.info(`Replaced ${kind.toLowerCase()}: ${name}`);
   }
 }
@@ -50,26 +53,31 @@ async function deploy() {
   await noConflict(
     mysqlDeployment,
     apps.createNamespacedDeployment.bind(apps),
+    apps.readNamespacedDeployment.bind(apps),
     apps.replaceNamespacedDeployment.bind(apps),
   );
   await noConflict(
     mysqlService,
     core.createNamespacedService.bind(core),
+    core.readNamespacedService.bind(core),
     core.replaceNamespacedService.bind(core),
   );
   await noConflict(
     appsembleDeployment,
     apps.createNamespacedDeployment.bind(apps),
+    apps.readNamespacedDeployment.bind(apps),
     apps.replaceNamespacedDeployment.bind(apps),
   );
   await noConflict(
     appsembleService,
     core.createNamespacedService.bind(core),
+    core.readNamespacedService.bind(core),
     core.replaceNamespacedService.bind(core),
   );
   await noConflict(
     ingress,
     beta.createNamespacedIngress.bind(beta),
+    beta.readNamespacedIngress.bind(beta),
     beta.replaceNamespacedIngress.bind(beta),
   );
 }
