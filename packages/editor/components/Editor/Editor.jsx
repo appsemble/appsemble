@@ -337,6 +337,11 @@ export default class Editor extends React.Component {
                     <Image alt="Icon" className={styles.iconPreview} size={32} src={iconURL} />
                   )}
                 </NavbarItem>
+                <NavbarItem>
+                  <Button component="a" href={`/${path}`} target="_blank">
+                    View live
+                  </Button>
+                </NavbarItem>
               </NavbarBrand>
             </Navbar>
             <Tab boxed className={styles.editorTabs}>
