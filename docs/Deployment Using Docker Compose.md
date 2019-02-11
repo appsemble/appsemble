@@ -29,6 +29,10 @@ services:
       MYSQL_USER: appsemble_database_user
       MYSQL_PASSWORD: appsemble_database_password
       MYSQL_RANDOM_ROOT_PASSWORD: 'yes'
+    volumes:
+      - ./mysql_data:/var/lib/mysql
+    ports:
+      - '3306:3306'
 ```
 
 It is highly recommended to specify the version of the `appsemble/appsemble` image to use. Replace
