@@ -7,6 +7,23 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.4.0] - 2019-02-19
+
+### Added
+
+- Editor: Add link to external documentation.
+- Extend documentation for creating blocks.
+- Add LGPL.
+
+### Changed
+
+- Editor: Add significant changes to the GUI to make it more appealing.
+- Editor: Host the editor on the root URL. Any other paths are available under subpaths of `/_`.
+
+### Fixed
+
+- App: Make sure the navigation menu button is always visible.
+
 ## [0.3.0] - 2019-01-25
 
 ### Added

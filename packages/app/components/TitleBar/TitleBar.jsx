@@ -4,6 +4,7 @@ import React from 'react';
 
 import Portal from '../Portal';
 import SideMenuButton from '../SideMenuButton';
+import styles from './TitleBar.css';
 
 /**
  * The title bar on the top of the page.
@@ -27,7 +28,7 @@ export default class TitleBar extends React.Component {
 
     return (
       <Portal element={document.getElementsByClassName('navbar')[0]}>
-        <NavbarBrand>
+        <NavbarBrand className={styles.brand}>
           <NavbarItem>
             <SideMenuButton />
           </NavbarItem>
