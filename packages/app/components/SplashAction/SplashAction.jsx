@@ -25,7 +25,7 @@ export default class SplashAction extends React.Component {
   componentDidMount() {
     const { definition, getBlockDefs } = this.props;
 
-    getBlockDefs(definition.blocks.map(({ type }) => type));
+    getBlockDefs(definition.blocks);
   }
 
   render() {
