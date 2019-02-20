@@ -41,15 +41,6 @@ passed as a command line parameter instead, if desired.
 | `SMTP_FROM`           |         | The address to use when sending emails.                                                                                   |
 | `HOST`                |         | The external host on which the server is available. This should include the protocol, hostname, and optionally port.      |
 
-## Initializing the Database
-
-Before the Appsemble server can run, the database needs to be initialized. This can be done by
-running the following command.
-
-```sh
-docker run -ti appsemble/appsemble initialize
-```
-
 ## Setting up Social Login
 
 In order to use social logins using third parties such as Google or GitLab, an _application key_ and
