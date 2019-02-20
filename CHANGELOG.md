@@ -7,6 +7,11 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Removed
+
+- Server: Remove the initialize subcommand. It only served to initialize a default user in
+  development. This can now be done easily from the editor.
+
 ## [0.4.0] - 2019-02-19
 
 ### Added

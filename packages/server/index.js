@@ -2,16 +2,14 @@
 import { configureLogger } from '@appsemble/node-utils';
 import yargs from 'yargs';
 
-import * as initialize from './commands/initialize';
 import * as start from './commands/start';
 
 /**
  * These are exported, so @appsemble/cli can wrap them.
  */
 const startHandler = start.handler;
-const initializeHandler = initialize.handler;
 
-export { initializeHandler as initialize };
+// eslint-disable-next-line import/prefer-default-export
 export { startHandler as start };
 
 /**
@@ -35,7 +33,6 @@ function main(argv) {
     })
     .middleware([configureLogger])
     .command(start)
-    .command(initialize)
     .help('help', 'Show this help message.')
     .alias('h', 'help')
     .env()
