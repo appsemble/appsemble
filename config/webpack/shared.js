@@ -3,7 +3,12 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
 
-module.exports = (env, { mode, publicPath }) => {
+/**
+ * This webpack configuration is shared by all webpack builds.
+ *
+ * This includes the core part and blocks.
+ */
+module.exports = (env, { mode }) => {
   const production = mode === 'production';
 
   return {
@@ -60,31 +65,6 @@ module.exports = (env, { mode, publicPath }) => {
                 'postcss-loader',
               ],
             },
-          ],
-        },
-        {
-          test: /\.(gif|jpe?g|png|woff2?)$/,
-          use: [
-            {
-              loader: 'file-loader',
-              options: {
-                name: production ? '_/[hash].[ext]' : '_/[name].[ext]',
-                publicPath,
-              },
-            },
-          ],
-        },
-        {
-          test: /\.svg$/,
-          use: [
-            {
-              loader: 'file-loader',
-              options: {
-                name: production ? '_/[hash].[ext]' : '_/[name].[ext]',
-                publicPath,
-              },
-            },
-            'svgo-loader',
           ],
         },
       ],
