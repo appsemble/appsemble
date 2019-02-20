@@ -24,8 +24,8 @@ not otherwise based on the Library. Defining a subclass of a class defined by th
 a mode of using an interface provided by the Library.
 
 A _“Combined Work”_ is a work produced by combining or linking an Application with the Library. The
-particular version of the Library with which the Combined Work was made is also called the "Linked
-Version".
+particular version of the Library with which the Combined Work was made is also called the _“Linked
+Version”_.
 
 The _“Minimal Corresponding Source”_ for a Combined Work means the Corresponding Source for the
 Combined Work, excluding any source code for portions of the Combined Work that, considered in
