@@ -47,7 +47,7 @@ To start the service, run the following command.
 $ docker-compose up -d
 ```
 
-The Appsemble editor should now be available on http://localhost:8000/editor.
+The Appsemble editor should now be available on http://localhost:8000.
 
 To stop the service, run the following command.
 
