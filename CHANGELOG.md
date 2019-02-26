@@ -7,6 +7,9 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+- Server: Disable user registration. This is only implemented server side. The registration form
+  still exists in the editor.
+
 ## [0.4.1] - 2019-02-20
 
 ### Removed

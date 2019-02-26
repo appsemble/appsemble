@@ -174,7 +174,7 @@ describe('auth controller', () => {
       .send({ token: token.token, password: 'newPassword' });
 
     const email = await token.getEmailAuthorization();
-    email.reload();
+    await email.reload();
 
     expect(responseA.status).toBe(204);
     expect(responseB.status).toBe(204);

@@ -65,6 +65,11 @@ export function builder(yargs) {
       desc: 'Secret key used to sign JWTs and cookies',
       default: 'appsemble',
     })
+    .option('disable-registration', {
+      desc: 'If specified, user registration will be disabled on the server',
+      type: 'boolean',
+      default: false,
+    })
     .option('host', {
       desc:
         'The external host on which the server is available. This should include the protocol, hostname, and optionally port.',
@@ -98,10 +103,6 @@ export async function handler(argv, webpackConfigs) {
   await configureStatic(app, webpackConfigs);
   if (argv.sentryDsn) {
     Sentry.init({ dsn: argv.sentryDsn });
-    app.use(async (ctx, next) => {
-      ctx.state.sentryDsn = argv.sentryDsn;
-      await next();
-    });
   }
   app.on('error', (err, ctx) => {
     logger.error(err);
@@ -145,7 +146,7 @@ export async function handler(argv, webpackConfigs) {
     };
   }
 
-  await createServer({ app, db, grantConfig, smtp, secret: argv.oauthSecret });
+  await createServer({ app, argv, db, grantConfig, smtp, secret: argv.oauthSecret });
   const { info } = yaml.safeLoad(fs.readFileSync(path.resolve(__dirname, '../api/api.yaml')));
 
   app.listen(argv.port || PORT, '0.0.0.0', () => {

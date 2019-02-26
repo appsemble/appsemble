@@ -5,6 +5,12 @@ import Boom from 'boom';
 
 import { resendVerificationEmail, sendResetPasswordEmail, sendWelcomeEmail } from '../utils/email';
 
+async function mayRegister({ argv }) {
+  if (argv.disableRegistration) {
+    throw Boom.forbidden('Registration is disabled');
+  }
+}
+
 async function registerUser(associatedModel) {
   await associatedModel.createUser();
   const user = await associatedModel.getUser();
@@ -12,6 +18,7 @@ async function registerUser(associatedModel) {
 }
 
 export async function registerEmail(ctx) {
+  await mayRegister(ctx);
   const { body } = ctx.request;
   const { EmailAuthorization } = ctx.db.models;
   const { smtp } = ctx.state;
@@ -42,6 +49,7 @@ export async function registerEmail(ctx) {
 }
 
 export async function registerOAuth(ctx) {
+  await mayRegister(ctx);
   const {
     body: { provider, id, accessToken },
   } = ctx.request;

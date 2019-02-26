@@ -93,6 +93,11 @@ export function builder(yargs) {
       desc: 'Secret key used to sign JWTs and cookies',
       default: 'appsemble',
     })
+    .option('disable-registration', {
+      desc: 'If specified, user registration will be disabled on the server',
+      type: 'boolean',
+      default: false,
+    })
     .option('host', {
       desc:
         'The external host on which the server is available. This should include the protocol, hostname, and optionally the port.',
