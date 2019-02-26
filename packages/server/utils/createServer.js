@@ -26,7 +26,7 @@ import routes from '../routes';
 
 export default async function createServer({
   app = new Koa(),
-  argv,
+  argv = {},
   db,
   smtp,
   grantConfig,
