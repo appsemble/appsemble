@@ -26,6 +26,7 @@ import routes from '../routes';
 
 export default async function createServer({
   app = new Koa(),
+  argv,
   db,
   smtp,
   grantConfig,
@@ -54,8 +55,7 @@ export default async function createServer({
   app.use(session(app));
 
   app.use(boomMiddleware);
-  // eslint-disable-next-line no-param-reassign
-  app.context.db = db;
+  Object.assign(app.context, { argv, db });
 
   let grant;
   if (grantConfig) {

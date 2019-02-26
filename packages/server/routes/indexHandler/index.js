@@ -16,8 +16,8 @@ export default async function indexHandler(ctx) {
   const { path: p } = ctx.params;
   const { App } = ctx.db.models;
   ctx.type = 'text/html';
-  const { assets, sentryDsn } = ctx.state;
-  const reportUri = sentryDsnToReportUri(sentryDsn);
+  const { assets, argv } = ctx.state;
+  const reportUri = sentryDsnToReportUri(argv.sentryDsn);
   const csp = makeCSP({
     'report-uri': [reportUri],
     'connect-src': ['*'],
@@ -49,7 +49,7 @@ export default async function indexHandler(ctx) {
         assets,
         bulmaURL,
         faURL,
-        sentryDsn,
+        sentryDsn: argv.sentryDsn,
       });
     }
   } catch (error) {
