@@ -47,7 +47,7 @@ deploy:review:
     - master
   allow_failure: false
   environment:
-    name: review/$CI_COMMIT_REF_NAME
+    name: review/$CI_COMMIT_REF_SLUG
     url: https://$CI_ENVIRONMENT_SLUG.appsemble.app
     on_stop: deploy:review:stop
   script:
@@ -66,7 +66,7 @@ deploy:review:stop:
   except:
     - master
   environment:
-    name: review/$CI_COMMIT_REF_NAME
+    name: review/$CI_COMMIT_REF_SLUG
     action: stop
   script:
     - yarn --frozen-lockfile
@@ -124,13 +124,12 @@ pack:
       - packages/**/*.tgz
 
 pages:
+  stage: build
   only:
     - master
   script:
     - yarn --frozen-lockfile
     - yarn gitbook build . public
-    - yarn surge --domain https://appsemble.surge.sh --project ./public
-    # publish to surge, replace with GitLab Pages when https://gitlab.com/gitlab-org/gitlab-ce/issues/30548 is resolved.
   artifacts:
     paths:
       - public/
@@ -177,6 +176,21 @@ provision:blocks:
     - yarn appsemble block register --ignore-conflict blocks/form
     - yarn appsemble block register --ignore-conflict blocks/map
     - yarn appsemble block register --ignore-conflict blocks/splash
+
+review pages:
+  only:
+    - branches
+  except:
+    - master
+  environment:
+    name: pages/$CI_COMMIT_REF_SLUG
+    url: https://$CI_PROJECT_NAMESPACE.$CI_PAGES_DOMAIN/-/$CI_PROJECT_NAME/-/jobs/$CI_JOB_ID/artifacts/public/index.html
+  script:
+    - yarn --frozen-lockfile
+    - yarn gitbook build . public
+  artifacts:
+    paths:
+      - public/
 
 stylelint:
   script:
