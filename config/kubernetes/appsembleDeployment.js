@@ -84,8 +84,7 @@ export default {
                 value: CI_ENVIRONMENT_URL,
               },
             ].concat(
-              CI_PROJECT_PATH === 'dcentralized/appsemble/appsemble' &&
-                CI_COMMIT_REF_NAME === 'master'
+              CI_PROJECT_PATH === 'appsemble/appsemble' && CI_COMMIT_REF_NAME === 'master'
                 ? [
                     {
                       name: 'OAUTH_GITLAB_KEY',
@@ -119,7 +118,6 @@ export default {
             },
           },
         ],
-        imagePullSecrets: [{ name: 'registry.gitlab.com' }],
       },
     },
   },

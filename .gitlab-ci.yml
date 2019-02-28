@@ -44,7 +44,7 @@ deploy:review:
   stage: deploy
   when: manual
   except:
-    - master@dcentralized/appsemble/appsemble
+    - master
   allow_failure: false
   environment:
     name: review/$CI_COMMIT_REF_NAME
@@ -64,7 +64,7 @@ deploy:review:stop:
   stage: deploy
   when: manual
   except:
-    - master@dcentralized/appsemble/appsemble
+    - master
   environment:
     name: review/$CI_COMMIT_REF_NAME
     action: stop
@@ -75,7 +75,7 @@ deploy:review:stop:
 deploy:staging:
   stage: deploy
   only:
-    - master@dcentralized/appsemble/appsemble
+    - master@appsemble/appsemble
   environment:
     name: review/master
     url: https://staging.appsemble.app
@@ -94,7 +94,7 @@ deploy:staging:stop:
   stage: deploy
   when: manual
   only:
-    - master@dcentralized/appsemble/appsemble
+    - master@appsemble/appsemble
   environment:
     name: review/master
     action: stop
