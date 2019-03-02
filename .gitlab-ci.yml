@@ -9,6 +9,8 @@ stages:
 
 build:docker:
   stage: build
+  except:
+    - schedules
   services:
     - docker:dind
   image: docker
@@ -19,6 +21,8 @@ build:docker:
 
 build:blocks:
   stage: build
+  except:
+    - schedules
   script:
     - yarn --frozen-lockfile
     - yarn block action-button
@@ -40,11 +44,23 @@ build:blocks:
       - blocks/splash/dist/
       - blocks/splash/package.json
 
+dependency scanning:
+  except:
+    - schedules
+  allow_failure: true
+  script:
+    - yarn --frozen-lockfile
+    - yarn gitlab-yarn-audit
+  artifacts:
+    reports:
+      dependency_scanning: gl-dependency-scanning.json
+
 deploy:review:
   stage: deploy
   when: manual
   except:
     - master
+    - schedules
   allow_failure: false
   environment:
     name: review/$CI_COMMIT_REF_SLUG
@@ -65,6 +81,7 @@ deploy:review:stop:
   when: manual
   except:
     - master
+    - schedules
   environment:
     name: review/$CI_COMMIT_REF_SLUG
     action: stop
@@ -76,6 +93,8 @@ deploy:staging:
   stage: deploy
   only:
     - master@appsemble/appsemble
+  except:
+    - schedules
   environment:
     name: review/master
     url: https://staging.appsemble.app
@@ -103,6 +122,8 @@ deploy:staging:stop:
     - node -r esm config/bin/stop.js
 
 eslint:
+  except:
+    - schedules
   script:
     - yarn --frozen-lockfile
     - yarn eslint
@@ -127,6 +148,8 @@ pages:
   stage: build
   only:
     - master
+  except:
+    - schedules
   script:
     - yarn --frozen-lockfile
     - yarn gitbook build . public
@@ -135,6 +158,8 @@ pages:
       - public/
 
 prettier:
+  except:
+    - schedules
   script:
     - yarn --frozen-lockfile
     - yarn prettier
@@ -148,6 +173,8 @@ publish:docker:latest:
     GIT_STRATEGY: none
   only:
     - tags
+  except:
+    - schedules
   script:
     - echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY
     - echo $DOCKER_HUB_PASSWORD | docker login -u $DOCKER_HUB_USER --password-stdin
@@ -161,6 +188,8 @@ publish:docker:latest:
 
 provision:blocks:
   stage: provision
+  except:
+    - schedules
   dependencies:
     - build:blocks
     - pack
@@ -182,6 +211,7 @@ review pages:
     - branches
   except:
     - master
+    - schedules
   environment:
     name: pages/$CI_COMMIT_REF_SLUG
     url: https://$CI_PROJECT_NAMESPACE.$CI_PAGES_DOMAIN/-/$CI_PROJECT_NAME/-/jobs/$CI_JOB_ID/artifacts/public/index.html
@@ -193,6 +223,8 @@ review pages:
       - public/
 
 stylelint:
+  except:
+    - schedules
   script:
     - yarn --frozen-lockfile
     - yarn stylelint
@@ -204,6 +236,8 @@ test:
   services:
     - name: mysql:8
       command: [--default-authentication-plugin=mysql_native_password]
+  except:
+    - schedules
   variables:
     MYSQL_DATABASE: testAppsemble
     MYSQL_ROOT_PASSWORD: password
@@ -236,6 +270,8 @@ test:
       junit: junit.xml
 
 tsc:
+  except:
+    - schedules
   script:
     - yarn --frozen-lockfile
     - yarn tsc
