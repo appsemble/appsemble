@@ -33,7 +33,7 @@ export default class Toolbar extends React.Component {
           <NavbarItem>
             <a
               className="button"
-              href="https://appsemble.surge.sh"
+              href="https://appsemble.gitlab.io/appsemble"
               rel="noopener noreferrer"
               target="_blank"
             >
