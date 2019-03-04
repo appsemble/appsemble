@@ -207,17 +207,18 @@ export async function getBlockVersion(ctx) {
 export async function getBlockVersions(ctx) {
   const { organization, id } = ctx.params;
   const name = `${organization}/${id}`;
-  const { BlockVersion } = ctx.db.models;
+  const { BlockDefinition, BlockVersion } = ctx.db.models;
+
+  const blockDefinition = await BlockDefinition.findOne({ where: { id: name } });
+  if (!blockDefinition) {
+    throw Boom.notFound('Block definition not found');
+  }
 
   const blockVersions = await BlockVersion.findAll({
     attributes: ['version', 'actions', 'position', 'resources'],
     raw: true,
     where: { name },
   });
-
-  if (!blockVersions) {
-    throw Boom.notFound('Block version not found');
-  }
 
   ctx.body = blockVersions;
 }

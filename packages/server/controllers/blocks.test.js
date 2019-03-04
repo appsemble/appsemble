@@ -132,6 +132,15 @@ describe('blocks', () => {
     ]);
   });
 
+  it('should not be possible to fetch block versions of non-existent blocks', async () => {
+    const { body } = await request(server).get('/api/blocks/@xkcd/standing/versions');
+    expect(body).toStrictEqual({
+      statusCode: 404,
+      error: 'Not Found',
+      message: 'Block definition not found',
+    });
+  });
+
   it('should be possible to upload block versions where data is sent as the last parameter', async () => {
     await request(server)
       .post('/api/blocks')
