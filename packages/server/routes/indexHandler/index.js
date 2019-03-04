@@ -16,7 +16,8 @@ export default async function indexHandler(ctx) {
   const { path: p } = ctx.params;
   const { App } = ctx.db.models;
   ctx.type = 'text/html';
-  const { assets, argv } = ctx.state;
+  const { assets } = ctx.state;
+  const { argv } = ctx;
   const reportUri = sentryDsnToReportUri(argv.sentryDsn);
   const csp = makeCSP({
     'report-uri': [reportUri],
