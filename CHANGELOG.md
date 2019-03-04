@@ -7,6 +7,41 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.4.2] - 2019-02-26
+
+### Added
+
+- Server: Add option to disable user registration. This is only implemented server side. The
+  registration form still exists in the editor.
+
+## [0.4.1] - 2019-02-20
+
+### Removed
+
+- Server: Remove the initialize subcommand. It only served to initialize a default user in
+  development. This can now be done easily from the editor.
+
+### Fixed
+
+- App: Fix the crash when a splash action is dispatched.
+
+## [0.4.0] - 2019-02-19
+
+### Added
+
+- Editor: Add link to external documentation.
+- Extend documentation for creating blocks.
+- Add LGPL.
+
+### Changed
+
+- Editor: Add significant changes to the GUI to make it more appealing.
+- Editor: Host the editor on the root URL. Any other paths are available under subpaths of `/_`.
+
+### Fixed
+
+- App: Make sure the navigation menu button is always visible.
+
 ## [0.3.0] - 2019-01-25
 
 ### Added

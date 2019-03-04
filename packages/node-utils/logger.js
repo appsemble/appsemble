@@ -1,4 +1,5 @@
 import os from 'os';
+import util from 'util';
 
 import winston from 'winston';
 
@@ -10,7 +11,10 @@ function toString(info) {
   if (info instanceof Error) {
     return info.stack;
   }
-  return `${info.message}`;
+  if (typeof info.message === 'string') {
+    return info.message;
+  }
+  return util.inspect(info.message, { colors: true });
 }
 
 /**

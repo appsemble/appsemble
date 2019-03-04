@@ -9,14 +9,11 @@ stages:
 
 build:docker:
   stage: build
+  except:
+    - schedules
   services:
     - docker:dind
   image: docker
-  tags:
-    - dind
-  variables:
-    DOCKER_HOST: tcp://docker:2375
-    DOCKER_DRIVER: overlay2
   script:
     - echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY
     - docker build -t "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME" .
@@ -24,6 +21,8 @@ build:docker:
 
 build:blocks:
   stage: build
+  except:
+    - schedules
   script:
     - yarn --frozen-lockfile
     - yarn block action-button
@@ -35,19 +34,36 @@ build:blocks:
     expire_in: 3 days
     paths:
       - blocks/action-button/dist/
+      - blocks/action-button/package.json
       - blocks/detail-viewer/dist/
+      - blocks/detail-viewer/package.json
       - blocks/form/dist/
+      - blocks/form/package.json
       - blocks/map/dist/
+      - blocks/map/package.json
       - blocks/splash/dist/
+      - blocks/splash/package.json
+
+dependency scanning:
+  except:
+    - schedules
+  allow_failure: true
+  script:
+    - yarn --frozen-lockfile
+    - yarn gitlab-yarn-audit
+  artifacts:
+    reports:
+      dependency_scanning: gl-dependency-scanning.json
 
 deploy:review:
   stage: deploy
   when: manual
   except:
-    - master@dcentralized/appsemble/appsemble
+    - master
+    - schedules
   allow_failure: false
   environment:
-    name: review/$CI_COMMIT_REF_NAME
+    name: review/$CI_COMMIT_REF_SLUG
     url: https://$CI_ENVIRONMENT_SLUG.appsemble.app
     on_stop: deploy:review:stop
   script:
@@ -64,9 +80,10 @@ deploy:review:stop:
   stage: deploy
   when: manual
   except:
-    - master@dcentralized/appsemble/appsemble
+    - master
+    - schedules
   environment:
-    name: review/$CI_COMMIT_REF_NAME
+    name: review/$CI_COMMIT_REF_SLUG
     action: stop
   script:
     - yarn --frozen-lockfile
@@ -75,7 +92,9 @@ deploy:review:stop:
 deploy:staging:
   stage: deploy
   only:
-    - master@dcentralized/appsemble/appsemble
+    - master@appsemble/appsemble
+  except:
+    - schedules
   environment:
     name: review/master
     url: https://staging.appsemble.app
@@ -94,7 +113,7 @@ deploy:staging:stop:
   stage: deploy
   when: manual
   only:
-    - master@dcentralized/appsemble/appsemble
+    - master@appsemble/appsemble
   environment:
     name: review/master
     action: stop
@@ -103,6 +122,8 @@ deploy:staging:stop:
     - node -r esm config/bin/stop.js
 
 eslint:
+  except:
+    - schedules
   script:
     - yarn --frozen-lockfile
     - yarn eslint
@@ -110,19 +131,35 @@ eslint:
     reports:
       codequality: gl-codequality.json
 
+pack:
+  stage: build
+  script:
+    - yarn workspace @appsemble/cli pack
+    - yarn workspace @appsemble/node-utils pack
+    - yarn workspace @appsemble/react pack
+    - yarn workspace @appsemble/sdk pack
+    - yarn workspace @appsemble/server pack
+    - yarn workspace create-appsemble pack
+  artifacts:
+    paths:
+      - packages/**/*.tgz
+
 pages:
+  stage: build
   only:
     - master
+  except:
+    - schedules
   script:
     - yarn --frozen-lockfile
     - yarn gitbook build . public
-    - yarn surge --domain https://appsemble.surge.sh --project ./public
-    # publish to surge, replace with GitLab Pages when https://gitlab.com/gitlab-org/gitlab-ce/issues/30548 is resolved.
   artifacts:
     paths:
       - public/
 
 prettier:
+  except:
+    - schedules
   script:
     - yarn --frozen-lockfile
     - yarn prettier
@@ -132,14 +169,12 @@ publish:docker:latest:
   services:
     - docker:dind
   image: docker
-  tags:
-    - dind
   variables:
-    DOCKER_HOST: tcp://docker:2375
-    DOCKER_DRIVER: overlay2
     GIT_STRATEGY: none
   only:
     - tags
+  except:
+    - schedules
   script:
     - echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY
     - echo $DOCKER_HUB_PASSWORD | docker login -u $DOCKER_HUB_USER --password-stdin
@@ -153,19 +188,43 @@ publish:docker:latest:
 
 provision:blocks:
   stage: provision
+  except:
+    - schedules
   dependencies:
     - build:blocks
+    - pack
     - deploy:review
     - deploy:staging
+  variables:
+    GIT_STRATEGY: none
   script:
-    - yarn --frozen-lockfile
+    - npm install ./packages/node-utils/*.tgz
+    - npm install ./packages/cli/*.tgz
     - yarn appsemble block register --ignore-conflict blocks/action-button
     - yarn appsemble block register --ignore-conflict blocks/detail-viewer
     - yarn appsemble block register --ignore-conflict blocks/form
     - yarn appsemble block register --ignore-conflict blocks/map
     - yarn appsemble block register --ignore-conflict blocks/splash
 
+review pages:
+  only:
+    - branches
+  except:
+    - master
+    - schedules
+  environment:
+    name: pages/$CI_COMMIT_REF_SLUG
+    url: https://$CI_PROJECT_NAMESPACE.$CI_PAGES_DOMAIN/-/$CI_PROJECT_NAME/-/jobs/$CI_JOB_ID/artifacts/public/index.html
+  script:
+    - yarn --frozen-lockfile
+    - yarn gitbook build . public
+  artifacts:
+    paths:
+      - public/
+
 stylelint:
+  except:
+    - schedules
   script:
     - yarn --frozen-lockfile
     - yarn stylelint
@@ -177,6 +236,8 @@ test:
   services:
     - name: mysql:8
       command: [--default-authentication-plugin=mysql_native_password]
+  except:
+    - schedules
   variables:
     MYSQL_DATABASE: testAppsemble
     MYSQL_ROOT_PASSWORD: password
@@ -184,9 +245,8 @@ test:
   script:
     - yarn --frozen-lockfile
     - yarn test --coverage --reporters default --reporters jest-junit
+    - yarn codecov
   artifacts:
-    paths:
-      - coverage/
     reports:
       junit: junit.xml
 
@@ -210,6 +270,8 @@ test:
       junit: junit.xml
 
 tsc:
+  except:
+    - schedules
   script:
     - yarn --frozen-lockfile
     - yarn tsc

@@ -29,6 +29,10 @@ services:
       MYSQL_USER: appsemble_database_user
       MYSQL_PASSWORD: appsemble_database_password
       MYSQL_RANDOM_ROOT_PASSWORD: 'yes'
+    volumes:
+      - ./mysql_data:/var/lib/mysql
+    ports:
+      - '3306:3306'
 ```
 
 It is highly recommended to specify the version of the `appsemble/appsemble` image to use. Replace
@@ -43,7 +47,7 @@ To start the service, run the following command.
 $ docker-compose up -d
 ```
 
-The Appsemble editor should now be available on http://localhost:8000/editor.
+The Appsemble editor should now be available on http://localhost:8000.
 
 To stop the service, run the following command.
 

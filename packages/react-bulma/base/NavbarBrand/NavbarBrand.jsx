@@ -5,7 +5,7 @@ import React from 'react';
 export default class NavbarBrand extends React.Component {
   static propTypes = {
     className: PropTypes.string,
-    component: PropTypes.string,
+    component: PropTypes.oneOfType([PropTypes.func, PropTypes.string]),
   };
 
   static defaultProps = {

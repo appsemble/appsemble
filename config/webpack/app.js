@@ -6,16 +6,19 @@ const { UnusedFilesWebpackPlugin } = require('unused-files-webpack-plugin');
 const merge = require('webpack-merge');
 const { StatsWriterPlugin } = require('webpack-stats-plugin');
 
-const shared = require('./shared');
+const core = require('./core');
 
 const publicPath = '/';
 
+/**
+ * This webpack configuration is used by the Appsemble app.
+ */
 module.exports = (env, argv) => {
   const { mode } = argv;
   const production = mode === 'production';
-  const appEntry = path.resolve(__dirname, '../../app');
+  const appEntry = path.resolve(__dirname, '../../packages/app');
 
-  return merge.smart(shared(env, argv), {
+  return merge.smart(core(env, argv), {
     name: 'Appsemble App',
     entry: [appEntry],
     output: {

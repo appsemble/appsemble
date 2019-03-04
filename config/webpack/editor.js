@@ -10,16 +10,19 @@ const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin');
 const { UnusedFilesWebpackPlugin } = require('unused-files-webpack-plugin');
 const merge = require('webpack-merge');
 
-const shared = require('./shared');
+const core = require('./core');
 
 const publicPath = '/';
 
+/**
+ * This webpack configuration is used by the Appsemble editor.
+ */
 module.exports = (env, argv) => {
   const { mode } = argv;
   const production = mode === 'production';
-  const editorEntry = path.resolve(__dirname, '../../editor');
+  const editorEntry = path.resolve(__dirname, '../../packages/editor');
 
-  return merge.smart(shared(env, argv), {
+  return merge.smart(core(env, argv), {
     name: 'Appsemble Editor',
     entry: [editorEntry],
     output: {

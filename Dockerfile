@@ -9,7 +9,7 @@ RUN yarn --frozen-lockfile \
 # Setup the backend
 FROM node:10-slim AS backend
 WORKDIR /app
-COPY server server
+COPY packages/server packages/server
 COPY packages/node-utils packages/node-utils
 COPY packages/utils packages/utils
 COPY package.json package.json
@@ -24,6 +24,6 @@ COPY --from=frontend /app/dist /app/dist
 WORKDIR /app
 ENV NODE_ENV production
 USER node
-ENTRYPOINT ["node", "-r", "esm", "server"]
+ENTRYPOINT ["node", "-r", "esm", "packages/server"]
 CMD ["start"]
 EXPOSE 9999

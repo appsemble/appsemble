@@ -16,5 +16,6 @@ export default {
       app: CI_ENVIRONMENT_SLUG,
       tier: 'frontend',
     },
+    clusterIP: 'None',
   },
 };

@@ -1,0 +1,30 @@
+{
+  "name": "@appsemble/app",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "@appsemble/react-bulma": "^1.0.0",
+    "@appsemble/react-components": "^1.0.0",
+    "@appsemble/utils": "^1.0.0",
+    "@material-ui/core": "^3.9.2",
+    "@sentry/browser": "^4.5.3",
+    "axios": "^0.18.0",
+    "classnames": "^2.2.6",
+    "idb": "^3.0.2",
+    "jsonpointer": "^4.0.1",
+    "jwt-decode": "^2.2.0",
+    "prop-types": "^15.6.2",
+    "react": "^16.7.0",
+    "react-dom": "^16.7.0",
+    "react-intl": "^2.8.0",
+    "react-redux": "^6.0.0",
+    "react-router-dom": "^4.3.1",
+    "redux": "^4.0.1",
+    "redux-thunk": "^2.3.0",
+    "roboto-fontface": "^0.10.0",
+    "serviceworker-webpack-plugin": "^1.0.1"
+  },
+  "devDependencies": {
+    "service-worker-mock": "^2.0.0"
+  }
+}
