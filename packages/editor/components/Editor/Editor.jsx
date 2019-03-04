@@ -179,13 +179,17 @@ export default class Editor extends React.Component {
     }
 
     const { id } = match.params;
+    const app = yaml.safeLoad(recipe);
+    let { path } = app;
 
     try {
       const formData = new FormData();
-      formData.append('app', JSON.stringify(yaml.safeLoad(recipe)));
+      formData.append('app', JSON.stringify(app));
       formData.append('style', new Blob([style], { type: 'text/css' }));
       formData.append('sharedStyle', new Blob([sharedStyle], { type: 'text/css' }));
-      await axios.put(`/api/apps/${id}`, formData);
+      ({
+        data: { path },
+      } = await axios.put(`/api/apps/${id}`, formData));
       push({ body: intl.formatMessage(messages.updateSuccess), color: 'success' });
     } catch (e) {
       if (e.response && e.response.status === 403) {
@@ -207,7 +211,7 @@ export default class Editor extends React.Component {
       }
     }
 
-    this.setState({ dirty: true, warningDialog: false, initialRecipe: recipe });
+    this.setState({ dirty: true, warningDialog: false, initialRecipe: recipe, path });
   };
 
   onUpload = async () => {
