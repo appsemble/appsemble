@@ -12,6 +12,11 @@
 
 - [Docker Compose](docs/Deployment Using Docker Compose.md)
 
+## Blocks
+
+- [action-button](docs/blocks/action-button.md)
+- [form](docs/blocks/form.md)
+
 ## server
 
 - [server](server/README.md)
