@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 
-import { logger } from '@appsemble/node-utils';
+import { AppsembleError, logger } from '@appsemble/node-utils';
 import * as Sentry from '@sentry/node';
 import yaml from 'js-yaml';
 import Koa from 'koa';
@@ -92,25 +92,19 @@ export async function handler(argv, webpackConfigs) {
     switch (dbException.name) {
       case 'SequelizeConnectionError':
       case 'SequelizeAccessDeniedError':
-        logger.error(`${dbException.name}: ${dbException.original.sqlMessage}`);
-        process.exit(1);
-        break;
+        throw new AppsembleError(`${dbException.name}: ${dbException.original.sqlMessage}`);
       case 'SequelizeHostNotFoundError':
-        logger.error(
+        throw new AppsembleError(
           `${dbException.name}: Could not find host ´${dbException.original.hostname}:${
             dbException.original.port
           }´`,
         );
-        process.exit(1);
-        break;
       case 'SequelizeConnectionRefusedError':
-        logger.error(
+        throw new AppsembleError(
           `${dbException.name}: Connection refused on address ´${dbException.original.address}:${
             dbException.original.port
           }´`,
         );
-        process.exit(1);
-        break;
       default:
         throw dbException;
     }

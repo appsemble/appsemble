@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { configureLogger } from '@appsemble/node-utils';
+import { configureLogger, handleError } from '@appsemble/node-utils';
 import yargs from 'yargs';
 
 import * as start from './commands/start';
@@ -33,6 +33,7 @@ function main(argv) {
     })
     .middleware([configureLogger])
     .command(start)
+    .fail(handleError)
     .help('help', 'Show this help message.')
     .alias('h', 'help')
     .env()
