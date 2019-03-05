@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 
-import { logger } from '@appsemble/node-utils';
+import { AppsembleError, logger } from '@appsemble/node-utils';
 import * as Sentry from '@sentry/node';
 import yaml from 'js-yaml';
 import Koa from 'koa';
@@ -77,15 +77,38 @@ export function builder(yargs) {
 }
 
 export async function handler(argv, webpackConfigs) {
-  const db = await setupModels({
-    host: argv.databaseHost,
-    dialect: argv.databaseDialect,
-    port: argv.databasePort,
-    username: argv.databaseUser,
-    password: argv.databasePassword,
-    database: argv.databaseName,
-    uri: argv.databaseUrl,
-  });
+  let db;
+  try {
+    db = await setupModels({
+      host: argv.databaseHost,
+      dialect: argv.databaseDialect,
+      port: argv.databasePort,
+      username: argv.databaseUser,
+      password: argv.databasePassword,
+      database: argv.databaseName,
+      uri: argv.databaseUrl,
+    });
+  } catch (dbException) {
+    switch (dbException.name) {
+      case 'SequelizeConnectionError':
+      case 'SequelizeAccessDeniedError':
+        throw new AppsembleError(`${dbException.name}: ${dbException.original.sqlMessage}`);
+      case 'SequelizeHostNotFoundError':
+        throw new AppsembleError(
+          `${dbException.name}: Could not find host ´${dbException.original.hostname}:${
+            dbException.original.port
+          }´`,
+        );
+      case 'SequelizeConnectionRefusedError':
+        throw new AppsembleError(
+          `${dbException.name}: Connection refused on address ´${dbException.original.address}:${
+            dbException.original.port
+          }´`,
+        );
+      default:
+        throw dbException;
+    }
+  }
 
   const smtp = argv.smtpHost
     ? {

@@ -1,9 +1,8 @@
 import path from 'path';
 
-import { configureLogger } from '@appsemble/node-utils';
+import { configureLogger, handleError } from '@appsemble/node-utils';
 import yargs from 'yargs';
 
-import handleError from './lib/handleError';
 import initAxios from './lib/initAxios';
 
 export default async function main(argv) {
