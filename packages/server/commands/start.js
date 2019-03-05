@@ -77,15 +77,44 @@ export function builder(yargs) {
 }
 
 export async function handler(argv, webpackConfigs) {
-  const db = await setupModels({
-    host: argv.databaseHost,
-    dialect: argv.databaseDialect,
-    port: argv.databasePort,
-    username: argv.databaseUser,
-    password: argv.databasePassword,
-    database: argv.databaseName,
-    uri: argv.databaseUrl,
-  });
+  let db;
+  try {
+    db = await setupModels({
+      host: argv.databaseHost,
+      dialect: argv.databaseDialect,
+      port: argv.databasePort,
+      username: argv.databaseUser,
+      password: argv.databasePassword,
+      database: argv.databaseName,
+      uri: argv.databaseUrl,
+    });
+  } catch (dbException) {
+    switch (dbException.name) {
+      case 'SequelizeConnectionError':
+      case 'SequelizeAccessDeniedError':
+        logger.error(`${dbException.name}: ${dbException.original.sqlMessage}`);
+        process.exit(1);
+        break;
+      case 'SequelizeHostNotFoundError':
+        logger.error(
+          `${dbException.name}: Could not find host ´${dbException.original.hostname}:${
+            dbException.original.port
+          }´`,
+        );
+        process.exit(1);
+        break;
+      case 'SequelizeConnectionRefusedError':
+        logger.error(
+          `${dbException.name}: Connection refused on address ´${dbException.original.address}:${
+            dbException.original.port
+          }´`,
+        );
+        process.exit(1);
+        break;
+      default:
+        throw dbException;
+    }
+  }
 
   const smtp = argv.smtpHost
     ? {

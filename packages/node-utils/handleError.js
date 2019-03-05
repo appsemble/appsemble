@@ -1,7 +1,6 @@
 import { EOL } from 'os';
 
-import { logger } from '@appsemble/node-utils';
-
+import { logger } from './logger';
 import AppsembleError from './AppsembleError';
 
 /**

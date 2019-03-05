@@ -1,4 +1,4 @@
-import AppsembleError from './AppsembleError';
+import { AppsembleError } from '@appsemble/node-utils';
 
 const PROMPT = process.platform === 'win32' ? '>' : '$';
 const COMMAND = /yarn/.test(process.env.npm_execpath)
