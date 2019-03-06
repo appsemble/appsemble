@@ -117,6 +117,7 @@ yarn gitbook serve
 The documentation can be compiled by running the following command.
 
 ```sh
+yarn gitbook install
 yarn gitbook build . public
 ```
 
