@@ -5,7 +5,7 @@ import 'monaco-editor/esm/vs/basic-languages/javascript/javascript.contribution'
 import 'monaco-editor/esm/vs/basic-languages/yaml/yaml.contribution';
 import 'monaco-editor/esm/vs/basic-languages/css/css.contribution';
 
-import { editor } from 'monaco-editor/esm/vs/editor/edcore.main';
+import { KeyCode, KeyMod, editor } from 'monaco-editor/esm/vs/editor/edcore.main';
 import React from 'react';
 import PropTypes from 'prop-types';
 
@@ -17,12 +17,14 @@ export default class MonacoEditor extends React.Component {
     language: PropTypes.string.isRequired,
     theme: PropTypes.string,
     onValueChange: PropTypes.func,
+    onSave: PropTypes.func,
     options: PropTypes.shape(),
   };
 
   static defaultProps = {
     value: '',
     onValueChange: null,
+    onSave: null,
     theme: 'vs',
     options: { insertSpaces: true, tabSize: 2, minimap: { enabled: false } },
   };
@@ -30,11 +32,18 @@ export default class MonacoEditor extends React.Component {
   node = React.createRef();
 
   componentDidMount() {
-    const { value, language, onValueChange, options } = this.props;
+    const { value, language, onValueChange, onSave, options } = this.props;
     const model = editor.createModel(value, language);
 
     this.editor = editor.create(this.node.current, options);
     this.editor.setModel(model);
+
+    if (onSave) {
+      // eslint-disable-next-line no-bitwise
+      this.editor.addCommand(KeyMod.CtrlCmd | KeyCode.KEY_S, () => {
+        onSave();
+      });
+    }
 
     this.subscription = model.onDidChangeContent(() => {
       onValueChange(model.getValue());
