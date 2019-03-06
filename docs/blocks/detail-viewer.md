@@ -16,6 +16,7 @@ A block that can be used to display various fields based on input data.
 | --------- | ------- | ------------------------------------------------------------- |
 | schema    |         | The schema used for reading the data                          |
 | fields    |         | A list of fields to display based on the name from the schema |
+| fileBase  |         | The base URL of the associated files                          |
 
 ## Images
 
