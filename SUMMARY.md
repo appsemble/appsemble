@@ -15,7 +15,9 @@
 ## Blocks
 
 - [action-button](docs/blocks/action-button.md)
+- [detail-viewer](docs/blocks/detail-viewer.md)
 - [form](docs/blocks/form.md)
+- [map](docs/blocks/map.md)
 
 ## server
 
