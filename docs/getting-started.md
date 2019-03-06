@@ -29,7 +29,7 @@ order to create apps that do exactly what the user needs. Blocks can be freely d
 submitted to Appsemble for use within apps. Check out the links below for some resources on getting
 started!
 
-- [Tutorial on getting started with a new block](Developing-Blocks.md)
+- [Tutorial on getting started with a new block](developing-blocks.md)
 - [Documentation on existing blocks](blocks/blocks.md)
 
 ### App Developer
@@ -40,9 +40,9 @@ complexity.
 
 Check out the resources below for more information on how to develop apps using Appsemble.
 
-- [Tutorial on developing a simple person registration app](App-Development.md)
-- [A summary on Appsemble's ´Resources´ system](Appsemble Resources.md)
-- [How to style apps](Theming.md)
+- [Tutorial on developing a simple person registration app](app-development.md)
+- [A summary on Appsemble's ´Resources´ system](appsemble-resources.md")
+- [How to style apps](theming.md)
 - [Documentation on blocks](blocks/blocks.md)
 
 ### Manager
@@ -52,5 +52,4 @@ how Appsemble can be deployed on your own server.
 
 For more information, please refer to the links below.
 
-- [Deployment using Docker Compose](Deployment Using Docker Compose.md)
-- Architecture (bestaat nog niet, yay)
+- [Deployment using Docker Compose](deployment-using-docker-compose.md)

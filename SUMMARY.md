@@ -1,20 +1,21 @@
 # Summary
 
-- [Getting Started](docs/Getting-Started.md)
+- [Getting Started](docs/getting-started.md)
 
 ## Development
 
-- [App Development](docs/App-Development.md)
-- [Block Development](docs/Developing-Blocks.md)
-- [Theming](docs/Theming.md)
+- [App Development](docs/app-development.md)
+- [Block Development](docs/developing-blocks.md)
+- [Theming](docs/theming.md)
+- [Appsemble Resources](docs/appsemble-resources.md)
 
 ## Deployment
 
-- [Docker Compose](Deployment Using Docker Compose.md)
+- [Docker Compose](deployment-using-docker-compose.md)
 
-## Blocks
+## [Blocks](docs/blocks/blocks.md)
 
-- [Blocksi](docs/blocks/blocks.md)
+- [Blocks](docs/blocks/blocks.md)
 - [action-button](docs/blocks/action-button.md)
 - [detail-viewer](docs/blocks/detail-viewer.md)
 - [form](docs/blocks/form.md)
