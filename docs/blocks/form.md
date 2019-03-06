@@ -13,12 +13,12 @@ A block used for inputting and submitting sets of data.
 
 ## Parameters
 
-| Parameter     | Description                                                             |
-| ------------- | ----------------------------------------------------------------------- |
-| fields        | A list of objects describing each field that can be entered in the form |
-| field[].name  | The name used when storing this field                                   |
-| field[].label | User-facing label describing the field                                  |
-| field[].type  | The type of the data                                                    |
+| Parameter     | Default      | Description                                                             |
+| ------------- | ------------ | ----------------------------------------------------------------------- |
+| fields        |              | A list of objects describing each field that can be entered in the form |
+| field[].name  |              | The name used when storing this field                                   |
+| field[].label | field[].name | User-facing label describing the field                                  |
+| field[].type  | string       | The type of the data                                                    |
 
 #### Field types
 

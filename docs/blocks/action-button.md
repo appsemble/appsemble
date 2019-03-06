@@ -15,4 +15,4 @@ lower-right corner, allowing for easy access on mobile devices.
 
 ## Images
 
-<img src="../images/action-button.png" />
+<a href="../images/action-button.png"  target="_blank"><img src="../images/action-button.png" style="width: 300px" /></a>
