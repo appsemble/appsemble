@@ -65,7 +65,7 @@ be registered.
 First, define a resource that represents the format of a `person` resource:
 
 ```yaml
-resources:
+definitions:
   person:
     type: object
     required:
@@ -219,7 +219,7 @@ name: Person App
 path: person-app
 defaultPage: Person List
 
-resources:
+definitions:
   person:
     type: object
     required:
