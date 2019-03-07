@@ -10,18 +10,7 @@ by professional role and common task scenarios. Because the roles in your organi
 different from the roles described here, consider this information as a recommendation to the
 location of the content that you need.
 
-## I am a...
-
-### Sys Admin
-
-As a sys admin you might be interested in learning more about how Appsemble's infrastructure works
-or how Appsemble can be deployed on your own server.
-
-For more information, please refer to the links below.
-
-- [Deployment using Docker Compose](deployment-using-docker-compose.md)
-
-### App Builder
+## App Builder
 
 Apps can be created using the Appsemble editor. You can get started by creating a new app using one
 of the available templates. Templates are small apps that come pre-configured at varying degrees of
@@ -34,7 +23,16 @@ Check out the resources below for more information on how to develop apps using 
 - [How to style apps](theming.md)
 - [Documentation on blocks](blocks/blocks.md)
 
-### Block Developer
+## Sys Admin
+
+As a sys admin you might be interested in learning more about how Appsemble's infrastructure works
+or how Appsemble can be deployed on your own server.
+
+For more information, please refer to the links below.
+
+- [Deployment using Docker Compose](deployment-using-docker-compose.md)
+
+## Block Developer
 
 Blocks are what app developers will use to build apps. Pages in apps can be composed using blocks in
 order to create apps that do exactly what the user needs. Blocks can be freely developed and
@@ -44,7 +42,7 @@ started!
 - [Tutorial on getting started with a new block](developing-blocks.md)
 - [Documentation on existing blocks](blocks/blocks.md)
 
-### Core Developer
+## Core Developer
 
 The Appsemble core consists of all the systems that makes Appsemble as a whole tick, like the API,
 database, authentication provider, and the app components used to display apps.
