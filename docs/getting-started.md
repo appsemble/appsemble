@@ -4,35 +4,24 @@ showToc: true
 
 # Getting Started
 
-## I am a...
-
 Some of the content in the Appsemble documentation is of interest to a wide range of software
 development and IT professionals. This section provides you with links to topics that are organized
 by professional role and common task scenarios. Because the roles in your organization might be
 different from the roles described here, consider this information as a recommendation to the
 location of the content that you need.
 
-### Core Developer
+## I am a...
 
-The Appsemble core consists of all the systems that makes Appsemble as a whole tick, like the API,
-database, authentication provider, and the app components used to display apps.
+### Sys Admin
 
-See also:
+As a sys admin you might be interested in learning more about how Appsemble's infrastructure works
+or how Appsemble can be deployed on your own server.
 
-- [API documentation](https://staging.appsemble.app/api-explorer)
-- [Contribution guidelines](https://gitlab.com/appsemble/appsemble/blob/master/CONTRIBUTING.md)
+For more information, please refer to the links below.
 
-### Block Developer
+- [Deployment using Docker Compose](deployment-using-docker-compose.md)
 
-Blocks are what app developers will use to build apps. Pages in apps can be composed using blocks in
-order to create apps that do exactly what the user needs. Blocks can be freely developed and
-submitted to Appsemble for use within apps. Check out the links below for some resources on getting
-started!
-
-- [Tutorial on getting started with a new block](developing-blocks.md)
-- [Documentation on existing blocks](blocks/blocks.md)
-
-### App Developer
+### App Builder
 
 Apps can be created using the Appsemble editor. You can get started by creating a new app using one
 of the available templates. Templates are small apps that come pre-configured at varying degrees of
@@ -45,11 +34,22 @@ Check out the resources below for more information on how to develop apps using 
 - [How to style apps](theming.md)
 - [Documentation on blocks](blocks/blocks.md)
 
-### Manager
+### Block Developer
 
-As a manager you might be interested in learning more about how Appsemble's infrastructure works or
-how Appsemble can be deployed on your own server.
+Blocks are what app developers will use to build apps. Pages in apps can be composed using blocks in
+order to create apps that do exactly what the user needs. Blocks can be freely developed and
+submitted to Appsemble for use within apps. Check out the links below for some resources on getting
+started!
 
-For more information, please refer to the links below.
+- [Tutorial on getting started with a new block](developing-blocks.md)
+- [Documentation on existing blocks](blocks/blocks.md)
 
-- [Deployment using Docker Compose](deployment-using-docker-compose.md)
+### Core Developer
+
+The Appsemble core consists of all the systems that makes Appsemble as a whole tick, like the API,
+database, authentication provider, and the app components used to display apps.
+
+See also:
+
+- [API documentation](https://staging.appsemble.app/api-explorer)
+- [Contribution guidelines](https://gitlab.com/appsemble/appsemble/blob/master/CONTRIBUTING.md)
