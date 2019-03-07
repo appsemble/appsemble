@@ -114,7 +114,9 @@ export default class Editor extends React.Component {
   }
 
   onSave = event => {
-    event.preventDefault();
+    if (event) {
+      event.preventDefault();
+    }
 
     this.setState(
       (
@@ -375,6 +377,7 @@ export default class Editor extends React.Component {
             <MonacoEditor
               className={styles.monacoEditor}
               language={language}
+              onSave={this.onSave}
               onValueChange={onValueChange}
               value={value}
             />
