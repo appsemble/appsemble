@@ -19,7 +19,7 @@ complexity.
 Check out the resources below for more information on how to develop apps using Appsemble.
 
 - [Tutorial on developing a simple person registration app](app-development.md)
-- [A summary on Appsemble's ´Resources´ system](appsemble-resources.md")
+- [A summary on Appsemble's ´Resources´ system](appsemble-resources.md)
 - [How to style apps](theming.md)
 - [Documentation on blocks](blocks/blocks.md)
 
