@@ -62,6 +62,30 @@
         $ref: '#/responses/default'
 
 /blocks/{organization}/{id}/versions:
+  get:
+    tags: [block version]
+    description: Retrieves all available versions of a block.
+    x-oai-middleware:
+      - file: blocks
+        handler: getBlockVersions
+    parameters:
+      - name: organization
+        in: path
+        description: The organization of the block definition.
+        required: true
+        type: string
+      - name: id
+        in: path
+        description: The id of the block definition.
+        required: true
+        type: string
+    responses:
+      200:
+        description: A list of versions of a block.
+        schema:
+          $ref: '#/definitions/BlockVersion'
+      default:
+        $ref: '#/responses/default'
   post:
     tags: [block version]
     description: Publish a version of a block definition
