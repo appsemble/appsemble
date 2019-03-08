@@ -152,10 +152,17 @@ pages:
     - schedules
   script:
     - yarn --frozen-lockfile
+    - >
+      for input in public/images/*.mmd; do
+        [ -f "$input" ] || break
+        output=public/images/$(basename $input .mmd).png
+        yarn mmdc -i $input -o $output
+      done
     - yarn gitbook install
     - yarn gitbook build . public
     - yarn typedoc --out public/sdk --includeDeclarations --excludeExternals --mode file --target
       ES6 --ignoreCompilerErrors packages/sdk
+
   artifacts:
     paths:
       - public/
@@ -220,10 +227,17 @@ review pages:
     url: https://$CI_PROJECT_NAMESPACE.$CI_PAGES_DOMAIN/-/$CI_PROJECT_NAME/-/jobs/$CI_JOB_ID/artifacts/public/index.html
   script:
     - yarn --frozen-lockfile
+    - >
+      for input in public/images/*.mmd; do
+        [ -f "$input" ] || break
+        output=public/images/$(basename $input .mmd).png
+        yarn mmdc -i $input -o $output
+      done
     - yarn gitbook install
     - yarn gitbook build . public
     - yarn typedoc --out public/sdk --includeDeclarations --excludeExternals --mode file --target
       ES6 --ignoreCompilerErrors packages/sdk
+
   artifacts:
     paths:
       - public/

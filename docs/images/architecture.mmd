@@ -1,0 +1,10 @@
+graph BT
+    A(Database) --> B
+    B("Server (API)") --> A
+    C(App) --> B
+    B --> C
+    D(Editor) --> B
+    B --> D
+    E(CLI) --> B
+    F(SDK) --> E
+    G(Block) --> F
