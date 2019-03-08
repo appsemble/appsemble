@@ -228,9 +228,9 @@ review pages:
   script:
     - yarn --frozen-lockfile
     - >
-      for input in public/images/*.mmd; do
+      for input in docs/images/*.mmd; do
         [ -f "$input" ] || break
-        output=public/images/$(basename $input .mmd).png
+        output=docs/images/$(basename $input .mmd).png
         yarn mmdc -i $input -o $output
       done
     - yarn gitbook install
