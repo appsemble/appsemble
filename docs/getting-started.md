@@ -41,6 +41,7 @@ started!
 
 - [Tutorial on getting started with a new block](developing-blocks.md)
 - [Documentation on existing blocks](blocks/blocks.md)
+- <a href="/sdk" target="_blank">Appsemble SDK documentation</a>
 
 ## Core Developer
 

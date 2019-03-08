@@ -11,7 +11,7 @@
 
 ## Deployment
 
-- [Docker Compose](deployment-using-docker-compose.md)
+- [Docker Compose](docs/deployment-using-docker-compose.md)
 
 ## [Blocks](docs/blocks/blocks.md)
 
