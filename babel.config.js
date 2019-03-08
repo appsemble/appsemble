@@ -4,6 +4,7 @@ module.exports = api => {
   const development = env === 'development';
 
   const presets = [
+    '@babel/preset-typescript',
     ['@babel/preset-env', { spec: false, loose: true, useBuiltIns: 'usage' }],
     ['@babel/preset-react', { useBuiltIns: true, development }],
   ];
