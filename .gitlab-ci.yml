@@ -223,7 +223,7 @@ review pages:
     - yarn gitbook install
     - yarn gitbook build . public
     - yarn typedoc --out public/sdk --includeDeclarations --excludeExternals --mode file --target
-      ES6 packages/sdk
+      ES6 --ignoreCompilerErrors packages/sdk
   artifacts:
     paths:
       - public/
