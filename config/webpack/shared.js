@@ -13,7 +13,7 @@ module.exports = (env, { mode }) => {
 
   return {
     resolve: {
-      extensions: ['.js', '.jsx', '.ts', '.tsx'],
+      extensions: ['.js', '.jsx', 'ts', 'tsx'],
       alias: {
         // These are required by leaflet CSS in a way which doesn’t work with webpack by default.
         './images/layers.png$': 'leaflet/dist/images/layers.png',
@@ -67,7 +67,6 @@ module.exports = (env, { mode }) => {
             },
           ],
         },
-        { test: /\.tsx?$/, loader: 'ts-loader' },
       ],
     },
     plugins: [new CaseSensitivePathsPlugin()],
