@@ -10,7 +10,7 @@ at **three different levels** and can be injected at **three different points** 
 
 ## Hierarchy
 
-<img src="images/theming-hierarchy.svg" style="float: right;" />
+<img src="images/theming-hierarchy.svg" style="float: right; max-height: 570px; max-width: 150px;" />
 
 Applications can be styled at a **server** level, **organization** level as well as the
 **app-specific** level.  

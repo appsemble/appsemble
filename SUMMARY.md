@@ -1,6 +1,7 @@
 # Summary
 
 - [Getting Started](docs/getting-started.md)
+- [Architecture](docs/architecture.md)
 
 ## Development
 
