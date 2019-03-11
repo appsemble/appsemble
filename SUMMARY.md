@@ -1,7 +1,7 @@
 # Summary
 
 - [Getting Started](docs/getting-started.md)
-- [Architecture of Appsemble](docs/architecture.md)
+- [Architecture](docs/architecture.md)
 
 ## Development
 
