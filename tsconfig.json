@@ -1,8 +1,7 @@
 {
   "compilerOptions": {
-    "noEmit": false,
+    "noEmit": true,
     "noImplicitAny": true,
-    "lib": ["es5", "es6", "dom"],
-    "sourceMap": true
+    "lib": ["es5", "es6", "dom"]
   }
 }
