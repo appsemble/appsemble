@@ -48,18 +48,10 @@ though apps in the preview panel can.
 The server component serves as the central point of connection between every component. It hosts the
 app and editor components as well as the API, which is used to interact with the database.
 
-### Database
-
-The database stores all information necessary in order to facilitate displaying apps, uploading
-blocks, authenticating users, resources, assets and styles. Parts of the database are optional for
-use and can be substituted with external databases (like your own!) by configuring the apps
-appropriately. These optional features are: Authentication within apps, the resource API and the
-asset API.
-
 ### CLI
 
 The CLI allows developers to communicate with the Appsemble server in order to register new blocks,
-uploading new versions of an existing blocks, or upload themes for entire organizations.
+upload new versions of an existing blocks, or upload themes for entire organizations.
 
 ### SDK
 
