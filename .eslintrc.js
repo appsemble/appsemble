@@ -1,8 +1,6 @@
 const path = require('path');
 
-// eslint-disable-next-line import/no-extraneous-dependencies
 const { version } = require('react/package.json');
-// eslint-disable-next-line import/no-extraneous-dependencies
 const restricted = require('eslint-restricted-globals');
 
 const configs = [path.join(__dirname, 'config/**'), '*.config.js', '.*rc.js'];
@@ -15,6 +13,7 @@ module.exports = {
     'plugin:eslint-comments/recommended',
     'plugin:compat/recommended',
     'plugin:prettier/recommended',
+    'prettier/react',
   ],
   parser: 'babel-eslint',
   plugins: ['babel', 'filenames'],

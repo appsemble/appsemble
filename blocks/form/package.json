@@ -16,9 +16,9 @@
     "@appsemble/react-bulma": "^1.0.0",
     "classnames": "^2.2.6",
     "leaflet": "^1.4.0",
-    "prop-types": "^15.6.2",
-    "react": "^16.7.0",
-    "react-dom": "^16.7.0",
+    "prop-types": "^15.7.2",
+    "react": "^16.8.4",
+    "react-dom": "^16.8.4",
     "react-intl": "^2.8.0",
     "read-blob": "^1.1.0"
   }
