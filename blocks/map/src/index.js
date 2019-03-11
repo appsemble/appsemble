@@ -8,10 +8,9 @@ import './index.css';
 import createGetters from './createGetters';
 import loadMarkers from './loadMarkers';
 
-attach(function* init({ actions, block, data, resources, utils }) {
-  const node = document.createElement('div');
+attach(({ actions, block, data, resources, shadowRoot, utils }) => {
+  const node = shadowRoot.appendChild(document.createElement('div'));
   const fetched = new Set();
-  yield node;
 
   const get = createGetters(block.parameters);
   const locationMarker = new CircleMarker(null, {

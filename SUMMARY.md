@@ -1,25 +1,34 @@
 # Summary
 
-- [Getting Started](README.md)
+- [Getting Started](docs/getting-started.md)
 
-## development
+## Development
 
-- [App Development](docs/App-Development.md)
-- [Block Development](docs/Developing-Blocks.md)
-- [Theming](docs/Theming.md)
+- [App Development](docs/app-development.md)
+- [Block Development](docs/developing-blocks.md)
+- [Theming](docs/theming.md)
+- [Appsemble Resources](docs/appsemble-resources.md)
 
 ## Deployment
 
-- [Docker Compose](docs/Deployment Using Docker Compose.md)
+- [Docker Compose](docs/deployment-using-docker-compose.md)
 
-## server
+## [Blocks](docs/blocks/blocks.md)
 
-- [server](server/README.md)
+- [Blocks](docs/blocks/blocks.md)
+- [action-button](docs/blocks/action-button.md)
+- [detail-viewer](docs/blocks/detail-viewer.md)
+- [form](docs/blocks/form.md)
+- [map](docs/blocks/map.md)
+
+## Server
+
+- [server](packages/server/README.md)
 
 ## packages
 
 - [cli](packages/cli/README.md)
-- [create](packages/create/README.md)
+- [create](packages/create-appsemble/README.md)
 - [react](packages/react/README.md)
 - [sdk](packages/sdk/README.md)
 - [utils](packages/utils/README.md)

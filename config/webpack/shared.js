@@ -13,7 +13,7 @@ module.exports = (env, { mode }) => {
 
   return {
     resolve: {
-      extensions: ['.js', '.jsx'],
+      extensions: ['.js', '.jsx', '.ts', '.tsx'],
       alias: {
         // These are required by leaflet CSS in a way which doesn’t work with webpack by default.
         './images/layers.png$': 'leaflet/dist/images/layers.png',
@@ -26,7 +26,7 @@ module.exports = (env, { mode }) => {
     module: {
       rules: [
         {
-          test: /\.jsx?$/,
+          test: /\.[jt]sx?$/,
           loader: 'babel-loader',
           exclude: [/node_modules/],
           options: {

@@ -152,7 +152,10 @@ pages:
     - schedules
   script:
     - yarn --frozen-lockfile
+    - yarn gitbook install
     - yarn gitbook build . public
+    - yarn typedoc --out public/sdk --includeDeclarations --excludeExternals --mode file --target
+      ES6 --ignoreCompilerErrors packages/sdk
   artifacts:
     paths:
       - public/
@@ -217,7 +220,10 @@ review pages:
     url: https://$CI_PROJECT_NAMESPACE.$CI_PAGES_DOMAIN/-/$CI_PROJECT_NAME/-/jobs/$CI_JOB_ID/artifacts/public/index.html
   script:
     - yarn --frozen-lockfile
+    - yarn gitbook install
     - yarn gitbook build . public
+    - yarn typedoc --out public/sdk --includeDeclarations --excludeExternals --mode file --target
+      ES6 --ignoreCompilerErrors packages/sdk
   artifacts:
     paths:
       - public/
@@ -274,4 +280,4 @@ tsc:
     - schedules
   script:
     - yarn --frozen-lockfile
-    - yarn tsc
+    - yarn tsc --noEmit

@@ -19,6 +19,11 @@ module.exports = {
   parser: 'babel-eslint',
   plugins: ['babel', 'filenames'],
   settings: {
+    'import/resolver': {
+      node: {
+        extensions: ['.js', '.jsx', '.ts', '.tsx'],
+      },
+    },
     react: {
       version,
     },

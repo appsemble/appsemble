@@ -124,7 +124,15 @@ type Awaitable<T> = T | Promise<T>;
  *
  * @param fn The bootstrap function to register
  */
-export function bootstrap(fn: (params: BootstrapParams) => Awaitable<void>): void;
+export function bootstrap(fn: (params: BootstrapParams) => Awaitable<void>): void {
+  const event = new CustomEvent('AppsembleBootstrap', {
+    detail: {
+      fn,
+      document,
+    },
+  });
+  document.currentScript.dispatchEvent(event);
+}
 
 /**
  * Attach the returned node to the shadow root.
@@ -134,4 +142,13 @@ export function bootstrap(fn: (params: BootstrapParams) => Awaitable<void>): voi
  *
  * @param fn The bootstrap function to register.
  */
-export function attach(fn: (params: BootstrapParams) => Awaitable<HTMLElement | void>): void;
+export function attach(fn: (params: BootstrapParams) => Awaitable<HTMLElement | void>): void {
+  bootstrap(async params => {
+    const { shadowRoot } = params;
+
+    const node = await fn(params);
+    if (node instanceof HTMLElement) {
+      shadowRoot.appendChild(node);
+    }
+  });
+}
