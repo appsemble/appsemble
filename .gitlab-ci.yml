@@ -162,7 +162,7 @@ pages:
     - >
       for input in public/images/*.mmd; do
         [ -f "$input" ] || break
-        output=public/images/$(basename $input .mmd).png
+        output=public/images/$(basename $input .mmd).svg
         yarn mmdc -p puppeteer-config.json -i $input -o $output
       done
     - yarn gitbook install
@@ -244,7 +244,7 @@ review pages:
     - >
       for input in docs/images/*.mmd; do
         [ -f "$input" ] || break
-        output=docs/images/$(basename $input .mmd).png
+        output=docs/images/$(basename $input .mmd).svg
         yarn mmdc -p puppeteer-config.json -i $input -o $output
       done
     - yarn gitbook install
