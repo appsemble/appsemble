@@ -22,6 +22,12 @@ App:
       description: The human readable name of the app.
 
         This will be displayed for example on the home screen or in the browser tab.
+    description:
+      type: string
+      maxLength: 80
+      description: A short description describing the app.
+
+        This will be displayed on the app store.
     path:
       type: string
       minLength: 1

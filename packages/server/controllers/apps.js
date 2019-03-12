@@ -215,7 +215,7 @@ export async function create(ctx) {
 
     const { id } = await App.create(result, { raw: true });
 
-    ctx.body = { ...result.definition, id, path: result.path, description: result.description };
+    ctx.body = { ...result.definition, id, path: result.path };
     ctx.status = 201;
   } catch (error) {
     handleAppValidationError(error, result);
@@ -237,7 +237,6 @@ export async function getOne(ctx) {
     id,
     path: app.path,
     organizationId: app.OrganizationId,
-    description: app.description,
   };
 }
 
@@ -249,7 +248,6 @@ export async function query(ctx) {
     ...app.definition,
     id: app.id,
     path: app.path,
-    description: app.description,
   }));
 }
 
@@ -267,7 +265,6 @@ export async function queryMyApps(ctx) {
     ...app.definition,
     id: app.id,
     path: app.path,
-    description: app.description,
   }));
 }
 
@@ -313,7 +310,7 @@ export async function update(ctx) {
 
     await app.update(result, { where: { id } });
 
-    ctx.body = { ...result.definition, id, path: result.path, description: app.description };
+    ctx.body = { ...result.definition, id, path: result.path };
   } catch (error) {
     handleAppValidationError(error, result);
   }

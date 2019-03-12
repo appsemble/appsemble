@@ -4,7 +4,6 @@ export default (sequelize, DataTypes) =>
     {
       id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
       definition: { type: DataTypes.JSON, allowNull: false },
-      description: { type: DataTypes.STRING(80), allowNull: true },
       icon: { type: DataTypes.BLOB('long') },
       path: { type: DataTypes.STRING, unique: true, allowNull: false },
       style: { type: DataTypes.TEXT('long') },
