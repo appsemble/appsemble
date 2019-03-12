@@ -215,7 +215,7 @@ export async function create(ctx) {
 
     const { id } = await App.create(result, { raw: true });
 
-    ctx.body = { ...result.definition, id, path: result.path };
+    ctx.body = { ...result.definition, id, path: result.path, description: result.description };
     ctx.status = 201;
   } catch (error) {
     handleAppValidationError(error, result);
@@ -232,14 +232,25 @@ export async function getOne(ctx) {
     throw Boom.notFound('App not found');
   }
 
-  ctx.body = { ...app.definition, id, path: app.path, organizationId: app.OrganizationId };
+  ctx.body = {
+    ...app.definition,
+    id,
+    path: app.path,
+    organizationId: app.OrganizationId,
+    description: app.description,
+  };
 }
 
 export async function query(ctx) {
   const { App } = ctx.db.models;
 
   const apps = await App.findAll({ raw: true });
-  ctx.body = apps.map(app => ({ ...app.definition, id: app.id, path: app.path }));
+  ctx.body = apps.map(app => ({
+    ...app.definition,
+    id: app.id,
+    path: app.path,
+    description: app.description,
+  }));
 }
 
 export async function queryMyApps(ctx) {
@@ -252,7 +263,12 @@ export async function queryMyApps(ctx) {
     where: { OrganizationId: { [Op.in]: organizations.map(o => o.id) } },
   });
 
-  ctx.body = apps.map(app => ({ ...app.definition, id: app.id, path: app.path }));
+  ctx.body = apps.map(app => ({
+    ...app.definition,
+    id: app.id,
+    path: app.path,
+    description: app.description,
+  }));
 }
 
 export async function update(ctx) {
@@ -297,7 +313,7 @@ export async function update(ctx) {
 
     await app.update(result, { where: { id } });
 
-    ctx.body = { ...result.definition, id, path: result.path };
+    ctx.body = { ...result.definition, id, path: result.path, description: app.description };
   } catch (error) {
     handleAppValidationError(error, result);
   }
