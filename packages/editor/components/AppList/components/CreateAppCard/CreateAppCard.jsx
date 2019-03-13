@@ -126,7 +126,7 @@ export default class CreateAppCard extends React.Component {
                 >
                   {user.organizations.map((organization, index) => (
                     <option key={organization.id} value={index}>
-                      {organization.name}
+                      {organization.id}
                     </option>
                   ))}
                 </SelectField>
