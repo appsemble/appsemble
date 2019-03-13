@@ -90,7 +90,7 @@ async function parseAppMultipart(ctx) {
       }
 
       if (fieldname === 'organizationId') {
-        res.OrganizationId = Number(content);
+        res.OrganizationId = content;
       }
     });
 

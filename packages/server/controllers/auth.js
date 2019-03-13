@@ -14,7 +14,7 @@ async function mayRegister({ argv }) {
 async function registerUser(associatedModel) {
   await associatedModel.createUser();
   const user = await associatedModel.getUser();
-  await user.createOrganization({ name: 'My Organization' });
+  await user.createOrganization({ id: 'My Organization' });
 }
 
 export async function registerEmail(ctx) {
