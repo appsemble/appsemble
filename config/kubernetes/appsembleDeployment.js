@@ -35,7 +35,8 @@ export default {
         containers: [
           {
             image: `${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_NAME}`,
-            // Make sure we always pull the latest GitLab master build Docker image instead of a cached one.
+            // Make sure we always pull the latest GitLab master build Docker image instead of a
+            // cached one.
             imagePullPolicy: 'Always',
             name: 'appsemble',
             env: [

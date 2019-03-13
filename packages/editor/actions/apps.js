@@ -45,7 +45,7 @@ export function getApps() {
       type: GET_START,
     });
     try {
-      const { data: apps } = await axios.get(`/api/apps/me`);
+      const { data: apps } = await axios.get('/api/apps/me');
       dispatch({
         type: GET_SUCCESS,
         apps,
