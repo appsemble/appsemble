@@ -11,10 +11,15 @@ async function mayRegister({ argv }) {
   }
 }
 
-async function registerUser(associatedModel) {
-  await associatedModel.createUser();
-  const user = await associatedModel.getUser();
-  await user.createOrganization({ id: 'My Organization' });
+async function registerUser(associatedModel, organizationName, transaction) {
+  await associatedModel.createUser({}, { transaction });
+  const user = await associatedModel.getUser({ transaction });
+  await user.createOrganization(
+    {
+      id: organizationName || `organization${new Date().getTime()}`,
+    },
+    { transaction },
+  );
 }
 
 export async function registerEmail(ctx) {
@@ -23,11 +28,15 @@ export async function registerEmail(ctx) {
   const { EmailAuthorization } = ctx.db.models;
   const { smtp } = ctx.state;
 
+  const transaction = await ctx.db.transaction();
+
   try {
     const password = await bcrypt.hash(body.password, 10);
     const key = crypto.randomBytes(40).toString('hex');
-    const record = await EmailAuthorization.create({ ...body, password, key });
-    await registerUser(record);
+
+    const record = await EmailAuthorization.create({ ...body, password, key }, { transaction });
+    await registerUser(record, body.organization, transaction);
+    await transaction.commit();
 
     await sendWelcomeEmail(
       {
@@ -40,8 +49,16 @@ export async function registerEmail(ctx) {
 
     ctx.status = 201;
   } catch (e) {
+    await transaction.rollback();
+
     if (e.name === 'SequelizeUniqueConstraintError') {
-      throw Boom.conflict('User with this email address already exists.');
+      const [{ instance }] = e.errors;
+
+      if (instance.constructor.name === 'EmailAuthorization') {
+        throw Boom.conflict('User with this email address already exists.');
+      } else {
+        throw Boom.conflict('This organization already exists.');
+      }
     }
 
     throw e;
@@ -51,17 +68,32 @@ export async function registerEmail(ctx) {
 export async function registerOAuth(ctx) {
   await mayRegister(ctx);
   const {
-    body: { provider, id, accessToken },
+    body: { provider, id, accessToken, organization },
   } = ctx.request;
   const { OAuthAuthorization } = ctx.db.models;
   const auth = await OAuthAuthorization.findOne({ where: { provider, id, token: accessToken } });
-
   if (!auth) {
     throw Boom.notFound('Could not find any matching credentials.');
   }
 
-  await registerUser(auth);
+  const transaction = await ctx.db.transaction();
 
+  try {
+    await registerUser(auth, organization, transaction);
+    await transaction.commit();
+  } catch (e) {
+    await transaction.rollback();
+
+    if (e.name === 'SequelizeUniqueConstraintError') {
+      const [{ instance }] = e.errors;
+
+      if (instance.constructor.name === 'Organization') {
+        throw Boom.conflict('User with this email address already exists.');
+      }
+    }
+
+    throw e;
+  }
   ctx.status = 201;
 }
 
