@@ -26,21 +26,24 @@ export default class AppCard extends React.Component {
     const { app, intl } = this.props;
 
     return (
-      <Card>
+      <Card className={styles.appCard}>
         <CardHeader>
           <CardHeaderTitle>{app.name}</CardHeaderTitle>
         </CardHeader>
-        <CardContent>
-          <Content>
+        <CardContent className={styles.appCardContent}>
+          <div className="media">
             <Image
               alt={intl.formatMessage(messages.icon)}
               className={styles.image}
               size={64}
               src={`/${app.id}/icon-64.png`}
             />
-          </Content>
+          </div>
+          {app.description && (
+            <Content className={styles.appDescription}>{app.description}</Content>
+          )}
         </CardContent>
-        <CardFooter>
+        <CardFooter className={styles.appCardFooter}>
           <CardFooterItem component="a" href={`/${app.path}`} target="_blank">
             <FormattedMessage {...messages.view} />
           </CardFooterItem>
