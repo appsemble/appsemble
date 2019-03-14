@@ -77,6 +77,7 @@ export async function handler({ remote, ...credentials }) {
 
   const config = new Configstore('appsemble');
   config.set(`${remote}.auth`, { requestDate, token });
+  config.set('recentRemote', remote);
 
   logger.info('All done! 👋');
 }
