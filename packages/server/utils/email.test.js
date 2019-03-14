@@ -39,7 +39,7 @@ describe('processTemplate', () => {
   });
 
   it('should extract template variables', async () => {
-    const template = `---\nsubject: Test\n---\nTest Message`;
+    const template = '---\nsubject: Test\n---\nTest Message';
     const { attributes, content } = processTemplate(template, {});
 
     expect(attributes).toStrictEqual({ subject: 'Test' });

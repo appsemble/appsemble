@@ -28,6 +28,17 @@ module.exports = {
     },
   },
   rules: {
+    'max-len': [
+      'error',
+      {
+        code: 100,
+        ignoreUrls: true,
+        ignoreRegExpLiterals: true,
+        ignoreStrings: true,
+        ignoreTemplateLiterals: true,
+      },
+    ],
+    'no-inline-comments': 'error',
     'sort-imports': ['error', { ignoreDeclarationSort: true }],
     'filenames/match-regex': ['error', /^\.?[a-z]+(\.config|\.test)?$/i, true],
     'filenames/match-exported': 'error',
@@ -35,6 +46,7 @@ module.exports = {
     'no-invalid-this': 'off',
     'no-unused-expressions': 'off',
     'babel/no-invalid-this': 'error',
+    'babel/quotes': ['error', 'single', { avoidEscape: true, allowTemplateLiterals: false }],
     'babel/no-unused-expressions': 'error',
     'eslint-comments/no-unused-disable': 'error',
     'eslint-comments/no-use': ['error', { allow: ['eslint-disable-next-line'] }],
@@ -63,7 +75,6 @@ module.exports = {
         '@typescript-eslint/explicit-function-return-type': 'error',
         '@typescript-eslint/explicit-member-accessibility': 'error',
         '@typescript-eslint/interface-name-prefix': 'error',
-        '@typescript-eslint/member-delimiter-style': 'error',
         '@typescript-eslint/no-angle-bracket-type-assertion': 'error',
         '@typescript-eslint/no-empty-interface': 'error',
         '@typescript-eslint/no-inferrable-types': 'error',
@@ -77,7 +88,6 @@ module.exports = {
         '@typescript-eslint/no-var-requires': 'error',
         '@typescript-eslint/prefer-interface': 'error',
         '@typescript-eslint/prefer-namespace-keyword': 'error',
-        '@typescript-eslint/type-annotation-spacing': 'error',
       },
     },
     {
