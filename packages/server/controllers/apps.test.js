@@ -891,7 +891,7 @@ describe('app controller', () => {
     });
 
     const response = await request(server)
-      .post(`/api/apps/0/style/block/@appsemble/testblock`)
+      .post('/api/apps/0/style/block/@appsemble/testblock')
       .attach('style', Buffer.from('body { color: red; }'), {
         contentType: 'text/css',
         filename: 'style.css',

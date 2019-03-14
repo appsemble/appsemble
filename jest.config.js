@@ -1,6 +1,6 @@
 module.exports = {
   collectCoverageFrom: ['blocks/**', 'packages/**'],
-  moduleFileExtensions: ['js', 'jsx'],
+  moduleFileExtensions: ['js', 'jsx', 'ts', 'tsx', 'json'],
   moduleNameMapper: {
     [/\.css$/.source]: 'identity-obj-proxy',
   },

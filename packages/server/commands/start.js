@@ -144,7 +144,8 @@ export async function handler(argv, webpackConfigs) {
     const { protocol, host } = new URL(argv.host);
     grantConfig = {
       server: {
-        protocol: protocol.replace(':', ''), // URL.protocol leaves a ´:´ in.
+        // URL.protocol leaves a ´:´ in.
+        protocol: protocol.replace(':', ''),
         host,
         path: '/api/oauth',
         callback: '/api/oauth/callback',

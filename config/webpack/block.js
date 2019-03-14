@@ -59,7 +59,7 @@ module.exports = (env, argv) => {
           ignore: ['**/package.json', '**/*.test.{js,jsx}'],
         },
       }),
-      production && new CleanWebpackPlugin([outputPath]),
+      production && new CleanWebpackPlugin(),
     ].filter(Boolean),
   });
 };

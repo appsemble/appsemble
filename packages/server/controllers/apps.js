@@ -232,14 +232,23 @@ export async function getOne(ctx) {
     throw Boom.notFound('App not found');
   }
 
-  ctx.body = { ...app.definition, id, path: app.path, organizationId: app.OrganizationId };
+  ctx.body = {
+    ...app.definition,
+    id,
+    path: app.path,
+    organizationId: app.OrganizationId,
+  };
 }
 
 export async function query(ctx) {
   const { App } = ctx.db.models;
 
   const apps = await App.findAll({ raw: true });
-  ctx.body = apps.map(app => ({ ...app.definition, id: app.id, path: app.path }));
+  ctx.body = apps.map(app => ({
+    ...app.definition,
+    id: app.id,
+    path: app.path,
+  }));
 }
 
 export async function queryMyApps(ctx) {
@@ -252,7 +261,11 @@ export async function queryMyApps(ctx) {
     where: { OrganizationId: { [Op.in]: organizations.map(o => o.id) } },
   });
 
-  ctx.body = apps.map(app => ({ ...app.definition, id: app.id, path: app.path }));
+  ctx.body = apps.map(app => ({
+    ...app.definition,
+    id: app.id,
+    path: app.path,
+  }));
 }
 
 export async function update(ctx) {

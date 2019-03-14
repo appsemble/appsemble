@@ -17,11 +17,12 @@ export default async function manifestHandler(ctx) {
   }
 
   const { path } = record;
-  const { defaultPage, name, theme } = record.definition;
+  const { defaultPage, description, name, theme } = record.definition;
   const { themeColor = '#ffffff', backgroundColor = themeColor } = theme;
 
   ctx.body = {
     background_color: backgroundColor,
+    description,
     display: 'standalone',
     icons: iconSizes.map(size => ({
       src: `/${id}/icon-${size}.png`,

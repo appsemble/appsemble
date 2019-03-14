@@ -9,6 +9,7 @@ import {
   InputField,
   Modal,
   SelectField,
+  TextareaField,
 } from '@appsemble/react-bulma';
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -32,6 +33,7 @@ export default class CreateAppCard extends React.Component {
     selectedTemplate: 0,
     selectedOrganization: 0,
     appName: '',
+    appDescription: '',
   };
 
   onChange = event => {
@@ -56,12 +58,12 @@ export default class CreateAppCard extends React.Component {
       intl: { formatMessage },
       user,
     } = this.props;
-    const { appName, selectedTemplate, selectedOrganization } = this.state;
+    const { appName, appDescription, selectedTemplate, selectedOrganization } = this.state;
 
     try {
       const template = templates[selectedTemplate].recipe;
       const app = await createApp(
-        { ...template, name: appName },
+        { ...template, name: appName, description: appDescription },
         user.organizations[selectedOrganization],
       );
 
@@ -90,7 +92,13 @@ export default class CreateAppCard extends React.Component {
       intl: { formatMessage },
       user,
     } = this.props;
-    const { modalOpen, selectedTemplate, selectedOrganization, appName } = this.state;
+    const {
+      modalOpen,
+      selectedTemplate,
+      selectedOrganization,
+      appName,
+      appDescription,
+    } = this.state;
     return (
       <div className={styles.createAppCardContainer}>
         <Card className={styles.createAppCard} onClick={this.onClick}>
@@ -142,6 +150,16 @@ export default class CreateAppCard extends React.Component {
                     </option>
                   ))}
                 </SelectField>
+                <TextareaField
+                  label={formatMessage(messages.description)}
+                  maxLength={80}
+                  minLength={0}
+                  name="appDescription"
+                  onChange={this.onChange}
+                  placeholder={formatMessage(messages.description)}
+                  required
+                  value={appDescription}
+                />
               </CardContent>
               <CardFooter>
                 <CardFooterItem className="is-link" component="a" onClick={this.onClose}>
