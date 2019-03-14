@@ -1,9 +1,12 @@
 import querystring from 'querystring';
 
+import AppDirectory from 'appdirectory';
+import fs from 'fs-extra';
 import inquirer from 'inquirer';
 import axios from 'axios';
 import { logger } from '@appsemble/node-utils';
-import Configstore from 'configstore';
+
+import pkg from '../../package.json';
 
 export const command = 'login';
 export const description =
@@ -75,9 +78,17 @@ export async function handler({ remote, ...credentials }) {
 
   logger.info('Logged in successfully! 🙌');
 
-  const config = new Configstore('appsemble');
-  config.set(`${remote}.auth`, { requestDate, token });
-  config.set('recentRemote', remote);
+  const configPath = new AppDirectory({
+    appName: 'Appsemble',
+    appAuthor: pkg.author,
+    appVersion: pkg.version,
+  });
+
+  const config = (await fs.readJson(`${configPath.userConfig()}/config.json`)) || {};
+  config[remote] = { auth: { requestDate, token } };
+  config.recentRemote = remote;
+
+  await fs.outputJson(`${configPath.userConfig()}/config.json`);
 
   logger.info('All done! 👋');
 }

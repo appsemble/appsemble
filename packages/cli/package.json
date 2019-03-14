@@ -9,9 +9,9 @@
   "main": "main.js",
   "dependencies": {
     "@appsemble/node-utils": "^1.0.0",
+    "appdirectory": "^0.1.0",
     "axios": "^0.18.0",
     "chalk": "^2.4.2",
-    "configstore": "^4.0.0",
     "cosmiconfig": "^5.1.0",
     "esm": "^3.2.16",
     "fast-glob": "^2.2.6",
