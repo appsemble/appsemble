@@ -260,7 +260,6 @@ test:
   script:
     - yarn --frozen-lockfile
     - yarn test --coverage --reporters default --reporters jest-junit
-    - yarn codecov
   artifacts:
     reports:
       junit: junit.xml
