@@ -6,7 +6,8 @@ import { logger } from '@appsemble/node-utils';
 import Configstore from 'configstore';
 
 export const command = 'login';
-export const description = 'Upload stylesheets to an organization.';
+export const description =
+  'Log into Appsemble to retrieve a token for use in authenticated commands.';
 
 export function builder(yargs) {
   return yargs
