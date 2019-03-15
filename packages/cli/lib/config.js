@@ -79,12 +79,12 @@ export async function getToken(remote = axios.defaults.baseURL) {
 
   if (!config[remote]) {
     logger.verbose(`Remote ${remote} does not exist in config.`);
-    return null;
+    throw new AppsembleError('Unable to retrieve token.');
   }
 
   if (!config[remote].auth) {
     logger.verbose(`${remote}.auth does not exist in config.`);
-    return null;
+    throw new AppsembleError('Unable to retrieve token.');
   }
 
   try {
@@ -99,21 +99,10 @@ export async function getToken(remote = axios.defaults.baseURL) {
       }),
     );
 
+    axios.defaults.headers.common.Authentication = `bearer ${response.data.acces_token}`;
     return response.data;
   } catch (e) {
-    if (e.response) {
-      return null;
-    }
-
+    logger.verbose(e);
     throw new AppsembleError('Unable to retrieve token.');
   }
-}
-
-/**
- * Checks against axios headers to determine whether the CLI is authenticated or not.
- *
- * @return true if authenticated, otherwise false.
- */
-export function isAuthenticated() {
-  return !!axios.defaults.headers.common.Authorization;
 }
