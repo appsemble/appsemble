@@ -84,11 +84,14 @@ export async function handler({ remote, ...credentials }) {
     appVersion: pkg.version,
   });
 
-  const config = (await fs.readJson(`${configPath.userConfig()}/config.json`)) || {};
+  const filePath = `${configPath.userConfig()}/config.json`;
+  await fs.ensureFile(filePath);
+
+  const config = (await fs.readJson(filePath, { throws: false })) || {};
   config[remote] = { auth: { requestDate, token } };
   config.recentRemote = remote;
 
-  await fs.outputJson(`${configPath.userConfig()}/config.json`);
+  await fs.outputJson(filePath, config);
 
   logger.info('All done! 👋');
 }
