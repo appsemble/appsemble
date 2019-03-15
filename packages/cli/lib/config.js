@@ -67,7 +67,7 @@ export async function requestToken(remote, username, password) {
   );
 
   return axios.post(
-    `${remote}/api/oauth/token`,
+    '/api/oauth/token',
     querystring.stringify({
       grant_type: 'password',
       username,
@@ -100,7 +100,7 @@ export async function getToken(remote) {
   try {
     const { refresh_token: refreshToken } = config[remote].auth.token;
     const response = await axios.post(
-      `${remote}/api/oauth/token`,
+      '/api/oauth/token',
       querystring.stringify({
         grant_type: 'refresh_token',
         refresh_token: refreshToken,
