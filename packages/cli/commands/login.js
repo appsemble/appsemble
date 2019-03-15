@@ -1,10 +1,10 @@
 import querystring from 'querystring';
 
-import AppDirectory from 'appdirectory';
-import fs from 'fs-extra';
 import inquirer from 'inquirer';
 import axios from 'axios';
 import { logger } from '@appsemble/node-utils';
+
+import { getConfig, saveConfig } from '../lib/config';
 
 export const command = 'login';
 export const description =
@@ -72,19 +72,9 @@ export async function handler({ remote, ...credentials }) {
 
   logger.info('Logged in successfully! 🙌');
 
-  const configPath = new AppDirectory({
-    appName: 'appsemble',
-    appAuthor: 'appsemble',
-  });
-
-  const filePath = `${configPath.userConfig()}/config.json`;
-  await fs.ensureFile(filePath);
-
-  const config = (await fs.readJson(filePath, { throws: false })) || {};
+  const config = await getConfig();
   config[remote] = { auth: { requestDate, token } };
   config.recentRemote = remote;
 
-  await fs.outputJson(filePath, config);
-
-  logger.info('All done! 👋');
+  await saveConfig(config);
 }
