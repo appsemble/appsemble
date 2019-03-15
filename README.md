@@ -1,6 +1,6 @@
 # Appsemble
 
-> The Appsemble Amsterdam project
+> The app building platform
 
 ## Usage
 
