@@ -12,10 +12,6 @@ export const description =
 
 export function builder(yargs) {
   return yargs
-    .option('remote', {
-      desc: 'Id of the organization to login at',
-      default: 'http://localhost:9999',
-    })
     .option('email', { desc: 'The email to use for authentication' })
     .option('password', { desc: 'The password to use for authentication' });
 }
