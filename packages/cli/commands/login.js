@@ -1,5 +1,5 @@
 import inquirer from 'inquirer';
-import { logger } from '@appsemble/node-utils';
+import { AppsembleError, logger } from '@appsemble/node-utils';
 
 import { getConfig, requestToken, saveConfig } from '../lib/config';
 
@@ -56,13 +56,10 @@ export async function handler({ remote, ...credentials }) {
 
     await saveConfig(config);
   } catch (e) {
-    if (e.response) {
-      if (e.response.status === 401) {
-        logger.info('Unable to login. The email or password is incorrect. 😓');
-      } else {
-        logger.info('Unable to login. 😓');
-      }
-      process.exit();
+    if (e.response && e.response.status === 401) {
+      throw new AppsembleError('Unable to login. The email or password is incorrect. 😓');
     }
+
+    throw e;
   }
 }

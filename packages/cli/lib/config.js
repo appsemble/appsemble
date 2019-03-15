@@ -19,21 +19,15 @@ function getConfigPath() {
 /**
  * Fetches the Appsemble config file.
  *
- * @param {Object} options
- * @param {boolean} throws Whether exceptions should be thrown if the file doesn't exist or doesn't parse correctly. Will create directories if set to false.
  * @return Appsemble config or empty object if it didn't exist
  */
-export async function getConfig(options = { throws: false }) {
-  const { throws } = options;
+export async function getConfig() {
   const filePath = getConfigPath();
 
   logger.verbose(`Reading config at ${filePath}`);
+  await fs.ensureFile(filePath);
 
-  if (!throws) {
-    await fs.ensureFile(filePath);
-  }
-
-  return fs.readJson(filePath, { throws }) || {};
+  return fs.readJson(filePath, { throws: false }) || {};
 }
 
 /**
@@ -60,11 +54,7 @@ export async function saveConfig(config) {
  * @return {import('axios').AxiosResponse} Response from request.
  */
 export async function requestToken(remote, username, password) {
-  logger.verbose(
-    `Requesting token at ${remote}/api/oauth/token using username ${username} and password ${new Array(
-      password.length + 1,
-    ).join('*')}`,
-  );
+  logger.verbose(`Requesting token at ${remote}/api/oauth/token using username ${username}`);
 
   return axios.post(
     '/api/oauth/token',
@@ -84,7 +74,7 @@ export async function requestToken(remote, username, password) {
  * @param {string} remote Host to fetch token from.
  * @return {(string|null)} The token if already authenticated or null if not.
  */
-export async function getToken(remote) {
+export async function getToken(remote = axios.defaults.baseURL) {
   const config = await getConfig();
 
   if (!config[remote]) {
