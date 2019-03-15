@@ -80,7 +80,7 @@ export async function handler({ remote, ...credentials }) {
 
   const configPath = new AppDirectory({
     appName: 'Appsemble',
-    appAuthor: pkg.author,
+    appAuthor: 'Appsemble',
     appVersion: pkg.version,
   });
 
