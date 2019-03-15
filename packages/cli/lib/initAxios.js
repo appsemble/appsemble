@@ -1,8 +1,6 @@
 import { logger } from '@appsemble/node-utils';
 import axios from 'axios';
 
-import { getToken } from './config';
-
 /**
  * Configure the default axios URL.
  *
@@ -12,13 +10,4 @@ import { getToken } from './config';
 export default function initAxios({ remote }) {
   axios.defaults.baseURL = remote;
   logger.verbose(`Request remote set to ${remote}`);
-
-  getToken(remote).then(token => {
-    if (token) {
-      axios.defaults.headers.common = { Authorization: `bearer ${token.access_token}` };
-      logger.verbose(`Token set for ${remote}`);
-    } else {
-      logger.verbose(`No token found for ${remote}`);
-    }
-  });
 }
