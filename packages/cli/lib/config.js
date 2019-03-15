@@ -118,3 +118,12 @@ export async function getToken(remote) {
     throw new AppsembleError('Unable to retrieve token.');
   }
 }
+
+/**
+ * Checks against axios headers to determine whether the CLI is authenticated or not.
+ *
+ * @return true if authenticated, otherwise false.
+ */
+export function isAuthenticated() {
+  return !!axios.defaults.headers.common.Authorization;
+}
