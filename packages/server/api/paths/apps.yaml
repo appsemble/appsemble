@@ -15,7 +15,7 @@
         required: false # oai-router does not properly validate this for multipart
       - name: organizationId
         in: formData
-        type: number
+        type: string
         required: false
       - name: style
         in: formData

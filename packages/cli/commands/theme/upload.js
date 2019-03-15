@@ -21,7 +21,6 @@ export function builder(yargs) {
     .option('organization', {
       desc: 'Id of the organization to upload to',
       demand: true,
-      type: 'number',
     })
     .option('shared', {
       desc: 'Upload a shared type stylesheet.',
