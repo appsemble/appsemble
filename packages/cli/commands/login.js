@@ -1,10 +1,7 @@
-import querystring from 'querystring';
-
 import inquirer from 'inquirer';
-import axios from 'axios';
 import { logger } from '@appsemble/node-utils';
 
-import { getConfig, saveConfig } from '../lib/config';
+import { getConfig, requestToken, saveConfig } from '../lib/config';
 
 export const command = 'login';
 export const description =
@@ -16,23 +13,7 @@ export function builder(yargs) {
     .option('password', { desc: 'The password to use for authentication' });
 }
 
-async function requestToken(remote, username, password) {
-  const { status, data } = await axios.post(
-    `${remote}/api/oauth/token`,
-    querystring.stringify({
-      grant_type: 'password',
-      username,
-      password,
-      client_id: 'appsemble-editor',
-      scope: 'apps:read apps:write',
-    }),
-  );
-
-  return { status, data };
-}
-
 export async function handler({ remote, ...credentials }) {
-  logger.info(remote);
   let { email, password } = credentials;
 
   if (!credentials.email || !credentials.password) {
@@ -63,18 +44,25 @@ export async function handler({ remote, ...credentials }) {
   }
 
   const requestDate = new Date();
-  const { status, data: token } = await requestToken(remote, email, password);
 
-  if (status !== 200) {
-    logger.info('Unable to login. 😓');
-    process.exit();
+  try {
+    const { data: token } = await requestToken(remote, email, password);
+
+    logger.info('Logged in successfully! 🙌');
+
+    const config = await getConfig();
+    config[remote] = { auth: { requestDate, token } };
+    config.recentRemote = remote;
+
+    await saveConfig(config);
+  } catch (e) {
+    if (e.response) {
+      if (e.response.status === 401) {
+        logger.info('Unable to login. The email or password is incorrect. 😓');
+      } else {
+        logger.info('Unable to login. 😓');
+      }
+      process.exit();
+    }
   }
-
-  logger.info('Logged in successfully! 🙌');
-
-  const config = await getConfig();
-  config[remote] = { auth: { requestDate, token } };
-  config.recentRemote = remote;
-
-  await saveConfig(config);
 }
