@@ -1,4 +1,4 @@
-import { Image } from '@appsemble/react-bulma';
+import { Image, Label } from '@appsemble/react-bulma';
 import React from 'react';
 import PropTypes from 'prop-types';
 
@@ -10,17 +10,15 @@ import styles from './FileRenderer.css';
 export default class FileRenderer extends React.Component {
   static propTypes = {
     /**
-     * The name of the property to render.
+     * Structure used to define this field.
      */
-    name: PropTypes.string.isRequired,
+    field: PropTypes.shape().isRequired,
+
     /**
      * The parameters passed in by the Appsemble block.
      */
     block: PropTypes.shape().isRequired,
-    /**
-     * The schema of the property to render.
-     */
-    schema: PropTypes.shape().isRequired,
+
     /**
      * The current value.
      */
@@ -32,7 +30,7 @@ export default class FileRenderer extends React.Component {
   };
 
   render() {
-    const { block, name, schema, value } = this.props;
+    const { block, field, value } = this.props;
 
     let src;
     if (value instanceof Blob) {
@@ -44,14 +42,17 @@ export default class FileRenderer extends React.Component {
     }
 
     return (
-      <Image
-        alt={schema.title || name}
-        className={styles.root}
-        imgProps={{
-          className: styles.img,
-        }}
-        src={src}
-      />
+      <React.Fragment>
+        {field.label && <Label>{field.label}</Label>}
+        <Image
+          alt={field.label || field.name}
+          className={styles.root}
+          imgProps={{
+            className: styles.img,
+          }}
+          src={src}
+        />
+      </React.Fragment>
     );
   }
 }

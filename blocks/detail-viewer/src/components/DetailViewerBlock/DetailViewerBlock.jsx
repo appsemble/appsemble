@@ -1,28 +1,20 @@
 import PropTypes from 'prop-types';
 import React from 'react';
-import { SchemaProvider, SchemaRenderer } from 'react-schema-renderer';
+import { remapData } from '@appsemble/utils/remap';
 
-import ArrayRenderer from '../ArrayRenderer';
-import BooleanRenderer from '../BooleanRenderer';
-import EnumRenderer from '../EnumRenderer';
-import ObjectRenderer from '../ObjectRenderer';
-import NumberRenderer from '../NumberRenderer';
-import StringRenderer from '../StringRenderer';
+import FileRenderer from '../renderers/FileRenderer';
+import GeoCoordinatesRenderer from '../renderers/GeoCoordinatesRenderer';
+import StringRenderer from '../renderers/StringRenderer';
+import styles from './DetailViewerBlock.css';
 
-const schemaOptions = {
-  renderers: {
-    array: ArrayRenderer,
-    boolean: BooleanRenderer,
-    enum: EnumRenderer,
-    integer: NumberRenderer,
-    object: ObjectRenderer,
-    number: NumberRenderer,
-    string: StringRenderer,
-  },
+const renderers = {
+  file: FileRenderer,
+  geocoordinates: GeoCoordinatesRenderer,
+  string: StringRenderer,
 };
 
 /**
- * The main component for the Appsemble detail-viewer block.
+ * Render data based on a JSON schema
  */
 export default class DetailViewerBlock extends React.Component {
   static propTypes = {
@@ -41,7 +33,7 @@ export default class DetailViewerBlock extends React.Component {
   };
 
   state = {
-    data: null,
+    data: {},
   };
 
   async componentDidMount() {
@@ -55,14 +47,27 @@ export default class DetailViewerBlock extends React.Component {
     const { block } = this.props;
     const { data } = this.state;
 
-    if (data == null) {
+    if (Object.entries(data).length === 0 && data.constructor === Object) {
       return 'Loading…';
     }
 
     return (
-      <SchemaProvider value={schemaOptions}>
-        <SchemaRenderer schema={block.parameters.schema} value={data} />
-      </SchemaProvider>
+      <div className={styles.root}>
+        {block.parameters.fields.map((field, index) => {
+          // Always default to string if type is not supported in renderers list.
+          const Component = renderers[field.type] || renderers.string;
+
+          return (
+            <Component
+              key={field.name || field.label || `${field.type}.${index}`}
+              block={block}
+              data={data}
+              field={field}
+              value={field.name ? remapData(field.name, data) : null}
+            />
+          );
+        })}
+      </div>
     );
   }
 }

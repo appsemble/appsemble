@@ -5,6 +5,7 @@ import { Icon, Marker, TileLayer } from 'leaflet/src/layer';
 import { Map } from 'leaflet/src/map';
 import { CircleMarker } from 'leaflet/src/layer/vector';
 import React from 'react';
+import { remapData } from '@appsemble/utils/remap';
 
 import iconUrl from '../../../../../../themes/amsterdam/core/marker.svg';
 import styles from './GeoCoordinatesRenderer.css';
@@ -24,6 +25,17 @@ export default class GeoCoordinatesRenderer extends React.Component {
      * The current value.
      */
     value: PropTypes.shape(),
+    /**
+     * The data structure to read from.
+     */
+    data: PropTypes.shape().isRequired,
+    /**
+     * Structure used to define this field.
+     */
+    field: PropTypes.shape({
+      longitude: PropTypes.string,
+      latitude: PropTypes.string,
+    }).isRequired,
   };
 
   static defaultProps = {
@@ -38,14 +50,31 @@ export default class GeoCoordinatesRenderer extends React.Component {
   });
 
   componentDidMount() {
-    const { value } = this.props;
+    const {
+      value,
+      data,
+      field: { longitude, latitude },
+    } = this.props;
+
+    let lat;
+    let lng;
+
+    if (value) {
+      // Relative to value
+      lat = latitude ? remapData(latitude, value) : value.lat;
+      lng = longitude ? remapData(longitude, value) : value.lng;
+    } else {
+      // Relative to root
+      lat = remapData(latitude, data);
+      lng = remapData(longitude, data);
+    }
 
     const map = new Map(this.ref.current, { attributionControl: false })
       .on('locationfound', ({ latlng }) => {
         this.locationMarker.setLatLng(latlng).addTo(map);
       })
       .locate()
-      .setView([value.latitude, value.longitude], 16);
+      .setView([lat, lng], 16);
     new TileLayer(
       'https://cartodb-basemaps-c.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png',
     ).addTo(map);
@@ -55,13 +84,18 @@ export default class GeoCoordinatesRenderer extends React.Component {
         iconAnchor: new Point(MARKER_ICON_WIDTH / 2, MARKER_ICON_HEIGHT),
       }),
     })
-      .setLatLng([value.latitude, value.longitude])
+      .setLatLng([lat, lng])
       .addTo(map);
   }
 
   render() {
+    const {
+      field: { label },
+    } = this.props;
+
     return (
       <div className={styles.root}>
+        {label && <h1 className="label">{label}</h1>}
         <div ref={this.ref} className={styles.map} />
       </div>
     );
