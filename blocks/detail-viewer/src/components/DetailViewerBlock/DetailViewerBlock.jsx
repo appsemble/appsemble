@@ -2,12 +2,14 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { remapData } from '@appsemble/utils/remap';
 
+import ArrayRenderer from '../renderers/ArrayRenderer';
 import FileRenderer from '../renderers/FileRenderer';
 import GeoCoordinatesRenderer from '../renderers/GeoCoordinatesRenderer';
 import StringRenderer from '../renderers/StringRenderer';
 import styles from './DetailViewerBlock.css';
 
 const renderers = {
+  array: ArrayRenderer,
   file: FileRenderer,
   geocoordinates: GeoCoordinatesRenderer,
   string: StringRenderer,
