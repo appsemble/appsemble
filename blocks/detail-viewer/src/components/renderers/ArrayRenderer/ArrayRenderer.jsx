@@ -45,7 +45,6 @@ export default class ArrayRenderer extends React.Component {
   render() {
     const { field, value, block, data } = this.props;
     const Component = renderers[field.arrayType] || renderers.string;
-    console.log(field);
 
     return (
       <React.Fragment>
