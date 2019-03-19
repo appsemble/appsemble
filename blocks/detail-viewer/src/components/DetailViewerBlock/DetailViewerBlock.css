@@ -5,3 +5,7 @@
   max-width: 480px;
   padding: 8px;
 }
+
+.root > :global(.label) {
+  margin-bottom: 0;
+}
