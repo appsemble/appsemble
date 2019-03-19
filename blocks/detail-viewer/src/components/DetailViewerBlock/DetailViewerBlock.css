@@ -6,6 +6,6 @@
   padding: 8px;
 }
 
-.root > :global(.label) {
+.root > :global(.title) {
   margin-bottom: 0;
 }

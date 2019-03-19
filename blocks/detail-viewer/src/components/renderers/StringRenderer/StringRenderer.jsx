@@ -1,4 +1,3 @@
-import { Content, Label } from '@appsemble/react-bulma';
 import PropTypes from 'prop-types';
 import React from 'react';
 
@@ -27,8 +26,8 @@ export default class StringRenderer extends React.Component {
 
     return (
       <React.Fragment>
-        <Label>{field.label || field.name}</Label>
-        <Content>{typeof value === 'string' ? value : JSON.stringify(value)}</Content>
+        <h6 className="title is-6">{field.label || field.name}</h6>
+        <div className="content">{typeof value === 'string' ? value : JSON.stringify(value)}</div>
       </React.Fragment>
     );
   }

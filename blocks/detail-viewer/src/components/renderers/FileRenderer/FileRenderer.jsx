@@ -1,4 +1,4 @@
-import { Image, Label } from '@appsemble/react-bulma';
+import classNames from 'classnames';
 import React from 'react';
 import PropTypes from 'prop-types';
 
@@ -43,15 +43,10 @@ export default class FileRenderer extends React.Component {
 
     return (
       <React.Fragment>
-        {field.label && <Label>{field.label}</Label>}
-        <Image
-          alt={field.label || field.name}
-          className={styles.root}
-          imgProps={{
-            className: styles.img,
-          }}
-          src={src}
-        />
+        {field.label && <h6 className="title is-6">{field.label}</h6>}
+        <figure className={classNames('image', styles.root)}>
+          <img alt={field.label || field.name} className={styles.img} src={src} />
+        </figure>
       </React.Fragment>
     );
   }

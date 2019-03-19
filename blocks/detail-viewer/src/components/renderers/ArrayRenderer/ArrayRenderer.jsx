@@ -1,4 +1,4 @@
-import { Container, Label } from '@appsemble/react-bulma';
+import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { remapData } from '@appsemble/utils/remap';
@@ -48,8 +48,8 @@ export default class ArrayRenderer extends React.Component {
 
     return (
       <React.Fragment>
-        {field.label && <Label>{field.label}</Label>}
-        <Container className={styles.root}>
+        {field.label && <h6 className="title is-6">{field.label}</h6>}
+        <div className={classNames('container', styles.root)}>
           {(value || []).map((v, index) => {
             return (
               <Component
@@ -62,7 +62,7 @@ export default class ArrayRenderer extends React.Component {
               />
             );
           })}
-        </Container>
+        </div>
       </React.Fragment>
     );
   }
