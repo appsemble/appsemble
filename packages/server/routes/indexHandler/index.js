@@ -28,8 +28,8 @@ export default async function indexHandler(ctx) {
       process.env.NODE_ENV !== 'production' && "'unsafe-eval'",
     ],
     'img-src': ['*', 'blob:', 'data:'],
-    'style-src': ["'self'", "'unsafe-inline'"],
-    'font-src': ["'self'", 'data:'],
+    'style-src': ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com;'],
+    'font-src': ["'self'", 'data:', 'https://fonts.gstatic.com'],
   });
   ctx.set('Content-Security-Policy', csp);
 

@@ -1,4 +1,7 @@
 import fs from 'fs';
+import path from 'path';
+
+import sass from 'node-sass';
 
 /**
  * Serve the minified Bulma CSS.
@@ -6,7 +9,12 @@ import fs from 'fs';
  * @param {Koa.Context} ctx The Koa context.
  */
 export function bulmaHandler(ctx) {
-  ctx.body = fs.readFileSync(require.resolve('bulma/css/bulma.min.css'));
+  const { css } = sass.renderSync({
+    file: path.resolve(__dirname, 'bulma.scss'),
+    outputStyle: 'compressed',
+  });
+
+  ctx.body = css;
   ctx.type = 'text/css';
   ctx.set('Cache-Control', 'max-age=31536000,immutable');
 }
