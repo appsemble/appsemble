@@ -12,11 +12,44 @@ A block that can be used to display various fields based on input data.
 
 ## Parameters
 
-| Parameter | Default | Description                                                   |
-| --------- | ------- | ------------------------------------------------------------- |
-| schema    |         | The schema used for reading the data                          |
-| fields    |         | A list of fields to display based on the name from the schema |
-| fileBase  |         | The base URL of the associated files                          |
+| Parameter      | Default       | Description                                                                               |
+| -------------- | ------------- | ----------------------------------------------------------------------------------------- |
+| fields         |               | A list of fields to display based on the name from the schema                             |
+| fileBase       |               | The base URL of the associated files                                                      |
+| fields[].name  |               | The name of the property of the data to fetch from. Supports dot notation.                |
+| fields[].label | fields[].name | The label that is presented to the user                                                   |
+| fields[].type  | string        | The data type of the field. Supported values: `string`, `geocoordinates`, `array`, `file` |
+
+#### Field types
+
+Based on the type of field, additional parameters are available.
+
+##### string
+
+Displays the content as regular text. If the content is an object it will be converted using
+`JSON.stringify()`.
+
+##### geocoordinates
+
+Displays a map with a marker.
+
+| Parameter          | Description                                                                                                                                                         |
+| ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| fields[].longitude | The name of the field used to access the longitude value. If `fields[].name` is set, it is retrieved relatively, otherwise it is fetched from the root of the data. |
+| fields[].longitude | The name of the field used to access the latitude value. If `fields[].name` is set, it is retrieved relatively, otherwise it is fetched from the root of the data.  |
+
+##### file
+
+Displays files as images.
+
+##### array
+
+Displays a list of fields in a single row.
+
+| Parameter          | Description                                                                                                          |
+| ------------------ | -------------------------------------------------------------------------------------------------------------------- |
+| fields[].arrayName | The name of the property of the data to fetch from within each item. If not set, the item itself is used as the url. |
+| fields[].arrayType | The type of data to display. Supports every data type except `array`.                                                |
 
 ## Images
 
