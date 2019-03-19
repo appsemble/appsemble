@@ -33,10 +33,11 @@ Displays the content as regular text. If the content is an object it will be con
 
 Displays a map with a marker.
 
-| Parameter          | Description                                                                                                                                                         |
-| ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| fields[].longitude | The name of the field used to access the longitude value. If `fields[].name` is set, it is retrieved relatively, otherwise it is fetched from the root of the data. |
-| fields[].longitude | The name of the field used to access the latitude value. If `fields[].name` is set, it is retrieved relatively, otherwise it is fetched from the root of the data.  |
+| Parameter          | Description                                                                                                                                                                      |
+| ------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| fields[].name      | The path to base the longitude and latitude fields from. If `fields[].latitude` and `fields[].longitude` are not set it defaults to `fields[].name.lat` and `fields[].name.lng`. |
+| fields[].longitude | The name of the field used to access the longitude value. If `fields[].name` is set it is retrieved relatively, otherwise it is fetched from the root of the data.               |
+| fields[].longitude | The name of the field used to access the latitude value. If `fields[].name` is setit is retrieved relatively, otherwise it is fetched from the root of the data.                 |
 
 ##### file
 
