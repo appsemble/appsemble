@@ -1,4 +1,4 @@
-import { Button, FileField, FileLabel, Icon, Image } from '@appsemble/react-bulma';
+import { FileField } from '@appsemble/react-bulma';
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -93,21 +93,24 @@ export default class FileEntry extends React.Component {
       >
         {url ? (
           <React.Fragment>
-            <Image
-              alt={title}
-              className={styles.image}
-              imgProps={{ className: styles.img }}
-              src={url}
-            />
-            <Button className={styles.removeButton} onClick={this.onRemove} size="small">
-              <Icon fa="times" />
-            </Button>
+            <figure className={classNames('image', styles.image)}>
+              <img alt={title} className={styles.img} src={url} />
+            </figure>
+            <button
+              className={classNames('button', 'is-small', styles.removeButton)}
+              onClick={this.onRemove}
+              type="button"
+            >
+              <span className="icon">
+                <i className={classNames('fas', 'fa-times')} />
+              </span>
+            </button>
           </React.Fragment>
         ) : (
           <span className={classNames('image is-128x128', styles.empty)}>
-            <FileLabel>
+            <span className="file-label">
               <FormattedMessage {...messages.clickAction} />
-            </FileLabel>
+            </span>
           </span>
         )}
       </FileField>

@@ -1,4 +1,4 @@
-import { Button } from '@appsemble/react-bulma';
+import classNames from 'classnames';
 import axios from 'axios';
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -64,14 +64,13 @@ export default class ConnectOAuth extends React.Component {
               values={{ provider: params.get('provider') }}
             />
           </p>
-          <Button
-            className={styles.registerButton}
-            color="primary"
+          <button
+            className={classNames('button', 'is-primary', styles.registerButton)}
             onClick={this.handleOAuthRegister}
             type="button"
           >
             <FormattedMessage {...messages.register} />
-          </Button>
+          </button>
         </div>
       );
     }

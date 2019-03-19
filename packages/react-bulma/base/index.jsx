@@ -14,7 +14,6 @@ export { default as FieldBody } from './FieldBody';
 export { default as FieldLabel } from './FieldLabel';
 export { default as File } from './File';
 export { default as FileCta } from './FileCta';
-export { default as FileIcon } from './FileIcon';
 export { default as FileInput } from './FileInput';
 export { default as FileLabel } from './FileLabel';
 export { default as FileName } from './FileName';

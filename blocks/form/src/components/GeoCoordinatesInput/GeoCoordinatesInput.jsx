@@ -1,10 +1,10 @@
 import 'leaflet/dist/leaflet.css';
-import { Button, Fas, Icon } from '@appsemble/react-bulma';
 import PropTypes from 'prop-types';
 import { TileLayer } from 'leaflet/src/layer';
 import { Map } from 'leaflet/src/map';
 import { CircleMarker } from 'leaflet/src/layer/vector';
 import React from 'react';
+import classNames from 'classnames';
 
 import styles from './GeoCoordinatesInput.css';
 
@@ -71,11 +71,17 @@ export default class GeoCoordinatesInput extends React.Component {
       <div className={styles.root}>
         <div ref={this.ref} className={styles.map} />
         <div className={styles.crossHairsOverlay}>
-          <Fas className={styles.crossHairs} fa="crosshairs" />
+          <i className={classNames('fas', 'fa-crosshairs', styles.crossHairs)} />
         </div>
-        <Button className={styles.resetButton} onClick={this.onReset}>
-          <Icon className={styles.currentlocation} fa="crosshairs" />
-        </Button>
+        <button
+          className={classNames('button', styles.resetButton)}
+          onClick={this.onReset}
+          type="button"
+        >
+          <span className={classNames('icon', styles.currentlocation)}>
+            <i className={classNames('fas', 'fa-crosshairs')} />
+          </span>
+        </button>
       </div>
     );
   }

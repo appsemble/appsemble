@@ -1,7 +1,8 @@
-import { Button, Container, Icon, InputField, Message, MessageBody } from '@appsemble/react-bulma';
+import { InputField } from '@appsemble/react-bulma';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
+import classNames from 'classnames';
 
 import styles from './EmailLogin.css';
 import messages from './messages';
@@ -78,19 +79,23 @@ export default class EmailLogin extends React.Component {
     const { dirty, error, errors, submitting, values } = this.state;
 
     return (
-      <Container className={styles.root} component="form" onSubmit={this.onSubmit}>
+      <form className={classNames('container', styles.root)} onSubmit={this.onSubmit}>
         {error && (
-          <Message color="danger">
-            <MessageBody>
+          <article className={classNames('message', 'is-danger')}>
+            <div className="message-body">
               <FormattedMessage {...messages.loginFailed} />
-            </MessageBody>
-          </Message>
+            </div>
+          </article>
         )}
         <InputField
           autoComplete="email"
           color={dirty && errors.username ? 'danger' : null}
           disabled={submitting}
-          iconLeft={<Icon fa="envelope" />}
+          iconLeft={
+            <span className="icon">
+              <i className={classNames('fas', 'fa-envelope')} />
+            </span>
+          }
           label={<FormattedMessage {...messages.usernameLabel} />}
           name="username"
           onChange={this.onChange}
@@ -102,7 +107,11 @@ export default class EmailLogin extends React.Component {
           autoComplete="current-password"
           color={dirty && errors.password ? 'danger' : null}
           disabled={submitting}
-          iconLeft={<Icon fa="unlock" />}
+          iconLeft={
+            <span className="icon">
+              <i className={classNames('fas', 'fa-unlock')} />
+            </span>
+          }
           label={<FormattedMessage {...messages.passwordLabel} />}
           name="password"
           onChange={this.onChange}
@@ -110,15 +119,14 @@ export default class EmailLogin extends React.Component {
           type="password"
           value={values.password}
         />
-        <Button
-          className={styles.submit}
-          color="primary"
+        <button
+          className={classNames('button', 'is-primary', styles.submit)}
           disabled={!dirty || submitting || errors.password || errors.username}
           type="submit"
         >
           <FormattedMessage {...messages.loginButton} />
-        </Button>
-      </Container>
+        </button>
+      </form>
     );
   }
 }

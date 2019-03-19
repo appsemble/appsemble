@@ -1,4 +1,4 @@
-import { NavbarBrand, NavbarItem } from '@appsemble/react-bulma';
+import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import React from 'react';
 
@@ -28,14 +28,14 @@ export default class TitleBar extends React.Component {
 
     return (
       <Portal element={document.getElementsByClassName('navbar')[0]}>
-        <NavbarBrand className={styles.brand}>
-          <NavbarItem>
+        <div className={classNames('navbar-brand', styles.brand)}>
+          <span className="navbar-item">
             <SideMenuButton />
-          </NavbarItem>
-          <NavbarItem className="title" component="h2">
+          </span>
+          <h2 className="navbar-item title" component="h2">
             {children}
-          </NavbarItem>
-        </NavbarBrand>
+          </h2>
+        </div>
       </Portal>
     );
   }

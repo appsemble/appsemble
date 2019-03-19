@@ -1,26 +1,4 @@
-import {
-  Button,
-  Card,
-  CardContent,
-  CardFooter,
-  CardFooterItem,
-  CardHeader,
-  CardHeaderTitle,
-  File,
-  FileCta,
-  FileIcon,
-  FileInput,
-  FileLabel,
-  FileName,
-  Icon,
-  Image,
-  Modal,
-  Navbar,
-  NavbarBrand,
-  NavbarItem,
-  Tab,
-  TabItem,
-} from '@appsemble/react-bulma';
+import classNames from 'classnames';
 import { Loader } from '@appsemble/react-components';
 import axios from 'axios';
 import isEqual from 'lodash.isequal';
@@ -268,6 +246,13 @@ export default class Editor extends React.Component {
     this.setState({ warningDialog: false });
   };
 
+  onKeyDown = event => {
+    console.log(event.key);
+    if (event.key === 'Escape') {
+      this.onClose();
+    }
+  };
+
   render() {
     const {
       recipe,
@@ -312,68 +297,92 @@ export default class Editor extends React.Component {
       <div className={styles.root}>
         <div className={styles.leftPanel}>
           <form className={styles.editorForm} onSubmit={this.onSave}>
-            <Navbar>
-              <NavbarBrand>
-                <NavbarItem>
-                  <Button disabled={!dirty} type="submit">
+            <nav className="navbar">
+              <div className="navbar-brand">
+                <span className="navbar-item">
+                  <button className="button" disabled={!dirty} type="submit">
                     Save
-                  </Button>
-                </NavbarItem>
-                <NavbarItem>
-                  <Button disabled={!valid || dirty} onClick={this.onUpload}>
+                  </button>
+                </span>
+                <span className="navbar-item">
+                  <button
+                    className="button"
+                    disabled={!valid || dirty}
+                    onClick={this.onUpload}
+                    type="button"
+                  >
                     Upload
-                  </Button>
-                </NavbarItem>
-                <NavbarItem>
-                  <File className={`${icon && 'has-name'}`}>
-                    <FileLabel component="label">
-                      <FileInput
+                  </button>
+                </span>
+                <span className="navbar-item">
+                  <div className={classNames('file', icon && 'has-name')}>
+                    <label className="file-label" htmlFor="icon-upload">
+                      <input
                         accept="image/jpeg, image/png, image/tiff, image/webp, image/xml+svg"
+                        className="file-input"
+                        id="icon-upload"
                         name="icon"
                         onChange={this.onIconChange}
+                        type="file"
                       />
-                      <FileCta>
-                        <FileIcon fa="upload" />
-                        <FileLabel>Icon</FileLabel>
-                      </FileCta>
-                      {icon && <FileName>{filename}</FileName>}
-                    </FileLabel>
-                  </File>
+                      <span className="file-cta">
+                        <span className="file-icon">
+                          <i className="fas fa-upload" />
+                        </span>
+                        <span className="file-label">Icon</span>
+                      </span>
+                      {icon && <span className="file-name">{filename}</span>}
+                    </label>
+                  </div>
                   {iconURL && (
-                    <Image alt="Icon" className={styles.iconPreview} size={32} src={iconURL} />
+                    <figure className={classNames('image', 'is-32x32', styles.iconPreview)}>
+                      <img alt="Icon" src={iconURL} />
+                    </figure>
                   )}
-                </NavbarItem>
-                <NavbarItem>
-                  <Button component="a" href={`/${path}`} target="_blank">
+                </span>
+                <span className="navbar-item">
+                  <a component="a" href={`/${path}`} rel="noopener noreferrer" target="_blank">
                     View live
-                  </Button>
-                </NavbarItem>
-              </NavbarBrand>
-            </Navbar>
-            <Tab boxed className={styles.editorTabs}>
-              <TabItem active={tab === '#editor'} value="editor">
-                <Link to="#editor">
-                  <Icon fa="file-code" />
-                  Recipe
-                </Link>
-              </TabItem>
-              <TabItem active={tab === '#style-core'} onClick={this.onTabChange} value="style-core">
-                <Link to="#style-core">
-                  <Icon fa="brush" />
-                  Core Style
-                </Link>
-              </TabItem>
-              <TabItem
-                active={tab === '#style-shared'}
-                onClick={this.onTabChange}
-                value="style-shared"
-              >
-                <Link to="#style-shared">
-                  <Icon fa="brush" />
-                  Shared Style
-                </Link>
-              </TabItem>
-            </Tab>
+                  </a>
+                </span>
+              </div>
+            </nav>
+            <div className={classNames('tabs', 'is-boxed', styles.editorTabs)}>
+              <ul>
+                <li className={classNames(tab === '#editor' && 'is-active')} value="editor">
+                  <Link to="#editor">
+                    <span className="icon">
+                      <i className={classNames('fas', 'fa-file-code')} />
+                    </span>
+                    Recipe
+                  </Link>
+                </li>
+                <li
+                  className={classNames(tab === '#style-core' && 'is-active')}
+                  // XXX: onClick={this.onTabChange}
+                  value="style-core"
+                >
+                  <Link to="#style-core">
+                    <span className="icon">
+                      <i className={classNames('fas', 'fa-brush')} />
+                    </span>
+                    Core Style
+                  </Link>
+                </li>
+                <li
+                  className={classNames(tab === '#style-shared' && 'is-active')}
+                  // XXX: onClick={this.onTabChange}
+                  value="style-shared"
+                >
+                  <Link to="#style-shared">
+                    <span className="icon">
+                      <i className={classNames('fas', 'fa-brush')} />
+                    </span>
+                    Shared Style
+                  </Link>
+                </li>
+              </ul>
+            </div>
             <MonacoEditor
               className={styles.monacoEditor}
               language={language}
@@ -381,35 +390,53 @@ export default class Editor extends React.Component {
               onValueChange={onValueChange}
               value={value}
             />
-            <Modal
-              active={warningDialog}
-              ModalCloseProps={{ size: 'large' }}
-              onClose={this.onClose}
-            >
-              <Card>
-                <CardHeader>
-                  <CardHeaderTitle>
-                    <FormattedMessage {...messages.resourceWarningTitle} />
-                  </CardHeaderTitle>
-                </CardHeader>
-                <CardContent>
-                  <FormattedMessage {...messages.resourceWarning} />
-                </CardContent>
-                <CardFooter>
-                  <CardFooterItem className="is-link" component="a" onClick={this.onClose}>
-                    <FormattedMessage {...messages.cancel} />
-                  </CardFooterItem>
-                  <CardFooterItem
-                    className={`${styles.cardFooterButton} button is-warning`}
-                    component="button"
-                    onClick={this.uploadApp}
-                    type="button"
-                  >
-                    <FormattedMessage {...messages.upload} />
-                  </CardFooterItem>
-                </CardFooter>
-              </Card>
-            </Modal>
+            <div className={classNames('modal', warningDialog && 'is-active')}>
+              <div
+                className="modal-background"
+                onClick={this.onClose}
+                onKeyDown={this.onKeyDown}
+                role="presentation"
+              />
+              <div className="modal-content">
+                <div className="card">
+                  <header className="card-header">
+                    <p className="card-header-title">
+                      <FormattedMessage {...messages.resourceWarningTitle} />
+                    </p>
+                  </header>
+                  <div className="card-content">
+                    <FormattedMessage {...messages.resourceWarning} />
+                  </div>
+                  <footer className="card-footer">
+                    {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
+                    <a
+                      className="card-footer-item is-link"
+                      component="a"
+                      onClick={this.onClose}
+                      onKeyDown={this.onKeyDown}
+                      role="button"
+                      tabIndex="-1"
+                    >
+                      <FormattedMessage {...messages.cancel} />
+                    </a>
+                    <button
+                      className={classNames(
+                        'card-footer-item',
+                        'button',
+                        'is-warning',
+                        styles.cardFooterButton,
+                      )}
+                      component="button"
+                      onClick={this.uploadApp}
+                      type="button"
+                    >
+                      <FormattedMessage {...messages.upload} />
+                    </button>
+                  </footer>
+                </div>
+              </div>
+              <button className="modal-close is-large" onClick={this.onClose} type="button" />
+            </div>
           </form>
         </div>
 

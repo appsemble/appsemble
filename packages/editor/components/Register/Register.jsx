@@ -1,7 +1,8 @@
-import { Button, Container, Icon, InputField, Message, MessageBody } from '@appsemble/react-bulma';
+import { InputField } from '@appsemble/react-bulma';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
+import classNames from 'classnames';
 
 import styles from './Register.css';
 import messages from './messages';
@@ -45,26 +46,30 @@ export default class Register extends React.Component {
     const { email, password, error, submitting, success } = this.state;
 
     return success ? (
-      <Container className={styles.root}>
-        <Message color="success">
-          <MessageBody>
+      <div className={classNames('container', styles.root)}>
+        <article className={classNames('message', 'is-success')}>
+          <div className="message-body">
             <FormattedMessage {...messages.registerSuccess} />
-          </MessageBody>
-        </Message>
-      </Container>
+          </div>
+        </article>
+      </div>
     ) : (
-      <Container className={styles.root} component="form" onSubmit={this.onSubmit}>
+      <form className={classNames('container', styles.root)} onSubmit={this.onSubmit}>
         {error && (
-          <Message color="danger">
-            <MessageBody>
+          <article className={classNames('message', 'is-danger')}>
+            <div className="message-body">
               <FormattedMessage {...messages.registerFailed} />
-            </MessageBody>
-          </Message>
+            </div>
+          </article>
         )}
         <InputField
           autoComplete="email"
           disabled={submitting}
-          iconLeft={<Icon fa="envelope" />}
+          iconLeft={
+            <span className="icon">
+              <i className={classNames('fas', 'fa-envelope')} />
+            </span>
+          }
           label={<FormattedMessage {...messages.usernameLabel} />}
           name="email"
           onChange={this.onChange}
@@ -75,7 +80,11 @@ export default class Register extends React.Component {
         <InputField
           autoComplete="new-password"
           disabled={submitting}
-          iconLeft={<Icon fa="unlock" />}
+          iconLeft={
+            <span className="icon">
+              <i className={classNames('fas', 'fa-unlock')} />
+            </span>
+          }
           label={<FormattedMessage {...messages.passwordLabel} />}
           name="password"
           onChange={this.onChange}
@@ -83,10 +92,14 @@ export default class Register extends React.Component {
           type="password"
           value={password}
         />
-        <Button className={styles.submit} color="primary" disabled={submitting} type="submit">
+        <button
+          className={classNames('button', 'is-primary', styles.submit)}
+          disabled={submitting}
+          type="submit"
+        >
           <FormattedMessage {...messages.registerButton} />
-        </Button>
-      </Container>
+        </button>
+      </form>
     );
   }
 }
