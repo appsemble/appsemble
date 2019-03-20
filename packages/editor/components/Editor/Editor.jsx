@@ -247,7 +247,6 @@ export default class Editor extends React.Component {
   };
 
   onKeyDown = event => {
-    console.log(event.key);
     if (event.key === 'Escape') {
       this.onClose();
     }

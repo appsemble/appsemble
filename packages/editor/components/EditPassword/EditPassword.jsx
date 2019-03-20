@@ -1,4 +1,3 @@
-import { InputField } from '@appsemble/react-bulma';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
@@ -63,21 +62,34 @@ export default class EditPassword extends React.Component {
             </div>
           </article>
         )}
-        <InputField
-          autoComplete="new-password"
-          disabled={submitting}
-          iconLeft={
-            <span className="icon">
-              <i className={classNames('fas', 'fa-unlock')} />
-            </span>
-          }
-          label={<FormattedMessage {...messages.passwordLabel} />}
-          name="password"
-          onChange={this.onChange}
-          required
-          type="password"
-          value={password}
-        />
+
+        <div className="field is-horizontal">
+          <div className="field-label is-normal">
+            <label className="label" htmlFor="inputPassword">
+              <FormattedMessage {...messages.passwordLabel} />
+            </label>
+          </div>
+          <div className="field-body">
+            <div className="field">
+              <div className="control has-icons-left">
+                <input
+                  autoComplete="new-password"
+                  className="input"
+                  disabled={submitting}
+                  id="inputPassword"
+                  name="password"
+                  onChange={this.onChange}
+                  required
+                  type="password"
+                  value={password}
+                />
+                <span className="icon is-left">
+                  <i className={classNames('fas', 'fa-unlock')} />
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
 
         <button
           className={classNames('button', 'is-primary', styles.submit)}

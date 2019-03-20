@@ -1,4 +1,3 @@
-import { FileField } from '@appsemble/react-bulma';
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -82,38 +81,39 @@ export default class FileEntry extends React.Component {
     const title = field.label || field.name;
 
     return (
-      <FileField
-        accept={(field.accept?.length && field.accept.join(',')) || undefined}
-        className={styles.root}
-        FileInputProps={{
-          className: styles.input,
-          innerRef: this.inputRef,
-        }}
-        name={name}
-      >
-        {url ? (
-          <React.Fragment>
-            <figure className={classNames('image', styles.image)}>
-              <img alt={title} className={styles.img} src={url} />
-            </figure>
-            <button
-              className={classNames('button', 'is-small', styles.removeButton)}
-              onClick={this.onRemove}
-              type="button"
-            >
-              <span className="icon">
-                <i className={classNames('fas', 'fa-times')} />
+      <div className={classNames('file', styles.root)}>
+        <label className="file-label" htmlFor={field.name}>
+          <input
+            ref={this.inputRef}
+            className={classNames('file-input', styles.input)}
+            id={field.name}
+            name={name}
+            type="file"
+          />
+          {url ? (
+            <React.Fragment>
+              <figure className={classNames('image', styles.image)}>
+                <img alt={title} className={styles.img} src={url} />
+              </figure>
+              <button
+                className={classNames('button', 'is-small', styles.removeButton)}
+                onClick={this.onRemove}
+                type="button"
+              >
+                <span className="icon">
+                  <i className={classNames('fas', 'fa-times')} />
+                </span>
+              </button>
+            </React.Fragment>
+          ) : (
+            <span className={classNames('image is-128x128', styles.empty)}>
+              <span className="file-label">
+                <FormattedMessage {...messages.clickAction} />
               </span>
-            </button>
-          </React.Fragment>
-        ) : (
-          <span className={classNames('image is-128x128', styles.empty)}>
-            <span className="file-label">
-              <FormattedMessage {...messages.clickAction} />
             </span>
-          </span>
-        )}
-      </FileField>
+          )}
+        </label>
+      </div>
     );
   }
 }

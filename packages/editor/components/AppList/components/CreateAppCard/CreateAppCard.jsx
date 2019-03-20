@@ -1,5 +1,4 @@
 import classNames from 'classnames';
-import { InputField, SelectField, TextareaField } from '@appsemble/react-bulma';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
@@ -123,51 +122,107 @@ export default class CreateAppCard extends React.Component {
                   </div>
                 </header>
                 <div className="card-content">
-                  <InputField
-                    label={formatMessage(messages.name)}
-                    maxLength={30}
-                    minLength={1}
-                    name="appName"
-                    onChange={this.onChange}
-                    placeholder={formatMessage(messages.name)}
-                    required
-                    value={appName}
-                  />
-                  <SelectField
-                    disabled={user.organizations.length === 1}
-                    label={formatMessage(messages.organization)}
-                    name="selectedOrganization"
-                    onChange={this.onChange}
-                    value={selectedOrganization}
-                  >
-                    {user.organizations.map((organization, index) => (
-                      <option key={organization.id} value={index}>
-                        {organization.name}
-                      </option>
-                    ))}
-                  </SelectField>
-                  <SelectField
-                    label={formatMessage(messages.template)}
-                    name="selectedTemplate"
-                    onChange={this.onChange}
-                    value={selectedTemplate}
-                  >
-                    {templates.map((template, index) => (
-                      <option key={template.name} value={index}>
-                        {template.name}
-                      </option>
-                    ))}
-                  </SelectField>
-                  <TextareaField
-                    label={formatMessage(messages.description)}
-                    maxLength={80}
-                    minLength={0}
-                    name="appDescription"
-                    onChange={this.onChange}
-                    placeholder={formatMessage(messages.description)}
-                    required
-                    value={appDescription}
-                  />
+                  <div className="field is-horizontal">
+                    <div className="field-label is-normal">
+                      <label className="label" htmlFor="inputAppName">
+                        <FormattedMessage {...messages.name} />
+                      </label>
+                    </div>
+                    <div className="field-body">
+                      <div className="field">
+                        <div className="control">
+                          <input
+                            className="input"
+                            id="inputAppName"
+                            maxLength={30}
+                            minLength={1}
+                            name="appName"
+                            onChange={this.onChange}
+                            placeholder={formatMessage(messages.name)}
+                            required
+                            value={appName}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="field is-horizontal">
+                    <div className="field-label is-normal">
+                      <label className="label" htmlFor="inputSelectedOrganization">
+                        <FormattedMessage {...messages.organization} />
+                      </label>
+                    </div>
+                    <div className="field-body">
+                      <div className="field">
+                        <div className="control">
+                          <div className="select">
+                            <select
+                              disabled={user.organizations.length === 1}
+                              id="inputSelectedOrganization"
+                              name="selectedOrganization"
+                              onChange={this.onChange}
+                              value={selectedOrganization}
+                            >
+                              {user.organizations.map((organization, index) => (
+                                <option key={organization.id} value={index}>
+                                  {organization.name}
+                                </option>
+                              ))}
+                            </select>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="field is-horizontal">
+                    <div className="field-label is-normal">
+                      <label className="label" htmlFor="inputSelectedTemplate">
+                        <FormattedMessage {...messages.template} />
+                      </label>
+                    </div>
+                    <div className="field-body">
+                      <div className="field">
+                        <div className="control">
+                          <div className="select">
+                            <select
+                              id="inputSelectedTemplate"
+                              name="selectedTemplate"
+                              onChange={this.onChange}
+                              value={selectedTemplate}
+                            >
+                              {templates.map((template, index) => (
+                                <option key={template.name} value={index}>
+                                  {template.name}
+                                </option>
+                              ))}
+                            </select>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="field is-horizontal">
+                    <div className="field-label is-normal">
+                      <label className="label" htmlFor="inputAppDescription">
+                        <FormattedMessage {...messages.description} />
+                      </label>
+                    </div>
+                    <div className="field-body">
+                      <div className="field">
+                        <div className="control">
+                          <textarea
+                            className="textarea"
+                            id="inputAppDescription"
+                            maxLength={80}
+                            name="appDescription"
+                            onChange={this.onChange}
+                            placeholder={formatMessage(messages.description)}
+                            value={appDescription}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
                 <footer className="card-footer">
                   {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}

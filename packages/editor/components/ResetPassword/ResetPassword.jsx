@@ -1,4 +1,3 @@
-import { InputField } from '@appsemble/react-bulma';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
@@ -61,21 +60,34 @@ export default class ResetPassword extends React.Component {
             </div>
           </article>
         )}
-        <InputField
-          autoComplete="email"
-          disabled={submitting}
-          iconLeft={
-            <span className="icon">
-              <i className={classNames('fas', 'fa-envelope')} />
-            </span>
-          }
-          label={<FormattedMessage {...messages.emailLabel} />}
-          name="email"
-          onChange={this.onChange}
-          required
-          type="email"
-          value={email}
-        />
+
+        <div className="field is-horizontal">
+          <div className="field-label is-normal">
+            <label className="label" htmlFor="inputEmail">
+              <FormattedMessage {...messages.emailLabel} />
+            </label>
+          </div>
+          <div className="field-body">
+            <div className="field">
+              <div className="control has-icons-left">
+                <input
+                  autoComplete="email"
+                  className="input"
+                  disabled={submitting}
+                  id="inputEmail"
+                  name="email"
+                  onChange={this.onChange}
+                  required
+                  type="email"
+                  value={email}
+                />
+                <span className="icon is-left">
+                  <i className={classNames('fas', 'fa-envelope')} />
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
 
         <button
           className={classNames('button', 'is-primary', styles.submit)}

@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "private": true,
   "dependencies": {
-    "@appsemble/react-bulma": "1.0.0",
     "@appsemble/react-components": "1.0.0",
     "@appsemble/utils": "1.0.0",
     "axios": "^0.18.0",

@@ -1,4 +1,3 @@
-import { InputField } from '@appsemble/react-bulma';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
@@ -87,38 +86,61 @@ export default class EmailLogin extends React.Component {
             </div>
           </article>
         )}
-        <InputField
-          autoComplete="email"
-          color={dirty && errors.username ? 'danger' : null}
-          disabled={submitting}
-          iconLeft={
-            <span className="icon">
-              <i className={classNames('fas', 'fa-envelope')} />
-            </span>
-          }
-          label={<FormattedMessage {...messages.usernameLabel} />}
-          name="username"
-          onChange={this.onChange}
-          required
-          type="email"
-          value={values.username}
-        />
-        <InputField
-          autoComplete="current-password"
-          color={dirty && errors.password ? 'danger' : null}
-          disabled={submitting}
-          iconLeft={
-            <span className="icon">
-              <i className={classNames('fas', 'fa-unlock')} />
-            </span>
-          }
-          label={<FormattedMessage {...messages.passwordLabel} />}
-          name="password"
-          onChange={this.onChange}
-          required
-          type="password"
-          value={values.password}
-        />
+
+        <div className="field is-horizontal">
+          <div className="field-label is-normal">
+            <label className="label" htmlFor="inputEmail">
+              <FormattedMessage {...messages.usernameLabel} />
+            </label>
+          </div>
+          <div className="field-body">
+            <div className="field">
+              <div className="control has-icons-left">
+                <input
+                  autoComplete="email"
+                  className={classNames('input', dirty && errors.username && 'is-danger')}
+                  disabled={submitting}
+                  id="inputEmail"
+                  name="username"
+                  onChange={this.onChange}
+                  required
+                  type="email"
+                  value={values.username}
+                />
+                <span className="icon is-left">
+                  <i className={classNames('fas', 'fa-envelope')} />
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="field is-horizontal">
+          <div className="field-label is-normal">
+            <label className="label" htmlFor="inputPassword">
+              <FormattedMessage {...messages.passwordLabel} />
+            </label>
+          </div>
+          <div className="field-body">
+            <div className="field">
+              <div className="control has-icons-left">
+                <input
+                  autoComplete="current-password"
+                  className={classNames('input', dirty && errors.password && 'is-danger')}
+                  disabled={submitting}
+                  id="inputPassword"
+                  name="password"
+                  onChange={this.onChange}
+                  required
+                  type="password"
+                  value={values.password}
+                />
+                <span className="icon is-left">
+                  <i className={classNames('fas', 'fa-unlock')} />
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
         <button
           className={classNames('button', 'is-primary', styles.submit)}
           disabled={!dirty || submitting || errors.password || errors.username}
