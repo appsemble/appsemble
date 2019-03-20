@@ -16,7 +16,7 @@ const renderers = {
 };
 
 /**
- * Render data based on a JSON schema
+ * The main component for the Appsemble detail-viewer block.
  */
 export default class DetailViewerBlock extends React.Component {
   static propTypes = {

@@ -109,8 +109,8 @@ pages:
               label: Notities
             - name: fotos
               label: Foto's
-              type: array
-              arrayType: file
+              type: file
+              repeated: true
         actions:
           load:
             type: request
