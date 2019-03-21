@@ -15,3 +15,9 @@
   /* stylelint-disable-next-line plugin/no-unsupported-browser-features */
   object-fit: cover;
 }
+
+.repeated {
+  display: flex;
+  overflow-x: scroll;
+  width: 100%;
+}
