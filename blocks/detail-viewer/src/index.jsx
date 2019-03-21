@@ -1,6 +1,5 @@
-import './index.css';
 import { bootstrap } from '@appsemble/react';
 
-import DetailViewerBlock from './components/DetailViewerBlock';
+import DetailBlock from './components/DetailViewerBlock';
 
-bootstrap(DetailViewerBlock);
+bootstrap(DetailBlock);

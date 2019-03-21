@@ -21,7 +21,9 @@ describe('organization controller', () => {
 
   beforeEach(async () => {
     await truncate(db);
-    ({ id: organizationId } = await Organization.create({ name: 'Test Organization A' }));
+    ({ id: organizationId } = await Organization.create({
+      id: `Test Organization ${new Date().getTime()}`,
+    }));
   });
 
   afterAll(async () => {
@@ -88,7 +90,7 @@ describe('organization controller', () => {
 
   it('should not allow uploading shared stylesheets to non-existant organizations', async () => {
     const response = await request(server)
-      .post(`/api/organizations/0/style/shared`)
+      .post('/api/organizations/test/style/shared')
       .attach('style', Buffer.from('body { color: red; }'), {
         contentType: 'text/css',
         filename: 'style.css',
@@ -151,7 +153,7 @@ describe('organization controller', () => {
 
   it('should not allow uploading core stylesheets to non-existant organizations', async () => {
     const response = await request(server)
-      .post(`/api/organizations/0/style/core`)
+      .post('/api/organizations/0/style/core')
       .attach('style', Buffer.from('body { color: red; }'), {
         contentType: 'text/css',
         filename: 'style.css',
@@ -246,7 +248,7 @@ describe('organization controller', () => {
     });
 
     const response = await request(server)
-      .post(`/api/organizations/0/style/block/@appsemble/testblock`)
+      .post('/api/organizations/0/style/block/@appsemble/testblock')
       .attach('style', Buffer.from('body { color: red; }'), {
         contentType: 'text/css',
         filename: 'style.css',

@@ -1,8 +1,0 @@
-:global(.container) {
-  margin: auto 0.5em;
-  padding-bottom: 1em;
-}
-
-:global(.title:not(:last-child)) {
-  margin-bottom: 0;
-}

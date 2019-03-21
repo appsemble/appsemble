@@ -68,7 +68,8 @@ export async function getAll(ctx) {
 
   const app = await App.findByPk(appId);
   const keys = Object.keys(verifyResourceDefinition(app, resourceType).properties);
-  const renamedQuery = deepRename(query, keys); // the data is stored in the ´data´ column as json
+  // the data is stored in the ´data´ column as json
+  const renamedQuery = deepRename(query, keys);
 
   try {
     const resources = await app.getResources({

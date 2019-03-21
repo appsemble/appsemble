@@ -44,7 +44,6 @@ async function parseStyleMultipart(ctx) {
 export async function getCoreStyle(ctx) {
   const { id } = ctx.params;
   const { Organization } = ctx.db.models;
-
   const organization = await Organization.findByPk(id, { raw: true });
 
   if (!organization) {
@@ -90,7 +89,6 @@ export async function setCoreStyle(ctx) {
 export async function getSharedStyle(ctx) {
   const { id } = ctx.params;
   const { Organization } = ctx.db.models;
-
   const organization = await Organization.findByPk(id, { raw: true });
 
   if (!organization) {

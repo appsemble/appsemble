@@ -1,4 +1,4 @@
-import { Button } from '@appsemble/react-bulma';
+import { Button, Icon, InputField } from '@appsemble/react-bulma';
 import axios from 'axios';
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -13,6 +13,10 @@ export default class ConnectOAuth extends React.Component {
     oauthLogin: PropTypes.func.isRequired,
   };
 
+  state = {
+    organization: '',
+  };
+
   componentDidMount() {
     const { location } = this.props;
 
@@ -25,6 +29,7 @@ export default class ConnectOAuth extends React.Component {
 
   handleOAuthRegister = async () => {
     const { location } = this.props;
+    const { organization } = this.state;
 
     const params = new URLSearchParams(location.search);
 
@@ -33,11 +38,16 @@ export default class ConnectOAuth extends React.Component {
       provider: params.get('provider'),
       refreshToken: params.get('refresh_token'),
       id: params.get('id'),
+      organization,
     });
 
     if (result.status === 201) {
       await this.handleOAuthLogin();
     }
+  };
+
+  onChange = event => {
+    this.setState({ [event.target.name]: event.target.value });
   };
 
   handleOAuthLogin() {
@@ -50,6 +60,7 @@ export default class ConnectOAuth extends React.Component {
 
   render() {
     const { location } = this.props;
+    const { organization } = this.state;
 
     const params = new URLSearchParams(location.search);
 
@@ -64,9 +75,20 @@ export default class ConnectOAuth extends React.Component {
               values={{ provider: params.get('provider') }}
             />
           </p>
+
+          <InputField
+            iconLeft={<Icon fa="briefcase" />}
+            label={<FormattedMessage {...messages.organizationLabel} />}
+            name="organization"
+            onChange={this.onChange}
+            required
+            value={organization}
+          />
+
           <Button
             className={styles.registerButton}
             color="primary"
+            disabled={!organization.length}
             onClick={this.handleOAuthRegister}
             type="button"
           >

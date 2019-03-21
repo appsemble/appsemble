@@ -39,7 +39,7 @@ export default function oauth2Model({ db, grant, secret }) {
           required: true,
           attributes: [],
         },
-      }).map(organization => ({ id: organization.id, name: organization.name }));
+      }).map(organization => ({ id: organization.id }));
     },
 
     async generateAccessToken(client, user, scope) {
@@ -110,7 +110,8 @@ export default function oauth2Model({ db, grant, secret }) {
       }
 
       const expiresAt = new Date();
-      expiresAt.setTime(expiresAt.getTime() + 3 * 60 * 60 * 1000); // The duration of the generated JWT.
+      // The duration of the generated JWT.
+      expiresAt.setTime(expiresAt.getTime() + 3 * 60 * 60 * 1000);
 
       const organizations = await this.getOrganizations(token.UserId);
 
@@ -118,7 +119,8 @@ export default function oauth2Model({ db, grant, secret }) {
         code: authorizationCode,
         expiresAt,
         user: { id: token.UserId, organizations },
-        client: { id: 'appsemble-editor' }, // XXX: Figure out how to determine the client ID properly.
+        // XXX: Figure out how to determine the client ID properly.
+        client: { id: 'appsemble-editor' },
         scope: 'apps:read apps:write',
       };
     },

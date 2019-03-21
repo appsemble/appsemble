@@ -14,6 +14,7 @@ export default class Register extends React.Component {
   state = {
     email: '',
     password: '',
+    organization: '',
     error: false,
     submitting: false,
     success: false,
@@ -22,19 +23,23 @@ export default class Register extends React.Component {
   onChange = event => {
     const { target } = event;
 
+    if (target.name === 'organization') {
+      target.value = target.value.toLowerCase();
+    }
+
     this.setState({ [target.name]: target.value, error: false });
   };
 
   onSubmit = async event => {
     event.preventDefault();
 
-    const { email, password } = this.state;
+    const { email, password, organization } = this.state;
     const { registerEmail } = this.props;
 
     this.setState({ submitting: true, error: false });
 
     try {
-      await registerEmail(email, password);
+      await registerEmail(email, password, organization);
       this.setState({ submitting: false, success: true });
     } catch (error) {
       this.setState({ error: true, submitting: false, success: false });
@@ -42,7 +47,7 @@ export default class Register extends React.Component {
   };
 
   render() {
-    const { email, password, error, submitting, success } = this.state;
+    const { email, password, organization, error, submitting, success } = this.state;
 
     return success ? (
       <Container className={styles.root}>
@@ -82,6 +87,15 @@ export default class Register extends React.Component {
           required
           type="password"
           value={password}
+        />
+        <InputField
+          disabled={submitting}
+          iconLeft={<Icon fa="briefcase" />}
+          label={<FormattedMessage {...messages.organizationLabel} />}
+          name="organization"
+          onChange={this.onChange}
+          required
+          value={organization}
         />
         <Button className={styles.submit} color="primary" disabled={submitting} type="submit">
           <FormattedMessage {...messages.registerButton} />
