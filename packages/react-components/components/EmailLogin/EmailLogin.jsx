@@ -80,7 +80,7 @@ export default class EmailLogin extends React.Component {
     return (
       <form className={classNames('container', styles.root)} onSubmit={this.onSubmit}>
         {error && (
-          <article className={classNames('message', 'is-danger')}>
+          <article className="message is-danger">
             <div className="message-body">
               <FormattedMessage {...messages.loginFailed} />
             </div>
@@ -98,7 +98,7 @@ export default class EmailLogin extends React.Component {
               <div className="control has-icons-left">
                 <input
                   autoComplete="email"
-                  className={classNames('input', dirty && errors.username && 'is-danger')}
+                  className={classNames('input', { 'is-danger': dirty && errors.username })}
                   disabled={submitting}
                   id="inputEmail"
                   name="username"
@@ -108,7 +108,7 @@ export default class EmailLogin extends React.Component {
                   value={values.username}
                 />
                 <span className="icon is-left">
-                  <i className={classNames('fas', 'fa-envelope')} />
+                  <i className="fas fa-envelope" />
                 </span>
               </div>
             </div>
@@ -125,7 +125,7 @@ export default class EmailLogin extends React.Component {
               <div className="control has-icons-left">
                 <input
                   autoComplete="current-password"
-                  className={classNames('input', dirty && errors.password && 'is-danger')}
+                  className={classNames('input', { 'is-danger': dirty && errors.password })}
                   disabled={submitting}
                   id="inputPassword"
                   name="password"
@@ -135,7 +135,7 @@ export default class EmailLogin extends React.Component {
                   value={values.password}
                 />
                 <span className="icon is-left">
-                  <i className={classNames('fas', 'fa-unlock')} />
+                  <i className="fas fa-unlock" />
                 </span>
               </div>
             </div>

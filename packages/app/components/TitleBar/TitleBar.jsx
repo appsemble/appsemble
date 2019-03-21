@@ -32,9 +32,7 @@ export default class TitleBar extends React.Component {
           <span className="navbar-item">
             <SideMenuButton />
           </span>
-          <h2 className="navbar-item title" component="h2">
-            {children}
-          </h2>
+          <h2 className="navbar-item title">{children}</h2>
         </div>
       </Portal>
     );

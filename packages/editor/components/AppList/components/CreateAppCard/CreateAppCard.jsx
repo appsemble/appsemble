@@ -106,8 +106,8 @@ export default class CreateAppCard extends React.Component {
             <FormattedMessage {...messages.createApp} />
           </div>
         </div>
-        <form className={classNames('container')} component="form" onSubmit={this.onCreate}>
-          <div className={classNames('modal', modalOpen && 'is-active')}>
+        <form className="container" onSubmit={this.onCreate}>
+          <div className={classNames('modal', { 'is-active': modalOpen })}>
             <div
               className="modal-background"
               onClick={this.onClose}
@@ -237,7 +237,6 @@ export default class CreateAppCard extends React.Component {
                   </a>
                   <button
                     className={classNames('card-footer-item', styles.cardFooterButton)}
-                    component="button"
                     type="submit"
                   >
                     <FormattedMessage {...messages.create} />

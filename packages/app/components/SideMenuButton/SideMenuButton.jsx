@@ -21,7 +21,7 @@ export default class SideMenuButton extends React.Component {
     return (
       <button
         aria-label={intl.formatMessage(messages.label)}
-        className={classNames('navbar-burger', isOpen && 'is-active', styles.root)}
+        className={classNames('navbar-burger', { 'is-active': isOpen }, styles.root)}
         onClick={openMenu}
         type="button"
       >

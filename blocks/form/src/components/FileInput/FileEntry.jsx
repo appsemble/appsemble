@@ -101,7 +101,7 @@ export default class FileEntry extends React.Component {
                 type="button"
               >
                 <span className="icon">
-                  <i className={classNames('fas', 'fa-times')} />
+                  <i className="fas fa-times" />
                 </span>
               </button>
             </React.Fragment>

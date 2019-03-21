@@ -20,7 +20,7 @@ export default class Toolbar extends React.Component {
     return (
       <nav className={classNames('navbar', 'is-fixed-top', 'is-dark', styles.root)}>
         <Link className="navbar-brand" to="/">
-          <header className="navbar-item title" component="header">
+          <header className="navbar-item title">
             <img
               alt={intl.formatMessage(messages.iconAlt)}
               className={styles.icon}
@@ -46,7 +46,7 @@ export default class Toolbar extends React.Component {
             <span className="navbar-item">
               <button className="button" onClick={logout} type="button">
                 <span className="icon">
-                  <i className={classNames('fas', 'fa-sign-out-alt')} />
+                  <i className="fas fa-sign-out-alt" />
                 </span>
                 <span>
                   <FormattedMessage {...messages.logoutButton} />

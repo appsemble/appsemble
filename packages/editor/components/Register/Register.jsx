@@ -46,7 +46,7 @@ export default class Register extends React.Component {
 
     return success ? (
       <div className={classNames('container', styles.root)}>
-        <article className={classNames('message', 'is-success')}>
+        <article className="message is-success">
           <div className="message-body">
             <FormattedMessage {...messages.registerSuccess} />
           </div>
@@ -55,7 +55,7 @@ export default class Register extends React.Component {
     ) : (
       <form className={classNames('container', styles.root)} onSubmit={this.onSubmit}>
         {error && (
-          <article className={classNames('message', 'is-danger')}>
+          <article className="message is-danger">
             <div className="message-body">
               <FormattedMessage {...messages.registerFailed} />
             </div>
@@ -82,7 +82,7 @@ export default class Register extends React.Component {
                   value={email}
                 />
                 <span className="icon is-left">
-                  <i className={classNames('fas', 'fa-envelope')} />
+                  <i className="fas fa-envelope" />
                 </span>
               </div>
             </div>
@@ -109,7 +109,7 @@ export default class Register extends React.Component {
                   value={password}
                 />
                 <span className="icon is-left">
-                  <i className={classNames('fas', 'fa-unlock')} />
+                  <i className="fas fa-unlock" />
                 </span>
               </div>
             </div>

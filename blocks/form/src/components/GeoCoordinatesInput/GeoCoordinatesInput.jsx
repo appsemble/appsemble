@@ -79,7 +79,7 @@ export default class GeoCoordinatesInput extends React.Component {
           type="button"
         >
           <span className={classNames('icon', styles.currentlocation)}>
-            <i className={classNames('fas', 'fa-crosshairs')} />
+            <i className="fas fa-crosshairs" />
           </span>
         </button>
       </div>

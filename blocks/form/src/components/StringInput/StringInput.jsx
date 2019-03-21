@@ -36,7 +36,7 @@ export default class StringInput extends React.Component {
   render() {
     const { error, field, onChange, value } = this.props;
     const elementProps = {
-      className: classNames(field.multiline ? 'textarea' : 'input', error && 'is-danger'),
+      className: classNames(field.multiline ? 'textarea' : 'input', { 'is-danger': error }),
       id: field.name,
       maxLength: field.maxLength,
       name: field.name,
@@ -59,7 +59,7 @@ export default class StringInput extends React.Component {
             <div className="control">
               {field.multiline ? <textarea {...elementProps} /> : <input {...elementProps} />}
               {error && (
-                <p className={classNames('help', error && 'is-danger')}>
+                <p className={classNames('help', { 'is-danger': error })}>
                   <FormattedMessage {...messages.invalid} />
                 </p>
               )}

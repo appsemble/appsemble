@@ -340,7 +340,7 @@ export default class Editor extends React.Component {
                   )}
                 </span>
                 <span className="navbar-item">
-                  <a component="a" href={`/${path}`} rel="noopener noreferrer" target="_blank">
+                  <a className="button" href={`/${path}`} rel="noopener noreferrer" target="_blank">
                     View live
                   </a>
                 </span>
@@ -348,34 +348,32 @@ export default class Editor extends React.Component {
             </nav>
             <div className={classNames('tabs', 'is-boxed', styles.editorTabs)}>
               <ul>
-                <li className={classNames(tab === '#editor' && 'is-active')} value="editor">
+                <li className={classNames({ 'is-active': tab === '#editor' })} value="editor">
                   <Link to="#editor">
                     <span className="icon">
-                      <i className={classNames('fas', 'fa-file-code')} />
+                      <i className="fas fa-file-code" />
                     </span>
                     Recipe
                   </Link>
                 </li>
                 <li
-                  className={classNames(tab === '#style-core' && 'is-active')}
-                  // XXX: onClick={this.onTabChange}
+                  className={classNames({ 'is-active': tab === '#style-core' })}
                   value="style-core"
                 >
                   <Link to="#style-core">
                     <span className="icon">
-                      <i className={classNames('fas', 'fa-brush')} />
+                      <i className="fas fa-brush" />
                     </span>
                     Core Style
                   </Link>
                 </li>
                 <li
-                  className={classNames(tab === '#style-shared' && 'is-active')}
-                  // XXX: onClick={this.onTabChange}
+                  className={classNames({ 'is-active': tab === '#style-shared' })}
                   value="style-shared"
                 >
                   <Link to="#style-shared">
                     <span className="icon">
-                      <i className={classNames('fas', 'fa-brush')} />
+                      <i className="fas fa-brush" />
                     </span>
                     Shared Style
                   </Link>
@@ -410,7 +408,6 @@ export default class Editor extends React.Component {
                     {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
                     <a
                       className="card-footer-item is-link"
-                      component="a"
                       onClick={this.onClose}
                       onKeyDown={this.onKeyDown}
                       role="button"
@@ -425,7 +422,6 @@ export default class Editor extends React.Component {
                         'is-warning',
                         styles.cardFooterButton,
                       )}
-                      component="button"
                       onClick={this.uploadApp}
                       type="button"
                     >

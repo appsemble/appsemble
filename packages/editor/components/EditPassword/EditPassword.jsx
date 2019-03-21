@@ -47,7 +47,7 @@ export default class EditPassword extends React.Component {
 
     return success ? (
       <div className={classNames('container', styles.root)}>
-        <article className={classNames('message', 'is-success')}>
+        <article className="message is-success">
           <div className="message-body">
             <FormattedMessage {...messages.requestSuccess} />
           </div>
@@ -56,7 +56,7 @@ export default class EditPassword extends React.Component {
     ) : (
       <form className={classNames('container', styles.root)} onSubmit={this.onSubmit}>
         {error && (
-          <article className={classNames('message', 'is-dangers')}>
+          <article className="message is-dangers">
             <div className="message-body">
               <FormattedMessage {...messages.requestFailed} />
             </div>
@@ -84,7 +84,7 @@ export default class EditPassword extends React.Component {
                   value={password}
                 />
                 <span className="icon is-left">
-                  <i className={classNames('fas', 'fa-unlock')} />
+                  <i className="fas fa-unlock" />
                 </span>
               </div>
             </div>

@@ -45,7 +45,7 @@ export default class ResetPassword extends React.Component {
 
     return success ? (
       <div className={classNames('container', styles.root)}>
-        <article className={classNames('message', 'is-success')}>
+        <article className="message is-success">
           <div className="message-body">
             <FormattedMessage {...messages.requestSuccess} />
           </div>
@@ -54,7 +54,7 @@ export default class ResetPassword extends React.Component {
     ) : (
       <form className={classNames('container', styles.root)} onSubmit={this.onSubmit}>
         {error && (
-          <article className={classNames('message', 'is-danger')}>
+          <article className="message is-danger">
             <div className="message-body">
               <FormattedMessage {...messages.requestFailed} />
             </div>
@@ -82,7 +82,7 @@ export default class ResetPassword extends React.Component {
                   value={email}
                 />
                 <span className="icon is-left">
-                  <i className={classNames('fas', 'fa-envelope')} />
+                  <i className="fas fa-envelope" />
                 </span>
               </div>
             </div>
