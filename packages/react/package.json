@@ -2,7 +2,7 @@
   "name": "@appsemble/react",
   "version": "1.0.0",
   "dependencies": {
-    "prop-types": "^15.6.2",
+    "prop-types": "^15.7.2",
     "react-shadow-dom-retarget-events": "^1.0.8"
   },
   "peerDependencies": {

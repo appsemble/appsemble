@@ -1,4 +1,4 @@
-import AppsembleError from './AppsembleError';
+import { AppsembleError } from '@appsemble/node-utils';
 
 const PROMPT = process.platform === 'win32' ? '>' : '$';
 const COMMAND = /yarn/.test(process.env.npm_execpath)
@@ -23,7 +23,7 @@ export default async function serverImport(member) {
     }
     return mod[member];
   } catch (error) {
-    if (error.code !== 'MODULE_NOT_FOUND') {
+    if (error.code !== 'MODULE_NOT_FOUND' || error.requireStack[0] !== __filename) {
       throw error;
     }
     throw new AppsembleError(INSTALL_MESSAGE);

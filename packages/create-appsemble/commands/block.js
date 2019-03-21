@@ -2,7 +2,7 @@ import path from 'path';
 
 import inquirer from 'inquirer';
 
-import createVanilla from '../lib/create/vanilla';
+import { createReact, createVanilla } from '../lib/create';
 
 export const command = 'block';
 export const description = 'Bootstrap a new Appsemble block.';
@@ -13,7 +13,7 @@ export async function handler() {
     { name: 'name', message: 'What should be the name of the block?' },
     {
       name: 'type',
-      choices: ['vanilla'],
+      choices: ['vanilla', 'react'],
       default: 'vanilla',
       message: 'What kind of block project should be bootstrapped?',
     },
@@ -28,6 +28,10 @@ export async function handler() {
     },
   };
   switch (answers.type) {
+    case 'react':
+      await createReact(outputPath, pkg);
+      break;
+    case 'vanilla':
     default:
       await createVanilla(outputPath, pkg);
   }

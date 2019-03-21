@@ -1,11 +1,9 @@
 import path from 'path';
 
-import { logger } from '@appsemble/node-utils';
+import { AppsembleError, logger } from '@appsemble/node-utils';
 import chalk from 'chalk';
 import cosmiconfig from 'cosmiconfig';
 import fs from 'fs-extra';
-
-import AppsembleError from './AppsembleError';
 
 const explorer = cosmiconfig('appsemble');
 

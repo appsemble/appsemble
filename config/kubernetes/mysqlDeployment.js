@@ -1,7 +1,7 @@
 const { CI_ENVIRONMENT_SLUG } = process.env;
 
 export default {
-  apiVersion: 'extensions/v1beta1',
+  apiVersion: 'apps/v1',
   kind: 'Deployment',
   metadata: {
     name: `${CI_ENVIRONMENT_SLUG}-mysql`,

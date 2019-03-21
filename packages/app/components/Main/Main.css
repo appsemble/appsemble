@@ -1,0 +1,7 @@
+.root {
+  box-sizing: border-box;
+  display: flex;
+  flex-flow: column;
+  min-height: 100vh;
+  padding-top: 68px;
+}

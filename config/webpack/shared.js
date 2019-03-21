@@ -3,12 +3,17 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
 
-module.exports = (env, { mode, publicPath }) => {
+/**
+ * This webpack configuration is shared by all webpack builds.
+ *
+ * This includes the core part and blocks.
+ */
+module.exports = (env, { mode }) => {
   const production = mode === 'production';
 
   return {
     resolve: {
-      extensions: ['.js', '.jsx'],
+      extensions: ['.js', '.jsx', '.ts', '.tsx'],
       alias: {
         // These are required by leaflet CSS in a way which doesn’t work with webpack by default.
         './images/layers.png$': 'leaflet/dist/images/layers.png',
@@ -21,7 +26,7 @@ module.exports = (env, { mode, publicPath }) => {
     module: {
       rules: [
         {
-          test: /\.jsx?$/,
+          test: /\.[jt]sx?$/,
           loader: 'babel-loader',
           exclude: [/node_modules/],
           options: {
@@ -60,29 +65,6 @@ module.exports = (env, { mode, publicPath }) => {
                 'postcss-loader',
               ],
             },
-          ],
-        },
-        {
-          test: /\.(gif|jpe?g|png|woff2?)$/,
-          use: [
-            {
-              loader: 'file-loader',
-              options: {
-                publicPath,
-              },
-            },
-          ],
-        },
-        {
-          test: /\.svg$/,
-          use: [
-            {
-              loader: 'file-loader',
-              options: {
-                publicPath,
-              },
-            },
-            'svgo-loader',
           ],
         },
       ],

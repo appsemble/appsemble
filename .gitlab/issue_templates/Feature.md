@@ -15,7 +15,7 @@ If relevant, add an example API request and response.
 **Request**
 
 ```http
-HTTP/1.1 PUT /api
+PUT /api HTTP/1.1
 Content-Type: application/json
 
 {
@@ -26,7 +26,7 @@ Content-Type: application/json
 **Response**
 
 ```http
-200 OK HTTP/1.1
+HTTP/1.1 200 OK
 Content-Type: application/json
 
 {

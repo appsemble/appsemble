@@ -1,7 +1,0 @@
-html {
-  overflow-y: auto;
-}
-
-:global(.monaco-editor) {
-  display: flex !important;
-}

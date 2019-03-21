@@ -1,0 +1,23 @@
+.root {
+  border-radius: 12px !important;
+  height: 6.75em !important;
+  margin-right: 12px;
+  min-width: 108px;
+  overflow: hidden;
+  position: relative;
+  width: 108px;
+}
+
+.img {
+  height: 100% !important;
+
+  /* The way we use this, it is supported by all browsers. */
+  /* stylelint-disable-next-line plugin/no-unsupported-browser-features */
+  object-fit: cover;
+}
+
+.repeated {
+  display: flex;
+  overflow-x: scroll;
+  width: 100%;
+}

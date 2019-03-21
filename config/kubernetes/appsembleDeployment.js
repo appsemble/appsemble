@@ -1,7 +1,13 @@
-const { CI_COMMIT_REF_NAME, CI_ENVIRONMENT_SLUG, CI_REGISTRY_IMAGE } = process.env;
+const {
+  CI_COMMIT_REF_NAME,
+  CI_ENVIRONMENT_SLUG,
+  CI_ENVIRONMENT_URL,
+  CI_PROJECT_PATH,
+  CI_REGISTRY_IMAGE,
+} = process.env;
 
 export default {
-  apiVersion: 'extensions/v1beta1',
+  apiVersion: 'apps/v1',
   kind: 'Deployment',
   metadata: {
     name: `${CI_ENVIRONMENT_SLUG}-frontend`,
@@ -29,7 +35,8 @@ export default {
         containers: [
           {
             image: `${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_NAME}`,
-            // Make sure we always pull the latest GitLab master build Docker image instead of a cached one.
+            // Make sure we always pull the latest GitLab master build Docker image instead of a
+            // cached one.
             imagePullPolicy: 'Always',
             name: 'appsemble',
             env: [
@@ -73,7 +80,32 @@ export default {
                 name: 'SMTP_FROM',
                 valueFrom: { secretKeyRef: { name: 'smtp', key: 'from' } },
               },
-            ],
+              {
+                name: 'HOST',
+                value: CI_ENVIRONMENT_URL,
+              },
+            ].concat(
+              CI_PROJECT_PATH === 'appsemble/appsemble' && CI_COMMIT_REF_NAME === 'master'
+                ? [
+                    {
+                      name: 'OAUTH_GITLAB_KEY',
+                      valueFrom: { secretKeyRef: { name: 'gitlab', key: 'key' } },
+                    },
+                    {
+                      name: 'OAUTH_GITLAB_SECRET',
+                      valueFrom: { secretKeyRef: { name: 'gitlab', key: 'secret' } },
+                    },
+                    {
+                      name: 'OAUTH_GOOGLE_KEY',
+                      valueFrom: { secretKeyRef: { name: 'google', key: 'key' } },
+                    },
+                    {
+                      name: 'OAUTH_GOOGLE_SECRET',
+                      valueFrom: { secretKeyRef: { name: 'google', key: 'secret' } },
+                    },
+                  ]
+                : [],
+            ),
             ports: [{ containerPort: 9999 }],
             resources: {
               requests: {
@@ -87,7 +119,6 @@ export default {
             },
           },
         ],
-        imagePullSecrets: [{ name: 'registry.gitlab.com' }],
       },
     },
   },

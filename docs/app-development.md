@@ -1,0 +1,319 @@
+# App Development
+
+Apps can be created and modified using the Appsemble editor. This can be found at the base URL of
+Appsemble.
+
+After logging in a list of apps you can manage will appear, providing direct links to the app itself
+as well as the corresponding editor pages.
+
+From this screen new apps can be created by clicking on the greyed out _”Create new app”_ card.
+
+By clicking on the create app card, a form is presented in which the following attributes can be
+filled in:
+
+**App Name**: This is the name of the app. It determines the url at which the app will be made
+available as well as the name that shows up when installing it. Note that app names must be unique.
+
+**Organization**: Each app belongs to an organization. This is used to determine the which rights
+users have for certain apps such as the ability to modify them. By default every user belongs to
+their own organization. If the user is in multiple organizations, the organization can be selected
+using a dropdown menu.
+
+**App Template**: The template determines what the initial app looks like. This can range from a
+very simple app that does not do very much to a more complex app that is provided with
+authentication, uploading files, et cetera.
+
+After filling in these fields and clicking the _”Create App”_ button, Appsemble redirects to the
+editor page corresponding to the newly created app.
+
+## App editor
+
+The app editor is an environment where apps can be modified, previewed, and updated. On the
+left-hand side it displays the definitions that make up an app and the right-hand side displays a
+preview of what the app will look like based on these definitions.
+
+Apps are defined using a data serialization language called `YAML`. To learn more about how YAML
+works, please refer to [this page](yaml).
+
+The _”Recipe”_ tab contains the app definition in YAML. Changes can be made to the app definition by
+editing them in this tab and pressing the _”Save”_ button. Doing so will replace the app definition
+in the right-hand panel with the new one, serving as a preview of the changes that have been made.
+Note that some functionality such as the [resource API](Appsemble%20Resources.md) when defining new
+resources might not be available unless the new app definition has been uploaded to the server.
+
+The other tabs that are available such as the _”Core”_ and _”Shared”_ tabs refer to the Theming API.
+For more information about this, please refer to [this page](Theming.md).
+
+Provided the app definition and styles successfully validated, the _”Upload”_ button will upload all
+this data to the server, effectively updating the app.
+
+## Example app
+
+An app definition at the very least contains a name, the path it has been assigned to and a list of
+`pages`.
+
+Each `page` is provided with a name as well as a list of `blocks`.
+
+A `block` is specified by a type as well as a version. The type follows the format of
+`@organization/name`. If the organization is _appsemble_, it may be omitted. A `block` may also have
+other properties such as named parameters and actions. The significance of these fields depends on
+which blocks are being used.
+
+With this knowledge in mind, let's compose a simple app in which basic information about people can
+be registered.
+
+First, define a resource that represents the format of a `person` resource:
+
+```yaml
+definitions:
+  person:
+    type: object
+    required:
+      - firstName
+      - lastName
+      - email
+    properties:
+      firstName:
+        type: string
+      lastName:
+        type: string
+      email:
+        type: string
+        format: email
+      age:
+        type: integer
+      description:
+        type: string
+```
+
+This creates a _”person”_ resource which contains a first name, a last name, an email address, an
+age, and a description. For more information about how resources work, please refer to
+[this page](Appsemble%20Resources.md).
+
+Next, add a new page containing `list` block used to display all the resources that are available:
+
+```yaml
+defaultPage: Person List
+
+pages:
+  - name: Person List
+    blocks:
+      - type: list
+        version: 1.0.0
+        parameters:
+          title: firstName
+        schema:
+          $ref: /definitions/person
+        actions:
+          load:
+            type: request
+            url: 'http://localhost:9999/api/apps/1/person' # Replace the 1 with your app's id
+```
+
+Saving and uploading the app at this point will result in no resources being displayed due to the
+fact that there aren't any available.
+
+Let's follow up by adding a page in which resources can be registered.
+
+```yaml
+- name: Person Registration Form
+  blocks:
+    - type: form
+      version: 1.0.0
+      actions:
+        submit:
+          method: post
+          schema:
+            $ref: /definitions/person
+          type: request
+          url: 'http://localhost:9999/api/apps/1/person'
+        submitSuccess:
+          to: Person List
+          type: link
+      parameters:
+        fields:
+          - label: First Name
+            name: firstName
+            type: string
+          - label: Last Name
+            name: lastName
+            type: string
+          - label: Age
+            name: age
+            type: string
+          - label: Email
+            name: email
+            type: string
+          - label: Description
+            multiline: true
+            name: description
+            type: string
+```
+
+To summarize this page: It contains a `form` block in which various fields of specific types are
+defined. These fields match up with the resource definition defined before. The form block contains
+two actions. The first action is _”submit”_ which describes where the resource will be submitted to.
+This can be sent to any API, but in this case it's being sent to Appsemble's resource API. Upon a
+succesful submit, the page will link back to the _”Person List”_ page as described in
+\_”submitSuccess”.
+
+At this point it might become noticable how navigating through these pages can be cumbersome. One
+way to make this easier is to add an `action-button` block to both pages that refer to each other.
+Clicking it results in being redirected to the other page.
+
+```yaml
+- type: action-button
+  version: 1.0.0
+  actions:
+    click:
+      to: Person Registration Form # Or `Person List` in case of the Person Registration Form
+      type: link
+```
+
+Since the `list` block only displays one field at a time, it might be desirable to be able to click
+on a resource and view more details about this resource. To facilitate this, let's add another page
+that is able to display a resource.
+
+```yaml
+- name: Person Details
+  parameters:
+    - id
+  blocks:
+    - type: detail-viewer
+      version: 1.0.0
+      actions:
+        load:
+          type: request
+          url: 'http://localhost:9999/api/apps/1/person/{id}'
+      parameters:
+        fields:
+          - firstName
+          - lastName
+          - email
+          - age
+          - description
+        schema:
+          $ref: /definitions/person
+```
+
+The structure of this page is the same as any other page with the exception of the `id` parameter.
+This is used to determine which resource to load.
+
+The `detail-viewer` block is able to display various types of fields based on the type specified in
+the resource definition. In this example it simply displays every available field, but other fields
+may also be hidden by removing it from the `fields` parameter.
+
+Finally, in order to link the `list` block to the _”Person Details”_ page, add a click action to its
+list of actions:
+
+```yaml
+click:
+  to: Person Details
+  type: link
+```
+
+The final result should look like this:
+
+```yaml
+name: Person App
+path: person-app
+defaultPage: Person List
+
+definitions:
+  person:
+    type: object
+    required:
+      - firstName
+      - lastName
+      - email
+    properties:
+      firstName:
+        type: string
+      lastName:
+        type: string
+      email:
+        type: string
+        format: email
+      age:
+        type: integer
+      description:
+        type: string
+
+pages:
+  - name: Person List
+    blocks:
+      - type: list
+        version: 1.0.0
+        parameters:
+          title: firstName
+        schema:
+          $ref: /definitions/person
+        actions:
+          click:
+            to: Person Details
+            type: link
+          load:
+            type: request
+            url: 'http://localhost:9999/api/apps/1/person'
+      - type: action-button
+        version: 1.0.0
+        actions:
+          click:
+            to: Person Registration Form
+            type: link
+
+  - name: Person Registration Form
+    blocks:
+      - type: form
+        version: 1.0.0
+        actions:
+          submit:
+            method: post
+            schema:
+              $ref: /definitions/person
+            type: request
+            url: 'http://localhost:9999/api/apps/1/person'
+          submitSuccess:
+            to: Person List
+            type: link
+        parameters:
+          fields:
+            - label: First Name
+              name: firstName
+              type: string
+            - label: Last Name
+              name: lastName
+              type: string
+            - label: Age
+              name: age
+              type: string
+            - label: Email
+              name: email
+              type: string
+            - label: Description
+              multiline: true
+              name: description
+              type: string
+
+  - name: Person Details
+    parameters:
+      - id
+    blocks:
+      - type: detail-viewer
+        version: 1.0.0
+        actions:
+          load:
+            type: request
+            url: 'http://localhost:9999/api/apps/1/person/{id}'
+        parameters:
+          fields:
+            - firstName
+            - lastName
+            - email
+            - age
+            - description
+          schema:
+            $ref: /definitions/person
+```
+
+[yaml]: https://learnxinyminutes.com/docs/yaml/

@@ -7,6 +7,9 @@ const merge = require('webpack-merge');
 
 const shared = require('./shared');
 
+/**
+ * This webpack configuration is used by Appsemble blocks.
+ */
 module.exports = (env, argv) => {
   if (typeof env !== 'string') {
     throw new Error('Specify a block to build.');
@@ -28,6 +31,22 @@ module.exports = (env, argv) => {
       publicPath,
       path: outputPath,
     },
+    module: {
+      rules: [
+        {
+          test: /\.(gif|jpe?g|png|svg|woff2?)$/,
+          loader: 'file-loader',
+          options: {
+            name: '[name].[ext]',
+            publicPath,
+          },
+        },
+        {
+          test: /\.svg$/,
+          loader: 'svgo-loader',
+        },
+      ],
+    },
     plugins: [
       new MiniCssExtractPlugin({
         filename: `${name}.css`,
@@ -40,7 +59,7 @@ module.exports = (env, argv) => {
           ignore: ['**/package.json', '**/*.test.{js,jsx}'],
         },
       }),
-      production && new CleanWebpackPlugin([outputPath]),
+      production && new CleanWebpackPlugin(),
     ].filter(Boolean),
   });
 };

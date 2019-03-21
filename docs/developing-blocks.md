@@ -1,0 +1,202 @@
+# Developing Blocks
+
+## Initialize the Project
+
+<!--
+XXX: To be replaced with `yarn create appsemble` when the tooling is ready to be published to npm.
+-->
+
+To start developing blocks, first the Appsemble repository needs to be cloned and installed as per
+the [Getting Started](../README.md#getting-started) instructions in the readme.
+
+<!--
+XXX: It should be possible to simply use a `dev` version to load unpublished blocks in test apps.
+-->
+
+Next, publish the existing blocks following the instructions from the [Blocks](../README.md#blocks)
+section.
+
+## Create Your First Block
+
+A new block can be bootstrapped by running the following command.
+
+```sh
+yarn create-appsemble block
+```
+
+This will prompt some questions about the new block. For now, lets bootstrap a vanilla JavaScript
+block using the block name `test` and organization name `org`. The output should look like this:
+
+```
+? For which organization is the block? org
+? What should be the name of the block? test
+? What kind of block project should be bootstrapped? vanilla
+```
+
+The block will be created in the _blocks/_ directory. Its version will be `0.0.0`.
+
+Now, the block needs to be built and registered before it can be used. It can be built using this
+command.
+
+```sh
+yarn block test
+```
+
+Make sure the local Appsemble server is running, then run the following to publish the newly created
+block.
+
+```sh
+yarn appsemble block register blocks/test
+```
+
+## Testing the Block
+
+Open the Appsemble editor on at the base URL of Appsemble. Login, and create your first app. This
+following example app will display your new block.
+
+```yaml
+name: Test App
+defaultPage: Home
+
+pages:
+  - name: Home
+    blocks:
+      - type: '@org/test'
+        version: 0.0.0
+        actions:
+          click:
+            type: link
+            to: Other Page
+  - name: Other Page
+    blocks:
+      - type: '@org/test'
+        version: 0.0.0
+        actions:
+          click:
+            type: link
+            to: Home
+```
+
+Enter this app definion, save it, and it should display the new block in the app preview. The app
+contains two pages that link to each other by clicking the button created by the new test block. ✨
+
+> **Note**: You may have noticed the block already has the `button` class and a specific style. This
+> is because Appsemble automatically injects the [Bulma][] CSS framework and [Font Awesome][] into
+> each block. It is possible, recommended even, to use Bulma classes to add minimal styling to your
+> block. This allows app builders and organizations to add custom styling when they use your block.
+
+## Modifying the Block
+
+Now lets make the text of the button configurable using the app definition.
+
+```diff
+  button.type = 'button';
+- button.innerText = 'Click me!';
++ button.innerText = block.parameters.text || 'Click me!';
+  button.classList.add('button');
+```
+
+In the app definition, specify the value of the parameter.
+
+```yaml
+name: Test App
+defaultPage: Home
+
+pages:
+  - name: Home
+    blocks:
+      - type: '@org/test'
+        version: 0.0.0
+        parameters:
+          text: Go to the other page.
+        actions:
+          click:
+            type: link
+            to: Other Page
+  - name: Other Page
+    blocks:
+      - type: '@org/test'
+        version: 0.0.0
+        parameters:
+          text: Go to the home page.
+        actions:
+          click:
+            type: link
+            to: Home
+```
+
+It may be interesting to show content from the context that the page was linked to. Blocks can pass
+data to dispatched actions. This data is then available ad the `data` object in the next block.
+
+Let’s to a little rewrite of our block.
+
+```diff
+  import { attach } from '@appsemble/sdk';
+
+  attach(({ actions, block, data, pageParameters, shadowRoot, utils }) => {
++   const wrapper = document.createElement('div');
++   const text = document.createElement('p');
+    const button = document.createElement('button');
++   text.innerText = data ? `I was linked from ${data.text}` : 'I was loaded without data';
+    button.type = 'button';
+    button.innerText = 'Click me!';
+    button.innerText = block.parameters.text;
+    button.classList.add('button');
+    button.addEventListener(
+      'click',
+      event => {
+        event.preventDefault();
+-       actions.click.dispatch();
++       actions.click.dispatch(block.parameters);
+      },
+      true,
+    );
+-   return button;
++   wrapper.appendChild(text);
++   wrapper.appendChild(button);
++   return wrapper;
+  });
+```
+
+As you can see, the button is now wrapped by a wrapper element. There is also a new text element. If
+the block received data, the text will render the text property of the received data.
+
+When the click action if dispatched, the block parameters are passed as the context to the action.
+In our example app, the test block on the other page will render this when the user navigates
+between pages.
+
+Appsemble also injects some utility functions. For example, it is possible to show a message. Let’s
+add a delay and a message when the user is navigating to the other page.
+
+```diff
+  button.addEventListener(
+    'click',
+    event => {
+      event.preventDefault();
+-     actions.click.dispatch(block.parameters);
++     utils.showMessage('Handling click actions in 5 seconds…');
++     setTimeout(() => actions.click.dispatch(block.parameters), 5000);
+    },
+    true,
+  );
+```
+
+## Unused Variables
+
+The attach function in the example block still has 2 unused variables.
+
+`shadowRoot` is the HTML shadow root on which the block is rendered. The returned value will be
+attached to the shadow root automatically, but it may be necessary to append child elements to the
+shadow root manually for more advanced use cases. Some use cases are when code needs to be run after
+the node has been attached, or when multiple nodes are appended.
+
+`pageParameters` is passed in if the block is rendered on a page that has the `parameters` property
+specified. Typically, this is used if a block needs to display data for a single resource, such as a
+detail view or an update form.
+
+<!-- XXX: Render the JSDoc -->
+
+For more details on what a block can do, see the technical documentation of the SDK.
+
+[bulma]: https://bulma.io
+[font awesome]: https://fontawesome.com

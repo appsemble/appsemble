@@ -1,6 +1,6 @@
 # Appsemble
 
-> The Appsemble Amsterdam project
+> The app building platform
 
 ## Usage
 
@@ -9,7 +9,7 @@ be found in the [server readme](server/README.md).
 
 A live deployment is made for each branch. Each deployment has their own subdomain of
 _appsemble.app_. The live preview for the master branch can be found on
-https://review-master-ul2m7c.appsemble.app.
+https://staging.appsemble.app.
 
 ### Requirements
 
@@ -23,7 +23,7 @@ In order to run the Appsemble project in development mode, the following must be
 Clone and setup the project.
 
 ```sh
-git clone git@gitlab.com:dcentralized/appsemble/appsemble.git
+git clone git@gitlab.com:appsemble/appsemble.git
 cd appsemble
 yarn
 ```
@@ -33,12 +33,6 @@ spin up a preconfigured database with ease.
 
 ```sh
 docker-compose up -d
-```
-
-The database can be initialized using the following command.
-
-```sh
-yarn initialize
 ```
 
 The project can be served using the following command.
@@ -125,6 +119,7 @@ yarn gitbook serve
 The documentation can be compiled by running the following command.
 
 ```sh
+yarn gitbook install
 yarn gitbook build . public
 ```
 

@@ -48,6 +48,60 @@ export function builder(yargs) {
       desc:
         'A connection string for the database to connect to. This is an alternative to the separate database related variables.',
       conflicts: ['database-host', 'database-name', 'database-user', 'database-password'],
+    })
+    .option('smtp-host', {
+      desc: 'The host of the SMTP server to connect to.',
+    })
+    .option('smtp-port', {
+      desc: 'The port of the SMTP server to connect to.',
+      type: 'number',
+    })
+    .option('smtp-secure', {
+      desc: 'Use TLS when connecting to the SMTP server.',
+      type: 'boolean',
+      default: false,
+    })
+    .option('smtp-user', {
+      desc: 'The user to use to login to the SMTP server.',
+      implies: ['smtp-pass', 'smtp-from'],
+    })
+    .option('smtp-pass', {
+      desc: 'The password to use to login to the SMTP server.',
+      implies: ['smtp-user', 'smtp-from'],
+    })
+    .option('smtp-from', {
+      desc: 'The address to use when sending emails.',
+      implies: ['smtp-user', 'smtp-pass'],
+    })
+    .option('oauth-google-key', {
+      desc: 'The application key to be used for Google OAuth2.',
+      implies: 'oauth-google-secret',
+    })
+    .option('oauth-google-secret', {
+      desc: 'The secret key to be used for Google OAuth2.',
+      implies: 'oauth-google-key',
+    })
+    .option('oauth-gitlab-key', {
+      desc: 'The application key to be used for GitLab OAuth2.',
+      implies: 'oauth-gitlab-secret',
+    })
+    .option('oauth-gitlab-secret', {
+      desc: 'The secret key to be used for GitLab OAuth2.',
+      implies: 'oauth-gitlab-key',
+    })
+    .option('oauth-secret', {
+      desc: 'Secret key used to sign JWTs and cookies',
+      default: 'appsemble',
+    })
+    .option('disable-registration', {
+      desc: 'If specified, user registration will be disabled on the server',
+      type: 'boolean',
+      default: false,
+    })
+    .option('host', {
+      desc:
+        'The external host on which the server is available. This should include the protocol, hostname, and optionally the port.',
+      default: 'http://localhost:9999',
     });
 }
 

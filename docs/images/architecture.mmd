@@ -1,0 +1,11 @@
+graph BT
+  subgraph Docker Container
+    A("Server (API)")
+    C(App) --> A
+    D(Editor) --> A
+  end
+  B(Database)
+  A --> B
+  E(CLI) --> A
+  F(SDK) --> C
+  G(Block) --> F

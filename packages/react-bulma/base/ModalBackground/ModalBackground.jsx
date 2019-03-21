@@ -14,7 +14,7 @@ export default class ModalBackground extends React.Component {
   };
 
   render() {
-    const { className, component: Component, onClose, ...props } = this.props;
+    const { className, component: Component, ...props } = this.props;
 
     return <Component className={classNames('modal-background', className)} {...props} />;
   }

@@ -1,10 +1,10 @@
 module.exports = {
-  collectCoverageFrom: ['app/**', 'blocks/**', 'packages/**', 'server/**'],
-  moduleFileExtensions: ['js', 'jsx'],
+  collectCoverageFrom: ['blocks/**', 'packages/**'],
+  moduleFileExtensions: ['js', 'jsx', 'ts', 'tsx', 'json'],
   moduleNameMapper: {
     [/\.css$/.source]: 'identity-obj-proxy',
   },
   snapshotSerializers: ['enzyme-to-json/serializer'],
-  setupTestFrameworkScriptFile: '<rootDir>/config/jest/setupTestFramework',
+  setupFiles: ['<rootDir>/config/jest/setupTestFramework'],
   testURL: 'http://localhost',
 };

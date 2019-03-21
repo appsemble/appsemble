@@ -1,4 +1,4 @@
-import idb from 'idb';
+import { openDb } from 'idb';
 
 export const RW = 'readwrite';
 export const AUTH = 'auth';
@@ -10,7 +10,7 @@ export const AUTH = 'auth';
  * @returns {idb.DB} An idb instance.
  */
 export default function getDB(app) {
-  return idb.open(`appsemble-${app.id}`, 1, upgrade => {
+  return openDb(`appsemble-${app.id}`, 1, upgrade => {
     // eslint-disable-next-line default-case
     switch (upgrade.oldVersion) {
       case 0:
