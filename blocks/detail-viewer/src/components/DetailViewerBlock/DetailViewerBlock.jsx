@@ -33,7 +33,7 @@ export default class DetailViewerBlock extends React.Component {
   };
 
   state = {
-    data: {},
+    data: undefined,
   };
 
   async componentDidMount() {
@@ -47,8 +47,7 @@ export default class DetailViewerBlock extends React.Component {
     const { block } = this.props;
     const { data } = this.state;
 
-    // Display loading when data is in its default state.
-    if (Object.entries(data).length === 0 && data.constructor === Object) {
+    if (data === undefined) {
       return 'Loading…';
     }
 
