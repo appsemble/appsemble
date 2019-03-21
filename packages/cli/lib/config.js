@@ -17,9 +17,9 @@ function getConfigPath() {
 }
 
 /**
- * Fetches the Appsemble config file.
+ * Fetch the Appsemble config file.
  *
- * @return Appsemble config or empty object if it didn't exist
+ * @returns Appsemble config or empty object if it didn't exist
  */
 export async function getConfig() {
   const filePath = getConfigPath();
@@ -31,7 +31,8 @@ export async function getConfig() {
 }
 
 /**
- * Saves an Appsemble config file.
+ * Save an Appsemble config file.
+ *
  * Will create directories if necessary.
  *
  * @param {Object} config Config to save
@@ -45,13 +46,13 @@ export async function saveConfig(config) {
 }
 
 /**
- * Attempts to authenticate to an Appsemble server.
+ * Attempt to authenticate to an Appsemble server.
  *
  * @param {string} remote Host to authenticate at.
  * @param {string} username Username to use to authenticate with.
  * @param {string} password Password to use to authenticate with.
  *
- * @return {import('axios').AxiosResponse} Response from request.
+ * @returns {AxiosResponse} Response from request.
  */
 export async function requestToken(remote, username, password) {
   logger.verbose(`Requesting token at ${remote}/api/oauth/token using username ${username}`);
@@ -69,10 +70,10 @@ export async function requestToken(remote, username, password) {
 }
 
 /**
- * Attempts to fetch a new token from the Appsemble server.
+ * Attempt to fetch a new token from the Appsemble server.
  *
  * @param {string} remote Host to fetch token from.
- * @return {(string|null)} The token if already authenticated or null if not.
+ * @returns {(string|null)} The token if already authenticated or null if not.
  */
 export async function getToken(remote = axios.defaults.baseURL) {
   const config = await getConfig();
