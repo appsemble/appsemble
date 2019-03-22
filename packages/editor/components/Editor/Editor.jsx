@@ -127,7 +127,7 @@ export default class Editor extends React.Component {
         // Attempt to parse the YAML into a JSON object
         try {
           app = yaml.safeLoad(recipe);
-          app.organizationId = Number(organizationId);
+          app.organizationId = organizationId;
           app.id = Number(match.params.id);
         } catch (error) {
           push(formatMessage(messages.invalidYaml));
