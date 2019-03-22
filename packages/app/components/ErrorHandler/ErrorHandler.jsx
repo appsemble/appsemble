@@ -1,8 +1,8 @@
-import { Container } from '@appsemble/react-bulma';
 import { captureException, withScope } from '@sentry/browser';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
+import classNames from 'classnames';
 
 import TitleBar from '../TitleBar';
 import styles from './ErrorHandler.css';
@@ -38,9 +38,9 @@ export default class ErrorHandler extends React.Component {
           <TitleBar>
             <FormattedMessage {...messages.title} />
           </TitleBar>
-          <Container className={styles.container} role="alert">
+          <div className={classNames('container', styles.container)} role="alert">
             <FormattedMessage {...messages.message} />
-          </Container>
+          </div>
         </React.Fragment>
       );
     }

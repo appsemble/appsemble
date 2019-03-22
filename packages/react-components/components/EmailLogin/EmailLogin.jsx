@@ -1,7 +1,7 @@
-import { Button, Container, Icon, InputField, Message, MessageBody } from '@appsemble/react-bulma';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
+import classNames from 'classnames';
 
 import styles from './EmailLogin.css';
 import messages from './messages';
@@ -78,47 +78,77 @@ export default class EmailLogin extends React.Component {
     const { dirty, error, errors, submitting, values } = this.state;
 
     return (
-      <Container className={styles.root} component="form" onSubmit={this.onSubmit}>
+      <form className={classNames('container', styles.root)} onSubmit={this.onSubmit}>
         {error && (
-          <Message color="danger">
-            <MessageBody>
+          <article className="message is-danger">
+            <div className="message-body">
               <FormattedMessage {...messages.loginFailed} />
-            </MessageBody>
-          </Message>
+            </div>
+          </article>
         )}
-        <InputField
-          autoComplete="email"
-          color={dirty && errors.username ? 'danger' : null}
-          disabled={submitting}
-          iconLeft={<Icon fa="envelope" />}
-          label={<FormattedMessage {...messages.usernameLabel} />}
-          name="username"
-          onChange={this.onChange}
-          required
-          type="email"
-          value={values.username}
-        />
-        <InputField
-          autoComplete="current-password"
-          color={dirty && errors.password ? 'danger' : null}
-          disabled={submitting}
-          iconLeft={<Icon fa="unlock" />}
-          label={<FormattedMessage {...messages.passwordLabel} />}
-          name="password"
-          onChange={this.onChange}
-          required
-          type="password"
-          value={values.password}
-        />
-        <Button
-          className={styles.submit}
-          color="primary"
+
+        <div className="field is-horizontal">
+          <div className="field-label is-normal">
+            <label className="label" htmlFor="inputEmail">
+              <FormattedMessage {...messages.usernameLabel} />
+            </label>
+          </div>
+          <div className="field-body">
+            <div className="field">
+              <div className="control has-icons-left">
+                <input
+                  autoComplete="email"
+                  className={classNames('input', { 'is-danger': dirty && errors.username })}
+                  disabled={submitting}
+                  id="inputEmail"
+                  name="username"
+                  onChange={this.onChange}
+                  required
+                  type="email"
+                  value={values.username}
+                />
+                <span className="icon is-left">
+                  <i className="fas fa-envelope" />
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="field is-horizontal">
+          <div className="field-label is-normal">
+            <label className="label" htmlFor="inputPassword">
+              <FormattedMessage {...messages.passwordLabel} />
+            </label>
+          </div>
+          <div className="field-body">
+            <div className="field">
+              <div className="control has-icons-left">
+                <input
+                  autoComplete="current-password"
+                  className={classNames('input', { 'is-danger': dirty && errors.password })}
+                  disabled={submitting}
+                  id="inputPassword"
+                  name="password"
+                  onChange={this.onChange}
+                  required
+                  type="password"
+                  value={values.password}
+                />
+                <span className="icon is-left">
+                  <i className="fas fa-unlock" />
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <button
+          className={classNames('button', 'is-primary', styles.submit)}
           disabled={!dirty || submitting || errors.password || errors.username}
           type="submit"
         >
           <FormattedMessage {...messages.loginButton} />
-        </Button>
-      </Container>
+        </button>
+      </form>
     );
   }
 }

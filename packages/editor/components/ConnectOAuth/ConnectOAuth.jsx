@@ -1,4 +1,4 @@
-import { Button, Icon, InputField } from '@appsemble/react-bulma';
+import classNames from 'classnames';
 import axios from 'axios';
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -76,24 +76,38 @@ export default class ConnectOAuth extends React.Component {
             />
           </p>
 
-          <InputField
-            iconLeft={<Icon fa="briefcase" />}
-            label={<FormattedMessage {...messages.organizationLabel} />}
-            name="organization"
-            onChange={this.onChange}
-            required
-            value={organization}
-          />
+          <div className="field is-horizontal">
+            <div className="field-label is-normal">
+              <label className="label" htmlFor="inputOrganization">
+                <FormattedMessage {...messages.organizationLabel} />
+              </label>
+            </div>
+            <div className="field-body">
+              <div className="field">
+                <div className="control has-icons-left">
+                  <input
+                    className="input"
+                    id="inputOrganization"
+                    name="organization"
+                    onChange={this.onChange}
+                    required
+                    value={organization}
+                  />
+                  <span className="icon is-left">
+                    <i className="fas fa-briefcase" />
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
 
-          <Button
-            className={styles.registerButton}
-            color="primary"
-            disabled={!organization.length}
+          <button
+            className={classNames('button', 'is-primary', styles.registerButton)}
             onClick={this.handleOAuthRegister}
             type="button"
           >
             <FormattedMessage {...messages.register} />
-          </Button>
+          </button>
         </div>
       );
     }
