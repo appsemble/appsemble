@@ -4,9 +4,8 @@
   "private": true,
   "dependencies": {
     "@appsemble/react": "^1.0.0",
-    "@appsemble/sdk": "^1.0.0",
     "@appsemble/utils": "^1.0.0",
-    "prop-types": "^15.6.2",
+    "prop-types": "^15.7.2",
     "react": "^16.8.4"
   }
 }
