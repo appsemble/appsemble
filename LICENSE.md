@@ -2,7 +2,9 @@
 
 Version 3, 29 June 2007
 
-Copyright © 06/2018 - 12/2018 Amsterdam, Chief Technology and Innovation Office - <https://www.amsterdam.nl/innovatie>
+Copyright © 2018 Amsterdam, Chief Technology and Innovation Office
+<https://www.amsterdam.nl/innovatie>
+
 Copyright © 2019 Appsemble B.V. <https://appsemble.com>
 
 Everyone is permitted to copy and distribute verbatim copies of this license document, but changing
