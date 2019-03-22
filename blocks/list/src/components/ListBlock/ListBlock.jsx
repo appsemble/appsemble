@@ -43,7 +43,7 @@ export default class ListBlock extends React.Component {
     }
 
     return (
-      <table className="table is-hoverable is-striped">
+      <table className="table is-hoverable is-striped is-fullwidth">
         <thead>
           <tr>
             {fields.map(field => (
