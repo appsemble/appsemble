@@ -82,7 +82,7 @@ The blocks can be published using the Appsemble CLI.
 ```sh
 yarn appsemble block register blocks/action-button
 yarn appsemble block register blocks/detail-viewer
-yarn appsemble block register  blocks/list
+yarn appsemble block register blocks/list
 yarn appsemble block register blocks/form
 yarn appsemble block register blocks/map
 yarn appsemble block register blocks/splash
