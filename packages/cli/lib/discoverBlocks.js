@@ -3,7 +3,7 @@ import path from 'path';
 import fg from 'fast-glob';
 import fs from 'fs-extra';
 
-import getConfig from './getConfig';
+import getBlockConfig from './getBlockConfig';
 
 /**
  * Discover Appsemble blocks based on workspaces in a monorepo.
@@ -27,6 +27,6 @@ export default async function discoverBlocks(root) {
   });
   return dirs
     .concat(root)
-    .map(getConfig)
+    .map(getBlockConfig)
     .reduce((acc, result) => result.then(async config => [...(await acc), config], () => acc), []);
 }
