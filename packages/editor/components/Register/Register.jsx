@@ -14,6 +14,7 @@ export default class Register extends React.Component {
   state = {
     email: '',
     password: '',
+    organization: '',
     error: false,
     submitting: false,
     success: false,
@@ -22,19 +23,23 @@ export default class Register extends React.Component {
   onChange = event => {
     const { target } = event;
 
+    if (target.name === 'organization') {
+      target.value = target.value.toLowerCase();
+    }
+
     this.setState({ [target.name]: target.value, error: false });
   };
 
   onSubmit = async event => {
     event.preventDefault();
 
-    const { email, password } = this.state;
+    const { email, password, organization } = this.state;
     const { registerEmail } = this.props;
 
     this.setState({ submitting: true, error: false });
 
     try {
-      await registerEmail(email, password);
+      await registerEmail(email, password, organization);
       this.setState({ submitting: false, success: true });
     } catch (error) {
       this.setState({ error: true, submitting: false, success: false });
@@ -42,7 +47,7 @@ export default class Register extends React.Component {
   };
 
   render() {
-    const { email, password, error, submitting, success } = this.state;
+    const { email, password, organization, error, submitting, success } = this.state;
 
     return success ? (
       <div className={classNames('container', styles.root)}>
@@ -110,6 +115,32 @@ export default class Register extends React.Component {
                 />
                 <span className="icon is-left">
                   <i className="fas fa-unlock" />
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="field is-horizontal">
+          <div className="field-label is-normal">
+            <label className="label" htmlFor="inputOrganization">
+              <FormattedMessage {...messages.organizationLabel} />
+            </label>
+          </div>
+          <div className="field-body">
+            <div className="field">
+              <div className="control has-icons-left">
+                <input
+                  className="input"
+                  disabled={submitting}
+                  id="inputOrganization"
+                  name="organization"
+                  onChange={this.onChange}
+                  required
+                  value={organization}
+                />
+                <span className="icon is-left">
+                  <i className="fas fa-briefcase" />
                 </span>
               </div>
             </div>

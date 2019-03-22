@@ -10,7 +10,7 @@
         in: path
         description: The id of the organization.
         required: true
-        type: integer
+        type: string
     produces:
       - text/css
     responses:
@@ -31,7 +31,7 @@
         in: path
         description: The id of the organization.
         required: true
-        type: integer
+        type: string
       - name: style
         in: formData
         description: The new organization shared stylesheet.
@@ -54,7 +54,7 @@
         in: path
         description: The id of the organization.
         required: true
-        type: integer
+        type: string
     produces:
       - text/css
     responses:
@@ -75,7 +75,7 @@
         in: path
         description: The id of the organization.
         required: true
-        type: integer
+        type: string
       - name: style
         in: formData
         description: The new organization core stylesheet.
@@ -98,7 +98,7 @@
         in: path
         description: The id of the organization.
         required: true
-        type: integer
+        type: string
       - name: organizationName
         in: path
         description: The organization name of the block.
@@ -129,7 +129,7 @@
         in: path
         description: The id of the organization.
         required: true
-        type: integer
+        type: string
       - name: organizationName
         in: path
         description: The organization name of the block.

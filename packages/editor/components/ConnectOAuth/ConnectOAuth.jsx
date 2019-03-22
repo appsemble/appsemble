@@ -13,6 +13,10 @@ export default class ConnectOAuth extends React.Component {
     oauthLogin: PropTypes.func.isRequired,
   };
 
+  state = {
+    organization: '',
+  };
+
   componentDidMount() {
     const { location } = this.props;
 
@@ -25,6 +29,7 @@ export default class ConnectOAuth extends React.Component {
 
   handleOAuthRegister = async () => {
     const { location } = this.props;
+    const { organization } = this.state;
 
     const params = new URLSearchParams(location.search);
 
@@ -33,11 +38,16 @@ export default class ConnectOAuth extends React.Component {
       provider: params.get('provider'),
       refreshToken: params.get('refresh_token'),
       id: params.get('id'),
+      organization,
     });
 
     if (result.status === 201) {
       await this.handleOAuthLogin();
     }
+  };
+
+  onChange = event => {
+    this.setState({ [event.target.name]: event.target.value });
   };
 
   handleOAuthLogin() {
@@ -50,6 +60,7 @@ export default class ConnectOAuth extends React.Component {
 
   render() {
     const { location } = this.props;
+    const { organization } = this.state;
 
     const params = new URLSearchParams(location.search);
 
@@ -64,6 +75,32 @@ export default class ConnectOAuth extends React.Component {
               values={{ provider: params.get('provider') }}
             />
           </p>
+
+          <div className="field is-horizontal">
+            <div className="field-label is-normal">
+              <label className="label" htmlFor="inputOrganization">
+                <FormattedMessage {...messages.organizationLabel} />
+              </label>
+            </div>
+            <div className="field-body">
+              <div className="field">
+                <div className="control has-icons-left">
+                  <input
+                    className="input"
+                    id="inputOrganization"
+                    name="organization"
+                    onChange={this.onChange}
+                    required
+                    value={organization}
+                  />
+                  <span className="icon is-left">
+                    <i className="fas fa-briefcase" />
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <button
             className={classNames('button', 'is-primary', styles.registerButton)}
             onClick={this.handleOAuthRegister}

@@ -2,21 +2,19 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { remapData } from '@appsemble/utils/remap';
 
-import ArrayRenderer from '../renderers/ArrayRenderer';
 import FileRenderer from '../renderers/FileRenderer';
 import GeoCoordinatesRenderer from '../renderers/GeoCoordinatesRenderer';
 import StringRenderer from '../renderers/StringRenderer';
 import styles from './DetailViewerBlock.css';
 
 const renderers = {
-  array: ArrayRenderer,
   file: FileRenderer,
   geocoordinates: GeoCoordinatesRenderer,
   string: StringRenderer,
 };
 
 /**
- * Render data based on a JSON schema
+ * The main component for the Appsemble detail-viewer block.
  */
 export default class DetailViewerBlock extends React.Component {
   static propTypes = {
@@ -35,7 +33,7 @@ export default class DetailViewerBlock extends React.Component {
   };
 
   state = {
-    data: {},
+    data: undefined,
   };
 
   async componentDidMount() {
@@ -49,7 +47,7 @@ export default class DetailViewerBlock extends React.Component {
     const { block } = this.props;
     const { data } = this.state;
 
-    if (Object.entries(data).length === 0 && data.constructor === Object) {
+    if (data === undefined) {
       return 'Loading…';
     }
 

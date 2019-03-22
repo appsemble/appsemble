@@ -43,14 +43,11 @@ Displays a map with a marker.
 
 Displays files as images.
 
-##### array
-
-Displays a list of fields in a single row.
-
-| Parameter          | Description                                                                                                          |
-| ------------------ | -------------------------------------------------------------------------------------------------------------------- |
-| fields[].arrayName | The name of the property of the data to fetch from within each item. If not set, the item itself is used as the url. |
-| fields[].arrayType | The type of data to display. Supports every data type except `array`.                                                |
+| Parameter             | Default | Description                                                                                                          |
+| --------------------- | ------- | -------------------------------------------------------------------------------------------------------------------- |
+|                       |
+| fields[].repeated     | boolean | Display one or multiple files.                                                                                       |
+| fields[].repeatedName | string  | The name of the property of the data to fetch from within each item. If not set, the item itself is used as the url. |
 
 ## Images
 

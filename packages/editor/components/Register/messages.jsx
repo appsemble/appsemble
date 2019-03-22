@@ -6,4 +6,5 @@ export default defineMessages({
   registerSuccess: 'Successfully registered! Please check your email for further instructions.',
   passwordLabel: 'Password',
   usernameLabel: 'Email',
+  organizationLabel: 'Organization',
 });

@@ -105,7 +105,7 @@ describe('app controller', () => {
       { raw: true },
     );
 
-    const organizationB = await Organization.create({ name: 'Test Organization B' });
+    const organizationB = await Organization.create({ id: 'Test Organization B' });
     const appB = await App.create(
       {
         path: 'test-app-b',
@@ -564,7 +564,7 @@ describe('app controller', () => {
   });
 
   it('should not update an app of another organization', async () => {
-    const newOrganization = await Organization.create({ name: 'Test Organization 2' });
+    const newOrganization = await Organization.create({ id: 'Test Organization 2' });
     const appA = await App.create(
       {
         path: 'test-app',

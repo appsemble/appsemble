@@ -8,9 +8,9 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ## [Unreleased]
 
 - App: Add support for app description field.
+- Block: Rewrite and simplify detail-viewer block
 - Editor: Add support for app description field.
 - Server: Add support for app description field.
-- Block: Rewrote and simplified detail-viewer block
 
 ## [0.4.2] - 2019-02-26
 
