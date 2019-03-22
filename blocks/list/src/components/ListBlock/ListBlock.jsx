@@ -62,8 +62,7 @@ export default class ListBlock extends React.Component {
                 const value = remapData(field.name, item);
 
                 return (
-                  /* eslint-disable-next-line react/no-array-index-key */
-                  <td key={`${field.name}.${dataIndex}`}>
+                  <td key={field.name}>
                     {typeof value === 'string' ? value : JSON.stringify(value)}
                   </td>
                 );
