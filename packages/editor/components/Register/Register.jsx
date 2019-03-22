@@ -1,7 +1,7 @@
-import { Button, Container, Icon, InputField, Message, MessageBody } from '@appsemble/react-bulma';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
+import classNames from 'classnames';
 
 import styles from './Register.css';
 import messages from './messages';
@@ -50,57 +50,110 @@ export default class Register extends React.Component {
     const { email, password, organization, error, submitting, success } = this.state;
 
     return success ? (
-      <Container className={styles.root}>
-        <Message color="success">
-          <MessageBody>
+      <div className={classNames('container', styles.root)}>
+        <article className="message is-success">
+          <div className="message-body">
             <FormattedMessage {...messages.registerSuccess} />
-          </MessageBody>
-        </Message>
-      </Container>
+          </div>
+        </article>
+      </div>
     ) : (
-      <Container className={styles.root} component="form" onSubmit={this.onSubmit}>
+      <form className={classNames('container', styles.root)} onSubmit={this.onSubmit}>
         {error && (
-          <Message color="danger">
-            <MessageBody>
+          <article className="message is-danger">
+            <div className="message-body">
               <FormattedMessage {...messages.registerFailed} />
-            </MessageBody>
-          </Message>
+            </div>
+          </article>
         )}
-        <InputField
-          autoComplete="email"
+        <div className="field is-horizontal">
+          <div className="field-label is-normal">
+            <label className="label" htmlFor="inputEmail">
+              <FormattedMessage {...messages.usernameLabel} />
+            </label>
+          </div>
+          <div className="field-body">
+            <div className="field">
+              <div className="control has-icons-left">
+                <input
+                  autoComplete="email"
+                  className="input"
+                  disabled={submitting}
+                  id="inputEmail"
+                  name="email"
+                  onChange={this.onChange}
+                  required
+                  type="email"
+                  value={email}
+                />
+                <span className="icon is-left">
+                  <i className="fas fa-envelope" />
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="field is-horizontal">
+          <div className="field-label is-normal">
+            <label className="label" htmlFor="inputPassword">
+              <FormattedMessage {...messages.passwordLabel} />
+            </label>
+          </div>
+          <div className="field-body">
+            <div className="field">
+              <div className="control has-icons-left">
+                <input
+                  autoComplete="new-password"
+                  className="input"
+                  disabled={submitting}
+                  id="inputPassword"
+                  name="password"
+                  onChange={this.onChange}
+                  required
+                  type="password"
+                  value={password}
+                />
+                <span className="icon is-left">
+                  <i className="fas fa-unlock" />
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="field is-horizontal">
+          <div className="field-label is-normal">
+            <label className="label" htmlFor="inputOrganization">
+              <FormattedMessage {...messages.organizationLabel} />
+            </label>
+          </div>
+          <div className="field-body">
+            <div className="field">
+              <div className="control has-icons-left">
+                <input
+                  className="input"
+                  disabled={submitting}
+                  id="inputOrganization"
+                  name="organization"
+                  onChange={this.onChange}
+                  required
+                  value={organization}
+                />
+                <span className="icon is-left">
+                  <i className="fas fa-briefcase" />
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <button
+          className={classNames('button', 'is-primary', styles.submit)}
           disabled={submitting}
-          iconLeft={<Icon fa="envelope" />}
-          label={<FormattedMessage {...messages.usernameLabel} />}
-          name="email"
-          onChange={this.onChange}
-          required
-          type="email"
-          value={email}
-        />
-        <InputField
-          autoComplete="new-password"
-          disabled={submitting}
-          iconLeft={<Icon fa="unlock" />}
-          label={<FormattedMessage {...messages.passwordLabel} />}
-          name="password"
-          onChange={this.onChange}
-          required
-          type="password"
-          value={password}
-        />
-        <InputField
-          disabled={submitting}
-          iconLeft={<Icon fa="briefcase" />}
-          label={<FormattedMessage {...messages.organizationLabel} />}
-          name="organization"
-          onChange={this.onChange}
-          required
-          value={organization}
-        />
-        <Button className={styles.submit} color="primary" disabled={submitting} type="submit">
+          type="submit"
+        >
           <FormattedMessage {...messages.registerButton} />
-        </Button>
-      </Container>
+        </button>
+      </form>
     );
   }
 }

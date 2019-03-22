@@ -1,6 +1,6 @@
 import { logger } from '@appsemble/node-utils';
 
-import getConfig from '../../lib/getConfig';
+import getBlockConfig from '../../lib/getBlockConfig';
 import publish from '../../lib/publish';
 import { post } from '../../lib/request';
 
@@ -20,7 +20,7 @@ export function builder(yargs) {
 }
 
 export async function handler({ ignoreConflict, path }) {
-  const config = await getConfig(path);
+  const config = await getBlockConfig(path);
   logger.info(`Registering block ${config.id}`);
   const { description: desc, id } = config;
   try {

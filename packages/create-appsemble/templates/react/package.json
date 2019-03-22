@@ -1,6 +1,5 @@
 {
   "dependencies": {
-    "@appsemble/react-bulma": "^1.0.0",
     "@appsemble/react": "^1.0.0",
     "@appsemble/sdk": "^1.0.0",
     "prop-types": "^15.6.2",

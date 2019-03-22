@@ -13,7 +13,7 @@ const explorer = cosmiconfig('appsemble');
  * @param {string} dir The directory in which to search for the configuration file.
  * @returns {Object} The block configuration.
  */
-export default async function getConfig(dir) {
+export default async function getBlockConfig(dir) {
   const found = await explorer.search(dir, { stopDir: dir });
   if (!found) {
     throw new AppsembleError('No Appsemble configuration file found.');

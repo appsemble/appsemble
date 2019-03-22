@@ -1,4 +1,4 @@
-import { Button } from '@appsemble/react-bulma';
+import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
@@ -112,14 +112,13 @@ export default class FormBlock extends React.Component {
           );
         })}
         <div className={styles.buttonWrapper}>
-          <Button
-            className={styles.submit}
-            color="primary"
+          <button
+            className={classNames('button', 'is-primary', styles.submit)}
             disabled={pristine || submitting || Object.keys(errors).length !== 0}
             type="submit"
           >
             <FormattedMessage {...messages.submit} />
-          </Button>
+          </button>
         </div>
       </form>
     );

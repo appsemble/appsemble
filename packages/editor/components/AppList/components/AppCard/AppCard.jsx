@@ -1,13 +1,4 @@
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardFooterItem,
-  CardHeader,
-  CardHeaderTitle,
-  Content,
-  Image,
-} from '@appsemble/react-bulma';
+import classNames from 'classnames';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -26,32 +17,34 @@ export default class AppCard extends React.Component {
     const { app, intl } = this.props;
 
     return (
-      <Card className={styles.appCard}>
-        <CardHeader>
-          <CardHeaderTitle>{app.name}</CardHeaderTitle>
-        </CardHeader>
-        <CardContent className={styles.appCardContent}>
+      <div className={classNames('card', styles.appCard)}>
+        <header className="card-header">
+          <p className="card-header-title">{app.name}</p>
+        </header>
+        <div className={classNames('card-content', styles.appCardContent)}>
           <div className="media">
-            <Image
-              alt={intl.formatMessage(messages.icon)}
-              className={styles.image}
-              size={64}
-              src={`/${app.id}/icon-64.png`}
-            />
+            <figure className={classNames('image', 'is-64x64', styles.image)}>
+              <img alt={intl.formatMessage(messages.icon)} src={`/${app.id}/icon-64.png`} />
+            </figure>
           </div>
           {app.description && (
-            <Content className={styles.appDescription}>{app.description}</Content>
+            <div className={classNames('content', styles.appDescription)}>{app.description}</div>
           )}
-        </CardContent>
-        <CardFooter className={styles.appCardFooter}>
-          <CardFooterItem component="a" href={`/${app.path}`} target="_blank">
+        </div>
+        <footer className={classNames('card-footer', styles.appCardFooter)}>
+          <a
+            className="card-footer-item"
+            href={`/${app.path}`}
+            rel="noopener noreferrer"
+            target="_blank"
+          >
             <FormattedMessage {...messages.view} />
-          </CardFooterItem>
-          <CardFooterItem component={Link} to={`/_/edit/${app.id}`}>
+          </a>
+          <Link className="card-footer-item" to={`/_/edit/${app.id}`}>
             <FormattedMessage {...messages.edit} />
-          </CardFooterItem>
-        </CardFooter>
-      </Card>
+          </Link>
+        </footer>
+      </div>
     );
   }
 }

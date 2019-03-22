@@ -1,4 +1,4 @@
-import { InputField, TextareaField } from '@appsemble/react-bulma';
+import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
@@ -35,22 +35,38 @@ export default class StringInput extends React.Component {
 
   render() {
     const { error, field, onChange, value } = this.props;
-
-    const Component = field.multiline ? TextareaField : InputField;
+    const elementProps = {
+      className: classNames(field.multiline ? 'textarea' : 'input', { 'is-danger': error }),
+      id: field.name,
+      maxLength: field.maxLength,
+      name: field.name,
+      onChange,
+      placeholder: field.placeholder || field.label || field.name,
+      readOnly: field.readOnly,
+      required: field.required,
+      value,
+    };
 
     return (
-      <Component
-        color={error && 'danger'}
-        help={error && <FormattedMessage {...messages.invalid} />}
-        label={field.label || field.name}
-        maxLength={field.maxLength}
-        name={field.name}
-        onChange={onChange}
-        placeholder={field.placeholder || field.label || field.name}
-        readOnly={field.readOnly}
-        required={field.required}
-        value={value}
-      />
+      <div className="field is-horizontal">
+        <div className="field-label is-normal">
+          <label className="label" htmlFor={field.name}>
+            {field.label || field.name}
+          </label>
+        </div>
+        <div className="field-body">
+          <div className="field">
+            <div className="control">
+              {field.multiline ? <textarea {...elementProps} /> : <input {...elementProps} />}
+              {error && (
+                <p className={classNames('help', { 'is-danger': error })}>
+                  <FormattedMessage {...messages.invalid} />
+                </p>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
     );
   }
 }
