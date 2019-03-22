@@ -40,6 +40,7 @@ build:blocks:
       - blocks/detail-viewer/package.json
       - blocks/list/dist/
       - blocks/list/package.json
+      - blocks/list/.appsemblerc.yaml
       - blocks/form/dist/
       - blocks/form/package.json
       - blocks/map/dist/
