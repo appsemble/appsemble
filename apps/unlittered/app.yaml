@@ -5,46 +5,6 @@ theme:
   splashColor: '#FFFFFF'
   themeColor: '#eb0000'
 
-definitions:
-  waarneming:
-    type: object
-    required:
-      - notities
-      - proces
-    properties:
-      locatie:
-        title: GeoCoordinates
-        type: object
-        required:
-          - latitude
-          - longitude
-        properties:
-          latitude:
-            type: number
-          longitude:
-            type: number
-      fotos:
-        title: Foto’s
-        type: array
-        items:
-          type: string
-          appsembleFile:
-            type:
-              - image/jpeg
-      notities:
-        title: Notities
-        type: string
-      proces:
-        title: Afdeling
-        enum:
-          - Fietsknip team
-          - Handhaving
-          - Heel en Groen
-          - Inzameling
-          - Monitoren
-          - Plusteam
-          - Veegdienst
-
 authentication:
   - method: email
     url: https://api.stadswerken.amsterdam/login
@@ -136,14 +96,21 @@ pages:
       - type: detail-viewer
         version: 1.0.0
         parameters:
-          fileBase: 'https://api.stadswerken.amsterdam/uploads/'
-          schema:
-            $ref: /definitions/waarneming
+          fileBase: 'https://api.stadswerken.amsterdam/uploads'
           fields:
-            - locatie
-            - proces
-            - notities
-            - fotos
+            - name: locatie
+              label: Locatie
+              type: geocoordinates
+              longitude: longitude # locatie.longitude
+              latitude: latitude # locatie.latitude
+            - name: proces
+              label: Proces
+            - name: notities
+              label: Notities
+            - name: fotos
+              label: Foto's
+              type: file
+              repeated: true
         actions:
           load:
             type: request

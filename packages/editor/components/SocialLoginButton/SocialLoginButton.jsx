@@ -1,4 +1,3 @@
-import { Fab } from '@appsemble/react-bulma';
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -21,7 +20,7 @@ export default class SocialLoginButton extends React.Component {
     return (
       <a className={classNames('button', className)} href={providerUri} {...props}>
         <span className="icon">
-          <Fab fa={iconClass} />
+          <i className={classNames('fab', `fa-${iconClass}`)} />
         </span>
         <span>{children}</span>
       </a>

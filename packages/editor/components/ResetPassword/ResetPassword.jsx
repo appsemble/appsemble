@@ -1,7 +1,7 @@
-import { Button, Container, Icon, InputField, Message, MessageBody } from '@appsemble/react-bulma';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
+import classNames from 'classnames';
 
 import styles from './ResetPassword.css';
 import messages from './messages';
@@ -44,38 +44,59 @@ export default class ResetPassword extends React.Component {
     const { email, error, submitting, success } = this.state;
 
     return success ? (
-      <Container className={styles.root}>
-        <Message color="success">
-          <MessageBody>
+      <div className={classNames('container', styles.root)}>
+        <article className="message is-success">
+          <div className="message-body">
             <FormattedMessage {...messages.requestSuccess} />
-          </MessageBody>
-        </Message>
-      </Container>
+          </div>
+        </article>
+      </div>
     ) : (
-      <Container className={styles.root} component="form" onSubmit={this.onSubmit}>
+      <form className={classNames('container', styles.root)} onSubmit={this.onSubmit}>
         {error && (
-          <Message color="danger">
-            <MessageBody>
+          <article className="message is-danger">
+            <div className="message-body">
               <FormattedMessage {...messages.requestFailed} />
-            </MessageBody>
-          </Message>
+            </div>
+          </article>
         )}
-        <InputField
-          autoComplete="email"
-          disabled={submitting}
-          iconLeft={<Icon fa="envelope" />}
-          label={<FormattedMessage {...messages.emailLabel} />}
-          name="email"
-          onChange={this.onChange}
-          required
-          type="email"
-          value={email}
-        />
 
-        <Button className={styles.submit} color="primary" disabled={submitting} type="submit">
+        <div className="field is-horizontal">
+          <div className="field-label is-normal">
+            <label className="label" htmlFor="inputEmail">
+              <FormattedMessage {...messages.emailLabel} />
+            </label>
+          </div>
+          <div className="field-body">
+            <div className="field">
+              <div className="control has-icons-left">
+                <input
+                  autoComplete="email"
+                  className="input"
+                  disabled={submitting}
+                  id="inputEmail"
+                  name="email"
+                  onChange={this.onChange}
+                  required
+                  type="email"
+                  value={email}
+                />
+                <span className="icon is-left">
+                  <i className="fas fa-envelope" />
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <button
+          className={classNames('button', 'is-primary', styles.submit)}
+          disabled={submitting}
+          type="submit"
+        >
           <FormattedMessage {...messages.requestButton} />
-        </Button>
-      </Container>
+        </button>
+      </form>
     );
   }
 }

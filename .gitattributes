@@ -1,9 +1,11 @@
 # Settle on line feeds, even for Windows users. This is also enforced by prettier and editorconfig.
 * text eol=lf
 
-# Git should treat binary files as such.
-*.gif binary
-*.jpg binary
-*.png binary
+# Treat images as such.
+*.gif binary diff=image
+*.jpg binary diff=image
+*.png binary diff=image
+
+# Treat unhandled binary files as such
 *.woff binary
 *.woff2 binary

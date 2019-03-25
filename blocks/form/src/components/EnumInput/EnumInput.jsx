@@ -1,4 +1,3 @@
-import { SelectField } from '@appsemble/react-bulma';
 import PropTypes from 'prop-types';
 import React from 'react';
 
@@ -29,24 +28,56 @@ export default class EnumInput extends React.Component {
 
   render() {
     const { field, onChange, value } = this.props;
-
     return (
-      <SelectField
-        label={field.label || field.name}
-        name={field.name}
-        onChange={onChange}
-        SelectProps={{
-          className: value ? null : 'empty',
-        }}
-        value={value}
-      >
-        {!value && <option className={styles.hidden}>{field.label}</option>}
-        {field.enum.map(choice => (
-          <option key={choice.value} value={choice.value}>
-            {choice.label || choice.value}
-          </option>
-        ))}
-      </SelectField>
+      <div className="field is-horizontal">
+        <div className="field-label is-normal">
+          <label className="label" htmlFor={field.name}>
+            {field.label || field.name}
+          </label>
+        </div>
+        <div className="field-body">
+          <div className="field">
+            <div className="control">
+              <div className="select">
+                <select
+                  className={value ? null : 'empty'}
+                  id={field.name}
+                  name={field.name}
+                  onChange={onChange}
+                  value={value}
+                >
+                  {!value && <option className={styles.hidden}>{field.label}</option>}
+                  {field.enum.map(choice => (
+                    <option key={choice.value} value={choice.value}>
+                      {choice.label || choice.value}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     );
+
+    // return (
+    //   <SelectField
+    //     id={field.name}
+    //     label={field.label || field.name}
+    //     name={field.name}
+    //     onChange={onChange}
+    //     SelectProps={{
+    //       className: value ? null : 'empty',
+    //     }}
+    //     value={value}
+    //   >
+    // {!value && <option className={styles.hidden}>{field.label}</option>}
+    // {field.enum.map(choice => (
+    //   <option key={choice.value} value={choice.value}>
+    //     {choice.label || choice.value}
+    //   </option>
+    // ))}
+    //   </SelectField>
+    // );
   }
 }

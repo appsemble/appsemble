@@ -1,4 +1,4 @@
-import { MenuList } from '@appsemble/react-bulma';
+import classNames from 'classnames';
 import normalize from '@appsemble/utils/normalize';
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -40,7 +40,7 @@ export default class SideNavigation extends React.Component {
     return (
       <SideMenu>
         <nav>
-          <MenuList className={styles.menuList}>
+          <ul className={classNames('menu-list', styles.menuList)}>
             {app.pages
               .filter(page => !page.parameters)
               .map(page => (
@@ -50,14 +50,14 @@ export default class SideNavigation extends React.Component {
                   </NavLink>
                 </li>
               ))}
-          </MenuList>
-          <MenuList>
+          </ul>
+          <ul className="menu-list">
             <li>
               <button className={styles.logoutButton} onClick={this.onLogout} type="button">
                 <FormattedMessage {...messages.logout} />
               </button>
             </li>
-          </MenuList>
+          </ul>
         </nav>
       </SideMenu>
     );

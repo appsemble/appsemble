@@ -59,7 +59,8 @@
   width: 36px;
   z-index: 1;
 
-  &:hover {
+  &:hover,
+  &:focus {
     color: transparent; /* XXX: Replace with ´var(--primary-color-inverse);´ when removing current-location.svg */
   }
 }

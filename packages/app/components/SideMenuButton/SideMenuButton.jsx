@@ -1,4 +1,4 @@
-import { NavbarBurger } from '@appsemble/react-bulma';
+import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import React from 'react';
 
@@ -19,12 +19,16 @@ export default class SideMenuButton extends React.Component {
     const { intl, isOpen, openMenu } = this.props;
 
     return (
-      <NavbarBurger
-        active={isOpen}
+      <button
         aria-label={intl.formatMessage(messages.label)}
-        className={styles.root}
+        className={classNames('navbar-burger', { 'is-active': isOpen }, styles.root)}
         onClick={openMenu}
-      />
+        type="button"
+      >
+        <span aria-hidden="true" />
+        <span aria-hidden="true" />
+        <span aria-hidden="true" />
+      </button>
     );
   }
 }

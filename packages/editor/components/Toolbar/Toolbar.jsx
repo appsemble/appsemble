@@ -1,4 +1,4 @@
-import { Button, Icon, Navbar, NavbarBrand, NavbarItem } from '@appsemble/react-bulma';
+import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
@@ -18,19 +18,19 @@ export default class Toolbar extends React.Component {
     const { intl, isLoggedIn, logout } = this.props;
 
     return (
-      <Navbar className={`is-fixed-top ${styles.root}`} color="dark">
-        <NavbarBrand component={Link} to="/">
-          <NavbarItem className="title" component="header">
+      <nav className={classNames('navbar', 'is-fixed-top', 'is-dark', styles.root)}>
+        <Link className="navbar-brand" to="/">
+          <header className="navbar-item title">
             <img
               alt={intl.formatMessage(messages.iconAlt)}
               className={styles.icon}
               src="/icon-64.png"
             />
             <h1 className="has-text-white title">Appsemble</h1>
-          </NavbarItem>
-        </NavbarBrand>
-        <NavbarBrand>
-          <NavbarItem>
+          </header>
+        </Link>
+        <div className="navbar-brand">
+          <span className="navbar-item">
             <a
               className="button"
               href="https://appsemble.gitlab.io/appsemble"
@@ -39,21 +39,23 @@ export default class Toolbar extends React.Component {
             >
               <FormattedMessage {...messages.docsLink} />
             </a>
-          </NavbarItem>
-        </NavbarBrand>
-        <NavbarBrand>
+          </span>
+        </div>
+        <div className="navbar-brand">
           {isLoggedIn && (
-            <NavbarItem>
-              <Button onClick={logout}>
-                <Icon fa="sign-out-alt" />
+            <span className="navbar-item">
+              <button className="button" onClick={logout} type="button">
+                <span className="icon">
+                  <i className="fas fa-sign-out-alt" />
+                </span>
                 <span>
                   <FormattedMessage {...messages.logoutButton} />
                 </span>
-              </Button>
-            </NavbarItem>
+              </button>
+            </span>
           )}
-        </NavbarBrand>
-      </Navbar>
+        </div>
+      </nav>
     );
   }
 }

@@ -1,16 +1,4 @@
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardFooterItem,
-  CardHeader,
-  CardHeaderTitle,
-  Container,
-  InputField,
-  Modal,
-  SelectField,
-  TextareaField,
-} from '@appsemble/react-bulma';
+import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
@@ -42,6 +30,12 @@ export default class CreateAppCard extends React.Component {
 
   onClick = async () => {
     this.setState({ modalOpen: true });
+  };
+
+  onKeyDown = async event => {
+    if (event.key === 'Escape') {
+      await this.onClose();
+    }
   };
 
   onClose = async () => {
@@ -101,81 +95,158 @@ export default class CreateAppCard extends React.Component {
     } = this.state;
     return (
       <div className={styles.createAppCardContainer}>
-        <Card className={styles.createAppCard} onClick={this.onClick}>
-          <CardContent>
+        <div
+          className={classNames('card', styles.createAppCard)}
+          onClick={this.onClick}
+          onKeyDown={this.onKeyDown}
+          role="button"
+          tabIndex="0"
+        >
+          <div className="card-content">
             <FormattedMessage {...messages.createApp} />
-          </CardContent>
-        </Card>
-        <Container component="form" onSubmit={this.onCreate}>
-          <Modal active={modalOpen} ModalCloseProps={{ size: 'large' }} onClose={this.onClose}>
-            <Card>
-              <CardHeader>
-                <CardHeaderTitle>
-                  <FormattedMessage {...messages.createAppTitle} />
-                </CardHeaderTitle>
-              </CardHeader>
-              <CardContent>
-                <InputField
-                  label={formatMessage(messages.name)}
-                  maxLength={30}
-                  minLength={1}
-                  name="appName"
-                  onChange={this.onChange}
-                  placeholder={formatMessage(messages.name)}
-                  required
-                  value={appName}
-                />
-                <SelectField
-                  disabled={user.organizations.length === 1}
-                  label={formatMessage(messages.organization)}
-                  name="selectedOrganization"
-                  onChange={this.onChange}
-                  value={selectedOrganization}
-                >
-                  {user.organizations.map((organization, index) => (
-                    <option key={organization.id} value={index}>
-                      {organization.id}
-                    </option>
-                  ))}
-                </SelectField>
-                <SelectField
-                  label={formatMessage(messages.template)}
-                  name="selectedTemplate"
-                  onChange={this.onChange}
-                  value={selectedTemplate}
-                >
-                  {templates.map((template, index) => (
-                    <option key={template.name} value={index}>
-                      {template.name}
-                    </option>
-                  ))}
-                </SelectField>
-                <TextareaField
-                  label={formatMessage(messages.description)}
-                  maxLength={80}
-                  minLength={0}
-                  name="appDescription"
-                  onChange={this.onChange}
-                  placeholder={formatMessage(messages.description)}
-                  required
-                  value={appDescription}
-                />
-              </CardContent>
-              <CardFooter>
-                <CardFooterItem className="is-link" component="a" onClick={this.onClose}>
-                  <FormattedMessage {...messages.cancel} />
-                </CardFooterItem>
-                <CardFooterItem
-                  className={styles.cardFooterButton}
-                  component="button"
-                  type="submit"
-                >
-                  <FormattedMessage {...messages.create} />
-                </CardFooterItem>
-              </CardFooter>
-            </Card>
-          </Modal>
-        </Container>
+          </div>
+        </div>
+        <form className="container" onSubmit={this.onCreate}>
+          <div className={classNames('modal', { 'is-active': modalOpen })}>
+            <div
+              className="modal-background"
+              onClick={this.onClose}
+              onKeyDown={this.onKeyDown}
+              role="presentation"
+            />
+            <div className="modal-content">
+              <div className="card">
+                <header className="card-header">
+                  <div className="card-header-title">
+                    <FormattedMessage {...messages.createAppTitle} />
+                  </div>
+                </header>
+                <div className="card-content">
+                  <div className="field is-horizontal">
+                    <div className="field-label is-normal">
+                      <label className="label" htmlFor="inputAppName">
+                        <FormattedMessage {...messages.name} />
+                      </label>
+                    </div>
+                    <div className="field-body">
+                      <div className="field">
+                        <div className="control">
+                          <input
+                            className="input"
+                            id="inputAppName"
+                            maxLength={30}
+                            minLength={1}
+                            name="appName"
+                            onChange={this.onChange}
+                            placeholder={formatMessage(messages.name)}
+                            required
+                            value={appName}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="field is-horizontal">
+                    <div className="field-label is-normal">
+                      <label className="label" htmlFor="inputSelectedOrganization">
+                        <FormattedMessage {...messages.organization} />
+                      </label>
+                    </div>
+                    <div className="field-body">
+                      <div className="field">
+                        <div className="control">
+                          <div className="select">
+                            <select
+                              disabled={user.organizations.length === 1}
+                              id="inputSelectedOrganization"
+                              name="selectedOrganization"
+                              onChange={this.onChange}
+                              value={selectedOrganization}
+                            >
+                              {user.organizations.map((organization, index) => (
+                                <option key={organization.id} value={index}>
+                                  {organization.id}
+                                </option>
+                              ))}
+                            </select>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="field is-horizontal">
+                    <div className="field-label is-normal">
+                      <label className="label" htmlFor="inputSelectedTemplate">
+                        <FormattedMessage {...messages.template} />
+                      </label>
+                    </div>
+                    <div className="field-body">
+                      <div className="field">
+                        <div className="control">
+                          <div className="select">
+                            <select
+                              id="inputSelectedTemplate"
+                              name="selectedTemplate"
+                              onChange={this.onChange}
+                              value={selectedTemplate}
+                            >
+                              {templates.map((template, index) => (
+                                <option key={template.name} value={index}>
+                                  {template.name}
+                                </option>
+                              ))}
+                            </select>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="field is-horizontal">
+                    <div className="field-label is-normal">
+                      <label className="label" htmlFor="inputAppDescription">
+                        <FormattedMessage {...messages.description} />
+                      </label>
+                    </div>
+                    <div className="field-body">
+                      <div className="field">
+                        <div className="control">
+                          <textarea
+                            className="textarea"
+                            id="inputAppDescription"
+                            maxLength={80}
+                            name="appDescription"
+                            onChange={this.onChange}
+                            placeholder={formatMessage(messages.description)}
+                            value={appDescription}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <footer className="card-footer">
+                  {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
+                  <a
+                    className="card-footer-item is-link"
+                    onClick={this.onClose}
+                    onKeyDown={this.onKeyDown}
+                    role="button"
+                    tabIndex="0"
+                  >
+                    <FormattedMessage {...messages.cancel} />
+                  </a>
+                  <button
+                    className={classNames('card-footer-item', styles.cardFooterButton)}
+                    type="submit"
+                  >
+                    <FormattedMessage {...messages.create} />
+                  </button>
+                </footer>
+              </div>
+            </div>
+            <button className="modal-close is-large" onClick={this.onClose} type="button" />
+          </div>
+        </form>
       </div>
     );
   }

@@ -1,6 +1,6 @@
 import { logger } from '@appsemble/node-utils';
 
-import getConfig from '../../lib/getConfig';
+import getBlockConfig from '../../lib/getBlockConfig';
 import publish from '../../lib/publish';
 
 export const command = 'publish <path>';
@@ -19,7 +19,7 @@ export function builder(yargs) {
 }
 
 export async function handler({ ignoreConflict, path }) {
-  const config = await getConfig(path);
+  const config = await getBlockConfig(path);
   logger.info(`Publishing ${config.id}@${config.version}`);
   await publish({ config, ignoreConflict, path });
 }
