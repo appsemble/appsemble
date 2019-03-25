@@ -1,4 +1,5 @@
 import path from 'path';
+import qs from 'querystring';
 
 import pug from 'pug';
 
@@ -48,7 +49,7 @@ export default async function indexHandler(ctx) {
       ctx.body = render({
         app,
         assets,
-        bulmaURL,
+        bulmaURL: `${bulmaURL}?${qs.stringify(app.definition.theme)}`,
         faURL,
         sentryDsn: argv.sentryDsn,
       });

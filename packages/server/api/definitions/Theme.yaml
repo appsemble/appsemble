@@ -16,3 +16,15 @@ Theme:
         The background color of the PWA splash screen.
 
         This defaults to the theme color.
+    primaryColor:
+      $ref: '#/definitions/Color'
+      default: #5191ff
+      description: |
+        The primary color used within the app.
+
+        This is used in various
+    linkColor:
+      $ref: '#/definitions/Color'
+      default: rgba(#000, 0.7)
+      description: |
+        The color used for links.
