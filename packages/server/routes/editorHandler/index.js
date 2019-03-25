@@ -6,7 +6,7 @@ import path from 'path';
  */
 export default async function editorHandler(ctx) {
   let filesystem = fs;
-  let filename = path.resolve(__dirname, '../../../dist/index.html');
+  let filename = path.resolve(__dirname, '../../../../dist/index.html');
   if (process.env.NODE_ENV !== 'production') {
     filesystem = ctx.state.fs;
     filename = '/index.html';
