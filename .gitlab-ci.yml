@@ -27,6 +27,7 @@ build:blocks:
     - yarn --frozen-lockfile
     - yarn block action-button
     - yarn block detail-viewer
+    - yarn block list
     - yarn block form
     - yarn block map
     - yarn block splash
@@ -37,6 +38,9 @@ build:blocks:
       - blocks/action-button/package.json
       - blocks/detail-viewer/dist/
       - blocks/detail-viewer/package.json
+      - blocks/list/dist/
+      - blocks/list/package.json
+      - blocks/list/.appsemblerc.yaml
       - blocks/form/dist/
       - blocks/form/package.json
       - blocks/map/dist/
@@ -219,6 +223,7 @@ provision:blocks:
     - npm install ./packages/cli/*.tgz
     - yarn appsemble block register --ignore-conflict blocks/action-button
     - yarn appsemble block register --ignore-conflict blocks/detail-viewer
+    - yarn appsemble block register --ignore-conflict blocks/list
     - yarn appsemble block register --ignore-conflict blocks/form
     - yarn appsemble block register --ignore-conflict blocks/map
     - yarn appsemble block register --ignore-conflict blocks/splash

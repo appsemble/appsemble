@@ -10,6 +10,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ### Added
 
 - App: Add support for app description field.
+- Block: Add List block.
 - CLI: Add support for authentication.
 - Editor: Add support for app description field.
 - Server: Add support for app description field.

@@ -1,0 +1,7 @@
+actions:
+  load:
+    required: true
+  click:
+    required: false
+
+output: dist

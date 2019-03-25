@@ -69,6 +69,7 @@ The current blocks can be built using the following commands.
 ```sh
 yarn block action-button
 yarn block detail-viewer
+yarn block list
 yarn block form
 yarn block map
 yarn block splash
@@ -81,6 +82,7 @@ The blocks can be published using the Appsemble CLI.
 ```sh
 yarn appsemble block register blocks/action-button
 yarn appsemble block register blocks/detail-viewer
+yarn appsemble block register blocks/list
 yarn appsemble block register blocks/form
 yarn appsemble block register blocks/map
 yarn appsemble block register blocks/splash
