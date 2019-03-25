@@ -1,3 +1,6 @@
+import qs from 'querystring';
+import URL from 'url';
+
 import PropTypes from 'prop-types';
 import React from 'react';
 import ReactDOM from 'react-dom';
@@ -72,9 +75,16 @@ export default class Block extends React.Component {
     const shadowRoot = div.attachShadow({ mode: 'closed' });
     const actions = makeActions(blockDef, app, block, history, showDialog, actionCreators);
     const resources = makeResources(blockDef, block);
+
+    const bulmaUrl = BULMA_URL.split('?')[0];
+    const bulmaUrlParams = {
+      ...qs.parse(URL.parse(BULMA_URL).query),
+      ...(block.theme && qs.stringify(block.theme)),
+    };
+
     await Promise.all(
       [
-        BULMA_URL,
+        `${bulmaUrl}?${bulmaUrlParams}`,
         FA_URL,
         ...blockDef.files.filter(url => url.endsWith('.css')).map(url => prefixURL(block, url)),
         `${window.location.origin}/api/organizations/${app.organizationId}/style/shared`,

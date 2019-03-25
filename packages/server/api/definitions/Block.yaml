@@ -21,6 +21,8 @@ Block:
     version:
       $ref: '#/definitions/BlockVersion/properties/version'
       description: The block version to use.
+    theme:
+      $ref: '#/definitions/Theme'
     parameters:
       type: object
       description: A free form mapping of named paramters.
