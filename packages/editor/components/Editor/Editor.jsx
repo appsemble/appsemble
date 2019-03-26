@@ -9,6 +9,7 @@ import React from 'react';
 import yaml from 'js-yaml';
 import validate, { SchemaValidationError } from '@appsemble/utils/validate';
 import validateStyle from '@appsemble/utils/validateStyle';
+import normalize from '@appsemble/utils/normalize';
 
 import MonacoEditor from './components/MonacoEditor';
 import styles from './Editor.css';
@@ -63,8 +64,15 @@ export default class Editor extends React.Component {
 
     try {
       const request = await axios.get(`/api/apps/${id}`);
-      const { data } = request;
-      const recipe = yaml.safeDump(data);
+      // Destructuring path, id and organizationId also hides these technical details for the user
+      const {
+        data: { id: dataId, path, organizationId, ...data },
+      } = request;
+      // Include path if the normalized app name does not equal path
+      const recipe = yaml.safeDump({
+        ...data,
+        ...(normalize(data.name) !== path && { path }),
+      });
       const { data: style } = await axios.get(`/api/apps/${id}/style/core`);
       const { data: sharedStyle } = await axios.get(`/api/apps/${id}/style/shared`);
 
@@ -75,10 +83,10 @@ export default class Editor extends React.Component {
         style,
         sharedStyle,
         initialRecipe: recipe,
-        path: data.path,
+        path,
         iconURL: `/api/apps/${id}/icon`,
         // eslint-disable-next-line react/no-unused-state
-        organizationId: data.organizationId,
+        organizationId,
       });
     } catch (e) {
       if (e.response && (e.response.status === 404 || e.response.status === 401)) {
