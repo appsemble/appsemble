@@ -160,7 +160,7 @@ export async function requestResetPassword(ctx) {
     const token = crypto.randomBytes(40).toString('hex');
     await record.createResetPasswordToken({ token });
     await sendResetPasswordEmail(
-      { email, name, url: `${ctx.origin}/editor/edit-password?token=${token}` },
+      { email, name, url: `${ctx.origin}/_/edit-password?token=${token}` },
       smtp,
     );
   }
