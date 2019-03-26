@@ -10,6 +10,7 @@ import EditPassword from '../EditPassword';
 import Login from '../Login';
 import Message from '../Message';
 import ResetPassword from '../ResetPassword';
+import VerifyEmail from '../VerifyEmail';
 import Register from '../Register';
 import Toolbar from '../Toolbar';
 import ConnectOAuth from '../ConnectOAuth';
@@ -56,6 +57,7 @@ export default class App extends React.Component {
                 <Route component={Register} exact path="/_/register" />
                 <Route component={ResetPassword} exact path="/_/reset-password" />
                 <Route component={EditPassword} exact path="/_/edit-password" />
+                <Route component={VerifyEmail} exact path="/_/verify" />
                 <Redirect to="/_/login" />
               </Switch>
             )}
