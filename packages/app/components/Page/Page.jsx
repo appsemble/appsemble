@@ -39,8 +39,8 @@ export default class Page extends React.Component {
 
   componentDidMount() {
     const { getBlockDefs, page } = this.props;
-    getBlockDefs(page.blocks);
     this.applyBulmaThemes();
+    getBlockDefs(page.blocks);
   }
 
   static getDerivedStateFromProps(props, state) {
@@ -55,13 +55,13 @@ export default class Page extends React.Component {
   componentDidUpdate({ page: prevPage }) {
     const { getBlockDefs, page } = this.props;
     if (page !== prevPage) {
+      this.applyBulmaThemes();
       getBlockDefs(page.blocks);
     }
   }
 
   applyBulmaThemes = () => {
     const { page, theme } = this.props;
-
     if (theme || page.theme) {
       const bulmaStyle = document.querySelector('#bulma-style-app');
       const [bulmaUrl] = bulmaStyle.href.split('?');

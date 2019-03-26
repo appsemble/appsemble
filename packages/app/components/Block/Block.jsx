@@ -11,10 +11,6 @@ import { prefixURL } from '../../utils/blockUtils';
 import { callBootstrap } from '../../utils/bootstrapper';
 import styles from './Block.css';
 
-const BULMA_URL = Array.prototype.find.call(document.styleSheets, sheet =>
-  sheet.href.startsWith(`${window.location.origin}/bulma/`),
-).href;
-
 const FA_URL = Array.prototype.find.call(document.styleSheets, sheet =>
   sheet.href.startsWith(`${window.location.origin}/fa/`),
 ).href;
@@ -76,9 +72,10 @@ export default class Block extends React.Component {
     const actions = makeActions(blockDef, app, block, history, showDialog, actionCreators);
     const resources = makeResources(blockDef, block);
 
-    const [bulmaUrl] = BULMA_URL.split('?');
+    const BULMA_URL = document.querySelector('#bulma-style-app');
+    const [bulmaUrl] = BULMA_URL.href.split('?');
     const bulmaUrlParams = qs.stringify({
-      ...qs.parse(URL.parse(BULMA_URL).query),
+      ...qs.parse(URL.parse(BULMA_URL.href).query),
       ...(block.theme && block.theme),
     });
 
