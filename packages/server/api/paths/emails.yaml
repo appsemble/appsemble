@@ -25,17 +25,22 @@
       default:
         $ref: '#/responses/default'
 /email/verify:
-  get:
+  post:
     description: Verify the email address of a registered user.
     x-oai-middleware:
       - file: auth
         handler: verifyEmail
     parameters:
-      - name: key
-        in: query
-        required: true
-        type: string
-        description: The verification key.
+      - name: token
+        in: body
+        description: The verification token to check against.
+        schema:
+          type: object
+          required:
+            - token
+          properties:
+            token:
+              type: string
     responses:
       200:
         description: The account was successfully verified.

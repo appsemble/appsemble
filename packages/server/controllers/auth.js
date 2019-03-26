@@ -41,7 +41,7 @@ export async function registerEmail(ctx) {
         {
           email: record.email,
           name: record.name,
-          url: `${ctx.origin}/api/email/verify?key=${key}`,
+          url: `${ctx.origin}/_/verify?key=${key}`,
         },
         smtp,
       );
@@ -111,13 +111,15 @@ export async function connectOAuth(ctx) {
 }
 
 export async function verifyEmail(ctx) {
-  const { key } = ctx.request.query;
+  const {
+    body: { token },
+  } = ctx.request;
   const { EmailAuthorization } = ctx.db.models;
 
-  const email = await EmailAuthorization.findOne({ where: { key } });
+  const email = await EmailAuthorization.findOne({ where: { key: token } });
 
   if (!email) {
-    throw Boom.notFound('Unable to verify this key.');
+    throw Boom.notFound('Unable to verify this token.');
   }
 
   email.verified = true;
@@ -139,7 +141,7 @@ export async function resendVerification(ctx) {
       {
         email,
         name,
-        url: `${ctx.origin}/api/email/verify?key=${key}`,
+        url: `${ctx.origin}/_/verify?key=${key}`,
       },
       smtp,
     );
