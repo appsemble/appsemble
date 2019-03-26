@@ -37,7 +37,12 @@ export default class Main extends React.Component {
         defaultPath = path;
       }
       return (
-        <Route key={path} exact path={path} render={props => <Page page={page} {...props} />} />
+        <Route
+          key={path}
+          exact
+          path={path}
+          render={props => <Page page={page} theme={app.theme} {...props} />}
+        />
       );
     });
 

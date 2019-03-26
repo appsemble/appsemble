@@ -76,11 +76,11 @@ export default class Block extends React.Component {
     const actions = makeActions(blockDef, app, block, history, showDialog, actionCreators);
     const resources = makeResources(blockDef, block);
 
-    const bulmaUrl = BULMA_URL.split('?')[0];
-    const bulmaUrlParams = {
+    const [bulmaUrl] = BULMA_URL.split('?');
+    const bulmaUrlParams = qs.stringify({
       ...qs.parse(URL.parse(BULMA_URL).query),
-      ...(block.theme && qs.stringify(block.theme)),
-    };
+      ...(block.theme && block.theme),
+    });
 
     await Promise.all(
       [

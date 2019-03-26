@@ -1,3 +1,5 @@
+import qs from 'querystring';
+
 import PropTypes from 'prop-types';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
@@ -21,11 +23,13 @@ export default class Page extends React.Component {
      * The page definition to render
      */
     page: PropTypes.shape().isRequired,
+    theme: PropTypes.shape(),
     user: PropTypes.shape(),
   };
 
   static defaultProps = {
     user: null,
+    theme: null,
   };
 
   state = {
@@ -35,8 +39,8 @@ export default class Page extends React.Component {
 
   componentDidMount() {
     const { getBlockDefs, page } = this.props;
-
     getBlockDefs(page.blocks);
+    this.applyBulmaThemes();
   }
 
   static getDerivedStateFromProps(props, state) {
@@ -54,6 +58,25 @@ export default class Page extends React.Component {
       getBlockDefs(page.blocks);
     }
   }
+
+  applyBulmaThemes = () => {
+    const { page, theme } = this.props;
+
+    if (theme || page.theme) {
+      const bulmaStyle = document.querySelector('#bulma-style-app');
+      const [bulmaUrl] = bulmaStyle.href.split('?');
+      const bulmaUrlParams = qs.stringify({
+        ...(theme && theme),
+        ...(page.theme && page.theme),
+      });
+
+      bulmaStyle.href = `${bulmaUrl}?${bulmaUrlParams}`;
+    } else {
+      const bulmaStyle = document.querySelector('#bulma-style-app');
+      const [bulmaUrl] = bulmaStyle.href.split('?');
+      bulmaStyle.href = bulmaUrl;
+    }
+  };
 
   showDialog = dialog => {
     this.setState({ dialog });

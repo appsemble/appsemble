@@ -28,6 +28,8 @@ Page:
       items:
         # XXX This should be a scope wild card eventually.
         enum: ['*']
+    theme:
+      $ref: '#/definitions/Theme'
     blocks:
       type: array
       minItems: 1
