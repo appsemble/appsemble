@@ -15,9 +15,11 @@ describe('resource controller', () => {
       defaultPage: 'Test Page',
       definitions: {
         testResource: {
-          type: 'object',
-          required: ['foo'],
-          properties: { foo: { type: 'string' } },
+          schema: {
+            type: 'object',
+            required: ['foo'],
+            properties: { foo: { type: 'string' } },
+          },
         },
       },
     },

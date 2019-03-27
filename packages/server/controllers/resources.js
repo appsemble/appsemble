@@ -115,7 +115,7 @@ export async function create(ctx) {
   verifyResourceDefinition(app, resourceType);
 
   const resource = ctx.request.body;
-  const schema = app.definition.definitions[resourceType];
+  const { schema } = app.definition.definitions[resourceType];
 
   try {
     await validate(schema, resource);
