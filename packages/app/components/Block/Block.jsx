@@ -1,9 +1,7 @@
-import qs from 'querystring';
-import URL from 'url';
-
 import PropTypes from 'prop-types';
 import React from 'react';
 import ReactDOM from 'react-dom';
+import normalize from '@appsemble/utils/normalize';
 
 import makeActions from '../../utils/makeActions';
 import makeResources from '../../utils/makeResources';
@@ -72,16 +70,25 @@ export default class Block extends React.Component {
     const actions = makeActions(blockDef, app, block, history, showDialog, actionCreators);
     const resources = makeResources(blockDef, block);
 
+    const { theme: pageTheme } = app.pages.find(
+      page => normalize(page.name) === match.path.slice(1),
+    );
     const BULMA_URL = document.querySelector('#bulma-style-app');
     const [bulmaUrl] = BULMA_URL.href.split('?');
-    const bulmaUrlParams = qs.stringify({
-      ...qs.parse(URL.parse(BULMA_URL.href).query),
-      ...(block.theme && block.theme),
-    });
+    const bulmaParams = {
+      ...app.theme,
+      ...pageTheme,
+      ...block.theme,
+    };
+
+    const urlParams = new URLSearchParams();
+    Object.keys(bulmaParams)
+      .sort()
+      .forEach(key => urlParams.append(key, bulmaParams[key]));
 
     await Promise.all(
       [
-        `${bulmaUrl}?${bulmaUrlParams}`,
+        `${bulmaUrl}?${urlParams}`,
         FA_URL,
         ...blockDef.files.filter(url => url.endsWith('.css')).map(url => prefixURL(block, url)),
         `${window.location.origin}/api/organizations/${app.organizationId}/style/shared`,

@@ -1,5 +1,3 @@
-import qs from 'querystring';
-
 import PropTypes from 'prop-types';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
@@ -16,6 +14,7 @@ import styles from './Page.css';
  */
 export default class Page extends React.Component {
   static propTypes = {
+    app: PropTypes.shape().isRequired,
     getBlockDefs: PropTypes.func.isRequired,
     hasErrors: PropTypes.bool.isRequired,
     location: PropTypes.shape().isRequired,
@@ -60,22 +59,26 @@ export default class Page extends React.Component {
     }
   }
 
-  applyBulmaThemes = () => {
-    const { page, theme } = this.props;
-    if (theme || page.theme) {
-      const bulmaStyle = document.querySelector('#bulma-style-app');
-      const [bulmaUrl] = bulmaStyle.href.split('?');
-      const bulmaUrlParams = qs.stringify({
-        ...(theme && theme),
-        ...(page.theme && page.theme),
+  createBulmaQueryString = () => {
+    const { app, page } = this.props;
+    const params = { ...app.theme, ...page.theme };
+    const queryStringParams = new URLSearchParams();
+
+    Object.keys(params)
+      .sort()
+      .forEach(key => {
+        queryStringParams.append(key, params[key]);
       });
 
-      bulmaStyle.href = `${bulmaUrl}?${bulmaUrlParams}`;
-    } else {
-      const bulmaStyle = document.querySelector('#bulma-style-app');
-      const [bulmaUrl] = bulmaStyle.href.split('?');
-      bulmaStyle.href = bulmaUrl;
-    }
+    return queryStringParams.toString();
+  };
+
+  applyBulmaThemes = () => {
+    const { page, theme } = this.props;
+    const bulmaStyle = document.querySelector('#bulma-style-app');
+    const [bulmaUrl] = bulmaStyle.href.split('?');
+    bulmaStyle.href =
+      theme || page.theme ? `${bulmaUrl}?${this.createBulmaQueryString()}` : bulmaUrl;
   };
 
   showDialog = dialog => {
@@ -86,7 +89,7 @@ export default class Page extends React.Component {
   };
 
   render() {
-    const { hasErrors, location, page, user } = this.props;
+    const { hasErrors, location, app, page, user } = this.props;
     const { dialog, counter } = this.state;
 
     if (!checkScope(page.scope, user)) {
@@ -116,6 +119,7 @@ export default class Page extends React.Component {
             key={`${location.key}.${index}.${counter}`}
             block={block}
             showDialog={this.showDialog}
+            theme={{ ...app.theme, ...page.theme, ...block.theme }}
           />
         ))}
         {dialog}
