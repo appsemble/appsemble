@@ -15,7 +15,11 @@ function verifyResourceDefinition(app, resourceType) {
     throw Boom.notFound(`App does not have resources called ${resourceType}`);
   }
 
-  return app.definition.definitions[resourceType];
+  if (!app.definition.definitions[resourceType].schema) {
+    throw Boom.notFound(`App does not have a schema for resources called ${resourceType}`);
+  }
+
+  return app.definition.definitions[resourceType].schema;
 }
 
 function generateQuery(ctx) {
