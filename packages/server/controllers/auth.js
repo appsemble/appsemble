@@ -41,7 +41,7 @@ export async function registerEmail(ctx) {
         {
           email: record.email,
           name: record.name,
-          url: `${ctx.origin}/_/verify?key=${key}`,
+          url: `${ctx.origin}/_/verify?token=${key}`,
         },
         smtp,
       );
@@ -141,7 +141,7 @@ export async function resendVerification(ctx) {
       {
         email,
         name,
-        url: `${ctx.origin}/_/verify?key=${key}`,
+        url: `${ctx.origin}/_/verify?token=${key}`,
       },
       smtp,
     );
