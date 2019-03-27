@@ -22,13 +22,11 @@ export default class Page extends React.Component {
      * The page definition to render
      */
     page: PropTypes.shape().isRequired,
-    theme: PropTypes.shape(),
     user: PropTypes.shape(),
   };
 
   static defaultProps = {
     user: null,
-    theme: null,
   };
 
   state = {
@@ -74,11 +72,11 @@ export default class Page extends React.Component {
   };
 
   applyBulmaThemes = () => {
-    const { page, theme } = this.props;
+    const { page, app } = this.props;
     const bulmaStyle = document.querySelector('#bulma-style-app');
     const [bulmaUrl] = bulmaStyle.href.split('?');
     bulmaStyle.href =
-      theme || page.theme ? `${bulmaUrl}?${this.createBulmaQueryString()}` : bulmaUrl;
+      app.theme || page.theme ? `${bulmaUrl}?${this.createBulmaQueryString()}` : bulmaUrl;
   };
 
   showDialog = dialog => {
@@ -89,7 +87,7 @@ export default class Page extends React.Component {
   };
 
   render() {
-    const { hasErrors, location, app, page, user } = this.props;
+    const { hasErrors, location, page, user } = this.props;
     const { dialog, counter } = this.state;
 
     if (!checkScope(page.scope, user)) {
@@ -119,7 +117,6 @@ export default class Page extends React.Component {
             key={`${location.key}.${index}.${counter}`}
             block={block}
             showDialog={this.showDialog}
-            theme={{ ...app.theme, ...page.theme, ...block.theme }}
           />
         ))}
         {dialog}
