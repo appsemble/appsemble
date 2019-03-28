@@ -16,32 +16,67 @@ An example of a resource definition:
 
 ```yaml
 person:
-  type: object
-  required:
-    - firstName
-    - lastName
-    - email
-  properties:
-    firstName:
-      type: string
-    lastName:
-      type: string
-    email:
-      type: string
-      format: email
-    age:
-      type: integer
-    description:
-      type: string
+  schema:
+    type: object
+    required:
+      - firstName
+      - lastName
+      - email
+    properties:
+      firstName:
+        type: string
+      lastName:
+        type: string
+      email:
+        type: string
+        format: email
+      age:
+        type: integer
+      description:
+        type: string
 ```
 
 The above resource will be recognized as an object which can be referred to from blocks using
-`$ref: /resources/person`.  
-It can be accessed in the API at `/apps/{appName}/person/{id?}`, supporting basic `CRUD` actions.
+`$ref: /resources/person` or by using `resource actions`.  
+It can be accessed in the API at `/api/apps/{appId}/person/{id?}`, supporting basic `CRUD` actions.
+
+## Resource Actions
+
+In order to make the usage of resources more convenient, Appsemble supports the usage of
+`resource actions`. Resource actions are actions that can fetch, modify, create or delete resources.
+These are configured to use Appsemble APIs by default, but can be overriden manually if need be.
+
+The resource actions available are:
+
+- **resource.query**: Fetch all resources.
+- **resource.get**: Fetch a single resource.
+- **resource.create**: Create a new resource.
+- **resource.update**: Update an existing resource.
+- **resource.delete**: Delete an existing resource.
+
+To customize which data to use, you can do this by simply adding this to the root of a resource
+object:
+
+```yaml
+person:
+  schema: ... # see schema above
+  id: id # the name of the field to use when calling get, update and delete
+  url: '/api/apps/{appId}/person' # the default URL to use for resource actions
+  query:
+    method: 'GET' # HTTP method to use
+    url: '/api/apps/{appId}/person'
+  get:
+    method: 'GET'
+    url: '/api/apps/{appId}/person'
+  # create:
+  #   ...
+  # update:
+  #   ...
+```
 
 ## Filtering Resources
 
-When fetching resources at `/apps/{appName}/{resourceName}`, by default all resources are
+When fetching resources at `/api/apps/{appId}/{resourceName}`, by default all resources are
 obtained.  
 The data that is retrieved can be further specified using a subset of the
 [OData URL syntax](http://docs.oasis-open.org/odata/odata/v4.01/odata-v4.01-part2-url-conventions.html).
