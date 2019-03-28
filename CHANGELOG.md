@@ -10,6 +10,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ### Added
 
 - App: Add support for app description field.
+- App: Add ´resource´ action type. This further simplifies the dataflow for retrieving and creating
+  data.
 - Block: Add List block.
 - CLI: Add support for authentication.
 - Editor: Add support for app description field.
@@ -17,6 +19,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Changed
 
+- App: Rename ´definitions´ to ´resources´ in app definition.
 - Block: Rewrite and simplify detail-viewer block.
 
 ## [0.4.2] - 2019-02-26
