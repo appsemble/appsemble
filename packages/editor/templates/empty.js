@@ -1,7 +1,7 @@
 export default {
-  name: 'Example App',
+  name: 'Empty App',
   recipe: {
-    name: 'Example App',
+    name: 'Empty App',
     defaultPage: 'Example Page A',
     theme: {
       themeColor: '#000000',
