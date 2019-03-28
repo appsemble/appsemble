@@ -137,7 +137,9 @@ describe('auth controller', () => {
     expect(email.verified).toBe(false);
     expect(email.key).not.toBeNull();
 
-    const response = await request(server).get(`/api/email/verify?key=${email.key}`);
+    const response = await request(server)
+      .post('/api/email/verify')
+      .send({ token: email.key });
     expect(response.status).toBe(200);
 
     await email.reload();
@@ -146,9 +148,13 @@ describe('auth controller', () => {
   });
 
   it('should not verify empty or invalid keys', async () => {
-    const responseA = await request(server).get('/api/email/verify');
-    const responseB = await request(server).get('/api/email/verify?key');
-    const responseC = await request(server).get('/api/email/verify?key=invalidkey');
+    const responseA = await request(server).post('/api/email/verify');
+    const responseB = await request(server)
+      .post('/api/email/verify')
+      .send({ token: null });
+    const responseC = await request(server)
+      .post('/api/email/verify')
+      .send({ token: 'invalidkey' });
 
     expect(responseA.status).toBe(400);
     expect(responseB.status).toBe(404);
