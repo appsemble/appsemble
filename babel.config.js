@@ -26,5 +26,6 @@ module.exports = api => {
   return {
     presets,
     plugins: plugins.filter(Boolean),
+    retainLines: true,
   };
 };
