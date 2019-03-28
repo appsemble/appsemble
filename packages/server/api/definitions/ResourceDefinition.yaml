@@ -74,3 +74,20 @@ ResourceDefinition:
           type: string
           default: '/api/{resource}/{id}'
           description: URL to use for this type of request.
+    blobs:
+      type: object
+      description: Overrides for 'query' requests.
+      properties:
+        type:
+          type: string
+          default: 'upload'
+        method:
+          type: string
+          default: 'post'
+        url:
+          type: 'string'
+          default: '/api/assets'
+        serialize:
+          type: string
+          enum:
+            - custom
