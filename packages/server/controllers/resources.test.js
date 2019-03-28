@@ -13,7 +13,7 @@ describe('resource controller', () => {
     definition: {
       name: 'Test App',
       defaultPage: 'Test Page',
-      definitions: {
+      resources: {
         testResource: {
           schema: {
             type: 'object',

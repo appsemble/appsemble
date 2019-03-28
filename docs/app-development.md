@@ -65,7 +65,7 @@ be registered.
 First, define a resource that represents the format of a `person` resource:
 
 ```yaml
-definitions:
+resources:
   person:
     type: object
     required:
@@ -103,7 +103,7 @@ pages:
         parameters:
           title: firstName
         schema:
-          $ref: /definitions/person
+          $ref: /resources/person
         actions:
           load:
             type: request
@@ -124,7 +124,7 @@ Let's follow up by adding a page in which resources can be registered.
         submit:
           method: post
           schema:
-            $ref: /definitions/person
+            $ref: /resources/person
           type: request
           url: 'http://localhost:9999/api/apps/1/person'
         submitSuccess:
@@ -193,7 +193,7 @@ that is able to display a resource.
           - age
           - description
         schema:
-          $ref: /definitions/person
+          $ref: /resources/person
 ```
 
 The structure of this page is the same as any other page with the exception of the `id` parameter.
@@ -219,7 +219,7 @@ name: Person App
 path: person-app
 defaultPage: Person List
 
-definitions:
+resources:
   person:
     type: object
     required:
@@ -247,7 +247,7 @@ pages:
         parameters:
           title: firstName
         schema:
-          $ref: /definitions/person
+          $ref: /resources/person
         actions:
           click:
             to: Person Details
@@ -270,7 +270,7 @@ pages:
           submit:
             method: post
             schema:
-              $ref: /definitions/person
+              $ref: /resources/person
             type: request
             url: 'http://localhost:9999/api/apps/1/person'
           submitSuccess:
@@ -313,7 +313,7 @@ pages:
             - age
             - description
           schema:
-            $ref: /definitions/person
+            $ref: /resources/person
 ```
 
 [yaml]: https://learnxinyminutes.com/docs/yaml/

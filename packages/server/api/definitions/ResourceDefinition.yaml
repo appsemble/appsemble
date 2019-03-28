@@ -28,7 +28,7 @@ ResourceDefinition:
           description: URL to use for this type of request.
     get:
       type: object
-      description: Overrides for 'query' requests.
+      description: Overrides for 'get' requests.
       properties:
         method:
           type: string
@@ -40,6 +40,7 @@ ResourceDefinition:
           description: URL to use for this type of request.
     create:
       type: object
+      description: Overrides for 'create' requests.
       properties:
         method:
           type: string
@@ -51,6 +52,7 @@ ResourceDefinition:
           description: URL to use for this type of request.
     update:
       type: object
+      description: Overrides for 'update' requests.
       properties:
         method:
           type: string
@@ -62,6 +64,7 @@ ResourceDefinition:
           description: URL to use for this type of request.
     delete:
       type: object
+      description: Overrides for 'delete' requests.
       properties:
         method:
           type: string

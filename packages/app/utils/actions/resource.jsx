@@ -1,7 +1,7 @@
 import request from './request';
 
 function get({ resource: name }, app) {
-  const resource = app.definitions[name];
+  const resource = app.resources[name];
   const { schema } = resource;
   const method = resource?.get?.method || 'GET';
   const url = resource?.get?.url || resource.url || `/api/apps/${app.id}/${name}`;
@@ -11,7 +11,7 @@ function get({ resource: name }, app) {
 }
 
 function query({ resource: name }, app) {
-  const resource = app.definitions[name];
+  const resource = app.resources[name];
   const { schema } = resource;
   const method = resource?.query?.method || 'GET';
   const url = resource?.query?.url || resource.url || `/api/apps/${app.id}/${name}`;
@@ -20,7 +20,7 @@ function query({ resource: name }, app) {
 }
 
 function create({ resource: name }, app) {
-  const resource = app.definitions[name];
+  const resource = app.resources[name];
   const { schema } = resource;
   const method = resource?.create?.method || 'POST';
   const url = resource?.create?.url || resource.url || `/api/apps/${app.id}/${name}`;
@@ -29,7 +29,7 @@ function create({ resource: name }, app) {
 }
 
 function update({ resource: name }, app) {
-  const resource = app.definitions[name];
+  const resource = app.resources[name];
   const { schema } = resource;
   const method = resource?.update?.method || 'PUT';
   const url = resource?.update?.url || resource.url || `/api/apps/${app.id}/${name}`;
@@ -39,7 +39,7 @@ function update({ resource: name }, app) {
 }
 
 function remove({ resource: name }, app) {
-  const resource = app.definitions[name];
+  const resource = app.resources[name];
   const { schema } = resource;
   const method = resource?.delete?.method || 'DELETE';
   const url = resource?.delete?.url || resource.url || `/api/apps/${app.id}/${name}`;

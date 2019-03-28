@@ -42,7 +42,7 @@ App:
       description: The name of the page that should be displayed when the app is initially loaded.
 
         This **must** match the name of a page defined for the app.
-    definitions:
+    resources:
       type: object
       description: 'Resource definitions that may be used by the app.'
       additionalProperties:

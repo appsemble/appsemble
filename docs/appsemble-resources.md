@@ -5,9 +5,9 @@ created via an app is called a ´resource´.
 
 ## Defining Resources
 
-Resources can be defined within an [app recipe](#) within the `definitions` property. Each object
-within `definitions` is considered to be a Resource, named after the name it is given within
-`definitions`.
+Resources can be defined within an [app recipe](#) within the `resources` property. Each object
+within `resources` is considered to be a Resource, named after the name it is given within
+`resources`.
 
 The shape of a resource is defined using [JSON Schema](https://json-schema.org/). JSON Schemas make
 it possible for submitted data to be validated on types and required properties automatically.
@@ -36,7 +36,7 @@ person:
 ```
 
 The above resource will be recognized as an object which can be referred to from blocks using
-`$ref: /definitions/person`.  
+`$ref: /resources/person`.  
 It can be accessed in the API at `/apps/{appName}/person/{id?}`, supporting basic `CRUD` actions.
 
 ## Filtering Resources
