@@ -42,11 +42,11 @@ App:
       description: The name of the page that should be displayed when the app is initially loaded.
 
         This **must** match the name of a page defined for the app.
-    definitions:
+    resources:
       type: object
-      description: 'JSON schema definitions that may be used by the app.
-
-        **note**: This is under consideration for deprecation.'
+      description: 'Resource definitions that may be used by the app.'
+      additionalProperties:
+        $ref: '#/definitions/ResourceDefinition'
     authentication:
       type: array
       description: A list of login methods for the app.

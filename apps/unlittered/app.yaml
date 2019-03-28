@@ -5,6 +5,13 @@ theme:
   splashColor: '#FFFFFF'
   themeColor: '#eb0000'
 
+resources:
+  waarneming:
+    url: https://api.stadswerken.amsterdam/waarnemingen_real
+    blobs:
+      url: 'https://api.stadswerken.amsterdam/upload'
+      serialize: custom
+
 authentication:
   - method: email
     url: https://api.stadswerken.amsterdam/login
@@ -48,14 +55,8 @@ pages:
                 version: 1.0.0
                 actions:
                   load:
-                    type: request
-                    method: post
-                    url: 'https://api.stadswerken.amsterdam/waarnemingen_real'
-                    blobs:
-                      type: upload
-                      method: post
-                      url: 'https://api.stadswerken.amsterdam/upload'
-                      serialize: custom
+                    type: resource.create
+                    resource: waarneming
                   error:
                     type: splash.error
                   success:
@@ -113,5 +114,5 @@ pages:
               repeated: true
         actions:
           load:
-            type: request
-            url: 'https://api.stadswerken.amsterdam/waarnemingen_real/{id}'
+            type: resource.get
+            resource: waarneming

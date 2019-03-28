@@ -209,7 +209,7 @@ export default class Editor extends React.Component {
       const app = yaml.safeLoad(recipe);
       const originalApp = yaml.safeLoad(initialRecipe);
 
-      if (!isEqual(app.definitions, originalApp.definitions)) {
+      if (!isEqual(app.resources, originalApp.resources)) {
         this.setState({ warningDialog: true });
         return;
       }
