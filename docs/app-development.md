@@ -67,23 +67,22 @@ First, define a resource that represents the format of a `person` resource:
 ```yaml
 resources:
   person:
-    type: object
-    required:
-      - firstName
-      - lastName
-      - email
-    properties:
-      firstName:
-        type: string
-      lastName:
-        type: string
-      email:
-        type: string
-        format: email
-      age:
-        type: integer
-      description:
-        type: string
+    schema:
+      type: object
+      required:
+        - firstName
+        - lastName
+        - email
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+          format: email
+        description:
+          type: string
 ```
 
 This creates a _”person”_ resource which contains a first name, a last name, an email address, an
@@ -101,13 +100,15 @@ pages:
       - type: list
         version: 1.0.0
         parameters:
-          title: firstName
-        schema:
-          $ref: /resources/person
+          fields:
+            - name: firstName
+              label: First Name
+            - name: lastName
+              label: Surname
         actions:
           load:
-            type: request
-            url: 'http://localhost:9999/api/apps/1/person' # Replace the 1 with your app's id
+            type: resource.query
+            resource: person
 ```
 
 Saving and uploading the app at this point will result in no resources being displayed due to the
@@ -122,11 +123,8 @@ Let's follow up by adding a page in which resources can be registered.
       version: 1.0.0
       actions:
         submit:
-          method: post
-          schema:
-            $ref: /resources/person
-          type: request
-          url: 'http://localhost:9999/api/apps/1/person'
+          type: resource.create
+          resource: person
         submitSuccess:
           to: Person List
           type: link
@@ -135,11 +133,8 @@ Let's follow up by adding a page in which resources can be registered.
           - label: First Name
             name: firstName
             type: string
-          - label: Last Name
+          - label: Surname
             name: lastName
-            type: string
-          - label: Age
-            name: age
             type: string
           - label: Email
             name: email
@@ -183,17 +178,18 @@ that is able to display a resource.
       version: 1.0.0
       actions:
         load:
-          type: request
-          url: 'http://localhost:9999/api/apps/1/person/{id}'
+          type: resource.get
+          resource: person
       parameters:
         fields:
-          - firstName
-          - lastName
-          - email
-          - age
-          - description
-        schema:
-          $ref: /resources/person
+          - name: firstName
+            label: First Name
+          - name: lastName
+            label: Surname
+          - name: email
+            label: Email Address
+          - name: description
+            label: Description
 ```
 
 The structure of this page is the same as any other page with the exception of the `id` parameter.
@@ -221,23 +217,22 @@ defaultPage: Person List
 
 resources:
   person:
-    type: object
-    required:
-      - firstName
-      - lastName
-      - email
-    properties:
-      firstName:
-        type: string
-      lastName:
-        type: string
-      email:
-        type: string
-        format: email
-      age:
-        type: integer
-      description:
-        type: string
+    schema:
+      type: object
+      required:
+        - firstName
+        - lastName
+        - email
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+          format: email
+        description:
+          type: string
 
 pages:
   - name: Person List
@@ -245,16 +240,18 @@ pages:
       - type: list
         version: 1.0.0
         parameters:
-          title: firstName
-        schema:
-          $ref: /resources/person
+          fields:
+            - name: firstName
+              label: First Name
+            - name: lastName
+              label: Surname
         actions:
           click:
             to: Person Details
             type: link
           load:
-            type: request
-            url: 'http://localhost:9999/api/apps/1/person'
+            type: resource.query
+            resource: person
       - type: action-button
         version: 1.0.0
         actions:
@@ -268,11 +265,8 @@ pages:
         version: 1.0.0
         actions:
           submit:
-            method: post
-            schema:
-              $ref: /resources/person
-            type: request
-            url: 'http://localhost:9999/api/apps/1/person'
+            type: resource.create
+            resource: person
           submitSuccess:
             to: Person List
             type: link
@@ -281,11 +275,8 @@ pages:
             - label: First Name
               name: firstName
               type: string
-            - label: Last Name
+            - label: Surname
               name: lastName
-              type: string
-            - label: Age
-              name: age
               type: string
             - label: Email
               name: email
@@ -303,17 +294,18 @@ pages:
         version: 1.0.0
         actions:
           load:
-            type: request
-            url: 'http://localhost:9999/api/apps/1/person/{id}'
+            type: resource.get
+            resource: person
         parameters:
           fields:
-            - firstName
-            - lastName
-            - email
-            - age
-            - description
-          schema:
-            $ref: /resources/person
+            - name: firstName
+              label: First Name
+            - name: lastName
+              label: Surname
+            - name: email
+              label: Email Address
+            - name: description
+              label: Description
 ```
 
 [yaml]: https://learnxinyminutes.com/docs/yaml/
