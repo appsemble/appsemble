@@ -7,7 +7,7 @@ import thunk from 'redux-thunk';
 
 import './index.css';
 import App from './components/App';
-import { apps, db, message, user } from './actions';
+import * as actions from './actions';
 
 async function getStore() {
   const idb = await getDb({ id: 'appsemble-editor' });
@@ -17,7 +17,7 @@ async function getStore() {
     (process.env.NODE_ENV !== 'production' && window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__) ||
     compose;
   return createStore(
-    combineReducers({ apps, user, db, message }),
+    combineReducers(actions),
     {
       db: idb,
     },
