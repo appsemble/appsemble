@@ -7823,9 +7823,9 @@ koa@^2.7.0:
     vary "^1.1.2"
 
 koas-body-parser@^0.1.0:
-  version "0.1.1"
-  resolved "https://registry.yarnpkg.com/koas-body-parser/-/koas-body-parser-0.1.1.tgz#5664ed427fd20a94f34eef97f231005b04044854"
-  integrity sha512-SmbUFkV2QvSxHEr00/blWnLmdCKPovUeHq/cDH5rWkrVAP8oEC00K9SQ3KQ4yVaBID6fT6ODMGuTOpVHtyjUGQ==
+  version "0.1.2"
+  resolved "https://registry.yarnpkg.com/koas-body-parser/-/koas-body-parser-0.1.2.tgz#220e4f348fa352835d8982cce326e894701a61c1"
+  integrity sha512-MNO5K87o+m1JzHlCciRr7aZNLJBtpIasLYSvgFhhxITKt4k2nmN8WTLgWe7GrFLTKF3GWsy2T4NPDxw6VsO6Zw==
   dependencies:
     busboy "^0.3.0"
     inflation "^2.0.0"
@@ -7835,9 +7835,9 @@ koas-body-parser@^0.1.0:
     vfile "^4.0.0"
 
 koas-core@*, koas-core@^0.1.0:
-  version "0.1.1"
-  resolved "https://registry.yarnpkg.com/koas-core/-/koas-core-0.1.1.tgz#8bbc60cb91f1af38f680374fbfc2ccbe1294055e"
-  integrity sha512-rU/bWxYl9S1jPlMI6wLLxaGXqTmeoAJfZSQagZI4H3uIX16J9vmzNSZWXKbjm2VhVV0uS8F8L5thX2N+HNBT5Q==
+  version "0.1.2"
+  resolved "https://registry.yarnpkg.com/koas-core/-/koas-core-0.1.2.tgz#3c34d1cd3cb95d95b2ad0ad4bc97e54daddfbd7e"
+  integrity sha512-FL4WX4zkTvhayAWb8gHWpRg0iTKbQ5kFi427UH7HecB/R66DCuxwyVpmT6wFF+nxBNImjf1UnKLa8hH1/Z+M1A==
   dependencies:
     json-schema-ref-parser "^6.1.0"
     koa-compose "^4.1.0"
@@ -7845,51 +7845,51 @@ koas-core@*, koas-core@^0.1.0:
     z-schema "^3.25.1"
 
 koas-oauth2-server@^0.1.0:
-  version "0.1.1"
-  resolved "https://registry.yarnpkg.com/koas-oauth2-server/-/koas-oauth2-server-0.1.1.tgz#29b7c85ebca8782c9f029ea7541d3b22ed556995"
-  integrity sha512-JBN8YVd26e6tyLh9lPQE8fsl37RnYuMO/8PJmSnZY6NXsl37rysaFeTXXiwyqm6qOBLW312YVEJGIH9gHFWjUw==
+  version "0.1.2"
+  resolved "https://registry.yarnpkg.com/koas-oauth2-server/-/koas-oauth2-server-0.1.2.tgz#84025c8ac6b49e98e09d4982fe605ca9cacd170e"
+  integrity sha512-LJ1A1IcvtdHVc3pKirQ0n+ZqKZfdorPTi3k6FuVvItDXviXXNeOH+9y3cLRDX2m20mYVXh4+JZxfk4zT5rfBqA==
   dependencies:
     inflation "^2.0.0"
     oauth2-server "^3.0.1"
     raw-body "^2.3.3"
 
 koas-operations@^0.1.0:
-  version "0.1.1"
-  resolved "https://registry.yarnpkg.com/koas-operations/-/koas-operations-0.1.1.tgz#478034b6fb3eba0a7d803c503300ed3cdabe862b"
-  integrity sha512-XqPpieWFBEoq0WX8kgwR2TE4n8UZxMvzGJPzXl25Xl8nA8CK2yMUU0G7GSZ5AouhH3Pa6DHy/jJ/QPCEtVnhSQ==
+  version "0.1.2"
+  resolved "https://registry.yarnpkg.com/koas-operations/-/koas-operations-0.1.2.tgz#593984374d5115a0de6940dfd21ebb54dfa1fb99"
+  integrity sha512-V1/dHcZjn3GT291tKavywAzcUu3LRfffvJX+Aac6sHbMNoWmh81+OH6dFm4r5/nSLpV6oNg7Aq4xWk+CAox1vQ==
   dependencies:
     once "^1.4.0"
 
 koas-parameters@^0.1.0:
-  version "0.1.1"
-  resolved "https://registry.yarnpkg.com/koas-parameters/-/koas-parameters-0.1.1.tgz#220339dc0b8e594e6ef269c7979a159bd0d49c77"
-  integrity sha512-w+m/762ex7irN7/lJBhqPjp1rlZrNsdtY9tjcHTwBGoHnVraSztr4aaH0phBLkg8VPPuHUxJCRRMOFE081PlZg==
+  version "0.1.2"
+  resolved "https://registry.yarnpkg.com/koas-parameters/-/koas-parameters-0.1.2.tgz#d51cf0ddf2fe4174381aa865b07a33109e2a75f4"
+  integrity sha512-enIwF5r1AfkPOdnVe3yxq4kYBCv36GIsKyuxgP21dqICMwDkuRIRLEujLud0rSHxTmn72rci/n+56uTTcmBa6w==
   dependencies:
     koas-core "*"
 
 koas-serializer@^0.1.0:
-  version "0.1.1"
-  resolved "https://registry.yarnpkg.com/koas-serializer/-/koas-serializer-0.1.1.tgz#30be0f30324ef732b24d6992a5d47d083f44cf61"
-  integrity sha512-r8f67n/tugHJwMXtObdWSCU2cqx41zsAxZB9DsFKfzh16+2qgyK8xYjw7580mlaC7xQsP+SU9Ja8MhObvf75Tw==
+  version "0.1.2"
+  resolved "https://registry.yarnpkg.com/koas-serializer/-/koas-serializer-0.1.2.tgz#58c89396184e1cbc17db4e4cc77f416cbde2d5dd"
+  integrity sha512-+lm55jcySXUgEKyhAtXU29TKEAt27PoiGceObIYAsLAB/cZvTtqIju/oMJJhfjlPipEjy4E3dEPxduZAizIdtg==
   dependencies:
     type-is "^1.6.16"
 
 koas-spec-handler@^0.1.0:
-  version "0.1.1"
-  resolved "https://registry.yarnpkg.com/koas-spec-handler/-/koas-spec-handler-0.1.1.tgz#9a4e85d14e8998f896ebd16de607ba7871540bd7"
-  integrity sha512-stnyrQrscqjvUZss3qdKR7M+HTu21tJCvj7eZBzcX3oHwAss20yooa5v/1IkKBb5Ns26QzJtPK0XyuHXiVUJ3A==
+  version "0.1.2"
+  resolved "https://registry.yarnpkg.com/koas-spec-handler/-/koas-spec-handler-0.1.2.tgz#72507d5d0b5045de93d93106bc3e02c9bdc16169"
+  integrity sha512-rLuJL8oftW0fnzEy9KQ833JYwJk3mqgGmSFue0ByBevxys/ojJZU+4BtHKVS49+EVcvzMCHnvuWCoRYznH1D/w==
 
 koas-status-code@^0.1.0:
-  version "0.1.1"
-  resolved "https://registry.yarnpkg.com/koas-status-code/-/koas-status-code-0.1.1.tgz#96584066dd1c6770f940b0207d9236a4fad33890"
-  integrity sha512-hi15WL/TaBAiLR6QffwiTavG9PhyeWeLDwRpFwVTZvHdqtZJaiXHfGVfOIIrpwmj5825B9Uhe7cCD21btfuMAQ==
+  version "0.1.2"
+  resolved "https://registry.yarnpkg.com/koas-status-code/-/koas-status-code-0.1.2.tgz#de903b2e743924a4ea3195d15cc23830d345b7b0"
+  integrity sha512-XEWonlq/rCEo7+3mCXwnv2J0/sjAaJ3VdlEO6xMEb4pI3LsA9mVmB/9ttn3789BucHWwP8NMRUYwy5u5LfA6vg==
   dependencies:
     swagger-methods "^1.0.8"
 
 koas-swagger-ui@^0.1.0:
-  version "0.1.1"
-  resolved "https://registry.yarnpkg.com/koas-swagger-ui/-/koas-swagger-ui-0.1.1.tgz#fdc789e3fc051a690f926284ba4428ba4f2c7786"
-  integrity sha512-9YnWXPJH1yvBIoGb5FeFpoFNEP3HIL3itf6drBdoGmTYk4Z7BgKBqKyWyEoPEpn4qQeXbTLW/uAN5CxVdaqOMA==
+  version "0.1.2"
+  resolved "https://registry.yarnpkg.com/koas-swagger-ui/-/koas-swagger-ui-0.1.2.tgz#1f66e293a702e455cf585e350ccd97e3aa066c8c"
+  integrity sha512-Jo1AFop7iLVbbhWMF3uaykKs2VCM18vnCmW8X1MZPLXb0U5zSpQaBnLv8hxD3kDcOWLwsQH0oRaCs2YV/jteCg==
   dependencies:
     lodash "^4.17.11"
     swagger-ui-dist "^3.21.0"
