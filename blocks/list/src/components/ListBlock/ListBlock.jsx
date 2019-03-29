@@ -41,7 +41,7 @@ export default class ListBlock extends React.Component {
   }
 
   render() {
-    const { block } = this.props;
+    const { block, actions } = this.props;
     const { data, error, loading } = this.state;
     const { fields } = block.parameters;
 
@@ -70,7 +70,7 @@ export default class ListBlock extends React.Component {
           {data.map((item, dataIndex) => (
             <tr
               key={item.id || dataIndex}
-              className={styles.dataRow}
+              className={actions.click.type !== 'noop' ? styles.clickable : undefined}
               onClick={() => this.onClick(item)}
             >
               {fields.map(field => {
