@@ -7,15 +7,19 @@ function verifyResourceDefinition(app, resourceType) {
     throw Boom.notFound('App not found');
   }
 
-  if (!app.definition.definitions) {
+  if (!app.definition.resources) {
     throw Boom.notFound('App does not have any resources defined');
   }
 
-  if (!app.definition.definitions[resourceType]) {
+  if (!app.definition.resources[resourceType]) {
     throw Boom.notFound(`App does not have resources called ${resourceType}`);
   }
 
-  return app.definition.definitions[resourceType];
+  if (!app.definition.resources[resourceType].schema) {
+    throw Boom.notFound(`App does not have a schema for resources called ${resourceType}`);
+  }
+
+  return app.definition.resources[resourceType].schema;
 }
 
 function generateQuery(ctx) {
@@ -111,7 +115,7 @@ export async function createResource(ctx) {
   verifyResourceDefinition(app, resourceType);
 
   const resource = ctx.request.body;
-  const schema = app.definition.definitions[resourceType];
+  const { schema } = app.definition.resources[resourceType];
 
   try {
     await validate(schema, resource);

@@ -13,11 +13,13 @@ describe('resource controller', () => {
     definition: {
       name: 'Test App',
       defaultPage: 'Test Page',
-      definitions: {
+      resources: {
         testResource: {
-          type: 'object',
-          required: ['foo'],
-          properties: { foo: { type: 'string' } },
+          schema: {
+            type: 'object',
+            required: ['foo'],
+            properties: { foo: { type: 'string' } },
+          },
         },
       },
     },

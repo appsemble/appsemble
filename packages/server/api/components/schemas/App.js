@@ -50,12 +50,9 @@ export default {
         This **must** match the name of a page defined for the app.
       `,
     },
-    definitions: {
-      type: 'object',
-      description: `JSON schema definitions that may be used by the app.
-
-        **note**: This is under consideration for deprecation.
-      `,
+    resources: {
+      $ref: '#/components/schemas/ResourceDefinition',
+      description: 'Resource definitions that may be used by the app.',
     },
     authentication: {
       type: 'array',
