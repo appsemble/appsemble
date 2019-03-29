@@ -6,6 +6,7 @@ import Color from './Color';
 import Error from './Error';
 import Page from './Page';
 import Resource from './Resource';
+import ResourceDefinition from './ResourceDefinition';
 import Theme from './Theme';
 
 export default {
@@ -17,5 +18,6 @@ export default {
   Error,
   Page,
   Resource,
+  ResourceDefinition,
   Theme,
 };
