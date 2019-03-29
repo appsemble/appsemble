@@ -1,7 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { remapData } from '@appsemble/utils/remap';
+import { Loader } from '@appsemble/react-components';
+import { FormattedMessage } from 'react-intl';
 
+import messages from './messages';
 import styles from './ListBlock.css';
 
 export default class ListBlock extends React.Component {
@@ -16,13 +19,17 @@ export default class ListBlock extends React.Component {
     block: PropTypes.shape().isRequired,
   };
 
-  state = { data: [] };
+  state = { data: undefined, error: false, loading: true };
 
   async componentDidMount() {
     const { actions } = this.props;
-    const data = await actions.load.dispatch();
 
-    this.setState({ data });
+    try {
+      const data = await actions.load.dispatch();
+      this.setState({ data, loading: false });
+    } catch (e) {
+      this.setState({ error: true, loading: false });
+    }
   }
 
   async onClick(item) {
@@ -35,11 +42,19 @@ export default class ListBlock extends React.Component {
 
   render() {
     const { block } = this.props;
-    const { data } = this.state;
+    const { data, error, loading } = this.state;
     const { fields } = block.parameters;
 
+    if (loading) {
+      return <Loader />;
+    }
+
+    if (error) {
+      return <FormattedMessage {...messages.error} />;
+    }
+
     if (!data.length) {
-      return <p>No data.</p>;
+      return <FormattedMessage {...messages.noData} />;
     }
 
     return (
