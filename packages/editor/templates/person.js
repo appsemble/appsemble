@@ -1,8 +1,10 @@
 export default {
   name: 'Person App',
+  description:
+    'Person App is an application that starts out with a simple person registration form using the resource API as well as pages to display this data.',
   recipe: {
     name: 'Person App',
-    defaultPage: 'Person List',
+    defaultPage: 'Person Registration Form',
     resources: {
       person: {
         schema: {
