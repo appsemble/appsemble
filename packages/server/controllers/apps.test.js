@@ -213,7 +213,17 @@ describe('app controller', () => {
         }),
       );
 
-    expect(body).toStrictEqual({});
+    expect(body).toStrictEqual({
+      errors: [
+        {
+          code: 'OBJECT_MISSING_REQUIRED_PROPERTY',
+          message: 'Missing required property: organizationId',
+          params: ['organizationId'],
+          path: [],
+        },
+      ],
+      message: 'JSON schema validation failed',
+    });
   });
 
   it('should not allow apps to be created for organizations the user does not belong to', async () => {
