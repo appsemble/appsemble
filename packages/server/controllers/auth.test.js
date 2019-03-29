@@ -156,7 +156,7 @@ describe('auth controller', () => {
       .post('/api/email/verify')
       .send({ token: 'invalidkey' });
 
-    expect(responseA.status).toBe(400);
+    expect(responseA.status).toBe(415);
     expect(responseB.status).toBe(404);
     expect(responseC.status).toBe(404);
   });
