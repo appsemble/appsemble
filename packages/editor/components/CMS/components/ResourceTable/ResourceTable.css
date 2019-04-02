@@ -1,0 +1,29 @@
+.actionsCell {
+  width: 32px;
+}
+
+.actionsCell > button {
+  background-color: transparent;
+  border: 0 solid transparent;
+  box-shadow: 0 0 0 transparent;
+  text-shadow: 0 0 0 transparent;
+
+  &:hover {
+    border: 0 solid transparent;
+    box-shadow: 0 0 0 transparent;
+    cursor: pointer;
+    text-shadow: 0 0 0 transparent;
+  }
+}
+.cardFooterButton {
+  background: none !important;
+  border: none;
+  color: hsl(217, 71%, 53%);
+  cursor: pointer;
+  font: inherit;
+  padding: 0 !important;
+}
+
+.cardFooterButton:hover {
+  color: hsl(0, 0%, 21%);
+}
