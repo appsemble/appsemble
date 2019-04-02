@@ -4,7 +4,9 @@ import { BrowserRouter, Redirect, Route, Switch } from 'react-router-dom';
 import React from 'react';
 import { IntlProvider } from 'react-intl';
 
+import AppContext from '../AppContext';
 import AppList from '../AppList';
+import CMS from '../CMS';
 import Editor from '../Editor';
 import EditPassword from '../EditPassword';
 import Login from '../Login';
@@ -46,7 +48,15 @@ export default class App extends React.Component {
             {user ? (
               <Switch>
                 <Route component={AppList} exact path="/" />
-                <Route component={Editor} exact path="/_/edit/:id" />
+                <Route
+                  path="/_/:id"
+                  render={props => (
+                    <AppContext {...props}>
+                      <Route component={Editor} exact path="/_/:id/edit" />
+                      <Route component={CMS} path="/_/:id/cms" />
+                    </AppContext>
+                  )}
+                />
                 <Route component={EditPassword} exact path="/_/edit-password" />
                 <Redirect to="/" />
               </Switch>

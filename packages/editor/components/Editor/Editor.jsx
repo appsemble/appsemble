@@ -17,6 +17,7 @@ import messages from './messages';
 
 export default class Editor extends React.Component {
   static propTypes = {
+    app: PropTypes.shape().isRequired,
     getOpenApiSpec: PropTypes.func.isRequired,
     history: PropTypes.shape().isRequired,
     intl: PropTypes.shape().isRequired,
@@ -48,6 +49,7 @@ export default class Editor extends React.Component {
 
   async componentDidMount() {
     const {
+      app,
       getOpenApiSpec,
       history,
       match,
@@ -63,11 +65,8 @@ export default class Editor extends React.Component {
 
     try {
       await getOpenApiSpec();
-      const request = await axios.get(`/api/apps/${id}`);
       // Destructuring path, id and organizationId also hides these technical details for the user
-      const {
-        data: { id: dataId, path, organizationId, ...data },
-      } = request;
+      const { id: dataId, path, organizationId, ...data } = app;
       // Include path if the normalized app name does not equal path
       const recipe = yaml.safeDump({
         ...data,
