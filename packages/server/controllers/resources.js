@@ -134,3 +134,62 @@ export async function create(ctx) {
   ctx.body = { id, ...resource };
   ctx.status = 201;
 }
+
+export async function updateResource(ctx) {
+  const { appId, resourceType, resourceId } = ctx.params;
+  const { App, Resource } = ctx.db.models;
+  const { user } = ctx.state.oauth.token;
+
+  const app = await App.findByPk(appId);
+
+  if (!user.organizations.some(organization => organization.id === app.OrganizationId)) {
+    throw Boom.forbidden('User does not belong in this organization.');
+  }
+
+  verifyResourceDefinition(app, resourceType);
+  const resource = await Resource.findByPk(resourceId);
+
+  if (!resource) {
+    throw Boom.notFound('Resource not found');
+  }
+
+  const updatedResource = ctx.request.body;
+  const { schema } = app.definition.resources[resourceType];
+
+  try {
+    await validate(schema, resource);
+  } catch (err) {
+    if (!(err instanceof SchemaValidationError)) {
+      throw err;
+    }
+
+    const boom = Boom.badRequest(err.message);
+    boom.output.payload.data = err.data;
+    throw boom;
+  }
+
+  await resource.update(updatedResource, { where: { id: resourceId } });
+  ctx.body = { resourceId, ...resource };
+}
+
+export async function deleteResource(ctx) {
+  const { appId, resourceType, resourceId } = ctx.params;
+  const { App, Resource } = ctx.db.models;
+  const { user } = ctx.state.oauth.token;
+
+  const app = await App.findByPk(appId);
+
+  if (!user.organizations.some(organization => organization.id === app.OrganizationId)) {
+    throw Boom.forbidden('User does not belong in this organization.');
+  }
+
+  verifyResourceDefinition(app, resourceType);
+  const resource = await Resource.findByPk(resourceId);
+
+  if (!resource) {
+    throw Boom.notFound('Resource not found');
+  }
+
+  await resource.destroy();
+  ctx.status = 204;
+}
