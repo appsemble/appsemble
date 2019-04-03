@@ -35,14 +35,13 @@ describe('resource controller', () => {
   beforeAll(async () => {
     db = await testSchema('resources');
     server = await createServer({ db });
-    organizationId = jwt.decode(token.substring(7)).user.organizations[0].id;
-
     ({ App, Resource } = db.models);
   }, 10e3);
 
   beforeEach(async () => {
     await truncate(db);
     token = await testToken(request, server, db, 'apps:write apps:read');
+    organizationId = jwt.decode(token.substring(7)).user.organizations[0].id;
   });
 
   afterAll(async () => {
@@ -166,7 +165,7 @@ describe('resource controller', () => {
   });
 
   it('should be able to update an existing resource', async () => {
-    const app = await App.create(exampleApp);
+    const app = await App.create({ ...exampleApp, OrganizationId: organizationId });
     const resource = await Resource.create({
       type: 'testResource',
       AppId: app.id,
@@ -175,8 +174,8 @@ describe('resource controller', () => {
 
     const response = await request(server)
       .put(`/api/apps/${app.id}/testResource/${resource.id}`)
-      .send({ foo: 'I am not Foo.' })
-      .set('Authorization', token);
+      .set('Authorization', token)
+      .send({ foo: 'I am not Foo.' });
 
     expect(response.status).toBe(200);
     expect(response.body.foo).toStrictEqual('I am not Foo.');
@@ -185,12 +184,12 @@ describe('resource controller', () => {
     const responseB = await request(server).get(`/api/apps/${app.id}/testResource/${resource.id}`);
 
     expect(responseB.status).toBe(200);
-    expect(responseB.body.foo).toStrictEqual({ foo: 'I am not Foo.' });
+    expect(responseB.body.foo).toStrictEqual('I am not Foo.');
     expect(responseB.body.id).toBe(resource.id);
   });
 
   it('should not be possible to update a non-existent resource', async () => {
-    const app = await App.create(exampleApp);
+    const app = await App.create({ ...exampleApp, OrganizationId: organizationId });
     const { body } = await request(server)
       .put(`/api/apps/${app.id}/testResource/0`)
       .send({ foo: 'I am not Foo.' })
@@ -204,7 +203,7 @@ describe('resource controller', () => {
   });
 
   it('should validate resources when updating resources', async () => {
-    const app = await App.create(exampleApp);
+    const app = await App.create({ ...exampleApp, OrganizationId: organizationId });
     const resource = await Resource.create({
       type: 'testResource',
       AppId: app.id,
@@ -221,7 +220,7 @@ describe('resource controller', () => {
   });
 
   it('should be able to delete an existing resource', async () => {
-    const app = await App.create(exampleApp);
+    const app = await App.create({ ...exampleApp, OrganizationId: organizationId });
     const resource = await Resource.create({
       type: 'testResource',
       AppId: app.id,
@@ -255,7 +254,7 @@ describe('resource controller', () => {
   });
 
   it('should not be able to delete a non-existent resource', async () => {
-    const app = await App.create(exampleApp);
+    const app = await App.create({ ...exampleApp, OrganizationId: organizationId });
     const { body } = await request(server)
       .delete(`/api/apps/${app.id}/testResource/0`)
       .set('Authorization', token);
