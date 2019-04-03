@@ -1,3 +1,5 @@
-import Example from './example';
+import Empty from './empty';
+import PersonApp from './person';
+import HolidayApp from './holiday';
 
-export default [Example];
+export default [Empty, PersonApp, HolidayApp];

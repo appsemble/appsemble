@@ -201,6 +201,9 @@ export default class CreateAppCard extends React.Component {
                       </div>
                     </div>
                   </div>
+                  <article className="message">
+                    <div className="message-body">{templates[selectedTemplate].description}</div>
+                  </article>
                   <div className="field is-horizontal">
                     <div className="field-label is-normal">
                       <label className="label" htmlFor="inputAppDescription">
