@@ -88,7 +88,7 @@ describe('auth controller', () => {
         client_id: 'test',
       });
 
-    expect(response.status).toBe(401);
+    expect(response.status).toBe(400);
   });
 
   it('should not allow users to log in using invalid credentials', async () => {
@@ -108,7 +108,7 @@ describe('auth controller', () => {
         client_id: 'test',
       });
 
-    expect(response.status).toBe(401);
+    expect(response.status).toBe(400);
   });
 
   it('should not register invalid email addresses', async () => {
@@ -156,7 +156,7 @@ describe('auth controller', () => {
       .post('/api/email/verify')
       .send({ token: 'invalidkey' });
 
-    expect(responseA.status).toBe(400);
+    expect(responseA.status).toBe(415);
     expect(responseB.status).toBe(404);
     expect(responseC.status).toBe(404);
   });

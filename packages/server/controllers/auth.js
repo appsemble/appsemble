@@ -129,7 +129,7 @@ export async function verifyEmail(ctx) {
   ctx.status = 200;
 }
 
-export async function resendVerification(ctx) {
+export async function resendEmailVerification(ctx) {
   const { email } = ctx.request.body;
   const { EmailAuthorization } = ctx.db.models;
   const { smtp } = ctx.state;
@@ -177,7 +177,7 @@ export async function resetPassword(ctx) {
   const tokenRecord = await ResetPasswordToken.findByPk(token);
 
   if (!tokenRecord) {
-    ctx.status = 404;
+    ctx.throw(404);
     return;
   }
 
@@ -186,6 +186,4 @@ export async function resetPassword(ctx) {
 
   await email.update({ password });
   await tokenRecord.destroy();
-
-  ctx.status = 204;
 }
