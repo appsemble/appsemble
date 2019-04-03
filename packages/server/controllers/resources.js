@@ -138,7 +138,7 @@ export async function createResource(ctx) {
 export async function updateResource(ctx) {
   const { appId, resourceType, resourceId } = ctx.params;
   const { App, Resource } = ctx.db.models;
-  const { user } = ctx.state.oauth.token;
+  const { user } = ctx.state;
 
   const app = await App.findByPk(appId);
 
@@ -147,7 +147,7 @@ export async function updateResource(ctx) {
   }
 
   verifyResourceDefinition(app, resourceType);
-  const resource = await Resource.findByPk(resourceId);
+  let resource = await Resource.findByPk(resourceId);
 
   if (!resource) {
     throw Boom.notFound('Resource not found');
@@ -157,7 +157,7 @@ export async function updateResource(ctx) {
   const { schema } = app.definition.resources[resourceType];
 
   try {
-    await validate(schema, resource);
+    await validate(schema, updatedResource);
   } catch (err) {
     if (!(err instanceof SchemaValidationError)) {
       throw err;
@@ -168,14 +168,14 @@ export async function updateResource(ctx) {
     throw boom;
   }
 
-  await resource.update(updatedResource, { where: { id: resourceId } });
-  ctx.body = { resourceId, ...resource };
+  resource = await resource.update({ data: updatedResource }, { where: { id: resourceId } });
+  ctx.body = { id: resourceId, ...resource.get('data', { plain: true }) };
 }
 
 export async function deleteResource(ctx) {
   const { appId, resourceType, resourceId } = ctx.params;
   const { App, Resource } = ctx.db.models;
-  const { user } = ctx.state.oauth.token;
+  const { user } = ctx.state;
 
   const app = await App.findByPk(appId);
 
