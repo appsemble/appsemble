@@ -4,6 +4,7 @@ import { Loader } from '@appsemble/react-components';
 import classNames from 'classnames';
 import { FormattedMessage } from 'react-intl';
 import PropTypes from 'prop-types';
+import { Link } from 'react-router-dom';
 
 import messages from './messages';
 import styles from './ResourceTable.css';
@@ -11,6 +12,8 @@ import styles from './ResourceTable.css';
 export default class ResourceTable extends React.Component {
   static propTypes = {
     app: PropTypes.shape().isRequired,
+    match: PropTypes.shape().isRequired,
+    history: PropTypes.shape().isRequired,
     resourceName: PropTypes.string.isRequired,
     push: PropTypes.func.isRequired,
     intl: PropTypes.shape().isRequired,
@@ -19,13 +22,42 @@ export default class ResourceTable extends React.Component {
   state = { resources: [], editingResource: undefined, loading: true, error: false };
 
   async componentDidMount() {
+    const {
+      match: {
+        params: { mode, resourceId },
+      },
+    } = this.props;
+
     await this.loadResource();
+
+    if (mode === 'edit') {
+      const { resources } = this.state;
+
+      this.setState({
+        editingResource: resources.find(resource => resource.id === Number(resourceId)),
+      });
+    }
+
+    if (mode === 'new') {
+      this.setState({ editingResource: {} });
+    }
   }
 
   async componentDidUpdate(prevProps) {
-    const { resourceName } = this.props;
+    const {
+      resourceName,
+      match: {
+        params: { mode, resourceId },
+      },
+    } = this.props;
+
     if (prevProps.resourceName !== resourceName) {
       await this.loadResource();
+    }
+
+    if (!prevProps.match.params.mode && mode === 'edit') {
+      const { resources } = this.state;
+      this.editResource(resources.find(resource => resource.id === Number(resourceId)));
     }
   }
 
@@ -37,6 +69,7 @@ export default class ResourceTable extends React.Component {
     if (event.target.name === 'id') {
       return;
     }
+
     const { editingResource } = this.state;
     editingResource[event.target.name] = event.target.value;
 
@@ -44,7 +77,13 @@ export default class ResourceTable extends React.Component {
   };
 
   onClose = () => {
-    this.setState({ editingResource: undefined });
+    const { match, history } = this.props;
+    history.push(
+      match.url.replace(
+        `/${match.params.mode}${match.params.mode === 'edit' ? `/${match.params.resourceId}` : ''}`,
+        '',
+      ),
+    );
   };
 
   onKeyDown = event => {
@@ -61,18 +100,33 @@ export default class ResourceTable extends React.Component {
       resourceName,
       push,
       intl: { formatMessage },
+      match,
+      history,
     } = this.props;
     const { editingResource, resources } = this.state;
 
     try {
-      await axios.put(`/api/apps/${app.id}/${resourceName}/${editingResource.id}`, editingResource);
+      await axios.put(
+        `/api/apps/${app.id}/${resourceName}/${match.params.resourceId}`,
+        editingResource,
+      );
 
       this.setState({
         resources: resources.map(resource =>
-          resource.id === editingResource.id ? editingResource : resource,
+          resource.id === match.params.resourceId ? editingResource : resource,
         ),
         editingResource: null,
       });
+
+      history.push(
+        match.url.replace(
+          `/${match.params.mode}${
+            match.params.mode === 'edit' ? `/${match.params.resourceId}` : ''
+          }`,
+          '',
+        ),
+      );
+
       push({ body: formatMessage(messages.updateSuccess), color: 'primary' });
     } catch (e) {
       push(formatMessage(messages.updateError));
@@ -80,8 +134,12 @@ export default class ResourceTable extends React.Component {
   };
 
   async loadResource() {
-    this.setState({ loading: true, error: false, resources: [] });
     const { app, resourceName } = this.props;
+    const { loading } = this.state;
+
+    if (!loading) {
+      this.setState({ loading: true, error: false, resources: [] });
+    }
 
     try {
       const { data: resources } = await axios.get(`/api/apps/${app.id}/${resourceName}`);
@@ -92,7 +150,14 @@ export default class ResourceTable extends React.Component {
   }
 
   render() {
-    const { app, resourceName } = this.props;
+    const {
+      app,
+      resourceName,
+      match: {
+        params: { mode },
+        ...match
+      },
+    } = this.props;
     const { resources, editingResource, loading, error } = this.state;
 
     if (!app || loading) {
@@ -113,23 +178,23 @@ export default class ResourceTable extends React.Component {
             <tr>
               <th>Actions</th>
               {keys.map(property => (
-                <th>{property}</th>
+                <th key={property}>{property}</th>
               ))}
             </tr>
           </thead>
           <tbody>
             {resources.map(resource => {
               return (
-                <tr>
+                <tr key={resource.id}>
                   <td className={styles.actionsCell}>
-                    <button onClick={() => this.editResource(resource)} type="button">
+                    <Link to={`${match.url}/edit/${resource.id}`}>
                       <span className="icon has-text-info">
                         <i className="fas fa-pen" />
                       </span>
-                    </button>
+                    </Link>
                   </td>
                   {keys.map(key => (
-                    <td>
+                    <td key={key}>
                       {typeof resource[key] === 'string'
                         ? resource[key]
                         : JSON.stringify(resource[key])}
@@ -141,7 +206,7 @@ export default class ResourceTable extends React.Component {
           </tbody>
         </table>
         <form className="container" onSubmit={this.submitEdit}>
-          <div className={classNames('modal', { 'is-active': !!editingResource })}>
+          <div className={classNames('modal', { 'is-active': mode === 'edit' || mode === 'new' })}>
             <div
               className="modal-background"
               onClick={this.onClose}
@@ -152,8 +217,10 @@ export default class ResourceTable extends React.Component {
               <div className="card">
                 <div className="card-content">
                   {keys.map(key => {
+                    const properties = schema.properties[key] || {};
+
                     return (
-                      <div className="field is-horizontal">
+                      <div key={key} className="field is-horizontal">
                         <div className="field-label is-normal">
                           <label className="label" htmlFor={key}>
                             {key}
@@ -164,14 +231,22 @@ export default class ResourceTable extends React.Component {
                             <div className="control">
                               <input
                                 className="input"
-                                disabled={schema.properties[key]?.readOnly || key === 'id'}
+                                disabled={properties.readOnly || key === 'id'}
                                 id={key}
                                 name={key}
                                 onChange={this.onChange}
                                 placeholder={key}
                                 required={schema.required.includes(key)}
-                                type={schema.properties[key].format === 'email' ? 'email' : 'text'}
-                                value={editingResource ? editingResource[key] : ''}
+                                type={
+                                  properties.format && properties.format === 'email'
+                                    ? 'email'
+                                    : 'text'
+                                }
+                                value={
+                                  editingResource && editingResource[key]
+                                    ? editingResource[key]
+                                    : ''
+                                }
                               />
                             </div>
                           </div>

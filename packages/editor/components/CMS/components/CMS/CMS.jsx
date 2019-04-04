@@ -13,7 +13,6 @@ export default class CMS extends React.Component {
 
   render() {
     const { app, match } = this.props;
-    console.log('cms', match);
 
     return (
       <React.Fragment>
@@ -33,7 +32,10 @@ export default class CMS extends React.Component {
             )}
           />
 
-          <Route component={ResourceTable} exact path={`${match.path}/:resourceName`} />
+          <Route
+            component={ResourceTable}
+            path={`${match.path}/:resourceName/:mode?/:resourceId?`}
+          />
         </Switch>
       </React.Fragment>
     );
