@@ -19,7 +19,14 @@ export default class ResourceTable extends React.Component {
     intl: PropTypes.shape().isRequired,
   };
 
-  state = { resources: [], editingResource: undefined, loading: true, error: false };
+  state = {
+    resources: [],
+    deletingResource: undefined,
+    editingResource: undefined,
+    loading: true,
+    error: false,
+    warningDialog: false,
+  };
 
   async componentDidMount() {
     const {
@@ -89,7 +96,7 @@ export default class ResourceTable extends React.Component {
       ),
     );
 
-    this.setState({ editingResource: undefined });
+    this.setState({ editingResource: undefined, warningDialog: false });
   };
 
   onKeyDown = event => {
@@ -161,6 +168,35 @@ export default class ResourceTable extends React.Component {
     }
   };
 
+  promptDeleteResource = resource => {
+    this.setState({ warningDialog: true, deletingResource: resource });
+  };
+
+  deleteResource = async () => {
+    const {
+      app,
+      resourceName,
+      push,
+      intl: { formatMessage },
+    } = this.props;
+    const { deletingResource, resources } = this.state;
+
+    try {
+      await axios.delete(`/api/apps/${app.id}/${resourceName}/${deletingResource.id}`);
+      push({
+        body: formatMessage(messages.deleteSuccess, { id: deletingResource.id }),
+        color: 'primary',
+      });
+      this.setState({
+        resources: resources.filter(resource => resource.id !== deletingResource.id),
+        deletingResource: undefined,
+        warningDialog: false,
+      });
+    } catch (e) {
+      push(formatMessage(messages.deleteError));
+    }
+  };
+
   async loadResource() {
     const { app, resourceName } = this.props;
     const { loading } = this.state;
@@ -186,7 +222,7 @@ export default class ResourceTable extends React.Component {
         ...match
       },
     } = this.props;
-    const { resources, editingResource, loading, error } = this.state;
+    const { resources, editingResource, loading, error, warningDialog } = this.state;
 
     if (!app || loading) {
       return <Loader />;
@@ -224,14 +260,23 @@ export default class ResourceTable extends React.Component {
               return (
                 <tr key={resource.id}>
                   <td className={styles.actionsCell}>
-                    <Link to={`${match.url}/edit/${resource.id}`}>
-                      <span className="icon has-text-info">
+                    <Link className="button" to={`${match.url}/edit/${resource.id}`}>
+                      <span className="icon is-small has-text-info">
                         <i className="fas fa-pen" />
                       </span>
                     </Link>
+                    <button
+                      className="button"
+                      onClick={() => this.promptDeleteResource(resource)}
+                      type="button"
+                    >
+                      <span className="icon is-small has-text-danger">
+                        <i className="fas fa-trash" />
+                      </span>
+                    </button>
                   </td>
                   {keys.map(key => (
-                    <td key={key}>
+                    <td key={key} className={styles.contentCell}>
                       {typeof resource[key] === 'string'
                         ? resource[key]
                         : JSON.stringify(resource[key])}
@@ -307,7 +352,12 @@ export default class ResourceTable extends React.Component {
                     <FormattedMessage {...messages.cancelButton} />
                   </a>
                   <button
-                    className={classNames('card-footer-item', styles.cardFooterButton)}
+                    className={classNames(
+                      'card-footer-item',
+                      'button',
+                      'is-primary',
+                      styles.cardFooterButton,
+                    )}
                     type="submit"
                   >
                     {mode === 'edit' ? (
@@ -322,6 +372,51 @@ export default class ResourceTable extends React.Component {
             <button className="modal-close is-large" onClick={this.onClose} type="button" />
           </div>
         </form>
+        <div className={classNames('modal', warningDialog && 'is-active')}>
+          <div
+            className="modal-background"
+            onClick={this.onClose}
+            onKeyDown={this.onKeyDown}
+            role="presentation"
+          />
+          <div className="modal-content">
+            <div className="card">
+              <header className="card-header">
+                <p className="card-header-title">
+                  <FormattedMessage {...messages.resourceWarningTitle} />
+                </p>
+              </header>
+              <div className="card-content">
+                <FormattedMessage {...messages.resourceWarning} />
+              </div>
+              <footer className="card-footer">
+                {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
+                <a
+                  className="card-footer-item is-link"
+                  onClick={this.onClose}
+                  onKeyDown={this.onKeyDown}
+                  role="button"
+                  tabIndex="-1"
+                >
+                  <FormattedMessage {...messages.cancelButton} />
+                </a>
+                <button
+                  className={classNames(
+                    'card-footer-item',
+                    'button',
+                    'is-danger',
+                    styles.cardFooterButton,
+                  )}
+                  onClick={this.deleteResource}
+                  type="button"
+                >
+                  <FormattedMessage {...messages.deleteButton} />
+                </button>
+              </footer>
+            </div>
+          </div>
+          <button className="modal-close is-large" onClick={this.onClose} type="button" />
+        </div>
       </React.Fragment>
     );
   }
