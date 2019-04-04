@@ -13,7 +13,7 @@ export default {
       scopes,
     },
     authorizationCode: {
-      authorizationUrl: tokenUrl,
+      authorizationUrl: '/_/login',
       tokenUrl,
       refreshUrl: tokenUrl,
       scopes,
