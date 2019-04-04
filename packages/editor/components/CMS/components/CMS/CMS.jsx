@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 
 import ResourceTable from '../ResourceTable';
 import SideMenu from '../SideMenu';
+import styles from './CMS.css';
 
 export default class CMS extends React.Component {
   static propTypes = {
@@ -20,23 +21,25 @@ export default class CMS extends React.Component {
           path={`${match.path}/:resourceName?`}
           render={props => <SideMenu app={app} {...props} />}
         />
-        <Switch>
-          <Route
-            exact
-            path={match.path}
-            render={() => (
-              <p>
-                this app has the following resources:
-                {Object.keys(app.resources).join(', ')}
-              </p>
-            )}
-          />
+        <div className={styles.cmsContent}>
+          <Switch>
+            <Route
+              exact
+              path={match.path}
+              render={() => (
+                <p>
+                  this app has the following resources:
+                  {Object.keys(app.resources).join(', ')}
+                </p>
+              )}
+            />
 
-          <Route
-            component={ResourceTable}
-            path={`${match.path}/:resourceName/:mode?/:resourceId?`}
-          />
-        </Switch>
+            <Route
+              component={ResourceTable}
+              path={`${match.path}/:resourceName/:mode?/:resourceId?`}
+            />
+          </Switch>
+        </div>
       </React.Fragment>
     );
   }

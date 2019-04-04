@@ -57,13 +57,17 @@ export default class ResourceTable extends React.Component {
 
     if (!prevProps.match.params.mode && mode === 'edit') {
       const { resources } = this.state;
-      this.editResource(resources.find(resource => resource.id === Number(resourceId)));
+      // eslint-disable-next-line react/no-did-update-set-state
+      this.setState({
+        editingResource: resources.find(resource => resource.id === Number(resourceId)),
+      });
+    }
+
+    if (!prevProps.match.params.mode && mode === 'new') {
+      // eslint-disable-next-line react/no-did-update-set-state
+      this.setState({ editingResource: {} });
     }
   }
-
-  editResource = resource => {
-    this.setState({ editingResource: { ...resource } });
-  };
 
   onChange = event => {
     if (event.target.name === 'id') {
@@ -84,11 +88,42 @@ export default class ResourceTable extends React.Component {
         '',
       ),
     );
+
+    this.setState({ editingResource: undefined });
   };
 
   onKeyDown = event => {
     if (event.key === 'Escape') {
       this.onClose();
+    }
+  };
+
+  submitCreate = async event => {
+    event.preventDefault();
+
+    const {
+      app,
+      resourceName,
+      push,
+      intl: { formatMessage },
+      match,
+      history,
+    } = this.props;
+    const { editingResource, resources } = this.state;
+
+    try {
+      const { data } = await axios.post(`/api/apps/${app.id}/${resourceName}`, editingResource);
+
+      this.setState({
+        resources: [...resources, data],
+        editingResource: null,
+      });
+
+      history.push(match.url.replace(`/${match.params.mode}`, ''));
+
+      push({ body: formatMessage(messages.createSuccess, { id: data.id }), color: 'primary' });
+    } catch (e) {
+      push(formatMessage(messages.createError));
     }
   };
 
@@ -118,14 +153,7 @@ export default class ResourceTable extends React.Component {
         editingResource: null,
       });
 
-      history.push(
-        match.url.replace(
-          `/${match.params.mode}${
-            match.params.mode === 'edit' ? `/${match.params.resourceId}` : ''
-          }`,
-          '',
-        ),
-      );
+      history.push(match.url.replace(`/${match.params.mode}/${match.params.resourceId}`, ''));
 
       push({ body: formatMessage(messages.updateSuccess), color: 'primary' });
     } catch (e) {
@@ -173,6 +201,15 @@ export default class ResourceTable extends React.Component {
 
     return (
       <React.Fragment>
+        <h1 className="title">Resource {resourceName}</h1>
+        <Link className="button is-primary" to={`${match.url}/new`}>
+          <span className="icon">
+            <i className="fas fa-plus-square" />
+          </span>
+          <span>
+            <FormattedMessage {...messages.createButton} />
+          </span>
+        </Link>
         <table className="table is-striped is-hoverable is-fullwidth">
           <thead>
             <tr>
@@ -205,7 +242,10 @@ export default class ResourceTable extends React.Component {
             })}
           </tbody>
         </table>
-        <form className="container" onSubmit={this.submitEdit}>
+        <form
+          className="container"
+          onSubmit={mode === 'edit' ? this.submitEdit : this.submitCreate}
+        >
           <div className={classNames('modal', { 'is-active': mode === 'edit' || mode === 'new' })}>
             <div
               className="modal-background"
@@ -270,7 +310,11 @@ export default class ResourceTable extends React.Component {
                     className={classNames('card-footer-item', styles.cardFooterButton)}
                     type="submit"
                   >
-                    <FormattedMessage {...messages.editButton} />
+                    {mode === 'edit' ? (
+                      <FormattedMessage {...messages.editButton} />
+                    ) : (
+                      <FormattedMessage {...messages.createButton} />
+                    )}
                   </button>
                 </footer>
               </div>

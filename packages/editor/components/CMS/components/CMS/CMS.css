@@ -1,0 +1,8 @@
+.cmsContent {
+  display: inline-block;
+  height: 100%;
+  max-width: 83%;
+  overflow-x: auto;
+  padding-top: 10px;
+  vertical-align: top;
+}

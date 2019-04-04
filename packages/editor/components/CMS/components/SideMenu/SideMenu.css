@@ -1,4 +1,5 @@
 .sideMenu {
-  margin: 10px;
-  width: 15%;
+  display: inline-block;
+  margin: 10px 0 10px 10px;
+  max-width: 25%;
 }
