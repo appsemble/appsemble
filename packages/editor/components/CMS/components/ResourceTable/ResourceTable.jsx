@@ -16,13 +16,17 @@ export default class ResourceTable extends React.Component {
     intl: PropTypes.shape().isRequired,
   };
 
-  state = { resources: [], editingResource: undefined };
+  state = { resources: [], editingResource: undefined, loading: true, error: false };
 
   async componentDidMount() {
-    const { app, resourceName } = this.props;
-    const { data: resources } = await axios.get(`/api/apps/${app.id}/${resourceName}`);
+    await this.loadResource();
+  }
 
-    this.setState({ resources });
+  async componentDidUpdate(prevProps) {
+    const { resourceName } = this.props;
+    if (prevProps.resourceName !== resourceName) {
+      await this.loadResource();
+    }
   }
 
   editResource = resource => {
@@ -60,23 +64,43 @@ export default class ResourceTable extends React.Component {
     } = this.props;
     const { editingResource, resources } = this.state;
 
-    await axios.put(`/api/apps/${app.id}/${resourceName}/${editingResource.id}`);
+    try {
+      await axios.put(`/api/apps/${app.id}/${resourceName}/${editingResource.id}`, editingResource);
 
-    this.setState({
-      resources: resources.map(resource =>
-        resource.id === editingResource.id ? editingResource : resource,
-      ),
-      editingResource: null,
-    });
-    push({ body: formatMessage(messages.updateSuccess), color: 'primary' });
+      this.setState({
+        resources: resources.map(resource =>
+          resource.id === editingResource.id ? editingResource : resource,
+        ),
+        editingResource: null,
+      });
+      push({ body: formatMessage(messages.updateSuccess), color: 'primary' });
+    } catch (e) {
+      push(formatMessage(messages.updateError));
+    }
   };
+
+  async loadResource() {
+    this.setState({ loading: true, error: false, resources: [] });
+    const { app, resourceName } = this.props;
+
+    try {
+      const { data: resources } = await axios.get(`/api/apps/${app.id}/${resourceName}`);
+      this.setState({ resources, loading: false });
+    } catch (e) {
+      this.setState({ loading: false, error: true });
+    }
+  }
 
   render() {
     const { app, resourceName } = this.props;
-    const { resources, editingResource } = this.state;
+    const { resources, editingResource, loading, error } = this.state;
 
-    if (!app) {
+    if (!app || loading) {
       return <Loader />;
+    }
+
+    if (error) {
+      return <FormattedMessage {...messages.loadError} />;
     }
 
     const { schema } = app.resources[resourceName];
@@ -146,6 +170,7 @@ export default class ResourceTable extends React.Component {
                                 onChange={this.onChange}
                                 placeholder={key}
                                 required={schema.required.includes(key)}
+                                type={schema.properties[key].format === 'email' ? 'email' : 'text'}
                                 value={editingResource ? editingResource[key] : ''}
                               />
                             </div>
