@@ -13,10 +13,14 @@ export default class CMS extends React.Component {
 
   render() {
     const { app, match } = this.props;
+    console.log('cms', match);
 
     return (
       <React.Fragment>
-        <SideMenu app={app} />
+        <Route
+          path={`${match.path}/:resourceName?`}
+          render={props => <SideMenu app={app} {...props} />}
+        />
         <Switch>
           <Route
             exact
