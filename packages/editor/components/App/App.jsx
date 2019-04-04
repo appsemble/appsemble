@@ -49,7 +49,7 @@ export default class App extends React.Component {
               <Switch>
                 <Route component={AppList} exact path="/" />
                 <Route
-                  path="/_/:id"
+                  path="/_/:id(\d+)"
                   render={props => (
                     <AppContext {...props}>
                       <Route component={Editor} exact path="/_/:id/edit" />
