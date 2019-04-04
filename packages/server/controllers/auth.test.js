@@ -63,6 +63,7 @@ describe('auth controller', () => {
         username: 'test@example.com',
         password: 'password',
         client_id: 'test',
+        scope: 'apps:read',
       });
     expect(token.access_token).toMatch(/^[a-zA-Z0-9\-_]+?\.[a-zA-Z0-9\-_]+?\.([a-zA-Z0-9\-_]+)?$/);
   });
@@ -157,7 +158,7 @@ describe('auth controller', () => {
       .send({ token: 'invalidkey' });
 
     expect(responseA.status).toBe(415);
-    expect(responseB.status).toBe(404);
+    expect(responseB.status).toBe(400);
     expect(responseC.status).toBe(404);
   });
 

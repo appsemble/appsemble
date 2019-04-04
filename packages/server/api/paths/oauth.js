@@ -24,6 +24,9 @@ export default {
                 provider: {
                   type: 'string',
                 },
+                organization: {
+                  type: 'string',
+                },
               },
             },
           },

@@ -1,5 +1,4 @@
 import normalize from '@appsemble/utils/normalize';
-import { SchemaValidationError } from '@appsemble/utils/validate';
 import validateStyle, { StyleValidationError } from '@appsemble/utils/validateStyle';
 import Boom from 'boom';
 import { isEqual, uniqWith } from 'lodash';
@@ -49,14 +48,6 @@ function handleAppValidationError(error, app) {
     throw Boom.conflict(`Another app with path “${app.path}” already exists`);
   }
 
-  if (error instanceof SyntaxError) {
-    throw Boom.badRequest('App recipe must be valid JSON.');
-  }
-
-  if (error instanceof SchemaValidationError) {
-    throw Boom.badRequest('App recipe is invalid.', error.data);
-  }
-
   if (error instanceof StyleValidationError) {
     throw Boom.badRequest('Provided CSS was invalid.');
   }
@@ -67,10 +58,6 @@ function handleAppValidationError(error, app) {
 
   if (error.message === 'Expected file ´sharedStyle´ to be css') {
     throw Boom.badRequest(error.message);
-  }
-
-  if (Array.isArray(error)) {
-    throw Boom.badRequest('Schema validation failed');
   }
 
   throw error;
