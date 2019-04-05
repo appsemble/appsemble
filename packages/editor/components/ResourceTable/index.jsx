@@ -1,7 +1,7 @@
 import { injectIntl } from 'react-intl';
 import { connect } from 'react-redux';
 
-import { push } from '../../../../actions/message';
+import { push } from '../../actions/message';
 import ResourceTable from './ResourceTable';
 
 function mapStateToProps(state, ownProps) {

@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import NavLink from '../../../NavLink';
+import NavLink from '../NavLink';
 import styles from './SideMenu.css';
 
 export default class SideMenu extends React.Component {
