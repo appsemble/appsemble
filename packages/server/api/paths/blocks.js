@@ -13,6 +13,7 @@ export default {
           $ref: '#/components/responses/blockDefinition',
         },
       },
+      security: [{ apiUser: ['blocks:write'] }],
     },
     get: {
       tags: ['block'],
@@ -121,6 +122,7 @@ export default {
           $ref: '#/components/responses/blockVersion',
         },
       },
+      security: [{ apiUser: ['blocks:write'] }],
     },
   },
   '/api/blocks/{organization}/{id}/versions/{version}': {

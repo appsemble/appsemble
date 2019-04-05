@@ -39,11 +39,7 @@ export default {
           $ref: '#/components/responses/app',
         },
       },
-      security: [
-        {
-          apiUser: ['apps:write'],
-        },
-      ],
+      security: [{ apiUser: ['apps:write'] }],
     },
     get: {
       tags: ['app'],
@@ -64,7 +60,7 @@ export default {
           },
         },
       },
-      security: [{ apiUser: ['apps:read', 'apps:write'] }],
+      security: [{ apiUser: ['apps:read'] }],
     },
   },
   '/api/apps/me': {
@@ -87,11 +83,7 @@ export default {
           },
         },
       },
-      security: [
-        {
-          apiUser: ['apps:write'],
-        },
-      ],
+      security: [{ apiUser: ['apps:read'] }],
     },
   },
   '/api/apps/{id}': {
@@ -150,7 +142,7 @@ export default {
           $ref: '#/components/responses/app',
         },
       },
-      security: [{ apiUser: ['apps:read', 'apps:write'] }],
+      security: [{ apiUser: ['apps:write'] }],
     },
   },
   '/api/apps/{id}/icon': {
@@ -201,7 +193,7 @@ export default {
           description: 'The icon has been updated succesfully.',
         },
       },
-      security: [{ apiUser: ['apps:read'] }],
+      security: [{ apiUser: ['apps:write'] }],
     },
     delete: {
       tags: ['app'],
@@ -215,7 +207,7 @@ export default {
           description: 'The icon has been deleted succesfully.',
         },
       },
-      security: [{ apiUser: ['apps:read'] }],
+      security: [{ apiUser: ['apps:write'] }],
     },
   },
   '/api/apps/{id}/style/core': {
@@ -306,6 +298,7 @@ export default {
           description: 'The block style has been updated succesfully.',
         },
       },
+      security: [{ apiUser: ['apps:write'] }],
     },
   },
 };
