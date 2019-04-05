@@ -16,7 +16,7 @@ export default class CMS extends React.Component {
     const { app, match } = this.props;
 
     return (
-      <React.Fragment>
+      <div className={styles.cmsContainer}>
         <Route
           path={`${match.path}/:resourceName?`}
           render={props => <SideMenu app={app} {...props} />}
@@ -40,7 +40,7 @@ export default class CMS extends React.Component {
             />
           </Switch>
         </div>
-      </React.Fragment>
+      </div>
     );
   }
 }
