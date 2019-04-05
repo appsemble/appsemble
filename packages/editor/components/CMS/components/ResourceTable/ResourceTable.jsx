@@ -20,7 +20,7 @@ export default class ResourceTable extends React.Component {
   };
 
   state = {
-    resources: [],
+    resources: undefined,
     deletingResource: undefined,
     editingResource: undefined,
     loading: true,
@@ -205,11 +205,15 @@ export default class ResourceTable extends React.Component {
       this.setState({ loading: true, error: false, resources: [] });
     }
 
-    try {
-      const { data: resources } = await axios.get(`/api/apps/${app.id}/${resourceName}`);
-      this.setState({ resources, loading: false });
-    } catch (e) {
-      this.setState({ loading: false, error: true });
+    if (app.schema) {
+      try {
+        const { data: resources } = await axios.get(`/api/apps/${app.id}/${resourceName}`);
+        this.setState({ resources, loading: false });
+      } catch (e) {
+        this.setState({ loading: false, error: true });
+      }
+    } else {
+      this.setState({ loading: false, resources: undefined });
     }
   }
 
@@ -230,6 +234,18 @@ export default class ResourceTable extends React.Component {
 
     if (error) {
       return <FormattedMessage {...messages.loadError} />;
+    }
+
+    if (!loading && resources === undefined) {
+      const { url } = app.resources[resourceName];
+      return (
+        <React.Fragment>
+          <FormattedMessage {...messages.notManaged} />
+          <a href={url} rel="noopener noreferrer" target="_blank">
+            {url}
+          </a>
+        </React.Fragment>
+      );
     }
 
     const { schema } = app.resources[resourceName];

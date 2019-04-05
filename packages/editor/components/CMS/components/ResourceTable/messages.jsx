@@ -12,6 +12,7 @@ export default defineMessages({
   createSuccess: 'Successfully created resource {id}!',
   deleteSuccess: 'Successfully deleted resource {id}.',
   updateSuccess: 'Successfully updated resource!',
+  notManaged: 'This resource is not managed by Appsemble. You can find this resource at: ',
   resourceWarningTitle: 'Deletion Warning',
   resourceWarning:
     'Are you sure you want to delete this resource? Deleted resources can not be recovered.',
