@@ -60,14 +60,8 @@ export default class Page extends React.Component {
   createBulmaQueryString = () => {
     const { app, page } = this.props;
     const params = { ...app.theme, ...page.theme };
-    const queryStringParams = new URLSearchParams();
-
-    Object.keys(params)
-      .sort()
-      .forEach(key => {
-        queryStringParams.append(key, params[key]);
-      });
-
+    const queryStringParams = new URLSearchParams(params);
+    queryStringParams.sort();
     return queryStringParams.toString();
   };
 
