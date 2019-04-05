@@ -1,4 +1,3 @@
-import path from 'path';
 import fs from 'fs';
 
 import sass from 'node-sass';
@@ -10,9 +9,16 @@ import sass from 'node-sass';
  * @returns {string} SASS string containing the base Appsemble style augmented by user parameters.
  */
 function processStyle(params) {
-  const style = fs.readFileSync(path.resolve(__dirname, 'bulma.scss'), 'utf8').split(/\r?\n/);
-  const bulmaPath = path.resolve(__dirname, '../../../../node_modules', 'bulma', 'bulma.sass');
-  const mappings = { primaryColor: 'primary', linkColor: 'link' };
+  const style = fs.readFileSync(require.resolve('./bulma.scss'), 'utf8').split(/\r?\n/);
+  const bulmaPath = require.resolve('bulma/bulma.sass');
+  const mappings = {
+    primaryColor: 'primary',
+    linkColor: 'link',
+    infoColor: 'info',
+    successColor: 'success',
+    warningColor: 'warning',
+    dangerColor: 'danger',
+  };
 
   Object.entries(params).forEach(([key, value]) => {
     if (mappings[key]) {
