@@ -62,15 +62,15 @@ export default class Page extends React.Component {
     const params = { ...app.theme, ...page.theme };
     const queryStringParams = new URLSearchParams(params);
     queryStringParams.sort();
-    return queryStringParams.toString();
+
+    return queryStringParams;
   };
 
   applyBulmaThemes = () => {
-    const { page, app } = this.props;
     const bulmaStyle = document.querySelector('#bulma-style-app');
-    const [bulmaUrl] = bulmaStyle.href.split('?');
-    bulmaStyle.href =
-      app.theme || page.theme ? `${bulmaUrl}?${this.createBulmaQueryString()}` : bulmaUrl;
+    const url = new URL(bulmaStyle.href);
+    url.searchParams = this.createBulmaQueryString();
+    bulmaStyle.href = url;
   };
 
   showDialog = dialog => {
