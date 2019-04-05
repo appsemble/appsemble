@@ -16,12 +16,14 @@ export default class CMS extends React.Component {
     const { app, match } = this.props;
 
     return (
-      <div className={styles.cmsContainer}>
-        <Route
-          path={`${match.path}/:resourceName?`}
-          render={props => <SideMenu app={app} {...props} />}
-        />
-        <div className={styles.cmsContent}>
+      <div className="columns">
+        <div className="column is-one-fifth">
+          <Route
+            path={`${match.path}/:resourceName?`}
+            render={props => <SideMenu app={app} {...props} />}
+          />
+        </div>
+        <div className={`column ${styles.cmsContent}`}>
           <Switch>
             <Route
               exact
