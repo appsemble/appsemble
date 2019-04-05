@@ -1,5 +1,5 @@
-import Busboy from 'busboy';
 import Boom from 'boom';
+import { isEmpty } from 'lodash';
 import { UniqueConstraintError } from 'sequelize';
 
 export async function createBlockDefinition(ctx) {
@@ -49,6 +49,11 @@ export async function createBlockVersion(ctx) {
   const { db } = ctx;
   const { BlockAsset, BlockDefinition, BlockVersion } = db.models;
   const name = `${organization}/${id}`;
+  const { data, ...files } = ctx.request.body;
+
+  if (isEmpty(files)) {
+    throw Boom.badRequest('At least one file should be uploaded');
+  }
 
   const blockDefinition = await BlockDefinition.findByPk(name, { raw: true });
 
@@ -56,128 +61,44 @@ export async function createBlockVersion(ctx) {
     throw Boom.notFound('Block definition not found');
   }
 
-  ctx.body = await db.transaction(
-    transaction =>
-      new Promise((resolve, reject) => {
-        const busboy = new Busboy(ctx.req);
-        const promises = [];
-        let result;
-        let resultDeferred;
-        let version;
-        const resultPromise = new Promise((res, rej) => {
-          resultDeferred = { resolve: res, reject: rej };
-        }).then(r => {
-          result = r;
-          return r;
-        });
-
-        function handleTransactionFinished(err) {
-          if (transaction.finished) {
-            return;
-          }
-          if (err instanceof UniqueConstraintError) {
-            throw Boom.conflict(`Block version “${name}@${version}” already exists`);
-          }
-          throw err;
-        }
-
-        function onError(error) {
-          reject(error);
-          busboy.removeAllListeners();
-        }
-
-        async function onSuccess() {
-          let files;
-          try {
-            files = await Promise.all(promises);
-          } catch (error) {
-            onError(error);
-            return;
-          }
-          if (files.length === 0) {
-            onError(Boom.badRequest('At least one file should be uploaded'));
-            return;
-          }
-          resolve({
-            ...result,
-            files,
-          });
-          busboy.removeAllListeners();
-        }
-
-        busboy.on('file', (fieldname, stream, filename, encoding, mime) => {
-          const bufs = [];
-          stream.on('data', data => {
-            bufs.push(data);
-          });
-          stream.on('end', () => {
-            if (result) {
-              promises.push(
-                BlockAsset.create(
-                  {
-                    name,
-                    version: result.version,
-                    filename,
-                    mime,
-                    content: Buffer.concat(bufs),
-                  },
-                  { transaction },
-                ).then(() => filename, handleTransactionFinished),
-              );
-            } else {
-              promises.push(
-                BlockAsset.create(
-                  {
-                    filename,
-                    mime,
-                    content: Buffer.concat(bufs),
-                  },
-                  { transaction },
-                )
-                  .then(async row => {
-                    bufs.splice(0, bufs.length);
-                    await resultPromise;
-                    await row.update(
-                      { name, version: result.version },
-                      { fields: ['name', 'version'], transaction },
-                    );
-                    return filename;
-                  })
-                  .catch(handleTransactionFinished),
-              );
-            }
-          });
-        });
-        busboy.on('field', async (fieldname, content) => {
-          try {
-            if (fieldname !== 'data') {
-              throw Boom.badRequest(`Unexpected field: ${fieldname}`);
-            }
-            const versionData = {
-              actions: null,
-              position: null,
-              resources: null,
-              ...JSON.parse(content),
+  try {
+    await db.transaction(async transaction => {
+      const {
+        actions = null,
+        position = null,
+        resources = null,
+        version,
+      } = await BlockVersion.create({ ...data, name }, { transaction });
+      const fileKeys = await Promise.all(
+        Object.entries(files).map(async ([key, file]) => {
+          await BlockAsset.create(
+            {
               name,
-            };
-            ({ version } = versionData);
-            await BlockVersion.create(versionData, { transaction }).catch(
-              handleTransactionFinished,
-            );
-            resultDeferred.resolve(versionData);
-          } catch (error) {
-            busboy.emit('error', error);
-          }
-        });
-        busboy.on('finish', onSuccess);
-        busboy.on('error', onError);
-        busboy.on('partsLimit', onError);
-        busboy.on('filesLimit', onError);
-        busboy.on('fieldsLimit', onError);
-        ctx.req.pipe(busboy);
-      }),
-  );
-  ctx.status = 201;
+              version: data.version,
+              filename: key,
+              mime: file.mime,
+              content: file.contents,
+            },
+            { transaction },
+          );
+          return key;
+        }),
+      );
+      ctx.body = {
+        actions,
+        files: fileKeys,
+        name,
+        position,
+        resources,
+        version,
+      };
+    });
+  } catch (err) {
+    if (err instanceof UniqueConstraintError) {
+      throw Boom.conflict(`Block version “${name}@${data.version}” already exists`);
+    }
+    throw err;
+  }
 }
 
 export async function getBlockVersion(ctx) {
@@ -228,10 +149,10 @@ export async function getBlockAsset(ctx) {
   const name = `${organization}/${id}`;
   const { BlockAsset } = ctx.db.models;
   const asset = await BlockAsset.findOne({
-    where: { name, version, filename: path },
+    where: { name, version, filename: path.join('/') },
   });
   if (asset == null) {
-    ctx.status = 404;
+    ctx.throw(404);
     return;
   }
   ctx.type = asset.mime;

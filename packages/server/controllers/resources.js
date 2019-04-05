@@ -7,15 +7,19 @@ function verifyResourceDefinition(app, resourceType) {
     throw Boom.notFound('App not found');
   }
 
-  if (!app.definition.definitions) {
+  if (!app.definition.resources) {
     throw Boom.notFound('App does not have any resources defined');
   }
 
-  if (!app.definition.definitions[resourceType]) {
+  if (!app.definition.resources[resourceType]) {
     throw Boom.notFound(`App does not have resources called ${resourceType}`);
   }
 
-  return app.definition.definitions[resourceType];
+  if (!app.definition.resources[resourceType].schema) {
+    throw Boom.notFound(`App does not have a schema for resources called ${resourceType}`);
+  }
+
+  return app.definition.resources[resourceType].schema;
 }
 
 function generateQuery(ctx) {
@@ -61,7 +65,7 @@ const deepRename = (object, keys) => {
   return obj;
 };
 
-export async function getAll(ctx) {
+export async function queryResources(ctx) {
   const query = generateQuery(ctx);
   const { appId, resourceType } = ctx.params;
   const { App } = ctx.db.models;
@@ -87,7 +91,7 @@ export async function getAll(ctx) {
   }
 }
 
-export async function getOne(ctx) {
+export async function getResourceById(ctx) {
   const { appId, resourceType, resourceId } = ctx.params;
   const { App } = ctx.db.models;
 
@@ -103,7 +107,7 @@ export async function getOne(ctx) {
   ctx.body = { id: resource.id, ...resource.data };
 }
 
-export async function create(ctx) {
+export async function createResource(ctx) {
   const { appId, resourceType } = ctx.params;
   const { App } = ctx.db.models;
 
@@ -111,7 +115,7 @@ export async function create(ctx) {
   verifyResourceDefinition(app, resourceType);
 
   const resource = ctx.request.body;
-  const schema = app.definition.definitions[resourceType];
+  const { schema } = app.definition.resources[resourceType];
 
   try {
     await validate(schema, resource);

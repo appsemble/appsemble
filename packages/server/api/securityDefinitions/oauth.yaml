@@ -1,7 +1,0 @@
-oauthPassword:
-  type: oauth2
-  flow: password
-  tokenUrl: /api/oauth/token
-  scopes:
-    apps:read: read app definitions
-    apps:write: overwrite or create app definitions

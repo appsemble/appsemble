@@ -63,6 +63,7 @@ describe('auth controller', () => {
         username: 'test@example.com',
         password: 'password',
         client_id: 'test',
+        scope: 'apps:read',
       });
     expect(token.access_token).toMatch(/^[a-zA-Z0-9\-_]+?\.[a-zA-Z0-9\-_]+?\.([a-zA-Z0-9\-_]+)?$/);
   });
@@ -88,7 +89,7 @@ describe('auth controller', () => {
         client_id: 'test',
       });
 
-    expect(response.status).toBe(401);
+    expect(response.status).toBe(400);
   });
 
   it('should not allow users to log in using invalid credentials', async () => {
@@ -108,7 +109,7 @@ describe('auth controller', () => {
         client_id: 'test',
       });
 
-    expect(response.status).toBe(401);
+    expect(response.status).toBe(400);
   });
 
   it('should not register invalid email addresses', async () => {
@@ -137,7 +138,9 @@ describe('auth controller', () => {
     expect(email.verified).toBe(false);
     expect(email.key).not.toBeNull();
 
-    const response = await request(server).get(`/api/email/verify?key=${email.key}`);
+    const response = await request(server)
+      .post('/api/email/verify')
+      .send({ token: email.key });
     expect(response.status).toBe(200);
 
     await email.reload();
@@ -146,12 +149,16 @@ describe('auth controller', () => {
   });
 
   it('should not verify empty or invalid keys', async () => {
-    const responseA = await request(server).get('/api/email/verify');
-    const responseB = await request(server).get('/api/email/verify?key');
-    const responseC = await request(server).get('/api/email/verify?key=invalidkey');
+    const responseA = await request(server).post('/api/email/verify');
+    const responseB = await request(server)
+      .post('/api/email/verify')
+      .send({ token: null });
+    const responseC = await request(server)
+      .post('/api/email/verify')
+      .send({ token: 'invalidkey' });
 
-    expect(responseA.status).toBe(400);
-    expect(responseB.status).toBe(404);
+    expect(responseA.status).toBe(415);
+    expect(responseB.status).toBe(400);
     expect(responseC.status).toBe(404);
   });
 

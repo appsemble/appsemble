@@ -1,0 +1,13 @@
+{
+  "name": "@appsemble/list",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "@appsemble/react": "^1.0.0",
+    "@appsemble/react-components": "^1.0.0",
+    "@appsemble/utils": "^1.0.0",
+    "prop-types": "^15.7.2",
+    "react": "^16.8.4",
+    "react-intl": "^2.8.0"
+  }
+}

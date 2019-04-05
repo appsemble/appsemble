@@ -214,9 +214,15 @@ describe('app controller', () => {
       );
 
     expect(body).toStrictEqual({
-      error: 'Bad Request',
-      message: 'organizationId is required.',
-      statusCode: 400,
+      errors: [
+        {
+          code: 'OBJECT_MISSING_REQUIRED_PROPERTY',
+          message: 'Missing required property: organizationId',
+          params: ['organizationId'],
+          path: [],
+        },
+      ],
+      message: 'JSON schema validation failed',
     });
   });
 
@@ -723,7 +729,11 @@ describe('app controller', () => {
 
   it('should not allow invalid core stylesheets when updating an app', async () => {
     const app = await App.create(
-      { path: 'bar', definition: { name: 'Test App', defaultPage: 'Test Page' } },
+      {
+        path: 'bar',
+        definition: { name: 'Test App', defaultPage: 'Test Page' },
+        OrganizationId: organizationId,
+      },
       { raw: true },
     );
 
@@ -940,7 +950,7 @@ describe('app controller', () => {
   });
 
   it('should not allow to update an app using non-existent blocks', async () => {
-    const { body } = await request(server)
+    const { status } = await request(server)
       .put('/api/apps/1')
       .set('Authorization', token)
       .field(
@@ -963,14 +973,7 @@ describe('app controller', () => {
       )
       .field('organizationId', organizationId);
 
-    expect(body).toStrictEqual({
-      data: {
-        'pages.0.blocks.0': 'Unknown block version “@non/existent@0.0.0”',
-      },
-      error: 'Bad Request',
-      message: 'Unknown blocks or block versions found',
-      statusCode: 400,
-    });
+    expect(status).toBe(400);
   });
 
   it('should not allow to update an app using non-existent block versions', async () => {

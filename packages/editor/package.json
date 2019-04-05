@@ -8,6 +8,7 @@
     "axios": "^0.18.0",
     "classnames": "^2.2.6",
     "js-yaml": "^3.12.2",
+    "json-schema-ref-parser": "^6.1.0",
     "jwt-decode": "^2.2.0",
     "lodash.isequal": "^4.5.0",
     "monaco-editor": "^0.16.0",

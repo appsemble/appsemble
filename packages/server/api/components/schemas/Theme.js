@@ -1,0 +1,33 @@
+export default {
+  type: 'object',
+  description: 'A generic theme definition.',
+  additionalProperties: false,
+  properties: {
+    themeColor: {
+      $ref: '#/components/schemas/Color',
+      default: '#ffffff',
+      description: `The generic theme color of the app.
+
+        This is used for example in the URL bar on Android.
+      `,
+    },
+    splashColor: {
+      $ref: '#/components/schemas/Color',
+      description: `The background color of the PWA splash screen.
+
+        This defaults to the theme color.
+      `,
+    },
+    primaryColor: {
+      $ref: '#/definitions/Color',
+      default: '#5191ff',
+      description: `The primary color used within the app.
+      
+      This is used in various elements like the navbar.`,
+    },
+    linkColor: {
+      $ref: '#/definitions/Color',
+      description: 'The color used for links.',
+    },
+  },
+};

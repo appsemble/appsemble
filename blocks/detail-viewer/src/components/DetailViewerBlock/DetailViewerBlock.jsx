@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import { remapData } from '@appsemble/utils/remap';
+import { Loader } from '@appsemble/react-components';
 
 import FileRenderer from '../renderers/FileRenderer';
 import GeoCoordinatesRenderer from '../renderers/GeoCoordinatesRenderer';
@@ -48,7 +49,7 @@ export default class DetailViewerBlock extends React.Component {
     const { data } = this.state;
 
     if (data === undefined) {
-      return 'Loading…';
+      return <Loader />;
     }
 
     return (

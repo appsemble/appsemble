@@ -19,6 +19,7 @@
 - [Blocks](docs/blocks/blocks.md)
 - [action-button](docs/blocks/action-button.md)
 - [detail-viewer](docs/blocks/detail-viewer.md)
+- [list](docs/blocks/list.md)
 - [form](docs/blocks/form.md)
 - [map](docs/blocks/map.md)
 

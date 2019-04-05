@@ -41,7 +41,7 @@ export async function registerEmail(ctx) {
         {
           email: record.email,
           name: record.name,
-          url: `${ctx.origin}/api/email/verify?key=${key}`,
+          url: `${ctx.origin}/_/verify?token=${key}`,
         },
         smtp,
       );
@@ -111,13 +111,15 @@ export async function connectOAuth(ctx) {
 }
 
 export async function verifyEmail(ctx) {
-  const { key } = ctx.request.query;
+  const {
+    body: { token },
+  } = ctx.request;
   const { EmailAuthorization } = ctx.db.models;
 
-  const email = await EmailAuthorization.findOne({ where: { key } });
+  const email = await EmailAuthorization.findOne({ where: { key: token } });
 
   if (!email) {
-    throw Boom.notFound('Unable to verify this key.');
+    throw Boom.notFound('Unable to verify this token.');
   }
 
   email.verified = true;
@@ -127,7 +129,7 @@ export async function verifyEmail(ctx) {
   ctx.status = 200;
 }
 
-export async function resendVerification(ctx) {
+export async function resendEmailVerification(ctx) {
   const { email } = ctx.request.body;
   const { EmailAuthorization } = ctx.db.models;
   const { smtp } = ctx.state;
@@ -139,7 +141,7 @@ export async function resendVerification(ctx) {
       {
         email,
         name,
-        url: `${ctx.origin}/api/email/verify?key=${key}`,
+        url: `${ctx.origin}/_/verify?token=${key}`,
       },
       smtp,
     );
@@ -160,7 +162,7 @@ export async function requestResetPassword(ctx) {
     const token = crypto.randomBytes(40).toString('hex');
     await record.createResetPasswordToken({ token });
     await sendResetPasswordEmail(
-      { email, name, url: `${ctx.origin}/editor/edit-password?token=${token}` },
+      { email, name, url: `${ctx.origin}/_/edit-password?token=${token}` },
       smtp,
     );
   }
@@ -175,8 +177,7 @@ export async function resetPassword(ctx) {
   const tokenRecord = await ResetPasswordToken.findByPk(token);
 
   if (!tokenRecord) {
-    ctx.status = 404;
-    return;
+    throw Boom.notFound(`Unknown password reset token: ${token}`);
   }
 
   const password = await bcrypt.hash(ctx.request.body.password, 10);
@@ -184,6 +185,4 @@ export async function resetPassword(ctx) {
 
   await email.update({ password });
   await tokenRecord.destroy();
-
-  ctx.status = 204;
 }

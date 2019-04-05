@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@appsemble/react": "^1.0.0",
+    "@appsemble/react-components": "^1.0.0",
     "@appsemble/utils": "^1.0.0",
     "classnames": "^2.2.6",
     "leaflet": "^1.4.0",

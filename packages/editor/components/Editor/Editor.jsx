@@ -9,6 +9,7 @@ import React from 'react';
 import yaml from 'js-yaml';
 import validate, { SchemaValidationError } from '@appsemble/utils/validate';
 import validateStyle from '@appsemble/utils/validateStyle';
+import normalize from '@appsemble/utils/normalize';
 
 import MonacoEditor from './components/MonacoEditor';
 import styles from './Editor.css';
@@ -16,16 +17,20 @@ import messages from './messages';
 
 export default class Editor extends React.Component {
   static propTypes = {
+    getOpenApiSpec: PropTypes.func.isRequired,
     history: PropTypes.shape().isRequired,
     intl: PropTypes.shape().isRequired,
     location: PropTypes.shape().isRequired,
     match: PropTypes.shape().isRequired,
+    openApiSpec: PropTypes.shape(),
     push: PropTypes.func.isRequired,
   };
 
+  static defaultProps = {
+    openApiSpec: null,
+  };
+
   state = {
-    // eslint-disable-next-line react/no-unused-state
-    appSchema: {},
     recipe: '',
     style: '',
     sharedStyle: '',
@@ -43,6 +48,7 @@ export default class Editor extends React.Component {
 
   async componentDidMount() {
     const {
+      getOpenApiSpec,
       history,
       match,
       push,
@@ -55,30 +61,30 @@ export default class Editor extends React.Component {
       history.push('#editor');
     }
 
-    const {
-      data: {
-        definitions: { App: appSchema },
-      },
-    } = await axios.get('/api.json');
-
     try {
+      await getOpenApiSpec();
       const request = await axios.get(`/api/apps/${id}`);
-      const { data } = request;
-      const recipe = yaml.safeDump(data);
+      // Destructuring path, id and organizationId also hides these technical details for the user
+      const {
+        data: { id: dataId, path, organizationId, ...data },
+      } = request;
+      // Include path if the normalized app name does not equal path
+      const recipe = yaml.safeDump({
+        ...data,
+        ...(normalize(data.name) !== path && { path }),
+      });
       const { data: style } = await axios.get(`/api/apps/${id}/style/core`);
       const { data: sharedStyle } = await axios.get(`/api/apps/${id}/style/shared`);
 
       this.setState({
-        // eslint-disable-next-line react/no-unused-state
-        appSchema,
         recipe,
         style,
         sharedStyle,
         initialRecipe: recipe,
-        path: data.path,
+        path,
         iconURL: `/api/apps/${id}/icon`,
         // eslint-disable-next-line react/no-unused-state
-        organizationId: data.organizationId,
+        organizationId,
       });
     } catch (e) {
       if (e.response && (e.response.status === 404 || e.response.status === 401)) {
@@ -98,8 +104,8 @@ export default class Editor extends React.Component {
 
     this.setState(
       (
-        { appSchema, recipe, style, sharedStyle, organizationId },
-        { intl: { formatMessage }, match, push },
+        { recipe, style, sharedStyle, organizationId },
+        { intl: { formatMessage }, match, openApiSpec, push },
       ) => {
         let app;
         // Attempt to parse the YAML into a JSON object
@@ -118,7 +124,8 @@ export default class Editor extends React.Component {
           push(formatMessage(messages.invalidStyle));
           return { valid: false, dirty: false };
         }
-        validate(appSchema, app)
+        // eslint-disable-next-line react/prop-types
+        validate(openApiSpec.components.schemas.App, app)
           .then(() => {
             this.setState({ valid: true, dirty: false });
 
@@ -201,7 +208,7 @@ export default class Editor extends React.Component {
       const app = yaml.safeLoad(recipe);
       const originalApp = yaml.safeLoad(initialRecipe);
 
-      if (!isEqual(app.definitions, originalApp.definitions)) {
+      if (!isEqual(app.resources, originalApp.resources)) {
         this.setState({ warningDialog: true });
         return;
       }

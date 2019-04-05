@@ -214,3 +214,7 @@ export function requestResetPassword(email) {
 export function registerEmail(email, password, organization) {
   return async () => axios.post('/api/email', { email, password, organization });
 }
+
+export function verifyEmail(token) {
+  return async () => axios.post('/api/email/verify', { token });
+}

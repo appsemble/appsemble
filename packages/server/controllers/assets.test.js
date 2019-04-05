@@ -57,7 +57,9 @@ describe('asset controller', () => {
   });
 
   it('should accept empty files', async () => {
-    const response = await request(server).post('/api/assets');
+    const response = await request(server)
+      .post('/api/assets')
+      .send(Buffer.alloc(0));
     expect(response.status).toBe(201);
   });
 
