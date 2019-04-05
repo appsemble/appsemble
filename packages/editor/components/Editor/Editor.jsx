@@ -124,7 +124,8 @@ export default class Editor extends React.Component {
           push(formatMessage(messages.invalidStyle));
           return { valid: false, dirty: false };
         }
-        validate(openApiSpec.definitions.App, app)
+        // eslint-disable-next-line react/prop-types
+        validate(openApiSpec.components.schemas.App, app)
           .then(() => {
             this.setState({ valid: true, dirty: false });
 

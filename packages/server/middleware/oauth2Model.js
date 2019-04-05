@@ -13,37 +13,39 @@ export default function oauth2Model({ db, grant, secret }) {
     User,
   } = db.models;
 
+  async function getOrganizations(UserId) {
+    const organizations = await Organization.findAll({
+      include: {
+        model: User,
+        through: { where: { UserId } },
+        required: true,
+        attributes: ['id'],
+      },
+    });
+
+    return organizations.map(({ id }) => ({ id }));
+  }
+
+  async function generateToken(client, user, scope, expiresIn = 10800) {
+    // expires in 3 hours by default
+    return jwt.sign(
+      {
+        scopes: scope,
+        client_id: client.id,
+        user,
+      },
+      secret,
+      {
+        issuer: 'appsemble-api',
+        subject: `${user.id}`,
+        expiresIn,
+      },
+    );
+  }
+
   return {
-    async generateToken(client, user, scope, expiresIn = 10800) {
-      // expires in 3 hours by default
-      return jwt.sign(
-        {
-          scopes: scope,
-          client_id: client.id,
-          user,
-        },
-        secret,
-        {
-          issuer: 'appsemble-api',
-          subject: `${user.id}`,
-          expiresIn,
-        },
-      );
-    },
-
-    async getOrganizations(UserId) {
-      return Organization.findAll({
-        include: {
-          model: User,
-          through: { where: { UserId } },
-          required: true,
-          attributes: [],
-        },
-      }).map(organization => ({ id: organization.id }));
-    },
-
     async generateAccessToken(client, user, scope) {
-      return this.generateToken(client, user, scope);
+      return generateToken(client, user, scope);
     },
 
     async generateRefreshToken() {
@@ -51,7 +53,7 @@ export default function oauth2Model({ db, grant, secret }) {
     },
 
     async generateAuthorizationCode(client, user, scope) {
-      return this.generateToken(client, user, scope);
+      return generateToken(client, user, scope);
     },
 
     async getAccessToken(accessToken) {
@@ -63,7 +65,8 @@ export default function oauth2Model({ db, grant, secret }) {
 
       try {
         const payload = jwt.verify(accessToken, secret);
-        const organizations = await this.getOrganizations(payload.sub);
+
+        const organizations = await getOrganizations(payload.sub);
 
         return {
           accessToken,
@@ -86,7 +89,7 @@ export default function oauth2Model({ db, grant, secret }) {
 
       try {
         const dec = jwt.verify(token.token, secret);
-        const organizations = await this.getOrganizations(dec.sub);
+        const organizations = await getOrganizations(dec.sub);
 
         return {
           refreshToken,
@@ -113,7 +116,7 @@ export default function oauth2Model({ db, grant, secret }) {
       // The duration of the generated JWT.
       expiresAt.setTime(expiresAt.getTime() + 3 * 60 * 60 * 1000);
 
-      const organizations = await this.getOrganizations(token.UserId);
+      const organizations = await getOrganizations(token.UserId);
 
       return {
         code: authorizationCode,
@@ -158,11 +161,11 @@ export default function oauth2Model({ db, grant, secret }) {
     async getUser(username, password) {
       const email = await EmailAuthorization.findOne({ where: { email: username }, raw: true });
 
-      if (!(email && bcrypt.compareSync(password, email.password))) {
+      if (!(email && (await bcrypt.compare(password, email.password)))) {
         return false;
       }
 
-      const organizations = await this.getOrganizations(email.UserId);
+      const organizations = await getOrganizations(email.UserId);
 
       return {
         id: email.UserId,
@@ -204,9 +207,5 @@ export default function oauth2Model({ db, grant, secret }) {
       // we want to manage these manually.
       return true;
     },
-
-    // XXX: Implement when implementing scopes
-    // async validateScope(user, client, scope) {
-    // },
   };
 }

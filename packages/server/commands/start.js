@@ -1,11 +1,8 @@
-import fs from 'fs';
-import path from 'path';
-
 import { AppsembleError, logger } from '@appsemble/node-utils';
 import * as Sentry from '@sentry/node';
-import yaml from 'js-yaml';
 import Koa from 'koa';
 
+import api from '../api';
 import loggerMiddleware from '../middleware/logger';
 import configureStatic from '../utils/configureStatic';
 import createServer from '../utils/createServer';
@@ -171,9 +168,8 @@ export async function handler(argv, webpackConfigs) {
   }
 
   await createServer({ app, argv, db, grantConfig, smtp, secret: argv.oauthSecret });
-  const { info } = yaml.safeLoad(fs.readFileSync(path.resolve(__dirname, '../api/api.yaml')));
 
   app.listen(argv.port || PORT, '0.0.0.0', () => {
-    logger.info(info.description);
+    logger.info(api(argv).info.description);
   });
 }

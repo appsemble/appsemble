@@ -1,7 +1,6 @@
 import Boom from 'boom';
-import getRawBody from 'raw-body';
 
-export async function getOne(ctx) {
+export async function getAssetById(ctx) {
   const { id } = ctx.params;
   const { Asset } = ctx.db.models;
 
@@ -15,10 +14,11 @@ export async function getOne(ctx) {
   ctx.body = asset.data;
 }
 
-export async function create(ctx) {
-  const { Asset } = ctx.db.models;
-  const data = await getRawBody(ctx.req);
-  const asset = await Asset.create({ mime: ctx.request.type, data }, { raw: true });
+export async function createAsset(ctx) {
+  const { db, request } = ctx;
+  const { Asset } = db.models;
+  const { body, type } = request;
+  const asset = await Asset.create({ mime: type, data: body }, { raw: true });
 
   ctx.status = 201;
   ctx.body = { id: asset.id };

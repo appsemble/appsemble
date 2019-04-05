@@ -129,7 +129,7 @@ export async function verifyEmail(ctx) {
   ctx.status = 200;
 }
 
-export async function resendVerification(ctx) {
+export async function resendEmailVerification(ctx) {
   const { email } = ctx.request.body;
   const { EmailAuthorization } = ctx.db.models;
   const { smtp } = ctx.state;
@@ -177,8 +177,7 @@ export async function resetPassword(ctx) {
   const tokenRecord = await ResetPasswordToken.findByPk(token);
 
   if (!tokenRecord) {
-    ctx.status = 404;
-    return;
+    throw Boom.notFound(`Unknown password reset token: ${token}`);
   }
 
   const password = await bcrypt.hash(ctx.request.body.password, 10);
@@ -186,6 +185,4 @@ export async function resetPassword(ctx) {
 
   await email.update({ password });
   await tokenRecord.destroy();
-
-  ctx.status = 204;
 }

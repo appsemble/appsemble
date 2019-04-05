@@ -38,11 +38,12 @@ describe('organization controller', () => {
         filename: 'style.css',
       });
 
+    expect(responseA.status).toBe(204);
+
     const responseB = await request(server).get(
       `/api/organizations/${organizationId}/style/shared`,
     );
 
-    expect(responseA.status).toBe(204);
     expect(responseB.status).toBe(200);
     expect(responseB.text).toStrictEqual('body { color: red; }');
   });
