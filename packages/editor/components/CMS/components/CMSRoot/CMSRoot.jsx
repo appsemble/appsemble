@@ -22,7 +22,7 @@ export default class CMSRoot extends React.Component {
         </p>
         <ul>
           {Object.keys(app.resources).map(resource => (
-            <li>
+            <li key={resource}>
               <Link to={`${match.url}/${resource}`}>{resource}</Link>
             </li>
           ))}

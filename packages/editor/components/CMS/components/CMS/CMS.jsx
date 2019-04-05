@@ -19,10 +19,7 @@ export default class CMS extends React.Component {
     return (
       <div className="columns">
         <div className="column is-one-fifth">
-          <Route
-            path={`${match.path}/:resourceName?`}
-            render={props => <SideMenu app={app} {...props} />}
-          />
+          <SideMenu app={app} />
         </div>
         <div className={`column ${styles.cmsContent}`}>
           <Switch>
