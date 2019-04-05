@@ -19,15 +19,31 @@ export default {
       `,
     },
     primaryColor: {
-      $ref: '#/definitions/Color',
+      $ref: '#/components/schemas/Color',
       default: '#5191ff',
       description: `The primary color used within the app.
       
       This is used in various elements like the navbar.`,
     },
     linkColor: {
-      $ref: '#/definitions/Color',
+      $ref: '#/components/schemas/Color',
       description: 'The color used for links.',
+    },
+    infoColor: {
+      $ref: '#/components/schemas/Color',
+      description: 'The color used for informational messages.',
+    },
+    successColor: {
+      $ref: '#/components/schemas/Color',
+      description: 'The color used for successful actions.',
+    },
+    warningColor: {
+      $ref: '#/components/schemas/Color',
+      description: 'The color used for warning messages.',
+    },
+    dangerColor: {
+      $ref: '#/components/schemas/Color',
+      description: 'The color used for error messages.',
     },
   },
 };
