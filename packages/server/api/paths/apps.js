@@ -64,7 +64,7 @@ export default {
           },
         },
       },
-      security: [{ apiUser: ['apps:read', 'apps:write'] }, { asdf: ['apps:read'] }],
+      security: [{ apiUser: ['apps:read', 'apps:write'] }],
     },
   },
   '/api/apps/me': {
