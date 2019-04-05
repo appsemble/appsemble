@@ -177,8 +177,7 @@ export async function resetPassword(ctx) {
   const tokenRecord = await ResetPasswordToken.findByPk(token);
 
   if (!tokenRecord) {
-    ctx.throw(404);
-    return;
+    throw Boom.notFound(`Unknown password reset token: ${token}`);
   }
 
   const password = await bcrypt.hash(ctx.request.body.password, 10);
