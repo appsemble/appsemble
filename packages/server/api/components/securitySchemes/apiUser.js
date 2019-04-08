@@ -6,7 +6,7 @@ const scopes = {
   'organizations:read': 'Read organization information for the authenticated user.',
   'organizations:style': 'Update organization wide styles for apps or blocks',
   'organizations:write':
-    'Create, read, update, and delete organizations to which the user has write access.',
+    'Create, read, update, and delete organizations to which the user has write access. This includes for example organization member management.',
 };
 
 export default {
