@@ -204,7 +204,6 @@ export async function setAppIcon(ctx) {
   const {
     user: { organizations },
   } = ctx.state;
-  // XXX
   const icon = await getRawBody(ctx.req);
 
   const app = await App.findOne({ where: { id } });
