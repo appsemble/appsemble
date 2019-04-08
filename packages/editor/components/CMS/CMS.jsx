@@ -1,5 +1,5 @@
 import React from 'react';
-import { Route, Switch } from 'react-router-dom';
+import { Redirect, Route, Switch } from 'react-router-dom';
 import PropTypes from 'prop-types';
 
 import CMSRoot from '../CMSRoot';
@@ -24,11 +24,11 @@ export default class CMS extends React.Component {
         <div className={`column ${styles.cmsContent}`}>
           <Switch>
             <Route component={CMSRoot} exact path={match.path} />
-
             <Route
               component={ResourceTable}
               path={`${match.path}/:resourceName/:mode?/:resourceId?`}
             />
+            <Redirect to={match.path} />
           </Switch>
         </div>
       </div>

@@ -48,6 +48,8 @@ export default class App extends React.Component {
             {user ? (
               <Switch>
                 <Route component={AppList} exact path="/" />
+                {/* eslint-disable-next-line no-inline-comments */}
+                {/* XXX: This will be changed in #149 https://gitlab.com/appsemble/appsemble/issues/149 */}
                 <Route
                   path="/_/:id(\d+)"
                   render={props => (
