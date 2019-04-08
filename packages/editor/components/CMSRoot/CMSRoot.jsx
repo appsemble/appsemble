@@ -21,11 +21,13 @@ export default class CMSRoot extends React.Component {
           <FormattedMessage {...messages.hasResources} />
         </p>
         <ul>
-          {Object.keys(app.resources).map(resource => (
-            <li key={resource}>
-              <Link to={`${match.url}/${resource}`}>{resource}</Link>
-            </li>
-          ))}
+          {Object.keys(app.resources)
+            .sort()
+            .map(resource => (
+              <li key={resource}>
+                <Link to={`${match.url}/${resource}`}>{resource}</Link>
+              </li>
+            ))}
         </ul>
       </div>
     ) : (

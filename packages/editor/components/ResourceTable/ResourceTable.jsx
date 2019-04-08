@@ -240,10 +240,16 @@ export default class ResourceTable extends React.Component {
       const { url } = app.resources[resourceName];
       return (
         <React.Fragment>
-          <FormattedMessage {...messages.notManaged} />
-          <a href={url} rel="noopener noreferrer" target="_blank">
-            {url}
-          </a>
+          <FormattedMessage
+            {...messages.notManaged}
+            values={{
+              link: (
+                <a href={url} rel="noopener noreferrer" target="_blank">
+                  {url}
+                </a>
+              ),
+            }}
+          />
         </React.Fragment>
       );
     }

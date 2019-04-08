@@ -23,11 +23,13 @@ export default class SideMenu extends React.Component {
             </NavLink>
             {app.resources && (
               <ul>
-                {Object.keys(app.resources).map(resource => (
-                  <li key={resource}>
-                    <NavLink to={`${match.url}/${resource}`}>{resource}</NavLink>
-                  </li>
-                ))}
+                {Object.keys(app.resources)
+                  .sort()
+                  .map(resource => (
+                    <li key={resource}>
+                      <NavLink to={`${match.url}/${resource}`}>{resource}</NavLink>
+                    </li>
+                  ))}
               </ul>
             )}
           </li>
