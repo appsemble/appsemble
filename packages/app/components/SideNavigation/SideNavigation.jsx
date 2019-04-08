@@ -17,10 +17,12 @@ export default class SideNavigation extends React.Component {
     app: PropTypes.shape(),
     closeMenu: PropTypes.func.isRequired,
     logout: PropTypes.func.isRequired,
+    user: PropTypes.shape(),
   };
 
   static defaultProps = {
     app: null,
+    user: null,
   };
 
   onLogout = () => {
@@ -31,7 +33,7 @@ export default class SideNavigation extends React.Component {
   };
 
   render() {
-    const { app } = this.props;
+    const { app, user } = this.props;
 
     if (app == null) {
       return null;
@@ -51,13 +53,16 @@ export default class SideNavigation extends React.Component {
                 </li>
               ))}
           </ul>
-          <ul className="menu-list">
-            <li>
-              <button className={styles.logoutButton} onClick={this.onLogout} type="button">
-                <FormattedMessage {...messages.logout} />
-              </button>
-            </li>
-          </ul>
+
+          {user && (
+            <ul className="menu-list">
+              <li>
+                <button className={styles.logoutButton} onClick={this.onLogout} type="button">
+                  <FormattedMessage {...messages.logout} />
+                </button>
+              </li>
+            </ul>
+          )}
         </nav>
       </SideMenu>
     );
