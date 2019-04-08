@@ -35,8 +35,8 @@ export default class Page extends React.Component {
   };
 
   componentDidMount() {
-    const { getBlockDefs, page } = this.props;
-    this.applyBulmaThemes();
+    const { app, getBlockDefs, page } = this.props;
+    this.applyBulmaThemes(app, page);
     getBlockDefs(page.blocks);
   }
 
@@ -50,9 +50,9 @@ export default class Page extends React.Component {
   }
 
   componentDidUpdate({ page: prevPage }) {
-    const { getBlockDefs, page } = this.props;
+    const { app, getBlockDefs, page } = this.props;
     if (page !== prevPage) {
-      this.applyBulmaThemes();
+      this.applyBulmaThemes(app, page);
       getBlockDefs(page.blocks);
     }
   }
@@ -63,14 +63,14 @@ export default class Page extends React.Component {
     const queryStringParams = new URLSearchParams(params);
     queryStringParams.sort();
 
-    return queryStringParams;
+    return queryStringParams.toString();
   };
 
-  applyBulmaThemes = () => {
+  applyBulmaThemes = (app, page) => {
     const bulmaStyle = document.querySelector('#bulma-style-app');
-    const url = new URL(bulmaStyle.href);
-    url.searchParams = this.createBulmaQueryString();
-    bulmaStyle.href = url;
+    const [bulmaUrl] = bulmaStyle.href.split('?');
+    bulmaStyle.href =
+      app.theme || page.theme ? `${bulmaUrl}?${this.createBulmaQueryString()}` : bulmaUrl;
   };
 
   showDialog = dialog => {
