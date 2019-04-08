@@ -7844,7 +7844,7 @@ koas-body-parser@^0.1.6:
     type-is "^1.6.16"
     vfile "^4.0.0"
 
-koas-core@^0.1.6:
+koas-core@*, koas-core@^0.1.6:
   version "0.1.6"
   resolved "https://registry.yarnpkg.com/koas-core/-/koas-core-0.1.6.tgz#b77c0799d0d8169e89017fbe5162e866fb85a328"
   integrity sha512-PNlAPkg/yViqqIL6GLUpybAm7ZGVCWoRl0ACXpxy3agagNvBnGJ+bbLRpJn5FFo50wd92UDOVW5uNX3rLUHDFQ==

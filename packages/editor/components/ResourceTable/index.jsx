@@ -1,20 +1,19 @@
-import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
+import { connect } from 'react-redux';
 
 import { push } from '../../actions/message';
-import { getOpenApiSpec } from '../../actions/openApi';
-import Editor from './Editor';
+import ResourceTable from './ResourceTable';
 
 function mapStateToProps(state, ownProps) {
   return {
     app: state.apps.apps.find(app => app.id === Number(ownProps.match.params.id)),
-    openApiSpec: state.openApi.spec,
+    resourceName: ownProps.match.params.resourceName,
   };
 }
 
 export default injectIntl(
   connect(
     mapStateToProps,
-    { getOpenApiSpec, push },
-  )(Editor),
+    { push },
+  )(ResourceTable),
 );
