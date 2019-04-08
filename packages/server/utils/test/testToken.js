@@ -1,9 +1,15 @@
 import bcrypt from 'bcrypt';
 
-export default async function testToken(request, server, db, scope) {
+export default async function testToken(
+  request,
+  server,
+  db,
+  scope,
+  organizationId = 'testorganization',
+) {
   const { User, EmailAuthorization, OAuthClient } = db.models;
   const user = await User.create();
-  await user.createOrganization({ id: 'Test Organization' });
+  await user.createOrganization({ id: organizationId });
   await EmailAuthorization.create({
     email: 'test',
     password: bcrypt.hashSync('test', 10),
