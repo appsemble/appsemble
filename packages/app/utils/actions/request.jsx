@@ -4,7 +4,7 @@ import axios from 'axios';
 
 import uploadBlobs from '../uploadBlobs';
 
-export default function request({ blobs = {}, method = 'GET', schema, url }) {
+export default function request({ blobs = {}, method = 'GET', schema, query, url }) {
   const regex = /{(.+?)}/g;
   const mappers = url
     .match(regex)
@@ -20,6 +20,7 @@ export default function request({ blobs = {}, method = 'GET', schema, url }) {
       const req = {
         method: methodUpper,
         url: url.replace(regex, (match, filter) => mappers[filter](data)),
+        params: query,
       };
 
       if (methodUpper === 'PUT' || methodUpper === 'POST' || methodUpper === 'PATCH') {
