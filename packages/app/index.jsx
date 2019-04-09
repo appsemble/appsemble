@@ -1,4 +1,5 @@
 import 'roboto-fontface';
+
 import { init } from '@sentry/browser';
 import React from 'react';
 import ReactDOM from 'react-dom';

@@ -1,0 +1,10 @@
+@charset "utf-8";
+
+@import url(https://fonts.googleapis.com/css?family=Libre+Franklin|Open+Sans);
+
+// Set brand colors
+$blue: hsl(218, 100%, 66%) !default;
+
+// Update Bulma's global variables
+$family-sans-serif: 'Libre Franklin', sans-serif !default;
+$primary: $blue !default;

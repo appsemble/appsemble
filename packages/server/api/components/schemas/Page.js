@@ -32,6 +32,9 @@ export default {
         enum: ['*'],
       },
     },
+    theme: {
+      $ref: '#/components/schemas/Theme',
+    },
     blocks: {
       type: 'array',
       minItems: 1,

@@ -20,7 +20,7 @@ html(lang='en' data-app-id=(app.id) data-sentry-dsn=sentryDsn)
   link(rel='apple-touch-icon' href=`/${app.id}/icon-57.png?opaque`)
   link(rel='manifest' href=`/${app.id}/manifest.json`)
   title #{app.definition.name}
-  link(rel='stylesheet' href=bulmaURL)
+  link(rel='stylesheet' href=bulmaURL id="bulma-style-app")
   link(rel='stylesheet' href=faURL)
   each stylesheet in assets.filter(name => name.endsWith('.css'))
     link(rel='stylesheet' href=`/${stylesheet}`)

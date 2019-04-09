@@ -3,6 +3,9 @@ export default {
   description: 'A block that is displayed on a page.',
   required: ['type', 'version'],
   properties: {
+    theme: {
+      $ref: '#/components/schemas/Theme',
+    },
     type: {
       type: 'string',
       pattern: /^(@[a-z]([a-z\d-]{0,30}[a-z\d])?\/)?[a-z]([a-z\d-]{0,30}[a-z\d])$/,
