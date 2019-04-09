@@ -3,6 +3,7 @@ import * as k8s from '@kubernetes/client-node';
 import axios from 'axios';
 import { merge } from 'lodash';
 
+import pkg from '../../package.json';
 import appsembleDeployment from '../kubernetes/appsembleDeployment';
 import appsembleService from '../kubernetes/appsembleService';
 import ingress from '../kubernetes/ingress';
@@ -123,9 +124,20 @@ async function waitForServer({ tries, interval }) {
   }
 }
 
+/**
+ * Register a user account for uploading blocks.
+ */
+async function register() {
+  logger.info('Registering bot user account');
+  const { email, password } = pkg.appsembleServer;
+  await axios.post('/api/email', { email, password, organization: 'appsemble' });
+  logger.info(`Registered user ${email}`);
+}
+
 async function main() {
   await deploy();
   await waitForServer({ tries: Infinity, interval: 5e3 });
+  await register();
 }
 
 main().catch(err => {

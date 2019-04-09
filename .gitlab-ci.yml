@@ -72,9 +72,11 @@ deploy:review:
     on_stop: deploy:review:stop
   script:
     - yarn --frozen-lockfile
-    - node -r esm config/bin/deploy.js
-    # This allows passing the CI_ENVIRONMENT_URL for use in later stages.
+    # This allows passing these variables for use in later stages.
+    - yarn appsemble config set email bot@appsemble.com
+    - yarn appsemble config set password "$(openssl rand -base64 12)"
     - yarn appsemble config set remote "$CI_ENVIRONMENT_URL"
+    - node -r esm config/bin/deploy.js
   artifacts:
     expire_in: 1 day
     paths:
