@@ -4,7 +4,10 @@
   "private": true,
   "appsemble": {
     "actions": {
-      "markerClick": {}
+      "markerClick": {},
+      "load": {
+        "required": true
+      }
     },
     "output": "dist",
     "resources": {

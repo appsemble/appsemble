@@ -19,14 +19,20 @@ function makeFilter(fields, bounds) {
 }
 
 export default async function loadMarkers(map, actions, resources, parameters, fetched, get, data) {
-  const response = await resources.marker.query({
-    $filter: makeFilter(
-      [parameters.latitude || 'latitude', parameters.longitude || 'longitude'],
-      map.getBounds(),
-    ),
-  });
+  const load = {
+    ...actions.load,
+    query: {
+      ...actions.load.query,
+      $filter: makeFilter(
+        [parameters.latitude || 'latitude', parameters.longitude || 'longitude'],
+        map.getBounds(),
+      ),
+    },
+  };
 
-  response.data.forEach(marker => {
+  const markers = await load.dispatch();
+
+  markers.forEach(marker => {
     if (fetched.has(marker.id)) {
       return;
     }
