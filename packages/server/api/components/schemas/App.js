@@ -72,6 +72,12 @@ export default {
             type: 'string',
             format: 'uri',
           },
+          clientId: {
+            type: 'string',
+          },
+          scope: {
+            type: 'string',
+          },
         },
       },
     },
