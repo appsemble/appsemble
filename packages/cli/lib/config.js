@@ -64,7 +64,7 @@ export async function requestToken(remote, username, password) {
       username,
       password,
       client_id: 'appsemble-editor',
-      scope: 'apps:read apps:write',
+      scope: 'apps:read apps:write blocks:write organizations:style',
     }),
   );
 }

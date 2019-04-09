@@ -130,7 +130,11 @@ async function waitForServer({ tries, interval }) {
 async function register() {
   logger.info('Registering bot user account');
   const { email, password } = pkg.appsembleServer;
-  await axios.post('/api/email', { email, password, organization: 'appsemble' });
+  await axios.post(
+    '/api/email',
+    { email, password, organization: 'appsemble' },
+    { baseURL: CI_ENVIRONMENT_URL },
+  );
   logger.info(`Registered user ${email}`);
 }
 
