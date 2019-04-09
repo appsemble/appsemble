@@ -80,13 +80,11 @@ export default class Block extends React.Component {
       ...block.theme,
     };
 
-    const bulmaUrl =
-      app.theme || pageTheme || block.theme
-        ? `${bulmaBase}?${this.createBulmaQueryString()}`
-        : bulmaBase;
-
     const urlParams = new URLSearchParams(bulmaParams);
     urlParams.sort();
+
+    const bulmaUrl =
+      app.theme || pageTheme || block.theme ? `${bulmaBase}?${urlParams}` : bulmaBase;
 
     await Promise.all(
       [
