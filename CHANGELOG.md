@@ -12,15 +12,18 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - App: Add support for app description field.
 - App: Add ´resource´ action type. This further simplifies the dataflow for retrieving and creating
   data.
+- App: Add support for building query strings for `resource` and `request` actions.
 - Block: Add List block.
 - CLI: Add support for authentication.
 - Editor: Add support for app description field.
+- Editor: Add `Person App`, `Holiday App`, and `Unlittered App` app templates.
 - Server: Add support for app description field.
 
 ### Changed
 
 - App: Rename ´definitions´ to ´resources´ in app definition.
 - Block: Rewrite and simplify detail-viewer block.
+- Block: Replace usage of resource in map block with a load action.
 
 ## [0.4.2] - 2019-02-26
 
