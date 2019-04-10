@@ -31,10 +31,6 @@ export default {
         The exact meaning of the parameters depends on the block type.
       `,
     },
-    resources: {
-      type: 'object',
-      description: 'A legacy resource definition. Don’t use this.',
-    },
     actions: {
       type: 'object',
       description: 'A mapping of actions that can be fired by the block to action handlers.',
