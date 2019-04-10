@@ -20,7 +20,7 @@ export default function request({ blobs = {}, method = 'GET', schema, query, url
       const req = {
         method: methodUpper,
         url: url.replace(regex, (match, filter) => mappers[filter](data)),
-        params: query,
+        params: methodUpper === 'GET' ? { ...query, ...data } : query,
       };
 
       if (methodUpper === 'PUT' || methodUpper === 'POST' || methodUpper === 'PATCH') {
