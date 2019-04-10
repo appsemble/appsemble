@@ -223,6 +223,7 @@ provision:blocks:
   script:
     - npm install ./packages/node-utils/*.tgz
     - npm install ./packages/cli/*.tgz
+    - yarn appsemble login
     - yarn appsemble block register --ignore-conflict blocks/action-button
     - yarn appsemble block register --ignore-conflict blocks/detail-viewer
     - yarn appsemble block register --ignore-conflict blocks/list
