@@ -5,8 +5,9 @@ import { push } from '../../actions/message';
 import { getOpenApiSpec } from '../../actions/openApi';
 import Editor from './Editor';
 
-function mapStateToProps(state) {
+function mapStateToProps(state, ownProps) {
   return {
+    app: state.apps.apps.find(app => app.id === Number(ownProps.match.params.id)),
     openApiSpec: state.openApi.spec,
   };
 }

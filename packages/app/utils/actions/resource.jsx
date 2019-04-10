@@ -9,7 +9,7 @@ function getBlobs(resource) {
   return { type, method, url, ...(blobs?.serialize && blobs.serialize) };
 }
 
-function get({ resource: name }, app) {
+function get({ resource: name, query: params }, app) {
   const { schema, ...resource } = app.resources[name];
   const method = resource?.get?.method || 'GET';
   const url = resource?.get?.url || resource.url || `/api/apps/${app.id}/${name}`;
@@ -19,16 +19,17 @@ function get({ resource: name }, app) {
     blobs: getBlobs(resource),
     method,
     url: `${url}${!url.endsWith('/') && '/'}{${id}}`,
+    query: params,
     schema,
   });
 }
 
-function query({ resource: name }, app) {
+function query({ resource: name, query: params }, app) {
   const { schema, ...resource } = app.resources[name];
   const method = resource?.query?.method || 'GET';
   const url = resource?.query?.url || resource.url || `/api/apps/${app.id}/${name}`;
 
-  return request({ blobs: getBlobs(resource), method, url, schema });
+  return request({ blobs: getBlobs(resource), method, url, query: params, schema });
 }
 
 function create({ resource: name }, app) {
@@ -39,7 +40,7 @@ function create({ resource: name }, app) {
   return request({ blobs: getBlobs(resource), method, url, schema });
 }
 
-function update({ resource: name }, app) {
+function update({ resource: name, query: params }, app) {
   const { schema, ...resource } = app.resources[name];
   const method = resource?.update?.method || 'PUT';
   const url = resource?.update?.url || resource.url || `/api/apps/${app.id}/${name}`;
@@ -49,11 +50,12 @@ function update({ resource: name }, app) {
     blobs: getBlobs(resource),
     method,
     url: `${url}${!url.endsWith('/') && '/'}{${id}}`,
+    query: params,
     schema,
   });
 }
 
-function remove({ resource: name }, app) {
+function remove({ resource: name, query: params }, app) {
   const { schema, ...resource } = app.resources[name];
   const method = resource?.delete?.method || 'DELETE';
   const url = resource?.delete?.url || resource.url || `/api/apps/${app.id}/${name}`;
@@ -63,6 +65,7 @@ function remove({ resource: name }, app) {
     blobs: getBlobs(resource),
     method,
     url: `${url}${!url.endsWith('/') && '/'}{${id}}`,
+    query: params,
     schema,
   });
 }

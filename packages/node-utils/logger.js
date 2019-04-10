@@ -1,14 +1,54 @@
-import os from 'os';
+import { EOL } from 'os';
 import util from 'util';
 
+import chalk from 'chalk';
+import highlight from 'cli-highlight';
 import winston from 'winston';
 
 const levels = ['crit', 'error', 'warn', 'info', 'verbose', 'silly'];
 const DEFAULT_LEVEL = levels.findIndex(level => level === 'info');
 const padding = Math.max(...levels.map(({ length }) => length));
 
+function headerCase(header) {
+  return header.replace(/(^|-)\w/g, a => a.toUpperCase());
+}
+
+function httpErrorToString(error) {
+  const { request, response } = error;
+  return [
+    chalk.blue.bold('Request:'),
+    highlight(
+      [
+        `${request.method} ${request.path} HTTP/${request.res.httpVersion}`,
+        ...Object.entries(request.getHeaders())
+          .map(([key, value]) => [headerCase(key), value])
+          .map(([key, value]) => `${key}: ${key === 'Authorization' ? 'xxxxxxxxxx' : value}`)
+          .sort(),
+      ].join(EOL),
+      { language: 'http', ignoreIllegals: true },
+    ),
+    '',
+    chalk.blue.bold('Response:'),
+    highlight(
+      [
+        `HTTP/${request.res.httpVersion} ${response.status} ${response.statusText}`,
+        ...Object.entries(response.headers)
+          .map(([key, value]) => [headerCase(key), value])
+          .map(pair => pair.join(': '))
+          .sort(),
+        '',
+        response.data instanceof Object ? JSON.stringify(response.data, null, 2) : response.data,
+      ].join(EOL),
+      { language: 'http', ignoreIllegals: true },
+    ),
+  ].join(EOL);
+}
+
 function toString(info) {
   if (info instanceof Error) {
+    if (info.response) {
+      return httpErrorToString(info);
+    }
     return info.stack;
   }
   if (typeof info.message === 'string') {
@@ -33,7 +73,7 @@ export const logger = winston.createLogger({
     winston.format.colorize(),
     winston.format.timestamp({ format: 'HH:mm:ss' }),
     winston.format.printf(({ timestamp, level, lines }) =>
-      lines.map(line => `${timestamp} [${level}]: ${line}`).join(os.EOL),
+      lines.map(line => `${timestamp} [${level}]: ${line}`).join(EOL),
     ),
   ),
   transports: [new winston.transports.Console()],

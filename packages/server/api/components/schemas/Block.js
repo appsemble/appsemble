@@ -3,6 +3,9 @@ export default {
   description: 'A block that is displayed on a page.',
   required: ['type', 'version'],
   properties: {
+    theme: {
+      $ref: '#/components/schemas/Theme',
+    },
     type: {
       type: 'string',
       pattern: /^(@[a-z]([a-z\d-]{0,30}[a-z\d])?\/)?[a-z]([a-z\d-]{0,30}[a-z\d])$/,
@@ -27,10 +30,6 @@ export default {
 
         The exact meaning of the parameters depends on the block type.
       `,
-    },
-    resources: {
-      type: 'object',
-      description: 'A legacy resource definition. Don’t use this.',
     },
     actions: {
       type: 'object',

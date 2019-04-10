@@ -14,6 +14,7 @@ import styles from './Page.css';
  */
 export default class Page extends React.Component {
   static propTypes = {
+    app: PropTypes.shape().isRequired,
     getBlockDefs: PropTypes.func.isRequired,
     hasErrors: PropTypes.bool.isRequired,
     location: PropTypes.shape().isRequired,
@@ -34,8 +35,8 @@ export default class Page extends React.Component {
   };
 
   componentDidMount() {
-    const { getBlockDefs, page } = this.props;
-
+    const { app, getBlockDefs, page } = this.props;
+    this.applyBulmaThemes(app, page);
     getBlockDefs(page.blocks);
   }
 
@@ -49,11 +50,28 @@ export default class Page extends React.Component {
   }
 
   componentDidUpdate({ page: prevPage }) {
-    const { getBlockDefs, page } = this.props;
+    const { app, getBlockDefs, page } = this.props;
     if (page !== prevPage) {
+      this.applyBulmaThemes(app, page);
       getBlockDefs(page.blocks);
     }
   }
+
+  createBulmaQueryString = () => {
+    const { app, page } = this.props;
+    const params = { ...app.theme, ...page.theme };
+    const queryStringParams = new URLSearchParams(params);
+    queryStringParams.sort();
+
+    return queryStringParams.toString();
+  };
+
+  applyBulmaThemes = (app, page) => {
+    const bulmaStyle = document.querySelector('#bulma-style-app');
+    const [bulmaUrl] = bulmaStyle.href.split('?');
+    bulmaStyle.href =
+      app.theme || page.theme ? `${bulmaUrl}?${this.createBulmaQueryString()}` : bulmaUrl;
+  };
 
   showDialog = dialog => {
     this.setState({ dialog });

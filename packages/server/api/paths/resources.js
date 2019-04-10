@@ -79,5 +79,33 @@ export default {
         },
       },
     },
+    put: {
+      tags: ['resource'],
+      description: 'Update an existing app resource.',
+      operationId: 'updateResource',
+      requestBody: {
+        required: true,
+        $ref: '#/components/requestBodies/resource',
+      },
+      responses: {
+        200: {
+          description: 'The updated resource.',
+          $ref: '#/components/responses/resource',
+        },
+      },
+      security: [{ apiUser: ['apps:write'] }],
+    },
+    delete: {
+      tags: ['resource'],
+      description: 'Delete an existing app resource.',
+      operationId: 'deleteResource',
+      responses: {
+        204: {
+          description: 'The app resource has been deleted succesfully.',
+          $ref: '#/components/responses/resource',
+        },
+      },
+      security: [{ apiUser: ['apps:write'] }],
+    },
   },
 };

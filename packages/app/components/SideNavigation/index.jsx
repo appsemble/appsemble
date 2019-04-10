@@ -7,6 +7,7 @@ import SideNavigation from './SideNavigation';
 function mapStateToProps(state) {
   return {
     app: state.app.app,
+    user: state.user.user,
   };
 }
 

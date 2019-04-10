@@ -102,11 +102,6 @@ export interface BootstrapParams {
   pageParameters?: PageParameters;
 
   /**
-   * @deprecated
-   */
-  resources?: {};
-
-  /**
    * The shadow root to which DOM elements may be appended.
    */
   shadowRoot: ShadowRoot;

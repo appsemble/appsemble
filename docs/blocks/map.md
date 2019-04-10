@@ -9,16 +9,10 @@ Markers can be loaded from external sources or from Appsemble's resource API.
 
 ## Actions
 
-| Action      | Required | Description                                           |
-| ----------- | -------- | ----------------------------------------------------- |
-| markerClick | false    | Action that gets dispatched when a marker is clicked. |
-
-## Resources
-
-| Resource   | Required | Description                                            |
-| ---------- | -------- | ------------------------------------------------------ |
-| marker     | true     | An object used to describe how to retrieve marker data |
-| marker.url | true     | The API URL used to fetch marker data                  |
+| Action      | Required | Description                                                                                                                                                                               |
+| ----------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| markerClick | false    | Action that gets dispatched when a marker is clicked.                                                                                                                                     |
+| load        | true     | Action that gets dispatched when loading markers initially as well as when moving the map around. Will apply [OData filters](https://www.odata.org/) to limit the range of items fetched. |
 
 ## Parameters
 

@@ -1,4 +1,5 @@
 import path from 'path';
+import qs from 'querystring';
 
 import pug from 'pug';
 
@@ -28,8 +29,8 @@ export default async function indexHandler(ctx) {
       process.env.NODE_ENV !== 'production' && "'unsafe-eval'",
     ],
     'img-src': ['*', 'blob:', 'data:'],
-    'style-src': ["'self'", "'unsafe-inline'"],
-    'font-src': ["'self'", 'data:'],
+    'style-src': ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
+    'font-src': ["'self'", 'data:', 'https://fonts.gstatic.com'],
   });
   ctx.set('Content-Security-Policy', csp);
 
@@ -48,7 +49,7 @@ export default async function indexHandler(ctx) {
       ctx.body = render({
         app,
         assets,
-        bulmaURL,
+        bulmaURL: `${bulmaURL}?${qs.stringify(app.definition.theme)}`,
         faURL,
         sentryDsn: argv.sentryDsn,
       });

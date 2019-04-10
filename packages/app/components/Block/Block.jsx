@@ -1,16 +1,12 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 import ReactDOM from 'react-dom';
+import normalize from '@appsemble/utils/normalize';
 
 import makeActions from '../../utils/makeActions';
-import makeResources from '../../utils/makeResources';
 import { prefixURL } from '../../utils/blockUtils';
 import { callBootstrap } from '../../utils/bootstrapper';
 import styles from './Block.css';
-
-const BULMA_URL = Array.prototype.find.call(document.styleSheets, sheet =>
-  sheet.href.startsWith(`${window.location.origin}/bulma/`),
-).href;
 
 const FA_URL = Array.prototype.find.call(document.styleSheets, sheet =>
   sheet.href.startsWith(`${window.location.origin}/fa/`),
@@ -71,10 +67,26 @@ export default class Block extends React.Component {
     this.attached = true;
     const shadowRoot = div.attachShadow({ mode: 'closed' });
     const actions = makeActions(blockDef, app, block, history, showDialog, actionCreators);
-    const resources = makeResources(blockDef, block);
+    const { theme: pageTheme } = app.pages.find(
+      page => normalize(page.name) === match.path.slice(1).split('/')[0],
+    );
+    const BULMA_URL = document.querySelector('#bulma-style-app');
+    const [bulmaBase] = BULMA_URL.href.split('?');
+    const bulmaParams = {
+      ...app.theme,
+      ...pageTheme,
+      ...block.theme,
+    };
+
+    const urlParams = new URLSearchParams(bulmaParams);
+    urlParams.sort();
+
+    const bulmaUrl =
+      app.theme || pageTheme || block.theme ? `${bulmaBase}?${urlParams}` : bulmaBase;
+
     await Promise.all(
       [
-        BULMA_URL,
+        bulmaUrl,
         FA_URL,
         ...blockDef.files.filter(url => url.endsWith('.css')).map(url => prefixURL(block, url)),
         `${window.location.origin}/api/organizations/${app.organizationId}/style/shared`,
@@ -114,7 +126,6 @@ export default class Block extends React.Component {
       block,
       data,
       pageParameters: match.params,
-      resources,
       shadowRoot,
       utils,
     });
