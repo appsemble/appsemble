@@ -18,19 +18,13 @@ function makeFilter(fields, bounds) {
   return `${lat} gt ${west} and ${lat} lt ${east} and ${lon} gt ${south} and ${lon} lt ${north}`;
 }
 
-export default async function loadMarkers(map, actions, resources, parameters, fetched, get, data) {
-  const load = {
-    ...actions.load,
-    query: {
-      ...actions.load.query,
-      $filter: makeFilter(
-        [parameters.latitude || 'latitude', parameters.longitude || 'longitude'],
-        map.getBounds(),
-      ),
-    },
-  };
-
-  const markers = await load.dispatch();
+export default async function loadMarkers(map, actions, parameters, fetched, get, data) {
+  const markers = await actions.load.dispatch({
+    $filter: makeFilter(
+      [parameters.latitude || 'latitude', parameters.longitude || 'longitude'],
+      map.getBounds(),
+    ),
+  });
 
   markers.forEach(marker => {
     if (fetched.has(marker.id)) {
