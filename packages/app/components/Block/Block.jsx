@@ -4,7 +4,6 @@ import ReactDOM from 'react-dom';
 import normalize from '@appsemble/utils/normalize';
 
 import makeActions from '../../utils/makeActions';
-import makeResources from '../../utils/makeResources';
 import { prefixURL } from '../../utils/blockUtils';
 import { callBootstrap } from '../../utils/bootstrapper';
 import styles from './Block.css';
@@ -68,7 +67,6 @@ export default class Block extends React.Component {
     this.attached = true;
     const shadowRoot = div.attachShadow({ mode: 'closed' });
     const actions = makeActions(blockDef, app, block, history, showDialog, actionCreators);
-    const resources = makeResources(blockDef, block);
     const { theme: pageTheme } = app.pages.find(
       page => normalize(page.name) === match.path.slice(1).split('/')[0],
     );
@@ -128,7 +126,6 @@ export default class Block extends React.Component {
       block,
       data,
       pageParameters: match.params,
-      resources,
       shadowRoot,
       utils,
     });

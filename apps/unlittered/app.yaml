@@ -72,15 +72,16 @@ pages:
         parameters:
           latitude: locatie.latitude
           longitude: locatie.longitude
-        resources:
-          marker:
-            url:
-              'https://api.stadswerken.amsterdam/waarnemingen_real?$orderBy=created_at desc&$top=50'
-            query: {}
         actions:
           markerClick:
             type: link
             to: Waarneming details
+          load:
+            type: resource.query
+            resource: waarneming
+            query:
+              $orderBy: 'created_at desc'
+              $top: 50
       - type: action-button
         version: 1.0.0
         actions:

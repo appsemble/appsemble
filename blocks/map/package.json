@@ -4,33 +4,12 @@
   "private": true,
   "appsemble": {
     "actions": {
-      "markerClick": {}
-    },
-    "output": "dist",
-    "resources": {
-      "marker": {
-        "schema": {
-          "type": "object",
-          "required": [
-            "lat",
-            "lon"
-          ],
-          "properties": {
-            "lat": {
-              "type": "number",
-              "minimum": "-90",
-              "maximum": "90"
-            },
-            "lon": {
-              "type": "number",
-              "minimum": "-180",
-              "maximum": "180"
-            },
-            "data": {}
-          }
-        }
+      "markerClick": {},
+      "load": {
+        "required": true
       }
-    }
+    },
+    "output": "dist"
   },
   "dependencies": {
     "@appsemble/sdk": "^1.0.0",
