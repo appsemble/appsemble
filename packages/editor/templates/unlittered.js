@@ -5,14 +5,6 @@ export default {
   recipe: {
     name: 'Unlittered',
     defaultPage: 'Report litter',
-    authentication: [
-      {
-        url: '/api/oauth/token',
-        scope: 'apps:read',
-        method: 'email',
-        clientId: 'appsemble-editor',
-      },
-    ],
     theme: {
       themeColor: '#eb0000',
       splashColor: '#ffffff',
@@ -39,7 +31,7 @@ export default {
               title: 'Photos',
             },
             process: {
-              enum: ['Bicycle Collection', 'Maintenance', 'Heel en Groen', 'Collection'],
+              enum: ['Bicycle Collection', 'Maintenance', 'Biodegradable Waste', 'Collection'],
               title: 'Process',
             },
             location: {
@@ -62,7 +54,6 @@ export default {
     pages: [
       {
         name: 'Report litter',
-        scope: ['*'],
         blocks: [
           {
             type: 'form',
@@ -83,7 +74,7 @@ export default {
                       value: 'Maintenance',
                     },
                     {
-                      value: 'Heel en Groen',
+                      value: 'Biodegradable Waste',
                     },
                     {
                       value: 'Collection',
@@ -123,7 +114,6 @@ export default {
       },
       {
         name: 'Litter Overview',
-        scope: ['*'],
         blocks: [
           {
             type: 'map',
@@ -162,7 +152,6 @@ export default {
       {
         name: 'Litter details',
         parameters: ['id'],
-        scope: ['*'],
         blocks: [
           {
             type: 'detail-viewer',
