@@ -110,7 +110,7 @@ export async function getToken(remote = axios.defaults.baseURL) {
         auth: data,
       },
     });
-    axios.defaults.headers.common.Authorization = `bearer ${data.access_token}`;
+    axios.defaults.headers.common.Authorization = `Bearer ${data.access_token}`;
     return data;
   } catch (e) {
     logger.verbose(e);
