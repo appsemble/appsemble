@@ -72,6 +72,7 @@ yarn block detail-viewer
 yarn block list
 yarn block form
 yarn block map
+yarn block markdown
 yarn block splash
 ```
 
@@ -85,6 +86,7 @@ yarn appsemble block register blocks/detail-viewer
 yarn appsemble block register blocks/list
 yarn appsemble block register blocks/form
 yarn appsemble block register blocks/map
+yarn appsemble block register blocks/markdown
 yarn appsemble block register blocks/splash
 ```
 

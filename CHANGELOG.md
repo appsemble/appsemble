@@ -14,6 +14,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   data.
 - App: Add support for building query strings for `resource` and `request` actions.
 - Block: Add List block.
+- Block: Add Markdown block.
 - CLI: Add support for authentication.
 - Editor: Add support for app description field.
 - Editor: Add `Person App`, `Holiday App`, and `Unlittered App` app templates.

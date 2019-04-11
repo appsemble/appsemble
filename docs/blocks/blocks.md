@@ -8,3 +8,4 @@ comes with several official blocks that can be used in any app.
 - [List](list.md)
 - [Form](form.md)
 - [Map](map.md)
+- [Markdown](markdown.md)
