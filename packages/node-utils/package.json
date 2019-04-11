@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/node-utils",
-  "version": "1.0.0",
+  "version": "0.5.0",
   "dependencies": {
     "chalk": "^2.4.2",
     "cli-highlight": "^2.0.0",
