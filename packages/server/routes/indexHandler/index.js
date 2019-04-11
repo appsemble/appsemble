@@ -1,23 +1,17 @@
-import path from 'path';
 import qs from 'querystring';
-
-import pug from 'pug';
 
 import { bulmaURL, faURL } from '../../utils/styleURL';
 import makeCSP from '../../utils/makeCSP';
 import sentryDsnToReportUri from '../../utils/sentryDsnToReportUri';
 
-const render = pug.compileFile(path.join(__dirname, 'index.pug'));
-const renderError = pug.compileFile(path.join(__dirname, 'error.pug'));
-
 /**
  * https://developers.google.com/web/fundamentals/web-app-manifest
  */
 export default async function indexHandler(ctx) {
-  const { path: p } = ctx.params;
+  const { path } = ctx.params;
   const { App } = ctx.db.models;
   ctx.type = 'text/html';
-  const { assets } = ctx.state;
+  const { render } = ctx.state;
   const { argv } = ctx;
   const reportUri = sentryDsnToReportUri(argv.sentryDsn);
   const csp = makeCSP({
@@ -35,28 +29,25 @@ export default async function indexHandler(ctx) {
   ctx.set('Content-Security-Policy', csp);
 
   try {
-    const app = await App.findOne({ where: { path: p } }, { raw: true });
+    const app = await App.findOne({ where: { path } }, { raw: true });
 
     if (app == null) {
-      ctx.body = renderError({
-        assets,
+      ctx.body = await render('error.html', {
         bulmaURL,
         faURL,
         message: 'The app you are looking for could not be found.',
       });
       ctx.status = 404;
     } else {
-      ctx.body = render({
+      ctx.body = await render('app.html', {
         app,
-        assets,
         bulmaURL: `${bulmaURL}?${qs.stringify(app.definition.theme)}`,
         faURL,
         sentryDsn: argv.sentryDsn,
       });
     }
   } catch (error) {
-    ctx.body = renderError({
-      assets,
+    ctx.body = await render('error.html', {
       bulmaURL,
       faURL,
       message: 'There was a problem loading the app. Please try again later.',

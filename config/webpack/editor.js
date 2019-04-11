@@ -11,6 +11,7 @@ const { UnusedFilesWebpackPlugin } = require('unused-files-webpack-plugin');
 const merge = require('webpack-merge');
 
 const core = require('./core');
+const minify = require('./html-minifier.json');
 
 const publicPath = '/';
 
@@ -36,6 +37,7 @@ module.exports = (env, argv) => {
           bulmaURL: `/bulma/${bulmaPkg.version}/bulma.min.css`,
           faURL: `/fa/${faPkg.version}/css/all.min.css`,
         },
+        minify,
       }),
       new UnusedFilesWebpackPlugin({
         failOnUnused: production,
