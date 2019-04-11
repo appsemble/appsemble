@@ -1,6 +1,6 @@
 {
   "name": "@amsterdam/splash",
-  "version": "1.0.0",
+  "version": "0.5.0",
   "private": true,
   "appsemble": {
     "actions": {
@@ -17,6 +17,6 @@
     "output": "dist"
   },
   "dependencies": {
-    "@appsemble/sdk": "^1.0.0"
+    "@appsemble/sdk": "0.5.0"
   }
 }
