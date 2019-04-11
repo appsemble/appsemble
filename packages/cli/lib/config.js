@@ -25,9 +25,12 @@ export async function getConfig() {
   const filePath = getConfigPath();
 
   logger.verbose(`Reading config at ${filePath}`);
-  await fs.ensureFile(filePath);
-
-  return fs.readJson(filePath, { throws: false }) || {};
+  try {
+    const config = await fs.readJson(filePath);
+    return config || {};
+  } catch (err) {
+    return {};
+  }
 }
 
 /**
@@ -64,7 +67,7 @@ export async function requestToken(remote, username, password) {
       username,
       password,
       client_id: 'appsemble-editor',
-      scope: 'apps:read apps:write',
+      scope: 'apps:read apps:write blocks:write organizations:style',
     }),
   );
 }
@@ -90,7 +93,8 @@ export async function getToken(remote = axios.defaults.baseURL) {
 
   try {
     const { refresh_token: refreshToken } = config[remote].auth.token;
-    const response = await axios.post(
+    const requestDate = new Date();
+    const { data } = await axios.post(
       '/api/oauth/token',
       querystring.stringify({
         grant_type: 'refresh_token',
@@ -100,8 +104,15 @@ export async function getToken(remote = axios.defaults.baseURL) {
       }),
     );
 
-    axios.defaults.headers.common.Authentication = `bearer ${response.data.acces_token}`;
-    return response.data;
+    await saveConfig({
+      ...config,
+      [remote]: {
+        ...config[remote],
+        auth: { requestDate, token: data },
+      },
+    });
+    axios.defaults.headers.common.Authorization = `Bearer ${data.access_token}`;
+    return data;
   } catch (e) {
     logger.verbose(e);
     throw new AppsembleError('Unable to retrieve token.');

@@ -45,6 +45,7 @@ export default {
           description: 'The shared style has been updated succesfully.',
         },
       },
+      security: [{ apiUser: ['organizations:style'] }],
     },
   },
   '/api/organizations/{id}/style/core': {
@@ -93,6 +94,7 @@ export default {
           description: 'The shared style has been updated succesfully.',
         },
       },
+      security: [{ apiUser: ['organizations:style'] }],
     },
   },
   '/api/organizations/{organizationId}/style/block/{organizationName}/{blockName}': {
@@ -151,6 +153,7 @@ export default {
           description: 'The block style has been updated succesfully.',
         },
       },
+      security: [{ apiUser: ['organizations:style'] }],
     },
   },
 };

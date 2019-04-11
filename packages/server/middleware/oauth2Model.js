@@ -124,7 +124,7 @@ export default function oauth2Model({ db, grant, secret }) {
         user: { id: token.UserId, organizations },
         // XXX: Figure out how to determine the client ID properly.
         client: { id: 'appsemble-editor' },
-        scope: 'apps:read apps:write',
+        scope: 'apps:read apps:write organizations:read organizations:style organizations:write',
       };
     },
 
