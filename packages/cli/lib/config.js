@@ -93,6 +93,7 @@ export async function getToken(remote = axios.defaults.baseURL) {
 
   try {
     const { refresh_token: refreshToken } = config[remote].auth.token;
+    const requestDate = new Date();
     const { data } = await axios.post(
       '/api/oauth/token',
       querystring.stringify({
@@ -107,7 +108,7 @@ export async function getToken(remote = axios.defaults.baseURL) {
       ...config,
       [remote]: {
         ...config[remote],
-        auth: data,
+        auth: { requestDate, token: data },
       },
     });
     axios.defaults.headers.common.Authorization = `Bearer ${data.access_token}`;
