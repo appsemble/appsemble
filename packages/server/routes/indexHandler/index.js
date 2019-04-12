@@ -12,8 +12,8 @@ export default async function indexHandler(ctx) {
   const { App } = ctx.db.models;
   ctx.type = 'text/html';
   const { render } = ctx.state;
-  const { argv } = ctx;
-  const reportUri = sentryDsnToReportUri(argv.sentryDsn);
+  const { sentryDsn } = ctx.argv;
+  const reportUri = sentryDsnToReportUri(sentryDsn);
   const csp = makeCSP({
     'report-uri': [reportUri],
     'connect-src': ['*'],
@@ -43,7 +43,7 @@ export default async function indexHandler(ctx) {
         app,
         bulmaURL: `${bulmaURL}?${qs.stringify(app.definition.theme)}`,
         faURL,
-        sentryDsn: argv.sentryDsn,
+        sentryDsn,
       });
     }
   } catch (error) {
