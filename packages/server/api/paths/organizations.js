@@ -1,12 +1,6 @@
 export default {
-  '/api/organizations/{id}/style/shared': {
-    parameters: [
-      {
-        name: 'id',
-        in: 'path',
-        description: 'The id of the organization.',
-      },
-    ],
+  '/api/organizations/{organizationId}/style/shared': {
+    parameters: [{ $ref: '#/components/parameters/organizationId' }],
     get: {
       tags: ['organization'],
       description: 'Get the shared style for this organization.',
@@ -48,14 +42,8 @@ export default {
       security: [{ apiUser: ['organizations:style'] }],
     },
   },
-  '/api/organizations/{id}/style/core': {
-    parameters: [
-      {
-        name: 'id',
-        in: 'path',
-        description: 'The id of the organization.',
-      },
-    ],
+  '/api/organizations/{organizationId}/style/core': {
+    parameters: [{ $ref: '#/components/parameters/organizationId' }],
     get: {
       tags: ['organization'],
       description: 'Get the core style for this organization.',
@@ -97,23 +85,15 @@ export default {
       security: [{ apiUser: ['organizations:style'] }],
     },
   },
-  '/api/organizations/{organizationId}/style/block/{organizationName}/{blockName}': {
+  '/api/organizations/{organizationId}/style/block/@{blockOrganizationId}/{blockId}': {
     parameters: [
+      { $ref: '#/components/parameters/organizationId' },
       {
-        name: 'organizationId',
-        in: 'path',
-        description: 'The id of the organization.',
+        $ref: '#/components/parameters/organizationId',
+        name: 'blockOrganizationId',
+        description: 'The organization ID of the block.',
       },
-      {
-        name: 'organizationName',
-        in: 'path',
-        description: 'The organization name of the block.',
-      },
-      {
-        name: 'blockName',
-        in: 'path',
-        description: 'The name of the block.',
-      },
+      { $ref: '#/components/parameters/blockId' },
     ],
     get: {
       tags: ['organization'],

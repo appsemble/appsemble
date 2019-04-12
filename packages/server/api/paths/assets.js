@@ -15,30 +15,15 @@ export default {
           description: 'The asset that was created.',
           content: {
             'application/json': {
-              schema: {
-                type: 'object',
-                properties: {
-                  id: {
-                    type: 'integer',
-                    description: 'The asset id.',
-                  },
-                },
-              },
+              schema: { $ref: '#/components/schemas/Asset/properties/id' },
             },
           },
         },
       },
     },
   },
-  '/api/assets/{id}': {
-    parameters: [
-      {
-        name: 'id',
-        in: 'path',
-        description: 'The id of the asset to get.',
-        schema: { type: 'integer' },
-      },
-    ],
+  '/api/assets/{assetId}': {
+    parameters: [{ $ref: '#/components/parameters/assetId' }],
     get: {
       tags: ['asset'],
       description: 'Get a single asset',

@@ -1,10 +1,10 @@
 import Boom from 'boom';
 
 export async function getAssetById(ctx) {
-  const { id } = ctx.params;
+  const { assetId } = ctx.params;
   const { Asset } = ctx.db.models;
 
-  const asset = await Asset.findByPk(id);
+  const asset = await Asset.findByPk(assetId);
 
   if (!asset) {
     throw Boom.notFound('Asset not found');

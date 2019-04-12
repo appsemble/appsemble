@@ -86,15 +86,8 @@ export default {
       security: [{ apiUser: ['apps:read'] }],
     },
   },
-  '/api/apps/{id}': {
-    parameters: [
-      {
-        name: 'id',
-        in: 'path',
-        description: 'The id of the app to perform the action on.',
-        schema: { type: 'integer' },
-      },
-    ],
+  '/api/apps/{appId}': {
+    parameters: [{ $ref: '#/components/parameters/appId' }],
     get: {
       tags: ['app'],
       description: 'Get a single app',
@@ -145,15 +138,8 @@ export default {
       security: [{ apiUser: ['apps:write'] }],
     },
   },
-  '/api/apps/{id}/icon': {
-    parameters: [
-      {
-        name: 'id',
-        in: 'path',
-        description: 'The id of the app on whose icon to perform an action.',
-        schema: { type: 'integer' },
-      },
-    ],
+  '/api/apps/{appId}/icon': {
+    parameters: [{ $ref: '#/components/parameters/appId' }],
     get: {
       tags: ['app'],
       description: 'Get the current app Icon.',
@@ -210,7 +196,8 @@ export default {
       security: [{ apiUser: ['apps:write'] }],
     },
   },
-  '/api/apps/{id}/style/core': {
+  '/api/apps/{appId}/style/core': {
+    parameters: [{ $ref: '#/components/parameters/appId' }],
     get: {
       tags: ['app'],
       description: 'Get the core style for this app.',
@@ -226,7 +213,8 @@ export default {
     },
   },
 
-  '/api/apps/{id}/style/shared': {
+  '/api/apps/{appId}/style/shared': {
+    parameters: [{ $ref: '#/components/parameters/appId' }],
     get: {
       tags: ['app'],
       description: 'Get the shared style for this app.',
@@ -241,24 +229,11 @@ export default {
       },
     },
   },
-  '/api/apps/{appId}/style/block/{organizationName}/{blockName}': {
+  '/api/apps/{appId}/style/block/@{organizationId}/{blockId}': {
     parameters: [
-      {
-        name: 'appId',
-        in: 'path',
-        description: 'The id of the app.',
-        schema: { type: 'integer' },
-      },
-      {
-        name: 'organizationName',
-        in: 'path',
-        description: 'The organization name of the block.',
-      },
-      {
-        name: 'blockName',
-        in: 'path',
-        description: 'The name of the block.',
-      },
+      { $ref: '#/components/parameters/appId' },
+      { $ref: '#/components/parameters/organizationId' },
+      { $ref: '#/components/parameters/blockId' },
     ],
     get: {
       tags: ['app'],
