@@ -1,0 +1,12 @@
+{
+  "collapseBooleanAttributes": true,
+  "collapseInlineTagWhitespace": true,
+  "collapseWhitespace": true,
+  "removeAttributeQuotes": true,
+  "removeComments": true,
+  "removeOptionalTags": true,
+  "removeRedundantAttributes": true,
+  "removeScriptTypeAttributes": true,
+  "removeStyleLinkTypeAttributes": true,
+  "useShortDoctype": true
+}

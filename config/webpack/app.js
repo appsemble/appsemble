@@ -1,5 +1,6 @@
 const path = require('path');
 
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const ServiceWorkerWebpackPlugin = require('serviceworker-webpack-plugin');
 const { UnusedFilesWebpackPlugin } = require('unused-files-webpack-plugin');
@@ -7,6 +8,7 @@ const merge = require('webpack-merge');
 const { StatsWriterPlugin } = require('webpack-stats-plugin');
 
 const core = require('./core');
+const minify = require('./html-minifier.json');
 
 const publicPath = '/';
 
@@ -26,6 +28,17 @@ module.exports = (env, argv) => {
       publicPath,
     },
     plugins: [
+      new HtmlWebpackPlugin({
+        template: path.join(appEntry, 'index.html'),
+        filename: 'app.html',
+        minify,
+      }),
+      new HtmlWebpackPlugin({
+        template: path.join(appEntry, 'error.html'),
+        filename: 'error.html',
+        minify,
+        chunks: [],
+      }),
       new ServiceWorkerWebpackPlugin({
         entry: path.join(appEntry, 'service-worker'),
         filename: 'service-worker.js',

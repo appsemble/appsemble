@@ -1,10 +1,11 @@
+import { ErrorHandler } from '@appsemble/react-components';
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core';
 import React from 'react';
 import { IntlProvider } from 'react-intl';
 import { BrowserRouter } from 'react-router-dom';
 
 import AppContext from '../AppContext';
-import ErrorHandler from '../ErrorHandler';
+import ErrorFallback from '../ErrorFallback';
 import Main from '../Main';
 import Message from '../Message';
 import SideNavigation from '../SideNavigation';
@@ -18,7 +19,7 @@ export default class App extends React.Component {
   render() {
     return (
       <IntlProvider defaultLocale="en-US" locale="en-US" textComponent={React.Fragment}>
-        <ErrorHandler>
+        <ErrorHandler fallback={ErrorFallback}>
           <MuiThemeProvider theme={createMuiTheme()}>
             <BrowserRouter basename={new URL(document.baseURI).pathname}>
               <AppContext>
