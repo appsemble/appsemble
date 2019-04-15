@@ -27,6 +27,7 @@ describe('respond', () => {
   });
 
   it('should pass through requests non GET requests', async () => {
+    // eslint-disable-next-line compat/compat
     const request = new Request('http://localhost/346', { method: 'POST' });
     const response = await respond(request);
     expect(fetch).toHaveBeenCalledWith(request);
@@ -34,6 +35,7 @@ describe('respond', () => {
   });
 
   it('should pass through external requests', async () => {
+    // eslint-disable-next-line compat/compat
     const request = new Request('https://example.com');
     const response = await respond(request);
     expect(fetch).toHaveBeenCalledWith(request);
@@ -41,6 +43,7 @@ describe('respond', () => {
   });
 
   it('should pass through hot-update requests', async () => {
+    // eslint-disable-next-line compat/compat
     const request = new Request('http://localhost/app/app.hot-update.json');
     const response = await respond(request);
     expect(fetch).toHaveBeenCalledWith(request);
@@ -48,6 +51,7 @@ describe('respond', () => {
   });
 
   it('should try to request app index URL first', async () => {
+    // eslint-disable-next-line compat/compat
     const request = new Request('http://localhost/123');
     const response = await respond(request);
     expect(requestFirst).toHaveBeenCalled();
@@ -56,6 +60,7 @@ describe('respond', () => {
   });
 
   it('should remap nested app URLs', async () => {
+    // eslint-disable-next-line compat/compat
     const request = new Request('http://localhost/asd/foo/bar-1');
     const response = await respond(request);
     expect(requestFirst).toHaveBeenCalled();
@@ -64,6 +69,7 @@ describe('respond', () => {
   });
 
   it('should try to request app related content first', async () => {
+    // eslint-disable-next-line compat/compat
     const request = new Request('http://localhost/457/manifest.json');
     const response = await respond(request);
     expect(requestFirst).toHaveBeenCalledWith(request);
@@ -71,6 +77,7 @@ describe('respond', () => {
   });
 
   it('should try to request the app definition first', async () => {
+    // eslint-disable-next-line compat/compat
     const request = new Request('http://localhost/api/apps/26');
     const response = await respond(request);
     expect(requestFirst).toHaveBeenCalledWith(request);
@@ -78,6 +85,7 @@ describe('respond', () => {
   });
 
   it('should pass through other API requests', async () => {
+    // eslint-disable-next-line compat/compat
     const request = new Request('http://localhost/api/apps/26/resource/123');
     const response = await respond(request);
     expect(fetch).toHaveBeenCalledWith(request);
@@ -85,6 +93,7 @@ describe('respond', () => {
   });
 
   it('should try to get static assets from the cache first', async () => {
+    // eslint-disable-next-line compat/compat
     const request = new Request('http://localhost/app/76fade46f4eac.js');
     const response = await respond(request);
     expect(cacheFirst).toHaveBeenCalledWith(request);

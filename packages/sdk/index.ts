@@ -138,12 +138,14 @@ export function bootstrap(fn: (params: BootstrapParams) => Awaitable<void>): voi
  * @param fn The bootstrap function to register.
  */
 export function attach(fn: (params: BootstrapParams) => Awaitable<HTMLElement | void>): void {
-  bootstrap(async params => {
-    const { shadowRoot } = params;
+  bootstrap(
+    async (params): Promise<void> => {
+      const { shadowRoot } = params;
 
-    const node = await fn(params);
-    if (node instanceof HTMLElement) {
-      shadowRoot.appendChild(node);
-    }
-  });
+      const node = await fn(params);
+      if (node instanceof HTMLElement) {
+        shadowRoot.appendChild(node);
+      }
+    },
+  );
 }
