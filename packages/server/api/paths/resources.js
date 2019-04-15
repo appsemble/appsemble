@@ -1,17 +1,8 @@
 export default {
   '/api/apps/{appId}/{resourceType}': {
     parameters: [
-      {
-        name: 'appId',
-        in: 'path',
-        description: 'The id of the app.',
-        schema: { type: 'integer' },
-      },
-      {
-        name: 'resourceType',
-        in: 'path',
-        description: 'The resource type within this app.',
-      },
+      { $ref: '#/components/parameters/appId' },
+      { $ref: '#/components/parameters/resourceType' },
     ],
     get: {
       tags: ['resource'],
@@ -51,22 +42,9 @@ export default {
   },
   '/api/apps/{appId}/{resourceType}/{resourceId}': {
     parameters: [
-      {
-        name: 'appId',
-        in: 'path',
-        description: 'The id of the app this resource belongs to.',
-      },
-      {
-        name: 'resourceType',
-        in: 'path',
-        description: 'The resource type within this app.',
-      },
-      {
-        name: 'resourceId',
-        in: 'path',
-        description: 'The id of the resource.',
-        schema: { type: 'integer' },
-      },
+      { $ref: '#/components/parameters/appId' },
+      { $ref: '#/components/parameters/resourceType' },
+      { $ref: '#/components/parameters/resourceId' },
     ],
     get: {
       tags: ['resource'],

@@ -170,7 +170,7 @@ describe('organization controller', () => {
 
   it('should not allow uploading core stylesheets to non-existant organizations', async () => {
     const response = await request(server)
-      .post('/api/organizations/0/style/core')
+      .post('/api/organizations/fake/style/core')
       .set('Authorization', token)
       .attach('style', Buffer.from('body { color: red; }'), {
         contentType: 'text/css',
@@ -270,7 +270,7 @@ describe('organization controller', () => {
     });
 
     const response = await request(server)
-      .post('/api/organizations/0/style/block/@appsemble/testblock')
+      .post('/api/organizations/fake/style/block/@appsemble/testblock')
       .set('Authorization', token)
       .attach('style', Buffer.from('body { color: red; }'), {
         contentType: 'text/css',
