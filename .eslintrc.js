@@ -58,6 +58,7 @@ module.exports = {
         'newlines-between': 'always',
       },
     ],
+    'import/no-cycle': ['error', { maxDepth: 1 }],
     'react/jsx-sort-props': 'error',
     'jsx-a11y/label-has-associated-control': 'off',
     'jsx-a11y/label-has-for': 'off',

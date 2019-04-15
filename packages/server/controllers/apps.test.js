@@ -27,7 +27,7 @@ describe('app controller', () => {
 
   beforeEach(async () => {
     await truncate(db);
-    token = await testToken(request, server, db, 'apps:write apps:read');
+    token = await testToken(request, server, db, 'apps:read apps:write');
     organizationId = jwt.decode(token.substring(7)).user.organizations[0].id;
 
     await BlockDefinition.create({
@@ -105,7 +105,7 @@ describe('app controller', () => {
       { raw: true },
     );
 
-    const organizationB = await Organization.create({ id: 'Test Organization B' });
+    const organizationB = await Organization.create({ id: 'testorganizationb' });
     const appB = await App.create(
       {
         path: 'test-app-b',
@@ -852,6 +852,7 @@ describe('app controller', () => {
 
     const responseA = await request(server)
       .post(`/api/apps/${id}/style/block/@appsemble/testblock`)
+      .set('Authorization', token)
       .attach('style', Buffer.from('body { color: blue; }'), {
         contentType: 'text/css',
         filename: 'style.css',
@@ -859,6 +860,7 @@ describe('app controller', () => {
 
     const responseB = await request(server)
       .post(`/api/apps/${id}/style/block/@appsemble/testblock`)
+      .set('Authorization', token)
       .attach('style', Buffer.from(' '), {
         contentType: 'text/css',
         filename: 'style.css',
@@ -886,6 +888,7 @@ describe('app controller', () => {
 
     const response = await request(server)
       .post(`/api/apps/${id}/style/block/@appsemble/testblock`)
+      .set('Authorization', token)
       .attach('style', Buffer.from('invalidCss'));
     expect(response.body).toStrictEqual({
       statusCode: 400,
@@ -902,6 +905,7 @@ describe('app controller', () => {
 
     const response = await request(server)
       .post('/api/apps/0/style/block/@appsemble/testblock')
+      .set('Authorization', token)
       .attach('style', Buffer.from('body { color: red; }'), {
         contentType: 'text/css',
         filename: 'style.css',
@@ -922,6 +926,7 @@ describe('app controller', () => {
 
     const response = await request(server)
       .post(`/api/apps/${id}/style/block/@appsemble/doesntexist`)
+      .set('Authorization', token)
       .attach('style', Buffer.from('body { color: red; }'), {
         contentType: 'text/css',
         filename: 'style.css',

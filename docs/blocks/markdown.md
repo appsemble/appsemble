@@ -1,0 +1,42 @@
+# Markdown
+
+## Introduction
+
+A simple block that can display content based on [Markdown] input.
+
+It can be used to provide content to pages, for example a list of external links or to further
+explain the other blocks found on a page.
+
+## Parameters
+
+| Parameter | Default | Description                                          |
+| --------- | ------- | ---------------------------------------------------- |
+| content   |         | A string containing the markdown content to display. |
+
+## Example
+
+It is recommended to use a YAML ´literal block´, as shown in the example below.
+
+```yaml
+type: markdown
+version: 1.0.0
+parameters:
+  content: |
+    > Do Androids Dream of Electric Sheep?
+
+    *Novel by Philip K. Dick*
+
+    ## Example Table
+
+    | Tables        | Are           | Cool  |
+    | ------------- |---------------|-------|
+    | example 1     | column 2      | 12345 |
+    | example 2     | column 2      |   123 |
+    | example 3     | column 2      |    23 |
+```
+
+## Images
+
+<a href="../images/markdown.png"  target="_blank"><img src="../images/markdown.png" style="width: 300px" /></a>
+
+[Markdown](https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet)

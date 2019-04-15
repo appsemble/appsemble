@@ -11,7 +11,7 @@ function getSrc(block, value) {
   }
 
   if (block?.parameters?.fileBase) {
-    return `${new URL(`${block.parameters.fileBase}/${value}`)}`;
+    return `${new URL(`${block.parameters.fileBase}/${value}`, window.location.origin)}`;
   }
 
   return value;

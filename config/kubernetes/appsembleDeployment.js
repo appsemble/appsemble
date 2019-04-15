@@ -81,6 +81,10 @@ export default {
                 valueFrom: { secretKeyRef: { name: 'smtp', key: 'from' } },
               },
               {
+                name: 'SENTRY_DSN',
+                valueFrom: { secretKeyRef: { name: 'sentry', key: 'dsn' } },
+              },
+              {
                 name: 'HOST',
                 value: CI_ENVIRONMENT_URL,
               },

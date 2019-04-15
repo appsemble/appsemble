@@ -30,6 +30,7 @@ build:blocks:
     - yarn block list
     - yarn block form
     - yarn block map
+    - yarn block markdown
     - yarn block splash
   artifacts:
     expire_in: 3 days
@@ -45,6 +46,9 @@ build:blocks:
       - blocks/form/package.json
       - blocks/map/dist/
       - blocks/map/package.json
+      - blocks/markdown/package.json
+      - blocks/markdown/dist/
+      - blocks/markdown/.appsemblerc.yaml
       - blocks/splash/dist/
       - blocks/splash/package.json
 
@@ -72,9 +76,11 @@ deploy:review:
     on_stop: deploy:review:stop
   script:
     - yarn --frozen-lockfile
-    - node -r esm config/bin/deploy.js
-    # This allows passing the CI_ENVIRONMENT_URL for use in later stages.
+    # This allows passing these variables for use in later stages.
+    - yarn appsemble config set email bot@appsemble.com
+    - yarn appsemble config set password "$(openssl rand -base64 12)"
     - yarn appsemble config set remote "$CI_ENVIRONMENT_URL"
+    - node -r esm config/bin/deploy.js
   artifacts:
     expire_in: 1 day
     paths:
@@ -221,11 +227,13 @@ provision:blocks:
   script:
     - npm install ./packages/node-utils/*.tgz
     - npm install ./packages/cli/*.tgz
+    - yarn appsemble login
     - yarn appsemble block register --ignore-conflict blocks/action-button
     - yarn appsemble block register --ignore-conflict blocks/detail-viewer
     - yarn appsemble block register --ignore-conflict blocks/list
     - yarn appsemble block register --ignore-conflict blocks/form
     - yarn appsemble block register --ignore-conflict blocks/map
+    - yarn appsemble block register --ignore-conflict blocks/markdown
     - yarn appsemble block register --ignore-conflict blocks/splash
 
 review pages:

@@ -40,7 +40,7 @@ export default class AppCard extends React.Component {
           >
             <FormattedMessage {...messages.view} />
           </a>
-          <Link className="card-footer-item" to={`/_/edit/${app.id}`}>
+          <Link className="card-footer-item" to={`/_/${app.id}/edit`}>
             <FormattedMessage {...messages.edit} />
           </Link>
         </footer>

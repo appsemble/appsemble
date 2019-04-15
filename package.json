@@ -10,7 +10,7 @@
     "build:editor": "webpack --config config/webpack/editor.js --mode production",
     "start": "appsemble start",
     "eslint": "eslint --format gitlab --max-warnings 0 --ext js,jsx,md,ts,tsx .",
-    "prettier": "prettier --check '**/*.{html,json,md,yaml,yml}'",
+    "prettier": "prettier --check '**/*.{html,json,md,scss,yaml,yml}'",
     "stylelint": "stylelint .",
     "stylelint:rd": "stylelint --report-needless-disables .",
     "test": "jest"
@@ -36,12 +36,12 @@
     "*.css": [
       "stylelint"
     ],
-    "*.{html,json,md,yaml,yml}": [
+    "*.{html,json,md,scss,yaml,yml}": [
       "prettier --check"
     ]
   },
   "devDependencies": {
-    "@appsemble/node-utils": "^1.0.0",
+    "@appsemble/node-utils": "^0.5.0",
     "@babel/core": "^7.4.3",
     "@babel/plugin-proposal-class-properties": "^7.4.0",
     "@babel/plugin-proposal-function-bind": "^7.2.0",

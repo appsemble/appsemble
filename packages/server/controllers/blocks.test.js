@@ -6,10 +6,12 @@ import request from 'supertest';
 import createServer from '../utils/createServer';
 import truncate from '../utils/test/truncate';
 import testSchema from '../utils/test/testSchema';
+import testToken from '../utils/test/testToken';
 
 describe('blocks', () => {
   let db;
   let server;
+  let token;
 
   beforeAll(async () => {
     db = await testSchema('blocks');
@@ -19,6 +21,7 @@ describe('blocks', () => {
 
   beforeEach(async () => {
     await truncate(db);
+    token = await testToken(request, server, db, 'blocks:write');
   });
 
   afterAll(async () => {
@@ -28,6 +31,7 @@ describe('blocks', () => {
   it('should be possible to register a block definition', async () => {
     const { body } = await request(server)
       .post('/api/blocks')
+      .set('Authorization', token)
       .send({
         id: '@appsemble/test',
         description: 'This block has been uploaded for the purpose of unit testing.',
@@ -41,12 +45,14 @@ describe('blocks', () => {
   it('should not be possible to register the same block definition twice', async () => {
     await request(server)
       .post('/api/blocks')
+      .set('Authorization', token)
       .send({
         id: '@appsemble/test',
         description: 'This block has been uploaded for the purpose of unit testing.',
       });
     const { body } = await request(server)
       .post('/api/blocks')
+      .set('Authorization', token)
       .send({
         id: '@appsemble/test',
         description: 'This block has been uploaded for the purpose of unit testing.',
@@ -61,6 +67,7 @@ describe('blocks', () => {
   it('should be possible to retrieve a block definition', async () => {
     const { body: original } = await request(server)
       .post('/api/blocks')
+      .set('Authorization', token)
       .send({
         id: '@appsemble/test',
         description: 'This block has been uploaded for the purpose of unit testing.',
@@ -81,12 +88,14 @@ describe('blocks', () => {
   it('should be possible to query block definitions', async () => {
     const { body: apple } = await request(server)
       .post('/api/blocks')
+      .set('Authorization', token)
       .send({
         id: '@appsemble/apple',
         description: 'I’ve got an apple.',
       });
     const { body: pen } = await request(server)
       .post('/api/blocks')
+      .set('Authorization', token)
       .send({
         id: '@appsemble/pen',
         description: 'I’ve got a pen.',
@@ -98,9 +107,11 @@ describe('blocks', () => {
   it('should be possible to upload block versions where data is sent as the first parameter', async () => {
     await request(server)
       .post('/api/blocks')
+      .set('Authorization', token)
       .send({ id: '@xkcd/standing' });
     const { body, status } = await request(server)
       .post('/api/blocks/@xkcd/standing/versions')
+      .set('Authorization', token)
       .field('data', JSON.stringify({ version: '1.32.9' }))
       .attach('build/standing.png', path.join(__dirname, '__fixtures__/standing.png'))
       .attach('build/testblock.js', path.join(__dirname, '__fixtures__/testblock.js'));
@@ -118,10 +129,12 @@ describe('blocks', () => {
   it('should be possible to fetch uploaded block versions', async () => {
     await request(server)
       .post('/api/blocks')
+      .set('Authorization', token)
       .send({ id: '@xkcd/standing' });
 
     await request(server)
       .post('/api/blocks/@xkcd/standing/versions')
+      .set('Authorization', token)
       .attach('build/standing.png', path.join(__dirname, '__fixtures__/standing.png'))
       .attach('build/testblock.js', path.join(__dirname, '__fixtures__/testblock.js'))
       .field('data', JSON.stringify({ version: '1.32.9' }));
@@ -144,9 +157,11 @@ describe('blocks', () => {
   it('should be possible to upload block versions where data is sent as the last parameter', async () => {
     await request(server)
       .post('/api/blocks')
+      .set('Authorization', token)
       .send({ id: '@xkcd/standing' });
     const { body, status } = await request(server)
       .post('/api/blocks/@xkcd/standing/versions')
+      .set('Authorization', token)
       .attach('build/standing.png', path.join(__dirname, '__fixtures__/standing.png'))
       .attach('build/testblock.js', path.join(__dirname, '__fixtures__/testblock.js'))
       .field('data', JSON.stringify({ version: '1.32.9' }));
@@ -164,17 +179,20 @@ describe('blocks', () => {
   it('should not be possible to register the same block version twice', async () => {
     await request(server)
       .post('/api/blocks')
+      .set('Authorization', token)
       .send({
         id: '@xkcd/standing',
         description: 'This block has been uploaded for the purpose of unit testing.',
       });
     await request(server)
       .post('/api/blocks/@xkcd/standing/versions')
+      .set('Authorization', token)
       .field('data', JSON.stringify({ version: '1.32.9' }))
       .attach('build/standing.png', path.join(__dirname, '__fixtures__/standing.png'))
       .attach('build/testblock.js', path.join(__dirname, '__fixtures__/testblock.js'));
     const { body } = await request(server)
       .post('/api/blocks/@xkcd/standing/versions')
+      .set('Authorization', token)
       .field('data', JSON.stringify({ version: '1.32.9' }))
       .attach('build/standing.png', path.join(__dirname, '__fixtures__/standing.png'))
       .attach('build/testblock.js', path.join(__dirname, '__fixtures__/testblock.js'));
@@ -188,9 +206,11 @@ describe('blocks', () => {
   it('should require at least one file', async () => {
     await request(server)
       .post('/api/blocks')
+      .set('Authorization', token)
       .send({ id: '@xkcd/standing' });
     const { body, status } = await request(server)
       .post('/api/blocks/@xkcd/standing/versions')
+      .set('Authorization', token)
       .field('data', JSON.stringify({ version: '1.32.9' }));
     expect(body).toStrictEqual({
       error: 'Bad Request',
@@ -203,9 +223,11 @@ describe('blocks', () => {
   it('should be possible to retrieve block versions', async () => {
     await request(server)
       .post('/api/blocks')
+      .set('Authorization', token)
       .send({ id: '@xkcd/standing' });
     const { body: created } = await request(server)
       .post('/api/blocks/@xkcd/standing/versions')
+      .set('Authorization', token)
       .attach('build/standing.png', path.join(__dirname, '__fixtures__/standing.png'))
       .attach('build/testblock.js', path.join(__dirname, '__fixtures__/testblock.js'))
       .field('data', JSON.stringify({ version: '1.32.9' }));
@@ -229,9 +251,11 @@ describe('blocks', () => {
   it('should be possible to download block assets', async () => {
     await request(server)
       .post('/api/blocks')
+      .set('Authorization', token)
       .send({ id: '@xkcd/standing' });
     await request(server)
       .post('/api/blocks/@xkcd/standing/versions')
+      .set('Authorization', token)
       .attach('standing.png', path.join(__dirname, '__fixtures__/standing.png'))
       .attach('testblock.js', path.join(__dirname, '__fixtures__/testblock.js'))
       .field('data', JSON.stringify({ version: '1.32.9' }));

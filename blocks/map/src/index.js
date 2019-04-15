@@ -8,7 +8,7 @@ import './index.css';
 import createGetters from './createGetters';
 import loadMarkers from './loadMarkers';
 
-attach(({ actions, block, data, resources, shadowRoot, utils }) => {
+attach(({ actions, block, data, shadowRoot, utils }) => {
   const node = shadowRoot.appendChild(document.createElement('div'));
   const fetched = new Set();
 
@@ -18,7 +18,7 @@ attach(({ actions, block, data, resources, shadowRoot, utils }) => {
   });
   const map = new Map(node, { attributionControl: false })
     .on('moveend', () => {
-      loadMarkers(map, actions, resources, block.parameters, fetched, get, data);
+      loadMarkers(map, actions, block.parameters, fetched, get, data);
     })
     .once('locationerror', () => {
       utils.showMessage({

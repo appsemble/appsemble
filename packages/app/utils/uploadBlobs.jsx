@@ -30,6 +30,11 @@ export default async function uploadBlobs(data, { method, serialize, url }) {
     }
     default: {
       const [, files] = extractBlobs(data);
+
+      if (files.length === 0) {
+        return data;
+      }
+
       const filesMap = new Map(
         await Promise.all(
           files.map(async file => {

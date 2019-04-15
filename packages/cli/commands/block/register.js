@@ -1,6 +1,7 @@
 import { logger } from '@appsemble/node-utils';
 
 import getBlockConfig from '../../lib/getBlockConfig';
+import { getToken } from '../../lib/config';
 import publish from '../../lib/publish';
 import { post } from '../../lib/request';
 
@@ -19,7 +20,8 @@ export function builder(yargs) {
     });
 }
 
-export async function handler({ ignoreConflict, path }) {
+export async function handler({ ignoreConflict, path, remote }) {
+  await getToken(remote);
   const config = await getBlockConfig(path);
   logger.info(`Registering block ${config.id}`);
   const { description: desc, id } = config;
