@@ -47,6 +47,7 @@ export function respond(request) {
   // consists of the client URL path. E.g. '/my-app', '/my-app/home'.
   const match = pathname.match(/^(\/[a-z\d-]+)(\/[a-z\d/-]+)*$/);
   if (match) {
+    // eslint-disable-next-line compat/compat
     return requestFirst(new Request(`${origin}${match[1]}`));
   }
   // This is unhandled. Let’s just use the default browser behaviour to be safe.

@@ -19,7 +19,7 @@ It is recommended to use a YAML ´literal block´, as shown in the example below
 
 ```yaml
 type: markdown
-version: 1.0.0
+version: 0.5.0
 parameters:
   content: |
     > Do Androids Dream of Electric Sheep?

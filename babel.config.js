@@ -5,8 +5,8 @@ module.exports = api => {
 
   const presets = [
     '@babel/preset-typescript',
-    ['@babel/preset-env', { spec: false, loose: true, useBuiltIns: 'usage' }],
-    ['@babel/preset-react', { useBuiltIns: true, development }],
+    ['@babel/preset-env', { spec: false, loose: true, useBuiltIns: 'usage', corejs: 3 }],
+    ['@babel/preset-react', { useBuiltIns: true, development, corejs: 3 }],
   ];
 
   const plugins = [
@@ -19,7 +19,6 @@ module.exports = api => {
     'babel-plugin-transform-react-class-to-function',
     '@babel/plugin-proposal-function-bind',
     ['@babel/plugin-proposal-optional-chaining', { loose: true }],
-    ['@babel/plugin-proposal-object-rest-spread', { loose: true, useBuiltIns: true }],
     ['@babel/plugin-proposal-class-properties', { loose: true }],
   ];
 

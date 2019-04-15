@@ -96,8 +96,6 @@ export default async function setupModels({
 }) {
   const options = {
     logging: logging && logSQL,
-    // XXX: This removes a pesky sequelize warning. Remove this when updating to sequelize@^5.
-    operatorsAliases: Sequelize.Op.Aliases,
     retry: { max: 3 },
   };
   let args;

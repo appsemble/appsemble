@@ -41,7 +41,8 @@ export default (state = initialState, action) => {
 async function doLogout(dispatch, getState, db = getState().db) {
   delete axios.defaults.headers.common.Authorization;
   clearTimeout(timeoutId);
-  db.transaction(AUTH, RW)
+  await db
+    .transaction(AUTH, RW)
     .objectStore(AUTH)
     .delete(0);
   dispatch({
@@ -72,7 +73,7 @@ async function requestToken(url, params, db, dispatch, refreshURL) {
   const { data } = await axios.post(url, new URLSearchParams(params));
   const { access_token: accessToken, refresh_token: refreshToken } = data;
   const tx = db.transaction(AUTH, RW);
-  tx.objectStore(AUTH).put(
+  await tx.objectStore(AUTH).put(
     {
       accessToken,
       refreshToken,
