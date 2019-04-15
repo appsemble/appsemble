@@ -29,12 +29,12 @@ A block that can be used to display various fields based on input data.
 
 Based on the type of field, additional parameters are available.
 
-##### string
+##### `string`
 
 Displays the content as regular text. If the content is an object it will be converted using
 `JSON.stringify()`.
 
-##### geocoordinates
+##### `geocoordinates`
 
 Displays a map with a marker.
 
@@ -44,7 +44,7 @@ Displays a map with a marker.
 | fields[].longitude | The name of the field used to access the longitude value. If `fields[].name` is set it is retrieved relatively, otherwise it is fetched from the root of the data.               |
 | fields[].longitude | The name of the field used to access the latitude value. If `fields[].name` is set it is retrieved relatively, otherwise it is fetched from the root of the data.                |
 
-##### file
+##### `file`
 
 Displays files as images.
 

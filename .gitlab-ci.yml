@@ -140,6 +140,19 @@ prettier:
   script:
     - yarn prettier
 
+# Lint Markdown using remark.
+remark lint:
+  extends: .yarn
+  only:
+    refs:
+      - branches
+      - merge_requests
+    changes:
+      - '**/*.md'
+      - yarn.lock
+  script:
+    - yarn remark .
+
 # Lint CSS using stylelint.
 stylelint:
   extends: .yarn

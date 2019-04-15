@@ -13,8 +13,8 @@ Resources can be defined within an [app recipe](#) within the `resources` proper
 within `resources` is considered to be a Resource, named after the name it is given within
 `resources`.
 
-The shape of a resource is defined using [JSON Schema](https://json-schema.org/). JSON Schemas make
-it possible for submitted data to be validated on types and required properties automatically.
+The shape of a resource is defined using [JSON Schema](https://json-schema.org/). This makes it
+possible for submitted data to be validated on types and required properties automatically.
 
 An example of a resource definition:
 
@@ -48,7 +48,7 @@ The above resource will be recognized as an object which can be referred to from
 
 In order to make the usage of resources more convenient, Appsemble supports the usage of
 `resource actions`. Resource actions are actions that can fetch, modify, create or delete resources.
-These are configured to use Appsemble APIs by default, but can be overriden manually if need be.
+These are configured to use Appsemble APIs by default, but can be overridden manually if need be.
 
 The resource actions available are:
 
@@ -88,51 +88,51 @@ The following OData syntaxes are supported:
 
 ### Boolean Operators
 
-- [x] AND
-- [x] OR
-- [ ] NOT
+- [x] `AND`
+- [x] `OR`
+- [ ] `NOT`
 
 ### Comparison Operators
 
-- [x] Equal (eq)
-- [x] Not Equal (ne)
-- [x] Greater Than (gt)
-- [x] Greater Than or Equal (ge)
-- [x] Less Than (lt)
-- [x] Less Than or Equal (le)
+- [x] Equal (`eq`)
+- [x] Not Equal (`ne`)
+- [x] Greater Than (`gt`)
+- [x] Greater Than or Equal (`ge`)
+- [x] Less Than (`lt`)
+- [x] Less Than or Equal (`le`)
 
 ### Functions
 
 1. String Functions
 
-- [x] substringof
-- [ ] endswith
-- [x] startswith
-- [x] tolower
-- [x] toupper
-- [x] trim
-- [ ] concat
-- [ ] substring
-- [ ] replace
-- [ ] indexof
+- [x] `substringof`
+- [ ] `endswith`
+- [x] `startswith`
+- [x] `tolower`
+- [x] `toupper`
+- [x] `trim`
+- [ ] `concat`
+- [ ] `substring`
+- [ ] `replace`
+- [ ] `indexof`
 
 2. Date Functions
 
-- [x] day
-- [x] hour
-- [x] minute
-- [x] month
-- [x] second
-- [x] year
+- [x] `day`
+- [x] `hour`
+- [x] `minute`
+- [x] `month`
+- [x] `second`
+- [x] `year`
 
 ### Others
 
 - [x] Complex query with precedence
-- [x] top
-- [x] select
-- [x] filter
-- [x] skip
-- [ ] expand
+- [x] `top`
+- [x] `select`
+- [x] `filter`
+- [x] `skip`
+- [ ] `expand`
 
 ## Assets
 
