@@ -205,7 +205,7 @@ export default class ResourceTable extends React.Component {
       this.setState({ loading: true, error: false, resources: [] });
     }
 
-    if (app.schema) {
+    if (app.resources[resourceName].schema) {
       try {
         const { data: resources } = await axios.get(`/api/apps/${app.id}/${resourceName}`);
         this.setState({ resources, loading: false });
@@ -343,7 +343,7 @@ export default class ResourceTable extends React.Component {
                                 name={key}
                                 onChange={this.onChange}
                                 placeholder={key}
-                                required={schema.required.includes(key)}
+                                required={schema.required?.includes(key)}
                                 type={
                                   properties.format && properties.format === 'email'
                                     ? 'email'
