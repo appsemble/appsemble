@@ -19,7 +19,6 @@ module.exports = api => {
     'babel-plugin-transform-react-class-to-function',
     '@babel/plugin-proposal-function-bind',
     ['@babel/plugin-proposal-optional-chaining', { loose: true }],
-    ['@babel/plugin-proposal-object-rest-spread', { loose: true, useBuiltIns: true, corejs: 3 }],
     ['@babel/plugin-proposal-class-properties', { loose: true }],
   ];
 
