@@ -1,5 +1,6 @@
 import qs from 'querystring';
 
+import createSettings from '../../utils/createSettings';
 import { bulmaURL, faURL } from '../../utils/styleURL';
 import makeCSP from '../../utils/makeCSP';
 import sentryDsnToReportUri from '../../utils/sentryDsnToReportUri';
@@ -14,10 +15,11 @@ export default async function indexHandler(ctx) {
   const { render } = ctx.state;
   const { sentryDsn } = ctx.argv;
   const reportUri = sentryDsnToReportUri(sentryDsn);
-  const csp = makeCSP({
+  const csp = {
     'report-uri': [reportUri],
     'connect-src': ['*'],
-    'default-src': [
+    'default-src': ["'self'"],
+    'script-src': [
       "'self'",
       // This is needed for Webpack.
       process.env.NODE_ENV !== 'production' && "'unsafe-eval'",
@@ -25,12 +27,10 @@ export default async function indexHandler(ctx) {
     'img-src': ['*', 'blob:', 'data:'],
     'style-src': ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
     'font-src': ["'self'", 'data:', 'https://fonts.gstatic.com'],
-  });
-  ctx.set('Content-Security-Policy', csp);
+  };
 
   try {
     const app = await App.findOne({ where: { path } }, { raw: true });
-
     if (app == null) {
       ctx.body = await render('error.html', {
         bulmaURL,
@@ -39,13 +39,19 @@ export default async function indexHandler(ctx) {
       });
       ctx.status = 404;
     } else {
+      const [settingsHash, settings] = createSettings({
+        app: { ...app.definition, id: app.id, organizationId: app.OrganizationId },
+        sentryDsn,
+      });
+      csp['script-src'].push(settingsHash);
       ctx.body = await render('app.html', {
         app,
         bulmaURL: `${bulmaURL}?${qs.stringify(app.definition.theme)}`,
         faURL,
-        sentryDsn,
+        settings,
       });
     }
+    ctx.set('Content-Security-Policy', makeCSP(csp));
   } catch (error) {
     ctx.body = await render('error.html', {
       bulmaURL,

@@ -10,7 +10,7 @@ import './index.css';
 import App from './components/App';
 import * as actions from './actions';
 
-const { sentryDsn } = document.documentElement.dataset;
+const { sentryDsn } = window.settings;
 init({ dsn: sentryDsn });
 
 async function getStore() {

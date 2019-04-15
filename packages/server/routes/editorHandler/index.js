@@ -1,3 +1,4 @@
+import createSettings from '../../utils/createSettings';
 import makeCSP from '../../utils/makeCSP';
 import sentryDsnToReportUri from '../../utils/sentryDsnToReportUri';
 
@@ -8,16 +9,19 @@ export default async function editorHandler(ctx) {
   const { render } = ctx.state;
   const { sentryDsn } = ctx.argv;
   const reportUri = sentryDsnToReportUri(sentryDsn);
+  const [settingsHash, settings] = createSettings({ sentryDsn });
   const csp = makeCSP({
     'report-uri': [reportUri],
     // This is needed for Webpack.
     'connect-src': [(process.env.NODE_ENV = process.env.NODE_ENV !== 'production' && '*')],
-    'default-src': [
+    'default-src': ["'self'"],
+    'img-src': ["'self'", 'blob:', 'data:'],
+    'script-src': [
       "'self'",
+      settingsHash,
       // This is needed for Webpack.
       process.env.NODE_ENV !== 'production' && "'unsafe-eval'",
     ],
-    'img-src': ["'self'", 'blob:', 'data:'],
     'style-src': [
       "'self'",
       // Monaco requires this for syntax highlighting
@@ -27,6 +31,6 @@ export default async function editorHandler(ctx) {
     'font-src': ["'self'", 'https://fonts.gstatic.com'],
   });
   ctx.set('Content-Security-Policy', csp);
-  ctx.body = await render('index.html', { sentryDsn });
+  ctx.body = await render('editor.html', { settings });
   ctx.type = 'text/html';
 }

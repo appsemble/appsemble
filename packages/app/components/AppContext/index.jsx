@@ -7,7 +7,7 @@ import AppContext from './AppContext';
 
 function mapStateToProps(state) {
   return {
-    ready: !!(state.app.app && state.user.initialized),
+    ready: !!state.user.initialized,
   };
 }
 

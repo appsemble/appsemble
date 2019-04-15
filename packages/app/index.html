@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-app-id="{{ app.id }}" data-sentry-dsn="{{ sentryDsn }}">
+<html lang="en">
   <head>
     <base href="/{{ app.path }}" />
     <meta charset="utf-8" />
@@ -40,7 +40,7 @@
     <link rel="stylesheet" href="/api/apps/{{ app.id }}/style/core" id="appsemble-style-core" />
     {{/app.style}} {{#app.sharedStyle}}
     <link rel="stylesheet" href="/api/apps/{{ app.id }}/style/shared" id="appsemble-style-shared" />
-    {{/app.sharedStyle}}
+    {{/app.sharedStyle}} {{{settings}}}
   </head>
   <body>
     <div class="is-fixed-top is-primary navbar">

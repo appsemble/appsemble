@@ -37,6 +37,7 @@ module.exports = (env, argv) => {
           bulmaURL: `/bulma/${bulmaPkg.version}/bulma.min.css`,
           faURL: `/fa/${faPkg.version}/css/all.min.css`,
         },
+        filename: 'editor.html',
         minify,
       }),
       new UnusedFilesWebpackPlugin({
