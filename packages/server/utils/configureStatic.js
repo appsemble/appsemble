@@ -1,14 +1,18 @@
 import path from 'path';
 
+import fs from 'fs-extra';
 import serve from 'koa-static';
+import mustache from 'mustache';
 
 export default async function configureStatic(app, webpackConfigs) {
   if (process.env.NODE_ENV === 'production') {
     const distDir = path.resolve(__dirname, '../../../dist');
     app.use(serve(distDir, { immutable: true, maxage: 365 * 24 * 60 * 60 * 1e3 }));
-    const { default: assets } = await import(path.join(distDir, 'stats.json'));
     app.use(async (ctx, next) => {
-      ctx.state.assets = assets;
+      ctx.state.render = async (filename, data) => {
+        const template = await fs.readFile(path.join(distDir, filename), 'utf8');
+        return mustache.render(template, data);
+      };
       await next();
     });
   } else {
@@ -32,9 +36,11 @@ export default async function configureStatic(app, webpackConfigs) {
     });
     app.use(middleware);
     app.use(async (ctx, next) => {
-      // The first index is the Webpack stats object for the app compilation. The main chunk is the
-      // first chunk.
-      ctx.state.assets = ctx.state.webpackStats.stats[0].compilation.chunks[0].files;
+      ctx.state.render = async (filename, data) => {
+        // ctx.state.fs is injected by koa-webpack.
+        const template = ctx.state.fs.readFileSync(`/${filename}`, 'utf8');
+        return mustache.render(template, data);
+      };
       await next();
     });
   }

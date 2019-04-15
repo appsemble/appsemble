@@ -2,9 +2,9 @@ import Boom from 'boom';
 import validateStyle, { StyleValidationError } from '@appsemble/utils/validateStyle';
 
 export async function getOrganizationCoreStyle(ctx) {
-  const { id } = ctx.params;
+  const { organizationId } = ctx.params;
   const { Organization } = ctx.db.models;
-  const organization = await Organization.findByPk(id, { raw: true });
+  const organization = await Organization.findByPk(organizationId, { raw: true });
 
   if (!organization) {
     throw Boom.notFound('Organization not found.');
@@ -16,7 +16,7 @@ export async function getOrganizationCoreStyle(ctx) {
 }
 
 export async function setOrganizationCoreStyle(ctx) {
-  const { id } = ctx.params;
+  const { organizationId } = ctx.params;
   const { db } = ctx;
   const { Organization } = db.models;
   const { style } = ctx.request.body;
@@ -25,7 +25,7 @@ export async function setOrganizationCoreStyle(ctx) {
   try {
     validateStyle(css);
 
-    const organization = await Organization.findByPk(id);
+    const organization = await Organization.findByPk(organizationId);
     if (!organization) {
       throw Boom.notFound('Organization not found.');
     }
@@ -44,9 +44,9 @@ export async function setOrganizationCoreStyle(ctx) {
 }
 
 export async function getOrganizationSharedStyle(ctx) {
-  const { id } = ctx.params;
+  const { organizationId } = ctx.params;
   const { Organization } = ctx.db.models;
-  const organization = await Organization.findByPk(id, { raw: true });
+  const organization = await Organization.findByPk(organizationId, { raw: true });
 
   if (!organization) {
     throw Boom.notFound('Organization not found.');
@@ -58,7 +58,7 @@ export async function getOrganizationSharedStyle(ctx) {
 }
 
 export async function setOrganizationSharedStyle(ctx) {
-  const { id } = ctx.params;
+  const { organizationId } = ctx.params;
   const { db } = ctx;
   const { Organization } = db.models;
   const { style } = ctx.request.body;
@@ -67,7 +67,7 @@ export async function setOrganizationSharedStyle(ctx) {
   try {
     validateStyle(css);
 
-    const organization = await Organization.findByPk(id);
+    const organization = await Organization.findByPk(organizationId);
     if (!organization) {
       throw Boom.notFound('Organization not found.');
     }
@@ -86,14 +86,13 @@ export async function setOrganizationSharedStyle(ctx) {
 }
 
 export async function getOrganizationBlockStyle(ctx) {
-  const { organizationId, organizationName, blockName } = ctx.params;
+  const { organizationId, blockOrganizationId, blockId } = ctx.params;
   const { OrganizationBlockStyle } = ctx.db.models;
 
-  const blockId = `${organizationName}/${blockName}`;
   const blockStyle = await OrganizationBlockStyle.findOne({
     where: {
       OrganizationId: organizationId,
-      BlockDefinitionId: blockId,
+      BlockDefinitionId: `@${blockOrganizationId}/${blockId}`,
     },
   });
 
@@ -103,13 +102,11 @@ export async function getOrganizationBlockStyle(ctx) {
 }
 
 export async function setOrganizationBlockStyle(ctx) {
-  const { organizationId, organizationName, blockName } = ctx.params;
+  const { organizationId, blockOrganizationId, blockId } = ctx.params;
   const { db } = ctx;
   const { Organization, OrganizationBlockStyle, BlockDefinition } = db.models;
   const { style } = ctx.request.body;
   const css = style.toString().trim();
-
-  const blockId = `${organizationName}/${blockName}`;
 
   try {
     validateStyle(css);
@@ -119,7 +116,7 @@ export async function setOrganizationBlockStyle(ctx) {
       throw Boom.notFound('Organization not found.');
     }
 
-    const block = await BlockDefinition.findByPk(blockId);
+    const block = await BlockDefinition.findByPk(`@${blockOrganizationId}/${blockId}`);
     if (!block) {
       throw Boom.notFound('Block not found.');
     }

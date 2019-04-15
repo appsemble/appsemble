@@ -1,4 +1,5 @@
 import getDb from '@appsemble/utils/getDB';
+import { init } from '@sentry/browser';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
@@ -8,6 +9,9 @@ import thunk from 'redux-thunk';
 import './index.css';
 import App from './components/App';
 import * as actions from './actions';
+
+const { sentryDsn } = document.documentElement.dataset;
+init({ dsn: sentryDsn });
 
 async function getStore() {
   const idb = await getDb({ id: 'appsemble-editor' });

@@ -96,10 +96,10 @@ export async function createApp(ctx) {
 }
 
 export async function getAppById(ctx) {
-  const { id } = ctx.params;
+  const { appId } = ctx.params;
   const { App } = ctx.db.models;
 
-  const app = await App.findByPk(id, { raw: true });
+  const app = await App.findByPk(appId, { raw: true });
 
   if (!app) {
     throw Boom.notFound('App not found');
@@ -107,7 +107,7 @@ export async function getAppById(ctx) {
 
   ctx.body = {
     ...app.definition,
-    id,
+    id: appId,
     path: app.path,
     organizationId: app.OrganizationId,
   };
@@ -143,7 +143,7 @@ export async function queryMyApps(ctx) {
 
 export async function updateApp(ctx) {
   const { db } = ctx;
-  const { id } = ctx.params;
+  const { appId } = ctx.params;
   const {
     user: { organizations },
   } = ctx.state;
@@ -163,7 +163,7 @@ export async function updateApp(ctx) {
 
     await checkBlocks(result.definition, db);
 
-    const app = await App.findOne({ where: { id } });
+    const app = await App.findOne({ where: { id: appId } });
 
     if (!app) {
       throw Boom.notFound('App not found');
@@ -173,18 +173,18 @@ export async function updateApp(ctx) {
       throw Boom.forbidden("User does not belong in this App's organization.");
     }
 
-    await app.update(result, { where: { id } });
+    await app.update(result, { where: { id: appId } });
 
-    ctx.body = { ...result.definition, id, path: result.path };
+    ctx.body = { ...result.definition, id: appId, path: result.path };
   } catch (error) {
     handleAppValidationError(error, result);
   }
 }
 
 export async function getAppIcon(ctx) {
-  const { id } = ctx.params;
+  const { appId } = ctx.params;
   const { App } = ctx.db.models;
-  const app = await App.findByPk(id, { raw: true });
+  const app = await App.findByPk(appId, { raw: true });
 
   if (!app) {
     throw Boom.notFound('App not found');
@@ -199,14 +199,14 @@ export async function getAppIcon(ctx) {
 }
 
 export async function setAppIcon(ctx) {
-  const { id } = ctx.params;
+  const { appId } = ctx.params;
   const { App } = ctx.db.models;
   const {
     user: { organizations },
   } = ctx.state;
   const icon = await getRawBody(ctx.req);
 
-  const app = await App.findOne({ where: { id } });
+  const app = await App.findOne({ where: { id: appId } });
 
   if (!app) {
     throw Boom.notFound('App not found');
@@ -221,13 +221,13 @@ export async function setAppIcon(ctx) {
 }
 
 export async function deleteAppIcon(ctx) {
-  const { id } = ctx.params;
+  const { appId } = ctx.params;
   const { App } = ctx.db.models;
   const {
     user: { organizations },
   } = ctx.state;
 
-  const app = await App.findOne({ where: { id } });
+  const app = await App.findOne({ where: { id: appId } });
 
   if (!app) {
     throw Boom.notFound('App not found');
@@ -243,10 +243,10 @@ export async function deleteAppIcon(ctx) {
 }
 
 export async function getAppCoreStyle(ctx) {
-  const { id } = ctx.params;
+  const { appId } = ctx.params;
   const { App } = ctx.db.models;
 
-  const app = await App.findByPk(id, { raw: true });
+  const app = await App.findByPk(appId, { raw: true });
 
   if (!app) {
     throw Boom.notFound('App not found');
@@ -258,10 +258,10 @@ export async function getAppCoreStyle(ctx) {
 }
 
 export async function getAppSharedStyle(ctx) {
-  const { id } = ctx.params;
+  const { appId } = ctx.params;
   const { App } = ctx.db.models;
 
-  const app = await App.findByPk(id, { raw: true });
+  const app = await App.findByPk(appId, { raw: true });
 
   if (!app) {
     throw Boom.notFound('App not found');
@@ -273,14 +273,13 @@ export async function getAppSharedStyle(ctx) {
 }
 
 export async function getAppBlockStyle(ctx) {
-  const { appId, organizationName, blockName } = ctx.params;
+  const { appId, organizationId, blockId } = ctx.params;
   const { AppBlockStyle } = ctx.db.models;
 
-  const blockId = `${organizationName}/${blockName}`;
   const blockStyle = await AppBlockStyle.findOne({
     where: {
       AppId: appId,
-      BlockDefinitionId: blockId,
+      BlockDefinitionId: `@${organizationId}/${blockId}`,
     },
   });
 
@@ -290,13 +289,11 @@ export async function getAppBlockStyle(ctx) {
 }
 
 export async function setAppBlockStyle(ctx) {
-  const { appId, organizationName, blockName } = ctx.params;
+  const { appId, organizationId, blockId } = ctx.params;
   const { db } = ctx;
   const { App, AppBlockStyle, BlockDefinition } = db.models;
   const { style } = ctx.request.body;
   const css = style.toString().trim();
-
-  const blockId = `${organizationName}/${blockName}`;
 
   try {
     validateStyle(css);
@@ -306,7 +303,7 @@ export async function setAppBlockStyle(ctx) {
       throw Boom.notFound('App not found.');
     }
 
-    const block = await BlockDefinition.findByPk(blockId);
+    const block = await BlockDefinition.findByPk(`@${organizationId}/${blockId}`);
     if (!block) {
       throw Boom.notFound('Block not found.');
     }

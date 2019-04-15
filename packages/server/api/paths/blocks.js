@@ -36,18 +36,10 @@ export default {
       },
     },
   },
-  '/api/blocks/{organization}/{id}': {
+  '/api/blocks/@{organizationId}/{blockId}': {
     parameters: [
-      {
-        name: 'organization',
-        in: 'path',
-        description: 'The organization of the block definition.',
-      },
-      {
-        name: 'id',
-        in: 'path',
-        description: 'The id of the block definition.',
-      },
+      { $ref: '#/components/parameters/organizationId' },
+      { $ref: '#/components/parameters/blockId' },
     ],
     get: {
       tags: ['block'],
@@ -61,18 +53,10 @@ export default {
       },
     },
   },
-  '/api/blocks/{organization}/{id}/versions': {
+  '/api/blocks/@{organizationId}/{blockId}/versions': {
     parameters: [
-      {
-        name: 'organization',
-        in: 'path',
-        description: 'The organization of the block definition.',
-      },
-      {
-        name: 'id',
-        in: 'path',
-        description: 'The id of the block definition.',
-      },
+      { $ref: '#/components/parameters/organizationId' },
+      { $ref: '#/components/parameters/blockId' },
     ],
     get: {
       tags: ['block version'],
@@ -125,7 +109,12 @@ export default {
       security: [{ apiUser: ['blocks:write'] }],
     },
   },
-  '/api/blocks/{organization}/{id}/versions/{version}': {
+  '/api/blocks/@{organizationId}/{blockId}/versions/{blockVersion}': {
+    parameters: [
+      { $ref: '#/components/parameters/organizationId' },
+      { $ref: '#/components/parameters/blockId' },
+      { $ref: '#/components/parameters/blockVersion' },
+    ],
     get: {
       tags: ['block'],
       description: 'Retrieve a single block version.',
@@ -137,23 +126,11 @@ export default {
       },
     },
   },
-  '/api/blocks/{organization}/{id}/versions/{version}/{path}': {
+  '/api/blocks/@{organizationId}/{blockId}/versions/{blockVersion}/{path}': {
     parameters: [
-      {
-        name: 'organization',
-        in: 'path',
-        description: 'The organization of the block definition.',
-      },
-      {
-        name: 'id',
-        in: 'path',
-        description: 'The id of the block definition.',
-      },
-      {
-        name: 'version',
-        in: 'path',
-        description: 'The block version as a semantic version.',
-      },
+      { $ref: '#/components/parameters/organizationId' },
+      { $ref: '#/components/parameters/blockId' },
+      { $ref: '#/components/parameters/blockVersion' },
       {
         name: 'path',
         in: 'path',

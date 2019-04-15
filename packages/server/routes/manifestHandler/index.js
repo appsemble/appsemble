@@ -17,7 +17,7 @@ export default async function manifestHandler(ctx) {
   }
 
   const { path } = record;
-  const { defaultPage, description, name, theme } = record.definition;
+  const { defaultPage, description, name, theme = {} } = record.definition;
   const { themeColor = '#ffffff', backgroundColor = themeColor } = theme;
 
   ctx.body = {
