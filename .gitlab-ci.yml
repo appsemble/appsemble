@@ -53,8 +53,6 @@ build:blocks:
       - blocks/splash/package.json
 
 dependency scanning:
-  except:
-    - schedules
   allow_failure: true
   script:
     - yarn --frozen-lockfile
@@ -124,6 +122,8 @@ deploy:staging:stop:
   when: manual
   only:
     - master@appsemble/appsemble
+  except:
+    - schedules
   environment:
     name: review/master
     action: stop
@@ -143,6 +143,8 @@ eslint:
 
 pack:
   stage: build
+  except:
+    - schedules
   script:
     - yarn workspace @appsemble/cli pack
     - yarn workspace @appsemble/node-utils pack
