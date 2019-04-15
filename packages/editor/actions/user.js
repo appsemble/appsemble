@@ -78,7 +78,7 @@ async function requestToken(url, params, db, dispatch, refreshURL) {
   const { data } = await axios.post(url, new URLSearchParams(params));
   const { access_token: accessToken, refresh_token: refreshToken } = data;
   const tx = db.transaction(AUTH, RW);
-  tx.objectStore(AUTH).put(
+  await tx.objectStore(AUTH).put(
     {
       accessToken,
       refreshToken,

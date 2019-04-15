@@ -1,4 +1,4 @@
-import { openDb } from 'idb';
+import { openDB } from 'idb';
 
 export const RW = 'readwrite';
 export const AUTH = 'auth';
@@ -9,12 +9,12 @@ export const AUTH = 'auth';
  * @param {Object} app The app for which to get an idb.
  * @returns {idb.DB} An idb instance.
  */
-export default function getDB(app) {
-  return openDb(`appsemble-${app.id}`, 1, upgrade => {
-    // eslint-disable-next-line default-case
-    switch (upgrade.oldVersion) {
-      case 0:
-        upgrade.createObjectStore(AUTH);
-    }
+export default async function getDB(app) {
+  return openDB(`appsemble-${app.id}`, 1, {
+    upgrade(db, oldVersion) {
+      if (oldVersion < 1) {
+        db.createObjectStore(AUTH);
+      }
+    },
   });
 }
