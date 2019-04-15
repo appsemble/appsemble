@@ -1,4 +1,5 @@
 .sideMenu {
   height: 100%;
   margin: 10px;
+  text-transform: capitalize;
 }

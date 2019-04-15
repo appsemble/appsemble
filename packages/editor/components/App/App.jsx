@@ -6,8 +6,6 @@ import { IntlProvider } from 'react-intl';
 
 import AppContext from '../AppContext';
 import AppList from '../AppList';
-import CMS from '../CMS';
-import Editor from '../Editor';
 import EditPassword from '../EditPassword';
 import ErrorFallback from '../ErrorFallback';
 import Login from '../Login';
@@ -48,20 +46,10 @@ export default class App extends React.Component {
             <Toolbar />
             {user ? (
               <Switch>
-                <Route component={AppList} exact path="/" />
-                {/* eslint-disable-next-line no-inline-comments */}
-                {/* XXX: This will be changed in #149 https://gitlab.com/appsemble/appsemble/issues/149 */}
-                <Route
-                  path="/_/:id(\d+)"
-                  render={props => (
-                    <AppContext {...props}>
-                      <Route component={Editor} exact path="/_/:id/edit" />
-                      <Route component={CMS} path="/_/:id/cms" />
-                    </AppContext>
-                  )}
-                />
+                <Route component={AppList} exact path="/_/apps" />
+                <Route component={AppContext} path="/_/apps/:id(\d+)" />
                 <Route component={EditPassword} exact path="/_/edit-password" />
-                <Redirect to="/" />
+                <Redirect to="/_/apps" />
               </Switch>
             ) : (
               <Switch>

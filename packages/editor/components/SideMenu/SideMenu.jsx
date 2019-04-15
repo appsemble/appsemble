@@ -18,7 +18,12 @@ export default class SideMenu extends React.Component {
         <p className="menu-label">General</p>
         <ul className="menu-list">
           <li>
-            <NavLink exact to={match.url}>
+            <NavLink exact to={`${match.url}/edit`}>
+              Editor
+            </NavLink>
+          </li>
+          <li>
+            <NavLink exact to={`${match.url}/resources`}>
               Resources
             </NavLink>
             {app.resources && (
@@ -27,7 +32,7 @@ export default class SideMenu extends React.Component {
                   .sort()
                   .map(resource => (
                     <li key={resource}>
-                      <NavLink to={`${match.url}/${resource}`}>{resource}</NavLink>
+                      <NavLink to={`${match.url}/resources/${resource}`}>{resource}</NavLink>
                     </li>
                   ))}
               </ul>
