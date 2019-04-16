@@ -22,11 +22,11 @@ export default class SideMenu extends React.Component {
     const { isCollapsed } = this.state;
 
     return (
-      <div className={classNames({ collapsed: !isCollapsed }, styles.sideMenuContainer)}>
+      <div className={classNames({ [styles.collapsed]: isCollapsed }, styles.sideMenuContainer)}>
         <aside className={classNames('menu', styles.sideMenu)}>
           <ul className="menu-list">
             <li>
-              <NavLink exact to={`${match.url}/edit`}>
+              <NavLink className={styles.menuItem} exact to={`${match.url}/edit`}>
                 <span className="icon is-medium">
                   <i className="fas fa-lg fa-edit" />
                 </span>
@@ -36,7 +36,11 @@ export default class SideMenu extends React.Component {
               </NavLink>
             </li>
             <li>
-              <NavLink exact={!isCollapsed} to={`${match.url}/resources`}>
+              <NavLink
+                className={styles.menuItem}
+                exact={!isCollapsed}
+                to={`${match.url}/resources`}
+              >
                 <span className="icon is-medium">
                   <i className="fas fa-lg fa-cubes" />
                 </span>
@@ -50,7 +54,12 @@ export default class SideMenu extends React.Component {
                     .sort()
                     .map(resource => (
                       <li key={resource}>
-                        <NavLink to={`${match.url}/resources/${resource}`}>{resource}</NavLink>
+                        <NavLink
+                          className={styles.menuItem}
+                          to={`${match.url}/resources/${resource}`}
+                        >
+                          {resource}
+                        </NavLink>
                       </li>
                     ))}
                 </ul>
