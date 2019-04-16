@@ -7,22 +7,86 @@ stages:
   - deploy
   - provision
 
-build:docker:
-  stage: build
-  except:
-    - schedules
-  services:
-    - docker:dind
-  image: docker
-  script:
-    - echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY
-    - docker build -t "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME" .
-    - docker push "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME"
+###################################################################################################
+#  Test Stage                                                                                     #
+###################################################################################################
 
-build:blocks:
+# Scan for dependency vulnerabilities.
+dependency scanning:
+  allow_failure: true
+  script:
+    - yarn --frozen-lockfile
+    - yarn gitlab-yarn-audit
+  artifacts:
+    reports:
+      dependency_scanning: gl-dependency-scanning.json
+
+# Lint JavaScript code using ESLint.
+eslint:
+  except:
+    - schedules
+  script:
+    - yarn --frozen-lockfile
+    - yarn eslint
+  artifacts:
+    reports:
+      codequality: gl-codequality.json
+
+# Check formatting using prettier.
+prettier:
+  except:
+    - schedules
+  script:
+    - yarn --frozen-lockfile
+    - yarn prettier
+
+# Lint CSS using stylelint.
+stylelint:
+  except:
+    - schedules
+  script:
+    - yarn --frozen-lockfile
+    - yarn stylelint
+      # This replaces the regular stylelint behaviour, instead of enhancing it.
+      # https://github.com/stylelint/stylelint/issues/2369
+    - yarn stylelint:rd
+
+# Test the code using unit tests.
+test:
+  services:
+    - name: mysql:8
+      command: [--default-authentication-plugin=mysql_native_password]
+  except:
+    - schedules
+  variables:
+    MYSQL_DATABASE: testAppsemble
+    MYSQL_ROOT_PASSWORD: password
+    DATABASE_URL: 'mysql://root:password@mysql:3306'
+  script:
+    - yarn --frozen-lockfile
+    - yarn jest --coverage --reporters default --reporters jest-junit
+  artifacts:
+    reports:
+      junit: junit.xml
+
+# Check type validity for our TypeScript files.
+tsc:
+  except:
+    - schedules
+  script:
+    - yarn --frozen-lockfile
+    - yarn tsc --noEmit
+
+###################################################################################################
+#  Build Stage                                                                                    #
+###################################################################################################
+
+# Build Appsemble blocks.
+build blocks:
   stage: build
   except:
     - schedules
+  dependencies: []
   script:
     - yarn --frozen-lockfile
     - yarn block action-button
@@ -52,99 +116,26 @@ build:blocks:
       - blocks/splash/dist/
       - blocks/splash/package.json
 
-dependency scanning:
-  allow_failure: true
-  script:
-    - yarn --frozen-lockfile
-    - yarn gitlab-yarn-audit
-  artifacts:
-    reports:
-      dependency_scanning: gl-dependency-scanning.json
-
-deploy:review:
-  stage: deploy
-  when: manual
-  except:
-    - master
-    - schedules
-  allow_failure: false
-  environment:
-    name: review/$CI_COMMIT_REF_SLUG
-    url: https://$CI_ENVIRONMENT_SLUG.appsemble.app
-    on_stop: deploy:review:stop
-  script:
-    - yarn --frozen-lockfile
-    # This allows passing these variables for use in later stages.
-    - yarn appsemble config set email bot@appsemble.com
-    - yarn appsemble config set password "$(openssl rand -base64 12)"
-    - yarn appsemble config set remote "$CI_ENVIRONMENT_URL"
-    - node -r esm config/bin/deploy.js
-  artifacts:
-    expire_in: 1 day
-    paths:
-      - package.json
-
-deploy:review:stop:
-  stage: deploy
-  when: manual
-  except:
-    - master
-    - schedules
-  environment:
-    name: review/$CI_COMMIT_REF_SLUG
-    action: stop
-  script:
-    - yarn --frozen-lockfile
-    - node -r esm config/bin/stop.js
-
-deploy:staging:
-  stage: deploy
-  only:
-    - master@appsemble/appsemble
+# Build the Docker image.
+build docker image:
+  stage: build
   except:
     - schedules
-  environment:
-    name: review/master
-    url: https://staging.appsemble.app
-    on_stop: deploy:staging:stop
+  dependencies: []
+  services:
+    - docker:dind
+  image: docker
   script:
-    - yarn --frozen-lockfile
-    - node -r esm config/bin/deploy.js
-    # This allows passing the CI_ENVIRONMENT_URL for use in later stages.
-    - yarn appsemble config set remote "$CI_ENVIRONMENT_URL"
-  artifacts:
-    expire_in: 1 day
-    paths:
-      - package.json
+    - echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY
+    - docker build -t "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME" .
+    - docker push "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME"
 
-deploy:staging:stop:
-  stage: deploy
-  when: manual
-  only:
-    - master@appsemble/appsemble
-  except:
-    - schedules
-  environment:
-    name: review/master
-    action: stop
-  script:
-    - yarn --frozen-lockfile
-    - node -r esm config/bin/stop.js
-
-eslint:
-  except:
-    - schedules
-  script:
-    - yarn --frozen-lockfile
-    - yarn eslint
-  artifacts:
-    reports:
-      codequality: gl-codequality.json
-
+# Build the npm packages that should be published.
 pack:
   stage: build
   except:
     - schedules
+  dependencies: []
   script:
     - yarn workspace @appsemble/cli pack
     - yarn workspace @appsemble/node-utils pack
@@ -156,12 +147,14 @@ pack:
     paths:
       - packages/**/*.tgz
 
+# Build documentation to be hosted on GitLab pages.
 pages:
   stage: build
   only:
     - master
   except:
     - schedules
+  dependencies: []
   script: &pages-script
     - yarn --frozen-lockfile
     - apt-get update
@@ -186,13 +179,28 @@ pages:
     paths:
       - public/
 
-prettier:
+# Build documentation for review purposes.
+review pages:
+  stage: build
+  only:
+    - branches
   except:
+    - master
     - schedules
-  script:
-    - yarn --frozen-lockfile
-    - yarn prettier
+  dependencies: []
+  environment:
+    name: pages/$CI_COMMIT_REF_SLUG
+    url: https://$CI_PROJECT_NAMESPACE.$CI_PAGES_DOMAIN/-/$CI_PROJECT_NAME/-/jobs/$CI_JOB_ID/artifacts/public/index.html
+  script: *pages-script
+  artifacts:
+    paths:
+      - public/
 
+###################################################################################################
+#  Publish Stage                                                                                  #
+###################################################################################################
+
+# Publish the Docker image that was built to Docker Hub.
 publish:docker:latest:
   stage: publish
   services:
@@ -204,6 +212,7 @@ publish:docker:latest:
     - tags
   except:
     - schedules
+  dependencies: []
   script:
     - echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY
     - echo $DOCKER_HUB_PASSWORD | docker login -u $DOCKER_HUB_USER --password-stdin
@@ -215,15 +224,104 @@ publish:docker:latest:
     - docker push "appsemble/appsemble:latest"
     - docker push "appsemble/appsemble:$CI_COMMIT_TAG"
 
-provision:blocks:
+###################################################################################################
+#  Deploy Stage                                                                                   #
+###################################################################################################
+
+# Deploy the Docker image for a branch to a review environment.
+review:
+  stage: deploy
+  when: manual
+  except:
+    - master
+    - schedules
+  dependencies: []
+  allow_failure: false
+  environment:
+    name: review/$CI_COMMIT_REF_SLUG
+    url: https://$CI_ENVIRONMENT_SLUG.appsemble.app
+    on_stop: stop review
+  script:
+    - yarn --frozen-lockfile
+    # This allows passing these variables for use in later stages.
+    - yarn appsemble config set email bot@appsemble.com
+    - yarn appsemble config set password "$(openssl rand -base64 12)"
+    - yarn appsemble config set remote "$CI_ENVIRONMENT_URL"
+    - node -r esm config/bin/deploy.js
+  artifacts:
+    expire_in: 1 day
+    paths:
+      - package.json
+
+# Stop a review environment.
+stop review:
+  stage: deploy
+  when: manual
+  except:
+    - master
+    - schedules
+  dependencies: []
+  environment:
+    name: review/$CI_COMMIT_REF_SLUG
+    action: stop
+  script:
+    - yarn --frozen-lockfile
+    - node -r esm config/bin/stop.js
+
+# Deploy the Docker image for master to the staging environment.
+staging:
+  stage: deploy
+  only:
+    - master@appsemble/appsemble
+  except:
+    - schedules
+  dependencies: []
+  environment:
+    name: review/master
+    url: https://staging.appsemble.app
+    on_stop: stop staging
+  script:
+    - yarn --frozen-lockfile
+    # This allows passing the CI_ENVIRONMENT_URL for use in later stages.
+    - yarn appsemble config set email bot@appsemble.com
+    - yarn appsemble config set password "$(openssl rand -base64 12)"
+    - yarn appsemble config set remote "$CI_ENVIRONMENT_URL"
+    - node -r esm config/bin/deploy.js
+  artifacts:
+    expire_in: 1 day
+    paths:
+      - package.json
+
+# Stop the staging environment.
+stop staging:
+  stage: deploy
+  when: manual
+  only:
+    - master@appsemble/appsemble
+  except:
+    - schedules
+  dependencies: []
+  environment:
+    name: review/master
+    action: stop
+  script:
+    - yarn --frozen-lockfile
+    - node -r esm config/bin/stop.js
+
+###################################################################################################
+#  Provision Stage                                                                                #
+###################################################################################################
+
+# Provision the live environment with the blocks that were built in the build stage.
+upload blocks:
   stage: provision
   except:
     - schedules
   dependencies:
-    - build:blocks
+    - build blocks
     - pack
-    - deploy:review
-    - deploy:staging
+    - review
+    - staging
   variables:
     GIT_STRATEGY: none
   script:
@@ -237,70 +335,3 @@ provision:blocks:
     - yarn appsemble block register --ignore-conflict blocks/map
     - yarn appsemble block register --ignore-conflict blocks/markdown
     - yarn appsemble block register --ignore-conflict blocks/splash
-
-review pages:
-  only:
-    - branches
-  except:
-    - master
-    - schedules
-  environment:
-    name: pages/$CI_COMMIT_REF_SLUG
-    url: https://$CI_PROJECT_NAMESPACE.$CI_PAGES_DOMAIN/-/$CI_PROJECT_NAME/-/jobs/$CI_JOB_ID/artifacts/public/index.html
-  script: *pages-script
-  artifacts:
-    paths:
-      - public/
-
-stylelint:
-  except:
-    - schedules
-  script:
-    - yarn --frozen-lockfile
-    - yarn stylelint
-      # This replaces the regular stylelint behaviour, instead of enhancing it.
-      # https://github.com/stylelint/stylelint/issues/2369
-    - yarn stylelint:rd
-
-test:
-  services:
-    - name: mysql:8
-      command: [--default-authentication-plugin=mysql_native_password]
-  except:
-    - schedules
-  variables:
-    MYSQL_DATABASE: testAppsemble
-    MYSQL_ROOT_PASSWORD: password
-    DATABASE_URL: 'mysql://root:password@mysql:3306'
-  script:
-    - yarn --frozen-lockfile
-    - yarn test --coverage --reporters default --reporters jest-junit
-  artifacts:
-    reports:
-      junit: junit.xml
-
-# XXX “should not be possible to register the same block version twice” in
-# server/controllers/blocks.test.js fails for Postgres due to commit
-# 163ba1e5561c8a180f969dc5ea756e8d2d4fb54c.
-# Postgres support is not worth blocking that commit, so Postgres tests have been excluded for now.
-.test:postgres:
-  services:
-    - postgres:10
-  variables:
-    POSTGRES_DB: testAppsemble
-    POSTGRES_USER: root
-    POSTGRES_PASSWORD: password
-    DATABASE_URL: 'postgresql://root:password@postgres:5432/testAppsemble'
-  script:
-    - yarn --frozen-lockfile
-    - yarn test --reporters default --reporters jest-junit
-  artifacts:
-    reports:
-      junit: junit.xml
-
-tsc:
-  except:
-    - schedules
-  script:
-    - yarn --frozen-lockfile
-    - yarn tsc --noEmit
