@@ -23,12 +23,22 @@ export default class SideMenu extends React.Component {
         <ul className="menu-list">
           <li>
             <NavLink exact to={`${match.url}/edit`}>
-              <FormattedMessage {...messages.editor} />
+              <span className="icon is-medium">
+                <i className="fas fa-lg fa-edit" />
+              </span>
+              <span>
+                <FormattedMessage {...messages.editor} />
+              </span>
             </NavLink>
           </li>
           <li>
             <NavLink exact to={`${match.url}/resources`}>
-              <FormattedMessage {...messages.resources} />
+              <span className="icon is-medium">
+                <i className="fas fa-lg fa-cubes" />
+              </span>
+              <span>
+                <FormattedMessage {...messages.resources} />
+              </span>
             </NavLink>
             {app.resources && (
               <ul>
