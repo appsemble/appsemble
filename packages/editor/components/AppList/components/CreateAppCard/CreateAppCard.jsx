@@ -12,6 +12,7 @@ export default class CreateAppCard extends React.Component {
     createApp: PropTypes.func.isRequired,
     history: PropTypes.shape().isRequired,
     intl: PropTypes.shape().isRequired,
+    match: PropTypes.shape().isRequired,
     push: PropTypes.func.isRequired,
     user: PropTypes.shape().isRequired,
   };
@@ -49,6 +50,7 @@ export default class CreateAppCard extends React.Component {
       createApp,
       history,
       push,
+      match,
       intl: { formatMessage },
       user,
     } = this.props;
@@ -61,7 +63,7 @@ export default class CreateAppCard extends React.Component {
         user.organizations[selectedOrganization],
       );
 
-      history.push(`/_/${app.id}/edit`);
+      history.push(`${match.url}/${app.id}/edit`);
     } catch (e) {
       if (e.response) {
         if (e.response.status === 409) {

@@ -3,16 +3,10 @@ import { connect } from 'react-redux';
 
 import CMS from './CMS';
 
-function mapStateToProps(state, ownProps) {
+function mapStateToProps(state) {
   return {
-    app: state.apps.apps.find(app => app.id === Number(ownProps.match.params.id)),
     user: state.user.user,
   };
 }
 
-export default injectIntl(
-  connect(
-    mapStateToProps,
-    {},
-  )(CMS),
-);
+export default injectIntl(connect(mapStateToProps)(CMS));

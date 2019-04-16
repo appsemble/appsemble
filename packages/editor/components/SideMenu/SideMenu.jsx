@@ -1,8 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { FormattedMessage } from 'react-intl';
 
 import NavLink from '../NavLink';
 import styles from './SideMenu.css';
+import messages from './messages';
 
 export default class SideMenu extends React.Component {
   static propTypes = {
@@ -15,11 +17,18 @@ export default class SideMenu extends React.Component {
 
     return (
       <aside className={`menu ${styles.sideMenu}`}>
-        <p className="menu-label">General</p>
+        <p className="menu-label">
+          <FormattedMessage {...messages.general} />
+        </p>
         <ul className="menu-list">
           <li>
-            <NavLink exact to={match.url}>
-              Resources
+            <NavLink exact to={`${match.url}/edit`}>
+              <FormattedMessage {...messages.editor} />
+            </NavLink>
+          </li>
+          <li>
+            <NavLink exact to={`${match.url}/resources`}>
+              <FormattedMessage {...messages.resources} />
             </NavLink>
             {app.resources && (
               <ul>
@@ -27,7 +36,7 @@ export default class SideMenu extends React.Component {
                   .sort()
                   .map(resource => (
                     <li key={resource}>
-                      <NavLink to={`${match.url}/${resource}`}>{resource}</NavLink>
+                      <NavLink to={`${match.url}/resources/${resource}`}>{resource}</NavLink>
                     </li>
                   ))}
               </ul>
