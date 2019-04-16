@@ -1,5 +1,33 @@
+.sideMenuContainer {
+  border-right: 1px solid hsl(0, 0%, 86%);
+
+  @media screen and (min-width: 769px) {
+    flex: none;
+    width: 16.66667%;
+  }
+}
+
 .sideMenu {
-  height: 100%;
-  margin: 10px;
+  margin: 10px 0 0 10px;
+  position: relative;
   text-transform: capitalize;
+
+  @media screen and (min-width: 769px) {
+    height: 100%;
+  }
+}
+
+.collapseButton {
+  border-bottom: none;
+  border-left: none;
+  border-radius: 0;
+  border-right: none;
+  bottom: 0;
+  overflow: hidden;
+  position: absolute;
+  width: 100%;
+
+  @media screen and (max-width: 768px) {
+    display: none;
+  }
 }
