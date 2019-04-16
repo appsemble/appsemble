@@ -1,4 +1,3 @@
-import axios from 'axios';
 import getDB from '@appsemble/utils/getDB';
 
 import resolveJsonPointers from '../utils/resolveJsonPointers';
@@ -52,8 +51,7 @@ export function getApp() {
       type: GET_START,
     });
     try {
-      const { data } = await axios.get(`/api/apps/${document.documentElement.dataset.appId}`);
-      const app = resolveJsonPointers(data);
+      const app = resolveJsonPointers(window.settings.app);
       const db = await getDB(app);
       dispatch({
         type: GET_SUCCESS,
