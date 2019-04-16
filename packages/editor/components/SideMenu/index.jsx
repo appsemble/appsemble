@@ -10,9 +10,4 @@ function mapStateToProps(state, ownProps) {
   };
 }
 
-export default withRouter(
-  connect(
-    mapStateToProps,
-    {},
-  )(SideMenu),
-);
+export default withRouter(connect(mapStateToProps)(SideMenu));

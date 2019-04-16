@@ -9,9 +9,4 @@ function mapStateToProps(state) {
   };
 }
 
-export default injectIntl(
-  connect(
-    mapStateToProps,
-    {},
-  )(CMS),
-);
+export default injectIntl(connect(mapStateToProps)(CMS));
