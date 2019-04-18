@@ -165,8 +165,8 @@ pages:
       libxcomposite1 libxcursor1 libxdamage1 libxext6 libxfixes3 libxi6 libxrandr2 libxrender1
       libxss1 libxtst6 ca-certificates fonts-liberation libappindicator1 libnss3 lsb-release
       xdg-utils wget
-    - yarn gitbook install
-    - yarn gitbook build . public
+    - yarn docz build
+    - cp .docz/dist public/docs
     - mkdir -p public/docs/images
     - >
       for input in docs/images/*.mmd; do
