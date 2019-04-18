@@ -33,11 +33,9 @@ export default class AppContext extends React.Component {
     }
 
     return (
-      <div className={`columns ${styles.container}`}>
-        <div className="column is-2">
-          <SideMenu />
-        </div>
-        <div className={`column ${styles.content}`}>
+      <div className={styles.container}>
+        <SideMenu />
+        <div className={styles.content}>
           <Switch>
             <Route component={Editor} exact path={`${match.path}/edit`} />
             <Route component={CMS} path={`${match.path}/resources`} />
