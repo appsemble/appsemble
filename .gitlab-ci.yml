@@ -171,7 +171,8 @@ pages:
         yarn mmdc -p puppeteer-config.json -i $input -o $output
       done
     - yarn docz build
-    - cp .docz/dist public/docs
+    - mkdir -p public
+    - cp .docz/dist/* public -r
     - yarn typedoc --out public/sdk --includeDeclarations --excludeExternals --mode file --target
       ES6 --ignoreCompilerErrors packages/sdk
   artifacts:
