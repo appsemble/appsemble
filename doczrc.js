@@ -4,4 +4,5 @@ module.exports = {
     : '/',
   src: './docs',
   title: 'Appsemble',
+  menu: ['Getting Started', 'Architecture', 'Blocks', 'Development', 'Deployment'],
 };
