@@ -75,7 +75,7 @@ module.exports = {
         '@typescript-eslint/array-type': 'error',
         '@typescript-eslint/ban-types': 'error',
         '@typescript-eslint/class-name-casing': 'error',
-        '@typescript-eslint/explicit-function-return-type': 'error',
+        '@typescript-eslint/explicit-function-return-type': ['error', { allowExpressions: true }],
         '@typescript-eslint/explicit-member-accessibility': 'error',
         '@typescript-eslint/interface-name-prefix': 'error',
         '@typescript-eslint/no-angle-bracket-type-assertion': 'error',
