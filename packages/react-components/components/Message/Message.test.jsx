@@ -15,7 +15,7 @@ describe('Message', () => {
     jest.useFakeTimers();
 
     const messages = [{ id: 1, body: 'Foo' }, { id: 2, body: 'Bar', color: 'info' }];
-    const mock = jest.fn(() => {});
+    const mock = jest.fn();
     const result = shallow(<Message messages={[]} remove={mock} />);
 
     // Simulate adding messages over time
@@ -23,14 +23,14 @@ describe('Message', () => {
     jest.advanceTimersByTime(1000);
     result.setProps({ messages });
 
-    expect(mock.mock.calls).toHaveLength(0);
+    expect(mock).not.toHaveBeenCalled();
 
     jest.advanceTimersByTime(4000);
-    expect(mock.mock.calls).toHaveLength(1);
-    expect(mock.mock.calls[0][0]).toStrictEqual(messages[0]);
+    expect(mock).toHaveBeenCalledTimes(1);
+    expect(mock).toHaveBeenLastCalledWith(messages[0]);
 
     jest.advanceTimersByTime(1000);
-    expect(mock.mock.calls).toHaveLength(2);
-    expect(mock.mock.calls[1][0]).toStrictEqual(messages[1]);
+    expect(mock).toHaveBeenCalledTimes(2);
+    expect(mock).toHaveBeenLastCalledWith(messages[1]);
   });
 });
