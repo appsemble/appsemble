@@ -2,6 +2,7 @@ import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
 
 import { push } from '../../actions/message';
+import { updateApp } from '../../actions/apps';
 import { getOpenApiSpec } from '../../actions/openApi';
 import Editor from './Editor';
 
@@ -15,6 +16,6 @@ function mapStateToProps(state, ownProps) {
 export default injectIntl(
   connect(
     mapStateToProps,
-    { getOpenApiSpec, push },
+    { getOpenApiSpec, push, updateApp },
   )(Editor),
 );
