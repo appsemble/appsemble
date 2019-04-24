@@ -8,9 +8,9 @@ import { prefixURL } from '../../utils/blockUtils';
 import { callBootstrap } from '../../utils/bootstrapper';
 import styles from './Block.css';
 
-const FA_URL = Array.prototype.find.call(document.styleSheets, sheet =>
-  sheet.href.startsWith(`${window.location.origin}/fa/`),
-).href;
+const FA_URL = Array.from(document.styleSheets, sheet => sheet.href).find(href =>
+  href?.startsWith(`${window.location.origin}/fa/`),
+);
 
 /**
  * Render a block on a page.
@@ -28,9 +28,21 @@ export default class Block extends React.Component {
     block: PropTypes.shape().isRequired,
     blockDef: PropTypes.shape(),
     data: PropTypes.shape(),
+    /**
+     * A function for emitting an event.
+     */
+    emitEvent: PropTypes.func.isRequired,
     history: PropTypes.shape().isRequired,
     location: PropTypes.shape().isRequired,
     match: PropTypes.shape().isRequired,
+    /**
+     * A function to deregister an event listener.
+     */
+    offEvent: PropTypes.func.isRequired,
+    /**
+     * A function to register an event listener.
+     */
+    onEvent: PropTypes.func.isRequired,
     showDialog: PropTypes.func,
     showMessage: PropTypes.func.isRequired,
   };
@@ -48,10 +60,13 @@ export default class Block extends React.Component {
       app,
       block,
       blockDef,
+      emitEvent,
       history,
       location,
       data = location.state,
       match,
+      offEvent,
+      onEvent,
       showDialog,
       showMessage,
     } = this.props;
@@ -121,10 +136,16 @@ export default class Block extends React.Component {
     const utils = {
       showMessage,
     };
+    const events = {
+      emit: emitEvent,
+      off: offEvent,
+      on: onEvent,
+    };
     await callBootstrap(blockDef, {
       actions,
       block,
       data,
+      events,
       pageParameters: match.params,
       shadowRoot,
       utils,

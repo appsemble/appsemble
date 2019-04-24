@@ -1,4 +1,9 @@
 /**
+ * A value that can be resolved with an `await` statement.
+ */
+type Awaitable<T> = T | Promise<T>;
+
+/**
  * An action that can be called from within a block.
  */
 export interface Action {
@@ -74,6 +79,32 @@ export interface Utils {
   showMessage: (message: Message) => void;
 }
 
+export interface Events {
+  /**
+   * Emit an Appsemble event.
+   *
+   * @param type The type of event to emit.
+   * @param data Data to emit with the event.
+   */
+  emit: (type: string | symbol, data: any) => void;
+
+  /**
+   * Remove an event listener for an Appsemble event.
+   *
+   * @param type The type of event to listen remove the listener from.
+   * @param callback The callback to remove.
+   */
+  off: (type: string | symbol, callback: (event: Event) => any) => void;
+
+  /**
+   * Add an event listener for an Appsemble event.
+   *
+   * @param type The type of event to listen on.
+   * @param callback A callback to register for the event.
+   */
+  on: (type: string | symbol, callback: (event: Event) => any) => void;
+}
+
 /**
  * The parameters that get passed to the bootstrap function.
  */
@@ -94,6 +125,11 @@ export interface BootstrapParams {
   data: {};
 
   /**
+   * Event related functions and constants.
+   */
+  events: Events;
+
+  /**
    * URL parameters of the current route.
    *
    * If the page on which the block is rendered, has parameters specified on a page level, the
@@ -111,8 +147,6 @@ export interface BootstrapParams {
    */
   utils: Utils;
 }
-
-type Awaitable<T> = T | Promise<T>;
 
 /**
  * Register a boostrap function.
