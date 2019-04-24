@@ -93,12 +93,16 @@ async function refreshTokenLogin(url, db, dispatch) {
     .transaction(AUTH)
     .objectStore(AUTH)
     .get(0);
+
   try {
     const user = await requestToken(
       url,
       {
         grant_type: 'refresh_token',
         refresh_token: refreshToken,
+        // XXX: Should be removed when updating login logic
+        client_id: 'appsemble-editor',
+        client_secret: 'appsemble-editor-secret',
       },
       db,
       dispatch,
