@@ -111,18 +111,17 @@ DATABASE_URL=mysql://root:password@localhost:3306 yarn test
 
 ### Documentation
 
-The Appsemble documentation can be built using GitBook. The documentation can be previewed by
-running the following command.
+The Appsemble documentation can be built using Docz. The documentation can be previewed by running
+the following command.
 
 ```sh
-yarn gitbook serve
+yarn docz dev
 ```
 
 The documentation can be compiled by running the following command.
 
 ```sh
-yarn gitbook install
-yarn gitbook build . public
+yarn docz build
 ```
 
 ### Building
