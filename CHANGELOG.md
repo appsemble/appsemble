@@ -12,6 +12,10 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Editor: Render a user fiendly error page if an unexpected error occurs.
 - Editor: Report errors to Sentry if this is configured.
 
+### Changed
+
+- Editor: Remove controls for unconfigured login / registration methods.
+
 ## [0.5.0] - 2019-04-11
 
 ### Added
