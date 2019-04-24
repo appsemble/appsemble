@@ -88,7 +88,7 @@ export default function oauth2Model({ db, grant, secret }) {
       }
 
       try {
-        const dec = jwt.verify(token.token, secret);
+        const dec = jwt.decode(token.token);
         const organizations = await getOrganizations(dec.sub);
 
         return {
