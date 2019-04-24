@@ -53,8 +53,6 @@
     "yargs": "^13.2.2"
   },
   "devDependencies": {
-    "koa-webpack": "^5.2.2",
-    "supertest": "^4.0.2",
-    "swagger-parser": "^6.0.5"
+    "koa-webpack": "^5.2.2"
   }
 }
