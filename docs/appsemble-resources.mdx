@@ -1,3 +1,7 @@
+---
+menu: Development
+---
+
 # Appsemble Resources
 
 Appsemble provides its own method of storing and retrieving data specific to apps. Data that is
@@ -37,7 +41,7 @@ person:
 ```
 
 The above resource will be recognized as an object which can be referred to from blocks using
-`$ref: /resources/person` or by using `resource actions`.  
+`$ref: /resources/person` or by using `resource actions`.
 It can be accessed in the API at `/api/apps/{appId}/person/{id?}`, supporting basic `CRUD` actions.
 
 ## Resource Actions
@@ -77,7 +81,7 @@ person:
 ## Filtering Resources
 
 When fetching resources at `/api/apps/{appId}/{resourceName}`, by default all resources are
-obtained.  
+obtained.
 The data that is retrieved can be further specified using a subset of the
 [OData URL syntax](http://docs.oasis-open.org/odata/odata/v4.01/odata-v4.01-part2-url-conventions.html).
 
@@ -133,7 +137,7 @@ The following OData syntaxes are supported:
 
 ## Assets
 
-Some resources may also include files such as images or documents.  
+Some resources may also include files such as images or documents.
 To support this, Appsemble provides the Asset API. The asset API accepts file uploads and returns
 the corresponding ID which can be referenced to within a resource.
 
