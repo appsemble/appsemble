@@ -50,7 +50,7 @@ module.exports = {
     'babel/no-unused-expressions': 'error',
     'eslint-comments/no-unused-disable': 'error',
     'eslint-comments/no-use': ['error', { allow: ['eslint-disable-next-line'] }],
-    'import/no-extraneous-dependencies': ['error', { devDependencies: [...configs, ...tests] }],
+    'import/no-extraneous-dependencies': ['error', { devDependencies: configs }],
     'import/order': [
       'error',
       {
@@ -122,6 +122,10 @@ module.exports = {
         jest: true,
       },
       rules: {
+        'import/no-extraneous-dependencies': context => [
+          'error',
+          { devDependencies: true, packageDir: [context.getFilename(), __dirname] },
+        ],
         'jest/consistent-test-it': ['error', { fn: 'it' }],
         'jest/expect-expect': 'error',
         'jest/no-alias-methods': 'error',
