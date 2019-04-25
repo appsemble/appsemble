@@ -9979,10 +9979,10 @@ odata-parser@^1.4.1:
   resolved "https://registry.yarnpkg.com/odata-parser/-/odata-parser-1.4.1.tgz#a2224bc749e76a6205bd47f47acd50eb1e71ed99"
   integrity sha1-oiJLx0nnamIFvUf0es1Q6x5x7Zk=
 
-odata-sequelize@^1.0.9:
-  version "1.0.10"
-  resolved "https://registry.yarnpkg.com/odata-sequelize/-/odata-sequelize-1.0.10.tgz#1e5a784b3f321f7004404b972387fa34a46c052a"
-  integrity sha512-89pxyHnubqKkfHpJ6gG0Cb28A5vkXT+X4FLmLbA9Op6CTDITl6ymRE7WUJXlTduayUodxrt5nceg6mQ/4hDaEQ==
+odata-sequelize@^1.0.11:
+  version "1.0.11"
+  resolved "https://registry.yarnpkg.com/odata-sequelize/-/odata-sequelize-1.0.11.tgz#ca84f6227592d15a8932387668bd2195348da953"
+  integrity sha512-UvOPBrAtmxWX9mKRQ70UI3MXPzwAWpnYLOI6+LQat4JnaePzuouwEURO+ZiJ13cK0TkS+mGxaFsTcd0c579qNg==
   dependencies:
     odata-parser "^1.4.1"
 

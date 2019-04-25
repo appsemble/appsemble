@@ -43,7 +43,7 @@
     "nodemailer-stub-transport": "^1.1.0",
     "oauth2-server": "^3.0.1",
     "odata-parser": "^1.4.1",
-    "odata-sequelize": "^1.0.9",
+    "odata-sequelize": "^1.0.11",
     "pg": "^7.9.0",
     "pg-hstore": "^2.3.2",
     "raw-body": "^2.3.3",
