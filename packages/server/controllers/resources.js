@@ -25,7 +25,7 @@ function verifyResourceDefinition(app, resourceType) {
 function generateQuery(ctx) {
   if (ctx.querystring) {
     try {
-      return parseOData(decodeURIComponent(ctx.querystring), ctx.db);
+      return parseOData(decodeURIComponent(ctx.querystring.replace(/\+/g, '%20')), ctx.db);
     } catch (e) {
       return {};
     }
