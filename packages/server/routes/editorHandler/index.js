@@ -7,9 +7,21 @@ import sentryDsnToReportUri from '../../utils/sentryDsnToReportUri';
  */
 export default async function editorHandler(ctx) {
   const { render } = ctx.state;
-  const { sentryDsn } = ctx.argv;
+  const { argv } = ctx;
+  const { disableRegistration, sentryDsn } = argv;
+  const logins = [];
+  if (argv.oauthGitlabKey) {
+    logins.push('gitlab');
+  }
+  if (argv.oauthGoogleKey) {
+    logins.push('google');
+  }
   const reportUri = sentryDsnToReportUri(sentryDsn);
-  const [settingsHash, settings] = createSettings({ sentryDsn });
+  const [settingsHash, settings] = createSettings({
+    enableRegistration: !disableRegistration,
+    logins,
+    sentryDsn,
+  });
   const csp = makeCSP({
     'report-uri': [reportUri],
     // This is needed for Webpack.

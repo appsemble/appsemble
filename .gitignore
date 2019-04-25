@@ -7,4 +7,4 @@ dist/
 node_modules/
 junit.xml
 /blocks/test/
-/_book/
+/.docz

@@ -1,3 +1,7 @@
+---
+menu: Development
+---
+
 # Theming Apps
 
 By default Appsemble provides a default style based on the [Bulma CSS framework](bulma). While this
@@ -10,10 +14,13 @@ at **three different levels** and can be injected at **three different points** 
 
 ## Hierarchy
 
-<img src="images/theming-hierarchy.svg" style="float: right; max-height: 570px; max-width: 150px;" />
+<img
+  src={require("images/theming-hierarchy.svg")}
+  style={{float: 'right',  maxHeight: '570px', maxWidth: '150px'}}
+/>
 
 Applications can be styled at a **server** level, **organization** level as well as the
-**app-specific** level.  
+**app-specific** level.
 Within each level, styling can be further specified for **core** modules, **block** modules and
 **shared** modules.
 
@@ -44,7 +51,7 @@ well as blocks, such as input fields. It can also be used to apply [CSS variable
 
 ## Applying themes for an application
 
-Open the Appsemble editor located at the base URL of Appsemble. Login, and create your first app.  
+Open the Appsemble editor located at the base URL of Appsemble. Login, and create your first app.
 Within the editor, tabs for `shared` and `core` are available. These tabs contain the current
 styling for these modules. Tabs containing styling for specific blocks are automatically added and
 removed depending on which blocks are used within the app recipe.
@@ -94,7 +101,7 @@ form {
 
 ## Applying themes for an organization
 
-Organization themes can be uploaded using the [CLI](cli).  
+Organization themes can be uploaded using the [CLI](cli).
 The command for uploading themes is as follows:
 
 ```sh

@@ -82,6 +82,8 @@ async function requestToken(url, params, db, dispatch, refreshURL) {
     {
       accessToken,
       refreshToken,
+      clientId: params.client_id,
+      clientSecret: params.client_secret,
     },
     0,
   );
@@ -89,16 +91,19 @@ async function requestToken(url, params, db, dispatch, refreshURL) {
 }
 
 async function refreshTokenLogin(url, db, dispatch) {
-  const { refreshToken } = await db
+  const { refreshToken, clientId, clientSecret } = await db
     .transaction(AUTH)
     .objectStore(AUTH)
     .get(0);
+
   try {
     const user = await requestToken(
       url,
       {
         grant_type: 'refresh_token',
         refresh_token: refreshToken,
+        ...(clientId && { client_id: clientId }),
+        ...(clientSecret && { client_secret: clientSecret }),
       },
       db,
       dispatch,

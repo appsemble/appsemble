@@ -6,6 +6,7 @@ import 'monaco-editor/esm/vs/basic-languages/yaml/yaml.contribution';
 import 'monaco-editor/esm/vs/basic-languages/css/css.contribution';
 
 import { KeyCode, KeyMod, editor } from 'monaco-editor/esm/vs/editor/edcore.main';
+import ResizeObserver from 'resize-observer-polyfill';
 import React from 'react';
 import PropTypes from 'prop-types';
 
@@ -31,6 +32,8 @@ export default class MonacoEditor extends React.Component {
 
   node = React.createRef();
 
+  observer = null;
+
   componentDidMount() {
     const { value, language, onValueChange, onSave, options } = this.props;
     const model = editor.createModel(value, language);
@@ -48,6 +51,12 @@ export default class MonacoEditor extends React.Component {
     this.subscription = model.onDidChangeContent(() => {
       onValueChange(model.getValue());
     });
+
+    this.observer = new ResizeObserver(() => {
+      this.editor.layout();
+    });
+
+    this.observer.observe(this.node.current);
   }
 
   componentDidUpdate(prevProps) {
@@ -89,6 +98,10 @@ export default class MonacoEditor extends React.Component {
 
     if (this.subscription) {
       this.subscription.dispose();
+    }
+
+    if (this.observer) {
+      this.observer.unobserve(this.node.current);
     }
   }
 

@@ -19,6 +19,7 @@ export default class Editor extends React.Component {
   static propTypes = {
     app: PropTypes.shape().isRequired,
     getOpenApiSpec: PropTypes.func.isRequired,
+    updateApp: PropTypes.func.isRequired,
     history: PropTypes.shape().isRequired,
     intl: PropTypes.shape().isRequired,
     location: PropTypes.shape().isRequired,
@@ -41,7 +42,6 @@ export default class Editor extends React.Component {
     icon: undefined,
     iconURL: undefined,
     warningDialog: false,
-    // eslint-disable-next-line react/no-unused-state
     organizationId: undefined,
   };
 
@@ -82,7 +82,6 @@ export default class Editor extends React.Component {
         initialRecipe: recipe,
         path,
         iconURL: `/api/apps/${id}/icon`,
-        // eslint-disable-next-line react/no-unused-state
         organizationId,
       });
     } catch (e) {
@@ -157,8 +156,8 @@ export default class Editor extends React.Component {
   };
 
   uploadApp = async () => {
-    const { intl, match, push } = this.props;
-    const { recipe, style, sharedStyle, icon, valid } = this.state;
+    const { intl, match, push, updateApp } = this.props;
+    const { recipe, style, sharedStyle, icon, valid, organizationId } = this.state;
 
     if (!valid) {
       return;
@@ -177,6 +176,9 @@ export default class Editor extends React.Component {
         data: { path },
       } = await axios.put(`/api/apps/${id}`, formData));
       push({ body: intl.formatMessage(messages.updateSuccess), color: 'success' });
+
+      // Update Redux state
+      updateApp({ ...app, organizationId, id: Number(match.params.id) });
     } catch (e) {
       if (e.response && e.response.status === 403) {
         push(intl.formatMessage(messages.forbidden));

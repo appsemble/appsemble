@@ -165,14 +165,14 @@ pages:
       libxcomposite1 libxcursor1 libxdamage1 libxext6 libxfixes3 libxi6 libxrandr2 libxrender1
       libxss1 libxtst6 ca-certificates fonts-liberation libappindicator1 libnss3 lsb-release
       xdg-utils wget
-    - yarn gitbook install
-    - yarn gitbook build . public
-    - mkdir -p public/docs/images
     - >
       for input in docs/images/*.mmd; do
-        output=public/docs/images/$(basename $input .mmd).svg
+        output=docs/images/$(basename $input .mmd).svg
         yarn mmdc -p puppeteer-config.json -i $input -o $output
       done
+    - yarn docz build
+    - mkdir -p public
+    - cp .docz/dist/* public -r
     - yarn typedoc --out public/sdk --includeDeclarations --excludeExternals --mode file --target
       ES6 --ignoreCompilerErrors packages/sdk
   artifacts:
