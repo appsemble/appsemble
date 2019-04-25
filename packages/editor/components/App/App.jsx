@@ -55,7 +55,9 @@ export default class App extends React.Component {
               <Switch>
                 <Route component={ConnectOAuth} exact path="/_/connect" />
                 <Route component={Login} exact path="/_/login" />
-                <Route component={Register} exact path="/_/register" />
+                {window.settings.enableRegistration && (
+                  <Route component={Register} exact path="/_/register" />
+                )}
                 <Route component={ResetPassword} exact path="/_/reset-password" />
                 <Route component={EditPassword} exact path="/_/edit-password" />
                 <Route component={VerifyEmail} exact path="/_/verify" />
