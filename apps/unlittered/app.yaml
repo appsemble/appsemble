@@ -11,6 +11,8 @@ resources:
     blobs:
       url: 'https://api.stadswerken.amsterdam/upload'
       serialize: custom
+  waarnemingFake:
+    url: https://api.stadswerken.amsterdam/waarnemingen
 
 authentication:
   - method: email
@@ -88,6 +90,28 @@ pages:
           click:
             type: link
             to: Maak waarneming
+
+  - name: Waarnemingen lijst
+    scope:
+      - '*'
+    blocks:
+      - type: feed
+        version: 0.5.0
+        parameters:
+          title: proces
+          subtitle: id|upper
+          heading: created_at
+          picture: fotos.0
+          pictureBase: https://api.stadswerken.amsterdam/uploads
+          description: notities
+
+        actions:
+          load:
+            type: resource.query
+            resource: waarneming
+            query:
+              $orderBy: 'created_at desc'
+              $top: 50
 
   - name: Waarneming details
     scope:

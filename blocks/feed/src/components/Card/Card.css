@@ -1,0 +1,18 @@
+.root {
+  margin: 10px;
+}
+
+.replies {
+  max-height: 12rem;
+  overflow-y: auto;
+}
+
+.replyForm {
+  display: flex;
+  padding: 8px 0;
+}
+
+.replyButton {
+  border-radius: 50%;
+  margin-left: 4px;
+}
