@@ -25,7 +25,10 @@ export default class AppContext extends React.Component {
 
   async componentDidUpdate(prevProps) {
     const { app, initAuth } = this.props;
-    const [authentication] = app.authentication;
+    let authentication;
+    if (app.authentication) {
+      [authentication] = app.authentication;
+    }
 
     if (!prevProps.app && app) {
       await initAuth(authentication);
