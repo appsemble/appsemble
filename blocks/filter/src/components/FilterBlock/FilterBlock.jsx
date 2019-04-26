@@ -100,6 +100,43 @@ export default class FilterBlock extends React.Component {
     }
 
     switch (type) {
+      case 'date': {
+        if (!range) {
+          return (
+            <input
+              className="input"
+              id={`filter${name}`}
+              name={name}
+              onChange={this.onChange}
+              type="date"
+              value={filter[name] || defaultValue || ''}
+            />
+          );
+        }
+
+        return (
+          <React.Fragment>
+            <input
+              className="input"
+              id={`filter${name}`}
+              max={filter[name]?.to}
+              name={name}
+              onChange={this.onRangeChange}
+              type="date"
+              value={filter[name]?.from || defaultValue || ''}
+            />
+            <input
+              className="input"
+              id={`to-filter${name}`}
+              min={filter[name]?.from}
+              name={name}
+              onChange={this.onRangeChange}
+              type="date"
+              value={filter[name]?.to || ''}
+            />
+          </React.Fragment>
+        );
+      }
       case 'number': {
         if (!range) {
           return (
