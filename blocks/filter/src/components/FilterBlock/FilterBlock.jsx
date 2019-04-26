@@ -78,7 +78,7 @@ export default class FilterBlock extends React.Component {
     events.emit(emit, data);
   };
 
-  generateInput = ({ name, type, range, enum: enumerator }) => {
+  generateInput = ({ name, type, range, enum: enumerator, default: defaultValue }) => {
     const { filter } = this.state;
 
     if (enumerator?.length) {
@@ -88,9 +88,9 @@ export default class FilterBlock extends React.Component {
             id={`filter${name}`}
             name={name}
             onChange={this.onChange}
-            value={filter[name] || ''}
+            value={filter[name] || defaultValue || ''}
           >
-            <option />
+            {!defaultValue && <option />}
             {enumerator.map(e => (
               <option value={e.value}>{e.label || e.value}</option>
             ))}
@@ -109,7 +109,7 @@ export default class FilterBlock extends React.Component {
               name={name}
               onChange={this.onChange}
               type="number"
-              value={filter[name] || ''}
+              value={filter[name] || defaultValue || ''}
             />
           );
         }
@@ -122,7 +122,7 @@ export default class FilterBlock extends React.Component {
               name={name}
               onChange={this.onRangeChange}
               type="number"
-              value={filter[name]?.from || ''}
+              value={filter[name]?.from || defaultValue || ''}
             />
             <input
               className="input"
@@ -144,7 +144,7 @@ export default class FilterBlock extends React.Component {
             id={`filter${name}`}
             name={name}
             onChange={this.onChange}
-            value={filter[name] || ''}
+            value={filter[name] || defaultValue || ''}
           />
         );
       }
