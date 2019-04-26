@@ -78,8 +78,26 @@ export default class FilterBlock extends React.Component {
     events.emit(emit, data);
   };
 
-  generateInput = (name, type, range) => {
+  generateInput = ({ name, type, range, enum: enumerator }) => {
     const { filter } = this.state;
+
+    if (enumerator?.length) {
+      return (
+        <div className="select">
+          <select
+            id={`filter${name}`}
+            name={name}
+            onChange={this.onChange}
+            value={filter[name] || ''}
+          >
+            <option />
+            {enumerator.map(e => (
+              <option value={e.value}>{e.label || e.value}</option>
+            ))}
+          </select>
+        </div>
+      );
+    }
 
     switch (type) {
       case 'number': {
@@ -99,7 +117,7 @@ export default class FilterBlock extends React.Component {
           <React.Fragment>
             <input
               className="input"
-              id={`from-filter${name}`}
+              id={`filter${name}`}
               max={filter[name]?.to}
               name={name}
               onChange={this.onRangeChange}
@@ -140,14 +158,14 @@ export default class FilterBlock extends React.Component {
     return (
       <React.Fragment>
         {fields.map(field => {
-          const { name, label = name, type = 'string', range } = field;
+          const { name, label = name } = field;
 
           return (
             <div key={name} className="control">
               <label className="label" htmlFor={`filter${name}`}>
                 {label}
               </label>
-              {this.generateInput(name, type, range)}
+              {this.generateInput(field)}
             </div>
           );
         })}
