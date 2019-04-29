@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { FormattedMessage } from 'react-intl';
+import classNames from 'classnames';
 
 import styles from './FilterBlock.css';
 import messages from './messages';
@@ -92,12 +93,26 @@ export default class FilterBlock extends React.Component {
     this.setState({ isOpen: false });
   };
 
-  generateInput = ({ name, type, range, enum: enumerator, default: defaultValue }) => {
+  generateField = ({
+    name,
+    label = name,
+    type,
+    range,
+    enum: enumerator,
+    default: defaultValue,
+  }) => {
     const { filter } = this.state;
+    const labelElement = (
+      <label className="label" htmlFor={`filter${name}`}>
+        {label}
+      </label>
+    );
+
+    let control;
 
     if (enumerator?.length) {
-      return (
-        <div className="select">
+      control = (
+        <div className="select is-fullwidth">
           <select
             id={`filter${name}`}
             name={name}
@@ -105,104 +120,125 @@ export default class FilterBlock extends React.Component {
             value={filter[name] || defaultValue || ''}
           >
             {!defaultValue && <option />}
-            {enumerator.map(({ value, label }, index) => (
+            {enumerator.map(({ value, label: lbl }, index) => (
               // eslint-disable-next-line react/no-array-index-key
               <option key={index} value={value}>
-                {label || value}
+                {lbl || value}
               </option>
             ))}
           </select>
         </div>
       );
-    }
+    } else {
+      switch (type) {
+        case 'date': {
+          if (!range) {
+            control = (
+              <input
+                className="input"
+                id={`filter${name}`}
+                name={name}
+                onChange={this.onChange}
+                type="date"
+                value={filter[name] || defaultValue || ''}
+              />
+            );
+            break;
+          }
 
-    switch (type) {
-      case 'date': {
-        if (!range) {
-          return (
+          control = (
+            <React.Fragment>
+              <p className="control">
+                <input
+                  className="input"
+                  id={`filter${name}`}
+                  max={filter[name]?.to}
+                  name={name}
+                  onChange={this.onRangeChange}
+                  type="date"
+                  value={filter[name]?.from || defaultValue || ''}
+                />
+              </p>
+              <p className="control">
+                <input
+                  className="input"
+                  id={`to-filter${name}`}
+                  min={filter[name]?.from}
+                  name={name}
+                  onChange={this.onRangeChange}
+                  type="date"
+                  value={filter[name]?.to || ''}
+                />
+              </p>
+            </React.Fragment>
+          );
+          break;
+        }
+        case 'number': {
+          if (!range) {
+            control = (
+              <input
+                className="input"
+                id={`filter${name}`}
+                name={name}
+                onChange={this.onChange}
+                type="number"
+                value={filter[name] || defaultValue || ''}
+              />
+            );
+            break;
+          }
+          control = (
+            <React.Fragment>
+              <p className="control">
+                <input
+                  className="input"
+                  id={`filter${name}`}
+                  max={filter[name]?.to}
+                  name={name}
+                  onChange={this.onRangeChange}
+                  type="number"
+                  value={filter[name]?.from || defaultValue || ''}
+                />
+              </p>
+              <p className="control">
+                <input
+                  className="input"
+                  id={`to-filter${name}`}
+                  min={filter[name]?.from}
+                  name={name}
+                  onChange={this.onRangeChange}
+                  type="number"
+                  value={filter[name]?.to || ''}
+                />
+              </p>
+            </React.Fragment>
+          );
+          break;
+        }
+        case 'string':
+        default: {
+          control = (
             <input
               className="input"
               id={`filter${name}`}
               name={name}
               onChange={this.onChange}
-              type="date"
               value={filter[name] || defaultValue || ''}
             />
           );
         }
-
-        return (
-          <React.Fragment>
-            <input
-              className="input"
-              id={`filter${name}`}
-              max={filter[name]?.to}
-              name={name}
-              onChange={this.onRangeChange}
-              type="date"
-              value={filter[name]?.from || defaultValue || ''}
-            />
-            <input
-              className="input"
-              id={`to-filter${name}`}
-              min={filter[name]?.from}
-              name={name}
-              onChange={this.onRangeChange}
-              type="date"
-              value={filter[name]?.to || ''}
-            />
-          </React.Fragment>
-        );
-      }
-      case 'number': {
-        if (!range) {
-          return (
-            <input
-              className="input"
-              id={`filter${name}`}
-              name={name}
-              onChange={this.onChange}
-              type="number"
-              value={filter[name] || defaultValue || ''}
-            />
-          );
-        }
-        return (
-          <React.Fragment>
-            <input
-              className="input"
-              id={`filter${name}`}
-              max={filter[name]?.to}
-              name={name}
-              onChange={this.onRangeChange}
-              type="number"
-              value={filter[name]?.from || defaultValue || ''}
-            />
-            <input
-              className="input"
-              id={`to-filter${name}`}
-              min={filter[name]?.from}
-              name={name}
-              onChange={this.onRangeChange}
-              type="number"
-              value={filter[name]?.to || ''}
-            />
-          </React.Fragment>
-        );
-      }
-      case 'string':
-      default: {
-        return (
-          <input
-            className="input"
-            id={`filter${name}`}
-            name={name}
-            onChange={this.onChange}
-            value={filter[name] || defaultValue || ''}
-          />
-        );
       }
     }
+
+    return (
+      <div className={classNames('field', 'is-horizontal')}>
+        <div className="field-label is-normal">{labelElement}</div>
+        <div className={classNames('field', 'field-body', { 'is-grouped': range })}>
+          {range ? control : <div className="control">{control}</div>}
+        </div>
+      </div>
+    );
   };
 
   render() {
@@ -212,7 +248,7 @@ export default class FilterBlock extends React.Component {
 
     return (
       <React.Fragment>
-        <div className={`modal ${isOpen && 'is-active'}`}>
+        <div className={classNames('modal', { 'is-active': isOpen })}>
           <div
             className="modal-background"
             onClick={this.onClose}
@@ -227,18 +263,9 @@ export default class FilterBlock extends React.Component {
                 </p>
               </header>
               <div className="card-content">
-                {fields.map(field => {
-                  const { name, label = name } = field;
-
-                  return (
-                    <div key={name} className="control">
-                      <label className="label" htmlFor={`filter${name}`}>
-                        {label}
-                      </label>
-                      {this.generateInput(field)}
-                    </div>
-                  );
-                })}
+                {fields.map(field => (
+                  <React.Fragment key={field.name}>{this.generateField(field)}</React.Fragment>
+                ))}
               </div>
               <footer className="card-footer">
                 {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
