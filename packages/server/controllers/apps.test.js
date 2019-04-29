@@ -53,11 +53,19 @@ describe('app controller', () => {
 
   it('should return an array of apps', async () => {
     const appA = await App.create(
-      { path: 'test-app', definition: { name: 'Test App', defaultPage: 'Test Page' } },
+      {
+        path: 'test-app',
+        definition: { name: 'Test App', defaultPage: 'Test Page' },
+        OrganizationId: organizationId,
+      },
       { raw: true },
     );
     const appB = await App.create(
-      { path: 'another-app', definition: { name: 'Another App', defaultPage: 'Another Page' } },
+      {
+        path: 'another-app',
+        definition: { name: 'Another App', defaultPage: 'Another Page' },
+        OrganizationId: organizationId,
+      },
       { raw: true },
     );
     const { body } = await request(server)
@@ -65,8 +73,18 @@ describe('app controller', () => {
       .set('Authorization', token);
 
     expect(body).toHaveLength(2);
-    expect(body).toContainEqual({ id: appA.id, path: 'test-app', ...appA.definition });
-    expect(body).toContainEqual({ id: appB.id, path: 'another-app', ...appB.definition });
+    expect(body).toContainEqual({
+      id: appA.id,
+      path: 'test-app',
+      ...appA.definition,
+      organizationId: appA.OrganizationId,
+    });
+    expect(body).toContainEqual({
+      id: appB.id,
+      path: 'another-app',
+      ...appB.definition,
+      organizationId: appB.OrganizationId,
+    });
   });
 
   it('should return 404 when fetching a non-existent app', async () => {
@@ -126,10 +144,12 @@ describe('app controller', () => {
       .get('/api/apps/me')
       .set('Authorization', token);
 
-    expect(requestA.body).toStrictEqual([{ ...appA.definition, id: appA.id, path: appA.path }]);
+    expect(requestA.body).toStrictEqual([
+      { ...appA.definition, id: appA.id, path: appA.path, organizationId: appA.OrganizationId },
+    ]);
     expect(requestB.body).toStrictEqual([
-      { ...appA.definition, id: appA.id, path: appA.path },
-      { ...appB.definition, id: appB.id, path: appB.path },
+      { ...appA.definition, id: appA.id, path: appA.path, organizationId: appA.OrganizationId },
+      { ...appB.definition, id: appB.id, path: appB.path, organizationId: appB.OrganizationId },
     ]);
   });
 
