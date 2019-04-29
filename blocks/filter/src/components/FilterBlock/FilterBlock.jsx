@@ -20,6 +20,7 @@ export default class FilterBlock extends React.Component {
      * The event helper functions as passed by the Appsemble interface.
      */
     events: PropTypes.shape().isRequired,
+    intl: PropTypes.shape().isRequired,
   };
 
   state = { filter: {} };
@@ -101,6 +102,9 @@ export default class FilterBlock extends React.Component {
     enum: enumerator,
     default: defaultValue,
   }) => {
+    const {
+      intl: { formatMessage },
+    } = this.props;
     const { filter } = this.state;
     const labelElement = (
       <label className="label" htmlFor={`filter${name}`}>
@@ -155,6 +159,7 @@ export default class FilterBlock extends React.Component {
                   max={filter[name]?.to}
                   name={name}
                   onChange={this.onRangeChange}
+                  placeholder={formatMessage(messages.from)}
                   type="date"
                   value={filter[name]?.from || defaultValue || ''}
                 />
@@ -166,6 +171,7 @@ export default class FilterBlock extends React.Component {
                   min={filter[name]?.from}
                   name={name}
                   onChange={this.onRangeChange}
+                  placeholder={formatMessage(messages.to)}
                   type="date"
                   value={filter[name]?.to || ''}
                 />
@@ -197,6 +203,7 @@ export default class FilterBlock extends React.Component {
                   max={filter[name]?.to}
                   name={name}
                   onChange={this.onRangeChange}
+                  placeholder={formatMessage(messages.from)}
                   type="number"
                   value={filter[name]?.from || defaultValue || ''}
                 />
@@ -208,6 +215,7 @@ export default class FilterBlock extends React.Component {
                   min={filter[name]?.from}
                   name={name}
                   onChange={this.onRangeChange}
+                  placeholder={formatMessage(messages.to)}
                   type="number"
                   value={filter[name]?.to || ''}
                 />

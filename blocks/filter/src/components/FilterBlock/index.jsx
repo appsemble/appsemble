@@ -1,1 +1,5 @@
-export { default } from './FilterBlock';
+import { injectIntl } from 'react-intl';
+
+import FilterBlock from './FilterBlock';
+
+export default injectIntl(FilterBlock);
