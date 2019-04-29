@@ -8,9 +8,11 @@ const { Consumer, Provider } = React.createContext();
 /**
  * Mount a React component returned by a bootstrap function in the shadow DOM of a block.
  */
-export function mount(Component) {
+export function mount(Component, root) {
   return params => {
-    const reactRoot = params.shadowRoot.appendChild(document.createElement('div'));
+    const reactRoot = params.shadowRoot.appendChild(
+      root ? root.cloneNode() : document.createElement('div'),
+    );
     const props = {
       ...params,
       reactRoot,
@@ -40,8 +42,8 @@ export function mount(Component) {
   };
 }
 
-export function bootstrap(Component) {
-  return sdkBootstrap(mount(Component));
+export function bootstrap(Component, reactRoot) {
+  return sdkBootstrap(mount(Component, reactRoot));
 }
 
 /**
