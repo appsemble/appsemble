@@ -1,5 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { FormattedMessage } from 'react-intl';
+
+import styles from './FilterBlock.css';
+import messages from './messages';
 
 export default class FilterBlock extends React.Component {
   static propTypes = {
@@ -76,6 +80,16 @@ export default class FilterBlock extends React.Component {
 
     const data = await this.fetchData();
     events.emit(emit, data);
+
+    this.onClose();
+  };
+
+  onOpen = () => {
+    this.setState({ isOpen: true });
+  };
+
+  onClose = () => {
+    this.setState({ isOpen: false });
   };
 
   generateInput = ({ name, type, range, enum: enumerator, default: defaultValue }) => {
@@ -91,8 +105,11 @@ export default class FilterBlock extends React.Component {
             value={filter[name] || defaultValue || ''}
           >
             {!defaultValue && <option />}
-            {enumerator.map(e => (
-              <option value={e.value}>{e.label || e.value}</option>
+            {enumerator.map(({ value, label }, index) => (
+              // eslint-disable-next-line react/no-array-index-key
+              <option key={index} value={value}>
+                {label || value}
+              </option>
             ))}
           </select>
         </div>
@@ -190,25 +207,71 @@ export default class FilterBlock extends React.Component {
 
   render() {
     const { block } = this.props;
+    const { isOpen } = this.state;
     const { fields } = block.parameters;
 
     return (
       <React.Fragment>
-        {fields.map(field => {
-          const { name, label = name } = field;
+        <div className={`modal ${isOpen && 'is-active'}`}>
+          <div
+            className="modal-background"
+            onClick={this.onClose}
+            onKeyDown={this.onKeyDown}
+            role="presentation"
+          />
+          <div className="modal-content">
+            <div className="card">
+              <header className="card-header">
+                <p className="card-header-title">
+                  <FormattedMessage {...messages.filter} />
+                </p>
+              </header>
+              <div className="card-content">
+                {fields.map(field => {
+                  const { name, label = name } = field;
 
-          return (
-            <div key={name} className="control">
-              <label className="label" htmlFor={`filter${name}`}>
-                {label}
-              </label>
-              {this.generateInput(field)}
+                  return (
+                    <div key={name} className="control">
+                      <label className="label" htmlFor={`filter${name}`}>
+                        {label}
+                      </label>
+                      {this.generateInput(field)}
+                    </div>
+                  );
+                })}
+              </div>
+              <footer className="card-footer">
+                {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
+                <a
+                  className="card-footer-item is-link"
+                  onClick={this.onClose}
+                  onKeyDown={this.onKeyDown}
+                  role="button"
+                  tabIndex="-1"
+                >
+                  <FormattedMessage {...messages.cancel} />
+                </a>
+                <button
+                  className={`card-footer-item button is-info ${styles.cardFooterButton}`}
+                  onClick={this.onFilter}
+                  type="button"
+                >
+                  <FormattedMessage {...messages.filter} />
+                </button>
+              </footer>
             </div>
-          );
-        })}
+          </div>
+          <button className="modal-close is-large" onClick={this.onClose} type="button" />
+        </div>
 
-        <button className="button" onClick={this.onFilter} type="button">
-          Filter
+        <button
+          className={`button ${styles.filterDialogButton} is-info`}
+          onClick={this.onOpen}
+          type="button"
+        >
+          <span className="icon">
+            <i className="fas fa-filter" />
+          </span>
         </button>
       </React.Fragment>
     );
