@@ -121,6 +121,7 @@ export async function queryApps(ctx) {
     ...app.definition,
     id: app.id,
     path: app.path,
+    organizationId: app.OrganizationId,
   }));
 }
 
@@ -138,6 +139,7 @@ export async function queryMyApps(ctx) {
     ...app.definition,
     id: app.id,
     path: app.path,
+    organizationId: app.OrganizationId,
   }));
 }
 
