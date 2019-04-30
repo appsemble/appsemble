@@ -2,7 +2,6 @@ import normalize from '@appsemble/utils/normalize';
 import validateStyle, { StyleValidationError } from '@appsemble/utils/validateStyle';
 import Boom from 'boom';
 import { isEqual, uniqWith } from 'lodash';
-import getRawBody from 'raw-body';
 import { Op, UniqueConstraintError } from 'sequelize';
 import sharp from 'sharp';
 
@@ -206,7 +205,7 @@ export async function setAppIcon(ctx) {
   const {
     user: { organizations },
   } = ctx.state;
-  const icon = await getRawBody(ctx.req);
+  const icon = ctx.request.body;
 
   const app = await App.findOne({ where: { id: appId } });
 
