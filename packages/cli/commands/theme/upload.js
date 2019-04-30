@@ -8,6 +8,7 @@ import postcssrc from 'postcss-load-config';
 import postcssUrl from 'postcss-url';
 
 import { post } from '../../lib/request';
+import { getToken } from '../../lib/config';
 
 export const command = 'upload <path>';
 export const description = 'Upload stylesheets to an organization.';
@@ -75,8 +76,9 @@ function determineType(shared, core, block) {
   return null;
 }
 
-export async function handler({ path, organization, shared, core, block }) {
+export async function handler({ path, organization, shared, core, block, remote }) {
   const themeDir = await fs.stat(path);
+  await getToken(remote);
 
   if (themeDir.isFile()) {
     // Path was not a directory, assume it's a file
