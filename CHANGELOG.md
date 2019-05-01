@@ -9,13 +9,17 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
+- App: Add support for the new `static` block layout.
 - Editor: Render a user fiendly error page if an unexpected error occurs.
 - Editor: Report errors to Sentry if this is configured.
 - SDK: Add support for the events API.
+- Server: Add support for the new `static` block layout.
 
 ### Changed
 
+- App: Rename a block `position` to `layout`.
 - Editor: Remove controls for unconfigured login / registration methods.
+- Server: Rename a block `position` to `layout`.
 
 ## [0.5.0] - 2019-04-11
 
