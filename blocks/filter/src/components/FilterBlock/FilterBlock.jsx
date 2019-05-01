@@ -287,7 +287,7 @@ export default class FilterBlock extends React.Component {
                   <FormattedMessage {...messages.cancel} />
                 </a>
                 <button
-                  className={`card-footer-item button is-info ${styles.cardFooterButton}`}
+                  className={`card-footer-item button is-primary ${styles.cardFooterButton}`}
                   onClick={this.onFilter}
                   type="button"
                 >
@@ -300,7 +300,7 @@ export default class FilterBlock extends React.Component {
         </div>
 
         <button
-          className={`button ${styles.filterDialogButton} is-info`}
+          className={`button ${styles.filterDialogButton}`}
           onClick={this.onOpen}
           type="button"
         >
