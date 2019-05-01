@@ -4,7 +4,7 @@ export default (sequelize, DataTypes) =>
     {
       name: { type: DataTypes.STRING, primaryKey: true },
       version: { type: DataTypes.STRING, primaryKey: true },
-      position: { type: DataTypes.STRING },
+      layout: { type: DataTypes.STRING },
       actions: { type: DataTypes.JSON },
       resources: { type: DataTypes.JSON },
     },

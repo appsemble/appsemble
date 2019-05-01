@@ -119,7 +119,7 @@ describe('blocks', () => {
       actions: null,
       files: ['build/standing.png', 'build/testblock.js'],
       name: '@xkcd/standing',
-      position: null,
+      layout: null,
       resources: null,
       version: '1.32.9',
     });
@@ -141,7 +141,7 @@ describe('blocks', () => {
 
     const { body } = await request(server).get('/api/blocks/@xkcd/standing/versions');
     expect(body).toStrictEqual([
-      { actions: null, position: null, resources: null, version: '1.32.9' },
+      { actions: null, layout: null, resources: null, version: '1.32.9' },
     ]);
   });
 
@@ -169,7 +169,7 @@ describe('blocks', () => {
       actions: null,
       files: ['build/standing.png', 'build/testblock.js'],
       name: '@xkcd/standing',
-      position: null,
+      layout: null,
       resources: null,
       version: '1.32.9',
     });

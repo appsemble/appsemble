@@ -17,10 +17,7 @@ import { pick } from 'lodash';
 export default async function makePayload({ config, path: p }) {
   const fullPath = config.output ? path.resolve(p, config.output) : p;
   const form = new FormData();
-  form.append(
-    'data',
-    JSON.stringify(pick(config, ['actions', 'position', 'resources', 'version'])),
-  );
+  form.append('data', JSON.stringify(pick(config, ['actions', 'layout', 'resources', 'version'])));
   return new Promise((resolve, reject) => {
     klaw(fullPath)
       .on('data', file => {
