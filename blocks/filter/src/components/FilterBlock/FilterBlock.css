@@ -7,8 +7,18 @@
   padding: 0 !important;
 }
 
+.container {
+  display: flex;
+  justify-content: flex-end;
+}
+
 .filterDialogButton {
+  display: inline-flex;
   margin: 10px;
-  position: absolute;
-  right: 0;
+}
+
+.highlighted {
+  display: inline-flex;
+  flex-grow: 11;
+  padding: 10px;
 }

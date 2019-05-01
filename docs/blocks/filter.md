@@ -15,6 +15,7 @@ A block that can filter data and pass it to other blocks using the event API.
 | Parameter             | Default                                      | Description                                                                                                                       |
 | --------------------- | -------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
 | event                 |                                              | Required field that determines the name of the event that other blocks can listen to to retrieve filtered data.                   |
+| highlight             |                                              | The field to highlight outside of the filter dialog. If set, changing the highlighted value will immediately apply a new filter   |
 | fields                |                                              | A list of objects describing each field that can be filtered                                                                      |
 | fields[].name         |                                              | The name used when storing this field                                                                                             |
 | fields[].label        | field[].name                                 | User-facing label describing the field                                                                                            |

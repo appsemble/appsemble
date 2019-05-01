@@ -28,13 +28,13 @@ export default class FilterBlock extends React.Component {
   async componentDidMount() {
     const {
       block: {
-        parameters: { emit },
+        parameters: { event },
       },
       events,
     } = this.props;
 
     const data = await this.fetchData();
-    events.emit(emit, data);
+    events.emit(event, data);
   }
 
   fetchData = () => {
@@ -59,10 +59,31 @@ export default class FilterBlock extends React.Component {
     return actions.load.dispatch(params);
   };
 
-  onChange = event => {
-    const { filter } = this.state;
+  onChange = async event => {
+    const { filter, typingTimer } = this.state;
+    const {
+      block: {
+        parameters: { fields, highlight },
+      },
+    } = this.props;
+
     filter[event.target.name] = event.target.value;
     this.setState({ filter });
+
+    if (highlight && event.target.name === highlight) {
+      if (fields.find(field => field.name === highlight).enum?.length) {
+        await this.onFilter();
+      } else {
+        // wait 300ms, then submit
+        clearTimeout(typingTimer);
+
+        this.setState({
+          typingTimer: setTimeout(async () => {
+            await this.onFilter();
+          }, 300),
+        });
+      }
+    }
   };
 
   onRangeChange = event => {
@@ -75,15 +96,17 @@ export default class FilterBlock extends React.Component {
   onFilter = async () => {
     const {
       block: {
-        parameters: { emit },
+        parameters: { event },
       },
       events,
     } = this.props;
 
-    const data = await this.fetchData();
-    events.emit(emit, data);
+    await this.setState({ loading: true });
 
-    this.onClose();
+    const data = await this.fetchData();
+    events.emit(event, data);
+
+    await this.setState({ loading: false, isOpen: false });
   };
 
   onOpen = () => {
@@ -105,7 +128,7 @@ export default class FilterBlock extends React.Component {
     const {
       intl: { formatMessage },
     } = this.props;
-    const { filter } = this.state;
+    const { filter, loading } = this.state;
     const labelElement = (
       <label className="label" htmlFor={`filter${name}`}>
         {label}
@@ -152,7 +175,7 @@ export default class FilterBlock extends React.Component {
 
           control = (
             <React.Fragment>
-              <p className="control">
+              <p className={classNames('control', { 'is-loading': loading })}>
                 <input
                   className="input"
                   id={`filter${name}`}
@@ -164,7 +187,7 @@ export default class FilterBlock extends React.Component {
                   value={filter[name]?.from || defaultValue || ''}
                 />
               </p>
-              <p className="control">
+              <p className={classNames('control', { 'is-loading': loading })}>
                 <input
                   className="input"
                   id={`to-filter${name}`}
@@ -196,7 +219,7 @@ export default class FilterBlock extends React.Component {
           }
           control = (
             <React.Fragment>
-              <p className="control">
+              <p className={classNames('control', { 'is-loading': loading })}>
                 <input
                   className="input"
                   id={`filter${name}`}
@@ -208,7 +231,7 @@ export default class FilterBlock extends React.Component {
                   value={filter[name]?.from || defaultValue || ''}
                 />
               </p>
-              <p className="control">
+              <p className={classNames('control', { 'is-loading': loading })}>
                 <input
                   className="input"
                   id={`to-filter${name}`}
@@ -240,10 +263,14 @@ export default class FilterBlock extends React.Component {
     }
 
     return (
-      <div className={classNames('field', 'is-horizontal')}>
+      <div className="field is-horizontal">
         <div className="field-label is-normal">{labelElement}</div>
         <div className={classNames('field', 'field-body', { 'is-grouped': range })}>
-          {range ? control : <div className="control">{control}</div>}
+          {range ? (
+            control
+          ) : (
+            <div className={classNames('control', { 'is-loading': loading })}>{control}</div>
+          )}
         </div>
       </div>
     );
@@ -252,10 +279,11 @@ export default class FilterBlock extends React.Component {
   render() {
     const { block } = this.props;
     const { isOpen } = this.state;
-    const { fields } = block.parameters;
+    const { fields, highlight } = block.parameters;
+    const highlightedField = highlight && fields.find(field => field.name === highlight);
 
     return (
-      <React.Fragment>
+      <div className={styles.container}>
         <div className={classNames('modal', { 'is-active': isOpen })}>
           <div
             className="modal-background"
@@ -271,9 +299,11 @@ export default class FilterBlock extends React.Component {
                 </p>
               </header>
               <div className="card-content">
-                {fields.map(field => (
-                  <React.Fragment key={field.name}>{this.generateField(field)}</React.Fragment>
-                ))}
+                {fields
+                  .filter(field => field.name !== highlight)
+                  .map(field => (
+                    <React.Fragment key={field.name}>{this.generateField(field)}</React.Fragment>
+                  ))}
               </div>
               <footer className="card-footer">
                 {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
@@ -298,7 +328,9 @@ export default class FilterBlock extends React.Component {
           </div>
           <button className="modal-close is-large" onClick={this.onClose} type="button" />
         </div>
-
+        {highlightedField && (
+          <div className={styles.highlighted}>{this.generateField(highlightedField)}</div>
+        )}
         <button
           className={`button ${styles.filterDialogButton}`}
           onClick={this.onOpen}
@@ -308,7 +340,7 @@ export default class FilterBlock extends React.Component {
             <i className="fas fa-filter" />
           </span>
         </button>
-      </React.Fragment>
+      </div>
     );
   }
 }
