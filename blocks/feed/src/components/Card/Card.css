@@ -2,6 +2,15 @@
   margin: 10px;
 }
 
+.avatar {
+  border: none;
+  padding: 0;
+
+  &:focus {
+    outline: none;
+  }
+}
+
 .replies {
   max-height: 12rem;
   overflow-y: auto;

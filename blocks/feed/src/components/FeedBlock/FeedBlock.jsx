@@ -5,10 +5,13 @@ import PropTypes from 'prop-types';
 
 import Card from '../Card';
 
-function getNull() {
-  return null;
+function createRemapper(mapper) {
+  return mapper ? compileFilters(mapper) : () => null;
 }
 
+/**
+ * The top level component for the feed block.
+ */
 export default class FeedBlock extends React.Component {
   static propTypes = {
     /**
@@ -19,29 +22,39 @@ export default class FeedBlock extends React.Component {
      * The block as passed by the Appsemble interface.
      */
     block: PropTypes.shape().isRequired,
+    /**
+     * The Appsemble events object.
+     */
+    events: PropTypes.shape().isRequired,
   };
 
-  state = { data: [] };
+  state = {
+    data: [],
+  };
 
   async componentDidMount() {
-    const { actions, block } = this.props;
-
+    const { actions, block, events } = this.props;
     const { parameters } = block;
+
     this.remappers = {
-      title: parameters.title ? compileFilters(parameters.title) : getNull,
-      subtitle: parameters.subtitle ? compileFilters(parameters.subtitle) : getNull,
-      heading: parameters.heading ? compileFilters(parameters.heading) : getNull,
-      picture: parameters.description ? compileFilters(parameters.picture) : getNull,
-      description: parameters.description ? compileFilters(parameters.description) : getNull,
+      title: createRemapper(parameters.title),
+      subtitle: createRemapper(parameters.subtitle),
+      heading: createRemapper(parameters.heading),
+      picture: createRemapper(parameters.picture),
+      description: createRemapper(parameters.description),
     };
 
-    const data = await actions.load.dispatch();
-
-    this.setState({ data });
+    if (parameters.listen) {
+      events.on(parameters.listen, data => {
+        this.setState({ data });
+      });
+    } else {
+      const data = await actions.load.dispatch();
+      this.setState({ data });
+    }
   }
 
   render() {
-    const { block } = this.props;
     const { data } = this.state;
 
     if (!data.length) {
@@ -49,7 +62,7 @@ export default class FeedBlock extends React.Component {
     }
 
     return data.map(content => (
-      <Card key={content.id} block={block} content={content} remappers={this.remappers} />
+      <Card key={content.id} content={content} remappers={this.remappers} />
     ));
   }
 }

@@ -11,8 +11,6 @@ resources:
     blobs:
       url: 'https://api.stadswerken.amsterdam/upload'
       serialize: custom
-  waarnemingFake:
-    url: https://api.stadswerken.amsterdam/waarnemingen
 
 authentication:
   - method: email
@@ -95,16 +93,18 @@ pages:
     scope:
       - '*'
     blocks:
-      - type: feed
+      - type: filter
         version: 0.5.0
         parameters:
-          title: proces
-          subtitle: id|upper
-          heading: created_at
-          picture: fotos.0
-          pictureBase: https://api.stadswerken.amsterdam/uploads
-          description: notities
-
+          event: updateWaarnemingen
+          highlight: process
+          fields:
+            - name: process
+              enum:
+                - value: Fietsknip team
+                - value: Handhaving
+                - value: Heel en Groen
+                - value: Inzameling
         actions:
           load:
             type: resource.query
@@ -112,6 +112,21 @@ pages:
             query:
               $orderBy: 'created_at desc'
               $top: 50
+
+      - type: feed
+        version: 0.5.0
+        parameters:
+          listen: updateWaarnemingen
+          title: proces
+          subtitle: id|upper
+          heading: created_at
+          picture: fotos.0
+          pictureBase: https://api.stadswerken.amsterdam/uploads
+          description: notities
+        actions:
+          avatarClick:
+            type: link
+            to: Overzichtskaart
 
   - name: Waarneming details
     scope:
