@@ -52,7 +52,11 @@ export default class FilterBlock extends React.Component {
             return `substringof('${filter[f]}',${f})`;
           }
 
-          return `(${f} ge ${filter[f].from} and ${f} le ${filter[f].to})`;
+          const field = filter[f];
+          const from = field.from ? `${f} ge ${field.from}` : '';
+          const to = field.to ? `${f} le ${field.to}` : '';
+
+          return `(${from}${from && to ? ' and ' : ''}${to})`;
         })
         .join(' and'),
     };
