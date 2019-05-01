@@ -159,10 +159,16 @@ export default class Block extends React.Component {
       return null;
     }
 
-    if (blockDef.position === 'float') {
-      return ReactDOM.createPortal(<div ref={this.ref} className={styles.float} />, document.body);
+    switch (blockDef.layout) {
+      case 'float':
+        return ReactDOM.createPortal(
+          <div ref={this.ref} className={styles.float} />,
+          document.body,
+        );
+      case 'static':
+        return <div ref={this.ref} className={styles.static} />;
+      default:
+        return <div ref={this.ref} className={styles.grow} />;
     }
-
-    return <div ref={this.ref} className={styles.main} />;
   }
 }

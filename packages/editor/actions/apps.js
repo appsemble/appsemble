@@ -4,6 +4,7 @@ export const GET_START = 'apps/GET_START';
 export const GET_SUCCESS = 'apps/GET_SUCCESS';
 export const APP_GET_SUCCESS = 'app/GET_SUCCESS';
 export const GET_ERROR = 'apps/GET_ERROR';
+export const UPDATE = 'apps/UPDATE';
 
 const CREATE_SUCCESS = 'app/CREATE_SUCCESS';
 
@@ -43,6 +44,12 @@ export default (state = initialState, action) => {
       return {
         ...state,
         apps: [...state.apps, action.app],
+      };
+
+    case UPDATE:
+      return {
+        ...state,
+        apps: state.apps.map(a => (a.id === action.app.id ? action.app : a)),
       };
     default:
       return state;
@@ -102,5 +109,14 @@ export function createApp(recipe, organization) {
     });
 
     return app;
+  };
+}
+
+export function updateApp(app) {
+  return async dispatch => {
+    dispatch({
+      type: UPDATE,
+      app,
+    });
   };
 }

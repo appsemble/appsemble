@@ -21,6 +21,9 @@ function makeJSONSafe(object) {
       return acc;
     }, {});
   }
+  if (typeof object === 'string') {
+    return dedent(object);
+  }
   return object;
 }
 
@@ -34,18 +37,18 @@ export default ({ port = 9999, host = `http://localhost:${port}` } = {}) => {
     },
     info: {
       title: 'Appsemble',
-      description: dedent(`
-      Welcome to the Appsemble API.
+      description: `
+        Welcome to the Appsemble API.
 
-      The app editor can be found on
-      > ${host}
+        The app editor can be found on
+        > ${host}
 
-      The OpenAPI explorer can be found on
-      > ${host}/api-explorer
+        The OpenAPI explorer can be found on
+        > ${host}/api-explorer
 
-      Rendered apps can be found on
-      > ${host}/:id
-    `),
+        Rendered apps can be found on
+        > ${host}/:id
+      `,
       license: {
         name: 'LGPL',
         url: 'https://gitlab.com/appsemble/appsemble/blob/master/LICENSE.md',

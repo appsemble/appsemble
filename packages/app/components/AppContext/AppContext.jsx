@@ -7,6 +7,7 @@ import React from 'react';
  */
 export default class AppContext extends React.Component {
   static propTypes = {
+    app: PropTypes.shape(),
     children: PropTypes.node.isRequired,
     getApp: PropTypes.func.isRequired,
     initAuth: PropTypes.func.isRequired,
@@ -14,11 +15,24 @@ export default class AppContext extends React.Component {
     ready: PropTypes.bool.isRequired,
   };
 
+  static defaultProps = { app: null };
+
   async componentDidMount() {
-    const { getApp, initAuth } = this.props;
+    const { getApp } = this.props;
 
     await getApp();
-    await initAuth();
+  }
+
+  async componentDidUpdate(prevProps) {
+    const { app, initAuth } = this.props;
+    let authentication;
+    if (app.authentication) {
+      [authentication] = app.authentication;
+    }
+
+    if (!prevProps.app && app) {
+      await initAuth(authentication);
+    }
   }
 
   render() {

@@ -16,14 +16,17 @@ export default {
       pattern: /^\d+\.\d+\.\d+$/,
       description: 'A [semver](https://semver.org) representation of the block version.',
     },
-    position: {
-      description: `Where the block will be positioned on the screen.
+    layout: {
+      description: `How the block will be displayed on the screen.
 
-        - **null**: The block will be positioned in the main page.
-        - **'float'**: The block will float somewhere on the screen.
+        - **\`float\`**: The block will float somewhere on the screen.
+        - **\`grow\`**: The block will be positioned in the main page. It will grow to fill up
+          remaining space on the page.
+        - **\`static\`**: The block will be positioned in the main page. It will take up a fixed
+          amount of space.
       `,
-      default: null,
-      enum: [null, 'float'],
+      default: 'grow',
+      enum: ['float', 'grow', 'static'],
     },
     actions: {
       type: 'object',

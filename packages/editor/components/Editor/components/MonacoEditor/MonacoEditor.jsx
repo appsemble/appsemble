@@ -101,7 +101,7 @@ export default class MonacoEditor extends React.Component {
     }
 
     if (this.observer) {
-      this.observer.unobserve();
+      this.observer.unobserve(this.node.current);
     }
   }
 

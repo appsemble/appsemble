@@ -13,6 +13,10 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Editor: Report errors to Sentry if this is configured.
 - SDK: Add support for the events API.
 
+### Changed
+
+- Editor: Remove controls for unconfigured login / registration methods.
+
 ## [0.5.0] - 2019-04-11
 
 ### Added

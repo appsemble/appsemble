@@ -1,0 +1,44 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Message should render messages 1`] = `
+<div
+  className="root"
+>
+  <CSSTransitionGroup
+    transitionAppear={false}
+    transitionEnter={true}
+    transitionEnterTimeout={300}
+    transitionLeave={true}
+    transitionLeaveTimeout={300}
+    transitionName={
+      Object {
+        "enter": "messageEnter",
+        "enterActive": "messageEnterActive",
+        "leave": "messageLeave",
+        "leaveActive": "messageLeaveActive",
+      }
+    }
+  >
+    <article
+      className="message is-danger"
+      key="1"
+    >
+      <div
+        className="message-body content"
+      >
+        Foo
+      </div>
+    </article>
+    <article
+      className="message is-info"
+      key="2"
+    >
+      <div
+        className="message-body content"
+      >
+        Bar
+      </div>
+    </article>
+  </CSSTransitionGroup>
+</div>
+`;
