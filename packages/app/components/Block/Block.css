@@ -1,11 +1,14 @@
-.main {
-  flex: 1 1 auto;
+.float {
+  position: fixed;
+  z-index: 1100;
+}
+
+.static {
+  flex: 0 0 auto;
   position: relative;
 }
 
-.float {
-  position: fixed;
-
-  /* This should overlay any Material-UI components, except dialogs and backdrops. */
-  z-index: 1100;
+.grow {
+  flex: 1 1 auto;
+  position: relative;
 }

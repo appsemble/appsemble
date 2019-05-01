@@ -67,7 +67,7 @@ export async function createBlockVersion(ctx) {
     await db.transaction(async transaction => {
       const {
         actions = null,
-        position = null,
+        layout = null,
         resources = null,
         version,
       } = await BlockVersion.create({ ...data, name }, { transaction });
@@ -90,7 +90,7 @@ export async function createBlockVersion(ctx) {
         actions,
         files: fileKeys,
         name,
-        position,
+        layout,
         resources,
         version,
       };
@@ -109,7 +109,7 @@ export async function getBlockVersion(ctx) {
   const { BlockAsset, BlockVersion } = ctx.db.models;
 
   const version = await BlockVersion.findOne({
-    attributes: ['actions', 'position', 'resources'],
+    attributes: ['actions', 'layout', 'resources'],
     raw: true,
     where: { name, version: blockVersion },
   });
@@ -138,7 +138,7 @@ export async function getBlockVersions(ctx) {
   }
 
   const blockVersions = await BlockVersion.findAll({
-    attributes: ['version', 'actions', 'position', 'resources'],
+    attributes: ['version', 'actions', 'layout', 'resources'],
     raw: true,
     where: { name },
   });
