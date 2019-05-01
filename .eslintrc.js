@@ -59,7 +59,6 @@ module.exports = {
       },
     ],
     'import/no-cycle': ['error', { maxDepth: 1 }],
-    'import/no-unused-modules': 'error',
     'import/no-useless-path-segments': 'error',
     'react/jsx-sort-props': 'error',
     'jsx-a11y/label-has-associated-control': 'off',
