@@ -273,6 +273,7 @@ export default class Editor extends React.Component {
       warningDialog,
     } = this.state;
     const {
+      intl,
       location: { hash: tab },
     } = this.props;
     const filename = icon ? icon.name : 'Icon';
@@ -308,7 +309,7 @@ export default class Editor extends React.Component {
               <div className="navbar-brand">
                 <span className="navbar-item">
                   <button className="button" disabled={!dirty} type="submit">
-                    Save
+                    <FormattedMessage {...messages.preview} />
                   </button>
                 </span>
                 <span className="navbar-item">
@@ -318,7 +319,7 @@ export default class Editor extends React.Component {
                     onClick={this.onUpload}
                     type="button"
                   >
-                    Upload
+                    <FormattedMessage {...messages.publish} />
                   </button>
                 </span>
                 <span className="navbar-item">
@@ -336,7 +337,9 @@ export default class Editor extends React.Component {
                         <span className="file-icon">
                           <i className="fas fa-upload" />
                         </span>
-                        <span className="file-label">Icon</span>
+                        <span className="file-label">
+                          <FormattedMessage {...messages.icon} />
+                        </span>
                       </span>
                       {icon && <span className="file-name">{filename}</span>}
                     </label>
@@ -349,7 +352,7 @@ export default class Editor extends React.Component {
                 </span>
                 <span className="navbar-item">
                   <a className="button" href={`/${path}`} rel="noopener noreferrer" target="_blank">
-                    View live
+                    <FormattedMessage {...messages.viewLive} />
                   </a>
                 </span>
               </div>
@@ -361,7 +364,7 @@ export default class Editor extends React.Component {
                     <span className="icon">
                       <i className="fas fa-file-code" />
                     </span>
-                    Recipe
+                    <FormattedMessage {...messages.recipe} />
                   </Link>
                 </li>
                 <li
@@ -372,7 +375,7 @@ export default class Editor extends React.Component {
                     <span className="icon">
                       <i className="fas fa-brush" />
                     </span>
-                    Core Style
+                    <FormattedMessage {...messages.coreStyle} />
                   </Link>
                 </li>
                 <li
@@ -383,7 +386,7 @@ export default class Editor extends React.Component {
                     <span className="icon">
                       <i className="fas fa-brush" />
                     </span>
-                    Shared Style
+                    <FormattedMessage {...messages.sharedStyle} />
                   </Link>
                 </li>
               </ul>
@@ -433,7 +436,7 @@ export default class Editor extends React.Component {
                       onClick={this.uploadApp}
                       type="button"
                     >
-                      <FormattedMessage {...messages.upload} />
+                      <FormattedMessage {...messages.publish} />
                     </button>
                   </footer>
                 </div>
@@ -449,7 +452,7 @@ export default class Editor extends React.Component {
               ref={this.frame}
               className={styles.appFrame}
               src={`/${path}`}
-              title="Appsemble App Preview"
+              title={intl.formatMessage(messages.iframeTitle)}
             />
           )}
         </div>
