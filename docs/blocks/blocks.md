@@ -5,6 +5,7 @@ comes with several official blocks that can be used in any app.
 
 - [Action Button](action-button.md)
 - [Detail Viewer](detail-viewer.md)
+- [Filter](filter.md)
 - [List](list.md)
 - [Form](form.md)
 - [Map](map.md)
