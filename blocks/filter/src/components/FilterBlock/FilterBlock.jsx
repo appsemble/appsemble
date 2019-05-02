@@ -47,14 +47,20 @@ export default class FilterBlock extends React.Component {
     const { filter } = this.state;
     const params = {
       $filter: Object.keys(filter)
-        .map(f => {
-          if (!fields.find(field => field.name === f).range) {
-            return `substringof('${filter[f]}',${f})`;
+        .map(key => {
+          const data = filter[key];
+          const field = fields.find(f => f.name === key);
+
+          if (field.enum) {
+            return `${key} eq '${data}'`;
           }
 
-          const field = filter[f];
-          const from = field.from ? `${f} ge ${field.from}` : '';
-          const to = field.to ? `${f} le ${field.to}` : '';
+          if (field.range) {
+            return `substringof('${data}',${key})`;
+          }
+
+          const from = data.from ? `${key} ge ${data.from}` : '';
+          const to = data.to ? `${key} le ${data.to}` : '';
 
           return `(${from}${from && to ? ' and ' : ''}${to})`;
         })
@@ -121,14 +127,7 @@ export default class FilterBlock extends React.Component {
     this.setState({ isOpen: false });
   };
 
-  generateField = ({
-    name,
-    label = name,
-    type,
-    range,
-    enum: enumerator,
-    default: defaultValue,
-  }) => {
+  generateField = ({ name, label = name, type, range, enum: enumerator, defaultValue }) => {
     const {
       intl: { formatMessage },
     } = this.props;
