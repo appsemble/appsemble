@@ -1,0 +1,11 @@
+.container {
+  margin: 10px;
+}
+
+.actionLabel {
+  vertical-align: sub;
+}
+
+.enum {
+  margin-left: 10px;
+}

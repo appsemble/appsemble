@@ -1,0 +1,5 @@
+actions:
+  load: {}
+  submit: {}
+
+output: dist
