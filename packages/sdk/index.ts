@@ -149,11 +149,18 @@ export interface BootstrapParams {
 }
 
 /**
+ * A function that may be passed as a callback to {@link bootstrap} or {@link attach}.
+ */
+export type BootstrapFunction<ReturnType = void> = (
+  params: BootstrapParams,
+) => Awaitable<ReturnType>;
+
+/**
  * Register a boostrap function.
  *
  * @param fn The bootstrap function to register
  */
-export function bootstrap(fn: (params: BootstrapParams) => Awaitable<void>): void {
+export function bootstrap(fn: BootstrapFunction): void {
   const event = new CustomEvent('AppsembleBootstrap', {
     detail: {
       fn,
@@ -171,7 +178,7 @@ export function bootstrap(fn: (params: BootstrapParams) => Awaitable<void>): voi
  *
  * @param fn The bootstrap function to register.
  */
-export function attach(fn: (params: BootstrapParams) => Awaitable<HTMLElement | void>): void {
+export function attach(fn: BootstrapFunction<HTMLElement | void>): void {
   bootstrap(
     async (params): Promise<void> => {
       const { shadowRoot } = params;

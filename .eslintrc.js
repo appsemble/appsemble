@@ -71,13 +71,14 @@ module.exports = {
       parser: '@typescript-eslint/parser',
       rules: {
         'no-undef': 'off',
+        'no-unused-vars': 'off',
         'filenames/match-regex': ['error', /^\.?[a-z]+(\.config|\.test|\.d)?$/i, true],
+        'react/jsx-filename-extension': 'off',
         '@typescript-eslint/adjacent-overload-signatures': 'error',
         '@typescript-eslint/array-type': 'error',
         '@typescript-eslint/ban-types': 'error',
         '@typescript-eslint/class-name-casing': 'error',
         '@typescript-eslint/explicit-function-return-type': ['error', { allowExpressions: true }],
-        '@typescript-eslint/explicit-member-accessibility': 'error',
         '@typescript-eslint/interface-name-prefix': 'error',
         '@typescript-eslint/no-angle-bracket-type-assertion': 'error',
         '@typescript-eslint/no-empty-interface': 'error',
@@ -92,6 +93,12 @@ module.exports = {
         '@typescript-eslint/no-var-requires': 'error',
         '@typescript-eslint/prefer-interface': 'error',
         '@typescript-eslint/prefer-namespace-keyword': 'error',
+      },
+    },
+    {
+      files: ['**/*.d.ts'],
+      rules: {
+        'filenames/match-regex': 'off',
       },
     },
     {

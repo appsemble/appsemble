@@ -2,6 +2,7 @@
   "compilerOptions": {
     "noEmit": true,
     "noImplicitAny": true,
+    "jsx": "react",
     "lib": ["es5", "es6", "dom"]
   }
 }
