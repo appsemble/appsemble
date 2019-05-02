@@ -15,6 +15,13 @@ export default defineMessages({
   resourceWarningTitle: 'Resource warning',
   resourceWarning:
     'The resource definitions in this app recipe contain different data from the original. This may cause unexpected results when using older data.',
-  upload: 'Upload',
+  icon: 'Icon',
+  preview: 'Preview',
+  publish: 'Publish',
+  viewLive: 'View live',
+  recipe: 'Recipe',
+  coreStyle: 'Core style',
+  sharedStyle: 'Shared style',
+  iframeTitle: 'App preview',
   cancel: 'Cancel',
 });
