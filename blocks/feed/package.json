@@ -1,0 +1,13 @@
+{
+  "name": "@appsemble/feed",
+  "version": "0.5.0",
+  "private": true,
+  "dependencies": {
+    "@appsemble/react": "0.5.0",
+    "@appsemble/react-components": "0.5.0",
+    "@appsemble/sdk": "0.5.0",
+    "@appsemble/utils": "0.5.0",
+    "prop-types": "^15.6.2",
+    "react": "^16.8.6"
+  }
+}

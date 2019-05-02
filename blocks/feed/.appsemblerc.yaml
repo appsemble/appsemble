@@ -1,0 +1,5 @@
+actions:
+  avatarClick: {}
+  load: {}
+
+output: dist
