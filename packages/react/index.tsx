@@ -1,7 +1,7 @@
 import { BootstrapFunction, BootstrapParams, bootstrap as sdkBootstrap } from '@appsemble/sdk';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import * as retargetEvents from 'react-shadow-dom-retarget-events';
+import retargetEvents from 'react-shadow-dom-retarget-events';
 
 interface BlockProps extends BootstrapParams {
   /**
