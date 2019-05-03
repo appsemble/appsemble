@@ -15,14 +15,13 @@ at **three different levels** and can be injected at **three different points** 
 ## Hierarchy
 
 <img
-  src={require("images/theming-hierarchy.svg")}
-  style={{float: 'right',  maxHeight: '570px', maxWidth: '150px'}}
+  src={require('images/theming-hierarchy.svg')}
+  style={{ float: 'right', maxHeight: '570px', maxWidth: '150px' }}
 />
 
 Applications can be styled at a **server** level, **organization** level as well as the
-**app-specific** level.
-Within each level, styling can be further specified for **core** modules, **block** modules and
-**shared** modules.
+**app-specific** level. Within each level, styling can be further specified for **core** modules,
+**block** modules and **shared** modules.
 
 ### Levels
 
@@ -101,8 +100,8 @@ form {
 
 ## Applying themes for an organization
 
-Organization themes can be uploaded using the [CLI](cli).
-The command for uploading themes is as follows:
+Organization themes can be uploaded using the [CLI](cli). The command for uploading themes is as
+follows:
 
 ```sh
 yarn appsemble theme upload [path-to-theme-css] --organization [organization-id] [--shared|--core|--block @organization/blockname]
