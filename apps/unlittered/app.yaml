@@ -97,9 +97,9 @@ pages:
         version: 0.5.0
         parameters:
           event: updateWaarnemingen
-          highlight: process
+          highlight: proces
           fields:
-            - name: process
+            - name: proces
               enum:
                 - value: Fietsknip team
                 - value: Handhaving
@@ -125,8 +125,34 @@ pages:
           description: notities
         actions:
           avatarClick:
-            type: link
-            to: Overzichtskaart
+            type: splash
+            blocks:
+              - type: '@amsterdam/action'
+                version: 0.5.0
+                actions:
+                  submit:
+                    type: resource.update
+                    resource: waarneming
+                  success:
+                    type: splash.ok
+                  error:
+                    type: splash.error
+                parameters:
+                  title: VOER ACTIE UIT
+                  fields:
+                    - name: notities
+                      label: pak waarneming op
+                      value: Waarneming opgepakt
+                    - name: notities
+                      label: meld als opgelost
+                      value: Waarneming opgelost
+                    - name: proces
+                      label: routeer naar
+                      enum:
+                        - value: Fietsknip team
+                        - value: Handhaving
+                        - value: Heel en Groen
+                        - value: Inzameling
 
   - name: Waarneming details
     scope:
