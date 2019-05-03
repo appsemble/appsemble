@@ -81,7 +81,12 @@ export default class Block extends React.Component {
 
     this.attached = true;
     const shadowRoot = div.attachShadow({ mode: 'closed' });
-    const actions = makeActions(blockDef, app, block, history, showDialog, actionCreators);
+    const events = {
+      emit: emitEvent,
+      off: offEvent,
+      on: onEvent,
+    };
+    const actions = makeActions(blockDef, app, block, history, showDialog, events, actionCreators);
     const { theme: pageTheme } = app.pages.find(
       page => normalize(page.name) === match.path.slice(1).split('/')[0],
     );
@@ -135,11 +140,6 @@ export default class Block extends React.Component {
 
     const utils = {
       showMessage,
-    };
-    const events = {
-      emit: emitEvent,
-      off: offEvent,
-      on: onEvent,
     };
     await callBootstrap(blockDef, {
       actions,

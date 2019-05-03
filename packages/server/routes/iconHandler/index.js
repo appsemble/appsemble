@@ -37,7 +37,7 @@ export default async function iconHandler(ctx) {
   }
   img.resize(Number(width), Number(height));
   if (opaque) {
-    img.flatten({ backround: backgroundColor });
+    img.flatten({ background: backgroundColor });
   }
   img.toFormat(format);
   ctx.body = await img.toBuffer();
