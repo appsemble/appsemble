@@ -33,7 +33,7 @@ export default ({ port = 9999, host = `http://localhost:${port}` } = {}) => {
     components,
     externalDocs: {
       description: 'Appsemble developer documentation',
-      url: 'https://appsemble.gitlab.io/appsemble',
+      url: 'https://appsemble.dev',
     },
     info: {
       title: 'Appsemble',
