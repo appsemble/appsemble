@@ -15,6 +15,7 @@ export default class SplashAction extends React.Component {
      * The page definition to render
      */
     definition: PropTypes.shape().isRequired,
+    events: PropTypes.shape().isRequired,
     getBlockDefs: PropTypes.func.isRequired,
   };
 
@@ -29,14 +30,22 @@ export default class SplashAction extends React.Component {
   }
 
   render() {
-    const { actionCreators, data, definition } = this.props;
+    const { actionCreators, data, events, definition } = this.props;
 
     return (
       <div className={styles.root}>
         {definition.blocks.map((block, index) => (
           // As long as blocks are in a static list, using the index as a key should be fine.
-          // eslint-disable-next-line react/no-array-index-key
-          <Block key={index} actionCreators={actionCreators} block={block} data={data} />
+          <Block
+            // eslint-disable-next-line react/no-array-index-key
+            key={index}
+            actionCreators={actionCreators}
+            block={block}
+            data={data}
+            emitEvent={events.emit}
+            offEvent={events.off}
+            onEvent={events.on}
+          />
         ))}
       </div>
     );

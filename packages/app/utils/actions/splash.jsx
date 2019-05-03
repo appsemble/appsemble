@@ -2,7 +2,7 @@ import React from 'react';
 
 import SplashAction from '../../components/SplashAction';
 
-export default function splash(definition, app, block, history, showDialog) {
+export default function splash(definition, app, block, history, showDialog, events) {
   return {
     dispatch(data) {
       return new Promise((resolve, reject) => {
@@ -22,7 +22,12 @@ export default function splash(definition, app, block, history, showDialog) {
           }),
         };
         close = showDialog(
-          <SplashAction actionCreators={actionCreators} data={data} definition={definition} />,
+          <SplashAction
+            actionCreators={actionCreators}
+            data={data}
+            definition={definition}
+            events={events}
+          />,
         );
       });
     },
