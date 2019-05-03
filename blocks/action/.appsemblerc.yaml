@@ -1,5 +1,6 @@
 actions:
-  submit: {}
+  submit:
+    required: true
   success: {}
   error: {}
 

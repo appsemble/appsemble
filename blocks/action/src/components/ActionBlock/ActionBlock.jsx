@@ -16,27 +16,27 @@ export default class ActionBlock extends React.Component {
     data: PropTypes.shape().isRequired,
   };
 
-  onUpdate = async (field, event) => {
+  onUpdate = async (event, field) => {
     if (!field.enum?.length && !field.value) {
       return;
     }
 
-    const { actions, data = { foo: 123, bar: 'baz' } } = this.props;
+    const { actions, data } = this.props;
 
     try {
-      await actions.submit.dispatch({
+      const updatedResource = {
         ...data,
         [field.name]: field.enum?.length ? event.target.value : field.value,
-      });
-
-      await actions.success.dispatch();
-    } catch (exception) {
-      await actions.error.dispatch(exception);
+      };
+      await actions.submit.dispatch(updatedResource);
+      await actions.success.dispatch(updatedResource);
+    } catch (ex) {
+      await actions.error.dispatch(ex);
     }
   };
 
   render() {
-    const { block } = this.props;
+    const { block, data } = this.props;
     const { fields, title } = block.parameters;
 
     return (
@@ -48,7 +48,7 @@ export default class ActionBlock extends React.Component {
               <button
                 className="button"
                 disabled={field.enum?.length}
-                onClick={event => this.onUpdate(field, event)}
+                onClick={event => this.onUpdate(event, field)}
                 type="button"
               >
                 <span className="icon is-small">
@@ -58,7 +58,10 @@ export default class ActionBlock extends React.Component {
               <span className={styles.actionLabel}>{field.label || ''}</span>
               {field.enum?.length && (
                 <div className={`select ${styles.enum}`}>
-                  <select onChange={event => this.onUpdate(field, event)}>
+                  <select
+                    defaultValue={data[field.name]}
+                    onChange={event => this.onUpdate(event, field)}
+                  >
                     {field.enum.map(entry => (
                       <option key={entry.value} value={entry.value}>
                         {entry.label || entry.value}
