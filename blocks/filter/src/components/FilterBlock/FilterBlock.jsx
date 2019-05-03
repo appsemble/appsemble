@@ -3,6 +3,8 @@ import PropTypes from 'prop-types';
 import { FormattedMessage } from 'react-intl';
 import classNames from 'classnames';
 
+import toOData from '../../utils/toOData';
+import Field from '../Field';
 import styles from './FilterBlock.css';
 import messages from './messages';
 
@@ -23,7 +25,11 @@ export default class FilterBlock extends React.Component {
     intl: PropTypes.shape().isRequired,
   };
 
-  state = { filter: {} };
+  state = {
+    filter: {},
+    loading: false,
+    isOpen: false,
+  };
 
   async componentDidMount() {
     const {
@@ -45,62 +51,47 @@ export default class FilterBlock extends React.Component {
       },
     } = this.props;
     const { filter } = this.state;
-    const params = {
-      $filter: Object.keys(filter)
-        .map(key => {
-          const data = filter[key];
-          const field = fields.find(f => f.name === key);
 
-          if (field.enum) {
-            return `${key} eq '${data}'`;
-          }
-
-          if (field.range) {
-            return `substringof('${data}',${key})`;
-          }
-
-          const from = data.from ? `${key} ge ${data.from}` : '';
-          const to = data.to ? `${key} le ${data.to}` : '';
-
-          return `(${from}${from && to ? ' and ' : ''}${to})`;
-        })
-        .join(' and'),
-    };
-    return actions.load.dispatch(params);
+    return actions.load.dispatch({
+      $filter: toOData(fields, filter),
+    });
   };
 
-  onChange = async event => {
-    const { filter, typingTimer } = this.state;
-    const {
-      block: {
-        parameters: { fields, highlight },
-      },
-    } = this.props;
+  onChange = async ({ target }) => {
+    this.setState(({ filter, typingTimer }, { block: { parameters: { fields, highlight } } }) => {
+      const newFilter = {
+        ...filter,
+        [target.name]: target.value,
+      };
+      if (highlight && target.name === highlight) {
+        if (!fields.find(field => field.name === highlight).enum) {
+          // wait 300ms, then submit
+          clearTimeout(typingTimer);
 
-    filter[event.target.name] = event.target.value;
-    this.setState({ filter });
-
-    if (highlight && event.target.name === highlight) {
-      if (fields.find(field => field.name === highlight).enum?.length) {
-        await this.onFilter();
-      } else {
-        // wait 300ms, then submit
-        clearTimeout(typingTimer);
-
-        this.setState({
-          typingTimer: setTimeout(async () => {
-            await this.onFilter();
-          }, 300),
-        });
+          return {
+            filter: newFilter,
+            typingTimer: setTimeout(this.onFilter, 300),
+          };
+        }
+        setTimeout(this.onFilter, 0);
       }
-    }
+      return { filter: newFilter };
+    });
   };
 
-  onRangeChange = event => {
-    const { filter } = this.state;
-    const target = event.target.id.startsWith('to') ? 'to' : 'from';
-    filter[event.target.name] = { ...filter[event.target.name], [target]: event.target.value };
-    this.setState({ filter });
+  onRangeChange = ({ target: { id, name, value } }) => {
+    this.setState(({ filter }) => {
+      const target = id.startsWith('to') ? 'to' : 'from';
+      return {
+        filter: {
+          ...filter,
+          [name]: {
+            ...filter[name],
+            [target]: value,
+          },
+        },
+      };
+    });
   };
 
   onFilter = async () => {
@@ -127,161 +118,9 @@ export default class FilterBlock extends React.Component {
     this.setState({ isOpen: false });
   };
 
-  generateField = ({ name, label = name, type, range, enum: enumerator, defaultValue }) => {
-    const {
-      intl: { formatMessage },
-    } = this.props;
-    const { filter, loading } = this.state;
-    const labelElement = (
-      <label className="label" htmlFor={`filter${name}`}>
-        {label}
-      </label>
-    );
-
-    let control;
-
-    if (enumerator?.length) {
-      control = (
-        <div className="select is-fullwidth">
-          <select
-            id={`filter${name}`}
-            name={name}
-            onChange={this.onChange}
-            value={filter[name] || defaultValue || ''}
-          >
-            {!defaultValue && <option />}
-            {enumerator.map(({ value, label: lbl }, index) => (
-              // eslint-disable-next-line react/no-array-index-key
-              <option key={index} value={value}>
-                {lbl || value}
-              </option>
-            ))}
-          </select>
-        </div>
-      );
-    } else {
-      switch (type) {
-        case 'date': {
-          if (!range) {
-            control = (
-              <input
-                className="input"
-                id={`filter${name}`}
-                name={name}
-                onChange={this.onChange}
-                type="date"
-                value={filter[name] || defaultValue || ''}
-              />
-            );
-            break;
-          }
-
-          control = (
-            <React.Fragment>
-              <p className={classNames('control', { 'is-loading': loading })}>
-                <input
-                  className="input"
-                  id={`filter${name}`}
-                  max={filter[name]?.to}
-                  name={name}
-                  onChange={this.onRangeChange}
-                  placeholder={formatMessage(messages.from)}
-                  type="date"
-                  value={filter[name]?.from || defaultValue || ''}
-                />
-              </p>
-              <p className={classNames('control', { 'is-loading': loading })}>
-                <input
-                  className="input"
-                  id={`to-filter${name}`}
-                  min={filter[name]?.from}
-                  name={name}
-                  onChange={this.onRangeChange}
-                  placeholder={formatMessage(messages.to)}
-                  type="date"
-                  value={filter[name]?.to || ''}
-                />
-              </p>
-            </React.Fragment>
-          );
-          break;
-        }
-        case 'number': {
-          if (!range) {
-            control = (
-              <input
-                className="input"
-                id={`filter${name}`}
-                name={name}
-                onChange={this.onChange}
-                type="number"
-                value={filter[name] || defaultValue || ''}
-              />
-            );
-            break;
-          }
-          control = (
-            <React.Fragment>
-              <p className={classNames('control', { 'is-loading': loading })}>
-                <input
-                  className="input"
-                  id={`filter${name}`}
-                  max={filter[name]?.to}
-                  name={name}
-                  onChange={this.onRangeChange}
-                  placeholder={formatMessage(messages.from)}
-                  type="number"
-                  value={filter[name]?.from || defaultValue || ''}
-                />
-              </p>
-              <p className={classNames('control', { 'is-loading': loading })}>
-                <input
-                  className="input"
-                  id={`to-filter${name}`}
-                  min={filter[name]?.from}
-                  name={name}
-                  onChange={this.onRangeChange}
-                  placeholder={formatMessage(messages.to)}
-                  type="number"
-                  value={filter[name]?.to || ''}
-                />
-              </p>
-            </React.Fragment>
-          );
-          break;
-        }
-        case 'string':
-        default: {
-          control = (
-            <input
-              className="input"
-              id={`filter${name}`}
-              name={name}
-              onChange={this.onChange}
-              value={filter[name] || defaultValue || ''}
-            />
-          );
-        }
-      }
-    }
-
-    return (
-      <div className="field is-horizontal">
-        <div className="field-label is-normal">{labelElement}</div>
-        <div className={classNames('field', 'field-body', { 'is-grouped': range })}>
-          {range ? (
-            control
-          ) : (
-            <div className={classNames('control', { 'is-loading': loading })}>{control}</div>
-          )}
-        </div>
-      </div>
-    );
-  };
-
   render() {
     const { block } = this.props;
-    const { isOpen } = this.state;
+    const { filter, isOpen, loading } = this.state;
     const { fields, highlight } = block.parameters;
     const highlightedField = highlight && fields.find(field => field.name === highlight);
 
@@ -305,7 +144,14 @@ export default class FilterBlock extends React.Component {
                 {fields
                   .filter(field => field.name !== highlight)
                   .map(field => (
-                    <React.Fragment key={field.name}>{this.generateField(field)}</React.Fragment>
+                    <Field
+                      {...field}
+                      key={field.name}
+                      filter={filter}
+                      loading={loading}
+                      onChange={this.onChange}
+                      onRangeChange={this.onRangeChange}
+                    />
                   ))}
               </div>
               <footer className="card-footer">
@@ -332,7 +178,15 @@ export default class FilterBlock extends React.Component {
           <button className="modal-close is-large" onClick={this.onClose} type="button" />
         </div>
         {highlightedField && (
-          <div className={styles.highlighted}>{this.generateField(highlightedField)}</div>
+          <div className={styles.highlighted}>
+            <Field
+              {...highlightedField}
+              filter={filter}
+              loading={loading}
+              onChange={this.onChange}
+              onRangeChange={this.onRangeChange}
+            />
+          </div>
         )}
         <button
           className={`button ${styles.filterDialogButton}`}
