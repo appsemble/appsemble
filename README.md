@@ -67,6 +67,7 @@ NODE_ENV=production yarn start
 The current blocks can be built using the following commands.
 
 ```sh
+yarn block action
 yarn block action-button
 yarn block detail-viewer
 yarn block list
@@ -83,6 +84,7 @@ yarn block splash
 The blocks can be published using the Appsemble CLI.
 
 ```sh
+yarn appsemble block register blocks/action
 yarn appsemble block register blocks/action-button
 yarn appsemble block register blocks/detail-viewer
 yarn appsemble block register blocks/list
