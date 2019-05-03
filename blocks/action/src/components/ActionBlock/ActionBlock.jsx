@@ -44,9 +44,9 @@ export default class ActionBlock extends React.Component {
         <h1>{title}</h1>
         {fields.map(field => {
           return (
-            <div key={`${field.name}.${field.value}`}>
+            <div key={`${field.name}.${field.value}`} className={styles.actionField}>
               <button
-                className="button is-rounded"
+                className="button"
                 disabled={field.enum?.length}
                 onClick={event => this.onUpdate(field, event)}
                 type="button"
