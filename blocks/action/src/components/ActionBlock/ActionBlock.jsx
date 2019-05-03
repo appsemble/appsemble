@@ -13,19 +13,26 @@ export default class ActionBlock extends React.Component {
      * The block as passed by the Appsemble interface.
      */
     block: PropTypes.shape().isRequired,
+    data: PropTypes.shape().isRequired,
   };
 
-  onUpdate = (field, event) => {
+  onUpdate = async (field, event) => {
     if (!field.enum?.length && !field.value) {
       return;
     }
 
-    const { actions } = this.props;
+    const { actions, data = { foo: 123, bar: 'baz' } } = this.props;
 
-    actions.submit.dispatch({
-      // XXX: Insert data fields
-      [field.name]: field.enum?.length ? event.target.value : field.value,
-    });
+    try {
+      await actions.submit.dispatch({
+        ...data,
+        [field.name]: field.enum?.length ? event.target.value : field.value,
+      });
+
+      await actions.success.dispatch();
+    } catch (exception) {
+      await actions.error.dispatch(exception);
+    }
   };
 
   render() {

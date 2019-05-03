@@ -1,5 +1,6 @@
 actions:
-  load: {}
   submit: {}
+  success: {}
+  error: {}
 
 output: dist
