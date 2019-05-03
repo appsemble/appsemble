@@ -89,6 +89,7 @@ build blocks:
   dependencies: []
   script:
     - yarn --frozen-lockfile
+    - yarn block action
     - yarn block action-button
     - yarn block detail-viewer
     - yarn block list
@@ -100,6 +101,9 @@ build blocks:
   artifacts:
     expire_in: 3 days
     paths:
+      - blocks/action/package.json
+      - blocks/action/dist/
+      - blocks/action/.appsemblerc.yaml
       - blocks/action-button/dist/
       - blocks/action-button/package.json
       - blocks/detail-viewer/dist/
@@ -332,6 +336,7 @@ upload blocks:
     - npm install ./packages/node-utils/*.tgz
     - npm install ./packages/cli/*.tgz
     - yarn appsemble login
+    - yarn appsemble block register --ignore-conflict blocks/action
     - yarn appsemble block register --ignore-conflict blocks/action-button
     - yarn appsemble block register --ignore-conflict blocks/detail-viewer
     - yarn appsemble block register --ignore-conflict blocks/list
