@@ -42,9 +42,9 @@ export default class SplashAction extends React.Component {
             actionCreators={actionCreators}
             block={block}
             data={data}
-            emitEvent={events.emitEvent}
-            offEvent={events.offEvent}
-            onEvent={events.onEvent}
+            emitEvent={events.emit}
+            offEvent={events.off}
+            onEvent={events.on}
           />
         ))}
       </div>
