@@ -2,7 +2,15 @@ import { remapData } from '@appsemble/utils/remap';
 
 import actionCreators from './actions';
 
-export default function makeActions(blockDef, app, block, history, showDialog, extraCreators) {
+export default function makeActions(
+  blockDef,
+  app,
+  block,
+  history,
+  showDialog,
+  events,
+  extraCreators,
+) {
   return Object.entries(blockDef.actions || {}).reduce((acc, [on, { required }]) => {
     let definition;
     let type;
@@ -16,7 +24,7 @@ export default function makeActions(blockDef, app, block, history, showDialog, e
       ({ type } = definition);
     }
     const actionCreator = actionCreators[type] || extraCreators[type];
-    const action = actionCreator(definition, app, block, history, showDialog);
+    const action = actionCreator(definition, app, block, history, showDialog, events);
     const { dispatch } = action;
     if (definition && Object.hasOwnProperty.call(definition, 'remap')) {
       action.dispatch = async args => dispatch(remapData(definition.remap, args));

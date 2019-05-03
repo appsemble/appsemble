@@ -8,3 +8,4 @@ node_modules/
 junit.xml
 /blocks/test/
 /.docz
+__diff_output__/

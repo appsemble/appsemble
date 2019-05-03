@@ -80,7 +80,9 @@ yarn block splash
 
 #### Publishing Blocks
 
-The blocks can be published using the Appsemble CLI.
+The blocks can be published using the Appsemble CLI. Note that in order to publish blocks, you need
+to be authenticated in the CLI. After having registered an Appsemble account, you can authenticate
+yourself using `yarn appsemble login`.
 
 ```sh
 yarn appsemble block register blocks/action-button
