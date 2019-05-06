@@ -8,6 +8,8 @@
 }
 
 .container {
+  border-bottom: 2px solid hsl(0, 0%, 96%);
+  border-top: 2px solid hsl(0, 0%, 96%);
   display: flex;
   justify-content: flex-end;
 }
