@@ -52,8 +52,10 @@ export default class FilterBlock extends React.Component {
     } = this.props;
     const { filter } = this.state;
 
+    const filterValue = toOData(fields, filter);
+
     return actions.load.dispatch({
-      $filter: toOData(fields, filter),
+      ...(filterValue && { $filter: toOData(fields, filter) }),
     });
   };
 
