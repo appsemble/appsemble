@@ -52,7 +52,7 @@ export default class ActionBlock extends React.Component {
                 type="button"
               >
                 <span className="icon is-small">
-                  <i className="fas fa-hand-point-right" />
+                  <i className={`fas fa-${field.icon || 'bolt'}`} />
                 </span>
               </button>
               <span className={styles.actionLabel}>{field.label || ''}</span>

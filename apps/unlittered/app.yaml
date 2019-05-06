@@ -142,12 +142,15 @@ pages:
                   fields:
                     - name: notities
                       label: pak waarneming op
+                      icon: cog
                       value: Waarneming opgepakt
                     - name: notities
                       label: meld als opgelost
+                      icon: check
                       value: Waarneming opgelost
                     - name: proces
                       label: routeer naar
+                      icon: paper-plane
                       enum:
                         - value: Fietsknip team
                         - value: Handhaving
