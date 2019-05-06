@@ -54,6 +54,11 @@ export default class FeedBlock extends React.Component {
     }
   }
 
+  onUpdate = resource => {
+    const { data } = this.state;
+    this.setState({ data: data.map(entry => (entry.id === resource.id ? resource : entry)) });
+  };
+
   render() {
     const { data } = this.state;
 
@@ -62,7 +67,12 @@ export default class FeedBlock extends React.Component {
     }
 
     return data.map(content => (
-      <Card key={content.id} content={content} remappers={this.remappers} />
+      <Card
+        key={content.id}
+        content={content}
+        onUpdate={this.onUpdate}
+        remappers={this.remappers}
+      />
     ));
   }
 }

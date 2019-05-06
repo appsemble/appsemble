@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 
 import styles from './Card.css';
 
+// XXX: Temporary dummy data
 const replies = [
   {
     author: 'Me',
@@ -43,16 +44,24 @@ export default class Card extends React.Component {
      * Remapper functions that have been prepared by a parent component.
      */
     remappers: PropTypes.shape().isRequired,
+    /**
+     * Update function that can be called to update a single resource
+     */
+    onUpdate: PropTypes.func.isRequired,
   };
 
   state = {
     message: '',
   };
 
-  onAvatarClick = event => {
-    const { actions, content } = this.props;
+  onAvatarClick = async event => {
+    const { actions, content, onUpdate } = this.props;
     event.preventDefault();
-    actions.avatarClick.dispatch(content);
+    const data = await actions.avatarClick.dispatch(content);
+
+    if (data) {
+      await onUpdate(data);
+    }
   };
 
   onChange = event => {
@@ -73,6 +82,7 @@ export default class Card extends React.Component {
     const picture = remappers.picture(content);
     const description = remappers.description(content);
 
+    // XXX: Replace with avatar/icon and a default icon
     const avatarContent = (
       <figure className="image is-48x48">
         <img alt="Placeholder" src="https://bulma.io/images/placeholders/96x96.png" />
