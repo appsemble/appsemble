@@ -143,14 +143,20 @@ pages:
                     - name: notities
                       label: pak waarneming op
                       icon: cog
+                      color: '#FFFFFF'
+                      backgroundColor: '#00AEEF'
                       value: Waarneming opgepakt
                     - name: notities
                       label: meld als opgelost
                       icon: check
+                      color: '#FFFFFF'
+                      backgroundColor: '#006502'
                       value: Waarneming opgelost
                     - name: proces
                       label: routeer naar
                       icon: paper-plane
+                      color: '#FFFFFF'
+                      backgroundColor: '#006502'
                       enum:
                         - value: Fietsknip team
                         - value: Handhaving

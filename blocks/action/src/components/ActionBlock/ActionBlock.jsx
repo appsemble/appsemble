@@ -43,12 +43,14 @@ export default class ActionBlock extends React.Component {
       <div className={`content ${styles.container}`}>
         <h1>{title}</h1>
         {fields.map(field => {
+          const { backgroundColor, color } = field;
           return (
             <div key={`${field.name}.${field.value}`} className={styles.actionField}>
               <button
                 className="button"
                 disabled={field.enum?.length}
                 onClick={field.enum?.length ? undefined : event => this.onUpdate(event, field)}
+                style={{ ...(backgroundColor && { backgroundColor }), ...(color && { color }) }}
                 type="button"
               >
                 <span className="icon is-small">
