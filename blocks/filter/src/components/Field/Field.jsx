@@ -7,6 +7,7 @@ import messages from './messages';
 
 export default class Field extends React.Component {
   static propTypes = {
+    displayLabel: PropTypes.bool,
     filter: PropTypes.shape().isRequired,
     intl: PropTypes.shape().isRequired,
     label: PropTypes.node,
@@ -18,6 +19,7 @@ export default class Field extends React.Component {
   };
 
   static defaultProps = {
+    displayLabel: true,
     label: undefined,
     range: false,
     type: null,
@@ -25,6 +27,7 @@ export default class Field extends React.Component {
 
   render() {
     const {
+      displayLabel,
       filter,
       intl,
       name,
@@ -37,11 +40,13 @@ export default class Field extends React.Component {
 
     return (
       <div className="field is-horizontal">
-        <div className="field-label is-normal">
-          <label className="label" htmlFor={`filter${name}`}>
-            {label}
-          </label>
-        </div>
+        {displayLabel && (
+          <div className="field-label is-normal">
+            <label className="label" htmlFor={`filter${name}`}>
+              {label}
+            </label>
+          </div>
+        )}
         <div className={classNames('field field-body', { 'is-grouped': range })}>
           {range ? (
             <React.Fragment>

@@ -186,6 +186,7 @@ export default class FilterBlock extends React.Component {
           <div className={styles.highlighted}>
             <Field
               {...highlightedField}
+              displayLabel={!!highlightedField.label}
               filter={filter}
               loading={loading}
               onChange={this.onChange}
