@@ -48,7 +48,7 @@ export default class ActionBlock extends React.Component {
               <button
                 className="button"
                 disabled={field.enum?.length}
-                onClick={event => this.onUpdate(event, field)}
+                onClick={field.enum?.length ? undefined : event => this.onUpdate(event, field)}
                 type="button"
               >
                 <span className="icon is-small">
