@@ -4,6 +4,7 @@ import Boom from 'boom';
 import { isEqual, uniqWith } from 'lodash';
 import { Op, UniqueConstraintError } from 'sequelize';
 import sharp from 'sharp';
+import jsYaml from 'js-yaml';
 
 import getDefaultIcon from '../utils/getDefaultIcon';
 import getAppBlocks from '../utils/getAppBlocks';
@@ -87,6 +88,7 @@ export async function createApp(ctx) {
       style: validateStyle(style),
       sharedStyle: validateStyle(sharedStyle),
       path: app.path || normalize(app.name),
+      yaml: jsYaml.safeDump(app),
     };
 
     if (!user.organizations.some(organization => organization.id === organizationId)) {
@@ -157,6 +159,22 @@ export async function updateApp(ctx) {
       path: definition.path || normalize(definition.name),
       yaml: yaml.toString('utf8'),
     };
+
+    if (yaml) {
+      try {
+        // The YAML should be valid YAML.
+        const appFromYaml = jsYaml.safeLoad(yaml);
+
+        // The YAML should be the same when converted to JSON.
+        if (!isEqual(appFromYaml, definition)) {
+          throw Boom.badRequest('Provided YAML was not equal to definition when converted.');
+        }
+      } catch (exception) {
+        throw Boom.badRequest('Provided YAML was invalid.');
+      }
+    } else {
+      result.yaml = jsYaml.safeDump(definition);
+    }
 
     await checkBlocks(result.definition, db);
 
