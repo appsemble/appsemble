@@ -25,7 +25,6 @@ describe('respond', () => {
   });
 
   it('should pass through requests non GET requests', async () => {
-    // eslint-disable-next-line compat/compat
     const request = new Request('http://localhost/346', { method: 'POST' });
     const response = await respond(request);
     expect(fetch).toHaveBeenCalledWith(request);
@@ -33,7 +32,6 @@ describe('respond', () => {
   });
 
   it('should pass through external requests', async () => {
-    // eslint-disable-next-line compat/compat
     const request = new Request('https://example.com');
     const response = await respond(request);
     expect(fetch).toHaveBeenCalledWith(request);
@@ -41,7 +39,6 @@ describe('respond', () => {
   });
 
   it('should pass through hot-update requests', async () => {
-    // eslint-disable-next-line compat/compat
     const request = new Request('http://localhost/app/app.hot-update.json');
     const response = await respond(request);
     expect(fetch).toHaveBeenCalledWith(request);
@@ -49,7 +46,6 @@ describe('respond', () => {
   });
 
   it('should try to request app index URL first', async () => {
-    // eslint-disable-next-line compat/compat
     const request = new Request('http://localhost/123');
     const response = await respond(request);
     expect(utils.requestFirst).toHaveBeenCalledWith(
@@ -61,7 +57,6 @@ describe('respond', () => {
   });
 
   it('should remap nested app URLs', async () => {
-    // eslint-disable-next-line compat/compat
     const request = new Request('http://localhost/asd/foo/bar-1');
     const response = await respond(request);
     expect(utils.requestFirst).toHaveBeenCalled();
@@ -74,7 +69,6 @@ describe('respond', () => {
   });
 
   it('should try to request app related content first', async () => {
-    // eslint-disable-next-line compat/compat
     const request = new Request('http://localhost/457/manifest.json');
     const response = await respond(request);
     expect(utils.requestFirst).toHaveBeenCalledWith(request);
@@ -82,7 +76,6 @@ describe('respond', () => {
   });
 
   it('should cache block version requests', async () => {
-    // eslint-disable-next-line compat/compat
     const request = new Request('http://localhost/api/blocks/@appsemble/form/versions/0.1.2');
     const response = await respond(request);
     expect(utils.cacheFirst).toHaveBeenCalledWith(request);
@@ -90,7 +83,6 @@ describe('respond', () => {
   });
 
   it('should pass through other API requests', async () => {
-    // eslint-disable-next-line compat/compat
     const request = new Request('http://localhost/api/apps/26/resources/resource/123');
     const response = await respond(request);
     expect(fetch).toHaveBeenCalledWith(request);
@@ -98,7 +90,6 @@ describe('respond', () => {
   });
 
   it('should pass through API explorer requests', async () => {
-    // eslint-disable-next-line compat/compat
     const request = new Request('http://localhost/api-explorer');
     const response = await respond(request);
     expect(fetch).toHaveBeenCalledWith(request);
@@ -106,7 +97,6 @@ describe('respond', () => {
   });
 
   it('should pass internal requests', async () => {
-    // eslint-disable-next-line compat/compat
     const request = new Request('http://localhost/_/apps');
     const response = await respond(request);
     expect(fetch).toHaveBeenCalledWith(request);
@@ -114,7 +104,6 @@ describe('respond', () => {
   });
 
   it('should try to get static assets from the cache first', async () => {
-    // eslint-disable-next-line compat/compat
     const request = new Request('http://localhost/app/76fade46f4eac.js');
     const response = await respond(request);
     expect(utils.cacheFirst).toHaveBeenCalledWith(request);
