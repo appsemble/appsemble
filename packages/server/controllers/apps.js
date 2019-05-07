@@ -62,6 +62,16 @@ function handleAppValidationError(error, app) {
   throw error;
 }
 
+function getAppFromRecord(record) {
+  return {
+    ...record.definition,
+    id: record.id,
+    path: record.path,
+    organizationId: record.OrganizationId,
+    yaml: record.yaml,
+  };
+}
+
 export async function createApp(ctx) {
   const { db } = ctx;
   const { App } = db.models;
@@ -85,9 +95,9 @@ export async function createApp(ctx) {
 
     await checkBlocks(app, db);
 
-    const { id } = await App.create(result, { raw: true });
+    const record = await App.create(result, { raw: true });
 
-    ctx.body = { ...result.definition, id, path: result.path };
+    ctx.body = getAppFromRecord(record);
     ctx.status = 201;
   } catch (error) {
     handleAppValidationError(error, result);
@@ -104,24 +114,14 @@ export async function getAppById(ctx) {
     throw Boom.notFound('App not found');
   }
 
-  ctx.body = {
-    ...app.definition,
-    id: appId,
-    path: app.path,
-    organizationId: app.OrganizationId,
-  };
+  ctx.body = getAppFromRecord(app);
 }
 
 export async function queryApps(ctx) {
   const { App } = ctx.db.models;
 
   const apps = await App.findAll({ raw: true });
-  ctx.body = apps.map(app => ({
-    ...app.definition,
-    id: app.id,
-    path: app.path,
-    organizationId: app.OrganizationId,
-  }));
+  ctx.body = apps.map(getAppFromRecord);
 }
 
 export async function queryMyApps(ctx) {
@@ -134,12 +134,7 @@ export async function queryMyApps(ctx) {
     where: { OrganizationId: { [Op.in]: organizations.map(o => o.id) } },
   });
 
-  ctx.body = apps.map(app => ({
-    ...app.definition,
-    id: app.id,
-    path: app.path,
-    organizationId: app.OrganizationId,
-  }));
+  ctx.body = apps.map(getAppFromRecord);
 }
 
 export async function updateApp(ctx) {
@@ -176,7 +171,7 @@ export async function updateApp(ctx) {
 
     await app.update(result, { where: { id: appId } });
 
-    ctx.body = { ...result.definition, id: appId, path: result.path };
+    ctx.body = getAppFromRecord({ ...app, ...result });
   } catch (error) {
     handleAppValidationError(error, result);
   }
