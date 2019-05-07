@@ -144,7 +144,7 @@ export async function updateApp(ctx) {
     user: { organizations },
   } = ctx.state;
   const { App } = db.models;
-  const { app: definition, organizationId, style, sharedStyle } = ctx.request.body;
+  const { app: definition, organizationId, style, sharedStyle, yaml } = ctx.request.body;
 
   let result;
 
@@ -155,6 +155,7 @@ export async function updateApp(ctx) {
       style: validateStyle(style && style.contents),
       sharedStyle: validateStyle(sharedStyle && sharedStyle.contents),
       path: definition.path || normalize(definition.name),
+      yaml: yaml.toString('utf8'),
     };
 
     await checkBlocks(result.definition, db);
