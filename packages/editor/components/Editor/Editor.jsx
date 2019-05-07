@@ -67,11 +67,17 @@ export default class Editor extends React.Component {
       await getOpenApiSpec();
       // Destructuring path, id and organizationId also hides these technical details for the user
       const { id: dataId, path, organizationId, ...data } = app;
+      let { yaml: recipe } = app;
+
+      if (!recipe) {
+        recipe = yaml.safeDump({
+          ...data,
+          ...(normalize(data.name) !== path && { path }),
+        });
+
+        push({ body: formatMessage(messages.yamlNotFound), color: 'info' });
+      }
       // Include path if the normalized app name does not equal path
-      const recipe = yaml.safeDump({
-        ...data,
-        ...(normalize(data.name) !== path && { path }),
-      });
       const { data: style } = await axios.get(`/api/apps/${id}/style/core`);
       const { data: sharedStyle } = await axios.get(`/api/apps/${id}/style/shared`);
 
@@ -170,8 +176,14 @@ export default class Editor extends React.Component {
     try {
       const formData = new FormData();
       formData.append('app', JSON.stringify(app));
+      // The MIME type for YAML is not officially registered in IANA.
+      // For the time being, x-yaml is used. See also: http://www.iana.org/assignments/media-types/media-types.xhtml
+      formData.append('yaml', new Blob([recipe], { type: 'text/x-yaml' }));
       formData.append('style', new Blob([style], { type: 'text/css' }));
       formData.append('sharedStyle', new Blob([sharedStyle], { type: 'text/css' }));
+      if (icon) {
+        formData.append('icon', icon, { type: icon.type });
+      }
       ({
         data: { path },
       } = await axios.put(`/api/apps/${id}`, formData));
