@@ -3,27 +3,25 @@ import makeServiceWorkerEnv from 'service-worker-mock';
 import * as utils from './utils';
 import { respond } from './onFetch';
 
+jest.mock('./utils');
+
 describe('respond', () => {
-  let cacheFirst;
-  let requestFirst;
-  let cachedResponse;
-  let fakeResponse;
-  let fetchResponse;
+  let cachedResponse: Response;
+  let fakeResponse: Response;
+  let fetchResponse: Response;
 
   beforeEach(() => {
-    Object.assign(global, makeServiceWorkerEnv());
+    Object.assign(global, makeServiceWorkerEnv(), { fetch: jest.fn(async () => fetchResponse) });
     cachedResponse = new Response();
     fakeResponse = new Response();
     fetchResponse = new Response();
-    // eslint-disable-next-line jest/prefer-spy-on
-    global.fetch = jest.fn(async () => fetchResponse);
-    cacheFirst = jest.spyOn(utils, 'cacheFirst').mockResolvedValue(cachedResponse);
-    requestFirst = jest.spyOn(utils, 'requestFirst').mockResolvedValue(fakeResponse);
+    (utils.cacheFirst as jest.Mock).mockResolvedValue(cachedResponse);
+    (utils.requestFirst as jest.Mock).mockResolvedValue(fakeResponse);
   });
 
   afterEach(() => {
-    delete global.fetch;
     jest.resetAllMocks();
+    jest.resetModules();
   });
 
   it('should pass through requests non GET requests', async () => {
@@ -54,8 +52,11 @@ describe('respond', () => {
     // eslint-disable-next-line compat/compat
     const request = new Request('http://localhost/123');
     const response = await respond(request);
-    expect(requestFirst).toHaveBeenCalled();
-    expect(requestFirst.mock.calls[0][0].url).toBe('http://localhost/123');
+    expect(utils.requestFirst).toHaveBeenCalledWith(
+      expect.objectContaining({
+        url: 'http://localhost/123',
+      }),
+    );
     expect(response).toBe(fakeResponse);
   });
 
@@ -63,8 +64,12 @@ describe('respond', () => {
     // eslint-disable-next-line compat/compat
     const request = new Request('http://localhost/asd/foo/bar-1');
     const response = await respond(request);
-    expect(requestFirst).toHaveBeenCalled();
-    expect(requestFirst.mock.calls[0][0].url).toBe('http://localhost/asd');
+    expect(utils.requestFirst).toHaveBeenCalled();
+    expect(utils.requestFirst).toHaveBeenCalledWith(
+      expect.objectContaining({
+        url: 'http://localhost/asd',
+      }),
+    );
     expect(response).toBe(fakeResponse);
   });
 
@@ -72,7 +77,7 @@ describe('respond', () => {
     // eslint-disable-next-line compat/compat
     const request = new Request('http://localhost/457/manifest.json');
     const response = await respond(request);
-    expect(requestFirst).toHaveBeenCalledWith(request);
+    expect(utils.requestFirst).toHaveBeenCalledWith(request);
     expect(response).toBe(fakeResponse);
   });
 
@@ -80,7 +85,7 @@ describe('respond', () => {
     // eslint-disable-next-line compat/compat
     const request = new Request('http://localhost/api/apps/26');
     const response = await respond(request);
-    expect(requestFirst).toHaveBeenCalledWith(request);
+    expect(utils.requestFirst).toHaveBeenCalledWith(request);
     expect(response).toBe(fakeResponse);
   });
 
@@ -96,7 +101,7 @@ describe('respond', () => {
     // eslint-disable-next-line compat/compat
     const request = new Request('http://localhost/app/76fade46f4eac.js');
     const response = await respond(request);
-    expect(cacheFirst).toHaveBeenCalledWith(request);
+    expect(utils.cacheFirst).toHaveBeenCalledWith(request);
     expect(response).toBe(cachedResponse);
   });
 });

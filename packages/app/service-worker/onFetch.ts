@@ -1,12 +1,12 @@
-import { cacheFirst, requestFirst } from './utils';
+import { Awaitable, cacheFirst, requestFirst } from './utils';
 
 /**
  * Map all requests to a caching behaviour based on the HTTP method and URL.
  *
- * @param {Request} request The request map.
- * @returns {Response} The matching HTTP response.
+ * @param request The request map.
+ * @returns The matching HTTP response.
  */
-export function respond(request) {
+export function respond(request: Request): Awaitable<Response> {
   // Pass through any non GET requests.
   if (request.method !== 'GET') {
     return fetch(request);
@@ -54,6 +54,6 @@ export function respond(request) {
   return fetch(request);
 }
 
-export default function onFetch(event) {
+export default function onFetch(event: FetchEvent): void {
   event.respondWith(respond(event.request));
 }
