@@ -81,17 +81,33 @@ describe('respond', () => {
     expect(response).toBe(fakeResponse);
   });
 
-  it('should try to request the app definition first', async () => {
+  it('should cache block version requests', async () => {
     // eslint-disable-next-line compat/compat
-    const request = new Request('http://localhost/api/apps/26');
+    const request = new Request('http://localhost/api/blocks/@appsemble/form/versions/0.1.2');
     const response = await respond(request);
-    expect(utils.requestFirst).toHaveBeenCalledWith(request);
-    expect(response).toBe(fakeResponse);
+    expect(utils.cacheFirst).toHaveBeenCalledWith(request);
+    expect(response).toBe(cachedResponse);
   });
 
   it('should pass through other API requests', async () => {
     // eslint-disable-next-line compat/compat
     const request = new Request('http://localhost/api/apps/26/resources/resource/123');
+    const response = await respond(request);
+    expect(fetch).toHaveBeenCalledWith(request);
+    expect(response).toBe(fetchResponse);
+  });
+
+  it('should pass through API explorer requests', async () => {
+    // eslint-disable-next-line compat/compat
+    const request = new Request('http://localhost/api-explorer');
+    const response = await respond(request);
+    expect(fetch).toHaveBeenCalledWith(request);
+    expect(response).toBe(fetchResponse);
+  });
+
+  it('should pass internal requests', async () => {
+    // eslint-disable-next-line compat/compat
+    const request = new Request('http://localhost/_/apps');
     const response = await respond(request);
     expect(fetch).toHaveBeenCalledWith(request);
     expect(response).toBe(fetchResponse);
