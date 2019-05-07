@@ -69,7 +69,7 @@ function getAppFromRecord(record) {
     id: record.id,
     path: record.path,
     organizationId: record.OrganizationId,
-    yaml: record.yaml,
+    yaml: record.yaml || jsYaml.safeDump(record.definition),
   };
 }
 
@@ -157,7 +157,7 @@ export async function updateApp(ctx) {
       style: validateStyle(style && style.contents),
       sharedStyle: validateStyle(sharedStyle && sharedStyle.contents),
       path: definition.path || normalize(definition.name),
-      yaml: yaml.toString('utf8'),
+      yaml: yaml?.toString('utf8'),
     };
 
     if (yaml) {
@@ -190,7 +190,7 @@ export async function updateApp(ctx) {
 
     await app.update(result, { where: { id: appId } });
 
-    ctx.body = getAppFromRecord({ ...app, ...result });
+    ctx.body = getAppFromRecord({ ...app.dataValues, ...result });
   } catch (error) {
     handleAppValidationError(error, result);
   }

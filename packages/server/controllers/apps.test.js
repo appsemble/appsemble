@@ -78,12 +78,18 @@ describe('app controller', () => {
       path: 'test-app',
       ...appA.definition,
       organizationId: appA.OrganizationId,
+      yaml: `name: Test App
+defaultPage: Test Page
+`,
     });
     expect(body).toContainEqual({
       id: appB.id,
       path: 'another-app',
       ...appB.definition,
       organizationId: appB.OrganizationId,
+      yaml: `name: Another App
+defaultPage: Another Page
+`,
     });
   });
 
@@ -110,6 +116,9 @@ describe('app controller', () => {
       path: 'test-app',
       ...appA.definition,
       organizationId,
+      yaml: `name: Test App
+defaultPage: Test Page
+`,
     });
   });
 
@@ -145,11 +154,35 @@ describe('app controller', () => {
       .set('Authorization', token);
 
     expect(requestA.body).toStrictEqual([
-      { ...appA.definition, id: appA.id, path: appA.path, organizationId: appA.OrganizationId },
+      {
+        ...appA.definition,
+        id: appA.id,
+        path: appA.path,
+        organizationId: appA.OrganizationId,
+        yaml: `name: Test App
+defaultPage: Test Page
+`,
+      },
     ]);
     expect(requestB.body).toStrictEqual([
-      { ...appA.definition, id: appA.id, path: appA.path, organizationId: appA.OrganizationId },
-      { ...appB.definition, id: appB.id, path: appB.path, organizationId: appB.OrganizationId },
+      {
+        ...appA.definition,
+        id: appA.id,
+        path: appA.path,
+        organizationId: appA.OrganizationId,
+        yaml: `name: Test App
+defaultPage: Test Page
+`,
+      },
+      {
+        ...appB.definition,
+        id: appB.id,
+        path: appB.path,
+        organizationId: appB.OrganizationId,
+        yaml: `name: Test App B
+defaultPage: Test Page
+`,
+      },
     ]);
   });
 
@@ -193,6 +226,15 @@ describe('app controller', () => {
           ],
         },
       ],
+      organizationId,
+      yaml: `name: Test App
+defaultPage: Test Page
+pages:
+  - name: Test page
+    blocks:
+      - type: test
+        version: 0.0.0
+`,
     });
     const { body: retrieved } = await request(server).get(`/api/apps/${created.id}`);
     expect(retrieved).toStrictEqual({ ...created, organizationId });
@@ -586,6 +628,14 @@ describe('app controller', () => {
           blocks: [{ type: 'test', version: '0.0.0' }],
         },
       ],
+      yaml: `name: Foobar
+defaultPage: Test Page
+pages:
+  - name: Test page
+    blocks:
+      - type: test
+        version: 0.0.0
+`,
     });
   });
 
