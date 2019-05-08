@@ -161,16 +161,17 @@ export async function updateApp(ctx) {
     };
 
     if (yaml) {
+      let appFromYaml;
       try {
         // The YAML should be valid YAML.
-        const appFromYaml = jsYaml.safeLoad(yaml);
-
-        // The YAML should be the same when converted to JSON.
-        if (!isEqual(appFromYaml, definition)) {
-          throw Boom.badRequest('Provided YAML was not equal to definition when converted.');
-        }
+        appFromYaml = jsYaml.safeLoad(yaml);
       } catch (exception) {
         throw Boom.badRequest('Provided YAML was invalid.');
+      }
+
+      // The YAML should be the same when converted to JSON.
+      if (!isEqual(appFromYaml, definition)) {
+        throw Boom.badRequest('Provided YAML was not equal to definition when converted.');
       }
     } else {
       result.yaml = jsYaml.safeDump(definition);
