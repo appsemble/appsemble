@@ -3,7 +3,7 @@ declare module 'service-worker-mock' {
 
   namespace makeServiceWorkerEnv {
     interface Caches {
-      [key: string]: any;
+      [key: string]: Cache;
     }
 
     interface Listeners {
@@ -14,7 +14,7 @@ declare module 'service-worker-mock' {
       /**
        * A key/value map of current cache contents.
        */
-      caches: {};
+      caches: Caches;
       /**
        * A list of active clients.
        */
@@ -22,7 +22,7 @@ declare module 'service-worker-mock' {
       /**
        * A list of active notifications.
        */
-      notifications: any[];
+      notifications: Notification[];
     }
 
     interface ServiceWorkerGlobalScopeMock extends ServiceWorkerGlobalScope {
