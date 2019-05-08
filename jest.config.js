@@ -8,6 +8,6 @@ module.exports = {
     [/\.css$/.source]: 'identity-obj-proxy',
   },
   snapshotSerializers: ['enzyme-to-json/serializer'],
-  setupFilesAfterEnv: ['<rootDir>/config/jest/setupFilesAfterEnv'],
+  setupFilesAfterEnv: ['<rootDir>/config/jest/setupFilesAfterEnv.ts'],
   testURL: 'http://localhost',
 };
