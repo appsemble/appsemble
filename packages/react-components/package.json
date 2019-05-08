@@ -6,9 +6,9 @@
     "@sentry/browser": "^5.1.1",
     "classnames": "^2.2.6",
     "prop-types": "^15.7.2",
-    "react-addons-css-transition-group": "^15.6.2",
     "react-intl": "^2.8.0",
-    "react-test-renderer": "^16.8.6"
+    "react-test-renderer": "^16.8.6",
+    "react-transition-group": "^4.0.0"
   },
   "peerDependencies": {
     "react": "^16.5.0"

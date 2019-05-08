@@ -4,41 +4,54 @@ exports[`Message should render messages 1`] = `
 <div
   className="root"
 >
-  <CSSTransitionGroup
-    transitionAppear={false}
-    transitionEnter={true}
-    transitionEnterTimeout={300}
-    transitionLeave={true}
-    transitionLeaveTimeout={300}
-    transitionName={
-      Object {
-        "enter": "messageEnter",
-        "enterActive": "messageEnterActive",
-        "leave": "messageLeave",
-        "leaveActive": "messageLeaveActive",
-      }
-    }
+  <TransitionGroup
+    childFactory={[Function]}
+    component="div"
   >
-    <article
-      className="message is-danger"
+    <CSSTransition
+      classNames={
+        Object {
+          "enter": "messageEnter",
+          "enterActive": "messageEnterActive",
+          "exit": "messageExit",
+          "exitActive": "messageExitActive",
+        }
+      }
       key="1"
+      timeout={300}
     >
-      <div
-        className="message-body content"
+      <article
+        className="message is-danger"
       >
-        Foo
-      </div>
-    </article>
-    <article
-      className="message is-info"
+        <div
+          className="message-body content"
+        >
+          Foo
+        </div>
+      </article>
+    </CSSTransition>
+    <CSSTransition
+      classNames={
+        Object {
+          "enter": "messageEnter",
+          "enterActive": "messageEnterActive",
+          "exit": "messageExit",
+          "exitActive": "messageExitActive",
+        }
+      }
       key="2"
+      timeout={300}
     >
-      <div
-        className="message-body content"
+      <article
+        className="message is-info"
       >
-        Bar
-      </div>
-    </article>
-  </CSSTransitionGroup>
+        <div
+          className="message-body content"
+        >
+          Bar
+        </div>
+      </article>
+    </CSSTransition>
+  </TransitionGroup>
 </div>
 `;

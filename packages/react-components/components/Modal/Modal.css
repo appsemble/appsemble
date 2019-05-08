@@ -1,0 +1,23 @@
+@value timeout 90;
+
+.background {
+  background-color: transparent;
+}
+
+.enter {
+  opacity: 0;
+}
+
+.enterActive {
+  opacity: 1;
+  transition: opacity calc(timeout * 1ms) ease-in;
+}
+
+.exit {
+  opacity: 1;
+}
+
+.exitActive {
+  opacity: 0;
+  transition: opacity calc(timeout * 1ms) ease-in;
+}
