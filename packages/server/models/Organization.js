@@ -1,5 +1,5 @@
-export default (sequelize, DataTypes) =>
-  sequelize.define(
+export default (sequelize, DataTypes) => {
+  const Organization = sequelize.define(
     'Organization',
     {
       id: { type: DataTypes.STRING, primaryKey: true },
@@ -14,3 +14,13 @@ export default (sequelize, DataTypes) =>
       deletedAt: 'deleted',
     },
   );
+
+  Organization.associate = ({ App, User, OrganizationBlockStyle }) => {
+    Organization.hasOne(Organization);
+    Organization.hasMany(App);
+    Organization.belongsToMany(User, { through: 'UserOrganization' });
+    Organization.hasMany(OrganizationBlockStyle);
+  };
+
+  return Organization;
+};

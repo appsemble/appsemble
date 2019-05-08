@@ -1,5 +1,5 @@
-export default (sequelize, DataTypes) =>
-  sequelize.define(
+export default (sequelize, DataTypes) => {
+  const OAuthToken = sequelize.define(
     'OAuthToken',
     {
       id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
@@ -12,3 +12,8 @@ export default (sequelize, DataTypes) =>
       updatedAt: 'updated',
     },
   );
+
+  OAuthToken.associate = () => {};
+
+  return OAuthToken;
+};

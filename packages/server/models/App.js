@@ -1,5 +1,5 @@
-export default (sequelize, DataTypes) =>
-  sequelize.define(
+export default (sequelize, DataTypes) => {
+  const App = sequelize.define(
     'App',
     {
       id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
@@ -19,3 +19,9 @@ export default (sequelize, DataTypes) =>
       deletedAt: 'deleted',
     },
   );
+  App.associate = ({ Resource, Organization }) => {
+    App.hasMany(Resource);
+    App.belongsTo(Organization, { foreignKey: { allowNull: false } });
+  };
+  return App;
+};

@@ -1,5 +1,5 @@
-export default (sequelize, DataTypes) =>
-  sequelize.define(
+export default (sequelize, DataTypes) => {
+  const BlockDefinition = sequelize.define(
     'BlockDefinition',
     {
       id: { type: DataTypes.STRING, primaryKey: true },
@@ -13,3 +13,10 @@ export default (sequelize, DataTypes) =>
       deletedAt: 'deleted',
     },
   );
+
+  BlockDefinition.associate = ({ BlockVersion }) => {
+    BlockDefinition.hasMany(BlockVersion, { foreignKey: 'name', sourceKey: 'id' });
+  };
+
+  return BlockDefinition;
+};
