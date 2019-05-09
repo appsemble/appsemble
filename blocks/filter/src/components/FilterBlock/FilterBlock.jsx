@@ -125,11 +125,11 @@ export default class FilterBlock extends React.Component {
     const { filter, isOpen, loading } = this.state;
     const { fields, highlight } = block.parameters;
     const highlightedField = highlight && fields.find(field => field.name === highlight);
+    const showModal = !highlightedField || fields.length > 1;
 
     return (
       <div className={styles.container}>
-        {((highlightedField && Object.keys(fields).length > 1) ||
-          (!highlightedField && Object.keys(fields).length >= 1)) && (
+        {showModal && (
           <div className={classNames('modal', { 'is-active': isOpen })}>
             <div
               className="modal-background"
@@ -194,8 +194,7 @@ export default class FilterBlock extends React.Component {
             />
           </div>
         )}
-        {((highlightedField && Object.keys(fields).length > 1) ||
-          (!highlightedField && Object.keys(fields).length >= 1)) && (
+        {showModal && (
           <button
             className={`button ${styles.filterDialogButton}`}
             onClick={this.onOpen}
