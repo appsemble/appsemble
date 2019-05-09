@@ -3,7 +3,7 @@ const path = require('path');
 const { version } = require('react/package.json');
 const restricted = require('eslint-restricted-globals');
 
-const configs = [path.join(__dirname, 'config/**'), '*.config.js', '.*rc.js'];
+const configs = [path.join(__dirname, 'config/**'), '*.config.js', '.*rc.js', '*.d.ts'];
 const tests = ['**/*.test.{js,jsx,ts,tsx}'];
 
 module.exports = {
