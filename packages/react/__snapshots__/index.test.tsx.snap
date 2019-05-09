@@ -1,0 +1,98 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`mount should mount the react component 1`] = `
+<Component
+  actions={Object {}}
+  block={
+    Object {
+      "type": "test",
+      "version": "0.0.0",
+    }
+  }
+  data={Object {}}
+  events={
+    Object {
+      "emit": [Function],
+      "off": [Function],
+      "on": [Function],
+    }
+  }
+  reactRoot={<div />}
+  shadowRoot={
+    Object {
+      "appendChild": [Function],
+    }
+  }
+  utils={
+    Object {
+      "showMessage": [Function],
+    }
+  }
+>
+  <div>
+    test
+  </div>
+</Component>
+`;
+
+exports[`withBlock should pass block props to the child element 1`] = `
+<Component
+  actions={Object {}}
+  block={
+    Object {
+      "type": "test",
+      "version": "0.0.0",
+    }
+  }
+  data={Object {}}
+  events={
+    Object {
+      "emit": [Function],
+      "off": [Function],
+      "on": [Function],
+    }
+  }
+  reactRoot={<div />}
+  shadowRoot={
+    Object {
+      "appendChild": [Function],
+    }
+  }
+  utils={
+    Object {
+      "showMessage": [Function],
+    }
+  }
+>
+  <withBlock(Test)>
+    <Test
+      actions={Object {}}
+      block={
+        Object {
+          "type": "test",
+          "version": "0.0.0",
+        }
+      }
+      data={Object {}}
+      events={
+        Object {
+          "emit": [Function],
+          "off": [Function],
+          "on": [Function],
+        }
+      }
+      reactRoot={<div />}
+      shadowRoot={
+        Object {
+          "appendChild": [Function],
+        }
+      }
+      utils={
+        Object {
+          "showMessage": [Function],
+        }
+      }
+    />
+  </withBlock(Test)>
+</Component>
+`;

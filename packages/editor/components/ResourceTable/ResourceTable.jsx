@@ -205,7 +205,7 @@ export default class ResourceTable extends React.Component {
       this.setState({ loading: true, error: false, resources: [] });
     }
 
-    if (app.resources[resourceName].schema) {
+    if (app.resources[resourceName]?.schema) {
       try {
         const { data: resources } = await axios.get(`/api/apps/${app.id}/${resourceName}`);
         this.setState({ resources, loading: false });
@@ -237,20 +237,23 @@ export default class ResourceTable extends React.Component {
     }
 
     if (!loading && resources === undefined) {
+      if (!app.resources[resourceName]) {
+        return <FormattedMessage {...messages.notFound} />;
+      }
+
       const { url } = app.resources[resourceName];
+
       return (
-        <React.Fragment>
-          <FormattedMessage
-            {...messages.notManaged}
-            values={{
-              link: (
-                <a href={url} rel="noopener noreferrer" target="_blank">
-                  {url}
-                </a>
-              ),
-            }}
-          />
-        </React.Fragment>
+        <FormattedMessage
+          {...messages.notManaged}
+          values={{
+            link: (
+              <a href={url} rel="noopener noreferrer" target="_blank">
+                {url}
+              </a>
+            ),
+          }}
+        />
       );
     }
 

@@ -2,6 +2,7 @@
   "name": "@appsemble/react",
   "version": "0.5.0",
   "dependencies": {
+    "@types/react-intl": "^2.3.17",
     "prop-types": "^15.7.2",
     "react-shadow-dom-retarget-events": "^1.0.8"
   },
