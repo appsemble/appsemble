@@ -11,7 +11,7 @@ interface ModalProps {
   /**
    * The child elements to render on the modal.
    */
-  children: React.ReactNode;
+  children?: React.ReactNode;
   /**
    * Wether or not the modal is currently active.
    */
@@ -19,7 +19,7 @@ interface ModalProps {
   /**
    * A function that will be called when the user closes the modal.
    */
-  onClose: React.ReactEventHandler;
+  onClose?: React.ReactEventHandler;
 }
 
 /**
@@ -27,10 +27,15 @@ interface ModalProps {
  */
 export default class Modal extends React.Component<InjectedIntlProps & ModalProps> {
   static propTypes = {
-    children: PropTypes.node.isRequired,
+    children: PropTypes.node,
     intl: intlShape.isRequired,
     isActive: PropTypes.bool.isRequired,
-    onClose: PropTypes.func.isRequired,
+    onClose: PropTypes.func,
+  };
+
+  static defaultProps: Partial<ModalProps> = {
+    children: null,
+    onClose() {},
   };
 
   onKeyDown: React.KeyboardEventHandler = event => {

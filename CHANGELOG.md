@@ -10,6 +10,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ### Added
 
 - App: Add support for the new `static` block layout.
+- App: Allow splash actions to not be full screen. They can still be made full screen by passing
+  `fullScreen: true` to the action.
 - Editor: Render a user fiendly error page if an unexpected error occurs.
 - Editor: Report errors to Sentry if this is configured.
 - SDK: Add support for the events API.
