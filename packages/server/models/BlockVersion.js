@@ -2,8 +2,8 @@ export default (sequelize, DataTypes) => {
   const BlockVersion = sequelize.define(
     'BlockVersion',
     {
-      name: { type: DataTypes.STRING, primaryKey: true },
-      version: { type: DataTypes.STRING, primaryKey: true },
+      name: { type: DataTypes.STRING, primaryKey: true, unique: 'blockVersionComposite' },
+      version: { type: DataTypes.STRING, primaryKey: true, unique: 'blockVersionComposite' },
       layout: { type: DataTypes.STRING },
       actions: { type: DataTypes.JSON },
       resources: { type: DataTypes.JSON },

@@ -66,6 +66,12 @@ module.exports = {
   },
   overrides: [
     {
+      files: ['packages/server/migrations/**'],
+      rules: {
+        'filenames/match-regex': 'off',
+      },
+    },
+    {
       files: ['**/*.ts', '**/*.tsx'],
       plugins: ['@typescript-eslint'],
       parser: '@typescript-eslint/parser',
