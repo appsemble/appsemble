@@ -21,5 +21,11 @@ exports[`should render the blocks for a page 1`] = `
     onEvent={[Function]}
     showDialog={[Function]}
   />
+  <ConnectFunction
+    dialog={null}
+    emitEvent={[Function]}
+    offEvent={[Function]}
+    onEvent={[Function]}
+  />
 </Fragment>
 `;
