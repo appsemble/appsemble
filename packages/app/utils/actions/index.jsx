@@ -1,4 +1,4 @@
-import splash from './splash';
+import dialog from './dialog';
 import link from './link';
 import log from './log';
 import noop from './noop';
@@ -10,7 +10,7 @@ export default {
   log,
   noop,
   request,
-  splash,
+  dialog,
   'resource.get': resource.get,
   'resource.query': resource.query,
   'resource.create': resource.create,

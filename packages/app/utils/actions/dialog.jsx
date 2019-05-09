@@ -1,16 +1,16 @@
-export default function splash(definition, app, block, history, showDialog) {
+export default function dialog(definition, app, block, history, showDialog) {
   return {
     dispatch(data) {
       return new Promise((resolve, reject) => {
         const close = showDialog({
           actionCreators: {
-            'splash.error': () => ({
+            'dialog.error': () => ({
               dispatch(error) {
                 reject(error);
                 close();
               },
             }),
-            'splash.ok': () => ({
+            'dialog.ok': () => ({
               dispatch(result) {
                 resolve(result);
                 close();
