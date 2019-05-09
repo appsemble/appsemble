@@ -54,7 +54,7 @@ export default class Modal extends React.Component<InjectedIntlProps & ModalProp
         }}
         in={isActive}
         mountOnEnter
-        timeout={Number(styles.timeout)}
+        timeout={90}
         unmountOnExit
       >
         <div className="is-active modal">
