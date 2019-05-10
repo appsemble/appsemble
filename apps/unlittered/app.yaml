@@ -50,7 +50,7 @@ pages:
         actions:
           submit:
             type: dialog
-            fullScreen: true
+            fullscreen: true
             blocks:
               - type: '@amsterdam/splash'
                 version: 0.5.0

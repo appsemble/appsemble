@@ -44,7 +44,7 @@ export default class PageDialog extends React.Component {
     return (
       <Modal isActive={!!dialog} onClose={dialog && dialog.close}>
         {dialog && (
-          <div className={classNames('card', { [styles.fullScreen]: dialog.fullScreen })}>
+          <div className={classNames('card', { [styles.fullscreen]: dialog.fullscreen })}>
             {dialog.blocks.map((block, index) => (
               <Block
                 // eslint-disable-next-line react/no-array-index-key

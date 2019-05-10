@@ -23,7 +23,7 @@ export default function dialog(definition, app, block, history, showDialog) {
             reject();
             close();
           },
-          fullScreen: definition.fullScreen,
+          fullscreen: definition.fullscreen,
         });
       });
     },
