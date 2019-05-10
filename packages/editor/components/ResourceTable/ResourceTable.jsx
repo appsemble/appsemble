@@ -1,6 +1,6 @@
 import React from 'react';
 import axios from 'axios';
-import { Loader } from '@appsemble/react-components';
+import { Loader, Modal } from '@appsemble/react-components';
 import classNames from 'classnames';
 import { FormattedMessage } from 'react-intl';
 import PropTypes from 'prop-types';
@@ -312,136 +312,109 @@ export default class ResourceTable extends React.Component {
             })}
           </tbody>
         </table>
-        <form
-          className="container"
-          onSubmit={mode === 'edit' ? this.submitEdit : this.submitCreate}
-        >
-          <div className={classNames('modal', { 'is-active': mode === 'edit' || mode === 'new' })}>
-            <div
-              className="modal-background"
-              onClick={this.onClose}
-              onKeyDown={this.onKeyDown}
-              role="presentation"
-            />
-            <div className="modal-content">
-              <div className="card">
-                <div className="card-content">
-                  {keys.map(key => {
-                    const properties = schema.properties[key] || {};
+        <Modal isActive={mode === 'edit' || mode === 'new'} onClose={this.onClose}>
+          <form className="card" onSubmit={mode === 'edit' ? this.submitEdit : this.submitCreate}>
+            <div className="card-content">
+              {keys.map(key => {
+                const properties = schema.properties[key] || {};
 
-                    return (
-                      <div key={key} className="field is-horizontal">
-                        <div className="field-label is-normal">
-                          <label className="label" htmlFor={key}>
-                            {key}
-                          </label>
-                        </div>
-                        <div className="field-body">
-                          <div className="field">
-                            <div className="control">
-                              <input
-                                className="input"
-                                disabled={properties.readOnly || key === 'id'}
-                                id={key}
-                                name={key}
-                                onChange={this.onChange}
-                                placeholder={key}
-                                required={schema.required?.includes(key)}
-                                type={
-                                  properties.format && properties.format === 'email'
-                                    ? 'email'
-                                    : 'text'
-                                }
-                                value={
-                                  editingResource && editingResource[key]
-                                    ? editingResource[key]
-                                    : ''
-                                }
-                              />
-                            </div>
-                          </div>
+                return (
+                  <div key={key} className="field is-horizontal">
+                    <div className="field-label is-normal">
+                      <label className="label" htmlFor={key}>
+                        {key}
+                      </label>
+                    </div>
+                    <div className="field-body">
+                      <div className="field">
+                        <div className="control">
+                          <input
+                            className="input"
+                            disabled={properties.readOnly || key === 'id'}
+                            id={key}
+                            name={key}
+                            onChange={this.onChange}
+                            placeholder={key}
+                            required={schema.required?.includes(key)}
+                            type={
+                              properties.format && properties.format === 'email' ? 'email' : 'text'
+                            }
+                            value={
+                              editingResource && editingResource[key] ? editingResource[key] : ''
+                            }
+                          />
                         </div>
                       </div>
-                    );
-                  })}
-                </div>
-                <footer className="card-footer">
-                  {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
-                  <a
-                    className="card-footer-item is-link"
-                    onClick={this.onClose}
-                    onKeyDown={this.onKeyDown}
-                    role="button"
-                    tabIndex="0"
-                  >
-                    <FormattedMessage {...messages.cancelButton} />
-                  </a>
-                  <button
-                    className={classNames(
-                      'card-footer-item',
-                      'button',
-                      'is-primary',
-                      styles.cardFooterButton,
-                    )}
-                    type="submit"
-                  >
-                    {mode === 'edit' ? (
-                      <FormattedMessage {...messages.editButton} />
-                    ) : (
-                      <FormattedMessage {...messages.createButton} />
-                    )}
-                  </button>
-                </footer>
-              </div>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
-            <button className="modal-close is-large" onClick={this.onClose} type="button" />
-          </div>
-        </form>
-        <div className={classNames('modal', warningDialog && 'is-active')}>
-          <div
-            className="modal-background"
-            onClick={this.onClose}
-            onKeyDown={this.onKeyDown}
-            role="presentation"
-          />
-          <div className="modal-content">
-            <div className="card">
-              <header className="card-header">
-                <p className="card-header-title">
-                  <FormattedMessage {...messages.resourceWarningTitle} />
-                </p>
-              </header>
-              <div className="card-content">
-                <FormattedMessage {...messages.resourceWarning} />
-              </div>
-              <footer className="card-footer">
-                {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
-                <a
-                  className="card-footer-item is-link"
-                  onClick={this.onClose}
-                  onKeyDown={this.onKeyDown}
-                  role="button"
-                  tabIndex="-1"
-                >
-                  <FormattedMessage {...messages.cancelButton} />
-                </a>
-                <button
-                  className={classNames(
-                    'card-footer-item',
-                    'button',
-                    'is-danger',
-                    styles.cardFooterButton,
-                  )}
-                  onClick={this.deleteResource}
-                  type="button"
-                >
-                  <FormattedMessage {...messages.deleteButton} />
-                </button>
-              </footer>
+            <footer className="card-footer">
+              {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
+              <a
+                className="card-footer-item is-link"
+                onClick={this.onClose}
+                onKeyDown={this.onKeyDown}
+                role="button"
+                tabIndex="0"
+              >
+                <FormattedMessage {...messages.cancelButton} />
+              </a>
+              <button
+                className={classNames(
+                  'card-footer-item',
+                  'button',
+                  'is-primary',
+                  styles.cardFooterButton,
+                )}
+                type="submit"
+              >
+                {mode === 'edit' ? (
+                  <FormattedMessage {...messages.editButton} />
+                ) : (
+                  <FormattedMessage {...messages.createButton} />
+                )}
+              </button>
+            </footer>
+          </form>
+        </Modal>
+        <Modal isActive={warningDialog} onClose={this.onClose}>
+          <div className="card">
+            <header className="card-header">
+              <p className="card-header-title">
+                <FormattedMessage {...messages.resourceWarningTitle} />
+              </p>
+            </header>
+            <div className="card-content">
+              <FormattedMessage {...messages.resourceWarning} />
             </div>
+            <footer className="card-footer">
+              {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
+              <a
+                className="card-footer-item is-link"
+                onClick={this.onClose}
+                onKeyDown={this.onKeyDown}
+                role="button"
+                tabIndex="-1"
+              >
+                <FormattedMessage {...messages.cancelButton} />
+              </a>
+              <button
+                className={classNames(
+                  'card-footer-item',
+                  'button',
+                  'is-danger',
+                  styles.cardFooterButton,
+                )}
+                onClick={this.deleteResource}
+                type="button"
+              >
+                <FormattedMessage {...messages.deleteButton} />
+              </button>
+            </footer>
           </div>
-          <button className="modal-close is-large" onClick={this.onClose} type="button" />
-        </div>
+        </Modal>
       </React.Fragment>
     );
   }

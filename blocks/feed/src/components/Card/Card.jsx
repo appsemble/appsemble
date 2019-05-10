@@ -2,25 +2,10 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import styles from './Card.css';
+import messages from './messages';
 
-const replies = [
-  {
-    author: 'Me',
-    content: 'This news is great!',
-  },
-  {
-    author: 'Someone else',
-    content: 'Boo! 😠',
-  },
-  {
-    author: 'Oðinn',
-    content: 'Keep up the great work!',
-  },
-  {
-    author: 'Þor',
-    content: '🌩🔨',
-  },
-];
+// XXX: Temporary dummy data
+const replies = [];
 
 /**
  * A single card in the feed.
@@ -35,6 +20,7 @@ export default class Card extends React.Component {
      * The Appsemble block for which to render the card.
      */
     block: PropTypes.shape().isRequired,
+    intl: PropTypes.shape().isRequired,
     /**
      * The content for this specific card to render.
      */
@@ -43,16 +29,24 @@ export default class Card extends React.Component {
      * Remapper functions that have been prepared by a parent component.
      */
     remappers: PropTypes.shape().isRequired,
+    /**
+     * Update function that can be called to update a single resource
+     */
+    onUpdate: PropTypes.func.isRequired,
   };
 
   state = {
     message: '',
   };
 
-  onAvatarClick = event => {
-    const { actions, content } = this.props;
+  onAvatarClick = async event => {
+    const { actions, content, onUpdate } = this.props;
     event.preventDefault();
-    actions.avatarClick.dispatch(content);
+    const data = await actions.avatarClick.dispatch(content);
+
+    if (data) {
+      await onUpdate(data);
+    }
   };
 
   onChange = event => {
@@ -64,7 +58,7 @@ export default class Card extends React.Component {
   };
 
   render() {
-    const { actions, content, block, remappers } = this.props;
+    const { actions, block, content, intl, remappers } = this.props;
     const { message } = this.state;
 
     const title = remappers.title(content);
@@ -73,9 +67,13 @@ export default class Card extends React.Component {
     const picture = remappers.picture(content);
     const description = remappers.description(content);
 
+    // XXX: Replace with avatar/icon and a default icon
     const avatarContent = (
       <figure className="image is-48x48">
-        <img alt="Placeholder" src="https://bulma.io/images/placeholders/96x96.png" />
+        <img
+          alt={intl.formatMessage(intl.avatar)}
+          src="https://bulma.io/images/placeholders/96x96.png"
+        />
       </figure>
     );
 
@@ -109,9 +107,10 @@ export default class Card extends React.Component {
         </div>
         {picture && (
           <div className="card-image">
-            <figure className="image is-4by3">
+            <figure className={styles.figure}>
               <img
                 alt={title || subtitle || heading || description}
+                className={styles.image}
                 src={`${block.parameters.pictureBase}/${picture}`}
               />
             </figure>
@@ -128,7 +127,12 @@ export default class Card extends React.Component {
             ))}
           </div>
           <form className={styles.replyForm} noValidate onSubmit={this.onSubmit}>
-            <input className="input" onChange={this.onChange} value={message} />
+            <input
+              className="input"
+              onChange={this.onChange}
+              placeholder={intl.formatMessage(messages.reply)}
+              value={message}
+            />
             <button className={`button ${styles.replyButton}`} type="submit">
               <span className="icon is-small">
                 <i className="fas fa-paper-plane" />

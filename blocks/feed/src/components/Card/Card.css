@@ -11,6 +11,21 @@
   }
 }
 
+.figure {
+  align-items: center;
+  background-color: hsl(0, 0%, 96%);
+  display: flex;
+  justify-content: center;
+  text-align: center;
+  vertical-align: baseline;
+  width: 100%;
+}
+
+.image {
+  max-height: 33vh;
+  position: relative;
+}
+
 .replies {
   max-height: 12rem;
   overflow-y: auto;
