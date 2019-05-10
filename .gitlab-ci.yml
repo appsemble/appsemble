@@ -339,6 +339,7 @@ upload blocks:
     - yarn appsemble block register --ignore-conflict blocks/action-button
     - yarn appsemble block register --ignore-conflict blocks/detail-viewer
     - yarn appsemble block register --ignore-conflict blocks/list
+    - yarn appsemble block register --ignore-conflict blocks/feed
     - yarn appsemble block register --ignore-conflict blocks/filter
     - yarn appsemble block register --ignore-conflict blocks/form
     - yarn appsemble block register --ignore-conflict blocks/map
