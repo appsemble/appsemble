@@ -52,8 +52,10 @@ export default class FilterBlock extends React.Component {
     } = this.props;
     const { filter } = this.state;
 
+    const filterValue = toOData(fields, filter);
+
     return actions.load.dispatch({
-      $filter: toOData(fields, filter),
+      ...(filterValue && { $filter: toOData(fields, filter) }),
     });
   };
 
@@ -123,6 +125,7 @@ export default class FilterBlock extends React.Component {
     const { filter, isOpen, loading } = this.state;
     const { fields, highlight } = block.parameters;
     const highlightedField = highlight && fields.find(field => field.name === highlight);
+    const showModal = !highlightedField || fields.length > 1;
 
     return (
       <div className={styles.container}>
@@ -172,6 +175,7 @@ export default class FilterBlock extends React.Component {
           <div className={styles.highlighted}>
             <Field
               {...highlightedField}
+              displayLabel={!!highlightedField.label}
               filter={filter}
               loading={loading}
               onChange={this.onChange}
@@ -179,15 +183,17 @@ export default class FilterBlock extends React.Component {
             />
           </div>
         )}
-        <button
-          className={`button ${styles.filterDialogButton}`}
-          onClick={this.onOpen}
-          type="button"
-        >
-          <span className="icon">
-            <i className="fas fa-filter" />
-          </span>
-        </button>
+        {showModal && (
+          <button
+            className={`button ${styles.filterDialogButton}`}
+            onClick={this.onOpen}
+            type="button"
+          >
+            <span className="icon">
+              <i className="fas fa-filter" />
+            </span>
+          </button>
+        )}
       </div>
     );
   }
