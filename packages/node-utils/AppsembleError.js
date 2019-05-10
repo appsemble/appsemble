@@ -10,7 +10,7 @@ export default class AppsembleError extends Error {
    */
   constructor(message) {
     super(message);
-    this.name = this.constructor.name;
+    this.name = 'AppsembleError';
     Error.captureStackTrace(this, this.constructor);
   }
 }

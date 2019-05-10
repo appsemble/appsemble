@@ -9,11 +9,15 @@ import AppsembleError from './AppsembleError';
  * @param {string} message Unused.
  * @param {Error} error The error that was thrown.
  */
-export default function handleError(message, error = message) {
-  if (error instanceof AppsembleError) {
+export default function handleError(message, error, yargs) {
+  if (typeof message === 'string') {
+    yargs.showHelp();
+    // eslint-disable-next-line no-console
+    console.error(message);
+  } else if (error instanceof AppsembleError) {
     logger.error(error.message);
-    return;
+  } else {
+    logger.error(error);
   }
-  logger.error(error);
   process.exit(1);
 }
