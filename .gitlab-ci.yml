@@ -92,6 +92,7 @@ build blocks:
     - yarn block action-button
     - yarn block detail-viewer
     - yarn block list
+    - yarn block feed
     - yarn block filter
     - yarn block form
     - yarn block map
@@ -107,6 +108,9 @@ build blocks:
       - blocks/list/dist/
       - blocks/list/package.json
       - blocks/list/.appsemblerc.yaml
+      - blocks/feed/package.json
+      - blocks/feed/dist/
+      - blocks/feed/.appsemblerc.yaml
       - blocks/filter/package.json
       - blocks/filter/dist/
       - blocks/filter/.appsemblerc.yaml
@@ -335,6 +339,7 @@ upload blocks:
     - yarn appsemble block register --ignore-conflict blocks/action-button
     - yarn appsemble block register --ignore-conflict blocks/detail-viewer
     - yarn appsemble block register --ignore-conflict blocks/list
+    - yarn appsemble block register --ignore-conflict blocks/feed
     - yarn appsemble block register --ignore-conflict blocks/filter
     - yarn appsemble block register --ignore-conflict blocks/form
     - yarn appsemble block register --ignore-conflict blocks/map

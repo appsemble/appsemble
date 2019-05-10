@@ -70,6 +70,7 @@ The current blocks can be built using the following commands.
 yarn block action-button
 yarn block detail-viewer
 yarn block list
+yarn block feed
 yarn block filter
 yarn block form
 yarn block map
@@ -87,6 +88,7 @@ yourself using `yarn appsemble login`.
 yarn appsemble block register blocks/action-button
 yarn appsemble block register blocks/detail-viewer
 yarn appsemble block register blocks/list
+yarn appsemble block register blocks/feed
 yarn appsemble block register blocks/filter
 yarn appsemble block register blocks/form
 yarn appsemble block register blocks/map

@@ -13,6 +13,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - App: Allow `splash` actions to not be full screen. They can still be made full screen by passing
   `fullscreen: true` to the action.
 - App: Rename `splash` action to `dialog`.
+- Block: Add new feed block for showing content similar to social media feeds.
 - Editor: Render a user fiendly error page if an unexpected error occurs.
 - Editor: Report errors to Sentry if this is configured.
 - SDK: Add support for the events API.

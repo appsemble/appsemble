@@ -90,6 +90,45 @@ pages:
             type: link
             to: Maak waarneming
 
+  - name: Waarnemingen lijst
+    scope:
+      - '*'
+    blocks:
+      - type: filter
+        version: 0.5.0
+        parameters:
+          event: updateWaarnemingen
+          highlight: process
+          fields:
+            - name: process
+              enum:
+                - value: Fietsknip team
+                - value: Handhaving
+                - value: Heel en Groen
+                - value: Inzameling
+        actions:
+          load:
+            type: resource.query
+            resource: waarneming
+            query:
+              $orderBy: 'created_at desc'
+              $top: 50
+
+      - type: feed
+        version: 0.5.0
+        parameters:
+          listen: updateWaarnemingen
+          title: proces
+          subtitle: id|upper
+          heading: created_at
+          picture: fotos.0
+          pictureBase: https://api.stadswerken.amsterdam/uploads
+          description: notities
+        actions:
+          avatarClick:
+            type: link
+            to: Overzichtskaart
+
   - name: Waarneming details
     scope:
       - '*'
