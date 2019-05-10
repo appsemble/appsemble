@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import { Loader } from '@appsemble/react-components';
+import { Loader, Modal } from '@appsemble/react-components';
 import axios from 'axios';
 import isEqual from 'lodash.isequal';
 import { FormattedMessage } from 'react-intl';
@@ -254,12 +254,6 @@ export default class Editor extends React.Component {
     this.setState({ warningDialog: false });
   };
 
-  onKeyDown = event => {
-    if (event.key === 'Escape') {
-      this.onClose();
-    }
-  };
-
   render() {
     const {
       recipe,
@@ -398,51 +392,42 @@ export default class Editor extends React.Component {
               onValueChange={onValueChange}
               value={value}
             />
-            <div className={classNames('modal', warningDialog && 'is-active')}>
-              <div
-                className="modal-background"
-                onClick={this.onClose}
-                onKeyDown={this.onKeyDown}
-                role="presentation"
-              />
-              <div className="modal-content">
-                <div className="card">
-                  <header className="card-header">
-                    <p className="card-header-title">
-                      <FormattedMessage {...messages.resourceWarningTitle} />
-                    </p>
-                  </header>
-                  <div className="card-content">
-                    <FormattedMessage {...messages.resourceWarning} />
-                  </div>
-                  <footer className="card-footer">
-                    {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
-                    <a
-                      className="card-footer-item is-link"
-                      onClick={this.onClose}
-                      onKeyDown={this.onKeyDown}
-                      role="button"
-                      tabIndex="-1"
-                    >
-                      <FormattedMessage {...messages.cancel} />
-                    </a>
-                    <button
-                      className={classNames(
-                        'card-footer-item',
-                        'button',
-                        'is-warning',
-                        styles.cardFooterButton,
-                      )}
-                      onClick={this.uploadApp}
-                      type="button"
-                    >
-                      <FormattedMessage {...messages.publish} />
-                    </button>
-                  </footer>
+            <Modal isActive={warningDialog} onClose={this.onClose}>
+              <div className="card">
+                <header className="card-header">
+                  <p className="card-header-title">
+                    <FormattedMessage {...messages.resourceWarningTitle} />
+                  </p>
+                </header>
+                <div className="card-content">
+                  <FormattedMessage {...messages.resourceWarning} />
                 </div>
+                <footer className="card-footer">
+                  {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
+                  <a
+                    className="card-footer-item is-link"
+                    onClick={this.onClose}
+                    onKeyDown={this.onKeyDown}
+                    role="button"
+                    tabIndex="-1"
+                  >
+                    <FormattedMessage {...messages.cancel} />
+                  </a>
+                  <button
+                    className={classNames(
+                      'card-footer-item',
+                      'button',
+                      'is-warning',
+                      styles.cardFooterButton,
+                    )}
+                    onClick={this.uploadApp}
+                    type="button"
+                  >
+                    <FormattedMessage {...messages.publish} />
+                  </button>
+                </footer>
               </div>
-              <button className="modal-close is-large" onClick={this.onClose} type="button" />
-            </div>
+            </Modal>
           </form>
         </div>
 
