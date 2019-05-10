@@ -119,9 +119,10 @@ export default class Card extends React.Component {
         </div>
         {picture && (
           <div className="card-image">
-            <figure className="image is-4by3">
+            <figure className={styles.figure}>
               <img
                 alt={title || subtitle || heading || description}
+                className={styles.image}
                 src={`${block.parameters.pictureBase}/${picture}`}
               />
             </figure>
