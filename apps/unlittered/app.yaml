@@ -126,7 +126,7 @@ pages:
           description: notities
         actions:
           avatarClick:
-            type: splash
+            type: dialog
             blocks:
               - type: '@amsterdam/action'
                 version: 0.5.0
@@ -135,9 +135,9 @@ pages:
                     type: resource.update
                     resource: waarneming
                   success:
-                    type: splash.ok
+                    type: dialog.ok
                   error:
-                    type: splash.error
+                    type: dialog.error
                 parameters:
                   title: VOER ACTIE UIT
                   fields:
