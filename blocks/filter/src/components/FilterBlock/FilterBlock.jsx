@@ -52,8 +52,10 @@ export default class FilterBlock extends React.Component {
     } = this.props;
     const { filter } = this.state;
 
+    const filterValue = toOData(fields, filter);
+
     return actions.load.dispatch({
-      $filter: toOData(fields, filter),
+      ...(filterValue && { $filter: toOData(fields, filter) }),
     });
   };
 
@@ -123,64 +125,68 @@ export default class FilterBlock extends React.Component {
     const { filter, isOpen, loading } = this.state;
     const { fields, highlight } = block.parameters;
     const highlightedField = highlight && fields.find(field => field.name === highlight);
+    const showModal = !highlightedField || fields.length > 1;
 
     return (
       <div className={styles.container}>
-        <div className={classNames('modal', { 'is-active': isOpen })}>
-          <div
-            className="modal-background"
-            onClick={this.onClose}
-            onKeyDown={this.onKeyDown}
-            role="presentation"
-          />
-          <div className="modal-content">
-            <div className="card">
-              <header className="card-header">
-                <p className="card-header-title">
-                  <FormattedMessage {...messages.filter} />
-                </p>
-              </header>
-              <div className="card-content">
-                {fields
-                  .filter(field => field.name !== highlight)
-                  .map(field => (
-                    <Field
-                      {...field}
-                      key={field.name}
-                      filter={filter}
-                      loading={loading}
-                      onChange={this.onChange}
-                      onRangeChange={this.onRangeChange}
-                    />
-                  ))}
+        {showModal && (
+          <div className={classNames('modal', { 'is-active': isOpen })}>
+            <div
+              className="modal-background"
+              onClick={this.onClose}
+              onKeyDown={this.onKeyDown}
+              role="presentation"
+            />
+            <div className="modal-content">
+              <div className="card">
+                <header className="card-header">
+                  <p className="card-header-title">
+                    <FormattedMessage {...messages.filter} />
+                  </p>
+                </header>
+                <div className="card-content">
+                  {fields
+                    .filter(field => field.name !== highlight)
+                    .map(field => (
+                      <Field
+                        {...field}
+                        key={field.name}
+                        filter={filter}
+                        loading={loading}
+                        onChange={this.onChange}
+                        onRangeChange={this.onRangeChange}
+                      />
+                    ))}
+                </div>
+                <footer className="card-footer">
+                  {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
+                  <a
+                    className="card-footer-item is-link"
+                    onClick={this.onClose}
+                    onKeyDown={this.onKeyDown}
+                    role="button"
+                    tabIndex="-1"
+                  >
+                    <FormattedMessage {...messages.cancel} />
+                  </a>
+                  <button
+                    className={`card-footer-item button is-primary ${styles.cardFooterButton}`}
+                    onClick={this.onFilter}
+                    type="button"
+                  >
+                    <FormattedMessage {...messages.filter} />
+                  </button>
+                </footer>
               </div>
-              <footer className="card-footer">
-                {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
-                <a
-                  className="card-footer-item is-link"
-                  onClick={this.onClose}
-                  onKeyDown={this.onKeyDown}
-                  role="button"
-                  tabIndex="-1"
-                >
-                  <FormattedMessage {...messages.cancel} />
-                </a>
-                <button
-                  className={`card-footer-item button is-primary ${styles.cardFooterButton}`}
-                  onClick={this.onFilter}
-                  type="button"
-                >
-                  <FormattedMessage {...messages.filter} />
-                </button>
-              </footer>
             </div>
+            <button className="modal-close is-large" onClick={this.onClose} type="button" />
           </div>
-          <button className="modal-close is-large" onClick={this.onClose} type="button" />
-        </div>
+        )}
         {highlightedField && (
           <div className={styles.highlighted}>
             <Field
               {...highlightedField}
+              displayLabel={!!highlightedField.label}
               filter={filter}
               loading={loading}
               onChange={this.onChange}
@@ -188,15 +194,17 @@ export default class FilterBlock extends React.Component {
             />
           </div>
         )}
-        <button
-          className={`button ${styles.filterDialogButton}`}
-          onClick={this.onOpen}
-          type="button"
-        >
-          <span className="icon">
-            <i className="fas fa-filter" />
-          </span>
-        </button>
+        {showModal && (
+          <button
+            className={`button ${styles.filterDialogButton}`}
+            onClick={this.onOpen}
+            type="button"
+          >
+            <span className="icon">
+              <i className="fas fa-filter" />
+            </span>
+          </button>
+        )}
       </div>
     );
   }
