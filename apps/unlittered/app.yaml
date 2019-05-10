@@ -4,6 +4,7 @@ defaultPage: Maak waarneming
 theme:
   splashColor: '#FFFFFF'
   themeColor: '#eb0000'
+  primaryColor: '#eb0000'
 
 resources:
   waarneming:
