@@ -7,10 +7,13 @@ import Block from '../Block';
 import styles from './PageDialog.css';
 
 /**
- * Render an app page definition.
+ * The dialog component to render on a page when the `dialog` action is dispatched.
  */
 export default class PageDialog extends React.Component {
   static propTypes = {
+    /**
+     * The dialog definition to render.
+     */
     dialog: PropTypes.shape(),
     getBlockDefs: PropTypes.func.isRequired,
   };
