@@ -71,7 +71,7 @@ export default class Modal extends React.Component<InjectedIntlProps & ModalProp
           />
           <div className="modal-content">{children}</div>
           <button
-            aria-label={intl.formatMessage(messages.closeModal)}
+            aria-label={intl.formatMessage(messages.closeDialog)}
             className="modal-close is-large"
             onClick={onClose}
             type="button"

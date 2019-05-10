@@ -1,5 +1,5 @@
 import { defineMessages } from 'react-intl';
 
 export default defineMessages({
-  closeModal: 'Close modal',
+  closeDialog: 'Close dialog',
 });
