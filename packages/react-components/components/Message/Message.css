@@ -9,7 +9,7 @@
 }
 
 .messageEnter {
-  opacity: 0.01;
+  opacity: 0;
 }
 
 .messageEnterActive {
@@ -17,12 +17,12 @@
   transition: opacity 300ms ease-in;
 }
 
-.messageLeave {
+.messageExit {
   opacity: 1;
 }
 
-.messageLeaveActive {
-  opacity: 0.01;
+.messageExitActive {
+  opacity: 0;
   transition: opacity 300ms ease-in;
 }
 

@@ -1,0 +1,79 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`should not render a bulma modal when it is inactive 1`] = `
+<CSSTransition
+  classNames={
+    Object {
+      "enter": "enter",
+      "enterActive": "enterActive",
+      "exit": "exit",
+      "exitActive": "exitActive",
+    }
+  }
+  in={false}
+  mountOnEnter={true}
+  timeout={90}
+  unmountOnExit={true}
+>
+  <div
+    className="is-active modal"
+  >
+    <div
+      className="modal-background"
+      onClick={[Function]}
+      onKeyDown={[Function]}
+      role="presentation"
+    />
+    <div
+      className="modal-content"
+    >
+      test
+    </div>
+    <button
+      aria-label="Close dialog"
+      className="modal-close is-large"
+      onClick={[Function]}
+      type="button"
+    />
+  </div>
+</CSSTransition>
+`;
+
+exports[`should render a bulma modal when it is active 1`] = `
+<CSSTransition
+  classNames={
+    Object {
+      "enter": "enter",
+      "enterActive": "enterActive",
+      "exit": "exit",
+      "exitActive": "exitActive",
+    }
+  }
+  in={true}
+  mountOnEnter={true}
+  timeout={90}
+  unmountOnExit={true}
+>
+  <div
+    className="is-active modal"
+  >
+    <div
+      className="modal-background"
+      onClick={[Function]}
+      onKeyDown={[Function]}
+      role="presentation"
+    />
+    <div
+      className="modal-content"
+    >
+      test
+    </div>
+    <button
+      aria-label="Close dialog"
+      className="modal-close is-large"
+      onClick={[Function]}
+      type="button"
+    />
+  </div>
+</CSSTransition>
+`;
