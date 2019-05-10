@@ -30,7 +30,7 @@ exports[`should not render a bulma modal when it is inactive 1`] = `
       test
     </div>
     <button
-      aria-label="Close modal"
+      aria-label="Close dialog"
       className="modal-close is-large"
       onClick={[Function]}
       type="button"
@@ -69,7 +69,7 @@ exports[`should render a bulma modal when it is active 1`] = `
       test
     </div>
     <button
-      aria-label="Close modal"
+      aria-label="Close dialog"
       className="modal-close is-large"
       onClick={[Function]}
       type="button"
