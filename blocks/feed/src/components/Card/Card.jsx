@@ -4,24 +4,7 @@ import PropTypes from 'prop-types';
 import styles from './Card.css';
 
 // XXX: Temporary dummy data
-const replies = [
-  {
-    author: 'Me',
-    content: 'This news is great!',
-  },
-  {
-    author: 'Someone else',
-    content: 'Boo! 😠',
-  },
-  {
-    author: 'Oðinn',
-    content: 'Keep up the great work!',
-  },
-  {
-    author: 'Þor',
-    content: '🌩🔨',
-  },
-];
+const replies = [];
 
 /**
  * A single card in the feed.
