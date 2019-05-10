@@ -33,7 +33,7 @@ export default class Toolbar extends React.Component {
           <span className="navbar-item">
             <a
               className="button"
-              href="https://appsemble.gitlab.io/appsemble"
+              href="https://appsemble.dev"
               rel="noopener noreferrer"
               target="_blank"
             >
