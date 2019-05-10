@@ -3,6 +3,7 @@ import { configureLogger, handleError } from '@appsemble/node-utils';
 import yargs from 'yargs';
 
 import * as start from './commands/start';
+import * as migrate from './commands/migrate';
 
 /**
  * These are exported, so @appsemble/cli can wrap them.
@@ -33,6 +34,7 @@ function main(argv) {
     })
     .middleware([configureLogger])
     .command(start)
+    .command(migrate)
     .fail(handleError)
     .help('help', 'Show this help message.')
     .alias('h', 'help')

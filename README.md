@@ -33,6 +33,7 @@ spin up a preconfigured database with ease.
 
 ```sh
 docker-compose up -d
+yarn appsemble migrate
 ```
 
 The project can be served using the following command.

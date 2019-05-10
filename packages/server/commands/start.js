@@ -75,6 +75,7 @@ export function builder(yargs) {
 
 export async function handler(argv, webpackConfigs) {
   let db;
+
   try {
     db = await setupModels({
       host: argv.databaseHost,
