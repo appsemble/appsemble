@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import styles from './Card.css';
+import messages from './messages';
 
 // XXX: Temporary dummy data
 const replies = [];
@@ -19,6 +20,7 @@ export default class Card extends React.Component {
      * The Appsemble block for which to render the card.
      */
     block: PropTypes.shape().isRequired,
+    intl: PropTypes.shape().isRequired,
     /**
      * The content for this specific card to render.
      */
@@ -56,7 +58,7 @@ export default class Card extends React.Component {
   };
 
   render() {
-    const { actions, content, block, remappers } = this.props;
+    const { actions, block, content, intl, remappers } = this.props;
     const { message } = this.state;
 
     const title = remappers.title(content);
@@ -68,7 +70,10 @@ export default class Card extends React.Component {
     // XXX: Replace with avatar/icon and a default icon
     const avatarContent = (
       <figure className="image is-48x48">
-        <img alt="Placeholder" src="https://bulma.io/images/placeholders/96x96.png" />
+        <img
+          alt={intl.formatMessage(intl.avatar)}
+          src="https://bulma.io/images/placeholders/96x96.png"
+        />
       </figure>
     );
 
@@ -122,7 +127,12 @@ export default class Card extends React.Component {
             ))}
           </div>
           <form className={styles.replyForm} noValidate onSubmit={this.onSubmit}>
-            <input className="input" onChange={this.onChange} value={message} />
+            <input
+              className="input"
+              onChange={this.onChange}
+              placeholder={intl.formatMessage(messages.reply)}
+              value={message}
+            />
             <button className={`button ${styles.replyButton}`} type="submit">
               <span className="icon is-small">
                 <i className="fas fa-paper-plane" />
