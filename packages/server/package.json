@@ -55,7 +55,6 @@
     "yargs": "^13.2.2"
   },
   "devDependencies": {
-    "koa-webpack": "^5.2.2",
-    "umzug": "^2.2.0"
+    "koa-webpack": "^5.2.2"
   }
 }
