@@ -4,9 +4,6 @@ import PropTypes from 'prop-types';
 import styles from './Card.css';
 import messages from './messages';
 
-// XXX: Temporary dummy data
-const replies = [];
-
 /**
  * A single card in the feed.
  */
@@ -21,6 +18,7 @@ export default class Card extends React.Component {
      */
     block: PropTypes.shape().isRequired,
     intl: PropTypes.shape().isRequired,
+    utils: PropTypes.shape().isRequired,
     /**
      * The content for this specific card to render.
      */
@@ -37,12 +35,21 @@ export default class Card extends React.Component {
 
   state = {
     message: '',
+    replies: [],
   };
 
+  async componentDidMount() {
+    const { actions, block, content } = this.props;
+    const parentId = block.parameters?.parentId || 'parentId';
+
+    const replies = await actions.loadReply.dispatch({ $filter: `${parentId} eq ${content.id}` });
+    this.setState({ replies });
+  }
+
   onAvatarClick = async event => {
-    const { actions, content, onUpdate } = this.props;
     event.preventDefault();
-    const data = await actions.avatarClick.dispatch(content);
+    const { actions, onUpdate } = this.props;
+    const data = await actions.avatarClick.dispatch();
 
     if (data) {
       await onUpdate(data);
@@ -53,25 +60,49 @@ export default class Card extends React.Component {
     this.setState({ message: event.target.value });
   };
 
-  onSubmit = event => {
+  onSubmit = async event => {
     event.preventDefault();
+    const { actions, block, content, utils, intl } = this.props;
+    const { message, replies } = this.state;
+
+    try {
+      const contentField = block.parameters?.contentField || 'content';
+      const parentId = block.parameters?.parentId || 'parentId';
+      const result = await actions.submitReply.dispatch({
+        [parentId]: content.id,
+        [contentField]: message,
+      });
+      if (!result) {
+        result.created = new Date();
+        result.id = `${content.id}${result.created.getTime()}`;
+      }
+
+      this.setState({
+        replies: [...replies, result],
+        message: '',
+      });
+    } catch (e) {
+      utils.showMessage(intl.formatMessage(messages.replyError));
+    }
   };
 
   render() {
     const { actions, block, content, intl, remappers } = this.props;
-    const { message } = this.state;
+    const { message, replies } = this.state;
 
     const title = remappers.title(content);
     const subtitle = remappers.subtitle(content);
     const heading = remappers.heading(content);
     const picture = remappers.picture(content);
     const description = remappers.description(content);
+    const authorField = block.parameters?.authorField || 'author';
+    const contentField = block.parameters?.contentField || 'content';
 
     // XXX: Replace with avatar/icon and a default icon
     const avatarContent = (
       <figure className="image is-48x48">
         <img
-          alt={intl.formatMessage(intl.avatar)}
+          alt={intl.formatMessage(messages.avatar)}
           src="https://bulma.io/images/placeholders/96x96.png"
         />
       </figure>
@@ -120,9 +151,9 @@ export default class Card extends React.Component {
           {description && <p className="content">{description}</p>}
           <div className={styles.replies}>
             {replies.map(reply => (
-              <div key={`${reply.author}${reply.content}`} className="content">
-                <h6 className="is-marginless">{reply.author}</h6>
-                <p>{reply.content}</p>
+              <div key={`${reply[authorField]}${reply[contentField]}`} className="content">
+                <h6 className="is-marginless">{reply.author || 'No author'}</h6>
+                <p>{reply[contentField]}</p>
               </div>
             ))}
           </div>

@@ -11,6 +11,16 @@ resources:
     blobs:
       url: 'https://api.stadswerken.amsterdam/upload'
       serialize: custom
+  waarnemingReply:
+    references:
+      waarneming: id
+    schema:
+      type: object
+      required:
+        - content
+      properties:
+        content:
+          type: string
 
 authentication:
   - method: email
@@ -124,10 +134,21 @@ pages:
           picture: fotos.0
           pictureBase: https://api.stadswerken.amsterdam/uploads
           description: notities
+          # XXX: make this work more generic?
+          contentField: content
+          authorField: author
+          # XXX: How to get this from resource?
+          parentId: waarnemingId
         actions:
           avatarClick:
             type: link
             to: Overzichtskaart
+          loadReply:
+            type: resource.query
+            resource: waarnemingReply
+          submitReply:
+            type: resource.create
+            resource: waarnemingReply
 
   - name: Waarneming details
     scope:

@@ -24,12 +24,12 @@ function get({ resource: name, query: params }, app) {
   });
 }
 
-function query({ resource: name, query: params }, app) {
+function query({ resource: name, query: queryParams }, app) {
   const { schema, ...resource } = app.resources[name];
   const method = resource?.query?.method || 'GET';
   const url = resource?.query?.url || resource.url || `/api/apps/${app.id}/${name}`;
 
-  return request({ blobs: getBlobs(resource), method, url, query: params, schema });
+  return request({ blobs: getBlobs(resource), method, url, query: queryParams, schema });
 }
 
 function create({ resource: name }, app) {
