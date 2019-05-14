@@ -12,21 +12,19 @@ export default {
               schema: {
                 type: 'array',
                 items: {
-                  schema: {
-                    type: 'object',
-                    properties: {
-                      template: {
-                        type: 'string',
-                        description: 'The name of the template.',
-                      },
-                      description: {
-                        type: 'string',
-                        description: 'The description of the template.',
-                      },
-                      resources: {
-                        type: 'boolean',
-                        description: 'Whether this template supports pre-made resources',
-                      },
+                  type: 'object',
+                  properties: {
+                    template: {
+                      type: 'string',
+                      description: 'The name of the template.',
+                    },
+                    description: {
+                      type: 'string',
+                      description: 'The description of the template.',
+                    },
+                    resources: {
+                      type: 'boolean',
+                      description: 'Whether this template supports pre-made resources',
                     },
                   },
                 },
