@@ -61,6 +61,10 @@ export default {
                 organizationId: {
                   $ref: '#/components/schemas/Organization/properties/id',
                 },
+                resources: {
+                  type: 'boolean',
+                  description: 'Include example resources.',
+                },
               },
             },
           },

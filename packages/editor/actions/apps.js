@@ -112,13 +112,14 @@ export function createApp(recipe, organization) {
   };
 }
 
-export function createTemplateApp({ template, name, description }, organization) {
+export function createTemplateApp({ template, name, description, resources }, organization) {
   return async dispatch => {
     const { data: app } = await axios.post('/api/templates', {
       template,
       name,
       description,
       organizationId: organization.id,
+      resources,
     });
 
     dispatch({

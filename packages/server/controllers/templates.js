@@ -7,13 +7,13 @@ export async function getAppTemplates(ctx) {
   ctx.body = templates.map(({ name, description, resources }) => ({
     name,
     description,
-    resources: !!(resources && resources.length),
+    resources: !!resources,
   }));
 }
 
 export async function createTemplateApp(ctx) {
-  const { template: reqTemplate, name, description, organizationId } = ctx.request.body;
-  const { App } = ctx.db.models;
+  const { template: reqTemplate, name, description, organizationId, resources } = ctx.request.body;
+  const { App, Resource } = ctx.db.models;
   const { user } = ctx.state;
 
   const template = templates.find(t => t.name === reqTemplate);
@@ -25,13 +25,21 @@ export async function createTemplateApp(ctx) {
   if (!template) {
     throw Boom.notFound(`Template ${template} does not exist.`);
   }
+
   const app = await App.create(
     {
       definition: { ...template.definition, description, name: name || template },
       OrganizationId: organizationId,
       path: name ? normalize(name) : normalize(template),
+      ...(resources && {
+        Resources: [].concat(
+          ...Object.keys(template.resources).map(key =>
+            template.resources[key].map(r => ({ type: key, data: r })),
+          ),
+        ),
+      }),
     },
-    { raw: true },
+    { include: [Resource], raw: true },
   );
 
   ctx.body = {
