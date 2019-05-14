@@ -1,4 +1,5 @@
 import { Modal } from '@appsemble/react-components';
+import axios from 'axios';
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -6,11 +7,10 @@ import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
 import styles from './CreateAppCard.css';
-import templates from '../../../../templates';
 
 export default class CreateAppCard extends React.Component {
   static propTypes = {
-    createApp: PropTypes.func.isRequired,
+    createTemplateApp: PropTypes.func.isRequired,
     history: PropTypes.shape().isRequired,
     intl: PropTypes.shape().isRequired,
     match: PropTypes.shape().isRequired,
@@ -24,7 +24,14 @@ export default class CreateAppCard extends React.Component {
     selectedOrganization: 0,
     appName: '',
     appDescription: '',
+    templates: [],
+    loading: true,
   };
+
+  async componentDidMount() {
+    const { data: templates } = await axios.get('/api/templates');
+    this.setState({ templates, loading: false });
+  }
 
   onChange = event => {
     this.setState({ [event.target.name]: event.target.value });
@@ -42,19 +49,25 @@ export default class CreateAppCard extends React.Component {
     event.preventDefault();
 
     const {
-      createApp,
+      createTemplateApp,
       history,
       push,
       match,
       intl: { formatMessage },
       user,
     } = this.props;
-    const { appName, appDescription, selectedTemplate, selectedOrganization } = this.state;
+    const {
+      appName,
+      appDescription,
+      selectedTemplate,
+      selectedOrganization,
+      templates,
+    } = this.state;
 
     try {
-      const template = templates[selectedTemplate].recipe;
-      const app = await createApp(
-        { ...template, name: appName, description: appDescription },
+      const { name } = templates[selectedTemplate];
+      const app = await createTemplateApp(
+        { template: name, name: appName, description: appDescription },
         user.organizations[selectedOrganization],
       );
 
@@ -89,7 +102,14 @@ export default class CreateAppCard extends React.Component {
       selectedOrganization,
       appName,
       appDescription,
+      templates,
+      loading,
     } = this.state;
+
+    if (loading) {
+      return null;
+    }
+
     return (
       <div className={styles.createAppCardContainer}>
         <div

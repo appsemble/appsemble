@@ -112,6 +112,24 @@ export function createApp(recipe, organization) {
   };
 }
 
+export function createTemplateApp({ template, name, description }, organization) {
+  return async dispatch => {
+    const { data: app } = await axios.post('/api/templates', {
+      template,
+      name,
+      description,
+      organizationId: organization.id,
+    });
+
+    dispatch({
+      type: CREATE_SUCCESS,
+      app,
+    });
+
+    return app;
+  };
+}
+
 export function updateApp(app) {
   return async dispatch => {
     dispatch({
