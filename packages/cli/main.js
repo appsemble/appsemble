@@ -27,7 +27,6 @@ export default async function main(argv) {
     .commandDir(path.join(__dirname, 'commands'))
     .demandCommand(1)
     .fail(handleError)
-    .strict()
     .help()
     .completion()
     .parse(argv);
