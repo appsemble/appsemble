@@ -1,0 +1,3 @@
+The documentation is available on the following URL:
+
+  https://{{ .Values.ingress.host }}
