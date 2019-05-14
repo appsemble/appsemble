@@ -157,7 +157,7 @@ export async function updateApp(ctx) {
       style: validateStyle(style && style.contents),
       sharedStyle: validateStyle(sharedStyle && sharedStyle.contents),
       path: definition.path || normalize(definition.name),
-      yaml: yaml?.toString('utf8'),
+      yaml: yaml && yaml.toString('utf8'),
     };
 
     if (yaml) {
