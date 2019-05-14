@@ -78,12 +78,18 @@ describe('app controller', () => {
       path: 'test-app',
       ...appA.definition,
       organizationId: appA.OrganizationId,
+      yaml: `name: Test App
+defaultPage: Test Page
+`,
     });
     expect(body).toContainEqual({
       id: appB.id,
       path: 'another-app',
       ...appB.definition,
       organizationId: appB.OrganizationId,
+      yaml: `name: Another App
+defaultPage: Another Page
+`,
     });
   });
 
@@ -110,6 +116,9 @@ describe('app controller', () => {
       path: 'test-app',
       ...appA.definition,
       organizationId,
+      yaml: `name: Test App
+defaultPage: Test Page
+`,
     });
   });
 
@@ -145,11 +154,35 @@ describe('app controller', () => {
       .set('Authorization', token);
 
     expect(requestA.body).toStrictEqual([
-      { ...appA.definition, id: appA.id, path: appA.path, organizationId: appA.OrganizationId },
+      {
+        ...appA.definition,
+        id: appA.id,
+        path: appA.path,
+        organizationId: appA.OrganizationId,
+        yaml: `name: Test App
+defaultPage: Test Page
+`,
+      },
     ]);
     expect(requestB.body).toStrictEqual([
-      { ...appA.definition, id: appA.id, path: appA.path, organizationId: appA.OrganizationId },
-      { ...appB.definition, id: appB.id, path: appB.path, organizationId: appB.OrganizationId },
+      {
+        ...appA.definition,
+        id: appA.id,
+        path: appA.path,
+        organizationId: appA.OrganizationId,
+        yaml: `name: Test App
+defaultPage: Test Page
+`,
+      },
+      {
+        ...appB.definition,
+        id: appB.id,
+        path: appB.path,
+        organizationId: appB.OrganizationId,
+        yaml: `name: Test App B
+defaultPage: Test Page
+`,
+      },
     ]);
   });
 
@@ -164,7 +197,7 @@ describe('app controller', () => {
           defaultPage: 'Test Page',
           pages: [
             {
-              name: 'Test page',
+              name: 'Test Page',
               blocks: [
                 {
                   type: 'test',
@@ -184,7 +217,7 @@ describe('app controller', () => {
       path: 'test-app',
       pages: [
         {
-          name: 'Test page',
+          name: 'Test Page',
           blocks: [
             {
               type: 'test',
@@ -193,6 +226,15 @@ describe('app controller', () => {
           ],
         },
       ],
+      organizationId,
+      yaml: `name: Test App
+defaultPage: Test Page
+pages:
+  - name: Test Page
+    blocks:
+      - type: test
+        version: 0.0.0
+`,
     });
     const { body: retrieved } = await request(server).get(`/api/apps/${created.id}`);
     expect(retrieved).toStrictEqual({ ...created, organizationId });
@@ -221,7 +263,7 @@ describe('app controller', () => {
           defaultPage: 'Test Page',
           pages: [
             {
-              name: 'Test page',
+              name: 'Test Page',
               blocks: [
                 {
                   type: 'test',
@@ -257,7 +299,7 @@ describe('app controller', () => {
           defaultPage: 'Test Page',
           pages: [
             {
-              name: 'Test page',
+              name: 'Test Page',
               blocks: [
                 {
                   type: 'test',
@@ -288,7 +330,7 @@ describe('app controller', () => {
           defaultPage: 'Test Page',
           pages: [
             {
-              name: 'Test page',
+              name: 'Test Page',
               blocks: [
                 {
                   type: '@non/existent',
@@ -322,7 +364,7 @@ describe('app controller', () => {
           defaultPage: 'Test Page',
           pages: [
             {
-              name: 'Test page',
+              name: 'Test Page',
               blocks: [
                 {
                   type: 'test',
@@ -357,7 +399,7 @@ describe('app controller', () => {
           path: 'a',
           pages: [
             {
-              name: 'Test page',
+              name: 'Test Page',
               blocks: [{ type: 'test', version: '0.0.0' }],
             },
           ],
@@ -375,7 +417,7 @@ describe('app controller', () => {
           path: 'a',
           pages: [
             {
-              name: 'Test page',
+              name: 'Test Page',
               blocks: [{ type: 'test', version: '0.0.0' }],
             },
           ],
@@ -402,7 +444,7 @@ describe('app controller', () => {
           defaultPage: 'Test Page',
           pages: [
             {
-              name: 'Test page',
+              name: 'Test Page',
               blocks: [{ type: 'test', version: '0.0.0' }],
             },
           ],
@@ -440,7 +482,7 @@ describe('app controller', () => {
           path: 'a',
           pages: [
             {
-              name: 'Test page',
+              name: 'Test Page',
               blocks: [{ type: 'test', version: '0.0.0' }],
             },
           ],
@@ -462,7 +504,7 @@ describe('app controller', () => {
           path: 'a',
           pages: [
             {
-              name: 'Test page',
+              name: 'Test Page',
               blocks: [{ type: 'test' }],
             },
           ],
@@ -489,7 +531,7 @@ describe('app controller', () => {
           path: 'a',
           pages: [
             {
-              name: 'Test page',
+              name: 'Test Page',
               blocks: [{ type: 'testblock' }],
             },
           ],
@@ -511,7 +553,7 @@ describe('app controller', () => {
           path: 'a',
           pages: [
             {
-              name: 'Test page',
+              name: 'Test Page',
               blocks: [{ type: 'testblock' }],
             },
           ],
@@ -537,7 +579,7 @@ describe('app controller', () => {
           defaultPage: 'Test Page',
           pages: [
             {
-              name: 'Test page',
+              name: 'Test Page',
               blocks: [{ type: 'test', version: '0.0.0' }],
             },
           ],
@@ -567,7 +609,7 @@ describe('app controller', () => {
           defaultPage: appA.definition.defaultPage,
           pages: [
             {
-              name: 'Test page',
+              name: 'Test Page',
               blocks: [{ type: 'test', version: '0.0.0' }],
             },
           ],
@@ -582,11 +624,150 @@ describe('app controller', () => {
       defaultPage: appA.definition.defaultPage,
       pages: [
         {
-          name: 'Test page',
+          name: 'Test Page',
           blocks: [{ type: 'test', version: '0.0.0' }],
         },
       ],
+      yaml: `name: Foobar
+defaultPage: Test Page
+pages:
+  - name: Test Page
+    blocks:
+      - type: test
+        version: 0.0.0
+`,
     });
+  });
+
+  it('should verify the YAML on validity when updating an app', async () => {
+    const appA = await App.create(
+      {
+        path: 'test-app',
+        definition: { name: 'Test App', defaultPage: 'Test Page' },
+        OrganizationId: organizationId,
+      },
+      { raw: true },
+    );
+    const response = await request(server)
+      .put(`/api/apps/${appA.id}`)
+      .set('Authorization', token)
+      .field(
+        'app',
+        JSON.stringify({
+          name: 'Foobar',
+          defaultPage: appA.definition.defaultPage,
+          pages: [
+            {
+              name: 'Test Page',
+              blocks: [{ type: 'test', version: '0.0.0' }],
+            },
+          ],
+        }),
+      )
+      .attach(
+        'yaml',
+        Buffer.from(`name; Foobar
+defaultPage: Test Page
+pages:
+  - name: Test Page
+    blocks:
+      - type: test
+        version: 0.0.0
+`),
+      );
+
+    expect(response.status).toBe(400);
+    expect(response.body).toStrictEqual({
+      statusCode: 400,
+      error: 'Bad Request',
+      message: 'Provided YAML was invalid.',
+    });
+  });
+
+  it('should verify if the supplied YAML is the same as the app definition when updating an app', async () => {
+    const appA = await App.create(
+      {
+        path: 'test-app',
+        definition: { name: 'Test App', defaultPage: 'Test Page' },
+        OrganizationId: organizationId,
+      },
+      { raw: true },
+    );
+    const response = await request(server)
+      .put(`/api/apps/${appA.id}`)
+      .set('Authorization', token)
+      .field(
+        'app',
+        JSON.stringify({
+          name: 'Foobar',
+          defaultPage: appA.definition.defaultPage,
+          pages: [
+            {
+              name: 'Test Page',
+              blocks: [{ type: 'test', version: '0.0.0' }],
+            },
+          ],
+        }),
+      )
+      .attach(
+        'yaml',
+        Buffer.from(`name: Barfoo
+defaultPage: Test Page
+pages:
+  - name: Test page
+    blocks:
+      - type: test
+        version: 0.0.0
+`),
+      );
+
+    expect(response.status).toBe(400);
+    expect(response.body).toStrictEqual({
+      statusCode: 400,
+      error: 'Bad Request',
+      message: 'Provided YAML was not equal to definition when converted.',
+    });
+  });
+
+  it('should allow for formatted YAML when updating an app', async () => {
+    const appA = await App.create(
+      {
+        path: 'test-app',
+        definition: { name: 'Test App', defaultPage: 'Test Page' },
+        OrganizationId: organizationId,
+      },
+      { raw: true },
+    );
+
+    const yaml = `# Hi I'm a comment
+name: Foobar
+defaultPage: &titlePage 'Test Page' # This page is used for testing!
+
+pages:
+  - blocks:
+      - type: test
+        version: 0.0.0
+    name: *titlePage`;
+
+    const response = await request(server)
+      .put(`/api/apps/${appA.id}`)
+      .set('Authorization', token)
+      .field(
+        'app',
+        JSON.stringify({
+          name: 'Foobar',
+          defaultPage: appA.definition.defaultPage,
+          pages: [
+            {
+              name: 'Test Page',
+              blocks: [{ type: 'test', version: '0.0.0' }],
+            },
+          ],
+        }),
+      )
+      .attach('yaml', Buffer.from(yaml));
+
+    expect(response.status).toBe(200);
   });
 
   it('should not update an app of another organization', async () => {
@@ -610,7 +791,7 @@ describe('app controller', () => {
           defaultPage: appA.definition.defaultPage,
           pages: [
             {
-              name: 'Test page',
+              name: 'Test Page',
               blocks: [{ type: 'test', version: '0.0.0' }],
             },
           ],
@@ -691,7 +872,7 @@ describe('app controller', () => {
           defaultPage: appA.definition.defaultPage,
           pages: [
             {
-              name: 'Test page',
+              name: 'Test Page',
               blocks: [{ type: 'test', version: '0.0.0' }],
             },
           ],
@@ -722,7 +903,7 @@ describe('app controller', () => {
           defaultPage: app.definition.defaultPage,
           pages: [
             {
-              name: 'Test page',
+              name: 'Test Page',
               blocks: [{ type: 'test', version: '0.0.0' }],
             },
           ],
@@ -768,7 +949,7 @@ describe('app controller', () => {
           path: 'a',
           pages: [
             {
-              name: 'Test page',
+              name: 'Test Page',
               blocks: [{ type: 'test', version: '0.0.0' }],
             },
           ],
@@ -790,7 +971,7 @@ describe('app controller', () => {
           path: 'a',
           pages: [
             {
-              name: 'Test page',
+              name: 'Test Page',
               blocks: [{ type: 'test', version: '0.0.0' }],
             },
           ],
@@ -822,7 +1003,7 @@ describe('app controller', () => {
           path: 'a',
           pages: [
             {
-              name: 'Test page',
+              name: 'Test Page',
               blocks: [{ type: 'testblock' }],
             },
           ],
@@ -844,7 +1025,7 @@ describe('app controller', () => {
           path: 'a',
           pages: [
             {
-              name: 'Test page',
+              name: 'Test Page',
               blocks: [{ type: 'testblock' }],
             },
           ],
@@ -985,7 +1166,7 @@ describe('app controller', () => {
           defaultPage: 'Test Page',
           pages: [
             {
-              name: 'Test page',
+              name: 'Test Page',
               blocks: [
                 {
                   type: '@non/existent',
@@ -1012,7 +1193,7 @@ describe('app controller', () => {
           defaultPage: 'Test Page',
           pages: [
             {
-              name: 'Test page',
+              name: 'Test Page',
               blocks: [
                 {
                   type: 'test',

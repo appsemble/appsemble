@@ -24,6 +24,16 @@ export default {
                   format: 'binary',
                   description: 'The custom style to apply to all parts of app.',
                 },
+                yaml: {
+                  type: 'string',
+                  format: 'binary',
+                  description: 'The original YAML definition used to define the app.',
+                },
+                icon: {
+                  type: 'string',
+                  format: 'binary',
+                  description: 'The app icon.',
+                },
               },
             },
             encoding: {
@@ -119,6 +129,16 @@ export default {
                   type: 'string',
                   format: 'binary',
                   description: 'The custom style to apply to all parts of app.',
+                },
+                yaml: {
+                  type: 'string',
+                  format: 'binary',
+                  description: 'The original YAML definition used to define the app.',
+                },
+                icon: {
+                  type: 'string',
+                  format: 'binary',
+                  description: 'The app icon.',
                 },
               },
             },
