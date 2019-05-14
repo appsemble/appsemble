@@ -1,0 +1,47 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Template API should create a new app using a template 1`] = `
+Object {
+  "defaultPage": "Example Page A",
+  "description": "This is a test app",
+  "id": 1,
+  "name": "Test app",
+  "organizationId": "testorganization",
+  "pages": Array [
+    Object {
+      "blocks": Array [
+        Object {
+          "actions": Object {
+            "click": Object {
+              "to": "Example Page B",
+              "type": "link",
+            },
+          },
+          "type": "action-button",
+          "version": "0.5.0",
+        },
+      ],
+      "name": "Example Page A",
+    },
+    Object {
+      "blocks": Array [
+        Object {
+          "actions": Object {
+            "click": Object {
+              "to": "Example Page A",
+              "type": "link",
+            },
+          },
+          "type": "action-button",
+          "version": "0.5.0",
+        },
+      ],
+      "name": "Example Page B",
+    },
+  ],
+  "path": "test-app",
+  "theme": Object {
+    "themeColor": "#000000",
+  },
+}
+`;
