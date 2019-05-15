@@ -1,5 +1,5 @@
 export default {
-  '/api/apps/{appId}/{resourceType}': {
+  '/api/apps/{appId}/resources/{resourceType}': {
     parameters: [
       { $ref: '#/components/parameters/appId' },
       { $ref: '#/components/parameters/resourceType' },
@@ -40,7 +40,7 @@ export default {
       },
     },
   },
-  '/api/apps/{appId}/{resourceType}/{resourceId}': {
+  '/api/apps/{appId}/resources/{resourceType}/{resourceId}': {
     parameters: [
       { $ref: '#/components/parameters/appId' },
       { $ref: '#/components/parameters/resourceType' },

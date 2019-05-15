@@ -42,7 +42,7 @@ person:
 
 The above resource will be recognized as an object which can be referred to from blocks using
 `$ref: /resources/person` or by using `resource actions`. It can be accessed in the API at
-`/api/apps/{appId}/person/{id?}`, supporting basic `CRUD` actions.
+`/api/apps/{appId}/resources/person/{id?}`, supporting basic `CRUD` actions.
 
 ## Resource Actions
 
@@ -65,13 +65,13 @@ object:
 person:
   schema: ... # see schema above
   id: id # the name of the field to use when calling get, update and delete
-  url: '/api/apps/{appId}/person' # the default URL to use for resource actions
+  url: '/api/apps/{appId}/resources/person' # the default URL to use for resource actions
   query:
     method: 'GET' # HTTP method to use
-    url: '/api/apps/{appId}/person'
+    url: '/api/apps/{appId}/resources/person'
   get:
     method: 'GET'
-    url: '/api/apps/{appId}/person'
+    url: '/api/apps/{appId}/resources/person'
   # create:
   #   ...
   # update:
@@ -80,8 +80,8 @@ person:
 
 ## Filtering Resources
 
-When fetching resources at `/api/apps/{appId}/{resourceName}`, by default all resources are
-obtained. The data that is retrieved can be further specified using a subset of the
+When fetching resources at `/api/apps/{appId}/resources/{resourceName}`, by default all resources
+are obtained. The data that is retrieved can be further specified using a subset of the
 [OData URL syntax](http://docs.oasis-open.org/odata/odata/v4.01/odata-v4.01-part2-url-conventions.html).
 
 The following OData syntaxes are supported:

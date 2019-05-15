@@ -24,6 +24,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - App: Rename a block `position` to `layout`.
 - Editor: Remove controls for unconfigured login / registration methods.
 - Server: Rename a block `position` to `layout`.
+- Server: Move Resource endpoint from `/apps/{appId}/{resourceName}` to
+  `/apps/{appId}/resources/{resourceName}`.
 
 ## [0.5.0] - 2019-04-11
 

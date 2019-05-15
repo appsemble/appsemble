@@ -52,7 +52,9 @@ describe('resource controller', () => {
     const app = await App.create(exampleApp);
 
     const resource = await app.createResource({ type: 'testResource', data: { foo: 'bar' } });
-    const response = await request(server).get(`/api/apps/${app.id}/testResource/${resource.id}`);
+    const response = await request(server).get(
+      `/api/apps/${app.id}/resources/testResource/${resource.id}`,
+    );
 
     expect(response.status).toBe(200);
     expect(response.body).toStrictEqual({ id: resource.id, foo: 'bar' });
@@ -64,7 +66,7 @@ describe('resource controller', () => {
     const resourceA = await app.createResource({ type: 'testResource', data: { foo: 'bar' } });
     const resourceB = await app.createResource({ type: 'testResource', data: { foo: 'baz' } });
 
-    const response = await request(server).get(`/api/apps/${app.id}/testResource`);
+    const response = await request(server).get(`/api/apps/${app.id}/resources/testResource`);
 
     expect(response.status).toBe(200);
     expect(response.body).toStrictEqual([
@@ -79,7 +81,7 @@ describe('resource controller', () => {
     const resourceA = await app.createResource({ type: 'testResource', data: { foo: 'bar' } });
     await app.createResource({ type: 'testResource', data: { foo: 'baz' } });
 
-    const response = await request(server).get(`/api/apps/${app.id}/testResource?$top=1`);
+    const response = await request(server).get(`/api/apps/${app.id}/resources/testResource?$top=1`);
 
     expect(response.status).toBe(200);
     expect(response.body).toStrictEqual([{ id: resourceA.id, foo: 'bar' }]);
@@ -92,10 +94,10 @@ describe('resource controller', () => {
     const resourceB = await app.createResource({ type: 'testResource', data: { foo: 'baz' } });
 
     const responseA = await request(server).get(
-      `/api/apps/${app.id}/testResource?$orderby=foo asc`,
+      `/api/apps/${app.id}/resources/testResource?$orderby=foo asc`,
     );
     const responseB = await request(server).get(
-      `/api/apps/${app.id}/testResource?$orderby=foo desc`,
+      `/api/apps/${app.id}/resources/testResource?$orderby=foo desc`,
     );
 
     expect(responseA.status).toBe(200);
@@ -114,7 +116,9 @@ describe('resource controller', () => {
     const app = await App.create(exampleApp);
 
     const resource = await app.createResource({ type: 'testResource', data: { foo: 'bar' } });
-    const response = await request(server).get(`/api/apps/${app.id}/testResource?$select=id`);
+    const response = await request(server).get(
+      `/api/apps/${app.id}/resources/testResource?$select=id`,
+    );
 
     expect(response.status).toBe(200);
     expect(response.body).toStrictEqual([{ id: resource.id }]);
@@ -125,7 +129,7 @@ describe('resource controller', () => {
 
     const resource = { foo: 'bar' };
     const response = await request(server)
-      .post(`/api/apps/${app.id}/testResource`)
+      .post(`/api/apps/${app.id}/resources/testResource`)
       .send(resource);
 
     expect(response.status).toBe(201);
@@ -138,7 +142,7 @@ describe('resource controller', () => {
 
     const resource = {};
     const response = await request(server)
-      .post(`/api/apps/${app.id}/testResource`)
+      .post(`/api/apps/${app.id}/resources/testResource`)
       .send(resource);
 
     expect(response.status).toBe(400);
@@ -148,7 +152,7 @@ describe('resource controller', () => {
   it('should check if an app has a specific resource definition when creating resources', async () => {
     const app = await App.create(exampleApp);
 
-    const response = await request(server).get(`/api/apps/${app.id}/thisDoesNotExist`);
+    const response = await request(server).get(`/api/apps/${app.id}/resources/thisDoesNotExist`);
     expect(response.status).toBe(404);
     expect(response.body.message).toBe('App does not have resources called thisDoesNotExist');
   });
@@ -158,7 +162,7 @@ describe('resource controller', () => {
       definition: { name: 'Test App', defaultPage: 'Test Page' },
       path: 'test-app',
     });
-    const response = await request(server).get(`/api/apps/${app.id}/thisDoesNotExist`);
+    const response = await request(server).get(`/api/apps/${app.id}/resources/thisDoesNotExist`);
 
     expect(response.status).toBe(404);
     expect(response.body.message).toBe('App does not have any resources defined');
@@ -173,7 +177,7 @@ describe('resource controller', () => {
     });
 
     const response = await request(server)
-      .put(`/api/apps/${app.id}/testResource/${resource.id}`)
+      .put(`/api/apps/${app.id}/resources/testResource/${resource.id}`)
       .set('Authorization', token)
       .send({ foo: 'I am not Foo.' });
 
@@ -181,7 +185,9 @@ describe('resource controller', () => {
     expect(response.body.foo).toStrictEqual('I am not Foo.');
     expect(response.body.id).toBe(resource.id);
 
-    const responseB = await request(server).get(`/api/apps/${app.id}/testResource/${resource.id}`);
+    const responseB = await request(server).get(
+      `/api/apps/${app.id}/resources/testResource/${resource.id}`,
+    );
 
     expect(responseB.status).toBe(200);
     expect(responseB.body.foo).toStrictEqual('I am not Foo.');
@@ -191,7 +197,7 @@ describe('resource controller', () => {
   it('should not be possible to update a non-existent resource', async () => {
     const app = await App.create({ ...exampleApp, OrganizationId: organizationId });
     const { body } = await request(server)
-      .put(`/api/apps/${app.id}/testResource/0`)
+      .put(`/api/apps/${app.id}/resources/testResource/0`)
       .send({ foo: 'I am not Foo.' })
       .set('Authorization', token);
 
@@ -211,7 +217,7 @@ describe('resource controller', () => {
     });
 
     const response = await request(server)
-      .put(`/api/apps/${app.id}/testResource/${resource.id}`)
+      .put(`/api/apps/${app.id}/resources/testResource/${resource.id}`)
       .send({ bar: 123 })
       .set('Authorization', token);
 
@@ -228,7 +234,7 @@ describe('resource controller', () => {
     });
 
     const responseGetA = await request(server).get(
-      `/api/apps/${app.id}/testResource/${resource.id}`,
+      `/api/apps/${app.id}/resources/testResource/${resource.id}`,
     );
 
     expect(responseGetA.status).toBe(200);
@@ -236,13 +242,13 @@ describe('resource controller', () => {
     expect(responseGetA.body.id).toBe(resource.id);
 
     const response = await request(server)
-      .delete(`/api/apps/${app.id}/testResource/${resource.id}`)
+      .delete(`/api/apps/${app.id}/resources/testResource/${resource.id}`)
       .set('Authorization', token);
 
     expect(response.status).toBe(204);
 
     const responseGetB = await request(server).get(
-      `/api/apps/${app.id}/testResource/${resource.id}`,
+      `/api/apps/${app.id}/resources/testResource/${resource.id}`,
     );
 
     expect(responseGetB.status).toBe(404);
@@ -256,7 +262,7 @@ describe('resource controller', () => {
   it('should not be able to delete a non-existent resource', async () => {
     const app = await App.create({ ...exampleApp, OrganizationId: organizationId });
     const { body } = await request(server)
-      .delete(`/api/apps/${app.id}/testResource/0`)
+      .delete(`/api/apps/${app.id}/resources/testResource/0`)
       .set('Authorization', token);
 
     expect(body).toStrictEqual({
