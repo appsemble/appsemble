@@ -43,5 +43,28 @@ Object {
   "theme": Object {
     "themeColor": "#000000",
   },
+  "yaml": "name: Test app
+defaultPage: Example Page A
+theme:
+  themeColor: '#000000'
+pages:
+  - name: Example Page A
+    blocks:
+      - type: action-button
+        version: 0.5.0
+        actions:
+          click:
+            type: link
+            to: Example Page B
+  - name: Example Page B
+    blocks:
+      - type: action-button
+        version: 0.5.0
+        actions:
+          click:
+            type: link
+            to: Example Page A
+description: This is a test app
+",
 }
 `;

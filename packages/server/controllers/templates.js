@@ -2,6 +2,7 @@ import Boom from 'boom';
 import normalize from '@appsemble/utils/normalize';
 
 import templates from '../templates/apps';
+import { getAppFromRecord } from './apps';
 
 export async function getAppTemplates(ctx) {
   ctx.body = templates.map(({ name, description, resources }) => ({
@@ -42,11 +43,6 @@ export async function createTemplateApp(ctx) {
     { include: [Resource], raw: true },
   );
 
-  ctx.body = {
-    ...app.definition,
-    id: app.id,
-    path: app.path,
-    organizationId: app.OrganizationId,
-  };
+  ctx.body = getAppFromRecord(app);
   ctx.status = 201;
 }

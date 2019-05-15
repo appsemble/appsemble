@@ -63,7 +63,7 @@ function handleAppValidationError(error, app) {
   throw error;
 }
 
-function getAppFromRecord(record) {
+export function getAppFromRecord(record) {
   return {
     ...record.definition,
     id: record.id,
