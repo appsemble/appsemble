@@ -53,7 +53,6 @@ describe('Template API', () => {
       resources: !!resources,
     }));
 
-    expect(result).toHaveLength(templates.length);
     expect(result).toStrictEqual(expected);
   });
 
