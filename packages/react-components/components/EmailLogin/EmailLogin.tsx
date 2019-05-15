@@ -1,25 +1,57 @@
-import PropTypes from 'prop-types';
-import React from 'react';
+import * as PropTypes from 'prop-types';
+import * as React from 'react';
 import { FormattedMessage } from 'react-intl';
 import classNames from 'classnames';
 
 import styles from './EmailLogin.css';
 import messages from './messages';
 
+interface Authentication {
+  url: string;
+  refreshURL: string;
+  clientId: string;
+  scope: string[];
+}
+
+interface EmailLoginValues {
+  username: string;
+  password: string;
+}
+
+export interface EmailLoginProps {
+  authentication: Authentication;
+  passwordLogin: (
+    url: string,
+    values: EmailLoginValues,
+    refreshURL: string,
+    clientId: string,
+    scope: string[],
+  ) => void;
+}
+
+interface EmailLoginState {
+  dirty: boolean;
+  error: boolean;
+  errors: { [K in keyof EmailLoginValues]: boolean };
+  submitting: boolean;
+  values: EmailLoginValues;
+}
+
 /**
  * A form which will let the user login based on an app definition.
  */
-export default class EmailLogin extends React.Component {
+export default class EmailLogin extends React.Component<EmailLoginProps, EmailLoginState> {
   static propTypes = {
     /**
      * The authentication instance for which to render an email login form.
      */
-    authentication: PropTypes.shape().isRequired,
+    authentication: PropTypes.shape({}).isRequired,
     passwordLogin: PropTypes.func.isRequired,
   };
 
-  state = {
+  state: EmailLoginState = {
     dirty: false,
+    error: false,
     errors: {
       password: true,
       username: true,
@@ -31,7 +63,7 @@ export default class EmailLogin extends React.Component {
     },
   };
 
-  onChange = event => {
+  onChange: React.ChangeEventHandler<HTMLInputElement> = event => {
     const { target } = event;
 
     this.setState(({ errors, values }) => ({
@@ -48,7 +80,7 @@ export default class EmailLogin extends React.Component {
     }));
   };
 
-  onSubmit = async event => {
+  onSubmit: React.FormEventHandler = async event => {
     event.preventDefault();
     const { authentication, passwordLogin } = this.props;
     const { values } = this.state;
@@ -74,7 +106,7 @@ export default class EmailLogin extends React.Component {
     }
   };
 
-  render() {
+  render(): React.ReactNode {
     const { dirty, error, errors, submitting, values } = this.state;
 
     return (

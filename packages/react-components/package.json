@@ -7,7 +7,6 @@
     "classnames": "^2.2.6",
     "prop-types": "^15.7.2",
     "react-intl": "^2.8.0",
-    "react-test-renderer": "^16.8.6",
     "react-transition-group": "^4.0.0"
   },
   "peerDependencies": {

@@ -1,21 +1,32 @@
 import classNames from 'classnames';
-import PropTypes from 'prop-types';
-import React from 'react';
+import * as PropTypes from 'prop-types';
+import * as React from 'react';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 
 import styles from './Message.css';
 
-export default class Message extends React.Component {
+interface IncomingMessage {
+  body: string;
+  color?: 'danger' | 'dark' | 'info' | 'link' | 'primary' | 'success' | 'warning';
+  id: number;
+}
+
+export interface MessageProps {
+  messages: IncomingMessage[];
+  remove: (message: IncomingMessage) => void;
+}
+
+export default class Message extends React.Component<MessageProps> {
   static propTypes = {
-    messages: PropTypes.arrayOf(PropTypes.shape()),
+    messages: PropTypes.arrayOf(PropTypes.shape({})),
     remove: PropTypes.func.isRequired,
   };
 
-  static defaultProps = {
+  static defaultProps: Partial<MessageProps> = {
     messages: [],
   };
 
-  componentDidUpdate(prevProps) {
+  componentDidUpdate(prevProps: MessageProps): void {
     const { messages, remove } = this.props;
 
     if (messages.length > prevProps.messages.length) {
@@ -27,7 +38,7 @@ export default class Message extends React.Component {
     }
   }
 
-  render() {
+  render(): React.ReactNode {
     const { messages } = this.props;
 
     return (
@@ -50,7 +61,9 @@ export default class Message extends React.Component {
                   message && message.color ? `is-${message.color}` : 'is-danger',
                 )}
               >
-                <div className={classNames('message-body', styles.content)}>{message?.body}</div>
+                <div className={classNames('message-body', styles.content)}>
+                  {message && message.body}
+                </div>
               </article>
             </CSSTransition>
           ))}

@@ -1,27 +1,23 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { remapData } from '@appsemble/utils/remap';
+import { BlockProps } from '@appsemble/react';
 import { Loader } from '@appsemble/react-components';
 import { FormattedMessage } from 'react-intl';
 
+import { BlockParameters } from '../../types';
 import messages from './messages';
 import styles from './ListBlock.css';
 
-export default class ListBlock extends React.Component {
-  static propTypes = {
-    /**
-     * The actions as passed by the Appsemble interface.
-     */
-    actions: PropTypes.shape().isRequired,
-    /**
-     * The block as passed by the Appsemble interface.
-     */
-    block: PropTypes.shape().isRequired,
-  };
+interface ListBlockState {
+  data: any[];
+  error: boolean;
+  loading: boolean;
+}
 
-  state = { data: undefined, error: false, loading: true };
+export default class ListBlock extends React.Component<BlockProps, ListBlockState> {
+  state: ListBlockState = { data: undefined, error: false, loading: true };
 
-  async componentDidMount() {
+  async componentDidMount(): Promise<void> {
     const { actions } = this.props;
 
     try {
@@ -32,18 +28,18 @@ export default class ListBlock extends React.Component {
     }
   }
 
-  async onClick(item) {
+  onClick(item: any): void {
     const { actions } = this.props;
 
     if (actions.click) {
-      await actions.click.dispatch(item);
+      actions.click.dispatch(item);
     }
   }
 
-  render() {
+  render(): React.ReactNode {
     const { block, actions } = this.props;
     const { data, error, loading } = this.state;
-    const { fields } = block.parameters;
+    const { fields } = block.parameters as BlockParameters;
 
     if (loading) {
       return <Loader />;
