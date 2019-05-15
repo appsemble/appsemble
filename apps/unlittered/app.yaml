@@ -14,7 +14,7 @@ resources:
       serialize: custom
   waarnemingReply:
     references:
-      waarneming: id
+      waarnemingId: waarneming
     schema:
       type: object
       required:
@@ -135,11 +135,10 @@ pages:
           picture: fotos.0
           pictureBase: https://api.stadswerken.amsterdam/uploads
           description: notities
-          # XXX: make this work more generic?
-          contentField: content
-          authorField: author
-          # XXX: How to get this from resource?
-          parentId: waarnemingId
+          reply:
+            content: content
+            author: author
+            parentId: waarnemingId
         actions:
           loadReply:
             type: resource.query

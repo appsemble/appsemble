@@ -40,9 +40,9 @@ export default class Card extends React.Component {
 
   async componentDidMount() {
     const { actions, block, content } = this.props;
-    const parentId = block.parameters?.parentId || 'parentId';
+    const parentId = block.parameters?.reply?.parentId || 'parentId';
 
-    const replies = await actions.loadReply.dispatch({ $filter: `${parentId} eq ${content.id}` });
+    const replies = await actions.loadReply.dispatch({ $filter: `${parentId} eq '${content.id}'` });
     this.setState({ replies });
   }
 
@@ -67,7 +67,7 @@ export default class Card extends React.Component {
 
     try {
       const contentField = block.parameters?.contentField || 'content';
-      const parentId = block.parameters?.parentId || 'parentId';
+      const parentId = block.parameters?.reply?.parentId || 'parentId';
       const result = await actions.submitReply.dispatch({
         [parentId]: content.id,
         [contentField]: message,

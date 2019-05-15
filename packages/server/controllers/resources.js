@@ -20,21 +20,27 @@ function verifyResourceDefinition(app, resourceType) {
   }
 
   const resource = app.definition.resources[resourceType];
+  const referenceProperties = {};
 
   if (resource.references) {
-    Object.keys(resource.references).forEach(reference => {
-      if (!app.definition.resources[reference]) {
-        throw Boom.notFound(`Resource ${reference} referenced by ${resourceType} does not exist.`);
+    Object.entries(resource.references).forEach(([field, resourceName]) => {
+      if (!app.definition.resources[resourceName]) {
+        throw Boom.notFound(
+          `Resource ${resourceName} referenced by ${resourceType} does not exist.`,
+        );
       }
 
-      const field = resource.references[reference];
-
-      resource.schema.properties[`${reference}${field.charAt(0).toUpperCase()}${field.slice(1)}`] =
-        app.definition.resources[reference][field] || {};
+      referenceProperties[field] = app.definition.resources[resourceName].id || {};
     });
   }
 
-  return resource.schema;
+  return {
+    ...resource.schema,
+    properties: {
+      ...resource.schema.properties,
+      ...referenceProperties,
+    },
+  };
 }
 
 function generateQuery(ctx) {
