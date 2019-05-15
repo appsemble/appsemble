@@ -2,7 +2,7 @@ import Boom from 'boom';
 import normalize from '@appsemble/utils/normalize';
 
 import templates from '../templates/apps';
-import { getAppFromRecord } from './apps';
+import getAppFromRecord from '../utils/getAppFromRecord';
 
 export async function getAppTemplates(ctx) {
   ctx.body = templates.map(({ name, description, resources }) => ({
