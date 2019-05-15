@@ -64,20 +64,18 @@ export default class Card extends React.Component {
 
   onSubmit = async event => {
     event.preventDefault();
+
     const { actions, block, content, utils, intl } = this.props;
     const { message, replies } = this.state;
 
     try {
-      const contentField = block.parameters?.contentField || 'content';
+      const contentField = block.parameters?.reply?.content || 'content';
       const parentId = block.parameters?.reply?.parentId || 'parentId';
+
       const result = await actions.submitReply.dispatch({
         [parentId]: content.id,
         [contentField]: message,
       });
-      if (!result) {
-        result.created = new Date();
-        result.id = `${content.id}${result.created.getTime()}`;
-      }
 
       this.setState({
         replies: [...replies, result],
@@ -166,14 +164,21 @@ export default class Card extends React.Component {
               );
             })}
           </div>
-          <form className={styles.replyForm} noValidate onSubmit={this.onSubmit}>
+          <form className={styles.replyForm} noValidate>
             <input
               className="input"
               onChange={this.onChange}
               placeholder={intl.formatMessage(messages.reply)}
               value={message}
             />
-            <button className={`button ${styles.replyButton}`} type="submit">
+            {/* eslint-disable-next-line no-inline-comments */}
+            {/* onSubmit is not used because of buggy interactions with ShadowDOM, React.
+                See: https://github.com/spring-media/react-shadow-dom-retarget-events/issues/13 */}
+            <button
+              className={`button ${styles.replyButton}`}
+              onClick={this.onSubmit}
+              type="button"
+            >
               <span className="icon is-small">
                 <i className="fas fa-paper-plane" />
               </span>
