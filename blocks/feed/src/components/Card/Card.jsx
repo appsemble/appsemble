@@ -95,8 +95,6 @@ export default class Card extends React.Component {
     const heading = remappers.heading(content);
     const picture = remappers.picture(content);
     const description = remappers.description(content);
-    const authorField = block.parameters?.authorField || 'author';
-    const contentField = block.parameters?.contentField || 'content';
 
     // XXX: Replace with avatar/icon and a default icon
     const avatarContent = (
@@ -150,12 +148,18 @@ export default class Card extends React.Component {
         <div className="card-content">
           {description && <p className="content">{description}</p>}
           <div className={styles.replies}>
-            {replies.map(reply => (
-              <div key={`${reply[authorField]}${reply[contentField]}`} className="content">
-                <h6 className="is-marginless">{reply.author || 'No author'}</h6>
-                <p>{reply[contentField]}</p>
-              </div>
-            ))}
+            {replies.map(reply => {
+              const author = remappers.author(reply);
+              const replyContent = remappers.content(reply);
+              return (
+                <div key={reply.id} className="content">
+                  <h6 className="is-marginless">
+                    {author || intl.formatMessage(messages.anonymous)}
+                  </h6>
+                  <p>{replyContent}</p>
+                </div>
+              );
+            })}
           </div>
           <form className={styles.replyForm} noValidate onSubmit={this.onSubmit}>
             <input
