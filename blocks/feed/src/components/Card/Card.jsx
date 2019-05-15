@@ -33,6 +33,8 @@ export default class Card extends React.Component {
     onUpdate: PropTypes.func.isRequired,
   };
 
+  replyContainer = React.createRef();
+
   state = {
     message: '',
     replies: [],
@@ -81,6 +83,9 @@ export default class Card extends React.Component {
         replies: [...replies, result],
         message: '',
       });
+
+      // Scroll to the bottom of the reply container
+      this.replyContainer.current.scrollTop = this.replyContainer.current.scrollHeight;
     } catch (e) {
       utils.showMessage(intl.formatMessage(messages.replyError));
     }
@@ -147,7 +152,7 @@ export default class Card extends React.Component {
         )}
         <div className="card-content">
           {description && <p className="content">{description}</p>}
-          <div className={styles.replies}>
+          <div ref={this.replyContainer} className={styles.replies}>
             {replies.map(reply => {
               const author = remappers.author(reply);
               const replyContent = remappers.content(reply);
