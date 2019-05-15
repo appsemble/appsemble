@@ -3,7 +3,7 @@
 exports[`should render the blocks for a page 1`] = `
 <Fragment>
   <TitleBar>
-    Test page
+    Test Page
   </TitleBar>
   <withRouter(Connect(Block))
     block={Object {}}

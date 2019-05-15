@@ -17,6 +17,7 @@
     "front-matter": "^3.0.2",
     "fs-extra": "^7.0.1",
     "grant-koa": "^4.5.1",
+    "js-yaml": "^3.13.1",
     "jsonwebtoken": "^8.5.1",
     "koa": "^2.7.0",
     "koa-compress": "^3.0.0",
