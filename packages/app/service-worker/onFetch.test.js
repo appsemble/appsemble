@@ -86,7 +86,7 @@ describe('respond', () => {
 
   it('should pass through other API requests', async () => {
     // eslint-disable-next-line compat/compat
-    const request = new Request('http://localhost/api/apps/26/resource/123');
+    const request = new Request('http://localhost/api/apps/26/resources/resource/123');
     const response = await respond(request);
     expect(fetch).toHaveBeenCalledWith(request);
     expect(response).toBe(fetchResponse);

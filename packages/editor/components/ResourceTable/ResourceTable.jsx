@@ -119,7 +119,10 @@ export default class ResourceTable extends React.Component {
     const { editingResource, resources } = this.state;
 
     try {
-      const { data } = await axios.post(`/api/apps/${app.id}/${resourceName}`, editingResource);
+      const { data } = await axios.post(
+        `/api/apps/${app.id}/resources/${resourceName}`,
+        editingResource,
+      );
 
       this.setState({
         resources: [...resources, data],
@@ -149,7 +152,7 @@ export default class ResourceTable extends React.Component {
 
     try {
       await axios.put(
-        `/api/apps/${app.id}/${resourceName}/${match.params.resourceId}`,
+        `/api/apps/${app.id}/resources/${resourceName}/${match.params.resourceId}`,
         editingResource,
       );
 
@@ -182,7 +185,7 @@ export default class ResourceTable extends React.Component {
     const { deletingResource, resources } = this.state;
 
     try {
-      await axios.delete(`/api/apps/${app.id}/${resourceName}/${deletingResource.id}`);
+      await axios.delete(`/api/apps/${app.id}/resources/${resourceName}/${deletingResource.id}`);
       push({
         body: formatMessage(messages.deleteSuccess, { id: deletingResource.id }),
         color: 'primary',
@@ -207,7 +210,9 @@ export default class ResourceTable extends React.Component {
 
     if (app.resources[resourceName]?.schema) {
       try {
-        const { data: resources } = await axios.get(`/api/apps/${app.id}/${resourceName}`);
+        const { data: resources } = await axios.get(
+          `/api/apps/resources/${app.id}/${resourceName}`,
+        );
         this.setState({ resources, loading: false });
       } catch (e) {
         this.setState({ loading: false, error: true });
