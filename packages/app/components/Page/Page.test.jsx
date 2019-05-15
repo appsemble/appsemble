@@ -9,7 +9,7 @@ beforeEach(() => {
 });
 
 it('should render the blocks for a page', () => {
-  const page = { name: 'Test page', blocks: [{}, {}] };
+  const page = { name: 'Test Page', blocks: [{}, {}] };
   const app = { pages: [page] };
   const wrapper = shallow(<Page app={app} getBlockDefs={() => {}} hasErrors={false} page={page} />);
 
@@ -17,7 +17,7 @@ it('should render the blocks for a page', () => {
 });
 
 it('should call event listeners when an event is emitted', () => {
-  const page = { name: 'Test page', blocks: [{}] };
+  const page = { name: 'Test Page', blocks: [{}] };
   const app = { pages: [page] };
   const wrapper = shallow(<Page app={app} getBlockDefs={() => {}} hasErrors={false} page={page} />);
 

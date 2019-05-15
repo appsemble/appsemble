@@ -9,6 +9,7 @@ export default (sequelize, DataTypes) =>
       path: { type: DataTypes.STRING, unique: true, allowNull: false },
       style: { type: DataTypes.TEXT('long') },
       sharedStyle: { type: DataTypes.TEXT('long') },
+      yaml: { type: DataTypes.TEXT('long') },
     },
     {
       freezeTableName: true,

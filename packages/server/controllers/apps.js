@@ -4,6 +4,7 @@ import Boom from 'boom';
 import { isEqual, uniqWith } from 'lodash';
 import { Op, UniqueConstraintError } from 'sequelize';
 import sharp from 'sharp';
+import jsYaml from 'js-yaml';
 
 import getDefaultIcon from '../utils/getDefaultIcon';
 import getAppBlocks from '../utils/getAppBlocks';
@@ -62,6 +63,16 @@ function handleAppValidationError(error, app) {
   throw error;
 }
 
+function getAppFromRecord(record) {
+  return {
+    ...record.definition,
+    id: record.id,
+    path: record.path,
+    organizationId: record.OrganizationId,
+    yaml: record.yaml || jsYaml.safeDump(record.definition),
+  };
+}
+
 export async function createApp(ctx) {
   const { db } = ctx;
   const { App } = db.models;
@@ -77,6 +88,7 @@ export async function createApp(ctx) {
       style: validateStyle(style),
       sharedStyle: validateStyle(sharedStyle),
       path: app.path || normalize(app.name),
+      yaml: jsYaml.safeDump(app),
     };
 
     if (!user.organizations.some(organization => organization.id === organizationId)) {
@@ -85,9 +97,9 @@ export async function createApp(ctx) {
 
     await checkBlocks(app, db);
 
-    const { id } = await App.create(result, { raw: true });
+    const record = await App.create(result, { raw: true });
 
-    ctx.body = { ...result.definition, id, path: result.path };
+    ctx.body = getAppFromRecord(record);
     ctx.status = 201;
   } catch (error) {
     handleAppValidationError(error, result);
@@ -104,24 +116,14 @@ export async function getAppById(ctx) {
     throw Boom.notFound('App not found');
   }
 
-  ctx.body = {
-    ...app.definition,
-    id: appId,
-    path: app.path,
-    organizationId: app.OrganizationId,
-  };
+  ctx.body = getAppFromRecord(app);
 }
 
 export async function queryApps(ctx) {
   const { App } = ctx.db.models;
 
   const apps = await App.findAll({ raw: true });
-  ctx.body = apps.map(app => ({
-    ...app.definition,
-    id: app.id,
-    path: app.path,
-    organizationId: app.OrganizationId,
-  }));
+  ctx.body = apps.map(getAppFromRecord);
 }
 
 export async function queryMyApps(ctx) {
@@ -134,12 +136,7 @@ export async function queryMyApps(ctx) {
     where: { OrganizationId: { [Op.in]: organizations.map(o => o.id) } },
   });
 
-  ctx.body = apps.map(app => ({
-    ...app.definition,
-    id: app.id,
-    path: app.path,
-    organizationId: app.OrganizationId,
-  }));
+  ctx.body = apps.map(getAppFromRecord);
 }
 
 export async function updateApp(ctx) {
@@ -149,7 +146,7 @@ export async function updateApp(ctx) {
     user: { organizations },
   } = ctx.state;
   const { App } = db.models;
-  const { app: definition, organizationId, style, sharedStyle } = ctx.request.body;
+  const { app: definition, organizationId, style, sharedStyle, yaml } = ctx.request.body;
 
   let result;
 
@@ -160,7 +157,25 @@ export async function updateApp(ctx) {
       style: validateStyle(style && style.contents),
       sharedStyle: validateStyle(sharedStyle && sharedStyle.contents),
       path: definition.path || normalize(definition.name),
+      yaml: yaml && yaml.toString('utf8'),
     };
+
+    if (yaml) {
+      let appFromYaml;
+      try {
+        // The YAML should be valid YAML.
+        appFromYaml = jsYaml.safeLoad(yaml);
+      } catch (exception) {
+        throw Boom.badRequest('Provided YAML was invalid.');
+      }
+
+      // The YAML should be the same when converted to JSON.
+      if (!isEqual(appFromYaml, definition)) {
+        throw Boom.badRequest('Provided YAML was not equal to definition when converted.');
+      }
+    } else {
+      result.yaml = jsYaml.safeDump(definition);
+    }
 
     await checkBlocks(result.definition, db);
 
@@ -176,7 +191,7 @@ export async function updateApp(ctx) {
 
     await app.update(result, { where: { id: appId } });
 
-    ctx.body = { ...result.definition, id: appId, path: result.path };
+    ctx.body = getAppFromRecord({ ...app.dataValues, ...result });
   } catch (error) {
     handleAppValidationError(error, result);
   }
