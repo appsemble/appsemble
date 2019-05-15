@@ -77,7 +77,7 @@ export interface Block {
    *
    * The exact meaning of the parameters depends on the block type.
    */
-  parameters?: {};
+  parameters?: any;
 
   /**
    * A mapping of actions that can be fired by the block to action handlers.
