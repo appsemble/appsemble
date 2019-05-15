@@ -3,16 +3,47 @@
  */
 type Awaitable<T> = T | Promise<T>;
 
+interface BaseAction {
+  /**
+   * A function which can be called to dispatch the action.
+   */
+  dispatch: (data?: any) => Promise<any>;
+}
+
 /**
  * An action that can be called from within a block.
  */
-export interface Action {
-  /** A function which can be called to dispatch the action. */
-  dispatch: Function;
-
-  /** The type of the action. */
-  type: string;
+export interface SimpleAction extends BaseAction {
+  /**
+   * The type of the action.
+   */
+  type:
+    | 'dialog'
+    | 'dialog.error'
+    | 'dialog.ok'
+    | 'log'
+    | 'noop'
+    | 'request'
+    | 'resource.get'
+    | 'resource.query'
+    | 'resource.create'
+    | 'resource.update'
+    | 'resource.delete';
 }
+
+export interface LinkAction extends BaseAction {
+  type: 'link';
+
+  /**
+   * Get the link that the action would link to if the given data was passed.
+   */
+  href: (data?: any) => string;
+}
+
+/**
+ * An action that can be called from within a block.
+ */
+export type Action = SimpleAction | LinkAction;
 
 /**
  * A block that is displayed on a page.
