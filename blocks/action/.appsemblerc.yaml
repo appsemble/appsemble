@@ -1,0 +1,7 @@
+actions:
+  submit:
+    required: true
+  success: {}
+  error: {}
+
+output: dist

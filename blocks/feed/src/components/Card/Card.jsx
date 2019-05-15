@@ -71,7 +71,7 @@ export default class Card extends React.Component {
     const avatarContent = (
       <figure className="image is-48x48">
         <img
-          alt={intl.formatMessage(intl.avatar)}
+          alt={intl.formatMessage(messages.avatar)}
           src="https://bulma.io/images/placeholders/96x96.png"
         />
       </figure>
