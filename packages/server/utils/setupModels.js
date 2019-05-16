@@ -76,14 +76,11 @@ export default async function setupModels({
   }
   const db = new Sequelize(...args);
   importModels(db);
-  Object.keys(db.models).forEach(model => db.models[model].associate(db.models));
+  Object.values(db.models).forEach(model => model.associate(db.models));
 
   if (sync) {
     await db.sync({ force });
   }
-
-  db.sequelize = db;
-  db.Sequelize = Sequelize;
 
   return db;
 }

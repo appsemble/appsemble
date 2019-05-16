@@ -1,5 +1,6 @@
 import { logger } from '@appsemble/node-utils';
 import Umzug from 'umzug';
+import Sequelize from 'sequelize';
 
 import migrations, { createMigration } from '../migrations';
 import setupModels, { handleDbException } from '../utils/setupModels';
@@ -40,7 +41,7 @@ export async function handler(argv) {
     storage: 'sequelize',
     storageOptions: { sequelize: db },
     migrations: migrations.map(migration =>
-      createMigration(db.getQueryInterface(), db.Sequelize, migration),
+      createMigration(db.getQueryInterface(), Sequelize, migration),
     ),
   });
 
