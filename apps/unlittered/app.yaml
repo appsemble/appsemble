@@ -12,6 +12,16 @@ resources:
     blobs:
       url: 'https://api.stadswerken.amsterdam/upload'
       serialize: custom
+  waarnemingReply:
+    references:
+      waarnemingId: waarneming
+    schema:
+      type: object
+      required:
+        - content
+      properties:
+        content:
+          type: string
 
 authentication:
   - method: email
@@ -125,7 +135,17 @@ pages:
           picture: fotos.0
           pictureBase: https://api.stadswerken.amsterdam/uploads
           description: notities
+          reply:
+            content: content
+            author: author
+            parentId: waarnemingId
         actions:
+          loadReply:
+            type: resource.query
+            resource: waarnemingReply
+          submitReply:
+            type: resource.create
+            resource: waarnemingReply
           avatarClick:
             type: dialog
             blocks:

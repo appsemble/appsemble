@@ -263,7 +263,7 @@ export default class ResourceTable extends React.Component {
     }
 
     const { schema } = app.resources[resourceName];
-    const keys = ['id', ...Object.keys(schema.properties)];
+    const keys = ['id', ...Object.keys(schema?.properties || {})];
 
     return (
       <React.Fragment>
@@ -321,7 +321,7 @@ export default class ResourceTable extends React.Component {
           <form className="card" onSubmit={mode === 'edit' ? this.submitEdit : this.submitCreate}>
             <div className="card-content">
               {keys.map(key => {
-                const properties = schema.properties[key] || {};
+                const properties = schema?.properties[key] || {};
 
                 return (
                   <div key={key} className="field is-horizontal">
@@ -340,7 +340,7 @@ export default class ResourceTable extends React.Component {
                             name={key}
                             onChange={this.onChange}
                             placeholder={key}
-                            required={schema.required?.includes(key)}
+                            required={schema?.required?.includes(key)}
                             type={
                               properties.format && properties.format === 'email' ? 'email' : 'text'
                             }

@@ -4,9 +4,6 @@ import PropTypes from 'prop-types';
 import styles from './Card.css';
 import messages from './messages';
 
-// XXX: Temporary dummy data
-const replies = [];
-
 /**
  * A single card in the feed.
  */
@@ -21,6 +18,7 @@ export default class Card extends React.Component {
      */
     block: PropTypes.shape().isRequired,
     intl: PropTypes.shape().isRequired,
+    utils: PropTypes.shape().isRequired,
     /**
      * The content for this specific card to render.
      */
@@ -35,14 +33,25 @@ export default class Card extends React.Component {
     onUpdate: PropTypes.func.isRequired,
   };
 
+  replyContainer = React.createRef();
+
   state = {
     message: '',
+    replies: [],
   };
 
+  async componentDidMount() {
+    const { actions, block, content } = this.props;
+    const parentId = block.parameters?.reply?.parentId || 'parentId';
+
+    const replies = await actions.loadReply.dispatch({ $filter: `${parentId} eq '${content.id}'` });
+    this.setState({ replies });
+  }
+
   onAvatarClick = async event => {
-    const { actions, content, onUpdate } = this.props;
     event.preventDefault();
-    const data = await actions.avatarClick.dispatch(content);
+    const { actions, onUpdate } = this.props;
+    const data = await actions.avatarClick.dispatch();
 
     if (data) {
       await onUpdate(data);
@@ -53,13 +62,36 @@ export default class Card extends React.Component {
     this.setState({ message: event.target.value });
   };
 
-  onSubmit = event => {
+  onSubmit = async event => {
     event.preventDefault();
+
+    const { actions, block, content, utils, intl } = this.props;
+    const { message, replies } = this.state;
+
+    try {
+      const contentField = block.parameters?.reply?.content || 'content';
+      const parentId = block.parameters?.reply?.parentId || 'parentId';
+
+      const result = await actions.submitReply.dispatch({
+        [parentId]: content.id,
+        [contentField]: message,
+      });
+
+      this.setState({
+        replies: [...replies, result],
+        message: '',
+      });
+
+      // Scroll to the bottom of the reply container
+      this.replyContainer.current.scrollTop = this.replyContainer.current.scrollHeight;
+    } catch (e) {
+      utils.showMessage(intl.formatMessage(messages.replyError));
+    }
   };
 
   render() {
     const { actions, block, content, intl, remappers } = this.props;
-    const { message } = this.state;
+    const { message, replies } = this.state;
 
     const title = remappers.title(content);
     const subtitle = remappers.subtitle(content);
@@ -118,22 +150,35 @@ export default class Card extends React.Component {
         )}
         <div className="card-content">
           {description && <p className="content">{description}</p>}
-          <div className={styles.replies}>
-            {replies.map(reply => (
-              <div key={`${reply.author}${reply.content}`} className="content">
-                <h6 className="is-marginless">{reply.author}</h6>
-                <p>{reply.content}</p>
-              </div>
-            ))}
+          <div ref={this.replyContainer} className={styles.replies}>
+            {replies.map(reply => {
+              const author = remappers.author(reply);
+              const replyContent = remappers.content(reply);
+              return (
+                <div key={reply.id} className="content">
+                  <h6 className="is-marginless">
+                    {author || intl.formatMessage(messages.anonymous)}
+                  </h6>
+                  <p>{replyContent}</p>
+                </div>
+              );
+            })}
           </div>
-          <form className={styles.replyForm} noValidate onSubmit={this.onSubmit}>
+          <form className={styles.replyForm} noValidate>
             <input
               className="input"
               onChange={this.onChange}
               placeholder={intl.formatMessage(messages.reply)}
               value={message}
             />
-            <button className={`button ${styles.replyButton}`} type="submit">
+            {/* eslint-disable-next-line no-inline-comments */}
+            {/* onSubmit is not used because of buggy interactions with ShadowDOM, React.
+                See: https://github.com/spring-media/react-shadow-dom-retarget-events/issues/13 */}
+            <button
+              className={`button ${styles.replyButton}`}
+              onClick={this.onSubmit}
+              type="button"
+            >
               <span className="icon is-small">
                 <i className="fas fa-paper-plane" />
               </span>

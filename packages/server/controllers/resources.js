@@ -19,7 +19,28 @@ function verifyResourceDefinition(app, resourceType) {
     throw Boom.notFound(`App does not have a schema for resources called ${resourceType}`);
   }
 
-  return app.definition.resources[resourceType].schema;
+  const resource = app.definition.resources[resourceType];
+  const referenceProperties = {};
+
+  if (resource.references) {
+    Object.entries(resource.references).forEach(([field, resourceName]) => {
+      if (!app.definition.resources[resourceName]) {
+        throw Boom.notFound(
+          `Resource ${resourceName} referenced by ${resourceType} does not exist.`,
+        );
+      }
+
+      referenceProperties[field] = app.definition.resources[resourceName].id || {};
+    });
+  }
+
+  return {
+    ...resource.schema,
+    properties: {
+      ...resource.schema.properties,
+      ...referenceProperties,
+    },
+  };
 }
 
 function generateQuery(ctx) {

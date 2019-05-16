@@ -1,5 +1,7 @@
 actions:
   avatarClick: {}
   load: {}
+  createReply: {}
+  loadReply: {}
 
 output: dist
