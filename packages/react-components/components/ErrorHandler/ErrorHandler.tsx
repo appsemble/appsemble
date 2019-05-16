@@ -1,21 +1,30 @@
 import { captureException, withScope } from '@sentry/browser';
-import PropTypes from 'prop-types';
-import React from 'react';
+import * as PropTypes from 'prop-types';
+import * as React from 'react';
+
+export interface ErrorHandlerProps {
+  children: React.ReactNode;
+  fallback: React.ElementType;
+}
+
+interface ErrorHandlerState {
+  error: boolean;
+}
 
 /**
  * Capture renderer errors using Sentry.
  */
-export default class ErrorHandler extends React.Component {
+export default class ErrorHandler extends React.Component<ErrorHandlerProps, ErrorHandlerState> {
   static propTypes = {
     children: PropTypes.node.isRequired,
     fallback: PropTypes.func.isRequired,
   };
 
-  state = {
+  state: ErrorHandlerState = {
     error: false,
   };
 
-  componentDidCatch(error, info) {
+  componentDidCatch(error: Error, info: React.ErrorInfo): void {
     this.setState({ error: true });
     withScope(scope => {
       Object.entries(info).forEach(([key, value]) => {
@@ -25,7 +34,7 @@ export default class ErrorHandler extends React.Component {
     });
   }
 
-  render() {
+  render(): React.ReactNode {
     const { children, fallback: Fallback } = this.props;
     const { error } = this.state;
 

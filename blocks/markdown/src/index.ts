@@ -3,10 +3,14 @@ import marked from 'marked';
 
 import styles from './style.css';
 
+interface BlockParameters {
+  content: string;
+}
+
 /**
  * @param {Object} block The block as it was specified by the app creator.
  */
-attach(({ block }) => {
+attach<BlockParameters>(({ block }) => {
   const { content } = block.parameters;
 
   const markdown = document.createElement('div');

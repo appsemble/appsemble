@@ -1,11 +1,11 @@
-import React from 'react';
-import renderer from 'react-test-renderer';
+import * as React from 'react';
+import { shallow } from 'enzyme';
 
 import Loader from './Loader';
 
 describe('Loader', () => {
   it('should match its snapshot', () => {
-    const result = renderer.create(<Loader />).toJSON();
+    const result = shallow(<Loader />);
     expect(result).toMatchSnapshot();
   });
 });

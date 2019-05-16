@@ -7,7 +7,7 @@ import { IntlProvider } from 'react-intl';
 // eslint-disable-next-line import/prefer-default-export
 export function provideIntl(
   Component: React.ComponentType,
-  intlProviderProps: IntlProvider.Props,
+  intlProviderProps?: IntlProvider.Props,
 ): React.ComponentType {
   return props => (
     <IntlProvider
