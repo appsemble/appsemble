@@ -1,8 +1,8 @@
-import { AppsembleError, logger } from '@appsemble/node-utils';
+import { logger } from '@appsemble/node-utils';
 import Umzug from 'umzug';
 
 import migrations, { createMigration } from '../migrations';
-import setupModels from '../utils/setupModels';
+import setupModels, { handleDbException } from '../utils/setupModels';
 import databaseBuilder from './builder/database';
 
 export const command = 'migrate';
@@ -32,25 +32,7 @@ export async function handler(argv) {
       uri: argv.databaseUrl,
     });
   } catch (dbException) {
-    switch (dbException.name) {
-      case 'SequelizeConnectionError':
-      case 'SequelizeAccessDeniedError':
-        throw new AppsembleError(`${dbException.name}: ${dbException.original.sqlMessage}`);
-      case 'SequelizeHostNotFoundError':
-        throw new AppsembleError(
-          `${dbException.name}: Could not find host ´${dbException.original.hostname}:${
-            dbException.original.port
-          }´`,
-        );
-      case 'SequelizeConnectionRefusedError':
-        throw new AppsembleError(
-          `${dbException.name}: Connection refused on address ´${dbException.original.address}:${
-            dbException.original.port
-          }´`,
-        );
-      default:
-        throw dbException;
-    }
+    handleDbException(dbException);
   }
 
   const umzug = new Umzug({

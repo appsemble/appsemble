@@ -1,4 +1,4 @@
-import { AppsembleError, logger } from '@appsemble/node-utils';
+import { logger } from '@appsemble/node-utils';
 import * as Sentry from '@sentry/node';
 import Koa from 'koa';
 
@@ -6,7 +6,7 @@ import api from '../api';
 import loggerMiddleware from '../middleware/logger';
 import configureStatic from '../utils/configureStatic';
 import createServer from '../utils/createServer';
-import setupModels from '../utils/setupModels';
+import setupModels, { handleDbException } from '../utils/setupModels';
 import databaseBuilder from './builder/database';
 
 export const PORT = 9999;
@@ -87,25 +87,7 @@ export async function handler(argv, webpackConfigs) {
       uri: argv.databaseUrl,
     });
   } catch (dbException) {
-    switch (dbException.name) {
-      case 'SequelizeConnectionError':
-      case 'SequelizeAccessDeniedError':
-        throw new AppsembleError(`${dbException.name}: ${dbException.original.sqlMessage}`);
-      case 'SequelizeHostNotFoundError':
-        throw new AppsembleError(
-          `${dbException.name}: Could not find host ´${dbException.original.hostname}:${
-            dbException.original.port
-          }´`,
-        );
-      case 'SequelizeConnectionRefusedError':
-        throw new AppsembleError(
-          `${dbException.name}: Connection refused on address ´${dbException.original.address}:${
-            dbException.original.port
-          }´`,
-        );
-      default:
-        throw dbException;
-    }
+    handleDbException(dbException);
   }
 
   const smtp = argv.smtpHost

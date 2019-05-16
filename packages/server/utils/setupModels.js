@@ -1,6 +1,29 @@
+import { AppsembleError } from '@appsemble/node-utils';
 import Sequelize from 'sequelize';
 
 import logSQL from './logSQL';
+
+export function handleDbException(dbException) {
+  switch (dbException.name) {
+    case 'SequelizeConnectionError':
+    case 'SequelizeAccessDeniedError':
+      throw new AppsembleError(`${dbException.name}: ${dbException.original.sqlMessage}`);
+    case 'SequelizeHostNotFoundError':
+      throw new AppsembleError(
+        `${dbException.name}: Could not find host ´${dbException.original.hostname}:${
+          dbException.original.port
+        }´`,
+      );
+    case 'SequelizeConnectionRefusedError':
+      throw new AppsembleError(
+        `${dbException.name}: Connection refused on address ´${dbException.original.address}:${
+          dbException.original.port
+        }´`,
+      );
+    default:
+      throw dbException;
+  }
+}
 
 function importModels(db) {
   db.import('../models/App');
