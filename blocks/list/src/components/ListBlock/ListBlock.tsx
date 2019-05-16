@@ -7,22 +7,26 @@ import { FormattedMessage } from 'react-intl';
 import messages from './messages';
 import styles from './ListBlock.css';
 
-export interface Field {
+interface Field {
   name: string;
   label?: string;
 }
 
-export interface BlockParameters {
+interface BlockParameters {
   fields: Field[];
 }
 
-export interface BlockActions {
+interface BlockActions {
   load: {};
   click: {};
 }
 
+interface Item {
+  id?: number;
+}
+
 interface ListBlockState {
-  data: any[];
+  data: Item[];
   error: boolean;
   loading: boolean;
 }
@@ -44,7 +48,7 @@ export default class ListBlock extends React.Component<
     }
   }
 
-  onClick(item: any): void {
+  onClick(item: Item): void {
     const { actions } = this.props;
 
     if (actions.click) {
