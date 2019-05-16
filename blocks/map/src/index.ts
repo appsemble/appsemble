@@ -1,14 +1,12 @@
 import { attach } from '@appsemble/sdk';
 import 'leaflet/dist/leaflet.css';
-import { Map } from 'leaflet/src/map';
-import { TileLayer } from 'leaflet/src/layer';
-import { CircleMarker } from 'leaflet/src/layer/vector';
+import { CircleMarker, LocationEvent, Map, TileLayer } from 'leaflet';
 
 import './index.css';
-import createGetters from './createGetters';
+import createGetters, { BlockActions, BlockParameters } from './createGetters';
 import loadMarkers from './loadMarkers';
 
-attach(({ actions, block, data, shadowRoot, utils }) => {
+attach<BlockParameters, BlockActions>(({ actions, block, data, shadowRoot, utils }) => {
   const node = shadowRoot.appendChild(document.createElement('div'));
   const fetched = new Set();
 
@@ -26,7 +24,7 @@ attach(({ actions, block, data, shadowRoot, utils }) => {
         body: 'Locatie kon niet worden gevonden. Is de locatievoorziening ingeschakeld?',
       });
     })
-    .on('locationfound', ({ latlng }) => {
+    .on('locationfound', ({ latlng }: LocationEvent) => {
       locationMarker.setLatLng(latlng).addTo(map);
     });
   const lat = Number(get.lat(data));

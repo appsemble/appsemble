@@ -1,14 +1,15 @@
-import { Point } from 'leaflet/src/geometry';
-import { Icon, Marker } from 'leaflet/src/layer';
+import { Actions } from '@appsemble/sdk';
+import { Icon, LatLngBounds, Map, Marker, Point } from 'leaflet';
 
 import iconUrl from '../../../themes/amsterdam/core/marker.svg';
+import { BlockActions, BlockParameters, LatLngMapper } from './createGetters';
 
 const MARKER_ICON_WIDTH = 39;
 const MARKER_ICON_HEIGHT = 39;
 const ACTIVE_MARKER_ICON_WIDTH = 64;
 const ACTIVE_MARKER_ICON_HEIGHT = 64;
 
-function makeFilter(fields, bounds) {
+function makeFilter(fields: [string, string], bounds: LatLngBounds): string {
   const [lon, lat] = fields;
   const east = bounds.getEast();
   const north = bounds.getNorth();
@@ -18,8 +19,19 @@ function makeFilter(fields, bounds) {
   return `${lat} gt ${west} and ${lat} lt ${east} and ${lon} gt ${south} and ${lon} lt ${north}`;
 }
 
-export default async function loadMarkers(map, actions, parameters, fetched, get, data) {
-  const markers = await actions.load.dispatch({
+interface BlockMarker {
+  id: number;
+}
+
+export default async function loadMarkers(
+  map: Map,
+  actions: Actions<BlockActions>,
+  parameters: BlockParameters,
+  fetched: Set<number>,
+  get: LatLngMapper,
+  data: any,
+): Promise<void> {
+  const markers: BlockMarker[] = await actions.load.dispatch({
     $filter: makeFilter(
       [parameters.latitude || 'latitude', parameters.longitude || 'longitude'],
       map.getBounds(),
