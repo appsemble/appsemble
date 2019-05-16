@@ -26,8 +26,8 @@ export default (sequelize, DataTypes) => {
   );
 
   AppBlockStyle.associate = ({ App, BlockDefinition }) => {
-    AppBlockStyle.belongsTo(App, { foreignKey: 'AppId' });
-    AppBlockStyle.belongsTo(BlockDefinition, { foreignKey: 'BlockDefinitionId' });
+    AppBlockStyle.belongsTo(App);
+    AppBlockStyle.belongsTo(BlockDefinition);
   };
 
   return AppBlockStyle;
