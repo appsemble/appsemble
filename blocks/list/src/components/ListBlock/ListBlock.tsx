@@ -4,9 +4,22 @@ import { BlockProps } from '@appsemble/react';
 import { Loader } from '@appsemble/react-components';
 import { FormattedMessage } from 'react-intl';
 
-import { BlockParameters } from '../../types';
 import messages from './messages';
 import styles from './ListBlock.css';
+
+export interface Field {
+  name: string;
+  label?: string;
+}
+
+export interface BlockParameters {
+  fields: Field[];
+}
+
+export interface BlockActions {
+  load: {};
+  click: {};
+}
 
 interface ListBlockState {
   data: any[];
@@ -14,7 +27,10 @@ interface ListBlockState {
   loading: boolean;
 }
 
-export default class ListBlock extends React.Component<BlockProps, ListBlockState> {
+export default class ListBlock extends React.Component<
+  BlockProps<BlockParameters, BlockActions>,
+  ListBlockState
+> {
   state: ListBlockState = { data: undefined, error: false, loading: true };
 
   async componentDidMount(): Promise<void> {
@@ -39,7 +55,7 @@ export default class ListBlock extends React.Component<BlockProps, ListBlockStat
   render(): React.ReactNode {
     const { block, actions } = this.props;
     const { data, error, loading } = this.state;
-    const { fields } = block.parameters as BlockParameters;
+    const { fields } = block.parameters;
 
     if (loading) {
       return <Loader />;

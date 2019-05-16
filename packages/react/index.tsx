@@ -1,9 +1,9 @@
-import { BootstrapFunction, BootstrapParams, bootstrap as sdkBootstrap } from '@appsemble/sdk';
+import { Actions, BootstrapParams, bootstrap as sdkBootstrap } from '@appsemble/sdk';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import retargetEvents from 'react-shadow-dom-retarget-events';
 
-export interface BlockProps extends BootstrapParams {
+export interface BlockProps<P = any, A = {}> extends BootstrapParams<P, A> {
   /**
    * The DOM node on which the block is mounted.
    */
@@ -18,7 +18,7 @@ const { Consumer, Provider } = React.createContext<BlockProps>(null);
 export function mount(
   Component: React.ComponentType<Partial<BlockProps>>,
   root?: HTMLElement,
-): BootstrapFunction {
+): (params: BootstrapParams) => void {
   return params => {
     const reactRoot = params.shadowRoot.appendChild(
       root ? root.cloneNode() : document.createElement('div'),
@@ -52,11 +52,11 @@ export function mount(
   };
 }
 
-export function bootstrap(
-  Component: React.ComponentType<Partial<BlockProps>>,
+export function bootstrap<P, A = {}>(
+  Component: React.ComponentType<Partial<BlockProps<P, A>>>,
   reactRoot?: HTMLElement,
 ): void {
-  sdkBootstrap(mount(Component, reactRoot));
+  sdkBootstrap<P, A>(mount(Component, reactRoot));
 }
 
 /**

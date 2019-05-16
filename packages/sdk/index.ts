@@ -45,10 +45,12 @@ export interface LinkAction extends BaseAction {
  */
 export type Action = SimpleAction | LinkAction;
 
+export type Actions<A> = { [K in keyof A]: Action };
+
 /**
  * A block that is displayed on a page.
  */
-export interface Block {
+export interface Block<P = any, A = {}> {
   /**
    * The type of the block.
    *
@@ -77,19 +79,14 @@ export interface Block {
    *
    * The exact meaning of the parameters depends on the block type.
    */
-  parameters?: any;
+  parameters?: P;
 
   /**
    * A mapping of actions that can be fired by the block to action handlers.
    *
    * The exact meaning of the parameters depends on the block type.
    */
-  actions?: {
-    [action: string]: {
-      type: string;
-      [additionalProperty: string]: any;
-    };
-  };
+  actions?: A;
 }
 
 export interface Message {
@@ -139,16 +136,16 @@ export interface Events {
 /**
  * The parameters that get passed to the bootstrap function.
  */
-export interface BootstrapParams {
+export interface BootstrapParams<P = any, A = {}> {
   /**
    * The actions that may be dispatched by the block.
    */
-  actions: { [key: string]: Action };
+  actions: Actions<A>;
 
   /**
    * The block as it is defined in the app definition.
    */
-  block: Block;
+  block: Block<P, A>;
 
   /**
    * Any kind of data that has been passed in by some context.
@@ -180,18 +177,13 @@ export interface BootstrapParams {
 }
 
 /**
- * A function that may be passed as a callback to {@link bootstrap} or {@link attach}.
- */
-export type BootstrapFunction<ReturnType = void> = (
-  params: BootstrapParams,
-) => Awaitable<ReturnType>;
-
-/**
  * Register a boostrap function.
  *
  * @param fn The bootstrap function to register
  */
-export function bootstrap(fn: BootstrapFunction): void {
+export function bootstrap<P = any, A = {}>(
+  fn: (params: BootstrapParams<P, A>) => Awaitable<void>,
+): void {
   const event = new CustomEvent('AppsembleBootstrap', {
     detail: {
       fn,
@@ -209,8 +201,10 @@ export function bootstrap(fn: BootstrapFunction): void {
  *
  * @param fn The bootstrap function to register.
  */
-export function attach(fn: BootstrapFunction<HTMLElement | void>): void {
-  bootstrap(
+export function attach<P = any, A = {}>(
+  fn: (params: BootstrapParams<P, A>) => Awaitable<HTMLElement | void>,
+): void {
+  bootstrap<P, A>(
     async (params): Promise<void> => {
       const { shadowRoot } = params;
 

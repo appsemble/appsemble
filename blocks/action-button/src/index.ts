@@ -1,7 +1,11 @@
 import { attach } from '@appsemble/sdk';
 import './index.css';
 
-attach(({ actions }) => {
+interface BlockActions {
+  click: {};
+}
+
+attach<{}, BlockActions>(({ actions }) => {
   let node;
   if (actions.click.type === 'link') {
     node = document.createElement('a');
