@@ -8,6 +8,7 @@ import jsYaml from 'js-yaml';
 
 import getDefaultIcon from '../utils/getDefaultIcon';
 import getAppBlocks from '../utils/getAppBlocks';
+import getAppFromRecord from '../utils/getAppFromRecord';
 
 async function checkBlocks(app, db) {
   const blocks = getAppBlocks(app);
@@ -61,16 +62,6 @@ function handleAppValidationError(error, app) {
   }
 
   throw error;
-}
-
-function getAppFromRecord(record) {
-  return {
-    ...record.definition,
-    id: record.id,
-    path: record.path,
-    organizationId: record.OrganizationId,
-    yaml: record.yaml || jsYaml.safeDump(record.definition),
-  };
 }
 
 export async function createApp(ctx) {

@@ -2,7 +2,7 @@ export default {
   name: 'Unlittered App',
   description:
     'An app featuring a form in which litter can be reported and displayed on an interactive map.',
-  recipe: {
+  definition: {
     name: 'Unlittered',
     defaultPage: 'Report litter',
     theme: {

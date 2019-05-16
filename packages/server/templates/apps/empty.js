@@ -2,7 +2,7 @@ export default {
   name: 'Empty App',
   description:
     'Empty App is a bare-bones application containing two pages with buttons switching between them.',
-  recipe: {
+  definition: {
     name: 'Empty App',
     defaultPage: 'Example Page A',
     theme: {

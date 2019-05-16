@@ -1,7 +1,7 @@
 export default {
   name: 'Holiday App',
   description: 'A simple app that fetches holiday information for various countries',
-  recipe: {
+  definition: {
     name: 'Holidays',
     defaultPage: 'Holidays in NL',
     pages: [

@@ -5,6 +5,7 @@ import emails from './emails';
 import oauth from './oauth';
 import organizations from './organizations';
 import resources from './resources';
+import templates from './templates';
 
 export default {
   ...apps,
@@ -14,4 +15,5 @@ export default {
   ...oauth,
   ...organizations,
   ...resources,
+  ...templates,
 };
