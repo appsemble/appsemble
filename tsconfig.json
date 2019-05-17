@@ -4,6 +4,6 @@
     "noImplicitAny": true,
     "esModuleInterop": true,
     "jsx": "react",
-    "lib": ["es5", "es6", "dom", "webworker"]
+    "lib": ["es5", "es6", "dom"]
   }
 }

@@ -6,7 +6,7 @@ import { Awaitable, cacheFirst, requestFirst } from './utils';
  * @param request The request map.
  * @returns The matching HTTP response.
  */
-export function respond(request: Request): Awaitable<Response> {
+export function respond(request: Request): Promise<Response> {
   // Pass through any non GET requests.
   if (request.method !== 'GET') {
     return fetch(request);

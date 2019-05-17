@@ -15,17 +15,22 @@ declare module 'service-worker-mock' {
        * A key/value map of current cache contents.
        */
       caches: Caches;
+
+      // This should extend Client, but we can’t use the service worker globals.
       /**
        * A list of active clients.
        */
-      clients: Client[];
+      clients: any[];
+
       /**
        * A list of active notifications.
        */
       notifications: Notification[];
     }
 
-    interface ServiceWorkerGlobalScopeMock extends ServiceWorkerGlobalScope {
+    // This should extend ServiceWorkerGlobalScope, but using service worker globals causes
+    // conflicts with the DOM environment.
+    interface ServiceWorkerGlobalScopeMock {
       /**
        * A key/value map of active listeners (`install`/`activate`/`fetch`/etc).
        */
