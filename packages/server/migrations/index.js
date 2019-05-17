@@ -23,7 +23,9 @@ export function createMigration(sequelize, dataTypes, { key, up, down }) {
     up: () => up(sequelize, dataTypes),
     down: () => down(sequelize, dataTypes),
     // name filter used by Umzug to decide if it should run this migration
-    testFileName: needle => key.startsWith(needle),
+    testFileName: needle => {
+      return key === needle;
+    },
   };
 }
 
