@@ -1,4 +1,6 @@
 FROM node:10-slim as build
+ARG CI_COMMIT_REF_NAME=dev
+ENV CI_COMMIT_REF_NAME $CI_COMMIT_REF_NAME
 WORKDIR /build
 COPY . .
 # The required Debian packages for Puppeteer are taken from

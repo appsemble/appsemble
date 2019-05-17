@@ -1,4 +1,4 @@
-const { CI_COMMIT_REF_NAME } = process.env;
+const { CI_COMMIT_REF_NAME = 'dev' } = process.env;
 
 module.exports = {
   src: './docs',
