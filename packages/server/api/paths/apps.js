@@ -70,7 +70,6 @@ export default {
           },
         },
       },
-      security: [{ apiUser: ['apps:read'] }],
     },
   },
   '/api/apps/me': {
