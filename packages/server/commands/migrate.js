@@ -11,16 +11,16 @@ export const description = 'Migrate the Appsemble database.';
 
 export function builder(yargs) {
   return databaseBuilder(yargs)
-    .option('migrate-to', {
+    .option('to', {
       desc: 'Id of database version to migrate to.',
     })
-    .option('migrate-from', {
+    .option('from', {
       desc: 'Id of database version to migrate from.',
     });
 }
 
 export async function handler(argv) {
-  const { migrateTo: to, migrateFrom: from } = argv;
+  const { to, from } = argv;
   let db;
   try {
     db = await setupModels({
