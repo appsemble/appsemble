@@ -139,8 +139,22 @@ build docker image:
   image: docker
   script:
     - echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY
-    - docker build -t "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME" .
-    - docker push "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME"
+    - docker build -t "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG" .
+    - docker push "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG"
+
+# Build the Docker image.
+build docs image:
+  stage: build
+  except:
+    - schedules
+  dependencies: []
+  services:
+    - docker:dind
+  image: docker
+  script:
+    - echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY
+    - docker build -f config/docs/Dockerfile -t "$CI_REGISTRY_IMAGE/docs:$CI_COMMIT_REF_SLUG" .
+    - docker push "$CI_REGISTRY_IMAGE/docs:$CI_COMMIT_REF_SLUG"
 
 # Build the npm packages that should be published.
 pack:
@@ -158,55 +172,6 @@ pack:
   artifacts:
     paths:
       - packages/**/*.tgz
-
-# Build documentation to be hosted on GitLab pages.
-pages:
-  stage: build
-  only:
-    - master
-  except:
-    - schedules
-  dependencies: []
-  script: &pages-script
-    - yarn --frozen-lockfile
-    - apt-get update
-    # The line below is for puppeteer, see: https://github.com/GoogleChrome/puppeteer/blob/master/docs/troubleshooting.md
-    - apt-get install -yq gconf-service libasound2 libatk1.0-0 libc6 libcairo2 libcups2 libdbus-1-3
-      libexpat1 libfontconfig1 libgcc1 libgconf-2-4 libgdk-pixbuf2.0-0 libglib2.0-0 libgtk-3-0
-      libnspr4 libpango-1.0-0 libpangocairo-1.0-0 libstdc++6 libx11-6 libx11-xcb1 libxcb1
-      libxcomposite1 libxcursor1 libxdamage1 libxext6 libxfixes3 libxi6 libxrandr2 libxrender1
-      libxss1 libxtst6 ca-certificates fonts-liberation libappindicator1 libnss3 lsb-release
-      xdg-utils wget
-    - >
-      for input in docs/images/*.mmd; do
-        output=docs/images/$(basename $input .mmd).svg
-        yarn mmdc -p puppeteer-config.json -i $input -o $output
-      done
-    - yarn docz build
-    - mkdir -p public
-    - cp .docz/dist/* public -r
-    - yarn typedoc --out public/sdk --includeDeclarations --excludeExternals --mode file --target
-      ES6 --ignoreCompilerErrors packages/sdk
-  artifacts:
-    paths:
-      - public/
-
-# Build documentation for review purposes.
-review pages:
-  stage: build
-  only:
-    - branches
-  except:
-    - master
-    - schedules
-  dependencies: []
-  environment:
-    name: pages/$CI_COMMIT_REF_SLUG
-    url: https://$CI_PROJECT_NAMESPACE.$CI_PAGES_DOMAIN/-/$CI_PROJECT_NAME/-/jobs/$CI_JOB_ID/artifacts/public/index.html
-  script: *pages-script
-  artifacts:
-    paths:
-      - public/
 
 ###################################################################################################
 #  Publish Stage                                                                                  #
@@ -279,6 +244,52 @@ stop review:
   script:
     - yarn --frozen-lockfile
     - node -r esm config/bin/stop.js
+
+# Deploy the Docker image for a branch to a review environment.
+review docs:
+  stage: deploy
+  image: registry.gitlab.com/gitlab-org/gitlab-build-images:gitlab-charts-build-base
+  when: manual
+  except:
+    - master
+    - schedules
+  dependencies: []
+  allow_failure: false
+  environment:
+    name: review/docs/$CI_COMMIT_REF_SLUG
+    url: https://$CI_ENVIRONMENT_SLUG.appsemble.app
+    on_stop: stop review docs
+  script:
+    - mkdir ~/.helm
+    - kubectl get secrets/tiller-secret -n gitlab-managed-apps -o "jsonpath={.data['tls\.crt']}" | base64 -d > ~/.helm/cert.pem
+    - kubectl get secrets/tiller-secret -n gitlab-managed-apps -o "jsonpath={.data['tls\.key']}" | base64 -d > ~/.helm/key.pem
+    - helm init --client-only
+    - helm upgrade "$CI_ENVIRONMENT_SLUG" config/charts/appsemble-docs
+      --install
+      --wait
+      --reset-values
+      --set "host=$CI_ENVIRONMENT_SLUG.appsemble.app"
+      --set "ingress.tls.secretName=$CI_COMMIT_REF_SLUG-tls"
+      --set "image.tag=$CI_COMMIT_REF_SLUG"
+
+# Stop a review environment.
+stop review docs:
+  stage: deploy
+  image: registry.gitlab.com/gitlab-org/gitlab-build-images:gitlab-charts-build-base
+  when: manual
+  except:
+    - master
+    - schedules
+  dependencies: []
+  environment:
+    name: review/docs/$CI_COMMIT_REF_SLUG
+    action: stop
+  script:
+    - mkdir ~/.helm
+    - kubectl get secrets/tiller-secret -n gitlab-managed-apps -o "jsonpath={.data['tls\.crt']}" | base64 -d > ~/.helm/cert.pem
+    - kubectl get secrets/tiller-secret -n gitlab-managed-apps -o "jsonpath={.data['tls\.key']}" | base64 -d > ~/.helm/key.pem
+    - helm init --client-only
+    - helm delete --purge "$CI_ENVIRONMENT_SLUG"
 
 # Deploy the Docker image for master to the staging environment.
 staging:
