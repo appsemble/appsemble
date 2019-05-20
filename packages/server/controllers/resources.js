@@ -131,6 +131,7 @@ export async function getResourceById(ctx) {
 export async function createResource(ctx) {
   const { appId, resourceType } = ctx.params;
   const { App } = ctx.db.models;
+  const { user } = ctx.state;
 
   const app = await App.findByPk(appId);
   verifyResourceDefinition(app, resourceType);
@@ -150,7 +151,11 @@ export async function createResource(ctx) {
     throw boom;
   }
 
-  const { id } = await app.createResource({ type: resourceType, data: resource });
+  const { id } = await app.createResource({
+    type: resourceType,
+    data: resource,
+    UserId: user && user.id,
+  });
 
   ctx.body = { id, ...resource };
   ctx.status = 201;
