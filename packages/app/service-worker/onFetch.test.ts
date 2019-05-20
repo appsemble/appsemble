@@ -66,7 +66,7 @@ describe('respond', () => {
   });
 
   it('should pass through other API requests', async () => {
-    const request = new Request('http://localhost/api/apps/26/resource/123');
+    const request = new Request('http://localhost/api/apps/26/resources/banana/123');
     await respond(request);
     expect(fetch).toHaveBeenCalledWith(request);
   });
