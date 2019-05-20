@@ -113,7 +113,10 @@ export async function getAppById(ctx) {
 export async function queryApps(ctx) {
   const { App } = ctx.db.models;
 
-  const apps = await App.findAll({ raw: true });
+  const apps = await App.findAll({
+    where: { definition: { private: { [Op.or]: { [Op.eq]: false, [Op.eq]: null } } } },
+    raw: true,
+  });
   ctx.body = apps.map(getAppFromRecord);
 }
 
