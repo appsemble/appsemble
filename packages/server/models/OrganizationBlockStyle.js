@@ -1,5 +1,5 @@
-export default (sequelize, DataTypes) =>
-  sequelize.define(
+export default (sequelize, DataTypes) => {
+  const OrganizationBlockStyle = sequelize.define(
     'OrganizationBlockStyle',
     {
       OrganizationId: {
@@ -24,3 +24,11 @@ export default (sequelize, DataTypes) =>
       deletedAt: 'deleted',
     },
   );
+
+  OrganizationBlockStyle.associate = ({ Organization, BlockDefinition }) => {
+    OrganizationBlockStyle.belongsTo(Organization, { foreignKey: 'OrganizationId' });
+    OrganizationBlockStyle.belongsTo(BlockDefinition, { foreignKey: 'BlockDefinitionId' });
+  };
+
+  return OrganizationBlockStyle;
+};

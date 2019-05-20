@@ -846,7 +846,11 @@ pages:
 
   it('should validate an app on update', async () => {
     const appA = await App.create(
-      { path: 'foo', definition: { name: 'Test App', defaultPage: 'Test Page' } },
+      {
+        path: 'foo',
+        definition: { name: 'Test App', defaultPage: 'Test Page' },
+        OrganizationId: organizationId,
+      },
       { raw: true },
     );
     const response = await request(server)
@@ -859,7 +863,11 @@ pages:
 
   it('should not allow an upload without an app when updating an app', async () => {
     const app = await App.create(
-      { path: 'test-app', definition: { name: 'Test App', defaultPage: 'Test Page' } },
+      {
+        path: 'test-app',
+        definition: { name: 'Test App', defaultPage: 'Test Page' },
+        OrganizationId: organizationId,
+      },
       { raw: true },
     );
 
@@ -1018,7 +1026,11 @@ pages:
 
   it('should not allow invalid shared stylesheets when updating an app', async () => {
     const app = await App.create(
-      { path: 'bar', definition: { name: 'Test App', defaultPage: 'Test Page' } },
+      {
+        path: 'bar',
+        definition: { name: 'Test App', defaultPage: 'Test Page' },
+        OrganizationId: organizationId,
+      },
       { raw: true },
     );
 
@@ -1077,7 +1089,11 @@ pages:
     });
 
     const { id } = await App.create(
-      { path: 'bar', definition: { name: 'Test App', defaultPage: 'Test Page' } },
+      {
+        path: 'bar',
+        definition: { name: 'Test App', defaultPage: 'Test Page' },
+        OrganizationId: organizationId,
+      },
       { raw: true },
     );
 
@@ -1113,7 +1129,11 @@ pages:
     });
 
     const { id } = await App.create(
-      { path: 'bar', definition: { name: 'Test App', defaultPage: 'Test Page' } },
+      {
+        path: 'bar',
+        definition: { name: 'Test App', defaultPage: 'Test Page' },
+        OrganizationId: organizationId,
+      },
       { raw: true },
     );
 
@@ -1151,7 +1171,11 @@ pages:
 
   it('should not allow uploading block stylesheets for non-existant blocks', async () => {
     const { id } = await App.create(
-      { path: 'bar', definition: { name: 'Test App', defaultPage: 'Test Page' } },
+      {
+        path: 'bar',
+        definition: { name: 'Test App', defaultPage: 'Test Page' },
+        OrganizationId: organizationId,
+      },
       { raw: true },
     );
 
@@ -1172,7 +1196,11 @@ pages:
 
   it('should return an empty response on non-existant block stylesheets', async () => {
     const { id } = await App.create(
-      { path: 'bar', definition: { name: 'Test App', defaultPage: 'Test Page' } },
+      {
+        path: 'bar',
+        definition: { name: 'Test App', defaultPage: 'Test Page' },
+        OrganizationId: organizationId,
+      },
       { raw: true },
     );
 

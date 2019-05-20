@@ -5,8 +5,8 @@
  * primary key which includes the block version reference. For this reason, a numeric id is used as
  * the primary key..
  */
-export default (sequelize, DataTypes) =>
-  sequelize.define(
+export default (sequelize, DataTypes) => {
+  const BlockAsset = sequelize.define(
     'BlockAsset',
     {
       id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
@@ -22,3 +22,8 @@ export default (sequelize, DataTypes) =>
       deletedAt: 'deleted',
     },
   );
+
+  BlockAsset.associate = () => {};
+
+  return BlockAsset;
+};

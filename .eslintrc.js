@@ -66,6 +66,12 @@ module.exports = {
   },
   overrides: [
     {
+      files: ['packages/server/migrations/**'],
+      rules: {
+        'filenames/match-regex': 'off',
+      },
+    },
+    {
       files: ['**/*.ts', '**/*.tsx'],
       plugins: ['@typescript-eslint'],
       parser: '@typescript-eslint/parser',
@@ -130,6 +136,8 @@ module.exports = {
         jest: true,
       },
       rules: {
+        // We don’t need browser compatibility checks on our tests.
+        'compat/compat': 'off',
         'import/no-extraneous-dependencies': context => [
           'error',
           { devDependencies: true, packageDir: [context.getFilename(), __dirname] },

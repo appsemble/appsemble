@@ -1,4 +1,10 @@
-async function put(request, response, fallback) {
+export type Awaitable<T> = T | Promise<T>;
+
+async function put(
+  request: Request,
+  response: Response,
+  fallback: () => Awaitable<Response>,
+): Promise<Response> {
   // Only cache responses if the status code is 2xx.
   if (response.ok) {
     const cache = await caches.open('appsemble');
@@ -8,7 +14,7 @@ async function put(request, response, fallback) {
   return fallback();
 }
 
-async function tryCached(request, fallback) {
+async function tryCached(request: Request, fallback: () => Awaitable<Response>): Promise<Response> {
   const cached = await caches.match(request);
   if (cached) {
     return cached;
@@ -21,10 +27,10 @@ async function tryCached(request, fallback) {
  *
  * If no response could be found in the cache, the resource is requested anyway and cached.
  *
- * @param {Request} request The request for which to get a response.
- * @returns {Response} The fetch response object.
+ * @param request The request for which to get a response.
+ * @returns The fetch response object.
  */
-export async function cacheFirst(request) {
+export async function cacheFirst(request: Request): Promise<Response> {
   return tryCached(request, async () => {
     const response = await fetch(request);
     return put(request, response, () => response);
@@ -36,11 +42,11 @@ export async function cacheFirst(request) {
  *
  * If the request fails for whatever reason, a cached response is returned.
  *
- * @param {Request} request The request for which to get a response.
- * @returns {Response} The fetch response object.
+ * @param request The request for which to get a response.
+ * @returns The fetch response object.
  */
-export async function requestFirst(request) {
-  let response;
+export async function requestFirst(request: Request): Promise<Response> {
+  let response: Response;
   try {
     response = await fetch(request);
   } catch (error) {

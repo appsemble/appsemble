@@ -3,14 +3,14 @@ import { configureLogger, handleError } from '@appsemble/node-utils';
 import yargs from 'yargs';
 
 import * as start from './commands/start';
+import * as migrate from './commands/migrate';
 
 /**
  * These are exported, so @appsemble/cli can wrap them.
  */
 const startHandler = start.handler;
-
-// eslint-disable-next-line import/prefer-default-export
-export { startHandler as start };
+const migrateHandler = migrate.handler;
+export { startHandler as start, migrateHandler as migrate };
 
 /**
  * The main entry point for the Appsemble production server.
@@ -33,6 +33,7 @@ function main(argv) {
     })
     .middleware([configureLogger])
     .command(start)
+    .command(migrate)
     .fail(handleError)
     .help('help', 'Show this help message.')
     .alias('h', 'help')

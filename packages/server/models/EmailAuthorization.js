@@ -1,5 +1,5 @@
-export default (sequelize, DataTypes) =>
-  sequelize.define(
+export default (sequelize, DataTypes) => {
+  const EmailAuthorization = sequelize.define(
     'EmailAuthorization',
     {
       email: { type: DataTypes.STRING, primaryKey: true },
@@ -16,3 +16,14 @@ export default (sequelize, DataTypes) =>
       deletedAt: 'deleted',
     },
   );
+
+  EmailAuthorization.associate = ({ User, ResetPasswordToken }) => {
+    EmailAuthorization.belongsTo(User);
+    EmailAuthorization.hasMany(ResetPasswordToken, {
+      foreignKey: { allowNull: false },
+      onDelete: 'CASCADE',
+    });
+  };
+
+  return EmailAuthorization;
+};

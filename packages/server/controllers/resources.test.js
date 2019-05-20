@@ -14,22 +14,24 @@ describe('resource controller', () => {
   let token;
   let organizationId;
 
-  const exampleApp = {
-    definition: {
-      name: 'Test App',
-      defaultPage: 'Test Page',
-      resources: {
-        testResource: {
-          schema: {
-            type: 'object',
-            required: ['foo'],
-            properties: { foo: { type: 'string' } },
+  const exampleApp = orgId => {
+    return {
+      definition: {
+        name: 'Test App',
+        defaultPage: 'Test Page',
+        resources: {
+          testResource: {
+            schema: {
+              type: 'object',
+              required: ['foo'],
+              properties: { foo: { type: 'string' } },
+            },
           },
         },
       },
-    },
-    path: 'test-app',
-    OrganizationId: organizationId,
+      path: 'test-app',
+      OrganizationId: orgId,
+    };
   };
 
   beforeAll(async () => {
@@ -49,7 +51,7 @@ describe('resource controller', () => {
   });
 
   it('should be able to fetch a resource', async () => {
-    const app = await App.create(exampleApp);
+    const app = await App.create(exampleApp(organizationId));
 
     const resource = await app.createResource({ type: 'testResource', data: { foo: 'bar' } });
     const response = await request(server).get(
@@ -61,7 +63,7 @@ describe('resource controller', () => {
   });
 
   it('should be able to fetch all resources of a type', async () => {
-    const app = await App.create(exampleApp);
+    const app = await App.create(exampleApp(organizationId));
 
     const resourceA = await app.createResource({ type: 'testResource', data: { foo: 'bar' } });
     const resourceB = await app.createResource({ type: 'testResource', data: { foo: 'baz' } });
@@ -76,7 +78,7 @@ describe('resource controller', () => {
   });
 
   it('should be able to limit the amount of resources', async () => {
-    const app = await App.create(exampleApp);
+    const app = await App.create(exampleApp(organizationId));
 
     const resourceA = await app.createResource({ type: 'testResource', data: { foo: 'bar' } });
     await app.createResource({ type: 'testResource', data: { foo: 'baz' } });
@@ -88,7 +90,7 @@ describe('resource controller', () => {
   });
 
   it('should be able to sort fetched resources', async () => {
-    const app = await App.create(exampleApp);
+    const app = await App.create(exampleApp(organizationId));
 
     const resourceA = await app.createResource({ type: 'testResource', data: { foo: 'bar' } });
     const resourceB = await app.createResource({ type: 'testResource', data: { foo: 'baz' } });
@@ -113,7 +115,7 @@ describe('resource controller', () => {
   });
 
   it('should be able to select fields when fetching resources', async () => {
-    const app = await App.create(exampleApp);
+    const app = await App.create(exampleApp(organizationId));
 
     const resource = await app.createResource({ type: 'testResource', data: { foo: 'bar' } });
     const response = await request(server).get(
@@ -125,7 +127,7 @@ describe('resource controller', () => {
   });
 
   it('should be able to create a new resource', async () => {
-    const app = await App.create(exampleApp);
+    const app = await App.create(exampleApp(organizationId));
 
     const resource = { foo: 'bar' };
     const response = await request(server)
@@ -138,7 +140,7 @@ describe('resource controller', () => {
   });
 
   it('should validate resources when creating resources', async () => {
-    const app = await App.create(exampleApp);
+    const app = await App.create(exampleApp(organizationId));
 
     const resource = {};
     const response = await request(server)
@@ -150,7 +152,7 @@ describe('resource controller', () => {
   });
 
   it('should check if an app has a specific resource definition when creating resources', async () => {
-    const app = await App.create(exampleApp);
+    const app = await App.create(exampleApp(organizationId));
 
     const response = await request(server).get(`/api/apps/${app.id}/resources/thisDoesNotExist`);
     expect(response.status).toBe(404);
@@ -161,6 +163,7 @@ describe('resource controller', () => {
     const app = await App.create({
       definition: { name: 'Test App', defaultPage: 'Test Page' },
       path: 'test-app',
+      OrganizationId: organizationId,
     });
     const response = await request(server).get(`/api/apps/${app.id}/resources/thisDoesNotExist`);
 
@@ -169,7 +172,7 @@ describe('resource controller', () => {
   });
 
   it('should be able to update an existing resource', async () => {
-    const app = await App.create({ ...exampleApp, OrganizationId: organizationId });
+    const app = await App.create(exampleApp(organizationId));
     const resource = await Resource.create({
       type: 'testResource',
       AppId: app.id,
@@ -195,7 +198,7 @@ describe('resource controller', () => {
   });
 
   it('should not be possible to update a non-existent resource', async () => {
-    const app = await App.create({ ...exampleApp, OrganizationId: organizationId });
+    const app = await App.create(exampleApp(organizationId));
     const { body } = await request(server)
       .put(`/api/apps/${app.id}/resources/testResource/0`)
       .send({ foo: 'I am not Foo.' })
@@ -209,7 +212,7 @@ describe('resource controller', () => {
   });
 
   it('should validate resources when updating resources', async () => {
-    const app = await App.create({ ...exampleApp, OrganizationId: organizationId });
+    const app = await App.create(exampleApp(organizationId));
     const resource = await Resource.create({
       type: 'testResource',
       AppId: app.id,
@@ -226,7 +229,7 @@ describe('resource controller', () => {
   });
 
   it('should be able to delete an existing resource', async () => {
-    const app = await App.create({ ...exampleApp, OrganizationId: organizationId });
+    const app = await App.create(exampleApp(organizationId));
     const resource = await Resource.create({
       type: 'testResource',
       AppId: app.id,
@@ -260,7 +263,7 @@ describe('resource controller', () => {
   });
 
   it('should not be able to delete a non-existent resource', async () => {
-    const app = await App.create({ ...exampleApp, OrganizationId: organizationId });
+    const app = await App.create(exampleApp(organizationId));
     const { body } = await request(server)
       .delete(`/api/apps/${app.id}/resources/testResource/0`)
       .set('Authorization', token);

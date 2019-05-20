@@ -1,5 +1,5 @@
-export default (sequelize, DataTypes) =>
-  sequelize.define(
+export default (sequelize, DataTypes) => {
+  const OAuthAuthorization = sequelize.define(
     'OAuthAuthorization',
     {
       id: { type: DataTypes.STRING, primaryKey: true },
@@ -15,3 +15,10 @@ export default (sequelize, DataTypes) =>
       updatedAt: 'updated',
     },
   );
+
+  OAuthAuthorization.associate = ({ User }) => {
+    OAuthAuthorization.belongsTo(User);
+  };
+
+  return OAuthAuthorization;
+};

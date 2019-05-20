@@ -1,5 +1,5 @@
-export default (sequelize, DataTypes) =>
-  sequelize.define(
+export default (sequelize, DataTypes) => {
+  const AppBlockStyle = sequelize.define(
     'AppBlockStyle',
     {
       AppId: {
@@ -24,3 +24,11 @@ export default (sequelize, DataTypes) =>
       deletedAt: 'deleted',
     },
   );
+
+  AppBlockStyle.associate = ({ App, BlockDefinition }) => {
+    AppBlockStyle.belongsTo(App);
+    AppBlockStyle.belongsTo(BlockDefinition);
+  };
+
+  return AppBlockStyle;
+};

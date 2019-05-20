@@ -44,13 +44,14 @@
     "nodemailer-stub-transport": "^1.1.0",
     "oauth2-server": "^3.0.1",
     "odata-parser": "^1.4.1",
-    "odata-sequelize": "^1.0.11",
+    "@wesselkuipers/odata-sequelize": "^1.0.13",
     "pg": "^7.10.0",
     "pg-hstore": "^2.3.2",
     "raw-body": "^2.4.0",
     "sequelize": "^5.8.1",
     "sharp": "^0.22.1",
     "to-ico": "^1.1.5",
+    "umzug": "^2.2.0",
     "yargs": "^13.2.2"
   },
   "devDependencies": {
