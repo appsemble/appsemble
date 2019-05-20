@@ -1,12 +1,12 @@
-import { cacheFirst, requestFirst } from './utils';
+import { Awaitable, cacheFirst, requestFirst } from './utils';
 
 /**
  * Map all requests to a caching behaviour based on the HTTP method and URL.
  *
- * @param {Request} request The request map.
- * @returns {Response} The matching HTTP response.
+ * @param request The request map.
+ * @returns The matching HTTP response.
  */
-export function respond(request) {
+export function respond(request: Request): Promise<Response> {
   // Pass through any non GET requests.
   if (request.method !== 'GET') {
     return fetch(request);
@@ -20,18 +20,17 @@ export function respond(request) {
   if (process.env.NODE_ENV !== 'production' && pathname.endsWith('.hot-update.json')) {
     return fetch(request);
   }
-  // These are requests that fetch an app definition. The latest app definition is preferred, but it
-  // is acceptable to fallback to the cache, so the app works offline.
-  if (/^\/api\/apps\/\d+$/.test(pathname)) {
-    return requestFirst(request);
+  // Block version requests are immutable and should be cached.
+  if (/^\/api\/blocks\/@[0-9a-z]+\/[0-9a-z]+\/versions\//.test(pathname)) {
+    return cacheFirst(request);
   }
   // Other requests made to the Appsemble API should not be cached.
   if (pathname.startsWith('/api/')) {
     return fetch(request);
   }
-  // It’s ok to cache the API explorer.
+  // Requests made to the API explorer should not be cached.
   if (pathname.startsWith('/api-explorer')) {
-    return requestFirst(request);
+    return fetch(request);
   }
   // This is a generated app file. It should be attempted to use the most recent version, but it is
   // acceptable to fallback to the cache, so the app works offline. E.g. '/1/manifest.json',
@@ -42,6 +41,10 @@ export function respond(request) {
   // This is a static file. Let’s cache it.
   if (pathname.includes('.')) {
     return cacheFirst(request);
+  }
+  // Requests made to the Appsemble API should not be cached.
+  if (pathname.startsWith('/_')) {
+    return fetch(request);
   }
   // If the URL either consists of a normalized path, it should be remapped to the cached url which
   // consists of the client URL path. E.g. '/my-app', '/my-app/home'.
@@ -54,6 +57,6 @@ export function respond(request) {
   return fetch(request);
 }
 
-export default function onFetch(event) {
+export default function onFetch(event: FetchEvent): void {
   event.respondWith(respond(event.request));
 }

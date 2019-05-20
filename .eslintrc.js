@@ -130,6 +130,8 @@ module.exports = {
         jest: true,
       },
       rules: {
+        // We don’t need browser compatibility checks on our tests.
+        'compat/compat': 'off',
         'import/no-extraneous-dependencies': context => [
           'error',
           { devDependencies: true, packageDir: [context.getFilename(), __dirname] },
