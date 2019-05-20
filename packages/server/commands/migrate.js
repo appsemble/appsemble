@@ -11,6 +11,11 @@ export const description = 'Migrate the Appsemble database.';
 
 export function builder(yargs) {
   return databaseBuilder(yargs)
+    .option('mode', {
+      describe: 'Whether to perform upgrade or downgrade migrations.',
+      default: 'up',
+      choices: ['up', 'down'],
+    })
     .option('to', {
       desc: 'Id of database version to migrate to.',
     })
@@ -20,7 +25,7 @@ export function builder(yargs) {
 }
 
 export async function handler(argv) {
-  const { to, from } = argv;
+  const { mode, to, from } = argv;
   let db;
   try {
     db = await setupModels({
@@ -45,6 +50,17 @@ export async function handler(argv) {
     ),
   });
 
-  const result = await umzug.up({ ...(to && { to }), ...(from && { from }) });
+  const params = { ...(to && { to }), ...(from && { from }) };
+  let result;
+
+  switch (mode) {
+    case 'down':
+      result = await umzug.down(params);
+      break;
+    case 'up':
+    default:
+      result = await umzug.up(params);
+  }
+
   logger.info(`Applied ${result.length} migration(s).`);
 }

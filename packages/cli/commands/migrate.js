@@ -36,6 +36,11 @@ export function builder(yargs) {
         'A connection string for the database to connect to. This is an alternative to the separate database related variables.',
       conflicts: ['database-host', 'database-name', 'database-user', 'database-password'],
     })
+    .option('mode', {
+      describe: 'Whether to perform upgrade or downgrade migrations.',
+      default: 'up',
+      choices: ['up', 'down'],
+    })
     .option('to', {
       desc: 'Id of database version to migrate to.',
     })
