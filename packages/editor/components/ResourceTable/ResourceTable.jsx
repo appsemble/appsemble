@@ -211,7 +211,7 @@ export default class ResourceTable extends React.Component {
     if (app.resources[resourceName]?.schema) {
       try {
         const { data: resources } = await axios.get(
-          `/api/apps/resources/${app.id}/${resourceName}`,
+          `/api/apps/${app.id}/resources/${resourceName}`,
         );
         this.setState({ resources, loading: false });
       } catch (e) {
