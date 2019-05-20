@@ -7,6 +7,7 @@ import { FormattedMessage } from 'react-intl';
 import checkScope from '../../utils/checkScope';
 import Block from '../Block';
 import Login from '../Login';
+import PageDialog from '../PageDialog';
 import TitleBar from '../TitleBar';
 import messages from './messages';
 import styles from './Page.css';
@@ -148,7 +149,12 @@ export default class Page extends React.Component {
             showDialog={this.showDialog}
           />
         ))}
-        {dialog}
+        <PageDialog
+          dialog={dialog}
+          emitEvent={this.emitEvent}
+          offEvent={this.offEvent}
+          onEvent={this.onEvent}
+        />
       </React.Fragment>
     );
   }

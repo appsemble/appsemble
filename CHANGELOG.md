@@ -9,7 +9,13 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
+- App: Add support for `private` flag in an app definition. Private apps are not included in
+  `/api/apps`.
 - App: Add support for the new `static` block layout.
+- App: Allow `splash` actions to not be full screen. They can still be made full screen by passing
+  `fullscreen: true` to the action.
+- App: Rename `splash` action to `dialog`.
+- Block: Add new feed block for showing content similar to social media feeds.
 - Editor: Render a user fiendly error page if an unexpected error occurs.
 - Editor: Report errors to Sentry if this is configured.
 - SDK: Add support for the events API.
@@ -21,6 +27,9 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - App: Rename a block `position` to `layout`.
 - Editor: Remove controls for unconfigured login / registration methods.
 - Server: Rename a block `position` to `layout`.
+- Server: Move Resource endpoint from `/apps/{appId}/{resourceName}` to
+  `/apps/{appId}/resources/{resourceName}`.
+- Server: Make App endpoint `/apps` public.
 
 ## [0.5.0] - 2019-04-11
 

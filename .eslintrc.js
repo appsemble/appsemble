@@ -3,7 +3,7 @@ const path = require('path');
 const { version } = require('react/package.json');
 const restricted = require('eslint-restricted-globals');
 
-const configs = [path.join(__dirname, 'config/**'), '*.config.js', '.*rc.js'];
+const configs = [path.join(__dirname, 'config/**'), '*.config.js', '.*rc.js', 'types/*.d.ts'];
 const tests = ['**/*.test.{js,jsx,ts,tsx}'];
 
 module.exports = {
@@ -136,6 +136,8 @@ module.exports = {
         jest: true,
       },
       rules: {
+        // We don’t need browser compatibility checks on our tests.
+        'compat/compat': 'off',
         'import/no-extraneous-dependencies': context => [
           'error',
           { devDependencies: true, packageDir: [context.getFilename(), __dirname] },

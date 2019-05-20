@@ -3,21 +3,54 @@
  */
 type Awaitable<T> = T | Promise<T>;
 
+interface BaseAction {
+  /**
+   * A function which can be called to dispatch the action.
+   */
+  dispatch: (data?: any) => Promise<any>;
+}
+
 /**
  * An action that can be called from within a block.
  */
-export interface Action {
-  /** A function which can be called to dispatch the action. */
-  dispatch: Function;
-
-  /** The type of the action. */
-  type: string;
+export interface SimpleAction extends BaseAction {
+  /**
+   * The type of the action.
+   */
+  type:
+    | 'dialog'
+    | 'dialog.error'
+    | 'dialog.ok'
+    | 'log'
+    | 'noop'
+    | 'request'
+    | 'resource.get'
+    | 'resource.query'
+    | 'resource.create'
+    | 'resource.update'
+    | 'resource.delete';
 }
+
+export interface LinkAction extends BaseAction {
+  type: 'link';
+
+  /**
+   * Get the link that the action would link to if the given data was passed.
+   */
+  href: (data?: any) => string;
+}
+
+/**
+ * An action that can be called from within a block.
+ */
+export type Action = SimpleAction | LinkAction;
+
+export type Actions<A> = { [K in keyof A]: Action };
 
 /**
  * A block that is displayed on a page.
  */
-export interface Block {
+export interface Block<P = any, A = {}> {
   /**
    * The type of the block.
    *
@@ -46,19 +79,14 @@ export interface Block {
    *
    * The exact meaning of the parameters depends on the block type.
    */
-  parameters?: {};
+  parameters?: P;
 
   /**
    * A mapping of actions that can be fired by the block to action handlers.
    *
    * The exact meaning of the parameters depends on the block type.
    */
-  actions?: {
-    [action: string]: {
-      type: string;
-      [additionalProperty: string]: any;
-    };
-  };
+  actions?: A;
 }
 
 export interface Message {
@@ -108,16 +136,16 @@ export interface Events {
 /**
  * The parameters that get passed to the bootstrap function.
  */
-export interface BootstrapParams {
+export interface BootstrapParams<P = any, A = {}> {
   /**
    * The actions that may be dispatched by the block.
    */
-  actions: { [key: string]: Action };
+  actions: Actions<A>;
 
   /**
    * The block as it is defined in the app definition.
    */
-  block: Block;
+  block: Block<P, A>;
 
   /**
    * Any kind of data that has been passed in by some context.
@@ -149,18 +177,13 @@ export interface BootstrapParams {
 }
 
 /**
- * A function that may be passed as a callback to {@link bootstrap} or {@link attach}.
- */
-export type BootstrapFunction<ReturnType = void> = (
-  params: BootstrapParams,
-) => Awaitable<ReturnType>;
-
-/**
  * Register a boostrap function.
  *
  * @param fn The bootstrap function to register
  */
-export function bootstrap(fn: BootstrapFunction): void {
+export function bootstrap<P = any, A = {}>(
+  fn: (params: BootstrapParams<P, A>) => Awaitable<void>,
+): void {
   const event = new CustomEvent('AppsembleBootstrap', {
     detail: {
       fn,
@@ -178,8 +201,10 @@ export function bootstrap(fn: BootstrapFunction): void {
  *
  * @param fn The bootstrap function to register.
  */
-export function attach(fn: BootstrapFunction<HTMLElement | void>): void {
-  bootstrap(
+export function attach<P = any, A = {}>(
+  fn: (params: BootstrapParams<P, A>) => Awaitable<HTMLElement | void>,
+): void {
+  bootstrap<P, A>(
     async (params): Promise<void> => {
       const { shadowRoot } = params;
 

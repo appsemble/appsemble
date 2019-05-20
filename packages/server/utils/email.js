@@ -9,7 +9,7 @@ import stubTransport from 'nodemailer-stub-transport';
 import { markdown } from 'nodemailer-markdown';
 
 function readTemplate(templateName) {
-  return fs.readFileSync(path.join(__dirname, `../templates/${templateName}.md`), 'utf8');
+  return fs.readFileSync(path.join(__dirname, `../templates/email/${templateName}.md`), 'utf8');
 }
 
 export function processTemplate(temp, replacements) {

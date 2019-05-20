@@ -12,7 +12,7 @@ function getBlobs(resource) {
 function get({ resource: name, query: params }, app) {
   const { schema, ...resource } = app.resources[name];
   const method = resource?.get?.method || 'GET';
-  const url = resource?.get?.url || resource.url || `/api/apps/${app.id}/${name}`;
+  const url = resource?.get?.url || resource.url || `/api/apps/${app.id}/resources/${name}`;
   const id = resource.id || 'id';
 
   return request({
@@ -24,18 +24,18 @@ function get({ resource: name, query: params }, app) {
   });
 }
 
-function query({ resource: name, query: params }, app) {
+function query({ resource: name, query: queryParams }, app) {
   const { schema, ...resource } = app.resources[name];
   const method = resource?.query?.method || 'GET';
-  const url = resource?.query?.url || resource.url || `/api/apps/${app.id}/${name}`;
+  const url = resource?.query?.url || resource.url || `/api/apps/${app.id}/resources/${name}`;
 
-  return request({ blobs: getBlobs(resource), method, url, query: params, schema });
+  return request({ blobs: getBlobs(resource), method, url, query: queryParams, schema });
 }
 
 function create({ resource: name }, app) {
   const { schema, ...resource } = app.resources[name];
   const method = resource?.create?.method || 'POST';
-  const url = resource?.create?.url || resource.url || `/api/apps/${app.id}/${name}`;
+  const url = resource?.create?.url || resource.url || `/api/apps/${app.id}/resources/${name}`;
 
   return request({ blobs: getBlobs(resource), method, url, schema });
 }
@@ -43,7 +43,7 @@ function create({ resource: name }, app) {
 function update({ resource: name, query: params }, app) {
   const { schema, ...resource } = app.resources[name];
   const method = resource?.update?.method || 'PUT';
-  const url = resource?.update?.url || resource.url || `/api/apps/${app.id}/${name}`;
+  const url = resource?.update?.url || resource.url || `/api/apps/${app.id}/resources/${name}`;
   const id = resource.id || 'id';
 
   return request({
@@ -58,7 +58,7 @@ function update({ resource: name, query: params }, app) {
 function remove({ resource: name, query: params }, app) {
   const { schema, ...resource } = app.resources[name];
   const method = resource?.delete?.method || 'DELETE';
-  const url = resource?.delete?.url || resource.url || `/api/apps/${app.id}/${name}`;
+  const url = resource?.delete?.url || resource.url || `/api/apps/${app.id}/resources/${name}`;
   const id = resource.id || 'id';
 
   return request({

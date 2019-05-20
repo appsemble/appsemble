@@ -20,7 +20,6 @@ export default async function main(argv) {
     .option('remote', {
       description: 'The Appsemble host that should be used.',
       default: 'http://localhost:9999',
-      // process.env.NODE_ENV === 'development' ? 'http://localhost:9999' : 'https://appsemble.com',
     })
     .pkgConf('appsembleServer')
     .middleware([configureLogger, initAxios])

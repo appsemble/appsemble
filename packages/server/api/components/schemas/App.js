@@ -43,6 +43,10 @@ export default {
         normalized version of the app name.
       `,
     },
+    private: {
+      type: 'boolean',
+      description: 'Determines whether this app should be included when fetching all apps.',
+    },
     defaultPage: {
       $ref: '#/components/schemas/Page/properties/name',
       description: `The name of the page that should be displayed when the app is initially loaded.

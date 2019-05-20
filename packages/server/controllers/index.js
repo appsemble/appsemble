@@ -4,3 +4,4 @@ export * from './auth';
 export * from './blocks';
 export * from './organizations';
 export * from './resources';
+export * from './templates';

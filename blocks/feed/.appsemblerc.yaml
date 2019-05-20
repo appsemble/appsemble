@@ -1,0 +1,7 @@
+actions:
+  avatarClick: {}
+  load: {}
+  submitReply: {}
+  loadReply: {}
+
+output: dist

@@ -1,8 +1,7 @@
+const { CI_COMMIT_REF_NAME = 'dev' } = process.env;
+
 module.exports = {
-  base: process.env.CI_ENVIRONMENT_URL
-    ? new URL(process.env.CI_ENVIRONMENT_URL).pathname.replace(/index\.html$/, '')
-    : '/',
   src: './docs',
-  title: 'Appsemble',
+  title: `Appsemble ${CI_COMMIT_REF_NAME}`,
   menu: ['Getting Started', 'Architecture', 'Blocks', 'Development', 'Deployment'],
 };

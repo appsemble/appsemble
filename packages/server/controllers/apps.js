@@ -8,6 +8,7 @@ import jsYaml from 'js-yaml';
 
 import getDefaultIcon from '../utils/getDefaultIcon';
 import getAppBlocks from '../utils/getAppBlocks';
+import getAppFromRecord from '../utils/getAppFromRecord';
 
 async function checkBlocks(app, db) {
   const blocks = getAppBlocks(app);
@@ -63,16 +64,6 @@ function handleAppValidationError(error, app) {
   throw error;
 }
 
-function getAppFromRecord(record) {
-  return {
-    ...record.definition,
-    id: record.id,
-    path: record.path,
-    organizationId: record.OrganizationId,
-    yaml: record.yaml || jsYaml.safeDump(record.definition),
-  };
-}
-
 export async function createApp(ctx) {
   const { db } = ctx;
   const { App } = db.models;
@@ -122,7 +113,10 @@ export async function getAppById(ctx) {
 export async function queryApps(ctx) {
   const { App } = ctx.db.models;
 
-  const apps = await App.findAll({ raw: true });
+  const apps = await App.findAll({
+    where: { definition: { private: { [Op.or]: { [Op.eq]: false, [Op.eq]: null } } } },
+    raw: true,
+  });
   ctx.body = apps.map(getAppFromRecord);
 }
 
@@ -157,7 +151,7 @@ export async function updateApp(ctx) {
       style: validateStyle(style && style.contents),
       sharedStyle: validateStyle(sharedStyle && sharedStyle.contents),
       path: definition.path || normalize(definition.name),
-      yaml: yaml?.toString('utf8'),
+      yaml: yaml && yaml.toString('utf8'),
     };
 
     if (yaml) {

@@ -1,0 +1,42 @@
+.root {
+  margin: 10px;
+}
+
+.avatar {
+  border: none;
+  padding: 0;
+
+  &:focus {
+    outline: none;
+  }
+}
+
+.figure {
+  align-items: center;
+  background-color: hsl(0, 0%, 96%);
+  display: flex;
+  justify-content: center;
+  text-align: center;
+  vertical-align: baseline;
+  width: 100%;
+}
+
+.image {
+  max-height: 33vh;
+  position: relative;
+}
+
+.replies {
+  max-height: 12rem;
+  overflow-y: auto;
+}
+
+.replyForm {
+  display: flex;
+  padding: 8px 0;
+}
+
+.replyButton {
+  border-radius: 50%;
+  margin-left: 4px;
+}

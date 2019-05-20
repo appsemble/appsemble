@@ -1,6 +1,6 @@
 import React from 'react';
 import axios from 'axios';
-import { Loader } from '@appsemble/react-components';
+import { Loader, Modal } from '@appsemble/react-components';
 import classNames from 'classnames';
 import { FormattedMessage } from 'react-intl';
 import PropTypes from 'prop-types';
@@ -119,7 +119,10 @@ export default class ResourceTable extends React.Component {
     const { editingResource, resources } = this.state;
 
     try {
-      const { data } = await axios.post(`/api/apps/${app.id}/${resourceName}`, editingResource);
+      const { data } = await axios.post(
+        `/api/apps/${app.id}/resources/${resourceName}`,
+        editingResource,
+      );
 
       this.setState({
         resources: [...resources, data],
@@ -149,7 +152,7 @@ export default class ResourceTable extends React.Component {
 
     try {
       await axios.put(
-        `/api/apps/${app.id}/${resourceName}/${match.params.resourceId}`,
+        `/api/apps/${app.id}/resources/${resourceName}/${match.params.resourceId}`,
         editingResource,
       );
 
@@ -182,7 +185,7 @@ export default class ResourceTable extends React.Component {
     const { deletingResource, resources } = this.state;
 
     try {
-      await axios.delete(`/api/apps/${app.id}/${resourceName}/${deletingResource.id}`);
+      await axios.delete(`/api/apps/${app.id}/resources/${resourceName}/${deletingResource.id}`);
       push({
         body: formatMessage(messages.deleteSuccess, { id: deletingResource.id }),
         color: 'primary',
@@ -205,9 +208,11 @@ export default class ResourceTable extends React.Component {
       this.setState({ loading: true, error: false, resources: [] });
     }
 
-    if (app.resources[resourceName].schema) {
+    if (app.resources[resourceName]?.schema) {
       try {
-        const { data: resources } = await axios.get(`/api/apps/${app.id}/${resourceName}`);
+        const { data: resources } = await axios.get(
+          `/api/apps/resources/${app.id}/${resourceName}`,
+        );
         this.setState({ resources, loading: false });
       } catch (e) {
         this.setState({ loading: false, error: true });
@@ -237,25 +242,28 @@ export default class ResourceTable extends React.Component {
     }
 
     if (!loading && resources === undefined) {
+      if (!app.resources[resourceName]) {
+        return <FormattedMessage {...messages.notFound} />;
+      }
+
       const { url } = app.resources[resourceName];
+
       return (
-        <React.Fragment>
-          <FormattedMessage
-            {...messages.notManaged}
-            values={{
-              link: (
-                <a href={url} rel="noopener noreferrer" target="_blank">
-                  {url}
-                </a>
-              ),
-            }}
-          />
-        </React.Fragment>
+        <FormattedMessage
+          {...messages.notManaged}
+          values={{
+            link: (
+              <a href={url} rel="noopener noreferrer" target="_blank">
+                {url}
+              </a>
+            ),
+          }}
+        />
       );
     }
 
     const { schema } = app.resources[resourceName];
-    const keys = ['id', ...Object.keys(schema.properties)];
+    const keys = ['id', ...Object.keys(schema?.properties || {})];
 
     return (
       <React.Fragment>
@@ -309,136 +317,109 @@ export default class ResourceTable extends React.Component {
             })}
           </tbody>
         </table>
-        <form
-          className="container"
-          onSubmit={mode === 'edit' ? this.submitEdit : this.submitCreate}
-        >
-          <div className={classNames('modal', { 'is-active': mode === 'edit' || mode === 'new' })}>
-            <div
-              className="modal-background"
-              onClick={this.onClose}
-              onKeyDown={this.onKeyDown}
-              role="presentation"
-            />
-            <div className="modal-content">
-              <div className="card">
-                <div className="card-content">
-                  {keys.map(key => {
-                    const properties = schema.properties[key] || {};
+        <Modal isActive={mode === 'edit' || mode === 'new'} onClose={this.onClose}>
+          <form className="card" onSubmit={mode === 'edit' ? this.submitEdit : this.submitCreate}>
+            <div className="card-content">
+              {keys.map(key => {
+                const properties = schema?.properties[key] || {};
 
-                    return (
-                      <div key={key} className="field is-horizontal">
-                        <div className="field-label is-normal">
-                          <label className="label" htmlFor={key}>
-                            {key}
-                          </label>
-                        </div>
-                        <div className="field-body">
-                          <div className="field">
-                            <div className="control">
-                              <input
-                                className="input"
-                                disabled={properties.readOnly || key === 'id'}
-                                id={key}
-                                name={key}
-                                onChange={this.onChange}
-                                placeholder={key}
-                                required={schema.required?.includes(key)}
-                                type={
-                                  properties.format && properties.format === 'email'
-                                    ? 'email'
-                                    : 'text'
-                                }
-                                value={
-                                  editingResource && editingResource[key]
-                                    ? editingResource[key]
-                                    : ''
-                                }
-                              />
-                            </div>
-                          </div>
+                return (
+                  <div key={key} className="field is-horizontal">
+                    <div className="field-label is-normal">
+                      <label className="label" htmlFor={key}>
+                        {key}
+                      </label>
+                    </div>
+                    <div className="field-body">
+                      <div className="field">
+                        <div className="control">
+                          <input
+                            className="input"
+                            disabled={properties.readOnly || key === 'id'}
+                            id={key}
+                            name={key}
+                            onChange={this.onChange}
+                            placeholder={key}
+                            required={schema?.required?.includes(key)}
+                            type={
+                              properties.format && properties.format === 'email' ? 'email' : 'text'
+                            }
+                            value={
+                              editingResource && editingResource[key] ? editingResource[key] : ''
+                            }
+                          />
                         </div>
                       </div>
-                    );
-                  })}
-                </div>
-                <footer className="card-footer">
-                  {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
-                  <a
-                    className="card-footer-item is-link"
-                    onClick={this.onClose}
-                    onKeyDown={this.onKeyDown}
-                    role="button"
-                    tabIndex="0"
-                  >
-                    <FormattedMessage {...messages.cancelButton} />
-                  </a>
-                  <button
-                    className={classNames(
-                      'card-footer-item',
-                      'button',
-                      'is-primary',
-                      styles.cardFooterButton,
-                    )}
-                    type="submit"
-                  >
-                    {mode === 'edit' ? (
-                      <FormattedMessage {...messages.editButton} />
-                    ) : (
-                      <FormattedMessage {...messages.createButton} />
-                    )}
-                  </button>
-                </footer>
-              </div>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
-            <button className="modal-close is-large" onClick={this.onClose} type="button" />
-          </div>
-        </form>
-        <div className={classNames('modal', warningDialog && 'is-active')}>
-          <div
-            className="modal-background"
-            onClick={this.onClose}
-            onKeyDown={this.onKeyDown}
-            role="presentation"
-          />
-          <div className="modal-content">
-            <div className="card">
-              <header className="card-header">
-                <p className="card-header-title">
-                  <FormattedMessage {...messages.resourceWarningTitle} />
-                </p>
-              </header>
-              <div className="card-content">
-                <FormattedMessage {...messages.resourceWarning} />
-              </div>
-              <footer className="card-footer">
-                {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
-                <a
-                  className="card-footer-item is-link"
-                  onClick={this.onClose}
-                  onKeyDown={this.onKeyDown}
-                  role="button"
-                  tabIndex="-1"
-                >
-                  <FormattedMessage {...messages.cancelButton} />
-                </a>
-                <button
-                  className={classNames(
-                    'card-footer-item',
-                    'button',
-                    'is-danger',
-                    styles.cardFooterButton,
-                  )}
-                  onClick={this.deleteResource}
-                  type="button"
-                >
-                  <FormattedMessage {...messages.deleteButton} />
-                </button>
-              </footer>
+            <footer className="card-footer">
+              {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
+              <a
+                className="card-footer-item is-link"
+                onClick={this.onClose}
+                onKeyDown={this.onKeyDown}
+                role="button"
+                tabIndex="0"
+              >
+                <FormattedMessage {...messages.cancelButton} />
+              </a>
+              <button
+                className={classNames(
+                  'card-footer-item',
+                  'button',
+                  'is-primary',
+                  styles.cardFooterButton,
+                )}
+                type="submit"
+              >
+                {mode === 'edit' ? (
+                  <FormattedMessage {...messages.editButton} />
+                ) : (
+                  <FormattedMessage {...messages.createButton} />
+                )}
+              </button>
+            </footer>
+          </form>
+        </Modal>
+        <Modal isActive={warningDialog} onClose={this.onClose}>
+          <div className="card">
+            <header className="card-header">
+              <p className="card-header-title">
+                <FormattedMessage {...messages.resourceWarningTitle} />
+              </p>
+            </header>
+            <div className="card-content">
+              <FormattedMessage {...messages.resourceWarning} />
             </div>
+            <footer className="card-footer">
+              {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
+              <a
+                className="card-footer-item is-link"
+                onClick={this.onClose}
+                onKeyDown={this.onKeyDown}
+                role="button"
+                tabIndex="-1"
+              >
+                <FormattedMessage {...messages.cancelButton} />
+              </a>
+              <button
+                className={classNames(
+                  'card-footer-item',
+                  'button',
+                  'is-danger',
+                  styles.cardFooterButton,
+                )}
+                onClick={this.deleteResource}
+                type="button"
+              >
+                <FormattedMessage {...messages.deleteButton} />
+              </button>
+            </footer>
           </div>
-          <button className="modal-close is-large" onClick={this.onClose} type="button" />
-        </div>
+        </Modal>
       </React.Fragment>
     );
   }

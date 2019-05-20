@@ -19,4 +19,6 @@ export default defineMessages({
   `,
   template: 'Template',
   organization: 'Organization',
+  resources: 'Resources',
+  includeResources: 'Include example resources',
 });

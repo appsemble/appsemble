@@ -68,9 +68,11 @@ NODE_ENV=production yarn start
 The current blocks can be built using the following commands.
 
 ```sh
+yarn block action
 yarn block action-button
 yarn block detail-viewer
 yarn block list
+yarn block feed
 yarn block filter
 yarn block form
 yarn block map
@@ -85,9 +87,11 @@ to be authenticated in the CLI. After having registered an Appsemble account, yo
 yourself using `yarn appsemble login`.
 
 ```sh
+yarn appsemble block register blocks/action
 yarn appsemble block register blocks/action-button
 yarn appsemble block register blocks/detail-viewer
 yarn appsemble block register blocks/list
+yarn appsemble block register blocks/feed
 yarn appsemble block register blocks/filter
 yarn appsemble block register blocks/form
 yarn appsemble block register blocks/map

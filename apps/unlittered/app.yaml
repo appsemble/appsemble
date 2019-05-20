@@ -4,6 +4,7 @@ defaultPage: Maak waarneming
 theme:
   splashColor: '#FFFFFF'
   themeColor: '#eb0000'
+  primaryColor: '#eb0000'
 
 resources:
   waarneming:
@@ -11,6 +12,16 @@ resources:
     blobs:
       url: 'https://api.stadswerken.amsterdam/upload'
       serialize: custom
+  waarnemingReply:
+    references:
+      waarnemingId: waarneming
+    schema:
+      type: object
+      required:
+        - content
+      properties:
+        content:
+          type: string
 
 authentication:
   - method: email
@@ -49,7 +60,8 @@ pages:
               repeated: true
         actions:
           submit:
-            type: splash
+            type: dialog
+            fullscreen: true
             blocks:
               - type: '@amsterdam/splash'
                 version: 0.5.0
@@ -58,7 +70,7 @@ pages:
                     type: resource.create
                     resource: waarneming
                   error:
-                    type: splash.error
+                    type: dialog.error
                   success:
                     type: link
                     to: Overzichtskaart
@@ -88,6 +100,90 @@ pages:
           click:
             type: link
             to: Maak waarneming
+
+  - name: Waarnemingen lijst
+    scope:
+      - '*'
+    blocks:
+      - type: filter
+        version: 0.5.0
+        parameters:
+          event: updateWaarnemingen
+          highlight: proces
+          fields:
+            - name: proces
+              enum:
+                - value: Fietsknip team
+                - value: Handhaving
+                - value: Heel en Groen
+                - value: Inzameling
+        actions:
+          load:
+            type: resource.query
+            resource: waarneming
+            query:
+              $orderBy: 'created_at desc'
+              $top: 50
+
+      - type: feed
+        version: 0.5.0
+        parameters:
+          listen: updateWaarnemingen
+          title: proces
+          subtitle: id|upper
+          heading: created_at
+          picture: fotos.0
+          pictureBase: https://api.stadswerken.amsterdam/uploads
+          description: notities
+          reply:
+            content: content
+            author: author
+            parentId: waarnemingId
+        actions:
+          loadReply:
+            type: resource.query
+            resource: waarnemingReply
+          submitReply:
+            type: resource.create
+            resource: waarnemingReply
+          avatarClick:
+            type: dialog
+            blocks:
+              - type: '@amsterdam/action'
+                version: 0.5.0
+                actions:
+                  submit:
+                    type: resource.update
+                    resource: waarneming
+                  success:
+                    type: dialog.ok
+                  error:
+                    type: dialog.error
+                parameters:
+                  title: VOER ACTIE UIT
+                  fields:
+                    - name: notities
+                      label: pak waarneming op
+                      icon: cog
+                      color: '#FFFFFF'
+                      backgroundColor: '#00AEEF'
+                      value: Waarneming opgepakt
+                    - name: notities
+                      label: meld als opgelost
+                      icon: check
+                      color: '#FFFFFF'
+                      backgroundColor: '#006502'
+                      value: Waarneming opgelost
+                    - name: proces
+                      label: routeer naar
+                      icon: paper-plane
+                      color: '#FFFFFF'
+                      backgroundColor: '#006502'
+                      enum:
+                        - value: Fietsknip team
+                        - value: Handhaving
+                        - value: Heel en Groen
+                        - value: Inzameling
 
   - name: Waarneming details
     scope:
