@@ -68,9 +68,8 @@ describe('app controller', () => {
       },
       { raw: true },
     );
-    const { body } = await request(server)
-      .get('/api/apps')
-      .set('Authorization', token);
+
+    const { body } = await request(server).get('/api/apps');
 
     expect(body).toHaveLength(2);
     expect(body).toContainEqual({
@@ -89,6 +88,37 @@ defaultPage: Test Page
       organizationId: appB.OrganizationId,
       yaml: `name: Another App
 defaultPage: Another Page
+`,
+    });
+  });
+
+  it('should not include private apps when fetching all apps', async () => {
+    const appA = await App.create(
+      {
+        path: 'test-app',
+        definition: { name: 'Test App', defaultPage: 'Test Page' },
+        OrganizationId: organizationId,
+      },
+      { raw: true },
+    );
+    await App.create(
+      {
+        path: 'another-app',
+        definition: { name: 'Another App', defaultPage: 'Another Page', private: true },
+        OrganizationId: organizationId,
+      },
+      { raw: true },
+    );
+
+    const { body } = await request(server).get('/api/apps');
+    expect(body).toHaveLength(1);
+    expect(body).toContainEqual({
+      id: appA.id,
+      path: 'test-app',
+      ...appA.definition,
+      organizationId: appA.OrganizationId,
+      yaml: `name: Test App
+defaultPage: Test Page
 `,
     });
   });
