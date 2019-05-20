@@ -50,11 +50,11 @@ export default class Card extends React.Component {
 
   onAvatarClick = async event => {
     event.preventDefault();
-    const { actions, onUpdate } = this.props;
-    const data = await actions.avatarClick.dispatch();
+    const { actions, content, onUpdate } = this.props;
+    const data = await actions.avatarClick.dispatch(content);
 
     if (data) {
-      await onUpdate(data);
+      onUpdate(data);
     }
   };
 
@@ -62,9 +62,11 @@ export default class Card extends React.Component {
     this.setState({ message: event.target.value });
   };
 
-  onSubmit = async event => {
+  onSubmit = event => {
     event.preventDefault();
+  };
 
+  onClick = async () => {
     const { actions, block, content, utils, intl } = this.props;
     const { message, replies } = this.state;
 
@@ -164,7 +166,7 @@ export default class Card extends React.Component {
               );
             })}
           </div>
-          <form className={styles.replyForm} noValidate>
+          <form className={styles.replyForm} noValidate onSubmit={this.onSubmit}>
             <input
               className="input"
               onChange={this.onChange}
@@ -174,11 +176,7 @@ export default class Card extends React.Component {
             {/* eslint-disable-next-line no-inline-comments */}
             {/* onSubmit is not used because of buggy interactions with ShadowDOM, React.
                 See: https://github.com/spring-media/react-shadow-dom-retarget-events/issues/13 */}
-            <button
-              className={`button ${styles.replyButton}`}
-              onClick={this.onSubmit}
-              type="button"
-            >
+            <button className={`button ${styles.replyButton}`} onClick={this.onClick} type="button">
               <span className="icon is-small">
                 <i className="fas fa-paper-plane" />
               </span>
