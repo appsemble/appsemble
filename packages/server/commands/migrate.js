@@ -53,13 +53,10 @@ export async function handler(argv) {
   const params = { ...(to && { to }), ...(from && { from }) };
   let result;
 
-  switch (mode) {
-    case 'down':
-      result = await umzug.down(params);
-      break;
-    case 'up':
-    default:
-      result = await umzug.up(params);
+  if (mode === 'down') {
+    result = await umzug.down(params);
+  } else {
+    result = await umzug.up(params);
   }
 
   logger.info(`Applied ${result.length} migration(s).`);
