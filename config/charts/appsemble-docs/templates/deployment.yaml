@@ -7,6 +7,7 @@ metadata:
     helm.sh/chart: {{ include "docs.chart" . }}
     app.kubernetes.io/instance: {{ .Release.Name }}
     app.kubernetes.io/managed-by: {{ .Release.Service }}
+    appsemble.app/git-commit-sha: {{ .Values.git.commit.sha }}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:

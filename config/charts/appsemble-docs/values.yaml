@@ -8,6 +8,9 @@ image:
 nameOverride: ''
 fullnameOverride: ''
 host: ''
+git:
+  commit:
+    sha: ''
 
 service:
   type: ClusterIP
