@@ -8,10 +8,53 @@ theme:
 
 resources:
   waarneming:
-    url: https://api.stadswerken.amsterdam/waarnemingen_real
-    blobs:
-      url: 'https://api.stadswerken.amsterdam/upload'
-      serialize: custom
+    schema:
+      type: object
+      properties:
+        notities:
+          title: Notities
+        fotos:
+          title: Foto's
+          type: array
+          items:
+            type: string
+            appsembleFile:
+              type:
+                - image/jpeg
+        proces:
+          title: Proces
+          enum:
+            - Fietsknip team
+            - Handhaving
+            - Heel en Groen
+            - Inzameling
+        locatie:
+          title: Locatie
+          type: object
+          required:
+            - latitude
+            - longitude
+          properties:
+            latitude:
+              type: number
+            longitude:
+              type: number
+        status:
+          title: Status
+          enum:
+            - open
+            - in-behandeling
+            - gesloten
+        kanaal:
+          title: Kanaal
+          enum:
+            - Centraal
+            - Zuid
+            - Noord
+    # url: https://api.stadswerken.amsterdam/waarnemingen_real
+    # blobs:
+    #   url: 'https://api.stadswerken.amsterdam/upload'
+    #   serialize: custom
   waarnemingReply:
     references:
       waarnemingId: waarneming
@@ -23,10 +66,16 @@ resources:
         content:
           type: string
 
+# authentication:
+#   - method: email
+#     url: https://api.stadswerken.amsterdam/login
+#     refreshURL: https://api.stadswerken.amsterdam/token/refresh
+
 authentication:
   - method: email
-    url: https://api.stadswerken.amsterdam/login
-    refreshURL: https://api.stadswerken.amsterdam/token/refresh
+    url: /api/oauth/token
+    clientId: appsemble-editor
+    scope: apps:read
 
 pages:
   - name: Maak waarneming
@@ -47,6 +96,17 @@ pages:
                 - value: Handhaving
                 - value: Heel en Groen
                 - value: Inzameling
+            - name: kanaal
+              label: Kanaal
+              enum:
+                - value: Centraal
+                - value: Noord
+                - value: Zuid
+            - name: status
+              label: Status
+              enum:
+                - value: open
+                  label: Open
             - name: notities
               label: Notities
               placeholder: Bijv. Er ligt een fiets in de bosjes.
@@ -109,14 +169,27 @@ pages:
         version: 0.5.0
         parameters:
           event: updateWaarnemingen
-          highlight: proces
+          highlight: kanaal
           fields:
-            - name: proces
+            - name: kanaal
+              label: Kanaal
               enum:
-                - value: Fietsknip team
-                - value: Handhaving
-                - value: Heel en Groen
-                - value: Inzameling
+                - value: Centraal
+                - value: Noord
+                - value: Zuid
+            - name: created
+              label: Datum
+              type: date
+              range: true
+            - name: status
+              label: Status
+              enum:
+                - value: open
+                  label: Open
+                - value: in-behandeling
+                  label: In behandeling
+                - value: opgelost
+                  label: Opgelost
         actions:
           load:
             type: resource.query
@@ -130,10 +203,11 @@ pages:
         parameters:
           listen: updateWaarnemingen
           title: proces
-          subtitle: id|upper
-          heading: created_at
+          subtitle: status
+          heading: created
           picture: fotos.0
-          pictureBase: https://api.stadswerken.amsterdam/uploads
+          pictureBase: /api/assets
+          # pictureBase: https://api.stadswerken.amsterdam/uploads
           description: notities
           reply:
             content: content
@@ -162,18 +236,18 @@ pages:
                 parameters:
                   title: VOER ACTIE UIT
                   fields:
-                    - name: notities
+                    - name: status
                       label: pak waarneming op
                       icon: cog
                       color: '#FFFFFF'
                       backgroundColor: '#00AEEF'
-                      value: Waarneming opgepakt
-                    - name: notities
+                      value: in-behandeling
+                    - name: status
                       label: meld als opgelost
                       icon: check
                       color: '#FFFFFF'
                       backgroundColor: '#006502'
-                      value: Waarneming opgelost
+                      value: opgelost
                     - name: proces
                       label: routeer naar
                       icon: paper-plane
@@ -184,7 +258,12 @@ pages:
                         - value: Handhaving
                         - value: Heel en Groen
                         - value: Inzameling
-
+      - type: action-button
+        version: 0.5.0
+        actions:
+          click:
+            type: link
+            to: Maak waarneming
   - name: Waarneming details
     scope:
       - '*'
@@ -194,7 +273,8 @@ pages:
       - type: detail-viewer
         version: 0.5.0
         parameters:
-          fileBase: 'https://api.stadswerken.amsterdam/uploads'
+          fileBase: /api/assets
+          # fileBase: 'https://api.stadswerken.amsterdam/uploads'
           fields:
             - name: locatie
               label: Locatie
@@ -203,6 +283,10 @@ pages:
               latitude: latitude # locatie.latitude
             - name: proces
               label: Proces
+            - name: kanaal
+              label: Kanaal
+            - name: status
+              label: Status
             - name: notities
               label: Notities
             - name: fotos
