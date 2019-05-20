@@ -1,10 +1,10 @@
 {
   "name": "@appsemble/server",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "private": true,
   "dependencies": {
-    "@appsemble/node-utils": "^0.5.0",
-    "@appsemble/utils": "^0.5.0",
+    "@appsemble/node-utils": "^0.6.0",
+    "@appsemble/utils": "^0.6.0",
     "@fortawesome/fontawesome-free": "^5.8.1",
     "@sentry/node": "^5.1.0",
     "axios": "^0.18.0",
