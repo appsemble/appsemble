@@ -1,9 +1,9 @@
-export default (sequelize, DataTypes) =>
-  sequelize.define(
+export default (sequelize, DataTypes) => {
+  const BlockVersion = sequelize.define(
     'BlockVersion',
     {
-      name: { type: DataTypes.STRING, primaryKey: true },
-      version: { type: DataTypes.STRING, primaryKey: true },
+      name: { type: DataTypes.STRING, primaryKey: true, unique: 'blockVersionComposite' },
+      version: { type: DataTypes.STRING, primaryKey: true, unique: 'blockVersionComposite' },
       layout: { type: DataTypes.STRING },
       actions: { type: DataTypes.JSON },
       resources: { type: DataTypes.JSON },
@@ -16,3 +16,11 @@ export default (sequelize, DataTypes) =>
       deletedAt: 'deleted',
     },
   );
+
+  BlockVersion.associate = ({ BlockAsset }) => {
+    BlockVersion.hasMany(BlockAsset, { foreignKey: 'name', sourceKey: 'name' });
+    BlockVersion.hasMany(BlockAsset, { foreignKey: 'version', sourceKey: 'version' });
+  };
+
+  return BlockVersion;
+};

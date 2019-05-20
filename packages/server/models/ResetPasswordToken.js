@@ -1,5 +1,5 @@
-export default (sequelize, DataTypes) =>
-  sequelize.define(
+export default (sequelize, DataTypes) => {
+  const ResetPasswordToken = sequelize.define(
     'ResetPasswordToken',
     {
       token: { type: DataTypes.STRING, primaryKey: true },
@@ -10,3 +10,13 @@ export default (sequelize, DataTypes) =>
       updatedAt: 'updated',
     },
   );
+
+  ResetPasswordToken.associate = ({ EmailAuthorization }) => {
+    ResetPasswordToken.belongsTo(EmailAuthorization, {
+      foreignKey: { allowNull: false },
+      onDelete: 'CASCADE',
+    });
+  };
+
+  return ResetPasswordToken;
+};

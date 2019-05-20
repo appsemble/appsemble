@@ -20,6 +20,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Editor: Report errors to Sentry if this is configured.
 - SDK: Add support for the events API.
 - Server: Add support for the new `static` block layout.
+- Server: Add support for database migrations.
 
 ### Changed
 

@@ -51,6 +51,7 @@
     "sequelize": "^5.8.1",
     "sharp": "^0.22.1",
     "to-ico": "^1.1.5",
+    "umzug": "^2.2.0",
     "yargs": "^13.2.2"
   },
   "devDependencies": {

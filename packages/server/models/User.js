@@ -1,5 +1,5 @@
-export default (sequelize, DataTypes) =>
-  sequelize.define(
+export default (sequelize, DataTypes) => {
+  const User = sequelize.define(
     'User',
     {
       id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
@@ -12,3 +12,13 @@ export default (sequelize, DataTypes) =>
       deletedAt: 'deleted',
     },
   );
+
+  User.associate = ({ Organization, OAuthToken, OAuthAuthorization, EmailAuthorization }) => {
+    User.belongsToMany(Organization, { through: 'UserOrganization' });
+    User.hasMany(OAuthToken);
+    User.hasMany(OAuthAuthorization);
+    User.hasOne(EmailAuthorization);
+  };
+
+  return User;
+};

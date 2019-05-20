@@ -1,5 +1,5 @@
-export default (sequelize, DataTypes) =>
-  sequelize.define(
+export default (sequelize, DataTypes) => {
+  const OAuthClient = sequelize.define(
     'OAuthClient',
     {
       clientId: { type: DataTypes.STRING, primaryKey: true },
@@ -14,3 +14,8 @@ export default (sequelize, DataTypes) =>
       deletedAt: 'deleted',
     },
   );
+
+  OAuthClient.associate = () => {};
+
+  return OAuthClient;
+};
