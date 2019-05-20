@@ -251,20 +251,21 @@ module.exports = {
     });
   },
   async down(queryInterface) {
-    await queryInterface.dropTable('App');
-    await queryInterface.dropTable('AppBlockStyle');
-    await queryInterface.dropTable('Asset');
-    await queryInterface.dropTable('BlockAsset');
-    await queryInterface.dropTable('BlockDefinition');
-    await queryInterface.dropTable('BlockVersion');
+    await queryInterface.dropTable('ResetPasswordToken');
     await queryInterface.dropTable('EmailAuthorization');
     await queryInterface.dropTable('OAuthAuthorization');
-    await queryInterface.dropTable('OAuthClient');
     await queryInterface.dropTable('OAuthToken');
-    await queryInterface.dropTable('Organization');
-    await queryInterface.dropTable('OrganizationBlockStyle');
-    await queryInterface.dropTable('ResetPasswordToken');
     await queryInterface.dropTable('Resource');
+    await queryInterface.dropTable('UserOrganization');
     await queryInterface.dropTable('User');
+    await queryInterface.dropTable('OrganizationBlockStyle');
+    await queryInterface.dropTable('AppBlockStyle');
+    await queryInterface.dropTable('App');
+    await queryInterface.dropTable('Organization');
+    await queryInterface.dropTable('OAuthClient');
+    await queryInterface.dropTable('BlockVersion');
+    await queryInterface.dropTable('BlockDefinition');
+    await queryInterface.dropTable('BlockAsset');
+    await queryInterface.dropTable('Asset');
   },
 };
