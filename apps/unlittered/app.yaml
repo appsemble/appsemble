@@ -34,7 +34,7 @@ pages:
       - '*'
     blocks:
       - type: form
-        version: 0.5.0
+        version: 0.6.0
         parameters:
           fields:
             - name: locatie
@@ -64,7 +64,7 @@ pages:
             fullscreen: true
             blocks:
               - type: '@amsterdam/splash'
-                version: 0.5.0
+                version: 0.6.0
                 actions:
                   load:
                     type: resource.create
@@ -80,7 +80,7 @@ pages:
       - '*'
     blocks:
       - type: map
-        version: 0.5.0
+        version: 0.6.0
         parameters:
           latitude: locatie.latitude
           longitude: locatie.longitude
@@ -95,7 +95,7 @@ pages:
               $orderBy: 'created_at desc'
               $top: 50
       - type: action-button
-        version: 0.5.0
+        version: 0.6.0
         actions:
           click:
             type: link
@@ -106,7 +106,7 @@ pages:
       - '*'
     blocks:
       - type: filter
-        version: 0.5.0
+        version: 0.6.0
         parameters:
           event: updateWaarnemingen
           highlight: proces
@@ -126,7 +126,7 @@ pages:
               $top: 50
 
       - type: feed
-        version: 0.5.0
+        version: 0.6.0
         parameters:
           listen: updateWaarnemingen
           title: proces
@@ -150,7 +150,7 @@ pages:
             type: dialog
             blocks:
               - type: '@amsterdam/action'
-                version: 0.5.0
+                version: 0.6.0
                 actions:
                   submit:
                     type: resource.update
@@ -192,7 +192,7 @@ pages:
       - id
     blocks:
       - type: detail-viewer
-        version: 0.5.0
+        version: 0.6.0
         parameters:
           fileBase: 'https://api.stadswerken.amsterdam/uploads'
           fields:

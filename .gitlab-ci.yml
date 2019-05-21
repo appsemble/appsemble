@@ -139,8 +139,8 @@ build docker image:
   image: docker
   script:
     - echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY
-    - docker build -t "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG" .
-    - docker push "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG"
+    - docker build -t "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME" .
+    - docker push "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME"
 
 # Build the Docker image.
 build docs image:
@@ -153,8 +153,8 @@ build docs image:
   image: docker
   script:
     - echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY
-    - docker build -f config/docs/Dockerfile -t "$CI_REGISTRY_IMAGE/docs:$CI_COMMIT_REF_SLUG" .
-    - docker push "$CI_REGISTRY_IMAGE/docs:$CI_COMMIT_REF_SLUG"
+    - docker build -f config/docs/Dockerfile -t "$CI_REGISTRY_IMAGE/docs:$CI_COMMIT_REF_NAME" .
+    - docker push "$CI_REGISTRY_IMAGE/docs:$CI_COMMIT_REF_NAME"
 
 # Build the npm packages that should be published.
 pack:
@@ -270,7 +270,7 @@ review docs:
       --reset-values
       --set "host=$CI_ENVIRONMENT_SLUG.appsemble.app"
       --set "ingress.tls.secretName=$CI_COMMIT_REF_SLUG-tls"
-      --set "image.tag=$CI_COMMIT_REF_SLUG"
+      --set "image.tag=$CI_COMMIT_REF_NAME"
 
 # Stop a review environment.
 stop review docs:

@@ -7,6 +7,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.6.0] - 2019-05-20
+
 ### Added
 
 - App: Add support for `private` flag in an app definition. Private apps are not included in
