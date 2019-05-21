@@ -159,7 +159,10 @@ build docs image:
   image: docker
   script:
     - echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY
-    - docker build -f config/docs/Dockerfile -t "$CI_REGISTRY_IMAGE/docs:$CI_COMMIT_REF_NAME" .
+    - docker build .
+      --build-arg "CI_COMMIT_REF_NAME=$CI_COMMIT_REF_NAME"
+      --file config/docs/Dockerfile
+      --tag "$CI_REGISTRY_IMAGE/docs:$CI_COMMIT_REF_NAME"
     - docker push "$CI_REGISTRY_IMAGE/docs:$CI_COMMIT_REF_NAME"
 
 # Build the npm packages that should be published.
