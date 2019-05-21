@@ -275,12 +275,9 @@ review docs:
     - helm init --client-only
     - helm upgrade "$CI_ENVIRONMENT_SLUG" config/charts/appsemble-docs
       --install
-      --wait
-      --reset-values
       --set "git.commit.sha=$CI_COMMIT_SHA"
-      --set "host=$CI_ENVIRONMENT_SLUG.appsemble.app"
-      --set "ingress.tls.secretName=$CI_COMMIT_REF_SLUG-tls"
       --set "image.tag=$CI_COMMIT_REF_NAME"
+      --wait
 
 # Stop a review environment.
 stop review docs:
