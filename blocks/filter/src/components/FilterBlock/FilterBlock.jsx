@@ -34,15 +34,7 @@ export default class FilterBlock extends React.Component {
   };
 
   async componentDidMount() {
-    const {
-      block: {
-        parameters: { event },
-      },
-      events,
-    } = this.props;
-
-    const data = await this.fetchData();
-    events.emit(event, data);
+    this.resetFilter();
   }
 
   fetchData = () => {
@@ -62,8 +54,23 @@ export default class FilterBlock extends React.Component {
   };
 
   resetFilter = () => {
-    this.setState({ currentFilter: {}, filter: {} }, async () => {
-      await this.fetchData();
+    const {
+      events,
+      block: {
+        parameters: { event, fields },
+      },
+    } = this.props;
+
+    const defaultFilter = fields.reduce((acc, { name, defaultValue }) => {
+      if (defaultValue) {
+        acc[name] = defaultValue;
+      }
+      return acc;
+    }, {});
+
+    this.setState({ currentFilter: defaultFilter, filter: defaultFilter }, async () => {
+      const data = await this.fetchData();
+      events.emit(event, data);
     });
   };
 
@@ -134,9 +141,11 @@ export default class FilterBlock extends React.Component {
     const { fields, highlight } = block.parameters;
     const highlightedField = highlight && fields.find(field => field.name === highlight);
     const showModal = !highlightedField || fields.length > 1;
-    // check if filter has any field set that isn't already highlighted
+    // check if filter has any field set that isn't already highlighted or its default value
     const activeFilters = Object.entries(currentFilter).some(
-      ([key, value]) => key !== highlight && !!value,
+      ([key, value]) =>
+        key !== highlight &&
+        (!!value || value !== fields.find(field => field.name === key)?.defaultValue),
     );
 
     return (
