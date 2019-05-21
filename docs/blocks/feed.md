@@ -1,3 +1,8 @@
+---
+menu: Blocks
+path: /blocks/feed
+---
+
 # Feed
 
 ## Introduction
