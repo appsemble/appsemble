@@ -172,7 +172,6 @@ pages:
           highlight: kanaal
           fields:
             - name: kanaal
-              label: Kanaal
               enum:
                 - value: Centraal
                 - value: Noord
@@ -180,9 +179,11 @@ pages:
             - name: created
               label: Datum
               type: date
+              icon: calendar-alt
               range: true
             - name: status
               label: Status
+              icon: cogs
               enum:
                 - value: open
                   label: Open
