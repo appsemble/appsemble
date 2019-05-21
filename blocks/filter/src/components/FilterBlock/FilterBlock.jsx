@@ -61,6 +61,12 @@ export default class FilterBlock extends React.Component {
     });
   };
 
+  resetFilter = () => {
+    this.setState({ currentFilter: {}, filter: {} }, async () => {
+      await this.fetchData();
+    });
+  };
+
   onChange = async ({ target }) => {
     this.setState(({ filter, typingTimer }, { block: { parameters: { fields, highlight } } }) => {
       const newFilter = {
@@ -190,17 +196,29 @@ export default class FilterBlock extends React.Component {
           </div>
         )}
         {showModal && (
-          <button
-            className={classNames('button', styles.filterDialogButton, {
-              'is-primary': activeFilters,
-            })}
-            onClick={this.onOpen}
-            type="button"
-          >
-            <span className="icon">
-              <i className="fas fa-filter" />
-            </span>
-          </button>
+          <React.Fragment>
+            <button
+              className={classNames('button', styles.filterDialogButton)}
+              disabled={!activeFilters ? true : undefined}
+              onClick={this.resetFilter}
+              type="button"
+            >
+              <span className="icon">
+                <i className="fas fa-ban has-text-danger" />
+              </span>
+            </button>
+            <button
+              className={classNames('button', styles.filterDialogButton, {
+                'is-primary': activeFilters,
+              })}
+              onClick={this.onOpen}
+              type="button"
+            >
+              <span className="icon">
+                <i className="fas fa-filter" />
+              </span>
+            </button>
+          </React.Fragment>
         )}
       </div>
     );
