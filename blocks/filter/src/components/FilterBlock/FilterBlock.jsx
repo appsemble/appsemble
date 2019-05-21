@@ -2,6 +2,7 @@ import { Modal } from '@appsemble/react-components';
 import React from 'react';
 import PropTypes from 'prop-types';
 import { FormattedMessage } from 'react-intl';
+import classNames from 'classnames';
 
 import toOData from '../../utils/toOData';
 import Field from '../Field';
@@ -26,6 +27,7 @@ export default class FilterBlock extends React.Component {
   };
 
   state = {
+    currentFilter: {},
     filter: {},
     loading: false,
     isOpen: false,
@@ -109,7 +111,7 @@ export default class FilterBlock extends React.Component {
     const data = await this.fetchData();
     events.emit(event, data);
 
-    await this.setState({ loading: false, isOpen: false });
+    await this.setState(({ filter }) => ({ loading: false, isOpen: false, currentFilter: filter }));
   };
 
   onOpen = () => {
@@ -122,10 +124,14 @@ export default class FilterBlock extends React.Component {
 
   render() {
     const { block } = this.props;
-    const { filter, isOpen, loading } = this.state;
+    const { currentFilter, filter, isOpen, loading } = this.state;
     const { fields, highlight } = block.parameters;
     const highlightedField = highlight && fields.find(field => field.name === highlight);
     const showModal = !highlightedField || fields.length > 1;
+    // check if filter has any field set that isn't already highlighted
+    const activeFilters = Object.entries(currentFilter).some(
+      ([key, value]) => key !== highlight && !!value,
+    );
 
     return (
       <div className={styles.container}>
@@ -185,7 +191,9 @@ export default class FilterBlock extends React.Component {
         )}
         {showModal && (
           <button
-            className={`button ${styles.filterDialogButton}`}
+            className={classNames('button', styles.filterDialogButton, {
+              'is-primary': activeFilters,
+            })}
             onClick={this.onOpen}
             type="button"
           >
