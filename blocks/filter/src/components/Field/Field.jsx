@@ -9,6 +9,7 @@ export default class Field extends React.Component {
   static propTypes = {
     displayLabel: PropTypes.bool,
     filter: PropTypes.shape().isRequired,
+    icon: PropTypes.string,
     intl: PropTypes.shape().isRequired,
     label: PropTypes.node,
     name: PropTypes.node.isRequired,
@@ -23,6 +24,7 @@ export default class Field extends React.Component {
     label: undefined,
     range: false,
     type: null,
+    icon: undefined,
   };
 
   render() {
@@ -35,6 +37,7 @@ export default class Field extends React.Component {
       onChange,
       range,
       label = name,
+      icon,
       ...props
     } = this.props;
 
@@ -43,6 +46,11 @@ export default class Field extends React.Component {
         {displayLabel && (
           <div className="field-label is-normal">
             <label className="label" htmlFor={`filter${name}`}>
+              {icon && (
+                <span className="icon">
+                  <i className={`fas fa-${icon}`} />
+                </span>
+              )}
               {label}
             </label>
           </div>
