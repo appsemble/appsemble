@@ -10,6 +10,8 @@ import styles from './FilterBlock.css';
 import messages from './messages';
 
 export default class FilterBlock extends React.Component {
+  refreshTimer = null;
+
   static propTypes = {
     /**
      * The actions as passed by the Appsemble interface.
@@ -27,6 +29,9 @@ export default class FilterBlock extends React.Component {
   };
 
   state = {
+    lastRefreshedDate: undefined,
+    newData: [],
+    data: [],
     currentFilter: {},
     filter: {},
     loading: false,
@@ -34,10 +39,26 @@ export default class FilterBlock extends React.Component {
   };
 
   async componentDidMount() {
+    const {
+      block: {
+        parameters: { refreshTimeout },
+      },
+    } = this.props;
+
     this.resetFilter();
+
+    if (refreshTimeout) {
+      this.refreshTimer = setInterval(this.onRefresh, refreshTimeout * 1000);
+    }
   }
 
-  fetchData = () => {
+  componentWillUnmount() {
+    if (this.refreshTimer) {
+      clearInterval(this.refreshTimer);
+    }
+  }
+
+  fetchData = filterParams => {
     const {
       actions,
       block: {
@@ -46,10 +67,10 @@ export default class FilterBlock extends React.Component {
     } = this.props;
     const { filter } = this.state;
 
-    const filterValue = toOData(fields, filter);
+    const $filter = toOData(fields, { ...filter, ...filterParams });
 
     return actions.load.dispatch({
-      ...(filterValue && { $filter: toOData(fields, filter) }),
+      ...($filter && { $filter }),
     });
   };
 
@@ -71,7 +92,32 @@ export default class FilterBlock extends React.Component {
     this.setState({ currentFilter: defaultFilter, filter: defaultFilter }, async () => {
       const data = await this.fetchData();
       events.emit(event, data);
+      this.setState({ data, newData: [] });
     });
+  };
+
+  onRefresh = async () => {
+    const { lastRefreshedDate = new Date(), newData } = this.state;
+    const refreshDate = new Date();
+
+    const fetchedItems = await this.fetchData({ created: { from: lastRefreshedDate.getTime() } });
+
+    this.setState({ lastRefreshedDate: refreshDate, newData: [...fetchedItems, ...newData] });
+  };
+
+  onMergeRefresh = () => {
+    const { newData, data } = this.state;
+    const {
+      events,
+      block: {
+        parameters: { event },
+      },
+    } = this.props;
+
+    const updatedData = [...newData, ...data];
+
+    events.emit(event, updatedData);
+    this.setState({ newData: [], data: updatedData });
   };
 
   onChange = async ({ target }) => {
@@ -124,7 +170,13 @@ export default class FilterBlock extends React.Component {
     const data = await this.fetchData();
     events.emit(event, data);
 
-    await this.setState(({ filter }) => ({ loading: false, isOpen: false, currentFilter: filter }));
+    await this.setState(({ filter }) => ({
+      loading: false,
+      isOpen: false,
+      currentFilter: filter,
+      data,
+      newData: [],
+    }));
   };
 
   onOpen = () => {
@@ -137,7 +189,7 @@ export default class FilterBlock extends React.Component {
 
   render() {
     const { block } = this.props;
-    const { currentFilter, filter, isOpen, loading } = this.state;
+    const { currentFilter, filter, isOpen, loading, newData } = this.state;
     const { fields, highlight } = block.parameters;
     const highlightedField = highlight && fields.find(field => field.name === highlight);
     const showModal = !highlightedField || fields.length > 1;
@@ -204,6 +256,9 @@ export default class FilterBlock extends React.Component {
             />
           </div>
         )}
+        <button className="button" onClick={this.onMergeRefresh} type="button">
+          {`Amount of new items: ${newData.length}`}
+        </button>
         {showModal && (
           <React.Fragment>
             <button
