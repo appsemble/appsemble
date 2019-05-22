@@ -32,6 +32,12 @@ eslint:
     reports:
       codequality: gl-codequality.json
 
+# Lint Helm charts.
+helm lint:
+  image: registry.gitlab.com/gitlab-org/gitlab-build-images:gitlab-charts-build-base
+  script:
+    - helm lint --strict config/charts/*
+
 # Check formatting using prettier.
 prettier:
   except:
@@ -153,7 +159,10 @@ build docs image:
   image: docker
   script:
     - echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY
-    - docker build -f config/docs/Dockerfile -t "$CI_REGISTRY_IMAGE/docs:$CI_COMMIT_REF_NAME" .
+    - docker build .
+      --build-arg "CI_COMMIT_REF_NAME=$CI_COMMIT_REF_NAME"
+      --file config/docs/Dockerfile
+      --tag "$CI_REGISTRY_IMAGE/docs:$CI_COMMIT_REF_NAME"
     - docker push "$CI_REGISTRY_IMAGE/docs:$CI_COMMIT_REF_NAME"
 
 # Build the npm packages that should be published.
@@ -264,13 +273,12 @@ review docs:
     - kubectl get secrets/tiller-secret -n gitlab-managed-apps -o "jsonpath={.data['tls\.crt']}" | base64 -d > ~/.helm/cert.pem
     - kubectl get secrets/tiller-secret -n gitlab-managed-apps -o "jsonpath={.data['tls\.key']}" | base64 -d > ~/.helm/key.pem
     - helm init --client-only
+    - helm delete --purge $CI_ENVIRONMENT_SLUG
     - helm upgrade "$CI_ENVIRONMENT_SLUG" config/charts/appsemble-docs
       --install
-      --wait
-      --reset-values
-      --set "host=$CI_ENVIRONMENT_SLUG.appsemble.app"
-      --set "ingress.tls.secretName=$CI_COMMIT_REF_SLUG-tls"
+      --set "git.commit.sha=$CI_COMMIT_SHA"
       --set "image.tag=$CI_COMMIT_REF_NAME"
+      --wait
 
 # Stop a review environment.
 stop review docs:
