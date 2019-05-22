@@ -105,6 +105,10 @@ export default class FilterBlock extends React.Component {
     this.setState({ lastRefreshedDate: refreshDate, newData: [...fetchedItems, ...newData] });
   };
 
+  onDismissRefresh = () => {
+    this.setState({ newData: [] });
+  };
+
   onMergeRefresh = () => {
     const { newData, data } = this.state;
     const {
@@ -201,90 +205,104 @@ export default class FilterBlock extends React.Component {
     );
 
     return (
-      <div className={styles.container}>
-        <Modal isActive={isOpen} onClose={this.onClose}>
-          <div className="card">
-            <header className="card-header">
-              <p className="card-header-title">
-                <FormattedMessage {...messages.filter} />
-              </p>
-            </header>
-            <div className="card-content">
-              {fields
-                .filter(field => field.name !== highlight)
-                .map(field => (
-                  <Field
-                    {...field}
-                    key={field.name}
-                    filter={filter}
-                    loading={loading}
-                    onChange={this.onChange}
-                    onRangeChange={this.onRangeChange}
-                  />
-                ))}
+      <React.Fragment>
+        <div className={styles.container}>
+          <Modal isActive={isOpen} onClose={this.onClose}>
+            <div className="card">
+              <header className="card-header">
+                <p className="card-header-title">
+                  <FormattedMessage {...messages.filter} />
+                </p>
+              </header>
+              <div className="card-content">
+                {fields
+                  .filter(field => field.name !== highlight)
+                  .map(field => (
+                    <Field
+                      {...field}
+                      key={field.name}
+                      filter={filter}
+                      loading={loading}
+                      onChange={this.onChange}
+                      onRangeChange={this.onRangeChange}
+                    />
+                  ))}
+              </div>
+              <footer className="card-footer">
+                {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
+                <a
+                  className="card-footer-item is-link"
+                  onClick={this.onClose}
+                  onKeyDown={this.onKeyDown}
+                  role="button"
+                  tabIndex="-1"
+                >
+                  <FormattedMessage {...messages.cancel} />
+                </a>
+                <button
+                  className={`card-footer-item button is-primary ${styles.cardFooterButton}`}
+                  onClick={this.onFilter}
+                  type="button"
+                >
+                  <FormattedMessage {...messages.filter} />
+                </button>
+              </footer>
             </div>
-            <footer className="card-footer">
-              {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
-              <a
-                className="card-footer-item is-link"
-                onClick={this.onClose}
-                onKeyDown={this.onKeyDown}
-                role="button"
-                tabIndex="-1"
-              >
-                <FormattedMessage {...messages.cancel} />
-              </a>
+          </Modal>
+          {highlightedField && (
+            <div className={styles.highlighted}>
+              <Field
+                {...highlightedField}
+                displayLabel={!!highlightedField.label}
+                filter={filter}
+                loading={loading}
+                onChange={this.onChange}
+                onRangeChange={this.onRangeChange}
+              />
+            </div>
+          )}
+          {showModal && (
+            <React.Fragment>
               <button
-                className={`card-footer-item button is-primary ${styles.cardFooterButton}`}
-                onClick={this.onFilter}
+                className={classNames('button', styles.filterDialogButton)}
+                disabled={!activeFilters ? true : undefined}
+                onClick={this.resetFilter}
                 type="button"
               >
-                <FormattedMessage {...messages.filter} />
+                <span className="icon">
+                  <i className="fas fa-ban has-text-danger" />
+                </span>
               </button>
-            </footer>
-          </div>
-        </Modal>
-        {highlightedField && (
-          <div className={styles.highlighted}>
-            <Field
-              {...highlightedField}
-              displayLabel={!!highlightedField.label}
-              filter={filter}
-              loading={loading}
-              onChange={this.onChange}
-              onRangeChange={this.onRangeChange}
-            />
-          </div>
+              <button
+                className={classNames('button', styles.filterDialogButton, {
+                  'is-primary': activeFilters,
+                })}
+                onClick={this.onOpen}
+                type="button"
+              >
+                <span className="icon">
+                  <i className="fas fa-filter" />
+                </span>
+              </button>
+            </React.Fragment>
+          )}
+        </div>
+        {newData.length > 0 && (
+          <article className={`message ${styles.newDataBar}`}>
+            <div className="message-header">
+              <button className={styles.newDataButton} onClick={this.onMergeRefresh} type="button">
+                <FormattedMessage {...messages.refreshData} values={{ amount: newData.length }} />
+              </button>
+              <button
+                aria-label="delete"
+                className="delete"
+                onClick={this.onDismissRefresh}
+                type="button"
+              />
+            </div>
+          </article>
         )}
-        <button className="button" onClick={this.onMergeRefresh} type="button">
-          {`Amount of new items: ${newData.length}`}
-        </button>
-        {showModal && (
-          <React.Fragment>
-            <button
-              className={classNames('button', styles.filterDialogButton)}
-              disabled={!activeFilters ? true : undefined}
-              onClick={this.resetFilter}
-              type="button"
-            >
-              <span className="icon">
-                <i className="fas fa-ban has-text-danger" />
-              </span>
-            </button>
-            <button
-              className={classNames('button', styles.filterDialogButton, {
-                'is-primary': activeFilters,
-              })}
-              onClick={this.onOpen}
-              type="button"
-            >
-              <span className="icon">
-                <i className="fas fa-filter" />
-              </span>
-            </button>
-          </React.Fragment>
-        )}
-      </div>
+      </React.Fragment>
     );
   }
 }

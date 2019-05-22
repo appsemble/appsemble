@@ -24,3 +24,18 @@
   flex-grow: 11;
   padding: 10px;
 }
+
+.newDataBar,
+.newDataBar > * {
+  border-radius: 0;
+}
+
+.newDataButton {
+  background: none;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+  outline: inherit;
+  padding: 0;
+}
