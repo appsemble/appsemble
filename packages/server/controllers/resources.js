@@ -68,7 +68,10 @@ const deepRename = (object, keys) => {
   const isArray = Array.isArray(object);
   const obj = isArray ? [...object] : { ...object };
 
-  Object.entries(obj).forEach(([key, value]) => {
+  const entries = [...Object.keys(obj), ...Object.getOwnPropertySymbols(obj)];
+  entries.forEach(key => {
+    const value = obj[key];
+
     if (isArray) {
       if (keys.some(k => k === value)) {
         obj[key] = `data.${value}`;
@@ -92,7 +95,9 @@ export async function queryResources(ctx) {
   const { App } = ctx.db.models;
 
   const app = await App.findByPk(appId);
-  const keys = Object.keys(verifyResourceDefinition(app, resourceType).properties);
+  const { properties } = verifyResourceDefinition(app, resourceType);
+
+  const keys = Object.keys(properties);
   // the data is stored in the ´data´ column as json
   const renamedQuery = deepRename(query, keys);
 
