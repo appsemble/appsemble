@@ -47,6 +47,8 @@ export default class FeedBlock extends React.Component {
       description: createRemapper(parameters.description),
       author: createRemapper(parameters.reply.author),
       content: createRemapper(parameters.reply.content),
+      latitude: createRemapper(parameters.latitude),
+      longitude: createRemapper(parameters.longitude),
     };
 
     if (parameters.listen) {

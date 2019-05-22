@@ -26,6 +26,10 @@
   position: relative;
 }
 
+.location {
+  height: 128px;
+}
+
 .replies {
   max-height: 12rem;
   overflow-y: auto;
