@@ -126,6 +126,35 @@ describe('resource controller', () => {
     expect(response.body).toStrictEqual([{ id: resource.id }]);
   });
 
+  it('should be able to filter fields when fetching resources', async () => {
+    const app = await App.create(exampleApp(organizationId));
+    const resource = await app.createResource({ type: 'testResource', data: { foo: 'foo' } });
+    await app.createResource({ type: 'testResource', data: { foo: 'bar' } });
+
+    const response = await request(server).get(
+      `/api/apps/${app.id}/resources/testResource?$filter=foo eq 'foo'`,
+    );
+
+    expect(response.status).toBe(200);
+    expect(response.body).toStrictEqual([{ id: resource.id, ...resource.data }]);
+  });
+
+  it('should be able to filter multiple fields when fetching resources', async () => {
+    const app = await App.create(exampleApp(organizationId));
+    const resource = await app.createResource({
+      type: 'testResource',
+      data: { foo: 'foo', bar: 1 },
+    });
+    await app.createResource({ type: 'testResource', data: { foo: 'bar', bar: 2 } });
+
+    const response = await request(server).get(
+      `/api/apps/${app.id}/resources/testResource?$filter=foo eq 'foo' and id le ${resource.id}`,
+    );
+
+    expect(response.status).toBe(200);
+    expect(response.body).toStrictEqual([{ id: resource.id, ...resource.data }]);
+  });
+
   it('should be able to create a new resource', async () => {
     const app = await App.create(exampleApp(organizationId));
 
