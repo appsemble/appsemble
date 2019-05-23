@@ -1,8 +1,10 @@
+import { Location } from '@appsemble/react-components';
 import React from 'react';
 import PropTypes from 'prop-types';
 
 import styles from './Card.css';
 import messages from './messages';
+import iconUrl from '../../../../../themes/amsterdam/core/marker.svg';
 
 /**
  * A single card in the feed.
@@ -100,6 +102,8 @@ export default class Card extends React.Component {
     const heading = remappers.heading(content);
     const picture = remappers.picture(content);
     const description = remappers.description(content);
+    const latitude = remappers.latitude(content);
+    const longitude = remappers.longitude(content);
 
     // XXX: Replace with avatar/icon and a default icon
     const avatarContent = (
@@ -148,6 +152,16 @@ export default class Card extends React.Component {
                 src={`${block.parameters.pictureBase}/${picture}`}
               />
             </figure>
+            {(latitude && longitude) != null && (
+              <Location
+                className={styles.location}
+                iconHeight={40}
+                iconUrl={iconUrl}
+                iconWidth={40}
+                latitude={latitude}
+                longitude={longitude}
+              />
+            )}
           </div>
         )}
         <div className="card-content">

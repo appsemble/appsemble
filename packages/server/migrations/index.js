@@ -1,4 +1,4 @@
-import initial from './0.5.0-initial';
+import initial from './0.6.0-initial';
 
 /**
  * @param {Sequelize.sequelize} pool Database connection pool

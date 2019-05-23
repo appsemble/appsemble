@@ -1,3 +1,8 @@
+---
+menu: Blocks
+path: /blocks/filter
+---
+
 # Filter
 
 ## Introduction

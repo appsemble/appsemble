@@ -1,10 +1,12 @@
 {
   "name": "@appsemble/react-components",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "private": true,
   "dependencies": {
+    "@appsemble/react": "0.6.0",
     "@sentry/browser": "^5.1.1",
     "classnames": "^2.2.6",
+    "leaflet": "^1.5.1",
     "prop-types": "^15.7.2",
     "react-intl": "^2.8.0",
     "react-transition-group": "^4.0.0"

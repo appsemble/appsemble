@@ -1,5 +1,5 @@
 module.exports = {
-  key: '0.5.0',
+  key: '0.6.0',
   async up(queryInterface, DataTypes) {
     await queryInterface.createTable('Organization', {
       id: { type: DataTypes.STRING, primaryKey: true },

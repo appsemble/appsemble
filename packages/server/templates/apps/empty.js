@@ -14,7 +14,7 @@ export default {
         blocks: [
           {
             type: 'action-button',
-            version: '0.5.0',
+            version: '0.6.0',
             actions: {
               click: {
                 type: 'link',
@@ -29,7 +29,7 @@ export default {
         blocks: [
           {
             type: 'action-button',
-            version: '0.5.0',
+            version: '0.6.0',
             actions: {
               click: {
                 type: 'link',
