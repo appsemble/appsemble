@@ -173,7 +173,7 @@ pages:
           highlight: kanaal
           fields:
             - name: kanaal
-              defaultValue: Centraal
+              emptyLabel: Alle kanalen
               enum:
                 - value: Centraal
                 - value: Noord
