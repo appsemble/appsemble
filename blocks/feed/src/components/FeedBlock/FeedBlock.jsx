@@ -2,8 +2,10 @@ import { Loader } from '@appsemble/react-components';
 import { compileFilters } from '@appsemble/utils/remap';
 import React from 'react';
 import PropTypes from 'prop-types';
+import { FormattedMessage } from 'react-intl';
 
 import Card from '../Card';
+import messages from './messages';
 
 function createRemapper(mapper) {
   return mapper ? compileFilters(mapper) : () => null;
@@ -30,6 +32,7 @@ export default class FeedBlock extends React.Component {
 
   state = {
     data: [],
+    loading: false,
   };
 
   async componentDidMount() {
@@ -44,15 +47,23 @@ export default class FeedBlock extends React.Component {
       description: createRemapper(parameters.description),
       author: createRemapper(parameters.reply.author),
       content: createRemapper(parameters.reply.content),
+      latitude: createRemapper(parameters.latitude),
+      longitude: createRemapper(parameters.longitude),
     };
 
     if (parameters.listen) {
       events.on(parameters.listen, data => {
-        this.setState({ data });
+        this.setState({
+          data,
+          loading: false,
+        });
       });
     } else {
       const data = await actions.load.dispatch();
-      this.setState({ data });
+      this.setState({
+        data,
+        loading: false,
+      });
     }
   }
 
@@ -62,10 +73,14 @@ export default class FeedBlock extends React.Component {
   };
 
   render() {
-    const { data } = this.state;
+    const { data, loading } = this.state;
+
+    if (loading) {
+      return <Loader />;
+    }
 
     if (!data.length) {
-      return <Loader />;
+      return <FormattedMessage {...messages.empty} />;
     }
 
     return data.map(content => (
