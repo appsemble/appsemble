@@ -44,7 +44,7 @@ resources:
           enum:
             - open
             - in-behandeling
-            - gesloten
+            - opgelost
         kanaal:
           title: Kanaal
           enum:
