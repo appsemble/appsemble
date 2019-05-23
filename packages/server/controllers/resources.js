@@ -169,13 +169,14 @@ export async function createResource(ctx) {
 export async function updateResource(ctx) {
   const { appId, resourceType, resourceId } = ctx.params;
   const { App, Resource } = ctx.db.models;
-  const { user } = ctx.state;
+  //  const { user } = ctx.state;
 
   const app = await App.findByPk(appId);
 
-  if (!user.organizations.some(organization => organization.id === app.OrganizationId)) {
-    throw Boom.forbidden('User does not belong in this organization.');
-  }
+  // XXX: Restore this once security is properly implemented.
+  // if (!user.organizations.some(organization => organization.id === app.OrganizationId)) {
+  //   throw Boom.forbidden('User does not belong in this organization.');
+  // }
 
   verifyResourceDefinition(app, resourceType);
   let resource = await Resource.findByPk(resourceId);
