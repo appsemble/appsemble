@@ -27,6 +27,7 @@ A block that can filter data and pass it to other blocks using the event API.
 | fields[].type         | string                                       | The type of the data                                                                                                              |
 | fields[].range        | false                                        | Whether a range picker should be used                                                                                             |
 | fields[].defaultValue |                                              | The default value used for the field. If not set, an empty filter option is added to allow for not filtering on this field at all |
+| fields[].icon         |                                              | Name of the [Font Awesome icon](https://fontawesome.com/icons?d=gallery&m=free) to be displayed next to the label.                |
 | fields[].enum         |                                              | A list of predetermined options the user can pick from.                                                                           |
 | fields[].enum[].label | User-facing label describing the option      |
 | fields[].enum[].value | The value that gets submitted when filtering |

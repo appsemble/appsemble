@@ -2,6 +2,7 @@ import { Modal } from '@appsemble/react-components';
 import React from 'react';
 import PropTypes from 'prop-types';
 import { FormattedMessage } from 'react-intl';
+import classNames from 'classnames';
 
 import toOData from '../../utils/toOData';
 import Field from '../Field';
@@ -9,6 +10,8 @@ import styles from './FilterBlock.css';
 import messages from './messages';
 
 export default class FilterBlock extends React.Component {
+  refreshTimer = null;
+
   static propTypes = {
     /**
      * The actions as passed by the Appsemble interface.
@@ -26,6 +29,10 @@ export default class FilterBlock extends React.Component {
   };
 
   state = {
+    lastRefreshedDate: undefined,
+    newData: [],
+    data: [],
+    currentFilter: {},
     filter: {},
     loading: false,
     isOpen: false,
@@ -34,16 +41,24 @@ export default class FilterBlock extends React.Component {
   async componentDidMount() {
     const {
       block: {
-        parameters: { event },
+        parameters: { refreshTimeout },
       },
-      events,
     } = this.props;
 
-    const data = await this.fetchData();
-    events.emit(event, data);
+    this.resetFilter();
+
+    if (refreshTimeout) {
+      this.refreshTimer = setInterval(this.onRefresh, refreshTimeout * 1000);
+    }
   }
 
-  fetchData = () => {
+  componentWillUnmount() {
+    if (this.refreshTimer) {
+      clearInterval(this.refreshTimer);
+    }
+  }
+
+  fetchData = filterParams => {
     const {
       actions,
       block: {
@@ -52,11 +67,61 @@ export default class FilterBlock extends React.Component {
     } = this.props;
     const { filter } = this.state;
 
-    const filterValue = toOData(fields, filter);
+    const $filter = toOData(fields, { ...filter, ...filterParams });
 
     return actions.load.dispatch({
-      ...(filterValue && { $filter: toOData(fields, filter) }),
+      ...($filter && { $filter }),
     });
+  };
+
+  resetFilter = () => {
+    const {
+      events,
+      block: {
+        parameters: { event, fields },
+      },
+    } = this.props;
+
+    const defaultFilter = fields.reduce((acc, { name, defaultValue }) => {
+      if (defaultValue) {
+        acc[name] = defaultValue;
+      }
+      return acc;
+    }, {});
+
+    this.setState({ currentFilter: defaultFilter, filter: defaultFilter }, async () => {
+      const data = await this.fetchData();
+      events.emit(event, data);
+      this.setState({ data, newData: [] });
+    });
+  };
+
+  onRefresh = async () => {
+    const { lastRefreshedDate = new Date(), newData } = this.state;
+    const refreshDate = new Date();
+
+    const fetchedItems = await this.fetchData({ created: { from: lastRefreshedDate.getTime() } });
+
+    this.setState({ lastRefreshedDate: refreshDate, newData: [...fetchedItems, ...newData] });
+  };
+
+  onDismissRefresh = () => {
+    this.setState({ newData: [] });
+  };
+
+  onMergeRefresh = () => {
+    const { newData, data } = this.state;
+    const {
+      events,
+      block: {
+        parameters: { event },
+      },
+    } = this.props;
+
+    const updatedData = [...newData, ...data];
+
+    events.emit(event, updatedData);
+    this.setState({ newData: [], data: updatedData });
   };
 
   onChange = async ({ target }) => {
@@ -109,7 +174,13 @@ export default class FilterBlock extends React.Component {
     const data = await this.fetchData();
     events.emit(event, data);
 
-    await this.setState({ loading: false, isOpen: false });
+    await this.setState(({ filter }) => ({
+      loading: false,
+      isOpen: false,
+      currentFilter: filter,
+      data,
+      newData: [],
+    }));
   };
 
   onOpen = () => {
@@ -122,79 +193,116 @@ export default class FilterBlock extends React.Component {
 
   render() {
     const { block } = this.props;
-    const { filter, isOpen, loading } = this.state;
+    const { currentFilter, filter, isOpen, loading, newData } = this.state;
     const { fields, highlight } = block.parameters;
     const highlightedField = highlight && fields.find(field => field.name === highlight);
     const showModal = !highlightedField || fields.length > 1;
+    // check if filter has any field set that isn't already highlighted or its default value
+    const activeFilters = Object.entries(currentFilter).some(
+      ([key, value]) =>
+        key !== highlight &&
+        (!!value || value !== fields.find(field => field.name === key)?.defaultValue),
+    );
 
     return (
-      <div className={styles.container}>
-        <Modal isActive={isOpen} onClose={this.onClose}>
-          <div className="card">
-            <header className="card-header">
-              <p className="card-header-title">
-                <FormattedMessage {...messages.filter} />
-              </p>
-            </header>
-            <div className="card-content">
-              {fields
-                .filter(field => field.name !== highlight)
-                .map(field => (
-                  <Field
-                    {...field}
-                    key={field.name}
-                    filter={filter}
-                    loading={loading}
-                    onChange={this.onChange}
-                    onRangeChange={this.onRangeChange}
-                  />
-                ))}
+      <React.Fragment>
+        <div className={styles.container}>
+          <Modal isActive={isOpen} onClose={this.onClose}>
+            <div className="card">
+              <header className="card-header">
+                <p className="card-header-title">
+                  <FormattedMessage {...messages.filter} />
+                </p>
+              </header>
+              <div className="card-content">
+                {fields
+                  .filter(field => field.name !== highlight)
+                  .map(field => (
+                    <Field
+                      {...field}
+                      key={field.name}
+                      filter={filter}
+                      loading={loading}
+                      onChange={this.onChange}
+                      onRangeChange={this.onRangeChange}
+                    />
+                  ))}
+              </div>
+              <footer className="card-footer">
+                {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
+                <a
+                  className="card-footer-item is-link"
+                  onClick={this.onClose}
+                  onKeyDown={this.onKeyDown}
+                  role="button"
+                  tabIndex="-1"
+                >
+                  <FormattedMessage {...messages.cancel} />
+                </a>
+                <button
+                  className={`card-footer-item button is-primary ${styles.cardFooterButton}`}
+                  onClick={this.onFilter}
+                  type="button"
+                >
+                  <FormattedMessage {...messages.filter} />
+                </button>
+              </footer>
             </div>
-            <footer className="card-footer">
-              {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
-              <a
-                className="card-footer-item is-link"
-                onClick={this.onClose}
-                onKeyDown={this.onKeyDown}
-                role="button"
-                tabIndex="-1"
-              >
-                <FormattedMessage {...messages.cancel} />
-              </a>
+          </Modal>
+          {highlightedField && (
+            <div className={styles.highlighted}>
+              <Field
+                {...highlightedField}
+                displayLabel={!!highlightedField.label}
+                filter={filter}
+                loading={loading}
+                onChange={this.onChange}
+                onRangeChange={this.onRangeChange}
+              />
+            </div>
+          )}
+          {showModal && (
+            <React.Fragment>
               <button
-                className={`card-footer-item button is-primary ${styles.cardFooterButton}`}
-                onClick={this.onFilter}
+                className={classNames('button', styles.filterDialogButton)}
+                disabled={!activeFilters ? true : undefined}
+                onClick={this.resetFilter}
                 type="button"
               >
-                <FormattedMessage {...messages.filter} />
+                <span className="icon">
+                  <i className="fas fa-ban has-text-danger" />
+                </span>
               </button>
-            </footer>
-          </div>
-        </Modal>
-        {highlightedField && (
-          <div className={styles.highlighted}>
-            <Field
-              {...highlightedField}
-              displayLabel={!!highlightedField.label}
-              filter={filter}
-              loading={loading}
-              onChange={this.onChange}
-              onRangeChange={this.onRangeChange}
-            />
-          </div>
+              <button
+                className={classNames('button', styles.filterDialogButton, {
+                  'is-primary': activeFilters,
+                })}
+                onClick={this.onOpen}
+                type="button"
+              >
+                <span className="icon">
+                  <i className="fas fa-filter" />
+                </span>
+              </button>
+            </React.Fragment>
+          )}
+        </div>
+        {newData.length > 0 && (
+          <article className={`message ${styles.newDataBar}`}>
+            <div className="message-header">
+              <button className={styles.newDataButton} onClick={this.onMergeRefresh} type="button">
+                <FormattedMessage {...messages.refreshData} values={{ amount: newData.length }} />
+              </button>
+              <button
+                aria-label="delete"
+                className="delete"
+                onClick={this.onDismissRefresh}
+                type="button"
+              />
+            </div>
+          </article>
         )}
-        {showModal && (
-          <button
-            className={`button ${styles.filterDialogButton}`}
-            onClick={this.onOpen}
-            type="button"
-          >
-            <span className="icon">
-              <i className="fas fa-filter" />
-            </span>
-          </button>
-        )}
-      </div>
+      </React.Fragment>
     );
   }
 }
