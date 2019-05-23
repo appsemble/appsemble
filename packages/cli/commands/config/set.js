@@ -16,7 +16,7 @@ export function builder(yargs) {
 }
 
 export async function handler({ key, value }) {
-  const { path, pkg } = await readPkgUp({ normalize: false });
+  const { path, package: pkg } = await readPkgUp({ normalize: false });
   if (!Object.prototype.hasOwnProperty.call(pkg, 'appsembleServer')) {
     pkg.appsembleServer = {};
   }

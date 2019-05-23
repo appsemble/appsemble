@@ -9,6 +9,6 @@
     "@appsemble/utils": "0.6.0",
     "prop-types": "^15.6.2",
     "react": "^16.8.6",
-    "react-intl": "^2.8.0"
+    "react-intl": "^2.9.0"
   }
 }

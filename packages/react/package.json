@@ -4,7 +4,7 @@
   "dependencies": {
     "@types/react-intl": "^2.3.17",
     "prop-types": "^15.7.2",
-    "react-shadow-dom-retarget-events": "^1.0.8"
+    "react-shadow-dom-retarget-events": "^1.0.10"
   },
   "peerDependencies": {
     "@appsemble/sdk": "^0.6.0",
