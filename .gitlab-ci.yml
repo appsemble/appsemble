@@ -273,7 +273,6 @@ review docs:
     - kubectl get secrets/tiller-secret -n gitlab-managed-apps -o "jsonpath={.data['tls\.crt']}" | base64 -d > ~/.helm/cert.pem
     - kubectl get secrets/tiller-secret -n gitlab-managed-apps -o "jsonpath={.data['tls\.key']}" | base64 -d > ~/.helm/key.pem
     - helm init --client-only
-    - helm delete --purge $CI_ENVIRONMENT_SLUG
     - helm upgrade "$CI_ENVIRONMENT_SLUG" config/charts/appsemble-docs
       --install
       --set "git.commit.sha=$CI_COMMIT_SHA"
