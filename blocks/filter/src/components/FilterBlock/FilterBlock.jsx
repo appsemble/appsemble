@@ -74,13 +74,17 @@ export default class FilterBlock extends React.Component {
     });
   };
 
-  resetFilter = () => {
+  resetFilter = e => {
     const {
       events,
       block: {
         parameters: { event, fields },
       },
     } = this.props;
+
+    if (e.target.disabled) {
+      return;
+    }
 
     const defaultFilter = fields.reduce((acc, { name, defaultValue }) => {
       if (defaultValue) {
@@ -197,11 +201,10 @@ export default class FilterBlock extends React.Component {
     const { fields, highlight } = block.parameters;
     const highlightedField = highlight && fields.find(field => field.name === highlight);
     const showModal = !highlightedField || fields.length > 1;
+
     // check if filter has any field set that isn't already highlighted or its default value
     const activeFilters = Object.entries(currentFilter).some(
-      ([key, value]) =>
-        key !== highlight &&
-        (!!value || value !== fields.find(field => field.name === key)?.defaultValue),
+      ([key, value]) => !!value || value !== fields.find(field => field.name === key)?.defaultValue,
     );
 
     return (
@@ -265,7 +268,7 @@ export default class FilterBlock extends React.Component {
             <React.Fragment>
               <button
                 className={classNames('button', styles.filterDialogButton)}
-                disabled={!activeFilters ? true : undefined}
+                disabled={!activeFilters}
                 onClick={this.resetFilter}
                 type="button"
               >
