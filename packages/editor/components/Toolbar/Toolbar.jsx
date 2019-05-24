@@ -6,6 +6,7 @@ import { Link } from 'react-router-dom';
 
 import messages from './messages';
 import styles from './Toolbar.css';
+import ProfileDropdown from '../ProfileDropdown/ProfileDropdown';
 
 export default class Toolbar extends React.Component {
   static propTypes = {
@@ -15,7 +16,7 @@ export default class Toolbar extends React.Component {
   };
 
   render() {
-    const { intl, isLoggedIn, logout } = this.props;
+    const { intl, isLoggedIn } = this.props;
 
     return (
       <nav className={classNames('navbar', 'is-fixed-top', 'is-dark', styles.root)}>
@@ -41,20 +42,7 @@ export default class Toolbar extends React.Component {
             </a>
           </span>
         </div>
-        <div className="navbar-brand">
-          {isLoggedIn && (
-            <span className="navbar-item">
-              <button className="button" onClick={logout} type="button">
-                <span className="icon">
-                  <i className="fas fa-sign-out-alt" />
-                </span>
-                <span>
-                  <FormattedMessage {...messages.logoutButton} />
-                </span>
-              </button>
-            </span>
-          )}
-        </div>
+        <div className="navbar-brand">{isLoggedIn && <ProfileDropdown {...this.props} />}</div>
       </nav>
     );
   }
