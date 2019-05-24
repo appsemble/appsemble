@@ -1,5 +1,3 @@
-import 'leaflet/dist/leaflet.css';
-
 import { Location } from '@appsemble/react-components';
 import { remapData } from '@appsemble/utils/remap';
 import PropTypes from 'prop-types';
