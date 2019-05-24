@@ -159,7 +159,7 @@ export default class Card extends React.Component {
             </AvatarWrapper>
             <header className="media-content">
               {title && <h4 className="title is-4 is-marginless">{title}</h4>}
-              {subtitle && <h5 className="subtitle is-5 is-marginless">{subtitle}</h5>}
+              {subtitle && <h5 className="subtitle is-5 is-marginless">naar: {subtitle}</h5>}
               {heading && <p className="subtitle is-6">{heading}</p>}
             </header>
           </div>
