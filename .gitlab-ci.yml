@@ -27,7 +27,7 @@ eslint:
     - schedules
   script:
     - yarn --frozen-lockfile
-    - yarn eslint
+    - yarn eslint --format gitlab .
   artifacts:
     reports:
       codequality: gl-codequality.json
@@ -52,10 +52,10 @@ stylelint:
     - schedules
   script:
     - yarn --frozen-lockfile
-    - yarn stylelint
+    - yarn stylelint .
       # This replaces the regular stylelint behaviour, instead of enhancing it.
       # https://github.com/stylelint/stylelint/issues/2369
-    - yarn stylelint:rd
+    - yarn stylelint --report-needless-disables .
 
 # Test the code using unit tests.
 test:
@@ -81,7 +81,7 @@ tsc:
     - schedules
   script:
     - yarn --frozen-lockfile
-    - yarn tsc --noEmit
+    - yarn tsc
 
 ###################################################################################################
 #  Build Stage                                                                                    #

@@ -9,10 +9,10 @@
     "build:app": "webpack --config config/webpack/app.js --mode production",
     "build:editor": "webpack --config config/webpack/editor.js --mode production",
     "start": "appsemble start",
-    "eslint": "eslint --format gitlab --max-warnings 0 --ext js,jsx,md,ts,tsx .",
+    "eslint": "eslint --max-warnings 0 --ext js,jsx,md,ts,tsx",
     "prettier": "prettier --check '**/*.{html,json,md,scss,yaml,yml}'",
-    "stylelint": "stylelint .",
-    "stylelint:rd": "stylelint --report-needless-disables .",
+    "stylelint": "stylelint",
+    "stylelint:rd": "stylelint --report-needless-disables",
     "test": "jest"
   },
   "appsembleServer": {
@@ -30,11 +30,12 @@
     }
   },
   "lint-staged": {
-    "*.{js,jsx}": [
-      "eslint"
+    "*.{js,jsx,ts,tsx}": [
+      "eslint --max-warnings 0"
     ],
     "*.css": [
-      "stylelint"
+      "stylelint",
+      "stylelint --report-needless-disables"
     ],
     "*.{html,json,md,scss,yaml,yml}": [
       "prettier --check"
