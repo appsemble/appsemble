@@ -10,6 +10,10 @@ resources:
   waarneming:
     schema:
       type: object
+      required:
+        - proces
+        - status
+        - kanaal
       properties:
         notities:
           title: Notities
@@ -65,6 +69,7 @@ resources:
       properties:
         content:
           type: string
+          minLength: 1
 
 # authentication:
 #   - method: email
@@ -207,8 +212,8 @@ pages:
         version: 0.6.0
         parameters:
           listen: updateWaarnemingen
-          title: proces
-          subtitle: status
+          title: status
+          subtitle: proces
           heading: created
           picture: fotos.0
           pictureBase: /api/assets
