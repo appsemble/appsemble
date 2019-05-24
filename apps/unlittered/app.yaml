@@ -169,6 +169,7 @@ pages:
       - type: filter
         version: 0.6.0
         parameters:
+          refreshTimeout: 30
           event: updateWaarnemingen
           highlight: kanaal
           fields:
@@ -217,6 +218,8 @@ pages:
             content: content
             author: author
             parentId: waarnemingId
+          longitude: locatie.longitude
+          latitude: locatie.latitude
         actions:
           loadReply:
             type: resource.query
