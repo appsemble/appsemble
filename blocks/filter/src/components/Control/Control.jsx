@@ -26,7 +26,7 @@ export default class Control extends React.Component {
         {enumerator ? (
           <div className="select is-fullwidth">
             <select value={value} {...props}>
-              {!defaultValue && <option value={null}>{emptyLabel}</option>}
+              {!defaultValue && <option label={emptyLabel} />}
               {enumerator.map(({ value: val, label }) => (
                 <option key={val} value={val}>
                   {label || val}
