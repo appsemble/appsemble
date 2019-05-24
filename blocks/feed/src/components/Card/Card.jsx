@@ -105,37 +105,58 @@ export default class Card extends React.Component {
     const latitude = remappers.latitude(content);
     const longitude = remappers.longitude(content);
 
-    // XXX: Replace with avatar/icon and a default icon
-    const avatarContent = (
-      <figure className="image is-48x48">
-        <img
-          alt={intl.formatMessage(messages.avatar)}
-          src="https://bulma.io/images/placeholders/96x96.png"
-        />
-      </figure>
-    );
+    let color;
+    let icon;
+
+    // XXX: Standardize this based on app definition
+    switch (content?.status) {
+      case 'open':
+        color = 'has-background-danger';
+        icon = 'exclamation';
+        break;
+      case 'in-behandeling':
+        color = 'has-background-warning';
+        icon = 'cog';
+        break;
+      case 'opgelost':
+        color = 'has-background-success';
+        icon = 'check';
+        break;
+      default:
+        color = '';
+        icon = 'user';
+    }
+
+    const AvatarWrapper = ({ children }) =>
+      actions.avatarClick.type === 'link' ? (
+        <a
+          className={`media-left ${styles.avatar}`}
+          href={actions.avatarClick.href()}
+          onClick={this.onAvatarClick}
+        >
+          {children}
+        </a>
+      ) : (
+        <button
+          className={`media-left ${styles.avatar}`}
+          onClick={this.onAvatarClick}
+          type="button"
+        >
+          {children}
+        </button>
+      );
 
     return (
       <article className={`card ${styles.root}`}>
         <div className="card-content">
           <div className="media">
-            {actions.avatarClick.type === 'link' ? (
-              <a
-                className={`media-left ${styles.avatar}`}
-                href={actions.avatarClick.href()}
-                onClick={this.onAvatarClick}
-              >
-                {avatarContent}
-              </a>
-            ) : (
-              <button
-                className={`media-left ${styles.avatar}`}
-                onClick={this.onAvatarClick}
-                type="button"
-              >
-                {avatarContent}
-              </button>
-            )}
+            <AvatarWrapper>
+              <figure className={`image is-48x48 ${color} ${styles.avatarIcon}`}>
+                <span className="icon">
+                  <i className={`fas fa-2x fa-${icon}`} />
+                </span>
+              </figure>
+            </AvatarWrapper>
             <header className="media-content">
               {title && <h4 className="title is-4 is-marginless">{title}</h4>}
               {subtitle && <h5 className="subtitle is-5 is-marginless">{subtitle}</h5>}

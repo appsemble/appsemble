@@ -4,11 +4,22 @@
 
 .avatar {
   border: none;
+  border-radius: 50%;
   padding: 0;
 
   &:focus {
     outline: none;
   }
+}
+
+.avatarIcon {
+  align-items: center;
+  border-radius: 50%;
+  display: flex;
+}
+
+.avatarIcon > * {
+  flex: auto;
 }
 
 .figure {
