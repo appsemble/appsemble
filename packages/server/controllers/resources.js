@@ -104,7 +104,7 @@ export async function queryResources(ctx) {
   try {
     const resources = await app.getResources({
       ...renamedQuery,
-      type: resourceType,
+      where: { ...renamedQuery.where, type: resourceType },
     });
 
     ctx.body = resources.map(resource => ({ id: resource.id, ...resource.data }));
@@ -124,7 +124,10 @@ export async function getResourceById(ctx) {
   const app = await App.findByPk(appId);
   verifyResourceDefinition(app, resourceType);
 
-  const [resource] = await app.getResources({ where: { id: resourceId }, raw: true });
+  const [resource] = await app.getResources({
+    where: { id: resourceId, type: resourceType },
+    raw: true,
+  });
 
   if (!resource) {
     throw Boom.notFound('Resource not found');
@@ -179,7 +182,7 @@ export async function updateResource(ctx) {
   // }
 
   verifyResourceDefinition(app, resourceType);
-  let resource = await Resource.findByPk(resourceId);
+  let resource = await Resource.findOne({ where: { id: resourceId, type: resourceType } });
 
   if (!resource) {
     throw Boom.notFound('Resource not found');
@@ -216,7 +219,7 @@ export async function deleteResource(ctx) {
   }
 
   verifyResourceDefinition(app, resourceType);
-  const resource = await Resource.findByPk(resourceId);
+  const resource = await Resource.findOne({ where: { id: resourceId, type: resourceType } });
 
   if (!resource) {
     throw Boom.notFound('Resource not found');
