@@ -1,3 +1,4 @@
+import 'leaflet/dist/leaflet.css';
 import { CircleMarker, Icon, LocationEvent, Map, Marker, Point, TileLayer } from 'leaflet';
 import * as React from 'react';
 import { BlockProps } from '@appsemble/react';
