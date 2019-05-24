@@ -40,6 +40,7 @@ export default class Card extends React.Component {
   state = {
     message: '',
     replies: [],
+    valid: false,
   };
 
   async componentDidMount() {
@@ -61,7 +62,7 @@ export default class Card extends React.Component {
   };
 
   onChange = event => {
-    this.setState({ message: event.target.value });
+    this.setState({ message: event.target.value, valid: event.target.validity.valid });
   };
 
   onSubmit = event => {
@@ -70,7 +71,11 @@ export default class Card extends React.Component {
 
   onClick = async () => {
     const { actions, block, content, utils, intl } = this.props;
-    const { message, replies } = this.state;
+    const { message, replies, valid } = this.state;
+
+    if (!valid) {
+      return;
+    }
 
     try {
       const contentField = block.parameters?.reply?.content || 'content';
@@ -95,7 +100,7 @@ export default class Card extends React.Component {
 
   render() {
     const { actions, block, content, intl, remappers } = this.props;
-    const { message, replies } = this.state;
+    const { message, replies, valid } = this.state;
 
     const title = remappers.title(content);
     const subtitle = remappers.subtitle(content);
@@ -206,12 +211,18 @@ export default class Card extends React.Component {
               className="input"
               onChange={this.onChange}
               placeholder={intl.formatMessage(messages.reply)}
+              required
               value={message}
             />
             {/* eslint-disable-next-line no-inline-comments */}
             {/* onSubmit is not used because of buggy interactions with ShadowDOM, React.
                 See: https://github.com/spring-media/react-shadow-dom-retarget-events/issues/13 */}
-            <button className={`button ${styles.replyButton}`} onClick={this.onClick} type="button">
+            <button
+              className={`button ${styles.replyButton}`}
+              disabled={!valid}
+              onClick={this.onClick}
+              type="button"
+            >
               <span className="icon is-small">
                 <i className="fas fa-paper-plane" />
               </span>
