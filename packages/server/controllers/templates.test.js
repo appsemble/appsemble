@@ -1,14 +1,14 @@
 import validate from '@appsemble/utils/validate';
 import RefParser from 'json-schema-ref-parser';
-import request from 'supertest';
 import jwt from 'jsonwebtoken';
+import request from 'supertest';
 
+import schema from '../api';
+import templates from '../templates/apps';
 import createServer from '../utils/createServer';
 import testSchema from '../utils/test/testSchema';
 import testToken from '../utils/test/testToken';
 import truncate from '../utils/test/truncate';
-import templates from '../templates/apps';
-import schema from '../api';
 
 describe('App Templates', () => {
   templates.map(template =>

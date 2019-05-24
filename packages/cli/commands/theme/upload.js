@@ -1,14 +1,13 @@
-import { join } from 'path';
-
 import { logger } from '@appsemble/node-utils';
 import FormData from 'form-data';
 import fs from 'fs-extra';
+import { join } from 'path';
 import postcss from 'postcss';
 import postcssrc from 'postcss-load-config';
 import postcssUrl from 'postcss-url';
 
-import { post } from '../../lib/request';
 import { getToken } from '../../lib/config';
+import { post } from '../../lib/request';
 
 export const command = 'upload <path>';
 export const description = 'Upload stylesheets to an organization.';

@@ -1,11 +1,11 @@
-import React from 'react';
-import { remapData } from '@appsemble/utils/remap';
 import { BlockProps } from '@appsemble/react';
 import { Loader } from '@appsemble/react-components';
+import { remapData } from '@appsemble/utils/remap';
+import React from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import messages from './messages';
 import styles from './ListBlock.css';
+import messages from './messages';
 
 interface Field {
   name: string;

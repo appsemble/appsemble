@@ -1,18 +1,18 @@
-import classNames from 'classnames';
 import { Loader, Modal } from '@appsemble/react-components';
-import axios from 'axios';
-import isEqual from 'lodash.isequal';
-import { FormattedMessage } from 'react-intl';
-import { Link } from 'react-router-dom';
-import PropTypes from 'prop-types';
-import React from 'react';
-import yaml from 'js-yaml';
+import normalize from '@appsemble/utils/normalize';
 import validate, { SchemaValidationError } from '@appsemble/utils/validate';
 import validateStyle from '@appsemble/utils/validateStyle';
-import normalize from '@appsemble/utils/normalize';
+import axios from 'axios';
+import classNames from 'classnames';
+import yaml from 'js-yaml';
+import isEqual from 'lodash.isequal';
+import PropTypes from 'prop-types';
+import React from 'react';
+import { FormattedMessage } from 'react-intl';
+import { Link } from 'react-router-dom';
 
-import MonacoEditor from './components/MonacoEditor';
 import styles from './Editor.css';
+import MonacoEditor from './components/MonacoEditor';
 import messages from './messages';
 
 export default class Editor extends React.Component {

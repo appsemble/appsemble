@@ -4,8 +4,8 @@ import React from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Link } from 'react-router-dom';
 
-import messages from './messages';
 import styles from './Toolbar.css';
+import messages from './messages';
 
 export default class Toolbar extends React.Component {
   static propTypes = {

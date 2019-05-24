@@ -1,6 +1,5 @@
-import path from 'path';
-
 import { configureLogger, handleError } from '@appsemble/node-utils';
+import path from 'path';
 import yargs from 'yargs';
 
 export default async argv => {

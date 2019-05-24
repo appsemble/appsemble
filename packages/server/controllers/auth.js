@@ -1,7 +1,6 @@
-import crypto from 'crypto';
-
 import bcrypt from 'bcrypt';
 import Boom from 'boom';
+import crypto from 'crypto';
 import { UniqueConstraintError } from 'sequelize';
 
 import { resendVerificationEmail, sendResetPasswordEmail, sendWelcomeEmail } from '../utils/email';

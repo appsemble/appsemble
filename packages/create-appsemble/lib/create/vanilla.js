@@ -1,6 +1,5 @@
-import path from 'path';
-
 import fs from 'fs-extra';
+import path from 'path';
 
 export default async function vanilla(outputPath, pkg) {
   await Promise.all([

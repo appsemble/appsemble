@@ -2,8 +2,8 @@
 import { configureLogger, handleError } from '@appsemble/node-utils';
 import yargs from 'yargs';
 
-import * as start from './commands/start';
 import * as migrate from './commands/migrate';
+import * as start from './commands/start';
 
 /**
  * These are exported, so @appsemble/cli can wrap them.

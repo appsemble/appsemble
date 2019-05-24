@@ -1,5 +1,6 @@
-import { attach } from '@appsemble/sdk';
 import './index.css';
+
+import { attach } from '@appsemble/sdk';
 
 interface BlockActions {
   click: {};

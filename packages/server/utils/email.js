@@ -1,12 +1,11 @@
-import fs from 'fs';
-import path from 'path';
-
 import { logger } from '@appsemble/node-utils';
 import frontmatter from 'front-matter';
+import fs from 'fs';
 import { template } from 'lodash';
 import nodemailer from 'nodemailer';
-import stubTransport from 'nodemailer-stub-transport';
 import { markdown } from 'nodemailer-markdown';
+import stubTransport from 'nodemailer-stub-transport';
+import path from 'path';
 
 function readTemplate(templateName) {
   return fs.readFileSync(path.join(__dirname, `../templates/email/${templateName}.md`), 'utf8');

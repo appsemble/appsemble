@@ -1,9 +1,9 @@
 import request from 'supertest';
 
 import createServer from '../utils/createServer';
-import truncate from '../utils/test/truncate';
 import testSchema from '../utils/test/testSchema';
 import testToken from '../utils/test/testToken';
+import truncate from '../utils/test/truncate';
 
 describe('organization controller', () => {
   let BlockDefinition;

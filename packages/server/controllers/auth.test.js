@@ -2,8 +2,8 @@ import bcrypt from 'bcrypt';
 import request from 'supertest';
 
 import createServer from '../utils/createServer';
-import truncate from '../utils/test/truncate';
 import testSchema from '../utils/test/testSchema';
+import truncate from '../utils/test/truncate';
 
 describe('auth controller', () => {
   let User;

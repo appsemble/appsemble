@@ -1,14 +1,14 @@
 import normalize from '@appsemble/utils/normalize';
 import validateStyle, { StyleValidationError } from '@appsemble/utils/validateStyle';
 import Boom from 'boom';
+import jsYaml from 'js-yaml';
 import { isEqual, uniqWith } from 'lodash';
 import { Op, UniqueConstraintError } from 'sequelize';
 import sharp from 'sharp';
-import jsYaml from 'js-yaml';
 
-import getDefaultIcon from '../utils/getDefaultIcon';
 import getAppBlocks from '../utils/getAppBlocks';
 import getAppFromRecord from '../utils/getAppFromRecord';
+import getDefaultIcon from '../utils/getDefaultIcon';
 
 async function checkBlocks(app, db) {
   const blocks = getAppBlocks(app);

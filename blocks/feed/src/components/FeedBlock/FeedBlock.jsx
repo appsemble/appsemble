@@ -1,7 +1,7 @@
 import { Loader } from '@appsemble/react-components';
 import { compileFilters } from '@appsemble/utils/remap';
-import React from 'react';
 import PropTypes from 'prop-types';
+import React from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import Card from '../Card';

@@ -1,10 +1,11 @@
 import 'leaflet/dist/leaflet.css';
-import PropTypes from 'prop-types';
-import { TileLayer } from 'leaflet/src/layer';
-import { Map } from 'leaflet/src/map';
-import { CircleMarker } from 'leaflet/src/layer/vector';
-import React from 'react';
+
 import classNames from 'classnames';
+import { TileLayer } from 'leaflet/src/layer';
+import { CircleMarker } from 'leaflet/src/layer/vector';
+import { Map } from 'leaflet/src/map';
+import PropTypes from 'prop-types';
+import React from 'react';
 
 import styles from './GeoCoordinatesInput.css';
 
