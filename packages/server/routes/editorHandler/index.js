@@ -27,7 +27,7 @@ export default async function editorHandler(ctx) {
     // This is needed for Webpack.
     'connect-src': [(process.env.NODE_ENV = process.env.NODE_ENV !== 'production' && '*')],
     'default-src': ["'self'"],
-    'img-src': ["'self'", 'blob:', 'data:'],
+    'img-src': ['https://www.gravatar.com', "'self'", 'blob:', 'data:'],
     'script-src': [
       "'self'",
       settingsHash,

@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom';
 
 import messages from './messages';
 import styles from './Toolbar.css';
-import ProfileDropdown from '../ProfileDropdown/ProfileDropdown';
+import ProfileDropdown from '../ProfileDropdown';
 
 export default class Toolbar extends React.Component {
   static propTypes = {
@@ -42,7 +42,13 @@ export default class Toolbar extends React.Component {
             </a>
           </span>
         </div>
-        <div className="navbar-brand">{isLoggedIn && <ProfileDropdown {...this.props} />}</div>
+        <div className="navbar-brand">
+          {isLoggedIn && (
+            <div className="navbar-item">
+              <ProfileDropdown />
+            </div>
+          )}
+        </div>
       </nav>
     );
   }
