@@ -3,9 +3,9 @@ import { Redirect, Route, Switch } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import React from 'react';
 
+import AppSideMenu from '../AppSideMenu';
 import Editor from '../Editor';
 import CMS from '../CMS';
-import SideMenu from '../SideMenu';
 import styles from './AppContext.css';
 
 /**
@@ -34,7 +34,7 @@ export default class AppContext extends React.Component {
 
     return (
       <div className={styles.container}>
-        <SideMenu />
+        <AppSideMenu />
         <div className={styles.content}>
           <Switch>
             <Route component={Editor} exact path={`${match.path}/edit`} />
