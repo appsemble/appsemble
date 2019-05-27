@@ -1,6 +1,5 @@
-import crypto from 'crypto';
-
 import bcrypt from 'bcrypt';
+import crypto from 'crypto';
 import jwt from 'jsonwebtoken';
 
 export default function oauth2Model({ db, grant, secret }) {

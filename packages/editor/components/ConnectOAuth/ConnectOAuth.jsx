@@ -1,11 +1,11 @@
-import classNames from 'classnames';
 import axios from 'axios';
+import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import messages from './messages';
 import styles from './ConnectOAuth.css';
+import messages from './messages';
 
 export default class ConnectOAuth extends React.Component {
   static propTypes = {

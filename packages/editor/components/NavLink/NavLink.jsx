@@ -1,7 +1,7 @@
+import classNames from 'classnames';
+import PropTypes from 'prop-types';
 import React from 'react';
 import { Link } from 'react-router-dom';
-import PropTypes from 'prop-types';
-import classNames from 'classnames';
 
 export default class NavLink extends React.Component {
   static propTypes = {

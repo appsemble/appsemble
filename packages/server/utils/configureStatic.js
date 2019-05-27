@@ -1,8 +1,7 @@
-import path from 'path';
-
 import fs from 'fs-extra';
 import serve from 'koa-static';
 import mustache from 'mustache';
+import path from 'path';
 
 export default async function configureStatic(app, webpackConfigs) {
   if (process.env.NODE_ENV === 'production') {

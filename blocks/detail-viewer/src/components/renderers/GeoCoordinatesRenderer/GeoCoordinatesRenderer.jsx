@@ -1,7 +1,7 @@
 import { Location } from '@appsemble/react-components';
+import { remapData } from '@appsemble/utils/remap';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { remapData } from '@appsemble/utils/remap';
 
 import iconUrl from '../../../../../../themes/amsterdam/core/marker.svg';
 import styles from './GeoCoordinatesRenderer.css';

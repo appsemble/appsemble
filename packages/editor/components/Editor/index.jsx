@@ -1,8 +1,8 @@
-import { connect } from 'react-redux';
 import { injectIntl } from 'react-intl';
+import { connect } from 'react-redux';
 
-import { push } from '../../actions/message';
 import { updateApp } from '../../actions/apps';
+import { push } from '../../actions/message';
 import { getOpenApiSpec } from '../../actions/openApi';
 import Editor from './Editor';
 

@@ -1,6 +1,6 @@
+import classNames from 'classnames';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
-import classNames from 'classnames';
 
 import Toolbar from '../Toolbar';
 import styles from './ErrorFallback.css';

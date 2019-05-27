@@ -1,6 +1,6 @@
-import Boom from 'boom';
 import validate, { SchemaValidationError } from '@appsemble/utils/validate';
 import parseOData from '@wesselkuipers/odata-sequelize';
+import Boom from 'boom';
 
 function verifyResourceDefinition(app, resourceType) {
   if (!app) {

@@ -1,7 +1,7 @@
+import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
-import classNames from 'classnames';
 
 import styles from './ResetPassword.css';
 import messages from './messages';

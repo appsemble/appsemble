@@ -1,9 +1,9 @@
 import qs from 'querystring';
 
 import createSettings from '../../utils/createSettings';
-import { bulmaURL, faURL } from '../../utils/styleURL';
 import makeCSP from '../../utils/makeCSP';
 import sentryDsnToReportUri from '../../utils/sentryDsnToReportUri';
+import { bulmaURL, faURL } from '../../utils/styleURL';
 
 /**
  * https://developers.google.com/web/fundamentals/web-app-manifest

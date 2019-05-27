@@ -1,6 +1,5 @@
-import path from 'path';
-
 import inquirer from 'inquirer';
+import path from 'path';
 
 import { createReact, createVanilla } from '../lib/create';
 

@@ -1,12 +1,12 @@
 import { EmailLogin } from '@appsemble/react-components';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { Link } from 'react-router-dom';
 import { FormattedMessage } from 'react-intl';
+import { Link } from 'react-router-dom';
 
+import SocialLoginButton from '../SocialLoginButton';
 import styles from './Login.css';
 import messages from './messages';
-import SocialLoginButton from '../SocialLoginButton';
 
 const loginMethods = new Set(window.settings.logins);
 

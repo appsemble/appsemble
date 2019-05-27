@@ -1,4 +1,4 @@
-import { Actions, BootstrapParams, bootstrap as sdkBootstrap } from '@appsemble/sdk';
+import { BootstrapParams, bootstrap as sdkBootstrap } from '@appsemble/sdk';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import retargetEvents from 'react-shadow-dom-retarget-events';

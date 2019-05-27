@@ -1,8 +1,7 @@
-import { EOL } from 'os';
-import util from 'util';
-
 import chalk from 'chalk';
 import highlight from 'cli-highlight';
+import { EOL } from 'os';
+import util from 'util';
 import winston from 'winston';
 
 const levels = ['crit', 'error', 'warn', 'info', 'verbose', 'silly'];
