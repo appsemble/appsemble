@@ -82,7 +82,7 @@ export default class FilterBlock extends React.Component {
       },
     } = this.props;
 
-    if (e.target.disabled) {
+    if (e && e.target.disabled) {
       return;
     }
 
