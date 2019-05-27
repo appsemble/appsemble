@@ -65,9 +65,33 @@ export default class FilterBlock extends React.Component {
         parameters: { fields },
       },
     } = this.props;
+
     const { filter } = this.state;
 
-    const $filter = toOData(fields, { ...filter, ...filterParams });
+    // Convert date fields to unix timestamps without mutating filter itself
+    const convertedFilter = Object.entries(filter).reduce((acc, [key, value]) => {
+      const field = fields.find(f => f.name === key);
+      if (field.type === 'date') {
+        if (field.range) {
+          acc[key] = {};
+          if (value.to) {
+            acc[key].to = new Date(value.to).getTime();
+          }
+
+          if (value.from) {
+            acc[key].from = new Date(value.from).getTime();
+          }
+        } else {
+          acc[key] = new Date(value).getTime();
+        }
+      } else {
+        acc[key] = value;
+      }
+
+      return acc;
+    }, {});
+
+    const $filter = toOData(fields, { ...convertedFilter, ...filterParams });
 
     return actions.load.dispatch({
       ...($filter && { $filter }),
