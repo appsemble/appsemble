@@ -9,10 +9,13 @@ export default async function testToken(
 ) {
   const { User, EmailAuthorization, OAuthClient } = db.models;
   const user = await User.create();
-  await user.createOrganization({ id: organizationId });
-  await EmailAuthorization.create({
-    email: 'test',
+  await user.createOrganization({
+    id: organizationId,
     password: bcrypt.hashSync('test', 10),
+    name: 'Test User',
+  });
+  await EmailAuthorization.create({
+    email: 'test@example.com',
     verified: true,
     UserId: user.id,
   });

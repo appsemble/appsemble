@@ -11,8 +11,8 @@ export default (sequelize, DataTypes) => {
     },
   );
 
-  ResetPasswordToken.associate = ({ EmailAuthorization }) => {
-    ResetPasswordToken.belongsTo(EmailAuthorization, {
+  ResetPasswordToken.associate = ({ User }) => {
+    ResetPasswordToken.belongsTo(User, {
       foreignKey: { allowNull: false },
       onDelete: 'CASCADE',
     });

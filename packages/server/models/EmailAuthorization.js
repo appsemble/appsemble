@@ -15,12 +15,8 @@ export default (sequelize, DataTypes) => {
     },
   );
 
-  EmailAuthorization.associate = ({ User, ResetPasswordToken }) => {
+  EmailAuthorization.associate = ({ User }) => {
     EmailAuthorization.belongsTo(User);
-    EmailAuthorization.hasMany(ResetPasswordToken, {
-      foreignKey: { allowNull: false },
-      onDelete: 'CASCADE',
-    });
   };
 
   return EmailAuthorization;

@@ -12,8 +12,8 @@ async function mayRegister({ argv }) {
   }
 }
 
-async function registerUser(associatedModel, organizationName, transaction) {
-  await associatedModel.createUser({}, { transaction });
+async function registerUser(associatedModel, organizationName, transaction, email, password) {
+  await associatedModel.createUser({ password, primaryEmail: email }, { transaction });
   const user = await associatedModel.getUser({ transaction });
   await user.createOrganization(
     {
@@ -34,8 +34,8 @@ export async function registerEmail(ctx) {
     const key = crypto.randomBytes(40).toString('hex');
 
     await ctx.db.transaction(async transaction => {
-      const record = await EmailAuthorization.create({ ...body, password, key }, { transaction });
-      await registerUser(record, body.organization, transaction);
+      const record = await EmailAuthorization.create({ ...body, key }, { transaction });
+      await registerUser(record, body.organization, transaction, record.email, password);
 
       await sendWelcomeEmail(
         {
@@ -155,12 +155,14 @@ export async function requestResetPassword(ctx) {
   const { EmailAuthorization } = ctx.db.models;
   const { smtp } = ctx.state;
 
-  const record = await EmailAuthorization.findByPk(email);
+  const emailRecord = await EmailAuthorization.findByPk(email);
 
-  if (record) {
-    const { name } = record;
+  if (emailRecord) {
+    const user = await emailRecord.getUser();
+
+    const { name } = user;
     const token = crypto.randomBytes(40).toString('hex');
-    await record.createResetPasswordToken({ token });
+    await user.createResetPasswordToken({ token });
     await sendResetPasswordEmail(
       { email, name, url: `${ctx.origin}/_/edit-password?token=${token}` },
       smtp,
@@ -181,8 +183,8 @@ export async function resetPassword(ctx) {
   }
 
   const password = await bcrypt.hash(ctx.request.body.password, 10);
-  const email = await tokenRecord.getEmailAuthorization();
+  const user = await tokenRecord.getUser();
 
-  await email.update({ password });
+  await user.update({ password });
   await tokenRecord.destroy();
 }

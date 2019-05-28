@@ -15,13 +15,24 @@ export default function(sequelize, DataTypes) {
     },
   );
 
-  User.associate = ({ Organization, OAuthToken, OAuthAuthorization, EmailAuthorization }) => {
+  User.associate = ({
+    Organization,
+    OAuthToken,
+    OAuthAuthorization,
+    EmailAuthorization,
+    ResetPasswordToken,
+  }) => {
     User.belongsToMany(Organization, { through: 'UserOrganization' });
     User.hasMany(OAuthToken);
     User.hasMany(OAuthAuthorization);
     User.hasMany(EmailAuthorization);
-    User.hasOne(EmailAuthorization, {
-      as: 'primaryEmail',
+    User.hasMany(ResetPasswordToken, {
+      foreignKey: { allowNull: false },
+      onDelete: 'CASCADE',
+    });
+    User.belongsTo(EmailAuthorization, {
+      foreignKey: 'primaryEmail',
+      constraints: false,
     });
   };
 

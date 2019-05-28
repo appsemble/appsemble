@@ -159,19 +159,26 @@ export default function oauth2Model({ db, grant, secret }) {
     },
 
     async getUser(username, password) {
-      const email = await EmailAuthorization.findOne({ where: { email: username }, raw: true });
+      const email = await EmailAuthorization.findOne({ where: { email: username } });
 
-      if (!(email && (await bcrypt.compare(password, email.password)))) {
+      if (!email) {
         return false;
       }
 
-      const organizations = await getOrganizations(email.UserId);
+      const user = await email.getUser();
+
+      if (!(await bcrypt.compare(password, user.password))) {
+        return false;
+      }
+
+      const organizations = await getOrganizations(user.id);
 
       return {
-        id: email.UserId,
+        id: user.id,
         verified: email.verified,
         email: email.email,
-        name: email.name,
+        name: user.name,
+        primaryEmail: user.primaryEmail,
         organizations,
       };
     },
