@@ -24,7 +24,7 @@ export default class SideMenu extends React.Component {
       <div className={classNames({ [styles.collapsed]: isCollapsed }, styles.sideMenuContainer)}>
         <aside className={classNames('menu', styles.sideMenu)}>
           <ul className="menu-list">
-            {children.map((item, index) => {
+            {React.Children.map(children, (item, index) => {
               // eslint-disable-next-line react/no-array-index-key
               return <li key={index}>{item}</li>;
             })}

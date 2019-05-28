@@ -15,6 +15,7 @@ import VerifyEmail from '../VerifyEmail';
 import Register from '../Register';
 import Toolbar from '../Toolbar';
 import ConnectOAuth from '../ConnectOAuth';
+import Settings from '../Settings';
 
 export default class App extends React.Component {
   static propTypes = {
@@ -47,6 +48,7 @@ export default class App extends React.Component {
             {user ? (
               <Switch>
                 <Route component={AppList} exact path="/_/apps" />
+                <Route component={Settings} path="/_/settings" />
                 <Route component={AppContext} path="/_/apps/:id(\d+)" />
                 <Route component={EditPassword} exact path="/_/edit-password" />
                 <Redirect to="/_/apps" />
