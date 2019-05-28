@@ -1,8 +1,10 @@
-export default (sequelize, DataTypes) => {
+export default function(sequelize, DataTypes) {
   const User = sequelize.define(
     'User',
     {
       id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+      name: { type: DataTypes.STRING },
+      password: { type: DataTypes.STRING },
     },
     {
       freezeTableName: true,
@@ -17,8 +19,11 @@ export default (sequelize, DataTypes) => {
     User.belongsToMany(Organization, { through: 'UserOrganization' });
     User.hasMany(OAuthToken);
     User.hasMany(OAuthAuthorization);
-    User.hasOne(EmailAuthorization);
+    User.hasMany(EmailAuthorization);
+    User.hasOne(EmailAuthorization, {
+      as: 'primaryEmail',
+    });
   };
 
   return User;
-};
+}

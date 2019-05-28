@@ -1,6 +1,9 @@
 module.exports = {
   key: '0.6.0',
-  async up(queryInterface, DataTypes) {
+
+  async up(db, DataTypes) {
+    const queryInterface = db.getQueryInterface();
+
     await queryInterface.createTable('Organization', {
       id: { type: DataTypes.STRING, primaryKey: true },
       OrganizationId: {
@@ -250,7 +253,9 @@ module.exports = {
       updated: { allowNull: false, type: DataTypes.DATE },
     });
   },
-  async down(queryInterface) {
+  async down(db) {
+    const queryInterface = db.getQueryInterface();
+
     await queryInterface.dropTable('ResetPasswordToken');
     await queryInterface.dropTable('EmailAuthorization');
     await queryInterface.dropTable('OAuthAuthorization');

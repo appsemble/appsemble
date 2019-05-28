@@ -3,8 +3,6 @@ export default (sequelize, DataTypes) => {
     'EmailAuthorization',
     {
       email: { type: DataTypes.STRING, primaryKey: true },
-      name: DataTypes.STRING,
-      password: { type: DataTypes.STRING, allowNull: false },
       verified: { type: DataTypes.BOOLEAN, defaultValue: false, allowNull: false },
       key: DataTypes.STRING,
     },

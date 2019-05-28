@@ -29,6 +29,7 @@ export async function handler(argv) {
   let db;
   try {
     db = await setupModels({
+      sync: false,
       host: argv.databaseHost,
       dialect: argv.databaseDialect,
       port: argv.databasePort,
@@ -45,9 +46,7 @@ export async function handler(argv) {
     logging: entry => logger.info(entry),
     storage: 'sequelize',
     storageOptions: { sequelize: db },
-    migrations: migrations.map(migration =>
-      createMigration(db.getQueryInterface(), Sequelize, migration),
-    ),
+    migrations: migrations.map(migration => createMigration(db, Sequelize, migration)),
   });
 
   const params = { ...(to && { to }), ...(from && { from }) };
