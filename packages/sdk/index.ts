@@ -104,7 +104,7 @@ export interface Utils {
   /**
    * Show a bulma style message.
    */
-  showMessage: (message: Message) => void;
+  showMessage: (message: string | Message) => void;
 }
 
 export interface Events {
