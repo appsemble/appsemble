@@ -186,6 +186,10 @@ export default class Card extends React.Component {
                 iconWidth={40}
                 latitude={latitude}
                 longitude={longitude}
+                mapOptions={{
+                  dragging: false,
+                  zoomControl: false,
+                }}
               />
             )}
           </div>
