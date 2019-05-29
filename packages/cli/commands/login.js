@@ -1,5 +1,5 @@
-import inquirer from 'inquirer';
 import { AppsembleError, logger } from '@appsemble/node-utils';
+import inquirer from 'inquirer';
 
 import { getConfig, requestToken, saveConfig } from '../lib/config';
 

@@ -1,5 +1,4 @@
 const path = require('path');
-
 // eslint-disable-next-line import/no-extraneous-dependencies
 const bulmaPkg = require('bulma/package.json');
 // eslint-disable-next-line import/no-extraneous-dependencies

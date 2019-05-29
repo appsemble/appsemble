@@ -10,7 +10,7 @@ export function builder(yargs) {
 }
 
 export async function handler({ key }) {
-  const { pkg } = await readPkgUp({ normalize: false });
+  const { package: pkg } = await readPkgUp({ normalize: false });
   if (Object.prototype.hasOwnProperty.call(pkg, 'appsembleServer')) {
     // eslint-disable-next-line no-console
     console.log(pkg.appsembleServer[key]);

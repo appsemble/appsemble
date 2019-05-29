@@ -5,8 +5,8 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import messages from './messages';
 import styles from './CreateAppCard.css';
+import messages from './messages';
 
 export default class CreateAppCard extends React.Component {
   static propTypes = {

@@ -1,5 +1,4 @@
 const path = require('path');
-
 const { version } = require('react/package.json');
 const restricted = require('eslint-restricted-globals');
 
@@ -16,7 +15,7 @@ module.exports = {
     'prettier/react',
   ],
   parser: 'babel-eslint',
-  plugins: ['babel', 'filenames'],
+  plugins: ['babel', 'filenames', 'simple-import-sort'],
   settings: {
     'import/resolver': {
       node: {
@@ -39,7 +38,6 @@ module.exports = {
       },
     ],
     'no-inline-comments': 'error',
-    'sort-imports': ['error', { ignoreDeclarationSort: true }],
     'filenames/match-regex': ['error', /^\.?[a-z]+(\.config|\.test)?$/i, true],
     'filenames/match-exported': 'error',
     'react/prefer-stateless-function': 'off',
@@ -54,13 +52,15 @@ module.exports = {
     'import/order': [
       'error',
       {
-        groups: ['builtin', ['external', 'internal'], ['index', 'sibling', 'parent']],
+        groups: [['builtin', 'external', 'internal'], ['index', 'sibling', 'parent']],
         'newlines-between': 'always',
       },
     ],
     'import/no-cycle': ['error', { maxDepth: 1 }],
     'import/no-useless-path-segments': 'error',
     'react/jsx-sort-props': 'error',
+    'react/state-in-constructor': ['error', 'never'],
+    'simple-import-sort/sort': 'error',
     'jsx-a11y/label-has-associated-control': 'off',
     'jsx-a11y/label-has-for': 'off',
   },
@@ -145,6 +145,7 @@ module.exports = {
         'jest/consistent-test-it': ['error', { fn: 'it' }],
         'jest/expect-expect': 'error',
         'jest/no-alias-methods': 'error',
+        'jest/no-commented-out-tests': 'error',
         'jest/no-disabled-tests': 'error',
         'jest/no-focused-tests': 'error',
         'jest/no-identical-title': 'error',

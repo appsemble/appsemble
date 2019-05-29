@@ -1,17 +1,14 @@
 #!/usr/bin/env node
-import path from 'path';
-import querystring from 'querystring';
-
 import faPkg from '@fortawesome/fontawesome-free/package.json';
 import boom from 'boom';
+import Grant from 'grant-koa';
 import Koa from 'koa';
 import compress from 'koa-compress';
-import Grant from 'grant-koa';
 import mount from 'koa-mount';
 import koaQuerystring from 'koa-qs';
 import Router from 'koa-router';
-import serve from 'koa-static';
 import session from 'koa-session';
+import serve from 'koa-static';
 import koasBodyParser from 'koas-body-parser';
 import koas from 'koas-core';
 import koasOAuth2Server from 'koas-oauth2-server';
@@ -21,6 +18,8 @@ import koasSerializer from 'koas-serializer';
 import koasSpecHandler from 'koas-spec-handler';
 import koasStatusCode from 'koas-status-code';
 import koasSwaggerUI from 'koas-swagger-ui';
+import path from 'path';
+import querystring from 'querystring';
 import raw from 'raw-body';
 
 import api from '../api';

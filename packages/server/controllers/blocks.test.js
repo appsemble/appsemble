@@ -1,12 +1,11 @@
-import path from 'path';
-
 import fs from 'fs-extra';
+import path from 'path';
 import request from 'supertest';
 
 import createServer from '../utils/createServer';
-import truncate from '../utils/test/truncate';
 import testSchema from '../utils/test/testSchema';
 import testToken from '../utils/test/testToken';
+import truncate from '../utils/test/truncate';
 
 describe('blocks', () => {
   let db;

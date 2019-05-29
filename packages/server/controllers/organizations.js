@@ -1,5 +1,5 @@
-import Boom from 'boom';
 import validateStyle, { StyleValidationError } from '@appsemble/utils/validateStyle';
+import Boom from 'boom';
 
 export async function getOrganizationCoreStyle(ctx) {
   const { organizationId } = ctx.params;

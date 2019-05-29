@@ -14,11 +14,11 @@
   "dependencies": {
     "@appsemble/react": "0.6.0",
     "classnames": "^2.2.6",
-    "leaflet": "^1.4.0",
+    "leaflet": "^1.5.1",
     "prop-types": "^15.7.2",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
-    "react-intl": "^2.8.0",
+    "react-intl": "^2.9.0",
     "read-blob": "^1.1.0"
   }
 }

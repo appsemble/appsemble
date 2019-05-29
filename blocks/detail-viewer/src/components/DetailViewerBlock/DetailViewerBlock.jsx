@@ -1,7 +1,7 @@
+import { Loader } from '@appsemble/react-components';
+import { remapData } from '@appsemble/utils/remap';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { remapData } from '@appsemble/utils/remap';
-import { Loader } from '@appsemble/react-components';
 
 import FileRenderer from '../renderers/FileRenderer';
 import GeoCoordinatesRenderer from '../renderers/GeoCoordinatesRenderer';

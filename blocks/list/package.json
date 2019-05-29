@@ -7,6 +7,6 @@
     "@appsemble/react-components": "0.6.0",
     "@appsemble/utils": "0.6.0",
     "react": "^16.8.6",
-    "react-intl": "^2.8.0"
+    "react-intl": "^2.9.0"
   }
 }

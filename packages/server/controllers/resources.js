@@ -1,6 +1,6 @@
-import Boom from 'boom';
 import validate, { SchemaValidationError } from '@appsemble/utils/validate';
 import parseOData from '@wesselkuipers/odata-sequelize';
+import Boom from 'boom';
 
 function verifyResourceDefinition(app, resourceType) {
   if (!app) {
@@ -182,7 +182,9 @@ export async function updateResource(ctx) {
   // }
 
   verifyResourceDefinition(app, resourceType);
-  let resource = await Resource.findOne({ where: { id: resourceId, type: resourceType } });
+  let resource = await Resource.findOne({
+    where: { id: resourceId, type: resourceType, AppId: appId },
+  });
 
   if (!resource) {
     throw Boom.notFound('Resource not found');
@@ -203,7 +205,10 @@ export async function updateResource(ctx) {
     throw boom;
   }
 
-  resource = await resource.update({ data: updatedResource }, { where: { id: resourceId } });
+  resource = await resource.update(
+    { data: updatedResource },
+    { where: { id: resourceId, type: resourceType, AppId: appId } },
+  );
   ctx.body = { id: resourceId, ...resource.get('data', { plain: true }) };
 }
 
@@ -219,7 +224,9 @@ export async function deleteResource(ctx) {
   }
 
   verifyResourceDefinition(app, resourceType);
-  const resource = await Resource.findOne({ where: { id: resourceId, type: resourceType } });
+  const resource = await Resource.findOne({
+    where: { id: resourceId, type: resourceType, AppId: appId },
+  });
 
   if (!resource) {
     throw Boom.notFound('Resource not found');

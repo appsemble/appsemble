@@ -1,6 +1,6 @@
 import { logger } from '@appsemble/node-utils';
-import Umzug from 'umzug';
 import Sequelize from 'sequelize';
+import Umzug from 'umzug';
 
 import migrations, { createMigration } from '../migrations';
 import setupModels, { handleDbException } from '../utils/setupModels';

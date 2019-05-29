@@ -1,11 +1,11 @@
+import normalize from '@appsemble/utils/normalize';
 import PropTypes from 'prop-types';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import normalize from '@appsemble/utils/normalize';
 
-import makeActions from '../../utils/makeActions';
 import { prefixURL } from '../../utils/blockUtils';
 import { callBootstrap } from '../../utils/bootstrapper';
+import makeActions from '../../utils/makeActions';
 import styles from './Block.css';
 
 const FA_URL = Array.from(document.styleSheets, sheet => sheet.href).find(href =>

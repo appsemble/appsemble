@@ -1,10 +1,9 @@
-import fs from 'fs';
-import path from 'path';
-
 import { logger } from '@appsemble/node-utils';
 import FormData from 'form-data';
+import fs from 'fs';
 import klaw from 'klaw';
 import { pick } from 'lodash';
+import path from 'path';
 
 /**
  * Configure the payload for a new block version upload.

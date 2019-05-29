@@ -1,5 +1,5 @@
-import { connect } from 'react-redux';
 import { Message } from '@appsemble/react-components';
+import { connect } from 'react-redux';
 
 import { remove } from '../../actions/message';
 

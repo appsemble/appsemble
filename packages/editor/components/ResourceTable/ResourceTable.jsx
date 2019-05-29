@@ -1,13 +1,13 @@
-import React from 'react';
-import axios from 'axios';
 import { Loader, Modal } from '@appsemble/react-components';
+import axios from 'axios';
 import classNames from 'classnames';
-import { FormattedMessage } from 'react-intl';
 import PropTypes from 'prop-types';
+import React from 'react';
+import { FormattedMessage } from 'react-intl';
 import { Link } from 'react-router-dom';
 
-import messages from './messages';
 import styles from './ResourceTable.css';
+import messages from './messages';
 
 export default class ResourceTable extends React.Component {
   static propTypes = {

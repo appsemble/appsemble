@@ -1,6 +1,6 @@
+import PropTypes from 'prop-types';
 import React from 'react';
 import { Redirect, Route, Switch } from 'react-router-dom';
-import PropTypes from 'prop-types';
 
 import CMSRoot from '../CMSRoot';
 import ResourceTable from '../ResourceTable';

@@ -1,4 +1,6 @@
 import 'leaflet/dist/leaflet.css';
+
+import { BlockProps } from '@appsemble/react';
 import {
   CircleMarker,
   Icon,
@@ -10,7 +12,6 @@ import {
   TileLayer,
 } from 'leaflet';
 import * as React from 'react';
-import { BlockProps } from '@appsemble/react';
 
 export interface LocationProps {
   className?: string;

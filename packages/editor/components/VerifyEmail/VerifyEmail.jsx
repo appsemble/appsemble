@@ -1,8 +1,8 @@
+import { Loader } from '@appsemble/react-components';
+import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
-import classNames from 'classnames';
-import { Loader } from '@appsemble/react-components';
 
 import styles from './VerifyEmail.css';
 import messages from './messages';

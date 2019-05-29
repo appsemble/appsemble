@@ -1,3 +1,5 @@
+import './index.css';
+
 import getDb from '@appsemble/utils/getDB';
 import { init } from '@sentry/browser';
 import React from 'react';
@@ -6,9 +8,8 @@ import { Provider } from 'react-redux';
 import { applyMiddleware, combineReducers, compose, createStore } from 'redux';
 import thunk from 'redux-thunk';
 
-import './index.css';
-import App from './components/App';
 import * as actions from './actions';
+import App from './components/App';
 
 const { sentryDsn } = window.settings;
 init({ dsn: sentryDsn });

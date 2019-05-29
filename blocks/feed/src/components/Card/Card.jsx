@@ -1,10 +1,10 @@
 import { Location } from '@appsemble/react-components';
-import React from 'react';
 import PropTypes from 'prop-types';
+import React from 'react';
 
+import iconUrl from '../../../../../themes/amsterdam/core/marker.svg';
 import styles from './Card.css';
 import messages from './messages';
-import iconUrl from '../../../../../themes/amsterdam/core/marker.svg';
 
 /**
  * A single card in the feed.
