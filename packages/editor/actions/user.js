@@ -55,7 +55,7 @@ function setupAuth(accessToken, refreshToken, url, db, dispatch) {
     exp,
     scopes,
     sub,
-    user: { organizations },
+    user: { organizations, name, primaryEmail },
   } = payload;
   if (exp) {
     const timeout = exp * 1e3 - REFRESH_BUFFER - new Date().getTime();
@@ -71,6 +71,8 @@ function setupAuth(accessToken, refreshToken, url, db, dispatch) {
     id: sub,
     scope: scopes,
     organizations,
+    name,
+    primaryEmail,
   };
 }
 

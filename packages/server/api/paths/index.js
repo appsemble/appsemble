@@ -6,6 +6,7 @@ import oauth from './oauth';
 import organizations from './organizations';
 import resources from './resources';
 import templates from './templates';
+import user from './user';
 
 export default {
   ...apps,
@@ -16,4 +17,5 @@ export default {
   ...organizations,
   ...resources,
   ...templates,
+  ...user,
 };
