@@ -6,3 +6,8 @@
 .icon {
   margin-right: 8px;
 }
+
+.tag {
+  margin: 3px;
+  text-decoration: none !important;
+}
