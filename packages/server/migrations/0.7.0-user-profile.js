@@ -13,6 +13,18 @@ module.exports = {
       references: { model: 'EmailAuthorization', key: 'email' },
     });
 
+    queryInterface.addColumn('ResetPasswordToken', 'UserId', {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      onDelete: 'CASCADE',
+      references: {
+        model: 'User',
+        key: 'id',
+      },
+    });
+
+    queryInterface.removeColumn('ResetPasswordToken', 'EmailAuthorizationEmail');
+
     const emailAuthorizations = await queryInterface.select(
       EmailAuthorization,
       'EmailAuthorization',
@@ -56,6 +68,17 @@ module.exports = {
           { email: user.dataValues.primaryEmail },
         );
       }
+    });
+
+    queryInterface.removeColumn('ResetPasswordToken', 'UserId');
+    queryInterface.addColumn('ResetPasswordToken', 'EmailAuthorizationEmail', {
+      type: Sequelize.DataTypes.STRING,
+      allowNull: false,
+      onDelete: 'CASCADE',
+      references: {
+        model: 'EmailAuthorization',
+        key: 'email',
+      },
     });
 
     queryInterface.removeColumn('User', 'name');
