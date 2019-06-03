@@ -396,6 +396,8 @@ provision staging:
   <<: *provision
   except:
     - schedules
+  only:
+    - master@appsemble/appsemble
   environment:
     name: staging
   dependencies:
