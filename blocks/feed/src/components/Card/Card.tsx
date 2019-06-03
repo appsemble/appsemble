@@ -9,10 +9,19 @@ import styles from './Card.css';
 import messages from './messages';
 
 export interface CardProps {
+  /**
+   * The content for this specific card to render.
+   */
   content: {
     id: number;
   };
+  /**
+   * Update function that can be called to update a single resource
+   */
   onUpdate: (data: any) => void;
+  /**
+   * Remapper functions that have been prepared by a parent component.
+   */
   remappers: Remappers;
 }
 
