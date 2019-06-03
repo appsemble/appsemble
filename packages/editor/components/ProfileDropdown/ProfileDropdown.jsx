@@ -66,7 +66,7 @@ export default class ProfileDropdown extends Component {
             tabIndex={0}
           >
             <div className="dropdown-content">
-              <Link className="dropdown-item" to="settings">
+              <Link className="dropdown-item" to="/_/settings">
                 <span className="icon">
                   <i className="fas fa-wrench" />
                 </span>
