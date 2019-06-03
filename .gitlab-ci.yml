@@ -225,7 +225,7 @@ review:
   allow_failure: false
   environment:
     name: review/$CI_COMMIT_REF_SLUG
-    url: https://demo.appsemble.app
+    url: https://amsterdam.appsemble.app
     on_stop: stop review
   script:
     - yarn --frozen-lockfile
