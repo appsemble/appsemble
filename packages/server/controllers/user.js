@@ -69,5 +69,10 @@ export async function updateUser(ctx) {
     name,
     primaryEmail,
     organizations: dbUser.Organizations.map(({ id }) => ({ id })),
+    emails: dbUser.EmailAuthorizations.map(({ email, verified }) => ({
+      email,
+      verified,
+      primary: dbUser.primaryEmail === email,
+    })),
   };
 }
