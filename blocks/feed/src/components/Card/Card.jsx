@@ -106,7 +106,9 @@ export default class Card extends React.Component {
     const subtitle = remappers.subtitle(content);
     const remappedHeading = remappers.heading(content);
     const headingDate = new Date(remappedHeading);
-    const heading = Number.isNaN(headingDate) ? remappedHeading : headingDate;
+    const heading = Number.isNaN(headingDate)
+      ? remappedHeading
+      : `${headingDate.toLocaleDateString()} ${headingDate.toLocaleTimeString()}`;
     const picture = remappers.picture(content);
     const description = remappers.description(content);
     const latitude = remappers.latitude(content);
