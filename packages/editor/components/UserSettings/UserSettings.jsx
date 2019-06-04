@@ -13,15 +13,10 @@ export default class UserSettings extends Component {
     push: PropTypes.func.isRequired,
   };
 
-  state = { user: undefined, newUser: undefined, loading: true, submitting: false };
+  state = { user: undefined, newUser: undefined, newEmail: '', loading: true, submitting: false };
 
   async componentDidMount() {
     const { data: user } = await axios.get('/api/user');
-    user.emails = [
-      ...user.emails,
-      { email: 'test@example.com', verified: true, primary: false },
-      { email: 'test2@example.com', verified: false, primary: false },
-    ];
     this.setState({ user, newUser: user, loading: false });
   }
 
@@ -31,7 +26,9 @@ export default class UserSettings extends Component {
     this.setState({ newUser: { ...user, name: event.target.value } });
   };
 
-  onAddNewEmail = async () => {
+  onAddNewEmail = async event => {
+    event.preventDefault();
+
     const { newEmail, user } = this.state;
     const { push, intl } = this.props;
 
@@ -46,7 +43,9 @@ export default class UserSettings extends Component {
       newEmail: '',
       user: {
         ...user,
-        emails: [...user.emails, { email: newEmail, verified: false, primary: false }],
+        emails: [...user.emails, { email: newEmail, verified: false, primary: false }].sort(
+          (a, b) => a.email.localeCompare(b.email),
+        ),
       },
     });
   };
@@ -55,11 +54,12 @@ export default class UserSettings extends Component {
     const { user } = this.state;
     const { push, intl } = this.props;
 
-    await axios.put('/api/user', { ...user, primaryEmail: email.email });
+    const { data: newUser } = await axios.put('/api/user', { ...user, primaryEmail: email.email });
     push({
       body: intl.formatMessage(messages.primaryEmailSuccess, { email: email.email }),
       color: 'success',
     });
+    this.setState({ user: newUser });
   };
 
   resendVerification = async email => {
@@ -84,9 +84,10 @@ export default class UserSettings extends Component {
   };
 
   onSaveProfile = async event => {
+    event.preventDefault();
+
     const { newUser } = this.state;
     const { push, intl } = this.props;
-    event.preventDefault();
 
     try {
       this.setState({ submitting: true });
@@ -108,65 +109,64 @@ export default class UserSettings extends Component {
     }
 
     return (
-      <form className="content" onSubmit={this.onSaveProfile}>
-        <div className="field">
-          <label className="label">
-            <FormattedMessage {...messages.displayName} />
-          </label>
-          <div className={`control has-icons-left ${styles.field}`}>
-            <input
-              className="input"
-              name="name"
-              onChange={this.onNameChange}
-              placeholder={intl.formatMessage(messages.displayName)}
-              type="text"
-              value={newUser.name}
-            />
-            <span className="icon is-small is-left">
-              <i className="fas fa-user" />
-            </span>
-            <p className="help">
-              <FormattedMessage {...messages.displayNameHelp} />
-            </p>
+      <div className="content">
+        <form onSubmit={this.onSaveProfile}>
+          <div className="field">
+            <label className="label">
+              <FormattedMessage {...messages.displayName} />
+            </label>
+            <div className={`control has-icons-left ${styles.field}`}>
+              <input
+                className="input"
+                name="name"
+                onChange={this.onNameChange}
+                placeholder={intl.formatMessage(messages.displayName)}
+                type="text"
+                value={newUser.name}
+              />
+              <span className="icon is-small is-left">
+                <i className="fas fa-user" />
+              </span>
+              <p className="help">
+                <FormattedMessage {...messages.displayNameHelp} />
+              </p>
+            </div>
           </div>
-        </div>
-        <div className="control">
-          <button className="button is-primary" disabled={submitting} type="submit">
-            <FormattedMessage {...messages.saveProfile} />
-          </button>
-        </div>
+          <div className="control">
+            <button className="button is-primary" disabled={submitting} type="submit">
+              <FormattedMessage {...messages.saveProfile} />
+            </button>
+          </div>
+        </form>
         <hr />
         <h4>
           <FormattedMessage {...messages.emails} />
         </h4>
-        <div className="field">
-          <label className="label">
-            <FormattedMessage {...messages.addEmail} />
-          </label>
-          <div className={`control has-icons-left ${styles.field}`}>
-            <input
-              className="input"
-              name="newEmail"
-              onChange={this.onNewEmailChange}
-              placeholder={intl.formatMessage(messages.email)}
-              type="email"
-              value={newEmail}
-            />
-            <span className="icon is-small is-left">
-              <i className="fas fa-envelope" />
-            </span>
+        <form onSubmit={this.onAddNewEmail}>
+          <div className="field">
+            <label className="label">
+              <FormattedMessage {...messages.addEmail} />
+            </label>
+            <div className={`control has-icons-left ${styles.field}`}>
+              <input
+                className="input"
+                name="newEmail"
+                onChange={this.onNewEmailChange}
+                placeholder={intl.formatMessage(messages.email)}
+                type="email"
+                value={newEmail}
+              />
+              <span className="icon is-small is-left">
+                <i className="fas fa-envelope" />
+              </span>
+            </div>
           </div>
-        </div>
-        <div className="control">
-          <button
-            className="button is-info"
-            disabled={submitting}
-            onClick={this.onAddNewEmail}
-            type="button"
-          >
-            <FormattedMessage {...messages.addEmail} />
-          </button>
-        </div>
+          <div className="control">
+            <button className="button is-info" disabled={submitting} type="submit">
+              <FormattedMessage {...messages.addEmail} />
+            </button>
+          </div>
+        </form>
         <hr />
         <table className="table">
           <thead>
@@ -239,7 +239,7 @@ export default class UserSettings extends Component {
             ))}
           </tbody>
         </table>
-      </form>
+      </div>
     );
   }
 }

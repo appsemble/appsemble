@@ -74,6 +74,19 @@ export default class ProfileDropdown extends Component {
                   <FormattedMessage {...messages.settings} />
                 </span>
               </Link>
+              <a
+                className="dropdown-item"
+                href="https://appsemble.dev"
+                rel="noopener noreferrer"
+                target="_blank"
+              >
+                <span className="icon">
+                  <i className="fas fa-book" />
+                </span>
+                <span>
+                  <FormattedMessage {...messages.documentation} />
+                </span>
+              </a>
               <hr className="dropdown-divider" />
               <button
                 className={`button dropdown-item ${styles.logoutButton}`}

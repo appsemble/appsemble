@@ -1,7 +1,6 @@
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { FormattedMessage } from 'react-intl';
 import { Link } from 'react-router-dom';
 
 import messages from './messages';
@@ -12,7 +11,6 @@ export default class Toolbar extends React.Component {
   static propTypes = {
     intl: PropTypes.shape().isRequired,
     isLoggedIn: PropTypes.bool.isRequired,
-    logout: PropTypes.func.isRequired,
   };
 
   render() {
@@ -30,18 +28,6 @@ export default class Toolbar extends React.Component {
             <h1 className="has-text-white title">Appsemble</h1>
           </header>
         </Link>
-        <div className="navbar-brand">
-          <span className="navbar-item">
-            <a
-              className="button"
-              href="https://appsemble.dev"
-              rel="noopener noreferrer"
-              target="_blank"
-            >
-              <FormattedMessage {...messages.docsLink} />
-            </a>
-          </span>
-        </div>
         <div className="navbar-brand">
           {isLoggedIn && (
             <div className="navbar-item">
