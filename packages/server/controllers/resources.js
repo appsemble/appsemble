@@ -107,7 +107,11 @@ export async function queryResources(ctx) {
       where: { ...renamedQuery.where, type: resourceType },
     });
 
-    ctx.body = resources.map(resource => ({ id: resource.id, ...resource.data }));
+    ctx.body = resources.map(resource => ({
+      id: resource.id,
+      ...resource.data,
+      created: resource.created,
+    }));
   } catch (e) {
     if (query) {
       throw Boom.badRequest('Unable to process this query');
@@ -133,7 +137,7 @@ export async function getResourceById(ctx) {
     throw Boom.notFound('Resource not found');
   }
 
-  ctx.body = { id: resource.id, ...resource.data };
+  ctx.body = { id: resource.id, ...resource.data, created: resource.created };
 }
 
 export async function createResource(ctx) {
@@ -159,13 +163,13 @@ export async function createResource(ctx) {
     throw boom;
   }
 
-  const { id } = await app.createResource({
+  const { id, created } = await app.createResource({
     type: resourceType,
     data: resource,
     UserId: user && user.id,
   });
 
-  ctx.body = { id, ...resource };
+  ctx.body = { id, ...resource, created };
   ctx.status = 201;
 }
 
@@ -209,7 +213,11 @@ export async function updateResource(ctx) {
     { data: updatedResource },
     { where: { id: resourceId, type: resourceType, AppId: appId } },
   );
-  ctx.body = { id: resourceId, ...resource.get('data', { plain: true }) };
+  ctx.body = {
+    id: resourceId,
+    ...resource.get('data', { plain: true }),
+    created: resource.created,
+  };
 }
 
 export async function deleteResource(ctx) {
