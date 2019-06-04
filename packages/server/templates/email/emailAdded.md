@@ -9,8 +9,10 @@ need to verify your email address.
 
 Please follow the link below to verify your email address: <%= url %>
 
-**Didn’t request this email?** No worries! Your address may have been entered by mistake. If you
-ignore or delete this email, nothing will be done with this email address.
+**Didn’t request this email?**
+
+No worries! Your address may have been entered by mistake. If you ignore or delete this email,
+nothing will be done with this email address.
 
 Kind regards,
 
