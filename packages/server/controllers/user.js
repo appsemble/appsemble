@@ -1,4 +1,8 @@
+import crypto from 'crypto';
+
 import Boom from 'boom';
+
+import { sendAddedEmail } from '../utils/email';
 
 export async function getUser(ctx) {
   const { User, Organization, EmailAuthorization } = ctx.db.models;
@@ -75,4 +79,41 @@ export async function updateUser(ctx) {
       primary: dbUser.primaryEmail === email,
     })),
   };
+}
+
+export async function addEmail(ctx) {
+  const { User, EmailAuthorization } = ctx.db.models;
+  const { user, smtp } = ctx.state;
+  const { email } = ctx.request.body;
+
+  const dbEmail = await EmailAuthorization.findOne({
+    where: { email },
+  });
+
+  if (dbEmail) {
+    throw Boom.conflict('This email has already been registered.');
+  }
+
+  const dbUser = await User.findOne({
+    where: { id: user.id },
+    include: [
+      {
+        model: EmailAuthorization,
+      },
+    ],
+  });
+
+  const key = crypto.randomBytes(40).toString('hex');
+  await dbUser.createEmailAuthorization({ email, key });
+
+  await sendAddedEmail(
+    {
+      email,
+      name: user.name,
+      url: `${ctx.origin}/_/verify?token=${key}`,
+    },
+    smtp,
+  );
+
+  ctx.status = 201;
 }
