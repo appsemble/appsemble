@@ -117,3 +117,29 @@ export async function addEmail(ctx) {
 
   ctx.status = 201;
 }
+
+export async function removeEmail(ctx) {
+  const { User, EmailAuthorization } = ctx.db.models;
+  const { user } = ctx.state;
+  const { email } = ctx.request.body;
+
+  const dbUser = await User.findOne({
+    where: { id: user.id },
+    include: [
+      {
+        model: EmailAuthorization,
+      },
+    ],
+  });
+
+  const dbEmail = await EmailAuthorization.findOne({ where: { email, UserId: user.id } });
+
+  if (!dbEmail) {
+    throw Boom.notFound('This email address is not associated with your account.');
+  }
+
+  await dbUser.removeEmailAuthorizations(dbEmail);
+  await dbEmail.destroy();
+
+  ctx.status = 204;
+}

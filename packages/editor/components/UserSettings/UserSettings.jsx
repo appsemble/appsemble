@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import axios from 'axios';
-import { Loader } from '@appsemble/react-components';
+import { Loader, Modal } from '@appsemble/react-components';
 import PropTypes from 'prop-types';
 import { FormattedMessage } from 'react-intl';
 
@@ -13,7 +13,14 @@ export default class UserSettings extends Component {
     push: PropTypes.func.isRequired,
   };
 
-  state = { user: undefined, newUser: undefined, newEmail: '', loading: true, submitting: false };
+  state = {
+    user: undefined,
+    newUser: undefined,
+    newEmail: '',
+    loading: true,
+    submitting: false,
+    deletingEmail: null,
+  };
 
   async componentDidMount() {
     const { data: user } = await axios.get('/api/user');
@@ -69,13 +76,24 @@ export default class UserSettings extends Component {
     push({ body: intl.formatMessage(messages.resendVerificationSent), color: 'info' });
   };
 
-  deleteEmail = async email => {
-    const { user } = this.state;
+  onCloseDeleteDialog = () => {
+    this.setState({ deletingEmail: null });
+  };
+
+  onDeleteEmailClick = email => {
+    this.setState({ deletingEmail: email });
+  };
+
+  deleteEmail = async () => {
+    const { user, deletingEmail: email } = this.state;
     const { push, intl } = this.props;
 
-    await axios.delete('/api/user/email', { email: email.email });
+    await axios.delete('/api/user/email', { data: { email: email.email } });
 
-    this.setState({ user: { ...user, emails: user.emails.map(e => e.email !== email.email) } });
+    this.setState({
+      deletingEmail: null,
+      user: { ...user, emails: user.emails.filter(e => e.email !== email.email) },
+    });
     push({ body: intl.formatMessage(messages.deleteEmailSuccess), color: 'info' });
   };
 
@@ -101,7 +119,7 @@ export default class UserSettings extends Component {
   };
 
   render() {
-    const { user, newUser, loading, submitting, newEmail } = this.state;
+    const { user, newUser, loading, submitting, newEmail, deletingEmail } = this.state;
     const { intl } = this.props;
 
     if (loading) {
@@ -224,7 +242,7 @@ export default class UserSettings extends Component {
                         <button
                           className="button is-danger"
                           disabled={submitting}
-                          onClick={() => this.deleteEmail(email)}
+                          onClick={() => this.onDeleteEmailClick(email)}
                           type="button"
                         >
                           <span className="icon is-small">
@@ -239,6 +257,37 @@ export default class UserSettings extends Component {
             ))}
           </tbody>
         </table>
+        <Modal isActive={deletingEmail} onClose={this.onCloseDeleteDialog}>
+          <div className="card">
+            <header className="card-header">
+              <p className="card-header-title">
+                <FormattedMessage {...messages.emailWarningTitle} />
+              </p>
+            </header>
+            <div className="card-content">
+              <FormattedMessage {...messages.emailWarning} />
+            </div>
+            <footer className="card-footer">
+              {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
+              <a
+                className="card-footer-item is-link"
+                onClick={this.onCloseDeleteDialog}
+                onKeyDown={this.onCloseDeleteDialog}
+                role="button"
+                tabIndex="-1"
+              >
+                <FormattedMessage {...messages.cancel} />
+              </a>
+              <button
+                className={`card-footer-item button is-danger ${styles.cardFooterButton}`}
+                onClick={this.deleteEmail}
+                type="button"
+              >
+                <FormattedMessage {...messages.deleteEmail} />
+              </button>
+            </footer>
+          </div>
+        </Modal>
       </div>
     );
   }
