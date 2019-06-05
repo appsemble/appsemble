@@ -39,22 +39,30 @@ export default class UserSettings extends Component {
     const { newEmail, user } = this.state;
     const { push, intl } = this.props;
 
-    await axios.post('/api/user/email', { email: newEmail });
+    try {
+      await axios.post('/api/user/email', { email: newEmail });
 
-    push({
-      body: intl.formatMessage(messages.addEmailSuccess),
-      color: 'success',
-    });
+      push({
+        body: intl.formatMessage(messages.addEmailSuccess),
+        color: 'success',
+      });
 
-    this.setState({
-      newEmail: '',
-      user: {
-        ...user,
-        emails: [...user.emails, { email: newEmail, verified: false, primary: false }].sort(
-          (a, b) => a.email.localeCompare(b.email),
-        ),
-      },
-    });
+      this.setState({
+        newEmail: '',
+        user: {
+          ...user,
+          emails: [...user.emails, { email: newEmail, verified: false, primary: false }].sort(
+            (a, b) => a.email.localeCompare(b.email),
+          ),
+        },
+      });
+    } catch (exception) {
+      if (exception?.response?.status === 409) {
+        push(intl.formatMessage(messages.addEmailConflict));
+      } else {
+        push(intl.formatMessage(messages.addEmailError));
+      }
+    }
   };
 
   setPrimaryEmail = async email => {
@@ -257,7 +265,7 @@ export default class UserSettings extends Component {
             ))}
           </tbody>
         </table>
-        <Modal isActive={deletingEmail} onClose={this.onCloseDeleteDialog}>
+        <Modal isActive={!!deletingEmail} onClose={this.onCloseDeleteDialog}>
           <div className="card">
             <header className="card-header">
               <p className="card-header-title">
