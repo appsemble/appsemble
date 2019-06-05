@@ -8,10 +8,9 @@ export default (sequelize, DataTypes) => {
     },
     {
       freezeTableName: true,
-      paranoid: true,
+      paranoid: false,
       createdAt: 'created',
       updatedAt: 'updated',
-      deletedAt: 'deleted',
     },
   );
 

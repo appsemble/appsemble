@@ -43,6 +43,7 @@ module.exports = {
 
     queryInterface.removeColumn('EmailAuthorization', 'password');
     queryInterface.removeColumn('EmailAuthorization', 'name');
+    queryInterface.removeColumn('EmailAuthorization', 'deleted');
   },
 
   async down(db) {
@@ -85,5 +86,6 @@ module.exports = {
     queryInterface.removeColumn('User', 'password');
     queryInterface.removeConstraint('User', 'User_primaryEmail_foreign_idx');
     queryInterface.removeColumn('User', 'primaryEmail');
+    queryInterface.addColumn('EmailAuthorization', 'deleted', { type: Sequelize.DataTypes.DATE });
   },
 };
