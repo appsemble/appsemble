@@ -1,4 +1,4 @@
-import { Awaitable, cacheFirst, requestFirst } from './utils';
+import { cacheFirst, requestFirst } from './utils';
 
 /**
  * Map all requests to a caching behaviour based on the HTTP method and URL.

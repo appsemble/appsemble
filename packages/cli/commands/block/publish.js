@@ -1,7 +1,7 @@
 import { logger } from '@appsemble/node-utils';
 
-import getBlockConfig from '../../lib/getBlockConfig';
 import { getToken } from '../../lib/config';
+import getBlockConfig from '../../lib/getBlockConfig';
 import publish from '../../lib/publish';
 
 export const command = 'publish <path>';

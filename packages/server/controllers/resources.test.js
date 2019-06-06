@@ -27,6 +27,13 @@ describe('resource controller', () => {
               properties: { foo: { type: 'string' } },
             },
           },
+          testResourceB: {
+            schema: {
+              type: 'object',
+              required: ['foo'],
+              properties: { bar: { type: 'string' } },
+            },
+          },
         },
       },
       path: 'test-app',
@@ -62,11 +69,28 @@ describe('resource controller', () => {
     expect(response.body).toStrictEqual({ id: resource.id, foo: 'bar' });
   });
 
+  it('should not be able to fetch a resources of a different app', async () => {
+    const appA = await App.create(exampleApp(organizationId));
+    const appB = await App.create({ ...exampleApp(organizationId), path: 'app-b' });
+
+    const resource = await appA.createResource({ type: 'testResource', data: { foo: 'bar' } });
+    const responseA = await request(server).get(
+      `/api/apps/${appB.id}/resources/testResource/${resource.id}`,
+    );
+    const responseB = await request(server).get(
+      `/api/apps/${appB.id}/resources/testResourceB/${resource.id}`,
+    );
+
+    expect(responseA.status).toBe(404);
+    expect(responseB.status).toBe(404);
+  });
+
   it('should be able to fetch all resources of a type', async () => {
     const app = await App.create(exampleApp(organizationId));
 
     const resourceA = await app.createResource({ type: 'testResource', data: { foo: 'bar' } });
     const resourceB = await app.createResource({ type: 'testResource', data: { foo: 'baz' } });
+    await app.createResource({ type: 'testResourceB', data: { bar: 'baz' } });
 
     const response = await request(server).get(`/api/apps/${app.id}/resources/testResource`);
 
@@ -226,6 +250,40 @@ describe('resource controller', () => {
     expect(responseB.body.id).toBe(resource.id);
   });
 
+  it('should not be possible to update an existing resource through another resource', async () => {
+    const app = await App.create(exampleApp(organizationId));
+    const resource = await Resource.create({
+      type: 'testResource',
+      AppId: app.id,
+      data: { foo: 'I am Foo.' },
+    });
+
+    const response = await request(server)
+      .put(`/api/apps/${app.id}/resources/testResourceB/${resource.id}`)
+      .set('Authorization', token)
+      .send({ foo: 'I am not Foo.' });
+
+    expect(response.status).toBe(404);
+  });
+
+  it('should not be possible to update an existing resource through another app', async () => {
+    const app = await App.create(exampleApp(organizationId));
+    const resource = await Resource.create({
+      type: 'testResource',
+      AppId: app.id,
+      data: { foo: 'I am Foo.' },
+    });
+
+    const appB = await App.create({ ...exampleApp(organizationId), path: 'app-b' });
+
+    const response = await request(server)
+      .put(`/api/apps/${appB.id}/resources/testResource/${resource.id}`)
+      .set('Authorization', token)
+      .send({ foo: 'I am not Foo.' });
+
+    expect(response.status).toBe(404);
+  });
+
   it('should not be possible to update a non-existent resource', async () => {
     const app = await App.create(exampleApp(organizationId));
     const { body } = await request(server)
@@ -302,5 +360,52 @@ describe('resource controller', () => {
       message: 'Resource not found',
       statusCode: 404,
     });
+  });
+
+  it('should not be possible to delete an existing resource through another resource', async () => {
+    const app = await App.create(exampleApp(organizationId));
+    const resource = await Resource.create({
+      type: 'testResource',
+      AppId: app.id,
+      data: { foo: 'I am Foo.' },
+    });
+
+    const response = await request(server)
+      .delete(`/api/apps/${app.id}/resources/testResourceB/${resource.id}`)
+      .set('Authorization', token);
+
+    expect(response.status).toBe(404);
+
+    const responseGet = await request(server).get(
+      `/api/apps/${app.id}/resources/testResource/${resource.id}`,
+    );
+
+    expect(responseGet.status).toBe(200);
+    expect(responseGet.body.foo).toStrictEqual('I am Foo.');
+    expect(responseGet.body.id).toBe(resource.id);
+  });
+
+  it('should not be possible to delete an existing resource through another app', async () => {
+    const app = await App.create(exampleApp(organizationId));
+    const resource = await Resource.create({
+      type: 'testResource',
+      AppId: app.id,
+      data: { foo: 'I am Foo.' },
+    });
+
+    const appB = await App.create({ ...exampleApp(organizationId), path: 'app-b' });
+    const response = await request(server)
+      .delete(`/api/apps/${appB.id}/resources/testResource/${resource.id}`)
+      .set('Authorization', token);
+
+    expect(response.status).toBe(404);
+
+    const responseGet = await request(server).get(
+      `/api/apps/${app.id}/resources/testResource/${resource.id}`,
+    );
+
+    expect(responseGet.status).toBe(200);
+    expect(responseGet.body.foo).toStrictEqual('I am Foo.');
+    expect(responseGet.body.id).toBe(resource.id);
   });
 });

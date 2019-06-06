@@ -1,8 +1,9 @@
-import { attach } from '@appsemble/sdk';
 import 'leaflet/dist/leaflet.css';
+import './index.css';
+
+import { attach } from '@appsemble/sdk';
 import { CircleMarker, LocationEvent, Map, TileLayer } from 'leaflet';
 
-import './index.css';
 import createGetters, { BlockActions, BlockParameters } from './createGetters';
 import loadMarkers from './loadMarkers';
 

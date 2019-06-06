@@ -1,0 +1,105 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "appsemble.fullname" . }}
+  labels:
+    app.kubernetes.io/name: {{ include "appsemble.name" . }}
+    helm.sh/chart: {{ include "appsemble.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "appsemble.name" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ include "appsemble.name" . }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ include "appsemble.tag" . }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 9999
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /api.json
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /api.json
+              port: http
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          env:
+            - name: DATABASE_HOST
+              value: {{ .Values.mysql.fullnameOverride }}
+            - name: DATABASE_NAME
+              value: {{ .Values.mysql.mysqlDatabase }}
+            - name: DATABASE_USER
+              value: {{ .Values.mysql.mysqlUser }}
+            - name: DATABASE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  {{ if .Values.mysql.existingSecret -}}
+                  name: {{ .Values.mysql.existingSecret }}
+                  {{- else -}}
+                  name: {{ template "mysql.fullname" . }}
+                  {{- end }}
+                  key: mysql-password
+            {{ if .Values.ingress.enabled -}}
+            - name: HOST
+              {{- range .Values.ingress.hosts }}
+              value: {{ . | quote }}
+              {{- end }}
+            {{- end }}
+            {{- if .Values.smtpSecret }}
+            - name: SMTP_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.smtpSecret | quote }}
+                  key: host
+            - name: SMTP_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.smtpSecret | quote }}
+                  key: port
+            - name: SMTP_SECURE
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.smtpSecret | quote }}
+                  key: secure
+            - name: SMTP_USER
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.smtpSecret | quote }}
+                  key: user
+            - name: SMTP_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.smtpSecret | quote }}
+                  key: pass
+            - name: SMTP_FROM
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.smtpSecret | quote }}
+                  key: from
+            {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+    {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}

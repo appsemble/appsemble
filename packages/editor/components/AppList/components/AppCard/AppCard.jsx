@@ -1,8 +1,8 @@
 import classNames from 'classnames';
-import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
+import { Link } from 'react-router-dom';
 
 import styles from './AppCard.css';
 import messages from './messages';

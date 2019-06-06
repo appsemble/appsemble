@@ -1,9 +1,8 @@
-import querystring from 'querystring';
-
 import { AppsembleError, logger } from '@appsemble/node-utils';
-import axios from 'axios';
 import AppDirectory from 'appdirectory';
+import axios from 'axios';
 import fs from 'fs-extra';
+import querystring from 'querystring';
 
 function getAppDirectory() {
   return new AppDirectory({

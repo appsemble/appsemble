@@ -1,5 +1,5 @@
-import { logger } from './logger';
 import AppsembleError from './AppsembleError';
+import { logger } from './logger';
 
 /**
  * Handle a fatal error.

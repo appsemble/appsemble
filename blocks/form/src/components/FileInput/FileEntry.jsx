@@ -3,8 +3,8 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import messages from './messages';
 import styles from './FileEntry.css';
+import messages from './messages';
 
 function getDerivedStateFromProps({ value }, state) {
   if (value === state.value) {

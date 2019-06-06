@@ -1,7 +1,17 @@
 import 'leaflet/dist/leaflet.css';
-import { CircleMarker, Icon, LocationEvent, Map, Marker, Point, TileLayer } from 'leaflet';
-import * as React from 'react';
+
 import { BlockProps } from '@appsemble/react';
+import {
+  CircleMarker,
+  Icon,
+  LocationEvent,
+  Map,
+  MapOptions,
+  Marker,
+  Point,
+  TileLayer,
+} from 'leaflet';
+import * as React from 'react';
 
 export interface LocationProps {
   className?: string;
@@ -10,6 +20,7 @@ export interface LocationProps {
   iconWidth: number;
   latitude: number;
   longitude: number;
+  mapOptions: MapOptions;
 }
 
 /**
@@ -19,13 +30,21 @@ export default class Location extends React.Component<LocationProps & BlockProps
   ref = React.createRef<HTMLDivElement>();
 
   componentDidMount(): void {
-    const { iconHeight, iconUrl, iconWidth, latitude, longitude, reactRoot } = this.props;
+    const {
+      iconHeight,
+      iconUrl,
+      iconWidth,
+      latitude,
+      longitude,
+      mapOptions,
+      reactRoot,
+    } = this.props;
 
     const locationMarker = new CircleMarker(null, {
       color: getComputedStyle(reactRoot).getPropertyValue('--primary-color'),
     });
 
-    const map = new Map(this.ref.current, { attributionControl: false })
+    const map = new Map(this.ref.current, { attributionControl: false, ...mapOptions })
       .on('locationfound', ({ latlng }: LocationEvent) => {
         locationMarker.setLatLng(latlng).addTo(map);
       })

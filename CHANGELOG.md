@@ -7,6 +7,11 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- Editor: Add version tag to the header.
+- Helm: Add official Helm chart.
+
 ## [0.6.0] - 2019-05-20
 
 ### Added

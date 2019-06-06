@@ -1,12 +1,12 @@
 import Router from 'koa-router';
 
 import { bulmaURL, faURL } from '../utils/styleURL';
-import { bulmaHandler, faHandler } from './styleHandler';
 import editorHandler from './editorHandler';
 import faviconHandler from './faviconHandler';
 import iconHandler from './iconHandler';
 import indexHandler from './indexHandler';
 import manifestHandler from './manifestHandler';
+import { bulmaHandler, faHandler } from './styleHandler';
 
 const router = new Router();
 router.get(bulmaURL, bulmaHandler);

@@ -1,21 +1,21 @@
 import { ErrorHandler, Loader } from '@appsemble/react-components';
 import PropTypes from 'prop-types';
-import { BrowserRouter, Redirect, Route, Switch } from 'react-router-dom';
 import React from 'react';
 import { IntlProvider } from 'react-intl';
+import { BrowserRouter, Redirect, Route, Switch } from 'react-router-dom';
 
 import AppContext from '../AppContext';
 import AppList from '../AppList';
+import ConnectOAuth from '../ConnectOAuth';
 import EditPassword from '../EditPassword';
 import ErrorFallback from '../ErrorFallback';
 import Login from '../Login';
 import Message from '../Message';
-import ResetPassword from '../ResetPassword';
-import VerifyEmail from '../VerifyEmail';
 import Register from '../Register';
-import Toolbar from '../Toolbar';
-import ConnectOAuth from '../ConnectOAuth';
+import ResetPassword from '../ResetPassword';
 import Settings from '../Settings';
+import Toolbar from '../Toolbar';
+import VerifyEmail from '../VerifyEmail';
 
 export default class App extends React.Component {
   static propTypes = {

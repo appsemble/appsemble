@@ -1,7 +1,7 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
+import React from 'react';
 import { FormattedMessage } from 'react-intl';
+import { Link } from 'react-router-dom';
 
 import styles from './CMSRoot.css';
 import messages from './messages';

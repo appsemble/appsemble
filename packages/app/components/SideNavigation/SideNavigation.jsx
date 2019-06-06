@@ -1,13 +1,13 @@
-import classNames from 'classnames';
 import normalize from '@appsemble/utils/normalize';
+import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 import { NavLink } from 'react-router-dom';
 
 import SideMenu from '../SideMenu';
-import messages from './messages';
 import styles from './SideNavigation.css';
+import messages from './messages';
 
 /**
  * The app navigation that is displayed in the side menu.

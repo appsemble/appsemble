@@ -1,5 +1,4 @@
 import EventEmitter from 'events';
-
 import PropTypes from 'prop-types';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
@@ -9,8 +8,8 @@ import Block from '../Block';
 import Login from '../Login';
 import PageDialog from '../PageDialog';
 import TitleBar from '../TitleBar';
-import messages from './messages';
 import styles from './Page.css';
+import messages from './messages';
 
 /**
  * Render an app page definition.

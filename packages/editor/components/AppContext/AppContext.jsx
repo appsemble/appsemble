@@ -1,11 +1,11 @@
 import { Loader } from '@appsemble/react-components';
-import { Redirect, Route, Switch } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import React from 'react';
+import { Redirect, Route, Switch } from 'react-router-dom';
 
 import AppSideMenu from '../AppSideMenu';
-import Editor from '../Editor';
 import CMS from '../CMS';
+import Editor from '../Editor';
 import styles from './AppContext.css';
 
 /**

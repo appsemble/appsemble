@@ -1,7 +1,7 @@
+import classNames from 'classnames';
 import * as PropTypes from 'prop-types';
 import * as React from 'react';
 import { FormattedMessage } from 'react-intl';
-import classNames from 'classnames';
 
 import styles from './EmailLogin.css';
 import messages from './messages';

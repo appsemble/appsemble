@@ -1,4 +1,5 @@
 import 'roboto-fontface';
+import './index.css';
 
 import { init } from '@sentry/browser';
 import React from 'react';
@@ -8,9 +9,8 @@ import { applyMiddleware, combineReducers, compose, createStore } from 'redux';
 import thunk from 'redux-thunk';
 import runtime from 'serviceworker-webpack-plugin/lib/runtime';
 
-import './index.css';
-import App from './components/App';
 import * as reducers from './actions';
+import App from './components/App';
 import resolveJsonPointers from './utils/resolveJsonPointers';
 
 const { sentryDsn } = document.documentElement.dataset;
