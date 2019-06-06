@@ -1,4 +1,4 @@
-module.exports = {
+export default {
   key: '0.6.0',
   async up(queryInterface, DataTypes) {
     await queryInterface.createTable('Organization', {
