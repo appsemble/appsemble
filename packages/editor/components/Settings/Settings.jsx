@@ -1,14 +1,14 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { FormattedMessage } from 'react-intl';
 import classNames from 'classnames';
+import PropTypes from 'prop-types';
+import React from 'react';
+import { FormattedMessage } from 'react-intl';
 import { Redirect, Route, Switch } from 'react-router-dom';
 
+import NavLink from '../NavLink';
+import SideMenu from '../SideMenu';
+import UserSettings from '../UserSettings';
 import styles from './Settings.css';
 import messages from './messages';
-import SideMenu from '../SideMenu';
-import NavLink from '../NavLink';
-import UserSettings from '../UserSettings';
 
 export default class Settings extends React.Component {
   static propTypes = {

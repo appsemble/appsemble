@@ -1,7 +1,7 @@
-import React, { Component } from 'react';
-import axios from 'axios';
 import { Loader, Modal } from '@appsemble/react-components';
+import axios from 'axios';
 import PropTypes from 'prop-types';
+import React, { Component } from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import styles from './UserSettings.css';

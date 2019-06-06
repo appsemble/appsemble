@@ -1,11 +1,11 @@
+import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
-import classNames from 'classnames';
 
+import NavLink from '../NavLink';
 import SideMenu from '../SideMenu';
 import styles from './AppSideMenu.css';
-import NavLink from '../NavLink';
 import messages from './messages';
 
 export default class AppSideMenu extends React.Component {

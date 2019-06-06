@@ -1,12 +1,12 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import { FormattedMessage } from 'react-intl';
 import classNames from 'classnames';
+import PropTypes from 'prop-types';
+import React, { Component } from 'react';
+import { FormattedMessage } from 'react-intl';
 import { Link } from 'react-router-dom';
 
-import messages from './messages';
-import styles from './ProfileDropdown.css';
 import generateGravatarHash from '../../utils/generateGravatarHash';
+import styles from './ProfileDropdown.css';
+import messages from './messages';
 
 export default class ProfileDropdown extends Component {
   static propTypes = {

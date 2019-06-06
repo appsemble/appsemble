@@ -1,8 +1,8 @@
 import { injectIntl } from 'react-intl';
 import { connect } from 'react-redux';
 
-import ProfileDropdown from './ProfileDropdown';
 import { logout } from '../../actions/user';
+import ProfileDropdown from './ProfileDropdown';
 
 function mapStateToProps(state) {
   return {

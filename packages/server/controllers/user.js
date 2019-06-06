@@ -1,6 +1,5 @@
-import crypto from 'crypto';
-
 import Boom from 'boom';
+import crypto from 'crypto';
 
 import { sendAddedEmail } from '../utils/email';
 
