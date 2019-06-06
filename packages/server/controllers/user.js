@@ -118,7 +118,7 @@ export async function addEmail(ctx) {
 }
 
 export async function removeEmail(ctx) {
-  const { User, EmailAuthorization } = ctx.db.models;
+  const { User, EmailAuthorization, OAuthAuthorization } = ctx.db.models;
   const { user } = ctx.state;
   const { email } = ctx.request.body;
 
@@ -128,6 +128,9 @@ export async function removeEmail(ctx) {
       {
         model: EmailAuthorization,
       },
+      {
+        model: OAuthAuthorization,
+      },
     ],
   });
 
@@ -135,6 +138,12 @@ export async function removeEmail(ctx) {
 
   if (!dbEmail) {
     throw Boom.notFound('This email address is not associated with your account.');
+  }
+
+  if (dbUser.EmailAuthorizations.length === 1 && !dbUser.OAuthAuthorizations.length) {
+    throw Boom.notAcceptable(
+      'Deleting this email results in the inability to access this account.',
+    );
   }
 
   await dbUser.removeEmailAuthorizations(dbEmail);
