@@ -46,8 +46,6 @@ function importModels(db) {
 
 export default async function setupModels({
   dialect = 'mysql',
-  sync = true,
-  force = false,
   logging = false,
   host = process.env.NODE_ENV === 'production' ? 'mysql' : 'localhost',
   port,
@@ -78,10 +76,6 @@ export default async function setupModels({
   const db = new Sequelize(...args);
   importModels(db);
   Object.values(db.models).forEach(model => model.associate(db.models));
-
-  if (sync) {
-    await db.sync({ force });
-  }
 
   return db;
 }

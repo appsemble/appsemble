@@ -10,14 +10,15 @@ export default async function migrate(db, to, migrations) {
   }
   let meta;
   if (metas.length === 0) {
-    logger.warn('No old meta information was found.\nSynchronizing database models as-is.');
+    logger.warn('No old database meta information was found.');
+    logger.info('Synchronizing database models as-is.');
     await db.sync();
     meta = await Meta.create({ version: migrations[migrations.length - 1].key });
   } else {
     [meta] = metas;
   }
   if (semver.eq(to, meta.version)) {
-    logger.info(`Already on version ${to}. Nothing to migrate`);
+    logger.info(`Database is already on version ${to}. Nothing to migrate.`);
     return;
   }
   logger.info(`Current database version: ${meta.version}`);
