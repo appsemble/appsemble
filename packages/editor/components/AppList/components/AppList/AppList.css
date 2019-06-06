@@ -10,6 +10,11 @@
   padding: 10px;
 }
 
+.filter {
+  margin: 10px auto;
+  max-width: 480px;
+}
+
 .navbarTitle,
 .navbarTitle:visited,
 .navbarTitle:hover {
