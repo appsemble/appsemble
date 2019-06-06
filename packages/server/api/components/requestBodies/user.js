@@ -3,11 +3,14 @@ export default {
   content: {
     'application/json': {
       schema: {
-        name: {
-          $ref: '#/components/schemas/User/properties/name',
-        },
-        primaryEmail: {
-          $ref: '#/components/schemas/User/properties/primaryEmail',
+        type: 'object',
+        properties: {
+          name: {
+            $ref: '#/components/schemas/User/properties/name',
+          },
+          primaryEmail: {
+            $ref: '#/components/schemas/User/properties/primaryEmail',
+          },
         },
         additionalProperties: true,
       },

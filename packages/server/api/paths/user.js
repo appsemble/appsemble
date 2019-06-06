@@ -32,6 +32,7 @@ export default {
           content: {
             'application/json': {
               schema: {
+                type: 'object',
                 $ref: '#/components/schemas/User',
               },
             },
