@@ -1,6 +1,8 @@
+import { DataTypes } from 'sequelize';
+
 export default {
   key: '0.6.0',
-  async up(queryInterface, DataTypes) {
+  async up(queryInterface) {
     await queryInterface.createTable('Organization', {
       id: { type: DataTypes.STRING, primaryKey: true },
       OrganizationId: {

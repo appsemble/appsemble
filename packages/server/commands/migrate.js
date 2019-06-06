@@ -1,31 +1,27 @@
-import { logger } from '@appsemble/node-utils';
-import Sequelize from 'sequelize';
-import Umzug from 'umzug';
+import { AppsembleError } from '@appsemble/node-utils';
+import semver from 'semver';
 
-import migrations, { createMigration } from '../migrations';
+import migrations from '../migrations';
+import pkg from '../package.json';
+import migrate from '../utils/migrate';
 import setupModels, { handleDbException } from '../utils/setupModels';
 import databaseBuilder from './builder/database';
 
-export const command = 'migrate';
+export const command = 'migrate [to]';
 export const description = 'Migrate the Appsemble database.';
 
 export function builder(yargs) {
-  return databaseBuilder(yargs)
-    .option('mode', {
-      describe: 'Whether to perform upgrade or downgrade migrations.',
-      default: 'up',
-      choices: ['up', 'down'],
-    })
-    .option('to', {
-      desc: 'Id of database version to migrate to.',
-    })
-    .option('from', {
-      desc: 'Id of database version to migrate from.',
-    });
+  return databaseBuilder(yargs).positional('to', {
+    desc: 'The database version to migrate to.',
+    default: pkg.version,
+  });
 }
 
 export async function handler(argv) {
-  const { mode, to, from } = argv;
+  const { to } = argv;
+  if (!semver.valid(to)) {
+    throw new AppsembleError(`A valid semver is required. Got ${to}`);
+  }
   let db;
   try {
     db = await setupModels({
@@ -41,23 +37,6 @@ export async function handler(argv) {
     handleDbException(dbException);
   }
 
-  const umzug = new Umzug({
-    logging: entry => logger.info(entry),
-    storage: 'sequelize',
-    storageOptions: { sequelize: db },
-    migrations: migrations.map(migration =>
-      createMigration(db.getQueryInterface(), Sequelize, migration),
-    ),
-  });
-
-  const params = { ...(to && { to }), ...(from && { from }) };
-  let result;
-
-  if (mode === 'down') {
-    result = await umzug.down(params);
-  } else {
-    result = await umzug.up(params);
-  }
-
-  logger.info(`Applied ${result.length} migration(s).`);
+  await migrate(db, to, migrations);
+  await db.close();
 }
