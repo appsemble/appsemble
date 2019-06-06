@@ -1,9 +1,17 @@
 import { connect } from 'react-redux';
 
-import { getApps } from '../../../../actions/apps';
+import { getApps, getPublicApps } from '../../../../actions/apps';
 import AppList from './AppList';
 
+function mapStateToProps(state) {
+  return {
+    apps: state.apps.apps,
+    error: state.apps.error,
+    isLoggedIn: !!state.user.user,
+  };
+}
+
 export default connect(
-  state => ({ apps: state.apps.apps, error: state.apps.error }),
-  { getApps },
+  mapStateToProps,
+  { getApps, getPublicApps },
 )(AppList);

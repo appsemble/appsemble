@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 
 import AppCard from '../AppCard';
+import AppIcon from '../AppIcon';
 import CreateAppCard from '../CreateAppCard';
 import styles from './AppList.css';
 
@@ -10,26 +11,36 @@ export default class AppList extends React.Component {
   static propTypes = {
     apps: PropTypes.arrayOf(PropTypes.shape()).isRequired,
     getApps: PropTypes.func.isRequired,
+    getPublicApps: PropTypes.func.isRequired,
+    isLoggedIn: PropTypes.bool.isRequired,
   };
 
   async componentDidMount() {
-    const { getApps } = this.props;
-    getApps();
+    const { getApps, getPublicApps, isLoggedIn } = this.props;
+
+    if (isLoggedIn) {
+      getApps();
+    } else {
+      getPublicApps();
+    }
   }
 
   render() {
-    const { apps } = this.props;
+    const { apps, isLoggedIn } = this.props;
 
     if (!apps) {
       return <Loader />;
     }
 
+    const Component = isLoggedIn ? AppCard : AppIcon;
+    const style = isLoggedIn ? styles.appList : styles.appIcons;
+
     return (
-      <div className={styles.appList}>
+      <div className={style}>
         {apps.map(app => (
-          <AppCard key={app.id} app={app} />
+          <Component key={app.id} app={app} />
         ))}
-        <CreateAppCard />
+        {isLoggedIn && <CreateAppCard />}
       </div>
     );
   }
