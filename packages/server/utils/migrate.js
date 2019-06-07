@@ -29,6 +29,7 @@ export default async function migrate(db, to, migrations) {
       await previous;
       logger.info(`Upgrade to ${migration.key} started`);
       await migration.up(queryInterface);
+      await Meta.update({ version: migration.key }, { where: {} });
       logger.info(`Upgrade to ${migration.key} successful`);
     }, null);
   } else {
@@ -36,7 +37,10 @@ export default async function migrate(db, to, migrations) {
     await f.reduceRight(async (previous, migration) => {
       await previous;
       logger.info(`Downgrade from ${migration.key} started`);
+      const migrationIndex = migrations.lastIndexOf(migration);
+      const version = migrationIndex ? migrations[migrationIndex - 1].key : '0.0.0';
       await migration.down(queryInterface);
+      await Meta.update({ version }, { where: {} });
       logger.info(`Downgrade from ${migration.key} successful`);
     }, null);
   }

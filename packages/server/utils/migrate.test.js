@@ -73,6 +73,8 @@ it('should downgrade if the given version is lower than the database meta versio
   expect(m003.down).toHaveBeenCalledWith(db.getQueryInterface());
   expect(m010.down).toHaveBeenCalledWith(db.getQueryInterface());
   expect(m100.down).not.toHaveBeenCalled();
+  const updatedMeta = await Meta.findAll({ raw: true });
+  expect(updatedMeta).toStrictEqual([{ version: '0.0.2' }]);
 });
 
 it('should upgrade if the given version is higher than the database meta version', async () => {
@@ -90,6 +92,8 @@ it('should upgrade if the given version is higher than the database meta version
   expect(m003.down).not.toHaveBeenCalled();
   expect(m010.down).not.toHaveBeenCalled();
   expect(m100.down).not.toHaveBeenCalled();
+  const updatedMeta = await Meta.findAll({ raw: true });
+  expect(updatedMeta).toStrictEqual([{ version: '0.1.0' }]);
 });
 
 it('should run downgrades in sequence', async () => {
