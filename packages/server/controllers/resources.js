@@ -172,7 +172,8 @@ export async function createResource(ctx) {
 export async function updateResource(ctx) {
   const { appId, resourceType, resourceId } = ctx.params;
   const { App, Resource } = ctx.db.models;
-  //  const { user } = ctx.state;
+  // XXX: Uncomment this when Koas allows for parsing tokens despite the endpoint not requiring one.
+  // const { user } = ctx.state;
 
   const app = await App.findByPk(appId);
 
