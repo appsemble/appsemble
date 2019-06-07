@@ -1,4 +1,6 @@
-export default function(sequelize, DataTypes) {
+import { DataTypes } from 'sequelize';
+
+export default sequelize => {
   const User = sequelize.define(
     'User',
     {
@@ -37,4 +39,4 @@ export default function(sequelize, DataTypes) {
   };
 
   return User;
-}
+};
