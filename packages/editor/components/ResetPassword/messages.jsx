@@ -1,6 +1,7 @@
 import { defineMessages } from 'react-intl';
 
 export default defineMessages({
+  title: 'Reset Password',
   requestButton: 'Send',
   requestFailed: 'Request failed',
   requestSuccess:

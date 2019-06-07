@@ -1,6 +1,7 @@
 import { defineMessages } from 'react-intl';
 
 export default defineMessages({
+  title: '{name} · Editor',
   schemaValidationFailed:
     'App schema validation failed. Please check if the following properties are correct: {properties}',
   appNotFound: 'App does not exist',

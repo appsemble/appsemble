@@ -4,6 +4,7 @@ import React from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Link } from 'react-router-dom';
 
+import HelmetIntl from '../HelmetIntl';
 import SocialLoginButton from '../SocialLoginButton';
 import styles from './Login.css';
 import messages from './messages';
@@ -26,6 +27,7 @@ export default class Login extends React.Component {
 
     return (
       <div>
+        <HelmetIntl title={messages.title} />
         <EmailLogin
           authentication={{
             method: 'email',
