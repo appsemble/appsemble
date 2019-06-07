@@ -1,4 +1,6 @@
-export default (sequelize, DataTypes) => {
+import { DataTypes } from 'sequelize';
+
+export default sequelize => {
   const OAuthAuthorization = sequelize.define(
     'OAuthAuthorization',
     {

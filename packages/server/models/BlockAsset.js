@@ -1,3 +1,5 @@
+import { DataTypes } from 'sequelize';
+
 /**
  * Blob assets may be stored in the database before a block version itself is actually stored.
  *
@@ -5,7 +7,7 @@
  * primary key which includes the block version reference. For this reason, a numeric id is used as
  * the primary key..
  */
-export default (sequelize, DataTypes) => {
+export default sequelize => {
   const BlockAsset = sequelize.define(
     'BlockAsset',
     {
