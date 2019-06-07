@@ -37,7 +37,7 @@ module.exports = {
           password: emailAuthorization.dataValues.password,
           primaryEmail: emailAuthorization.dataValues.email,
         },
-        { id: emailAuthorization.UserId },
+        { id: emailAuthorization.dataValues.UserId },
       );
     });
 
