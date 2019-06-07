@@ -17,3 +17,19 @@ spec:
         - name: {{ include "appsemble.fullname" . }}-migrate
           image: "{{ .Values.image.repository }}:{{ include "appsemble.tag" . }}"
           command: [node, -r, esm, packages/server, migrate]
+          env:
+            - name: DATABASE_HOST
+              value: {{ .Values.mysql.fullnameOverride }}
+            - name: DATABASE_NAME
+              value: {{ .Values.mysql.mysqlDatabase }}
+            - name: DATABASE_USER
+              value: {{ .Values.mysql.mysqlUser }}
+            - name: DATABASE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  {{ if .Values.mysql.existingSecret -}}
+                  name: {{ .Values.mysql.existingSecret }}
+                  {{- else -}}
+                  name: {{ template "mysql.fullname" . }}
+                  {{- end }}
+                  key: mysql-password
