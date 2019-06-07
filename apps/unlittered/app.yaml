@@ -28,10 +28,10 @@ resources:
         proces:
           title: Proces
           enum:
-            - Fietsknip team
+            - Afval
             - Handhaving
-            - Heel en Groen
-            - Inzameling
+            - Stadswerken
+            - Groen
         locatie:
           title: Locatie
           type: object
@@ -94,13 +94,18 @@ pages:
             - name: locatie
               label: Locatie
               type: geocoordinates
+            - name: type
+              label: Type
+              enum:
+                - value: Bijplaatsing
+                - value: Kapotte container
             - name: proces
               label: Proces
               enum:
-                - value: Fietsknip team
+                - value: Afval
                 - value: Handhaving
-                - value: Heel en Groen
-                - value: Inzameling
+                - value: Stadswerken
+                - value: Groen
             - name: kanaal
               label: Kanaal
               enum:
@@ -212,7 +217,7 @@ pages:
         version: 0.6.0
         parameters:
           listen: updateWaarnemingen
-          title: status
+          title: type
           subtitle: proces
           heading: created
           picture: fotos.0
@@ -266,10 +271,10 @@ pages:
                       color: '#FFFFFF'
                       backgroundColor: '#006502'
                       enum:
-                        - value: Fietsknip team
+                        - value: Afval
                         - value: Handhaving
-                        - value: Heel en Groen
-                        - value: Inzameling
+                        - value: Stadswerken
+                        - value: Groen
       - type: action-button
         version: 0.6.0
         actions:
