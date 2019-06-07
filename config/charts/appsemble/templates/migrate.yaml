@@ -16,6 +16,4 @@ spec:
       containers:
         - name: {{ include "appsemble.fullname" . }}-migrate
           image: "{{ .Values.image.repository }}:{{ include "appsemble.tag" . }}"
-          command:
-            - appsemble
-            - migrate
+          command: [node, -r, esm, packages/server, migrate]
