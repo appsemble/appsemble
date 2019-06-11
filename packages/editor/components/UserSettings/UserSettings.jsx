@@ -226,11 +226,19 @@ export default class UserSettings extends Component {
                 <td>
                   <span>{email.email}</span>
                   <div className={`tags ${styles.tags}`}>
-                    {email.primary && <span className="tag is-primary">primary</span>}
+                    {email.primary && (
+                      <span className="tag is-primary">
+                        <FormattedMessage {...messages.primary} />
+                      </span>
+                    )}
                     {email.verified ? (
-                      <span className="tag is-success">verified</span>
+                      <span className="tag is-success">
+                        <FormattedMessage {...messages.verified} />
+                      </span>
                     ) : (
-                      <span className="tag is-warning">not verified</span>
+                      <span className="tag is-warning">
+                        <FormattedMessage {...messages.unverified} />
+                      </span>
                     )}
                   </div>
                 </td>
