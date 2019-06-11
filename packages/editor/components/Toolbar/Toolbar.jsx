@@ -40,17 +40,15 @@ export default class Toolbar extends React.Component {
           </a>
         </div>
         <div className="navbar-brand">
-          {isLoggedIn ? (
-            <div className="navbar-item">
+          <div className="navbar-item">
+            {isLoggedIn ? (
               <ProfileDropdown />
-            </div>
-          ) : (
-            <div className="navbar-item">
+            ) : (
               <Link className="button" to="/_/login">
                 <FormattedMessage {...messages.login} />
               </Link>
-            </div>
-          )}
+            )}
+          </div>
         </div>
       </nav>
     );
