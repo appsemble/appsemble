@@ -1,4 +1,4 @@
-import { Loader, Modal } from '@appsemble/react-components';
+import { Form, Loader, Modal } from '@appsemble/react-components';
 import axios from 'axios';
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
@@ -318,7 +318,7 @@ export default class ResourceTable extends React.Component {
           </tbody>
         </table>
         <Modal isActive={mode === 'edit' || mode === 'new'} onClose={this.onClose}>
-          <form className="card" onSubmit={mode === 'edit' ? this.submitEdit : this.submitCreate}>
+          <Form className="card" onSubmit={mode === 'edit' ? this.submitEdit : this.submitCreate}>
             <div className="card-content">
               {keys.map(key => {
                 const properties = schema?.properties[key] || {};
@@ -382,7 +382,7 @@ export default class ResourceTable extends React.Component {
                 )}
               </button>
             </footer>
-          </form>
+          </Form>
         </Modal>
         <Modal isActive={warningDialog} onClose={this.onClose}>
           <div className="card">

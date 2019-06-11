@@ -39,8 +39,8 @@ describe('auth controller', () => {
     const user = await User.findByPk(email.UserId);
 
     expect(user).toBeDefined();
-    expect(email.password).not.toBe('password');
-    expect(bcrypt.compareSync(data.password, email.password)).toBe(true);
+    expect(user.password).not.toBe('password');
+    expect(bcrypt.compareSync(data.password, user.password)).toBe(true);
   });
 
   it('should allow users to log in using valid email credentials', async () => {
@@ -172,20 +172,22 @@ describe('auth controller', () => {
       .post('/api/email/reset/request')
       .send({ email: data.email });
 
+    const email = await EmailAuthorization.findOne({ where: { email: data.email } });
+
     const token = await ResetPasswordToken.findOne({
-      where: { EmailAuthorizationEmail: data.email },
+      where: { UserId: email.UserId },
     });
 
     const responseB = await request(server)
       .post('/api/email/reset')
       .send({ token: token.token, password: 'newPassword' });
 
-    const email = await token.getEmailAuthorization();
-    await email.reload();
+    const user = await token.getUser();
+    await user.reload();
 
     expect(responseA.status).toBe(204);
     expect(responseB.status).toBe(204);
-    expect(bcrypt.compareSync('newPassword', email.password)).toBe(true);
+    expect(bcrypt.compareSync('newPassword', user.password)).toBe(true);
 
     // Sequelize throws errors when trying to load in null objects.
     await expect(token.reload()).rejects.toThrow();
