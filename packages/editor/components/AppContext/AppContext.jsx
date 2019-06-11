@@ -39,7 +39,7 @@ export default class AppContext extends React.Component {
           <Switch>
             <Route component={Editor} exact path={`${match.path}/edit`} />
             <Route component={CMS} path={`${match.path}/resources`} />
-            <Redirect to={match.path} />
+            <Redirect to={`${match.path}/edit`} />
           </Switch>
         </div>
       </div>
