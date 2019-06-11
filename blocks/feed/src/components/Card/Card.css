@@ -2,16 +2,6 @@
   margin: 10px;
 }
 
-.avatar {
-  border: none;
-  border-radius: 50%;
-  padding: 0;
-
-  &:focus {
-    outline: none;
-  }
-}
-
 .avatarIcon {
   align-items: center;
   border-radius: 50%;
@@ -20,6 +10,10 @@
 
 .avatarIcon > * {
   flex: auto;
+}
+
+.content {
+  padding: 1rem;
 }
 
 .figure {
@@ -33,12 +27,17 @@
 }
 
 .image {
-  max-height: 33vh;
+  max-height: 16vh;
   position: relative;
 }
 
 .location {
   height: 128px;
+  max-height: 12vh;
+}
+
+.media {
+  align-items: center;
 }
 
 .replies {

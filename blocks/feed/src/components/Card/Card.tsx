@@ -5,6 +5,7 @@ import { InjectedIntlProps } from 'react-intl';
 
 import iconUrl from '../../../../../themes/amsterdam/core/marker.svg';
 import { BlockActions, BlockParameters, Remappers } from '../../../types';
+import AvatarWrapper from '../AvatarWrapper';
 import styles from './Card.css';
 import messages from './messages';
 
@@ -140,30 +141,11 @@ export default class Card extends React.Component<
         icon = 'user';
     }
 
-    const AvatarWrapper: React.SFC<{}> = ({ children }) =>
-      actions.avatarClick.type === 'link' ? (
-        <a
-          className={`media-left ${styles.avatar}`}
-          href={actions.avatarClick.href()}
-          onClick={this.onAvatarClick}
-        >
-          {children}
-        </a>
-      ) : (
-        <button
-          className={`media-left ${styles.avatar}`}
-          onClick={this.onAvatarClick}
-          type="button"
-        >
-          {children}
-        </button>
-      );
-
     return (
       <article className={`card ${styles.root}`}>
         <div className="card-content">
-          <div className="media">
-            <AvatarWrapper>
+          <div className={`media ${styles.media}`}>
+            <AvatarWrapper action={actions.avatarClick} onAvatarClick={this.onAvatarClick}>
               <figure className={`image is-48x48 ${color} ${styles.avatarIcon}`}>
                 <span className="icon">
                   <i className={`fas fa-2x fa-${icon}`} />
@@ -202,7 +184,7 @@ export default class Card extends React.Component<
             )}
           </div>
         )}
-        <div className="card-content">
+        <div className={`card-content ${styles.content}`}>
           {description && <p className="content">{description}</p>}
           <div ref={this.replyContainer} className={styles.replies}>
             {replies.map(reply => {
