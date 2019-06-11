@@ -3,6 +3,7 @@ import * as PropTypes from 'prop-types';
 import * as React from 'react';
 import { FormattedMessage } from 'react-intl';
 
+import Form from '../Form';
 import styles from './EmailLogin.css';
 import messages from './messages';
 
@@ -110,7 +111,7 @@ export default class EmailLogin extends React.Component<EmailLoginProps, EmailLo
     const { dirty, error, errors, submitting, values } = this.state;
 
     return (
-      <form className={classNames('container', styles.root)} onSubmit={this.onSubmit}>
+      <Form className={classNames('container', styles.root)} onSubmit={this.onSubmit}>
         {error && (
           <article className="message is-danger">
             <div className="message-body">
@@ -180,7 +181,7 @@ export default class EmailLogin extends React.Component<EmailLoginProps, EmailLo
         >
           <FormattedMessage {...messages.loginButton} />
         </button>
-      </form>
+      </Form>
     );
   }
 }

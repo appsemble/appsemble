@@ -2,7 +2,7 @@ import { BlockProps } from '@appsemble/react';
 import { Loader } from '@appsemble/react-components';
 import { remapData } from '@appsemble/utils/remap';
 import React from 'react';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, InjectedIntlProps } from 'react-intl';
 
 import styles from './ListBlock.css';
 import messages from './messages';
@@ -32,7 +32,7 @@ interface ListBlockState {
 }
 
 export default class ListBlock extends React.Component<
-  BlockProps<BlockParameters, BlockActions>,
+  BlockProps<BlockParameters, BlockActions> & InjectedIntlProps,
   ListBlockState
 > {
   state: ListBlockState = { data: undefined, error: false, loading: true };
@@ -57,7 +57,7 @@ export default class ListBlock extends React.Component<
   }
 
   render(): React.ReactNode {
-    const { block, actions } = this.props;
+    const { block, actions, intl } = this.props;
     const { data, error, loading } = this.state;
     const { fields } = block.parameters;
 
@@ -90,7 +90,7 @@ export default class ListBlock extends React.Component<
               onClick={() => this.onClick(item)}
             >
               {fields.map(field => {
-                const value = remapData(field.name, item);
+                const value = remapData(field.name, item, { intl });
 
                 return (
                   <td key={field.name}>

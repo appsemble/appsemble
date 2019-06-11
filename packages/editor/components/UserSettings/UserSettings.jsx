@@ -1,4 +1,4 @@
-import { Loader, Modal } from '@appsemble/react-components';
+import { Form, Loader, Modal } from '@appsemble/react-components';
 import axios from 'axios';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
@@ -18,7 +18,8 @@ export default class UserSettings extends Component {
     newUser: undefined,
     newEmail: '',
     loading: true,
-    submitting: false,
+    submittingEmail: false,
+    submittingName: false,
     deletingEmail: null,
   };
 
@@ -28,9 +29,12 @@ export default class UserSettings extends Component {
   }
 
   onNameChange = event => {
-    const { user } = this.state;
-
-    this.setState({ newUser: { ...user, name: event.target.value } });
+    this.setState(({ user }) => ({
+      user: {
+        ...user,
+        name: event.target.value,
+      },
+    }));
   };
 
   onAddNewEmail = async event => {
@@ -38,6 +42,8 @@ export default class UserSettings extends Component {
 
     const { newEmail, user } = this.state;
     const { push, intl } = this.props;
+
+    this.setState({ submittingEmail: true });
 
     try {
       await axios.post('/api/user/email', { email: newEmail });
@@ -63,6 +69,7 @@ export default class UserSettings extends Component {
         push(intl.formatMessage(messages.addEmailError));
       }
     }
+    this.setState({ submittingEmail: false });
   };
 
   setPrimaryEmail = async email => {
@@ -116,9 +123,9 @@ export default class UserSettings extends Component {
     const { push, intl } = this.props;
 
     try {
-      this.setState({ submitting: true });
+      this.setState({ submittingName: true });
       const { data: updatedUser } = await axios.put('/api/user', newUser);
-      this.setState({ user: updatedUser, newUser: updatedUser, submitting: false }, () => {
+      this.setState({ user: updatedUser, newUser: updatedUser, submittingName: false }, () => {
         push({ body: intl.formatMessage(messages.submitSuccess), color: 'success' });
       });
     } catch (e) {
@@ -127,7 +134,15 @@ export default class UserSettings extends Component {
   };
 
   render() {
-    const { user, newUser, loading, submitting, newEmail, deletingEmail } = this.state;
+    const {
+      user,
+      newUser,
+      loading,
+      submittingEmail,
+      submittingName,
+      newEmail,
+      deletingEmail,
+    } = this.state;
     const { intl } = this.props;
 
     if (loading) {
@@ -136,7 +151,7 @@ export default class UserSettings extends Component {
 
     return (
       <div className="content">
-        <form onSubmit={this.onSaveProfile}>
+        <Form onSubmit={this.onSaveProfile}>
           <div className="field">
             <label className="label">
               <FormattedMessage {...messages.displayName} />
@@ -159,16 +174,16 @@ export default class UserSettings extends Component {
             </div>
           </div>
           <div className="control">
-            <button className="button is-primary" disabled={submitting} type="submit">
+            <button className="button is-primary" disabled={submittingName} type="submit">
               <FormattedMessage {...messages.saveProfile} />
             </button>
           </div>
-        </form>
+        </Form>
         <hr />
         <h4>
           <FormattedMessage {...messages.emails} />
         </h4>
-        <form onSubmit={this.onAddNewEmail}>
+        <Form onSubmit={this.onAddNewEmail}>
           <div className="field">
             <label className="label">
               <FormattedMessage {...messages.addEmail} />
@@ -188,11 +203,11 @@ export default class UserSettings extends Component {
             </div>
           </div>
           <div className="control">
-            <button className="button is-info" disabled={submitting} type="submit">
+            <button className="button is-info" disabled={submittingEmail} type="submit">
               <FormattedMessage {...messages.addEmail} />
             </button>
           </div>
-        </form>
+        </Form>
         <hr />
         <table className="table">
           <thead>
@@ -211,53 +226,55 @@ export default class UserSettings extends Component {
                 <td>
                   <span>{email.email}</span>
                   <div className={`tags ${styles.tags}`}>
-                    {email.primary && <span className="tag is-primary">primary</span>}
+                    {email.primary && (
+                      <span className="tag is-primary">
+                        <FormattedMessage {...messages.primary} />
+                      </span>
+                    )}
                     {email.verified ? (
-                      <span className="tag is-success">verified</span>
+                      <span className="tag is-success">
+                        <FormattedMessage {...messages.verified} />
+                      </span>
                     ) : (
-                      <span className="tag is-warning">not verified</span>
+                      <span className="tag is-warning">
+                        <FormattedMessage {...messages.unverified} />
+                      </span>
                     )}
                   </div>
                 </td>
                 <td>
                   <div className="field is-grouped">
                     {email.verified && !email.primary && (
-                      <p className="control">
-                        <button
-                          className="button is-info"
-                          disabled={submitting}
-                          onClick={() => this.setPrimaryEmail(email)}
-                          type="button"
-                        >
-                          <FormattedMessage {...messages.setPrimaryEmail} />
-                        </button>
-                      </p>
+                      <button
+                        className="control button is-info"
+                        // disabled={submitting}
+                        onClick={() => this.setPrimaryEmail(email)}
+                        type="button"
+                      >
+                        <FormattedMessage {...messages.setPrimaryEmail} />
+                      </button>
                     )}
                     {!email.verified && (
-                      <p className="control">
-                        <button
-                          className="button is-outlined"
-                          disabled={submitting}
-                          onClick={() => this.resendVerification(email)}
-                          type="button"
-                        >
-                          <FormattedMessage {...messages.resendVerification} />
-                        </button>
-                      </p>
+                      <button
+                        className="control button is-outlined"
+                        // disabled={submitting}
+                        onClick={() => this.resendVerification(email)}
+                        type="button"
+                      >
+                        <FormattedMessage {...messages.resendVerification} />
+                      </button>
                     )}
                     {!email.primary && (
-                      <p className="control">
-                        <button
-                          className="button is-danger"
-                          disabled={submitting}
-                          onClick={() => this.onDeleteEmailClick(email)}
-                          type="button"
-                        >
-                          <span className="icon is-small">
-                            <i className="fas fa-trash-alt" />
-                          </span>
-                        </button>
-                      </p>
+                      <button
+                        className="control button is-danger"
+                        // disabled={submitting}
+                        onClick={() => this.onDeleteEmailClick(email)}
+                        type="button"
+                      >
+                        <span className="icon is-small">
+                          <i className="fas fa-trash-alt" />
+                        </span>
+                      </button>
                     )}
                   </div>
                 </td>

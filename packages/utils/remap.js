@@ -2,7 +2,8 @@ const property = '.';
 const filter = '|';
 
 const filters = {
-  get: name => object =>
+  date: ({ intl }) => object => `${intl.formatDate(object)} ${intl.formatTime(object)}`,
+  get: (context, name) => object =>
     object != null && Object.hasOwnProperty.call(object, name) ? object[name] : undefined,
   lower: () => Function.call.bind(String.prototype.toLowerCase),
   upper: () => Function.call.bind(String.prototype.toUpperCase),
@@ -25,9 +26,10 @@ const filters = {
  * Besides the shorthand syntax for the `get` filter, it is not yet possible to pass arguments.
  *
  * @param {string} mapperString The string which defines the filters that should be used.
+ * @param {Object} context The context to which remapper functions have access.
  * @returns {Function} the resulting mapper function.
  */
-export function compileFilters(mapperString) {
+export function compileFilters(mapperString, context) {
   const { length } = mapperString;
   const result = [];
   let type = property;
@@ -35,9 +37,9 @@ export function compileFilters(mapperString) {
 
   function processCurrent() {
     if (type === property) {
-      result.push(filters.get(current));
+      result.push(filters.get(context, current));
     } else if (Object.hasOwnProperty.call(filters, current)) {
-      result.push(filters[current]());
+      result.push(filters[current](context));
     } else {
       throw new Error(`Invalid filter ${current}`);
     }
@@ -80,18 +82,19 @@ export function compileFilters(mapperString) {
  *
  * @param {*} mapperData An (optionally nested) object which defines what to output.
  * @param {*} inputData The input data which should be mapped.
+ * @param {Object} context The context to which remapper functions have access.
  * @returns {*} The resulting data as specified by the `mapperData` argument.
  */
-export function remapData(mapperData, inputData) {
+export function remapData(mapperData, inputData, context) {
   if (typeof mapperData === 'string') {
-    return compileFilters(mapperData)(inputData);
+    return compileFilters(mapperData, context)(inputData);
   }
   if (Array.isArray(mapperData)) {
-    return mapperData.map(value => remapData(value, inputData));
+    return mapperData.map(value => remapData(value, inputData, context));
   }
   if (mapperData instanceof Object) {
     return Object.entries(mapperData).reduce((acc, [key, value]) => {
-      acc[key] = remapData(value, inputData);
+      acc[key] = remapData(value, inputData, context);
       return acc;
     }, {});
   }

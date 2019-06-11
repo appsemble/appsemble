@@ -65,22 +65,50 @@ export default class FilterBlock extends React.Component {
         parameters: { fields },
       },
     } = this.props;
+
     const { filter } = this.state;
 
-    const $filter = toOData(fields, { ...filter, ...filterParams });
+    // Convert date fields to unix timestamps without mutating filter itself
+    const convertedFilter = Object.entries(filter).reduce((acc, [key, value]) => {
+      const field = fields.find(f => f.name === key);
+      if (field.type === 'date') {
+        if (field.range) {
+          acc[key] = {};
+          if (value.to) {
+            acc[key].to = new Date(value.to).getTime();
+          }
+
+          if (value.from) {
+            acc[key].from = new Date(value.from).getTime();
+          }
+        } else {
+          acc[key] = new Date(value).getTime();
+        }
+      } else {
+        acc[key] = value;
+      }
+
+      return acc;
+    }, {});
+
+    const $filter = toOData(fields, { ...convertedFilter, ...filterParams });
 
     return actions.load.dispatch({
       ...($filter && { $filter }),
     });
   };
 
-  resetFilter = () => {
+  resetFilter = e => {
     const {
       events,
       block: {
         parameters: { event, fields },
       },
     } = this.props;
+
+    if (e && e.target.disabled) {
+      return;
+    }
 
     const defaultFilter = fields.reduce((acc, { name, defaultValue }) => {
       if (defaultValue) {
@@ -197,11 +225,10 @@ export default class FilterBlock extends React.Component {
     const { fields, highlight } = block.parameters;
     const highlightedField = highlight && fields.find(field => field.name === highlight);
     const showModal = !highlightedField || fields.length > 1;
+
     // check if filter has any field set that isn't already highlighted or its default value
     const activeFilters = Object.entries(currentFilter).some(
-      ([key, value]) =>
-        key !== highlight &&
-        (!!value || value !== fields.find(field => field.name === key)?.defaultValue),
+      ([key, value]) => !!value || value !== fields.find(field => field.name === key)?.defaultValue,
     );
 
     return (
@@ -265,7 +292,7 @@ export default class FilterBlock extends React.Component {
             <React.Fragment>
               <button
                 className={classNames('button', styles.filterDialogButton)}
-                disabled={!activeFilters ? true : undefined}
+                disabled={!activeFilters}
                 onClick={this.resetFilter}
                 type="button"
               >

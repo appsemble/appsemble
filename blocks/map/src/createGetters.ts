@@ -17,7 +17,13 @@ export interface BlockActions {
 
 export default function createGetters(params: BlockParameters): LatLngMapper {
   return {
-    lat: params.latitude == null ? data => data.latitude : compileFilters(params.latitude),
-    lng: params.longitude == null ? data => data.longitude : compileFilters(params.longitude),
+    lat:
+      params.latitude == null
+        ? data => data.latitude
+        : compileFilters(params.latitude, { intl: null }),
+    lng:
+      params.longitude == null
+        ? data => data.longitude
+        : compileFilters(params.longitude, { intl: null }),
   };
 }

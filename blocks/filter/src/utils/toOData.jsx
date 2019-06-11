@@ -1,6 +1,10 @@
 export default function toOData(fields, filter) {
   return Object.entries(filter)
     .map(([key, data]) => {
+      if (!data) {
+        return '';
+      }
+
       const field = fields.find(f => f.name === key);
 
       if (field.type === 'string') {
