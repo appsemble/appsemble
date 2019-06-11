@@ -55,10 +55,7 @@ resources:
             - Centraal
             - Zuid
             - Noord
-    # url: https://api.stadswerken.amsterdam/waarnemingen_real
-    # blobs:
-    #   url: 'https://api.stadswerken.amsterdam/upload'
-    #   serialize: custom
+
   waarnemingReply:
     references:
       waarnemingId: waarneming
@@ -70,11 +67,6 @@ resources:
         content:
           type: string
           minLength: 1
-
-# authentication:
-#   - method: email
-#     url: https://api.stadswerken.amsterdam/login
-#     refreshURL: https://api.stadswerken.amsterdam/token/refresh
 
 authentication:
   - method: email
@@ -162,7 +154,6 @@ pages:
             type: resource.query
             resource: waarneming
             query:
-              # $orderBy: 'created_at desc'
               $orderby: 'created desc'
               $top: 50
       - type: action-button
@@ -209,7 +200,6 @@ pages:
             type: resource.query
             resource: waarneming
             query:
-              # $orderBy: 'created_at desc'
               $orderby: 'created desc'
               $top: 50
 
@@ -222,7 +212,6 @@ pages:
           heading: created
           picture: fotos.0
           pictureBase: /api/assets
-          # pictureBase: https://api.stadswerken.amsterdam/uploads
           description: notities
           reply:
             content: content
@@ -291,13 +280,12 @@ pages:
         version: 0.6.0
         parameters:
           fileBase: /api/assets
-          # fileBase: 'https://api.stadswerken.amsterdam/uploads'
           fields:
             - name: locatie
               label: Locatie
               type: geocoordinates
-              longitude: longitude # locatie.longitude
-              latitude: latitude # locatie.latitude
+              longitude: longitude
+              latitude: latitude
             - name: proces
               label: Proces
             - name: kanaal

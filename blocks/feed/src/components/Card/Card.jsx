@@ -104,11 +104,7 @@ export default class Card extends React.Component {
 
     const title = remappers.title(content);
     const subtitle = remappers.subtitle(content);
-    const remappedHeading = remappers.heading(content);
-    const headingDate = new Date(remappedHeading);
-    const heading = Number.isNaN(headingDate)
-      ? remappedHeading
-      : `${headingDate.toLocaleDateString()} ${headingDate.toLocaleTimeString()}`;
+    const heading = remappers.heading(content);
     const picture = remappers.picture(content);
     const description = remappers.description(content);
     const latitude = remappers.latitude(content);
@@ -168,7 +164,7 @@ export default class Card extends React.Component {
             </AvatarWrapper>
             <header className="media-content">
               {title && <h4 className="title is-4 is-marginless">{title}</h4>}
-              {subtitle && <h5 className="subtitle is-5 is-marginless">naar: {subtitle}</h5>}
+              {subtitle && <h5 className="subtitle is-5 is-marginless">{subtitle}</h5>}
               {heading && <p className="subtitle is-6">{heading}</p>}
             </header>
           </div>

@@ -42,7 +42,7 @@ export default class ActionBlock extends React.Component {
     return (
       <div className={`content ${styles.container}`}>
         <h1>{title}</h1>
-        {fields.map(field => {
+        {fields.map((field, index) => {
           const { backgroundColor, color } = field;
           return (
             <div key={`${field.name}.${field.value}`} className={styles.actionField}>
@@ -62,10 +62,13 @@ export default class ActionBlock extends React.Component {
               </button>
               {field.enum?.length && (
                 <React.Fragment>
-                  <span className={styles.actionLabel}>{field.label || ''}</span>
+                  <label className={styles.actionLabel} htmlFor={`${field.name}.${index}`}>
+                    {field.label || ''}
+                  </label>
                   <div className={`select ${styles.enum}`}>
                     <select
                       defaultValue={data[field.name]}
+                      id={`${field.name}.${index}`}
                       onChange={event => this.onUpdate(event, field)}
                     >
                       {field.enum.map(entry => (
