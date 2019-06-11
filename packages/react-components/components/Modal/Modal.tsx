@@ -61,7 +61,7 @@ export default class Modal extends React.Component<InjectedIntlProps & ModalProp
         timeout={90}
         unmountOnExit
       >
-        <div className="is-active modal">
+        <div className={`is-active modal ${styles.modal}`}>
           <div
             className="modal-background"
             onClick={onClose}

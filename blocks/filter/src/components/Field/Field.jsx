@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 
 import Control from '../Control';
+import styles from './Field.css';
 import messages from './messages';
 
 export default class Field extends React.Component {
@@ -76,7 +77,13 @@ export default class Field extends React.Component {
               />
             </React.Fragment>
           ) : (
-            <Control name={name} onChange={onChange} value={filter[name]} {...props} />
+            <Control
+              className={styles.control}
+              name={name}
+              onChange={onChange}
+              value={filter[name]}
+              {...props}
+            />
           )}
         </div>
       </div>
