@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import React from 'react';
 
 import AppCard from '../AppCard';
-import AppIcon from '../AppIcon';
 import CreateAppCard from '../CreateAppCard';
 import styles from './AppList.css';
 import messages from './messages';
@@ -43,9 +42,6 @@ export default class AppList extends React.Component {
 
     const filteredApps = apps.filter(app => app.name.includes(filter));
 
-    const Component = isLoggedIn ? AppCard : AppIcon;
-    const style = isLoggedIn ? styles.appList : styles.appIcons;
-
     return (
       <React.Fragment>
         <div className={`field ${styles.filter}`}>
@@ -61,9 +57,9 @@ export default class AppList extends React.Component {
             </span>
           </p>
         </div>
-        <div className={style}>
+        <div className={styles.appList}>
           {filteredApps.map(app => (
-            <Component key={app.id} app={app} />
+            <AppCard key={app.id} app={app} isLoggedIn={isLoggedIn} />
           ))}
           {isLoggedIn && <CreateAppCard />}
         </div>
