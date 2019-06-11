@@ -1,4 +1,4 @@
-import { Loader, Modal } from '@appsemble/react-components';
+import { Form, Loader, Modal } from '@appsemble/react-components';
 import axios from 'axios';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
@@ -136,7 +136,7 @@ export default class UserSettings extends Component {
 
     return (
       <div className="content">
-        <form onSubmit={this.onSaveProfile}>
+        <Form onSubmit={this.onSaveProfile}>
           <div className="field">
             <label className="label">
               <FormattedMessage {...messages.displayName} />
@@ -163,12 +163,12 @@ export default class UserSettings extends Component {
               <FormattedMessage {...messages.saveProfile} />
             </button>
           </div>
-        </form>
+        </Form>
         <hr />
         <h4>
           <FormattedMessage {...messages.emails} />
         </h4>
-        <form onSubmit={this.onAddNewEmail}>
+        <Form onSubmit={this.onAddNewEmail}>
           <div className="field">
             <label className="label">
               <FormattedMessage {...messages.addEmail} />
@@ -192,7 +192,7 @@ export default class UserSettings extends Component {
               <FormattedMessage {...messages.addEmail} />
             </button>
           </div>
-        </form>
+        </Form>
         <hr />
         <table className="table">
           <thead>
