@@ -54,7 +54,6 @@
     "@babel/preset-react": "^7.0.0",
     "@babel/preset-typescript": "^7.3.3",
     "@babel/runtime": "^7.4.5",
-    "@kubernetes/client-node": "^0.8.2",
     "@types/classnames": "^2.2.7",
     "@types/css-modules": "^1.0.0",
     "@types/enzyme": "^3.9.2",

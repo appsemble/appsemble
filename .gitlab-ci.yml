@@ -217,6 +217,7 @@ publish:docker:latest:
 # Deploy the Docker image for a branch to a review environment.
 review:
   stage: deploy
+  image: registry.gitlab.com/gitlab-org/gitlab-build-images:gitlab-charts-build-base
   when: manual
   except:
     - master
@@ -228,20 +229,26 @@ review:
     url: https://$CI_ENVIRONMENT_SLUG.appsemble.app
     on_stop: stop review
   script:
-    - yarn --frozen-lockfile
-    # This allows passing these variables for use in later stages.
-    - yarn appsemble config set email bot@appsemble.com
-    - yarn appsemble config set password "$(openssl rand -base64 12)"
-    - yarn appsemble config set remote "$CI_ENVIRONMENT_URL"
-    - node -r esm config/bin/deploy.js
-  artifacts:
-    expire_in: 1 day
-    paths:
-      - package.json
+    - mkdir ~/.helm
+    - kubectl get secrets/tiller-secret -n gitlab-managed-apps -o "jsonpath={.data['tls\.crt']}" | base64 -d > ~/.helm/cert.pem
+    - kubectl get secrets/tiller-secret -n gitlab-managed-apps -o "jsonpath={.data['tls\.key']}" | base64 -d > ~/.helm/key.pem
+    - helm init --client-only
+    - helm dependency build config/charts/appsemble
+    - helm upgrade "$CI_ENVIRONMENT_SLUG" config/charts/appsemble
+      --install
+      --set "image.repository=$CI_REGISTRY_IMAGE"
+      --set "image.tag=$CI_COMMIT_REF_NAME"
+      --set "ingress.enabled=true"
+      --set "ingress.hosts={${CI_ENVIRONMENT_URL/https:\/\//}}"
+      --set "ingress.tls.secretName=$CI_ENVIRONMENT_SLUG-tls"
+      --set "mysql.existingSecret=$CI_ENVIRONMENT_SLUG-mysql-secret"
+      --set "mysql.fullnameOverride=$CI_ENVIRONMENT_SLUG-mysql"
+      --wait
 
 # Stop a review environment.
 stop review:
   stage: deploy
+  image: registry.gitlab.com/gitlab-org/gitlab-build-images:gitlab-charts-build-base
   when: manual
   except:
     - master
@@ -251,8 +258,11 @@ stop review:
     name: review/$CI_COMMIT_REF_SLUG
     action: stop
   script:
-    - yarn --frozen-lockfile
-    - node -r esm config/bin/stop.js
+    - mkdir ~/.helm
+    - kubectl get secrets/tiller-secret -n gitlab-managed-apps -o "jsonpath={.data['tls\.crt']}" | base64 -d > ~/.helm/cert.pem
+    - kubectl get secrets/tiller-secret -n gitlab-managed-apps -o "jsonpath={.data['tls\.key']}" | base64 -d > ~/.helm/key.pem
+    - helm init --client-only
+    - helm delete --purge "$CI_ENVIRONMENT_SLUG"
 
 # Deploy the Docker image for a branch to a review environment.
 review docs:
@@ -301,30 +311,37 @@ stop review docs:
 # Deploy the Docker image for master to the staging environment.
 staging:
   stage: deploy
+  image: registry.gitlab.com/gitlab-org/gitlab-build-images:gitlab-charts-build-base
   only:
     - master@appsemble/appsemble
   except:
     - schedules
   dependencies: []
   environment:
-    name: review/master
+    name: staging
     url: https://staging.appsemble.app
     on_stop: stop staging
   script:
-    - yarn --frozen-lockfile
-    # This allows passing the CI_ENVIRONMENT_URL for use in later stages.
-    - yarn appsemble config set email bot@appsemble.com
-    - yarn appsemble config set password "$(openssl rand -base64 12)"
-    - yarn appsemble config set remote "$CI_ENVIRONMENT_URL"
-    - node -r esm config/bin/deploy.js
-  artifacts:
-    expire_in: 1 day
-    paths:
-      - package.json
+    - mkdir ~/.helm
+    - kubectl get secrets/tiller-secret -n gitlab-managed-apps -o "jsonpath={.data['tls\.crt']}" | base64 -d > ~/.helm/cert.pem
+    - kubectl get secrets/tiller-secret -n gitlab-managed-apps -o "jsonpath={.data['tls\.key']}" | base64 -d > ~/.helm/key.pem
+    - helm init --client-only
+    - helm dependency build config/charts/appsemble
+    - helm upgrade "$CI_ENVIRONMENT_SLUG" config/charts/appsemble
+      --install
+      --set "image.repository=$CI_REGISTRY_IMAGE"
+      --set "image.tag=$CI_COMMIT_REF_NAME"
+      --set "ingress.enabled=true"
+      --set "ingress.hosts={staging.appsemble.app}"
+      --set "ingress.tls.secretName=$CI_ENVIRONMENT_SLUG-tls"
+      --set "mysql.existingSecret=$CI_ENVIRONMENT_SLUG-mysql-secret"
+      --set "mysql.fullnameOverride=$CI_ENVIRONMENT_SLUG-mysql"
+      --wait
 
 # Stop the staging environment.
 stop staging:
   stage: deploy
+  image: registry.gitlab.com/gitlab-org/gitlab-build-images:gitlab-charts-build-base
   when: manual
   only:
     - master@appsemble/appsemble
@@ -332,39 +349,57 @@ stop staging:
     - schedules
   dependencies: []
   environment:
-    name: review/master
+    name: staging
     action: stop
   script:
-    - yarn --frozen-lockfile
-    - node -r esm config/bin/stop.js
+    - mkdir ~/.helm
+    - kubectl get secrets/tiller-secret -n gitlab-managed-apps -o "jsonpath={.data['tls\.crt']}" | base64 -d > ~/.helm/cert.pem
+    - kubectl get secrets/tiller-secret -n gitlab-managed-apps -o "jsonpath={.data['tls\.key']}" | base64 -d > ~/.helm/key.pem
+    - helm init --client-only
+    - helm delete --purge "$CI_ENVIRONMENT_SLUG"
 
 ###################################################################################################
 #  Provision Stage                                                                                #
 ###################################################################################################
 
-# Provision the live environment with the blocks that were built in the build stage.
-upload blocks:
+# Provision the review environment with the blocks that were built in the build stage.
+provision review: &provision
   stage: provision
   except:
+    - master
     - schedules
   dependencies:
     - build blocks
-    - pack
     - review
-    - staging
-  variables:
-    GIT_STRATEGY: none
+  environment:
+    name: review/$CI_COMMIT_REF_SLUG
   script:
-    - npm install ./packages/node-utils/*.tgz
-    - npm install ./packages/cli/*.tgz
+    - yarn --frozen-lockfile
+    - yarn appsemble config set remote "$CI_ENVIRONMENT_URL"
+    - yarn appsemble config set email "$APPSEMBLE_EMAIL"
+    - yarn appsemble config set password "$APPSEMBLE_PASSWORD"
+    - node -r esm ./config/bin/register.js
     - yarn appsemble login
-    - yarn appsemble block register --ignore-conflict blocks/action
-    - yarn appsemble block register --ignore-conflict blocks/action-button
-    - yarn appsemble block register --ignore-conflict blocks/detail-viewer
-    - yarn appsemble block register --ignore-conflict blocks/list
-    - yarn appsemble block register --ignore-conflict blocks/feed
-    - yarn appsemble block register --ignore-conflict blocks/filter
-    - yarn appsemble block register --ignore-conflict blocks/form
-    - yarn appsemble block register --ignore-conflict blocks/map
-    - yarn appsemble block register --ignore-conflict blocks/markdown
-    - yarn appsemble block register --ignore-conflict blocks/splash
+    - yarn appsemble block register blocks/action
+    - yarn appsemble block register blocks/action-button
+    - yarn appsemble block register blocks/detail-viewer
+    - yarn appsemble block register blocks/list
+    - yarn appsemble block register blocks/feed
+    - yarn appsemble block register blocks/filter
+    - yarn appsemble block register blocks/form
+    - yarn appsemble block register blocks/map
+    - yarn appsemble block register blocks/markdown
+    - yarn appsemble block register blocks/splash
+
+# Provision the staging environment with the blocks that were built in the build stage.
+provision staging:
+  <<: *provision
+  except:
+    - schedules
+  only:
+    - master@appsemble/appsemble
+  environment:
+    name: staging
+  dependencies:
+    - build blocks
+    - staging

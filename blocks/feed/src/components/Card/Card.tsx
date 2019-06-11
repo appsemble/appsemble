@@ -1,57 +1,62 @@
+import { BlockProps } from '@appsemble/react';
 import { Location } from '@appsemble/react-components';
-import PropTypes from 'prop-types';
 import React from 'react';
+import { InjectedIntlProps } from 'react-intl';
 
 import iconUrl from '../../../../../themes/amsterdam/core/marker.svg';
+import { BlockActions, BlockParameters, Remappers } from '../../../types';
 import styles from './Card.css';
 import messages from './messages';
+
+export interface CardProps {
+  /**
+   * The content for this specific card to render.
+   */
+  content: {
+    id: number;
+    status: string;
+  };
+  /**
+   * Update function that can be called to update a single resource
+   */
+  onUpdate: (data: any) => void;
+  /**
+   * Remapper functions that have been prepared by a parent component.
+   */
+  remappers: Remappers;
+}
+
+interface CardState {
+  message: string;
+  replies: any[];
+  valid: boolean;
+}
 
 /**
  * A single card in the feed.
  */
-export default class Card extends React.Component {
-  static propTypes = {
-    /**
-     * The actions as passed by the Appsemble interface.
-     */
-    actions: PropTypes.shape().isRequired,
-    /**
-     * The Appsemble block for which to render the card.
-     */
-    block: PropTypes.shape().isRequired,
-    intl: PropTypes.shape().isRequired,
-    utils: PropTypes.shape().isRequired,
-    /**
-     * The content for this specific card to render.
-     */
-    content: PropTypes.shape().isRequired,
-    /**
-     * Remapper functions that have been prepared by a parent component.
-     */
-    remappers: PropTypes.shape().isRequired,
-    /**
-     * Update function that can be called to update a single resource
-     */
-    onUpdate: PropTypes.func.isRequired,
-  };
+export default class Card extends React.Component<
+  BlockProps<BlockParameters, BlockActions> & InjectedIntlProps & CardProps,
+  CardState
+> {
+  replyContainer = React.createRef<HTMLDivElement>();
 
-  replyContainer = React.createRef();
-
-  state = {
+  state: CardState = {
     message: '',
     replies: [],
     valid: false,
   };
 
-  async componentDidMount() {
+  async componentDidMount(): Promise<void> {
     const { actions, block, content } = this.props;
-    const parentId = block.parameters?.reply?.parentId || 'parentId';
+    const parentId =
+      (block.parameters && block.parameters.reply && block.parameters.reply.parentId) || 'parentId';
 
     const replies = await actions.loadReply.dispatch({ $filter: `${parentId} eq '${content.id}'` });
     this.setState({ replies });
   }
 
-  onAvatarClick = async event => {
+  onAvatarClick: React.MouseEventHandler = async event => {
     event.preventDefault();
     const { actions, content, onUpdate } = this.props;
     const data = await actions.avatarClick.dispatch(content);
@@ -61,11 +66,11 @@ export default class Card extends React.Component {
     }
   };
 
-  onChange = event => {
+  onChange: React.ChangeEventHandler<HTMLInputElement> = event => {
     this.setState({ message: event.target.value, valid: event.target.validity.valid });
   };
 
-  onSubmit = event => {
+  onSubmit: React.FormEventHandler = event => {
     event.preventDefault();
   };
 
@@ -78,8 +83,11 @@ export default class Card extends React.Component {
     }
 
     try {
-      const contentField = block.parameters?.reply?.content || 'content';
-      const parentId = block.parameters?.reply?.parentId || 'parentId';
+      const contentField =
+        (block.parameters && block.parameters.reply && block.parameters.reply.content) || 'content';
+      const parentId =
+        (block.parameters && block.parameters.reply && block.parameters.reply.parentId) ||
+        'parentId';
 
       const result = await actions.submitReply.dispatch({
         [parentId]: content.id,
@@ -98,7 +106,7 @@ export default class Card extends React.Component {
     }
   };
 
-  render() {
+  render(): React.ReactNode {
     const { actions, block, content, intl, remappers } = this.props;
     const { message, replies, valid } = this.state;
 
@@ -114,7 +122,7 @@ export default class Card extends React.Component {
     let icon;
 
     // XXX: Standardize this based on app definition
-    switch (content?.status) {
+    switch (content && content.status) {
       case 'open':
         color = 'has-background-danger';
         icon = 'exclamation';
@@ -132,7 +140,7 @@ export default class Card extends React.Component {
         icon = 'user';
     }
 
-    const AvatarWrapper = ({ children }) =>
+    const AvatarWrapper: React.SFC<{}> = ({ children }) =>
       actions.avatarClick.type === 'link' ? (
         <a
           className={`media-left ${styles.avatar}`}

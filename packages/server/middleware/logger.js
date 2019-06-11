@@ -7,19 +7,25 @@ export default function logger() {
   return async (ctx, next) => {
     const start = Date.now();
     log.info(`${ctx.method} ${ctx.url}`);
-    try {
-      await next();
-    } finally {
+
+    function message(status, msg) {
       let level;
-      if (ctx.status < 300) {
+      if (status < 300) {
         level = 'info';
-      } else if (ctx.status < 500) {
+      } else if (status < 500) {
         level = 'warn';
       } else {
         level = 'error';
       }
-      const msg = `${ctx.method} ${ctx.url} ${ctx.status} ${ctx.message} ${Date.now() - start}ms`;
-      log.log(level, msg);
+      log.log(level, `${ctx.method} ${ctx.url} ${status} ${msg} ${Date.now() - start}ms`);
     }
+
+    try {
+      await next();
+    } catch (error) {
+      message(500, 'Internal Server Error');
+      throw error;
+    }
+    message(ctx.status, ctx.message);
   };
 }

@@ -1,41 +1,37 @@
+import { BlockProps } from '@appsemble/react';
 import { Loader } from '@appsemble/react-components';
-import { compileFilters } from '@appsemble/utils/remap';
-import PropTypes from 'prop-types';
+import { MapperFunction, compileFilters } from '@appsemble/utils/remap';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 
+import { BlockActions, BlockParameters, Remappers } from '../../../types';
 import Card from '../Card';
 import messages from './messages';
 
-function createRemapper(mapper) {
+function createRemapper(mapper?: any): MapperFunction {
   return mapper ? compileFilters(mapper) : () => null;
+}
+
+interface FeedBlockState {
+  data: any[];
+  loading: boolean;
 }
 
 /**
  * The top level component for the feed block.
  */
-export default class FeedBlock extends React.Component {
-  static propTypes = {
-    /**
-     * The actions as passed by the Appsemble interface.
-     */
-    actions: PropTypes.shape().isRequired,
-    /**
-     * The block as passed by the Appsemble interface.
-     */
-    block: PropTypes.shape().isRequired,
-    /**
-     * The Appsemble events object.
-     */
-    events: PropTypes.shape().isRequired,
-  };
-
-  state = {
+export default class FeedBlock extends React.Component<
+  BlockProps<BlockParameters, BlockActions>,
+  FeedBlockState
+> {
+  state: FeedBlockState = {
     data: [],
     loading: false,
   };
 
-  async componentDidMount() {
+  remappers: Remappers;
+
+  async componentDidMount(): Promise<void> {
     const { actions, block, events } = this.props;
     const { parameters } = block;
 
@@ -52,7 +48,7 @@ export default class FeedBlock extends React.Component {
     };
 
     if (parameters.listen) {
-      events.on(parameters.listen, data => {
+      events.on(parameters.listen, (data: any) => {
         this.setState({
           data,
           loading: false,
@@ -67,12 +63,12 @@ export default class FeedBlock extends React.Component {
     }
   }
 
-  onUpdate = resource => {
+  onUpdate = (resource: any) => {
     const { data } = this.state;
     this.setState({ data: data.map(entry => (entry.id === resource.id ? resource : entry)) });
   };
 
-  render() {
+  render(): React.ReactNode {
     const { data, loading } = this.state;
 
     if (loading) {
