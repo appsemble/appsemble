@@ -1,4 +1,4 @@
-import { Loader, Modal } from '@appsemble/react-components';
+import { Form, Loader, Modal } from '@appsemble/react-components';
 import normalize from '@appsemble/utils/normalize';
 import validate, { SchemaValidationError } from '@appsemble/utils/validate';
 import validateStyle from '@appsemble/utils/validateStyle';
@@ -310,7 +310,7 @@ export default class Editor extends React.Component {
     return (
       <div className={styles.root}>
         <div className={styles.leftPanel}>
-          <form className={styles.editorForm} onSubmit={this.onSave}>
+          <Form className={styles.editorForm} onSubmit={this.onSave}>
             <nav className="navbar">
               <div className="navbar-brand">
                 <span className="navbar-item">
@@ -440,7 +440,7 @@ export default class Editor extends React.Component {
                 </footer>
               </div>
             </Modal>
-          </form>
+          </Form>
         </div>
 
         <div className={styles.rightPanel}>

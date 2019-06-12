@@ -1,4 +1,4 @@
-import { Modal } from '@appsemble/react-components';
+import { Form, Modal } from '@appsemble/react-components';
 import axios from 'axios';
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
@@ -136,7 +136,7 @@ export default class CreateAppCard extends React.Component {
           </div>
         </div>
         <Modal isActive={modalOpen} onClose={this.onClose}>
-          <form className="card" noValidate onSubmit={this.onCreate}>
+          <Form className="card" onSubmit={this.onCreate}>
             <header className="card-header">
               <div className="card-header-title">
                 <FormattedMessage {...messages.createAppTitle} />
@@ -293,7 +293,7 @@ export default class CreateAppCard extends React.Component {
                 <FormattedMessage {...messages.create} />
               </button>
             </footer>
-          </form>
+          </Form>
         </Modal>
       </div>
     );

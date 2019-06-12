@@ -12,6 +12,10 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Editor: Add version tag to the header.
 - Helm: Add official Helm chart.
 
+### Fixed
+
+- Server: Internal server error responses are now logged as such.
+
 ## [0.6.0] - 2019-05-20
 
 ### Added

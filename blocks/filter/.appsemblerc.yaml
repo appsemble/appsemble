@@ -1,5 +1,6 @@
 actions:
   load:
     required: true
+layout: static
 
 output: dist

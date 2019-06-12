@@ -66,7 +66,11 @@ describe('resource controller', () => {
     );
 
     expect(response.status).toBe(200);
-    expect(response.body).toStrictEqual({ id: resource.id, foo: 'bar' });
+    expect(response.body).toStrictEqual({
+      id: resource.id,
+      foo: 'bar',
+      created: expect.any(String),
+    });
   });
 
   it('should not be able to fetch a resources of a different app', async () => {
@@ -96,8 +100,8 @@ describe('resource controller', () => {
 
     expect(response.status).toBe(200);
     expect(response.body).toStrictEqual([
-      { id: resourceA.id, foo: 'bar' },
-      { id: resourceB.id, foo: 'baz' },
+      { id: resourceA.id, foo: 'bar', created: expect.any(String) },
+      { id: resourceB.id, foo: 'baz', created: expect.any(String) },
     ]);
   });
 
@@ -110,7 +114,9 @@ describe('resource controller', () => {
     const response = await request(server).get(`/api/apps/${app.id}/resources/testResource?$top=1`);
 
     expect(response.status).toBe(200);
-    expect(response.body).toStrictEqual([{ id: resourceA.id, foo: 'bar' }]);
+    expect(response.body).toStrictEqual([
+      { id: resourceA.id, foo: 'bar', created: expect.any(String) },
+    ]);
   });
 
   it('should be able to sort fetched resources', async () => {
@@ -128,13 +134,13 @@ describe('resource controller', () => {
 
     expect(responseA.status).toBe(200);
     expect(responseA.body).toStrictEqual([
-      { id: resourceA.id, foo: 'bar' },
-      { id: resourceB.id, foo: 'baz' },
+      { id: resourceA.id, foo: 'bar', created: expect.any(String) },
+      { id: resourceB.id, foo: 'baz', created: expect.any(String) },
     ]);
     expect(responseB.status).toBe(200);
     expect(responseB.body).toStrictEqual([
-      { id: resourceB.id, foo: 'baz' },
-      { id: resourceA.id, foo: 'bar' },
+      { id: resourceB.id, foo: 'baz', created: expect.any(String) },
+      { id: resourceA.id, foo: 'bar', created: expect.any(String) },
     ]);
   });
 
@@ -160,7 +166,9 @@ describe('resource controller', () => {
     );
 
     expect(response.status).toBe(200);
-    expect(response.body).toStrictEqual([{ id: resource.id, ...resource.data }]);
+    expect(response.body).toStrictEqual([
+      { id: resource.id, ...resource.data, created: expect.any(String) },
+    ]);
   });
 
   it('should be able to filter multiple fields when fetching resources', async () => {
@@ -176,7 +184,9 @@ describe('resource controller', () => {
     );
 
     expect(response.status).toBe(200);
-    expect(response.body).toStrictEqual([{ id: resource.id, ...resource.data }]);
+    expect(response.body).toStrictEqual([
+      { id: resource.id, ...resource.data, created: expect.any(String) },
+    ]);
   });
 
   it('should be able to create a new resource', async () => {
