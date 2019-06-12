@@ -1,4 +1,18 @@
 export default {
+  '/api/organizations/{organizationId}': {
+    parameters: [{ $ref: '#/components/parameters/organizationId' }],
+    get: {
+      tags: ['organization'],
+      description: 'Get a single organization.',
+      operationId: 'getOrganization',
+      responses: {
+        200: {
+          description: 'The organization that matches the given id.',
+          $ref: '#/components/responses/organization',
+        },
+      },
+    },
+  },
   '/api/organizations/{organizationId}/style/shared': {
     parameters: [{ $ref: '#/components/parameters/organizationId' }],
     get: {

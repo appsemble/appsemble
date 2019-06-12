@@ -6,4 +6,5 @@ export default defineMessages({
   member: 'Member',
   actions: 'Actions',
   you: "It's you!",
+  removeMemberSuccess: 'Successfully removed member',
 });

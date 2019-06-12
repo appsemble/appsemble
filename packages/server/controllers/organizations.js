@@ -15,6 +15,27 @@ export async function getOrganizationCoreStyle(ctx) {
   ctx.status = 200;
 }
 
+export async function getOrganization(ctx) {
+  const { organizationId } = ctx.params;
+  const { Organization, User } = ctx.db.models;
+
+  const organization = await Organization.findByPk(organizationId, {
+    include: [User],
+  });
+  if (!organization) {
+    throw Boom.notFound('Organization not found.');
+  }
+
+  ctx.body = {
+    id: organization.id,
+    members: organization.Users.map(user => ({
+      id: user.id,
+      name: user.name,
+      primaryEmail: user.primaryEmail,
+    })),
+  };
+}
+
 export async function setOrganizationCoreStyle(ctx) {
   const { organizationId } = ctx.params;
   const { db } = ctx;

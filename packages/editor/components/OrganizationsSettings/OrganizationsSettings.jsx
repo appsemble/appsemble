@@ -1,5 +1,6 @@
 import { Loader } from '@appsemble/react-components';
 import axios from 'axios';
+import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { FormattedMessage } from 'react-intl';
 
@@ -7,30 +8,72 @@ import styles from './OrganizationsSettings.css';
 import messages from './messages';
 
 export default class OrganizationsSettings extends Component {
+  static propTypes = {
+    push: PropTypes.func.isRequired,
+    intl: PropTypes.shape().isRequired,
+  };
+
   state = {
     user: undefined,
     loading: true,
-    selectedOrganization: 0,
+    selectedOrganization: undefined,
+    organizations: [],
   };
 
   async componentDidMount() {
     const { data: user } = await axios.get('/api/user');
-    this.setState({ user, loading: false });
+    const [{ id: selectedOrganization }] = user.organizations;
+    const { data: organization } = await axios.get(`/api/organizations/${selectedOrganization}`);
+    const organizations = user.organizations.map(org =>
+      org.id === organization.id ? organization : org,
+    );
+
+    this.setState({
+      user,
+      loading: false,
+      selectedOrganization,
+      organizations,
+    });
   }
 
-  onChange = event => {
-    this.setState({ [event.target.name]: event.target.value });
+  onOrganizationChange = async event => {
+    const { organizations } = this.state;
+    const organizationId = event.target.value;
+    const { data: organization } = await axios.get(`/api/organizations/${organizationId}`);
+
+    this.setState({
+      selectedOrganization: organizationId,
+      organizations: organizations.map(org => (org.id === organizationId ? organization : org)),
+    });
+  };
+
+  onRemoveMemberClick = async (organizationId, memberId) => {
+    const { organizations } = this.state;
+    const { intl, push } = this.props;
+
+    await axios.delete(`/api/organizations/${organizationId}/${memberId}`);
+
+    const organization = organizations.find(o => o.id === organizationId);
+    organization.members = organizations.members.filter(m => m.id !== memberId);
+
+    this.setState({
+      organizations: organizations.map(o => (o.id === organization ? organization : o)),
+    });
+
+    push({
+      body: intl.formatMessage(messages.removeMemberSuccess),
+      color: 'info',
+    });
   };
 
   render() {
-    const { user, loading, selectedOrganization } = this.state;
+    const { user, loading, selectedOrganization, organizations } = this.state;
 
     if (loading) {
       return <Loader />;
     }
 
-    const organization = user.organizations[selectedOrganization];
-    organization.members = [{ id: user.id, name: user.name, primaryEmail: user.primaryEmail }];
+    const organization = organizations.find(o => o.id === selectedOrganization);
 
     return (
       <div className="content">
@@ -44,11 +87,11 @@ export default class OrganizationsSettings extends Component {
                 disabled={user.organizations.length === 1}
                 id="selectedOrganization"
                 name="selectedOrganization"
-                onChange={this.onChange}
+                onChange={this.onOrganizationChange}
                 value={selectedOrganization}
               >
-                {user.organizations.map((org, index) => (
-                  <option key={org.id} value={index}>
+                {user.organizations.map(org => (
+                  <option key={org.id} value={org.id}>
                     {org.id}
                   </option>
                 ))}
@@ -86,7 +129,26 @@ export default class OrganizationsSettings extends Component {
                     )}
                   </div>
                 </td>
-                <td>Owner</td>
+                <td>
+                  <span>
+                    <FormattedMessage {...messages.member} />
+                  </span>
+                  <div className="field is-grouped">
+                    {member.id !== user.id && (
+                      <p className="control">
+                        <button
+                          className="button is-danger"
+                          onClick={() => this.onRemoveMemberClick(organization.id, member.id)}
+                          type="button"
+                        >
+                          <span className="icon is-small">
+                            <i className="fas fa-trash-alt" />
+                          </span>
+                        </button>
+                      </p>
+                    )}
+                  </div>
+                </td>
               </tr>
             ))}
           </tbody>

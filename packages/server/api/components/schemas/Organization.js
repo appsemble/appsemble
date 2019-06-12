@@ -8,5 +8,14 @@ export default {
       readOnly: true,
       description: 'The unique identifier for the organization.',
     },
+    members: {
+      type: 'array',
+      readOnly: true,
+      description: 'A list of organization members',
+      minItems: 1,
+      items: {
+        $ref: '#/components/schemas/User',
+      },
+    },
   },
 };
