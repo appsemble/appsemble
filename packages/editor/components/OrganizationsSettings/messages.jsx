@@ -6,5 +6,8 @@ export default defineMessages({
   member: 'Member',
   actions: 'Actions',
   you: "It's you!",
+  email: 'Email',
+  addMemberEmail: 'Add new member by email',
+  inviteMemberSuccess: 'Successfully invited {email}',
   removeMemberSuccess: 'Successfully removed member',
 });

@@ -2,3 +2,7 @@
   display: inline;
   margin-left: 0.5rem;
 }
+
+.field {
+  max-width: 480px;
+}

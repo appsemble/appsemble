@@ -36,6 +36,10 @@ export default class OrganizationsSettings extends Component {
     });
   }
 
+  onChange = event => {
+    this.setState({ [event.target.name]: event.target.value });
+  };
+
   onOrganizationChange = async event => {
     const { organizations } = this.state;
     const organizationId = event.target.value;
@@ -44,6 +48,30 @@ export default class OrganizationsSettings extends Component {
     this.setState({
       selectedOrganization: organizationId,
       organizations: organizations.map(org => (org.id === organizationId ? organization : org)),
+    });
+  };
+
+  onInviteMember = async event => {
+    event.preventDefault();
+
+    const { intl, push } = this.props;
+    const { selectedOrganization, organizations, memberEmail } = this.state;
+    const organization = organizations.find(o => o.id === selectedOrganization);
+
+    const { body: member } = await axios.post(
+      `/api/organizations/${selectedOrganization}/members`,
+      { email: memberEmail },
+    );
+    organization.members.push(member);
+
+    this.setState({
+      memberEmail: '',
+      organizations: organizations.map(o => (o.id === selectedOrganization ? organization : o)),
+    });
+
+    push({
+      body: intl.formatMessage(messages.inviteMemberSuccess, { email: memberEmail }),
+      color: 'success',
     });
   };
 
@@ -67,7 +95,8 @@ export default class OrganizationsSettings extends Component {
   };
 
   render() {
-    const { user, loading, selectedOrganization, organizations } = this.state;
+    const { user, loading, selectedOrganization, organizations, memberEmail } = this.state;
+    const { intl } = this.props;
 
     if (loading) {
       return <Loader />;
@@ -81,7 +110,7 @@ export default class OrganizationsSettings extends Component {
           <label className="label" htmlFor="selectedOrganization">
             <FormattedMessage {...messages.selectedOrganization} />
           </label>
-          <div className="control">
+          <div className={`control ${styles.field}`}>
             <div className="select">
               <select
                 disabled={user.organizations.length === 1}
@@ -99,6 +128,26 @@ export default class OrganizationsSettings extends Component {
             </div>
           </div>
         </div>
+
+        <div className="field">
+          <label className="label" htmlFor="memberEmail">
+            <FormattedMessage {...messages.addMemberEmail} />
+          </label>
+          <div className={`control has-icons-left ${styles.field}`}>
+            <input
+              className="input"
+              id="memberEmail"
+              name="memberEmail"
+              placeholder={intl.formatMessage(messages.email)}
+              type="email"
+              value={memberEmail}
+            />
+            <span className="icon is-left">
+              <i className="fas fa-envelope" />
+            </span>
+          </div>
+        </div>
+
         <h3>
           <FormattedMessage
             {...messages.organizationMembers}
