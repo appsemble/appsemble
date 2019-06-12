@@ -1,4 +1,4 @@
-import { Loader } from '@appsemble/react-components';
+import { Form, Loader } from '@appsemble/react-components';
 import axios from 'axios';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
@@ -18,6 +18,8 @@ export default class OrganizationsSettings extends Component {
     loading: true,
     selectedOrganization: undefined,
     organizations: [],
+    submittingMember: false,
+    memberEmail: '',
   };
 
   async componentDidMount() {
@@ -53,10 +55,20 @@ export default class OrganizationsSettings extends Component {
 
   onInviteMember = async event => {
     event.preventDefault();
+    this.setState({ submittingMember: true });
 
     const { intl, push } = this.props;
     const { selectedOrganization, organizations, memberEmail } = this.state;
     const organization = organizations.find(o => o.id === selectedOrganization);
+
+    if (organization.members.some(m => m.primaryEmail === memberEmail.trim())) {
+      push({
+        body: intl.formatMessage(messages.existingMemberWarning),
+        color: 'warning',
+      });
+      this.setState({ submittingMember: false });
+      return;
+    }
 
     const { body: member } = await axios.post(
       `/api/organizations/${selectedOrganization}/members`,
@@ -65,6 +77,7 @@ export default class OrganizationsSettings extends Component {
     organization.members.push(member);
 
     this.setState({
+      submittingMember: false,
       memberEmail: '',
       organizations: organizations.map(o => (o.id === selectedOrganization ? organization : o)),
     });
@@ -95,7 +108,14 @@ export default class OrganizationsSettings extends Component {
   };
 
   render() {
-    const { user, loading, selectedOrganization, organizations, memberEmail } = this.state;
+    const {
+      user,
+      loading,
+      selectedOrganization,
+      organizations,
+      memberEmail,
+      submittingMember,
+    } = this.state;
     const { intl } = this.props;
 
     if (loading) {
@@ -129,24 +149,32 @@ export default class OrganizationsSettings extends Component {
           </div>
         </div>
 
-        <div className="field">
-          <label className="label" htmlFor="memberEmail">
-            <FormattedMessage {...messages.addMemberEmail} />
-          </label>
-          <div className={`control has-icons-left ${styles.field}`}>
-            <input
-              className="input"
-              id="memberEmail"
-              name="memberEmail"
-              placeholder={intl.formatMessage(messages.email)}
-              type="email"
-              value={memberEmail}
-            />
-            <span className="icon is-left">
-              <i className="fas fa-envelope" />
-            </span>
+        <Form onSubmit={this.onInviteMember}>
+          <div className="field">
+            <label className="label" htmlFor="memberEmail">
+              <FormattedMessage {...messages.addMemberEmail} />
+            </label>
+            <div className={`control has-icons-left ${styles.field}`}>
+              <input
+                className="input"
+                id="memberEmail"
+                name="memberEmail"
+                onChange={this.onChange}
+                placeholder={intl.formatMessage(messages.email)}
+                type="email"
+                value={memberEmail}
+              />
+              <span className="icon is-left">
+                <i className="fas fa-envelope" />
+              </span>
+            </div>
           </div>
-        </div>
+          <div className="control">
+            <button className="button is-primary" disabled={submittingMember} type="submit">
+              <FormattedMessage {...messages.inviteMember} />
+            </button>
+          </div>
+        </Form>
 
         <h3>
           <FormattedMessage
@@ -182,9 +210,9 @@ export default class OrganizationsSettings extends Component {
                   <span>
                     <FormattedMessage {...messages.member} />
                   </span>
-                  <div className="field is-grouped">
+                  <div className={`field is-grouped ${styles.tags}`}>
                     {member.id !== user.id && (
-                      <p className="control">
+                      <p className={`control ${styles.memberButton}`}>
                         <button
                           className="button is-danger"
                           onClick={() => this.onRemoveMemberClick(organization.id, member.id)}

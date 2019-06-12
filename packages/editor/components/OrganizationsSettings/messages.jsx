@@ -7,7 +7,9 @@ export default defineMessages({
   actions: 'Actions',
   you: "It's you!",
   email: 'Email',
+  inviteMember: 'Invite member',
   addMemberEmail: 'Add new member by email',
+  existingMemberWarning: 'This member already exists in this organization',
   inviteMemberSuccess: 'Successfully invited {email}',
   removeMemberSuccess: 'Successfully removed member',
 });

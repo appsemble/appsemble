@@ -1,6 +1,10 @@
 .tags {
-  display: inline;
+  display: inline !important;
   margin-left: 0.5rem;
+}
+
+.memberButton {
+  display: inline-flex;
 }
 
 .field {
