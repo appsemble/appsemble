@@ -36,6 +36,52 @@ export async function getOrganization(ctx) {
   };
 }
 
+export async function inviteMember(ctx) {
+  const { organizationId } = ctx.params;
+  const { email } = ctx.request.body;
+  const { Organization, EmailAuthorization, User } = ctx.db.models;
+
+  const dbEmail = await EmailAuthorization.findByPk(email, { include: [User] });
+
+  if (!dbEmail) {
+    throw Boom.notFound('No member with this email address could be found.');
+  }
+
+  const organization = await Organization.findByPk(organizationId);
+  const user = dbEmail.User;
+
+  if (await organization.hasUser(user)) {
+    throw Boom.conflict('User is already in this organization.');
+  }
+
+  await organization.addUser(user);
+  ctx.body = {
+    id: user.id,
+    name: user.name,
+    primaryEmail: user.primaryEmail,
+  };
+  ctx.status = 201;
+}
+
+export async function removeMember(ctx) {
+  const { organizationId, memberId } = ctx.params;
+  const { Organization, User } = ctx.db.models;
+  const { user } = ctx.state;
+
+  if (memberId === user.id) {
+    throw Boom.notAcceptable('Not allowed to remove yourself from an organization');
+  }
+
+  const organization = await Organization.findByPk(organizationId, { include: [User] });
+  if (!organization.Users.some(u => u.id === memberId)) {
+    throw Boom.notFound('User is not part of this organization');
+  }
+
+  await organization.removeUser(memberId);
+
+  ctx.status = 204;
+}
+
 export async function setOrganizationCoreStyle(ctx) {
   const { organizationId } = ctx.params;
   const { db } = ctx;

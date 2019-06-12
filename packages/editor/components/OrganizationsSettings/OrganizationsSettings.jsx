@@ -55,10 +55,11 @@ export default class OrganizationsSettings extends Component {
 
   onInviteMember = async event => {
     event.preventDefault();
-    this.setState({ submittingMember: true });
 
     const { intl, push } = this.props;
     const { selectedOrganization, organizations, memberEmail } = this.state;
+
+    this.setState({ submittingMember: true });
     const organization = organizations.find(o => o.id === selectedOrganization);
 
     if (organization.members.some(m => m.primaryEmail === memberEmail.trim())) {
@@ -70,7 +71,7 @@ export default class OrganizationsSettings extends Component {
       return;
     }
 
-    const { body: member } = await axios.post(
+    const { data: member } = await axios.post(
       `/api/organizations/${selectedOrganization}/members`,
       { email: memberEmail },
     );
@@ -92,10 +93,10 @@ export default class OrganizationsSettings extends Component {
     const { organizations } = this.state;
     const { intl, push } = this.props;
 
-    await axios.delete(`/api/organizations/${organizationId}/${memberId}`);
+    await axios.delete(`/api/organizations/${organizationId}/members/${memberId}`);
 
     const organization = organizations.find(o => o.id === organizationId);
-    organization.members = organizations.members.filter(m => m.id !== memberId);
+    organization.members = organization.members.filter(m => m.id !== memberId);
 
     this.setState({
       organizations: organizations.map(o => (o.id === organization ? organization : o)),
@@ -126,6 +127,12 @@ export default class OrganizationsSettings extends Component {
 
     return (
       <div className="content">
+        <h2>
+          <FormattedMessage {...messages.createOrganization} />
+        </h2>
+        <h2>
+          <FormattedMessage {...messages.manageOrganization} />
+        </h2>
         <div className="field">
           <label className="label" htmlFor="selectedOrganization">
             <FormattedMessage {...messages.selectedOrganization} />

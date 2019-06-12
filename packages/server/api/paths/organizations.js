@@ -13,6 +13,68 @@ export default {
       },
     },
   },
+  '/api/organizations/{organizationId}/members': {
+    parameters: [{ $ref: '#/components/parameters/organizationId' }],
+    post: {
+      tags: ['organization'],
+      description: 'Invite a new member to the organization that matches the given id.',
+      operationId: 'inviteMember',
+      requestBody: {
+        description: 'The member to invite.',
+        required: true,
+        content: {
+          'application/json': {
+            schema: {
+              type: 'object',
+              required: ['email'],
+              properties: {
+                email: {
+                  type: 'string',
+                  format: 'email',
+                },
+              },
+            },
+          },
+        },
+      },
+      responses: {
+        201: {
+          description: 'The newly invited member.',
+          content: {
+            'application/json': {
+              schema: {
+                $ref: '#/components/schemas/User',
+              },
+            },
+          },
+        },
+      },
+      security: [{ apiUser: [] }],
+    },
+  },
+  '/api/organizations/{organizationId}/members/{memberId}': {
+    parameters: [
+      { $ref: '#/components/parameters/organizationId' },
+      {
+        name: 'memberId',
+        in: 'path',
+        description: 'The ID of the member to remove',
+        required: true,
+        schema: { $ref: '#/components/schemas/User/properties/id' },
+      },
+    ],
+    delete: {
+      tags: ['organization'],
+      description: 'Remove a member from the organization that matches the given id.',
+      operationId: 'removeMember',
+      responses: {
+        204: {
+          description: 'The member has been successfully removed.',
+        },
+      },
+      security: [{ apiUser: [] }],
+    },
+  },
   '/api/organizations/{organizationId}/style/shared': {
     parameters: [{ $ref: '#/components/parameters/organizationId' }],
     get: {
