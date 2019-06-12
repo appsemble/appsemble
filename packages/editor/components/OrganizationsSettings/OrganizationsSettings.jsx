@@ -1,4 +1,4 @@
-import { Form, Loader } from '@appsemble/react-components';
+import { Form, Loader, Modal } from '@appsemble/react-components';
 import axios from 'axios';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
@@ -19,6 +19,7 @@ export default class OrganizationsSettings extends Component {
     selectedOrganization: undefined,
     organizations: [],
     submittingMember: false,
+    removingMember: undefined,
     memberEmail: '',
   };
 
@@ -89,16 +90,23 @@ export default class OrganizationsSettings extends Component {
     });
   };
 
-  onRemoveMemberClick = async (organizationId, memberId) => {
-    const { organizations } = this.state;
+  onRemoveMemberClick = async memberId => {
+    this.setState({
+      removingMember: memberId,
+    });
+  };
+
+  onRemoveMember = async () => {
+    const { removingMember, organizations, selectedOrganization } = this.state;
     const { intl, push } = this.props;
 
-    await axios.delete(`/api/organizations/${organizationId}/members/${memberId}`);
+    await axios.delete(`/api/organizations/${selectedOrganization}/members/${removingMember}`);
 
-    const organization = organizations.find(o => o.id === organizationId);
-    organization.members = organization.members.filter(m => m.id !== memberId);
+    const organization = organizations.find(o => o.id === selectedOrganization);
+    organization.members = organization.members.filter(m => m.id !== removingMember);
 
     this.setState({
+      removingMember: undefined,
       organizations: organizations.map(o => (o.id === organization ? organization : o)),
     });
 
@@ -106,6 +114,10 @@ export default class OrganizationsSettings extends Component {
       body: intl.formatMessage(messages.removeMemberSuccess),
       color: 'info',
     });
+  };
+
+  onCloseDeleteDialog = () => {
+    this.setState({ removingMember: undefined });
   };
 
   render() {
@@ -116,6 +128,7 @@ export default class OrganizationsSettings extends Component {
       organizations,
       memberEmail,
       submittingMember,
+      removingMember,
     } = this.state;
     const { intl } = this.props;
 
@@ -222,7 +235,7 @@ export default class OrganizationsSettings extends Component {
                       <p className={`control ${styles.memberButton}`}>
                         <button
                           className="button is-danger"
-                          onClick={() => this.onRemoveMemberClick(organization.id, member.id)}
+                          onClick={() => this.onRemoveMemberClick(member.id)}
                           type="button"
                         >
                           <span className="icon is-small">
@@ -237,6 +250,38 @@ export default class OrganizationsSettings extends Component {
             ))}
           </tbody>
         </table>
+
+        <Modal isActive={!!removingMember} onClose={this.onCloseDeleteDialog}>
+          <div className="card">
+            <header className="card-header">
+              <p className="card-header-title">
+                <FormattedMessage {...messages.removeMemberWarningTitle} />
+              </p>
+            </header>
+            <div className="card-content">
+              <FormattedMessage {...messages.removeMemberWarning} />
+            </div>
+            <footer className="card-footer">
+              {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
+              <a
+                className="card-footer-item is-link"
+                onClick={this.onCloseDeleteDialog}
+                onKeyDown={this.onCloseDeleteDialog}
+                role="button"
+                tabIndex="-1"
+              >
+                <FormattedMessage {...messages.cancel} />
+              </a>
+              <button
+                className={`card-footer-item button is-danger ${styles.cardFooterButton}`}
+                onClick={this.onRemoveMember}
+                type="button"
+              >
+                <FormattedMessage {...messages.removeMember} />
+              </button>
+            </footer>
+          </div>
+        </Modal>
       </div>
     );
   }
