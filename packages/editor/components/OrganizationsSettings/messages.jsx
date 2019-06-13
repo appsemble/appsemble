@@ -1,7 +1,12 @@
 import { defineMessages } from 'react-intl';
 
 export default defineMessages({
+  create: 'Create',
   createOrganization: 'Create new Organization',
+  createOrganizationConflict: 'An organization with this name already exists.',
+  createOrganizationError: 'Something went wrong when trying to create this organization.',
+  createOrganizationSuccess: 'Successfully created organization {organization}.',
+  organizationName: 'Organization name',
   manageOrganization: 'Manage Organization',
   organizationMembers: '{organization} members',
   selectedOrganization: 'Selected organization',
@@ -12,7 +17,7 @@ export default defineMessages({
   cancel: 'Cancel',
   inviteMember: 'Invite member',
   addMemberEmail: 'Invite new member by email',
-  existingMemberWarning: 'This member already exists in this organization',
+  existingMemberWarning: 'This member already exists in this organization.',
   inviteMemberSuccess: 'Successfully invited {email}',
   removeMember: 'Remove member',
   removeMemberWarningTitle: 'Removing member',

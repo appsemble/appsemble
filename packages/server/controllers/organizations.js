@@ -1,19 +1,6 @@
 import validateStyle, { StyleValidationError } from '@appsemble/utils/validateStyle';
 import Boom from 'boom';
-
-export async function getOrganizationCoreStyle(ctx) {
-  const { organizationId } = ctx.params;
-  const { Organization } = ctx.db.models;
-  const organization = await Organization.findByPk(organizationId, { raw: true });
-
-  if (!organization) {
-    throw Boom.notFound('Organization not found.');
-  }
-
-  ctx.body = organization.coreStyle || '';
-  ctx.type = 'css';
-  ctx.status = 200;
-}
+import { UniqueConstraintError } from 'sequelize';
 
 export async function getOrganization(ctx) {
   const { organizationId } = ctx.params;
@@ -34,6 +21,37 @@ export async function getOrganization(ctx) {
       primaryEmail: user.primaryEmail,
     })),
   };
+}
+
+export async function createOrganization(ctx) {
+  const { name } = ctx.request.body;
+  const { Organization, User } = ctx.db.models;
+  const {
+    user: { id: userId },
+  } = ctx.state;
+
+  try {
+    const organization = await Organization.create({ id: name }, { include: [User] });
+    await organization.addUser(userId);
+
+    await organization.reload();
+
+    ctx.status = 201;
+    ctx.body = {
+      id: organization.id,
+      members: organization.Users.map(u => ({
+        id: u.id,
+        name: u.name,
+        primaryEmail: u.primaryEmail,
+      })),
+    };
+  } catch (error) {
+    if (error instanceof UniqueConstraintError) {
+      throw Boom.conflict(`Another organization with the name “${name}” already exists`);
+    }
+
+    throw error;
+  }
 }
 
 export async function inviteMember(ctx) {
@@ -80,6 +98,20 @@ export async function removeMember(ctx) {
   await organization.removeUser(memberId);
 
   ctx.status = 204;
+}
+
+export async function getOrganizationCoreStyle(ctx) {
+  const { organizationId } = ctx.params;
+  const { Organization } = ctx.db.models;
+  const organization = await Organization.findByPk(organizationId, { raw: true });
+
+  if (!organization) {
+    throw Boom.notFound('Organization not found.');
+  }
+
+  ctx.body = organization.coreStyle || '';
+  ctx.type = 'css';
+  ctx.status = 200;
 }
 
 export async function setOrganizationCoreStyle(ctx) {

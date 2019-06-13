@@ -1,4 +1,35 @@
 export default {
+  '/api/organizations': {
+    post: {
+      tags: ['organization'],
+      description: 'Create a new organization.',
+      operationId: 'createOrganization',
+      requestBody: {
+        description: 'The name of the new organization.',
+        required: true,
+        content: {
+          'application/json': {
+            schema: {
+              type: 'object',
+              required: ['name'],
+              properties: {
+                name: {
+                  type: 'string',
+                },
+              },
+            },
+          },
+        },
+      },
+      responses: {
+        201: {
+          description: 'The newly created organization.',
+          $ref: '#/components/responses/organization',
+        },
+      },
+      security: [{ apiUser: [] }],
+    },
+  },
   '/api/organizations/{organizationId}': {
     parameters: [{ $ref: '#/components/parameters/organizationId' }],
     get: {

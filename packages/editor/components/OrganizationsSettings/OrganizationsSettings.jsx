@@ -21,6 +21,8 @@ export default class OrganizationsSettings extends Component {
     submittingMember: false,
     removingMember: undefined,
     memberEmail: '',
+    newOrganization: '',
+    submittingOrganization: false,
   };
 
   async componentDidMount() {
@@ -52,6 +54,41 @@ export default class OrganizationsSettings extends Component {
       selectedOrganization: organizationId,
       organizations: organizations.map(org => (org.id === organizationId ? organization : org)),
     });
+  };
+
+  onSubmitNewOrganization = async event => {
+    event.preventDefault();
+
+    const { intl, push } = this.props;
+    const { organizations, newOrganization } = this.state;
+
+    this.setState({ submittingOrganization: true });
+
+    try {
+      const { data: organization } = await axios.post('/api/organizations', {
+        name: newOrganization,
+      });
+
+      organizations.push(organization);
+      push({
+        body: intl.formatMessage(messages.createOrganizationSuccess, {
+          organization: organization.id,
+        }),
+        color: 'success',
+      });
+
+      this.setState({
+        newOrganization: '',
+        submittingOrganization: false,
+        selectedOrganization: newOrganization,
+      });
+    } catch (exception) {
+      if (exception?.response?.status === 409) {
+        push(intl.formatMessage(messages.createOrganizationConflict));
+      } else {
+        push(intl.formatMessage(messages.createOrganizationError));
+      }
+    }
   };
 
   onInviteMember = async event => {
@@ -129,6 +166,8 @@ export default class OrganizationsSettings extends Component {
       memberEmail,
       submittingMember,
       removingMember,
+      newOrganization,
+      submittingOrganization,
     } = this.state;
     const { intl } = this.props;
 
@@ -143,6 +182,32 @@ export default class OrganizationsSettings extends Component {
         <h2>
           <FormattedMessage {...messages.createOrganization} />
         </h2>
+        <Form onSubmit={this.onSubmitNewOrganization}>
+          <div className="field">
+            <label className="label" htmlFor="newOrganization">
+              <FormattedMessage {...messages.organizationName} />
+            </label>
+            <div className={`control has-icons-left ${styles.field}`}>
+              <input
+                className="input"
+                disabled={submittingOrganization}
+                id="newOrganization"
+                name="newOrganization"
+                onChange={this.onChange}
+                placeholder={intl.formatMessage(messages.organizationName)}
+                value={newOrganization}
+              />
+              <span className="icon is-left">
+                <i className="fas fa-briefcase" />
+              </span>
+            </div>
+          </div>
+          <div className="control">
+            <button className="button is-primary" disabled={submittingOrganization} type="submit">
+              <FormattedMessage {...messages.create} />
+            </button>
+          </div>
+        </Form>
         <h2>
           <FormattedMessage {...messages.manageOrganization} />
         </h2>
@@ -153,13 +218,13 @@ export default class OrganizationsSettings extends Component {
           <div className={`control ${styles.field}`}>
             <div className="select">
               <select
-                disabled={user.organizations.length === 1}
+                disabled={organizations.length === 1}
                 id="selectedOrganization"
                 name="selectedOrganization"
                 onChange={this.onOrganizationChange}
                 value={selectedOrganization}
               >
-                {user.organizations.map(org => (
+                {organizations.map(org => (
                   <option key={org.id} value={org.id}>
                     {org.id}
                   </option>
@@ -177,6 +242,7 @@ export default class OrganizationsSettings extends Component {
             <div className={`control has-icons-left ${styles.field}`}>
               <input
                 className="input"
+                disabled={submittingMember}
                 id="memberEmail"
                 name="memberEmail"
                 onChange={this.onChange}
