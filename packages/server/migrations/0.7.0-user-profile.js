@@ -1,8 +1,8 @@
-const Sequelize = require('sequelize');
+import { DataTypes, Op } from 'sequelize';
 
-module.exports = {
+export default {
   key: '0.7.0',
-  async up(db, DataTypes) {
+  async up(db) {
     const queryInterface = db.getQueryInterface();
     const { User, EmailAuthorization } = db.models;
 
@@ -55,10 +55,10 @@ module.exports = {
     const { User, EmailAuthorization } = db.models;
 
     await queryInterface.addColumn('EmailAuthorization', 'name', {
-      type: Sequelize.DataTypes.STRING,
+      type: DataTypes.STRING,
     });
     await queryInterface.addColumn('EmailAuthorization', 'password', {
-      type: Sequelize.DataTypes.STRING,
+      type: DataTypes.STRING,
     });
 
     const users = await queryInterface.select(User, 'User');
@@ -67,7 +67,7 @@ module.exports = {
         .filter(user => user.dataValues.primaryEmail)
         .map(async user => {
           await queryInterface.bulkDelete('EmailAuthorization', {
-            [Sequelize.Op.not]: { email: user.dataValues.primaryEmail },
+            [Op.not]: { email: user.dataValues.primaryEmail },
           });
 
           return queryInterface.update(
@@ -81,7 +81,7 @@ module.exports = {
 
     await queryInterface.removeColumn('ResetPasswordToken', 'UserId');
     await queryInterface.addColumn('ResetPasswordToken', 'EmailAuthorizationEmail', {
-      type: Sequelize.DataTypes.STRING,
+      type: DataTypes.STRING,
       allowNull: false,
       onDelete: 'CASCADE',
       references: {
@@ -95,7 +95,7 @@ module.exports = {
     await queryInterface.removeConstraint('User', 'User_primaryEmail_foreign_idx');
     await queryInterface.removeColumn('User', 'primaryEmail');
     await queryInterface.addColumn('EmailAuthorization', 'deleted', {
-      type: Sequelize.DataTypes.DATE,
+      type: DataTypes.DATE,
     });
   },
 };
