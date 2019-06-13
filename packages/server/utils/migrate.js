@@ -22,13 +22,12 @@ export default async function migrate(db, to, migrations) {
     return;
   }
   logger.info(`Current database version: ${meta.version}`);
-  const queryInterface = db.getQueryInterface();
   if (semver.gt(to, meta.version)) {
     const f = migrations.filter(({ key }) => semver.gt(key, meta.version) && semver.lte(key, to));
     await f.reduce(async (previous, migration) => {
       await previous;
       logger.info(`Upgrade to ${migration.key} started`);
-      await migration.up(queryInterface);
+      await migration.up(db);
       await Meta.update({ version: migration.key }, { where: {} });
       logger.info(`Upgrade to ${migration.key} successful`);
     }, null);
@@ -39,7 +38,7 @@ export default async function migrate(db, to, migrations) {
       logger.info(`Downgrade from ${migration.key} started`);
       const migrationIndex = migrations.lastIndexOf(migration);
       const version = migrationIndex ? migrations[migrationIndex - 1].key : '0.0.0';
-      await migration.down(queryInterface);
+      await migration.down(db);
       await Meta.update({ version }, { where: {} });
       logger.info(`Downgrade from ${migration.key} successful`);
     }, null);

@@ -2,7 +2,9 @@ import { DataTypes } from 'sequelize';
 
 export default {
   key: '0.6.0',
-  async up(queryInterface) {
+  async up(db) {
+    const queryInterface = db.getQueryInterface();
+
     await queryInterface.createTable('Organization', {
       id: { type: DataTypes.STRING, primaryKey: true },
       OrganizationId: {
@@ -252,7 +254,9 @@ export default {
       updated: { allowNull: false, type: DataTypes.DATE },
     });
   },
-  async down(queryInterface) {
+  async down(db) {
+    const queryInterface = db.getQueryInterface();
+
     await queryInterface.dropTable('ResetPasswordToken');
     await queryInterface.dropTable('EmailAuthorization');
     await queryInterface.dropTable('OAuthAuthorization');

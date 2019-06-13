@@ -5,26 +5,19 @@ export default sequelize => {
     'EmailAuthorization',
     {
       email: { type: DataTypes.STRING, primaryKey: true },
-      name: DataTypes.STRING,
-      password: { type: DataTypes.STRING, allowNull: false },
       verified: { type: DataTypes.BOOLEAN, defaultValue: false, allowNull: false },
       key: DataTypes.STRING,
     },
     {
       freezeTableName: true,
-      paranoid: true,
+      paranoid: false,
       createdAt: 'created',
       updatedAt: 'updated',
-      deletedAt: 'deleted',
     },
   );
 
-  EmailAuthorization.associate = ({ User, ResetPasswordToken }) => {
+  EmailAuthorization.associate = ({ User }) => {
     EmailAuthorization.belongsTo(User);
-    EmailAuthorization.hasMany(ResetPasswordToken, {
-      foreignKey: { allowNull: false },
-      onDelete: 'CASCADE',
-    });
   };
 
   return EmailAuthorization;

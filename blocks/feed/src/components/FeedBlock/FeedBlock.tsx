@@ -1,15 +1,15 @@
 import { BlockProps } from '@appsemble/react';
 import { Loader } from '@appsemble/react-components';
-import { MapperFunction, compileFilters } from '@appsemble/utils/remap';
+import { Context, MapperFunction, compileFilters } from '@appsemble/utils/remap';
 import React from 'react';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, InjectedIntlProps } from 'react-intl';
 
 import { BlockActions, BlockParameters, Remappers } from '../../../types';
 import Card from '../Card';
 import messages from './messages';
 
-function createRemapper(mapper?: any): MapperFunction {
-  return mapper ? compileFilters(mapper) : () => null;
+function createRemapper(mapper: any, context: Context): MapperFunction {
+  return mapper ? compileFilters(mapper, context) : () => null;
 }
 
 interface FeedBlockState {
@@ -21,7 +21,7 @@ interface FeedBlockState {
  * The top level component for the feed block.
  */
 export default class FeedBlock extends React.Component<
-  BlockProps<BlockParameters, BlockActions>,
+  BlockProps<BlockParameters, BlockActions> & InjectedIntlProps,
   FeedBlockState
 > {
   state: FeedBlockState = {
@@ -32,19 +32,19 @@ export default class FeedBlock extends React.Component<
   remappers: Remappers;
 
   async componentDidMount(): Promise<void> {
-    const { actions, block, events } = this.props;
+    const { actions, block, events, intl } = this.props;
     const { parameters } = block;
 
     this.remappers = {
-      title: createRemapper(parameters.title),
-      subtitle: createRemapper(parameters.subtitle),
-      heading: createRemapper(parameters.heading),
-      picture: createRemapper(parameters.picture),
-      description: createRemapper(parameters.description),
-      author: createRemapper(parameters.reply.author),
-      content: createRemapper(parameters.reply.content),
-      latitude: createRemapper(parameters.latitude),
-      longitude: createRemapper(parameters.longitude),
+      title: createRemapper(parameters.title, { intl }),
+      subtitle: createRemapper(parameters.subtitle, { intl }),
+      heading: createRemapper(parameters.heading, { intl }),
+      picture: createRemapper(parameters.picture, { intl }),
+      description: createRemapper(parameters.description, { intl }),
+      author: createRemapper(parameters.reply.author, { intl }),
+      content: createRemapper(parameters.reply.content, { intl }),
+      latitude: createRemapper(parameters.latitude, { intl }),
+      longitude: createRemapper(parameters.longitude, { intl }),
     };
 
     if (parameters.listen) {

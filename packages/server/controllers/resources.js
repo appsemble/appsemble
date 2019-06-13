@@ -107,7 +107,11 @@ export async function queryResources(ctx) {
       where: { ...renamedQuery.where, type: resourceType },
     });
 
-    ctx.body = resources.map(resource => ({ id: resource.id, ...resource.data }));
+    ctx.body = resources.map(resource => ({
+      id: resource.id,
+      ...resource.data,
+      created: resource.created,
+    }));
   } catch (e) {
     if (query) {
       throw Boom.badRequest('Unable to process this query');
@@ -133,7 +137,7 @@ export async function getResourceById(ctx) {
     throw Boom.notFound('Resource not found');
   }
 
-  ctx.body = { id: resource.id, ...resource.data };
+  ctx.body = { id: resource.id, ...resource.data, created: resource.created };
 }
 
 export async function createResource(ctx) {
@@ -159,26 +163,28 @@ export async function createResource(ctx) {
     throw boom;
   }
 
-  const { id } = await app.createResource({
+  const { id, created } = await app.createResource({
     type: resourceType,
     data: resource,
     UserId: user && user.id,
   });
 
-  ctx.body = { id, ...resource };
+  ctx.body = { id, ...resource, created };
   ctx.status = 201;
 }
 
 export async function updateResource(ctx) {
   const { appId, resourceType, resourceId } = ctx.params;
   const { App, Resource } = ctx.db.models;
-  const { user } = ctx.state;
+  // XXX: Uncomment this when Koas allows for parsing tokens despite the endpoint not requiring one.
+  // const { user } = ctx.state;
 
   const app = await App.findByPk(appId);
 
-  if (!user.organizations.some(organization => organization.id === app.OrganizationId)) {
-    throw Boom.forbidden('User does not belong in this organization.');
-  }
+  // XXX: Restore this once security is properly implemented.
+  // if (!user.organizations.some(organization => organization.id === app.OrganizationId)) {
+  //   throw Boom.forbidden('User does not belong in this organization.');
+  // }
 
   verifyResourceDefinition(app, resourceType);
   let resource = await Resource.findOne({
@@ -208,7 +214,11 @@ export async function updateResource(ctx) {
     { data: updatedResource },
     { where: { id: resourceId, type: resourceType, AppId: appId } },
   );
-  ctx.body = { id: resourceId, ...resource.get('data', { plain: true }) };
+  ctx.body = {
+    id: resourceId,
+    ...resource.get('data', { plain: true }),
+    created: resource.created,
+  };
 }
 
 export async function deleteResource(ctx) {

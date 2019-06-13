@@ -5,3 +5,4 @@ export * from './blocks';
 export * from './organizations';
 export * from './resources';
 export * from './templates';
+export * from './user';

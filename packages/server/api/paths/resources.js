@@ -71,7 +71,6 @@ export default {
           $ref: '#/components/responses/resource',
         },
       },
-      security: [{ apiUser: ['apps:write'] }],
     },
     delete: {
       tags: ['resource'],

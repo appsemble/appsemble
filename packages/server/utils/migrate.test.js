@@ -70,8 +70,8 @@ it('should downgrade if the given version is lower than the database meta versio
   expect(m000.down).not.toHaveBeenCalled();
   expect(m001.down).not.toHaveBeenCalled();
   expect(m002.down).not.toHaveBeenCalled();
-  expect(m003.down).toHaveBeenCalledWith(db.getQueryInterface());
-  expect(m010.down).toHaveBeenCalledWith(db.getQueryInterface());
+  expect(m003.down).toHaveBeenCalledWith(db);
+  expect(m010.down).toHaveBeenCalledWith(db);
   expect(m100.down).not.toHaveBeenCalled();
   const updatedMeta = await Meta.findAll({ raw: true });
   expect(updatedMeta).toStrictEqual([{ version: '0.0.2' }]);
@@ -82,9 +82,9 @@ it('should upgrade if the given version is higher than the database meta version
   await migrate(db, '0.1.0', migrations);
   expect(m000.up).not.toHaveBeenCalled();
   expect(m001.up).not.toHaveBeenCalled();
-  expect(m002.up).toHaveBeenCalledWith(db.getQueryInterface());
-  expect(m003.up).toHaveBeenCalledWith(db.getQueryInterface());
-  expect(m010.up).toHaveBeenCalledWith(db.getQueryInterface());
+  expect(m002.up).toHaveBeenCalledWith(db);
+  expect(m003.up).toHaveBeenCalledWith(db);
+  expect(m010.up).toHaveBeenCalledWith(db);
   expect(m100.up).not.toHaveBeenCalled();
   expect(m000.down).not.toHaveBeenCalled();
   expect(m001.down).not.toHaveBeenCalled();
@@ -108,7 +108,7 @@ it('should run downgrades in sequence', async () => {
   expect(m002.down).not.toHaveBeenCalled();
   resolve();
   await pendingMigration;
-  expect(m002.down).toHaveBeenCalledWith(db.getQueryInterface());
+  expect(m002.down).toHaveBeenCalledWith(db);
 });
 
 it('should run upgrades in sequence', async () => {
@@ -123,5 +123,5 @@ it('should run upgrades in sequence', async () => {
   expect(m002.up).not.toHaveBeenCalled();
   resolve();
   await pendingMigration;
-  expect(m002.up).toHaveBeenCalledWith(db.getQueryInterface());
+  expect(m002.up).toHaveBeenCalledWith();
 });

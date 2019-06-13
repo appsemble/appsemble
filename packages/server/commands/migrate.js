@@ -25,6 +25,7 @@ export async function handler(argv) {
   let db;
   try {
     db = await setupModels({
+      sync: false,
       host: argv.databaseHost,
       dialect: argv.databaseDialect,
       port: argv.databasePort,

@@ -28,7 +28,7 @@ it('should serve the editor index page with correct headers', async () => {
     'connect-src *' +
       "; default-src 'self'" +
       "; font-src 'self' https://fonts.gstatic.com" +
-      "; img-src 'self' blob: data:" +
+      "; img-src 'self' blob: data: https://www.gravatar.com" +
       "; script-src 'self' 'sha256-9sOokSPGKu0Vo4/TBZI1T7Bm5ThrXz9qTWATwd3augo=' 'unsafe-eval'" +
       "; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
   );
@@ -56,7 +56,7 @@ it('should pass login options from argv to the editor', async () => {
     'connect-src *' +
       "; default-src 'self'" +
       "; font-src 'self' https://fonts.gstatic.com" +
-      "; img-src 'self' blob: data:" +
+      "; img-src 'self' blob: data: https://www.gravatar.com" +
       '; report-uri https://sentry.io/api/path/security/?sentry_key=secret' +
       "; script-src 'self' 'sha256-u7Lwg39nDVoG/C+KUi2A+femGRBoDntSTyJiVRgbfqc=' 'unsafe-eval'" +
       "; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
