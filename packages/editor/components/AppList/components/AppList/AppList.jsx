@@ -10,6 +10,11 @@ export default class AppList extends React.Component {
   static propTypes = {
     apps: PropTypes.arrayOf(PropTypes.shape()).isRequired,
     getApps: PropTypes.func.isRequired,
+    user: PropTypes.shape(),
+  };
+
+  static defaultProps = {
+    user: undefined,
   };
 
   async componentDidMount() {
@@ -18,7 +23,7 @@ export default class AppList extends React.Component {
   }
 
   render() {
-    const { apps } = this.props;
+    const { apps, user } = this.props;
 
     if (!apps) {
       return <Loader />;
@@ -29,7 +34,7 @@ export default class AppList extends React.Component {
         {apps.map(app => (
           <AppCard key={app.id} app={app} />
         ))}
-        <CreateAppCard />
+        {user && user.organizations.length > 1 && <CreateAppCard />}
       </div>
     );
   }
