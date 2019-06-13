@@ -27,9 +27,9 @@ export default async function testSchema(spec, options = {}) {
   await root.query(`CREATE DATABASE ${dbName}`);
   const db = await setupModels({
     ...options,
-    sync: true,
     uri: `${database.replace(/\/\w+$/, '')}/${dbName}`,
   });
+  await db.sync();
 
   // Stub db.close(), so also the test database is dropped and the root database connection is
   // closed.

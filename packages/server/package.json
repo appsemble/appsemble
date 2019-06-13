@@ -48,10 +48,10 @@
     "pg": "^7.11.0",
     "pg-hstore": "^2.3.2",
     "raw-body": "^2.4.0",
+    "semver": "^6.1.1",
     "sequelize": "^5.8.6",
     "sharp": "^0.22.1",
     "to-ico": "^1.1.5",
-    "umzug": "^2.2.0",
     "yargs": "^13.2.4"
   },
   "devDependencies": {

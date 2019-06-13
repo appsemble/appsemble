@@ -11,6 +11,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 - Editor: Add version tag to the header.
 - Helm: Add official Helm chart.
+- Server: Add support for database migrations.
 
 ### Fixed
 
