@@ -114,22 +114,46 @@ export default class OrganizationsSettings extends Component {
       return;
     }
 
-    const { data: member } = await axios.post(
-      `/api/organizations/${selectedOrganization}/members`,
-      { email: memberEmail },
-    );
-    organization.members.push(member);
+    try {
+      const { data: member } = await axios.post(
+        `/api/organizations/${selectedOrganization}/members`,
+        { email: memberEmail },
+      );
+      organization.members.push(member);
 
-    this.setState({
-      submittingMember: false,
-      memberEmail: '',
-      organizations: organizations.map(o => (o.id === selectedOrganization ? organization : o)),
-    });
+      this.setState({
+        submittingMember: false,
+        memberEmail: '',
+        organizations: organizations.map(o => (o.id === selectedOrganization ? organization : o)),
+      });
 
-    push({
-      body: intl.formatMessage(messages.inviteMemberSuccess, { email: memberEmail }),
-      color: 'success',
-    });
+      push({
+        body: intl.formatMessage(messages.inviteMemberSuccess, { email: memberEmail }),
+        color: 'success',
+      });
+    } catch (exception) {
+      if (exception?.response) {
+        switch (exception.response.status) {
+          case 404:
+            push(intl.formatMessage(messages.inviteMemberNotFound));
+            break;
+          case 406:
+            push(intl.formatMessage(messages.inviteMemberNotVerified));
+            break;
+          case 409:
+            push(intl.formatMessage(messages.inviteMemberConflict));
+            break;
+          default:
+            push(intl.formatMessage(messages.inviteMemberError));
+        }
+      } else {
+        push(intl.formatMessage(messages.inviteMemberError));
+      }
+
+      this.setState({
+        submittingMember: false,
+      });
+    }
   };
 
   onRemoveMemberClick = async memberId => {
