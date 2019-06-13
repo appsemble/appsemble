@@ -247,7 +247,6 @@ export default class UserSettings extends Component {
                     {email.verified && !email.primary && (
                       <button
                         className="control button is-info"
-                        // disabled={submitting}
                         onClick={() => this.setPrimaryEmail(email)}
                         type="button"
                       >
@@ -257,7 +256,6 @@ export default class UserSettings extends Component {
                     {!email.verified && (
                       <button
                         className="control button is-outlined"
-                        // disabled={submitting}
                         onClick={() => this.resendVerification(email)}
                         type="button"
                       >
@@ -267,7 +265,6 @@ export default class UserSettings extends Component {
                     {!email.primary && (
                       <button
                         className="control button is-danger"
-                        // disabled={submitting}
                         onClick={() => this.onDeleteEmailClick(email)}
                         type="button"
                       >
