@@ -23,4 +23,8 @@ export default defineMessages({
   removeMemberWarningTitle: 'Removing member',
   removeMemberWarning: 'Are you sure you want to remove this member from this organization?',
   removeMemberSuccess: 'Successfully removed member',
+  leaveOrganization: 'Leave organization',
+  leaveOrganizationWarningTitle: 'Leaving organization',
+  leaveOrganizationWarning: 'Are you sure you want to leave this organization',
+  leaveOrganizationSuccess: 'Successfully left organization {organization}.',
 });

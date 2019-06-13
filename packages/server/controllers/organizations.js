@@ -93,13 +93,15 @@ export async function removeMember(ctx) {
   const { Organization, User } = ctx.db.models;
   const { user } = ctx.state;
 
-  if (memberId === user.id) {
-    throw Boom.notAcceptable('Not allowed to remove yourself from an organization');
-  }
-
   const organization = await Organization.findByPk(organizationId, { include: [User] });
   if (!organization.Users.some(u => u.id === memberId)) {
     throw Boom.notFound('User is not part of this organization');
+  }
+
+  if (Number(memberId) === Number(user.id) && organization.Users.length <= 1) {
+    throw Boom.notAcceptable(
+      "Not allowed to remove yourself from an organization if you're the only member left.",
+    );
   }
 
   await organization.removeUser(memberId);

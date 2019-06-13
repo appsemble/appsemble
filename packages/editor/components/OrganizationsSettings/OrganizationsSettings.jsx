@@ -133,8 +133,30 @@ export default class OrganizationsSettings extends Component {
     });
   };
 
+  onLeaveOrganization = async () => {
+    const { user, organizations, selectedOrganization } = this.state;
+    const { intl, push } = this.props;
+
+    await axios.delete(`/api/organizations/${selectedOrganization}/members/${user.id}`);
+
+    const organization = organizations.find(o => o.id === selectedOrganization);
+    const newOrganizations = organizations.filter(o => o.id !== selectedOrganization);
+
+    this.setState({
+      organizations: newOrganizations,
+      removingMember: undefined,
+      selectedOrganization: newOrganizations[0]?.id,
+    });
+    push({
+      body: intl.formatMessage(messages.leaveOrganizationSuccess, {
+        organization: organization.id,
+      }),
+      color: 'info',
+    });
+  };
+
   onRemoveMember = async () => {
-    const { removingMember, organizations, selectedOrganization } = this.state;
+    const { removingMember, organizations, selectedOrganization, user } = this.state;
     const { intl, push } = this.props;
 
     await axios.delete(`/api/organizations/${selectedOrganization}/members/${removingMember}`);
@@ -148,7 +170,10 @@ export default class OrganizationsSettings extends Component {
     });
 
     push({
-      body: intl.formatMessage(messages.removeMemberSuccess),
+      body:
+        removingMember === user.id
+          ? intl.formatMessage(messages.leaveOrganizationSuccess, { organization: organization.id })
+          : intl.formatMessage(messages.removeMemberSuccess),
       color: 'info',
     });
   };
@@ -297,6 +322,19 @@ export default class OrganizationsSettings extends Component {
                     <FormattedMessage {...messages.member} />
                   </span>
                   <div className={`field is-grouped ${styles.tags}`}>
+                    {member.id === user.id && organization.members.length > 1 && (
+                      <p className={`control ${styles.memberButton}`}>
+                        <button
+                          className="button is-danger"
+                          onClick={() => this.onRemoveMemberClick(member.id)}
+                          type="button"
+                        >
+                          <span className="icon is-small">
+                            <i className="fas fa-sign-out-alt" />
+                          </span>
+                        </button>
+                      </p>
+                    )}
                     {member.id !== user.id && (
                       <p className={`control ${styles.memberButton}`}>
                         <button
@@ -321,11 +359,19 @@ export default class OrganizationsSettings extends Component {
           <div className="card">
             <header className="card-header">
               <p className="card-header-title">
-                <FormattedMessage {...messages.removeMemberWarningTitle} />
+                {removingMember === user.id ? (
+                  <FormattedMessage {...messages.leaveOrganizationWarningTitle} />
+                ) : (
+                  <FormattedMessage {...messages.removeMemberWarningTitle} />
+                )}
               </p>
             </header>
             <div className="card-content">
-              <FormattedMessage {...messages.removeMemberWarning} />
+              {removingMember === user.id ? (
+                <FormattedMessage {...messages.leaveOrganizationWarning} />
+              ) : (
+                <FormattedMessage {...messages.removeMemberWarning} />
+              )}
             </div>
             <footer className="card-footer">
               {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
@@ -340,10 +386,16 @@ export default class OrganizationsSettings extends Component {
               </a>
               <button
                 className={`card-footer-item button is-danger ${styles.cardFooterButton}`}
-                onClick={this.onRemoveMember}
+                onClick={
+                  removingMember === user.id ? this.onLeaveOrganization : this.onRemoveMember
+                }
                 type="button"
               >
-                <FormattedMessage {...messages.removeMember} />
+                {removingMember === user.id ? (
+                  <FormattedMessage {...messages.leaveOrganization} />
+                ) : (
+                  <FormattedMessage {...messages.removeMember} />
+                )}
               </button>
             </footer>
           </div>
