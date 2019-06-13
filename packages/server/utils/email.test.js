@@ -2,6 +2,7 @@ import {
   processTemplate,
   resendVerificationEmail,
   sendEmail,
+  sendOrganizationInviteEmail,
   sendResetPasswordEmail,
   sendWelcomeEmail,
 } from './email';
@@ -105,6 +106,28 @@ describe('sendForgetPasswordEmail', () => {
   it('should combine name and email', async () => {
     const result = await sendResetPasswordEmail(
       { email: 'test@example.com', name: 'John Doe', url: 'https://example.com/test' },
+      null,
+    );
+
+    const converted = result.response.toString();
+    expect(converted).toMatch('John Doe <test@example.com>');
+  });
+});
+
+describe('sendOrganizationInviteEmail', () => {
+  it('should match its snapshot', async () => {
+    const result = await sendOrganizationInviteEmail(
+      { email: 'test@example.com', organization: 'Appsemble' },
+      null,
+    );
+
+    const converted = result.response.toString();
+    expect(converted).toMatchSnapshot();
+  });
+
+  it('should combine name and email', async () => {
+    const result = await sendOrganizationInviteEmail(
+      { email: 'test@example.com', name: 'John Doe', organization: 'Appsemble' },
       null,
     );
 

@@ -2,6 +2,8 @@ import validateStyle, { StyleValidationError } from '@appsemble/utils/validateSt
 import Boom from 'boom';
 import { UniqueConstraintError } from 'sequelize';
 
+import { sendOrganizationInviteEmail } from '../utils/email';
+
 export async function getOrganization(ctx) {
   const { organizationId } = ctx.params;
   const { Organization, User } = ctx.db.models;
@@ -73,6 +75,11 @@ export async function inviteMember(ctx) {
   }
 
   await organization.addUser(user);
+  await sendOrganizationInviteEmail(
+    { email, name: user.name, organization: organization.id },
+    ctx.state.smtp,
+  );
+
   ctx.body = {
     id: user.id,
     name: user.name,
