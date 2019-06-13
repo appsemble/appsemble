@@ -12,6 +12,7 @@
     "json-schema-ref-parser": "^6.1.0",
     "jwt-decode": "^2.2.0",
     "lodash.isequal": "^4.5.0",
+    "md5": "^2.2.1",
     "monaco-editor": "^0.17.0",
     "monaco-yaml": "^2.1.0",
     "prop-types": "^15.7.2",

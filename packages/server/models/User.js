@@ -5,6 +5,8 @@ export default sequelize => {
     'User',
     {
       id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+      name: { type: DataTypes.STRING },
+      password: { type: DataTypes.STRING },
     },
     {
       freezeTableName: true,
@@ -15,11 +17,25 @@ export default sequelize => {
     },
   );
 
-  User.associate = ({ Organization, OAuthToken, OAuthAuthorization, EmailAuthorization }) => {
+  User.associate = ({
+    Organization,
+    OAuthToken,
+    OAuthAuthorization,
+    EmailAuthorization,
+    ResetPasswordToken,
+  }) => {
     User.belongsToMany(Organization, { through: 'UserOrganization' });
     User.hasMany(OAuthToken);
     User.hasMany(OAuthAuthorization);
-    User.hasOne(EmailAuthorization);
+    User.hasMany(EmailAuthorization);
+    User.hasMany(ResetPasswordToken, {
+      foreignKey: { allowNull: false },
+      onDelete: 'CASCADE',
+    });
+    User.belongsTo(EmailAuthorization, {
+      foreignKey: 'primaryEmail',
+      constraints: false,
+    });
   };
 
   return User;

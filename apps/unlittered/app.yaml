@@ -8,10 +8,54 @@ theme:
 
 resources:
   waarneming:
-    url: https://api.stadswerken.amsterdam/waarnemingen_real
-    blobs:
-      url: 'https://api.stadswerken.amsterdam/upload'
-      serialize: custom
+    schema:
+      type: object
+      required:
+        - proces
+        - status
+        - kanaal
+      properties:
+        notities:
+          title: Notities
+        fotos:
+          title: Foto's
+          type: array
+          items:
+            type: string
+            appsembleFile:
+              type:
+                - image/jpeg
+        proces:
+          title: Proces
+          enum:
+            - Afval
+            - Handhaving
+            - Stadswerken
+            - Groen
+        locatie:
+          title: Locatie
+          type: object
+          required:
+            - latitude
+            - longitude
+          properties:
+            latitude:
+              type: number
+            longitude:
+              type: number
+        status:
+          title: Status
+          enum:
+            - open
+            - in-behandeling
+            - opgelost
+        kanaal:
+          title: Kanaal
+          enum:
+            - Centraal
+            - Zuid
+            - Noord
+
   waarnemingReply:
     references:
       waarnemingId: waarneming
@@ -22,11 +66,13 @@ resources:
       properties:
         content:
           type: string
+          minLength: 1
 
 authentication:
   - method: email
-    url: https://api.stadswerken.amsterdam/login
-    refreshURL: https://api.stadswerken.amsterdam/token/refresh
+    url: /api/oauth/token
+    clientId: appsemble-editor
+    scope: apps:read
 
 pages:
   - name: Maak waarneming
@@ -40,13 +86,29 @@ pages:
             - name: locatie
               label: Locatie
               type: geocoordinates
+            - name: type
+              label: Type
+              enum:
+                - value: Bijplaatsing
+                - value: Kapotte container
             - name: proces
               label: Proces
               enum:
-                - value: Fietsknip team
+                - value: Afval
                 - value: Handhaving
-                - value: Heel en Groen
-                - value: Inzameling
+                - value: Stadswerken
+                - value: Groen
+            - name: kanaal
+              label: Kanaal
+              enum:
+                - value: Centraal
+                - value: Noord
+                - value: Zuid
+            - name: status
+              label: Status
+              enum:
+                - value: open
+                  label: Open
             - name: notities
               label: Notities
               placeholder: Bijv. Er ligt een fiets in de bosjes.
@@ -92,7 +154,7 @@ pages:
             type: resource.query
             resource: waarneming
             query:
-              $orderBy: 'created_at desc'
+              $orderby: 'created desc'
               $top: 50
       - type: action-button
         version: 0.6.0
@@ -108,37 +170,55 @@ pages:
       - type: filter
         version: 0.6.0
         parameters:
+          refreshTimeout: 30
           event: updateWaarnemingen
-          highlight: proces
+          highlight: kanaal
           fields:
-            - name: proces
+            - name: kanaal
+              emptyLabel: Alle kanalen
               enum:
-                - value: Fietsknip team
-                - value: Handhaving
-                - value: Heel en Groen
-                - value: Inzameling
+                - value: Centraal
+                - value: Noord
+                - value: Zuid
+            - name: created
+              label: Datum
+              type: date
+              icon: calendar-alt
+              range: true
+            - name: status
+              label: Status
+              icon: cogs
+              enum:
+                - value: open
+                  label: Open
+                - value: in-behandeling
+                  label: In behandeling
+                - value: opgelost
+                  label: Opgelost
         actions:
           load:
             type: resource.query
             resource: waarneming
             query:
-              $orderBy: 'created_at desc'
+              $orderby: 'created desc'
               $top: 50
 
       - type: feed
         version: 0.6.0
         parameters:
           listen: updateWaarnemingen
-          title: proces
-          subtitle: id|upper
-          heading: created_at
+          title: type
+          subtitle: proces
+          heading: created
           picture: fotos.0
-          pictureBase: https://api.stadswerken.amsterdam/uploads
+          pictureBase: /api/assets
           description: notities
           reply:
             content: content
             author: author
             parentId: waarnemingId
+          longitude: locatie.longitude
+          latitude: locatie.latitude
         actions:
           loadReply:
             type: resource.query
@@ -162,29 +242,34 @@ pages:
                 parameters:
                   title: VOER ACTIE UIT
                   fields:
-                    - name: notities
+                    - name: status
                       label: pak waarneming op
                       icon: cog
                       color: '#FFFFFF'
                       backgroundColor: '#00AEEF'
-                      value: Waarneming opgepakt
-                    - name: notities
+                      value: in-behandeling
+                    - name: status
                       label: meld als opgelost
                       icon: check
                       color: '#FFFFFF'
                       backgroundColor: '#006502'
-                      value: Waarneming opgelost
+                      value: opgelost
                     - name: proces
                       label: routeer naar
                       icon: paper-plane
                       color: '#FFFFFF'
                       backgroundColor: '#006502'
                       enum:
-                        - value: Fietsknip team
+                        - value: Afval
                         - value: Handhaving
-                        - value: Heel en Groen
-                        - value: Inzameling
-
+                        - value: Stadswerken
+                        - value: Groen
+      - type: action-button
+        version: 0.6.0
+        actions:
+          click:
+            type: link
+            to: Maak waarneming
   - name: Waarneming details
     scope:
       - '*'
@@ -194,15 +279,19 @@ pages:
       - type: detail-viewer
         version: 0.6.0
         parameters:
-          fileBase: 'https://api.stadswerken.amsterdam/uploads'
+          fileBase: /api/assets
           fields:
             - name: locatie
               label: Locatie
               type: geocoordinates
-              longitude: longitude # locatie.longitude
-              latitude: latitude # locatie.latitude
+              longitude: longitude
+              latitude: latitude
             - name: proces
               label: Proces
+            - name: kanaal
+              label: Kanaal
+            - name: status
+              label: Status
             - name: notities
               label: Notities
             - name: fotos

@@ -10,6 +10,7 @@ import Page from './Page';
 import Resource from './Resource';
 import ResourceDefinition from './ResourceDefinition';
 import Theme from './Theme';
+import User from './User';
 
 export default {
   App,
@@ -24,4 +25,5 @@ export default {
   Resource,
   ResourceDefinition,
   Theme,
+  User,
 };

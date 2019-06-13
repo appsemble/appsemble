@@ -1,3 +1,7 @@
 .brand {
   flex: 1;
 }
+
+.navbar {
+  z-index: 2000 !important;
+}

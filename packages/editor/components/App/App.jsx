@@ -14,6 +14,7 @@ import Login from '../Login';
 import Message from '../Message';
 import Register from '../Register';
 import ResetPassword from '../ResetPassword';
+import Settings from '../Settings';
 import Toolbar from '../Toolbar';
 import VerifyEmail from '../VerifyEmail';
 
@@ -49,6 +50,7 @@ export default class App extends React.Component {
             {user ? (
               <Switch>
                 <Route component={AppList} exact path="/_/apps" />
+                <Route component={Settings} path="/_/settings" />
                 <Route component={AppContext} path="/_/apps/:id(\d+)" />
                 <Route component={EditPassword} exact path="/_/edit-password" />
                 <Redirect to="/_/apps" />

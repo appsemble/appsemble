@@ -27,7 +27,7 @@ export default class TitleBar extends React.Component {
     const { children } = this.props;
 
     return (
-      <Portal element={document.getElementsByClassName('navbar')[0]}>
+      <Portal className={styles.navbar} element={document.getElementsByClassName('navbar')[0]}>
         <div className={classNames('navbar-brand', styles.brand)}>
           <span className="navbar-item">
             <SideMenuButton />

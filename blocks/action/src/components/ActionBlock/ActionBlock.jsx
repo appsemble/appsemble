@@ -42,7 +42,7 @@ export default class ActionBlock extends React.Component {
     return (
       <div className={`content ${styles.container}`}>
         <h1>{title}</h1>
-        {fields.map(field => {
+        {fields.map((field, index) => {
           const { backgroundColor, color } = field;
           return (
             <div key={`${field.name}.${field.value}`} className={styles.actionField}>
@@ -56,21 +56,29 @@ export default class ActionBlock extends React.Component {
                 <span className="icon is-small">
                   <i className={`fas fa-${field.icon || 'bolt'}`} />
                 </span>
+                {!field.enum?.length && (
+                  <span className={styles.actionLabel}>{field.label || ''}</span>
+                )}
               </button>
-              <span className={styles.actionLabel}>{field.label || ''}</span>
               {field.enum?.length && (
-                <div className={`select ${styles.enum}`}>
-                  <select
-                    defaultValue={data[field.name]}
-                    onChange={event => this.onUpdate(event, field)}
-                  >
-                    {field.enum.map(entry => (
-                      <option key={entry.value} value={entry.value}>
-                        {entry.label || entry.value}
-                      </option>
-                    ))}
-                  </select>
-                </div>
+                <React.Fragment>
+                  <label className={styles.actionLabel} htmlFor={`${field.name}.${index}`}>
+                    {field.label || ''}
+                  </label>
+                  <div className={`select ${styles.enum}`}>
+                    <select
+                      defaultValue={data[field.name]}
+                      id={`${field.name}.${index}`}
+                      onChange={event => this.onUpdate(event, field)}
+                    >
+                      {field.enum.map(entry => (
+                        <option key={entry.value} value={entry.value}>
+                          {entry.label || entry.value}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </React.Fragment>
               )}
             </div>
           );
