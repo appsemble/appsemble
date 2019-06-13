@@ -127,6 +127,48 @@ Content-Transfer-Encoding: 7bit
 "
 `;
 
+exports[`sendOrganizationInviteEmail should match its snapshot 1`] = `
+"Content-Type: multipart/alternative;
+ 
+To: test@example.com
+Subject: Invited to organization
+
+
+MIME-Version: 1.0
+
+
+Content-Type: text/plain
+Content-Transfer-Encoding: quoted-printable
+
+Hello,
+
+You have been invited to join the organization **Appsemble**.
+
+Joining an organization allows you to view private applications as well as =
+create and edit apps
+belonging to an organization.
+
+Kind regards,
+
+_The Appsemble Team_
+
+
+Content-Type: text/html
+Content-Transfer-Encoding: quoted-printable
+
+<p>Hello,</p>
+<p>You have been invited to join the organization =
+<strong>Appsemble</strong>.</p>
+<p>Joining an organization allows you to =
+view private applications as well as create and edit apps
+belonging to an organization.</p>
+<p>Kind regards,</p>
+<p><em>The Appsemble Team</em></p>
+
+
+"
+`;
+
 exports[`sendWelcomeEmail should match its snapshot 1`] = `
 "Content-Type: multipart/alternative;
  
