@@ -40,6 +40,8 @@ affinity: {}
 
 smtpSecret: smtp
 
+migrateTo: null
+
 mysql:
   existingSecret: mysql-password
   mysqlUser: appsemble
