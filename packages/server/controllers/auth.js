@@ -13,13 +13,16 @@ async function mayRegister({ argv }) {
 
 async function registerUser(associatedModel, organizationName, transaction, email, password) {
   await associatedModel.createUser({ password, primaryEmail: email }, { transaction });
-  const user = await associatedModel.getUser({ transaction });
-  await user.createOrganization(
-    {
-      id: organizationName || `organization${new Date().getTime()}`,
-    },
-    { transaction },
-  );
+
+  if (organizationName) {
+    const user = await associatedModel.getUser({ transaction });
+    await user.createOrganization(
+      {
+        id: organizationName,
+      },
+      { transaction },
+    );
+  }
 }
 
 export async function registerEmail(ctx) {
