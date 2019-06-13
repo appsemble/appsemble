@@ -62,9 +62,10 @@ module.exports = {
     });
 
     const users = await queryInterface.select(User, 'User');
-    Promise.all(
-      users.map(async user => {
-        if (user.dataValues.primaryEmail) {
+    await Promise.all(
+      users
+        .filter(user => user.dataValues.primaryEmail)
+        .map(async user => {
           await queryInterface.bulkDelete('EmailAuthorization', {
             [Sequelize.Op.not]: { email: user.dataValues.primaryEmail },
           });
@@ -75,10 +76,7 @@ module.exports = {
             { name: user.dataValues.name, password: user.dataValues.password },
             { email: user.dataValues.primaryEmail },
           );
-        }
-
-        return null;
-      }),
+        }),
     );
 
     await queryInterface.removeColumn('ResetPasswordToken', 'UserId');
