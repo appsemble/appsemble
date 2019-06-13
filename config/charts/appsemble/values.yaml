@@ -40,7 +40,7 @@ affinity: {}
 
 smtpSecret: smtp
 
-migrateTo: null
+migrateTo: {}
 
 mysql:
   existingSecret: mysql-password
