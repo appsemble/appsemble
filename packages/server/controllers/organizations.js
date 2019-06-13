@@ -67,6 +67,10 @@ export async function inviteMember(ctx) {
     throw Boom.notFound('No member with this email address could be found.');
   }
 
+  if (dbEmail && !dbEmail.verified) {
+    throw Boom.notAcceptable('This email address has not been verified.');
+  }
+
   const organization = await Organization.findByPk(organizationId);
   const user = dbEmail.User;
 
