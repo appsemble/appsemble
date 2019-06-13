@@ -9,6 +9,8 @@ interface IncomingMessage {
   body: string;
   color?: 'danger' | 'dark' | 'info' | 'link' | 'primary' | 'success' | 'warning';
   id: number;
+  timeout: number;
+  dismissable: boolean;
 }
 
 export interface MessageProps {
@@ -31,11 +33,24 @@ export default class Message extends React.Component<MessageProps> {
 
     if (messages.length > prevProps.messages.length) {
       const message = messages[messages.length - 1];
+      let { timeout } = message;
 
-      setTimeout(() => {
-        remove(message);
-      }, 5e3);
+      if (!timeout && !message.dismissable) {
+        timeout = 5e3;
+      }
+
+      if (timeout) {
+        setTimeout(() => {
+          remove(message);
+        }, timeout);
+      }
     }
+  }
+
+  onDismiss(message: IncomingMessage): void {
+    const { remove } = this.props;
+
+    remove(message);
   }
 
   render(): React.ReactNode {
@@ -62,7 +77,14 @@ export default class Message extends React.Component<MessageProps> {
                 )}
               >
                 <div className={classNames('message-body', styles.content)}>
-                  {message && message.body}
+                  <span>{message && message.body}</span>
+                  {message.dismissable && (
+                    <button
+                      className={`delete ${styles.deleteButton}`}
+                      onClick={() => this.onDismiss(message)}
+                      type="button"
+                    />
+                  )}
                 </div>
               </article>
             </CSSTransition>

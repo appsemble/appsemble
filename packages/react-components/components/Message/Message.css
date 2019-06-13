@@ -28,4 +28,11 @@
 
 .content {
   min-height: 64px;
+  position: relative;
+}
+
+.deleteButton {
+  position: absolute;
+  right: 5px;
+  top: 5px;
 }
