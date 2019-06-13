@@ -123,5 +123,5 @@ it('should run upgrades in sequence', async () => {
   expect(m002.up).not.toHaveBeenCalled();
   resolve();
   await pendingMigration;
-  expect(m002.up).toHaveBeenCalledWith();
+  expect(m002.up).toHaveBeenCalledWith(db);
 });
