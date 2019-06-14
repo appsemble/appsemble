@@ -9,14 +9,14 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
-- Editor: Support for private apps.
-- Editor: Support for editing user profiles.
 - Editor: Add version tag to the header.
 - Editor: Display the current Appsemble version in the toolbar.
+- Editor: Support for editing user profiles.
+- Editor: Support for private apps.
+- Editor: Support private apps.
 - Helm: Add official Helm chart.
 - Server: Support database migrations.
 - Server: Support editing user profiles.
-- Editor: Support private apps.
 
 ### Changed
 
