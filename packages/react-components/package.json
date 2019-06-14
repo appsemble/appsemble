@@ -1,9 +1,9 @@
 {
   "name": "@appsemble/react-components",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "private": true,
   "dependencies": {
-    "@appsemble/react": "0.6.0",
+    "@appsemble/react": "0.7.0",
     "@sentry/browser": "^5.3.0",
     "classnames": "^2.2.6",
     "leaflet": "^1.5.1",
