@@ -14,6 +14,7 @@ const inputs = {
   file: FileInput,
   enum: EnumInput,
   geocoordinates: GeoCoordinatesInput,
+  hidden: () => null,
   string: StringInput,
 };
 
