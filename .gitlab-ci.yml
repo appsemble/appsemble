@@ -229,9 +229,6 @@ review:
     url: https://$CI_ENVIRONMENT_SLUG.appsemble.app
     on_stop: stop review
   script:
-    - mkdir ~/.helm
-    - kubectl get secrets/tiller-secret -n gitlab-managed-apps -o "jsonpath={.data['tls\.crt']}" | base64 -d > ~/.helm/cert.pem
-    - kubectl get secrets/tiller-secret -n gitlab-managed-apps -o "jsonpath={.data['tls\.key']}" | base64 -d > ~/.helm/key.pem
     - helm init --client-only
     - helm dependency build config/charts/appsemble
     - helm upgrade "$CI_ENVIRONMENT_SLUG" config/charts/appsemble
@@ -260,9 +257,6 @@ stop review:
     name: review/$CI_COMMIT_REF_SLUG
     action: stop
   script:
-    - mkdir ~/.helm
-    - kubectl get secrets/tiller-secret -n gitlab-managed-apps -o "jsonpath={.data['tls\.crt']}" | base64 -d > ~/.helm/cert.pem
-    - kubectl get secrets/tiller-secret -n gitlab-managed-apps -o "jsonpath={.data['tls\.key']}" | base64 -d > ~/.helm/key.pem
     - helm init --client-only
     - helm delete --purge "$CI_ENVIRONMENT_SLUG"
 
@@ -281,9 +275,6 @@ review docs:
     url: https://$CI_ENVIRONMENT_SLUG.appsemble.app
     on_stop: stop review docs
   script:
-    - mkdir ~/.helm
-    - kubectl get secrets/tiller-secret -n gitlab-managed-apps -o "jsonpath={.data['tls\.crt']}" | base64 -d > ~/.helm/cert.pem
-    - kubectl get secrets/tiller-secret -n gitlab-managed-apps -o "jsonpath={.data['tls\.key']}" | base64 -d > ~/.helm/key.pem
     - helm init --client-only
     - helm upgrade "$CI_ENVIRONMENT_SLUG" config/charts/appsemble-docs
       --install
@@ -304,9 +295,6 @@ stop review docs:
     name: review/docs/$CI_COMMIT_REF_SLUG
     action: stop
   script:
-    - mkdir ~/.helm
-    - kubectl get secrets/tiller-secret -n gitlab-managed-apps -o "jsonpath={.data['tls\.crt']}" | base64 -d > ~/.helm/cert.pem
-    - kubectl get secrets/tiller-secret -n gitlab-managed-apps -o "jsonpath={.data['tls\.key']}" | base64 -d > ~/.helm/key.pem
     - helm init --client-only
     - helm delete --purge "$CI_ENVIRONMENT_SLUG"
 
@@ -324,9 +312,6 @@ staging:
     url: https://staging.appsemble.app
     on_stop: stop staging
   script:
-    - mkdir ~/.helm
-    - kubectl get secrets/tiller-secret -n gitlab-managed-apps -o "jsonpath={.data['tls\.crt']}" | base64 -d > ~/.helm/cert.pem
-    - kubectl get secrets/tiller-secret -n gitlab-managed-apps -o "jsonpath={.data['tls\.key']}" | base64 -d > ~/.helm/key.pem
     - helm init --client-only
     - helm dependency build config/charts/appsemble
     - helm upgrade "$CI_ENVIRONMENT_SLUG" config/charts/appsemble
@@ -356,9 +341,6 @@ stop staging:
     name: staging
     action: stop
   script:
-    - mkdir ~/.helm
-    - kubectl get secrets/tiller-secret -n gitlab-managed-apps -o "jsonpath={.data['tls\.crt']}" | base64 -d > ~/.helm/cert.pem
-    - kubectl get secrets/tiller-secret -n gitlab-managed-apps -o "jsonpath={.data['tls\.key']}" | base64 -d > ~/.helm/key.pem
     - helm init --client-only
     - helm delete --purge "$CI_ENVIRONMENT_SLUG"
 
