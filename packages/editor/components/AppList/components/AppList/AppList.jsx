@@ -38,7 +38,7 @@ export default class AppList extends React.Component {
           {apps.map(app => (
             <AppCard key={app.id} app={app} />
           ))}
-          {user && user.organizations.length > 1 && <CreateAppCard />}
+          {user && user.organizations.length >= 1 && <CreateAppCard />}
         </div>
         {user && user.organizations.length === 0 && apps.length === 0 && (
           <div className={styles.noApps}>
