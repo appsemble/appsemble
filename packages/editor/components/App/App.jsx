@@ -51,6 +51,7 @@ export default class App extends React.Component {
                 <Route component={Settings} path="/_/settings" />
                 <Route component={AppContext} path="/_/apps/:id(\d+)" />
                 <Route component={EditPassword} exact path="/_/edit-password" />
+                <Route component={VerifyEmail} exact path="/_/verify" />
                 <Redirect to="/_/apps" />
               </Switch>
             ) : (
