@@ -232,6 +232,7 @@ review:
     - helm init --client-only
     - helm dependency build config/charts/appsemble
     - helm upgrade "$CI_ENVIRONMENT_SLUG" config/charts/appsemble
+      --atomic
       --install
       --set "image.pullPolicy=Always"
       --set "image.repository=$CI_REGISTRY_IMAGE"
@@ -242,7 +243,6 @@ review:
       --set "migrateTo=999.999.999"
       --set "mysql.existingSecret=$CI_ENVIRONMENT_SLUG-mysql-secret"
       --set "mysql.fullnameOverride=$CI_ENVIRONMENT_SLUG-mysql"
-      --wait
 
 # Stop a review environment.
 stop review:
@@ -275,10 +275,10 @@ review docs:
     on_stop: stop review docs
   script:
     - helm upgrade "$CI_ENVIRONMENT_SLUG" config/charts/appsemble-docs
+      --atomic
       --install
       --set "git.commit.sha=$CI_COMMIT_SHA"
       --set "image.tag=$CI_COMMIT_REF_NAME"
-      --wait
 
 # Stop a review environment.
 stop review docs:
@@ -312,6 +312,7 @@ staging:
     - helm init --client-only
     - helm dependency build config/charts/appsemble
     - helm upgrade "$CI_ENVIRONMENT_SLUG" config/charts/appsemble
+      --atomic
       --install
       --set "image.pullPolicy=Always"
       --set "image.repository=$CI_REGISTRY_IMAGE"
@@ -322,7 +323,6 @@ staging:
       --set "migrateTo=999.999.999"
       --set "mysql.existingSecret=$CI_ENVIRONMENT_SLUG-mysql-secret"
       --set "mysql.fullnameOverride=$CI_ENVIRONMENT_SLUG-mysql"
-      --wait
 
 # Stop the staging environment.
 stop staging:
