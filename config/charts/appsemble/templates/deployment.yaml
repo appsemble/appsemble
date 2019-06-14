@@ -3,21 +3,21 @@ kind: Deployment
 metadata:
   name: {{ include "appsemble.fullname" . }}
   labels:
-    app.kubernetes.io/name: {{ include "appsemble.name" . }}
-    helm.sh/chart: {{ include "appsemble.chart" . }}
     app.kubernetes.io/instance: {{ .Release.Name }}
     app.kubernetes.io/managed-by: {{ .Release.Service }}
+    app.kubernetes.io/name: {{ include "appsemble.name" . }}
+    helm.sh/chart: {{ include "appsemble.chart" . }}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      app.kubernetes.io/name: {{ include "appsemble.name" . }}
       app.kubernetes.io/instance: {{ .Release.Name }}
+      app.kubernetes.io/name: {{ include "appsemble.name" . }}
   template:
     metadata:
       labels:
-        app.kubernetes.io/name: {{ include "appsemble.name" . }}
         app.kubernetes.io/instance: {{ .Release.Name }}
+        app.kubernetes.io/name: {{ include "appsemble.name" . }}
     spec:
       containers:
         - name: {{ .Chart.Name }}
