@@ -44,6 +44,19 @@ export default {
       },
     },
   },
+  '/api/organizations/{organizationId}/resend': {
+    parameters: [{ $ref: '#/components/parameters/organizationId' }],
+    post: {
+      tags: ['organization'],
+      description: 'Request to resend an invitation.',
+      operationId: 'resendInvitation',
+      responses: {
+        204: {
+          description: 'The invite has been sent.',
+        },
+      },
+    },
+  },
   '/api/organizations/{organizationId}/members': {
     parameters: [{ $ref: '#/components/parameters/organizationId' }],
     post: {

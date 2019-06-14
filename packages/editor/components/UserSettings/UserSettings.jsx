@@ -215,7 +215,7 @@ export default class UserSettings extends Component {
               <th>
                 <FormattedMessage {...messages.email} />
               </th>
-              <th>
+              <th className="has-text-right">
                 <FormattedMessage {...messages.actions} />
               </th>
             </tr>
@@ -242,38 +242,36 @@ export default class UserSettings extends Component {
                     )}
                   </div>
                 </td>
-                <td>
-                  <div className="field is-grouped">
-                    {email.verified && !email.primary && (
-                      <button
-                        className="control button is-info"
-                        onClick={() => this.setPrimaryEmail(email)}
-                        type="button"
-                      >
-                        <FormattedMessage {...messages.setPrimaryEmail} />
-                      </button>
-                    )}
-                    {!email.verified && (
-                      <button
-                        className="control button is-outlined"
-                        onClick={() => this.resendVerification(email)}
-                        type="button"
-                      >
-                        <FormattedMessage {...messages.resendVerification} />
-                      </button>
-                    )}
-                    {!email.primary && (
-                      <button
-                        className="control button is-danger"
-                        onClick={() => this.onDeleteEmailClick(email)}
-                        type="button"
-                      >
-                        <span className="icon is-small">
-                          <i className="fas fa-trash-alt" />
-                        </span>
-                      </button>
-                    )}
-                  </div>
+                <td className={`has-text-right ${styles.buttonGroup}`}>
+                  {email.verified && !email.primary && (
+                    <button
+                      className="control button is-info"
+                      onClick={() => this.setPrimaryEmail(email)}
+                      type="button"
+                    >
+                      <FormattedMessage {...messages.setPrimaryEmail} />
+                    </button>
+                  )}
+                  {!email.verified && (
+                    <button
+                      className="control button is-outlined"
+                      onClick={() => this.resendVerification(email)}
+                      type="button"
+                    >
+                      <FormattedMessage {...messages.resendVerification} />
+                    </button>
+                  )}
+                  {!email.primary && (
+                    <button
+                      className="control button is-danger"
+                      onClick={() => this.onDeleteEmailClick(email)}
+                      type="button"
+                    >
+                      <span className="icon is-small">
+                        <i className="fas fa-trash-alt" />
+                      </span>
+                    </button>
+                  )}
                 </td>
               </tr>
             ))}

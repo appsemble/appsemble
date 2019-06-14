@@ -1,5 +1,6 @@
 import validateStyle, { StyleValidationError } from '@appsemble/utils/validateStyle';
 import Boom from 'boom';
+import crypto from 'crypto';
 import { UniqueConstraintError } from 'sequelize';
 
 import { sendOrganizationInviteEmail } from '../utils/email';
@@ -21,6 +22,7 @@ export async function getOrganization(ctx) {
       id: user.id,
       name: user.name,
       primaryEmail: user.primaryEmail,
+      verified: user.Member.verified,
     })),
   };
 }
@@ -34,7 +36,7 @@ export async function createOrganization(ctx) {
 
   try {
     const organization = await Organization.create({ id: name }, { include: [User] });
-    await organization.addUser(userId);
+    await organization.addUser(userId, { through: { verified: true } });
 
     await organization.reload();
 
@@ -45,6 +47,7 @@ export async function createOrganization(ctx) {
         id: u.id,
         name: u.name,
         primaryEmail: u.primaryEmail,
+        verified: u.Member.verified,
       })),
     };
   } catch (error) {
@@ -71,16 +74,28 @@ export async function inviteMember(ctx) {
     throw Boom.notAcceptable('This email address has not been verified.');
   }
 
-  const organization = await Organization.findByPk(organizationId);
+  const organization = await Organization.findByPk(organizationId, { include: [User] });
+  if (!organization) {
+    throw Boom.notFound('Organization not found.');
+  }
+
   const user = dbEmail.User;
 
   if (await organization.hasUser(user)) {
-    throw Boom.conflict('User is already in this organization.');
+    throw Boom.conflict('User is already in this organization or has already been invited.');
   }
 
-  await organization.addUser(user);
+  await organization.addUser(user, {
+    through: { verified: false, key: crypto.randomBytes(20).toString('hex'), email },
+  });
+
   await sendOrganizationInviteEmail(
-    { email, name: user.name, organization: organization.id },
+    {
+      email,
+      name: user.name,
+      organization: organization.id,
+      url: `${ctx.origin}/_/organization-invite?token=${user.Member.key}`,
+    },
     ctx.state.smtp,
   );
 
@@ -88,8 +103,37 @@ export async function inviteMember(ctx) {
     id: user.id,
     name: user.name,
     primaryEmail: user.primaryEmail,
+    verified: false,
   };
   ctx.status = 201;
+}
+
+export async function resendInvitation(ctx) {
+  const { organizationId } = ctx.params;
+  const { memberId } = ctx.request.body;
+  const { Organization, User } = ctx.db.models;
+
+  const organization = await Organization.findByPk(organizationId, { include: [User] });
+  if (!organization) {
+    throw Boom.notFound('Organization not found.');
+  }
+
+  const user = organization.Users.find(u => u.id === memberId);
+  if (!user) {
+    throw Boom.notFound('This user was not invited previously.');
+  }
+
+  await sendOrganizationInviteEmail(
+    {
+      email: user.Member.email,
+      name: user.name,
+      organization: organization.id,
+      url: `${ctx.origin}/_/organization-invite?token=${user.Member.key}`,
+    },
+    ctx.state.smtp,
+  );
+
+  ctx.body = 204;
 }
 
 export async function removeMember(ctx) {

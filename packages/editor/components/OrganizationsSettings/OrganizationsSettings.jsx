@@ -156,6 +156,14 @@ export default class OrganizationsSettings extends Component {
     }
   };
 
+  resendInvitation = async member => {
+    const { selectedOrganization } = this.state;
+    const { intl, push } = this.props;
+
+    await axios.post(`/api/organizations/${selectedOrganization}/resend`, { memberId: member.id });
+    push({ body: intl.formatMessage(messages.resendInvitationSent), color: 'info' });
+  };
+
   onRemoveMemberClick = async memberId => {
     this.setState({
       removingMember: memberId,
@@ -328,12 +336,12 @@ export default class OrganizationsSettings extends Component {
             <table className="table is-hoverable is-striped">
               <thead>
                 <tr>
-                  <td>
+                  <th>
                     <FormattedMessage {...messages.member} />
-                  </td>
-                  <td>
+                  </th>
+                  <th className="has-text-right">
                     <FormattedMessage {...messages.actions} />
-                  </td>
+                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -349,11 +357,20 @@ export default class OrganizationsSettings extends Component {
                         )}
                       </div>
                     </td>
-                    <td>
-                      <span>
-                        <FormattedMessage {...messages.member} />
-                      </span>
+                    <td className="has-text-right">
+                      <span>{member.verified && <FormattedMessage {...messages.member} />}</span>
                       <div className={`field is-grouped ${styles.tags}`}>
+                        {!member.verified && (
+                          <p className={`control ${styles.memberButton}`}>
+                            <button
+                              className="control button is-outlined"
+                              onClick={() => this.resendInvitation(member)}
+                              type="button"
+                            >
+                              <FormattedMessage {...messages.resendInvitation} />
+                            </button>
+                          </p>
+                        )}
                         {member.id === user.id && organization.members.length > 1 && (
                           <p className={`control ${styles.memberButton}`}>
                             <button

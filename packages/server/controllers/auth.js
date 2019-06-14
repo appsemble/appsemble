@@ -20,7 +20,7 @@ async function registerUser(associatedModel, organizationName, transaction, emai
       {
         id: organizationName,
       },
-      { transaction },
+      { transaction, through: { verified: true } },
     );
   }
 }

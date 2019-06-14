@@ -20,6 +20,8 @@ export default defineMessages({
   inviteMemberNotFound: 'No member with this email address could be found.',
   inviteMemberNotVerified: 'This email address has not been verified.',
   inviteMemberConflict: 'This member is already in this organization',
+  resendInvitation: 'Resend invitation mail',
+  resendInvitationSent: 'Resent invitation mail',
   addMemberEmail: 'Invite new member by email',
   existingMemberWarning: 'This member already exists in this organization.',
   inviteMemberSuccess: 'Successfully invited {email}',

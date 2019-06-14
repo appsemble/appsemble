@@ -6,6 +6,7 @@ export default sequelize => {
     {
       verified: { type: DataTypes.BOOLEAN, defaultValue: false, allowNull: false },
       key: DataTypes.STRING,
+      email: DataTypes.STRING,
     },
     {
       freezeTableName: true,

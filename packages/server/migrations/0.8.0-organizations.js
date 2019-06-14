@@ -14,6 +14,7 @@ export default {
       allowNull: false,
     });
     await queryInterface.addColumn('Member', 'key', { type: DataTypes.STRING });
+    await queryInterface.addColumn('Member', 'email', { type: DataTypes.STRING });
 
     // All current members are automatically considered verified
     // Member.update and queryInterface.bulkUpdate are not used due to a bug with the MySQL provider
@@ -31,6 +32,7 @@ export default {
     await queryInterface.bulkDelete('Member', { verified: false });
 
     await queryInterface.removeColumn('Member', 'key');
+    await queryInterface.removeColumn('Member', 'email');
     await queryInterface.removeColumn('Member', 'verified');
     await queryInterface.renameTable('Member', 'UserOrganization');
 
