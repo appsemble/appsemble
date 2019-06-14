@@ -9,9 +9,19 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
+- Editor: Support for private apps.
+- Editor: Support for editing user profiles.
 - Editor: Add version tag to the header.
+- Editor: Display the current Appsemble version in the toolbar.
 - Helm: Add official Helm chart.
-- Server: Add support for database migrations.
+- Server: Support database migrations.
+- Server: Support editing user profiles.
+- Editor: Support private apps.
+
+### Changed
+
+- Editor: Move app templates to the server side.
+- Server: Move app templates to the server side.
 
 ### Fixed
 
