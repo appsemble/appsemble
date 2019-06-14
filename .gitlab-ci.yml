@@ -257,7 +257,6 @@ stop review:
     name: review/$CI_COMMIT_REF_SLUG
     action: stop
   script:
-    - helm init --client-only
     - helm delete --purge "$CI_ENVIRONMENT_SLUG"
 
 # Deploy the Docker image for a branch to a review environment.
@@ -275,7 +274,6 @@ review docs:
     url: https://$CI_ENVIRONMENT_SLUG.appsemble.app
     on_stop: stop review docs
   script:
-    - helm init --client-only
     - helm upgrade "$CI_ENVIRONMENT_SLUG" config/charts/appsemble-docs
       --install
       --set "git.commit.sha=$CI_COMMIT_SHA"
@@ -295,7 +293,6 @@ stop review docs:
     name: review/docs/$CI_COMMIT_REF_SLUG
     action: stop
   script:
-    - helm init --client-only
     - helm delete --purge "$CI_ENVIRONMENT_SLUG"
 
 # Deploy the Docker image for master to the staging environment.
@@ -341,7 +338,6 @@ stop staging:
     name: staging
     action: stop
   script:
-    - helm init --client-only
     - helm delete --purge "$CI_ENVIRONMENT_SLUG"
 
 ###################################################################################################
