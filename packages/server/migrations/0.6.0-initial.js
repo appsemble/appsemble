@@ -1,7 +1,8 @@
-module.exports = {
-  key: '0.6.0',
+import { DataTypes } from 'sequelize';
 
-  async up(db, DataTypes) {
+export default {
+  key: '0.6.0',
+  async up(db) {
     const queryInterface = db.getQueryInterface();
 
     await queryInterface.createTable('Organization', {

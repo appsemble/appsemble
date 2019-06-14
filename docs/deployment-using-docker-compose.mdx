@@ -53,6 +53,12 @@ $ docker-compose up -d
 
 The Appsemble editor should now be available on http://localhost:8000.
 
+The database needs to be migrated to the current version first. This can be done by running:
+
+```sh
+$ docker run -ti appsemble/appsemble:latest migrate
+```
+
 To stop the service, run the following command.
 
 ```
