@@ -1,10 +1,10 @@
 {
   "name": "@appsemble/server",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "private": true,
   "dependencies": {
-    "@appsemble/node-utils": "^0.6.0",
-    "@appsemble/utils": "^0.6.0",
+    "@appsemble/node-utils": "^0.7.0",
+    "@appsemble/utils": "^0.7.0",
     "@fortawesome/fontawesome-free": "^5.8.2",
     "@sentry/node": "^5.3.0",
     "@wesselkuipers/odata-sequelize": "^1.0.13",
