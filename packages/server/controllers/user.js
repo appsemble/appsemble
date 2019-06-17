@@ -12,7 +12,8 @@ export async function getUser(ctx) {
     include: [
       {
         model: Organization,
-        attributes: ['id'],
+        attributes: ['id', 'name'],
+        through: { where: { verified: true } },
       },
       {
         model: EmailAuthorization,
@@ -24,7 +25,7 @@ export async function getUser(ctx) {
     id: dbUser.id,
     name: dbUser.name,
     primaryEmail: dbUser.primaryEmail,
-    organizations: dbUser.Organizations.map(({ id }) => ({ id })),
+    organizations: dbUser.Organizations.map(({ id, name }) => ({ id, name })),
     emails: dbUser.EmailAuthorizations.map(({ email, verified }) => ({
       email,
       verified,

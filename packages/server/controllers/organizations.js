@@ -59,6 +59,50 @@ export async function createOrganization(ctx) {
   }
 }
 
+export async function getInvitation(ctx) {
+  const { token } = ctx.params;
+  const { Member, Organization } = ctx.db.models;
+
+  const invite = await Member.findOne(
+    {
+      where: { key: token },
+    },
+    { raw: true },
+  );
+
+  if (!invite) {
+    throw Boom.notFound('This token does not exist.');
+  }
+
+  const organization = await Organization.findByPk(invite.OrganizationId, { raw: true });
+
+  ctx.body = { organization: { id: organization.id, name: organization.name } };
+}
+
+export async function respondInvitation(ctx) {
+  const { organizationId } = ctx.params;
+  const { response, token } = ctx.request.body;
+  const { Member } = ctx.db.models;
+
+  const invite = await Member.findOne({ where: { key: token } });
+
+  if (!invite) {
+    throw Boom.notFound('This token is invalid.');
+  }
+
+  if (organizationId !== invite.OrganizationId) {
+    throw Boom.notAcceptable('Organization IDs does not match');
+  }
+
+  if (response) {
+    await invite.update({ verified: true, key: null, email: null });
+  } else {
+    await invite.destroy();
+  }
+
+  ctx.status = 204;
+}
+
 export async function inviteMember(ctx) {
   const { organizationId } = ctx.params;
   const { email } = ctx.request.body;
@@ -85,8 +129,9 @@ export async function inviteMember(ctx) {
     throw Boom.conflict('User is already in this organization or has already been invited.');
   }
 
+  const key = crypto.randomBytes(20).toString('hex');
   await organization.addUser(user, {
-    through: { verified: false, key: crypto.randomBytes(20).toString('hex'), email },
+    through: { verified: false, key, email },
   });
 
   await sendOrganizationInviteEmail(
@@ -94,7 +139,7 @@ export async function inviteMember(ctx) {
       email,
       name: user.name,
       organization: organization.id,
-      url: `${ctx.origin}/_/organization-invite?token=${user.Member.key}`,
+      url: `${ctx.origin}/_/organization-invite?token=${key}`,
     },
     ctx.state.smtp,
   );

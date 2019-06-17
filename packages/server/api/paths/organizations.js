@@ -57,6 +57,42 @@ export default {
       },
     },
   },
+  '/api/organizations/{organizationId}/join': {
+    parameters: [{ $ref: '#/components/parameters/organizationId' }],
+    post: {
+      tags: ['organization'],
+      description: 'Respond to a given invitation.',
+      operationId: 'respondInvitation',
+      requestBody: {
+        description: `The response of the invitation.
+
+        If response is true, user will join the organization. If response is false, the user declines the invite and the invite is removed.`,
+        required: true,
+        content: {
+          'application/json': {
+            schema: {
+              type: 'object',
+              required: ['response', 'token'],
+              properties: {
+                response: {
+                  type: 'boolean',
+                },
+                token: {
+                  type: 'string',
+                },
+              },
+            },
+          },
+        },
+      },
+      responses: {
+        204: {
+          description: 'The response has been processed.',
+        },
+      },
+    },
+    security: [{ apiUser: [] }],
+  },
   '/api/organizations/{organizationId}/members': {
     parameters: [{ $ref: '#/components/parameters/organizationId' }],
     post: {
