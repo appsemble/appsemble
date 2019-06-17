@@ -7,6 +7,10 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Fixed
+
+- Editor: Fix issue where users were unable to verify their accounts when logged in.
+
 ## [0.7.0] - 2019-06-14
 
 ### Added
