@@ -1,4 +1,5 @@
 import { Form } from '@appsemble/react-components';
+import normalize from '@appsemble/utils/normalize';
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -26,7 +27,7 @@ export default class Register extends React.Component {
     const { target } = event;
 
     if (target.name === 'organization') {
-      target.value = target.value.toLowerCase();
+      target.value = normalize(target.value);
     }
 
     this.setState({ [target.name]: target.value });
