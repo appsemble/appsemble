@@ -9,6 +9,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
+- Block: Add support for hidden for hidden form field in form block.
 - Editor: Support basic organization management
 - Server: Support basic organization management
 
