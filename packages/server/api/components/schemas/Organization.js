@@ -8,6 +8,11 @@ export default {
       readOnly: true,
       description: 'The unique identifier for the organization.',
     },
+    name: {
+      type: 'string',
+      pattern: /^[a-z]([a-z\d-]{0,30}[a-z\d])$/,
+      description: 'The display name for the organization.',
+    },
     members: {
       type: 'array',
       readOnly: true,

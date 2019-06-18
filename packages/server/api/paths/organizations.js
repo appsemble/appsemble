@@ -11,8 +11,11 @@ export default {
           'application/json': {
             schema: {
               type: 'object',
-              required: ['name'],
+              required: ['id'],
               properties: {
+                id: {
+                  type: 'string',
+                },
                 name: {
                   type: 'string',
                 },

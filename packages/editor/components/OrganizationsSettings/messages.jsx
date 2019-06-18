@@ -7,6 +7,7 @@ export default defineMessages({
   createOrganizationError: 'Something went wrong when trying to create this organization.',
   createOrganizationSuccess: 'Successfully created organization {organization}.',
   organizationName: 'Organization name',
+  organizationId: 'Organization identifier',
   manageOrganization: 'Manage Organization',
   organizationMembers: '{organization} members',
   selectedOrganization: 'Selected organization',

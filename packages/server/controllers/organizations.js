@@ -1,3 +1,4 @@
+import normalize from '@appsemble/utils/normalize';
 import validateStyle, { StyleValidationError } from '@appsemble/utils/validateStyle';
 import Boom from 'boom';
 import crypto from 'crypto';
@@ -18,6 +19,7 @@ export async function getOrganization(ctx) {
 
   ctx.body = {
     id: organization.id,
+    name: organization.name,
     members: organization.Users.map(user => ({
       id: user.id,
       name: user.name,
@@ -28,14 +30,17 @@ export async function getOrganization(ctx) {
 }
 
 export async function createOrganization(ctx) {
-  const { name } = ctx.request.body;
+  const { id, name } = ctx.request.body;
   const { Organization, User } = ctx.db.models;
   const {
     user: { id: userId },
   } = ctx.state;
 
   try {
-    const organization = await Organization.create({ id: name }, { include: [User] });
+    const organization = await Organization.create(
+      { id: normalize(id), name },
+      { include: [User] },
+    );
     await organization.addUser(userId, { through: { verified: true } });
 
     await organization.reload();
@@ -43,6 +48,7 @@ export async function createOrganization(ctx) {
     ctx.status = 201;
     ctx.body = {
       id: organization.id,
+      name: organization.name,
       members: organization.Users.map(u => ({
         id: u.id,
         name: u.name,

@@ -1,4 +1,5 @@
 import { Form, Loader, Modal } from '@appsemble/react-components';
+import normalize from '@appsemble/utils/normalize';
 import axios from 'axios';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
@@ -21,7 +22,8 @@ export default class OrganizationsSettings extends Component {
     submittingMember: false,
     removingMember: undefined,
     memberEmail: '',
-    newOrganization: '',
+    newOrganizationId: '',
+    newOrganizationName: '',
     submittingOrganization: false,
   };
 
@@ -47,7 +49,11 @@ export default class OrganizationsSettings extends Component {
   }
 
   onChange = event => {
-    this.setState({ [event.target.name]: event.target.value });
+    const value =
+      event.target.name === 'newOrganizationId'
+        ? normalize(event.target.value)
+        : event.target.value;
+    this.setState({ [event.target.name]: value });
   };
 
   onOrganizationChange = async event => {
@@ -65,27 +71,29 @@ export default class OrganizationsSettings extends Component {
     event.preventDefault();
 
     const { intl, push } = this.props;
-    const { organizations, newOrganization } = this.state;
+    const { organizations, newOrganizationId, newOrganizationName } = this.state;
 
     this.setState({ submittingOrganization: true });
 
     try {
       const { data: organization } = await axios.post('/api/organizations', {
-        name: newOrganization,
+        id: normalize(newOrganizationId),
+        name: newOrganizationName,
       });
 
       organizations.push(organization);
       push({
         body: intl.formatMessage(messages.createOrganizationSuccess, {
-          organization: organization.id,
+          organization: organization.name,
         }),
         color: 'success',
       });
 
       this.setState({
-        newOrganization: '',
+        newOrganizationId: '',
+        newOrganizationName: '',
         submittingOrganization: false,
-        selectedOrganization: newOrganization,
+        selectedOrganization: newOrganizationId,
       });
     } catch (exception) {
       if (exception?.response?.status === 409) {
@@ -228,7 +236,8 @@ export default class OrganizationsSettings extends Component {
       memberEmail,
       submittingMember,
       removingMember,
-      newOrganization,
+      newOrganizationId,
+      newOrganizationName,
       submittingOrganization,
     } = this.state;
     const { intl } = this.props;
@@ -246,24 +255,45 @@ export default class OrganizationsSettings extends Component {
         </h2>
         <Form onSubmit={this.onSubmitNewOrganization}>
           <div className="field">
-            <label className="label" htmlFor="newOrganization">
-              <FormattedMessage {...messages.organizationName} />
+            <label className="label" htmlFor="newOrganizationId">
+              <FormattedMessage {...messages.organizationId} />
             </label>
             <div className={`control has-icons-left ${styles.field}`}>
               <input
                 className="input"
                 disabled={submittingOrganization}
-                id="newOrganization"
-                name="newOrganization"
+                id="newOrganizationId"
+                name="newOrganizationId"
                 onChange={this.onChange}
-                placeholder={intl.formatMessage(messages.organizationName)}
-                value={newOrganization}
+                placeholder={intl.formatMessage(messages.organizationId)}
+                value={newOrganizationId}
               />
               <span className="icon is-left">
                 <i className="fas fa-briefcase" />
               </span>
             </div>
           </div>
+
+          <div className="field">
+            <label className="label" htmlFor="newOrganizationName">
+              <FormattedMessage {...messages.organizationName} />
+            </label>
+            <div className={`control has-icons-left ${styles.field}`}>
+              <input
+                className="input"
+                disabled={submittingOrganization}
+                id="newOrganizationName"
+                name="newOrganizationName"
+                onChange={this.onChange}
+                placeholder={intl.formatMessage(messages.organizationName)}
+                value={newOrganizationName}
+              />
+              <span className="icon is-left">
+                <i className="fas fa-briefcase" />
+              </span>
+            </div>
+          </div>
+
           <div className="control">
             <button className="button is-primary" disabled={submittingOrganization} type="submit">
               <FormattedMessage {...messages.create} />
@@ -291,7 +321,7 @@ export default class OrganizationsSettings extends Component {
                   >
                     {organizations.map(org => (
                       <option key={org.id} value={org.id}>
-                        {org.id}
+                        {org.name}
                       </option>
                     ))}
                   </select>
@@ -330,7 +360,7 @@ export default class OrganizationsSettings extends Component {
             <h3>
               <FormattedMessage
                 {...messages.organizationMembers}
-                values={{ organization: organization.id }}
+                values={{ organization: organization.name }}
               />
             </h3>
             <table className="table is-hoverable is-striped">
