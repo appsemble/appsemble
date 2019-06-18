@@ -7,6 +7,10 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- Block: Add support for hidden for hidden form field in form block.
+
 ## [0.7.0] - 2019-06-14
 
 ### Added
