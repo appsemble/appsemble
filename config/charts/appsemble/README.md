@@ -1,5 +1,23 @@
 # Appsemble Helm Chart
 
+## Installing
+
+New installation:
+
+```sh
+helm dependency update config/charts/appsemble
+helm install --name my-release config/charts/appsemble
+```
+
+```sh
+helm dependency update config/charts/appsemble
+helm upgrade my-release config/charts/appsemble --set 'mysql.existingSecret=my-secret'
+```
+
+> **Note**: Appsemble isn’t published yet. Clone the repository and specify the path to the chart.
+
+## Variables
+
 | Name                     | Default               | Description                                                                                                                                                 |
 | ------------------------ | --------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `replicaCount`           | 1                     |                                                                                                                                                             |
@@ -18,10 +36,25 @@
 | `nodeSelector`           | `{}`                  |                                                                                                                                                             |
 | `tolerations`            | `[]`                  |                                                                                                                                                             |
 | `affinity`               | `{}`                  |                                                                                                                                                             |
-| `smtpSecret`             | `smtp`                | The secret to use for configuring SMTP. The secret should contain the following values: `host`,`port`,`secure`,`user`,`pass`,`from`.                        |
+| `smtpSecret`             | `smtp`                | The secret to use for configuring SMTP. The secret should contain the following values: `host`, `port`, `secure`, `user`, `pass`, `from`.                   |
 | `migrateTo`              | `nil`                 | If specified, the database will be migrated to this specific version. To upgrade to the latest version, just specify a very high number. E.g. `999.999.999` |
 | `mysql`                  |                       | Any `mysql` variables are passed into the `mysql` dependency chart.                                                                                         |
 | `mysql.existingSecret`   | `mysql-password`      | The name of the MySQL secret to use. Appsemble requires this.                                                                                               |
 | `mysql.mysqlUser`        | `appsemble`           |                                                                                                                                                             |
 | `mysql.mysqlDatabase`    | `appsemble`           |                                                                                                                                                             |
 | `mysql.fullnameOverride` | `mysql-appsemble`     | The Appsemble chart passes this to the `mysql` chart, but it also uses this variable itself.                                                                |
+
+## Secrets
+
+### MySQL
+
+Appsemble uses the [MySQL subchart][]. If `mysql.existingSecret` is set, Appsemble will use this
+secret to connect to the MySQL database. Otherwise, the MySQL subchart will create this secret for
+you and Appsemble will use that one.
+
+### SMTP
+
+Appsemble requires SMTP variables to send emails. These should be stored in a predefined SMTP
+secret.
+
+[mysql subchart]: https://hub.helm.sh/charts/stable/mysql

@@ -39,7 +39,7 @@ spec:
             {{- toYaml .Values.resources | nindent 12 }}
           env:
             - name: DATABASE_HOST
-              value: {{ .Values.mysql.fullnameOverride }}
+              value: {{ include "call-nested" (list . "mysql" "mysql.fullname") }}
             - name: DATABASE_NAME
               value: {{ .Values.mysql.mysqlDatabase }}
             - name: DATABASE_USER
@@ -47,11 +47,7 @@ spec:
             - name: DATABASE_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  {{ if .Values.mysql.existingSecret -}}
-                  name: {{ .Values.mysql.existingSecret }}
-                  {{- else -}}
-                  name: {{ template "mysql.fullname" . }}
-                  {{- end }}
+                  name: {{ include "call-nested" (list . "mysql" "mysql.secretName") }}
                   key: mysql-password
             {{ if .Values.ingress.enabled -}}
             - name: HOST

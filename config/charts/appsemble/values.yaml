@@ -43,9 +43,23 @@ smtpSecret: smtp
 migrateTo: {}
 
 mysql:
-  existingSecret: mysql-password
-  mysqlUser: appsemble
+  existingSecret: null
+  fullnameOverride: null
+  imagePullSecrets: null
+  mysqlAllowEmptyPassword: false
   mysqlDatabase: appsemble
   mysqlPassword: null
   mysqlRootPassword: null
-  fullnameOverride: mysql-test
+  mysqlUser: appsemble
+  nameOverride: null
+  persistence:
+    existingClaim: null
+    storageClass: null
+    subPath: null
+  priorityClassName: null
+  schedulerName: null
+  service:
+    loadBalancerIP: null
+    nodePort: null
+  subPath: null
+  timezone: null

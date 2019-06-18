@@ -42,6 +42,8 @@ eslint:
 helm lint:
   image: *HELM
   script:
+    - helm repo add stable https://kubernetes-charts.storage.googleapis.com
+    - helm dependency update --strict config/charts/*
     - helm lint --strict config/charts/*
 
 # Check formatting using prettier.
@@ -235,7 +237,7 @@ review:
     url: https://$CI_ENVIRONMENT_SLUG.appsemble.app
     on_stop: stop review
   script:
-    - helm init --client-only
+    - helm repo add stable https://kubernetes-charts.storage.googleapis.com
     - helm dependency build config/charts/appsemble
     - helm upgrade "$CI_ENVIRONMENT_SLUG" config/charts/appsemble
       --atomic
@@ -315,7 +317,7 @@ staging:
     url: https://staging.appsemble.app
     on_stop: stop staging
   script:
-    - helm init --client-only
+    - helm repo add stable https://kubernetes-charts.storage.googleapis.com
     - helm dependency build config/charts/appsemble
     - helm upgrade "$CI_ENVIRONMENT_SLUG" config/charts/appsemble
       --atomic
