@@ -7,6 +7,12 @@ stages:
   - deploy
   - provision
 
+# This is the most official Helm image at the moment.
+# https://github.com/helm/helm/issues/5682#issuecomment-490084864
+.helm-image: &HELM
+  name: lachlanevenson/k8s-helm:v2.14.1
+  entrypoint: [/bin/sh]
+
 ###################################################################################################
 #  Test Stage                                                                                     #
 ###################################################################################################
@@ -34,7 +40,7 @@ eslint:
 
 # Lint Helm charts.
 helm lint:
-  image: registry.gitlab.com/gitlab-org/gitlab-build-images:gitlab-charts-build-base
+  image: *HELM
   script:
     - helm lint --strict config/charts/*
 
@@ -217,7 +223,7 @@ publish:docker:latest:
 # Deploy the Docker image for a branch to a review environment.
 review:
   stage: deploy
-  image: registry.gitlab.com/gitlab-org/gitlab-build-images:gitlab-charts-build-base
+  image: *HELM
   when: manual
   except:
     - master
@@ -247,7 +253,7 @@ review:
 # Stop a review environment.
 stop review:
   stage: deploy
-  image: registry.gitlab.com/gitlab-org/gitlab-build-images:gitlab-charts-build-base
+  image: *HELM
   when: manual
   except:
     - master
@@ -262,7 +268,7 @@ stop review:
 # Deploy the Docker image for a branch to a review environment.
 review docs:
   stage: deploy
-  image: registry.gitlab.com/gitlab-org/gitlab-build-images:gitlab-charts-build-base
+  image: *HELM
   when: manual
   except:
     - master
@@ -283,7 +289,7 @@ review docs:
 # Stop a review environment.
 stop review docs:
   stage: deploy
-  image: registry.gitlab.com/gitlab-org/gitlab-build-images:gitlab-charts-build-base
+  image: *HELM
   when: manual
   except:
     - master
@@ -298,7 +304,7 @@ stop review docs:
 # Deploy the Docker image for master to the staging environment.
 staging:
   stage: deploy
-  image: registry.gitlab.com/gitlab-org/gitlab-build-images:gitlab-charts-build-base
+  image: *HELM
   only:
     - master@appsemble/appsemble
   except:
@@ -327,7 +333,7 @@ staging:
 # Stop the staging environment.
 stop staging:
   stage: deploy
-  image: registry.gitlab.com/gitlab-org/gitlab-build-images:gitlab-charts-build-base
+  image: *HELM
   when: manual
   only:
     - master@appsemble/appsemble
