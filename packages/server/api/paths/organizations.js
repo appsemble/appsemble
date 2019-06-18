@@ -51,6 +51,23 @@ export default {
       tags: ['organization'],
       description: 'Request to resend an invitation.',
       operationId: 'resendInvitation',
+      requestBody: {
+        description: 'The ID of the member to resend the invitation to.',
+        required: true,
+        content: {
+          'application/json': {
+            schema: {
+              type: 'object',
+              required: ['memberId'],
+              properties: {
+                memberId: {
+                  type: 'number',
+                },
+              },
+            },
+          },
+        },
+      },
       responses: {
         204: {
           description: 'The invite has been sent.',

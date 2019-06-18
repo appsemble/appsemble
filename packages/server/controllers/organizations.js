@@ -113,37 +113,41 @@ export async function inviteMember(ctx) {
   const { organizationId } = ctx.params;
   const { email } = ctx.request.body;
   const { Organization, EmailAuthorization, User } = ctx.db.models;
-
-  const dbEmail = await EmailAuthorization.findByPk(email, { include: [User] });
-
-  if (!dbEmail) {
-    throw Boom.notFound('No member with this email address could be found.');
-  }
-
-  if (dbEmail && !dbEmail.verified) {
-    throw Boom.notAcceptable('This email address has not been verified.');
-  }
+  const { user } = ctx.state;
 
   const organization = await Organization.findByPk(organizationId, { include: [User] });
   if (!organization) {
     throw Boom.notFound('Organization not found.');
   }
 
-  const user = dbEmail.User;
+  const dbEmail = await EmailAuthorization.findByPk(email, { include: [User] });
+  if (!dbEmail) {
+    throw Boom.notFound('No member with this email address could be found.');
+  }
 
-  if (await organization.hasUser(user)) {
+  const invitedUser = dbEmail.User;
+
+  if (!(await organization.hasUser(Number(user.id)))) {
+    throw Boom.forbidden('Not allowed to invite users to organizations you are not a member of.');
+  }
+
+  if (await organization.hasUser(invitedUser)) {
     throw Boom.conflict('User is already in this organization or has already been invited.');
   }
 
+  if (dbEmail && !dbEmail.verified) {
+    throw Boom.notAcceptable('This email address has not been verified.');
+  }
+
   const key = crypto.randomBytes(20).toString('hex');
-  await organization.addUser(user, {
+  await organization.addUser(invitedUser, {
     through: { verified: false, key, email },
   });
 
   await sendOrganizationInviteEmail(
     {
       email,
-      name: user.name,
+      name: invitedUser.name,
       organization: organization.id,
       url: `${ctx.origin}/_/organization-invite?token=${key}`,
     },
@@ -151,9 +155,9 @@ export async function inviteMember(ctx) {
   );
 
   ctx.body = {
-    id: user.id,
-    name: user.name,
-    primaryEmail: user.primaryEmail,
+    id: invitedUser.id,
+    name: invitedUser.name,
+    primaryEmail: invitedUser.primaryEmail,
     verified: false,
   };
   ctx.status = 201;
