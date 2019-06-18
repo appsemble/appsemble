@@ -11,7 +11,7 @@ stages:
 # https://github.com/helm/helm/issues/5682#issuecomment-490084864
 .helm-image: &HELM
   name: lachlanevenson/k8s-helm:v2.14.1
-  entrypoint: [/bin/sh]
+  entrypoint: [/bin/sh, -c]
 
 ###################################################################################################
 #  Test Stage                                                                                     #
