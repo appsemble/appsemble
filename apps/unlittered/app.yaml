@@ -105,10 +105,8 @@ pages:
                 - value: Noord
                 - value: Zuid
             - name: status
-              label: Status
-              enum:
-                - value: open
-                  label: Open
+              type: hidden
+              defaultValue: open
             - name: notities
               label: Notities
               placeholder: Bijv. Er ligt een fiets in de bosjes.
