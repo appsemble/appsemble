@@ -23,7 +23,6 @@ export default {
       },
       responses: {
         201: {
-          description: 'The newly created organization.',
           $ref: '#/components/responses/organization',
         },
       },
@@ -38,7 +37,6 @@ export default {
       operationId: 'getOrganization',
       responses: {
         200: {
-          description: 'The organization that matches the given id.',
           $ref: '#/components/responses/organization',
         },
       },
@@ -90,8 +88,8 @@ export default {
           description: 'The response has been processed.',
         },
       },
+      security: [{ apiUser: [] }],
     },
-    security: [{ apiUser: [] }],
   },
   '/api/organizations/{organizationId}/members': {
     parameters: [{ $ref: '#/components/parameters/organizationId' }],
