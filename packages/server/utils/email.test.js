@@ -117,7 +117,7 @@ describe('sendForgetPasswordEmail', () => {
 describe('sendOrganizationInviteEmail', () => {
   it('should match its snapshot', async () => {
     const result = await sendOrganizationInviteEmail(
-      { email: 'test@example.com', organization: 'Appsemble' },
+      { email: 'test@example.com', organization: 'Appsemble', url: 'https://example.com/test' },
       null,
     );
 

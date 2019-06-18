@@ -38,7 +38,7 @@ describe('user', () => {
       name: 'Test User',
       primaryEmail: 'test@example.com',
       emails: [{ email: 'test@example.com', primary: true, verified: true }],
-      organizations: [{ id: 'testorganization' }],
+      organizations: [{ id: 'testorganization', name: 'Test Organization' }],
     });
   });
 

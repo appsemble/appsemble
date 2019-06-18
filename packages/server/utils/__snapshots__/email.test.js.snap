@@ -148,6 +148,10 @@ Joining an organization allows you to view private applications as well as =
 create and edit apps
 belonging to an organization.
 
+You can accept or decline this invitation by following the link below:
+
+https://example.com/test
+
 Kind regards,
 
 _The Appsemble Team_
@@ -162,6 +166,10 @@ Content-Transfer-Encoding: quoted-printable
 <p>Joining an organization allows you to =
 view private applications as well as create and edit apps
 belonging to an organization.</p>
+<p>You can accept or decline this =
+invitation by following the link below:</p>
+<p><a href=3D\\"https://example.=
+com/test\\">https://example.com/test</a></p>
 <p>Kind regards,</p>
 <p><em>The Appsemble Team</em></p>
 
