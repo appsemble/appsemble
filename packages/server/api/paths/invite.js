@@ -15,7 +15,6 @@ export default {
       operationId: 'getInvitation',
       responses: {
         200: {
-          description: 'The information relating to this invite.',
           $ref: '#/components/responses/invite',
         },
       },
