@@ -43,7 +43,7 @@ helm lint:
   image: *HELM
   script:
     - helm init --client-only
-    - helm dependency update --strict config/charts/*
+    - helm dependency build config/charts/*
     - helm lint --strict config/charts/*
 
 # Check formatting using prettier.
