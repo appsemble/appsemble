@@ -3,7 +3,7 @@ kind: Job
 metadata:
   name: {{ include "appsemble.fullname" . }}-migrate
   annotations:
-    app: appsemble
+    app: {{ .Values.app }}
     app.kubernetes.io/instance: {{ .Release.Name }}
     app.kubernetes.io/managed-by: {{ .Release.Service }}
     app.kubernetes.io/name: {{ include "appsemble.name" . }}
