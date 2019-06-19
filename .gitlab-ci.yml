@@ -42,7 +42,7 @@ eslint:
 helm lint:
   image: *HELM
   script:
-    - helm repo add stable https://kubernetes-charts.storage.googleapis.com
+    - helm init --client-only
     - helm dependency update --strict config/charts/*
     - helm lint --strict config/charts/*
 
@@ -237,7 +237,7 @@ review:
     url: https://$CI_ENVIRONMENT_SLUG.appsemble.app
     on_stop: stop review
   script:
-    - helm repo add stable https://kubernetes-charts.storage.googleapis.com
+    - helm init --client-only
     - helm dependency build config/charts/appsemble
     - helm upgrade "$CI_ENVIRONMENT_SLUG" config/charts/appsemble
       --atomic
@@ -317,7 +317,7 @@ staging:
     url: https://staging.appsemble.app
     on_stop: stop staging
   script:
-    - helm repo add stable https://kubernetes-charts.storage.googleapis.com
+    - helm init --client-only
     - helm dependency build config/charts/appsemble
     - helm upgrade "$CI_ENVIRONMENT_SLUG" config/charts/appsemble
       --atomic
@@ -358,7 +358,7 @@ stop staging:
     name: production
     url: https://appsemble.app
   script:
-    - helm repo add stable https://kubernetes-charts.storage.googleapis.com
+    - helm init --client-only
     - helm dependency build config/charts/appsemble
     - helm upgrade appsemble config/charts/appsemble
       --set "ingress.enabled=true"
