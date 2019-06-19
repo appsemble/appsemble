@@ -1,6 +1,6 @@
 import { defineMessages } from 'react-intl';
 
 export default defineMessages({
-  title: 'App Not Found',
+  title: 'Error',
   message: 'An unexpected error has occurred.',
 });
