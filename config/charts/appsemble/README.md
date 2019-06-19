@@ -24,6 +24,7 @@ helm upgrade my-release config/charts/appsemble --set 'mysql.existingSecret=my-s
 | `image.repository`       | `appsemble/appsemble` | Set this to `registry.gitlab.io/appsemble/appsemble` to support prerelease versions.                                                                        |
 | `image.tag`              | `nil`                 | If specified, this Docker image tag will be used. Otherwise, it will use the chart’s `appVersion`.                                                          |
 | `image.pullPolicy`       | `IfNotPresent`        | This can be used to override the default image pull policy.                                                                                                 |
+| `app`                    | `appsemble`           | The app annotation for Appsemble related resources.                                                                                                         |
 | `nameOverride`           | `''`                  | This can be used to override the name in the templates.                                                                                                     |
 | `fullnameOverride`       | `''`                  | This can be used to override the full name in the templates.                                                                                                |
 | `service.type`           | `ClusterIP`           | The type of the Appsemble service.                                                                                                                          |
