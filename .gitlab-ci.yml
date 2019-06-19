@@ -348,6 +348,29 @@ stop staging:
   script:
     - helm delete --purge "$CI_ENVIRONMENT_SLUG"
 
+production:
+  stage: deploy
+  image: *HELM
+  only:
+    - tags
+  dependencies: []
+  environment:
+    name: production
+    url: https://appsemble.app
+  script:
+    - helm repo add stable https://kubernetes-charts.storage.googleapis.com
+    - helm dependency build config/charts/appsemble
+    - helm upgrade appsemble config/charts/appsemble
+      --set "ingress.enabled=true"
+      --set "ingress.hosts={appsemble.app}"
+      --set "ingress.tls.secretName=production-tls"
+      --set "migrateTo=999.999.999"
+      --set "mysql.existingSecret=mysql-secret"
+      --set "mysql.fullnameOverride=mysql-test"
+      --set "mysql.mysqlHost=mysql-test"
+      --set "mysql.mysqlName=appsemble"
+      --set "mysql.mysqlUser=appsemble"
+
 ###################################################################################################
 #  Provision Stage                                                                                #
 ###################################################################################################

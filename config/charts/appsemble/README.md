@@ -2,19 +2,48 @@
 
 ## Installing
 
-New installation:
+### New installation
+
+It is recommended to create a MySQL secret beforehand.
 
 ```sh
-helm dependency update config/charts/appsemble
-helm install --name my-release config/charts/appsemble
+kubectl create secret generic mysql-secret \
+  --from-literal 'mysql-password=my-password' \
+  --from-literal 'mysql-root-password=my-root-password'
 ```
 
+However, this step **may** be skipped. In this case don’t pass the `mysql.existingSecret` and Helm
+will create a random password.
+
+> **Caution**: Make sure not to lose the MySQL passwords!
+
+Next an SMTP secret is needed for sending emails.
+
+```sh
+kubectl create secret generic smtp \
+  --from-literal 'host=my-smtp-host'
+  --from-literal 'port=my-smtp-port'
+  --from-literal 'secure=my-smtp-secure'
+  --from-literal 'user=my-smtp-user'
+  --from-literal 'pass=my-smtp-pass'
+  --from-literal 'from=my-smtp-from'
+```
+
+Now the chart can be installed.
+
 ```sh
 helm dependency update config/charts/appsemble
-helm upgrade my-release config/charts/appsemble --set 'mysql.existingSecret=my-secret'
+helm install --name my-release config/charts/appsemble --set 'mysql.existingSecret=mysql-secret'
 ```
 
 > **Note**: Appsemble isn’t published yet. Clone the repository and specify the path to the chart.
+
+### Upgrading
+
+```sh
+helm dependency update config/charts/appsemble
+helm upgrade my-release config/charts/appsemble --set 'mysql.existingSecret=mysql-secret'
+```
 
 ## Variables
 

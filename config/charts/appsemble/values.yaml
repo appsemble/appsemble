@@ -5,6 +5,7 @@ image:
   tag: null
   pullPolicy: IfNotPresent
 
+app: appsemble
 nameOverride: ''
 fullnameOverride: ''
 
