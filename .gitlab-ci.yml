@@ -42,6 +42,8 @@ eslint:
 helm lint:
   image: *HELM
   script:
+    - helm init --client-only
+    - helm dependency build config/charts/*
     - helm lint --strict config/charts/*
 
 # Check formatting using prettier.
@@ -240,6 +242,7 @@ review:
     - helm upgrade "$CI_ENVIRONMENT_SLUG" config/charts/appsemble
       --atomic
       --install
+      --set "app=$CI_ENVIRONMENT_SLUG"
       --set "image.pullPolicy=Always"
       --set "image.repository=$CI_REGISTRY_IMAGE"
       --set "image.tag=$CI_COMMIT_REF_NAME"
@@ -247,8 +250,9 @@ review:
       --set "ingress.hosts={${CI_ENVIRONMENT_URL/https:\/\//}}"
       --set "ingress.tls.secretName=$CI_ENVIRONMENT_SLUG-tls"
       --set "migrateTo=999.999.999"
-      --set "mysql.existingSecret=$CI_ENVIRONMENT_SLUG-mysql-secret"
+      --set "mysql.existingSecret=mysql"
       --set "mysql.fullnameOverride=$CI_ENVIRONMENT_SLUG-mysql"
+      --set "mysql.persistence.enabled=false"
 
 # Stop a review environment.
 stop review:
@@ -317,9 +321,10 @@ staging:
   script:
     - helm init --client-only
     - helm dependency build config/charts/appsemble
-    - helm upgrade "$CI_ENVIRONMENT_SLUG" config/charts/appsemble
+    - helm upgrade staging config/charts/appsemble
       --atomic
       --install
+      --set "app=$CI_ENVIRONMENT_SLUG"
       --set "image.pullPolicy=Always"
       --set "image.repository=$CI_REGISTRY_IMAGE"
       --set "image.tag=$CI_COMMIT_REF_NAME"
@@ -327,8 +332,9 @@ staging:
       --set "ingress.hosts={staging.appsemble.app}"
       --set "ingress.tls.secretName=$CI_ENVIRONMENT_SLUG-tls"
       --set "migrateTo=999.999.999"
-      --set "mysql.existingSecret=$CI_ENVIRONMENT_SLUG-mysql-secret"
+      --set "mysql.existingSecret=mysql"
       --set "mysql.fullnameOverride=$CI_ENVIRONMENT_SLUG-mysql"
+      --set "mysql.persistence.enabled=false"
 
 # Stop the staging environment.
 stop staging:
@@ -345,6 +351,24 @@ stop staging:
     action: stop
   script:
     - helm delete --purge "$CI_ENVIRONMENT_SLUG"
+
+.production:
+  stage: deploy
+  image: *HELM
+  only:
+    - tags
+  dependencies: []
+  environment:
+    name: production
+    url: https://appsemble.app
+  script:
+    - helm init --client-only
+    - helm dependency build config/charts/appsemble
+    - helm upgrade appsemble config/charts/appsemble
+      --set "ingress.enabled=true"
+      --set "ingress.hosts={appsemble.app}"
+      --set "ingress.tls.secretName=tls-secret"
+      --set "mysql.existingSecret=mysql-secret"
 
 ###################################################################################################
 #  Provision Stage                                                                                #
