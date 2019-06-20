@@ -251,6 +251,7 @@ review:
       --set "migrateTo=999.999.999"
       --set "mysql.existingSecret=$CI_ENVIRONMENT_SLUG-mysql-secret"
       --set "mysql.fullnameOverride=$CI_ENVIRONMENT_SLUG-mysql"
+      --set "mysql.persistence.enabled=false"
 
 # Stop a review environment.
 stop review:
@@ -331,6 +332,7 @@ staging:
       --set "migrateTo=999.999.999"
       --set "mysql.existingSecret=$CI_ENVIRONMENT_SLUG-mysql-secret"
       --set "mysql.fullnameOverride=$CI_ENVIRONMENT_SLUG-mysql"
+      --set "mysql.persistence.enabled=false"
 
 # Stop the staging environment.
 stop staging:
