@@ -250,7 +250,7 @@ review:
       --set "ingress.hosts={${CI_ENVIRONMENT_URL/https:\/\//}}"
       --set "ingress.tls.secretName=$CI_ENVIRONMENT_SLUG-tls"
       --set "migrateTo=999.999.999"
-      --set "mysql.existingSecret=$CI_ENVIRONMENT_SLUG-mysql-secret"
+      --set "mysql.existingSecret=mysql"
       --set "mysql.fullnameOverride=$CI_ENVIRONMENT_SLUG-mysql"
       --set "mysql.persistence.enabled=false"
 
@@ -332,7 +332,7 @@ staging:
       --set "ingress.hosts={staging.appsemble.app}"
       --set "ingress.tls.secretName=$CI_ENVIRONMENT_SLUG-tls"
       --set "migrateTo=999.999.999"
-      --set "mysql.existingSecret=$CI_ENVIRONMENT_SLUG-mysql-secret"
+      --set "mysql.existingSecret=mysql"
       --set "mysql.fullnameOverride=$CI_ENVIRONMENT_SLUG-mysql"
       --set "mysql.persistence.enabled=false"
 
