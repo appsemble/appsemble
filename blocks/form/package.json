@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/form",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "private": true,
   "appsemble": {
     "actions": {
@@ -12,7 +12,7 @@
     "output": "dist"
   },
   "dependencies": {
-    "@appsemble/react": "0.6.0",
+    "@appsemble/react": "0.7.0",
     "classnames": "^2.2.6",
     "leaflet": "^1.5.1",
     "prop-types": "^15.7.2",

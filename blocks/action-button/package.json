@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/action-button",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "private": true,
   "appsemble": {
     "layout": "float",
@@ -12,6 +12,6 @@
     "output": "dist"
   },
   "dependencies": {
-    "@appsemble/sdk": "0.6.0"
+    "@appsemble/sdk": "0.7.0"
   }
 }

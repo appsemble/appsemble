@@ -18,12 +18,13 @@ A block used for inputting and submitting sets of data.
 
 ## Parameters
 
-| Parameter      | Default      | Description                                                             |
-| -------------- | ------------ | ----------------------------------------------------------------------- |
-| fields         |              | A list of objects describing each field that can be entered in the form |
-| fields[].name  |              | The name used when storing this field                                   |
-| fields[].label | field[].name | User-facing label describing the field                                  |
-| fields[].type  | string       | The type of the data                                                    |
+| Parameter             | Default      | Description                                                             |
+| --------------------- | ------------ | ----------------------------------------------------------------------- |
+| fields                |              | A list of objects describing each field that can be entered in the form |
+| fields[].defaultValue |              | The default value for the field.                                        |
+| fields[].name         |              | The name used when storing this field                                   |
+| fields[].label        | field[].name | User-facing label describing the field                                  |
+| fields[].type         | string       | The type of the data                                                    |
 
 #### Field types
 
@@ -59,6 +60,10 @@ A dropdown list containing a list of predetermined values.
 | -------------- | ---------------------------------------------------- |
 | fields[].value | The value and name of the field that can be selected |
 
+#### hidden
+
+A hidden field. This is useful for submitting default values the user may not change.
+
 ## Images
 
-<img src={require('../images/form.png')} style={{width: '300px' }} />
+<img src={require('../images/form.png')} style={{ width: '300px' }} />

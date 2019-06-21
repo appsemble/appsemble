@@ -16,6 +16,7 @@ describe('logger', () => {
     now = 0;
     app = new Koa();
     app.use(logger());
+    app.silent = true;
     request = supertest(app.callback());
   });
 
@@ -45,10 +46,22 @@ describe('logger', () => {
   it('should log error responses as error', async () => {
     app.use(ctx => {
       now += 53;
-      ctx.status = 500;
+      ctx.status = 503;
     });
     await request.get('/wrap');
-    expect(log.log).toHaveBeenCalledWith('error', 'GET /wrap 500 Internal Server Error 53ms');
+    expect(log.log).toHaveBeenCalledWith('error', 'GET /wrap 503 Service Unavailable 53ms');
+  });
+
+  it('should log errors as internal server errors and rethrow', async () => {
+    const spy = jest.fn();
+    app.on('error', spy);
+    app.use(() => {
+      now += 86;
+      throw new Error('fail');
+    });
+    await request.get('/taco');
+    expect(spy).toHaveBeenCalled();
+    expect(log.log).toHaveBeenCalledWith('error', 'GET /taco 500 Internal Server Error 86ms');
   });
 
   it('should append the response length if it is defined', async () => {

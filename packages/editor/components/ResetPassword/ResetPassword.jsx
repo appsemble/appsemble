@@ -1,3 +1,4 @@
+import { Form } from '@appsemble/react-components';
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -52,7 +53,7 @@ export default class ResetPassword extends React.Component {
         </article>
       </div>
     ) : (
-      <form className={classNames('container', styles.root)} onSubmit={this.onSubmit}>
+      <Form className={classNames('container', styles.root)} onSubmit={this.onSubmit}>
         {error && (
           <article className="message is-danger">
             <div className="message-body">
@@ -96,7 +97,7 @@ export default class ResetPassword extends React.Component {
         >
           <FormattedMessage {...messages.requestButton} />
         </button>
-      </form>
+      </Form>
     );
   }
 }

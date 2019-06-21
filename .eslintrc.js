@@ -58,6 +58,7 @@ module.exports = {
     ],
     'import/no-cycle': ['error', { maxDepth: 1 }],
     'import/no-useless-path-segments': 'error',
+    'react/destructuring-assignment': ['error', 'always', { ignoreClassFields: true }],
     'react/jsx-sort-props': 'error',
     'react/state-in-constructor': ['error', 'never'],
     'simple-import-sort/sort': 'error',

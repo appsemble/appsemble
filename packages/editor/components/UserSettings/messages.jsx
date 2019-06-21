@@ -22,4 +22,7 @@ export default defineMessages({
   primaryEmailSuccess: 'Successfully set {email} as your primary email address.',
   resendVerification: 'Resend verification mail',
   resendVerificationSent: 'Sent verification mail',
+  verified: 'Verified',
+  unverified: 'Not verified',
+  primary: 'Primary',
 });

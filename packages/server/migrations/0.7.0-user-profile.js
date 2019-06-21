@@ -1,19 +1,19 @@
-const Sequelize = require('sequelize');
+import { DataTypes, Op } from 'sequelize';
 
-module.exports = {
+export default {
   key: '0.7.0',
-  async up(db, DataTypes) {
+  async up(db) {
     const queryInterface = db.getQueryInterface();
     const { User, EmailAuthorization } = db.models;
 
-    queryInterface.addColumn('User', 'name', { type: DataTypes.STRING });
-    queryInterface.addColumn('User', 'password', { type: DataTypes.STRING });
-    queryInterface.addColumn('User', 'primaryEmail', {
+    await queryInterface.addColumn('User', 'name', { type: DataTypes.STRING });
+    await queryInterface.addColumn('User', 'password', { type: DataTypes.STRING });
+    await queryInterface.addColumn('User', 'primaryEmail', {
       type: DataTypes.STRING,
       references: { model: 'EmailAuthorization', key: 'email' },
     });
 
-    queryInterface.addColumn('ResetPasswordToken', 'UserId', {
+    await queryInterface.addColumn('ResetPasswordToken', 'UserId', {
       type: DataTypes.INTEGER,
       allowNull: false,
       onDelete: 'CASCADE',
@@ -23,57 +23,65 @@ module.exports = {
       },
     });
 
-    queryInterface.removeColumn('ResetPasswordToken', 'EmailAuthorizationEmail');
+    await queryInterface.removeColumn('ResetPasswordToken', 'EmailAuthorizationEmail');
 
     const emailAuthorizations = await queryInterface.select(
       EmailAuthorization,
       'EmailAuthorization',
     );
-    emailAuthorizations.forEach(emailAuthorization => {
-      queryInterface.update(
-        User,
-        'User',
-        {
-          password: emailAuthorization.dataValues.password,
-          primaryEmail: emailAuthorization.dataValues.email,
-        },
-        { id: emailAuthorization.UserId },
-      );
-    });
 
-    queryInterface.removeColumn('EmailAuthorization', 'password');
-    queryInterface.removeColumn('EmailAuthorization', 'name');
-    queryInterface.removeColumn('EmailAuthorization', 'deleted');
+    await Promise.all(
+      emailAuthorizations.map(emailAuthorization =>
+        queryInterface.update(
+          User,
+          'User',
+          {
+            name: emailAuthorization.dataValues.name,
+            password: emailAuthorization.dataValues.password,
+            primaryEmail: emailAuthorization.dataValues.email,
+          },
+          { id: emailAuthorization.dataValues.UserId },
+        ),
+      ),
+    );
+
+    await queryInterface.removeColumn('EmailAuthorization', 'password');
+    await queryInterface.removeColumn('EmailAuthorization', 'name');
+    await queryInterface.removeColumn('EmailAuthorization', 'deleted');
   },
 
   async down(db) {
     const queryInterface = db.getQueryInterface();
     const { User, EmailAuthorization } = db.models;
 
-    queryInterface.addColumn('EmailAuthorization', 'name', { type: Sequelize.DataTypes.STRING });
-    queryInterface.addColumn('EmailAuthorization', 'password', {
-      type: Sequelize.DataTypes.STRING,
+    await queryInterface.addColumn('EmailAuthorization', 'name', {
+      type: DataTypes.STRING,
+    });
+    await queryInterface.addColumn('EmailAuthorization', 'password', {
+      type: DataTypes.STRING,
     });
 
     const users = await queryInterface.select(User, 'User');
-    users.forEach(user => {
-      if (user.dataValues.primaryEmail) {
-        queryInterface.bulkDelete('EmailAuthorization', {
-          [Sequelize.Op.not]: { email: user.dataValues.primaryEmail },
-        });
+    await Promise.all(
+      users
+        .filter(user => user.dataValues.primaryEmail)
+        .map(async user => {
+          await queryInterface.bulkDelete('EmailAuthorization', {
+            [Op.not]: { email: user.dataValues.primaryEmail },
+          });
 
-        queryInterface.update(
-          EmailAuthorization,
-          'EmailAuthorization',
-          { name: user.dataValues.name, password: user.dataValues.password },
-          { email: user.dataValues.primaryEmail },
-        );
-      }
-    });
+          return queryInterface.update(
+            EmailAuthorization,
+            'EmailAuthorization',
+            { name: user.dataValues.name, password: user.dataValues.password },
+            { email: user.dataValues.primaryEmail },
+          );
+        }),
+    );
 
-    queryInterface.removeColumn('ResetPasswordToken', 'UserId');
-    queryInterface.addColumn('ResetPasswordToken', 'EmailAuthorizationEmail', {
-      type: Sequelize.DataTypes.STRING,
+    await queryInterface.removeColumn('ResetPasswordToken', 'UserId');
+    await queryInterface.addColumn('ResetPasswordToken', 'EmailAuthorizationEmail', {
+      type: DataTypes.STRING,
       allowNull: false,
       onDelete: 'CASCADE',
       references: {
@@ -82,10 +90,12 @@ module.exports = {
       },
     });
 
-    queryInterface.removeColumn('User', 'name');
-    queryInterface.removeColumn('User', 'password');
-    queryInterface.removeConstraint('User', 'User_primaryEmail_foreign_idx');
-    queryInterface.removeColumn('User', 'primaryEmail');
-    queryInterface.addColumn('EmailAuthorization', 'deleted', { type: Sequelize.DataTypes.DATE });
+    await queryInterface.removeColumn('User', 'name');
+    await queryInterface.removeColumn('User', 'password');
+    await queryInterface.removeConstraint('User', 'User_primaryEmail_foreign_idx');
+    await queryInterface.removeColumn('User', 'primaryEmail');
+    await queryInterface.addColumn('EmailAuthorization', 'deleted', {
+      type: DataTypes.DATE,
+    });
   },
 };

@@ -1,8 +1,8 @@
 apiVersion: v1
 name: appsemble
-version: 0.6.0
+version: 0.7.0
 description: The official Helm chart for Appsemble.
 home: https://appsemble.com
 sources:
   - https://gitlab.com/appsemble/appsemble
-appVersion: 0.6.0
+appVersion: 0.7.0
