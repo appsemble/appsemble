@@ -80,7 +80,7 @@ pages:
       - '*'
     blocks:
       - type: form
-        version: 0.6.0
+        version: 0.7.0
         parameters:
           fields:
             - name: locatie
@@ -105,10 +105,8 @@ pages:
                 - value: Noord
                 - value: Zuid
             - name: status
-              label: Status
-              enum:
-                - value: open
-                  label: Open
+              type: hidden
+              defaultValue: open
             - name: notities
               label: Notities
               placeholder: Bijv. Er ligt een fiets in de bosjes.
@@ -126,7 +124,7 @@ pages:
             fullscreen: true
             blocks:
               - type: '@amsterdam/splash'
-                version: 0.6.0
+                version: 0.7.0
                 actions:
                   load:
                     type: resource.create
@@ -142,7 +140,7 @@ pages:
       - '*'
     blocks:
       - type: map
-        version: 0.6.0
+        version: 0.7.0
         parameters:
           latitude: locatie.latitude
           longitude: locatie.longitude
@@ -157,7 +155,7 @@ pages:
               $orderby: 'created desc'
               $top: 50
       - type: action-button
-        version: 0.6.0
+        version: 0.7.0
         actions:
           click:
             type: link
@@ -168,7 +166,7 @@ pages:
       - '*'
     blocks:
       - type: filter
-        version: 0.6.0
+        version: 0.7.0
         parameters:
           refreshTimeout: 30
           event: updateWaarnemingen
@@ -204,7 +202,7 @@ pages:
               $top: 50
 
       - type: feed
-        version: 0.6.0
+        version: 0.7.0
         parameters:
           listen: updateWaarnemingen
           title: type
@@ -230,7 +228,7 @@ pages:
             type: dialog
             blocks:
               - type: '@amsterdam/action'
-                version: 0.6.0
+                version: 0.7.0
                 actions:
                   submit:
                     type: resource.update
@@ -265,7 +263,7 @@ pages:
                         - value: Stadswerken
                         - value: Groen
       - type: action-button
-        version: 0.6.0
+        version: 0.7.0
         actions:
           click:
             type: link
@@ -277,7 +275,7 @@ pages:
       - id
     blocks:
       - type: detail-viewer
-        version: 0.6.0
+        version: 0.7.0
         parameters:
           fileBase: /api/assets
           fields:

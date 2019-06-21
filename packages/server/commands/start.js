@@ -4,8 +4,11 @@ import Koa from 'koa';
 
 import api from '../api';
 import loggerMiddleware from '../middleware/logger';
+import migrations from '../migrations';
+import pkg from '../package.json';
 import configureStatic from '../utils/configureStatic';
 import createServer from '../utils/createServer';
+import migrate from '../utils/migrate';
 import setupModels, { handleDbException } from '../utils/setupModels';
 import databaseBuilder from './builder/database';
 
@@ -73,7 +76,7 @@ export function builder(yargs) {
     });
 }
 
-export async function handler(argv, webpackConfigs) {
+export async function handler(argv, { webpackConfigs, syncDB } = {}) {
   let db;
 
   try {
@@ -88,6 +91,10 @@ export async function handler(argv, webpackConfigs) {
     });
   } catch (dbException) {
     handleDbException(dbException);
+  }
+
+  if (syncDB) {
+    await migrate(db, pkg.version, migrations);
   }
 
   const smtp = argv.smtpHost

@@ -116,5 +116,5 @@ export async function handler(argv) {
       }),
     ),
   );
-  return start(argv, webpackConfigs);
+  return start(argv, { webpackConfigs, syncDB: true });
 }

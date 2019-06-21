@@ -27,7 +27,6 @@ export default class GeoCoordinatesInput extends React.Component {
   };
 
   locationMarker = new CircleMarker(null, {
-    // eslint-disable-next-line react/destructuring-assignment
     color: getComputedStyle(this.props.reactRoot).getPropertyValue('--primary-color'),
   });
 

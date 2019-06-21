@@ -14,6 +14,7 @@ const inputs = {
   file: FileInput,
   enum: EnumInput,
   geocoordinates: GeoCoordinatesInput,
+  hidden: () => null,
   string: StringInput,
 };
 
@@ -36,7 +37,10 @@ export default class FormBlock extends React.Component {
     errors: {},
     pristine: true,
     submitting: false,
-    values: {},
+    values: this.props.block.parameters.fields.reduce((acc, { name, defaultValue }) => {
+      acc[name] = defaultValue;
+      return acc;
+    }, {}),
   };
 
   onChange = (event, value = event.target.value) => {

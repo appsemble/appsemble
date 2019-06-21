@@ -7,6 +7,12 @@ stages:
   - deploy
   - provision
 
+# This is the most official Helm image at the moment.
+# https://github.com/helm/helm/issues/5682#issuecomment-490084864
+.helm-image: &HELM
+  name: lachlanevenson/k8s-helm:v2.14.1
+  entrypoint: [/bin/sh, -c]
+
 ###################################################################################################
 #  Test Stage                                                                                     #
 ###################################################################################################
@@ -34,8 +40,10 @@ eslint:
 
 # Lint Helm charts.
 helm lint:
-  image: registry.gitlab.com/gitlab-org/gitlab-build-images:gitlab-charts-build-base
+  image: *HELM
   script:
+    - helm init --client-only
+    - helm dependency build config/charts/*
     - helm lint --strict config/charts/*
 
 # Check formatting using prettier.
@@ -217,7 +225,7 @@ publish:docker:latest:
 # Deploy the Docker image for a branch to a review environment.
 review:
   stage: deploy
-  image: registry.gitlab.com/gitlab-org/gitlab-build-images:gitlab-charts-build-base
+  image: *HELM
   when: manual
   except:
     - master
@@ -229,26 +237,27 @@ review:
     url: https://$CI_ENVIRONMENT_SLUG.appsemble.app
     on_stop: stop review
   script:
-    - mkdir ~/.helm
-    - kubectl get secrets/tiller-secret -n gitlab-managed-apps -o "jsonpath={.data['tls\.crt']}" | base64 -d > ~/.helm/cert.pem
-    - kubectl get secrets/tiller-secret -n gitlab-managed-apps -o "jsonpath={.data['tls\.key']}" | base64 -d > ~/.helm/key.pem
     - helm init --client-only
     - helm dependency build config/charts/appsemble
     - helm upgrade "$CI_ENVIRONMENT_SLUG" config/charts/appsemble
+      --atomic
       --install
+      --set "app=$CI_ENVIRONMENT_SLUG"
+      --set "image.pullPolicy=Always"
       --set "image.repository=$CI_REGISTRY_IMAGE"
       --set "image.tag=$CI_COMMIT_REF_NAME"
       --set "ingress.enabled=true"
       --set "ingress.hosts={${CI_ENVIRONMENT_URL/https:\/\//}}"
       --set "ingress.tls.secretName=$CI_ENVIRONMENT_SLUG-tls"
-      --set "mysql.existingSecret=$CI_ENVIRONMENT_SLUG-mysql-secret"
+      --set "migrateTo=999.999.999"
+      --set "mysql.existingSecret=mysql"
       --set "mysql.fullnameOverride=$CI_ENVIRONMENT_SLUG-mysql"
-      --wait
+      --set "mysql.persistence.enabled=false"
 
 # Stop a review environment.
 stop review:
   stage: deploy
-  image: registry.gitlab.com/gitlab-org/gitlab-build-images:gitlab-charts-build-base
+  image: *HELM
   when: manual
   except:
     - master
@@ -258,16 +267,12 @@ stop review:
     name: review/$CI_COMMIT_REF_SLUG
     action: stop
   script:
-    - mkdir ~/.helm
-    - kubectl get secrets/tiller-secret -n gitlab-managed-apps -o "jsonpath={.data['tls\.crt']}" | base64 -d > ~/.helm/cert.pem
-    - kubectl get secrets/tiller-secret -n gitlab-managed-apps -o "jsonpath={.data['tls\.key']}" | base64 -d > ~/.helm/key.pem
-    - helm init --client-only
     - helm delete --purge "$CI_ENVIRONMENT_SLUG"
 
 # Deploy the Docker image for a branch to a review environment.
 review docs:
   stage: deploy
-  image: registry.gitlab.com/gitlab-org/gitlab-build-images:gitlab-charts-build-base
+  image: *HELM
   when: manual
   except:
     - master
@@ -279,20 +284,16 @@ review docs:
     url: https://$CI_ENVIRONMENT_SLUG.appsemble.app
     on_stop: stop review docs
   script:
-    - mkdir ~/.helm
-    - kubectl get secrets/tiller-secret -n gitlab-managed-apps -o "jsonpath={.data['tls\.crt']}" | base64 -d > ~/.helm/cert.pem
-    - kubectl get secrets/tiller-secret -n gitlab-managed-apps -o "jsonpath={.data['tls\.key']}" | base64 -d > ~/.helm/key.pem
-    - helm init --client-only
     - helm upgrade "$CI_ENVIRONMENT_SLUG" config/charts/appsemble-docs
+      --atomic
       --install
       --set "git.commit.sha=$CI_COMMIT_SHA"
       --set "image.tag=$CI_COMMIT_REF_NAME"
-      --wait
 
 # Stop a review environment.
 stop review docs:
   stage: deploy
-  image: registry.gitlab.com/gitlab-org/gitlab-build-images:gitlab-charts-build-base
+  image: *HELM
   when: manual
   except:
     - master
@@ -302,16 +303,12 @@ stop review docs:
     name: review/docs/$CI_COMMIT_REF_SLUG
     action: stop
   script:
-    - mkdir ~/.helm
-    - kubectl get secrets/tiller-secret -n gitlab-managed-apps -o "jsonpath={.data['tls\.crt']}" | base64 -d > ~/.helm/cert.pem
-    - kubectl get secrets/tiller-secret -n gitlab-managed-apps -o "jsonpath={.data['tls\.key']}" | base64 -d > ~/.helm/key.pem
-    - helm init --client-only
     - helm delete --purge "$CI_ENVIRONMENT_SLUG"
 
 # Deploy the Docker image for master to the staging environment.
 staging:
   stage: deploy
-  image: registry.gitlab.com/gitlab-org/gitlab-build-images:gitlab-charts-build-base
+  image: *HELM
   only:
     - master@appsemble/appsemble
   except:
@@ -322,26 +319,27 @@ staging:
     url: https://staging.appsemble.app
     on_stop: stop staging
   script:
-    - mkdir ~/.helm
-    - kubectl get secrets/tiller-secret -n gitlab-managed-apps -o "jsonpath={.data['tls\.crt']}" | base64 -d > ~/.helm/cert.pem
-    - kubectl get secrets/tiller-secret -n gitlab-managed-apps -o "jsonpath={.data['tls\.key']}" | base64 -d > ~/.helm/key.pem
     - helm init --client-only
     - helm dependency build config/charts/appsemble
-    - helm upgrade "$CI_ENVIRONMENT_SLUG" config/charts/appsemble
+    - helm upgrade staging config/charts/appsemble
+      --atomic
       --install
+      --set "app=$CI_ENVIRONMENT_SLUG"
+      --set "image.pullPolicy=Always"
       --set "image.repository=$CI_REGISTRY_IMAGE"
       --set "image.tag=$CI_COMMIT_REF_NAME"
       --set "ingress.enabled=true"
       --set "ingress.hosts={staging.appsemble.app}"
       --set "ingress.tls.secretName=$CI_ENVIRONMENT_SLUG-tls"
-      --set "mysql.existingSecret=$CI_ENVIRONMENT_SLUG-mysql-secret"
+      --set "migrateTo=999.999.999"
+      --set "mysql.existingSecret=mysql"
       --set "mysql.fullnameOverride=$CI_ENVIRONMENT_SLUG-mysql"
-      --wait
+      --set "mysql.persistence.enabled=false"
 
 # Stop the staging environment.
 stop staging:
   stage: deploy
-  image: registry.gitlab.com/gitlab-org/gitlab-build-images:gitlab-charts-build-base
+  image: *HELM
   when: manual
   only:
     - master@appsemble/appsemble
@@ -352,11 +350,25 @@ stop staging:
     name: staging
     action: stop
   script:
-    - mkdir ~/.helm
-    - kubectl get secrets/tiller-secret -n gitlab-managed-apps -o "jsonpath={.data['tls\.crt']}" | base64 -d > ~/.helm/cert.pem
-    - kubectl get secrets/tiller-secret -n gitlab-managed-apps -o "jsonpath={.data['tls\.key']}" | base64 -d > ~/.helm/key.pem
-    - helm init --client-only
     - helm delete --purge "$CI_ENVIRONMENT_SLUG"
+
+.production:
+  stage: deploy
+  image: *HELM
+  only:
+    - tags
+  dependencies: []
+  environment:
+    name: production
+    url: https://appsemble.app
+  script:
+    - helm init --client-only
+    - helm dependency build config/charts/appsemble
+    - helm upgrade appsemble config/charts/appsemble
+      --set "ingress.enabled=true"
+      --set "ingress.hosts={appsemble.app}"
+      --set "ingress.tls.secretName=tls-secret"
+      --set "mysql.existingSecret=mysql-secret"
 
 ###################################################################################################
 #  Provision Stage                                                                                #
