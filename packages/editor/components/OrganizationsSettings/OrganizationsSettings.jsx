@@ -56,6 +56,10 @@ export default class OrganizationsSettings extends Component {
     this.setState({ [event.target.name]: value });
   };
 
+  onMemberEmailChange = event => {
+    this.setState({ [event.target.name]: event.targetvalue.trim() });
+  };
+
   onOrganizationChange = async event => {
     const { organizations } = this.state;
     const organizationId = event.target.value;
@@ -111,9 +115,9 @@ export default class OrganizationsSettings extends Component {
     const { selectedOrganization, organizations, memberEmail } = this.state;
 
     this.setState({ submittingMember: true });
-    const organization = organizations.find(o => o.id === selectedOrganization);
+    const organization = { ...organizations.find(o => o.id === selectedOrganization) };
 
-    if (organization.members.some(m => m.primaryEmail === memberEmail.trim())) {
+    if (organization.members.some(m => m.primaryEmail === memberEmail)) {
       push({
         body: intl.formatMessage(messages.existingMemberWarning),
         color: 'warning',
@@ -127,6 +131,7 @@ export default class OrganizationsSettings extends Component {
         `/api/organizations/${selectedOrganization}/members`,
         { email: memberEmail },
       );
+
       organization.members.push(member);
 
       this.setState({
@@ -140,22 +145,18 @@ export default class OrganizationsSettings extends Component {
         color: 'success',
       });
     } catch (exception) {
-      if (exception?.response) {
-        switch (exception.response.status) {
-          case 404:
-            push(intl.formatMessage(messages.inviteMemberNotFound));
-            break;
-          case 406:
-            push(intl.formatMessage(messages.inviteMemberNotVerified));
-            break;
-          case 409:
-            push(intl.formatMessage(messages.inviteMemberConflict));
-            break;
-          default:
-            push(intl.formatMessage(messages.inviteMemberError));
-        }
-      } else {
-        push(intl.formatMessage(messages.inviteMemberError));
+      switch (exception.response && exception.response.status) {
+        case 404:
+          push(intl.formatMessage(messages.inviteMemberNotFound));
+          break;
+        case 406:
+          push(intl.formatMessage(messages.inviteMemberNotVerified));
+          break;
+        case 409:
+          push(intl.formatMessage(messages.inviteMemberConflict));
+          break;
+        default:
+          push(intl.formatMessage(messages.inviteMemberError));
       }
 
       this.setState({
@@ -340,7 +341,7 @@ export default class OrganizationsSettings extends Component {
                     disabled={submittingMember}
                     id="memberEmail"
                     name="memberEmail"
-                    onChange={this.onChange}
+                    onChange={this.onMemberEmailChange}
                     placeholder={intl.formatMessage(messages.email)}
                     type="email"
                     value={memberEmail}
