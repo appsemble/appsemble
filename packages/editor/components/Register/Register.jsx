@@ -45,22 +45,16 @@ export default class Register extends React.Component {
       await registerEmail(email, password, organization);
       this.setState({ submitting: false, success: true });
     } catch (error) {
-      if (error?.response) {
-        if (error.response.status === 409) {
-          if (error.response.data.message === 'User with this email address already exists.') {
-            push(intl.formatMessage(messages.emailConflict));
-          } else if (error.response.data.message === 'This organization already exists.') {
-            push({
-              body: intl.formatMessage(messages.organizationConflict),
-              timeout: 0,
-              dismissable: true,
-            });
-          } else {
-            push(intl.formatMessage(messages.registerFailed));
-          }
-        } else {
-          push(intl.formatMessage(messages.registerFailed));
-        }
+      if (error?.response?.status !== 409) {
+        push(intl.formatMessage(messages.registerFailed));
+      } else if (error.response.data.message === 'User with this email address already exists.') {
+        push(intl.formatMessage(messages.emailConflict));
+      } else if (error.response.data.message === 'This organization already exists.') {
+        push({
+          body: intl.formatMessage(messages.organizationConflict),
+          timeout: 0,
+          dismissable: true,
+        });
       } else {
         push(intl.formatMessage(messages.registerFailed));
       }
