@@ -57,7 +57,7 @@ export default class OrganizationsSettings extends Component {
   };
 
   onMemberEmailChange = event => {
-    this.setState({ [event.target.name]: event.targetvalue.trim() });
+    this.setState({ [event.target.name]: event.target.value.trim() });
   };
 
   onOrganizationChange = async event => {
