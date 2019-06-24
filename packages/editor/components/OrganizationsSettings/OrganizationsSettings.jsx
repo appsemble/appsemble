@@ -5,6 +5,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { FormattedMessage } from 'react-intl';
 
+import { requestUser } from '../../actions/user';
 import styles from './OrganizationsSettings.css';
 import messages from './messages';
 
@@ -12,10 +13,11 @@ export default class OrganizationsSettings extends Component {
   static propTypes = {
     push: PropTypes.func.isRequired,
     intl: PropTypes.shape().isRequired,
+    user: PropTypes.shape().isRequired,
+    updateUser: PropTypes.func.isRequired,
   };
 
   state = {
-    user: undefined,
     loading: true,
     selectedOrganization: undefined,
     organizations: [],
@@ -28,7 +30,11 @@ export default class OrganizationsSettings extends Component {
   };
 
   async componentDidMount() {
-    const { data: user } = await axios.get('/api/user');
+    const { updateUser } = this.props;
+
+    const user = await requestUser();
+    updateUser(user);
+
     let selectedOrganization = '';
     let organizations = [];
 
@@ -41,7 +47,6 @@ export default class OrganizationsSettings extends Component {
     }
 
     this.setState({
-      user,
       loading: false,
       selectedOrganization,
       organizations,
@@ -74,7 +79,7 @@ export default class OrganizationsSettings extends Component {
   onSubmitNewOrganization = async event => {
     event.preventDefault();
 
-    const { intl, push } = this.props;
+    const { intl, push, user, updateUser } = this.props;
     const { organizations, newOrganizationId, newOrganizationName } = this.state;
 
     this.setState({ submittingOrganization: true });
@@ -86,6 +91,9 @@ export default class OrganizationsSettings extends Component {
       });
 
       organizations.push(organization);
+
+      updateUser({ ...user, organizations });
+
       push({
         body: intl.formatMessage(messages.createOrganizationSuccess, {
           organization: organization.name,
@@ -180,8 +188,8 @@ export default class OrganizationsSettings extends Component {
   };
 
   onLeaveOrganization = async () => {
-    const { user, organizations, selectedOrganization } = this.state;
-    const { intl, push } = this.props;
+    const { organizations, selectedOrganization } = this.state;
+    const { intl, push, user } = this.props;
 
     await axios.delete(`/api/organizations/${selectedOrganization}/members/${user.id}`);
 
@@ -230,7 +238,6 @@ export default class OrganizationsSettings extends Component {
 
   render() {
     const {
-      user,
       loading,
       selectedOrganization,
       organizations,
@@ -241,7 +248,7 @@ export default class OrganizationsSettings extends Component {
       newOrganizationName,
       submittingOrganization,
     } = this.state;
-    const { intl } = this.props;
+    const { intl, user } = this.props;
 
     if (loading) {
       return <Loader />;

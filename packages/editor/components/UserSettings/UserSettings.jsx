@@ -11,11 +11,12 @@ export default class UserSettings extends Component {
   static propTypes = {
     intl: PropTypes.shape().isRequired,
     push: PropTypes.func.isRequired,
+    user: PropTypes.shape().isRequired,
+    updateUser: PropTypes.func.isRequired,
   };
 
   state = {
-    user: undefined,
-    newUser: undefined,
+    newUser: { name: '' },
     newEmail: '',
     loading: true,
     submittingEmail: false,
@@ -24,24 +25,22 @@ export default class UserSettings extends Component {
   };
 
   async componentDidMount() {
-    const { data: user } = await axios.get('/api/user');
-    this.setState({ user, newUser: user, loading: false });
+    const { user } = this.props;
+    this.setState({ newUser: { ...user }, loading: false });
   }
 
   onNameChange = event => {
-    this.setState(({ user }) => ({
-      user: {
-        ...user,
-        name: event.target.value,
-      },
-    }));
+    const { newUser } = this.state;
+    newUser.name = event.target.value;
+
+    this.setState({ newUser });
   };
 
   onAddNewEmail = async event => {
     event.preventDefault();
 
-    const { newEmail, user } = this.state;
-    const { push, intl } = this.props;
+    const { newEmail } = this.state;
+    const { push, intl, user, updateUser } = this.props;
 
     this.setState({ submittingEmail: true });
 
@@ -53,14 +52,15 @@ export default class UserSettings extends Component {
         color: 'success',
       });
 
+      updateUser({
+        ...user,
+        emails: [...user.emails, { email: newEmail, verified: false, primary: false }].sort(
+          (a, b) => a.email.localeCompare(b.email),
+        ),
+      });
+
       this.setState({
         newEmail: '',
-        user: {
-          ...user,
-          emails: [...user.emails, { email: newEmail, verified: false, primary: false }].sort(
-            (a, b) => a.email.localeCompare(b.email),
-          ),
-        },
       });
     } catch (exception) {
       if (exception?.response?.status === 409) {
@@ -74,14 +74,15 @@ export default class UserSettings extends Component {
 
   setPrimaryEmail = async email => {
     const { user } = this.state;
-    const { push, intl } = this.props;
+    const { push, intl, updateUser } = this.props;
 
     const { data: newUser } = await axios.put('/api/user', { ...user, primaryEmail: email.email });
     push({
       body: intl.formatMessage(messages.primaryEmailSuccess, { email: email.email }),
       color: 'success',
     });
-    this.setState({ user: newUser });
+
+    updateUser(newUser);
   };
 
   resendVerification = async email => {
@@ -100,14 +101,15 @@ export default class UserSettings extends Component {
   };
 
   deleteEmail = async () => {
-    const { user, deletingEmail: email } = this.state;
-    const { push, intl } = this.props;
+    const { deletingEmail: email } = this.state;
+    const { push, intl, updateUser, user } = this.props;
 
     await axios.delete('/api/user/email', { data: { email: email.email } });
 
+    updateUser({ ...user, emails: user.emails.filter(e => e.email !== email.email) });
+
     this.setState({
       deletingEmail: null,
-      user: { ...user, emails: user.emails.filter(e => e.email !== email.email) },
     });
     push({ body: intl.formatMessage(messages.deleteEmailSuccess), color: 'info' });
   };
@@ -120,12 +122,13 @@ export default class UserSettings extends Component {
     event.preventDefault();
 
     const { newUser } = this.state;
-    const { push, intl } = this.props;
+    const { push, intl, updateUser } = this.props;
 
     try {
       this.setState({ submittingName: true });
       const { data: updatedUser } = await axios.put('/api/user', newUser);
-      this.setState({ user: updatedUser, newUser: updatedUser, submittingName: false }, () => {
+      updateUser(updatedUser);
+      this.setState({ newUser: updatedUser, submittingName: false }, () => {
         push({ body: intl.formatMessage(messages.submitSuccess), color: 'success' });
       });
     } catch (e) {
@@ -135,7 +138,6 @@ export default class UserSettings extends Component {
 
   render() {
     const {
-      user,
       newUser,
       loading,
       submittingEmail,
@@ -143,7 +145,7 @@ export default class UserSettings extends Component {
       newEmail,
       deletingEmail,
     } = this.state;
-    const { intl } = this.props;
+    const { intl, user } = this.props;
 
     if (loading) {
       return <Loader />;
@@ -163,7 +165,7 @@ export default class UserSettings extends Component {
                 onChange={this.onNameChange}
                 placeholder={intl.formatMessage(messages.displayName)}
                 type="text"
-                value={newUser.name}
+                value={newUser.name || ''}
               />
               <span className="icon is-small is-left">
                 <i className="fas fa-user" />

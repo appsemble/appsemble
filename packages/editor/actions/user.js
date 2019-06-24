@@ -7,6 +7,7 @@ import jwtDecode from 'jwt-decode';
 const REFRESH_BUFFER = 60e3;
 
 const INITIALIZED = 'user/INITIALIZED';
+const UPDATED = 'user/UPDATED';
 const LOGIN_SUCCESS = 'user/LOGIN_SUCCESS';
 const LOGOUT = 'user/LOGOUT';
 let timeoutId;
@@ -21,6 +22,11 @@ export default (state = initialState, action) => {
     case INITIALIZED:
       return {
         initialized: true,
+        user: action.user,
+      };
+    case UPDATED:
+      return {
+        ...state,
         user: action.user,
       };
     case LOGIN_SUCCESS:
@@ -49,14 +55,14 @@ async function doLogout(dispatch, getState, db = getState().db) {
   });
 }
 
-function setupAuth(accessToken, refreshToken, url, db, dispatch) {
+export async function requestUser() {
+  const { data } = await axios.get('/api/user');
+  return data;
+}
+
+async function setupAuth(accessToken, refreshToken, url, db, dispatch) {
   const payload = jwtDecode(accessToken);
-  const {
-    exp,
-    scopes,
-    sub,
-    user: { organizations, name, primaryEmail },
-  } = payload;
+  const { exp, scopes, sub } = payload;
   if (exp) {
     const timeout = exp * 1e3 - REFRESH_BUFFER - new Date().getTime();
     if (refreshToken) {
@@ -67,12 +73,11 @@ function setupAuth(accessToken, refreshToken, url, db, dispatch) {
     }
   }
   axios.defaults.headers.common.Authorization = `Bearer ${accessToken}`;
+  const user = await requestUser();
   return {
+    ...user,
     id: sub,
     scope: scopes,
-    organizations,
-    name,
-    primaryEmail,
   };
 }
 
@@ -136,7 +141,13 @@ export function initAuth() {
       .get(0);
     let user = null;
     if (token != null) {
-      user = setupAuth(token.accessToken, token.refreshToken, '/api/oauth/token', db, dispatch);
+      user = await setupAuth(
+        token.accessToken,
+        token.refreshToken,
+        '/api/oauth/token',
+        db,
+        dispatch,
+      );
     }
     dispatch({
       type: INITIALIZED,
@@ -207,6 +218,19 @@ export function oauthLogin(token) {
     );
 
     dispatch({ type: LOGIN_SUCCESS, user });
+  };
+}
+
+export function fetchUser() {
+  return async dispatch => {
+    const user = await requestUser();
+    dispatch({ type: UPDATED, user });
+  };
+}
+
+export function updateUser(user) {
+  return async dispatch => {
+    dispatch({ type: UPDATED, user });
   };
 }
 
