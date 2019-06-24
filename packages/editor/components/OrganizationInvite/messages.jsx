@@ -9,8 +9,10 @@ export default defineMessages({
   invalidInvite: 'This invite is invalid. This may be caused by the invitation being retracted.',
   invalidOrganization: 'The organization does not match up with the invite token.',
   error: 'Something went wrong when trying to respond to this invitation.',
+  appSettings: 'apps settings',
+  organizationSettings: 'organization settings',
   successJoined:
-    'Successfully joined {organization}. You can start making apps {makeApps} or view your organization {viewOrganization}.',
+    'Successfully joined {organization}. You can start making apps in the {makeApps} or view your organization in the {viewOrganization}.',
   successDeclined: 'Successfully declined the invitation. You can go back to Appsemble {makeApps}.',
   here: 'here',
   noInvite: 'No invite has been found. You can return to Appsemble {here}.',

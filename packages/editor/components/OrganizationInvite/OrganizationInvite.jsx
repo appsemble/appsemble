@@ -132,22 +132,35 @@ export default class OrganizationInvite extends React.Component {
       return (
         <article className={`message is-${joined ? 'success' : 'info'} ${styles.root}`}>
           <div className="message-body">
-            <FormattedMessage
-              {...(joined ? messages.successJoined : messages.successDeclined)}
-              values={{
-                organization: <strong>{organization.name || organization.id}</strong>,
-                makeApps: (
-                  <Link to="/_/apps">
-                    <FormattedMessage {...messages.here} />
-                  </Link>
-                ),
-                viewOrganization: (
-                  <Link to="/_/settings/organizations">
-                    <FormattedMessage {...messages.here} />
-                  </Link>
-                ),
-              }}
-            />
+            {joined ? (
+              <FormattedMessage
+                {...messages.successJoined}
+                values={{
+                  organization: <strong>{organization.name || organization.id}</strong>,
+                  makeApps: (
+                    <Link to="/_/apps">
+                      <FormattedMessage {...messages.appSettings} />
+                    </Link>
+                  ),
+                  viewOrganization: (
+                    <Link to="/_/settings/organizations">
+                      <FormattedMessage {...messages.organizationSettings} />
+                    </Link>
+                  ),
+                }}
+              />
+            ) : (
+              <FormattedMessage
+                {...messages.successDeclined}
+                values={{
+                  makeApps: (
+                    <Link to="/_/apps">
+                      <FormattedMessage {...messages.here} />
+                    </Link>
+                  ),
+                }}
+              />
+            )}
           </div>
         </article>
       );
