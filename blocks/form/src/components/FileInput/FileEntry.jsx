@@ -58,14 +58,66 @@ export default class FileEntry extends React.Component {
 
     // XXX A native event listener is used, to prevent the same event to be fired twice because of
     // the shadow DOM hackery.
-    node.addEventListener('change', ({ target }) => {
-      const { onChange } = this.props;
-      const [value] = target.files;
+    node.addEventListener('change', async ({ target }) => {
+      const {
+        onChange,
+        field: { maxWidth, maxHeight, quality },
+      } = this.props;
+      let [value] = target.files;
       // eslint-disable-next-line no-param-reassign
       node.value = null;
 
+      if (value?.type.match('image/*') && (maxWidth || maxHeight || quality)) {
+        value = await this.resize(value, maxWidth, maxHeight, quality / 100);
+      }
+
       onChange({ target }, value);
     });
+  };
+
+  resize = async (file, maxWidth, maxHeight, quality = 0.8) => {
+    // Derived from: https://hacks.mozilla.org/2011/01/how-to-develop-a-html5-image-uploader/
+    const img = new Image();
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+
+    // Attempting to read width/height without waiting for it to load results in the values being 0.
+    await new Promise(resolve => {
+      img.src = URL.createObjectURL(file);
+
+      if (img.complete) {
+        resolve();
+      } else {
+        img.onload = resolve;
+      }
+    });
+
+    let { width } = img;
+    let { height } = img;
+
+    if (maxWidth || maxHeight) {
+      // Resize while respecting ratios.
+      if (width > maxWidth) {
+        height *= maxWidth / width;
+        width = maxWidth;
+      } else if (height > maxHeight) {
+        width *= maxHeight / height;
+        height = maxHeight;
+      }
+    }
+
+    canvas.width = Math.floor(width);
+    canvas.height = Math.floor(height);
+
+    ctx.drawImage(img, 0, 0, width, height);
+    const data = await new Promise(resolve => {
+      canvas.toBlob(blob => resolve(blob), file.type, quality);
+    });
+
+    canvas.remove();
+    img.remove();
+
+    return data;
   };
 
   onRemove = () => {
