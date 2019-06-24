@@ -389,7 +389,7 @@ export default class OrganizationsSettings extends Component {
                       </div>
                     </td>
                     <td className="has-text-right">
-                      <span>{member.verified && <FormattedMessage {...messages.member} />}</span>
+                      {member.verified && <FormattedMessage {...messages.member} />}
                       <div className={`field is-grouped ${styles.tags}`}>
                         {!member.verified && (
                           <p className={`control ${styles.memberButton}`}>
