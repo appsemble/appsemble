@@ -45,7 +45,6 @@ export async function createOrganization(ctx) {
 
     await organization.reload();
 
-    ctx.status = 201;
     ctx.body = {
       id: organization.id,
       name: organization.name,
@@ -105,8 +104,6 @@ export async function respondInvitation(ctx) {
   } else {
     await invite.destroy();
   }
-
-  ctx.status = 204;
 }
 
 export async function inviteMember(ctx) {
@@ -160,7 +157,6 @@ export async function inviteMember(ctx) {
     primaryEmail: invitedUser.primaryEmail,
     verified: false,
   };
-  ctx.status = 201;
 }
 
 export async function resendInvitation(ctx) {
@@ -208,8 +204,6 @@ export async function removeMember(ctx) {
   }
 
   await organization.removeUser(memberId);
-
-  ctx.status = 204;
 }
 
 export async function getOrganizationCoreStyle(ctx) {
@@ -243,8 +237,6 @@ export async function setOrganizationCoreStyle(ctx) {
 
     organization.coreStyle = css.length ? css.toString() : null;
     await organization.save();
-
-    ctx.status = 204;
   } catch (e) {
     if (e instanceof StyleValidationError) {
       throw Boom.badRequest('Provided CSS was invalid.');
@@ -285,8 +277,6 @@ export async function setOrganizationSharedStyle(ctx) {
 
     organization.sharedStyle = css.length ? css.toString() : null;
     await organization.save();
-
-    ctx.status = 204;
   } catch (e) {
     if (e instanceof StyleValidationError) {
       throw Boom.badRequest('Provided CSS was invalid.');
@@ -337,8 +327,6 @@ export async function setOrganizationBlockStyle(ctx) {
       OrganizationId: organization.id,
       BlockDefinitionId: block.id,
     });
-
-    ctx.status = 204;
   } catch (e) {
     if (e instanceof StyleValidationError) {
       throw Boom.badRequest('Provided CSS was invalid.');
