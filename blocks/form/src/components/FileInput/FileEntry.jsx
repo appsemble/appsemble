@@ -89,15 +89,13 @@ export default class FileEntry extends React.Component {
 
     let { width, height } = img;
 
-    if (maxWidth || maxHeight) {
-      // Resize while respecting ratios.
-      if (maxWidth && width > maxWidth) {
-        height *= maxWidth / width;
-        width = maxWidth;
-      } else if (maxHeight && height > maxHeight) {
-        width *= maxHeight / height;
-        height = maxHeight;
-      }
+    // Resize while respecting ratios.
+    if (maxWidth && width > maxWidth) {
+      height *= maxWidth / width;
+      width = maxWidth;
+    } else if (maxHeight && height > maxHeight) {
+      width *= maxHeight / height;
+      height = maxHeight;
     }
 
     canvas.width = Math.floor(width);
