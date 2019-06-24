@@ -3,7 +3,10 @@
   <head>
     <base href="/{{ app.path }}" />
     <meta charset="utf-8" />
-    <meta name="viewport" content="initial-scale=1,minimum-scale=1,width=device-width" />
+    <meta
+      name="viewport"
+      content="initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=0,width=device-width"
+    />
     <meta
       name="theme-color"
       content="{{ (app.definition.theme && app.definition.theme.themeColor) || '#ffffff' }}"
@@ -40,7 +43,7 @@
     <link rel="stylesheet" href="/api/apps/{{ app.id }}/style/core" id="appsemble-style-core" />
     {{/app.style}} {{#app.sharedStyle}}
     <link rel="stylesheet" href="/api/apps/{{ app.id }}/style/shared" id="appsemble-style-shared" />
-    {{/app.sharedStyle}} {{{settings}}}
+    {{/app.sharedStyle}} {{{settings }}}
   </head>
   <body>
     <div class="is-fixed-top is-primary navbar">

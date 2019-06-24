@@ -30,7 +30,7 @@ export default class AppContext extends React.Component {
       [authentication] = app.authentication;
     }
 
-    if (!prevProps.app && app) {
+    if (app && app !== prevProps.app) {
       await initAuth(authentication);
     }
   }
