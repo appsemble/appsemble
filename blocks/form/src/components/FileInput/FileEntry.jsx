@@ -83,24 +83,18 @@ export default class FileEntry extends React.Component {
 
     // Attempting to read width/height without waiting for it to load results in the values being 0.
     await new Promise(resolve => {
+      img.onload = resolve;
       img.src = URL.createObjectURL(file);
-
-      if (img.complete) {
-        resolve();
-      } else {
-        img.onload = resolve;
-      }
     });
 
-    let { width } = img;
-    let { height } = img;
+    let { width, height } = img;
 
     if (maxWidth || maxHeight) {
       // Resize while respecting ratios.
-      if (width > maxWidth) {
+      if (maxWidth && width > maxWidth) {
         height *= maxWidth / width;
         width = maxWidth;
-      } else if (height > maxHeight) {
+      } else if (maxHeight && height > maxHeight) {
         width *= maxHeight / height;
         height = maxHeight;
       }
@@ -110,14 +104,10 @@ export default class FileEntry extends React.Component {
     canvas.height = Math.floor(height);
 
     ctx.drawImage(img, 0, 0, width, height);
-    const data = await new Promise(resolve => {
+
+    return new Promise(resolve => {
       canvas.toBlob(blob => resolve(blob), file.type, quality);
     });
-
-    canvas.remove();
-    img.remove();
-
-    return data;
   };
 
   onRemove = () => {
