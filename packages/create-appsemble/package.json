@@ -1,9 +1,9 @@
 {
   "name": "create-appsemble",
-  "version": "0.7.0",
+  "version": "0.8.0",
   "bin": "./bin/create-appsemble",
   "dependencies": {
-    "@appsemble/node-utils": "^0.7.0",
+    "@appsemble/node-utils": "^0.8.0",
     "esm": "^3.2.25",
     "fs-extra": "^8.0.1",
     "inquirer": "^6.2.2",

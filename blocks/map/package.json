@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/map",
-  "version": "0.7.0",
+  "version": "0.8.0",
   "private": true,
   "appsemble": {
     "actions": {
@@ -12,8 +12,8 @@
     "output": "dist"
   },
   "dependencies": {
-    "@appsemble/sdk": "0.7.0",
-    "@appsemble/utils": "0.7.0",
+    "@appsemble/sdk": "0.8.0",
+    "@appsemble/utils": "0.8.0",
     "leaflet": "^1.5.1"
   }
 }

@@ -7,12 +7,14 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.8.0] - 2019-06-25
+
 ### Added
 
 - Block: Add support for hidden for hidden form field in form block.
 - Block: Add support for resolution limits for uploading images in form block.
-- Editor: Support basic organization management
-- Server: Support basic organization management
+- Editor: Support basic organization management.
+- Server: Support basic organization management.
 
 ### Fixed
 
