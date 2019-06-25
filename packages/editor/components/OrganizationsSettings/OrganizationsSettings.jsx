@@ -128,8 +128,8 @@ export default class OrganizationsSettings extends Component {
 
     this.setState({ submittingMember: true });
 
-    const organizations = [...user.organizations];
-    const organization = { ...organizations.find(o => o.id === selectedOrganization) };
+    const { organizations } = user;
+    const organization = organizations.find(o => o.id === selectedOrganization);
 
     if (organization.members.some(m => m.primaryEmail === memberEmail)) {
       push({
@@ -149,7 +149,11 @@ export default class OrganizationsSettings extends Component {
       organization.members.push(member);
       updateUser({
         ...user,
-        organizations: organizations.map(o => (o.id === selectedOrganization ? organization : o)),
+        organizations: organizations.map(o =>
+          o.id === selectedOrganization
+            ? { ...organization, members: [...organization.members, member] }
+            : o,
+        ),
       });
 
       this.setState({
@@ -225,13 +229,15 @@ export default class OrganizationsSettings extends Component {
 
     await axios.delete(`/api/organizations/${selectedOrganization}/members/${removingMember}`);
 
-    const organizations = [...user.organizations];
+    const { organizations } = user;
     const organization = organizations.find(o => o.id === selectedOrganization);
-    organization.members = organization.members.filter(m => m.id !== removingMember);
+    const filteredMembers = organization.members.filter(m => m.id !== removingMember);
 
     updateUser({
       ...user,
-      organizations: organizations.map(o => (o.id === organization ? organization : o)),
+      organizations: organizations.map(o =>
+        o.id === organization ? { ...organization, members: filteredMembers } : o,
+      ),
     });
 
     this.setState({
