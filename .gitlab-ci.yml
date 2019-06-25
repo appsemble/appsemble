@@ -6,6 +6,7 @@ stages:
   - publish
   - deploy
   - provision
+  - migrate
 
 # This is the most official Helm image at the moment.
 # https://github.com/helm/helm/issues/5682#issuecomment-490084864
@@ -41,7 +42,11 @@ eslint:
 # Lint Helm charts.
 helm lint:
   image: *HELM
+  except:
+    - schedules
   script:
+    - helm init --client-only
+    - helm dependency build config/charts/*
     - helm lint --strict config/charts/*
 
 # Check formatting using prettier.
@@ -240,6 +245,7 @@ review:
     - helm upgrade "$CI_ENVIRONMENT_SLUG" config/charts/appsemble
       --atomic
       --install
+      --set "app=$CI_ENVIRONMENT_SLUG"
       --set "image.pullPolicy=Always"
       --set "image.repository=$CI_REGISTRY_IMAGE"
       --set "image.tag=$CI_COMMIT_REF_NAME"
@@ -247,8 +253,9 @@ review:
       --set "ingress.hosts={${CI_ENVIRONMENT_URL/https:\/\//}}"
       --set "ingress.tls.secretName=$CI_ENVIRONMENT_SLUG-tls"
       --set "migrateTo=999.999.999"
-      --set "mysql.existingSecret=$CI_ENVIRONMENT_SLUG-mysql-secret"
+      --set "mysql.existingSecret=mysql"
       --set "mysql.fullnameOverride=$CI_ENVIRONMENT_SLUG-mysql"
+      --set "mysql.persistence.enabled=false"
 
 # Stop a review environment.
 stop review:
@@ -313,38 +320,70 @@ staging:
   environment:
     name: staging
     url: https://staging.appsemble.app
-    on_stop: stop staging
   script:
     - helm init --client-only
     - helm dependency build config/charts/appsemble
-    - helm upgrade "$CI_ENVIRONMENT_SLUG" config/charts/appsemble
+    - helm upgrade staging config/charts/appsemble
       --atomic
       --install
+      --set "app=$CI_ENVIRONMENT_SLUG"
       --set "image.pullPolicy=Always"
       --set "image.repository=$CI_REGISTRY_IMAGE"
-      --set "image.tag=$CI_COMMIT_REF_NAME"
+      --set "image.tag=master"
       --set "ingress.enabled=true"
       --set "ingress.hosts={staging.appsemble.app}"
-      --set "ingress.tls.secretName=$CI_ENVIRONMENT_SLUG-tls"
+      --set "ingress.tls.secretName=staging-tls"
       --set "migrateTo=999.999.999"
-      --set "mysql.existingSecret=$CI_ENVIRONMENT_SLUG-mysql-secret"
-      --set "mysql.fullnameOverride=$CI_ENVIRONMENT_SLUG-mysql"
+      --set "mysql.existingSecret=mysql"
+      --set "mysql.fullnameOverride=staging-mysql"
+      --set "mysql.persistence.enabled=false"
 
-# Stop the staging environment.
-stop staging:
+# Wipe the staging environment, reset the staging environment to the latest release, and upgrade to master.
+reset staging:
   stage: deploy
   image: *HELM
-  when: manual
   only:
-    - master@appsemble/appsemble
-  except:
     - schedules
   dependencies: []
   environment:
     name: staging
-    action: stop
+    url: https://staging.appsemble.app
   script:
-    - helm delete --purge "$CI_ENVIRONMENT_SLUG"
+    - helm init --client-only
+    - helm dependency build config/charts/appsemble
+    # We can’s use `--replace` because of https://github.com/helm/helm/issues/3134
+    - helm delete --purge staging
+    - helm install config/charts/appsemble
+      --atomic
+      --name staging
+      --set "app=$CI_ENVIRONMENT_SLUG"
+      --set "image.pullPolicy=Always"
+      --set "image.repository=$CI_REGISTRY_IMAGE"
+      --set "image.tag=master"
+      --set "ingress.enabled=true"
+      --set "ingress.hosts={staging.appsemble.app}"
+      --set "ingress.tls.secretName=staging-tls"
+      --set "mysql.existingSecret=mysql"
+      --set "mysql.fullnameOverride=staging-mysql"
+      --set "mysql.persistence.enabled=false"
+
+.production:
+  stage: deploy
+  image: *HELM
+  only:
+    - tags
+  dependencies: []
+  environment:
+    name: production
+    url: https://appsemble.app
+  script:
+    - helm init --client-only
+    - helm dependency build config/charts/appsemble
+    - helm upgrade appsemble config/charts/appsemble
+      --set "ingress.enabled=true"
+      --set "ingress.hosts={appsemble.app}"
+      --set "ingress.tls.secretName=tls-secret"
+      --set "mysql.existingSecret=mysql-secret"
 
 ###################################################################################################
 #  Provision Stage                                                                                #
@@ -382,8 +421,6 @@ provision review: &provision
 # Provision the staging environment with the blocks that were built in the build stage.
 provision staging:
   <<: *provision
-  except:
-    - schedules
   only:
     - master@appsemble/appsemble
   environment:
@@ -391,3 +428,45 @@ provision staging:
   dependencies:
     - build blocks
     - staging
+
+###################################################################################################
+#  Migrate Stage                                                                                  #
+###################################################################################################
+
+# Test migrations by Downgrading to latest, then upgrading back to master.
+migrate staging:
+  stage: migrate
+  image: *HELM
+  only:
+    - schedules
+  dependencies: []
+  environment:
+    name: staging
+    url: https://staging.appsemble.app
+  script:
+    - helm init --client-only
+    - helm dependency build config/charts/appsemble
+    # Downgrade to latest
+    - helm upgrade staging config/charts/appsemble
+      --atomic
+      --set "app=$CI_ENVIRONMENT_SLUG"
+      --set "ingress.enabled=true"
+      --set "ingress.hosts={staging.appsemble.app}"
+      --set "ingress.tls.secretName=staging-tls"
+      --set "mysql.existingSecret=mysql"
+      --set "mysql.fullnameOverride=staging-mysql"
+      --set "mysql.persistence.enabled=false"
+    # Upgrade to master
+    - helm upgrade staging config/charts/appsemble
+      --atomic
+      --set "app=$CI_ENVIRONMENT_SLUG"
+      --set "image.pullPolicy=Always"
+      --set "image.repository=$CI_REGISTRY_IMAGE"
+      --set "image.tag=master"
+      --set "ingress.enabled=true"
+      --set "ingress.hosts={staging.appsemble.app}"
+      --set "ingress.tls.secretName=staging-tls"
+      --set "migrateTo=999.999.999"
+      --set "mysql.existingSecret=mysql"
+      --set "mysql.fullnameOverride=staging-mysql"
+      --set "mysql.persistence.enabled=false"

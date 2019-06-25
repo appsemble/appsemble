@@ -3,6 +3,7 @@ kind: Job
 metadata:
   name: {{ include "appsemble.fullname" . }}-migrate
   annotations:
+    app: {{ .Values.app }}
     app.kubernetes.io/instance: {{ .Release.Name }}
     app.kubernetes.io/managed-by: {{ .Release.Service }}
     app.kubernetes.io/name: {{ include "appsemble.name" . }}
@@ -28,7 +29,7 @@ spec:
             {{ end }}
           env:
             - name: DATABASE_HOST
-              value: {{ .Values.mysql.fullnameOverride }}
+              value: {{ include "call-nested" (list . "mysql" "mysql.fullname") }}
             - name: DATABASE_NAME
               value: {{ .Values.mysql.mysqlDatabase }}
             - name: DATABASE_USER
@@ -36,9 +37,5 @@ spec:
             - name: DATABASE_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  {{ if .Values.mysql.existingSecret -}}
-                  name: {{ .Values.mysql.existingSecret }}
-                  {{- else -}}
-                  name: {{ template "mysql.fullname" . }}
-                  {{- end }}
+                  name: {{ include "call-nested" (list . "mysql" "mysql.secretName") }}
                   key: mysql-password
