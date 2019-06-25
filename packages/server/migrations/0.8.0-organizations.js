@@ -5,7 +5,7 @@ export default {
 
   async up(db) {
     const queryInterface = db.getQueryInterface();
-    const { Member } = db.models;
+    const { Member, Organization } = db.models;
 
     await queryInterface.renameTable('UserOrganization', 'Member');
     await queryInterface.addColumn('Member', 'verified', {
@@ -23,6 +23,10 @@ export default {
     await Promise.all(members.map(member => member.update({ verified: true })));
 
     await queryInterface.addColumn('Organization', 'name', { type: DataTypes.STRING });
+    const organizations = await Organization.findAll();
+    await Promise.all(
+      organizations.map(organization => organization.update({ name: organization.id })),
+    );
   },
 
   async down(db) {
