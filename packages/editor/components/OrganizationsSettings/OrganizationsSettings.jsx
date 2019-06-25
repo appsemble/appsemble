@@ -20,7 +20,6 @@ export default class OrganizationsSettings extends Component {
   state = {
     loading: true,
     selectedOrganization: undefined,
-    organizations: [],
     submittingMember: false,
     removingMember: undefined,
     memberEmail: '',
@@ -36,20 +35,20 @@ export default class OrganizationsSettings extends Component {
     updateUser(user);
 
     let selectedOrganization = '';
-    let organizations = [];
 
     if (user.organizations.length) {
       [{ id: selectedOrganization }] = user.organizations;
       const { data: organization } = await axios.get(`/api/organizations/${selectedOrganization}`);
-      organizations = user.organizations.map(org =>
+      const organizations = user.organizations.map(org =>
         org.id === organization.id ? organization : org,
       );
+
+      updateUser({ ...user, organizations });
     }
 
     this.setState({
       loading: false,
       selectedOrganization,
-      organizations,
     });
   }
 
@@ -66,21 +65,25 @@ export default class OrganizationsSettings extends Component {
   };
 
   onOrganizationChange = async event => {
-    const { organizations } = this.state;
+    const { user, updateUser } = this.props;
+    const { organizations } = user;
     const organizationId = event.target.value;
     const { data: organization } = await axios.get(`/api/organizations/${organizationId}`);
 
-    this.setState({
-      selectedOrganization: organizationId,
+    updateUser({
+      ...user,
       organizations: organizations.map(org => (org.id === organizationId ? organization : org)),
     });
+
+    this.setState({ selectedOrganization: organizationId });
   };
 
   onSubmitNewOrganization = async event => {
     event.preventDefault();
 
     const { intl, push, user, updateUser } = this.props;
-    const { organizations, newOrganizationId, newOrganizationName } = this.state;
+    const { newOrganizationId, newOrganizationName } = this.state;
+    const organizations = [...user.organizations];
 
     this.setState({ submittingOrganization: true });
 
@@ -90,8 +93,14 @@ export default class OrganizationsSettings extends Component {
         name: newOrganizationName,
       });
 
-      organizations.push(organization);
+      this.setState({
+        newOrganizationId: '',
+        newOrganizationName: '',
+        submittingOrganization: false,
+        selectedOrganization: organization.id,
+      });
 
+      organizations.push(organization);
       updateUser({ ...user, organizations });
 
       push({
@@ -100,29 +109,26 @@ export default class OrganizationsSettings extends Component {
         }),
         color: 'success',
       });
-
-      this.setState({
-        newOrganizationId: '',
-        newOrganizationName: '',
-        submittingOrganization: false,
-        selectedOrganization: newOrganizationId,
-      });
     } catch (exception) {
       if (exception?.response?.status === 409) {
         push(intl.formatMessage(messages.createOrganizationConflict));
       } else {
         push(intl.formatMessage(messages.createOrganizationError));
       }
+
+      this.setState({ submittingOrganization: false });
     }
   };
 
   onInviteMember = async event => {
     event.preventDefault();
 
-    const { intl, push } = this.props;
-    const { selectedOrganization, organizations, memberEmail } = this.state;
+    const { intl, push, user, updateUser } = this.props;
+    const { selectedOrganization, memberEmail } = this.state;
 
     this.setState({ submittingMember: true });
+
+    const organizations = [...user.organizations];
     const organization = { ...organizations.find(o => o.id === selectedOrganization) };
 
     if (organization.members.some(m => m.primaryEmail === memberEmail)) {
@@ -141,11 +147,14 @@ export default class OrganizationsSettings extends Component {
       );
 
       organization.members.push(member);
+      updateUser({
+        ...user,
+        organizations: organizations.map(o => (o.id === selectedOrganization ? organization : o)),
+      });
 
       this.setState({
         submittingMember: false,
         memberEmail: '',
-        organizations: organizations.map(o => (o.id === selectedOrganization ? organization : o)),
       });
 
       push({
@@ -188,16 +197,17 @@ export default class OrganizationsSettings extends Component {
   };
 
   onLeaveOrganization = async () => {
-    const { organizations, selectedOrganization } = this.state;
-    const { intl, push, user } = this.props;
+    const { selectedOrganization } = this.state;
+    const { intl, push, user, updateUser } = this.props;
 
     await axios.delete(`/api/organizations/${selectedOrganization}/members/${user.id}`);
 
+    const { organizations } = user;
     const organization = organizations.find(o => o.id === selectedOrganization);
     const newOrganizations = organizations.filter(o => o.id !== selectedOrganization);
 
+    updateUser({ ...user, organizations: newOrganizations });
     this.setState({
-      organizations: newOrganizations,
       removingMember: undefined,
       selectedOrganization: newOrganizations[0]?.id,
     });
@@ -210,17 +220,22 @@ export default class OrganizationsSettings extends Component {
   };
 
   onRemoveMember = async () => {
-    const { removingMember, organizations, selectedOrganization, user } = this.state;
-    const { intl, push } = this.props;
+    const { removingMember, selectedOrganization } = this.state;
+    const { intl, push, user, updateUser } = this.props;
 
     await axios.delete(`/api/organizations/${selectedOrganization}/members/${removingMember}`);
 
+    const organizations = [...user.organizations];
     const organization = organizations.find(o => o.id === selectedOrganization);
     organization.members = organization.members.filter(m => m.id !== removingMember);
 
+    updateUser({
+      ...user,
+      organizations: organizations.map(o => (o.id === organization ? organization : o)),
+    });
+
     this.setState({
       removingMember: undefined,
-      organizations: organizations.map(o => (o.id === organization ? organization : o)),
     });
 
     push({
@@ -240,7 +255,6 @@ export default class OrganizationsSettings extends Component {
     const {
       loading,
       selectedOrganization,
-      organizations,
       memberEmail,
       submittingMember,
       removingMember,
@@ -254,6 +268,7 @@ export default class OrganizationsSettings extends Component {
       return <Loader />;
     }
 
+    const { organizations } = user;
     const organization = organizations.find(o => o.id === selectedOrganization);
 
     return (
