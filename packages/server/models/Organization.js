@@ -5,6 +5,7 @@ export default sequelize => {
     'Organization',
     {
       id: { type: DataTypes.STRING, primaryKey: true },
+      name: { type: DataTypes.STRING },
       coreStyle: { type: DataTypes.TEXT('long') },
       sharedStyle: { type: DataTypes.TEXT('long') },
     },
@@ -17,10 +18,10 @@ export default sequelize => {
     },
   );
 
-  Organization.associate = ({ App, User, OrganizationBlockStyle }) => {
+  Organization.associate = ({ App, User, OrganizationBlockStyle, Member }) => {
     Organization.hasOne(Organization);
     Organization.hasMany(App);
-    Organization.belongsToMany(User, { through: 'UserOrganization' });
+    Organization.belongsToMany(User, { through: Member });
     Organization.hasMany(OrganizationBlockStyle);
   };
 

@@ -1,13 +1,14 @@
+import '../../index.css';
+
 import { injectIntl } from 'react-intl';
 import { connect } from 'react-redux';
 
 import { push } from '../../actions/message';
-import { registerEmail } from '../../actions/user';
-import Register from './Register';
+import OrganizationInvite from './OrganizationInvite';
 
 export default injectIntl(
   connect(
     null,
-    { registerEmail, push },
-  )(Register),
+    { push },
+  )(OrganizationInvite),
 );

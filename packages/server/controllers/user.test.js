@@ -11,12 +11,13 @@ describe('user', () => {
   let server;
   let token;
   let EmailAuthorization;
+  let User;
 
   beforeAll(async () => {
     db = await testSchema('user');
 
     server = await createServer({ db });
-    ({ EmailAuthorization } = db.models);
+    ({ EmailAuthorization, User } = db.models);
   }, 10e3);
 
   beforeEach(async () => {
@@ -38,13 +39,30 @@ describe('user', () => {
       name: 'Test User',
       primaryEmail: 'test@example.com',
       emails: [{ email: 'test@example.com', primary: true, verified: true }],
-      organizations: [{ id: 'testorganization' }],
+      organizations: [{ id: 'testorganization', name: 'Test Organization' }],
     });
   });
 
   it('should not return a user profile if not logged in', async () => {
     const response = await request(server).get('/api/user');
     expect(response.status).toStrictEqual(401);
+  });
+
+  it("should not return organizations that aren't verified", async () => {
+    const dbUser = await User.findOne({ where: { primaryEmail: 'test@example.com' } });
+    await dbUser.createOrganization({ id: 'org2', name: 'Org 2' });
+
+    const { body: user } = await request(server)
+      .get('/api/user')
+      .set('Authorization', token);
+
+    expect(user).toStrictEqual({
+      id: expect.any(Number),
+      name: 'Test User',
+      primaryEmail: 'test@example.com',
+      emails: [{ email: 'test@example.com', primary: true, verified: true }],
+      organizations: [{ id: 'testorganization', name: 'Test Organization' }],
+    });
   });
 
   it('should update the user display name', async () => {

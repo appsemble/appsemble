@@ -1,10 +1,14 @@
-.field {
-  max-width: 480px;
+.tags {
+  display: inline !important;
+  margin-left: 0.5rem;
 }
 
-.tags {
-  display: inline;
-  margin-left: 0.5rem;
+.memberButton {
+  display: inline-flex;
+}
+
+.field {
+  max-width: 480px;
 }
 
 .cardFooterButton {
@@ -14,8 +18,4 @@
   font: inherit;
   height: auto;
   padding: 0 !important;
-}
-
-.buttonGroup > button:not(:first-child) {
-  margin-left: 0.75rem;
 }

@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 
 import { push } from '../../actions/message';
 import { updateUser } from '../../actions/user';
-import UserSettings from './UserSettings';
+import OrganizationsSettings from './OrganizationsSettings';
 
 function mapStateToProps(state) {
   return {
@@ -15,5 +15,5 @@ export default injectIntl(
   connect(
     mapStateToProps,
     { push, updateUser },
-  )(UserSettings),
+  )(OrganizationsSettings),
 );

@@ -5,6 +5,7 @@ import { FormattedMessage } from 'react-intl';
 import { Redirect, Route, Switch } from 'react-router-dom';
 
 import NavLink from '../NavLink';
+import OrganizationsSettings from '../OrganizationsSettings';
 import SideMenu from '../SideMenu';
 import UserSettings from '../UserSettings';
 import styles from './Settings.css';
@@ -35,10 +36,19 @@ export default class Settings extends React.Component {
               <FormattedMessage {...messages.user} />
             </span>
           </NavLink>
+          <NavLink className={styles.menuItem} exact to={`${match.url}/organizations`}>
+            <span className="icon is-medium">
+              <i className="fas fa-lg fa-briefcase" />
+            </span>
+            <span className={classNames({ 'is-hidden': isCollapsed })}>
+              <FormattedMessage {...messages.organizations} />
+            </span>
+          </NavLink>
         </SideMenu>
         <div className={styles.content}>
           <Switch>
             <Route component={UserSettings} exact path={`${match.path}/user`} />
+            <Route component={OrganizationsSettings} exact path={`${match.path}/organizations`} />
             <Redirect to={`${match.path}/user`} />
           </Switch>
         </div>
