@@ -380,10 +380,14 @@ reset staging:
     - helm init --client-only
     - helm dependency build config/charts/appsemble
     - helm upgrade appsemble config/charts/appsemble
+      --set "app=$CI_ENVIRONMENT_SLUG"
       --set "ingress.enabled=true"
       --set "ingress.hosts={appsemble.app}"
       --set "ingress.tls.secretName=tls-secret"
       --set "mysql.existingSecret=mysql-secret"
+      --set "mysql.fullnameOverride=appsemble-mysql"
+      --set "mysql.persistence.existingClaim=appsemble-mysql"
+      --wait
 
 ###################################################################################################
 #  Provision Stage                                                                                #
