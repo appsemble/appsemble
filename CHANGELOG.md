@@ -7,6 +7,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.8.1] - 2019-06-26
+
 ### Fixed
 
 - App: Adjust the toolbar items size. They no longer exceed the main element padding.
