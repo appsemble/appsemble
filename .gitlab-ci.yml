@@ -233,6 +233,7 @@ review:
   except:
     - master
     - schedules
+    - tags
   dependencies: []
   allow_failure: false
   environment:
@@ -265,6 +266,7 @@ stop review:
   except:
     - master
     - schedules
+    - tags
   dependencies: []
   environment:
     name: review/$CI_COMMIT_REF_SLUG
@@ -280,6 +282,7 @@ review docs:
   except:
     - master
     - schedules
+    - tags
   dependencies: []
   allow_failure: false
   environment:
@@ -301,6 +304,7 @@ stop review docs:
   except:
     - master
     - schedules
+    - tags
   dependencies: []
   environment:
     name: review/docs/$CI_COMMIT_REF_SLUG
