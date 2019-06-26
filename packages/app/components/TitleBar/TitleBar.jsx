@@ -29,10 +29,10 @@ export default class TitleBar extends React.Component {
     return (
       <Portal className={styles.navbar} element={document.getElementsByClassName('navbar')[0]}>
         <div className={classNames('navbar-brand', styles.brand)}>
-          <span className="navbar-item">
+          <span>
             <SideMenuButton />
           </span>
-          <h2 className="navbar-item title">{children}</h2>
+          <h2 className="navbar-item title is-4">{children}</h2>
         </div>
       </Portal>
     );
