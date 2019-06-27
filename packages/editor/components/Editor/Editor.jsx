@@ -11,6 +11,7 @@ import React from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Link } from 'react-router-dom';
 
+import HelmetIntl from '../HelmetIntl';
 import styles from './Editor.css';
 import MonacoEditor from './components/MonacoEditor';
 import messages from './messages';
@@ -33,6 +34,7 @@ export default class Editor extends React.Component {
   };
 
   state = {
+    appName: '',
     recipe: '',
     style: '',
     sharedStyle: '',
@@ -82,6 +84,7 @@ export default class Editor extends React.Component {
       const { data: sharedStyle } = await axios.get(`/api/apps/${id}/style/shared`);
 
       this.setState({
+        appName: data.name,
         recipe,
         style,
         sharedStyle,
@@ -211,7 +214,13 @@ export default class Editor extends React.Component {
       }
     }
 
-    this.setState({ dirty: true, warningDialog: false, initialRecipe: recipe, path });
+    this.setState({
+      appName: app.name,
+      dirty: true,
+      warningDialog: false,
+      initialRecipe: recipe,
+      path,
+    });
   };
 
   onUpload = async () => {
@@ -268,6 +277,7 @@ export default class Editor extends React.Component {
 
   render() {
     const {
+      appName,
       recipe,
       style,
       sharedStyle,
@@ -309,6 +319,7 @@ export default class Editor extends React.Component {
 
     return (
       <div className={styles.root}>
+        <HelmetIntl title={messages.title} titleValues={{ name: appName }} />
         <div className={styles.leftPanel}>
           <Form className={styles.editorForm} onSubmit={this.onSave}>
             <nav className="navbar">

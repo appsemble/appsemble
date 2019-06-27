@@ -6,6 +6,7 @@ import React, { Component } from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import { requestUser } from '../../actions/user';
+import HelmetIntl from '../HelmetIntl';
 import styles from './OrganizationsSettings.css';
 import messages from './messages';
 
@@ -279,6 +280,8 @@ export default class OrganizationsSettings extends Component {
 
     return (
       <div className="content">
+        <HelmetIntl title={messages.title} />
+
         <h2>
           <FormattedMessage {...messages.createOrganization} />
         </h2>

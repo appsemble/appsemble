@@ -1,6 +1,7 @@
 import { defineMessages } from 'react-intl';
 
 export default defineMessages({
+  title: 'Settings · Organizations',
   create: 'Create',
   createOrganization: 'Create new Organization',
   createOrganizationConflict: 'An organization with this name already exists.',

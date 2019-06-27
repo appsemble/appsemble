@@ -1,6 +1,7 @@
 import { ErrorHandler, Loader } from '@appsemble/react-components';
 import PropTypes from 'prop-types';
 import React from 'react';
+import Helmet from 'react-helmet';
 import { IntlProvider } from 'react-intl';
 import { BrowserRouter, Redirect, Route, Switch } from 'react-router-dom';
 
@@ -45,6 +46,7 @@ export default class App extends React.Component {
       <IntlProvider defaultLocale="en-US" locale="en-US" textComponent={React.Fragment}>
         <BrowserRouter>
           <ErrorHandler fallback={ErrorFallback}>
+            <Helmet defaultTitle="Appsemble" titleTemplate="Appsemble · %s" />
             <Toolbar />
             {user ? (
               <Switch>

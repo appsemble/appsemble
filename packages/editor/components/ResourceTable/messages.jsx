@@ -1,6 +1,8 @@
 import { defineMessages } from 'react-intl';
 
 export default defineMessages({
+  title: '{name} · Resource {resourceName}',
+  resources: 'Resources',
   cancelButton: 'Cancel',
   createButton: 'Create',
   deleteButton: 'Delete',

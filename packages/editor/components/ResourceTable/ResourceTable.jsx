@@ -6,6 +6,7 @@ import React from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Link } from 'react-router-dom';
 
+import HelmetIntl from '../HelmetIntl';
 import styles from './ResourceTable.css';
 import messages from './messages';
 
@@ -243,7 +244,12 @@ export default class ResourceTable extends React.Component {
 
     if (!loading && resources === undefined) {
       if (!app.resources[resourceName]) {
-        return <FormattedMessage {...messages.notFound} />;
+        return (
+          <React.Fragment>
+            <HelmetIntl title={messages.title} titleValues={{ name: app.name, resourceName }} />
+            <FormattedMessage {...messages.notFound} />
+          </React.Fragment>
+        );
       }
 
       const { url } = app.resources[resourceName];
@@ -267,6 +273,7 @@ export default class ResourceTable extends React.Component {
 
     return (
       <React.Fragment>
+        <HelmetIntl title={messages.title} titleValues={{ name: app.name, resourceName }} />
         <h1 className="title">Resource {resourceName}</h1>
         <Link className="button is-primary" to={`${match.url}/new`}>
           <span className="icon">
