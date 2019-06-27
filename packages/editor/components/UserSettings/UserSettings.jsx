@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { FormattedMessage } from 'react-intl';
 
+import HelmetIntl from '../HelmetIntl';
 import styles from './UserSettings.css';
 import messages from './messages';
 
@@ -153,6 +154,7 @@ export default class UserSettings extends Component {
 
     return (
       <div className="content">
+        <HelmetIntl title={messages.title} />
         <Form onSubmit={this.onSaveProfile}>
           <div className="field">
             <label className="label">
