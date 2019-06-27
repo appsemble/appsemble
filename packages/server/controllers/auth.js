@@ -1,3 +1,4 @@
+import normalize from '@appsemble/utils/normalize';
 import bcrypt from 'bcrypt';
 import Boom from 'boom';
 import crypto from 'crypto';
@@ -13,13 +14,17 @@ async function mayRegister({ argv }) {
 
 async function registerUser(associatedModel, organizationName, transaction, email, password) {
   await associatedModel.createUser({ password, primaryEmail: email }, { transaction });
-  const user = await associatedModel.getUser({ transaction });
-  await user.createOrganization(
-    {
-      id: organizationName || `organization${new Date().getTime()}`,
-    },
-    { transaction },
-  );
+
+  if (organizationName) {
+    const user = await associatedModel.getUser({ transaction });
+    await user.createOrganization(
+      {
+        id: normalize(organizationName),
+        name: organizationName,
+      },
+      { transaction, through: { verified: true } },
+    );
+  }
 }
 
 export async function registerEmail(ctx) {

@@ -1,11 +1,11 @@
 {
   "name": "@appsemble/list",
-  "version": "0.7.0",
+  "version": "0.8.1",
   "private": true,
   "dependencies": {
-    "@appsemble/react": "0.7.0",
-    "@appsemble/react-components": "0.7.0",
-    "@appsemble/utils": "0.7.0",
+    "@appsemble/react": "0.8.1",
+    "@appsemble/react-components": "0.8.1",
+    "@appsemble/utils": "0.8.1",
     "react": "^16.8.6",
     "react-intl": "^2.9.0"
   }

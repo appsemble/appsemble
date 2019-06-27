@@ -92,7 +92,6 @@ export default {
 
     await queryInterface.removeColumn('User', 'name');
     await queryInterface.removeColumn('User', 'password');
-    await queryInterface.removeConstraint('User', 'User_primaryEmail_foreign_idx');
     await queryInterface.removeColumn('User', 'primaryEmail');
     await queryInterface.addColumn('EmailAuthorization', 'deleted', {
       type: DataTypes.DATE,

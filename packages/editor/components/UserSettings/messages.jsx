@@ -21,7 +21,7 @@ export default defineMessages({
   setPrimaryEmail: 'Set as primary',
   primaryEmailSuccess: 'Successfully set {email} as your primary email address.',
   resendVerification: 'Resend verification mail',
-  resendVerificationSent: 'Sent verification mail',
+  resendVerificationSent: 'Resent verification mail',
   verified: 'Verified',
   unverified: 'Not verified',
   primary: 'Primary',

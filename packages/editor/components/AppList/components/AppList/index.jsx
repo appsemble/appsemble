@@ -8,7 +8,7 @@ function mapStateToProps(state) {
   return {
     apps: state.apps.apps,
     error: state.apps.error,
-    isLoggedIn: !!state.user.user,
+    user: state.user.user,
   };
 }
 

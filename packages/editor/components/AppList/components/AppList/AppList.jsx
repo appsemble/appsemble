@@ -1,6 +1,8 @@
 import { Loader } from '@appsemble/react-components';
 import PropTypes from 'prop-types';
 import React from 'react';
+import { FormattedMessage } from 'react-intl';
+import { Link } from 'react-router-dom';
 
 import AppCard from '../AppCard';
 import CreateAppCard from '../CreateAppCard';
@@ -12,16 +14,20 @@ export default class AppList extends React.Component {
     apps: PropTypes.arrayOf(PropTypes.shape()).isRequired,
     getApps: PropTypes.func.isRequired,
     getPublicApps: PropTypes.func.isRequired,
-    isLoggedIn: PropTypes.bool.isRequired,
     intl: PropTypes.shape().isRequired,
+    user: PropTypes.shape(),
+  };
+
+  static defaultProps = {
+    user: undefined,
   };
 
   state = { filter: '' };
 
   async componentDidMount() {
-    const { getApps, getPublicApps, isLoggedIn } = this.props;
+    const { getApps, getPublicApps, user } = this.props;
 
-    if (isLoggedIn) {
+    if (user) {
       getApps();
     } else {
       getPublicApps();
@@ -33,7 +39,7 @@ export default class AppList extends React.Component {
   };
 
   render() {
-    const { apps, isLoggedIn, intl } = this.props;
+    const { apps, intl, user } = this.props;
     const { filter } = this.state;
 
     if (!apps) {
@@ -59,10 +65,29 @@ export default class AppList extends React.Component {
         </div>
         <div className={styles.appList}>
           {filteredApps.map(app => (
-            <AppCard key={app.id} app={app} isLoggedIn={isLoggedIn} />
+            <AppCard key={app.id} app={app} />
           ))}
-          {isLoggedIn && <CreateAppCard />}
+          {user && user.organizations.length >= 1 && <CreateAppCard />}
         </div>
+        {user && user.organizations.length === 0 && apps.length === 0 && (
+          <div className={styles.noApps}>
+            <span>
+              <i className={`fas fa-folder-open ${styles.noAppsIcon}`} />
+            </span>
+            <span>
+              <FormattedMessage
+                {...messages.createOrganizationInstruction}
+                values={{
+                  link: (
+                    <Link to="/_/settings/organizations">
+                      <FormattedMessage {...messages.here} />
+                    </Link>
+                  ),
+                }}
+              />
+            </span>
+          </div>
+        )}
       </React.Fragment>
     );
   }

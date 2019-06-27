@@ -1,0 +1,22 @@
+.root {
+  box-sizing: border-box;
+  flex-flow: column;
+  margin: 10px auto;
+  max-width: 480px;
+  padding: 10px;
+}
+
+.registerButton {
+  margin-top: 10px;
+}
+
+.noInviteIcon {
+  font-size: 6em;
+}
+
+.noInvite {
+  display: grid;
+  margin: 0 auto;
+  padding: 15px;
+  text-align: center;
+}

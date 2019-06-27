@@ -1,4 +1,178 @@
 export default {
+  '/api/organizations': {
+    post: {
+      tags: ['organization'],
+      description: 'Create a new organization.',
+      operationId: 'createOrganization',
+      requestBody: {
+        description: 'The name of the new organization.',
+        required: true,
+        content: {
+          'application/json': {
+            schema: {
+              type: 'object',
+              required: ['id'],
+              properties: {
+                id: {
+                  type: 'string',
+                },
+                name: {
+                  type: 'string',
+                },
+              },
+            },
+          },
+        },
+      },
+      responses: {
+        201: {
+          $ref: '#/components/responses/organization',
+        },
+      },
+      security: [{ apiUser: [] }],
+    },
+  },
+  '/api/organizations/{organizationId}': {
+    parameters: [{ $ref: '#/components/parameters/organizationId' }],
+    get: {
+      tags: ['organization'],
+      description: 'Get a single organization.',
+      operationId: 'getOrganization',
+      responses: {
+        200: {
+          $ref: '#/components/responses/organization',
+        },
+      },
+    },
+  },
+  '/api/organizations/{organizationId}/resend': {
+    parameters: [{ $ref: '#/components/parameters/organizationId' }],
+    post: {
+      tags: ['organization'],
+      description: 'Request to resend an invitation.',
+      operationId: 'resendInvitation',
+      requestBody: {
+        description: 'The ID of the member to resend the invitation to.',
+        required: true,
+        content: {
+          'application/json': {
+            schema: {
+              type: 'object',
+              required: ['memberId'],
+              properties: {
+                memberId: {
+                  type: 'number',
+                },
+              },
+            },
+          },
+        },
+      },
+      responses: {
+        204: {
+          description: 'The invite has been sent.',
+        },
+      },
+    },
+  },
+  '/api/organizations/{organizationId}/join': {
+    parameters: [{ $ref: '#/components/parameters/organizationId' }],
+    post: {
+      tags: ['organization'],
+      description: 'Respond to a given invitation.',
+      operationId: 'respondInvitation',
+      requestBody: {
+        description: `The response of the invitation.
+
+        If response is true, user will join the organization. If response is false, the user declines the invite and the invite is removed.`,
+        required: true,
+        content: {
+          'application/json': {
+            schema: {
+              type: 'object',
+              required: ['response', 'token'],
+              properties: {
+                response: {
+                  type: 'boolean',
+                },
+                token: {
+                  type: 'string',
+                },
+              },
+            },
+          },
+        },
+      },
+      responses: {
+        204: {
+          description: 'The response has been processed.',
+        },
+      },
+      security: [{ apiUser: [] }],
+    },
+  },
+  '/api/organizations/{organizationId}/members': {
+    parameters: [{ $ref: '#/components/parameters/organizationId' }],
+    post: {
+      tags: ['organization'],
+      description: 'Invite a new member to the organization that matches the given id.',
+      operationId: 'inviteMember',
+      requestBody: {
+        description: 'The member to invite.',
+        required: true,
+        content: {
+          'application/json': {
+            schema: {
+              type: 'object',
+              required: ['email'],
+              properties: {
+                email: {
+                  type: 'string',
+                  format: 'email',
+                },
+              },
+            },
+          },
+        },
+      },
+      responses: {
+        201: {
+          description: 'The newly invited member.',
+          content: {
+            'application/json': {
+              schema: {
+                $ref: '#/components/schemas/User',
+              },
+            },
+          },
+        },
+      },
+      security: [{ apiUser: [] }],
+    },
+  },
+  '/api/organizations/{organizationId}/members/{memberId}': {
+    parameters: [
+      { $ref: '#/components/parameters/organizationId' },
+      {
+        name: 'memberId',
+        in: 'path',
+        description: 'The ID of the member to remove',
+        required: true,
+        schema: { $ref: '#/components/schemas/User/properties/id' },
+      },
+    ],
+    delete: {
+      tags: ['organization'],
+      description: 'Remove a member from the organization that matches the given id.',
+      operationId: 'removeMember',
+      responses: {
+        204: {
+          description: 'The member has been successfully removed.',
+        },
+      },
+      security: [{ apiUser: [] }],
+    },
+  },
   '/api/organizations/{organizationId}/style/shared': {
     parameters: [{ $ref: '#/components/parameters/organizationId' }],
     get: {
