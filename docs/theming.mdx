@@ -9,13 +9,13 @@ is completely functional for end users, developers may be interested in further 
 applications by applying their own style and branding.
 
 To support this, Appsemble supports customizing the styling in two different ways: Theme options for
-setting basic colours and custom styling for advanced or more specific styling.
+setting basic colors and custom styling for advanced or more specific styling.
 
 ## Theme options
 
-The Bulma CSS framework uses a set of colours for different parts of its elements. Appsemble
-supports customizing a subset of these variables by including a `theme object` at different points
-within an app recipe.
+The Bulma CSS framework uses a set of colors for different parts of its elements. Appsemble supports
+customizing a subset of these variables by including a `theme` object at different points within an
+app recipe.
 
 The supported variables are:
 
@@ -28,10 +28,10 @@ The supported variables are:
 - warningColor
 - dangerColor
 
-The `themeColor` and `splashColor` variables are not visible at all times. These define the colours
+The `themeColor` and `splashColor` variables are not visible at all times. These define the colors
 that appear when starting up the app after installing it on a mobile device.
 
-Each variable can be assigned with a [`hex value`](hex) representing the desired colour.
+Each variable can be assigned with a [hexadecimal value](hex) representing the desired color.
 
 ### Example
 
@@ -56,9 +56,9 @@ pages:
     ...
 ```
 
-The above example sets the app´s primary colour to green, the colour of its links to orange and the
-colour of ´success´ elements to purple. The page `Red Page` overwrites the primary colour to be red
-and one of its blocks overwrites the primary colour to be blue instead.
+The above example sets the app´s primary color to green, the color of its links to orange and the
+color of ´success´ elements to purple. The page `Red Page` overwrites the primary color to be red
+and one of its blocks overwrites the primary color to be blue instead.
 
 If a theme variable is not overwritten, it will simply use the theme of its parent.
 
@@ -89,7 +89,7 @@ useful for quickly applying style changes without having to re-deploy the server
 
 **Organization**-level styling gets applied to every application that belongs to a specific
 organization. This is useful for applying unified styling across every application within an
-organization, such as for supplying basic colour themes and icons.
+organization, such as for supplying basic color themes and icons.
 
 **App**-level styling gets applied to one specific application. This is primarily used for any
 styling that is directly related to one specific application without influencing any other
