@@ -7,6 +7,10 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- Editor: Allow viewing apps without logging in.
+
 ## [0.8.1] - 2019-06-26
 
 ### Fixed
