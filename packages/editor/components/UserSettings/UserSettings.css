@@ -15,3 +15,7 @@
   height: auto;
   padding: 0 !important;
 }
+
+.buttonGroup > button:not(:first-child) {
+  margin-left: 0.75rem;
+}

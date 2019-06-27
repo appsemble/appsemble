@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/utils",
-  "version": "0.7.0",
+  "version": "0.8.1",
   "private": true,
   "dependencies": {
     "idb": "^4.0.3",

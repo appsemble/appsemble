@@ -1,4 +1,5 @@
 import { Form } from '@appsemble/react-components';
+import normalize from '@appsemble/utils/normalize';
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -11,13 +12,14 @@ import messages from './messages';
 export default class Register extends React.Component {
   static propTypes = {
     registerEmail: PropTypes.func.isRequired,
+    intl: PropTypes.shape().isRequired,
+    push: PropTypes.func.isRequired,
   };
 
   state = {
     email: '',
     password: '',
     organization: '',
-    error: false,
     submitting: false,
     success: false,
   };
@@ -26,30 +28,44 @@ export default class Register extends React.Component {
     const { target } = event;
 
     if (target.name === 'organization') {
-      target.value = target.value.toLowerCase();
+      target.value = normalize(target.value);
     }
 
-    this.setState({ [target.name]: target.value, error: false });
+    this.setState({ [target.name]: target.value });
   };
 
   onSubmit = async event => {
     event.preventDefault();
 
     const { email, password, organization } = this.state;
-    const { registerEmail } = this.props;
+    const { registerEmail, intl, push } = this.props;
 
-    this.setState({ submitting: true, error: false });
+    this.setState({ submitting: true });
 
     try {
       await registerEmail(email, password, organization);
       this.setState({ submitting: false, success: true });
     } catch (error) {
-      this.setState({ error: true, submitting: false, success: false });
+      if (error?.response?.status !== 409) {
+        push(intl.formatMessage(messages.registerFailed));
+      } else if (error.response.data.message === 'User with this email address already exists.') {
+        push(intl.formatMessage(messages.emailConflict));
+      } else if (error.response.data.message === 'This organization already exists.') {
+        push({
+          body: intl.formatMessage(messages.organizationConflict),
+          timeout: 0,
+          dismissable: true,
+        });
+      } else {
+        push(intl.formatMessage(messages.registerFailed));
+      }
+
+      this.setState({ submitting: false, success: false });
     }
   };
 
   render() {
-    const { email, password, organization, error, submitting, success } = this.state;
+    const { email, password, organization, submitting, success } = this.state;
 
     return (
       <React.Fragment>
@@ -64,13 +80,6 @@ export default class Register extends React.Component {
           </div>
         ) : (
           <Form className={classNames('container', styles.root)} onSubmit={this.onSubmit}>
-            {error && (
-              <article className="message is-danger">
-                <div className="message-body">
-                  <FormattedMessage {...messages.registerFailed} />
-                </div>
-              </article>
-            )}
             <div className="field is-horizontal">
               <div className="field-label is-normal">
                 <label className="label" htmlFor="inputEmail">
@@ -128,8 +137,12 @@ export default class Register extends React.Component {
 
             <div className="field is-horizontal">
               <div className="field-label is-normal">
-                <label className="label" htmlFor="inputOrganization">
+                <label className="label is-inline" htmlFor="inputOrganization">
                   <FormattedMessage {...messages.organizationLabel} />
+                  <i className="is-inline has-text-weight-normal">
+                    {' - '}
+                    <FormattedMessage {...messages.optional} />
+                  </i>
                 </label>
               </div>
               <div className="field-body">

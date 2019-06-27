@@ -12,6 +12,7 @@ import EditPassword from '../EditPassword';
 import ErrorFallback from '../ErrorFallback';
 import Login from '../Login';
 import Message from '../Message';
+import OrganizationInvite from '../OrganizationInvite';
 import Register from '../Register';
 import ResetPassword from '../ResetPassword';
 import Settings from '../Settings';
@@ -54,6 +55,7 @@ export default class App extends React.Component {
                 <Route component={AppContext} path="/_/apps/:id(\d+)" />
                 <Route component={EditPassword} exact path="/_/edit-password" />
                 <Route component={VerifyEmail} exact path="/_/verify" />
+                <Route component={OrganizationInvite} exact path="/_/organization-invite" />
                 <Redirect to="/_/apps" />
               </Switch>
             ) : (

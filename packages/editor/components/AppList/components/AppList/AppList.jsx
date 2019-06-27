@@ -1,6 +1,8 @@
 import { Loader } from '@appsemble/react-components';
 import PropTypes from 'prop-types';
 import React from 'react';
+import { FormattedMessage } from 'react-intl';
+import { Link } from 'react-router-dom';
 
 import HelmetIntl from '../../../HelmetIntl';
 import AppCard from '../AppCard';
@@ -12,6 +14,11 @@ export default class AppList extends React.Component {
   static propTypes = {
     apps: PropTypes.arrayOf(PropTypes.shape()).isRequired,
     getApps: PropTypes.func.isRequired,
+    user: PropTypes.shape(),
+  };
+
+  static defaultProps = {
+    user: undefined,
   };
 
   async componentDidMount() {
@@ -20,21 +27,41 @@ export default class AppList extends React.Component {
   }
 
   render() {
-    const { apps } = this.props;
+    const { apps, user } = this.props;
 
     if (!apps) {
       return <Loader />;
     }
 
     return (
-      <div className={styles.appList}>
+      <React.Fragment>
         <HelmetIntl title={messages.title} />
-
-        {apps.map(app => (
-          <AppCard key={app.id} app={app} />
-        ))}
-        <CreateAppCard />
-      </div>
+        <div className={styles.appList}>
+          {apps.map(app => (
+            <AppCard key={app.id} app={app} />
+          ))}
+          {user && user.organizations.length >= 1 && <CreateAppCard />}
+        </div>
+        {user && user.organizations.length === 0 && apps.length === 0 && (
+          <div className={styles.noApps}>
+            <span>
+              <i className={`fas fa-folder-open ${styles.noAppsIcon}`} />
+            </span>
+            <span>
+              <FormattedMessage
+                {...messages.createOrganizationInstruction}
+                values={{
+                  link: (
+                    <Link to="/_/settings/organizations">
+                      <FormattedMessage {...messages.here} />
+                    </Link>
+                  ),
+                }}
+              />
+            </span>
+          </div>
+        )}
+      </React.Fragment>
     );
   }
 }

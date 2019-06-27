@@ -27,6 +27,7 @@ export function handleDbException(dbException) {
 
 function importModels(db) {
   db.import('../models/App');
+  db.import('../models/Member');
   db.import('../models/User');
   db.import('../models/Organization');
   db.import('../models/EmailAuthorization');

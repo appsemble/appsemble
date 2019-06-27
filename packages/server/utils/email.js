@@ -113,3 +113,17 @@ export async function sendResetPasswordEmail({ email, name, url }, smtp) {
 
   return sendEmail({ to, subject }, content, smtp);
 }
+
+export async function sendOrganizationInviteEmail({ email, name, organization, url }, smtp) {
+  const replacements = {
+    greeting: name ? `Hello ${name}` : 'Hello',
+    organization,
+    url,
+  };
+
+  const { attributes, content } = processTemplate(readTemplate('organizationInvite'), replacements);
+  const { subject } = attributes;
+  const to = name ? `"${name}" <${email}>` : email;
+
+  return sendEmail({ to, subject }, content, smtp);
+}

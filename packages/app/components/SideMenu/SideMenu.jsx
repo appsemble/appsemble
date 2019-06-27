@@ -29,7 +29,11 @@ export default class SideMenu extends React.Component {
     const { children, closeMenu, isOpen } = this.props;
 
     return (
-      <Drawer classes={{ paper: `side-menu ${styles.paper}` }} onClose={closeMenu} open={isOpen}>
+      <Drawer
+        classes={{ paper: `side-menu ${styles.paper}`, root: styles.backdrop }}
+        onClose={closeMenu}
+        open={isOpen}
+      >
         {children}
       </Drawer>
     );

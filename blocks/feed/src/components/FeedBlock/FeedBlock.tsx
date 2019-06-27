@@ -6,6 +6,7 @@ import { FormattedMessage, InjectedIntlProps } from 'react-intl';
 
 import { BlockActions, BlockParameters, Remappers } from '../../../types';
 import Card from '../Card';
+import styles from './FeedBlock.css';
 import messages from './messages';
 
 function createRemapper(mapper: any, context: Context): MapperFunction {
@@ -76,7 +77,11 @@ export default class FeedBlock extends React.Component<
     }
 
     if (!data.length) {
-      return <FormattedMessage {...messages.empty} />;
+      return (
+        <div className={styles.empty}>
+          <FormattedMessage {...messages.empty} />
+        </div>
+      );
     }
 
     return data.map(content => (

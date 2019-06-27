@@ -23,8 +23,9 @@ export default sequelize => {
     OAuthAuthorization,
     EmailAuthorization,
     ResetPasswordToken,
+    Member,
   }) => {
-    User.belongsToMany(Organization, { through: 'UserOrganization' });
+    User.belongsToMany(Organization, { through: Member });
     User.hasMany(OAuthToken);
     User.hasMany(OAuthAuthorization);
     User.hasMany(EmailAuthorization);

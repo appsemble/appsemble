@@ -1,3 +1,4 @@
+import normalize from '@appsemble/utils/normalize';
 import axios from 'axios';
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
@@ -48,7 +49,13 @@ export default class ConnectOAuth extends React.Component {
   };
 
   onChange = event => {
-    this.setState({ [event.target.name]: event.target.value });
+    const { target } = event;
+
+    if (target.name === 'organization') {
+      target.value = normalize(target.value);
+    }
+
+    this.setState({ [target.name]: target.value });
   };
 
   handleOAuthLogin() {
