@@ -2,7 +2,8 @@
   "private": true,
   "workspaces": [
     "blocks/*",
-    "packages/*"
+    "packages/*",
+    "packages/@types/*"
   ],
   "scripts": {
     "block": "webpack --config config/webpack/block.js --mode production --env",

@@ -1,0 +1,15 @@
+{
+  "extends": "../../tsconfig",
+  "exclude": [],
+  "compilerOptions": {
+    "lib": ["dom", "esnext"],
+    "types": [
+      "babel-plugin-react-intl-auto",
+      "css-modules",
+      "jest",
+      "node",
+      "react",
+      "service-worker-mock"
+    ]
+  }
+}

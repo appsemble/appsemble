@@ -93,6 +93,7 @@ tsc:
   script:
     - yarn --frozen-lockfile
     - yarn tsc
+    - yarn workspaces tsc
 
 ###################################################################################################
 #  Build Stage                                                                                    #
