@@ -5,8 +5,8 @@ import { FormattedMessage } from 'react-intl';
 import { Link } from 'react-router-dom';
 
 import generateGravatarHash from '../../utils/generateGravatarHash';
-import styles from './ProfileDropdown.css';
 import messages from './messages';
+import styles from './ProfileDropdown.css';
 
 export default class ProfileDropdown extends Component {
   static propTypes = {

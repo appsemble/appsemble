@@ -58,8 +58,9 @@ module.exports = (env, { mode }) => {
                   options: {
                     importLoaders: 1,
                     sourceMap: true,
-                    modules: true,
-                    localIdentName: production ? '[hash:base64:5]' : '[path][name]_[local]',
+                    modules: {
+                      localIdentName: production ? '[hash:base64:5]' : '[path][name]_[local]',
+                    },
                   },
                 },
                 'postcss-loader',

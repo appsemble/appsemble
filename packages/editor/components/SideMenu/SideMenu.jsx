@@ -3,8 +3,8 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import styles from './SideMenu.css';
 import messages from './messages';
+import styles from './SideMenu.css';
 
 export default class SideMenu extends React.Component {
   static propTypes = {

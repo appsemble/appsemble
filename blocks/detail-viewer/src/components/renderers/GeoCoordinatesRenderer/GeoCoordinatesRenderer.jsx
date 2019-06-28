@@ -27,6 +27,7 @@ export default class GeoCoordinatesRenderer extends React.Component {
     field: PropTypes.shape({
       longitude: PropTypes.string,
       latitude: PropTypes.string,
+      label: PropTypes.string,
     }).isRequired,
   };
 

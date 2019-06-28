@@ -4,8 +4,8 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import styles from './VerifyEmail.css';
 import messages from './messages';
+import styles from './VerifyEmail.css';
 
 export default class VerifyEmail extends React.Component {
   static propTypes = {

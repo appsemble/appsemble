@@ -10,15 +10,11 @@ export function handleDbException(dbException) {
       throw new AppsembleError(`${dbException.name}: ${dbException.original.sqlMessage}`);
     case 'SequelizeHostNotFoundError':
       throw new AppsembleError(
-        `${dbException.name}: Could not find host ´${dbException.original.hostname}:${
-          dbException.original.port
-        }´`,
+        `${dbException.name}: Could not find host ´${dbException.original.hostname}:${dbException.original.port}´`,
       );
     case 'SequelizeConnectionRefusedError':
       throw new AppsembleError(
-        `${dbException.name}: Connection refused on address ´${dbException.original.address}:${
-          dbException.original.port
-        }´`,
+        `${dbException.name}: Connection refused on address ´${dbException.original.address}:${dbException.original.port}´`,
       );
     default:
       throw dbException;

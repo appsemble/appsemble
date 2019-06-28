@@ -1,4 +1,4 @@
-import Boom from 'boom';
+import Boom from '@hapi/boom';
 
 export async function getAssetById(ctx) {
   const { assetId } = ctx.params;

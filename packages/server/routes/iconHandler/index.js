@@ -1,4 +1,4 @@
-import Boom from 'boom';
+import Boom from '@hapi/boom';
 import sharp from 'sharp';
 
 import getDefaultIcon from '../../utils/getDefaultIcon';

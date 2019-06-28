@@ -5,8 +5,8 @@ import React, { Component } from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import HelmetIntl from '../HelmetIntl';
-import styles from './UserSettings.css';
 import messages from './messages';
+import styles from './UserSettings.css';
 
 export default class UserSettings extends Component {
   static propTypes = {

@@ -4,7 +4,7 @@
   "private": true,
   "dependencies": {
     "idb": "^4.0.3",
-    "postcss": "^7.0.16",
-    "z-schema": "^4.0.2"
+    "postcss": "^7.0.17",
+    "z-schema": "^4.1.0"
   }
 }

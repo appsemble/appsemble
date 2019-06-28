@@ -135,6 +135,7 @@ export default {
         name: 'path',
         in: 'path',
         description: 'The path segments of the asset to get.',
+        required: true,
         schema: { type: 'array' },
       },
     ],

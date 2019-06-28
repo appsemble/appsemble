@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import faPkg from '@fortawesome/fontawesome-free/package.json';
-import boom from 'boom';
+import boom from '@hapi/boom';
 import Grant from 'grant-koa';
 import Koa from 'koa';
 import compress from 'koa-compress';
