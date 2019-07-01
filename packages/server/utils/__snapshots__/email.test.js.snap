@@ -1,151 +1,149 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`resendVerificationEmail should match its snapshot 1`] = `
-"Content-Type: multipart/alternative;
- 
-To: John Doe <test@example.com>
-Subject: Confirm account registration
+Object {
+  "bcc": null,
+  "cc": null,
+  "from": null,
+  "headers": Object {},
+  "html": "<p>Hello John Doe,</p>
+<p>Someone has requested to resend the verification key for your account.<br>Before you can use your account, we need to verify your email address.</p>
+<p>Please follow the link below to verify your email address:<br><a href=\\"https://example.com/test\\">https://example.com/test</a></p>
+<p><strong>Didn’t request this email?</strong><br>No worries! Your address may have been entered by mistake. If you ignore or delete this email,
+nothing will happen to your account.</p>
+<p>Kind regards,</p>
+<p><em>The Appsemble Team</em></p>
+",
+  "markdown": "Hello John Doe,
 
+Someone has requested to resend the verification key for your account.  
+Before you can use your account, we need to verify your email address.
 
-MIME-Version: 1.0
-
-
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-
-Hello John Doe,
-
-Someone has requested to resend the verification key for =
-your account. =20
-Before you can use your account, we need to verify your =
-email address.
-
-Please follow the link below to verify your email address: =
-=20
+Please follow the link below to verify your email address:  
 https://example.com/test
 
-**Didn=E2=80=99t request this email?** =20
-No worries! Your address may have been entered by mistake. If you ignore or=
- delete this email,
+**Didn’t request this email?**  
+No worries! Your address may have been entered by mistake. If you ignore or delete this email,
 nothing will happen to your account.
 
 Kind regards,
 
 _The Appsemble Team_
+",
+  "messageId": "<TestMessageId>",
+  "subject": "Confirm account registration",
+  "text": "Hello John Doe,
 
+Someone has requested to resend the verification key for your account.  
+Before you can use your account, we need to verify your email address.
 
-Content-Type: text/html; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Please follow the link below to verify your email address:  
+https://example.com/test
 
-<p>Hello John Doe,</p>
-<p>Someone has requested to resend the verification =
-key for your account.<br>Before you can use your account, we need to verify=
- your email address.</p>
-<p>Please follow the link below to verify your =
-email address:<br><a href=3D\\"https://example.com/test\\">https://example.=
-com/test</a></p>
-<p><strong>Didn=E2=80=99t request this email?=
-</strong><br>No worries! Your address may have been entered by mistake. If =
-you ignore or delete this email,
-nothing will happen to your account.</p>
-<p>Kind regards,</p>
-<p><em>The Appsemble Team</em></p>
+**Didn’t request this email?**  
+No worries! Your address may have been entered by mistake. If you ignore or delete this email,
+nothing will happen to your account.
 
+Kind regards,
 
-"
+_The Appsemble Team_
+",
+  "to": Array [
+    Object {
+      "address": "test@example.com",
+      "name": "John Doe",
+    },
+  ],
+}
 `;
 
 exports[`sendForgetPasswordEmail should match its snapshot 1`] = `
-"Content-Type: multipart/alternative;
- 
-To: John Doe <test@example.com>
-Subject: Reset password
+Object {
+  "bcc": null,
+  "cc": null,
+  "from": null,
+  "headers": Object {},
+  "html": "<p>Hello John Doe,</p>
+<p>A password reset has been requested for you account. Please click <a href=\\"https://example.com/test\\">here</a> to reset your
+password.</p>
+<p>Kind regards,</p>
+<p><em>The Appsemble Team</em></p>
+<p><strong>Didn’t request this email?</strong></p>
+<p>Your email address may have been entered by mistake. This email can be ignored safely.</p>
+",
+  "markdown": "Hello John Doe,
 
-
-MIME-Version: 1.0
-
-
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-
-Hello John Doe,
-
-A password reset has been requested for you account. =
-Please click [here](https://example.com/test) to reset your
+A password reset has been requested for you account. Please click [here](https://example.com/test) to reset your
 password.
 
 Kind regards,
 
 _The Appsemble Team_
 
-**Didn=E2=80=99t request this email?**
+**Didn’t request this email?**
 
-Your email address may have been entered by mistake. This email can be =
-ignored safely.
+Your email address may have been entered by mistake. This email can be ignored safely.
+",
+  "messageId": "<TestMessageId>",
+  "subject": "Reset password",
+  "text": "Hello John Doe,
 
+A password reset has been requested for you account. Please click [here](https://example.com/test) to reset your
+password.
 
-Content-Type: text/html; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Kind regards,
 
-<p>Hello John Doe,</p>
-<p>A password reset has been requested for you =
-account. Please click <a href=3D\\"https://example.com/test\\">here</a> to =
-reset your
-password.</p>
-<p>Kind regards,</p>
-<p><em>The Appsemble =
-Team</em></p>
-<p><strong>Didn=E2=80=99t request this email?</strong></p>
-<p>Your email address may have been entered by mistake. This email can be =
-ignored safely.</p>
+_The Appsemble Team_
 
+**Didn’t request this email?**
 
-"
+Your email address may have been entered by mistake. This email can be ignored safely.
+",
+  "to": Array [
+    Object {
+      "address": "test@example.com",
+      "name": "John Doe",
+    },
+  ],
+}
 `;
 
 exports[`sendMail should convert markdown to text and html 1`] = `
-"Content-Type: multipart/alternative;
- 
-To: test@example.com
-Subject: Test
+Array [
+  Object {
+    "address": "test@example.com",
+    "name": "",
+  },
+]
+`;
 
-
-MIME-Version: 1.0
-
-
-Content-Type: text/plain
-Content-Transfer-Encoding: 7bit
-
-**Bold Text** Regular text
-
-Content-Type: text/html
-Content-Transfer-Encoding: 7bit
-
-<p><strong>Bold Text</strong> Regular text</p>
-
-
+exports[`sendMail should convert markdown to text and html 2`] = `
+"<p><strong>Bold Text</strong> Regular text</p>
 "
 `;
 
+exports[`sendMail should convert markdown to text and html 3`] = `"**Bold Text** Regular text"`;
+
 exports[`sendOrganizationInviteEmail should match its snapshot 1`] = `
-"Content-Type: multipart/alternative;
- 
-To: test@example.com
-Subject: Invited to organization
-
-
-MIME-Version: 1.0
-
-
-Content-Type: text/plain
-Content-Transfer-Encoding: quoted-printable
-
-Hello,
+Object {
+  "bcc": null,
+  "cc": null,
+  "from": null,
+  "headers": Object {},
+  "html": "<p>Hello,</p>
+<p>You have been invited to join the organization <strong>Appsemble</strong>.</p>
+<p>Joining an organization allows you to view private applications as well as create and edit apps
+belonging to an organization.</p>
+<p>You can accept or decline this invitation by following the link below:</p>
+<p><a href=\\"https://example.com/test\\">https://example.com/test</a></p>
+<p>Kind regards,</p>
+<p><em>The Appsemble Team</em></p>
+",
+  "markdown": "Hello,
 
 You have been invited to join the organization **Appsemble**.
 
-Joining an organization allows you to view private applications as well as =
-create and edit apps
+Joining an organization allows you to view private applications as well as create and edit apps
 belonging to an organization.
 
 You can accept or decline this invitation by following the link below:
@@ -155,42 +153,46 @@ https://example.com/test
 Kind regards,
 
 _The Appsemble Team_
+",
+  "messageId": "<TestMessageId>",
+  "subject": "Invited to organization",
+  "text": "Hello,
 
+You have been invited to join the organization **Appsemble**.
 
-Content-Type: text/html
-Content-Transfer-Encoding: quoted-printable
+Joining an organization allows you to view private applications as well as create and edit apps
+belonging to an organization.
 
-<p>Hello,</p>
-<p>You have been invited to join the organization =
-<strong>Appsemble</strong>.</p>
-<p>Joining an organization allows you to =
-view private applications as well as create and edit apps
-belonging to an organization.</p>
-<p>You can accept or decline this =
-invitation by following the link below:</p>
-<p><a href=3D\\"https://example.=
-com/test\\">https://example.com/test</a></p>
-<p>Kind regards,</p>
-<p><em>The Appsemble Team</em></p>
+You can accept or decline this invitation by following the link below:
 
+https://example.com/test
 
-"
+Kind regards,
+
+_The Appsemble Team_
+",
+  "to": Array [
+    Object {
+      "address": "test@example.com",
+      "name": "",
+    },
+  ],
+}
 `;
 
 exports[`sendWelcomeEmail should match its snapshot 1`] = `
-"Content-Type: multipart/alternative;
- 
-To: John Doe <test@example.com>
-Subject: Welcome to Appsemble
-
-
-MIME-Version: 1.0
-
-
-Content-Type: text/plain
-Content-Transfer-Encoding: 7bit
-
-Hello John Doe,
+Object {
+  "bcc": null,
+  "cc": null,
+  "from": null,
+  "headers": Object {},
+  "html": "<p>Hello John Doe,</p>
+<p>Thank you for registering your account.<br>Before you can use your account, we need to verify your email address.</p>
+<p>Please follow the link below to verify your email address:<br><a href=\\"https://example.com/test\\">https://example.com/test</a></p>
+<p>Kind regards,</p>
+<p><em>The Appsemble Team</em></p>
+",
+  "markdown": "Hello John Doe,
 
 Thank you for registering your account.  
 Before you can use your account, we need to verify your email address.
@@ -201,19 +203,26 @@ https://example.com/test
 Kind regards,
 
 _The Appsemble Team_
+",
+  "messageId": "<TestMessageId>",
+  "subject": "Welcome to Appsemble",
+  "text": "Hello John Doe,
 
+Thank you for registering your account.  
+Before you can use your account, we need to verify your email address.
 
-Content-Type: text/html
-Content-Transfer-Encoding: quoted-printable
+Please follow the link below to verify your email address:  
+https://example.com/test
 
-<p>Hello John Doe,</p>
-<p>Thank you for registering your account.<br>Before=
- you can use your account, we need to verify your email address.</p>
-<p>Please follow the link below to verify your email address:<br><a =
-href=3D\\"https://example.com/test\\">https://example.com/test</a></p>
-<p>Kind regards,</p>
-<p><em>The Appsemble Team</em></p>
+Kind regards,
 
-
-"
+_The Appsemble Team_
+",
+  "to": Array [
+    Object {
+      "address": "test@example.com",
+      "name": "John Doe",
+    },
+  ],
+}
 `;

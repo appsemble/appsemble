@@ -1,10 +1,10 @@
 import { logger } from '@appsemble/node-utils';
+import dedent from 'dedent';
 import frontmatter from 'front-matter';
 import fs from 'fs';
 import { template } from 'lodash';
 import nodemailer from 'nodemailer';
 import { markdown } from 'nodemailer-markdown';
-import stubTransport from 'nodemailer-stub-transport';
 import path from 'path';
 
 function readTemplate(templateName) {
@@ -24,7 +24,7 @@ async function getTransport(smtp) {
   if (smtp) {
     transport = nodemailer.createTransport(smtp);
   } else {
-    transport = nodemailer.createTransport(stubTransport());
+    transport = nodemailer.createTransport({ jsonTransport: true });
   }
 
   transport.use('compile', markdown());
@@ -44,16 +44,21 @@ export async function sendEmail({ to, cc, bcc, subject }, message, smtp) {
   });
 
   if (process.env.NODE_ENV !== 'production' || !smtp) {
-    // Filter out fields that are unique for snapshot testing
-    result.response = result.response
-      .toString()
-      .replace(
-        /(Message-ID:\r?\n? <\w{8}-\w{4}-\w{4}-\w{4}-\w{12}@(.+)>$|Date: .+$|----_NmP.+$|boundary="--_NmP.+$)/gm,
-        '',
-      );
-
     if (process.env.NODE_ENV !== 'test') {
-      logger.warn(`Mail not sent:\n${result.response}`);
+      const {
+        to: [toObject],
+        markdown: content,
+      } = JSON.parse(result.message);
+
+      logger.warn(
+        dedent(
+          `Mail not sent:
+        To: ${toObject.name ? `${toObject.name}<${toObject.address}>}` : toObject.address}
+        Subject: ${subject}
+
+        ${content}`,
+        ),
+      );
     }
   }
 
