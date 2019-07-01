@@ -1,5 +1,4 @@
 const path = require('path');
-const { version } = require('react/package.json');
 const restricted = require('eslint-restricted-globals');
 
 const configs = [path.join(__dirname, 'config/**'), '*.config.js', '.*rc.js', 'types/*.d.ts'];
@@ -23,7 +22,7 @@ module.exports = {
       },
     },
     react: {
-      version,
+      version: 'detect',
     },
   },
   rules: {
@@ -139,10 +138,8 @@ module.exports = {
       rules: {
         // We don’t need browser compatibility checks on our tests.
         'compat/compat': 'off',
-        'import/no-extraneous-dependencies': context => [
-          'error',
-          { devDependencies: true, packageDir: [context.getFilename(), __dirname] },
-        ],
+        // https://github.com/benmosher/eslint-plugin-import/issues/458#issuecomment-496134695
+        'import/no-extraneous-dependencies': 'off',
         'jest/consistent-test-it': ['error', { fn: 'it' }],
         'jest/expect-expect': 'error',
         'jest/no-alias-methods': 'error',

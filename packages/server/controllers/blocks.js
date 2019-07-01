@@ -1,4 +1,4 @@
-import Boom from 'boom';
+import Boom from '@hapi/boom';
 import { isEmpty } from 'lodash';
 import { UniqueConstraintError } from 'sequelize';
 

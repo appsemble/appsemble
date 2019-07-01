@@ -1,4 +1,4 @@
-import Boom from 'boom';
+import Boom from '@hapi/boom';
 import crypto from 'crypto';
 
 import { sendAddedEmail } from '../utils/email';

@@ -6,8 +6,8 @@ import { FormattedMessage } from 'react-intl';
 import { NavLink } from 'react-router-dom';
 
 import SideMenu from '../SideMenu';
-import styles from './SideNavigation.css';
 import messages from './messages';
+import styles from './SideNavigation.css';
 
 /**
  * The app navigation that is displayed in the side menu.

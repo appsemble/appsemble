@@ -1,4 +1,4 @@
-import { BootstrapParams, bootstrap as sdkBootstrap } from '@appsemble/sdk';
+import { bootstrap as sdkBootstrap, BootstrapParams } from '@appsemble/sdk';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import retargetEvents from 'react-shadow-dom-retarget-events';
@@ -15,10 +15,10 @@ const { Consumer, Provider } = React.createContext<BlockProps>(null);
 /**
  * Mount a React component returned by a bootstrap function in the shadow DOM of a block.
  */
-export function mount(
-  Component: React.ComponentType<Partial<BlockProps>>,
+export function mount<P, A = {}>(
+  Component: React.ComponentType<BlockProps<P, A>>,
   root?: HTMLElement,
-): (params: BootstrapParams) => void {
+): (params: BootstrapParams<P, A>) => void {
   return params => {
     const reactRoot = params.shadowRoot.appendChild(
       root ? root.cloneNode() : document.createElement('div'),
@@ -53,7 +53,7 @@ export function mount(
 }
 
 export function bootstrap<P, A = {}>(
-  Component: React.ComponentType<Partial<BlockProps<P, A>>>,
+  Component: React.ComponentType<BlockProps<P, A>>,
   reactRoot?: HTMLElement,
 ): void {
   sdkBootstrap<P, A>(mount(Component, reactRoot));
@@ -63,7 +63,7 @@ export function bootstrap<P, A = {}>(
  * A HOC which passes the Appsemble block values to he wrapped React component.
  */
 export function withBlock<P extends object>(
-  Component: React.ComponentType<P & Partial<BlockProps>>,
+  Component: React.ComponentType<P & BlockProps>,
 ): React.ComponentType<P> {
   function Wrapper(props: P): JSX.Element {
     return <Consumer>{values => <Component {...values} {...props} />}</Consumer>;

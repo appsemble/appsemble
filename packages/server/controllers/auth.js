@@ -1,6 +1,6 @@
 import normalize from '@appsemble/utils/normalize';
+import Boom from '@hapi/boom';
 import bcrypt from 'bcrypt';
-import Boom from 'boom';
 import crypto from 'crypto';
 import { UniqueConstraintError } from 'sequelize';
 

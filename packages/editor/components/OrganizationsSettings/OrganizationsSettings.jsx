@@ -7,8 +7,8 @@ import { FormattedMessage } from 'react-intl';
 
 import { requestUser } from '../../actions/user';
 import HelmetIntl from '../HelmetIntl';
-import styles from './OrganizationsSettings.css';
 import messages from './messages';
+import styles from './OrganizationsSettings.css';
 
 export default class OrganizationsSettings extends Component {
   static propTypes = {

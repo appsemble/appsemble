@@ -12,8 +12,8 @@ import { FormattedMessage } from 'react-intl';
 import { Link } from 'react-router-dom';
 
 import HelmetIntl from '../HelmetIntl';
-import styles from './Editor.css';
 import MonacoEditor from './components/MonacoEditor';
+import styles from './Editor.css';
 import messages from './messages';
 
 export default class Editor extends React.Component {
@@ -131,13 +131,11 @@ export default class Editor extends React.Component {
           push(formatMessage(messages.invalidStyle));
           return { valid: false, dirty: false };
         }
-        // eslint-disable-next-line react/prop-types
         validate(openApiSpec.components.schemas.App, app)
           .then(() => {
             this.setState({ valid: true, dirty: false });
 
             // YAML and schema appear to be valid, send it to the app preview iframe
-            // eslint-disable-next-line react/prop-types
             this.frame.current.contentWindow.postMessage(
               { type: 'editor/EDIT_SUCCESS', app, style, sharedStyle },
               window.location.origin,

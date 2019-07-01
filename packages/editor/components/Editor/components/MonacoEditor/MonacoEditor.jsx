@@ -4,7 +4,7 @@ import 'monaco-editor/esm/vs/basic-languages/javascript/javascript.contribution'
 import 'monaco-editor/esm/vs/basic-languages/yaml/yaml.contribution';
 import 'monaco-editor/esm/vs/basic-languages/css/css.contribution';
 
-import { KeyCode, KeyMod, editor } from 'monaco-editor/esm/vs/editor/edcore.main';
+import { editor, KeyCode, KeyMod } from 'monaco-editor/esm/vs/editor/edcore.main';
 import PropTypes from 'prop-types';
 import React from 'react';
 import ResizeObserver from 'resize-observer-polyfill';

@@ -8,8 +8,8 @@ import NavLink from '../NavLink';
 import OrganizationsSettings from '../OrganizationsSettings';
 import SideMenu from '../SideMenu';
 import UserSettings from '../UserSettings';
-import styles from './Settings.css';
 import messages from './messages';
+import styles from './Settings.css';
 
 export default class Settings extends React.Component {
   static propTypes = {

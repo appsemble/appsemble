@@ -5,8 +5,8 @@ import React from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import HelmetIntl from '../HelmetIntl';
-import styles from './ResetPassword.css';
 import messages from './messages';
+import styles from './ResetPassword.css';
 
 export default class ResetPassword extends React.Component {
   static propTypes = {

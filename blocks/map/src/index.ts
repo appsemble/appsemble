@@ -9,7 +9,7 @@ import loadMarkers from './loadMarkers';
 
 attach<BlockParameters, BlockActions>(({ actions, block, data, shadowRoot, utils }) => {
   const node = shadowRoot.appendChild(document.createElement('div'));
-  const fetched = new Set();
+  const fetched = new Set<number>();
 
   const get = createGetters(block.parameters);
   const locationMarker = new CircleMarker(null, {

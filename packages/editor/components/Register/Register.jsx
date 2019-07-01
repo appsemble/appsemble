@@ -6,8 +6,8 @@ import React from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import HelmetIntl from '../HelmetIntl';
-import styles from './Register.css';
 import messages from './messages';
+import styles from './Register.css';
 
 export default class Register extends React.Component {
   static propTypes = {

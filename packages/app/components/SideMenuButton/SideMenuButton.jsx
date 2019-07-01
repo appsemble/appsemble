@@ -2,8 +2,8 @@ import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import React from 'react';
 
-import styles from './SideMenuButton.css';
 import messages from './messages';
+import styles from './SideMenuButton.css';
 
 /**
  * A toolbar button which can be used to open the side menu.

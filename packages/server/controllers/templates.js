@@ -1,5 +1,5 @@
 import normalize from '@appsemble/utils/normalize';
-import Boom from 'boom';
+import Boom from '@hapi/boom';
 
 import templates from '../templates/apps';
 import getAppFromRecord from '../utils/getAppFromRecord';

@@ -7,8 +7,8 @@ import { FormattedMessage } from 'react-intl';
 import { Link } from 'react-router-dom';
 
 import HelmetIntl from '../HelmetIntl';
-import styles from './ResourceTable.css';
 import messages from './messages';
+import styles from './ResourceTable.css';
 
 export default class ResourceTable extends React.Component {
   static propTypes = {
