@@ -15,18 +15,11 @@ describe('sendMail', () => {
       null,
     );
 
-    const {
-      envelope: { to },
-    } = result;
-    const converted = result.response.toString();
+    const converted = JSON.parse(result.message);
 
-    expect(to).toStrictEqual(['test@example.com']);
-    expect(converted).toMatch('Content-Type: multipart/alternative;');
-    expect(converted).toMatch('Content-Type: text/plain');
-    expect(converted).toMatch('Content-Type: text/html');
-    expect(converted).toMatch('**Bold Text** Regular text');
-    expect(converted).toMatch('<p><strong>Bold Text</strong> Regular text</p>');
-    expect(converted).toMatchSnapshot();
+    expect(converted.to).toMatchSnapshot();
+    expect(converted.html).toMatchSnapshot();
+    expect(converted.markdown).toMatchSnapshot();
   });
 });
 
@@ -55,18 +48,9 @@ describe('sendWelcomeEmail', () => {
       null,
     );
 
-    const converted = result.response.toString();
+    const converted = JSON.parse(result.message);
+    converted.messageId = '<TestMessageId>';
     expect(converted).toMatchSnapshot();
-  });
-
-  it('should combine name and email', async () => {
-    const result = await sendWelcomeEmail(
-      { email: 'test@example.com', name: 'John Doe', url: 'https://example.com/test' },
-      null,
-    );
-
-    const converted = result.response.toString();
-    expect(converted).toMatch('John Doe <test@example.com>');
   });
 });
 
@@ -77,18 +61,9 @@ describe('resendVerificationEmail', () => {
       null,
     );
 
-    const converted = result.response.toString();
+    const converted = JSON.parse(result.message);
+    converted.messageId = '<TestMessageId>';
     expect(converted).toMatchSnapshot();
-  });
-
-  it('should combine name and email', async () => {
-    const result = await resendVerificationEmail(
-      { email: 'test@example.com', name: 'John Doe', url: 'https://example.com/test' },
-      null,
-    );
-
-    const converted = result.response.toString();
-    expect(converted).toMatch('John Doe <test@example.com>');
   });
 });
 
@@ -99,18 +74,9 @@ describe('sendForgetPasswordEmail', () => {
       null,
     );
 
-    const converted = result.response.toString();
+    const converted = JSON.parse(result.message);
+    converted.messageId = '<TestMessageId>';
     expect(converted).toMatchSnapshot();
-  });
-
-  it('should combine name and email', async () => {
-    const result = await sendResetPasswordEmail(
-      { email: 'test@example.com', name: 'John Doe', url: 'https://example.com/test' },
-      null,
-    );
-
-    const converted = result.response.toString();
-    expect(converted).toMatch('John Doe <test@example.com>');
   });
 });
 
@@ -121,17 +87,8 @@ describe('sendOrganizationInviteEmail', () => {
       null,
     );
 
-    const converted = result.response.toString();
+    const converted = JSON.parse(result.message);
+    converted.messageId = '<TestMessageId>';
     expect(converted).toMatchSnapshot();
-  });
-
-  it('should combine name and email', async () => {
-    const result = await sendOrganizationInviteEmail(
-      { email: 'test@example.com', name: 'John Doe', organization: 'Appsemble' },
-      null,
-    );
-
-    const converted = result.response.toString();
-    expect(converted).toMatch('John Doe <test@example.com>');
   });
 });
