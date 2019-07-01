@@ -1,6 +1,7 @@
 import { defineMessages } from 'react-intl';
 
 export default defineMessages({
+  title: 'Settings · Profile',
   actions: 'Actions',
   addEmail: 'Add an email address',
   addEmailSuccess: 'Successfully added email address',

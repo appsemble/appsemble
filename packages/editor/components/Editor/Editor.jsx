@@ -11,8 +11,9 @@ import React from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Link } from 'react-router-dom';
 
-import styles from './Editor.css';
+import HelmetIntl from '../HelmetIntl';
 import MonacoEditor from './components/MonacoEditor';
+import styles from './Editor.css';
 import messages from './messages';
 
 export default class Editor extends React.Component {
@@ -33,6 +34,7 @@ export default class Editor extends React.Component {
   };
 
   state = {
+    appName: '',
     recipe: '',
     style: '',
     sharedStyle: '',
@@ -82,6 +84,7 @@ export default class Editor extends React.Component {
       const { data: sharedStyle } = await axios.get(`/api/apps/${id}/style/shared`);
 
       this.setState({
+        appName: data.name,
         recipe,
         style,
         sharedStyle,
@@ -128,13 +131,11 @@ export default class Editor extends React.Component {
           push(formatMessage(messages.invalidStyle));
           return { valid: false, dirty: false };
         }
-        // eslint-disable-next-line react/prop-types
         validate(openApiSpec.components.schemas.App, app)
           .then(() => {
             this.setState({ valid: true, dirty: false });
 
             // YAML and schema appear to be valid, send it to the app preview iframe
-            // eslint-disable-next-line react/prop-types
             this.frame.current.contentWindow.postMessage(
               { type: 'editor/EDIT_SUCCESS', app, style, sharedStyle },
               window.location.origin,
@@ -211,7 +212,13 @@ export default class Editor extends React.Component {
       }
     }
 
-    this.setState({ dirty: true, warningDialog: false, initialRecipe: recipe, path });
+    this.setState({
+      appName: app.name,
+      dirty: true,
+      warningDialog: false,
+      initialRecipe: recipe,
+      path,
+    });
   };
 
   onUpload = async () => {
@@ -268,6 +275,7 @@ export default class Editor extends React.Component {
 
   render() {
     const {
+      appName,
       recipe,
       style,
       sharedStyle,
@@ -309,6 +317,7 @@ export default class Editor extends React.Component {
 
     return (
       <div className={styles.root}>
+        <HelmetIntl title={messages.title} titleValues={{ name: appName }} />
         <div className={styles.leftPanel}>
           <Form className={styles.editorForm} onSubmit={this.onSave}>
             <nav className="navbar">

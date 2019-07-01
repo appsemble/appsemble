@@ -6,8 +6,8 @@ import React from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Link } from 'react-router-dom';
 
-import styles from './OrganizationInvite.css';
 import messages from './messages';
+import styles from './OrganizationInvite.css';
 
 export default class OrganizationInvite extends React.Component {
   static propTypes = {

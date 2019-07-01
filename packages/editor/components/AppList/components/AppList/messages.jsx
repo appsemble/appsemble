@@ -1,6 +1,7 @@
 import { defineMessages } from 'react-intl';
 
 export default defineMessages({
+  title: 'Apps',
   search: 'Search',
   here: 'here',
   createOrganizationInstruction:

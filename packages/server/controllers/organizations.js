@@ -1,6 +1,6 @@
 import normalize from '@appsemble/utils/normalize';
 import validateStyle, { StyleValidationError } from '@appsemble/utils/validateStyle';
-import Boom from 'boom';
+import Boom from '@hapi/boom';
 import crypto from 'crypto';
 import { UniqueConstraintError } from 'sequelize';
 

@@ -5,6 +5,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 
+import HelmetIntl from '../HelmetIntl';
 import styles from './ConnectOAuth.css';
 import messages from './messages';
 
@@ -74,6 +75,7 @@ export default class ConnectOAuth extends React.Component {
     if (params.has('access_token') && params.has('provider')) {
       return (
         <div className={styles.registerPrompt}>
+          <HelmetIntl title={messages.title} titleValues={{ provider: params.get('provider') }} />
           <p>
             <FormattedMessage {...messages.greeting} values={{ name: params.get('name') }} />
             <br />

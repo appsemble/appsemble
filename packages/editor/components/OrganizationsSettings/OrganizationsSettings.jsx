@@ -6,8 +6,9 @@ import React, { Component } from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import { requestUser } from '../../actions/user';
-import styles from './OrganizationsSettings.css';
+import HelmetIntl from '../HelmetIntl';
 import messages from './messages';
+import styles from './OrganizationsSettings.css';
 
 export default class OrganizationsSettings extends Component {
   static propTypes = {
@@ -279,6 +280,8 @@ export default class OrganizationsSettings extends Component {
 
     return (
       <div className="content">
+        <HelmetIntl title={messages.title} />
+
         <h2>
           <FormattedMessage {...messages.createOrganization} />
         </h2>

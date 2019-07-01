@@ -5,8 +5,8 @@ import { Link } from 'react-router-dom';
 
 import { version } from '../../package.json';
 import ProfileDropdown from '../ProfileDropdown';
-import styles from './Toolbar.css';
 import messages from './messages';
+import styles from './Toolbar.css';
 
 export default class Toolbar extends React.Component {
   static propTypes = {

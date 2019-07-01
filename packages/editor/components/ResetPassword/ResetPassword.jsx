@@ -4,8 +4,9 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import styles from './ResetPassword.css';
+import HelmetIntl from '../HelmetIntl';
 import messages from './messages';
+import styles from './ResetPassword.css';
 
 export default class ResetPassword extends React.Component {
   static propTypes = {
@@ -44,60 +45,65 @@ export default class ResetPassword extends React.Component {
   render() {
     const { email, error, submitting, success } = this.state;
 
-    return success ? (
-      <div className={classNames('container', styles.root)}>
-        <article className="message is-success">
-          <div className="message-body">
-            <FormattedMessage {...messages.requestSuccess} />
+    return (
+      <React.Fagment>
+        <HelmetIntl title={messages.title} />
+        {success ? (
+          <div className={classNames('container', styles.root)}>
+            <article className="message is-success">
+              <div className="message-body">
+                <FormattedMessage {...messages.requestSuccess} />
+              </div>
+            </article>
           </div>
-        </article>
-      </div>
-    ) : (
-      <Form className={classNames('container', styles.root)} onSubmit={this.onSubmit}>
-        {error && (
-          <article className="message is-danger">
-            <div className="message-body">
-              <FormattedMessage {...messages.requestFailed} />
-            </div>
-          </article>
-        )}
+        ) : (
+          <Form className={classNames('container', styles.root)} onSubmit={this.onSubmit}>
+            {error && (
+              <article className="message is-danger">
+                <div className="message-body">
+                  <FormattedMessage {...messages.requestFailed} />
+                </div>
+              </article>
+            )}
 
-        <div className="field is-horizontal">
-          <div className="field-label is-normal">
-            <label className="label" htmlFor="inputEmail">
-              <FormattedMessage {...messages.emailLabel} />
-            </label>
-          </div>
-          <div className="field-body">
-            <div className="field">
-              <div className="control has-icons-left">
-                <input
-                  autoComplete="email"
-                  className="input"
-                  disabled={submitting}
-                  id="inputEmail"
-                  name="email"
-                  onChange={this.onChange}
-                  required
-                  type="email"
-                  value={email}
-                />
-                <span className="icon is-left">
-                  <i className="fas fa-envelope" />
-                </span>
+            <div className="field is-horizontal">
+              <div className="field-label is-normal">
+                <label className="label" htmlFor="inputEmail">
+                  <FormattedMessage {...messages.emailLabel} />
+                </label>
+              </div>
+              <div className="field-body">
+                <div className="field">
+                  <div className="control has-icons-left">
+                    <input
+                      autoComplete="email"
+                      className="input"
+                      disabled={submitting}
+                      id="inputEmail"
+                      name="email"
+                      onChange={this.onChange}
+                      required
+                      type="email"
+                      value={email}
+                    />
+                    <span className="icon is-left">
+                      <i className="fas fa-envelope" />
+                    </span>
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
-        </div>
 
-        <button
-          className={classNames('button', 'is-primary', styles.submit)}
-          disabled={submitting}
-          type="submit"
-        >
-          <FormattedMessage {...messages.requestButton} />
-        </button>
-      </Form>
+            <button
+              className={classNames('button', 'is-primary', styles.submit)}
+              disabled={submitting}
+              type="submit"
+            >
+              <FormattedMessage {...messages.requestButton} />
+            </button>
+          </Form>
+        )}
+      </React.Fagment>
     );
   }
 }

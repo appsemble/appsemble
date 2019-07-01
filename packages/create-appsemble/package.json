@@ -6,7 +6,7 @@
     "@appsemble/node-utils": "^0.8.1",
     "esm": "^3.2.25",
     "fs-extra": "^8.0.1",
-    "inquirer": "^6.2.2",
+    "inquirer": "^6.4.1",
     "sort-package-json": "^1.22.1",
     "yargs": "^13.2.4"
   }

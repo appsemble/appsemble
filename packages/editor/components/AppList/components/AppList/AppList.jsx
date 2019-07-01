@@ -4,6 +4,7 @@ import React from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Link } from 'react-router-dom';
 
+import HelmetIntl from '../../../HelmetIntl';
 import AppCard from '../AppCard';
 import CreateAppCard from '../CreateAppCard';
 import styles from './AppList.css';
@@ -50,6 +51,7 @@ export default class AppList extends React.Component {
 
     return (
       <React.Fragment>
+        <HelmetIntl title={messages.title} />
         <div className={`field ${styles.filter}`}>
           <p className="control has-icons-left">
             <input

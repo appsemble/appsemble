@@ -21,7 +21,7 @@ exports[`should render the blocks for a page 1`] = `
     onEvent={[Function]}
     showDialog={[Function]}
   />
-  <ConnectFunction
+  <Connect(PageDialog)
     dialog={null}
     emitEvent={[Function]}
     offEvent={[Function]}

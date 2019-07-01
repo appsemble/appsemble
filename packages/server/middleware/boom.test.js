@@ -1,4 +1,4 @@
-import Boom from 'boom';
+import Boom from '@hapi/boom';
 import Koa from 'koa';
 import request from 'supertest';
 

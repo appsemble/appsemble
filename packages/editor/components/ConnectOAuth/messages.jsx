@@ -1,6 +1,7 @@
 import { defineMessages } from 'react-intl';
 
 export default defineMessages({
+  title: 'Registering {provider} Account',
   register: 'Register',
   greeting: 'Hello {name}!',
   organizationLabel: 'Organization',

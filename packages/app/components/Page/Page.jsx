@@ -8,8 +8,8 @@ import Block from '../Block';
 import Login from '../Login';
 import PageDialog from '../PageDialog';
 import TitleBar from '../TitleBar';
-import styles from './Page.css';
 import messages from './messages';
+import styles from './Page.css';
 
 /**
  * Render an app page definition.
