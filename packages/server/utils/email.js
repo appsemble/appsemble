@@ -43,7 +43,7 @@ export async function sendEmail({ to, cc, bcc, subject }, message, smtp) {
     markdown: message,
   });
 
-  if (process.env.NODE_ENV !== 'development' || !smtp) {
+  if (process.env.NODE_ENV === 'development' || !smtp) {
     const {
       to: [toObject],
       markdown: content,
