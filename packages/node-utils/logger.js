@@ -45,7 +45,7 @@ function httpErrorToString(error) {
 
 function toString(info) {
   if (info instanceof Error) {
-    if (info.response) {
+    if (info.request && info.response) {
       return httpErrorToString(info);
     }
     return info.stack;
