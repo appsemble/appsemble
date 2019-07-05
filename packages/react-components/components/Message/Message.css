@@ -5,7 +5,7 @@
   margin-right: 10px;
   position: fixed;
   width: calc(100vw - 20px);
-  z-index: 1000;
+  z-index: 3000;
 }
 
 .messageEnter {
