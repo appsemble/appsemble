@@ -43,16 +43,19 @@ export async function sendEmail({ to, cc, bcc, subject }, message, smtp) {
     markdown: message,
   });
 
-  if (process.env.NODE_ENV === 'development' || !smtp) {
+  if (process.env.NODE_ENV !== 'test') {
     const {
       to: [toObject],
       markdown: content,
     } = JSON.parse(result.message);
 
+    if (!smtp) {
+      logger.warn('Mail not sent:');
+    }
+
     logger.warn(
       dedent(
-        `Mail not sent:
-        To: ${toObject.name ? `${toObject.name}<${toObject.address}>}` : toObject.address}
+        `To: ${toObject.name ? `${toObject.name}<${toObject.address}>}` : toObject.address}
         Subject: ${subject}
 
         ${content}`,
