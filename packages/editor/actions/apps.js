@@ -56,6 +56,26 @@ export default (state = initialState, action) => {
   }
 };
 
+export function getPublicApps() {
+  return async dispatch => {
+    dispatch({
+      type: GET_START,
+    });
+    try {
+      const { data: apps } = await axios.get('/api/apps');
+      dispatch({
+        type: GET_SUCCESS,
+        apps,
+      });
+    } catch (error) {
+      dispatch({
+        type: GET_ERROR,
+        error,
+      });
+    }
+  };
+}
+
 export function getApps() {
   return async dispatch => {
     dispatch({

@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import React from 'react';
+import { FormattedMessage } from 'react-intl';
 import { Link } from 'react-router-dom';
 
 import { version } from '../../package.json';
@@ -39,11 +40,15 @@ export default class Toolbar extends React.Component {
           </a>
         </div>
         <div className="navbar-brand">
-          {isLoggedIn && (
-            <div className="navbar-item">
+          <div className="navbar-item">
+            {isLoggedIn ? (
               <ProfileDropdown />
-            </div>
-          )}
+            ) : (
+              <Link className="button" to="/_/login">
+                <FormattedMessage {...messages.login} />
+              </Link>
+            )}
+          </div>
         </div>
       </nav>
     );

@@ -12,10 +12,11 @@ export default class AppCard extends React.Component {
     app: PropTypes.shape().isRequired,
     intl: PropTypes.shape().isRequired,
     match: PropTypes.shape().isRequired,
+    isLoggedIn: PropTypes.bool.isRequired,
   };
 
   render() {
-    const { app, intl, match } = this.props;
+    const { app, intl, match, isLoggedIn } = this.props;
 
     return (
       <div className={classNames('card', styles.appCard)}>
@@ -41,9 +42,11 @@ export default class AppCard extends React.Component {
           >
             <FormattedMessage {...messages.view} />
           </a>
-          <Link className="card-footer-item" to={`${match.url}/${app.id}/edit`}>
-            <FormattedMessage {...messages.edit} />
-          </Link>
+          {isLoggedIn && (
+            <Link className="card-footer-item" to={`${match.url}/${app.id}/edit`}>
+              <FormattedMessage {...messages.edit} />
+            </Link>
+          )}
         </footer>
       </div>
     );

@@ -14,6 +14,8 @@ export default class AppList extends React.Component {
   static propTypes = {
     apps: PropTypes.arrayOf(PropTypes.shape()).isRequired,
     getApps: PropTypes.func.isRequired,
+    getPublicApps: PropTypes.func.isRequired,
+    intl: PropTypes.shape().isRequired,
     user: PropTypes.shape(),
   };
 
@@ -21,23 +23,50 @@ export default class AppList extends React.Component {
     user: undefined,
   };
 
+  state = { filter: '' };
+
   async componentDidMount() {
-    const { getApps } = this.props;
-    getApps();
+    const { getApps, getPublicApps, user } = this.props;
+
+    if (user) {
+      getApps();
+    } else {
+      getPublicApps();
+    }
   }
 
+  onFilterChange = event => {
+    this.setState({ filter: event.target.value });
+  };
+
   render() {
-    const { apps, user } = this.props;
+    const { apps, intl, user } = this.props;
+    const { filter } = this.state;
 
     if (!apps) {
       return <Loader />;
     }
 
+    const filteredApps = apps.filter(app => app.name.toLowerCase().includes(filter.toLowerCase()));
+
     return (
       <React.Fragment>
         <HelmetIntl title={messages.title} />
+        <div className={`field ${styles.filter}`}>
+          <p className="control has-icons-left">
+            <input
+              className="input"
+              onChange={this.onFilterChange}
+              placeholder={intl.formatMessage(messages.search)}
+              value={filter}
+            />
+            <span className="icon is-small is-left">
+              <i className="fas fa-search" />
+            </span>
+          </p>
+        </div>
         <div className={styles.appList}>
-          {apps.map(app => (
+          {filteredApps.map(app => (
             <AppCard key={app.id} app={app} />
           ))}
           {user && user.organizations.length >= 1 && <CreateAppCard />}
