@@ -7,6 +7,10 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- Editor: Allow viewing apps without logging in.
+
 ### Fixed
 
 - Editor: Fix issue where array or object fields could not be edited.

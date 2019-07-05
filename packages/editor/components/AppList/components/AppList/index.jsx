@@ -1,6 +1,7 @@
+import { injectIntl } from 'react-intl';
 import { connect } from 'react-redux';
 
-import { getApps } from '../../../../actions/apps';
+import { getApps, getPublicApps } from '../../../../actions/apps';
 import AppList from './AppList';
 
 function mapStateToProps(state) {
@@ -11,7 +12,9 @@ function mapStateToProps(state) {
   };
 }
 
-export default connect(
-  mapStateToProps,
-  { getApps },
-)(AppList);
+export default injectIntl(
+  connect(
+    mapStateToProps,
+    { getApps, getPublicApps },
+  )(AppList),
+);
