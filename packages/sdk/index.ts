@@ -150,7 +150,7 @@ export interface BootstrapParams<P = any, A = {}> {
   /**
    * Any kind of data that has been passed in by some context.
    */
-  data: {};
+  data: any;
 
   /**
    * Event related functions and constants.
