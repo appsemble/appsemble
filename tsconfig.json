@@ -1,10 +1,14 @@
 {
   "compilerOptions": {
-    "noEmit": true,
-    "noImplicitAny": true,
     "esModuleInterop": true,
-    "noUnusedLocals": true,
     "jsx": "react",
-    "lib": ["es5", "es6", "dom"]
-  }
+    "noEmit": true,
+    "moduleResolution": "node",
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "strict": true,
+    "strictFunctionTypes": false,
+    "strictNullChecks": false
+  },
+  "exclude": ["blocks/*", "packages/*"]
 }

@@ -2,6 +2,9 @@
   "name": "@appsemble/detail-viewer",
   "version": "0.8.1",
   "private": true,
+  "scripts": {
+    "tsc": "../../config/bin/tscstub.js"
+  },
   "appsemble": {
     "actions": {
       "load": {

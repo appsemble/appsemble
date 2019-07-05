@@ -190,7 +190,9 @@ export function bootstrap<P = any, A = {}>(
       document,
     },
   });
-  document.currentScript.dispatchEvent(event);
+  if (document.currentScript) {
+    document.currentScript.dispatchEvent(event);
+  }
 }
 
 /**

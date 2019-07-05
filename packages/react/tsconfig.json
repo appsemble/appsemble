@@ -1,0 +1,8 @@
+{
+  "extends": "../../tsconfig",
+  "exclude": [],
+  "compilerOptions": {
+    "lib": ["dom", "esnext"],
+    "types": ["jest", "react-shadow-dom-retarget-events"]
+  }
+}

@@ -2,6 +2,9 @@
   "name": "create-appsemble",
   "version": "0.8.1",
   "bin": "./bin/create-appsemble",
+  "scripts": {
+    "tsc": "../../config/bin/tscstub.js"
+  },
   "dependencies": {
     "@appsemble/node-utils": "^0.8.1",
     "esm": "^3.2.25",

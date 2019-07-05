@@ -1,5 +1,11 @@
 import { cacheFirst, requestFirst } from './utils';
 
+export interface FetchEvent extends Event {
+  request: Request;
+
+  respondWith: (promise: Promise<any>) => void;
+}
+
 /**
  * Map all requests to a caching behaviour based on the HTTP method and URL.
  *
