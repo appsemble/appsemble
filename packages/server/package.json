@@ -2,6 +2,9 @@
   "name": "@appsemble/server",
   "version": "0.8.1",
   "private": true,
+  "scripts": {
+    "tsc": "../../config/bin/tscstub.js"
+  },
   "dependencies": {
     "@appsemble/node-utils": "^0.8.1",
     "@appsemble/utils": "^0.8.1",

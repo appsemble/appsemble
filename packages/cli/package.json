@@ -7,6 +7,9 @@
     "bin": "bin"
   },
   "main": "main.js",
+  "scripts": {
+    "tsc": "../../config/bin/tscstub.js"
+  },
   "dependencies": {
     "@appsemble/node-utils": "0.8.1",
     "appdirectory": "^0.1.0",

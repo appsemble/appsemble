@@ -43,23 +43,21 @@ export async function sendEmail({ to, cc, bcc, subject }, message, smtp) {
     markdown: message,
   });
 
-  if (process.env.NODE_ENV !== 'production' || !smtp) {
-    if (process.env.NODE_ENV !== 'test') {
-      const {
-        to: [toObject],
-        markdown: content,
-      } = JSON.parse(result.message);
+  if (process.env.NODE_ENV === 'development' || !smtp) {
+    const {
+      to: [toObject],
+      markdown: content,
+    } = JSON.parse(result.message);
 
-      logger.warn(
-        dedent(
-          `Mail not sent:
+    logger.warn(
+      dedent(
+        `Mail not sent:
         To: ${toObject.name ? `${toObject.name}<${toObject.address}>}` : toObject.address}
         Subject: ${subject}
 
         ${content}`,
-        ),
-      );
-    }
+      ),
+    );
   }
 
   transport.close();

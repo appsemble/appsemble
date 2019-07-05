@@ -2,6 +2,9 @@
   "name": "@amsterdam/action",
   "version": "0.8.1",
   "private": true,
+  "scripts": {
+    "tsc": "../../config/bin/tscstub.js"
+  },
   "dependencies": {
     "@appsemble/react": "^0.8.1",
     "@appsemble/sdk": "^0.8.1",
