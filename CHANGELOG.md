@@ -11,7 +11,9 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 - App: Allow to load media from any source.
 - Editor: Allow viewing apps without logging in.
+- Helm: Add health check.
 - Server: Show the date in logs.
+- Server: Add health check.
 
 ## [0.8.1] - 2019-06-26
 
