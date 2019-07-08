@@ -32,6 +32,11 @@ function main(argv) {
       describe: 'Decrease verbosity',
       type: 'count',
     })
+    .option('log-date', {
+      describe: 'Prepend the date to logging.',
+      type: 'boolean',
+      default: true,
+    })
     .middleware([configureLogger])
     .command(health)
     .command(start)
