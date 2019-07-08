@@ -9,6 +9,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
+- App: Allow to load media from any source.
 - Editor: Allow viewing apps without logging in.
 
 ## [0.8.1] - 2019-06-26
