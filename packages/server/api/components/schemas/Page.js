@@ -1,7 +1,17 @@
 export default {
   type: 'object',
   description: 'This describes what a page will look like in the app.',
-  required: ['name', 'blocks'],
+  if: {
+    properties: {
+      type: 'flow',
+    },
+  },
+  then: {
+    required: ['name', 'flowPages'],
+  },
+  else: {
+    required: ['name', 'blocks'],
+  },
   properties: {
     name: {
       type: 'string',
@@ -10,6 +20,10 @@ export default {
 
         This will be displayed on the top of the page and in the side menu.
       `,
+    },
+    type: {
+      type: 'string',
+      enum: ['flow', 'page'],
     },
     parameters: {
       type: 'array',
@@ -41,6 +55,14 @@ export default {
       description: 'The blocks that make up a page.',
       items: {
         $ref: '#/components/schemas/Block',
+      },
+    },
+    flowPages: {
+      type: 'array',
+      minItems: 1,
+      description: "Sub pages belonging to this page's flow.",
+      items: {
+        $ref: '#/components/schemas/FlowPage',
       },
     },
   },

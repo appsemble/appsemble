@@ -33,6 +33,35 @@ export default class Page extends React.Component {
   state = {
     dialog: null,
     counter: 0,
+    currentPage: 0,
+  };
+
+  flowActions = {
+    next: () => {
+      const { currentPage } = this.state;
+      const { page } = this.props;
+      const { flowPages } = page;
+
+      if (currentPage + 1 === flowPages.length) {
+        // Trigger flowFinish action
+        return;
+      }
+
+      this.setState({ currentPage: currentPage + 1 });
+    },
+    back: () => {
+      const { currentPage } = this.state;
+
+      if (currentPage - 1 < 0) {
+        // Don't do anything if a previous page does not exist
+        return;
+      }
+
+      this.setState({ currentPage: currentPage + -1 });
+    },
+    skip: () => {
+      // Trigger flowSkip action
+    },
   };
 
   constructor(props) {
@@ -42,10 +71,16 @@ export default class Page extends React.Component {
 
   componentDidMount() {
     const { app, getBlockDefs, page } = this.props;
+    const { currentPage } = this.state;
 
     this.applyBulmaThemes(app, page);
     this.setupEvents();
-    getBlockDefs(page.blocks);
+
+    if (page.type === 'flow') {
+      getBlockDefs(page.flowPages[currentPage].blocks);
+    } else {
+      getBlockDefs(page.blocks);
+    }
   }
 
   static getDerivedStateFromProps(props, state) {
@@ -59,11 +94,18 @@ export default class Page extends React.Component {
 
   componentDidUpdate({ page: prevPage }) {
     const { app, getBlockDefs, page } = this.props;
+    const { currentPage } = this.state;
+
     if (page !== prevPage) {
       this.applyBulmaThemes(app, page);
       this.teardownEvents();
       this.setupEvents();
-      getBlockDefs(page.blocks);
+
+      if (page.type === 'flow') {
+        getBlockDefs(page.flowPages[currentPage].blocks);
+      } else {
+        getBlockDefs(page.blocks);
+      }
     }
   }
 
@@ -114,7 +156,8 @@ export default class Page extends React.Component {
 
   render() {
     const { hasErrors, page, user } = this.props;
-    const { dialog, counter } = this.state;
+    const { dialog, counter, currentPage } = this.state;
+    const { type } = page;
 
     if (!checkScope(page.scope, user)) {
       return (
@@ -133,28 +176,67 @@ export default class Page extends React.Component {
       );
     }
 
-    return (
-      <React.Fragment>
-        <TitleBar>{page.name}</TitleBar>
-        {page.blocks.map((block, index) => (
-          <Block
-            // As long as blocks are in a static list, using the index as a key should be fine.
-            // eslint-disable-next-line react/no-array-index-key
-            key={`${index}.${counter}`}
-            block={block}
-            emitEvent={this.emitEvent}
-            offEvent={this.offEvent}
-            onEvent={this.onEvent}
-            showDialog={this.showDialog}
-          />
-        ))}
-        <PageDialog
-          dialog={dialog}
-          emitEvent={this.emitEvent}
-          offEvent={this.offEvent}
-          onEvent={this.onEvent}
-        />
-      </React.Fragment>
-    );
+    switch (type) {
+      case 'flow':
+        return (
+          <React.Fragment>
+            <TitleBar>{page.name}</TitleBar>
+            <div className={styles.dotContainer}>
+              {page.flowPages.map((sub, index) => (
+                <div
+                  key={sub.name}
+                  className={`${styles.dot} ${index < currentPage && styles.previous} ${index ===
+                    currentPage && styles.active}`}
+                />
+              ))}
+            </div>
+            {page.flowPages[currentPage].blocks.map((block, index) => (
+              <Block
+                // As long as blocks are in a static list, using the index as a key should be fine.
+                // eslint-disable-next-line react/no-array-index-key
+                key={`${currentPage}.${index}.${counter}`}
+                block={block}
+                emitEvent={this.emitEvent}
+                flowActions={this.flowActions}
+                offEvent={this.offEvent}
+                onEvent={this.onEvent}
+                showDialog={this.showDialog}
+              />
+            ))}
+            <PageDialog
+              dialog={dialog}
+              emitEvent={this.emitEvent}
+              offEvent={this.offEvent}
+              onEvent={this.onEvent}
+            />
+          </React.Fragment>
+        );
+      case 'page':
+      default:
+        return (
+          <React.Fragment>
+            <TitleBar>{page.name}</TitleBar>
+            {page.blocks.map((block, index) => (
+              <Block
+                // As long as blocks are in a static list, using the index as a key should be fine.
+                // eslint-disable-next-line react/no-array-index-key
+                key={`${index}.${counter}`}
+                block={block}
+                emitEvent={this.emitEvent}
+                flowActions={this.flowActions}
+                offEvent={this.offEvent}
+                onEvent={this.onEvent}
+                showDialog={this.showDialog}
+              />
+            ))}
+            <PageDialog
+              dialog={dialog}
+              emitEvent={this.emitEvent}
+              offEvent={this.offEvent}
+              onEvent={this.onEvent}
+            />
+          </React.Fragment>
+        );
+    }
   }
 }

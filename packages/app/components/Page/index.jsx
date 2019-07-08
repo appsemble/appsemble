@@ -7,7 +7,12 @@ function mapStateToProps(state, ownProps) {
   return {
     app: state.app.app,
     user: state.user.user,
-    hasErrors: ownProps.page.blocks.some(block => state.blockDefs.errored.has(block.type)),
+    hasErrors:
+      ownProps.page.type && ownProps.page.type === 'flow'
+        ? ownProps.page.flowPages.some(sub =>
+            sub.blocks.some(block => state.blockDefs.errored.has(block.type)),
+          )
+        : ownProps.page.blocks.some(block => state.blockDefs.errored.has(block.type)),
   };
 }
 
