@@ -43,7 +43,6 @@ function importModels(db) {
 
 export default async function setupModels({
   dialect = 'mysql',
-  logging = false,
   host = process.env.NODE_ENV === 'production' ? 'mysql' : 'localhost',
   port,
   username,
@@ -52,7 +51,7 @@ export default async function setupModels({
   uri,
 }) {
   const options = {
-    logging: logging && logSQL,
+    logging: logSQL,
     retry: { max: 3 },
   };
   let args;
