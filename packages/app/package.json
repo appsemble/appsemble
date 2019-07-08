@@ -22,6 +22,7 @@
     "redux": "^4.0.1",
     "redux-thunk": "^2.3.0",
     "roboto-fontface": "^0.10.0",
-    "serviceworker-webpack-plugin": "^1.0.1"
+    "serviceworker-webpack-plugin": "^1.0.1",
+    "type-fest": "^0.6.0"
   }
 }
