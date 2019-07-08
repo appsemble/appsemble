@@ -2,6 +2,7 @@
 import { configureLogger, handleError } from '@appsemble/node-utils';
 import yargs from 'yargs';
 
+import * as health from './commands/health';
 import * as migrate from './commands/migrate';
 import * as start from './commands/start';
 
@@ -32,6 +33,7 @@ function main(argv) {
       type: 'count',
     })
     .middleware([configureLogger])
+    .command(health)
     .command(start)
     .command(migrate)
     .fail(handleError)
