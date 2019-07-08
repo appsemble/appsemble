@@ -4,7 +4,9 @@ import axios from 'axios';
 
 import uploadBlobs from '../uploadBlobs';
 
-export default function request({ blobs = {}, method = 'GET', schema, query, url }) {
+export default function request({
+  definition: { blobs = {}, method = 'GET', schema, query, url },
+}) {
   const regex = /{(.+?)}/g;
   const mappers = url
     .match(regex)

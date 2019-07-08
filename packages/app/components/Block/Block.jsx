@@ -35,6 +35,7 @@ export default class Block extends React.Component {
     history: PropTypes.shape().isRequired,
     location: PropTypes.shape().isRequired,
     match: PropTypes.shape().isRequired,
+    flowActions: PropTypes.shape().isRequired,
     /**
      * A function to deregister an event listener.
      */
@@ -69,6 +70,7 @@ export default class Block extends React.Component {
       onEvent,
       showDialog,
       showMessage,
+      flowActions,
     } = this.props;
 
     if (div == null) {
@@ -86,7 +88,17 @@ export default class Block extends React.Component {
       off: offEvent,
       on: onEvent,
     };
-    const actions = makeActions(blockDef, app, block, history, showDialog, events, actionCreators);
+
+    const actions = makeActions(
+      blockDef,
+      app,
+      block,
+      history,
+      showDialog,
+      events,
+      actionCreators,
+      flowActions,
+    );
     const { theme: pageTheme } = app.pages.find(
       page => normalize(page.name) === match.path.slice(1).split('/')[0],
     );

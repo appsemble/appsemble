@@ -1,4 +1,4 @@
-export default function log(definition) {
+export default function log({ definition }) {
   const { level = 'info' } = definition;
 
   return {

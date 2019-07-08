@@ -1,4 +1,5 @@
 import dialog from './dialog';
+import { back, next, skip } from './flow';
 import link from './link';
 import log from './log';
 import noop from './noop';
@@ -11,6 +12,9 @@ export default {
   noop,
   request,
   dialog,
+  'flow.next': next,
+  'flow.back': back,
+  'flow.skip': skip,
   'resource.get': resource.get,
   'resource.query': resource.query,
   'resource.create': resource.create,

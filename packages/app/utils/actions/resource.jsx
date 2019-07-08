@@ -9,7 +9,7 @@ function getBlobs(resource) {
   return { type, method, url, ...(blobs?.serialize && blobs.serialize) };
 }
 
-function get({ resource: name, query: params }, app) {
+function get({ definition: { resource: name, query: params }, app }) {
   const { schema, ...resource } = app.resources[name];
   const method = resource?.get?.method || 'GET';
   const url = resource?.get?.url || resource.url || `/api/apps/${app.id}/resources/${name}`;
@@ -32,7 +32,7 @@ function query({ resource: name, query: queryParams }, app) {
   return request({ blobs: getBlobs(resource), method, url, query: queryParams, schema });
 }
 
-function create({ resource: name }, app) {
+function create({ definition: { resource: name }, app }) {
   const { schema, ...resource } = app.resources[name];
   const method = resource?.create?.method || 'POST';
   const url = resource?.create?.url || resource.url || `/api/apps/${app.id}/resources/${name}`;
@@ -40,7 +40,7 @@ function create({ resource: name }, app) {
   return request({ blobs: getBlobs(resource), method, url, schema });
 }
 
-function update({ resource: name, query: params }, app) {
+function update({ definition: { resource: name, query: params }, app }) {
   const { schema, ...resource } = app.resources[name];
   const method = resource?.update?.method || 'PUT';
   const url = resource?.update?.url || resource.url || `/api/apps/${app.id}/resources/${name}`;
@@ -55,7 +55,7 @@ function update({ resource: name, query: params }, app) {
   });
 }
 
-function remove({ resource: name, query: params }, app) {
+function remove({ definition: { resource: name, query: params }, app }) {
   const { schema, ...resource } = app.resources[name];
   const method = resource?.delete?.method || 'DELETE';
   const url = resource?.delete?.url || resource.url || `/api/apps/${app.id}/resources/${name}`;
