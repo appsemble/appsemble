@@ -1,5 +1,5 @@
 // See Page.jsx
-export function next({ flowActions }) {
+function next({ flowActions }) {
   return {
     dispatch(data) {
       return flowActions.next(data);
@@ -7,7 +7,7 @@ export function next({ flowActions }) {
   };
 }
 
-export function back({ flowActions }) {
+function back({ flowActions }) {
   return {
     dispatch(data) {
       return flowActions.back(data);
@@ -15,7 +15,7 @@ export function back({ flowActions }) {
   };
 }
 
-export function skip({ flowActions }) {
+function skip({ flowActions }) {
   return {
     dispatch(data) {
       return flowActions.skip(data);
