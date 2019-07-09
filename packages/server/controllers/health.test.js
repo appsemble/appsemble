@@ -1,3 +1,4 @@
+import nodemailer from 'nodemailer';
 import request from 'supertest';
 
 import createServer from '../utils/createServer';
@@ -10,7 +11,7 @@ describe('app controller', () => {
 
   beforeAll(async () => {
     db = await testSchema('health');
-    server = await createServer({ db });
+    server = await createServer({ db, smtp: {} });
   }, 10e3);
 
   beforeEach(async () => {
@@ -22,14 +23,20 @@ describe('app controller', () => {
   });
 
   it('should return status ok if all services are connected properly', async () => {
+    jest
+      .spyOn(nodemailer, 'createTransport')
+      .mockReturnValue({ verify: () => Promise.resolve(true) });
     const response = await request(server).get('/api/health');
 
     expect(response.status).toBe(200);
-    expect(response.body).toStrictEqual({ database: true });
+    expect(response.body).toStrictEqual({ database: true, smtp: true });
   });
 
   it('should fail if the database is disconnected', async () => {
-    await db.close();
+    jest
+      .spyOn(nodemailer, 'createTransport')
+      .mockReturnValue({ verify: () => Promise.resolve(true) });
+    jest.spyOn(db, 'authenticate').mockImplementation(() => Promise.reject(new Error('stub')));
     const response = await request(server).get('/api/health');
 
     expect(response.status).toBe(503);
@@ -39,6 +46,25 @@ describe('app controller', () => {
       error: 'Service Unavailable',
       data: {
         database: false,
+        smtp: true,
+      },
+    });
+  });
+
+  it('should fail if smtp credentials are incorrect is disconnected', async () => {
+    jest
+      .spyOn(nodemailer, 'createTransport')
+      .mockReturnValue({ verify: () => Promise.reject(new Error('stub')) });
+    const response = await request(server).get('/api/health');
+
+    expect(response.status).toBe(503);
+    expect(response.body).toStrictEqual({
+      statusCode: 503,
+      message: 'API unhealthy',
+      error: 'Service Unavailable',
+      data: {
+        database: true,
+        smtp: false,
       },
     });
   });
