@@ -1,5 +1,6 @@
 import normalize from '@appsemble/utils/normalize';
 import Boom from '@hapi/boom';
+import { UniqueConstraintError } from 'sequelize';
 
 import templates from '../templates/apps';
 import getAppFromRecord from '../utils/getAppFromRecord';
@@ -27,22 +28,32 @@ export async function createTemplateApp(ctx) {
     throw Boom.notFound(`Template ${template} does not exist.`);
   }
 
-  const app = await App.create(
-    {
-      definition: { ...template.definition, description, name: name || template },
-      OrganizationId: organizationId,
-      path: name ? normalize(name) : normalize(template),
-      ...(resources && {
-        Resources: [].concat(
-          ...Object.keys(template.resources).map(key =>
-            template.resources[key].map(r => ({ type: key, data: r })),
+  try {
+    const app = await App.create(
+      {
+        definition: { ...template.definition, description, name: name || template },
+        OrganizationId: organizationId,
+        path: name ? normalize(name) : normalize(template),
+        ...(resources && {
+          Resources: [].concat(
+            ...Object.keys(template.resources).map(key =>
+              template.resources[key].map(r => ({ type: key, data: r })),
+            ),
           ),
-        ),
-      }),
-    },
-    { include: [Resource], raw: true },
-  );
+        }),
+      },
+      { include: [Resource], raw: true },
+    );
 
-  ctx.body = getAppFromRecord(app);
-  ctx.status = 201;
+    ctx.body = getAppFromRecord(app);
+    ctx.status = 201;
+  } catch (error) {
+    if (error instanceof UniqueConstraintError) {
+      throw Boom.conflict(
+        `Another app with path “${name ? normalize(name) : normalize(template)}” already exists`,
+      );
+    }
+
+    throw error;
+  }
 }

@@ -93,4 +93,28 @@ describe('Template API', () => {
       expect.arrayContaining(template.resources.person),
     );
   });
+
+  it('should not create a new app using a template with a duplicate name', async () => {
+    await request(server)
+      .post('/api/templates')
+      .set('Authorization', token)
+      .send({
+        template: templates[0].name,
+        name: 'Test app',
+        description: 'This is a test app',
+        organizationId,
+      });
+
+    const { status } = await request(server)
+      .post('/api/templates')
+      .set('Authorization', token)
+      .send({
+        template: templates[0].name,
+        name: 'Test app',
+        description: 'This is a test app',
+        organizationId,
+      });
+
+    expect(status).toStrictEqual(409);
+  });
 });

@@ -81,9 +81,16 @@ export default class ResourceTable extends React.Component {
     if (event.target.name === 'id') {
       return;
     }
+    const { app, resourceName } = this.props;
+    const { schema } = app.resources[resourceName];
+    const properties = schema.properties[event.target.name];
+    const value =
+      properties.type === 'object' || properties.type === 'array'
+        ? JSON.parse(event.target.value)
+        : event.target.value;
 
     const { editingResource } = this.state;
-    editingResource[event.target.name] = event.target.value;
+    editingResource[event.target.name] = value;
 
     this.setState({ editingResource });
   };
@@ -329,6 +336,14 @@ export default class ResourceTable extends React.Component {
             <div className="card-content">
               {keys.map(key => {
                 const properties = schema?.properties[key] || {};
+                let value = '';
+
+                if (editingResource && editingResource[key]) {
+                  value = editingResource[key];
+                  if (typeof value === 'object') {
+                    value = JSON.stringify(value);
+                  }
+                }
 
                 return (
                   <div key={key} className="field is-horizontal">
@@ -351,9 +366,7 @@ export default class ResourceTable extends React.Component {
                             type={
                               properties.format && properties.format === 'email' ? 'email' : 'text'
                             }
-                            value={
-                              editingResource && editingResource[key] ? editingResource[key] : ''
-                            }
+                            value={value}
                           />
                         </div>
                       </div>

@@ -15,6 +15,10 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Server: Show the date in logs.
 - Server: Add health check.
 
+### Fixed
+
+- Editor: Fix issue where array or object fields could not be edited.
+
 ## [0.8.1] - 2019-06-26
 
 ### Fixed
