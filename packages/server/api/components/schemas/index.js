@@ -5,6 +5,7 @@ import BlockDefinition from './BlockDefinition';
 import BlockVersion from './BlockVersion';
 import Color from './Color';
 import Error from './Error';
+import Health from './Health';
 import Organization from './Organization';
 import Page from './Page';
 import Resource from './Resource';
@@ -20,6 +21,7 @@ export default {
   BlockVersion,
   Color,
   Error,
+  Health,
   Organization,
   Page,
   Resource,

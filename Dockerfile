@@ -26,4 +26,5 @@ ENV NODE_ENV production
 USER node
 ENTRYPOINT ["node", "-r", "esm", "packages/server"]
 CMD ["start"]
+HEALTHCHECK CMD ["node", "-r", "esm", "packages/server", "health"]
 EXPOSE 9999

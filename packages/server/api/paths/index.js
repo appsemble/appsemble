@@ -2,6 +2,7 @@ import apps from './apps';
 import assets from './assets';
 import blocks from './blocks';
 import emails from './emails';
+import health from './health';
 import invite from './invite';
 import oauth from './oauth';
 import organizations from './organizations';
@@ -14,6 +15,7 @@ export default {
   ...assets,
   ...blocks,
   ...emails,
+  ...health,
   ...invite,
   ...oauth,
   ...organizations,
