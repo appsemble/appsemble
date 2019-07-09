@@ -39,7 +39,7 @@ module.exports = (env, argv) => {
         chunks: [],
       }),
       new ServiceWorkerWebpackPlugin({
-        entry: path.join(appEntry, 'service-worker'),
+        entry: require.resolve('@appsemble/service-worker/index.ts'),
         filename: 'service-worker.js',
         minimize: production,
         publicPath,
@@ -49,12 +49,7 @@ module.exports = (env, argv) => {
         failOnUnused: production,
         patterns: ['app/**/*.*'],
         globOptions: {
-          ignore: [
-            '**/node_modules/**',
-            '**/package.json',
-            '**/*.test.{js,jsx}',
-            '**/service-worker/**',
-          ],
+          ignore: ['**/node_modules/**', '**/package.json', '**/*.test.{js,jsx}'],
         },
       }),
       new MiniCssExtractPlugin({

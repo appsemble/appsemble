@@ -1,0 +1,8 @@
+{
+  "extends": "../../tsconfig",
+  "exclude": [],
+  "compilerOptions": {
+    "lib": ["esnext", "webworker"],
+    "types": ["jest", "node", "service-worker-mock", "type-fest"]
+  }
+}

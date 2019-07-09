@@ -1,12 +1,6 @@
 // eslint-disable-next-line filenames/match-exported
 export default function makeServiceWorkerEnv(): ServiceWorkerGlobalScopeMock;
 
-export interface FetchEvent extends Event {
-  request: Request;
-
-  respondWith: (promise: Promise<any>) => void;
-}
-
 export interface Caches {
   [key: string]: Cache;
 }
@@ -21,11 +15,10 @@ export interface Snapshot {
    */
   caches: Caches;
 
-  // This should extend Client, but we can’t use the service worker globals.
   /**
    * A list of active clients.
    */
-  clients: any[];
+  clients: Client[];
 
   /**
    * A list of active notifications.
