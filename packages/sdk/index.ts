@@ -1,7 +1,4 @@
-/**
- * A value that can be resolved with an `await` statement.
- */
-type Awaitable<T> = T | Promise<T>;
+import { Promisable } from 'type-fest';
 
 interface BaseAction {
   /**
@@ -182,7 +179,7 @@ export interface BootstrapParams<P = any, A = {}> {
  * @param fn The bootstrap function to register
  */
 export function bootstrap<P = any, A = {}>(
-  fn: (params: BootstrapParams<P, A>) => Awaitable<void>,
+  fn: (params: BootstrapParams<P, A>) => Promisable<void>,
 ): void {
   const event = new CustomEvent('AppsembleBootstrap', {
     detail: {
@@ -204,7 +201,7 @@ export function bootstrap<P = any, A = {}>(
  * @param fn The bootstrap function to register.
  */
 export function attach<P = any, A = {}>(
-  fn: (params: BootstrapParams<P, A>) => Awaitable<HTMLElement | void>,
+  fn: (params: BootstrapParams<P, A>) => Promisable<HTMLElement | void>,
 ): void {
   bootstrap<P, A>(
     async (params): Promise<void> => {
