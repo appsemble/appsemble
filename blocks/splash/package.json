@@ -20,6 +20,7 @@
     "output": "dist"
   },
   "dependencies": {
+    "@appsemble/jsx-dom": "0.8.1",
     "@appsemble/sdk": "0.8.1"
   }
 }
