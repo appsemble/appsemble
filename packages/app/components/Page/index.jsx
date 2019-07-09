@@ -1,4 +1,5 @@
 import { connect } from 'react-redux';
+import { withRouter } from 'react-router-dom';
 
 import { getBlockDefs } from '../../actions/blockDefs';
 import Page from './Page';
@@ -16,9 +17,11 @@ function mapStateToProps(state, ownProps) {
   };
 }
 
-export default connect(
-  mapStateToProps,
-  {
-    getBlockDefs,
-  },
-)(Page);
+export default withRouter(
+  connect(
+    mapStateToProps,
+    {
+      getBlockDefs,
+    },
+  )(Page),
+);

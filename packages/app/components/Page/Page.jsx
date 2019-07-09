@@ -4,6 +4,7 @@ import React from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import checkScope from '../../utils/checkScope';
+import makeActions from '../../utils/makeActions';
 import Block from '../Block';
 import Login from '../Login';
 import PageDialog from '../PageDialog';
@@ -19,6 +20,7 @@ export default class Page extends React.Component {
     app: PropTypes.shape().isRequired,
     getBlockDefs: PropTypes.func.isRequired,
     hasErrors: PropTypes.bool.isRequired,
+    history: PropTypes.shape().isRequired,
     /**
      * The page definition to render
      */
@@ -32,35 +34,42 @@ export default class Page extends React.Component {
 
   state = {
     dialog: null,
+    actions: {},
     counter: 0,
     currentPage: 0,
+    data: {},
   };
 
   flowActions = {
-    next: () => {
+    next: async data => {
       const { currentPage } = this.state;
       const { page } = this.props;
       const { flowPages } = page;
 
       if (currentPage + 1 === flowPages.length) {
         // Trigger flowFinish action
-        return;
+        this.actions.onFlowFinish.dispatch(data);
+        return data;
       }
 
-      this.setState({ currentPage: currentPage + 1 });
+      this.setState({ data, currentPage: currentPage + 1 });
+      return data;
     },
-    back: () => {
+    back: async data => {
       const { currentPage } = this.state;
 
-      if (currentPage - 1 < 0) {
+      if (currentPage <= 0) {
         // Don't do anything if a previous page does not exist
-        return;
+        return data;
       }
 
-      this.setState({ currentPage: currentPage + -1 });
+      this.setState({ data, currentPage: currentPage - 1 });
+      return data;
     },
-    skip: () => {
+    cancel: async data => {
       // Trigger flowSkip action
+      this.actions.onFlowCancel.dispatch(data);
+      this.setState({ data: {} });
     },
   };
 
@@ -70,13 +79,29 @@ export default class Page extends React.Component {
   }
 
   componentDidMount() {
-    const { app, getBlockDefs, page } = this.props;
+    const { app, getBlockDefs, page, history } = this.props;
     const { currentPage } = this.state;
 
     this.applyBulmaThemes(app, page);
     this.setupEvents();
 
     if (page.type === 'flow') {
+      const actions = makeActions(
+        page,
+        app,
+        page,
+        history,
+        this.showDialog,
+        {
+          emit: this.emitEvent,
+          off: this.offEvent,
+          on: this.onEvent,
+        },
+        {},
+        this.flowActions,
+      );
+
+      this.actions = actions;
       getBlockDefs(page.flowPages[currentPage].blocks);
     } else {
       getBlockDefs(page.blocks);
@@ -97,13 +122,14 @@ export default class Page extends React.Component {
     const { currentPage } = this.state;
 
     if (page !== prevPage) {
-      this.applyBulmaThemes(app, page);
       this.teardownEvents();
       this.setupEvents();
 
       if (page.type === 'flow') {
+        this.applyBulmaThemes(app, page.flowPages[currentPage]);
         getBlockDefs(page.flowPages[currentPage].blocks);
       } else {
+        this.applyBulmaThemes(app, page);
         getBlockDefs(page.blocks);
       }
     }

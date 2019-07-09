@@ -65,5 +65,12 @@ export default {
         $ref: '#/components/schemas/FlowPage',
       },
     },
+    actions: {
+      type: 'object',
+      description: 'A mapping of actions that can be fired by the page to action handlers.',
+      additionalProperties: {
+        type: 'object',
+      },
+    },
   },
 };
