@@ -61,6 +61,16 @@ export default class Page extends React.Component {
       { leading: false },
     ),
 
+    finish: throttle(
+      async data => {
+        this.actions.onFlowFinish.dispatch(data);
+        this.setState({ data });
+        return data;
+      },
+      50,
+      { leading: false },
+    ),
+
     back: throttle(
       async data => {
         const { currentPage } = this.state;

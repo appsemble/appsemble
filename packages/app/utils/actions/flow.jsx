@@ -7,6 +7,14 @@ function next({ flowActions }) {
   };
 }
 
+function finish({ flowActions }) {
+  return {
+    async dispatch(data) {
+      return flowActions.finish(data);
+    },
+  };
+}
+
 function back({ flowActions }) {
   return {
     async dispatch(data) {
@@ -23,4 +31,4 @@ function cancel({ flowActions }) {
   };
 }
 
-export default { next, back, cancel };
+export default { next, finish, back, cancel };

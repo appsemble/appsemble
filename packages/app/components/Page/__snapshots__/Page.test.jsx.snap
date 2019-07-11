@@ -8,6 +8,14 @@ exports[`should render the blocks for a page 1`] = `
   <withRouter(Connect(Block))
     block={Object {}}
     emitEvent={[Function]}
+    flowActions={
+      Object {
+        "back": [Function],
+        "cancel": [Function],
+        "finish": [Function],
+        "next": [Function],
+      }
+    }
     key="0.1"
     offEvent={[Function]}
     onEvent={[Function]}
@@ -16,6 +24,14 @@ exports[`should render the blocks for a page 1`] = `
   <withRouter(Connect(Block))
     block={Object {}}
     emitEvent={[Function]}
+    flowActions={
+      Object {
+        "back": [Function],
+        "cancel": [Function],
+        "finish": [Function],
+        "next": [Function],
+      }
+    }
     key="1.1"
     offEvent={[Function]}
     onEvent={[Function]}
