@@ -55,6 +55,7 @@ export default class Page extends React.Component {
       this.setState({ data, currentPage: currentPage + 1 });
       return data;
     },
+
     back: async data => {
       const { currentPage } = this.state;
 
@@ -66,6 +67,7 @@ export default class Page extends React.Component {
       this.setState({ data, currentPage: currentPage - 1 });
       return data;
     },
+
     cancel: async data => {
       // Trigger flowSkip action
       this.actions.onFlowCancel.dispatch(data);
@@ -117,11 +119,11 @@ export default class Page extends React.Component {
     return null;
   }
 
-  componentDidUpdate({ page: prevPage }) {
+  componentDidUpdate({ page: prevPage }, { prevCurrentPage }) {
     const { app, getBlockDefs, page } = this.props;
     const { currentPage } = this.state;
 
-    if (page !== prevPage) {
+    if (page !== prevPage || prevCurrentPage !== currentPage) {
       this.teardownEvents();
       this.setupEvents();
 
