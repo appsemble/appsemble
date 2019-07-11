@@ -49,7 +49,6 @@ export default class Page extends React.Component {
         const { flowPages } = page;
 
         if (currentPage + 1 === flowPages.length) {
-          // Trigger flowFinish action
           this.actions.onFlowFinish.dispatch(data);
           return data;
         }
@@ -89,7 +88,6 @@ export default class Page extends React.Component {
 
     cancel: throttle(
       async data => {
-        // Trigger flowSkip action
         this.actions.onFlowCancel.dispatch(data);
         this.setState({ data });
       },
@@ -112,7 +110,7 @@ export default class Page extends React.Component {
 
     if (page.type === 'flow') {
       const actions = makeActions(
-        page,
+        { actions: { onFlowFinish: {}, onFlowCancel: {} } },
         app,
         page,
         history,
