@@ -16,20 +16,24 @@ function get({ definition: { resource: name, query: params }, app }) {
   const id = resource.id || 'id';
 
   return request({
-    blobs: getBlobs(resource),
-    method,
-    url: `${url}${!url.endsWith('/') && '/'}{${id}}`,
-    query: params,
-    schema,
+    definition: {
+      blobs: getBlobs(resource),
+      method,
+      url: `${url}${!url.endsWith('/') && '/'}{${id}}`,
+      query: params,
+      schema,
+    },
   });
 }
 
-function query({ resource: name, query: queryParams }, app) {
+function query({ definition: { resource: name, query: queryParams }, app }) {
   const { schema, ...resource } = app.resources[name];
   const method = resource?.query?.method || 'GET';
   const url = resource?.query?.url || resource.url || `/api/apps/${app.id}/resources/${name}`;
 
-  return request({ blobs: getBlobs(resource), method, url, query: queryParams, schema });
+  return request({
+    definition: { blobs: getBlobs(resource), method, url, query: queryParams, schema },
+  });
 }
 
 function create({ definition: { resource: name }, app }) {
@@ -37,7 +41,7 @@ function create({ definition: { resource: name }, app }) {
   const method = resource?.create?.method || 'POST';
   const url = resource?.create?.url || resource.url || `/api/apps/${app.id}/resources/${name}`;
 
-  return request({ blobs: getBlobs(resource), method, url, schema });
+  return request({ definition: { blobs: getBlobs(resource), method, url, schema } });
 }
 
 function update({ definition: { resource: name, query: params }, app }) {
@@ -47,11 +51,13 @@ function update({ definition: { resource: name, query: params }, app }) {
   const id = resource.id || 'id';
 
   return request({
-    blobs: getBlobs(resource),
-    method,
-    url: `${url}${!url.endsWith('/') && '/'}{${id}}`,
-    query: params,
-    schema,
+    definition: {
+      blobs: getBlobs(resource),
+      method,
+      url: `${url}${!url.endsWith('/') && '/'}{${id}}`,
+      query: params,
+      schema,
+    },
   });
 }
 
@@ -62,11 +68,13 @@ function remove({ definition: { resource: name, query: params }, app }) {
   const id = resource.id || 'id';
 
   return request({
-    blobs: getBlobs(resource),
-    method,
-    url: `${url}${!url.endsWith('/') && '/'}{${id}}`,
-    query: params,
-    schema,
+    definition: {
+      blobs: getBlobs(resource),
+      method,
+      url: `${url}${!url.endsWith('/') && '/'}{${id}}`,
+      query: params,
+      schema,
+    },
   });
 }
 
