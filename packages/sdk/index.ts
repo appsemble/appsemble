@@ -1,7 +1,4 @@
-/**
- * A value that can be resolved with an `await` statement.
- */
-type Awaitable<T> = T | Promise<T>;
+import { Promisable } from 'type-fest';
 
 interface BaseAction {
   /**
@@ -102,6 +99,13 @@ export interface PageParameters {
 
 export interface Utils {
   /**
+   * Register a function that should be called when the block is being removed.
+   *
+   * Use this to clean up resouces that would otherwise stay in memory, e.g. object URLs.
+   */
+  addCleanup: (fn: () => void) => void;
+
+  /**
    * Show a bulma style message.
    */
   showMessage: (message: string | Message) => void;
@@ -150,7 +154,7 @@ export interface BootstrapParams<P = any, A = {}> {
   /**
    * Any kind of data that has been passed in by some context.
    */
-  data: {};
+  data: any;
 
   /**
    * Event related functions and constants.
@@ -182,7 +186,7 @@ export interface BootstrapParams<P = any, A = {}> {
  * @param fn The bootstrap function to register
  */
 export function bootstrap<P = any, A = {}>(
-  fn: (params: BootstrapParams<P, A>) => Awaitable<void>,
+  fn: (params: BootstrapParams<P, A>) => Promisable<void>,
 ): void {
   const event = new CustomEvent('AppsembleBootstrap', {
     detail: {
@@ -204,7 +208,7 @@ export function bootstrap<P = any, A = {}>(
  * @param fn The bootstrap function to register.
  */
 export function attach<P = any, A = {}>(
-  fn: (params: BootstrapParams<P, A>) => Awaitable<HTMLElement | void>,
+  fn: (params: BootstrapParams<P, A>) => Promisable<HTMLElement | void>,
 ): void {
   bootstrap<P, A>(
     async (params): Promise<void> => {

@@ -9,7 +9,17 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
+- App: Allow to load media from any source.
 - Editor: Allow viewing apps without logging in.
+- Helm: Add health check.
+- React: Embrace the new `addCleanup` utility function to cleanup React based blocks automatically.
+- SDK: Add a new `addCleanup` utility function.
+- Server: Show the date in logs.
+- Server: Add health check.
+
+### Fixed
+
+- Editor: Fix issue where array or object fields could not be edited.
 
 ## [0.8.1] - 2019-06-26
 

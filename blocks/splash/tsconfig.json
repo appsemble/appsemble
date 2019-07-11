@@ -1,0 +1,8 @@
+{
+  "extends": "../../tsconfig.json",
+  "exclude": [],
+  "compilerOptions": {
+    "lib": ["dom", "esnext"],
+    "types": ["css-modules", "file-loader"]
+  }
+}

@@ -1,9 +1,9 @@
-export type Awaitable<T> = T | Promise<T>;
+import { Promisable } from 'type-fest';
 
 async function put(
   request: Request,
   response: Response,
-  fallback: () => Awaitable<Response>,
+  fallback: () => Promisable<Response>,
 ): Promise<Response> {
   // Only cache responses if the status code is 2xx.
   if (response.ok) {
@@ -14,7 +14,10 @@ async function put(
   return fallback();
 }
 
-async function tryCached(request: Request, fallback: () => Awaitable<Response>): Promise<Response> {
+async function tryCached(
+  request: Request,
+  fallback: () => Promisable<Response>,
+): Promise<Response> {
   const cached = await caches.match(request);
   if (cached) {
     return cached;

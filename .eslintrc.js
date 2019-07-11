@@ -79,6 +79,7 @@ module.exports = {
         'no-undef': 'off',
         'no-unused-vars': 'off',
         'filenames/match-regex': ['error', /^\.?[a-z]+(\.config|\.test|\.d)?$/i, true],
+        'import/no-unresolved': 'off',
         'react/jsx-filename-extension': 'off',
         '@typescript-eslint/adjacent-overload-signatures': 'error',
         '@typescript-eslint/array-type': 'error',

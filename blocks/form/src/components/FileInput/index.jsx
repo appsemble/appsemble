@@ -1,1 +1,5 @@
-export { default } from './FileInput';
+import { withBlock } from '@appsemble/react';
+
+import FileInput from './FileInput';
+
+export default withBlock(FileInput);
