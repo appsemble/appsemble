@@ -33,6 +33,7 @@ export function mount<P, A = {}>(
       </Provider>
     );
     ReactDOM.render(component, reactRoot);
+    params.utils.addCleanup(() => ReactDOM.unmountComponentAtNode(reactRoot));
     /**
      * React doesn’t play nice with shadow DOM. This library works around that. However, the
      * implementation does contain some bugs.
