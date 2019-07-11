@@ -81,7 +81,7 @@ export default class Page extends React.Component {
       async data => {
         // Trigger flowSkip action
         this.actions.onFlowCancel.dispatch(data);
-        this.setState({ data: {} });
+        this.setState({ data });
       },
       50,
       { leading: false },
@@ -197,7 +197,7 @@ export default class Page extends React.Component {
 
   render() {
     const { hasErrors, page, user } = this.props;
-    const { dialog, counter, currentPage } = this.state;
+    const { dialog, counter, currentPage, data } = this.state;
     const { type } = page;
 
     if (!checkScope(page.scope, user)) {
@@ -237,6 +237,7 @@ export default class Page extends React.Component {
                 // eslint-disable-next-line react/no-array-index-key
                 key={`${currentPage}.${index}.${counter}`}
                 block={block}
+                data={data}
                 emitEvent={this.emitEvent}
                 flowActions={this.flowActions}
                 offEvent={this.offEvent}

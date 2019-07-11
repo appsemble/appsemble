@@ -6,7 +6,7 @@ interface BlockActions {
   click: {};
 }
 
-attach<{}, BlockActions>(({ actions }) => {
+attach<{}, BlockActions>(({ actions, data }) => {
   let node;
   if (actions.click.type === 'link') {
     node = document.createElement('a');
@@ -20,7 +20,7 @@ attach<{}, BlockActions>(({ actions }) => {
     'click',
     event => {
       event.preventDefault();
-      actions.click.dispatch();
+      actions.click.dispatch(data);
     },
     true,
   );
