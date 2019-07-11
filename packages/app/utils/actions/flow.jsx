@@ -15,12 +15,12 @@ function back({ flowActions }) {
   };
 }
 
-function skip({ flowActions }) {
+function cancel({ flowActions }) {
   return {
     async dispatch(data) {
-      return flowActions.skip(data);
+      return flowActions.cancel(data);
     },
   };
 }
 
-export default { next, back, skip };
+export default { next, back, cancel };

@@ -14,7 +14,7 @@ export default {
   dialog,
   'flow.next': flow.next,
   'flow.back': flow.back,
-  'flow.skip': flow.skip,
+  'flow.cancel': flow.cancel,
   'resource.get': resource.get,
   'resource.query': resource.query,
   'resource.create': resource.create,
