@@ -1,5 +1,6 @@
 export default function noop() {
   return {
-    dispatch() {},
+    // eslint-disable-next-line no-empty-function
+    async dispatch() {},
   };
 }

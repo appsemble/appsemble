@@ -1,7 +1,7 @@
 // See Page.jsx
 function next({ flowActions }) {
   return {
-    dispatch(data) {
+    async dispatch(data) {
       return flowActions.next(data);
     },
   };
@@ -9,7 +9,7 @@ function next({ flowActions }) {
 
 function back({ flowActions }) {
   return {
-    dispatch(data) {
+    async dispatch(data) {
       return flowActions.back(data);
     },
   };
@@ -17,7 +17,7 @@ function back({ flowActions }) {
 
 function skip({ flowActions }) {
   return {
-    dispatch(data) {
+    async dispatch(data) {
       return flowActions.skip(data);
     },
   };

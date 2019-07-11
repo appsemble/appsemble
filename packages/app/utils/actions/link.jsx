@@ -21,7 +21,7 @@ export default function link({ definition: { to, parameters = {} }, app: { pages
   }
 
   return {
-    dispatch(data) {
+    async dispatch(data) {
       history.push(href(data), data);
     },
     href,
