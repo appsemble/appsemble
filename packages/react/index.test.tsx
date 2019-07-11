@@ -33,6 +33,7 @@ beforeEach(() => {
       },
     } as any,
     utils: {
+      addCleanup() {},
       showMessage() {},
     },
   };

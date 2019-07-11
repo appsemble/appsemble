@@ -54,6 +54,18 @@ export default class Block extends React.Component {
     showDialog: null,
   };
 
+  cleanups = [];
+
+  componentWillUnmount() {
+    // Run all cleanups asynchronously, so they are run in parallel, and a failing cleanup won’t
+    // block the others.
+    this.cleanups.forEach(async fn => fn());
+  }
+
+  addCleanup = fn => {
+    this.cleanups.push(fn);
+  };
+
   ref = async div => {
     const {
       actionCreators,
@@ -138,6 +150,7 @@ export default class Block extends React.Component {
 
     const utils = {
       showMessage,
+      addCleanup: this.addCleanup,
     };
     await callBootstrap(blockDef, {
       actions,

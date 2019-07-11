@@ -99,6 +99,13 @@ export interface PageParameters {
 
 export interface Utils {
   /**
+   * Register a function that should be called when the block is being removed.
+   *
+   * Use this to clean up resouces that would otherwise stay in memory, e.g. object URLs.
+   */
+  addCleanup: (fn: () => void) => void;
+
+  /**
    * Show a bulma style message.
    */
   showMessage: (message: string | Message) => void;
