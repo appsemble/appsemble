@@ -63,22 +63,28 @@ export async function requestUser() {
 async function setupAuth(accessToken, refreshToken, url, db, dispatch) {
   const payload = jwtDecode(accessToken);
   const { exp, scopes, sub } = payload;
-  if (exp) {
-    const timeout = exp * 1e3 - REFRESH_BUFFER - new Date().getTime();
-    if (refreshToken) {
-      // eslint-disable-next-line no-use-before-define
-      timeoutId = setTimeout(refreshTokenLogin, timeout, url, db, dispatch);
-    } else {
-      timeoutId = setTimeout(doLogout, timeout, dispatch, null, db);
-    }
+
+  const timeout = exp * 1e3 - REFRESH_BUFFER - new Date().getTime();
+
+  if (refreshToken) {
+    // eslint-disable-next-line no-use-before-define
+    timeoutId = setTimeout(refreshTokenLogin, timeout, url, db, dispatch);
+  } else {
+    timeoutId = setTimeout(doLogout, timeout, dispatch, null, db);
   }
+
   axios.defaults.headers.common.Authorization = `Bearer ${accessToken}`;
-  const user = await requestUser();
-  return {
-    ...user,
-    id: sub,
-    scope: scopes,
-  };
+  try {
+    const user = await requestUser();
+    return {
+      ...user,
+      id: sub,
+      scope: scopes,
+    };
+  } catch (exception) {
+    await doLogout(dispatch, null, db);
+    return null;
+  }
 }
 
 async function requestToken(url, params, db, dispatch, refreshURL) {
@@ -119,8 +125,11 @@ async function refreshTokenLogin(url, db, dispatch) {
       type: LOGIN_SUCCESS,
       user,
     });
+
+    return user;
   } catch (error) {
     doLogout(dispatch, null, db);
+    return null;
   }
 }
 
