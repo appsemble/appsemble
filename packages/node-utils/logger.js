@@ -62,8 +62,20 @@ function toString(info) {
 export const logger = winston.createLogger({
   level: levels[DEFAULT_LEVEL],
   levels: levels.reduce((acc, level, index) => ({ ...acc, [level]: index }), {}),
-  // Suppress warnings about no transport having been registered.
-  transports: [new winston.transports.Console({ silent: true })],
+  format: winston.format.combine(
+    winston.format(info => ({
+      ...info,
+      lines: toString(info)
+        .split(/\r?\n/)
+        .map(line => `${''.padEnd(padding - info.level.length)}${line}`),
+    }))(),
+    winston.format.colorize(),
+    winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
+    winston.format.printf(({ timestamp, level, lines }) =>
+      lines.map(line => `${timestamp} [${level}]: ${line}`).join(EOL),
+    ),
+  ),
+  transports: [new winston.transports.Console()],
 });
 
 /**
@@ -84,27 +96,9 @@ export function setLogLevel(level = DEFAULT_LEVEL) {
  * Use this in conjunction with `yargs`.
  *
  * @param {Object} argv
- * @param {number} argv.logDate Prepend the date to logging.
  * @param {number} argv.quiet The negative verbosity count.
  * @param {number} argv.verbose The verbosity count.
  */
-export function configureLogger({ logDate = false, quiet = 0, verbose = 0 }) {
-  logger.add(
-    new winston.transports.Console({
-      format: winston.format.combine(
-        winston.format(info => ({
-          ...info,
-          lines: toString(info)
-            .split(/\r?\n/)
-            .map(line => `${''.padEnd(padding - info.level.length)}${line}`),
-        }))(),
-        winston.format.colorize(),
-        winston.format.timestamp({ format: logDate ? 'YYYY-MM-DD HH:mm:ss' : 'HH:mm:ss' }),
-        winston.format.printf(({ timestamp, level, lines }) =>
-          lines.map(line => `${timestamp} [${level}]: ${line}`).join(EOL),
-        ),
-      ),
-    }),
-  );
+export function configureLogger({ quiet = 0, verbose = 0 }) {
   setLogLevel(DEFAULT_LEVEL + verbose - quiet);
 }
