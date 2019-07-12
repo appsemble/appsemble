@@ -8,7 +8,9 @@
     "noUnusedParameters": true,
     "strict": true,
     "strictFunctionTypes": false,
-    "strictNullChecks": false
+    "strictNullChecks": false,
+    "lib": ["esnext"],
+    "types": ["jest", "node"]
   },
   "exclude": ["blocks/*", "packages/*"]
 }

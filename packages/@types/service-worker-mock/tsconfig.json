@@ -2,6 +2,7 @@
   "extends": "../../../tsconfig",
   "exclude": [],
   "compilerOptions": {
-    "lib": ["dom", "esnext"]
+    "lib": ["esnext", "webworker"],
+    "types": []
   }
 }

@@ -2,6 +2,9 @@
   "name": "@appsemble/app",
   "version": "0.8.1",
   "private": true,
+  "scripts": {
+    "tsc": "../../config/bin/tscstub.js"
+  },
   "dependencies": {
     "@appsemble/react-components": "^0.8.1",
     "@appsemble/utils": "^0.8.1",
@@ -22,7 +25,6 @@
     "redux": "^4.0.1",
     "redux-thunk": "^2.3.0",
     "roboto-fontface": "^0.10.0",
-    "serviceworker-webpack-plugin": "^1.0.1",
-    "type-fest": "^0.6.0"
+    "serviceworker-webpack-plugin": "^1.0.1"
   }
 }
