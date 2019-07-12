@@ -16,3 +16,7 @@
   margin-top: -25px;
   padding-right: 20px;
 }
+
+.registerLink {
+  z-index: 1;
+}
