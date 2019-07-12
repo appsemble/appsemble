@@ -20,6 +20,7 @@
     "react-intl": "^2.9.0",
     "react-redux": "^7.1.0",
     "react-router-dom": "^5.0.1",
+    "react-transition-group": "^4.2.1",
     "redux": "^4.0.1",
     "redux-thunk": "^2.3.0",
     "roboto-fontface": "^0.10.0",

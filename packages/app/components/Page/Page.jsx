@@ -3,6 +3,7 @@ import throttle from 'lodash.throttle';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
+import { CSSTransition, TransitionGroup } from 'react-transition-group';
 
 import checkScope from '../../utils/checkScope';
 import makeActions from '../../utils/makeActions';
@@ -103,7 +104,6 @@ export default class Page extends React.Component {
 
   componentDidMount() {
     const { app, getBlockDefs, page, history } = this.props;
-    const { currentPage } = this.state;
 
     this.applyBulmaThemes(app, page);
     this.setupEvents();
@@ -125,7 +125,16 @@ export default class Page extends React.Component {
       );
 
       this.actions = actions;
-      getBlockDefs(page.flowPages[currentPage].blocks);
+      getBlockDefs(
+        [
+          ...new Set(
+            page.flowPages
+              .map(f => f.blocks)
+              .flat()
+              .map(b => JSON.stringify({ type: b.type, version: b.version })),
+          ),
+        ].map(block => JSON.parse(block)),
+      );
     } else {
       getBlockDefs(page.blocks);
     }
@@ -150,7 +159,6 @@ export default class Page extends React.Component {
 
       if (page.type === 'flow') {
         this.applyBulmaThemes(app, page.flowPages[currentPage]);
-        getBlockDefs(page.flowPages[currentPage].blocks);
       } else {
         this.applyBulmaThemes(app, page);
         getBlockDefs(page.blocks);
@@ -239,20 +247,35 @@ export default class Page extends React.Component {
                 />
               ))}
             </div>
-            {page.flowPages[currentPage].blocks.map((block, index) => (
-              <Block
-                // As long as blocks are in a static list, using the index as a key should be fine.
-                // eslint-disable-next-line react/no-array-index-key
-                key={`${currentPage}.${index}.${counter}`}
-                block={block}
-                data={data}
-                emitEvent={this.emitEvent}
-                flowActions={this.flowActions}
-                offEvent={this.offEvent}
-                onEvent={this.onEvent}
-                showDialog={this.showDialog}
-              />
-            ))}
+            <TransitionGroup className={styles.transitionGroup}>
+              {page.flowPages[currentPage].blocks.map((block, index) => (
+                <CSSTransition
+                  // Since blocks are in a static list, using the index as a key should be fine.
+                  // eslint-disable-next-line react/no-array-index-key
+                  key={`${currentPage}.${index}.${counter}`}
+                  classNames={{
+                    enter: styles.pageEnter,
+                    enterActive: styles.pageEnterActive,
+                    exit: styles.pageExit,
+                    exitActive: styles.pageExitActive,
+                  }}
+                  timeout={300}
+                >
+                  <div className={styles.transitionWrapper}>
+                    <Block
+                      block={block}
+                      className="foo"
+                      data={data}
+                      emitEvent={this.emitEvent}
+                      flowActions={this.flowActions}
+                      offEvent={this.offEvent}
+                      onEvent={this.onEvent}
+                      showDialog={this.showDialog}
+                    />
+                  </div>
+                </CSSTransition>
+              ))}
+            </TransitionGroup>
             <PageDialog
               dialog={dialog}
               emitEvent={this.emitEvent}
