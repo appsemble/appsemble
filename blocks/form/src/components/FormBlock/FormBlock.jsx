@@ -37,8 +37,8 @@ export default class FormBlock extends React.Component {
     errors: {},
     pristine: true,
     submitting: false,
-    values: this.props.block.parameters.fields.reduce((acc, { name, defaultValue }) => {
-      acc[name] = defaultValue;
+    values: this.props.block.parameters.fields.reduce((acc, { name, defaultValue, repeated }) => {
+      acc[name] = defaultValue || (repeated && []);
       return acc;
     }, {}),
   };
