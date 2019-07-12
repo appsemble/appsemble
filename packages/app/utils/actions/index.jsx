@@ -13,6 +13,7 @@ export default {
   request,
   dialog,
   'flow.next': flow.next,
+  'flow.finish': flow.finish,
   'flow.back': flow.back,
   'flow.cancel': flow.cancel,
   'resource.get': resource.get,
