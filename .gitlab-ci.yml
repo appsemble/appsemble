@@ -293,6 +293,7 @@ review:
       --set "mysql.existingSecret=mysql"
       --set "mysql.fullnameOverride=$CI_ENVIRONMENT_SLUG-mysql"
       --set "mysql.persistence.enabled=false"
+      --set "sentrySecret=sentry"
     - echo -n "$CI_ENVIRONMENT_URL" > environment-url.txt
   artifacts:
     expire_in: 30 days
@@ -366,6 +367,7 @@ staging:
       --set "mysql.existingSecret=mysql"
       --set "mysql.fullnameOverride=staging-mysql"
       --set "mysql.persistence.enabled=false"
+      --set "sentrySecret=sentry"
 
 # Wipe the staging environment, reset the staging environment to the latest release, and upgrade to master.
 reset staging:
@@ -392,6 +394,7 @@ reset staging:
       --set "mysql.existingSecret=mysql"
       --set "mysql.fullnameOverride=staging-mysql"
       --set "mysql.persistence.enabled=false"
+      --set "sentrySecret=sentry"
 
 .production:
   extends: .helm
@@ -437,6 +440,7 @@ migrate staging:
       --set "mysql.existingSecret=mysql"
       --set "mysql.fullnameOverride=staging-mysql"
       --set "mysql.persistence.enabled=false"
+      --set "sentrySecret=sentry"
     # Upgrade to master
     - helm upgrade staging config/charts/appsemble
       --atomic
@@ -451,6 +455,7 @@ migrate staging:
       --set "mysql.existingSecret=mysql"
       --set "mysql.fullnameOverride=staging-mysql"
       --set "mysql.persistence.enabled=false"
+      --set "sentrySecret=sentry"
 
 ###################################################################################################
 #  Provision Stage                                                                                #

@@ -89,6 +89,13 @@ spec:
                   name: {{ .Values.smtpSecret | quote }}
                   key: from
             {{- end }}
+            {{- if .Values.sentrySecret }}
+            - name: SENTRY_DSN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.sentrySecret | quote }}
+                  key: dsn
+            {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
