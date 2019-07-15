@@ -4,8 +4,6 @@ import Boom from '@hapi/boom';
 import crypto from 'crypto';
 import { UniqueConstraintError } from 'sequelize';
 
-import { sendOrganizationInviteEmail } from '../utils/email';
-
 export async function getOrganization(ctx) {
   const { organizationId } = ctx.params;
   const { Organization, User } = ctx.db.models;
@@ -107,6 +105,7 @@ export async function respondInvitation(ctx) {
 }
 
 export async function inviteMember(ctx) {
+  const { mailer } = ctx;
   const { organizationId } = ctx.params;
   const { email } = ctx.request.body;
   const { Organization, EmailAuthorization, User } = ctx.db.models;
@@ -141,15 +140,10 @@ export async function inviteMember(ctx) {
     through: { verified: false, key, email },
   });
 
-  await sendOrganizationInviteEmail(
-    {
-      email,
-      name: invitedUser.name,
-      organization: organization.id,
-      url: `${ctx.origin}/_/organization-invite?token=${key}`,
-    },
-    ctx.state.smtp,
-  );
+  await mailer.sendEmail({ email, name: invitedUser.name }, 'organizationInvite', {
+    organization: organization.id,
+    url: `${ctx.origin}/_/organization-invite?token=${key}`,
+  });
 
   ctx.body = {
     id: invitedUser.id,
@@ -160,6 +154,7 @@ export async function inviteMember(ctx) {
 }
 
 export async function resendInvitation(ctx) {
+  const { mailer } = ctx;
   const { organizationId } = ctx.params;
   const { memberId } = ctx.request.body;
   const { Organization, User } = ctx.db.models;
@@ -174,15 +169,10 @@ export async function resendInvitation(ctx) {
     throw Boom.notFound('This user was not invited previously.');
   }
 
-  await sendOrganizationInviteEmail(
-    {
-      email: user.Member.email,
-      name: user.name,
-      organization: organization.id,
-      url: `${ctx.origin}/_/organization-invite?token=${user.Member.key}`,
-    },
-    ctx.state.smtp,
-  );
+  await mailer.sendEmail({ email: user.Member.email, name: user.name }, 'organizationInvite', {
+    organization: organization.id,
+    url: `${ctx.origin}/_/organization-invite?token=${user.Member.key}`,
+  });
 
   ctx.body = 204;
 }

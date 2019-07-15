@@ -2,13 +2,12 @@
 subject: Welcome to Appsemble
 ---
 
-<%= greeting %>,
+`{{greeting}}`,
 
-Thank you for registering your account.  
-Before you can use your account, we need to verify your email address.
+Thank you for registering your account. Before you can use your account, we need to verify your
+email address.
 
-Please follow the link below to verify your email address:  
-<%= url %>
+Please click [here]({{url}}) to verify your email address.
 
 Kind regards,
 

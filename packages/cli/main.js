@@ -16,11 +16,6 @@ export default async function main(argv) {
       describe: 'Decrease verbosity',
       type: 'count',
     })
-    .option('log-date', {
-      describe: 'Prepend the date to logging.',
-      type: 'boolean',
-      default: false,
-    })
     .option('remote', {
       description: 'The Appsemble host that should be used.',
       default: 'http://localhost:9999',
