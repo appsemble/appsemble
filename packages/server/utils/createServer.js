@@ -28,12 +28,12 @@ import boomMiddleware from '../middleware/boom';
 import oauth2Handlers from '../middleware/oauth2Handlers';
 import oauth2Model from '../middleware/oauth2Model';
 import routes from '../routes';
+import Mailer from './email/Mailer';
 
 export default async function createServer({
   app = new Koa(),
   argv = {},
   db,
-  smtp,
   grantConfig,
   secret = 'appsemble',
 }) {
@@ -42,7 +42,7 @@ export default async function createServer({
   app.use(session(app));
 
   app.use(boomMiddleware);
-  Object.assign(app.context, { argv, db });
+  Object.assign(app.context, { argv, db, mailer: new Mailer(argv) });
 
   let grant;
   if (grantConfig) {
@@ -105,10 +105,6 @@ export default async function createServer({
 
   koaQuerystring(app);
 
-  app.use((ctx, next) => {
-    ctx.state.smtp = smtp;
-    return next();
-  });
   if (process.env.NODE_ENV === 'production') {
     app.use(compress());
   }
