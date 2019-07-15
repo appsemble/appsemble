@@ -24,6 +24,11 @@ export default class Mailer {
     }
   }
 
+  /**
+   * Check if the SMTP connection still works
+   *
+   * @throws If the SMTP connection no longer works.
+   */
   async verify() {
     if (!this.transport) {
       logger.warn('SMTP hasn’t been configured.');
@@ -32,6 +37,15 @@ export default class Mailer {
     await this.transport.verify();
   }
 
+  /**
+   * Send an email using the configured SMTP transport.
+   *
+   * @param {Object} to
+   * @param {string} to.email The email address to send the email to.
+   * @param {string} to.name The name of the recipient.
+   * @param {string} templateName The name of the Markdown email template to send
+   * @param {Object} values A key/value pair of values to use for rendering the email.
+   */
   async sendEmail(to, templateName, values) {
     const { html, subject, text } = await renderEmail(templateName, {
       ...values,

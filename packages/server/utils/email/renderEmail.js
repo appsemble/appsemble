@@ -24,6 +24,18 @@ const rehype = unified()
   .use(rehypeStringify)
   .freeze();
 
+/**
+ * Render a markdown email template.
+ *
+ * @param {string} templateName The name of the template to render.
+ * @param {Object} values Values to pass to the template for rendering.
+ *
+ * @returns {Object} An object which consists of the following properties:
+ *
+ * - `text`: The (markdown) text content of the email.
+ * - `html`: The markdown content rendered to HTML.
+ * - `subject`: The subject of the email.
+ */
 export default async function renderEmail(templateName, values) {
   const template = await fs.readFile(path.join(templateDir, `${templateName}.md`), 'utf-8');
   let subject;
