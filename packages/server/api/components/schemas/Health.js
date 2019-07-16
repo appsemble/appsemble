@@ -7,9 +7,5 @@ export default {
       type: 'boolean',
       description: 'Whether or not the database status is healthy',
     },
-    smtp: {
-      type: 'boolean',
-      description: 'Whether or not the SMTP configuration is still correct',
-    },
   },
 };
