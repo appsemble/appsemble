@@ -2,9 +2,9 @@
 subject: Reset password
 ---
 
-<%= greeting %>,
+`{{greeting}}`,
 
-A password reset has been requested for you account. Please click [here](<%= url %>) to reset your
+A password reset has been requested for you account. Please click [here]({{url}}) to reset your
 password.
 
 Kind regards,
