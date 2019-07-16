@@ -103,6 +103,9 @@ dependency scanning:
 eslint:
   extends: .yarn
   only:
+    refs:
+      - branches
+      - merge_requests
     changes:
       - '**/*.{js,jsx,ts,tsx}'
       - yarn.lock
@@ -116,6 +119,9 @@ eslint:
 helm lint:
   extends: .helm
   only:
+    refs:
+      - branches
+      - merge_requests
     changes:
       - config/charts/**
   script:
@@ -125,6 +131,9 @@ helm lint:
 prettier:
   extends: .yarn
   only:
+    refs:
+      - branches
+      - merge_requests
     changes:
       - '**/*.{html,json,md,scss,yaml,yml}'
       - yarn.lock
@@ -135,6 +144,9 @@ prettier:
 stylelint:
   extends: .yarn
   only:
+    refs:
+      - branches
+      - merge_requests
     changes:
       - '**/*.css'
       - yarn.lock
