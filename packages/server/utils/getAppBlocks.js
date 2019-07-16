@@ -8,7 +8,7 @@
 export default function getAppBlocks(app) {
   const blocks = {};
   app.pages.forEach((page, pageIndex) => {
-    page.blocks.forEach((block, blockIndex) => {
+    const parseBlocks = (block, blockIndex) => {
       const blockPath = `pages.${pageIndex}.blocks.${blockIndex}`;
       blocks[blockPath] = block;
       if (!block.actions) {
@@ -23,7 +23,16 @@ export default function getAppBlocks(app) {
           blocks[fullBlockPath] = actionBlock;
         });
       });
-    });
+    };
+
+    switch (page.type) {
+      case 'flow':
+        page.flowPages.forEach(sub => sub.blocks.forEach(parseBlocks));
+        break;
+      case 'page':
+      default:
+        page.blocks.forEach(parseBlocks);
+    }
   });
   return blocks;
 }

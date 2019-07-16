@@ -5,26 +5,36 @@ import actionCreators from './actions';
 export default function makeActions(
   blockDef,
   app,
-  block,
+  context,
   history,
   showDialog,
   events,
   extraCreators,
+  flowActions,
 ) {
   return Object.entries(blockDef.actions || {}).reduce((acc, [on, { required }]) => {
     let definition;
     let type;
-    if (!block.actions || !Object.hasOwnProperty.call(block.actions, on)) {
+    if (!context.actions || !Object.hasOwnProperty.call(context.actions, on)) {
       if (required) {
         throw new Error(`Missing required action ${on}`);
       }
       type = 'noop';
     } else {
-      definition = block.actions[on];
+      definition = context.actions[on];
       ({ type } = definition);
     }
+
     const actionCreator = actionCreators[type] || extraCreators[type];
-    const action = actionCreator(definition, app, block, history, showDialog, events);
+    const action = actionCreator({
+      definition,
+      app,
+      context,
+      history,
+      showDialog,
+      events,
+      flowActions,
+    });
     const { dispatch } = action;
     if (definition && Object.hasOwnProperty.call(definition, 'remap')) {
       action.dispatch = async args => dispatch(remapData(definition.remap, args));

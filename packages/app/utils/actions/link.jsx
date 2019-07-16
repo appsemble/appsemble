@@ -3,7 +3,7 @@ import { compileFilters } from '@appsemble/utils/remap';
 
 import mapValues from '../mapValues';
 
-export default function link({ to, parameters = {} }, { pages }, block, history) {
+export default function link({ definition: { to, parameters = {} }, app: { pages }, history }) {
   const toPage = pages.find(({ name }) => name === to);
   if (toPage == null) {
     throw new Error(`Invalid link reference ${to}`);
@@ -21,7 +21,7 @@ export default function link({ to, parameters = {} }, { pages }, block, history)
   }
 
   return {
-    dispatch(data) {
+    async dispatch(data) {
       history.push(href(data), data);
     },
     href,

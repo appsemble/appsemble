@@ -1,9 +1,12 @@
 import EventEmitter from 'events';
+import throttle from 'lodash.throttle';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
+import { CSSTransition, TransitionGroup } from 'react-transition-group';
 
 import checkScope from '../../utils/checkScope';
+import makeActions from '../../utils/makeActions';
 import Block from '../Block';
 import Login from '../Login';
 import PageDialog from '../PageDialog';
@@ -19,6 +22,7 @@ export default class Page extends React.Component {
     app: PropTypes.shape().isRequired,
     getBlockDefs: PropTypes.func.isRequired,
     hasErrors: PropTypes.bool.isRequired,
+    history: PropTypes.shape().isRequired,
     /**
      * The page definition to render
      */
@@ -32,7 +36,65 @@ export default class Page extends React.Component {
 
   state = {
     dialog: null,
+    actions: {},
     counter: 0,
+    currentPage: 0,
+    data: {},
+  };
+
+  flowActions = {
+    next: throttle(
+      async data => {
+        const { currentPage } = this.state;
+        const { page } = this.props;
+        const { flowPages } = page;
+
+        if (currentPage + 1 === flowPages.length) {
+          this.actions.onFlowFinish.dispatch(data);
+          return data;
+        }
+
+        this.setState({ data, currentPage: currentPage + 1 });
+        return data;
+      },
+      50,
+      { leading: false },
+    ),
+
+    finish: throttle(
+      async data => {
+        this.actions.onFlowFinish.dispatch(data);
+        this.setState({ data });
+        return data;
+      },
+      50,
+      { leading: false },
+    ),
+
+    back: throttle(
+      async data => {
+        const { currentPage } = this.state;
+
+        if (currentPage <= 0) {
+          // Don't do anything if a previous page does not exist
+          return data;
+        }
+
+        this.setState({ data, currentPage: currentPage - 1 });
+        return data;
+      },
+      50,
+      { leading: false },
+    ),
+
+    cancel: throttle(
+      async data => {
+        this.actions.onFlowCancel.dispatch(data);
+        this.setState({ data });
+      },
+      50,
+      { leading: false },
+    ),
   };
 
   constructor(props) {
@@ -41,11 +103,41 @@ export default class Page extends React.Component {
   }
 
   componentDidMount() {
-    const { app, getBlockDefs, page } = this.props;
+    const { app, getBlockDefs, page, history } = this.props;
 
     this.applyBulmaThemes(app, page);
     this.setupEvents();
-    getBlockDefs(page.blocks);
+
+    if (page.type === 'flow') {
+      const actions = makeActions(
+        { actions: { onFlowFinish: {}, onFlowCancel: {} } },
+        app,
+        page,
+        history,
+        this.showDialog,
+        {
+          emit: this.emitEvent,
+          off: this.offEvent,
+          on: this.onEvent,
+        },
+        {},
+        this.flowActions,
+      );
+
+      this.actions = actions;
+      getBlockDefs(
+        [
+          ...new Set(
+            page.flowPages
+              .map(f => f.blocks)
+              .flat()
+              .map(b => JSON.stringify({ type: b.type, version: b.version })),
+          ),
+        ].map(block => JSON.parse(block)),
+      );
+    } else {
+      getBlockDefs(page.blocks);
+    }
   }
 
   static getDerivedStateFromProps(props, state) {
@@ -57,13 +149,20 @@ export default class Page extends React.Component {
     return null;
   }
 
-  componentDidUpdate({ page: prevPage }) {
+  componentDidUpdate({ page: prevPage }, { prevCurrentPage }) {
     const { app, getBlockDefs, page } = this.props;
-    if (page !== prevPage) {
-      this.applyBulmaThemes(app, page);
+    const { currentPage } = this.state;
+
+    if (page !== prevPage || prevCurrentPage !== currentPage) {
       this.teardownEvents();
       this.setupEvents();
-      getBlockDefs(page.blocks);
+
+      if (page.type === 'flow') {
+        this.applyBulmaThemes(app, page.flowPages[currentPage]);
+      } else {
+        this.applyBulmaThemes(app, page);
+        getBlockDefs(page.blocks);
+      }
     }
   }
 
@@ -114,7 +213,8 @@ export default class Page extends React.Component {
 
   render() {
     const { hasErrors, page, user } = this.props;
-    const { dialog, counter } = this.state;
+    const { dialog, counter, currentPage, data } = this.state;
+    const { type } = page;
 
     if (!checkScope(page.scope, user)) {
       return (
@@ -133,28 +233,83 @@ export default class Page extends React.Component {
       );
     }
 
-    return (
-      <React.Fragment>
-        <TitleBar>{page.name}</TitleBar>
-        {page.blocks.map((block, index) => (
-          <Block
-            // As long as blocks are in a static list, using the index as a key should be fine.
-            // eslint-disable-next-line react/no-array-index-key
-            key={`${index}.${counter}`}
-            block={block}
-            emitEvent={this.emitEvent}
-            offEvent={this.offEvent}
-            onEvent={this.onEvent}
-            showDialog={this.showDialog}
-          />
-        ))}
-        <PageDialog
-          dialog={dialog}
-          emitEvent={this.emitEvent}
-          offEvent={this.offEvent}
-          onEvent={this.onEvent}
-        />
-      </React.Fragment>
-    );
+    switch (type) {
+      case 'flow':
+        return (
+          <React.Fragment>
+            <TitleBar>{page.name}</TitleBar>
+            <div className={styles.dotContainer}>
+              {page.flowPages.map((sub, index) => (
+                <div
+                  key={sub.name}
+                  className={`${styles.dot} ${index < currentPage && styles.previous} ${index ===
+                    currentPage && styles.active}`}
+                />
+              ))}
+            </div>
+            <TransitionGroup className={styles.transitionGroup}>
+              {page.flowPages[currentPage].blocks.map((block, index) => (
+                <CSSTransition
+                  // Since blocks are in a static list, using the index as a key should be fine.
+                  // eslint-disable-next-line react/no-array-index-key
+                  key={`${currentPage}.${index}.${counter}`}
+                  classNames={{
+                    enter: styles.pageEnter,
+                    enterActive: styles.pageEnterActive,
+                    exit: styles.pageExit,
+                    exitActive: styles.pageExitActive,
+                  }}
+                  timeout={300}
+                >
+                  <div className={styles.transitionWrapper}>
+                    <Block
+                      block={block}
+                      className="foo"
+                      data={data}
+                      emitEvent={this.emitEvent}
+                      flowActions={this.flowActions}
+                      offEvent={this.offEvent}
+                      onEvent={this.onEvent}
+                      showDialog={this.showDialog}
+                    />
+                  </div>
+                </CSSTransition>
+              ))}
+            </TransitionGroup>
+            <PageDialog
+              dialog={dialog}
+              emitEvent={this.emitEvent}
+              offEvent={this.offEvent}
+              onEvent={this.onEvent}
+            />
+          </React.Fragment>
+        );
+      case 'page':
+      default:
+        return (
+          <React.Fragment>
+            <TitleBar>{page.name}</TitleBar>
+            {page.blocks.map((block, index) => (
+              <Block
+                // As long as blocks are in a static list, using the index as a key should be fine.
+                // eslint-disable-next-line react/no-array-index-key
+                key={`${index}.${counter}`}
+                block={block}
+                emitEvent={this.emitEvent}
+                flowActions={this.flowActions}
+                offEvent={this.offEvent}
+                onEvent={this.onEvent}
+                showDialog={this.showDialog}
+              />
+            ))}
+            <PageDialog
+              dialog={dialog}
+              emitEvent={this.emitEvent}
+              offEvent={this.offEvent}
+              onEvent={this.onEvent}
+            />
+          </React.Fragment>
+        );
+    }
   }
 }

@@ -31,16 +31,23 @@ export default class FormBlock extends React.Component {
      * The block as passed by the Appsemble interface.
      */
     block: PropTypes.shape().isRequired,
+    /**
+     * The initial data as passed by the Appsemble interface.
+     */
+    data: PropTypes.shape().isRequired,
   };
 
   state = {
     errors: {},
     pristine: true,
     submitting: false,
-    values: this.props.block.parameters.fields.reduce((acc, { name, defaultValue, repeated }) => {
-      acc[name] = defaultValue || (repeated && []);
-      return acc;
-    }, {}),
+    values: {
+      ...this.props.block.parameters.fields.reduce((acc, { name, defaultValue, repeated }) => {
+        acc[name] = defaultValue || (repeated && []);
+        return acc;
+      }, {}),
+      ...this.props.data,
+    },
   };
 
   onChange = (event, value = event.target.value) => {

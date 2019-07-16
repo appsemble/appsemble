@@ -1,4 +1,4 @@
-export default function dialog(definition, app, block, history, showDialog) {
+export default function dialog({ definition, showDialog }) {
   return {
     dispatch(data) {
       return new Promise((resolve, reject) => {

@@ -5,6 +5,7 @@ import BlockDefinition from './BlockDefinition';
 import BlockVersion from './BlockVersion';
 import Color from './Color';
 import Error from './Error';
+import FlowPage from './FlowPage';
 import Health from './Health';
 import Organization from './Organization';
 import Page from './Page';
@@ -21,6 +22,7 @@ export default {
   BlockVersion,
   Color,
   Error,
+  FlowPage,
   Health,
   Organization,
   Page,

@@ -1,3 +1,62 @@
 .error {
   margin: 20vh 8px 8px;
 }
+
+.dotContainer {
+  padding-right: 15px;
+  padding-top: 15px;
+  position: absolute;
+  right: 0;
+  z-index: 1000;
+}
+
+.dot {
+  background-color: hsl(0, 0%, 100%);
+  border: none;
+  border-radius: 50%;
+  display: inline-block;
+  height: 10px;
+  margin: 0 2px;
+  opacity: 0.2;
+  width: 10px;
+}
+
+.dot.previous {
+  opacity: 0.5;
+}
+
+.dot.active {
+  opacity: 1;
+}
+
+.transitionGroup,
+.transitionWrapper {
+  display: flex;
+  height: 100%;
+  position: relative;
+}
+
+.transitionWrapper {
+  left: 0;
+  position: absolute;
+  top: 0;
+  width: 100%;
+}
+
+.pageEnter {
+  opacity: 0;
+}
+
+.pageEnterActive {
+  opacity: 1;
+  transition: opacity 300ms ease-in;
+}
+
+.pageExit {
+  opacity: 1;
+}
+
+.pageExitActive {
+  opacity: 0;
+  transition: opacity 300ms ease-in;
+}

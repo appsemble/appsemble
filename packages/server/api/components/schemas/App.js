@@ -48,7 +48,7 @@ export default {
       description: 'Determines whether this app should be included when fetching all apps.',
     },
     defaultPage: {
-      $ref: '#/components/schemas/Page/properties/name',
+      $ref: '#/components/schemas/Page/oneOf/1/properties/name',
       description: `The name of the page that should be displayed when the app is initially loaded.
 
         This **must** match the name of a page defined for the app.
