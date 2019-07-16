@@ -97,17 +97,6 @@ export async function handler(argv, { webpackConfigs, syncDB } = {}) {
     await migrate(db, pkg.version, migrations);
   }
 
-  const smtp = argv.smtpHost
-    ? {
-        port: argv.smtpPort || argv.smtpSecure ? 465 : 587,
-        host: argv.smtpHost,
-        secure: argv.smtpSecure,
-        ...(argv.smtpUser &&
-          argv.smtpPass && { auth: { user: argv.smtpUser, pass: argv.smtpPass } }),
-        from: argv.smtpFrom,
-      }
-    : undefined;
-
   const app = new Koa();
   app.use(loggerMiddleware());
   await configureStatic(app, webpackConfigs);
@@ -157,7 +146,7 @@ export async function handler(argv, { webpackConfigs, syncDB } = {}) {
     };
   }
 
-  await createServer({ app, argv, db, grantConfig, smtp, secret: argv.oauthSecret });
+  await createServer({ app, argv, db, grantConfig, secret: argv.oauthSecret });
 
   app.listen(argv.port || PORT, '0.0.0.0', () => {
     logger.info(api(argv).info.description);

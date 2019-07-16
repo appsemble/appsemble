@@ -2,12 +2,12 @@
 subject: Email added to account
 ---
 
-<%= greeting %>,
+`{{greeting}}`,
 
 You have registered a new email address to your account. In order to make full use of this email, we
 need to verify your email address.
 
-Please follow the link below to verify your email address: <%= url %>
+Please click [this link]({{url}}) to verify your email address.
 
 **Didn’t request this email?**
 

@@ -5,108 +5,58 @@ stages:
   - build
   - publish
   - deploy
-  - provision
   - migrate
-
-# This is the most official Helm image at the moment.
-# https://github.com/helm/helm/issues/5682#issuecomment-490084864
-.helm-image: &HELM
-  name: lachlanevenson/k8s-helm:v2.14.1
-  entrypoint: [/bin/sh, -c]
+  - provision
 
 ###################################################################################################
-#  Test Stage                                                                                     #
+#  Job Templates                                                                                  #
 ###################################################################################################
 
-# Scan for dependency vulnerabilities.
-dependency scanning:
-  allow_failure: true
-  script:
-    - yarn --frozen-lockfile
-    - yarn gitlab-yarn-audit
-  artifacts:
-    reports:
-      dependency_scanning: gl-dependency-scanning.json
+# A preset for running Docker in Docker.
+.docker:
+  services:
+    - docker:dind
+  image: docker
+  dependencies: []
+  before_script:
+    - echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY
 
-# Lint JavaScript code using ESLint.
-eslint:
-  except:
-    - schedules
-  script:
-    - yarn --frozen-lockfile
-    - yarn eslint --format gitlab .
-  artifacts:
-    reports:
-      codequality: gl-codequality.json
+# A preconfigured environment for using Helm.
+.helm-simple:
+  image:
+    # This is the most official Helm image at the moment.
+    # https://github.com/helm/helm/issues/5682#issuecomment-490084864
+    name: lachlanevenson/k8s-helm:v2.14.1
+    entrypoint: [/bin/sh, -c]
+  dependencies: []
 
-# Lint Helm charts.
-helm lint:
-  image: *HELM
-  except:
-    - schedules
-  script:
+# A preconfigured, initialized environment for using Helm.
+.helm:
+  extends: .helm-simple
+  before_script:
     - helm init --client-only
     - helm dependency build config/charts/*
-    - helm lint --strict config/charts/*
 
-# Check formatting using prettier.
-prettier:
-  except:
-    - schedules
-  script:
-    - yarn --frozen-lockfile
-    - yarn prettier
-
-# Lint CSS using stylelint.
-stylelint:
-  except:
-    - schedules
-  script:
-    - yarn --frozen-lockfile
-    - yarn stylelint .
-      # This replaces the regular stylelint behaviour, instead of enhancing it.
-      # https://github.com/stylelint/stylelint/issues/2369
-    - yarn stylelint --report-needless-disables .
-
-# Test the code using unit tests.
-test:
-  services:
-    - name: mysql:8
-      command: [--default-authentication-plugin=mysql_native_password]
-  except:
-    - schedules
+# A job preset for deleting Helm Charts.
+.helm-delete:
+  extends: .helm-simple
   variables:
-    MYSQL_DATABASE: testAppsemble
-    MYSQL_ROOT_PASSWORD: password
-    DATABASE_URL: 'mysql://root:password@mysql:3306'
+    GIT_STRATEGY: none
   script:
-    - yarn --frozen-lockfile
-    - yarn jest --coverage --reporters default --reporters jest-junit
-  artifacts:
-    reports:
-      junit: junit.xml
+    - helm delete --purge "$CI_ENVIRONMENT_SLUG"
 
-# Check type validity for our TypeScript files.
-tsc:
-  except:
-    - schedules
-  script:
-    - yarn --frozen-lockfile
-    - yarn tsc
-    - yarn workspaces run tsc
-
-###################################################################################################
-#  Build Stage                                                                                    #
-###################################################################################################
-
-# Build Appsemble blocks.
-build blocks:
-  stage: build
-  except:
-    - schedules
+# A preconfigured environment for using Yarn.
+.yarn:
+  image: node:10-slim
   dependencies: []
-  script:
+  before_script:
     - yarn --frozen-lockfile
+
+# A job preset for povisioning an environment.
+.provision:
+  extends: .yarn
+  stage: provision
+  script:
     - yarn block action
     - yarn block action-button
     - yarn block detail-viewer
@@ -117,60 +67,143 @@ build blocks:
     - yarn block map
     - yarn block markdown
     - yarn block splash
+    - node -r esm ./config/bin/register.js
+    - yarn appsemble login --email "$APPSEMBLE_EMAIL" --password "$APPSEMBLE_PASSWORD"
+    - yarn appsemble block register blocks/action
+    - yarn appsemble block register blocks/action-button
+    - yarn appsemble block register blocks/detail-viewer
+    - yarn appsemble block register blocks/list
+    - yarn appsemble block register blocks/feed
+    - yarn appsemble block register blocks/filter
+    - yarn appsemble block register blocks/form
+    - yarn appsemble block register blocks/map
+    - yarn appsemble block register blocks/markdown
+    - yarn appsemble block register blocks/splash
+
+###################################################################################################
+#  Test Stage                                                                                     #
+###################################################################################################
+
+# Scan for dependency vulnerabilities.
+dependency scanning:
+  extends: .yarn
+  allow_failure: true
+  only:
+    refs:
+      - triggers
+    changes:
+      - yarn.lock
+  script:
+    - yarn gitlab-yarn-audit
   artifacts:
-    expire_in: 3 days
-    paths:
-      - blocks/action/package.json
-      - blocks/action/dist/
-      - blocks/action/.appsemblerc.yaml
-      - blocks/action-button/dist/
-      - blocks/action-button/package.json
-      - blocks/detail-viewer/dist/
-      - blocks/detail-viewer/package.json
-      - blocks/list/dist/
-      - blocks/list/package.json
-      - blocks/list/.appsemblerc.yaml
-      - blocks/feed/package.json
-      - blocks/feed/dist/
-      - blocks/feed/.appsemblerc.yaml
-      - blocks/filter/package.json
-      - blocks/filter/dist/
-      - blocks/filter/.appsemblerc.yaml
-      - blocks/form/dist/
-      - blocks/form/package.json
-      - blocks/map/dist/
-      - blocks/map/package.json
-      - blocks/markdown/package.json
-      - blocks/markdown/dist/
-      - blocks/markdown/.appsemblerc.yaml
-      - blocks/splash/dist/
-      - blocks/splash/package.json
+    reports:
+      dependency_scanning: gl-dependency-scanning.json
+
+# Lint JavaScript code using ESLint.
+eslint:
+  extends: .yarn
+  only:
+    changes:
+      - '**/*.{js,jsx,ts,tsx}'
+      - yarn.lock
+  script:
+    - yarn eslint --format gitlab .
+  artifacts:
+    reports:
+      codequality: gl-codequality.json
+
+# Lint Helm charts.
+helm lint:
+  extends: .helm
+  only:
+    changes:
+      - config/charts/**
+  script:
+    - helm lint --strict config/charts/*
+
+# Check formatting using prettier.
+prettier:
+  extends: .yarn
+  only:
+    changes:
+      - '**/*.{html,json,md,scss,yaml,yml}'
+      - yarn.lock
+  script:
+    - yarn prettier
+
+# Lint CSS using stylelint.
+stylelint:
+  extends: .yarn
+  only:
+    changes:
+      - '**/*.css'
+      - yarn.lock
+  script:
+    - yarn stylelint .
+    # This replaces the regular stylelint behaviour, instead of enhancing it.
+    # https://github.com/stylelint/stylelint/issues/2369
+    - yarn stylelint --report-needless-disables .
+
+# Test the code using unit tests.
+test:
+  extends: .yarn
+  services:
+    - name: mysql:8
+      command: [--default-authentication-plugin=mysql_native_password]
+  only:
+    - branches
+    - merge_requests
+    - tags
+  variables:
+    MYSQL_DATABASE: testAppsemble
+    MYSQL_ROOT_PASSWORD: password
+    DATABASE_URL: 'mysql://root:password@mysql:3306'
+  script:
+    - yarn jest --coverage --reporters default --reporters jest-junit
+  artifacts:
+    reports:
+      junit: junit.xml
+
+# Check type validity for our TypeScript files.
+tsc:
+  extends: .yarn
+  only:
+    - branches
+    - merge_requests
+    - tags
+  script:
+    - yarn tsc
+    - yarn workspaces run tsc
+
+###################################################################################################
+#  Build Stage                                                                                    #
+###################################################################################################
 
 # Build the Docker image.
 build docker image:
+  extends: .docker
   stage: build
+  only:
+    - branches
+    - merge_requests
+    - tags
   except:
     - schedules
-  dependencies: []
-  services:
-    - docker:dind
-  image: docker
   script:
-    - echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY
     - docker build -t "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME" .
     - docker push "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME"
 
 # Build the Docker image.
 build docs image:
+  extends: .docker
   stage: build
+  only:
+    - branches
+    - merge_requests
+    - tags
   except:
     - schedules
-  dependencies: []
-  services:
-    - docker:dind
-  image: docker
   script:
-    - echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY
     - docker build .
       --build-arg "CI_COMMIT_REF_NAME=$CI_COMMIT_REF_NAME"
       --file config/docs/Dockerfile
@@ -200,19 +233,13 @@ pack:
 
 # Publish the Docker image that was built to Docker Hub.
 publish:docker:latest:
+  extends: .docker
   stage: publish
-  services:
-    - docker:dind
-  image: docker
   variables:
     GIT_STRATEGY: none
   only:
     - tags
-  except:
-    - schedules
-  dependencies: []
   script:
-    - echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY
     - echo $DOCKER_HUB_PASSWORD | docker login -u $DOCKER_HUB_USER --password-stdin
     - docker pull "$CI_REGISTRY_IMAGE:$CI_COMMIT_TAG"
     - docker tag "$CI_REGISTRY_IMAGE:$CI_COMMIT_TAG" "$CI_REGISTRY_IMAGE:latest"
@@ -228,22 +255,17 @@ publish:docker:latest:
 
 # Deploy the Docker image for a branch to a review environment.
 review:
+  extends: .helm
   stage: deploy
-  image: *HELM
   when: manual
-  except:
-    - master
-    - schedules
-    - tags
-  dependencies: []
+  only:
+    - merge_requests
   allow_failure: false
   environment:
     name: review/$CI_COMMIT_REF_SLUG
     url: https://$CI_ENVIRONMENT_SLUG.appsemble.app
     on_stop: stop review
   script:
-    - helm init --client-only
-    - helm dependency build config/charts/appsemble
     - helm upgrade "$CI_ENVIRONMENT_SLUG" config/charts/appsemble
       --atomic
       --install
@@ -259,33 +281,30 @@ review:
       --set "mysql.existingSecret=mysql"
       --set "mysql.fullnameOverride=$CI_ENVIRONMENT_SLUG-mysql"
       --set "mysql.persistence.enabled=false"
+    - echo -n "$CI_ENVIRONMENT_URL" > environment-url.txt
+  artifacts:
+    expire_in: 30 days
+    paths:
+      - environment-url.txt
 
 # Stop a review environment.
 stop review:
+  extends: .helm-delete
   stage: deploy
-  image: *HELM
   when: manual
-  except:
-    - master
-    - schedules
-    - tags
-  dependencies: []
+  only:
+    - merge_requests
   environment:
     name: review/$CI_COMMIT_REF_SLUG
     action: stop
-  script:
-    - helm delete --purge "$CI_ENVIRONMENT_SLUG"
 
 # Deploy the Docker image for a branch to a review environment.
 review docs:
+  extends: .helm
   stage: deploy
-  image: *HELM
   when: manual
-  except:
-    - master
-    - schedules
-    - tags
-  dependencies: []
+  only:
+    - merge_requests
   allow_failure: false
   environment:
     name: review/docs/$CI_COMMIT_REF_SLUG
@@ -300,35 +319,27 @@ review docs:
 
 # Stop a review environment.
 stop review docs:
+  extends: .helm-delete
   stage: deploy
-  image: *HELM
   when: manual
-  except:
-    - master
-    - schedules
-    - tags
-  dependencies: []
+  only:
+    - merge_requests
   environment:
     name: review/docs/$CI_COMMIT_REF_SLUG
     action: stop
-  script:
-    - helm delete --purge "$CI_ENVIRONMENT_SLUG"
 
 # Deploy the Docker image for master to the staging environment.
 staging:
+  extends: .helm
   stage: deploy
-  image: *HELM
   only:
     - master@appsemble/appsemble
   except:
     - schedules
-  dependencies: []
   environment:
     name: staging
     url: https://staging.appsemble.app
   script:
-    - helm init --client-only
-    - helm dependency build config/charts/appsemble
     - helm upgrade staging config/charts/appsemble
       --atomic
       --install
@@ -346,17 +357,14 @@ staging:
 
 # Wipe the staging environment, reset the staging environment to the latest release, and upgrade to master.
 reset staging:
+  extends: .helm
   stage: deploy
-  image: *HELM
   only:
     - schedules
-  dependencies: []
   environment:
     name: staging
     url: https://staging.appsemble.app
   script:
-    - helm init --client-only
-    - helm dependency build config/charts/appsemble
     # We can’s use `--replace` because of https://github.com/helm/helm/issues/3134
     - helm delete --purge staging
     - helm install config/charts/appsemble
@@ -374,8 +382,8 @@ reset staging:
       --set "mysql.persistence.enabled=false"
 
 .production:
+  extends: .helm
   stage: deploy
-  image: *HELM
   only:
     - tags
   dependencies: []
@@ -383,8 +391,6 @@ reset staging:
     name: production
     url: https://appsemble.app
   script:
-    - helm init --client-only
-    - helm dependency build config/charts/appsemble
     - helm upgrade appsemble config/charts/appsemble
       --set "app=$CI_ENVIRONMENT_SLUG"
       --set "ingress.enabled=true"
@@ -396,66 +402,19 @@ reset staging:
       --wait
 
 ###################################################################################################
-#  Provision Stage                                                                                #
-###################################################################################################
-
-# Provision the review environment with the blocks that were built in the build stage.
-provision review: &provision
-  stage: provision
-  except:
-    - master
-    - schedules
-  dependencies:
-    - build blocks
-    - review
-  environment:
-    name: review/$CI_COMMIT_REF_SLUG
-  script:
-    - yarn --frozen-lockfile
-    - yarn appsemble config set remote "$CI_ENVIRONMENT_URL"
-    - yarn appsemble config set email "$APPSEMBLE_EMAIL"
-    - yarn appsemble config set password "$APPSEMBLE_PASSWORD"
-    - node -r esm ./config/bin/register.js
-    - yarn appsemble login
-    - yarn appsemble block register blocks/action
-    - yarn appsemble block register blocks/action-button
-    - yarn appsemble block register blocks/detail-viewer
-    - yarn appsemble block register blocks/list
-    - yarn appsemble block register blocks/feed
-    - yarn appsemble block register blocks/filter
-    - yarn appsemble block register blocks/form
-    - yarn appsemble block register blocks/map
-    - yarn appsemble block register blocks/markdown
-    - yarn appsemble block register blocks/splash
-
-# Provision the staging environment with the blocks that were built in the build stage.
-provision staging:
-  <<: *provision
-  only:
-    - master@appsemble/appsemble
-  environment:
-    name: staging
-  dependencies:
-    - build blocks
-    - staging
-
-###################################################################################################
 #  Migrate Stage                                                                                  #
 ###################################################################################################
 
 # Test migrations by Downgrading to latest, then upgrading back to master.
 migrate staging:
+  extends: .helm
   stage: migrate
-  image: *HELM
   only:
     - schedules
-  dependencies: []
   environment:
     name: staging
     url: https://staging.appsemble.app
   script:
-    - helm init --client-only
-    - helm dependency build config/charts/appsemble
     # Downgrade to latest
     - helm upgrade staging config/charts/appsemble
       --atomic
@@ -480,3 +439,31 @@ migrate staging:
       --set "mysql.existingSecret=mysql"
       --set "mysql.fullnameOverride=staging-mysql"
       --set "mysql.persistence.enabled=false"
+
+###################################################################################################
+#  Provision Stage                                                                                #
+###################################################################################################
+
+# Provision the review environment with the blocks that were built in the build stage.
+provision review:
+  extends: .provision
+  only:
+    - merge_requests
+  dependencies:
+    - review
+  environment:
+    name: review/provision/$CI_COMMIT_REF_SLUG
+  before_script:
+    - yarn --frozen-lockfile
+    - yarn appsemble config set remote "$(cat environment-url.txt)"
+
+# Provision the staging environment with the blocks that were built in the build stage.
+provision staging:
+  extends: .provision
+  only:
+    - master@appsemble/appsemble
+  environment:
+    name: staging/provision
+  before_script:
+    - yarn --frozen-lockfile
+    - yarn appsemble config set remote staging.appsemble.app
