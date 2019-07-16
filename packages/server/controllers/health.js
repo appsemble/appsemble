@@ -3,11 +3,10 @@ import Boom from '@hapi/boom';
 
 // eslint-disable-next-line import/prefer-default-export
 export async function checkHealth(ctx) {
-  const { db, mailer } = ctx;
+  const { db } = ctx;
 
   const status = {
     database: true,
-    smtp: true,
   };
 
   try {
@@ -15,13 +14,6 @@ export async function checkHealth(ctx) {
   } catch (err) {
     logger.error(err);
     status.database = false;
-  }
-
-  try {
-    await mailer.verify();
-  } catch (err) {
-    logger.error(err);
-    status.smtp = false;
   }
 
   ctx.body = status;
