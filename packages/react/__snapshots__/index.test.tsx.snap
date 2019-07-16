@@ -25,6 +25,7 @@ exports[`mount should mount the react component 1`] = `
   }
   utils={
     Object {
+      "addCleanup": [Function],
       "showMessage": [Function],
     }
   }
@@ -60,6 +61,7 @@ exports[`withBlock should pass block props to the child element 1`] = `
   }
   utils={
     Object {
+      "addCleanup": [Function],
       "showMessage": [Function],
     }
   }
@@ -89,6 +91,7 @@ exports[`withBlock should pass block props to the child element 1`] = `
       }
       utils={
         Object {
+          "addCleanup": [Function],
           "showMessage": [Function],
         }
       }

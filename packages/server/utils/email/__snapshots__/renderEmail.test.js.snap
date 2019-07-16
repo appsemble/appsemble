@@ -1,0 +1,379 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`emailAdded should render emailAdded 0: html 1`] = `
+"<!doctype html>
+<html lang=\\"en\\">
+<head>
+<meta charset=\\"utf-8\\">
+<title>Email added to account</title>
+<meta name=\\"viewport\\" content=\\"width=device-width, initial-scale=1\\">
+</head>
+<body>
+<p>Hello User,</p>
+<p>You have registered a new email address to your account. In order to make full use of this email, we
+need to verify your email address.</p>
+<p>Please click <a href=\\"https://example.com\\">this link</a> to verify your email address.</p>
+<p><strong>Didn’t request this email?</strong></p>
+<p>No worries! Your address may have been entered by mistake. If you ignore or delete this email,
+nothing will be done with this email address.</p>
+<p>Kind regards,</p>
+<p><em>The Appsemble Team</em></p>
+</body>
+</html>
+"
+`;
+
+exports[`emailAdded should render emailAdded 0: text 1`] = `
+"Hello User,
+
+You have registered a new email address to your account. In order to make full use of this email, we
+need to verify your email address.
+
+Please click [this link](https://example.com) to verify your email address.
+
+**Didn’t request this email?**
+
+No worries! Your address may have been entered by mistake. If you ignore or delete this email,
+nothing will be done with this email address.
+
+Kind regards,
+
+_The Appsemble Team_
+"
+`;
+
+exports[`emailAdded should render emailAdded 1: html 1`] = `
+"<!doctype html>
+<html lang=\\"en\\">
+<head>
+<meta charset=\\"utf-8\\">
+<title>Email added to account</title>
+<meta name=\\"viewport\\" content=\\"width=device-width, initial-scale=1\\">
+</head>
+<body>
+<p>Hello,</p>
+<p>You have registered a new email address to your account. In order to make full use of this email, we
+need to verify your email address.</p>
+<p>Please click <a href=\\"https://example.com\\">this link</a> to verify your email address.</p>
+<p><strong>Didn’t request this email?</strong></p>
+<p>No worries! Your address may have been entered by mistake. If you ignore or delete this email,
+nothing will be done with this email address.</p>
+<p>Kind regards,</p>
+<p><em>The Appsemble Team</em></p>
+</body>
+</html>
+"
+`;
+
+exports[`emailAdded should render emailAdded 1: text 1`] = `
+"Hello,
+
+You have registered a new email address to your account. In order to make full use of this email, we
+need to verify your email address.
+
+Please click [this link](https://example.com) to verify your email address.
+
+**Didn’t request this email?**
+
+No worries! Your address may have been entered by mistake. If you ignore or delete this email,
+nothing will be done with this email address.
+
+Kind regards,
+
+_The Appsemble Team_
+"
+`;
+
+exports[`organizationInvite should render organizationInvite 0: html 1`] = `
+"<!doctype html>
+<html lang=\\"en\\">
+<head>
+<meta charset=\\"utf-8\\">
+<title>Invited to organization</title>
+<meta name=\\"viewport\\" content=\\"width=device-width, initial-scale=1\\">
+</head>
+<body>
+<p>Hello User,</p>
+<p>You have been invited to join the organization <strong>winners</strong>.</p>
+<p>Joining an organization allows you to view private applications as well as create and edit apps
+belonging to an organization.</p>
+<p>You can accept or decline this invitation by following <a href=\\"https://example.com\\">this link</a>.</p>
+<p>Kind regards,</p>
+<p><em>The Appsemble Team</em></p>
+</body>
+</html>
+"
+`;
+
+exports[`organizationInvite should render organizationInvite 0: text 1`] = `
+"Hello User,
+
+You have been invited to join the organization **winners**.
+
+Joining an organization allows you to view private applications as well as create and edit apps
+belonging to an organization.
+
+You can accept or decline this invitation by following [this link](https://example.com).
+
+Kind regards,
+
+_The Appsemble Team_
+"
+`;
+
+exports[`organizationInvite should render organizationInvite 1: html 1`] = `
+"<!doctype html>
+<html lang=\\"en\\">
+<head>
+<meta charset=\\"utf-8\\">
+<title>Invited to organization</title>
+<meta name=\\"viewport\\" content=\\"width=device-width, initial-scale=1\\">
+</head>
+<body>
+<p>Hello,</p>
+<p>You have been invited to join the organization <strong>winners</strong>.</p>
+<p>Joining an organization allows you to view private applications as well as create and edit apps
+belonging to an organization.</p>
+<p>You can accept or decline this invitation by following <a href=\\"https://example.com\\">this link</a>.</p>
+<p>Kind regards,</p>
+<p><em>The Appsemble Team</em></p>
+</body>
+</html>
+"
+`;
+
+exports[`organizationInvite should render organizationInvite 1: text 1`] = `
+"Hello,
+
+You have been invited to join the organization **winners**.
+
+Joining an organization allows you to view private applications as well as create and edit apps
+belonging to an organization.
+
+You can accept or decline this invitation by following [this link](https://example.com).
+
+Kind regards,
+
+_The Appsemble Team_
+"
+`;
+
+exports[`resend should render resend 0: html 1`] = `
+"<!doctype html>
+<html lang=\\"en\\">
+<head>
+<meta charset=\\"utf-8\\">
+<title>Confirm account registration</title>
+<meta name=\\"viewport\\" content=\\"width=device-width, initial-scale=1\\">
+</head>
+<body>
+<p>Hello User,</p>
+<p>Someone has requested to resend the verification key for your account. Before you can use your
+account, we need to verify your email address.</p>
+<p>Please click <a href=\\"https://example.com\\">this link</a> below to verify your email address</p>
+<p><strong>Didn’t request this email?</strong> No worries! Your address may have been entered by mistake. If you
+ignore or delete this email, nothing will happen to your account.</p>
+<p>Kind regards,</p>
+<p><em>The Appsemble Team</em></p>
+</body>
+</html>
+"
+`;
+
+exports[`resend should render resend 0: text 1`] = `
+"Hello User,
+
+Someone has requested to resend the verification key for your account. Before you can use your
+account, we need to verify your email address.
+
+Please click [this link](https://example.com) below to verify your email address
+
+**Didn’t request this email?** No worries! Your address may have been entered by mistake. If you
+ignore or delete this email, nothing will happen to your account.
+
+Kind regards,
+
+_The Appsemble Team_
+"
+`;
+
+exports[`resend should render resend 1: html 1`] = `
+"<!doctype html>
+<html lang=\\"en\\">
+<head>
+<meta charset=\\"utf-8\\">
+<title>Confirm account registration</title>
+<meta name=\\"viewport\\" content=\\"width=device-width, initial-scale=1\\">
+</head>
+<body>
+<p>Hello,</p>
+<p>Someone has requested to resend the verification key for your account. Before you can use your
+account, we need to verify your email address.</p>
+<p>Please click <a href=\\"https://example.com\\">this link</a> below to verify your email address</p>
+<p><strong>Didn’t request this email?</strong> No worries! Your address may have been entered by mistake. If you
+ignore or delete this email, nothing will happen to your account.</p>
+<p>Kind regards,</p>
+<p><em>The Appsemble Team</em></p>
+</body>
+</html>
+"
+`;
+
+exports[`resend should render resend 1: text 1`] = `
+"Hello,
+
+Someone has requested to resend the verification key for your account. Before you can use your
+account, we need to verify your email address.
+
+Please click [this link](https://example.com) below to verify your email address
+
+**Didn’t request this email?** No worries! Your address may have been entered by mistake. If you
+ignore or delete this email, nothing will happen to your account.
+
+Kind regards,
+
+_The Appsemble Team_
+"
+`;
+
+exports[`reset should render reset 0: html 1`] = `
+"<!doctype html>
+<html lang=\\"en\\">
+<head>
+<meta charset=\\"utf-8\\">
+<title>Reset password</title>
+<meta name=\\"viewport\\" content=\\"width=device-width, initial-scale=1\\">
+</head>
+<body>
+<p>Hello User,</p>
+<p>A password reset has been requested for you account. Please click <a href=\\"https://example.com\\">here</a> to reset your
+password.</p>
+<p>Kind regards,</p>
+<p><em>The Appsemble Team</em></p>
+<p><strong>Didn’t request this email?</strong></p>
+<p>Your email address may have been entered by mistake. This email can be ignored safely.</p>
+</body>
+</html>
+"
+`;
+
+exports[`reset should render reset 0: text 1`] = `
+"Hello User,
+
+A password reset has been requested for you account. Please click [here](https://example.com) to reset your
+password.
+
+Kind regards,
+
+_The Appsemble Team_
+
+**Didn’t request this email?**
+
+Your email address may have been entered by mistake. This email can be ignored safely.
+"
+`;
+
+exports[`reset should render reset 1: html 1`] = `
+"<!doctype html>
+<html lang=\\"en\\">
+<head>
+<meta charset=\\"utf-8\\">
+<title>Reset password</title>
+<meta name=\\"viewport\\" content=\\"width=device-width, initial-scale=1\\">
+</head>
+<body>
+<p>Hello,</p>
+<p>A password reset has been requested for you account. Please click <a href=\\"https://example.com\\">here</a> to reset your
+password.</p>
+<p>Kind regards,</p>
+<p><em>The Appsemble Team</em></p>
+<p><strong>Didn’t request this email?</strong></p>
+<p>Your email address may have been entered by mistake. This email can be ignored safely.</p>
+</body>
+</html>
+"
+`;
+
+exports[`reset should render reset 1: text 1`] = `
+"Hello,
+
+A password reset has been requested for you account. Please click [here](https://example.com) to reset your
+password.
+
+Kind regards,
+
+_The Appsemble Team_
+
+**Didn’t request this email?**
+
+Your email address may have been entered by mistake. This email can be ignored safely.
+"
+`;
+
+exports[`welcome should render welcome 0: html 1`] = `
+"<!doctype html>
+<html lang=\\"en\\">
+<head>
+<meta charset=\\"utf-8\\">
+<title>Welcome to Appsemble</title>
+<meta name=\\"viewport\\" content=\\"width=device-width, initial-scale=1\\">
+</head>
+<body>
+<p>Hello User,</p>
+<p>Thank you for registering your account. Before you can use your account, we need to verify your
+email address.</p>
+<p>Please click <a href=\\"https://example.com\\">here</a> to verify your email address.</p>
+<p>Kind regards,</p>
+<p><em>The Appsemble Team</em></p>
+</body>
+</html>
+"
+`;
+
+exports[`welcome should render welcome 0: text 1`] = `
+"Hello User,
+
+Thank you for registering your account. Before you can use your account, we need to verify your
+email address.
+
+Please click [here](https://example.com) to verify your email address.
+
+Kind regards,
+
+_The Appsemble Team_
+"
+`;
+
+exports[`welcome should render welcome 1: html 1`] = `
+"<!doctype html>
+<html lang=\\"en\\">
+<head>
+<meta charset=\\"utf-8\\">
+<title>Welcome to Appsemble</title>
+<meta name=\\"viewport\\" content=\\"width=device-width, initial-scale=1\\">
+</head>
+<body>
+<p>Hello,</p>
+<p>Thank you for registering your account. Before you can use your account, we need to verify your
+email address.</p>
+<p>Please click <a href=\\"https://example.com\\">here</a> to verify your email address.</p>
+<p>Kind regards,</p>
+<p><em>The Appsemble Team</em></p>
+</body>
+</html>
+"
+`;
+
+exports[`welcome should render welcome 1: text 1`] = `
+"Hello,
+
+Thank you for registering your account. Before you can use your account, we need to verify your
+email address.
+
+Please click [here](https://example.com) to verify your email address.
+
+Kind regards,
+
+_The Appsemble Team_
+"
+`;

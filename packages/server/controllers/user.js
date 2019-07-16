@@ -1,8 +1,6 @@
 import Boom from '@hapi/boom';
 import crypto from 'crypto';
 
-import { sendAddedEmail } from '../utils/email';
-
 export async function getUser(ctx) {
   const { User, Organization, EmailAuthorization } = ctx.db.models;
   const { user } = ctx.state;
@@ -82,8 +80,9 @@ export async function updateUser(ctx) {
 }
 
 export async function addEmail(ctx) {
+  const { mailer } = ctx;
   const { User, EmailAuthorization } = ctx.db.models;
-  const { user, smtp } = ctx.state;
+  const { user } = ctx.state;
   const { email } = ctx.request.body;
 
   const dbEmail = await EmailAuthorization.findOne({
@@ -106,14 +105,9 @@ export async function addEmail(ctx) {
   const key = crypto.randomBytes(40).toString('hex');
   await dbUser.createEmailAuthorization({ email, key });
 
-  await sendAddedEmail(
-    {
-      email,
-      name: user.name,
-      url: `${ctx.origin}/_/verify?token=${key}`,
-    },
-    smtp,
-  );
+  await mailer.sendEmail({ email, name: dbUser.name }, 'emailAdded', {
+    url: `${ctx.origin}/_/verify?token=${key}`,
+  });
 
   ctx.status = 201;
 }

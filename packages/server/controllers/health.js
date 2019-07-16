@@ -1,11 +1,9 @@
 import { logger } from '@appsemble/node-utils';
 import Boom from '@hapi/boom';
-import nodemailer from 'nodemailer';
 
 // eslint-disable-next-line import/prefer-default-export
 export async function checkHealth(ctx) {
-  const { db } = ctx;
-  const { smtp } = ctx.state;
+  const { db, mailer } = ctx;
 
   const status = {
     database: true,
@@ -19,9 +17,8 @@ export async function checkHealth(ctx) {
     status.database = false;
   }
 
-  const transport = nodemailer.createTransport(smtp);
   try {
-    await transport.verify();
+    await mailer.verify();
   } catch (err) {
     logger.error(err);
     status.smtp = false;

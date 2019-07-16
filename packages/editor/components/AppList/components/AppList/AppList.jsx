@@ -67,7 +67,7 @@ export default class AppList extends React.Component {
         </div>
         <div className={styles.appList}>
           {filteredApps.map(app => (
-            <AppCard key={app.id} app={app} />
+            <AppCard key={app.id} app={app} isLoggedIn={!!user} />
           ))}
           {user && user.organizations.length >= 1 && <CreateAppCard />}
         </div>
