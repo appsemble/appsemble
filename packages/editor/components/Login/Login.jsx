@@ -41,7 +41,7 @@ export default class Login extends React.Component {
         />
         <div className={styles.links}>
           {window.settings.enableRegistration && (
-            <Link to="/_/register">
+            <Link className={styles.registerLink} to="/_/register">
               <FormattedMessage {...messages.registerLink} />
             </Link>
           )}
