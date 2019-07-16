@@ -4,8 +4,6 @@ import bcrypt from 'bcrypt';
 import crypto from 'crypto';
 import { UniqueConstraintError } from 'sequelize';
 
-import { resendVerificationEmail, sendResetPasswordEmail, sendWelcomeEmail } from '../utils/email';
-
 async function mayRegister({ argv }) {
   if (argv.disableRegistration) {
     throw Boom.forbidden('Registration is disabled');
@@ -29,9 +27,9 @@ async function registerUser(associatedModel, organizationName, transaction, emai
 
 export async function registerEmail(ctx) {
   await mayRegister(ctx);
+  const { mailer } = ctx;
   const { body } = ctx.request;
   const { EmailAuthorization } = ctx.db.models;
-  const { smtp } = ctx.state;
 
   try {
     const password = await bcrypt.hash(body.password, 10);
@@ -41,14 +39,9 @@ export async function registerEmail(ctx) {
       const record = await EmailAuthorization.create({ ...body, key }, { transaction });
       await registerUser(record, body.organization, transaction, record.email, password);
 
-      await sendWelcomeEmail(
-        {
-          email: record.email,
-          name: record.name,
-          url: `${ctx.origin}/_/verify?token=${key}`,
-        },
-        smtp,
-      );
+      await mailer.sendEmail({ email: record.email }, 'welcome', {
+        url: `${ctx.origin}/_/verify?token=${key}`,
+      });
 
       ctx.status = 201;
     });
@@ -134,30 +127,25 @@ export async function verifyEmail(ctx) {
 }
 
 export async function resendEmailVerification(ctx) {
+  const { mailer } = ctx;
   const { email } = ctx.request.body;
   const { EmailAuthorization } = ctx.db.models;
-  const { smtp } = ctx.state;
 
   const record = await EmailAuthorization.findByPk(email, { raw: true });
   if (record && !record.verified) {
-    const { name, key } = record;
-    await resendVerificationEmail(
-      {
-        email,
-        name,
-        url: `${ctx.origin}/_/verify?token=${key}`,
-      },
-      smtp,
-    );
+    const { key } = record;
+    await mailer.sendEmail(record, 'resend', {
+      url: `${ctx.origin}/_/verify?token=${key}`,
+    });
   }
 
   ctx.status = 204;
 }
 
 export async function requestResetPassword(ctx) {
+  const { mailer } = ctx;
   const { email } = ctx.request.body;
   const { EmailAuthorization } = ctx.db.models;
-  const { smtp } = ctx.state;
 
   const emailRecord = await EmailAuthorization.findByPk(email);
 
@@ -167,10 +155,9 @@ export async function requestResetPassword(ctx) {
     const { name } = user;
     const token = crypto.randomBytes(40).toString('hex');
     await user.createResetPasswordToken({ token });
-    await sendResetPasswordEmail(
-      { email, name, url: `${ctx.origin}/_/edit-password?token=${token}` },
-      smtp,
-    );
+    await mailer.sendEmail({ email, name }, 'reset', {
+      url: `${ctx.origin}/_/edit-password?token=${token}`,
+    });
   }
 
   ctx.status = 204;

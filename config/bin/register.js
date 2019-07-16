@@ -9,13 +9,14 @@ import { appsembleServer } from '../../package.json';
  */
 async function main() {
   logger.info('Registering bot user account');
-  const { email, remote, password } = appsembleServer;
+  const { APPSEMBLE_EMAIL, APPSEMBLE_PASSWORD } = process.env;
+  const { remote } = appsembleServer;
   await axios.post(
     '/api/email',
-    { email, password, organization: 'appsemble' },
+    { email: APPSEMBLE_EMAIL, password: APPSEMBLE_PASSWORD, organization: 'appsemble' },
     { baseURL: remote },
   );
-  logger.info(`Registered user ${email}`);
+  logger.info(`Registered user ${APPSEMBLE_EMAIL}`);
 }
 
 main().catch(err => {
