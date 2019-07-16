@@ -160,8 +160,8 @@ export default class Card extends React.Component<
             </header>
           </div>
         </div>
-        {picture && (
-          <div className="card-image">
+        <div className="card-image">
+          {picture && (
             <figure className={styles.figure}>
               <img
                 alt={title || subtitle || heading || description}
@@ -169,34 +169,34 @@ export default class Card extends React.Component<
                 src={`${block.parameters.pictureBase}/${picture}`}
               />
             </figure>
-            {pictures && pictures.length > 1 && (
-              <div className={styles.images}>
-                {pictures.map(p => (
-                  <figure key={p} className={`image is-64x64 ${styles.figure}`}>
-                    <img
-                      alt={title || subtitle || heading || description}
-                      src={`${block.parameters.pictureBase}/${p}`}
-                    />
-                  </figure>
-                ))}
-              </div>
-            )}
-            {(latitude && longitude) != null && (
-              <Location
-                className={styles.location}
-                iconHeight={40}
-                iconUrl={iconUrl}
-                iconWidth={40}
-                latitude={latitude}
-                longitude={longitude}
-                mapOptions={{
-                  dragging: false,
-                  zoomControl: false,
-                }}
-              />
-            )}
-          </div>
-        )}
+          )}
+          {pictures && pictures.length > 1 && (
+            <div className={styles.images}>
+              {pictures.map(p => (
+                <figure key={p} className={`image is-64x64 ${styles.figure}`}>
+                  <img
+                    alt={title || subtitle || heading || description}
+                    src={`${block.parameters.pictureBase}/${p}`}
+                  />
+                </figure>
+              ))}
+            </div>
+          )}
+          {(latitude && longitude) != null && (
+            <Location
+              className={styles.location}
+              iconHeight={40}
+              iconUrl={iconUrl}
+              iconWidth={40}
+              latitude={latitude}
+              longitude={longitude}
+              mapOptions={{
+                dragging: false,
+                zoomControl: false,
+              }}
+            />
+          )}
+        </div>
         <div className={`card-content ${styles.content}`}>
           {description && <p className="content">{description}</p>}
           <div ref={this.replyContainer} className={styles.replies}>
