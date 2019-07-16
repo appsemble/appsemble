@@ -41,6 +41,7 @@ export default class FeedBlock extends React.Component<
       subtitle: createRemapper(parameters.subtitle, { intl }),
       heading: createRemapper(parameters.heading, { intl }),
       picture: createRemapper(parameters.picture, { intl }),
+      pictures: createRemapper(parameters.pictures, { intl }),
       description: createRemapper(parameters.description, { intl }),
       author: createRemapper(parameters.reply.author, { intl }),
       content: createRemapper(parameters.reply.content, { intl }),

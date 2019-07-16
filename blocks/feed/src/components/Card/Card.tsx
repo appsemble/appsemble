@@ -111,13 +111,14 @@ export default class Card extends React.Component<
     const { actions, block, content, intl, remappers } = this.props;
     const { message, replies, valid } = this.state;
 
-    const title = remappers.title(content);
-    const subtitle = remappers.subtitle(content);
-    const heading = remappers.heading(content);
-    const picture = remappers.picture(content);
-    const description = remappers.description(content);
-    const latitude = remappers.latitude(content);
-    const longitude = remappers.longitude(content);
+    const title: string = remappers.title(content);
+    const subtitle: string = remappers.subtitle(content);
+    const heading: string = remappers.heading(content);
+    const picture: string = remappers.picture(content);
+    const pictures: string[] = remappers.pictures(content);
+    const description: string = remappers.description(content);
+    const latitude: number = remappers.latitude(content);
+    const longitude: number = remappers.longitude(content);
 
     let color;
     let icon;
@@ -168,6 +169,18 @@ export default class Card extends React.Component<
                 src={`${block.parameters.pictureBase}/${picture}`}
               />
             </figure>
+            {pictures && pictures.length > 1 && (
+              <div className={styles.images}>
+                {pictures.map(p => (
+                  <figure key={p} className={`image is-64x64 ${styles.figure}`}>
+                    <img
+                      alt={title || subtitle || heading || description}
+                      src={`${block.parameters.pictureBase}/${p}`}
+                    />
+                  </figure>
+                ))}
+              </div>
+            )}
             {(latitude && longitude) != null && (
               <Location
                 className={styles.location}

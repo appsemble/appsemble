@@ -11,6 +11,7 @@ export interface Remappers {
   subtitle: MapperFunction;
   heading: MapperFunction;
   picture: MapperFunction;
+  pictures: MapperFunction;
   description: MapperFunction;
   author: MapperFunction;
   content: MapperFunction;
@@ -26,6 +27,7 @@ export interface BlockParameters {
   subtitle: string;
   heading: string;
   picture: string;
+  pictures: string[];
   description: string;
   author: string;
   content: string;
