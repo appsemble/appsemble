@@ -31,6 +31,16 @@
   position: relative;
 }
 
+.images {
+  display: flex;
+  justify-content: center;
+  padding: 5px;
+}
+
+.images > .figure {
+  margin: 5px;
+}
+
 .location {
   height: 128px;
   max-height: 12vh;

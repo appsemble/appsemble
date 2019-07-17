@@ -111,13 +111,14 @@ export default class Card extends React.Component<
     const { actions, block, content, intl, remappers } = this.props;
     const { message, replies, valid } = this.state;
 
-    const title = remappers.title(content);
-    const subtitle = remappers.subtitle(content);
-    const heading = remappers.heading(content);
-    const picture = remappers.picture(content);
-    const description = remappers.description(content);
-    const latitude = remappers.latitude(content);
-    const longitude = remappers.longitude(content);
+    const title: string = remappers.title(content);
+    const subtitle: string = remappers.subtitle(content);
+    const heading: string = remappers.heading(content);
+    const picture: string = remappers.picture(content);
+    const pictures: string[] = remappers.pictures(content);
+    const description: string = remappers.description(content);
+    const latitude: number = remappers.latitude(content);
+    const longitude: number = remappers.longitude(content);
 
     let color;
     let icon;
@@ -159,8 +160,8 @@ export default class Card extends React.Component<
             </header>
           </div>
         </div>
-        {picture && (
-          <div className="card-image">
+        <div className="card-image">
+          {picture && (
             <figure className={styles.figure}>
               <img
                 alt={title || subtitle || heading || description}
@@ -168,22 +169,34 @@ export default class Card extends React.Component<
                 src={`${block.parameters.pictureBase}/${picture}`}
               />
             </figure>
-            {(latitude && longitude) != null && (
-              <Location
-                className={styles.location}
-                iconHeight={40}
-                iconUrl={iconUrl}
-                iconWidth={40}
-                latitude={latitude}
-                longitude={longitude}
-                mapOptions={{
-                  dragging: false,
-                  zoomControl: false,
-                }}
-              />
-            )}
-          </div>
-        )}
+          )}
+          {pictures && pictures.length > 1 && (
+            <div className={styles.images}>
+              {pictures.map(p => (
+                <figure key={p} className={`image is-64x64 ${styles.figure}`}>
+                  <img
+                    alt={title || subtitle || heading || description}
+                    src={`${block.parameters.pictureBase}/${p}`}
+                  />
+                </figure>
+              ))}
+            </div>
+          )}
+          {(latitude && longitude) != null && (
+            <Location
+              className={styles.location}
+              iconHeight={40}
+              iconUrl={iconUrl}
+              iconWidth={40}
+              latitude={latitude}
+              longitude={longitude}
+              mapOptions={{
+                dragging: false,
+                zoomControl: false,
+              }}
+            />
+          )}
+        </div>
         <div className={`card-content ${styles.content}`}>
           {description && <p className="content">{description}</p>}
           <div ref={this.replyContainer} className={styles.replies}>
