@@ -72,7 +72,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   `fullscreen: true` to the action.
 - App: Rename `splash` action to `dialog`.
 - Block: Add new feed block for showing content similar to social media feeds.
-- Editor: Render a user fiendly error page if an unexpected error occurs.
+- Editor: Render a user friendly error page if an unexpected error occurs.
 - Editor: Report errors to Sentry if this is configured.
 - SDK: Add support for the events API.
 - Server: Add support for the new `static` block layout.
@@ -92,7 +92,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ### Added
 
 - App: Add support for app description field.
-- App: Add ´resource´ action type. This further simplifies the dataflow for retrieving and creating
+- App: Add ´resource´ action type. This further simplifies the data flow for retrieving and creating
   data.
 - App: Add support for building query strings for `resource` and `request` actions.
 - Block: Add List block.
@@ -120,7 +120,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Removed
 
-- Server: Remove the initialize subcommand. It only served to initialize a default user in
+- Server: Remove the initialize sub command. It only served to initialize a default user in
   development. This can now be done easily from the editor.
 
 ### Fixed
@@ -138,7 +138,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ### Changed
 
 - Editor: Add significant changes to the GUI to make it more appealing.
-- Editor: Host the editor on the root URL. Any other paths are available under subpaths of `/_`.
+- Editor: Host the editor on the root URL. Any other paths are available under sub paths of `/_`.
 
 ### Fixed
 
@@ -166,7 +166,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
-- Docker: Publish the appsemble/appsemble image on the public Docker Hub.
+- Docker: Publish the `appsemble/appsemble` image on the public Docker Hub.
 - Editor: Add support for uploading app icons.
 - Frontend: Implement error reporting using Sentry.
 - Frontend: Add logout button in the side menu.

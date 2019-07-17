@@ -10,12 +10,12 @@ Appsemble.
 After logging in a list of apps you can manage will appear, providing direct links to the app itself
 as well as the corresponding editor pages.
 
-From this screen new apps can be created by clicking on the greyed out _”Create new app”_ card.
+From this screen new apps can be created by clicking on the grayed out _”Create new app”_ card.
 
 By clicking on the create app card, a form is presented in which the following attributes can be
 filled in:
 
-**App Name**: This is the name of the app. It determines the url at which the app will be made
+**App Name**: This is the name of the app. It determines the URL at which the app will be made
 available as well as the name that shows up when installing it. Note that app names must be unique.
 
 **Organization**: Each app belongs to an organization. This is used to determine the which rights
@@ -25,7 +25,7 @@ using a dropdown menu.
 
 **App Template**: The template determines what the initial app looks like. This can range from a
 very simple app that does not do very much to a more complex app that is provided with
-authentication, uploading files, et cetera.
+authentication, uploading files, etc.
 
 After filling in these fields and clicking the _”Create App”_ button, Appsemble redirects to the
 editor page corresponding to the newly created app.
@@ -59,7 +59,7 @@ An app definition at the very least contains a name, the path it has been assign
 Each `page` is provided with a name as well as a list of `blocks`.
 
 A `block` is specified by a type as well as a version. The type follows the format of
-`@organization/name`. If the organization is _appsemble_, it may be omitted. A `block` may also have
+`@organization/name`. If the organization is `appsemble`, it may be omitted. A `block` may also have
 other properties such as named parameters and actions. The significance of these fields depends on
 which blocks are being used.
 
@@ -153,10 +153,10 @@ To summarize this page: It contains a `form` block in which various fields of sp
 defined. These fields match up with the resource definition defined before. The form block contains
 two actions. The first action is _”submit”_ which describes where the resource will be submitted to.
 This can be sent to any API, but in this case it's being sent to Appsemble's resource API. Upon a
-succesful submit, the page will link back to the _”Person List”_ page as described in
+successful submit, the page will link back to the _”Person List”_ page as described in
 \_”submitSuccess”.
 
-At this point it might become noticable how navigating through these pages can be cumbersome. One
+At this point it might become noticeable how navigating through these pages can be cumbersome. One
 way to make this easier is to add an `action-button` block to both pages that refer to each other.
 Clicking it results in being redirected to the other page.
 

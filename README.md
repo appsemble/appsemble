@@ -48,7 +48,7 @@ To see additional options, run the following command.
 yarn start --help
 ```
 
-The frontend project can be built using the following command.
+The front end project can be built using the following command.
 
 ```sh
 yarn build
@@ -120,7 +120,7 @@ DATABASE_URL=mysql://root:password@localhost:3306 yarn test
 
 ### Documentation
 
-The Appsemble documentation can be built using Docz. The documentation can be previewed by running
+The Appsemble documentation can be built using `docz`. The documentation can be previewed by running
 the following command.
 
 ```sh

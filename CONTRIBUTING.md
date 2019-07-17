@@ -49,85 +49,85 @@ The project roughly has the following file structure
 ┗━ packages/
 ```
 
-### server
+### `server`
 
-The _server/_ directory holds the code of the server backend. The backend includes an API that uses
-[OpenAPI 2.0][openapi] and logic for the required server side rendering.
+The _server/_ directory holds the code of the server back end. The back end includes an API that
+uses [OpenAPI 2.0][openapi] and logic for the required server side rendering.
 
-#### server/api
+#### `server/api`
 
 This directory contains the [OpenAPI] specification, split into manageable chunks.
 
-#### server/controllers
+#### `server/controllers`
 
 The _controllers/_ directory contains the business logic for each API call. The calls are
 categorized by the resource they apply to.
 
-#### server/middleware
+#### `server/middleware`
 
 This directory holds miscellaneous Koa middlewares.
 
-#### server/models
+#### `server/models`
 
 This directory contains all database model definitions.
 
-#### server/routes
+#### `server/routes`
 
 The _routes/_ directory contains any route definitions that are not related to the REST API. For
 example the loading of browser related app assets.
 
-#### server/templates
+#### `server/templates`
 
 <!-- XXX make this more general purpose -->
 
 This directory contains email templates.
 
-#### server/utils
+#### `server/utils`
 
 The _utils/_ directory contains several uncategorized utility functions. Note that many utility
-functions may already exist in [lodash] or in other popular packages on [npmjs].
+functions may already exist in [`lodash`] or in other popular packages on [npmjs].
 
-### app
+### `app`
 
-The _app/_ directory holds the code of the frontend web app.
+The _app/_ directory holds the code of the front end web app.
 
-#### app/actions
+#### `app/actions`
 
 The _actions_ folder contains the [Redux] code. Each file exposes a series of action creators using
 named exports. The reducer is exported using the default export.
 
 _index.jsx_ re-exports every reducer.
 
-#### app/components
+#### `app/components`
 
 Each React component is defined in its own dedicated directory. The component itself is defined in a
 file named after the component itself. The component is exported through _index.jsx_. If any
-decorators need to be applied to the component, such as Redux’ _connect_ or React Router’s
-_withRouter_, this is typically done in _index.jsx_ as well.
+decorators need to be applied to the component, such as `redux` `connect` or React Router’s
+`withRouter`, this is typically done in _index.jsx_ as well.
 
-CSS modules are used. This allows to define CSS in a _.css_ file on a component level. The CSS for
-each component is defined in a css file named after the component. If the top level node of a
+CSS modules are used. This allows to define CSS in a `.css` file on a component level. The CSS for
+each component is defined in a CSS file named after the component. If the top level node of a
 component is styled, the CSS class should be `root`.
 
 If a component displays any user facing texts, these should be translated. The translations are
 defined in _messages.jsx_. The default locale is always _en-US_.
 
-#### app/service-worker
+#### `app/service-worker`
 
 This contains the service worker that is used by Appsemble. The service worker is shared by all
 apps, and makes sure they work offline.
 
-#### app/utils
+#### `app/utils`
 
 The _utils/_ directory contains several uncategorized utility functions. Note that many utility
-functions may already exist in [lodash] or in other popular packages on [npmjs].
+functions may already exist in [`lodash`] or in other popular packages on [npmjs].
 
-### apps
+### `apps`
 
-Each subdirectory in _apps/_ contains an app definition. At the moment of writing, this consistes
+Each subdirectory in _apps/_ contains an app definition. At the moment of writing, this consists
 merely of an _app.yaml_ file, but more files may be included in the future.
 
-### blocks
+### `blocks`
 
 Each subdirectory in _blocks/_ defines an Appsemble block. Each block consists of a _package.json_,
 which defines some metadata about the block, and the source code.
@@ -136,16 +136,16 @@ Simple blocks are written in vanilla JavaScript. However, if a block gets more c
 used. In this case the same directory structure is used as for the top level _[app/](#app)_
 directory.
 
-### docs
+### `docs`
 
 The _docs_ directory contains documentation that will be rendered on [dev.appsemble.io].
 
-### editor
+### `editor`
 
 This folder holds the source code for the app editor. Since this is another React app, it follows
 the same structure as the app directory.
 
-### packages
+### `packages`
 
 The packages directory contains any reusable packages. These packages may or may not eventually be
 extracted into their own project.
@@ -167,7 +167,7 @@ ruleset, see [stylelint.config.js](./stylelint.config.js).
 ## Testing
 
 Test files are placed in the same location as the file that’s under test, except that the test file
-has a _.test_ postfix. Not everything is tested yet. However, please make sure existing tests keep
+has a _.test_ suffix. Not everything is tested yet. However, please make sure existing tests keep
 working. To run tests, simply run
 
 ```sh
@@ -180,69 +180,12 @@ To run tests for a single file, run
 yarn test path/to/file.test.jsx
 ```
 
-## Committing
-
-Please keep commits small and focused. Only commit the code that is relevant to the change. This
-will make it much more likely the change will get merged.
-
-**Pro tip**: Use `commit add -p`.
-
-The [Angular commit message convention] is used for commit messages. GitLab will reject commits if
-the commit message is too far off.
-
-In short, this means a commit message should use the following layout:
-
-```
-<type>(<scope>): <subject>
-
-<body>
-```
-
-### Type
-
-Type must be one of the following:
-
-- build: Changes that affect the build system or external dependencies. (For example changes to
-  Webpack configurations)
-- ci: Changes to our CI configuration files and scripts. (For example changes to _.gitlab-ci.yml_)
-- docs: Documentation only changes. (For example updates to _README.md_)
-- feat: A new feature.
-- fix: A bug fix.
-- perf: A code change that improves performance.
-- refactor: A code change that neither fixes a bug nor adds a feature. (For example if code is moved
-  to another file, or split into smaller chunks.)
-- style: Changes that do not affect the meaning of the code. (For example if code formatting has
-  changed.)
-- test: Adding missing tests or correcting existing tests.
-
-### Scope
-
-Scope should be one of the following:
-
-- **api**
-- **app**
-- **block**
-- **editor**
-
-If the change doesn’t fit in one of these scopes, or the scope is unclear, it should be omitted.
-
-### Subject
-
-The subject should describe the change in a short line using the imperative tense. The first letter
-should be lower case and the subject should not use punctuation.
-
-### Body
-
-A detailed description of the change. It is recommended to use markdown syntax.
-
 ## Changelog
 
 A changelog is kept following the [keep a changelog] format. Please update it for any notable
 changes.
 
 [airbnb javascript style guide]: https://github.com/airbnb/javascript
-[angular commit message convention]:
-  https://github.com/angular/angular/blob/master/CONTRIBUTING.md#commit
 [css modules]: https://github.com/css-modules/css-modules
 [dev.appsemble.io]: https://dev.appsemble.io
 [eslint]: https://eslint.org

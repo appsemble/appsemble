@@ -55,7 +55,7 @@ Appsemble server is available.
 
 Go to your [GitLab profile applications page](https://gitlab.com/profile/applications).
 
-Add the following redirect URI, where `HOST` is the actual value `HOST` variable.
+Add the following redirect URL, where `HOST` is the actual value `HOST` variable.
 
 ```
 {HOST}/api/oauth/connect/gitlab/callback
