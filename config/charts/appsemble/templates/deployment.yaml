@@ -57,43 +57,43 @@ spec:
               value: {{ . | quote }}
               {{- end }}
             {{- end }}
-            {{- if .Values.smtpSecret }}
+            {{- with .Values.smtpSecret }}
             - name: SMTP_HOST
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.smtpSecret | quote }}
+                  name: {{ . | quote }}
                   key: host
             - name: SMTP_PORT
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.smtpSecret | quote }}
+                  name: {{ . | quote }}
                   key: port
             - name: SMTP_SECURE
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.smtpSecret | quote }}
+                  name: {{ . | quote }}
                   key: secure
             - name: SMTP_USER
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.smtpSecret | quote }}
+                  name: {{ . | quote }}
                   key: user
             - name: SMTP_PASS
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.smtpSecret | quote }}
+                  name: {{ . | quote }}
                   key: pass
             - name: SMTP_FROM
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.smtpSecret | quote }}
+                  name: {{ . | quote }}
                   key: from
             {{- end }}
-            {{- if .Values.sentrySecret }}
+            {{- with .Values.sentrySecret }}
             - name: SENTRY_DSN
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.sentrySecret | quote }}
+                  name: {{ . | quote }}
                   key: dsn
             {{- end }}
       {{- with .Values.nodeSelector }}
