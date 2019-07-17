@@ -41,6 +41,8 @@ affinity: {}
 
 smtpSecret: smtp
 
+sentrySecret: null
+
 migrateTo: {}
 
 mysql:

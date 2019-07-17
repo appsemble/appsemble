@@ -12,6 +12,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - App: Allow to load media from any source.
 - Editor: Allow viewing apps without logging in.
 - Helm: Add health check.
+- Helm: Add support for Sentry.
 - React: Embrace the new `addCleanup` utility function to cleanup React based blocks automatically.
 - SDK: Add a new `addCleanup` utility function.
 - Server: Show the date in logs.
