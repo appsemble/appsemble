@@ -33,20 +33,33 @@ A block used for inputting and submitting sets of data.
 
 Based on the type of field, additional parameters are available.
 
-##### string (default)
+##### `string` (default)
 
-A regular text entry field
+A regular text entry field.
 
 | Parameter            | Description                                                                                 |
 | -------------------- | ------------------------------------------------------------------------------------------- |
 | fields[].placeholder | Placeholder value displayed when field is empty                                             |
 | fields[].multiline   | Boolean value representing whether to use a multline text field or a single line text field |
 
-##### geocoordinates
+##### `number` and `integer`
+
+A number entry field.
+
+Both `number` and `integer` represent numbers with the latter representing whole numbers and the
+former allowing for decimals.
+
+| Parameter     | Description                                                 |
+| ------------- | ----------------------------------------------------------- |
+| fields[].min  | The minimum allowed value                                   |
+| fields[].max  | The maximum allowed value                                   |
+| fields[].step | The size of a step whenever the increment button is pressed |
+
+##### `geocoordinates`
 
 A location picker used to select a location.
 
-##### file
+##### `file`
 
 An input field used to upload files.
 
@@ -55,7 +68,7 @@ An input field used to upload files.
 | fields[].accept   | A list of accepted [MIME-types](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Complete_list_of_MIME_types) |
 | fields[].repeated | Boolean value representing whether to accept one file or multiple files                                                                  |
 
-##### enum
+##### `enum`
 
 A dropdown list containing a list of predetermined values.
 
@@ -63,7 +76,7 @@ A dropdown list containing a list of predetermined values.
 | -------------- | ---------------------------------------------------- |
 | fields[].value | The value and name of the field that can be selected |
 
-#### hidden
+#### `hidden`
 
 A hidden field. This is useful for submitting default values the user may not change.
 

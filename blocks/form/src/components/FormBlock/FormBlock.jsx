@@ -6,6 +6,7 @@ import { FormattedMessage } from 'react-intl';
 import EnumInput from '../EnumInput';
 import FileInput from '../FileInput';
 import GeoCoordinatesInput from '../GeoCoordinatesInput';
+import NumberInput from '../NumberInput';
 import StringInput from '../StringInput';
 import styles from './FormBlock.css';
 import messages from './messages';
@@ -16,6 +17,8 @@ const inputs = {
   geocoordinates: GeoCoordinatesInput,
   hidden: () => null,
   string: StringInput,
+  number: NumberInput,
+  integer: NumberInput,
 };
 
 /**
