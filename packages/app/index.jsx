@@ -21,7 +21,6 @@ if ('serviceWorker' in navigator) {
 }
 
 const composeEnhancers =
-  // eslint-disable-next-line no-underscore-dangle
   (process.env.NODE_ENV !== 'production' && window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__) || compose;
 const store = createStore(combineReducers(reducers), composeEnhancers(applyMiddleware(thunk)));
 
