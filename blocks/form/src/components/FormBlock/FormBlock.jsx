@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 
+import BooleanInput from '../BooleanInput/BooleanInput';
 import EnumInput from '../EnumInput';
 import FileInput from '../FileInput';
 import GeoCoordinatesInput from '../GeoCoordinatesInput';
@@ -19,6 +20,8 @@ const inputs = {
   string: StringInput,
   number: NumberInput,
   integer: NumberInput,
+  boolean: BooleanInput,
+  bool: BooleanInput,
 };
 
 /**
