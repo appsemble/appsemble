@@ -35,18 +35,6 @@ export default class BooleanInput extends React.Component {
 
   render() {
     const { error, field, onChange, value } = this.props;
-    const elementProps = {
-      className: classNames({ 'is-danger': error }),
-      id: field.name,
-      name: field.name,
-      onChange: event => {
-        onChange({ target: { name: field.name } }, event.target.checked);
-      },
-      readOnly: field.readOnly,
-      required: field.required,
-      checked: Boolean(value),
-      type: 'checkbox',
-    };
 
     return (
       <div className="field is-horizontal">
@@ -59,7 +47,18 @@ export default class BooleanInput extends React.Component {
           <div className="field">
             <div className="control">
               <label className="checkbox">
-                <input {...elementProps} />
+                <input
+                  checked={!!value}
+                  className={classNames({ 'is-danger': error })}
+                  id={field.name}
+                  name={field.name}
+                  onChange={event => {
+                    onChange(event, event.target.checked);
+                  }}
+                  readOnly={field.readOnly}
+                  required={field.required}
+                  type="checkbox"
+                />
                 {field.labelText || field.label || field.name}
               </label>
               {error && (

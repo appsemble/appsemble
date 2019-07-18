@@ -35,26 +35,6 @@ export default class NumberInput extends React.Component {
 
   render() {
     const { error, field, onChange, value } = this.props;
-    const elementProps = {
-      className: classNames('input', { 'is-danger': error }),
-      id: field.name,
-      min: field.min,
-      max: field.max,
-      step: field.step || field.type === 'integer' ? '1' : 'any',
-      name: field.name,
-      onChange: event => {
-        onChange(
-          { target: { name: field.name } },
-          field.type === 'integer'
-            ? Number.parseInt(event.target.value, 10)
-            : Number.parseFloat(event.target.value),
-        );
-      },
-      placeholder: field.placeholder,
-      readOnly: field.readOnly,
-      required: field.required,
-      value,
-    };
 
     return (
       <div className="field is-horizontal">
@@ -66,7 +46,27 @@ export default class NumberInput extends React.Component {
         <div className="field-body">
           <div className="field">
             <div className="control">
-              {<input type="number" {...elementProps} />}
+              <input
+                className={classNames('input', { 'is-danger': error })}
+                id={field.name}
+                max={field.max}
+                min={field.min}
+                name={field.name}
+                onChange={event => {
+                  onChange(
+                    event,
+                    field.type === 'integer'
+                      ? Math.floor(event.target.valueAsNumber)
+                      : event.target.valueAsNumber,
+                  );
+                }}
+                placeholder={field.placeholder}
+                readOnly={field.readOnly}
+                required={field.required}
+                step={field.step || field.type === 'integer' ? 1 : 'any'}
+                type="number"
+                value={value}
+              />
               {error && (
                 <p className={classNames('help', { 'is-danger': error })}>
                   <FormattedMessage {...messages.invalid} />
