@@ -20,7 +20,7 @@ attach<Parameters, Actions>(({ actions, data }) => {
     loading.src = animationLoop;
   }, ANIMATION_LENGTH);
   const root = <div className={styles.root}>{loading}</div>;
-  actions.load.dispatch(data).then(
+  actions.onLoad.dispatch(data).then(
     response => {
       setTimeout(() => {
         root.replaceChild(
@@ -36,7 +36,7 @@ attach<Parameters, Actions>(({ actions, data }) => {
         root.classList.add(styles.done);
 
         setTimeout(() => {
-          actions.success.dispatch(response);
+          actions.onSuccess.dispatch(response);
         }, 2e3);
       }, 4e3);
     },
@@ -46,7 +46,7 @@ attach<Parameters, Actions>(({ actions, data }) => {
           <button
             className={styles.circle}
             onclick={() => {
-              actions.error.dispatch({});
+              actions.onError.dispatch({});
             }}
             type="button"
           >

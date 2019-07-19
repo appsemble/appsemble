@@ -57,7 +57,7 @@ export default class FeedBlock extends React.Component<
         });
       });
     } else {
-      const data = await actions.load.dispatch();
+      const data = await actions.onLoad.dispatch();
       this.setState({
         data,
         loading: false,

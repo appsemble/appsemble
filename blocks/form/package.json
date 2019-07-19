@@ -7,10 +7,10 @@
   },
   "appsemble": {
     "actions": {
-      "submit": {
+      "onSubmit": {
         "required": true
       },
-      "submitSuccess": {}
+      "onSubmitSuccess": {}
     },
     "output": "dist"
   },

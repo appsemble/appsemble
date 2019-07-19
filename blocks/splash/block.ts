@@ -5,15 +5,15 @@ export interface Actions {
   /**
    * This action is dispatched with the given data.
    */
-  load: {};
+  onLoad: {};
 
   /**
    * This action is dispatched if the load action has failed.
    */
-  error: {};
+  onError: {};
 
   /**
    * This action is dispatched if the load action was successful.
    */
-  success: {};
+  onSuccess: {};
 }

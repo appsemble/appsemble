@@ -18,7 +18,7 @@ attach(({ actions, block, data, events, pageParameters, shadowRoot, utils }) => 
     'click',
     event => {
       event.preventDefault();
-      actions.click.dispatch();
+      actions.onClick.dispatch();
     },
     true,
   );

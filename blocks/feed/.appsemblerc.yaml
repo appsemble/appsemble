@@ -1,7 +1,7 @@
 actions:
-  avatarClick: {}
-  load: {}
-  submitReply: {}
-  loadReply: {}
+  onAvatarClick: {}
+  onLoad: {}
+  onSubmitReply: {}
+  onLoadReply: {}
 
 output: dist

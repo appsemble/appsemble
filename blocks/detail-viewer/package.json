@@ -7,7 +7,7 @@
   },
   "appsemble": {
     "actions": {
-      "load": {
+      "onLoad": {
         "required": true
       }
     },

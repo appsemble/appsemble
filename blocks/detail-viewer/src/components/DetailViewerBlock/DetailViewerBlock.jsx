@@ -40,7 +40,7 @@ export default class DetailViewerBlock extends React.Component {
   async componentDidMount() {
     const { actions, pageParameters } = this.props;
 
-    const data = await actions.load.dispatch(pageParameters);
+    const data = await actions.onLoad.dispatch(pageParameters);
     this.setState({ data });
   }
 

@@ -3,14 +3,14 @@ import './index.css';
 import { attach } from '@appsemble/sdk';
 
 interface BlockActions {
-  click: {};
+  onClick: {};
 }
 
 attach<{}, BlockActions>(({ actions, data }) => {
   let node;
-  if (actions.click.type === 'link') {
+  if (actions.onClick.type === 'link') {
     node = document.createElement('a');
-    node.href = actions.click.href();
+    node.href = actions.onClick.href();
   } else {
     node = document.createElement('button');
     node.type = 'button';
@@ -20,7 +20,7 @@ attach<{}, BlockActions>(({ actions, data }) => {
     'click',
     event => {
       event.preventDefault();
-      actions.click.dispatch(data);
+      actions.onClick.dispatch(data);
     },
     true,
   );
