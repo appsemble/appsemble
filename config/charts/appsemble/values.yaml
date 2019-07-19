@@ -41,7 +41,7 @@ affinity: {}
 
 smtpSecret: smtp
 
-sentrySecret: null
+sentrySecret: {}
 
 migrateTo: {}
 
