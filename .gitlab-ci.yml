@@ -123,7 +123,7 @@ helm lint:
       - branches
       - merge_requests
     changes:
-      - config/charts/**
+      - config/charts/**/*.*
   script:
     - helm lint --strict config/charts/*
 

@@ -11,6 +11,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 - App: Allow to load media from any source.
 - App: Prepend every action with `on`, for example: `click` → `onClick`.
+- Block: Add support for `number`, `integer`, and `boolean` input types in form block.
 - Editor: Allow viewing apps without logging in.
 - Helm: Add health check.
 - Helm: Add support for Sentry.

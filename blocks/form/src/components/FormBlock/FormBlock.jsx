@@ -3,9 +3,11 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 
+import BooleanInput from '../BooleanInput';
 import EnumInput from '../EnumInput';
 import FileInput from '../FileInput';
 import GeoCoordinatesInput from '../GeoCoordinatesInput';
+import NumberInput from '../NumberInput';
 import StringInput from '../StringInput';
 import styles from './FormBlock.css';
 import messages from './messages';
@@ -16,6 +18,10 @@ const inputs = {
   geocoordinates: GeoCoordinatesInput,
   hidden: () => null,
   string: StringInput,
+  number: NumberInput,
+  integer: NumberInput,
+  boolean: BooleanInput,
+  bool: BooleanInput,
 };
 
 /**
