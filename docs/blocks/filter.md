@@ -13,7 +13,7 @@ A block that can filter data and pass it to other blocks using the event API.
 
 | Action | Required | Description                                                                                                |
 | ------ | -------- | ---------------------------------------------------------------------------------------------------------- |
-| load   | true     | Action that gets dispatched when a new filter gets applied. This also gets called during the initial load. |
+| onLoad | true     | Action that gets dispatched when a new filter gets applied. This also gets called during the initial load. |
 
 ## Parameters
 
