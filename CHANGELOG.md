@@ -10,6 +10,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ### Added
 
 - App: Allow to load media from any source.
+- App: Prepend every action with `on`, for example: `click` → `onClick`.
 - Editor: Allow viewing apps without logging in.
 - Helm: Add health check.
 - Helm: Add support for Sentry.
