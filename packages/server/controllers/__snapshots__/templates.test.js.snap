@@ -12,7 +12,7 @@ Object {
       "blocks": Array [
         Object {
           "actions": Object {
-            "click": Object {
+            "onClick": Object {
               "to": "Example Page B",
               "type": "link",
             },
@@ -27,7 +27,7 @@ Object {
       "blocks": Array [
         Object {
           "actions": Object {
-            "click": Object {
+            "onClick": Object {
               "to": "Example Page A",
               "type": "link",
             },
@@ -53,7 +53,7 @@ pages:
       - type: action-button
         version: 0.8.1
         actions:
-          click:
+          onClick:
             type: link
             to: Example Page B
   - name: Example Page B
@@ -61,7 +61,7 @@ pages:
       - type: action-button
         version: 0.8.1
         actions:
-          click:
+          onClick:
             type: link
             to: Example Page A
 description: This is a test app
