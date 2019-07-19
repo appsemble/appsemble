@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import BooleanInput from '../BooleanInput/BooleanInput';
+import BooleanInput from '../BooleanInput';
 import EnumInput from '../EnumInput';
 import FileInput from '../FileInput';
 import GeoCoordinatesInput from '../GeoCoordinatesInput';
