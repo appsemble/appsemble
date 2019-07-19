@@ -100,11 +100,11 @@ export default {
               ],
             },
             actions: {
-              submit: {
+              onsubmit: {
                 type: 'resource.create',
                 resource: 'litter',
               },
-              submitSuccess: {
+              onSubmitSuccess: {
                 type: 'link',
                 to: 'Litter Overview',
               },
@@ -123,11 +123,11 @@ export default {
               longitude: 'location.longitude',
             },
             actions: {
-              markerClick: {
+              onMarkerClick: {
                 to: 'Litter details',
                 type: 'link',
               },
-              load: {
+              onLoad: {
                 type: 'resource.query',
                 resource: 'litter',
                 query: {
@@ -141,7 +141,7 @@ export default {
             type: 'action-button',
             version: '0.8.1',
             actions: {
-              click: {
+              onClick: {
                 to: 'Report litter',
                 type: 'link',
               },
@@ -183,7 +183,7 @@ export default {
               ],
             },
             actions: {
-              load: {
+              onLoad: {
                 type: 'resource.get',
                 resource: 'litter',
               },

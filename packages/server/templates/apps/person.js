@@ -48,11 +48,11 @@ export default {
               ],
             },
             actions: {
-              click: {
+              onClick: {
                 to: 'Person Details',
                 type: 'link',
               },
-              load: {
+              onLoad: {
                 type: 'resource.query',
                 resource: 'person',
               },
@@ -62,7 +62,7 @@ export default {
             type: 'action-button',
             version: '0.8.1',
             actions: {
-              click: {
+              onClick: {
                 to: 'Person Registration Form',
                 type: 'link',
               },
@@ -77,11 +77,11 @@ export default {
             type: 'form',
             version: '0.8.1',
             actions: {
-              submit: {
+              onSubmit: {
                 type: 'resource.create',
                 resource: 'person',
               },
-              submitSuccess: {
+              onSubmitSuccess: {
                 to: 'Person List',
                 type: 'link',
               },
@@ -122,7 +122,7 @@ export default {
             type: 'detail-viewer',
             version: '0.8.1',
             actions: {
-              load: {
+              onLoad: {
                 type: 'resource.get',
                 resource: 'person',
               },
