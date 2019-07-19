@@ -17,7 +17,7 @@ export default async function indexHandler(ctx) {
   const reportUri = sentryDsnToReportUri(sentryDsn);
   const csp = {
     'report-uri': [reportUri],
-    'connect-src': ['*'],
+    'connect-src': ['*', 'blob:', 'data:'],
     'default-src': ["'self'"],
     'script-src': [
       "'self'",
