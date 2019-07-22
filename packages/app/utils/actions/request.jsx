@@ -29,20 +29,24 @@ export default function request({
         let body;
 
         if (serialize && serialize === 'formdata') {
-          body = new FormData();
+          const form = new FormData();
           Object.entries(data).forEach((key, value) => {
             switch (typeof value) {
               case 'object': {
                 switch (value.constructor.name) {
+                  case 'Array': {
+                    value.forEach(item => form.append(key, item));
+                    break;
+                  }
                   case 'Date':
-                    body[key] = String(value);
+                    form.set(key, String(value));
                     break;
                   case 'Blob':
                   case 'ArrayBuffer':
-                    body[key] = value;
+                    form.set(key, value);
                     break;
                   default:
-                    body[key] = JSON.stringify(value);
+                    form.set(key, JSON.stringify(value));
                 }
                 break;
               }
@@ -51,9 +55,11 @@ export default function request({
               case 'number':
               case 'symbol':
               default:
-                body[key] = String(value);
+                form.set(key, String(value));
             }
           });
+
+          body = form;
         } else {
           switch (blobs.type) {
             case 'upload': {
