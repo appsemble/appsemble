@@ -39,8 +39,10 @@ export default function request({
                     break;
                   case 'Blob':
                   case 'ArrayBuffer':
-                  default:
                     body[key] = value;
+                    break;
+                  default:
+                    body[key] = JSON.stringify(value);
                 }
                 break;
               }
