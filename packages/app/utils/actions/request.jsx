@@ -5,7 +5,7 @@ import axios from 'axios';
 import uploadBlobs from '../uploadBlobs';
 
 export default function request({
-  definition: { blobs = {}, method = 'GET', schema, query, url },
+  definition: { blobs = {}, method = 'GET', schema, query, url, serialize },
 }) {
   const regex = /{(.+?)}/g;
   const mappers = url
@@ -27,13 +27,40 @@ export default function request({
 
       if (methodUpper === 'PUT' || methodUpper === 'POST' || methodUpper === 'PATCH') {
         let body;
-        switch (blobs.type) {
-          case 'upload': {
-            body = await uploadBlobs(data, blobs);
-            break;
+
+        if (serialize && serialize === 'formdata') {
+          body = new FormData();
+          Object.entries(data).forEach((key, value) => {
+            switch (typeof value) {
+              case 'object': {
+                switch (value.constructor.name) {
+                  case 'Date':
+                    body[key] = String(value);
+                    break;
+                  case 'Blob':
+                  case 'ArrayBuffer':
+                  default:
+                    body[key] = value;
+                }
+                break;
+              }
+              case 'boolean':
+              case 'string':
+              case 'number':
+              case 'symbol':
+              default:
+                body[key] = String(value);
+            }
+          });
+        } else {
+          switch (blobs.type) {
+            case 'upload': {
+              body = await uploadBlobs(data, blobs);
+              break;
+            }
+            default:
+              body = data;
           }
-          default:
-            body = data;
         }
 
         if (schema) {
