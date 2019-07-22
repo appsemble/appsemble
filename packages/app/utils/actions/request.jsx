@@ -29,38 +29,29 @@ export default function request({
         let body;
 
         if (serialize && serialize === 'formdata') {
-          const form = new FormData();
-          Object.entries(data).forEach(([key, value]) => {
-            switch (typeof value) {
-              case 'object': {
-                switch (value.constructor.name) {
-                  case 'Array': {
-                    value.forEach(item => form.append(key, item));
-                    break;
-                  }
-                  case 'Date':
-                    form.set(key, String(value));
-                    break;
-                  case 'Blob':
-                  case 'ArrayBuffer':
-                  case 'File':
-                    form.set(key, value);
-                    break;
-                  default:
-                    form.set(key, JSON.stringify(value));
-                }
-                break;
-              }
-              case 'boolean':
-              case 'string':
-              case 'number':
-              case 'symbol':
-              default:
-                form.set(key, String(value));
+          const formData = new FormData();
+
+          const processFormData = (form, key, value) => {
+            if (value instanceof Blob) {
+              form.append(key, value);
+            } else if (Array.isArray(value)) {
+              value.forEach(item => {
+                // Recursively iterate over values
+                processFormData(form, key, item);
+              });
+            } else if (value instanceof Object) {
+              form.append(key, JSON.stringify(value));
+            } else {
+              // Primitives
+              form.append(key, value);
             }
+          };
+
+          Object.entries(data).forEach(([key, value]) => {
+            processFormData(formData, key, value);
           });
 
-          body = form;
+          body = formData;
         } else {
           switch (blobs.type) {
             case 'upload': {
