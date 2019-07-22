@@ -43,6 +43,7 @@ export default function request({
                     break;
                   case 'Blob':
                   case 'ArrayBuffer':
+                  case 'File':
                     form.set(key, value);
                     break;
                   default:
