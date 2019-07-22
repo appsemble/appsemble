@@ -30,7 +30,7 @@ export default function request({
 
         if (serialize && serialize === 'formdata') {
           const form = new FormData();
-          Object.entries(data).forEach((key, value) => {
+          Object.entries(data).forEach(([key, value]) => {
             switch (typeof value) {
               case 'object': {
                 switch (value.constructor.name) {
