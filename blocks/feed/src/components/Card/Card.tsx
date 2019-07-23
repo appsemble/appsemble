@@ -44,7 +44,7 @@ export default class Card extends React.Component<
 
   state: CardState = {
     message: '',
-    replies: [],
+    replies: undefined,
     valid: false,
   };
 
@@ -53,10 +53,12 @@ export default class Card extends React.Component<
     const parentId =
       (block.parameters && block.parameters.reply && block.parameters.reply.parentId) || 'parentId';
 
-    const replies = await actions.onLoadReply.dispatch({
-      $filter: `${parentId} eq '${content.id}'`,
-    });
-    this.setState({ replies });
+    if (actions.onLoadReply.type !== 'noop') {
+      const replies = await actions.onLoadReply.dispatch({
+        $filter: `${parentId} eq '${content.id}'`,
+      });
+      this.setState({ replies });
+    }
   }
 
   onAvatarClick: React.MouseEventHandler = async event => {
@@ -201,42 +203,46 @@ export default class Card extends React.Component<
         </div>
         <div className={`card-content ${styles.content}`}>
           {description && <p className="content">{description}</p>}
-          <div ref={this.replyContainer} className={styles.replies}>
-            {replies.map(reply => {
-              const author = remappers.author(reply);
-              const replyContent = remappers.content(reply);
-              return (
-                <div key={reply.id} className="content">
-                  <h6 className="is-marginless">
-                    {author || intl.formatMessage(messages.anonymous)}
-                  </h6>
-                  <p>{replyContent}</p>
-                </div>
-              );
-            })}
-          </div>
-          <form className={styles.replyForm} noValidate onSubmit={this.onSubmit}>
-            <input
-              className="input"
-              onChange={this.onChange}
-              placeholder={intl.formatMessage(messages.reply)}
-              required
-              value={message}
-            />
-            {/* eslint-disable-next-line no-inline-comments */}
-            {/* onSubmit is not used because of buggy interactions with ShadowDOM, React.
+          {replies !== undefined && (
+            <React.Fragment>
+              <div ref={this.replyContainer} className={styles.replies}>
+                {replies.map(reply => {
+                  const author = remappers.author(reply);
+                  const replyContent = remappers.content(reply);
+                  return (
+                    <div key={reply.id} className="content">
+                      <h6 className="is-marginless">
+                        {author || intl.formatMessage(messages.anonymous)}
+                      </h6>
+                      <p>{replyContent}</p>
+                    </div>
+                  );
+                })}
+              </div>
+              <form className={styles.replyForm} noValidate onSubmit={this.onSubmit}>
+                <input
+                  className="input"
+                  onChange={this.onChange}
+                  placeholder={intl.formatMessage(messages.reply)}
+                  required
+                  value={message}
+                />
+                {/* eslint-disable-next-line no-inline-comments */}
+                {/* onSubmit is not used because of buggy interactions with ShadowDOM, React.
                 See: https://github.com/spring-media/react-shadow-dom-retarget-events/issues/13 */}
-            <button
-              className={`button ${styles.replyButton}`}
-              disabled={!valid}
-              onClick={this.onClick}
-              type="button"
-            >
-              <span className="icon is-small">
-                <i className="fas fa-paper-plane" />
-              </span>
-            </button>
-          </form>
+                <button
+                  className={`button ${styles.replyButton}`}
+                  disabled={!valid}
+                  onClick={this.onClick}
+                  type="button"
+                >
+                  <span className="icon is-small">
+                    <i className="fas fa-paper-plane" />
+                  </span>
+                </button>
+              </form>
+            </React.Fragment>
+          )}
         </div>
       </article>
     );
