@@ -36,15 +36,15 @@ function query({ definition: { resource: name, query: queryParams }, app }) {
   });
 }
 
-function create({ definition: { resource: name }, app }) {
+function create({ definition: { resource: name, serialize }, app }) {
   const { schema, ...resource } = app.resources[name];
   const method = resource?.create?.method || 'POST';
   const url = resource?.create?.url || resource.url || `/api/apps/${app.id}/resources/${name}`;
 
-  return request({ definition: { blobs: getBlobs(resource), method, url, schema } });
+  return request({ definition: { blobs: getBlobs(resource), method, url, schema, serialize } });
 }
 
-function update({ definition: { resource: name, query: params }, app }) {
+function update({ definition: { resource: name, query: params, serialize }, app }) {
   const { schema, ...resource } = app.resources[name];
   const method = resource?.update?.method || 'PUT';
   const url = resource?.update?.url || resource.url || `/api/apps/${app.id}/resources/${name}`;
@@ -57,11 +57,12 @@ function update({ definition: { resource: name, query: params }, app }) {
       url: `${url}${!url.endsWith('/') && '/'}{${id}}`,
       query: params,
       schema,
+      serialize,
     },
   });
 }
 
-function remove({ definition: { resource: name, query: params }, app }) {
+function remove({ definition: { resource: name, query: params, serialize }, app }) {
   const { schema, ...resource } = app.resources[name];
   const method = resource?.delete?.method || 'DELETE';
   const url = resource?.delete?.url || resource.url || `/api/apps/${app.id}/resources/${name}`;
@@ -74,6 +75,7 @@ function remove({ definition: { resource: name, query: params }, app }) {
       url: `${url}${!url.endsWith('/') && '/'}{${id}}`,
       query: params,
       schema,
+      serialize,
     },
   });
 }
