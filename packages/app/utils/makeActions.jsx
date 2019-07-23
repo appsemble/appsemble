@@ -34,6 +34,32 @@ export default function makeActions(
       showDialog,
       events,
       flowActions,
+      ...((type === 'request' || type.startsWith('resource.')) &&
+        definition.onSuccess &&
+        definition.onSuccess.type && {
+          onSuccess: actionCreators[definition.onSuccess.type]({
+            definition: definition.onSuccess,
+            app,
+            context,
+            history,
+            showDialog,
+            events,
+            flowActions,
+          }),
+        }),
+      ...((type === 'request' || type.startsWith('resource.')) &&
+        definition.onError &&
+        definition.onError.type && {
+          onError: actionCreators[definition.onError.type]({
+            definition: definition.onError,
+            app,
+            context,
+            history,
+            showDialog,
+            events,
+            flowActions,
+          }),
+        }),
     });
     const { dispatch } = action;
     if (definition && Object.hasOwnProperty.call(definition, 'remap')) {
