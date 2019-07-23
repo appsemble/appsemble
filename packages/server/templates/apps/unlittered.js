@@ -100,7 +100,7 @@ export default {
               ],
             },
             actions: {
-              onsubmit: {
+              onSubmit: {
                 type: 'resource.create',
                 resource: 'litter',
               },
