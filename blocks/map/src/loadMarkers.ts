@@ -31,7 +31,7 @@ export default async function loadMarkers(
   get: LatLngMapper,
   data: any,
 ): Promise<void> {
-  const markers: BlockMarker[] = await actions.load.dispatch({
+  const markers: BlockMarker[] = await actions.onLoad.dispatch({
     $filter: makeFilter(
       [parameters.latitude || 'latitude', parameters.longitude || 'longitude'],
       map.getBounds(),
@@ -62,7 +62,7 @@ export default async function loadMarkers(
               iconAnchor: new Point(MARKER_ICON_WIDTH / 2, MARKER_ICON_HEIGHT),
             }),
     })
-      .on('click', actions.markerClick.dispatch.bind(null, marker))
+      .on('click', actions.onMarkerClick.dispatch.bind(null, marker))
       .addTo(map);
   });
 }

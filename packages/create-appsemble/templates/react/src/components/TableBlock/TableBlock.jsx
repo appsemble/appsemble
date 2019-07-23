@@ -17,7 +17,7 @@ export default class TableBlock extends React.Component {
 
   async componentDidMount() {
     const { actions } = this.props;
-    const data = await actions.load.dispatch();
+    const data = await actions.onLoad.dispatch();
 
     this.setState({ data });
   }

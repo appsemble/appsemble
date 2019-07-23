@@ -1,7 +1,7 @@
 actions:
-  load:
+  onLoad:
     required: true
-  click:
+  onClick:
     required: false
 
 output: dist

@@ -68,7 +68,7 @@ pages:
       - type: '@org/test'
         version: 0.0.0
         actions:
-          click:
+          onClick:
             type: link
             to: Other Page
   - name: Other Page
@@ -76,7 +76,7 @@ pages:
       - type: '@org/test'
         version: 0.0.0
         actions:
-          click:
+          onClick:
             type: link
             to: Home
 ```
@@ -114,7 +114,7 @@ pages:
         parameters:
           text: Go to the other page.
         actions:
-          click:
+          onClick:
             type: link
             to: Other Page
   - name: Other Page
@@ -124,7 +124,7 @@ pages:
         parameters:
           text: Go to the home page.
         actions:
-          click:
+          onClick:
             type: link
             to: Home
 ```
@@ -150,8 +150,8 @@ Let’s to a little rewrite of our block.
       'click',
       event => {
         event.preventDefault();
--       actions.click.dispatch();
-+       actions.click.dispatch(block.parameters);
+-       actions.onClick.dispatch();
++       actions.onClick.dispatch(block.parameters);
       },
       true,
     );
@@ -177,9 +177,9 @@ add a delay and a message when the user is navigating to the other page.
     'click',
     event => {
       event.preventDefault();
--     actions.click.dispatch(block.parameters);
+-     actions.onClick.dispatch(block.parameters);
 +     utils.showMessage('Handling click actions in 5 seconds…');
-+     setTimeout(() => actions.click.dispatch(block.parameters), 5000);
++     setTimeout(() => actions.onClick.dispatch(block.parameters), 5000);
     },
     true,
   );
@@ -211,7 +211,7 @@ so the click event will emit a `button-click` event instead. We’ll also add a 
         event.preventDefault();
 +       events.emit('button-click', block.parameters);
 -       utils.showMessage('Handling click actions in 5 seconds…');
--       setTimeout(() => actions.click.dispatch(block.parameters), 5000);
+-       setTimeout(() => actions.onClick.dispatch(block.parameters), 5000);
       },
       true,
     );

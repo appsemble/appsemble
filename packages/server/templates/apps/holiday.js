@@ -11,7 +11,7 @@ export default {
           {
             type: 'list',
             actions: {
-              load: {
+              onLoad: {
                 url:
                   'https://cors-anywhere.herokuapp.com/https://date.nager.at/Api/v2/NextPublicHolidays/NL',
                 type: 'request',
@@ -43,7 +43,7 @@ export default {
           {
             type: 'list',
             actions: {
-              load: {
+              onLoad: {
                 url:
                   'https://cors-anywhere.herokuapp.com/https://date.nager.at/Api/v2/NextPublicHolidays/US',
                 type: 'request',
@@ -71,7 +71,7 @@ export default {
           {
             type: 'list',
             actions: {
-              load: {
+              onLoad: {
                 url:
                   'https://cors-anywhere.herokuapp.com/https://date.nager.at/Api/v2/NextPublicHolidays/DE',
                 type: 'request',
@@ -103,7 +103,7 @@ export default {
           {
             type: 'list',
             actions: {
-              load: {
+              onLoad: {
                 url:
                   'https://cors-anywhere.herokuapp.com/https://date.nager.at/Api/v2/NextPublicHolidays/ES',
                 type: 'request',

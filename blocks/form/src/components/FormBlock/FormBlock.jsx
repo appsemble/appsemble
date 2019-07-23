@@ -71,13 +71,13 @@ export default class FormBlock extends React.Component {
 
     this.setState(({ submitting, values }, { actions }) => {
       if (!submitting) {
-        actions.submit
+        actions.onSubmit
           .dispatch(values)
           .then(() => {
             this.setState({
               submitting: false,
             });
-            return actions.submitSuccess.dispatch(values);
+            return actions.onSubmitSuccess.dispatch(values);
           })
           .catch(error => {
             if (error.message !== 'Schema Validation Failed') {

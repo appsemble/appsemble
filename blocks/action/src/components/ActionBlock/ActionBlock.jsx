@@ -28,10 +28,10 @@ export default class ActionBlock extends React.Component {
         ...data,
         [field.name]: field.enum?.length ? event.target.value : field.value,
       };
-      await actions.submit.dispatch(updatedResource);
-      await actions.success.dispatch(updatedResource);
+      await actions.onSubmit.dispatch(updatedResource);
+      await actions.onSuccess.dispatch(updatedResource);
     } catch (ex) {
-      await actions.error.dispatch(ex);
+      await actions.onError.dispatch(ex);
     }
   };
 

@@ -36,8 +36,8 @@ export interface BlockParameters {
 }
 
 export interface BlockActions {
-  avatarClick: any;
-  submitReply: any;
-  load: any;
-  loadReply: any;
+  onAvatarClick: any;
+  onSubmitReply: any;
+  onLoad: any;
+  onLoadReply: any;
 }

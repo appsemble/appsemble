@@ -93,7 +93,7 @@ export default class FilterBlock extends React.Component {
 
     const $filter = toOData(fields, { ...convertedFilter, ...filterParams });
 
-    return actions.load.dispatch({
+    return actions.onLoad.dispatch({
       ...($filter && { $filter }),
     });
   };

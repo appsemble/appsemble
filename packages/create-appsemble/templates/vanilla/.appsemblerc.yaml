@@ -1,4 +1,4 @@
 actions:
-  click: {}
+  onClick: {}
 
 output: dist

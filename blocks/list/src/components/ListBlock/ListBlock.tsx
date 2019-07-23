@@ -17,8 +17,8 @@ interface BlockParameters {
 }
 
 interface BlockActions {
-  load: {};
-  click: {};
+  onLoad: {};
+  onClick: {};
 }
 
 interface Item {
@@ -41,7 +41,7 @@ export default class ListBlock extends React.Component<
     const { actions } = this.props;
 
     try {
-      const data = await actions.load.dispatch();
+      const data = await actions.onLoad.dispatch();
       this.setState({ data, loading: false });
     } catch (e) {
       this.setState({ error: true, loading: false });
@@ -51,8 +51,8 @@ export default class ListBlock extends React.Component<
   onClick(item: Item): void {
     const { actions } = this.props;
 
-    if (actions.click) {
-      actions.click.dispatch(item);
+    if (actions.onClick) {
+      actions.onClick.dispatch(item);
     }
   }
 
@@ -86,7 +86,7 @@ export default class ListBlock extends React.Component<
           {data.map((item, dataIndex) => (
             <tr
               key={item.id || dataIndex}
-              className={actions.click.type !== 'noop' ? styles.clickable : undefined}
+              className={actions.onClick.type !== 'noop' ? styles.clickable : undefined}
               onClick={() => this.onClick(item)}
             >
               {fields.map(field => {

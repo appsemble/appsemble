@@ -16,7 +16,7 @@ export default {
             type: 'action-button',
             version: '0.8.1',
             actions: {
-              click: {
+              onClick: {
                 type: 'link',
                 to: 'Example Page B',
               },
@@ -31,7 +31,7 @@ export default {
             type: 'action-button',
             version: '0.8.1',
             actions: {
-              click: {
+              onClick: {
                 type: 'link',
                 to: 'Example Page A',
               },

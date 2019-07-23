@@ -119,19 +119,19 @@ pages:
                 - image/jpeg
               repeated: true
         actions:
-          submit:
+          onSubmit:
             type: dialog
             fullscreen: true
             blocks:
               - type: '@amsterdam/splash'
                 version: 0.8.1
                 actions:
-                  load:
+                  onLoad:
                     type: resource.create
                     resource: waarneming
-                  error:
+                  onError:
                     type: dialog.error
-                  success:
+                  onSuccess:
                     type: link
                     to: Overzichtskaart
 
@@ -145,10 +145,10 @@ pages:
           latitude: locatie.latitude
           longitude: locatie.longitude
         actions:
-          markerClick:
+          onMarkerClick:
             type: link
             to: Waarneming details
-          load:
+          onLoad:
             type: resource.query
             resource: waarneming
             query:
@@ -157,7 +157,7 @@ pages:
       - type: action-button
         version: 0.8.1
         actions:
-          click:
+          onClick:
             type: link
             to: Maak waarneming
 
@@ -194,7 +194,7 @@ pages:
                 - value: opgelost
                   label: Opgelost
         actions:
-          load:
+          onLoad:
             type: resource.query
             resource: waarneming
             query:
@@ -218,24 +218,24 @@ pages:
           longitude: locatie.longitude
           latitude: locatie.latitude
         actions:
-          loadReply:
+          onLoadReply:
             type: resource.query
             resource: waarnemingReply
-          submitReply:
+          onSubmitReply:
             type: resource.create
             resource: waarnemingReply
-          avatarClick:
+          onAvatarClick:
             type: dialog
             blocks:
               - type: '@amsterdam/action'
                 version: 0.8.1
                 actions:
-                  submit:
+                  onSubmit:
                     type: resource.update
                     resource: waarneming
-                  success:
+                  onSuccess:
                     type: dialog.ok
-                  error:
+                  onError:
                     type: dialog.error
                 parameters:
                   title: VOER ACTIE UIT
@@ -265,7 +265,7 @@ pages:
       - type: action-button
         version: 0.8.1
         actions:
-          click:
+          onClick:
             type: link
             to: Maak waarneming
   - name: Waarneming details
@@ -297,6 +297,6 @@ pages:
               type: file
               repeated: true
         actions:
-          load:
+          onLoad:
             type: resource.get
             resource: waarneming

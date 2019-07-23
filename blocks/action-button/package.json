@@ -5,7 +5,7 @@
   "appsemble": {
     "layout": "float",
     "actions": {
-      "click": {
+      "onClick": {
         "required": true
       }
     },

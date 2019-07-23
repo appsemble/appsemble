@@ -53,14 +53,16 @@ export default class Card extends React.Component<
     const parentId =
       (block.parameters && block.parameters.reply && block.parameters.reply.parentId) || 'parentId';
 
-    const replies = await actions.loadReply.dispatch({ $filter: `${parentId} eq '${content.id}'` });
+    const replies = await actions.onLoadReply.dispatch({
+      $filter: `${parentId} eq '${content.id}'`,
+    });
     this.setState({ replies });
   }
 
   onAvatarClick: React.MouseEventHandler = async event => {
     event.preventDefault();
     const { actions, content, onUpdate } = this.props;
-    const data = await actions.avatarClick.dispatch(content);
+    const data = await actions.onAvatarClick.dispatch(content);
 
     if (data) {
       onUpdate(data);
@@ -90,7 +92,7 @@ export default class Card extends React.Component<
         (block.parameters && block.parameters.reply && block.parameters.reply.parentId) ||
         'parentId';
 
-      const result = await actions.submitReply.dispatch({
+      const result = await actions.onSubmitReply.dispatch({
         [parentId]: content.id,
         [contentField]: message,
       });
@@ -146,7 +148,7 @@ export default class Card extends React.Component<
       <article className={`card ${styles.root}`}>
         <div className="card-content">
           <div className={`media ${styles.media}`}>
-            <AvatarWrapper action={actions.avatarClick} onAvatarClick={this.onAvatarClick}>
+            <AvatarWrapper action={actions.onAvatarClick} onAvatarClick={this.onAvatarClick}>
               <figure className={`image is-48x48 ${color} ${styles.avatarIcon}`}>
                 <span className="icon">
                   <i className={`fas fa-2x fa-${icon}`} />

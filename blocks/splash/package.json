@@ -4,13 +4,13 @@
   "private": true,
   "appsemble": {
     "actions": {
-      "load": {
+      "onLoad": {
         "required": true
       },
-      "success": {
+      "onSuccess": {
         "required": true
       },
-      "error": {
+      "onError": {
         "required": true
       }
     },

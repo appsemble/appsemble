@@ -13,12 +13,12 @@ This can be used for example to show a social media feed in an app.
 
 ## Actions
 
-| Action      | Required | Description                                                  |
-| ----------- | -------- | ------------------------------------------------------------ |
-| load        |          | Action that gets dispatched when data is initially loaded.   |
-| loadReply   | true     | Action to retrieve replies, dispatched on every feed item.   |
-| submitReply |          | Action that gets dispatched when submitting a reply.         |
-| avatarClck  |          | Action that gets dispatched when a user clicks on an avatar. |
+| Action        | Required | Description                                                  |
+| ------------- | -------- | ------------------------------------------------------------ |
+| onLoad        |          | Action that gets dispatched when data is initially loaded.   |
+| onLoadReply   | true     | Action to retrieve replies, dispatched on every feed item.   |
+| onSubmitReply |          | Action that gets dispatched when submitting a reply.         |
+| onAvatarClck  |          | Action that gets dispatched when a user clicks on an avatar. |
 
 ## Parameters
 

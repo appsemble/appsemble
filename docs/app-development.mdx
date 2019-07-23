@@ -110,7 +110,7 @@ pages:
             - name: lastName
               label: Surname
         actions:
-          load:
+          onLoad:
             type: resource.query
             resource: person
 ```
@@ -126,10 +126,10 @@ Let's follow up by adding a page in which resources can be registered.
     - type: form
       version: 0.8.1
       actions:
-        submit:
+        onSubmit:
           type: resource.create
           resource: person
-        submitSuccess:
+        onSubmitSuccess:
           to: Person List
           type: link
       parameters:
@@ -164,7 +164,7 @@ Clicking it results in being redirected to the other page.
 - type: action-button
   version: 0.8.1
   actions:
-    click:
+    onClick:
       to: Person Registration Form # Or `Person List` in case of the Person Registration Form
       type: link
 ```
@@ -181,7 +181,7 @@ that is able to display a resource.
     - type: detail-viewer
       version: 0.8.1
       actions:
-        load:
+        onLoad:
           type: resource.get
           resource: person
       parameters:
@@ -207,7 +207,7 @@ Finally, in order to link the `list` block to the _”Person Details”_ page, a
 list of actions:
 
 ```yaml
-click:
+onClick:
   to: Person Details
   type: link
 ```
@@ -250,10 +250,10 @@ pages:
             - name: lastName
               label: Surname
         actions:
-          click:
+          onClick:
             to: Person Details
             type: link
-          load:
+          onLoad:
             type: resource.query
             resource: person
       - type: action-button
@@ -268,10 +268,10 @@ pages:
       - type: form
         version: 0.8.1
         actions:
-          submit:
+          onSubmit:
             type: resource.create
             resource: person
-          submitSuccess:
+          onSubmitSuccess:
             to: Person List
             type: link
         parameters:
@@ -297,7 +297,7 @@ pages:
       - type: detail-viewer
         version: 0.8.1
         actions:
-          load:
+          onLoad:
             type: resource.get
             resource: person
         parameters:
