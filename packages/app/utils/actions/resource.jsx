@@ -40,19 +40,24 @@ function query({ definition: { resource: name, query: queryParams }, app, onSucc
   });
 }
 
-function create({ definition: { resource: name }, app, onSuccess, onError }) {
+function create({ definition: { resource: name, serialize }, app, onSuccess, onError }) {
   const { schema, ...resource } = app.resources[name];
   const method = resource?.create?.method || 'POST';
   const url = resource?.create?.url || resource.url || `/api/apps/${app.id}/resources/${name}`;
 
   return request({
-    definition: { blobs: getBlobs(resource), method, url, schema },
+    definition: { blobs: getBlobs(resource), method, url, schema, serialize },
     onSuccess,
     onError,
   });
 }
 
-function update({ definition: { resource: name, query: params }, app, onSuccess, onError }) {
+function update({
+  definition: { resource: name, query: params, serialize },
+  app,
+  onSuccess,
+  onError,
+}) {
   const { schema, ...resource } = app.resources[name];
   const method = resource?.update?.method || 'PUT';
   const url = resource?.update?.url || resource.url || `/api/apps/${app.id}/resources/${name}`;
@@ -65,13 +70,19 @@ function update({ definition: { resource: name, query: params }, app, onSuccess,
       url: `${url}${!url.endsWith('/') && '/'}{${id}}`,
       query: params,
       schema,
+      serialize,
     },
     onSuccess,
     onError,
   });
 }
 
-function remove({ definition: { resource: name, query: params }, app, onSuccess, onError }) {
+function remove({
+  definition: { resource: name, query: params, serialize },
+  app,
+  onSuccess,
+  onError,
+}) {
   const { schema, ...resource } = app.resources[name];
   const method = resource?.delete?.method || 'DELETE';
   const url = resource?.delete?.url || resource.url || `/api/apps/${app.id}/resources/${name}`;
@@ -84,6 +95,7 @@ function remove({ definition: { resource: name, query: params }, app, onSuccess,
       url: `${url}${!url.endsWith('/') && '/'}{${id}}`,
       query: params,
       schema,
+      serialize,
     },
     onSuccess,
     onError,

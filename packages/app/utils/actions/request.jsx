@@ -5,7 +5,7 @@ import axios from 'axios';
 import uploadBlobs from '../uploadBlobs';
 
 export default function request({
-  definition: { blobs = {}, method = 'GET', schema, query, url },
+  definition: { blobs = {}, method = 'GET', schema, query, url, serialize },
   onSuccess,
   onError,
 }) {
@@ -29,13 +29,40 @@ export default function request({
 
       if (methodUpper === 'PUT' || methodUpper === 'POST' || methodUpper === 'PATCH') {
         let body;
-        switch (blobs.type) {
-          case 'upload': {
-            body = await uploadBlobs(data, blobs);
-            break;
+
+        if (serialize && serialize === 'formdata') {
+          const formData = new FormData();
+
+          const processFormData = (form, key, value) => {
+            if (value instanceof Blob) {
+              form.append(key, value);
+            } else if (Array.isArray(value)) {
+              value.forEach(item => {
+                // Recursively iterate over values
+                processFormData(form, key, item);
+              });
+            } else if (value instanceof Object) {
+              form.append(key, JSON.stringify(value));
+            } else {
+              // Primitives
+              form.append(key, value);
+            }
+          };
+
+          Object.entries(data).forEach(([key, value]) => {
+            processFormData(formData, key, value);
+          });
+
+          body = formData;
+        } else {
+          switch (blobs.type) {
+            case 'upload': {
+              body = await uploadBlobs(data, blobs);
+              break;
+            }
+            default:
+              body = data;
           }
-          default:
-            body = data;
         }
 
         if (schema) {
