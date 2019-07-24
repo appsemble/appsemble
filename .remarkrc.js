@@ -1,33 +1,21 @@
 const dictionary = require('dictionary-en-us');
 const fs = require('fs');
 const path = require('path');
-const frontmatter = require('remark-frontmatter');
 const english = require('retext-english');
 const repeatedWords = require('retext-repeated-words');
-const retext = require('remark-retext');
 const spell = require('retext-spell');
 const syntaxURLs = require('retext-syntax-urls');
 const usage = require('retext-usage');
 const unified = require('unified');
 
-exports.plugins = [
-  frontmatter,
-  [
-    retext,
-    unified().use({
-      plugins: [
-        english,
-        syntaxURLs,
-        [
-          spell,
-          {
-            dictionary,
-            personal: fs.readFileSync(path.join(__dirname, 'config/retext/personal.dic')),
-          },
-        ],
-        repeatedWords,
-        usage,
-      ],
-    }),
-  ],
-];
+exports.plugins = {
+  'remark-retext': unified()
+    .use(english)
+    .use(syntaxURLs)
+    .use(spell, {
+      dictionary,
+      personal: fs.readFileSync(path.join(__dirname, 'config/retext/personal.dic')),
+    })
+    .use(repeatedWords)
+    .use(usage),
+};
