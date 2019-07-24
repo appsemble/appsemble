@@ -148,7 +148,7 @@ remark lint:
       - branches
       - merge_requests
     changes:
-      - '**/*.md'
+      - '**/*.{dic,md}'
       - yarn.lock
   script:
     - yarn remark --frail .
