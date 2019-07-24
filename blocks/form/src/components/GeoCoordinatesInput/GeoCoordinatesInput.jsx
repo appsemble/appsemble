@@ -35,7 +35,12 @@ export default class GeoCoordinatesInput extends React.Component {
   componentDidMount() {
     const { field, onChange, utils } = this.props;
 
-    const map = new Map(this.ref.current, { attributionControl: false })
+    const map = new Map(this.ref.current, {
+      attributionControl: false,
+      layers: [
+        new TileLayer('https://cartodb-basemaps-c.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png'),
+      ],
+    })
       .once('locationerror', () => {
         utils.showMessage({
           // XXX Implement i18n.
@@ -56,9 +61,6 @@ export default class GeoCoordinatesInput extends React.Component {
         );
       })
       .locate({ setView: true });
-    new TileLayer(
-      'https://cartodb-basemaps-c.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png',
-    ).addTo(map);
     this.map = map;
   }
 
