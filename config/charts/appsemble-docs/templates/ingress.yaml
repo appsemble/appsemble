@@ -13,10 +13,10 @@ metadata:
 spec:
   tls:
     - hosts:
-        - {{ include "host" . }}
+        - {{ .Values.url | trimPrefix "https://" }}
       secretName: {{ .Release.Name }}
   rules:
-    - host: {{ include "host" . }}
+    - host: {{ .Values.url | trimPrefix "https://" }}
       http:
         paths:
           - path: /

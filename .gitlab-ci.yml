@@ -334,7 +334,7 @@ review docs:
   allow_failure: false
   environment:
     name: review/docs/$CI_COMMIT_REF_SLUG
-    url: https://$CI_ENVIRONMENT_SLUG.appsemble.app
+    url: https://$CI_ENVIRONMENT_SLUG.appsemble.dev
     on_stop: stop review docs
   script:
     - helm upgrade "$CI_ENVIRONMENT_SLUG" config/charts/appsemble-docs
@@ -342,6 +342,7 @@ review docs:
       --install
       --set "git.commit.sha=$CI_COMMIT_SHA"
       --set "image.tag=$CI_COMMIT_REF_NAME"
+      --set "url=$CI_ENVIRONMENT_URL"
 
 # Stop a review environment.
 stop review docs:
@@ -381,6 +382,26 @@ staging:
       --set "mysql.fullnameOverride=staging-mysql"
       --set "mysql.persistence.enabled=false"
       --set "sentrySecret=sentry"
+
+# Deploy the docs for the staging environment.
+staging docs:
+  extends: .helm
+  stage: deploy
+  only:
+    - master@appsemble/appsemble
+  except:
+    - schedules
+  allow_failure: false
+  environment:
+    name: staging docs
+    url: https://staging.appsemble.dev
+  script:
+    - helm upgrade "$CI_ENVIRONMENT_SLUG" config/charts/appsemble-docs
+      --atomic
+      --install
+      --set "git.commit.sha=$CI_COMMIT_SHA"
+      --set "image.tag=$CI_COMMIT_REF_NAME"
+      --set "url=$CI_ENVIRONMENT_URL"
 
 # Wipe the staging environment, reset the staging environment to the latest release, and upgrade to master.
 reset staging:

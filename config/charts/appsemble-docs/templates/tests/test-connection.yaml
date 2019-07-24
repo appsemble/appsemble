@@ -16,5 +16,5 @@ spec:
       command:
         - wget
       args:
-        - {{ include "url" . }}
+        - {{ .Values.url }}
   restartPolicy: Never
