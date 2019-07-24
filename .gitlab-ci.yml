@@ -151,7 +151,7 @@ remark lint:
       - '**/*.md'
       - yarn.lock
   script:
-    - yarn remark .
+    - yarn remark --frail .
 
 # Lint CSS using stylelint.
 stylelint:
