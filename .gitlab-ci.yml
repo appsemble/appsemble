@@ -497,3 +497,4 @@ provision staging:
   before_script:
     - yarn --frozen-lockfile
     - yarn appsemble config set remote https://staging.appsemble.app
+    - yarn appsemble config set no-conflict true
