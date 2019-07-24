@@ -450,6 +450,24 @@ reset staging:
       --set "mysql.persistence.existingClaim=appsemble-mysql"
       --wait
 
+# Deploy the docs for production.
+production docs:
+  extends: .helm
+  stage: deploy
+  only:
+    - tags
+  allow_failure: false
+  environment:
+    name: production docs
+    url: https://appsemble.dev
+  script:
+    - helm upgrade docs config/charts/appsemble-docs
+      --atomic
+      --install
+      --set "git.commit.sha=$CI_COMMIT_SHA"
+      --set "image.tag=$CI_COMMIT_REF_NAME"
+      --set "url=$CI_ENVIRONMENT_URL"
+
 ###################################################################################################
 #  Migrate Stage                                                                                  #
 ###################################################################################################
