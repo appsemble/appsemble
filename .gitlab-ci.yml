@@ -496,4 +496,4 @@ provision staging:
     name: staging/provision
   before_script:
     - yarn --frozen-lockfile
-    - yarn appsemble config set remote staging.appsemble.app
+    - yarn appsemble config set remote https://staging.appsemble.app
