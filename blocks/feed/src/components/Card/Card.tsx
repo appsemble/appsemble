@@ -44,7 +44,7 @@ export default class Card extends React.Component<
 
   state: CardState = {
     message: '',
-    replies: undefined,
+    replies: [],
     valid: false,
   };
 
@@ -203,7 +203,7 @@ export default class Card extends React.Component<
         </div>
         <div className={`card-content ${styles.content}`}>
           {description && <p className="content">{description}</p>}
-          {replies !== undefined && (
+          {actions.onLoadReply.type !== 'noop' && (
             <React.Fragment>
               <div ref={this.replyContainer} className={styles.replies}>
                 {replies.map(reply => {
