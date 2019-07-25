@@ -14,7 +14,7 @@ spec:
   tls:
     - hosts:
         - {{ .Values.url | trimPrefix "https://" }}
-      secretName: {{ .Release.Name }}
+      secretName: {{ .Release.Name }}-tls
   rules:
     - host: {{ .Values.url | trimPrefix "https://" }}
       http:
