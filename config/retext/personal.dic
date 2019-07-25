@@ -7,7 +7,7 @@ dialog/kitten
 enum/kitten
 middleware/mare
 preconfigure/reconfigure
-pretend/prepend
+prepend/append
 readme/kitten
 relink/link
 ruleset/set
@@ -30,6 +30,7 @@ Bulma
 CLI/URL
 CSS
 DOM
+DSN
 dropdown
 ESLint
 GitLab

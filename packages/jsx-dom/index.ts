@@ -13,7 +13,7 @@ interface Props {
   [prop: string]: any;
 }
 
-type Child = string | Node | Children;
+type Child = boolean | number | string | Node | Children;
 
 // This is a workaround for https://github.com/microsoft/TypeScript/issues/6230
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
@@ -24,8 +24,12 @@ function appendChildren(node: Node, children: Child): void {
     children.forEach(child => {
       appendChildren(node, child);
     });
-  } else {
-    node.appendChild(typeof children === 'string' ? document.createTextNode(children) : children);
+  } else if (children !== null && children !== true && children !== false) {
+    node.appendChild(
+      typeof children === 'string' || typeof children === 'number'
+        ? document.createTextNode(`${children}`)
+        : children,
+    );
   }
 }
 
@@ -34,7 +38,8 @@ function appendChildren(node: Node, children: Child): void {
  *
  * @param tag The HTML tag name of the DOM node to create, or a function that returns a DOM node.
  * @param props Properties to assign to the DOM node or props to pass to the tag function.
- * @param children DOM nodes to append to the newly created DOM node. These may also be strings.
+ * @param children DOM nodes to append to the newly created DOM node. These may also be strings or
+ *   numbers. If a boolean or `null` is passed, the value is ignored.
  *
  * @returns The created DOM node.
  */

@@ -6,6 +6,8 @@ import uploadBlobs from '../uploadBlobs';
 
 export default function request({
   definition: { blobs = {}, method = 'GET', schema, query, url, serialize },
+  onSuccess,
+  onError,
 }) {
   const regex = /{(.+?)}/g;
   const mappers = url
@@ -70,8 +72,21 @@ export default function request({
         req.data = body;
       }
 
-      const response = await axios(req);
-      return response.data;
+      try {
+        const response = await axios(req);
+
+        if (onSuccess) {
+          return onSuccess.dispatch(response.data);
+        }
+
+        return response.data;
+      } catch (exception) {
+        if (onError) {
+          return onError.dispatch(exception);
+        }
+
+        throw exception;
+      }
     },
     method,
     url,

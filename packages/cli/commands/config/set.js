@@ -1,6 +1,7 @@
 import { logger } from '@appsemble/node-utils';
 import fs from 'fs-extra';
 import readPkgUp from 'read-pkg-up';
+import { inspect } from 'util';
 
 export const command = 'set <key> <value>';
 export const description = 'Set an Appsemble configuration option in package.json.';
@@ -20,7 +21,15 @@ export async function handler({ key, value }) {
   if (!Object.prototype.hasOwnProperty.call(pkg, 'appsembleServer')) {
     pkg.appsembleServer = {};
   }
-  pkg.appsembleServer[key] = value;
+  let parsed;
+  try {
+    parsed = JSON.parse(value);
+  } catch (err) {
+    parsed = value;
+  }
+  pkg.appsembleServer[key] = parsed;
   await fs.writeJson(path, pkg, { spaces: 2 });
-  logger.info(`Set option "appsembleServer.${key}" to "${value}" in ${path}`);
+  logger.info(
+    `Set option appsembleServer.${key} to ${inspect(parsed, { colors: true })} in ${path}`,
+  );
 }
