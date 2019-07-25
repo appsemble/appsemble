@@ -3,6 +3,7 @@ Appsemble
 # Unrecognized words
 accessor/processor
 changelog/kitten
+dialog/kitten
 enum/kitten
 middleware/mare
 preconfigure/reconfigure

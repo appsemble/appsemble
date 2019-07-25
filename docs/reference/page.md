@@ -27,9 +27,14 @@ requires users to authenticate themselves in order to view the page.
 
 ## `type`
 
-The type of the page. Setting this value to `flow` will result in the page displaying like a flow
-page, in which the page is divided into _subpages_, allowing for users to be guided through several
-steps. Flow page actions can be used to facilitate navigating through flow pages.
+The type of the page. Type currently supports the following options:
+
+- page (default)
+- flow
+
+Setting this value to `flow` will result in the page displaying like a flow page, in which the page
+is divided into _subpages_, allowing for users to be guided through several steps. Flow page actions
+can be used to facilitate navigating through flow pages.
 
 ## `blocks`\*
 
