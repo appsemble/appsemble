@@ -15,7 +15,12 @@ attach<BlockParameters, BlockActions>(({ actions, block, data, shadowRoot, utils
   const locationMarker = new CircleMarker(null, {
     color: getComputedStyle(node).getPropertyValue('--primary-color'),
   });
-  const map = new Map(node, { attributionControl: false })
+  const map = new Map(node, {
+    attributionControl: false,
+    layers: [
+      new TileLayer('https://cartodb-basemaps-c.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png'),
+    ],
+  })
     .on('moveend', () => {
       loadMarkers(map, actions, block.parameters, fetched, get, data);
     })
@@ -27,16 +32,13 @@ attach<BlockParameters, BlockActions>(({ actions, block, data, shadowRoot, utils
     })
     .on('locationfound', ({ latlng }: LocationEvent) => {
       locationMarker.setLatLng(latlng).addTo(map);
-    });
+    })
+    .locate({ watch: true });
   const lat = Number(get.lat(data));
   const lng = Number(get.lng(data));
   if (Number.isNaN(lat) || Number.isNaN(lng)) {
     map.locate({ setView: true });
   } else {
-    map.locate().setView([lat, lng], 18);
+    map.setView([lat, lng], 18);
   }
-  const layer = new TileLayer(
-    'https://cartodb-basemaps-c.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png',
-  );
-  layer.addTo(map);
 });

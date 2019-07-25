@@ -44,23 +44,25 @@ export default class Location extends React.Component<LocationProps & BlockProps
       color: getComputedStyle(reactRoot).getPropertyValue('--primary-color'),
     });
 
-    const map = new Map(this.ref.current, { attributionControl: false, ...mapOptions })
+    const map = new Map(this.ref.current, {
+      attributionControl: false,
+      zoom: 16,
+      center: [latitude, longitude],
+      layers: [
+        new TileLayer('https://cartodb-basemaps-c.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png'),
+        new Marker([latitude, longitude], {
+          icon: new Icon({
+            iconUrl,
+            iconAnchor: new Point(iconWidth / 2, iconHeight),
+          }),
+        }),
+      ],
+      ...mapOptions,
+    })
       .on('locationfound', ({ latlng }: LocationEvent) => {
         locationMarker.setLatLng(latlng).addTo(map);
       })
-      .locate()
-      .setView([latitude, longitude], 16);
-    new TileLayer(
-      'https://cartodb-basemaps-c.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png',
-    ).addTo(map);
-    new Marker(null, {
-      icon: new Icon({
-        iconUrl,
-        iconAnchor: new Point(iconWidth / 2, iconHeight),
-      }),
-    })
-      .setLatLng([latitude, longitude])
-      .addTo(map);
+      .locate({ watch: true });
   }
 
   render(): JSX.Element {
