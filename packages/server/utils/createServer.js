@@ -6,6 +6,7 @@ import Koa from 'koa';
 import compress from 'koa-compress';
 import mount from 'koa-mount';
 import koaQuerystring from 'koa-qs';
+import range from 'koa-range';
 import Router from 'koa-router';
 import session from 'koa-session';
 import serve from 'koa-static';
@@ -42,6 +43,7 @@ export default async function createServer({
   app.use(session(app));
 
   app.use(boomMiddleware);
+  app.use(range);
   Object.assign(app.context, { argv, db, mailer: new Mailer(argv) });
 
   let grant;

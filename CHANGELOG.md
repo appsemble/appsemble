@@ -20,6 +20,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - SDK: Add a new `addCleanup` utility function.
 - Server: Show the date in logs.
 - Server: Add health check.
+- Server: Support for partial HTTP responses.
 
 ### Fixed
 
