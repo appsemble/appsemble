@@ -20,6 +20,7 @@ export interface Remappers {
 }
 
 export interface BlockParameters {
+  buttonLabel?: string;
   reply?: Reply;
   pictureBase: string;
   listen?: string;
@@ -37,6 +38,7 @@ export interface BlockParameters {
 
 export interface BlockActions {
   onAvatarClick: any;
+  onButtonClick: any;
   onSubmitReply: any;
   onLoad: any;
   onLoadReply: any;

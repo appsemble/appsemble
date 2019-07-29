@@ -20,17 +20,3 @@ The Docker image including repository and tag.
 {{- define "image" -}}
 {{- printf "%s:%s" .Values.image.repository .Values.image.tag | quote -}}
 {{- end -}}
-
-{{/*
-The fully qualified host name of the documentation instance.
-*/}}
-{{- define "host" -}}
-{{- printf "%s.appsemble.app" .Release.Name -}}
-{{- end -}}
-
-{{/*
-The URL to the docs, including the host name and protocol.
-*/}}
-{{- define "url" -}}
-{{- printf "https://%s" (include "host" .) -}}
-{{- end -}}

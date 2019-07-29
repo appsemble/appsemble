@@ -71,6 +71,16 @@ export default class Card extends React.Component<
     }
   };
 
+  onButtonClick: React.MouseEventHandler = async event => {
+    event.preventDefault();
+    const { actions, content, onUpdate } = this.props;
+    const data = await actions.onButtonClick.dispatch(content);
+
+    if (data) {
+      onUpdate(data);
+    }
+  };
+
   onChange: React.ChangeEventHandler<HTMLInputElement> = event => {
     this.setState({ message: event.target.value, valid: event.target.validity.valid });
   };
@@ -203,6 +213,16 @@ export default class Card extends React.Component<
         </div>
         <div className={`card-content ${styles.content}`}>
           {description && <p className="content">{description}</p>}
+          {actions.onButtonClick.type !== 'noop' && (
+            <button
+              className={`button ${styles.button}`}
+              onClick={this.onButtonClick}
+              type="button"
+            >
+              {block.parameters.buttonLabel || 'Click'}
+            </button>
+          )}
+
           {actions.onLoadReply.type !== 'noop' && (
             <React.Fragment>
               <div ref={this.replyContainer} className={styles.replies}>

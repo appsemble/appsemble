@@ -12,6 +12,11 @@
   flex: auto;
 }
 
+.button {
+  margin-bottom: 15px;
+  margin-top: -10px;
+}
+
 .content {
   padding: 1rem;
 }

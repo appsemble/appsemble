@@ -12,6 +12,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - App: Allow to load media from any source.
 - App: Prepend every action with `on`, for example: `click` → `onClick`.
 - Block: Add support for `number`, `integer`, and `boolean` input types in form block.
+- CLI: Parse JSON compatible values for `appsemble config set`.
 - Editor: Allow viewing apps without logging in.
 - Helm: Add health check.
 - Helm: Add support for Sentry.
@@ -19,6 +20,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - SDK: Add a new `addCleanup` utility function.
 - Server: Show the date in logs.
 - Server: Add health check.
+- Server: Support for partial HTTP responses.
 
 ### Fixed
 
