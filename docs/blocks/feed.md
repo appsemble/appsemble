@@ -13,17 +13,19 @@ This can be used for example to show a social media feed in an app.
 
 ## Actions
 
-| Action        | Required | Description                                                  |
-| ------------- | -------- | ------------------------------------------------------------ |
-| onLoad        |          | Action that gets dispatched when data is initially loaded.   |
-| onLoadReply   | true     | Action to retrieve replies, dispatched on every feed item.   |
-| onSubmitReply |          | Action that gets dispatched when submitting a reply.         |
-| onAvatarClck  |          | Action that gets dispatched when a user clicks on an avatar. |
+| Action        | Required | Description                                                                                              |
+| ------------- | -------- | -------------------------------------------------------------------------------------------------------- |
+| onButtonClick |          | Action that gets dispatched when the button is clicked. The button won't display if this is not defined. |
+| onLoad        |          | Action that gets dispatched when data is initially loaded.                                               |
+| onLoadReply   | true     | Action to retrieve replies, dispatched on every feed item.                                               |
+| onSubmitReply |          | Action that gets dispatched when submitting a reply.                                                     |
+| onAvatarClck  |          | Action that gets dispatched when a user clicks on an avatar.                                             |
 
 ## Parameters
 
 | Parameter      | Default  | Description                                                                                                   |
 | -------------- | -------- | ------------------------------------------------------------------------------------------------------------- |
+| buttonLabel    | Click    | The text that displays inside the button.                                                                     |
 | title          |          | The field that will be used as the title of a card.                                                           |
 | subtitle       |          | The field that will be used as the sub title of a card.                                                       |
 | heading        |          | The field that will be used as a heading of a card.                                                           |
