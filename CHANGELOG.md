@@ -12,6 +12,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - App: Allow to load media from any source.
 - App: Prepend every action with `on`, for example: `click` → `onClick`.
 - Block: Add support for `number`, `integer`, and `boolean` input types in form block.
+- Block: Add optional button to feed block.
+- Block: Make replies section in feed block optional.
 - CLI: Parse JSON compatible values for `appsemble config set`.
 - Editor: Allow viewing apps without logging in.
 - Helm: Add health check.
