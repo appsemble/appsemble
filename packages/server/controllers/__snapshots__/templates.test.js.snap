@@ -18,7 +18,7 @@ Object {
             },
           },
           "type": "action-button",
-          "version": "0.8.1",
+          "version": "0.8.2",
         },
       ],
       "name": "Example Page A",
@@ -33,7 +33,7 @@ Object {
             },
           },
           "type": "action-button",
-          "version": "0.8.1",
+          "version": "0.8.2",
         },
       ],
       "name": "Example Page B",
@@ -51,7 +51,7 @@ pages:
   - name: Example Page A
     blocks:
       - type: action-button
-        version: 0.8.1
+        version: 0.8.2
         actions:
           onClick:
             type: link
@@ -59,7 +59,7 @@ pages:
   - name: Example Page B
     blocks:
       - type: action-button
-        version: 0.8.1
+        version: 0.8.2
         actions:
           onClick:
             type: link

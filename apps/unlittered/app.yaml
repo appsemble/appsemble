@@ -80,7 +80,7 @@ pages:
       - '*'
     blocks:
       - type: form
-        version: 0.8.1
+        version: 0.8.2
         parameters:
           fields:
             - name: locatie
@@ -124,7 +124,7 @@ pages:
             fullscreen: true
             blocks:
               - type: '@amsterdam/splash'
-                version: 0.8.1
+                version: 0.8.2
                 actions:
                   onLoad:
                     type: resource.create
@@ -140,7 +140,7 @@ pages:
       - '*'
     blocks:
       - type: map
-        version: 0.8.1
+        version: 0.8.2
         parameters:
           latitude: locatie.latitude
           longitude: locatie.longitude
@@ -155,7 +155,7 @@ pages:
               $orderby: 'created desc'
               $top: 50
       - type: action-button
-        version: 0.8.1
+        version: 0.8.2
         actions:
           onClick:
             type: link
@@ -166,7 +166,7 @@ pages:
       - '*'
     blocks:
       - type: filter
-        version: 0.8.1
+        version: 0.8.2
         parameters:
           refreshTimeout: 30
           event: updateWaarnemingen
@@ -202,7 +202,7 @@ pages:
               $top: 50
 
       - type: feed
-        version: 0.8.1
+        version: 0.8.2
         parameters:
           listen: updateWaarnemingen
           title: type
@@ -228,7 +228,7 @@ pages:
             type: dialog
             blocks:
               - type: '@amsterdam/action'
-                version: 0.8.1
+                version: 0.8.2
                 actions:
                   onSubmit:
                     type: resource.update
@@ -263,7 +263,7 @@ pages:
                         - value: Stadswerken
                         - value: Groen
       - type: action-button
-        version: 0.8.1
+        version: 0.8.2
         actions:
           onClick:
             type: link
@@ -275,7 +275,7 @@ pages:
       - id
     blocks:
       - type: detail-viewer
-        version: 0.8.1
+        version: 0.8.2
         parameters:
           fileBase: /api/assets
           fields:
