@@ -13,6 +13,7 @@ import ErrorFallback from '../ErrorFallback';
 import Login from '../Login';
 import Message from '../Message';
 import OrganizationInvite from '../OrganizationInvite';
+import ProtectedRoute from '../ProtectedRoute';
 import Register from '../Register';
 import ResetPassword from '../ResetPassword';
 import Settings from '../Settings';
@@ -23,11 +24,6 @@ export default class App extends React.Component {
   static propTypes = {
     initAuth: PropTypes.func.isRequired,
     initialized: PropTypes.bool.isRequired,
-    user: PropTypes.shape(),
-  };
-
-  static defaultProps = {
-    user: null,
   };
 
   async componentDidMount() {
@@ -36,7 +32,7 @@ export default class App extends React.Component {
   }
 
   render() {
-    const { initialized, user } = this.props;
+    const { initialized } = this.props;
 
     if (!initialized) {
       return <Loader />;
@@ -48,31 +44,24 @@ export default class App extends React.Component {
           <ErrorHandler fallback={ErrorFallback}>
             <Helmet defaultTitle="Appsemble" titleTemplate="Appsemble · %s" />
             <Toolbar />
-            {user ? (
-              <Switch>
-                <Route component={AppList} exact path="/_/apps" />
-                <Route component={Settings} path="/_/settings" />
-                <Route component={AppContext} path="/_/apps/:id(\d+)" />
-                <Route component={EditPassword} exact path="/_/edit-password" />
-                <Route component={VerifyEmail} exact path="/_/verify" />
-                <Route component={OrganizationInvite} exact path="/_/organization-invite" />
-                <Route component={Login} exact path="/_/login" />
-                <Redirect to="/_/apps" />
-              </Switch>
-            ) : (
-              <Switch>
-                <Route component={AppList} exact path="/_/apps" />
-                <Route component={ConnectOAuth} exact path="/_/connect" />
-                <Route component={Login} exact path="/_/login" />
-                {window.settings.enableRegistration && (
-                  <Route component={Register} exact path="/_/register" />
-                )}
-                <Route component={ResetPassword} exact path="/_/reset-password" />
-                <Route component={EditPassword} exact path="/_/edit-password" />
-                <Route component={VerifyEmail} exact path="/_/verify" />
-                <Redirect to="/_/apps" />
-              </Switch>
-            )}
+            <Switch>
+              <Route component={AppList} exact path="/_/apps" />
+              <ProtectedRoute component={Settings} path="/_/settings" />
+              <ProtectedRoute component={AppContext} path="/_/apps/:id(\d+)" />
+              <ProtectedRoute component={EditPassword} exact path="/_/edit-password" />
+              <ProtectedRoute component={VerifyEmail} exact path="/_/verify" />
+              <ProtectedRoute component={OrganizationInvite} exact path="/_/organization-invite" />
+              <Route component={AppList} exact path="/_/apps" />
+              <Route component={ConnectOAuth} exact path="/_/connect" />
+              <Route component={Login} exact path="/_/login" />
+              {window.settings.enableRegistration && (
+                <Route component={Register} exact path="/_/register" />
+              )}
+              <Route component={ResetPassword} exact path="/_/reset-password" />
+              <Route component={EditPassword} exact path="/_/edit-password" />
+              <Route component={VerifyEmail} exact path="/_/verify" />
+              <Redirect to="/_/apps" />
+            </Switch>
             <Message />
           </ErrorHandler>
         </BrowserRouter>
