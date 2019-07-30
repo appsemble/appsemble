@@ -13,13 +13,35 @@ const loginMethods = new Set(window.settings.logins);
 
 export default class Login extends React.Component {
   static propTypes = {
+    history: PropTypes.shape().isRequired,
+    location: PropTypes.shape().isRequired,
+    match: PropTypes.shape().isRequired,
     passwordLogin: PropTypes.func.isRequired,
+    user: PropTypes.shape(),
   };
 
+  static defaultProps = {
+    user: null,
+  };
+
+  componentDidMount() {
+    const { location, history, user } = this.props;
+    if (!user) {
+      return;
+    }
+
+    const qs = new URLSearchParams(location.search);
+    const redirect = qs.has('redirect') ? qs.get('redirect') : '/_/apps';
+    history.replace(redirect);
+  }
+
   onPasswordLogin = async (...args) => {
-    const { passwordLogin } = this.props;
+    const { location, history, passwordLogin } = this.props;
+    const qs = new URLSearchParams(location.search);
 
     await passwordLogin(...args);
+    const redirect = qs.has('redirect') ? qs.get('redirect') : '/_/apps';
+    history.replace(redirect);
   };
 
   render() {

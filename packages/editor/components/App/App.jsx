@@ -56,6 +56,7 @@ export default class App extends React.Component {
                 <Route component={EditPassword} exact path="/_/edit-password" />
                 <Route component={VerifyEmail} exact path="/_/verify" />
                 <Route component={OrganizationInvite} exact path="/_/organization-invite" />
+                <Route component={Login} exact path="/_/login" />
                 <Redirect to="/_/apps" />
               </Switch>
             ) : (
