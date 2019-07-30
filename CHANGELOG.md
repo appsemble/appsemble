@@ -18,6 +18,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Block: Make replies section in feed block optional.
 - CLI: Parse JSON compatible values for `appsemble config set`.
 - Editor: Allow viewing apps without logging in.
+- Editor: Redirect back to previous page when logging in.
 - Helm: Add health check.
 - Helm: Add support for Sentry.
 - React: Embrace the new `addCleanup` utility function to cleanup React based blocks automatically.
