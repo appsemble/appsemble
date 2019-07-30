@@ -13,7 +13,9 @@ export default class OrganizationInvite extends React.Component {
   static propTypes = {
     location: PropTypes.shape().isRequired,
     intl: PropTypes.shape().isRequired,
+    user: PropTypes.shape().isRequired,
     push: PropTypes.func.isRequired,
+    updateUser: PropTypes.func.isRequired,
   };
 
   state = {
@@ -43,7 +45,11 @@ export default class OrganizationInvite extends React.Component {
   }
 
   onAcceptClick = async () => {
+    const { updateUser, user } = this.props;
+    const { organization } = this.state;
+
     await this.sendResponse(true);
+    await updateUser({ ...user, organizations: [...user.organizations, organization] });
   };
 
   onDeclineClick = async () => {
