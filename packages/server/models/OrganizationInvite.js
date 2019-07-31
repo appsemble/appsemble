@@ -6,17 +6,13 @@ export default sequelize => {
     {
       email: { type: DataTypes.STRING, allowNull: false },
       key: { type: DataTypes.STRING, allowNull: false },
+      UserId: { type: DataTypes.INTEGER, unique: 'EmailOrganizationInex' },
+      OrganizationId: { type: DataTypes.STRING, unique: 'EmailOrganizationInex' },
     },
     {
       freezeTableName: true,
       createdAt: 'created',
       updatedAt: 'updated',
-      indexes: [
-        {
-          name: 'EmailOrganizationIndex',
-          fields: ['email', 'OrganizationId'],
-        },
-      ],
     },
   );
 

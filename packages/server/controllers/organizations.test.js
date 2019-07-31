@@ -59,7 +59,6 @@ describe('organization controller', () => {
           id: expect.any(Number),
           name: 'Test User',
           primaryEmail: 'test@example.com',
-          verified: true,
         },
       ],
     });
@@ -87,7 +86,6 @@ describe('organization controller', () => {
           id: expect.any(Number),
           name: 'Test User',
           primaryEmail: 'test@example.com',
-          verified: true,
         },
       ],
     });

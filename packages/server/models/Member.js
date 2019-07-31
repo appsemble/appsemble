@@ -9,10 +9,7 @@ export default sequelize => {
     },
   );
 
-  Member.associate = ({ User, Organization }) => {
-    Member.hasOne(User);
-    Member.hasOne(Organization);
-  };
+  Member.associate = () => {};
 
   return Member;
 };
