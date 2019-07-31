@@ -39,8 +39,8 @@ export async function createOrganization(ctx) {
       { id: normalize(id), name },
       { include: [User] },
     );
-    await organization.addUser(userId, { through: { verified: true } });
 
+    await organization.addUser(userId, { through: { verified: true } });
     await organization.reload();
 
     ctx.body = {
@@ -64,9 +64,9 @@ export async function createOrganization(ctx) {
 
 export async function getInvitation(ctx) {
   const { token } = ctx.params;
-  const { Member, Organization } = ctx.db.models;
+  const { Organization, OrganizationInvite } = ctx.db.models;
 
-  const invite = await Member.findOne(
+  const invite = await OrganizationInvite.findOne(
     {
       where: { key: token },
     },
@@ -108,7 +108,7 @@ export async function inviteMember(ctx) {
   const { mailer } = ctx;
   const { organizationId } = ctx.params;
   const { email } = ctx.request.body;
-  const { Organization, EmailAuthorization, User } = ctx.db.models;
+  const { Organization, EmailAuthorization, OrganizationInvite, User } = ctx.db.models;
   const { user } = ctx.state;
 
   const organization = await Organization.findByPk(organizationId, { include: [User] });
@@ -117,61 +117,63 @@ export async function inviteMember(ctx) {
   }
 
   const dbEmail = await EmailAuthorization.findByPk(email, { include: [User] });
-  if (!dbEmail) {
-    throw Boom.notFound('No member with this email address could be found.');
-  }
-
-  const invitedUser = dbEmail.User;
+  const invitedUser = dbEmail ? dbEmail.User : null;
 
   if (!(await organization.hasUser(Number(user.id)))) {
     throw Boom.forbidden('Not allowed to invite users to organizations you are not a member of.');
   }
 
-  if (await organization.hasUser(invitedUser)) {
+  if (invitedUser && (await organization.hasUser(invitedUser))) {
     throw Boom.conflict('User is already in this organization or has already been invited.');
   }
 
-  if (dbEmail && !dbEmail.verified) {
-    throw Boom.notAcceptable('This email address has not been verified.');
-  }
-
   const key = crypto.randomBytes(20).toString('hex');
-  await organization.addUser(invitedUser, {
-    through: { verified: false, key, email },
+  await OrganizationInvite.create({
+    OrganizationId: organization.id,
+    UserId: invitedUser ? invitedUser.id : null,
+    key,
+    email,
   });
 
-  await mailer.sendEmail({ email, name: invitedUser.name }, 'organizationInvite', {
-    organization: organization.id,
-    url: `${ctx.origin}/_/organization-invite?token=${key}`,
-  });
+  await mailer.sendEmail(
+    { email, ...(invitedUser && { name: invitedUser.name }) },
+    'organizationInvite',
+    {
+      organization: organization.id,
+      url: `${ctx.origin}/_/organization-invite?token=${key}`,
+    },
+  );
 
   ctx.body = {
-    id: invitedUser.id,
-    name: invitedUser.name,
-    primaryEmail: invitedUser.primaryEmail,
-    verified: false,
+    id: invitedUser ? invitedUser.id : null,
+    name: invitedUser ? invitedUser.name : null,
+    primaryEmail: invitedUser ? invitedUser.primaryEmail : email,
   };
 }
 
 export async function resendInvitation(ctx) {
   const { mailer } = ctx;
   const { organizationId } = ctx.params;
-  const { memberId } = ctx.request.body;
-  const { Organization, User } = ctx.db.models;
+  const { email } = ctx.request.body;
+  const { Organization, OrganizationInvite } = ctx.db.models;
 
-  const organization = await Organization.findByPk(organizationId, { include: [User] });
+  const organization = await Organization.findByPk(organizationId, {
+    include: [OrganizationInvite],
+  });
   if (!organization) {
     throw Boom.notFound('Organization not found.');
   }
 
-  const user = organization.Users.find(u => u.id === memberId);
-  if (!user) {
-    throw Boom.notFound('This user was not invited previously.');
+  const invite = await organization.OrganizationInvites.find(i => i.email === email);
+  if (!invite) {
+    throw Boom.notFound('This person was not invited previously.');
   }
 
-  await mailer.sendEmail({ email: user.Member.email, name: user.name }, 'organizationInvite', {
+  const user = await invite.getUser();
+
+  await mailer.sendEmail({ email, ...(user && { name: user.name }) }, 'organizationInvite', {
     organization: organization.id,
-    url: `${ctx.origin}/_/organization-invite?token=${user.Member.key}`,
+    url: `${ctx.origin}/_/organization-invite?token=${invite.key}`,
   });
 
   ctx.body = 204;

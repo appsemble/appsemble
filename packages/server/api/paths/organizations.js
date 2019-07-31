@@ -52,16 +52,16 @@ export default {
       description: 'Request to resend an invitation.',
       operationId: 'resendInvitation',
       requestBody: {
-        description: 'The ID of the member to resend the invitation to.',
+        description: 'The email of the person to resend the invitation to.',
         required: true,
         content: {
           'application/json': {
             schema: {
               type: 'object',
-              required: ['memberId'],
+              required: ['email'],
               properties: {
-                memberId: {
-                  type: 'number',
+                email: {
+                  type: 'string',
                 },
               },
             },
