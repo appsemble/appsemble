@@ -10,9 +10,10 @@ export default class ProtectedRoute extends React.Component<ProtectedRouteProps>
     const { user, ...props } = this.props;
 
     if (!user) {
-      return (
-        <Redirect to={{ pathname: '/_/login', search: `?redirect=${props.location.pathname}` }} />
-      );
+      const { location } = props;
+      const search = new URLSearchParams();
+      search.set('redirect', `${location.pathname}${location.search}${location.hash}`);
+      return <Redirect to={{ pathname: '/_/login', search: `?${search}` }} />;
     }
 
     return <Route {...props} />;
