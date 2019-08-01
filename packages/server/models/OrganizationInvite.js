@@ -6,8 +6,8 @@ export default sequelize => {
     {
       email: { type: DataTypes.STRING, allowNull: false },
       key: { type: DataTypes.STRING, allowNull: false },
-      UserId: { type: DataTypes.INTEGER, unique: 'EmailOrganizationInex' },
-      OrganizationId: { type: DataTypes.STRING, unique: 'EmailOrganizationInex' },
+      UserId: { type: DataTypes.INTEGER, unique: 'EmailOrganizationIndex' },
+      OrganizationId: { type: DataTypes.STRING, unique: 'EmailOrganizationIndex' },
     },
     {
       freezeTableName: true,
@@ -17,8 +17,8 @@ export default sequelize => {
   );
 
   OrganizationInvite.associate = ({ User, Organization }) => {
-    OrganizationInvite.hasOne(Organization);
-    OrganizationInvite.hasOne(User);
+    OrganizationInvite.belongsTo(Organization);
+    OrganizationInvite.belongsTo(User);
   };
 
   return OrganizationInvite;
