@@ -1,4 +1,4 @@
-import { Form } from '@appsemble/react-components';
+import { Form, Input } from '@appsemble/react-components';
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import * as React from 'react';
@@ -25,10 +25,8 @@ export default class ResetPassword extends React.Component<ResetPasswordProps> {
     success: false,
   };
 
-  onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const { target } = event;
-
-    this.setState({ [target.name]: target.value, error: false });
+  onChange = (event: React.ChangeEvent<HTMLInputElement>, value: string) => {
+    this.setState({ [event.target.name]: value, error: false });
   };
 
   onSubmit = async (event: React.FormEvent) => {
@@ -70,35 +68,17 @@ export default class ResetPassword extends React.Component<ResetPasswordProps> {
                 </div>
               </article>
             )}
-
-            <div className="field is-horizontal">
-              <div className="field-label is-normal">
-                <label className="label" htmlFor="inputEmail">
-                  <FormattedMessage {...messages.emailLabel} />
-                </label>
-              </div>
-              <div className="field-body">
-                <div className="field">
-                  <div className="control has-icons-left">
-                    <input
-                      autoComplete="email"
-                      className="input"
-                      disabled={submitting}
-                      id="inputEmail"
-                      name="email"
-                      onChange={this.onChange}
-                      required
-                      type="email"
-                      value={email}
-                    />
-                    <span className="icon is-left">
-                      <i className="fas fa-envelope" />
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
+            <Input
+              autoComplete="email"
+              disabled={submitting}
+              iconLeft="envelope"
+              label={<FormattedMessage {...messages.emailLabel} />}
+              name="email"
+              onChange={this.onChange}
+              required
+              type="email"
+              value={email}
+            />
             <button
               className={classNames('button', 'is-primary', styles.submit)}
               disabled={submitting}

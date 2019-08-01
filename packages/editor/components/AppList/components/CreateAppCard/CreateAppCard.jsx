@@ -1,4 +1,4 @@
-import { Form, Modal } from '@appsemble/react-components';
+import { Form, FormComponent, Input, Modal, Select } from '@appsemble/react-components';
 import axios from 'axios';
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
@@ -34,8 +34,8 @@ export default class CreateAppCard extends React.Component {
     this.setState({ templates, loading: false });
   }
 
-  onChange = event => {
-    this.setState({ [event.target.name]: event.target.value });
+  onChange = (event, value) => {
+    this.setState({ [event.target.name]: value });
   };
 
   onCheckboxChange = event => {
@@ -143,136 +143,70 @@ export default class CreateAppCard extends React.Component {
               </div>
             </header>
             <div className="card-content">
-              <div className="field is-horizontal">
-                <div className="field-label is-normal">
-                  <label className="label" htmlFor="inputAppName">
-                    <FormattedMessage {...messages.name} />
-                  </label>
-                </div>
-                <div className="field-body">
-                  <div className="field">
-                    <div className="control">
-                      <input
-                        className="input"
-                        id="inputAppName"
-                        maxLength={30}
-                        minLength={1}
-                        name="appName"
-                        onChange={this.onChange}
-                        placeholder={formatMessage(messages.name)}
-                        required
-                        value={appName}
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="field is-horizontal">
-                <div className="field-label is-normal">
-                  <label className="label" htmlFor="inputSelectedOrganization">
-                    <FormattedMessage {...messages.organization} />
-                  </label>
-                </div>
-                <div className="field-body">
-                  <div className="field">
-                    <div className="control">
-                      <div className="select">
-                        <select
-                          disabled={user.organizations.length === 1}
-                          id="inputSelectedOrganization"
-                          name="selectedOrganization"
-                          onChange={this.onChange}
-                          value={selectedOrganization}
-                        >
-                          {user.organizations.map((organization, index) => (
-                            <option key={organization.id} value={index}>
-                              {organization.id}
-                            </option>
-                          ))}
-                        </select>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="field is-horizontal">
-                <div className="field-label is-normal">
-                  <label className="label" htmlFor="inputAppDescription">
-                    <FormattedMessage {...messages.description} />
-                  </label>
-                </div>
-                <div className="field-body">
-                  <div className="field">
-                    <div className="control">
-                      <textarea
-                        className="textarea"
-                        id="inputAppDescription"
-                        maxLength={80}
-                        name="appDescription"
-                        onChange={this.onChange}
-                        placeholder={formatMessage(messages.description)}
-                        value={appDescription}
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="field is-horizontal">
-                <div className="field-label is-normal">
-                  <label className="label" htmlFor="inputSelectedTemplate">
-                    <FormattedMessage {...messages.template} />
-                  </label>
-                </div>
-                <div className="field-body">
-                  <div className="field">
-                    <div className="control">
-                      <div className="select">
-                        <select
-                          id="inputSelectedTemplate"
-                          name="selectedTemplate"
-                          onChange={this.onChange}
-                          value={selectedTemplate}
-                        >
-                          {templates.map((template, index) => (
-                            <option key={template.name} value={index}>
-                              {template.name}
-                            </option>
-                          ))}
-                        </select>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              <Input
+                label={<FormattedMessage {...messages.name} />}
+                maxLength={30}
+                minLength={1}
+                name="appName"
+                onChange={this.onChange}
+                placeholder={formatMessage(messages.name)}
+                required
+                value={appName}
+              />
+              <Select
+                disabled={user.organizations.length === 1}
+                label={<FormattedMessage {...messages.organization} />}
+                name="selectedOrganization"
+                onChange={this.onChange}
+                required
+                value={selectedOrganization}
+              >
+                {user.organizations.map((organization, index) => (
+                  <option key={organization.id} value={index}>
+                    {organization.id}
+                  </option>
+                ))}
+              </Select>
+              <Input
+                label={<FormattedMessage {...messages.description} />}
+                maxLength={80}
+                name="appDescription"
+                onChange={this.onChange}
+                placeholder={formatMessage(messages.description)}
+                type="textarea"
+                value={appDescription}
+              />
+              <Select
+                label={<FormattedMessage {...messages.template} />}
+                name="selectedTemplate"
+                onChange={this.onChange}
+                value={selectedTemplate}
+              >
+                {templates.map((template, index) => (
+                  <option key={template.name} value={index}>
+                    {template.name}
+                  </option>
+                ))}
+              </Select>
               <article className="message">
                 <div className="message-body">{templates[selectedTemplate].description}</div>
               </article>
               {templates[selectedTemplate].resources && (
-                <div className="field is-horizontal">
-                  <div className="field-label">
-                    <label className="label" htmlFor="inputIncludeResources">
-                      <FormattedMessage {...messages.resources} />
-                    </label>
-                  </div>
-                  <div className="field-body">
-                    <div className="field">
-                      <div className="control">
-                        <div className="control">
-                          <label className="checkbox">
-                            <input
-                              checked={templates[selectedTemplate].resources && includeResources}
-                              id="inputIncludeResources"
-                              name="includeResources"
-                              onChange={this.onCheckboxChange}
-                              type="checkbox"
-                            />
-                            <FormattedMessage {...messages.includeResources} />
-                          </label>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+                <FormComponent
+                  id="includeResources"
+                  label={<FormattedMessage {...messages.resources} />}
+                >
+                  <label className="checkbox">
+                    <input
+                      checked={templates[selectedTemplate].resources && includeResources}
+                      id="includeResources"
+                      name="includeResources"
+                      onChange={this.onCheckboxChange}
+                      type="checkbox"
+                    />
+                    <FormattedMessage {...messages.includeResources} />
+                  </label>
+                </FormComponent>
               )}
             </div>
             <footer className="card-footer">

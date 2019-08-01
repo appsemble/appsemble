@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "@appsemble/react": "0.8.2",
+    "@fortawesome/fontawesome-common-types": "^0.2.20",
     "@sentry/browser": "^5.5.0",
     "classnames": "^2.2.6",
     "leaflet": "^1.5.1",

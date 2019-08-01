@@ -1,3 +1,4 @@
+import { Input } from '@appsemble/react-components';
 import normalize from '@appsemble/utils/normalize';
 import axios from 'axios';
 import classNames from 'classnames';
@@ -48,14 +49,10 @@ export default class ConnectOAuth extends React.Component {
     }
   };
 
-  onChange = event => {
-    const { target } = event;
+  onChange = (event, value) => {
+    const { name } = event.target;
 
-    if (target.name === 'organization') {
-      target.value = normalize(target.value);
-    }
-
-    this.setState({ [target.name]: target.value });
+    this.setState({ [name]: name === 'organization' ? normalize(value) : value });
   };
 
   handleOAuthLogin() {
@@ -85,30 +82,14 @@ export default class ConnectOAuth extends React.Component {
             />
           </p>
 
-          <div className="field is-horizontal">
-            <div className="field-label is-normal">
-              <label className="label" htmlFor="inputOrganization">
-                <FormattedMessage {...messages.organizationLabel} />
-              </label>
-            </div>
-            <div className="field-body">
-              <div className="field">
-                <div className="control has-icons-left">
-                  <input
-                    className="input"
-                    id="inputOrganization"
-                    name="organization"
-                    onChange={this.onChange}
-                    required
-                    value={organization}
-                  />
-                  <span className="icon is-left">
-                    <i className="fas fa-briefcase" />
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
+          <Input
+            iconLeft="briefcase"
+            label={<FormattedMessage {...messages.organizationLabel} />}
+            name="organization"
+            onChange={this.onChange}
+            required
+            value={organization}
+          />
 
           <button
             className={classNames('button', 'is-primary', styles.registerButton)}

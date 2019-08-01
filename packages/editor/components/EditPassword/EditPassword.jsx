@@ -1,4 +1,4 @@
-import { Form } from '@appsemble/react-components';
+import { Form, Input } from '@appsemble/react-components';
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -21,10 +21,8 @@ export default class EditPassword extends React.Component {
     success: false,
   };
 
-  onChange = event => {
-    const { target } = event;
-
-    this.setState({ [target.name]: target.value, error: false });
+  onChange = (event, value) => {
+    this.setState({ [event.target.name]: value, error: false });
   };
 
   onSubmit = async event => {
@@ -67,33 +65,16 @@ export default class EditPassword extends React.Component {
               </article>
             )}
 
-            <div className="field is-horizontal">
-              <div className="field-label is-normal">
-                <label className="label" htmlFor="inputPassword">
-                  <FormattedMessage {...messages.passwordLabel} />
-                </label>
-              </div>
-              <div className="field-body">
-                <div className="field">
-                  <div className="control has-icons-left">
-                    <input
-                      autoComplete="new-password"
-                      className="input"
-                      disabled={submitting}
-                      id="inputPassword"
-                      name="password"
-                      onChange={this.onChange}
-                      required
-                      type="password"
-                      value={password}
-                    />
-                    <span className="icon is-left">
-                      <i className="fas fa-unlock" />
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <Input
+              autoComplete="new-password"
+              disabled={submitting}
+              label={<FormattedMessage {...messages.passwordLabel} />}
+              name="password"
+              onChange={this.onChange}
+              required
+              type="password"
+              value={password}
+            />
 
             <button
               className={classNames('button', 'is-primary', styles.submit)}
