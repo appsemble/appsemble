@@ -61,6 +61,7 @@ describe('organization controller', () => {
           primaryEmail: 'test@example.com',
         },
       ],
+      invites: [],
     });
   });
 
@@ -88,6 +89,7 @@ describe('organization controller', () => {
           primaryEmail: 'test@example.com',
         },
       ],
+      invites: [],
     });
   });
 
@@ -109,7 +111,7 @@ describe('organization controller', () => {
     const userB = await EmailAuthorization.create({ email: 'test2@example.com', verified: true });
     await userB.createUser({ primaryEmail: 'test2@example.com', name: 'John' });
     const response = await request(server)
-      .post('/api/organizations/testorganization/members')
+      .post('/api/organizations/testorganization/invites')
       .set('Authorization', token)
       .send({ email: 'test2@example.com' });
 
@@ -117,13 +119,12 @@ describe('organization controller', () => {
       id: expect.any(Number),
       name: 'John',
       primaryEmail: 'test2@example.com',
-      verified: false,
     });
   });
 
   it('should not send an invite for non-existent organizations', async () => {
     const response = await request(server)
-      .post('/api/organizations/doesnotexist/members')
+      .post('/api/organizations/doesnotexist/invites')
       .set('Authorization', token)
       .send({ email: 'test@example.com' });
 
@@ -135,7 +136,7 @@ describe('organization controller', () => {
     const userB = await EmailAuthorization.create({ email: 'test2@example.com', verified: true });
     await userB.createUser({ primaryEmail: 'test2@example.com', name: 'John' });
     const response = await request(server)
-      .post('/api/organizations/org/members')
+      .post('/api/organizations/org/invites')
       .set('Authorization', token)
       .send({ email: 'test2@example.com' });
 
@@ -149,70 +150,51 @@ describe('organization controller', () => {
     await organization.addUser(id);
 
     const response = await request(server)
-      .post('/api/organizations/testorganization/members')
+      .post('/api/organizations/testorganization/invites')
       .set('Authorization', token)
       .send({ email: 'test2@example.com' });
 
     expect(response.status).toStrictEqual(409);
   });
 
-  it('should not send an invite to an organization to non-existent users', async () => {
-    const response = await request(server)
-      .post('/api/organizations/testorganization/members')
-      .set('Authorization', token)
-      .send({ email: 'example@example.com' });
+  it('should resend an invitation', async () => {
+    const userB = await EmailAuthorization.create({ email: 'test2@example.com', verified: true });
+    await userB.createUser({ primaryEmail: 'test2@example.com', name: 'John' });
 
-    expect(response.status).toStrictEqual(404);
-  });
-
-  it('should not send an invite to an organization to unverified email addresses', async () => {
-    await EmailAuthorization.create({ email: 'test2@example.com', verified: false });
-
-    const response = await request(server)
-      .post('/api/organizations/testorganization/members')
+    await request(server)
+      .post('/api/organizations/testorganization/invites')
       .set('Authorization', token)
       .send({ email: 'test2@example.com' });
 
-    expect(response.status).toStrictEqual(406);
-  });
-
-  it('should resend an invitation', async () => {
-    const userB = await EmailAuthorization.create({ email: 'test2@example.com', verified: true });
-    const { id } = await userB.createUser({ primaryEmail: 'test2@example.com', name: 'John' });
-    const organization = await Organization.findByPk('testorganization');
-    await organization.addUser(id, {
-      through: { verified: false, email: 'test2@example.com', key: 'abcde' },
-    });
-
     const response = await request(server)
-      .post('/api/organizations/testorganization/resend')
+      .post('/api/organizations/testorganization/invites/resend')
       .set('Authorization', token)
-      .send({ memberId: id });
+      .send({ email: 'test2@example.com' });
 
     expect(response.status).toStrictEqual(204);
   });
 
   it('should not resend an invitation to a member who has not been invited', async () => {
     const userB = await EmailAuthorization.create({ email: 'test2@example.com', verified: true });
-    const { id } = await userB.createUser({ primaryEmail: 'test2@example.com', name: 'John' });
+    await userB.createUser({ primaryEmail: 'test2@example.com', name: 'John' });
 
     const response = await request(server)
-      .post('/api/organizations/testorganization/resend')
+      .post('/api/organizations/testorganization/invites/resend')
       .set('Authorization', token)
-      .send({ memberId: id });
+      .send({ email: 'test2@example.com' });
 
     expect(response.body).toStrictEqual({
       error: 'Not Found',
-      message: 'This user was not invited previously.',
+      message: 'This person was not invited previously.',
       statusCode: 404,
     });
   });
 
   it('should not resend an invitation for a non-existent organization', async () => {
     const response = await request(server)
-      .post('/api/organizations/foo/resend')
+      .post('/api/organizations/foo/invites/resend')
       .set('Authorization', token)
-      .send({ memberId: 1234 });
+      .send({ email: 'test@example.com' });
 
     expect(response.body).toStrictEqual({
       error: 'Not Found',

@@ -35,4 +35,8 @@ export default defineMessages({
   leaveOrganizationWarningTitle: 'Leaving organization',
   leaveOrganizationWarning: 'Are you sure you want to leave this organization',
   leaveOrganizationSuccess: 'Successfully left organization {organization}.',
+  removeInviteWarningTitle: 'Revoking invitation',
+  removeInviteWarning: 'Are you sure you want to revoke this invitation?',
+  removeInviteSuccess: 'Successfully revoked invitation',
+  removeInvite: 'Revoke invitation',
 });

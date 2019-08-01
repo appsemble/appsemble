@@ -6,10 +6,10 @@ import { UniqueConstraintError } from 'sequelize';
 
 export async function getOrganization(ctx) {
   const { organizationId } = ctx.params;
-  const { Organization, User } = ctx.db.models;
+  const { Organization, OrganizationInvite, User } = ctx.db.models;
 
   const organization = await Organization.findByPk(organizationId, {
-    include: [User],
+    include: [User, OrganizationInvite],
   });
   if (!organization) {
     throw Boom.notFound('Organization not found.');
@@ -22,7 +22,9 @@ export async function getOrganization(ctx) {
       id: user.id,
       name: user.name,
       primaryEmail: user.primaryEmail,
-      verified: user.Member.verified,
+    })),
+    invites: organization.OrganizationInvites.map(invite => ({
+      email: invite.email,
     })),
   };
 }
@@ -40,7 +42,7 @@ export async function createOrganization(ctx) {
       { include: [User] },
     );
 
-    await organization.addUser(userId, { through: { verified: true } });
+    await organization.addUser(userId);
     await organization.reload();
 
     ctx.body = {
@@ -50,8 +52,8 @@ export async function createOrganization(ctx) {
         id: u.id,
         name: u.name,
         primaryEmail: u.primaryEmail,
-        verified: u.Member.verified,
       })),
+      invites: [],
     };
   } catch (error) {
     if (error instanceof UniqueConstraintError) {
@@ -85,23 +87,29 @@ export async function getInvitation(ctx) {
 export async function respondInvitation(ctx) {
   const { organizationId } = ctx.params;
   const { response, token } = ctx.request.body;
-  const { Member } = ctx.db.models;
+  const { OrganizationInvite, Organization } = ctx.db.models;
+  const {
+    user: { id: userId },
+  } = ctx.state;
 
-  const invite = await Member.findOne({ where: { key: token } });
+  const invite = await OrganizationInvite.findOne(
+    { where: { key: token } },
+    { include: [Organization] },
+  );
 
   if (!invite) {
     throw Boom.notFound('This token is invalid.');
   }
 
-  if (organizationId !== invite.OrganizationId) {
+  if (organizationId !== invite.Organization.id) {
     throw Boom.notAcceptable('Organization IDs does not match');
   }
 
   if (response) {
-    await invite.update({ verified: true, key: null, email: null });
-  } else {
-    await invite.destroy();
+    await invite.Organization.addUser(userId);
   }
+
+  await invite.destroy();
 }
 
 export async function inviteMember(ctx) {
