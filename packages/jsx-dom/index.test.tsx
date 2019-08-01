@@ -14,12 +14,47 @@ it('should add event handlers', () => {
   expect(handler).toHaveBeenCalledTimes(1);
 });
 
-it('should render a function that returns a tag', () => {
-  function Foo({ cls }: { cls: string }): HTMLDivElement {
-    return <div className={cls} /> as HTMLDivElement;
-  }
+it('should set unknown properties as attributes', () => {
+  const div = <div aria-busy />;
+  expect(div.getAttribute('aria-busy')).toBe('true');
+});
 
-  const foo = <Foo cls="foo" />;
-  expect(foo.tagName).toBe('DIV');
-  expect(foo.className).toBe('foo');
+it('render element children', () => {
+  const div = (
+    <div>
+      <figure>
+        <img alt="test" />
+      </figure>
+      <span />
+    </div>
+  );
+  expect(div.outerHTML).toBe('<div><figure><img alt="test"></figure><span></span></div>');
+});
+
+it('render string children', () => {
+  const div = <div>Hello world!</div>;
+  expect(div.outerHTML).toBe('<div>Hello world!</div>');
+});
+
+it('render number children', () => {
+  const div = <div>{42}</div>;
+  expect(div.outerHTML).toBe('<div>42</div>');
+});
+
+it('ignore boolean or null children', () => {
+  const div = (
+    <div>
+      {true}
+      {false}
+      {null}
+      {undefined}
+    </div>
+  );
+  expect(div.outerHTML).toBe('<div></div>');
+});
+
+it('should support svg elements', () => {
+  const g = <g />;
+  // Jest doesn’t support SVG elements.
+  expect(g).toBeInstanceOf(HTMLUnknownElement);
 });
