@@ -206,6 +206,26 @@ export async function removeMember(ctx) {
   await organization.removeUser(memberId);
 }
 
+export async function removeInvite(ctx) {
+  const { email } = ctx.request.body;
+  const { OrganizationInvite } = ctx.db.models;
+  const { user } = ctx.state;
+
+  const invite = await OrganizationInvite.findOne({ where: { email } });
+  if (!invite) {
+    throw Boom.notFound('This invite does not exist.');
+  }
+
+  const organization = await invite.getOrganization();
+  if (!organization.hasUser(user.id)) {
+    throw Boom.forbidden(
+      "Not allowed to revoke an invitation if you're not part of the organization.",
+    );
+  }
+
+  await invite.destroy();
+}
+
 export async function getOrganizationCoreStyle(ctx) {
   const { organizationId } = ctx.params;
   const { Organization } = ctx.db.models;

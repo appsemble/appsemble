@@ -143,17 +143,15 @@ export default class OrganizationsSettings extends Component {
     }
 
     try {
-      const { data: member } = await axios.post(
-        `/api/organizations/${selectedOrganization}/invites`,
-        { email: memberEmail },
-      );
+      await axios.post(`/api/organizations/${selectedOrganization}/invites`, {
+        email: memberEmail,
+      });
 
-      organization.members.push(member);
       updateUser({
         ...user,
         organizations: organizations.map(o =>
           o.id === selectedOrganization
-            ? { ...organization, members: [...organization.members, member] }
+            ? { ...organization, invites: [...organization.invites, { email: memberEmail }] }
             : o,
         ),
       });
@@ -272,11 +270,13 @@ export default class OrganizationsSettings extends Component {
     updateUser({
       ...user,
       organizations: organizations.map(o =>
-        o.id === organization ? { ...organization, invites: filteredInvites } : o,
+        o.id === organization.id ? { ...organization, invites: filteredInvites } : o,
       ),
     });
 
-    await axios.delete(`/api/organizations/${selectedOrganization}/invites`, removingInvite);
+    await axios.delete(`/api/organizations/${selectedOrganization}/invites`, {
+      data: removingInvite,
+    });
     this.setState({ removingInvite: undefined });
 
     push({
