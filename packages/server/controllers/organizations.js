@@ -92,21 +92,20 @@ export async function respondInvitation(ctx) {
     user: { id: userId },
   } = ctx.state;
 
-  const invite = await OrganizationInvite.findOne(
-    { where: { key: token } },
-    { include: [Organization] },
-  );
+  const invite = await OrganizationInvite.findOne({ where: { key: token } });
 
   if (!invite) {
     throw Boom.notFound('This token is invalid.');
   }
 
-  if (organizationId !== invite.Organization.id) {
+  const organization = await Organization.findByPk(invite.OrganizationId);
+
+  if (organizationId !== organization.id) {
     throw Boom.notAcceptable('Organization IDs does not match');
   }
 
   if (response) {
-    await invite.Organization.addUser(userId);
+    await organization.addUser(userId);
   }
 
   await invite.destroy();
