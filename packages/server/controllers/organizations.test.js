@@ -10,6 +10,7 @@ describe('organization controller', () => {
   let BlockDefinition;
   let Organization;
   let OrganizationBlockStyle;
+  let OrganizationInvite;
   let User;
   let EmailAuthorization;
   let db;
@@ -26,6 +27,7 @@ describe('organization controller', () => {
       EmailAuthorization,
       Organization,
       OrganizationBlockStyle,
+      OrganizationInvite,
       User,
     } = db.models);
   }, 10e3);
@@ -120,6 +122,46 @@ describe('organization controller', () => {
       name: 'John',
       primaryEmail: 'test2@example.com',
     });
+  });
+
+  it('should revoke an invite', async () => {
+    await request(server)
+      .post('/api/organizations/testorganization/invites')
+      .set('Authorization', token)
+      .send({ email: 'test2@example.com' });
+
+    const response = await request(server)
+      .delete('/api/organizations/testorganization/invites')
+      .set('Authorization', token)
+      .send({ email: 'test2@example.com' });
+
+    expect(response.status).toStrictEqual(204);
+  });
+
+  it('should not revoke a non-existent invite', async () => {
+    const response = await request(server)
+      .delete('/api/organizations/testorganization/invites')
+      .set('Authorization', token)
+      .send({ email: 'test2@example.com' });
+
+    expect(response.status).toStrictEqual(404);
+  });
+
+  it('should not revoke an invite for an organization you are not a member of', async () => {
+    await Organization.create({ id: 'org' });
+    const userB = await EmailAuthorization.create({ email: 'test2@example.com', verified: true });
+    await userB.createUser({ primaryEmail: 'test2@example.com', name: 'John' });
+    await OrganizationInvite.create({
+      email: 'test2@example.com',
+      key: 'abcde',
+      OrganizationId: 'org',
+    });
+    const response = await request(server)
+      .post('/api/organizations/org/invites')
+      .set('Authorization', token)
+      .send({ email: 'test2@example.com' });
+
+    expect(response.status).toStrictEqual(403);
   });
 
   it('should not send an invite for non-existent organizations', async () => {
