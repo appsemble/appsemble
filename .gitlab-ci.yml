@@ -35,6 +35,7 @@ stages:
   extends: .helm-simple
   before_script:
     - helm init --client-only
+    - helm repo remove local
     - helm dependency build config/charts/*
 
 # A job preset for deleting Helm Charts.

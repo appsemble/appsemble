@@ -1,14 +1,19 @@
 import { Form } from '@appsemble/react-components';
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
-import React from 'react';
+import * as React from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import HelmetIntl from '../HelmetIntl';
 import messages from './messages';
 import styles from './ResetPassword.css';
 
-export default class ResetPassword extends React.Component {
+export interface ResetPasswordProps {
+  // XXX ReturnType<actions.user.requestResetPassword>
+  requestResetPassword: (email: string) => Promise<void>;
+}
+
+export default class ResetPassword extends React.Component<ResetPasswordProps> {
   static propTypes = {
     requestResetPassword: PropTypes.func.isRequired,
   };
@@ -20,13 +25,13 @@ export default class ResetPassword extends React.Component {
     success: false,
   };
 
-  onChange = event => {
+  onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { target } = event;
 
     this.setState({ [target.name]: target.value, error: false });
   };
 
-  onSubmit = async event => {
+  onSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
 
     const { email } = this.state;
@@ -42,11 +47,11 @@ export default class ResetPassword extends React.Component {
     }
   };
 
-  render() {
+  render(): JSX.Element {
     const { email, error, submitting, success } = this.state;
 
     return (
-      <React.Fagment>
+      <React.Fragment>
         <HelmetIntl title={messages.title} />
         {success ? (
           <div className={classNames('container', styles.root)}>
@@ -103,7 +108,7 @@ export default class ResetPassword extends React.Component {
             </button>
           </Form>
         )}
-      </React.Fagment>
+      </React.Fragment>
     );
   }
 }

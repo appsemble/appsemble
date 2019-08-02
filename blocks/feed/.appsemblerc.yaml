@@ -1,4 +1,5 @@
 actions:
+  onButtonClick: {}
   onAvatarClick: {}
   onLoad: {}
   onSubmitReply: {}

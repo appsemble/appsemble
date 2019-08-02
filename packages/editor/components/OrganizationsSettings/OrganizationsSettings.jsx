@@ -242,7 +242,7 @@ export default class OrganizationsSettings extends Component {
     updateUser({
       ...user,
       organizations: organizations.map(o =>
-        o.id === organization ? { ...organization, members: filteredMembers } : o,
+        o.id === organization.id ? { ...organization, members: filteredMembers } : o,
       ),
     });
 
