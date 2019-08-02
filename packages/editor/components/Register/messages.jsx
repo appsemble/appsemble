@@ -4,7 +4,8 @@ export default defineMessages({
   title: 'Register New Account',
   registerButton: 'Register',
   registerFailed: 'Register failed',
-  registerSuccess: 'Successfully registered! Please check your email for further instructions.',
+  registerSuccess:
+    'Successfully registered! Please check your email for instructions on verifying your account.',
   passwordLabel: 'Password',
   usernameLabel: 'Email',
   organizationLabel: 'Organization',

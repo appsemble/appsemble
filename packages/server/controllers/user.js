@@ -11,7 +11,6 @@ export async function getUser(ctx) {
       {
         model: Organization,
         attributes: ['id', 'name'],
-        through: { where: { verified: true } },
       },
       {
         model: EmailAuthorization,

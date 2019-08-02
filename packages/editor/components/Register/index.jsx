@@ -1,13 +1,22 @@
 import { injectIntl } from 'react-intl';
 import { connect } from 'react-redux';
+import { withRouter } from 'react-router-dom';
 
 import { push } from '../../actions/message';
-import { registerEmail } from '../../actions/user';
+import { passwordLogin, registerEmail } from '../../actions/user';
 import Register from './Register';
 
-export default injectIntl(
-  connect(
-    null,
-    { registerEmail, push },
-  )(Register),
+function mapStateToProps(state) {
+  return {
+    user: state.user.user,
+  };
+}
+
+export default withRouter(
+  injectIntl(
+    connect(
+      mapStateToProps,
+      { registerEmail, passwordLogin, push },
+    )(Register),
+  ),
 );

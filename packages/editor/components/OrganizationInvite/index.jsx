@@ -1,5 +1,3 @@
-import '../../index.css';
-
 import { injectIntl } from 'react-intl';
 import { connect } from 'react-redux';
 
