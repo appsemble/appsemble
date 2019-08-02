@@ -7,6 +7,10 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Fixed
+
+- Editor: The password reset page no longer crashes.
+
 ## [0.8.2] - 2019-07-29
 
 ### Added
