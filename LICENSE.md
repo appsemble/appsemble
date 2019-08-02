@@ -86,7 +86,7 @@ engineering for debugging such modifications, if you also do each of the followi
      Combined Work, in the manner specified by section 6 of the GNU GPL for conveying Corresponding
      Source.
   2. Use a suitable shared library mechanism for linking with the Library. A suitable mechanism is
-     one that (a) uses at run time a copy of the Library already present on the user's computer
+     one that (a) uses at run time a copy of the Library already present on the user’s computer
      system, and (b) will operate properly with a modified version of the Library that is
      interface-compatible with the Linked Version.
 - e) Provide Installation Information, but only if you would otherwise be required to provide such
@@ -125,5 +125,5 @@ choose any version of the GNU Lesser General Public License ever published by th
 Foundation.
 
 If the Library as you received it specifies that a proxy can decide whether future versions of the
-GNU Lesser General Public License shall apply, that proxy's public statement of acceptance of any
+GNU Lesser General Public License shall apply, that proxy’s public statement of acceptance of any
 version is permanent authorization for you to choose that version for the Library.
