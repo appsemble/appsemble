@@ -45,6 +45,7 @@ export default class Login extends React.Component {
   };
 
   render() {
+    const { location } = this.props;
     const returnUri = new URLSearchParams({ returnUri: '/_/connect' });
 
     return (
@@ -63,7 +64,10 @@ export default class Login extends React.Component {
         />
         <div className={styles.links}>
           {window.settings.enableRegistration && (
-            <Link className={styles.registerLink} to="/_/register">
+            <Link
+              className={styles.registerLink}
+              to={{ pathname: '/_/register', search: location.search, hash: location.hash }}
+            >
               <FormattedMessage {...messages.registerLink} />
             </Link>
           )}
