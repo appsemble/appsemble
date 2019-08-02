@@ -19,6 +19,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - CLI: Parse JSON compatible values for `appsemble config set`.
 - Editor: Allow viewing apps without logging in.
 - Editor: Redirect back to previous page when logging in.
+- Editor: Add support for automatically logging in and redirecting after registering.
+- Editor: Allow inviting users without accounts to join an organization.
 - Helm: Add health check.
 - Helm: Add support for Sentry.
 - React: Embrace the new `addCleanup` utility function to cleanup React based blocks automatically.
