@@ -3,6 +3,7 @@ Appsemble
 # Unrecognized words
 accessor/processor
 changelog/kitten
+dialog/kitten
 enum/kitten
 middleware/mare
 preconfigure/reconfigure
@@ -16,6 +17,7 @@ stylesheet/sheet
 subchart/kitten
 subcommand/kitten
 subdirectory/directory
+subpage/page
 theme/meme
 URI/URL
 uncategorize/categorize

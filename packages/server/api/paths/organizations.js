@@ -45,23 +45,23 @@ export default {
       },
     },
   },
-  '/api/organizations/{organizationId}/resend': {
+  '/api/organizations/{organizationId}/invites/resend': {
     parameters: [{ $ref: '#/components/parameters/organizationId' }],
     post: {
       tags: ['organization'],
       description: 'Request to resend an invitation.',
       operationId: 'resendInvitation',
       requestBody: {
-        description: 'The ID of the member to resend the invitation to.',
+        description: 'The email of the person to resend the invitation to.',
         required: true,
         content: {
           'application/json': {
             schema: {
               type: 'object',
-              required: ['memberId'],
+              required: ['email'],
               properties: {
-                memberId: {
-                  type: 'number',
+                email: {
+                  type: 'string',
                 },
               },
             },
@@ -111,7 +111,7 @@ export default {
       security: [{ apiUser: [] }],
     },
   },
-  '/api/organizations/{organizationId}/members': {
+  '/api/organizations/{organizationId}/invites': {
     parameters: [{ $ref: '#/components/parameters/organizationId' }],
     post: {
       tags: ['organization'],
@@ -145,6 +145,35 @@ export default {
               },
             },
           },
+        },
+      },
+      security: [{ apiUser: [] }],
+    },
+    delete: {
+      tags: ['organization'],
+      description: 'Revoke a member invitation.',
+      operationId: 'removeInvite',
+      requestBody: {
+        description: 'The email address to revoke the invite of.',
+        required: true,
+        content: {
+          'application/json': {
+            schema: {
+              type: 'object',
+              required: ['email'],
+              properties: {
+                email: {
+                  type: 'string',
+                  format: 'email',
+                },
+              },
+            },
+          },
+        },
+      },
+      responses: {
+        204: {
+          description: 'The invitation has been successfully revoked.',
         },
       },
       security: [{ apiUser: [] }],

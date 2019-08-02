@@ -23,6 +23,7 @@ export default class OrganizationsSettings extends Component {
     selectedOrganization: undefined,
     submittingMember: false,
     removingMember: undefined,
+    removingInvite: undefined,
     memberEmail: '',
     newOrganizationId: '',
     newOrganizationName: '',
@@ -142,16 +143,15 @@ export default class OrganizationsSettings extends Component {
     }
 
     try {
-      const { data: member } = await axios.post(
-        `/api/organizations/${selectedOrganization}/members`,
-        { email: memberEmail },
-      );
+      await axios.post(`/api/organizations/${selectedOrganization}/invites`, {
+        email: memberEmail,
+      });
 
       updateUser({
         ...user,
         organizations: organizations.map(o =>
           o.id === selectedOrganization
-            ? { ...organization, members: [...organization.members, member] }
+            ? { ...organization, invites: [...organization.invites, { email: memberEmail }] }
             : o,
         ),
       });
@@ -186,11 +186,13 @@ export default class OrganizationsSettings extends Component {
     }
   };
 
-  resendInvitation = async member => {
+  resendInvitation = async invite => {
     const { selectedOrganization } = this.state;
     const { intl, push } = this.props;
 
-    await axios.post(`/api/organizations/${selectedOrganization}/resend`, { memberId: member.id });
+    await axios.post(`/api/organizations/${selectedOrganization}/invites/resend`, {
+      email: invite.email,
+    });
     push({ body: intl.formatMessage(messages.resendInvitationSent), color: 'info' });
   };
 
@@ -198,6 +200,10 @@ export default class OrganizationsSettings extends Component {
     this.setState({
       removingMember: memberId,
     });
+  };
+
+  onRemoveInviteClick = async invite => {
+    this.setState({ removingInvite: invite });
   };
 
   onLeaveOrganization = async () => {
@@ -253,8 +259,38 @@ export default class OrganizationsSettings extends Component {
     });
   };
 
+  onRemoveInvite = async () => {
+    const { selectedOrganization, removingInvite } = this.state;
+    const { intl, push, user, updateUser } = this.props;
+
+    const { organizations } = user;
+    const organization = organizations.find(o => o.id === selectedOrganization);
+    const filteredInvites = organization.invites.filter(m => m.email !== removingInvite.email);
+
+    updateUser({
+      ...user,
+      organizations: organizations.map(o =>
+        o.id === organization.id ? { ...organization, invites: filteredInvites } : o,
+      ),
+    });
+
+    await axios.delete(`/api/organizations/${selectedOrganization}/invites`, {
+      data: removingInvite,
+    });
+    this.setState({ removingInvite: undefined });
+
+    push({
+      body: intl.formatMessage(messages.removeInviteSuccess),
+      color: 'info',
+    });
+  };
+
   onCloseDeleteDialog = () => {
     this.setState({ removingMember: undefined });
+  };
+
+  onCloseInviteDialog = () => {
+    this.setState({ removingInvite: undefined });
   };
 
   render() {
@@ -264,6 +300,7 @@ export default class OrganizationsSettings extends Component {
       memberEmail,
       submittingMember,
       removingMember,
+      removingInvite,
       newOrganizationId,
       newOrganizationName,
       submittingOrganization,
@@ -419,19 +456,8 @@ export default class OrganizationsSettings extends Component {
                       </div>
                     </td>
                     <td className="has-text-right">
-                      {member.verified && <FormattedMessage {...messages.member} />}
+                      <FormattedMessage {...messages.member} />
                       <div className={`field is-grouped ${styles.tags}`}>
-                        {!member.verified && (
-                          <p className={`control ${styles.memberButton}`}>
-                            <button
-                              className="control button is-outlined"
-                              onClick={() => this.resendInvitation(member)}
-                              type="button"
-                            >
-                              <FormattedMessage {...messages.resendInvitation} />
-                            </button>
-                          </p>
-                        )}
                         {member.id === user.id && organization.members.length > 1 && (
                           <p className={`control ${styles.memberButton}`}>
                             <button
@@ -462,10 +488,71 @@ export default class OrganizationsSettings extends Component {
                     </td>
                   </tr>
                 ))}
+                {organization.invites.map(invite => (
+                  <tr key={invite.email}>
+                    <td>{invite.email}</td>
+                    <td className="has-text-right">
+                      <div className={`field is-grouped ${styles.tags}`}>
+                        <p className={`control ${styles.memberButton}`}>
+                          <button
+                            className="control button is-outlined"
+                            onClick={() => this.resendInvitation(invite)}
+                            type="button"
+                          >
+                            <FormattedMessage {...messages.resendInvitation} />
+                          </button>
+                        </p>
+                        <p className={`control ${styles.memberButton}`}>
+                          <button
+                            className="button is-danger"
+                            onClick={() => this.onRemoveInviteClick(invite)}
+                            type="button"
+                          >
+                            <span className="icon is-small">
+                              <i className="fas fa-trash-alt" />
+                            </span>
+                          </button>
+                        </p>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
               </tbody>
             </table>
           </React.Fragment>
         )}
+
+        <Modal isActive={!!removingInvite} onClose={this.onCloseInviteDialog}>
+          <div className="card">
+            <header className="card-header">
+              <p className="card-header-title">
+                <FormattedMessage {...messages.removeInviteWarningTitle} />
+              </p>
+            </header>
+            <div className="card-content">
+              <FormattedMessage {...messages.removeInviteWarning} />
+            </div>
+            <footer className="card-footer">
+              {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
+              <a
+                className="card-footer-item is-link"
+                onClick={this.onCloseInviteDialog}
+                onKeyDown={this.onCloseInviteDialog}
+                role="button"
+                tabIndex="-1"
+              >
+                <FormattedMessage {...messages.cancel} />
+              </a>
+              <button
+                className={`card-footer-item button is-danger ${styles.cardFooterButton}`}
+                onClick={this.onRemoveInvite}
+                type="button"
+              >
+                <FormattedMessage {...messages.removeInvite} />
+              </button>
+            </footer>
+          </div>
+        </Modal>
 
         <Modal isActive={!!removingMember} onClose={this.onCloseDeleteDialog}>
           <div className="card">

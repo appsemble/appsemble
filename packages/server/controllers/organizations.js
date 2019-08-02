@@ -6,10 +6,10 @@ import { UniqueConstraintError } from 'sequelize';
 
 export async function getOrganization(ctx) {
   const { organizationId } = ctx.params;
-  const { Organization, User } = ctx.db.models;
+  const { Organization, OrganizationInvite, User } = ctx.db.models;
 
   const organization = await Organization.findByPk(organizationId, {
-    include: [User],
+    include: [User, OrganizationInvite],
   });
   if (!organization) {
     throw Boom.notFound('Organization not found.');
@@ -22,7 +22,9 @@ export async function getOrganization(ctx) {
       id: user.id,
       name: user.name,
       primaryEmail: user.primaryEmail,
-      verified: user.Member.verified,
+    })),
+    invites: organization.OrganizationInvites.map(invite => ({
+      email: invite.email,
     })),
   };
 }
@@ -39,8 +41,8 @@ export async function createOrganization(ctx) {
       { id: normalize(id), name },
       { include: [User] },
     );
-    await organization.addUser(userId, { through: { verified: true } });
 
+    await organization.addUser(userId);
     await organization.reload();
 
     ctx.body = {
@@ -50,8 +52,8 @@ export async function createOrganization(ctx) {
         id: u.id,
         name: u.name,
         primaryEmail: u.primaryEmail,
-        verified: u.Member.verified,
       })),
+      invites: [],
     };
   } catch (error) {
     if (error instanceof UniqueConstraintError) {
@@ -64,9 +66,9 @@ export async function createOrganization(ctx) {
 
 export async function getInvitation(ctx) {
   const { token } = ctx.params;
-  const { Member, Organization } = ctx.db.models;
+  const { Organization, OrganizationInvite } = ctx.db.models;
 
-  const invite = await Member.findOne(
+  const invite = await OrganizationInvite.findOne(
     {
       where: { key: token },
     },
@@ -85,30 +87,35 @@ export async function getInvitation(ctx) {
 export async function respondInvitation(ctx) {
   const { organizationId } = ctx.params;
   const { response, token } = ctx.request.body;
-  const { Member } = ctx.db.models;
+  const { OrganizationInvite, Organization } = ctx.db.models;
+  const {
+    user: { id: userId },
+  } = ctx.state;
 
-  const invite = await Member.findOne({ where: { key: token } });
+  const invite = await OrganizationInvite.findOne({ where: { key: token } });
 
   if (!invite) {
     throw Boom.notFound('This token is invalid.');
   }
 
-  if (organizationId !== invite.OrganizationId) {
+  const organization = await Organization.findByPk(invite.OrganizationId);
+
+  if (organizationId !== organization.id) {
     throw Boom.notAcceptable('Organization IDs does not match');
   }
 
   if (response) {
-    await invite.update({ verified: true, key: null, email: null });
-  } else {
-    await invite.destroy();
+    await organization.addUser(userId);
   }
+
+  await invite.destroy();
 }
 
 export async function inviteMember(ctx) {
   const { mailer } = ctx;
   const { organizationId } = ctx.params;
   const { email } = ctx.request.body;
-  const { Organization, EmailAuthorization, User } = ctx.db.models;
+  const { Organization, EmailAuthorization, OrganizationInvite, User } = ctx.db.models;
   const { user } = ctx.state;
 
   const organization = await Organization.findByPk(organizationId, { include: [User] });
@@ -117,61 +124,63 @@ export async function inviteMember(ctx) {
   }
 
   const dbEmail = await EmailAuthorization.findByPk(email, { include: [User] });
-  if (!dbEmail) {
-    throw Boom.notFound('No member with this email address could be found.');
-  }
-
-  const invitedUser = dbEmail.User;
+  const invitedUser = dbEmail ? dbEmail.User : null;
 
   if (!(await organization.hasUser(Number(user.id)))) {
     throw Boom.forbidden('Not allowed to invite users to organizations you are not a member of.');
   }
 
-  if (await organization.hasUser(invitedUser)) {
+  if (invitedUser && (await organization.hasUser(invitedUser))) {
     throw Boom.conflict('User is already in this organization or has already been invited.');
   }
 
-  if (dbEmail && !dbEmail.verified) {
-    throw Boom.notAcceptable('This email address has not been verified.');
-  }
-
   const key = crypto.randomBytes(20).toString('hex');
-  await organization.addUser(invitedUser, {
-    through: { verified: false, key, email },
+  await OrganizationInvite.create({
+    OrganizationId: organization.id,
+    UserId: invitedUser ? invitedUser.id : null,
+    key,
+    email,
   });
 
-  await mailer.sendEmail({ email, name: invitedUser.name }, 'organizationInvite', {
-    organization: organization.id,
-    url: `${ctx.origin}/_/organization-invite?token=${key}`,
-  });
+  await mailer.sendEmail(
+    { email, ...(invitedUser && { name: invitedUser.name }) },
+    'organizationInvite',
+    {
+      organization: organization.id,
+      url: `${ctx.origin}/_/organization-invite?token=${key}`,
+    },
+  );
 
   ctx.body = {
-    id: invitedUser.id,
-    name: invitedUser.name,
-    primaryEmail: invitedUser.primaryEmail,
-    verified: false,
+    id: invitedUser ? invitedUser.id : null,
+    name: invitedUser ? invitedUser.name : null,
+    primaryEmail: invitedUser ? invitedUser.primaryEmail : email,
   };
 }
 
 export async function resendInvitation(ctx) {
   const { mailer } = ctx;
   const { organizationId } = ctx.params;
-  const { memberId } = ctx.request.body;
-  const { Organization, User } = ctx.db.models;
+  const { email } = ctx.request.body;
+  const { Organization, OrganizationInvite } = ctx.db.models;
 
-  const organization = await Organization.findByPk(organizationId, { include: [User] });
+  const organization = await Organization.findByPk(organizationId, {
+    include: [OrganizationInvite],
+  });
   if (!organization) {
     throw Boom.notFound('Organization not found.');
   }
 
-  const user = organization.Users.find(u => u.id === memberId);
-  if (!user) {
-    throw Boom.notFound('This user was not invited previously.');
+  const invite = await organization.OrganizationInvites.find(i => i.email === email);
+  if (!invite) {
+    throw Boom.notFound('This person was not invited previously.');
   }
 
-  await mailer.sendEmail({ email: user.Member.email, name: user.name }, 'organizationInvite', {
+  const user = await invite.getUser();
+
+  await mailer.sendEmail({ email, ...(user && { name: user.name }) }, 'organizationInvite', {
     organization: organization.id,
-    url: `${ctx.origin}/_/organization-invite?token=${user.Member.key}`,
+    url: `${ctx.origin}/_/organization-invite?token=${invite.key}`,
   });
 
   ctx.body = 204;
@@ -194,6 +203,26 @@ export async function removeMember(ctx) {
   }
 
   await organization.removeUser(memberId);
+}
+
+export async function removeInvite(ctx) {
+  const { email } = ctx.request.body;
+  const { OrganizationInvite } = ctx.db.models;
+  const { user } = ctx.state;
+
+  const invite = await OrganizationInvite.findOne({ where: { email } });
+  if (!invite) {
+    throw Boom.notFound('This invite does not exist.');
+  }
+
+  const organization = await invite.getOrganization();
+  if (!organization.hasUser(user.id)) {
+    throw Boom.forbidden(
+      "Not allowed to revoke an invitation if you're not part of the organization.",
+    );
+  }
+
+  await invite.destroy();
 }
 
 export async function getOrganizationCoreStyle(ctx) {
