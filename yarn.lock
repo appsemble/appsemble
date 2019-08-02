@@ -13968,6 +13968,15 @@ retext-indefinite-article@^1.1.7:
     unist-util-is "^3.0.0"
     unist-util-visit "^1.1.0"
 
+retext-quotes@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/retext-quotes/-/retext-quotes-3.0.0.tgz#47f772e886b9b513dc6f1b97c482e15b1446b84a"
+  integrity sha512-2htggeOFsrorhXrQvb4BI1O/r7CGVQZx/TysAT7wlVMsRUTZooiIGkBcLrcySa4sbqjsVgg1RjMy8K5O+gCQlg==
+  dependencies:
+    nlcst-to-string "^2.0.0"
+    unist-util-is "^3.0.0"
+    unist-util-visit "^1.1.0"
+
 retext-repeated-words@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/retext-repeated-words/-/retext-repeated-words-2.0.0.tgz#93e8f5b81b76388910b1453a0d9c527460e95637"
