@@ -1916,6 +1916,13 @@
   dependencies:
     "@types/react" "*"
 
+"@types/react-helmet@^5.0.8":
+  version "5.0.8"
+  resolved "https://registry.yarnpkg.com/@types/react-helmet/-/react-helmet-5.0.8.tgz#f080eea6652e44f60b4574463d238f268d81d9af"
+  integrity sha512-ZTr12eDAYI0yUiMx1K82EHqRYa8J1BOOLus+0gL+AkksUiIPwLE0wLiXa9FNqD8r9GXAi+yRPZImkRh1JNlTkQ==
+  dependencies:
+    "@types/react" "*"
+
 "@types/react-intl@^2.3.18":
   version "2.3.18"
   resolved "https://registry.yarnpkg.com/@types/react-intl/-/react-intl-2.3.18.tgz#fd2d8b7f4d0a1dd05b5f1784ab0d7fe1786a690d"
@@ -9127,6 +9134,13 @@ koa-qs@^2.0.0:
     merge-descriptors "~0.0.2"
     qs "~2.3.3"
 
+koa-range@^0.3.0:
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/koa-range/-/koa-range-0.3.0.tgz#3588e3496473a839a1bd264d2a42b1d85bd7feac"
+  integrity sha1-NYjjSWRzqDmhvSZNKkKx2FvX/qw=
+  dependencies:
+    stream-slice "^0.1.2"
+
 koa-router@^7.4.0:
   version "7.4.0"
   resolved "https://registry.yarnpkg.com/koa-router/-/koa-router-7.4.0.tgz#aee1f7adc02d5cb31d7d67465c9eacc825e8c5e0"
@@ -13954,6 +13968,15 @@ retext-indefinite-article@^1.1.7:
     unist-util-is "^3.0.0"
     unist-util-visit "^1.1.0"
 
+retext-quotes@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/retext-quotes/-/retext-quotes-3.0.0.tgz#47f772e886b9b513dc6f1b97c482e15b1446b84a"
+  integrity sha512-2htggeOFsrorhXrQvb4BI1O/r7CGVQZx/TysAT7wlVMsRUTZooiIGkBcLrcySa4sbqjsVgg1RjMy8K5O+gCQlg==
+  dependencies:
+    nlcst-to-string "^2.0.0"
+    unist-util-is "^3.0.0"
+    unist-util-visit "^1.1.0"
+
 retext-repeated-words@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/retext-repeated-words/-/retext-repeated-words-2.0.0.tgz#93e8f5b81b76388910b1453a0d9c527460e95637"
@@ -14871,6 +14894,11 @@ stream-shift@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/stream-shift/-/stream-shift-1.0.0.tgz#d5c752825e5367e786f78e18e445ea223a155952"
   integrity sha1-1cdSgl5TZ+eG944Y5EXqIjoVWVI=
+
+stream-slice@^0.1.2:
+  version "0.1.2"
+  resolved "https://registry.yarnpkg.com/stream-slice/-/stream-slice-0.1.2.tgz#2dc4f4e1b936fb13f3eb39a2def1932798d07a4b"
+  integrity sha1-LcT04bk2+xPz6zmi3vGTJ5jQeks=
 
 stream-to-buffer@^0.1.0:
   version "0.1.0"

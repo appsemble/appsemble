@@ -1,7 +1,7 @@
 ---
 menu: Reference
 name: App
-route: '/reference/app'
+route: /reference/app
 ---
 
 # App

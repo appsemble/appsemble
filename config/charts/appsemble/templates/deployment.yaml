@@ -21,6 +21,7 @@ spec:
         app.kubernetes.io/instance: {{ .Release.Name }}
         app.kubernetes.io/name: {{ include "appsemble.name" . }}
     spec:
+      enableServiceLinks: false
       containers:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ include "appsemble.tag" . }}"

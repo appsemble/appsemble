@@ -1,7 +1,7 @@
 ---
 menu: Reference
 name: Action
-route: '/reference/action'
+route: /reference/action
 ---
 
 # Action

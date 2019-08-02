@@ -1,13 +1,13 @@
 ---
 menu: Reference
 name: Page
-route: '/reference/page'
+route: /reference/page
 ---
 
 # Page
 
 One of the most important components of an Appsemble app is its list of pages. Without pages, the
-apps won't have anything for the users to interact with.
+apps won’t have anything for the users to interact with.
 
 Each page in the list of pages in an app has several properties that define what they are called,
 how they should display and what its content looks like.
