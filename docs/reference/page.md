@@ -16,9 +16,9 @@ how they should display and what its content looks like.
 
 ## `name`\*
 
-The name of the page. This field is always required and must be unique, meaning that it is not
-possible to have two pages with the same name. The name of the page is displayed at the top of each
-page as well as in the side navigational menu.
+The name of the page. This field is always required and must be unique within the app, meaning that
+it is not possible to have two pages with the same name. The name of the page is displayed at the
+top of each page as well as in the side navigational menu.
 
 ## `scope`
 

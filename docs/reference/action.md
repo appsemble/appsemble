@@ -89,10 +89,18 @@ request using the [form block](../blocks/form).
 This action opens a pop-up dialog that can be used to seamlessly transition to a new set of blocks
 temporarily.
 
-Dialogs can be closed by calling the `dialog.ok` and `dialog.error`. Users can still manually close
-dialogs, which should be supported by the app.
+Dialogs can be closed by calling the [`dialog.ok`] and [`dialog.error`]. Users can still manually
+close dialogs, which should be supported by the app.
 
 | Parameter  | Required | Description                                                                              |
 | ---------- | -------- | ---------------------------------------------------------------------------------------- |
 | blocks     | true     | The list of blocks to render.                                                            |
 | fullscreen |          | Whether the dialog should be displayed fullscreen as if it's a new page, or as a pop-up. |
+
+## `dialog.ok`
+
+Close the dialog that is described above, signaling the `dialog` action succeeded.
+
+## `dialog.error`
+
+Close the dialog that is described above, signaling the `dialog` action has failed.
