@@ -10,6 +10,8 @@ import sass from 'node-sass';
 function processStyle(params) {
   const style = fs.readFileSync(require.resolve('./bulma.scss'), 'utf8').split(/\r?\n/);
   const bulmaPath = require.resolve('bulma/bulma.sass');
+  const checkRadioPath = require.resolve('bulma-checkradio/src/sass/index.sass');
+
   const mappings = {
     primaryColor: 'primary',
     linkColor: 'link',
@@ -26,6 +28,7 @@ function processStyle(params) {
   });
 
   style.push(`@import "${bulmaPath}";`);
+  style.push(`@import "${checkRadioPath}";`);
 
   return style.join('\n');
 }
