@@ -97,6 +97,7 @@ export default class Input extends React.Component<InputProps> {
           name={name}
           onChange={this.onChange}
           required={required}
+          type={type}
         />
         {iconLeft && (
           <span className="icon is-left">
