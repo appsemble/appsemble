@@ -22,7 +22,7 @@ export interface FormComponentProps {
   label: JSX.Element;
 
   /**
-   * Wether or not the input is required.
+   * Whether or not the input is required.
    */
   required?: boolean;
 }

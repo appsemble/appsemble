@@ -11,9 +11,6 @@ type SelectProps = FormComponentProps &
 
     /**
      * This is fired when the input value has changed.
-     *
-     * If the input type is `checkbox`, the value is a boolean. If the input type is `number`, the
-     * value is a number, otherwise it is a string.
      */
     onChange: (event: React.ChangeEvent<HTMLSelectElement>, value: string) => void;
   };
