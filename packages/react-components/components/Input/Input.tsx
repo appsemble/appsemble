@@ -6,7 +6,7 @@ import FormComponent, { FormComponentProps } from '../FormComponent';
 type InteractiveElement = HTMLInputElement | HTMLTextAreaElement;
 
 type InputProps = FormComponentProps &
-  Omit<React.HTMLProps<InteractiveElement>, 'onChange'> & {
+  Omit<React.HTMLProps<InteractiveElement>, 'label' | 'onChange'> & {
     /**
      * An error message to render.
      */
