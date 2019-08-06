@@ -132,7 +132,10 @@ export function createApp(recipe, organization) {
   };
 }
 
-export function createTemplateApp({ template, name, description, resources }, organization) {
+export function createTemplateApp(
+  { template, name, description, isPrivate, resources },
+  organization,
+) {
   return async dispatch => {
     const { data: app } = await axios.post('/api/templates', {
       template,
@@ -140,6 +143,7 @@ export function createTemplateApp({ template, name, description, resources }, or
       description,
       organizationId: organization.id,
       resources,
+      private: isPrivate,
     });
 
     dispatch({

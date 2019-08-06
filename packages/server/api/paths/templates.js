@@ -63,6 +63,9 @@ export default {
                   type: 'boolean',
                   description: 'Include example resources.',
                 },
+                private: {
+                  $ref: '#/components/schemas/App/properties/private',
+                },
               },
             },
           },

@@ -69,6 +69,7 @@ export default class CreateAppCard extends React.Component {
       selectedOrganization,
       templates,
       includeResources,
+      isPrivate,
     } = this.state;
 
     try {
@@ -77,6 +78,7 @@ export default class CreateAppCard extends React.Component {
         {
           template: name,
           name: appName,
+          isPrivate,
           description: appDescription,
           resources: resources && includeResources,
         },
