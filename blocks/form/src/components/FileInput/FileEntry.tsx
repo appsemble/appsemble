@@ -16,7 +16,7 @@ interface FileInputState {
 }
 
 function getDerivedStateFromProps(
-  { value }: FileInputProps,
+  { value }: FileEntryProps,
   state: FileInputState,
 ): FileInputState {
   if (value === state.value) {
