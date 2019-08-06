@@ -14,7 +14,14 @@ export async function getAppTemplates(ctx) {
 }
 
 export async function createTemplateApp(ctx) {
-  const { template: reqTemplate, name, description, organizationId, resources } = ctx.request.body;
+  const {
+    template: reqTemplate,
+    name,
+    description,
+    organizationId,
+    resources,
+    private: isPrivate = true,
+  } = ctx.request.body;
   const { App, Resource } = ctx.db.models;
   const { user } = ctx.state;
 
@@ -31,7 +38,12 @@ export async function createTemplateApp(ctx) {
   try {
     const app = await App.create(
       {
-        definition: { ...template.definition, description, name: name || template },
+        definition: {
+          ...template.definition,
+          description,
+          name: name || template,
+          private: isPrivate,
+        },
         OrganizationId: organizationId,
         path: name ? normalize(name) : normalize(template),
         ...(resources && {
