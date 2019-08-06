@@ -1,27 +1,31 @@
-import PropTypes from 'prop-types';
+import { BlockProps } from '@appsemble/react';
 import React from 'react';
+
+import { Field } from '../../../../block';
+
+interface StringRendererProps extends Partial<BlockProps> {
+  /**
+   * Structure used to define this field.
+   */
+  field: Field;
+
+  /**
+   * The current value.
+   */
+  value: any;
+
+  data: any;
+}
 
 /**
  * An element for a text type schema.
  */
-export default class StringRenderer extends React.Component {
-  static propTypes = {
-    /**
-     * Structure used to define this field.
-     */
-    field: PropTypes.shape().isRequired,
-
-    /**
-     * The current value.
-     */
-    value: PropTypes.oneOfType([PropTypes.string, PropTypes.shape()]),
-  };
-
+export default class StringRenderer extends React.Component<StringRendererProps> {
   static defaultProps = {
     value: '',
   };
 
-  render() {
+  render(): JSX.Element {
     const { field, value } = this.props;
 
     return (

@@ -21,7 +21,7 @@ export interface LocationProps {
   iconWidth: number;
   latitude: number;
   longitude: number;
-  mapOptions: MapOptions;
+  mapOptions?: MapOptions;
   theme: Theme;
 }
 

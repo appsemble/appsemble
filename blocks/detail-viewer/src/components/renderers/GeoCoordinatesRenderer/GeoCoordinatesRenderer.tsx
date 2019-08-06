@@ -1,46 +1,37 @@
+import { BlockProps } from '@appsemble/react';
 import { Location } from '@appsemble/react-components';
 import { remapData } from '@appsemble/utils';
-import PropTypes from 'prop-types';
 import React from 'react';
 
 import iconUrl from '../../../../../../themes/amsterdam/core/marker.svg';
+import { Field } from '../../../../block';
 import styles from './GeoCoordinatesRenderer.css';
+
+export interface GeoCoordinatesRendererProps extends Partial<BlockProps> {
+  /**
+   * The current value.
+   */
+  value: any;
+
+  /**
+   * Structure used to define this field.
+   */
+  field: Field;
+
+  data: any;
+}
 
 /**
  * An map for an object type schema which implements GeoCoordinates.
  *
  * https://schema.org/GeoCoordinates
  */
-export default class GeoCoordinatesRenderer extends React.Component {
-  static propTypes = {
-    /**
-     * The current value.
-     */
-    value: PropTypes.shape(),
-    /**
-     * The data structure to read from.
-     */
-    data: PropTypes.shape().isRequired,
-    /**
-     * Structure used to define this field.
-     */
-    field: PropTypes.shape({
-      longitude: PropTypes.string,
-      latitude: PropTypes.string,
-      label: PropTypes.string,
-    }).isRequired,
-
-    /**
-     * The current theme provided by the Appsemble SDK.
-     */
-    theme: PropTypes.shape().isRequired,
-  };
-
+export default class GeoCoordinatesRenderer extends React.Component<GeoCoordinatesRendererProps> {
   static defaultProps = {
     value: {},
   };
 
-  render() {
+  render(): JSX.Element {
     const {
       data,
       field: { label, latitude, longitude },
@@ -48,8 +39,8 @@ export default class GeoCoordinatesRenderer extends React.Component {
       theme,
     } = this.props;
 
-    let lat;
-    let lng;
+    let lat: number;
+    let lng: number;
 
     if (value) {
       // Relative to value

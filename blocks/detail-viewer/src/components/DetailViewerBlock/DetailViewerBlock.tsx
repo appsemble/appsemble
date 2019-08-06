@@ -1,12 +1,17 @@
+import { BlockProps } from '@appsemble/react';
 import { Loader } from '@appsemble/react-components';
 import { remapData } from '@appsemble/utils';
-import PropTypes from 'prop-types';
 import React from 'react';
 
+import { Actions, Parameters } from '../../../block';
 import FileRenderer from '../renderers/FileRenderer';
 import GeoCoordinatesRenderer from '../renderers/GeoCoordinatesRenderer';
 import StringRenderer from '../renderers/StringRenderer';
 import styles from './DetailViewerBlock.css';
+
+interface DetailViewerBlockState {
+  data: any;
+}
 
 const renderers = {
   file: FileRenderer,
@@ -17,39 +22,22 @@ const renderers = {
 /**
  * The main component for the Appsemble detail-viewer block.
  */
-export default class DetailViewerBlock extends React.Component {
-  static propTypes = {
-    /**
-     * The actions as passed by the Appsemble interface.
-     */
-    actions: PropTypes.shape().isRequired,
-    /**
-     * The url parameters as passed by the Appsemble interface.
-     */
-    pageParameters: PropTypes.shape().isRequired,
-    /**
-     * The block as passed by the Appsemble interface.
-     */
-    block: PropTypes.shape().isRequired,
-
-    /**
-     * The theme as passed by the Appsemble interface.
-     */
-    theme: PropTypes.shape().isRequired,
-  };
-
-  state = {
+export default class DetailViewerBlock extends React.Component<
+  BlockProps<Parameters, Actions>,
+  DetailViewerBlockState
+> {
+  state: DetailViewerBlockState = {
     data: undefined,
   };
 
-  async componentDidMount() {
+  async componentDidMount(): Promise<void> {
     const { actions, pageParameters } = this.props;
 
     const data = await actions.onLoad.dispatch(pageParameters);
     this.setState({ data });
   }
 
-  render() {
+  render(): JSX.Element {
     const { block, theme } = this.props;
     const { data } = this.state;
 

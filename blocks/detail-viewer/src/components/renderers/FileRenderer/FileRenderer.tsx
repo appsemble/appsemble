@@ -1,45 +1,28 @@
+import { BlockProps } from '@appsemble/react';
 import { remapData } from '@appsemble/utils';
 import classNames from 'classnames';
-import PropTypes from 'prop-types';
 import React from 'react';
 
+import { Field } from '../../../../block';
 import styles from './FileRenderer.css';
+
+export interface FileRendererProps extends Partial<BlockProps> {
+  /**
+   * Structure used to define this field.
+   */
+  field: Field;
+
+  /**
+   * The current value.
+   */
+  value: string | Blob | (string | Blob)[];
+}
 
 /**
  * Render a string as is.
  */
-export default class FileRenderer extends React.Component {
-  static propTypes = {
-    /**
-     * Structure used to define this field.
-     */
-    field: PropTypes.shape().isRequired,
-
-    /**
-     * The parameters passed in by the Appsemble block.
-     */
-    block: PropTypes.shape().isRequired,
-
-    /**
-     * The parameters passed in by the Appsemble block.
-     */
-    utils: PropTypes.shape().isRequired,
-
-    /**
-     * The current value.
-     */
-    value: PropTypes.oneOfType([
-      PropTypes.instanceOf(Blob),
-      PropTypes.string,
-      PropTypes.arrayOf(PropTypes.string),
-    ]),
-  };
-
-  static defaultProps = {
-    value: null,
-  };
-
-  getSrc = value => {
+export default class FileRenderer extends React.Component<FileRendererProps> {
+  getSrc = (value: string | Blob) => {
     const { block, utils } = this.props;
 
     if (value instanceof Blob) {
@@ -48,14 +31,14 @@ export default class FileRenderer extends React.Component {
       return url;
     }
 
-    if (block?.parameters?.fileBase) {
+    if (block && block.parameters && block.parameters.fileBase) {
       return `${new URL(`${block.parameters.fileBase}/${value}`, window.location.origin)}`;
     }
 
     return value;
   };
 
-  render() {
+  render(): JSX.Element {
     const { field, value } = this.props;
 
     return (
@@ -63,7 +46,7 @@ export default class FileRenderer extends React.Component {
         {field.label && <h6 className="title is-6">{field.label}</h6>}
         {field.repeated ? (
           <div className={classNames('container', styles.repeated)}>
-            {(value || []).map((v, index) => {
+            {((value || []) as string[]).map((v, index) => {
               return (
                 <figure
                   // eslint-disable-next-line react/no-array-index-key
@@ -81,7 +64,11 @@ export default class FileRenderer extends React.Component {
           </div>
         ) : (
           <figure className={classNames('image', styles.root)}>
-            <img alt={field.label || field.name} className={styles.img} src={this.getSrc(value)} />
+            <img
+              alt={field.label || field.name}
+              className={styles.img}
+              src={this.getSrc(value as string)}
+            />
           </figure>
         )}
       </React.Fragment>

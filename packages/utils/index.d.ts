@@ -10,9 +10,9 @@ interface Context {
   };
 }
 
-export function compileFilters(mapperString: string, context: Context): MapperFunction;
+export function compileFilters(mapperString: string, context?: Context): MapperFunction;
 
-export function remapData(mapperData: any, inputData: any, context: Context): any;
+export function remapData(mapperData: any, inputData: any, context?: Context): any;
 
 export function normalize(input: string): string;
 
