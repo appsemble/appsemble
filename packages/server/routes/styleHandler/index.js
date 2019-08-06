@@ -31,6 +31,8 @@ function processStyle(params) {
 
   // Syntax: https://sass-lang.com/documentation/breaking-changes/css-vars
   style.push(
+    `$themeColor: ${params.themeColor || '#fff'};`,
+    `$splashColor: ${params.splashColor || '#fff'};`,
     ':root {',
     '--primary-color: #{$primary};',
     '--link-color: #{$link};',
@@ -39,6 +41,8 @@ function processStyle(params) {
     '--warning-color: #{$warning};',
     '--danger-color: #{$danger};',
     '--success-color: #{$success};',
+    '--theme-color: #{$themeColor};',
+    '--splash-color: #{$splashColor};',
     '--primary-color-invert: #{$primary-invert};',
     '--link-color-invert: #{$link-invert};',
     '--success-color-invert: #{$success-invert};',
@@ -46,6 +50,8 @@ function processStyle(params) {
     '--warning-color-invert: #{$warning-invert};',
     '--danger-color-invert: #{$danger-invert};',
     '--success-color-invert: #{$success-invert};',
+    '--theme-color-invert: #{findColorInvert($themeColor)};',
+    '--splash-color-invert: #{findColorInvert($splashColor)};',
     '}',
   );
 
