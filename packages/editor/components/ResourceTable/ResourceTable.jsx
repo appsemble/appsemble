@@ -1,4 +1,4 @@
-import { Form, Input, Loader, Modal } from '@appsemble/react-components';
+import { Form, Icon, Input, Loader, Modal } from '@appsemble/react-components';
 import axios from 'axios';
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
@@ -282,9 +282,7 @@ export default class ResourceTable extends React.Component {
         <HelmetIntl title={messages.title} titleValues={{ name: app.name, resourceName }} />
         <h1 className="title">Resource {resourceName}</h1>
         <Link className="button is-primary" to={`${match.url}/new`}>
-          <span className="icon">
-            <i className="fas fa-plus-square" />
-          </span>
+          <Icon icon="plus-square" />
           <span>
             <FormattedMessage {...messages.createButton} />
           </span>
@@ -304,18 +302,14 @@ export default class ResourceTable extends React.Component {
                 <tr key={resource.id}>
                   <td className={styles.actionsCell}>
                     <Link className="button" to={`${match.url}/edit/${resource.id}`}>
-                      <span className="icon is-small has-text-info">
-                        <i className="fas fa-pen" />
-                      </span>
+                      <Icon className="is-small has-text-info" icon="pen" />
                     </Link>
                     <button
                       className="button"
                       onClick={() => this.promptDeleteResource(resource)}
                       type="button"
                     >
-                      <span className="icon is-small has-text-danger">
-                        <i className="fas fa-trash" />
-                      </span>
+                      <Icon className="is-small has-text-danger" icon="trash" />
                     </button>
                   </td>
                   {keys.map(key => (

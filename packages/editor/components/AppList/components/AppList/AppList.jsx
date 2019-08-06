@@ -1,4 +1,4 @@
-import { Loader } from '@appsemble/react-components';
+import { Icon, Loader } from '@appsemble/react-components';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
@@ -60,9 +60,7 @@ export default class AppList extends React.Component {
               placeholder={intl.formatMessage(messages.search)}
               value={filter}
             />
-            <span className="icon is-small is-left">
-              <i className="fas fa-search" />
-            </span>
+            <Icon className="is-left" icon="search" size="small" />
           </p>
         </div>
         <div className={styles.appList}>

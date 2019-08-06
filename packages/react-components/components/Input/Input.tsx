@@ -2,6 +2,7 @@ import classNames from 'classnames';
 import * as React from 'react';
 
 import FormComponent, { FormComponentProps } from '../FormComponent';
+import Icon from '../Icon';
 
 type InteractiveElement = HTMLInputElement | HTMLTextAreaElement;
 
@@ -85,11 +86,7 @@ export default class Input extends React.Component<InputProps> {
           required={required}
           type={type}
         />
-        {iconLeft && (
-          <span className="icon is-left">
-            <i className={`fas fa-${iconLeft}`} />
-          </span>
-        )}
+        {iconLeft && <Icon className="is-left" icon={iconLeft} />}
         {help && <p className="help">{help}</p>}
         {React.isValidElement(error) && <p className="help is-danger">{error}</p>}
       </FormComponent>

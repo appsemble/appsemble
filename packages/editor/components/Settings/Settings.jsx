@@ -1,3 +1,4 @@
+import { Icon } from '@appsemble/react-components';
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -29,17 +30,13 @@ export default class Settings extends React.Component {
           toggleCollapse={() => this.setState({ isCollapsed: !isCollapsed })}
         >
           <NavLink className={styles.menuItem} exact to={`${match.url}/user`}>
-            <span className="icon is-medium">
-              <i className="fas fa-lg fa-user" />
-            </span>
+            <Icon icon="user" size="medium" />
             <span className={classNames({ 'is-hidden': isCollapsed })}>
               <FormattedMessage {...messages.user} />
             </span>
           </NavLink>
           <NavLink className={styles.menuItem} exact to={`${match.url}/organizations`}>
-            <span className="icon is-medium">
-              <i className="fas fa-lg fa-briefcase" />
-            </span>
+            <Icon icon="briefcase" size="medium" />
             <span className={classNames({ 'is-hidden': isCollapsed })}>
               <FormattedMessage {...messages.organizations} />
             </span>

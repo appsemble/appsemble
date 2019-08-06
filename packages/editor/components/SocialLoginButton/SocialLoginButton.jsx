@@ -1,3 +1,4 @@
+import { Icon } from '@appsemble/react-components';
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -19,9 +20,7 @@ export default class SocialLoginButton extends React.Component {
 
     return (
       <a className={classNames('button', className)} href={providerUri} {...props}>
-        <span className="icon">
-          <i className={classNames('fab', `fa-${iconClass}`)} />
-        </span>
+        <Icon icon={iconClass} />
         <span>{children}</span>
       </a>
     );
