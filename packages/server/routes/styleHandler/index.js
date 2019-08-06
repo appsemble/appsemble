@@ -1,6 +1,8 @@
 import fs from 'fs';
 import sass from 'node-sass';
 
+const baseStyle = fs.readFileSync(require.resolve('./bulma.scss'), 'utf8').split(/\r?\n/);
+
 /**
  * Process SASS styles based on given parameters.
  *
@@ -8,7 +10,7 @@ import sass from 'node-sass';
  * @returns {string} SASS string containing the base Appsemble style augmented by user parameters.
  */
 function processStyle(params) {
-  const style = fs.readFileSync(require.resolve('./bulma.scss'), 'utf8').split(/\r?\n/);
+  const style = [...baseStyle];
   const bulmaPath = require.resolve('bulma/bulma.sass');
   const mappings = {
     primaryColor: 'primary',
@@ -26,6 +28,26 @@ function processStyle(params) {
   });
 
   style.push(`@import "${bulmaPath}";`);
+
+  // Syntax: https://sass-lang.com/documentation/breaking-changes/css-vars
+  style.push(
+    ':root {',
+    '--primary-color: #{$primary};',
+    '--link-color: #{$link};',
+    '--success-color: #{$success};',
+    '--info-color: #{$info};',
+    '--warning-color: #{$warning};',
+    '--danger-color: #{$danger};',
+    '--success-color: #{$success};',
+    '--primary-color-invert: #{$primary-invert};',
+    '--link-color-invert: #{$link-invert};',
+    '--success-color-invert: #{$success-invert};',
+    '--info-color-invert: #{$info-invert};',
+    '--warning-color-invert: #{$warning-invert};',
+    '--danger-color-invert: #{$danger-invert};',
+    '--success-color-invert: #{$success-invert};',
+    '}',
+  );
 
   return style.join('\n');
 }
