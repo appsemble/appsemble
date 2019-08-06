@@ -111,6 +111,48 @@ export interface Utils {
   showMessage: (message: string | Message) => void;
 }
 
+export interface Theme {
+  /**
+   * The color primarily featured in the color scheme.
+   */
+  primaryColor: string;
+
+  /**
+   * The color used for links.
+   */
+  linkColor: string;
+
+  /**
+   * The color used to feature succesful or positive actions.
+   */
+  successColor: string;
+
+  /**
+   * The color used to indicate information.
+   */
+  infoColor: string;
+
+  /**
+   * The color used for elements that require extra attention.
+   */
+  warningColor: string;
+
+  /**
+   * The color used for elements that demand caution for destructive actions.
+   */
+  dangerColor: string;
+
+  /**
+   * The color used in the foreground of the splash screen.
+   */
+  themeColor: string;
+
+  /**
+   * The color used in the background of the splash screen.
+   */
+  splashColor: string;
+}
+
 export interface Events {
   /**
    * Emit an Appsemble event.
@@ -168,6 +210,13 @@ export interface BootstrapParams<P = any, A = {}> {
    * parameter keys and values of the page will be extracted and set as this object.
    */
   pageParameters?: PageParameters;
+
+  /**
+   * The theme of the block given the context.
+   *
+   * This is based on a combination of the base theme, app theme, page theme and block theme.
+   */
+  theme: Theme;
 
   /**
    * The shadow root to which DOM elements may be appended.
