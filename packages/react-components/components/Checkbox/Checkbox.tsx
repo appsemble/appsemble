@@ -4,7 +4,7 @@ import * as React from 'react';
 import FormComponent, { FormComponentProps } from '../FormComponent';
 
 type CheckboxProps = FormComponentProps &
-  React.HTMLProps<HTMLInputElement> & {
+  Omit<React.HTMLProps<HTMLInputElement>, 'value'> & {
     /**
      * The name of the HTML element.
      */
@@ -19,6 +19,11 @@ type CheckboxProps = FormComponentProps &
      * This is fired when the input value has changed.
      */
     onChange: (event: React.ChangeEvent<HTMLInputElement>, value: boolean) => void;
+
+    /**
+     * Whether or not the checkbox is checked.
+     */
+    value: boolean;
   };
 
 /**
@@ -32,12 +37,13 @@ export default class Checkbox extends React.Component<CheckboxProps> {
   };
 
   render(): JSX.Element {
-    const { label, name, help, id = name, className, ...props } = this.props;
+    const { className, help, label, name, value, id = name, ...props } = this.props;
 
     return (
       <FormComponent id={id} label={label} required>
         <input
           {...props}
+          checked={value}
           className={classNames('is-checkradio', className)}
           id={id}
           name={name}

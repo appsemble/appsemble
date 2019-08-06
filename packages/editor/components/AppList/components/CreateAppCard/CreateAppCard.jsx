@@ -197,22 +197,20 @@ export default class CreateAppCard extends React.Component {
                 <div className="message-body">{templates[selectedTemplate].description}</div>
               </article>
               <Checkbox
-                checked={isPrivate}
                 className="is-warning"
                 help={<FormattedMessage {...messages.privateHelp} />}
-                id="isPrivate"
                 label={<FormattedMessage {...messages.private} />}
                 name="isPrivate"
                 onChange={this.onChange}
+                value={isPrivate}
               />
               {templates[selectedTemplate].resources && (
                 <Checkbox
-                  checked={templates[selectedTemplate].resources && includeResources}
                   help={<FormattedMessage {...messages.includeResources} />}
-                  id="includeResources"
                   label={<FormattedMessage {...messages.resources} />}
                   name="includeResources"
                   onChange={this.onChange}
+                  value={templates[selectedTemplate].resources && includeResources}
                 />
               )}
             </div>
