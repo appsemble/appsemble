@@ -1,39 +1,22 @@
 import classNames from 'classnames';
-import PropTypes from 'prop-types';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 
+import { InputProps } from '../../../block';
 import messages from './messages';
+
+type NumberInputProps = InputProps<number>;
 
 /**
  * An input element for a number type schema.
  */
-export default class NumberInput extends React.Component {
-  static propTypes = {
-    /**
-     * A field error object.
-     */
-    error: PropTypes.shape(),
-    /**
-     * The enum field to render.
-     */
-    field: PropTypes.shape().isRequired,
-    /**
-     * A callback for when the value changes.
-     */
-    onChange: PropTypes.func.isRequired,
-    /**
-     * The current value.
-     */
-    value: PropTypes.number,
-  };
-
-  static defaultProps = {
+export default class NumberInput extends React.Component<NumberInputProps> {
+  static defaultProps: Partial<NumberInputProps> = {
     error: null,
     value: undefined,
   };
 
-  render() {
+  render(): JSX.Element {
     const { error, field, onChange, value } = this.props;
 
     return (

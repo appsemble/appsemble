@@ -1,38 +1,28 @@
 import 'leaflet/dist/leaflet.css';
 
+import { BlockProps } from '@appsemble/react';
 import classNames from 'classnames';
-import { TileLayer } from 'leaflet/src/layer';
-import { CircleMarker } from 'leaflet/src/layer/vector';
-import { Map } from 'leaflet/src/map';
-import PropTypes from 'prop-types';
+import { CircleMarker, LocationEvent, Map, TileLayer } from 'leaflet';
 import React from 'react';
 
+import { InputProps } from '../../../block';
 import styles from './GeoCoordinatesInput.css';
+
+type GeoCoordinatesInputProps = InputProps<{}> & BlockProps;
 
 /**
  * An input element for an object type schema which implements GeoCoordinates.
  */
-export default class GeoCoordinatesInput extends React.Component {
-  static propTypes = {
-    /**
-     * The name of the property to render.
-     */
-    field: PropTypes.shape().isRequired,
-    /**
-     * A callback for when the value changes.
-     */
-    onChange: PropTypes.func.isRequired,
-    reactRoot: PropTypes.instanceOf(HTMLElement).isRequired,
-    utils: PropTypes.shape().isRequired,
-  };
-
+export default class GeoCoordinatesInput extends React.Component<GeoCoordinatesInputProps> {
   locationMarker = new CircleMarker(null, {
     color: getComputedStyle(this.props.reactRoot).getPropertyValue('--primary-color'),
   });
 
-  ref = React.createRef();
+  ref = React.createRef<HTMLDivElement>();
 
-  componentDidMount() {
+  map: Map;
+
+  componentDidMount(): void {
     const { field, onChange, utils } = this.props;
 
     const map = new Map(this.ref.current, {
@@ -47,7 +37,7 @@ export default class GeoCoordinatesInput extends React.Component {
           body: 'Locatie kon niet worden gevonden. Is de locatievoorziening ingeschakeld?',
         });
       })
-      .on('locationfound', ({ latlng }) => {
+      .on('locationfound', ({ latlng }: LocationEvent) => {
         this.locationMarker.setLatLng(latlng).addTo(map);
       })
       .on('move', () => {
@@ -65,10 +55,10 @@ export default class GeoCoordinatesInput extends React.Component {
   }
 
   onReset = () => {
-    this.map.setView(this.locationMarker.getLatLng());
+    this.map.setView(this.locationMarker.getLatLng(), 16);
   };
 
-  render() {
+  render(): JSX.Element {
     return (
       <div className={styles.root}>
         <div ref={this.ref} className={styles.map} />

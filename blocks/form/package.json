@@ -2,9 +2,6 @@
   "name": "@appsemble/form",
   "version": "0.8.2",
   "private": true,
-  "scripts": {
-    "tsc": "../../config/bin/tscstub.js"
-  },
   "appsemble": {
     "actions": {
       "onSubmit": {
@@ -18,7 +15,6 @@
     "@appsemble/react": "0.8.2",
     "classnames": "^2.2.6",
     "leaflet": "^1.5.1",
-    "prop-types": "^15.7.2",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
     "react-intl": "^2.9.0",
