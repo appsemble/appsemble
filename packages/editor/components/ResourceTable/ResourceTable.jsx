@@ -1,4 +1,4 @@
-import { Form, Loader, Modal } from '@appsemble/react-components';
+import { Form, Input, Loader, Modal } from '@appsemble/react-components';
 import axios from 'axios';
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
@@ -77,22 +77,21 @@ export default class ResourceTable extends React.Component {
     }
   }
 
-  onChange = event => {
-    if (event.target.name === 'id') {
+  onChange = (event, value) => {
+    const { name } = event.target;
+    if (name === 'id') {
       return;
     }
-    const { app, resourceName } = this.props;
-    const { schema } = app.resources[resourceName];
-    const properties = schema.properties[event.target.name];
-    const value =
-      properties.type === 'object' || properties.type === 'array'
-        ? JSON.parse(event.target.value)
-        : event.target.value;
+    this.setState(({ editingResource }, { app, resourceName }) => {
+      const { type } = app.resources[resourceName].properties[name];
 
-    const { editingResource } = this.state;
-    editingResource[event.target.name] = value;
-
-    this.setState({ editingResource });
+      return {
+        editingResource: {
+          ...editingResource,
+          [name]: type === 'object' || type === 'array' ? JSON.parse(value) : value,
+        },
+      };
+    });
   };
 
   onClose = () => {
@@ -346,32 +345,18 @@ export default class ResourceTable extends React.Component {
                 }
 
                 return (
-                  <div key={key} className="field is-horizontal">
-                    <div className="field-label is-normal">
-                      <label className="label" htmlFor={key}>
-                        {key}
-                      </label>
-                    </div>
-                    <div className="field-body">
-                      <div className="field">
-                        <div className="control">
-                          <input
-                            className="input"
-                            disabled={properties.readOnly || key === 'id'}
-                            id={key}
-                            name={key}
-                            onChange={this.onChange}
-                            placeholder={key}
-                            required={schema?.required?.includes(key)}
-                            type={
-                              properties.format && properties.format === 'email' ? 'email' : 'text'
-                            }
-                            value={value}
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                  <Input
+                    key={key}
+                    disabled={properties.readOnly || key === 'id'}
+                    id={key}
+                    label={key}
+                    name={key}
+                    onChange={this.onChange}
+                    placeholder={key}
+                    required={schema?.required?.includes(key)}
+                    type={properties.format && properties.format === 'email' ? 'email' : 'text'}
+                    value={value}
+                  />
                 );
               })}
             </div>
