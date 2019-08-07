@@ -15,7 +15,7 @@ type GeoCoordinatesInputProps = InputProps<{}> & BlockProps;
  */
 export default class GeoCoordinatesInput extends React.Component<GeoCoordinatesInputProps> {
   locationMarker = new CircleMarker(null, {
-    color: getComputedStyle(this.props.reactRoot).getPropertyValue('--primary-color'),
+    color: this.props.theme.primaryColor,
   });
 
   ref = React.createRef<HTMLDivElement>();

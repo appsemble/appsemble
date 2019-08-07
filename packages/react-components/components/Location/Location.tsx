@@ -39,12 +39,11 @@ export default class Location extends React.Component<LocationProps & BlockProps
       latitude,
       longitude,
       mapOptions,
-      reactRoot,
-      theme: { tileLayer },
+      theme: { primaryColor, tileLayer },
     } = this.props;
 
     const locationMarker = new CircleMarker(null, {
-      color: getComputedStyle(reactRoot).getPropertyValue('--primary-color'),
+      color: primaryColor,
     });
 
     const map = new Map(this.ref.current, {

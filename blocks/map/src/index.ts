@@ -8,13 +8,13 @@ import createGetters, { BlockActions, BlockParameters } from './createGetters';
 import loadMarkers from './loadMarkers';
 
 attach<BlockParameters, BlockActions>(
-  ({ actions, block, data, shadowRoot, utils, theme: { tileLayer } }) => {
+  ({ actions, block, data, shadowRoot, utils, theme: { primaryColor, tileLayer } }) => {
     const node = shadowRoot.appendChild(document.createElement('div'));
     const fetched = new Set<number>();
 
     const get = createGetters(block.parameters);
     const locationMarker = new CircleMarker(null, {
-      color: getComputedStyle(node).getPropertyValue('--primary-color'),
+      color: primaryColor,
     });
     const map = new Map(node, {
       attributionControl: false,
