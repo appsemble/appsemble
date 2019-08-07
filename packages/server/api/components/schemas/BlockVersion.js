@@ -36,6 +36,10 @@ export default {
       `,
       additionalProperties: true,
     },
+    parameters: {
+      type: 'object',
+      description: 'XXX',
+    },
     resources: {
       type: 'object',
       description: 'deprecated',

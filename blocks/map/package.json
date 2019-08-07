@@ -2,15 +2,6 @@
   "name": "@appsemble/map",
   "version": "0.8.2",
   "private": true,
-  "appsemble": {
-    "actions": {
-      "onMarkerClick": {},
-      "onLoad": {
-        "required": true
-      }
-    },
-    "output": "dist"
-  },
   "dependencies": {
     "@appsemble/sdk": "0.8.2",
     "@appsemble/utils": "0.8.2",

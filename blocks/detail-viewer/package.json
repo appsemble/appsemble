@@ -2,14 +2,6 @@
   "name": "@appsemble/detail-viewer",
   "version": "0.8.2",
   "private": true,
-  "appsemble": {
-    "actions": {
-      "onLoad": {
-        "required": true
-      }
-    },
-    "output": "dist"
-  },
   "dependencies": {
     "@appsemble/react": "0.8.2",
     "@appsemble/react-components": "0.8.2",

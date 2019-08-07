@@ -68,6 +68,7 @@ export async function createBlockVersion(ctx) {
       const {
         actions = null,
         layout = null,
+        parameters,
         resources = null,
         version,
       } = await BlockVersion.create({ ...data, name }, { transaction });
@@ -91,6 +92,7 @@ export async function createBlockVersion(ctx) {
         files: fileKeys,
         name,
         layout,
+        parameters,
         resources,
         version,
       };

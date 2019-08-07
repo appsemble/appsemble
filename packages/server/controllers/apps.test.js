@@ -36,6 +36,7 @@ describe('app controller', () => {
     await BlockVersion.create({
       name: '@appsemble/test',
       version: '0.0.0',
+      parameters: {},
     });
   });
 
@@ -375,10 +376,10 @@ pages:
 
     expect(body).toStrictEqual({
       data: {
-        'pages.0.blocks.0': 'Unknown block version “@non/existent@0.0.0”',
+        'pages.0.blocks.0': 'Unknown block type “@non/existent”',
       },
       error: 'Bad Request',
-      message: 'Unknown blocks or block versions found',
+      message: 'Block validation failed',
       statusCode: 400,
     });
   });
@@ -409,10 +410,10 @@ pages:
 
     expect(body).toStrictEqual({
       data: {
-        'pages.0.blocks.0': 'Unknown block version “@appsemble/test@0.0.1”',
+        'pages.0.blocks.0': 'Unknown block type “@appsemble/test”',
       },
       error: 'Bad Request',
-      message: 'Unknown blocks or block versions found',
+      message: 'Block validation failed',
       statusCode: 400,
     });
   });
@@ -1265,10 +1266,10 @@ pages:
 
     expect(body).toStrictEqual({
       data: {
-        'pages.0.blocks.0': 'Unknown block version “@appsemble/test@0.0.1”',
+        'pages.0.blocks.0': 'Unknown block type “@appsemble/test”',
       },
       error: 'Bad Request',
-      message: 'Unknown blocks or block versions found',
+      message: 'Block validation failed',
       statusCode: 400,
     });
   });

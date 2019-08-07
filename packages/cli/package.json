@@ -21,12 +21,14 @@
     "form-data": "^2.5.0",
     "fs-extra": "^8.1.0",
     "inquirer": "^6.5.0",
+    "json5": "^2.1.0",
     "klaw": "^3.0.0",
     "lodash": "^4.17.14",
     "postcss": "^7.0.17",
     "postcss-load-config": "^2.1.0",
     "postcss-url": "^8.0.0",
     "read-pkg-up": "^6.0.0",
+    "typescript-json-schema": "^0.39.0",
     "yargs": "^13.3.0"
   }
 }

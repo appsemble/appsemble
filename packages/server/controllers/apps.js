@@ -1,5 +1,6 @@
 import { normalize, StyleValidationError, validateStyle } from '@appsemble/utils';
 import Boom from '@hapi/boom';
+import Ajv from 'ajv';
 import jsYaml from 'js-yaml';
 import { isEqual, uniqWith } from 'lodash';
 import { Op, UniqueConstraintError } from 'sequelize';
@@ -9,10 +10,12 @@ import getAppBlocks from '../utils/getAppBlocks';
 import getAppFromRecord from '../utils/getAppFromRecord';
 import getDefaultIcon from '../utils/getDefaultIcon';
 
+const ajv = new Ajv();
+ajv.addFormat('fontawesome', () => true);
+
 async function checkBlocks(app, db) {
   const blocks = getAppBlocks(app);
   const blockVersions = await db.models.BlockVersion.findAll({
-    attributes: ['name', 'version'],
     raw: true,
     where: {
       [Op.or]: uniqWith(
@@ -24,22 +27,37 @@ async function checkBlocks(app, db) {
       ),
     },
   });
-  const blockVersionMap = blockVersions.reduce((acc, { name: blockName, version }) => {
-    if (!Object.prototype.hasOwnProperty.call(acc, blockName)) {
-      acc[blockName] = new Set();
+  const blockVersionMap = new Map();
+  blockVersions.forEach(version => {
+    if (!blockVersionMap.has(version.name)) {
+      blockVersionMap.set(version.name, new Map());
     }
-    acc[blockName].add(version);
-    return acc;
-  }, {});
-  const errors = Object.entries(blocks).reduce((acc, [loc, { type, version }]) => {
-    const fullType = type.startsWith('@') ? type : `@appsemble/${type}`;
-    if (!(blockVersionMap[fullType] && blockVersionMap[fullType].has(version))) {
-      return { ...acc, [loc]: `Unknown block version “${fullType}@${version}”` };
+    blockVersionMap.get(version.name).set(version.version, version);
+  });
+  const errors = Object.entries(blocks).reduce((acc, [loc, block]) => {
+    const type = block.type.startsWith('@') ? block.type : `@appsemble/${block.type}`;
+    const versions = blockVersionMap.get(type);
+    if (!versions) {
+      return { ...acc, [loc]: `Unknown block type “${type}”` };
+    }
+    if (!versions.has(block.version)) {
+      return { ...acc, [loc]: `Unknown block version “${type}@${block.version}”` };
+    }
+    const validate = ajv.compile(versions.get(block.version).parameters);
+    const valid = validate(block.parameters);
+    if (!valid) {
+      return validate.errors.reduce(
+        (accumulator, error) => ({
+          ...accumulator,
+          [`${loc}.parameters${error.dataPath}`]: error,
+        }),
+        acc,
+      );
     }
     return acc;
   }, null);
   if (errors) {
-    throw Boom.badRequest('Unknown blocks or block versions found', errors);
+    throw Boom.badRequest('Block validation failed', errors);
   }
 }
 

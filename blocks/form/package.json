@@ -2,15 +2,6 @@
   "name": "@appsemble/form",
   "version": "0.8.2",
   "private": true,
-  "appsemble": {
-    "actions": {
-      "onSubmit": {
-        "required": true
-      },
-      "onSubmitSuccess": {}
-    },
-    "output": "dist"
-  },
   "dependencies": {
     "@appsemble/react": "0.8.2",
     "classnames": "^2.2.6",

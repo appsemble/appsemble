@@ -1,11 +1,11 @@
+layout: float
+
 types:
   file: block.ts
   parameters: Parameters
 
 actions:
-  onSubmit:
+  onClick:
     required: true
-  onSuccess: {}
-  onError: {}
 
 output: dist

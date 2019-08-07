@@ -1,3 +1,6 @@
+types:
+  parameters: BlockParameters
+
 actions:
   onButtonClick: {}
   onAvatarClick: {}

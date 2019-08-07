@@ -1,11 +1,10 @@
 types:
-  file: src/components/ListBlock/ListBlock.tsx
+  file: src/createGetters.ts
   parameters: BlockParameters
 
 actions:
+  onMarkerClick: {}
   onLoad:
     required: true
-  onClick:
-    required: false
 
 output: dist
