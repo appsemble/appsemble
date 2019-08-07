@@ -1,4 +1,4 @@
-import { normalize, theme as baseTheme } from '@appsemble/utils';
+import { baseTheme, normalize } from '@appsemble/utils';
 import PropTypes from 'prop-types';
 import React from 'react';
 import ReactDOM from 'react-dom';

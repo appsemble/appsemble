@@ -1,4 +1,4 @@
-import { theme } from '@appsemble/utils';
+import { baseTheme } from '@appsemble/utils';
 import fs from 'fs';
 import sass from 'node-sass';
 
@@ -14,14 +14,14 @@ function processStyle(params) {
     @charset "utf-8";
     @import url(https://fonts.googleapis.com/css?family=Libre+Franklin|Open+Sans);
     $family-sans-serif: 'Libre Franklin', sans-serif !default;
-    $primary: ${params.primaryColor || theme.primaryColor};
-    $link: ${params.linkColor || theme.linkColor};
-    $info: ${params.infoColor || theme.infoColor};
-    $success: ${params.successColor || theme.successColor};
-    $warning: ${params.warningColor || theme.warningColor};
-    $danger: ${params.dangerColor || theme.dangerColor};
-    $themeColor: ${params.themeColor || theme.themeColor};
-    $splashColor: ${params.splashColor || theme.splashColor};
+    $primary: ${params.primaryColor || baseTheme.primaryColor};
+    $link: ${params.linkColor || baseTheme.linkColor};
+    $info: ${params.infoColor || baseTheme.infoColor};
+    $success: ${params.successColor || baseTheme.successColor};
+    $warning: ${params.warningColor || baseTheme.warningColor};
+    $danger: ${params.dangerColor || baseTheme.dangerColor};
+    $themeColor: ${params.themeColor || baseTheme.themeColor};
+    $splashColor: ${params.splashColor || baseTheme.splashColor};
     @import "${bulmaPath}";
     // Syntax: https://sass-lang.com/documentation/breaking-changes/css-vars
     :root {
