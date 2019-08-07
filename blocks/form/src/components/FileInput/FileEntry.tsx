@@ -1,12 +1,24 @@
 import classNames from 'classnames';
-import PropTypes from 'prop-types';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 
+import { InputProps } from '../../../block';
 import styles from './FileEntry.css';
 import messages from './messages';
 
-function getDerivedStateFromProps({ value }, state) {
+interface FileEntryProps extends InputProps<string | Blob> {
+  name: string;
+}
+
+interface FileInputState {
+  url?: string;
+  value?: string | Blob;
+}
+
+function getDerivedStateFromProps(
+  { value }: FileEntryProps,
+  state: FileInputState,
+): FileInputState {
   if (value === state.value) {
     return null;
   }
@@ -23,27 +35,8 @@ function getDerivedStateFromProps({ value }, state) {
   };
 }
 
-export default class FileEntry extends React.Component {
-  static propTypes = {
-    /**
-     * The name of the input field.
-     */
-    name: PropTypes.string.isRequired,
-    /**
-     * This will be called when a new file has been selected/
-     */
-    onChange: PropTypes.func.isRequired,
-    /**
-     * The enum field to render.
-     */
-    field: PropTypes.shape().isRequired,
-    /**
-     * The current value.
-     */
-    value: PropTypes.oneOfType([PropTypes.instanceOf(Blob), PropTypes.string]),
-  };
-
-  static defaultProps = {
+export default class FileEntry extends React.Component<FileEntryProps> {
+  static defaultProps: Partial<FileEntryProps> = {
     value: null,
   };
 
@@ -51,31 +44,36 @@ export default class FileEntry extends React.Component {
 
   static getDerivedStateFromProps = getDerivedStateFromProps;
 
-  inputRef = node => {
+  inputRef = (node: HTMLInputElement) => {
     if (node == null) {
       return;
     }
 
     // XXX A native event listener is used, to prevent the same event to be fired twice because of
     // the shadow DOM hackery.
-    node.addEventListener('change', async ({ target }) => {
+    node.addEventListener('change', async event => {
       const {
         onChange,
         field: { maxWidth, maxHeight, quality },
       } = this.props;
-      let [value] = target.files;
+      let value: Blob = (event.target as HTMLInputElement).files[0];
       // eslint-disable-next-line no-param-reassign
       node.value = null;
 
-      if (value?.type.match('image/*') && (maxWidth || maxHeight || quality)) {
+      if (value && value.type.match('image/*') && (maxWidth || maxHeight || quality)) {
         value = await this.resize(value, maxWidth, maxHeight, quality / 100);
       }
 
-      onChange({ target }, value);
+      onChange(event, value);
     });
   };
 
-  resize = async (file, maxWidth, maxHeight, quality = 0.8) => {
+  resize = async (
+    file: Blob,
+    maxWidth: number,
+    maxHeight: number,
+    quality = 0.8,
+  ): Promise<Blob> => {
     // Derived from: https://hacks.mozilla.org/2011/01/how-to-develop-a-html5-image-uploader/
     const img = new Image();
     const canvas = document.createElement('canvas');
@@ -114,7 +112,7 @@ export default class FileEntry extends React.Component {
     onChange({ target: { name } }, null);
   };
 
-  render() {
+  render(): JSX.Element {
     const { field, name } = this.props;
     const { url } = this.state;
 

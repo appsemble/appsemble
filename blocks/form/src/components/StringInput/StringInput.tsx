@@ -1,46 +1,30 @@
 import classNames from 'classnames';
-import PropTypes from 'prop-types';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 
+import { InputProps } from '../../../block';
 import messages from './messages';
+
+type StringInputProps = InputProps<string, HTMLInputElement | HTMLTextAreaElement>;
 
 /**
  * An input element for a text type schema.
  */
-export default class StringInput extends React.Component {
-  static propTypes = {
-    /**
-     * A field error object.
-     */
-    error: PropTypes.shape(),
-    /**
-     * The enum field to render.
-     */
-    field: PropTypes.shape().isRequired,
-    /**
-     * A callback for when the value changes.
-     */
-    onChange: PropTypes.func.isRequired,
-    /**
-     * The current value.
-     */
-    value: PropTypes.string,
-  };
-
-  static defaultProps = {
+export default class StringInput extends React.Component<StringInputProps> {
+  static defaultProps: Partial<StringInputProps> = {
     error: null,
     value: '',
   };
 
-  render() {
+  render(): JSX.Element {
     const { error, field, onChange, value } = this.props;
     const elementProps = {
       className: classNames(field.multiline ? 'textarea' : 'input', { 'is-danger': error }),
       id: field.name,
-      maxLength: field.maxLength,
       name: field.name,
-      onChange,
+      onChange(event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
+        onChange(event, event.target.value);
+      },
       placeholder: field.placeholder || field.label || field.name,
       readOnly: field.readOnly,
       required: field.required,
@@ -57,7 +41,11 @@ export default class StringInput extends React.Component {
         <div className="field-body">
           <div className="field">
             <div className="control">
-              {field.multiline ? <textarea {...elementProps} /> : <input {...elementProps} />}
+              {field.multiline ? (
+                <textarea {...elementProps} />
+              ) : (
+                <input {...elementProps} maxLength={field.maxLength} />
+              )}
               {error && (
                 <p className={classNames('help', { 'is-danger': error })}>
                   <FormattedMessage {...messages.invalid} />
