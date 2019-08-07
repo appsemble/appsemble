@@ -31,6 +31,11 @@ export default class DetailViewerBlock extends React.Component {
      * The block as passed by the Appsemble interface.
      */
     block: PropTypes.shape().isRequired,
+
+    /**
+     * The theme as passed by the Appsemble interface.
+     */
+    theme: PropTypes.shape().isRequired,
   };
 
   state = {
@@ -45,7 +50,7 @@ export default class DetailViewerBlock extends React.Component {
   }
 
   render() {
-    const { block } = this.props;
+    const { block, theme } = this.props;
     const { data } = this.state;
 
     if (data === undefined) {
@@ -64,6 +69,7 @@ export default class DetailViewerBlock extends React.Component {
               block={block}
               data={data}
               field={field}
+              theme={theme}
               value={field.name ? remapData(field.name, data) : null}
             />
           );

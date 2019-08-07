@@ -45,5 +45,10 @@ export default {
       $ref: '#/components/schemas/Color',
       description: 'The color used for error messages.',
     },
+    tileLayer: {
+      type: 'string',
+      format: 'uri',
+      description: 'The tileLayer to use for Leaflet maps.',
+    },
   },
 };

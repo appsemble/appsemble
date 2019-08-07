@@ -151,6 +151,11 @@ export interface Theme {
    * The color used in the background of the splash screen.
    */
   splashColor: string;
+
+  /**
+   * The link to the tile layer used for Leaflet maps.
+   */
+  tileLayer: string;
 }
 
 export interface Events {

@@ -7,4 +7,5 @@ export default {
   dangerColor: '#ff3860',
   splashColor: '#ffffff',
   themeColor: '#ffffff',
+  tileLayer: 'https://cartodb-basemaps-c.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png',
 };

@@ -29,6 +29,11 @@ export default class GeoCoordinatesRenderer extends React.Component {
       latitude: PropTypes.string,
       label: PropTypes.string,
     }).isRequired,
+
+    /**
+     * The current theme provided by the Appsemble SDK.
+     */
+    theme: PropTypes.shape().isRequired,
   };
 
   static defaultProps = {
@@ -40,6 +45,7 @@ export default class GeoCoordinatesRenderer extends React.Component {
       data,
       field: { label, latitude, longitude },
       value,
+      theme,
     } = this.props;
 
     let lat;
@@ -66,6 +72,7 @@ export default class GeoCoordinatesRenderer extends React.Component {
           iconWidth={40}
           latitude={lat}
           longitude={lng}
+          theme={theme}
         />
       </div>
     );

@@ -21,6 +21,7 @@ export interface LocationProps {
   latitude: number;
   longitude: number;
   mapOptions: MapOptions;
+  theme: any;
 }
 
 /**
@@ -38,6 +39,7 @@ export default class Location extends React.Component<LocationProps & BlockProps
       longitude,
       mapOptions,
       reactRoot,
+      theme: { tileLayer },
     } = this.props;
 
     const locationMarker = new CircleMarker(null, {
@@ -49,7 +51,7 @@ export default class Location extends React.Component<LocationProps & BlockProps
       zoom: 16,
       center: [latitude, longitude],
       layers: [
-        new TileLayer('https://cartodb-basemaps-c.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png'),
+        new TileLayer(tileLayer),
         new Marker([latitude, longitude], {
           icon: new Icon({
             iconUrl,

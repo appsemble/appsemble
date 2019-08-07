@@ -1,4 +1,4 @@
-import normalize from '@appsemble/utils/normalize';
+import { normalize, theme as baseTheme } from '@appsemble/utils';
 import PropTypes from 'prop-types';
 import React from 'react';
 import ReactDOM from 'react-dom';
@@ -116,13 +116,14 @@ export default class Block extends React.Component {
     );
     const BULMA_URL = document.querySelector('#bulma-style-app');
     const [bulmaBase] = BULMA_URL.href.split('?');
-    const bulmaParams = {
+    const theme = {
+      ...baseTheme,
       ...app.theme,
       ...pageTheme,
       ...block.theme,
     };
 
-    const urlParams = new URLSearchParams(bulmaParams);
+    const urlParams = new URLSearchParams(theme);
     urlParams.sort();
 
     const bulmaUrl =
@@ -170,6 +171,7 @@ export default class Block extends React.Component {
       data,
       events,
       pageParameters: match.params,
+      theme,
       shadowRoot,
       utils,
     });

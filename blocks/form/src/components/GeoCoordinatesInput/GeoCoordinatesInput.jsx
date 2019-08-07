@@ -24,6 +24,7 @@ export default class GeoCoordinatesInput extends React.Component {
     onChange: PropTypes.func.isRequired,
     reactRoot: PropTypes.instanceOf(HTMLElement).isRequired,
     utils: PropTypes.shape().isRequired,
+    theme: PropTypes.shape().isRequired,
   };
 
   locationMarker = new CircleMarker(null, {
@@ -33,13 +34,16 @@ export default class GeoCoordinatesInput extends React.Component {
   ref = React.createRef();
 
   componentDidMount() {
-    const { field, onChange, utils } = this.props;
+    const {
+      field,
+      onChange,
+      utils,
+      theme: { tileLayer },
+    } = this.props;
 
     const map = new Map(this.ref.current, {
       attributionControl: false,
-      layers: [
-        new TileLayer('https://cartodb-basemaps-c.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png'),
-      ],
+      layers: [new TileLayer(tileLayer)],
     })
       .once('locationerror', () => {
         utils.showMessage({
