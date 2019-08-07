@@ -1,5 +1,5 @@
 import { Loader } from '@appsemble/react-components';
-import { remapData } from '@appsemble/utils/remap';
+import { remapData } from '@appsemble/utils';
 import PropTypes from 'prop-types';
 import React from 'react';
 

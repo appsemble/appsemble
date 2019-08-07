@@ -1,5 +1,4 @@
-import { compileFilters } from '@appsemble/utils/remap';
-import validate from '@appsemble/utils/validate';
+import { compileFilters, validate } from '@appsemble/utils';
 import axios from 'axios';
 
 import uploadBlobs from '../uploadBlobs';

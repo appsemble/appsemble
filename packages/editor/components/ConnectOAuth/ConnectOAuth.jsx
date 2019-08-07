@@ -1,5 +1,5 @@
 import { Input } from '@appsemble/react-components';
-import normalize from '@appsemble/utils/normalize';
+import { normalize } from '@appsemble/utils';
 import axios from 'axios';
 import classNames from 'classnames';
 import PropTypes from 'prop-types';

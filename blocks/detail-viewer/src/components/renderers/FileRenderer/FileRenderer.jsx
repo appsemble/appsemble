@@ -1,4 +1,4 @@
-import { remapData } from '@appsemble/utils/remap';
+import { remapData } from '@appsemble/utils';
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import React from 'react';

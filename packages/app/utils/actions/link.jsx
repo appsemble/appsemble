@@ -1,5 +1,4 @@
-import normalize from '@appsemble/utils/normalize';
-import { compileFilters } from '@appsemble/utils/remap';
+import { compileFilters, normalize } from '@appsemble/utils';
 
 import mapValues from '../mapValues';
 

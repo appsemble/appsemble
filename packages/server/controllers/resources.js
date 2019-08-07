@@ -1,4 +1,4 @@
-import validate, { SchemaValidationError } from '@appsemble/utils/validate';
+import { SchemaValidationError, validate } from '@appsemble/utils';
 import Boom from '@hapi/boom';
 import parseOData from '@wesselkuipers/odata-sequelize';
 

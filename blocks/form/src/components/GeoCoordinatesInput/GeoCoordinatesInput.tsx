@@ -13,25 +13,7 @@ type GeoCoordinatesInputProps = InputProps<{}> & BlockProps;
 /**
  * An input element for an object type schema which implements GeoCoordinates.
  */
-<<<<<<< HEAD:blocks/form/src/components/GeoCoordinatesInput/GeoCoordinatesInput.jsx
-export default class GeoCoordinatesInput extends React.Component {
-  static propTypes = {
-    /**
-     * The name of the property to render.
-     */
-    field: PropTypes.shape().isRequired,
-    /**
-     * A callback for when the value changes.
-     */
-    onChange: PropTypes.func.isRequired,
-    reactRoot: PropTypes.instanceOf(HTMLElement).isRequired,
-    utils: PropTypes.shape().isRequired,
-    theme: PropTypes.shape().isRequired,
-  };
-
-=======
 export default class GeoCoordinatesInput extends React.Component<GeoCoordinatesInputProps> {
->>>>>>> master:blocks/form/src/components/GeoCoordinatesInput/GeoCoordinatesInput.tsx
   locationMarker = new CircleMarker(null, {
     color: getComputedStyle(this.props.reactRoot).getPropertyValue('--primary-color'),
   });

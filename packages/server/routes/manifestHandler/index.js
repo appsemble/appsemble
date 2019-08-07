@@ -1,4 +1,4 @@
-import normalize from '@appsemble/utils/normalize';
+import { normalize } from '@appsemble/utils';
 import Boom from '@hapi/boom';
 
 const iconSizes = [48, 144, 192, 512];

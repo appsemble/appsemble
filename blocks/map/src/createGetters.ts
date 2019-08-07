@@ -1,4 +1,4 @@
-import { compileFilters } from '@appsemble/utils/remap';
+import { compileFilters } from '@appsemble/utils';
 
 export interface LatLngMapper {
   lat: (data: any) => any;

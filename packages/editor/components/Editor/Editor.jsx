@@ -1,7 +1,5 @@
 import { Form, Loader, Modal } from '@appsemble/react-components';
-import normalize from '@appsemble/utils/normalize';
-import validate, { SchemaValidationError } from '@appsemble/utils/validate';
-import validateStyle from '@appsemble/utils/validateStyle';
+import { normalize, SchemaValidationError, validate, validateStyle } from '@appsemble/utils';
 import axios from 'axios';
 import classNames from 'classnames';
 import yaml from 'js-yaml';

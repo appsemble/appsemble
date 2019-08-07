@@ -1,4 +1,4 @@
-import { remapData } from '@appsemble/utils/remap';
+import { remapData } from '@appsemble/utils';
 
 import actionCreators from './actions';
 

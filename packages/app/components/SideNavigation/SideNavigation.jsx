@@ -1,4 +1,4 @@
-import normalize from '@appsemble/utils/normalize';
+import { normalize } from '@appsemble/utils';
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import React from 'react';
