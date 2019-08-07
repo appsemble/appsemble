@@ -1,33 +1,21 @@
-import PropTypes from 'prop-types';
 import React from 'react';
 
+import { InputProps } from '../../../block';
 import styles from './EnumInput.css';
+
+type EnumInputProps = InputProps<string, HTMLSelectElement>;
 
 /**
  * Render a select box which offers choices a JSON schema enum.
  */
-export default class EnumInput extends React.Component {
-  static propTypes = {
-    /**
-     * The enum field to render.
-     */
-    field: PropTypes.shape().isRequired,
-    /**
-     * A callback for when the value changes.
-     */
-    onChange: PropTypes.func.isRequired,
-    /**
-     * The current value.
-     */
-    value: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
-  };
-
-  static defaultProps = {
+export default class EnumInput extends React.Component<EnumInputProps> {
+  static defaultProps: Partial<EnumInputProps> = {
     value: '',
   };
 
-  render() {
+  render(): JSX.Element {
     const { field, onChange, value } = this.props;
+
     return (
       <div className="field is-horizontal">
         <div className="field-label is-normal">
@@ -43,7 +31,7 @@ export default class EnumInput extends React.Component {
                   className={value ? null : 'empty'}
                   id={field.name}
                   name={field.name}
-                  onChange={onChange}
+                  onChange={event => onChange(event, event.target.value)}
                   value={value}
                 >
                   {!value && <option className={styles.hidden}>{field.label}</option>}
@@ -59,25 +47,5 @@ export default class EnumInput extends React.Component {
         </div>
       </div>
     );
-
-    // return (
-    //   <SelectField
-    //     id={field.name}
-    //     label={field.label || field.name}
-    //     name={field.name}
-    //     onChange={onChange}
-    //     SelectProps={{
-    //       className: value ? null : 'empty',
-    //     }}
-    //     value={value}
-    //   >
-    // {!value && <option className={styles.hidden}>{field.label}</option>}
-    // {field.enum.map(choice => (
-    //   <option key={choice.value} value={choice.value}>
-    //     {choice.label || choice.value}
-    //   </option>
-    // ))}
-    //   </SelectField>
-    // );
   }
 }

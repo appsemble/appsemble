@@ -10,6 +10,7 @@ import sass from 'node-sass';
  */
 function processStyle(params) {
   const bulmaPath = require.resolve('bulma/bulma.sass');
+  const checkRadioPath = require.resolve('bulma-checkradio/src/sass/index.sass');
   return `
     @charset "utf-8";
     @import url(https://fonts.googleapis.com/css?family=Libre+Franklin|Open+Sans);
@@ -23,6 +24,7 @@ function processStyle(params) {
     $themeColor: ${params.themeColor || baseTheme.themeColor};
     $splashColor: ${params.splashColor || baseTheme.splashColor};
     @import "${bulmaPath}";
+    @import "${checkRadioPath}";
     // Syntax: https://sass-lang.com/documentation/breaking-changes/css-vars
     :root {
       --primary-color: #{$primary};

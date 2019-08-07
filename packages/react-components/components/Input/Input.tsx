@@ -28,10 +28,7 @@ type InputProps = FormComponentProps &
      * If the input type is `checkbox`, the value is a boolean. If the input type is `number`, the
      * value is a number, otherwise it is a string.
      */
-    onChange: (
-      event: React.ChangeEvent<InteractiveElement>,
-      value: boolean | number | string,
-    ) => void;
+    onChange: (event: React.ChangeEvent<InteractiveElement>, value: number | string) => void;
 
     /**
      * The HTML input type.
@@ -39,7 +36,6 @@ type InputProps = FormComponentProps &
      * This may be extended if necessary.
      */
     type?:
-      | 'checkbox'
       | 'color'
       | 'email'
       | 'number'
@@ -58,18 +54,8 @@ export default class Input extends React.Component<InputProps> {
   onChange = (event: React.ChangeEvent<InteractiveElement>) => {
     const { onChange, type } = this.props;
 
-    let value;
-    switch (type) {
-      case 'checkbox':
-        value = (event.target as HTMLInputElement).checked;
-        break;
-      case 'number':
-        value = (event.target as HTMLInputElement).valueAsNumber;
-        break;
-      default:
-        ({ value } = event.target);
-    }
-    onChange(event, value);
+    const target = event.target as HTMLInputElement;
+    onChange(event, type === 'number' ? target.valueAsNumber : target.value);
   };
 
   render(): JSX.Element {

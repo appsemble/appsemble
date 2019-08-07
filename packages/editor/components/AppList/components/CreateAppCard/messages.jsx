@@ -21,4 +21,6 @@ export default defineMessages({
   organization: 'Organization',
   resources: 'Resources',
   includeResources: 'Include example resources',
+  private: 'Private',
+  privateHelp: 'Hide this app from the public app list',
 });

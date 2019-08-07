@@ -1,34 +1,17 @@
-import PropTypes from 'prop-types';
 import React from 'react';
 
+import { FakeEvent, InputProps } from '../../../block';
 import FileEntry from './FileEntry';
 import styles from './FileInput.css';
 
-export default class FileInput extends React.Component {
-  static propTypes = {
-    /**
-     * This will be called when a new file has been selected/
-     */
-    onChange: PropTypes.func.isRequired,
-    /**
-     * The enum field to render.
-     */
-    field: PropTypes.shape().isRequired,
-    /**
-     * The current value.
-     */
-    value: PropTypes.oneOfType([
-      PropTypes.instanceOf(Blob),
-      PropTypes.string,
-      PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.instanceOf(Blob), PropTypes.string])),
-    ]),
-  };
+type FileInputProps = InputProps<string | Blob | (string | Blob)[]>;
 
-  static defaultProps = {
+export default class FileInput extends React.Component<FileInputProps> {
+  static defaultProps: Partial<FileInputProps> = {
     value: [],
   };
 
-  onChange = (event, val) => {
+  onChange = (event: FakeEvent, val: string) => {
     const { field, onChange, value } = this.props;
 
     const copy = [...value];
@@ -41,13 +24,17 @@ export default class FileInput extends React.Component {
     onChange({ target: { name: field.name } }, copy);
   };
 
-  render() {
+  render(): JSX.Element {
     const { field, onChange, value } = this.props;
 
     return field.repeated ? (
       <div className={styles.repeatedContainer}>
-        <FileEntry field={field} name={`${field.name}.${value.length}`} onChange={this.onChange} />
-        {value.map((val, index) => (
+        <FileEntry
+          field={field}
+          name={`${field.name}.${(value as string[]).length}`}
+          onChange={this.onChange}
+        />
+        {(value as string[]).map((val, index) => (
           <FileEntry
             // eslint-disable-next-line react/no-array-index-key
             key={index}
@@ -59,7 +46,7 @@ export default class FileInput extends React.Component {
         ))}
       </div>
     ) : (
-      <FileEntry field={field} name={field.name} onChange={onChange} value={value} />
+      <FileEntry field={field} name={field.name} onChange={onChange} value={value as string} />
     );
   }
 }

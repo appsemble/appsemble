@@ -1,4 +1,4 @@
-import { Form, FormComponent, Input, Modal, Select } from '@appsemble/react-components';
+import { Checkbox, Form, Input, Modal, Select } from '@appsemble/react-components';
 import axios from 'axios';
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
@@ -27,6 +27,7 @@ export default class CreateAppCard extends React.Component {
     templates: [],
     loading: true,
     includeResources: false,
+    isPrivate: true,
   };
 
   async componentDidMount() {
@@ -68,6 +69,7 @@ export default class CreateAppCard extends React.Component {
       selectedOrganization,
       templates,
       includeResources,
+      isPrivate,
     } = this.state;
 
     try {
@@ -76,6 +78,7 @@ export default class CreateAppCard extends React.Component {
         {
           template: name,
           name: appName,
+          isPrivate,
           description: appDescription,
           resources: resources && includeResources,
         },
@@ -116,6 +119,7 @@ export default class CreateAppCard extends React.Component {
       templates,
       loading,
       includeResources,
+      isPrivate,
     } = this.state;
 
     if (loading) {
@@ -180,6 +184,7 @@ export default class CreateAppCard extends React.Component {
                 label={<FormattedMessage {...messages.template} />}
                 name="selectedTemplate"
                 onChange={this.onChange}
+                required
                 value={selectedTemplate}
               >
                 {templates.map((template, index) => (
@@ -191,22 +196,22 @@ export default class CreateAppCard extends React.Component {
               <article className="message">
                 <div className="message-body">{templates[selectedTemplate].description}</div>
               </article>
+              <Checkbox
+                className="is-warning"
+                help={<FormattedMessage {...messages.privateHelp} />}
+                label={<FormattedMessage {...messages.private} />}
+                name="isPrivate"
+                onChange={this.onChange}
+                value={isPrivate}
+              />
               {templates[selectedTemplate].resources && (
-                <FormComponent
-                  id="includeResources"
+                <Checkbox
+                  help={<FormattedMessage {...messages.includeResources} />}
                   label={<FormattedMessage {...messages.resources} />}
-                >
-                  <label className="checkbox">
-                    <input
-                      checked={templates[selectedTemplate].resources && includeResources}
-                      id="includeResources"
-                      name="includeResources"
-                      onChange={this.onCheckboxChange}
-                      type="checkbox"
-                    />
-                    <FormattedMessage {...messages.includeResources} />
-                  </label>
-                </FormComponent>
+                  name="includeResources"
+                  onChange={this.onChange}
+                  value={templates[selectedTemplate].resources && includeResources}
+                />
               )}
             </div>
             <footer className="card-footer">

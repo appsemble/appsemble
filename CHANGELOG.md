@@ -7,6 +7,10 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- Editor: Add a toggle for making apps private by default.
+
 ### Fixed
 
 - Editor: The password reset page no longer crashes.

@@ -1,8 +1,9 @@
+import { BlockProps } from '@appsemble/react';
 import classNames from 'classnames';
-import PropTypes from 'prop-types';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 
+import { Actions, FakeEvent, Parameters } from '../../../block';
 import BooleanInput from '../BooleanInput';
 import EnumInput from '../EnumInput';
 import FileInput from '../FileInput';
@@ -12,11 +13,23 @@ import StringInput from '../StringInput';
 import styles from './FormBlock.css';
 import messages from './messages';
 
+type FormBlockProps = BlockProps<Parameters, Actions>;
+
+type Values = Record<string, any>;
+
+interface FormBlockState {
+  errors: {
+    [name: string]: string;
+  };
+  pristine: boolean;
+  submitting: boolean;
+  values: Values;
+}
+
 const inputs = {
   file: FileInput,
-  enum: EnumInput,
   geocoordinates: GeoCoordinatesInput,
-  hidden: () => null,
+  hidden: (): null => null,
   string: StringInput,
   number: NumberInput,
   integer: NumberInput,
@@ -27,36 +40,24 @@ const inputs = {
 /**
  * Render Material UI based a form based on a JSON schema
  */
-export default class FormBlock extends React.Component {
-  static propTypes = {
-    /**
-     * The actions as passed by the Appsemble interface.
-     */
-    actions: PropTypes.shape().isRequired,
-    /**
-     * The block as passed by the Appsemble interface.
-     */
-    block: PropTypes.shape().isRequired,
-    /**
-     * The initial data as passed by the Appsemble interface.
-     */
-    data: PropTypes.shape().isRequired,
-  };
-
-  state = {
+export default class FormBlock extends React.Component<FormBlockProps, FormBlockState> {
+  state: FormBlockState = {
     errors: {},
     pristine: true,
     submitting: false,
     values: {
-      ...this.props.block.parameters.fields.reduce((acc, { name, defaultValue, repeated }) => {
-        acc[name] = defaultValue || (repeated && []);
-        return acc;
-      }, {}),
+      ...this.props.block.parameters.fields.reduce<Values>(
+        (acc, { name, defaultValue, repeated }) => {
+          acc[name] = defaultValue || (repeated && []);
+          return acc;
+        },
+        {},
+      ),
       ...this.props.data,
     },
   };
 
-  onChange = (event, value = event.target.value) => {
+  onChange = (event: FakeEvent, value: any) => {
     this.setState(({ values }) => ({
       pristine: false,
       values: {
@@ -66,7 +67,7 @@ export default class FormBlock extends React.Component {
     }));
   };
 
-  onSubmit = event => {
+  onSubmit = (event: React.FormEvent) => {
     event.preventDefault();
 
     this.setState(({ submitting, values }, { actions }) => {
@@ -98,15 +99,25 @@ export default class FormBlock extends React.Component {
     });
   };
 
-  render() {
+  render(): JSX.Element {
     const { block } = this.props;
     const { errors, pristine, submitting, values } = this.state;
 
     return (
       <form className={styles.root} noValidate onSubmit={this.onSubmit}>
         {block.parameters.fields.map(field => {
-          const Component = field.enum ? inputs.enum : inputs[field.type];
-          if (!Component) {
+          if (field.enum) {
+            return (
+              <EnumInput
+                key={field.name}
+                error={errors[field.name]}
+                field={field}
+                onChange={this.onChange}
+                value={values[field.name]}
+              />
+            );
+          }
+          if (!Object.prototype.hasOwnProperty.call(inputs, field.type)) {
             return (
               <FormattedMessage
                 key={field.name}
@@ -118,6 +129,7 @@ export default class FormBlock extends React.Component {
               />
             );
           }
+          const Component = inputs[field.type];
           return (
             <Component
               key={field.name}
