@@ -122,7 +122,7 @@ export default class Card extends React.Component<
   };
 
   render(): React.ReactNode {
-    const { actions, block, content, intl, remappers } = this.props;
+    const { actions, block, content, intl, remappers, theme } = this.props;
     const { message, replies, valid } = this.state;
 
     const title: string = remappers.title(content);
@@ -208,6 +208,7 @@ export default class Card extends React.Component<
                 dragging: false,
                 zoomControl: false,
               }}
+              theme={theme}
             />
           )}
         </div>

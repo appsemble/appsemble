@@ -1,6 +1,7 @@
 import 'leaflet/dist/leaflet.css';
 
 import { BlockProps } from '@appsemble/react';
+import { Theme } from '@appsemble/sdk';
 import {
   CircleMarker,
   Icon,
@@ -21,7 +22,7 @@ export interface LocationProps {
   latitude: number;
   longitude: number;
   mapOptions: MapOptions;
-  theme: any;
+  theme: Theme;
 }
 
 /**
