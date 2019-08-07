@@ -6,7 +6,7 @@ button {
   border-radius: 50%;
   bottom: 12px;
   box-shadow: 0 1px 5px 0 hsl(0, 0%, 0%);
-  color: var(--primary-color-inverse);
+  color: var(--primary-color-invert);
   cursor: pointer;
   display: flex !important;
   font-size: 24px;

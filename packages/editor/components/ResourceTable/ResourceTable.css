@@ -26,7 +26,7 @@
 .cardFooterButton {
   /* background: none !important; */
   border: none;
-  color: hsl(217, 71%, 53%);
+  color: var(--link-color);
   cursor: pointer;
   font: inherit;
   height: auto;
