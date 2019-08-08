@@ -23,6 +23,19 @@ exports[`mount should mount the react component 1`] = `
       "appendChild": [Function],
     }
   }
+  theme={
+    Object {
+      "dangerColor": "#4b0082",
+      "infoColor": "#00ff00",
+      "linkColor": "#ff7f00",
+      "primaryColor": "#ff0000",
+      "splashColor": "#8b00ff",
+      "successColor": "#ffff00",
+      "themeColor": "#ffffff",
+      "tileLayer": "https://cartodb-basemaps-c.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png",
+      "warningColor": "#0000ff",
+    }
+  }
   utils={
     Object {
       "addCleanup": [Function],
@@ -59,6 +72,19 @@ exports[`withBlock should pass block props to the child element 1`] = `
       "appendChild": [Function],
     }
   }
+  theme={
+    Object {
+      "dangerColor": "#4b0082",
+      "infoColor": "#00ff00",
+      "linkColor": "#ff7f00",
+      "primaryColor": "#ff0000",
+      "splashColor": "#8b00ff",
+      "successColor": "#ffff00",
+      "themeColor": "#ffffff",
+      "tileLayer": "https://cartodb-basemaps-c.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png",
+      "warningColor": "#0000ff",
+    }
+  }
   utils={
     Object {
       "addCleanup": [Function],
@@ -87,6 +113,19 @@ exports[`withBlock should pass block props to the child element 1`] = `
       shadowRoot={
         Object {
           "appendChild": [Function],
+        }
+      }
+      theme={
+        Object {
+          "dangerColor": "#4b0082",
+          "infoColor": "#00ff00",
+          "linkColor": "#ff7f00",
+          "primaryColor": "#ff0000",
+          "splashColor": "#8b00ff",
+          "successColor": "#ffff00",
+          "themeColor": "#ffffff",
+          "tileLayer": "https://cartodb-basemaps-c.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png",
+          "warningColor": "#0000ff",
         }
       }
       utils={
