@@ -1,6 +1,5 @@
 import { Form, Input } from '@appsemble/react-components';
 import classNames from 'classnames';
-import PropTypes from 'prop-types';
 import * as React from 'react';
 import { FormattedMessage } from 'react-intl';
 
@@ -14,10 +13,6 @@ export interface ResetPasswordProps {
 }
 
 export default class ResetPassword extends React.Component<ResetPasswordProps> {
-  static propTypes = {
-    requestResetPassword: PropTypes.func.isRequired,
-  };
-
   state = {
     email: '',
     error: false,
@@ -49,7 +44,7 @@ export default class ResetPassword extends React.Component<ResetPasswordProps> {
     const { email, error, submitting, success } = this.state;
 
     return (
-      <React.Fragment>
+      <>
         <HelmetIntl title={messages.title} />
         {success ? (
           <div className={classNames('container', styles.root)}>
@@ -88,7 +83,7 @@ export default class ResetPassword extends React.Component<ResetPasswordProps> {
             </button>
           </Form>
         )}
-      </React.Fragment>
+      </>
     );
   }
 }

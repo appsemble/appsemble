@@ -386,7 +386,7 @@ export default class OrganizationsSettings extends Component {
         </Form>
 
         {!!organizations.length && (
-          <React.Fragment>
+          <>
             <h2>
               <FormattedMessage {...messages.manageOrganization} />
             </h2>
@@ -527,7 +527,7 @@ export default class OrganizationsSettings extends Component {
                 ))}
               </tbody>
             </table>
-          </React.Fragment>
+          </>
         )}
 
         <Modal isActive={!!removingInvite} onClose={this.onCloseInviteDialog}>

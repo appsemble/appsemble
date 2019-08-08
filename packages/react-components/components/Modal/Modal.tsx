@@ -1,12 +1,11 @@
-import * as PropTypes from 'prop-types';
 import * as React from 'react';
-import { InjectedIntlProps, intlShape } from 'react-intl';
+import { WrappedComponentProps } from 'react-intl';
 import { CSSTransition } from 'react-transition-group';
 
 import messages from './messages';
 import styles from './Modal.css';
 
-interface ModalProps {
+export interface ModalProps extends WrappedComponentProps {
   /**
    * The child elements to render on the modal.
    */
@@ -24,14 +23,7 @@ interface ModalProps {
 /**
  * Render an aria compliant modal overlay.
  */
-export default class Modal extends React.Component<InjectedIntlProps & ModalProps> {
-  static propTypes = {
-    children: PropTypes.node,
-    intl: intlShape.isRequired,
-    isActive: PropTypes.bool.isRequired,
-    onClose: PropTypes.func,
-  };
-
+export default class Modal extends React.Component<ModalProps> {
   static defaultProps: Partial<ModalProps> = {
     children: null,
     onClose() {},

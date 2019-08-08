@@ -8,7 +8,7 @@ beforeEach(() => {
 
 describe('verify', () => {
   it('should succeed if no transport exists', async () => {
-    await expect(mailer.verify()).resolves.toBeUndefined();
+    expect(await mailer.verify()).toBeUndefined();
   });
 
   it('should succeed if the transport verification succeeds', async () => {
@@ -17,7 +17,7 @@ describe('verify', () => {
         return true;
       },
     };
-    await expect(mailer.verify()).resolves.toBeUndefined();
+    expect(await mailer.verify()).toBeUndefined();
   });
 
   it('should fail if the transport verification fails', async () => {
@@ -62,10 +62,10 @@ describe('sendEmail', () => {
   });
 
   it('should not send emails when smtp is not configured', async () => {
-    await expect(
-      mailer.sendEmail({ email: 'test@example.com' }, 'resend', {
+    expect(
+      await mailer.sendEmail({ email: 'test@example.com' }, 'resend', {
         url: 'https://example.appsemble.app/verify?code=test',
       }),
-    ).resolves.toBeUndefined();
+    ).toBeUndefined();
   });
 });

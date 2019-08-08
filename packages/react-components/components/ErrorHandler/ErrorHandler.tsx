@@ -1,5 +1,4 @@
 import { captureException, withScope } from '@sentry/browser';
-import * as PropTypes from 'prop-types';
 import * as React from 'react';
 
 export interface ErrorHandlerProps {
@@ -15,11 +14,6 @@ interface ErrorHandlerState {
  * Capture renderer errors using Sentry.
  */
 export default class ErrorHandler extends React.Component<ErrorHandlerProps, ErrorHandlerState> {
-  static propTypes = {
-    children: PropTypes.node.isRequired,
-    fallback: PropTypes.func.isRequired,
-  };
-
   state: ErrorHandlerState = {
     error: false,
   };
