@@ -22,7 +22,7 @@ export default class NavLink extends React.Component {
 
     return (
       <Link
-        className={classNames(className, {
+        className={classNames(className, 'is-radiusless', {
           'is-active':
             location.pathname === to || (!exact && location.pathname.startsWith(`${to}/`)),
         })}

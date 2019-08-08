@@ -21,6 +21,8 @@
 }
 
 .menuList {
+  background-color: hsl(0, 0%, 100%);
+
   & > li > * {
     padding: 1em;
 
