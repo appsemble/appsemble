@@ -26,9 +26,9 @@
   & > li > * {
     padding: 1em;
 
-    &.is-active {
-      background-color: inherit;
-      color: var(--primary-color);
+    &.active {
+      background-color: var(--primary-color);
+      color: var(--primary-color-invert);
     }
   }
 }

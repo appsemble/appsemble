@@ -47,7 +47,7 @@ export default class SideNavigation extends React.Component {
               .filter(page => !page.parameters)
               .map(page => (
                 <li key={page.name}>
-                  <NavLink activeClassName="is-active" to={`/${normalize(page.name)}`}>
+                  <NavLink activeClassName={styles.active} to={`/${normalize(page.name)}`}>
                     {page.name}
                   </NavLink>
                 </li>
