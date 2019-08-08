@@ -1,4 +1,4 @@
-import { Theme } from '@appsemble/sdk';
+import { Theme } from '@appsemble/types';
 import { OpenAPIV3 } from 'openapi-types';
 
 type MapperFunction = (data: any) => any;
