@@ -37,17 +37,19 @@ export default {
       },
     );
 
-    await queryInterface.bulkInsert(
-      'OrganizationInvite',
-      invites.map(invite => ({
-        email: invite.email,
-        key: invite.key,
-        OrganizationId: invite.OrganizationId,
-        UserId: invite.UserId,
-        created: invite.created,
-        updated: invite.updated,
-      })),
-    );
+    if (invites.length) {
+      await queryInterface.bulkInsert(
+        'OrganizationInvite',
+        invites.map(invite => ({
+          email: invite.email,
+          key: invite.key,
+          OrganizationId: invite.OrganizationId,
+          UserId: invite.UserId,
+          created: invite.created,
+          updated: invite.updated,
+        })),
+      );
+    }
 
     await queryInterface.bulkDelete('Member', { verified: false });
     await queryInterface.removeColumn('Member', 'key');
@@ -83,18 +85,20 @@ export default {
       members.map(member => queryInterface.update(member, 'Member', { verified: true })),
     );
 
-    await queryInterface.bulkInsert(
-      'Member',
-      invites.map(invite => ({
-        verified: false,
-        key: invite.key,
-        email: invite.email,
-        UserId: invite.UserId,
-        OrganizationId: invite.OrganizationId,
-        created: invite.created,
-        updated: invite.updated,
-      })),
-    );
+    if (invites.length) {
+      await queryInterface.bulkInsert(
+        'Member',
+        invites.map(invite => ({
+          verified: false,
+          key: invite.key,
+          email: invite.email,
+          UserId: invite.UserId,
+          OrganizationId: invite.OrganizationId,
+          created: invite.created,
+          updated: invite.updated,
+        })),
+      );
+    }
 
     await queryInterface.dropTable('OrganizationInvite');
   },
