@@ -10,6 +10,7 @@ import sass from 'node-sass';
  */
 function processStyle(params) {
   const bulmaPath = require.resolve('bulma/bulma.sass');
+  const functionPath = require.resolve('bulma/sass/utilities/functions.sass');
   const checkRadioPath = require.resolve('bulma-checkradio/src/sass/index.sass');
   return `
     @charset "utf-8";
@@ -23,6 +24,17 @@ function processStyle(params) {
     $danger: ${params.dangerColor || baseTheme.dangerColor};
     $themeColor: ${params.themeColor || baseTheme.themeColor};
     $splashColor: ${params.splashColor || baseTheme.splashColor};
+
+    @import "${functionPath}";
+    $primary-invert: findColorInvert($primary);
+    $link-invert: findColorInvert($link);
+    $info-invert: findColorInvert($info);
+    $success-invert: findColorInvert($success);
+    $warning-invert: findColorInvert($warning);
+    $danger-invert: findColorInvert($danger);
+    $themeColor-invert: findColorInvert($themeColor);
+    $splashColor-invert: findColorInvert($splashColor);
+
     @import "${bulmaPath}";
     @import "${checkRadioPath}";
     // Syntax: https://sass-lang.com/documentation/breaking-changes/css-vars
@@ -43,8 +55,8 @@ function processStyle(params) {
       --warning-color-invert: #{$warning-invert};
       --danger-color-invert: #{$danger-invert};
       --success-color-invert: #{$success-invert};
-      --theme-color-invert: #{findColorInvert($themeColor)};
-      --splash-color-invert: #{findColorInvert($splashColor)};
+      --theme-color-invert: #{$themeColor-invert};
+      --splash-color-invert: #{$splashColor-invert};
     }`;
 }
 
