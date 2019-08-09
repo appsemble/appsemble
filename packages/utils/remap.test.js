@@ -32,14 +32,47 @@ describe('compileFilters', () => {
       mapper: 'deeply.nested',
       expected: 'data',
     },
+    {
+      data: { foo: [42, 1337, Math.PI] },
+      mapper: 'foo.0',
+      expected: 42,
+    },
+    {
+      data: { foo: [42, 1337, Math.PI] },
+      mapper: 'foo.1',
+      expected: 1337,
+    },
+    {
+      data: { foo: [42, 1337, Math.PI] },
+      mapper: 'foo.2',
+      expected: Math.PI,
+    },
+    {
+      data: { foo: [42, 1337, Math.PI] },
+      mapper: 'foo.-1',
+      expected: Math.PI,
+    },
+    {
+      data: { foo: [42, 1337, Math.PI] },
+      mapper: 'foo.-2',
+      expected: 1337,
+    },
+    {
+      data: { foo: [42, 1337, Math.PI] },
+      mapper: 'foo.-3',
+      expected: 42,
+    },
+    {
+      data: { foo: [42, 1337, Math.PI] },
+      mapper: 'foo.length',
+      expected: 3,
+    },
   ];
 
-  fixtures.forEach(({ data, mapper, expected }) => {
-    it(`should process ${mapper}`, () => {
-      const fn = compileFilters(mapper);
-      const result = fn(data);
-      expect(result).toStrictEqual(expected);
-    });
+  it.each(fixtures)('should process %p', ({ data, mapper, expected }) => {
+    const fn = compileFilters(mapper);
+    const result = fn(data);
+    expect(result).toStrictEqual(expected);
   });
 });
 
@@ -52,10 +85,8 @@ describe('remapData', () => {
     },
   ];
 
-  fixtures.forEach(({ data, mapper, expected }) => {
-    it(`should process ${JSON.stringify(mapper)}`, () => {
-      const result = remapData(mapper, data);
-      expect(result).toStrictEqual(expected);
-    });
+  it.each(fixtures)('should process %j', ({ data, mapper, expected }) => {
+    const result = remapData(mapper, data);
+    expect(result).toStrictEqual(expected);
   });
 });
