@@ -15,7 +15,7 @@ type GeoCoordinatesInputProps = InputProps<{}> & BlockProps;
  */
 export default class GeoCoordinatesInput extends React.Component<GeoCoordinatesInputProps> {
   locationMarker = new CircleMarker(null, {
-    color: getComputedStyle(this.props.reactRoot).getPropertyValue('--primary-color'),
+    color: this.props.theme.primaryColor,
   });
 
   ref = React.createRef<HTMLDivElement>();
@@ -23,13 +23,16 @@ export default class GeoCoordinatesInput extends React.Component<GeoCoordinatesI
   map: Map;
 
   componentDidMount(): void {
-    const { field, onChange, utils } = this.props;
+    const {
+      field,
+      onChange,
+      utils,
+      theme: { tileLayer },
+    } = this.props;
 
     const map = new Map(this.ref.current, {
       attributionControl: false,
-      layers: [
-        new TileLayer('https://cartodb-basemaps-c.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png'),
-      ],
+      layers: [new TileLayer(tileLayer)],
     })
       .once('locationerror', () => {
         utils.showMessage({

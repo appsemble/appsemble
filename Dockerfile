@@ -12,6 +12,7 @@ WORKDIR /app
 COPY packages/server packages/server
 COPY packages/node-utils packages/node-utils
 COPY packages/utils packages/utils
+COPY packages/types packages/types
 COPY package.json package.json
 COPY yarn.lock yarn.lock
 RUN yarn --frozen-lockfile --production \

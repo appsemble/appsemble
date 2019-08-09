@@ -1,4 +1,4 @@
-import normalize from '@appsemble/utils/normalize';
+import { normalize } from '@appsemble/utils';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { Redirect, Route, Switch } from 'react-router-dom';

@@ -1,3 +1,4 @@
+import { baseTheme } from '@appsemble/utils';
 import fs from 'fs';
 import sass from 'node-sass';
 
@@ -8,29 +9,43 @@ import sass from 'node-sass';
  * @returns {string} SASS string containing the base Appsemble style augmented by user parameters.
  */
 function processStyle(params) {
-  const style = fs.readFileSync(require.resolve('./bulma.scss'), 'utf8').split(/\r?\n/);
   const bulmaPath = require.resolve('bulma/bulma.sass');
   const checkRadioPath = require.resolve('bulma-checkradio/src/sass/index.sass');
-
-  const mappings = {
-    primaryColor: 'primary',
-    linkColor: 'link',
-    infoColor: 'info',
-    successColor: 'success',
-    warningColor: 'warning',
-    dangerColor: 'danger',
-  };
-
-  Object.entries(params).forEach(([key, value]) => {
-    if (mappings[key]) {
-      style.push(`$${mappings[key]}: ${value};`);
-    }
-  });
-
-  style.push(`@import "${bulmaPath}";`);
-  style.push(`@import "${checkRadioPath}";`);
-
-  return style.join('\n');
+  return `
+    @charset "utf-8";
+    @import url(https://fonts.googleapis.com/css?family=Libre+Franklin|Open+Sans);
+    $family-sans-serif: 'Libre Franklin', sans-serif !default;
+    $primary: ${params.primaryColor || baseTheme.primaryColor};
+    $link: ${params.linkColor || baseTheme.linkColor};
+    $info: ${params.infoColor || baseTheme.infoColor};
+    $success: ${params.successColor || baseTheme.successColor};
+    $warning: ${params.warningColor || baseTheme.warningColor};
+    $danger: ${params.dangerColor || baseTheme.dangerColor};
+    $themeColor: ${params.themeColor || baseTheme.themeColor};
+    $splashColor: ${params.splashColor || baseTheme.splashColor};
+    @import "${bulmaPath}";
+    @import "${checkRadioPath}";
+    // Syntax: https://sass-lang.com/documentation/breaking-changes/css-vars
+    :root {
+      --primary-color: #{$primary};
+      --link-color: #{$link};
+      --success-color: #{$success};
+      --info-color: #{$info};
+      --warning-color: #{$warning};
+      --danger-color: #{$danger};
+      --success-color: #{$success};
+      --theme-color: #{$themeColor};
+      --splash-color: #{$splashColor};
+      --primary-color-invert: #{$primary-invert};
+      --link-color-invert: #{$link-invert};
+      --success-color-invert: #{$success-invert};
+      --info-color-invert: #{$info-invert};
+      --warning-color-invert: #{$warning-invert};
+      --danger-color-invert: #{$danger-invert};
+      --success-color-invert: #{$success-invert};
+      --theme-color-invert: #{findColorInvert($themeColor)};
+      --splash-color-invert: #{findColorInvert($splashColor)};
+    }`;
 }
 
 /**

@@ -1,6 +1,6 @@
 import { BlockProps } from '@appsemble/react';
 import { Loader } from '@appsemble/react-components';
-import { compileFilters, Context, MapperFunction } from '@appsemble/utils/remap';
+import { compileFilters, Context, MapperFunction } from '@appsemble/utils';
 import React from 'react';
 import { FormattedMessage, InjectedIntlProps } from 'react-intl';
 

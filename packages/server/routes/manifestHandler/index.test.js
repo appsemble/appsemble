@@ -32,7 +32,7 @@ it('should serve a PWA manifest', async () => {
       definition: {
         name: 'Test App',
         defaultPage: 'Test Page',
-        theme: { backgroundColor: '#deffde', themeColor: '#fa86ff' },
+        theme: { splashColor: '#deffde', themeColor: '#fa86ff' },
       },
       OrganizationId: 'manitest',
     },

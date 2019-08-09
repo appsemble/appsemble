@@ -1,5 +1,5 @@
 import { Form, Loader, Modal } from '@appsemble/react-components';
-import normalize from '@appsemble/utils/normalize';
+import { normalize } from '@appsemble/utils';
 import axios from 'axios';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';

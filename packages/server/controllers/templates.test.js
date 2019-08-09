@@ -1,4 +1,4 @@
-import validate from '@appsemble/utils/validate';
+import { validate } from '@appsemble/utils';
 import RefParser from 'json-schema-ref-parser';
 import jwt from 'jsonwebtoken';
 import request from 'supertest';

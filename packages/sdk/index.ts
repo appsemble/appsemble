@@ -1,3 +1,4 @@
+import { Theme } from '@appsemble/types';
 import { Promisable } from 'type-fest';
 
 interface BaseAction {
@@ -168,6 +169,13 @@ export interface BootstrapParams<P = any, A = {}> {
    * parameter keys and values of the page will be extracted and set as this object.
    */
   pageParameters?: PageParameters;
+
+  /**
+   * The theme of the block given the context.
+   *
+   * This is based on a combination of the base theme, app theme, page theme and block theme.
+   */
+  theme: Theme;
 
   /**
    * The shadow root to which DOM elements may be appended.

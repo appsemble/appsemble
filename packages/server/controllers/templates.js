@@ -1,4 +1,4 @@
-import normalize from '@appsemble/utils/normalize';
+import { normalize } from '@appsemble/utils';
 import Boom from '@hapi/boom';
 import { UniqueConstraintError } from 'sequelize';
 

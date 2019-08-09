@@ -3,7 +3,9 @@
   "version": "0.8.2",
   "private": true,
   "dependencies": {
+    "@appsemble/types": "0.8.2",
     "idb": "^4.0.4",
+    "openapi-types": "^1.3.5",
     "postcss": "^7.0.17",
     "z-schema": "^4.1.0"
   }

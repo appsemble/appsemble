@@ -9,7 +9,10 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
+- Block: Make Leaflet `tileLayer` configurable using `theme` object.
 - Editor: Add a toggle for making apps private by default.
+- SDK: Add a `theme` object representing the combined theme of the base theme, app theme, page theme
+  and block theme to the SDK.
 
 ### Fixed
 

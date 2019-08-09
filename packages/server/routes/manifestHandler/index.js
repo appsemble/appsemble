@@ -1,4 +1,4 @@
-import normalize from '@appsemble/utils/normalize';
+import { baseTheme, normalize } from '@appsemble/utils';
 import Boom from '@hapi/boom';
 
 const iconSizes = [48, 144, 192, 512];
@@ -17,11 +17,11 @@ export default async function manifestHandler(ctx) {
   }
 
   const { path } = record;
-  const { defaultPage, description, name, theme = {} } = record.definition;
-  const { themeColor = '#ffffff', backgroundColor = themeColor } = theme;
+  const { defaultPage, description, name, theme = { baseTheme } } = record.definition;
+  const { themeColor = '#ffffff', splashColor = themeColor } = theme;
 
   ctx.body = {
-    background_color: backgroundColor,
+    background_color: splashColor,
     description,
     display: 'standalone',
     icons: iconSizes.map(size => ({
