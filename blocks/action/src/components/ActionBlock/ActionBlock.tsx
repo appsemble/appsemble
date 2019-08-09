@@ -51,7 +51,7 @@ export default class ActionBlock extends React.Component<BlockProps<Parameters, 
                 <span className="icon is-small">
                   <i className={`fas fa-${field.icon || 'bolt'}`} />
                 </span>
-                {!field.enum && field.enum.length && (
+                {(field.enum && field.enum.length) || (
                   <span className={styles.actionLabel}>{field.label || ''}</span>
                 )}
               </button>
