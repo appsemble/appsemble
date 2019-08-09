@@ -62,7 +62,7 @@ export default class ActionBlock extends React.Component<BlockProps<Parameters, 
                   </label>
                   <div className={`select ${styles.enum}`}>
                     <select
-                      defaultValue={data[field.name]}
+                      defaultValue={data[field.name] || null}
                       id={`${field.name}.${index}`}
                       onChange={event => this.onUpdate(event, field)}
                     >
