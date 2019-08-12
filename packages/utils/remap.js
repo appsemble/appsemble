@@ -11,6 +11,8 @@ const filters = {
       const index = Number(name);
       if (Number.isInteger(index)) {
         const { length } = object;
+        // This adds support for n number indexing. For example -4, -1, 2, or 5 will return the 3rd
+        // item of an array of length 3.
         return object[((index % length) + length) % length];
       }
     }
