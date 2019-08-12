@@ -3,8 +3,24 @@ const filter = '|';
 
 const filters = {
   date: ({ intl }) => object => `${intl.formatDate(object)} ${intl.formatTime(object)}`,
-  get: (context, name) => object =>
-    object != null && Object.hasOwnProperty.call(object, name) ? object[name] : undefined,
+  get: (context, name) => object => {
+    if (object == null) {
+      return undefined;
+    }
+    if (Array.isArray(object)) {
+      const index = Number(name);
+      if (Number.isInteger(index)) {
+        const { length } = object;
+        // This adds support for n number indexing. For example -4, -1, 2, or 5 will return the 3rd
+        // item of an array of length 3.
+        return object[((index % length) + length) % length];
+      }
+    }
+    if (Object.prototype.hasOwnProperty.call(object, name)) {
+      return object[name];
+    }
+    return undefined;
+  },
   lower: () => Function.call.bind(String.prototype.toLowerCase),
   upper: () => Function.call.bind(String.prototype.toUpperCase),
 };
