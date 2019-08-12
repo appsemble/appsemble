@@ -1,23 +1,15 @@
-import PropTypes from 'prop-types';
+import { BlockProps } from '@appsemble/react';
 import React from 'react';
 
+import { Actions, Field, Parameters } from '../../../block';
 import styles from './ActionBlock.css';
 
-export default class ActionBlock extends React.Component {
-  static propTypes = {
-    /**
-     * The actions as passed by the Appsemble interface.
-     */
-    actions: PropTypes.shape().isRequired,
-    /**
-     * The block as passed by the Appsemble interface.
-     */
-    block: PropTypes.shape().isRequired,
-    data: PropTypes.shape().isRequired,
-  };
-
-  onUpdate = async (event, field) => {
-    if (!field.enum?.length && !field.value) {
+export default class ActionBlock extends React.Component<BlockProps<Parameters, Actions>> {
+  onUpdate = async (
+    event: React.MouseEvent<HTMLButtonElement> | React.ChangeEvent<HTMLSelectElement>,
+    field: Field,
+  ) => {
+    if ((!field.enum || !field.enum.length) && !field.value) {
       return;
     }
 
@@ -26,7 +18,8 @@ export default class ActionBlock extends React.Component {
     try {
       const updatedResource = {
         ...data,
-        [field.name]: field.enum?.length ? event.target.value : field.value,
+        [field.name]:
+          field.enum && field.enum.length ? (event.target as HTMLSelectElement).value : field.value,
       };
       await actions.onSubmit.dispatch(updatedResource);
       await actions.onSuccess.dispatch(updatedResource);
@@ -35,7 +28,7 @@ export default class ActionBlock extends React.Component {
     }
   };
 
-  render() {
+  render(): JSX.Element {
     const { block, data } = this.props;
     const { fields, title } = block.parameters;
 
@@ -48,19 +41,21 @@ export default class ActionBlock extends React.Component {
             <div key={`${field.name}.${field.value}`} className={styles.actionField}>
               <button
                 className="button"
-                disabled={field.enum?.length}
-                onClick={field.enum?.length ? undefined : event => this.onUpdate(event, field)}
+                disabled={!!(field.enum && field.enum.length)}
+                onClick={
+                  field.enum && field.enum.length ? undefined : event => this.onUpdate(event, field)
+                }
                 style={{ ...(backgroundColor && { backgroundColor }), ...(color && { color }) }}
                 type="button"
               >
                 <span className="icon is-small">
                   <i className={`fas fa-${field.icon || 'bolt'}`} />
                 </span>
-                {!field.enum?.length && (
+                {(field.enum && field.enum.length) || (
                   <span className={styles.actionLabel}>{field.label || ''}</span>
                 )}
               </button>
-              {field.enum?.length && (
+              {field.enum && field.enum.length && (
                 <React.Fragment>
                   <label className={styles.actionLabel} htmlFor={`${field.name}.${index}`}>
                     {field.label || ''}
