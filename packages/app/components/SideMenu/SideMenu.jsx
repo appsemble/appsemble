@@ -41,23 +41,21 @@ export default class SideMenu extends React.Component {
 
     return (
       <React.Fragment>
-        <div
-          className={classNames(styles.menu, styles.transition, {
+        <aside
+          className={classNames(styles.menu, {
             [styles.active]: isOpen,
             [styles.hidden]: !isOpen,
           })}
         >
           {children}
-        </div>
-        {isOpen && (
-          <div
-            className={styles.backdrop}
-            onClick={closeMenu}
-            onKeyDown={this.onKeyDown}
-            role="button"
-            tabIndex="-1"
-          />
-        )}
+        </aside>
+        <div
+          className={classNames(styles.backdrop, { [styles.active]: isOpen })}
+          onClick={closeMenu}
+          onKeyDown={this.onKeyDown}
+          role="button"
+          tabIndex="-1"
+        />
       </React.Fragment>
     );
   }
