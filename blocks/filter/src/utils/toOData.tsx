@@ -1,4 +1,6 @@
-export default function toOData(fields, filter) {
+import { Filter, FilterField } from '../../types';
+
+export default function toOData(fields: FilterField[], filter: Filter): string {
   return Object.entries(filter)
     .map(([key, data]) => {
       if (!data) {
