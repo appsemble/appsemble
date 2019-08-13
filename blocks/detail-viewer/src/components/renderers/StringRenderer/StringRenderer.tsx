@@ -1,26 +1,11 @@
-import { BlockProps } from '@appsemble/react';
 import React from 'react';
 
-import { Field } from '../../../../block';
-
-interface StringRendererProps extends Partial<BlockProps> {
-  /**
-   * Structure used to define this field.
-   */
-  field: Field;
-
-  /**
-   * The current value.
-   */
-  value: any;
-
-  data: any;
-}
+import { RendererProps } from '../../../../block';
 
 /**
  * An element for a text type schema.
  */
-export default class StringRenderer extends React.Component<StringRendererProps> {
+export default class StringRenderer extends React.Component<RendererProps> {
   static defaultProps = {
     value: '',
   };

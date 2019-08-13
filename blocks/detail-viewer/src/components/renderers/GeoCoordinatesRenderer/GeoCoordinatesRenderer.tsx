@@ -1,32 +1,17 @@
-import { BlockProps } from '@appsemble/react';
 import { Location } from '@appsemble/react-components';
 import { remapData } from '@appsemble/utils';
 import React from 'react';
 
 import iconUrl from '../../../../../../themes/amsterdam/core/marker.svg';
-import { Field } from '../../../../block';
+import { RendererProps } from '../../../../block';
 import styles from './GeoCoordinatesRenderer.css';
-
-export interface GeoCoordinatesRendererProps extends Partial<BlockProps> {
-  /**
-   * The current value.
-   */
-  value: any;
-
-  /**
-   * Structure used to define this field.
-   */
-  field: Field;
-
-  data: any;
-}
 
 /**
  * An map for an object type schema which implements GeoCoordinates.
  *
  * https://schema.org/GeoCoordinates
  */
-export default class GeoCoordinatesRenderer extends React.Component<GeoCoordinatesRendererProps> {
+export default class GeoCoordinatesRenderer extends React.Component<RendererProps> {
   static defaultProps = {
     value: {},
   };

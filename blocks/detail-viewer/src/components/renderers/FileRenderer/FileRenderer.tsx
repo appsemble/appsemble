@@ -1,27 +1,14 @@
-import { BlockProps } from '@appsemble/react';
 import { remapData } from '@appsemble/utils';
 import classNames from 'classnames';
 import React from 'react';
 
-import { Field } from '../../../../block';
+import { RendererProps } from '../../../../block';
 import styles from './FileRenderer.css';
-
-export interface FileRendererProps extends Partial<BlockProps> {
-  /**
-   * Structure used to define this field.
-   */
-  field: Field;
-
-  /**
-   * The current value.
-   */
-  value: string | Blob | (string | Blob)[];
-}
 
 /**
  * Render a string as is.
  */
-export default class FileRenderer extends React.Component<FileRendererProps> {
+export default class FileRenderer extends React.Component<RendererProps> {
   getSrc = (value: string | Blob) => {
     const { block, utils } = this.props;
 
