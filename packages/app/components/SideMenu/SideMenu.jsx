@@ -44,7 +44,6 @@ export default class SideMenu extends React.Component {
         <aside
           className={classNames(styles.menu, {
             [styles.active]: isOpen,
-            [styles.hidden]: !isOpen,
           })}
         >
           {children}
