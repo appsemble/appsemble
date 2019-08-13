@@ -1,4 +1,4 @@
-import { Drawer } from '@material-ui/core';
+import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import React from 'react';
 
@@ -18,24 +18,44 @@ export default class SideMenu extends React.Component {
   componentDidMount() {
     const { closeMenu, history } = this.props;
 
+    document.addEventListener('keydown', this.onKeyDown, false);
     this.unlisten = history.listen(closeMenu);
   }
 
   componentWillUnmount() {
+    document.removeEventListener('keydown', this.onKeyDown, false);
     this.unlisten();
   }
+
+  onKeyDown = event => {
+    const { closeMenu } = this.props;
+
+    // Close menu if the Escape key is pressed.
+    if (event.keyCode === 27) {
+      closeMenu();
+    }
+  };
 
   render() {
     const { children, closeMenu, isOpen } = this.props;
 
     return (
-      <Drawer
-        classes={{ paper: `side-menu ${styles.paper}`, root: styles.backdrop }}
-        onClose={closeMenu}
-        open={isOpen}
-      >
-        {children}
-      </Drawer>
+      <React.Fragment>
+        <aside
+          className={classNames(styles.menu, {
+            [styles.active]: isOpen,
+          })}
+        >
+          {children}
+        </aside>
+        <div
+          className={classNames(styles.backdrop, { [styles.active]: isOpen })}
+          onClick={closeMenu}
+          onKeyDown={this.onKeyDown}
+          role="button"
+          tabIndex="-1"
+        />
+      </React.Fragment>
     );
   }
 }

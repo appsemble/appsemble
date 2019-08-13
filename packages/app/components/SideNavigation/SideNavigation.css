@@ -21,12 +21,15 @@
 }
 
 .menuList {
+  background-color: hsl(0, 0%, 100%);
+
   & > li > * {
+    border-radius: 0;
     padding: 1em;
 
-    &.is-active {
-      background-color: inherit;
-      color: var(--primary-color);
+    &.active {
+      background-color: var(--primary-color);
+      color: var(--primary-color-invert);
     }
   }
 }
