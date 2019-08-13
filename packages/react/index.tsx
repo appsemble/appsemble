@@ -64,7 +64,7 @@ export function bootstrap<P, A = {}>(
  * A HOC which passes the Appsemble block values to he wrapped React component.
  */
 export function withBlock<P extends object>(
-  Component: React.ComponentType<P & BlockProps>,
+  Component: React.ComponentType<P & Omit<BlockProps, keyof P>>,
 ): React.ComponentType<P> {
   function Wrapper(props: P): JSX.Element {
     return <Consumer>{values => <Component {...values} {...props} />}</Consumer>;

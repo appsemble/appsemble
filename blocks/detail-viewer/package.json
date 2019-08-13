@@ -2,9 +2,6 @@
   "name": "@appsemble/detail-viewer",
   "version": "0.8.2",
   "private": true,
-  "scripts": {
-    "tsc": "../../config/bin/tscstub.js"
-  },
   "appsemble": {
     "actions": {
       "onLoad": {
@@ -18,7 +15,6 @@
     "@appsemble/react-components": "0.8.2",
     "@appsemble/utils": "0.8.2",
     "classnames": "^2.2.6",
-    "prop-types": "^15.7.2",
     "react": "^16.8.6",
     "react-dom": "^16.8.6"
   }

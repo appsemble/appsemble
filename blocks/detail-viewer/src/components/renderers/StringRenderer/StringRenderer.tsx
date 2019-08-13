@@ -1,27 +1,16 @@
-import PropTypes from 'prop-types';
 import React from 'react';
+
+import { RendererProps } from '../../../../block';
 
 /**
  * An element for a text type schema.
  */
-export default class StringRenderer extends React.Component {
-  static propTypes = {
-    /**
-     * Structure used to define this field.
-     */
-    field: PropTypes.shape().isRequired,
-
-    /**
-     * The current value.
-     */
-    value: PropTypes.oneOfType([PropTypes.string, PropTypes.shape()]),
-  };
-
+export default class StringRenderer extends React.Component<RendererProps> {
   static defaultProps = {
     value: '',
   };
 
-  render() {
+  render(): JSX.Element {
     const { field, value } = this.props;
 
     return (
