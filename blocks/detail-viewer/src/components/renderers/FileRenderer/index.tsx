@@ -1,5 +1,6 @@
 import { withBlock } from '@appsemble/react';
 
-import FileRenderer, { FileRendererProps } from './FileRenderer';
+import { RendererProps } from '../../../../block';
+import FileRenderer from './FileRenderer';
 
-export default withBlock<FileRendererProps>(FileRenderer);
+export default withBlock<RendererProps>(FileRenderer);
