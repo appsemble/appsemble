@@ -1,4 +1,4 @@
-import { Filter, FilterField } from '../../types';
+import { Filter, FilterField, RangeFilter } from '../../types';
 
 export default function toOData(fields: FilterField[], filter: Filter): string {
   return Object.entries(filter)
@@ -14,9 +14,10 @@ export default function toOData(fields: FilterField[], filter: Filter): string {
       }
 
       if (field.range) {
-        const from = data.from == null || data.from === '' ? null : `${key} ge ${data.from}`;
-        const to = data.to == null || data.to === '' ? null : `${key} le ${data.to}`;
-        return [from, to];
+        const { from, to } = data as RangeFilter;
+        const f = from == null || from === '' ? null : `${key} ge ${from}`;
+        const t = to == null || to === '' ? null : `${key} le ${to}`;
+        return [f, t];
       }
 
       return `${key} eq '${data}'`;
