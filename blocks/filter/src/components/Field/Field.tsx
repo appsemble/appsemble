@@ -1,26 +1,26 @@
 import classNames from 'classnames';
-import PropTypes from 'prop-types';
 import React from 'react';
+import { InjectedIntlProps } from 'react-intl';
 
+import { Filter, FilterField, RangeFilter } from '../../../types';
 import Control from '../Control';
 import styles from './Field.css';
 import messages from './messages';
 
-export default class Field extends React.Component {
-  static propTypes = {
-    displayLabel: PropTypes.bool,
-    filter: PropTypes.shape().isRequired,
-    icon: PropTypes.string,
-    intl: PropTypes.shape().isRequired,
-    label: PropTypes.node,
-    name: PropTypes.node.isRequired,
-    onChange: PropTypes.func.isRequired,
-    onRangeChange: PropTypes.func.isRequired,
-    type: PropTypes.string,
-    range: PropTypes.bool,
-  };
+export interface FieldProps {
+  displayLabel?: boolean;
+  filter: Filter;
+  loading: boolean;
+  onChange:
+    | React.ChangeEventHandler<HTMLInputElement>
+    | React.ChangeEventHandler<HTMLSelectElement>;
+  onRangeChange:
+    | React.ChangeEventHandler<HTMLInputElement>
+    | React.ChangeEventHandler<HTMLSelectElement>;
+}
 
-  static defaultProps = {
+export default class Field extends React.Component<FieldProps & FilterField & InjectedIntlProps> {
+  static defaultProps: Partial<FieldProps & FilterField> = {
     displayLabel: true,
     label: undefined,
     range: false,
@@ -28,7 +28,7 @@ export default class Field extends React.Component {
     icon: undefined,
   };
 
-  render() {
+  render(): JSX.Element {
     const {
       displayLabel,
       filter,
@@ -64,7 +64,7 @@ export default class Field extends React.Component {
                 name={name}
                 onChange={onRangeChange}
                 placeholder={intl.formatMessage(messages.from)}
-                value={filter[name]?.from}
+                value={filter[name] && (filter[name] as RangeFilter).from}
                 {...props}
               />
               <Control
@@ -72,7 +72,7 @@ export default class Field extends React.Component {
                 name={name}
                 onChange={onRangeChange}
                 placeholder={intl.formatMessage(messages.to)}
-                value={filter[name]?.to}
+                value={filter[name] && (filter[name] as RangeFilter).to}
                 {...props}
               />
             </React.Fragment>

@@ -1,25 +1,39 @@
 import classNames from 'classnames';
-import PropTypes from 'prop-types';
 import React from 'react';
 
-export default class Control extends React.Component {
-  static propTypes = {
-    emptyLabel: PropTypes.string,
-    defaultValue: PropTypes.string,
-    enum: PropTypes.arrayOf(PropTypes.shape()),
-    loading: PropTypes.bool.isRequired,
-    value: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
-  };
+import { Enum } from '../../../types';
 
-  static defaultProps = {
+interface ControlProps {
+  className?: string;
+  defaultValue?: any;
+  enum?: Enum[];
+  emptyLabel?: string;
+  id: string;
+  loading: boolean;
+  name: string;
+  placeholder?: string;
+  value?: any;
+  onChange: React.ChangeEventHandler<HTMLElement>;
+}
+
+export default class Control extends React.Component<ControlProps> {
+  static defaultProps: Partial<ControlProps> = {
     emptyLabel: '',
     defaultValue: undefined,
     enum: null,
     value: '',
   };
 
-  render() {
-    const { enum: enumerator, defaultValue, loading, value, emptyLabel, ...props } = this.props;
+  render(): JSX.Element {
+    const {
+      enum: enumerator,
+      defaultValue,
+      loading,
+      onChange,
+      value,
+      emptyLabel,
+      ...props
+    } = this.props;
 
     return (
       <div className={classNames('control', { 'is-loading': loading })}>

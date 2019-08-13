@@ -1,34 +1,33 @@
+import { BlockProps } from '@appsemble/react';
 import { Modal } from '@appsemble/react-components';
 import classNames from 'classnames';
-import PropTypes from 'prop-types';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 
+import { Actions, Filter, Parameters, RangeFilter } from '../../../types';
 import toOData from '../../utils/toOData';
 import Field from '../Field';
 import styles from './FilterBlock.css';
 import messages from './messages';
 
-export default class FilterBlock extends React.Component {
-  refreshTimer = null;
+interface FilterBlockState {
+  currentFilter?: Filter;
+  filter?: Filter;
+  data?: any;
+  newData?: any[];
+  isOpen?: boolean;
+  loading?: boolean;
+  lastRefreshedDate?: Date;
+  typingTimer?: number;
+}
 
-  static propTypes = {
-    /**
-     * The actions as passed by the Appsemble interface.
-     */
-    actions: PropTypes.shape().isRequired,
-    /**
-     * The block as passed by the Appsemble interface.
-     */
-    block: PropTypes.shape().isRequired,
-    /**
-     * The event helper functions as passed by the Appsemble interface.
-     */
-    events: PropTypes.shape().isRequired,
-    intl: PropTypes.shape().isRequired,
-  };
+export default class FilterBlock extends React.Component<
+  BlockProps<Parameters, Actions>,
+  FilterBlockState
+> {
+  refreshTimer: number = null;
 
-  state = {
+  state: FilterBlockState = {
     lastRefreshedDate: undefined,
     newData: [],
     data: [],
@@ -38,7 +37,7 @@ export default class FilterBlock extends React.Component {
     isOpen: false,
   };
 
-  async componentDidMount() {
+  async componentDidMount(): Promise<void> {
     const {
       block: {
         parameters: { refreshTimeout },
@@ -52,13 +51,13 @@ export default class FilterBlock extends React.Component {
     }
   }
 
-  componentWillUnmount() {
+  componentWillUnmount(): void {
     if (this.refreshTimer) {
       clearInterval(this.refreshTimer);
     }
   }
 
-  fetchData = filterParams => {
+  fetchData = (filterParams?: Filter) => {
     const {
       actions,
       block: {
@@ -69,20 +68,20 @@ export default class FilterBlock extends React.Component {
     const { filter } = this.state;
 
     // Convert date fields to unix timestamps without mutating filter itself
-    const convertedFilter = Object.entries(filter).reduce((acc, [key, value]) => {
+    const convertedFilter = Object.entries(filter).reduce<Filter>((acc, [key, value]) => {
       const field = fields.find(f => f.name === key);
       if (field.type === 'date') {
         if (field.range) {
           acc[key] = {};
-          if (value.to) {
-            acc[key].to = new Date(value.to).getTime();
+          if ((value as RangeFilter).to) {
+            (acc[key] as RangeFilter).to = new Date((value as RangeFilter).to).getTime();
           }
 
-          if (value.from) {
-            acc[key].from = new Date(value.from).getTime();
+          if ((value as RangeFilter).from) {
+            (acc[key] as RangeFilter).from = new Date((value as RangeFilter).from).getTime();
           }
         } else {
-          acc[key] = new Date(value).getTime();
+          acc[key] = new Date(value as string).getTime();
         }
       } else {
         acc[key] = value;
@@ -98,7 +97,7 @@ export default class FilterBlock extends React.Component {
     });
   };
 
-  resetFilter = e => {
+  resetFilter = (e?: React.MouseEvent<HTMLButtonElement>) => {
     const {
       events,
       block: {
@@ -106,11 +105,11 @@ export default class FilterBlock extends React.Component {
       },
     } = this.props;
 
-    if (e && e.target.disabled) {
+    if (e && (e.target as HTMLButtonElement).disabled) {
       return;
     }
 
-    const defaultFilter = fields.reduce((acc, { name, defaultValue }) => {
+    const defaultFilter = fields.reduce<Filter>((acc, { name, defaultValue }) => {
       if (defaultValue) {
         acc[name] = defaultValue;
       }
@@ -152,7 +151,7 @@ export default class FilterBlock extends React.Component {
     this.setState({ newData: [], data: updatedData });
   };
 
-  onChange = async ({ target }) => {
+  onChange = async ({ target }: React.ChangeEvent<HTMLInputElement>) => {
     this.setState(({ filter, typingTimer }, { block: { parameters: { fields, highlight } } }) => {
       const newFilter = {
         ...filter,
@@ -174,15 +173,14 @@ export default class FilterBlock extends React.Component {
     });
   };
 
-  onRangeChange = ({ target: { id, name, value } }) => {
+  onRangeChange = ({ target: { id, name, value } }: React.ChangeEvent<HTMLInputElement>) => {
     this.setState(({ filter }) => {
-      const target = id.startsWith('to') ? 'to' : 'from';
       return {
         filter: {
           ...filter,
           [name]: {
-            ...filter[name],
-            [target]: value,
+            ...(filter[name] as {}),
+            [id.startsWith('to') ? 'to' : 'from']: value,
           },
         },
       };
@@ -219,7 +217,13 @@ export default class FilterBlock extends React.Component {
     this.setState({ isOpen: false });
   };
 
-  render() {
+  onFilterKeyDown = (event: React.KeyboardEvent): void => {
+    if (event.key === 'Escape') {
+      this.onClose();
+    }
+  };
+
+  render(): JSX.Element {
     const { block } = this.props;
     const { currentFilter, filter, isOpen, loading, newData } = this.state;
     const { fields, highlight } = block.parameters;
@@ -227,9 +231,13 @@ export default class FilterBlock extends React.Component {
     const showModal = !highlightedField || fields.length > 1;
 
     // check if filter has any field set that isn't already highlighted or its default value
-    const activeFilters = Object.entries(currentFilter).some(
-      ([key, value]) => !!value || value !== fields.find(field => field.name === key)?.defaultValue,
-    );
+    const activeFilters = Object.entries(currentFilter).some(([key, value]) => {
+      if (value == null) {
+        return false;
+      }
+      const field = fields.find(f => f.name === key);
+      return field && field.defaultValue === value;
+    });
 
     return (
       <React.Fragment>
@@ -260,9 +268,9 @@ export default class FilterBlock extends React.Component {
                 <a
                   className="card-footer-item is-link"
                   onClick={this.onClose}
-                  onKeyDown={this.onKeyDown}
+                  onKeyDown={this.onFilterKeyDown}
                   role="button"
-                  tabIndex="-1"
+                  tabIndex={-1}
                 >
                   <FormattedMessage {...messages.cancel} />
                 </a>
