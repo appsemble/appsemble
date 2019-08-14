@@ -10,7 +10,7 @@ import { appsembleServer } from '../../package.json';
 async function main() {
   logger.info('Registering bot user account');
   const { APPSEMBLE_EMAIL, APPSEMBLE_PASSWORD } = process.env;
-  const { 'no-conflict': noConflict, remote } = appsembleServer;
+  const { 'ignore-conflict': ignoreConflict, remote } = appsembleServer;
   try {
     await axios.post(
       '/api/email',
@@ -19,7 +19,7 @@ async function main() {
     );
     logger.info(`Registered user ${APPSEMBLE_EMAIL}`);
   } catch (err) {
-    if (noConflict && err && err.response && err.response.status === 409) {
+    if (ignoreConflict && err && err.response && err.response.status === 409) {
       logger.warn('Registration conflict ignored');
       return;
     }
