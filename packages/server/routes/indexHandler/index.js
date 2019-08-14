@@ -21,11 +21,6 @@ export default async function indexHandler(ctx) {
     'default-src': ["'self'", '*.vimeo.com'],
     'script-src': [
       "'self'",
-      // Vimeo scripts
-      '*.vimeo.com',
-      '*.vimeocdn.com',
-      '*.newrelic.com',
-      '*.nr-data.net',
       // This is needed for Webpack.
       process.env.NODE_ENV !== 'production' && "'unsafe-eval'",
     ],
