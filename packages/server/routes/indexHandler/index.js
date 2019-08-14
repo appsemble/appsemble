@@ -18,16 +18,22 @@ export default async function indexHandler(ctx) {
   const csp = {
     'report-uri': [reportUri],
     'connect-src': ['*', 'blob:', 'data:'],
-    'default-src': ["'self'"],
+    'default-src': ["'self'", '*.vimeo.com'],
     'script-src': [
       "'self'",
+      // Vimeo scripts
+      '*.vimeo.com',
+      '*.vimeocdn.com',
+      '*.newrelic.com',
+      '*.nr-data.net',
       // This is needed for Webpack.
       process.env.NODE_ENV !== 'production' && "'unsafe-eval'",
     ],
     'img-src': ['*', 'blob:', 'data:'],
     'media-src': ['*', 'blob:', 'data:'],
-    'style-src': ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
+    'style-src': ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com', '*.vimeocdn.com'],
     'font-src': ["'self'", 'data:', 'https://fonts.gstatic.com'],
+    'frame-src': ["'self'", '*.vimeo.com', '*.youtube.com'],
   };
 
   try {
