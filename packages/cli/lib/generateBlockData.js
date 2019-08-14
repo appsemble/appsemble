@@ -1,10 +1,32 @@
 import { AppsembleError, logger } from '@appsemble/node-utils';
 import fs from 'fs-extra';
-import json5 from 'json5';
 import path from 'path';
+import { readConfigFile } from 'typescript';
 import { buildGenerator, getProgramFromFiles } from 'typescript-json-schema';
 
-export async function getFromContext({ dir, actions, parameters, types = {} }) {
+/**
+ * Recursively read an extended TypeScript configuration file.
+ *
+ * @param {string} tsConfigPath The path to the `tsconfig.json` file to read.
+ * @returns {Object} The resolved compiler options.
+ */
+function readTSConfig(tsConfigPath) {
+  logger.verbose(`Reading extended tsconfig file ${tsConfigPath}`);
+  const { config, error } = readConfigFile(tsConfigPath, p => fs.readFileSync(p, 'utf8'));
+  if (error) {
+    throw new AppsembleError(error.messageText);
+  }
+  if (!Object.prototype.hasOwnProperty.call(config, 'extends')) {
+    return config.compilerOptions;
+  }
+  const { dir, name, ext } = path.parse(config.extends);
+  return {
+    ...readTSConfig(path.resolve(path.dirname(tsConfigPath), dir, `${name}${ext || '.json'}`)),
+    ...config.compilerOptions,
+  };
+}
+
+export function getFromContext({ dir, actions, parameters, types = {} }, fullPath) {
   const { file = 'types.ts', parameters: parametersInterface } = types;
   if (parameters && parametersInterface) {
     throw new AppsembleError(
@@ -15,9 +37,9 @@ export async function getFromContext({ dir, actions, parameters, types = {} }) {
     return { actions, parameters };
   }
   logger.info('Extracting data from TypeScript project');
-  const tsConfigPath = path.join(dir, 'tsconfig.json');
-  const tsConfigText = await fs.readFile(tsConfigPath, 'utf8');
-  const { compilerOptions } = json5.parse(tsConfigText);
+  const tsConfigPath = path.join(fullPath, 'tsconfig.json');
+  const compilerOptions = readTSConfig(tsConfigPath);
+  logger.verbose(`Resolved TypeScript compiler options ${JSON.stringify(compilerOptions)}`);
   const program = getProgramFromFiles([path.join(dir, file)], compilerOptions, dir);
   const generator = buildGenerator(program, {
     noExtraProps: true,
@@ -35,9 +57,9 @@ export async function getFromContext({ dir, actions, parameters, types = {} }) {
   };
 }
 
-export default async function generateBlockData(config) {
+export default function generateBlockData(config, fullPath) {
   const { layout, resources, version } = config;
-  const { actions, parameters } = await getFromContext(config);
+  const { actions, parameters } = getFromContext(config, fullPath);
 
   return {
     actions,

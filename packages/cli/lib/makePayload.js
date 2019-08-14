@@ -16,17 +16,17 @@ import generateBlockData from './generateBlockData';
  */
 export default async function makePayload({ config, path: p }) {
   const { output } = config;
-  const fullPath = output ? path.resolve(p, output) : p;
+  const distPath = output ? path.resolve(p, output) : p;
   const form = new FormData();
-  const data = await generateBlockData(config);
+  const data = generateBlockData(config, p);
   form.append('data', JSON.stringify(data));
   return new Promise((resolve, reject) => {
-    klaw(fullPath)
+    klaw(distPath)
       .on('data', file => {
         if (!file.stats.isFile()) {
           return;
         }
-        const key = path.relative(fullPath, file.path);
+        const key = path.relative(distPath, file.path);
         const realPath = path.relative(process.cwd(), file.path);
         logger.info(`Adding file: “${realPath}” as “${key}”`);
         form.append(key, fs.createReadStream(file.path));
