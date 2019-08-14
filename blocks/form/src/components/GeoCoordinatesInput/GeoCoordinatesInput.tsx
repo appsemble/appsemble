@@ -41,6 +41,9 @@ export default class GeoCoordinatesInput extends React.Component<GeoCoordinatesI
         });
       })
       .on('locationfound', ({ latlng }: LocationEvent) => {
+        if (!this.locationMarker.getLatLng()) {
+          map.setView(latlng, 18);
+        }
         this.locationMarker.setLatLng(latlng).addTo(map);
       })
       .on('move', () => {
@@ -53,7 +56,7 @@ export default class GeoCoordinatesInput extends React.Component<GeoCoordinatesI
           },
         );
       })
-      .locate({ setView: true });
+      .locate({ watch: true });
     this.map = map;
   }
 
