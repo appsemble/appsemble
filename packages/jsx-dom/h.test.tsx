@@ -52,9 +52,3 @@ it('ignore boolean or null children', () => {
   );
   expect(div.outerHTML).toBe('<div></div>');
 });
-
-it('should support svg elements', () => {
-  const g = <g />;
-  // Jest doesn’t support SVG elements.
-  expect(g).toBeInstanceOf(HTMLUnknownElement);
-});
