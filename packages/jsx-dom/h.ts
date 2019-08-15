@@ -446,7 +446,7 @@ declare namespace h {
     /**
      * An HTML or SVG element.
      */
-    type Element = HTMLElement | SVGElement;
+    type Element = HTMLElement;
 
     /**
      * These properties can be passed to the JSX element function.
