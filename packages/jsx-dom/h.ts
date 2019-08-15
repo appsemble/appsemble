@@ -382,11 +382,11 @@ interface Attributes {
     | 'treeitem';
 }
 
-type TagNameMap = HTMLElementTagNameMap & SVGElementTagNameMap;
-
-type Props<T extends keyof TagNameMap> = Attributes &
+type Props<T extends keyof HTMLElementTagNameMap> = Attributes &
   {
-    [K in keyof TagNameMap[T]]?: Partial<TagNameMap[T][K]>;
+    [K in keyof HTMLElementTagNameMap[T]]?: HTMLElementTagNameMap[T][K] extends object
+      ? Partial<HTMLElementTagNameMap[T][K]>
+      : HTMLElementTagNameMap[T][K];
   };
 
 type Child = boolean | string | Element | Children;
@@ -405,7 +405,7 @@ interface Children extends Array<Child> {}
  *
  * @returns The created DOM node.
  */
-const h = <T extends keyof TagNameMap>(
+const h = <T extends keyof HTMLElementTagNameMap>(
   tag: T,
   props: Props<T>,
   ...children: Children
@@ -452,7 +452,7 @@ declare namespace h {
      * These properties can be passed to the JSX element function.
      */
     type IntrinsicElements = {
-      [K in keyof TagNameMap]: Props<K>;
+      [K in keyof HTMLElementTagNameMap]: Props<K>;
     };
   }
 }
