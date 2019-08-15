@@ -28,6 +28,7 @@ export default async function indexHandler(ctx) {
     'media-src': ['*', 'blob:', 'data:'],
     'style-src': ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
     'font-src': ["'self'", 'data:', 'https://fonts.gstatic.com'],
+    'frame-src': ["'self'", '*.vimeo.com', '*.youtube.com'],
   };
 
   try {
