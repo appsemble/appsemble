@@ -18,7 +18,7 @@ export default async function indexHandler(ctx) {
   const csp = {
     'report-uri': [reportUri],
     'connect-src': ['*', 'blob:', 'data:'],
-    'default-src': ["'self'", '*.vimeo.com'],
+    'default-src': ["'self'"],
     'script-src': [
       "'self'",
       // This is needed for Webpack.
@@ -26,7 +26,7 @@ export default async function indexHandler(ctx) {
     ],
     'img-src': ['*', 'blob:', 'data:'],
     'media-src': ['*', 'blob:', 'data:'],
-    'style-src': ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com', '*.vimeocdn.com'],
+    'style-src': ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
     'font-src': ["'self'", 'data:', 'https://fonts.gstatic.com'],
     'frame-src': ["'self'", '*.vimeo.com', '*.youtube.com'],
   };
