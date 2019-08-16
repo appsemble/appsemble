@@ -152,7 +152,7 @@ pages:
             type: resource.query
             resource: waarneming
             query:
-              $orderby: 'created desc'
+              $orderby: '$created desc'
               $top: 50
       - type: action-button
         version: 0.8.2
@@ -198,7 +198,7 @@ pages:
             type: resource.query
             resource: waarneming
             query:
-              $orderby: 'created desc'
+              $orderby: '$created desc'
               $top: 50
 
       - type: feed
@@ -207,7 +207,7 @@ pages:
           listen: updateWaarnemingen
           title: type
           subtitle: proces
-          heading: created
+          heading: $created|date
           picture: fotos.0
           pictureBase: /api/assets
           description: notities
