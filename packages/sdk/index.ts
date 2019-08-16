@@ -92,6 +92,21 @@ export interface Message {
    * The content of the message to display.
    */
   body: string;
+
+  /**
+   * The color to use for the message.
+   */
+  color?: 'primary' | 'info' | 'success' | 'warning' | 'danger';
+
+  /**
+   * The timeout period for this message (in milliseconds).
+   */
+  timeout?: number;
+
+  /**
+   * Whether or not to show the dismiss button.
+   */
+  dismissable?: boolean;
 }
 
 export interface PageParameters {
