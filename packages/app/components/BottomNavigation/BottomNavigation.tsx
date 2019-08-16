@@ -20,20 +20,18 @@ export default class BottomNavigation extends React.Component<BottomNavigationPr
     }
 
     return (
-      <nav className={styles.root}>
+      <nav className="bottom-nav">
         <ul className={styles.list}>
           {app.pages
             .filter(page => !page.parameters)
             .map(page => (
-              <li key={page.name} className={styles.listItem}>
+              <li key={page.name} className="bottom-nav-item">
                 <NavLink
-                  activeClassName={styles.active}
-                  className={styles.link}
+                  activeClassName="is-active"
+                  className="bottom-nav-item-link"
                   to={`/${normalize(page.name)}`}
                 >
-                  {page.icon ? (
-                    <Icon className={styles.icon} icon={page.icon} iconSize="3x" size="large" />
-                  ) : null}
+                  {page.icon ? <Icon icon={page.icon} iconSize="3x" size="large" /> : null}
                   <span>{page.name}</span>
                 </NavLink>
               </li>
