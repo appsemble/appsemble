@@ -1,13 +1,13 @@
 {
   "name": "@appsemble/server",
-  "version": "0.8.2",
+  "version": "0.8.3",
   "private": true,
   "scripts": {
     "tsc": "../../config/bin/tscstub.js"
   },
   "dependencies": {
-    "@appsemble/node-utils": "^0.8.2",
-    "@appsemble/utils": "^0.8.2",
+    "@appsemble/node-utils": "^0.8.3",
+    "@appsemble/utils": "^0.8.3",
     "@fortawesome/fontawesome-free": "^5.9.0",
     "@hapi/boom": "^7.4.2",
     "@sentry/node": "^5.5.0",
