@@ -7,6 +7,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.8.3] - 2019-08-16
+
 ### Added
 
 - App: Add ability to specify different navigation types. Currently only `bottom` is supported,
