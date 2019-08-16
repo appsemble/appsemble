@@ -2,9 +2,6 @@
   "name": "@appsemble/app",
   "version": "0.8.2",
   "private": true,
-  "scripts": {
-    "tsc": "../../config/bin/tscstub.js"
-  },
   "dependencies": {
     "@appsemble/react-components": "^0.8.2",
     "@appsemble/utils": "^0.8.2",

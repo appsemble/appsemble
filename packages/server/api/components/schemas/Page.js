@@ -17,6 +17,13 @@ export default {
           type: 'string',
           enum: ['flow', 'page'],
         },
+        icon: {
+          type: 'string',
+          description: `An optional icon from the fontawesome icon set
+
+            This will be displayed in the navigation menu.
+          `,
+        },
         parameters: {
           type: 'array',
           description:

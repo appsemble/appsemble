@@ -1,3 +1,4 @@
+import { Icon } from '@appsemble/react-components';
 import { normalize } from '@appsemble/utils';
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
@@ -35,7 +36,7 @@ export default class SideNavigation extends React.Component {
   render() {
     const { app, user } = this.props;
 
-    if (app == null) {
+    if (app.navigation != null) {
       return null;
     }
 
@@ -48,7 +49,8 @@ export default class SideNavigation extends React.Component {
               .map(page => (
                 <li key={page.name}>
                   <NavLink activeClassName={styles.active} to={`/${normalize(page.name)}`}>
-                    {page.name}
+                    {page.icon ? <Icon className={styles.icon} icon={page.icon} /> : null}
+                    <span>{page.name}</span>
                   </NavLink>
                 </li>
               ))}

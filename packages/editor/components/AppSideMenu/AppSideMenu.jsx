@@ -1,3 +1,4 @@
+import { Icon } from '@appsemble/react-components';
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -33,17 +34,13 @@ export default class AppSideMenu extends React.Component {
         toggleCollapse={() => this.setState({ isCollapsed: !isCollapsed })}
       >
         <NavLink className={styles.menuItem} exact to={`${match.url}/edit`}>
-          <span className="icon is-medium">
-            <i className="fas fa-lg fa-edit" />
-          </span>
+          <Icon icon="edit" size="medium" />
           <span className={classNames({ 'is-hidden': isCollapsed })}>
             <FormattedMessage {...messages.editor} />
           </span>
         </NavLink>
         <NavLink className={styles.menuItem} exact={!isCollapsed} to={`${match.url}/resources`}>
-          <span className="icon is-medium">
-            <i className="fas fa-lg fa-cubes" />
-          </span>
+          <Icon icon="cubes" size="medium" />
           <span className={classNames({ 'is-hidden': isCollapsed })}>
             <FormattedMessage {...messages.resources} />
           </span>

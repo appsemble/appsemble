@@ -34,6 +34,11 @@ organization as the app.
 The description of the app. This description has a maximum character limit of 80 and is displayed in
 the app index.
 
+## `navigation`
+
+Use a navigation type different from the default. Set to `bottom` to use a navigation pane at the
+bottom of the screen instead of the default side menu.
+
 ## `pages`\*
 
 The list of pages. Each app must have at least one page. More information about the properties of a

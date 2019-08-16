@@ -1,4 +1,5 @@
-// eslint-disable-next-line import/prefer-default-export
+import { IconName } from '@fortawesome/fontawesome-common-types';
+
 export interface Theme {
   /**
    * The color primarily featured in the color scheme.
@@ -44,4 +45,15 @@ export interface Theme {
    * The link to the tile layer used for Leaflet maps.
    */
   tileLayer: string;
+}
+
+export interface Page {
+  name: string;
+  icon: IconName;
+  parameters: string[];
+}
+
+export interface App {
+  navigation?: 'bottom';
+  pages: Page[];
 }
