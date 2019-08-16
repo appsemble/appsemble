@@ -169,7 +169,7 @@ export default class UserSettings extends Component {
                 type="text"
                 value={newUser.name || ''}
               />
-              <Icon className="is-small is-left" icon="user" />
+              <Icon className="is-left" icon="user" size="small" />
               <p className="help">
                 <FormattedMessage {...messages.displayNameHelp} />
               </p>

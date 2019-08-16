@@ -302,14 +302,14 @@ export default class ResourceTable extends React.Component {
                 <tr key={resource.id}>
                   <td className={styles.actionsCell}>
                     <Link className="button" to={`${match.url}/edit/${resource.id}`}>
-                      <Icon className="is-small has-text-info" icon="pen" />
+                      <Icon className="has-text-info" icon="pen" size="small" />
                     </Link>
                     <button
                       className="button"
                       onClick={() => this.promptDeleteResource(resource)}
                       type="button"
                     >
-                      <Icon className="is-small has-text-danger" icon="trash" />
+                      <Icon className="has-text-danger" icon="trash" size="small" />
                     </button>
                   </td>
                   {keys.map(key => (

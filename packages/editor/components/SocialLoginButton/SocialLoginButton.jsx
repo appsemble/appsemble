@@ -20,7 +20,7 @@ export default class SocialLoginButton extends React.Component {
 
     return (
       <a className={classNames('button', className)} href={providerUri} {...props}>
-        <Icon icon={iconClass} />
+        <Icon icon={iconClass} prefix="fab" />
         <span>{children}</span>
       </a>
     );
