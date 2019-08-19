@@ -15,7 +15,7 @@ export default {
         },
         type: {
           type: 'string',
-          enum: ['flow', 'page'],
+          enum: ['flow', 'page', 'tabs'],
         },
         icon: {
           type: 'string',
@@ -88,7 +88,7 @@ export default {
         },
         type: {
           type: 'string',
-          enum: ['flow', 'page'],
+          enum: ['flow', 'page', 'tabs'],
         },
         icon: {
           type: 'string',

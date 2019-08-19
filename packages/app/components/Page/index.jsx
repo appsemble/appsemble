@@ -9,7 +9,7 @@ function mapStateToProps(state, ownProps) {
     app: state.app.app,
     user: state.user.user,
     hasErrors:
-      ownProps.page.type && ownProps.page.type === 'flow'
+      ownProps.page.type && (ownProps.page.type === 'flow' || ownProps.page.type === 'tabs')
         ? ownProps.page.subPages.some(sub =>
             sub.blocks.some(block => state.blockDefs.errored.has(block.type)),
           )

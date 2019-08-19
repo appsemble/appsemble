@@ -1,8 +1,11 @@
+import { normalize } from '@appsemble/utils';
+import classNames from 'classnames';
 import EventEmitter from 'events';
 import throttle from 'lodash.throttle';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
+import { Link, Redirect, Route, Switch } from 'react-router-dom';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 
 import checkScope from '../../utils/checkScope';
@@ -23,6 +26,7 @@ export default class Page extends React.Component {
     getBlockDefs: PropTypes.func.isRequired,
     hasErrors: PropTypes.bool.isRequired,
     history: PropTypes.shape().isRequired,
+    match: PropTypes.shape().isRequired,
     /**
      * The page definition to render
      */
@@ -108,23 +112,26 @@ export default class Page extends React.Component {
     this.applyBulmaThemes(app, page);
     this.setupEvents();
 
-    if (page.type === 'flow') {
-      const actions = makeActions(
-        { actions: { onFlowFinish: {}, onFlowCancel: {} } },
-        app,
-        page,
-        history,
-        this.showDialog,
-        {
-          emit: this.emitEvent,
-          off: this.offEvent,
-          on: this.onEvent,
-        },
-        {},
-        this.flowActions,
-      );
+    if (page.type === 'tabs' || page.type === 'flow') {
+      if (page.type === 'flow') {
+        const actions = makeActions(
+          { actions: { onFlowFinish: {}, onFlowCancel: {} } },
+          app,
+          page,
+          history,
+          this.showDialog,
+          {
+            emit: this.emitEvent,
+            off: this.offEvent,
+            on: this.onEvent,
+          },
+          {},
+          this.flowActions,
+        );
 
-      this.actions = actions;
+        this.actions = actions;
+      }
+
       getBlockDefs(
         [
           ...new Set(
@@ -157,12 +164,22 @@ export default class Page extends React.Component {
       this.teardownEvents();
       this.setupEvents();
 
-      if (page.type === 'flow') {
-        this.applyBulmaThemes(app, page.subPages[currentPage]);
+      if (page.type === 'flow' || page.type === 'tabs') {
+        getBlockDefs(
+          [
+            ...new Set(
+              page.subPages
+                .map(f => f.blocks)
+                .flat()
+                .map(b => JSON.stringify({ type: b.type, version: b.version })),
+            ),
+          ].map(block => JSON.parse(block)),
+        );
       } else {
-        this.applyBulmaThemes(app, page);
         getBlockDefs(page.blocks);
       }
+
+      this.applyBulmaThemes(app, page);
     }
   }
 
@@ -212,7 +229,7 @@ export default class Page extends React.Component {
   }
 
   render() {
-    const { hasErrors, page, user } = this.props;
+    const { hasErrors, page, user, match } = this.props;
     const { dialog, counter, currentPage, data } = this.state;
     const { type } = page;
 
@@ -235,7 +252,6 @@ export default class Page extends React.Component {
 
     switch (type) {
       case 'flow':
-      case 'tab':
         return (
           <React.Fragment>
             <TitleBar>{page.name}</TitleBar>
@@ -285,11 +301,59 @@ export default class Page extends React.Component {
             />
           </React.Fragment>
         );
-      case 'page':
-      default:
+      case 'tabs':
         return (
           <React.Fragment>
             <TitleBar>{page.name}</TitleBar>
+            <div className="tabs is-centered is-medium">
+              <ul>
+                {page.subPages.map(({ name }) => (
+                  <li
+                    key={name}
+                    className={classNames({
+                      'is-active': normalize(name) === match.params.subPage,
+                    })}
+                  >
+                    <Link to={`${normalize(name)}`}>{name}</Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <Switch>
+              {page.subPages.map(({ name, blocks }) => (
+                <Route
+                  key={name}
+                  exact
+                  path={`${match.path}/${normalize(name)}`}
+                  render={() =>
+                    blocks.map((block, index) => (
+                      <Block
+                        // eslint-disable-next-line react/no-array-index-key
+                        key={`${name}.${index}.${counter}`}
+                        block={block}
+                        className="foo"
+                        data={data}
+                        emitEvent={this.emitEvent}
+                        flowActions={this.flowActions}
+                        offEvent={this.offEvent}
+                        onEvent={this.onEvent}
+                        showDialog={this.showDialog}
+                      />
+                    ))
+                  }
+                />
+              ))}
+
+              <Redirect to={`${match.url}/${normalize(page.subPages[0].name)}`} />
+            </Switch>
+          </React.Fragment>
+        );
+      case 'page':
+      case 'subPage':
+      default:
+        return (
+          <React.Fragment>
+            {type !== 'subPage' && <TitleBar>{page.name}</TitleBar>}
             {page.blocks.map((block, index) => (
               <Block
                 // As long as blocks are in a static list, using the index as a key should be fine.
