@@ -4,6 +4,7 @@ import { IntlProvider } from 'react-intl';
 import { BrowserRouter } from 'react-router-dom';
 
 import AppContext from '../AppContext';
+import BottomNavigation from '../BottomNavigation';
 import ErrorFallback from '../ErrorFallback';
 import Main from '../Main';
 import Message from '../Message';
@@ -21,8 +22,9 @@ export default class App extends React.Component {
         <ErrorHandler fallback={ErrorFallback}>
           <BrowserRouter basename={new URL(document.baseURI).pathname}>
             <AppContext>
-              <SideNavigation />
               <Main />
+              <SideNavigation />
+              <BottomNavigation />
               <Message />
             </AppContext>
           </BrowserRouter>

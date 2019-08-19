@@ -6,6 +6,7 @@ import SideMenuButton from './SideMenuButton';
 
 function mapStateToProps(state) {
   return {
+    app: state.app.app,
     isOpen: state.menu.isOpen,
   };
 }

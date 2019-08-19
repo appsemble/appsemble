@@ -10,13 +10,18 @@ import styles from './SideMenuButton.css';
  */
 export default class SideMenuButton extends React.Component {
   static propTypes = {
+    app: PropTypes.shape().isRequired,
     intl: PropTypes.shape().isRequired,
     isOpen: PropTypes.bool.isRequired,
     openMenu: PropTypes.func.isRequired,
   };
 
   render() {
-    const { intl, isOpen, openMenu } = this.props;
+    const { app, intl, isOpen, openMenu } = this.props;
+
+    if (!app || app.navigation) {
+      return null;
+    }
 
     return (
       <button

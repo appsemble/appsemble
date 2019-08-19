@@ -7,8 +7,14 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.8.3] - 2019-08-16
+
 ### Added
 
+- App: Add ability to specify different navigation types. Currently only `bottom` is supported,
+  which renders a navigation pane at the bottom of the screen. The default is a side menu on the
+  left.
+- App: Support page icons. These will be rendered in the navigation menu.
 - Block: Make Leaflet `tileLayer` configurable using `theme` object.
 - Editor: Add a toggle for making apps private by default.
 - SDK: Add a `theme` object representing the combined theme of the base theme, app theme, page theme

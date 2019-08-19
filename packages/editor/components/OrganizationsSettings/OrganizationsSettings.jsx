@@ -1,4 +1,4 @@
-import { Form, Loader, Modal } from '@appsemble/react-components';
+import { Form, Icon, Loader, Modal } from '@appsemble/react-components';
 import { normalize } from '@appsemble/utils';
 import axios from 'axios';
 import PropTypes from 'prop-types';
@@ -336,9 +336,7 @@ export default class OrganizationsSettings extends Component {
                 placeholder={intl.formatMessage(messages.organizationId)}
                 value={newOrganizationId}
               />
-              <span className="icon is-left">
-                <i className="fas fa-briefcase" />
-              </span>
+              <Icon className="is-left" icon="briefcase" />
             </div>
           </div>
 
@@ -356,9 +354,7 @@ export default class OrganizationsSettings extends Component {
                 placeholder={intl.formatMessage(messages.organizationName)}
                 value={newOrganizationName}
               />
-              <span className="icon is-left">
-                <i className="fas fa-briefcase" />
-              </span>
+              <Icon className="is-left" icon="briefcase" />
             </div>
           </div>
 
@@ -413,9 +409,7 @@ export default class OrganizationsSettings extends Component {
                     type="email"
                     value={memberEmail}
                   />
-                  <span className="icon is-left">
-                    <i className="fas fa-envelope" />
-                  </span>
+                  <Icon className="is-left" icon="envelope" />
                 </div>
               </div>
               <div className="control">
@@ -465,9 +459,7 @@ export default class OrganizationsSettings extends Component {
                               onClick={() => this.onRemoveMemberClick(member.id)}
                               type="button"
                             >
-                              <span className="icon is-small">
-                                <i className="fas fa-sign-out-alt" />
-                              </span>
+                              <Icon icon="sign-out-alt" size="small" />
                             </button>
                           </p>
                         )}
@@ -478,9 +470,7 @@ export default class OrganizationsSettings extends Component {
                               onClick={() => this.onRemoveMemberClick(member.id)}
                               type="button"
                             >
-                              <span className="icon is-small">
-                                <i className="fas fa-trash-alt" />
-                              </span>
+                              <Icon icon="trash-alt" size="small" />
                             </button>
                           </p>
                         )}
@@ -508,9 +498,7 @@ export default class OrganizationsSettings extends Component {
                             onClick={() => this.onRemoveInviteClick(invite)}
                             type="button"
                           >
-                            <span className="icon is-small">
-                              <i className="fas fa-trash-alt" />
-                            </span>
+                            <Icon icon="trash-alt" size="small" />
                           </button>
                         </p>
                       </div>

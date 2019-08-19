@@ -47,6 +47,13 @@ export default {
       type: 'boolean',
       description: 'Determines whether this app should be included when fetching all apps.',
     },
+    navigation: {
+      enum: ['bottom'],
+      description: `The navigation type to use.
+
+        If this is omitted, a collapsable side navigation menu will be rendered on the left.
+      `,
+    },
     defaultPage: {
       $ref: '#/components/schemas/Page/oneOf/1/properties/name',
       description: `The name of the page that should be displayed when the app is initially loaded.

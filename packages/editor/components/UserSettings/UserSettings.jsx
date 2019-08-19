@@ -1,4 +1,4 @@
-import { Form, Loader, Modal } from '@appsemble/react-components';
+import { Form, Icon, Loader, Modal } from '@appsemble/react-components';
 import axios from 'axios';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
@@ -169,9 +169,7 @@ export default class UserSettings extends Component {
                 type="text"
                 value={newUser.name || ''}
               />
-              <span className="icon is-small is-left">
-                <i className="fas fa-user" />
-              </span>
+              <Icon className="is-left" icon="user" size="small" />
               <p className="help">
                 <FormattedMessage {...messages.displayNameHelp} />
               </p>
@@ -201,9 +199,7 @@ export default class UserSettings extends Component {
                 type="email"
                 value={newEmail}
               />
-              <span className="icon is-small is-left">
-                <i className="fas fa-envelope" />
-              </span>
+              <Icon className="is-left" icon="envelope" size="small" />
             </div>
           </div>
           <div className="control">
@@ -271,9 +267,7 @@ export default class UserSettings extends Component {
                       onClick={() => this.onDeleteEmailClick(email)}
                       type="button"
                     >
-                      <span className="icon is-small">
-                        <i className="fas fa-trash-alt" />
-                      </span>
+                      <Icon icon="trash-alt" size="small" />
                     </button>
                   )}
                 </td>

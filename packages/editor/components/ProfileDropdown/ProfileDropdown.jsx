@@ -1,3 +1,4 @@
+import { Icon } from '@appsemble/react-components';
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
@@ -52,9 +53,7 @@ export default class ProfileDropdown extends Component {
                   src={generateGravatarHash(user.primaryEmail || user.id)}
                 />
               </figure>
-              <span className="icon is-small">
-                <i aria-hidden="true" className="fas fa-angle-down" />
-              </span>
+              <Icon icon="angle-down" size="small" />
             </button>
           </div>
           <div
@@ -67,9 +66,7 @@ export default class ProfileDropdown extends Component {
           >
             <div className="dropdown-content">
               <Link className="dropdown-item" to="/_/settings">
-                <span className="icon">
-                  <i className="fas fa-wrench" />
-                </span>
+                <Icon icon="wrench" />
                 <span>
                   <FormattedMessage {...messages.settings} />
                 </span>
@@ -80,9 +77,7 @@ export default class ProfileDropdown extends Component {
                 rel="noopener noreferrer"
                 target="_blank"
               >
-                <span className="icon">
-                  <i className="fas fa-book" />
-                </span>
+                <Icon icon="book" />
                 <span>
                   <FormattedMessage {...messages.documentation} />
                 </span>
@@ -93,9 +88,7 @@ export default class ProfileDropdown extends Component {
                 onClick={logout}
                 type="button"
               >
-                <span className={`icon ${styles.logoutButtonIcon}`}>
-                  <i className="fas fa-sign-out-alt" />
-                </span>
+                <Icon className={styles.logoutButtonIcon} icon="sign-out-alt" size="small" />
                 <span>
                   <FormattedMessage {...messages.logoutButton} />
                 </span>

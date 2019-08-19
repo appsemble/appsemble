@@ -1,4 +1,4 @@
-import { Form, Loader, Modal } from '@appsemble/react-components';
+import { Form, Icon, Loader, Modal } from '@appsemble/react-components';
 import { normalize, SchemaValidationError, validate, validateStyle } from '@appsemble/utils';
 import axios from 'axios';
 import classNames from 'classnames';
@@ -374,9 +374,7 @@ export default class Editor extends React.Component {
               <ul>
                 <li className={classNames({ 'is-active': tab === '#editor' })} value="editor">
                   <Link to="#editor">
-                    <span className="icon">
-                      <i className="fas fa-file-code" />
-                    </span>
+                    <Icon icon="file-code" />
                     <FormattedMessage {...messages.recipe} />
                   </Link>
                 </li>
@@ -385,9 +383,7 @@ export default class Editor extends React.Component {
                   value="style-core"
                 >
                   <Link to="#style-core">
-                    <span className="icon">
-                      <i className="fas fa-brush" />
-                    </span>
+                    <Icon icon="brush" />
                     <FormattedMessage {...messages.coreStyle} />
                   </Link>
                 </li>
@@ -396,9 +392,7 @@ export default class Editor extends React.Component {
                   value="style-shared"
                 >
                   <Link to="#style-shared">
-                    <span className="icon">
-                      <i className="fas fa-brush" />
-                    </span>
+                    <Icon icon="brush" />
                     <FormattedMessage {...messages.sharedStyle} />
                   </Link>
                 </li>

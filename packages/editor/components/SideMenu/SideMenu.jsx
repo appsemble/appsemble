@@ -1,3 +1,4 @@
+import { Icon } from '@appsemble/react-components';
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -34,14 +35,7 @@ export default class SideMenu extends React.Component {
             onClick={toggleCollapse}
             type="button"
           >
-            <span className="icon is-medium">
-              <i
-                className={`fas fa-lg ${classNames({
-                  'fa-angle-double-left': !isCollapsed,
-                  'fa-angle-double-right': isCollapsed,
-                })}`}
-              />
-            </span>
+            <Icon icon={isCollapsed ? 'angle-double-right' : 'angle-double-right'} size="medium" />
             <span className={classNames({ 'is-hidden': isCollapsed })}>
               <FormattedMessage {...messages.collapse} />
             </span>

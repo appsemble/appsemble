@@ -20,6 +20,11 @@ The name of the page. This field is always required and must be unique within th
 it is not possible to have two pages with the same name. The name of the page is displayed at the
 top of each page as well as in the side navigational menu.
 
+## `icon`
+
+An Font Awesome icon to render in the navigation menu to represent the page. All supported icons can
+be found on the [Font Awesome website](https://fontawesome.com/icons?m=free).
+
 ## `scope`
 
 A list of `OAuth scopes` that are allowed to view this page. Adding `'*'` to the list of scopes
