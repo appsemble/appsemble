@@ -1,6 +1,5 @@
 types:
-  file: src/components/ListBlock/ListBlock.tsx
-  parameters: BlockParameters
+  parameters: Parameters
 
 actions:
   onLoad:

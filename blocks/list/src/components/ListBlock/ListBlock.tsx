@@ -4,22 +4,9 @@ import { remapData } from '@appsemble/utils';
 import React from 'react';
 import { FormattedMessage, InjectedIntlProps } from 'react-intl';
 
+import { Actions, Parameters } from '../../../types';
 import styles from './ListBlock.css';
 import messages from './messages';
-
-interface Field {
-  name: string;
-  label?: string;
-}
-
-interface BlockParameters {
-  fields: Field[];
-}
-
-interface BlockActions {
-  onLoad: {};
-  onClick: {};
-}
 
 interface Item {
   id?: number;
@@ -32,7 +19,7 @@ interface ListBlockState {
 }
 
 export default class ListBlock extends React.Component<
-  BlockProps<BlockParameters, BlockActions> & InjectedIntlProps,
+  BlockProps<Parameters, Actions> & InjectedIntlProps,
   ListBlockState
 > {
   state: ListBlockState = { data: undefined, error: false, loading: true };
