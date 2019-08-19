@@ -1,4 +1,4 @@
-.root {
+:global(.bottom-nav) {
   background-color: hsl(0, 0%, 100%);
   bottom: 0;
   margin-bottom: 0;
@@ -13,11 +13,11 @@
   width: 100%;
 }
 
-.listItem {
+:global(.bottom-nav-item) {
   flex: 1 0 0;
 }
 
-.link {
+:global(.bottom-nav-item-link) {
   align-items: center;
   display: flex;
   flex-flow: column;
@@ -25,12 +25,12 @@
   justify-content: flex-end;
   padding: 16px;
   text-align: center;
-}
 
-.active {
-  color: var(--primary-color);
-}
+  &:global(.is-active) {
+    color: var(--primary-color);
+  }
 
-.icon {
-  margin-bottom: 5px;
+  & :global(.icon) {
+    margin-bottom: 5px;
+  }
 }
