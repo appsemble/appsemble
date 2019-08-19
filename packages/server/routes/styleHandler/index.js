@@ -25,6 +25,7 @@ function processStyle(params) {
     $themeColor: ${params.themeColor || baseTheme.themeColor};
     $splashColor: ${params.splashColor || baseTheme.splashColor};
 
+    // XXX: Remove when https://github.com/jgthms/bulma/pull/2594 is merged.
     @import "${functionPath}";
     $primary-invert: findColorInvert($primary);
     $link-invert: findColorInvert($link);
@@ -45,7 +46,6 @@ function processStyle(params) {
       --info-color: #{$info};
       --warning-color: #{$warning};
       --danger-color: #{$danger};
-      --success-color: #{$success};
       --theme-color: #{$themeColor};
       --splash-color: #{$splashColor};
       --primary-color-invert: #{$primary-invert};
@@ -54,7 +54,6 @@ function processStyle(params) {
       --info-color-invert: #{$info-invert};
       --warning-color-invert: #{$warning-invert};
       --danger-color-invert: #{$danger-invert};
-      --success-color-invert: #{$success-invert};
       --theme-color-invert: #{$themeColor-invert};
       --splash-color-invert: #{$splashColor-invert};
     }`;
