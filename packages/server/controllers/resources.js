@@ -110,7 +110,8 @@ export async function queryResources(ctx) {
     ctx.body = resources.map(resource => ({
       id: resource.id,
       ...resource.data,
-      created: resource.created,
+      $created: resource.created,
+      $updated: resource.updated,
     }));
   } catch (e) {
     if (query) {
@@ -137,7 +138,12 @@ export async function getResourceById(ctx) {
     throw Boom.notFound('Resource not found');
   }
 
-  ctx.body = { id: resource.id, ...resource.data, created: resource.created };
+  ctx.body = {
+    id: resource.id,
+    ...resource.data,
+    $created: resource.created,
+    $updated: resource.updated,
+  };
 }
 
 export async function createResource(ctx) {
@@ -163,13 +169,13 @@ export async function createResource(ctx) {
     throw boom;
   }
 
-  const { id, created } = await app.createResource({
+  const { id, created, updated } = await app.createResource({
     type: resourceType,
     data: resource,
     UserId: user && user.id,
   });
 
-  ctx.body = { id, ...resource, created };
+  ctx.body = { id, ...resource, $created: created, $updated: updated };
   ctx.status = 201;
 }
 
@@ -210,14 +216,19 @@ export async function updateResource(ctx) {
     throw boom;
   }
 
+  resource.changed('updatedAt', true);
   resource = await resource.update(
     { data: updatedResource },
     { where: { id: resourceId, type: resourceType, AppId: appId } },
   );
+
+  await resource.reload();
+
   ctx.body = {
     id: resourceId,
     ...resource.get('data', { plain: true }),
-    created: resource.created,
+    $created: resource.created,
+    $updated: resource.updated,
   };
 }
 
