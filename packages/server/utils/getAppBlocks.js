@@ -27,7 +27,7 @@ export default function getAppBlocks(app) {
 
     switch (page.type) {
       case 'flow':
-        page.flowPages.forEach(sub => sub.blocks.forEach(parseBlocks));
+        page.subPages.forEach(sub => sub.blocks.forEach(parseBlocks));
         break;
       case 'page':
       default:

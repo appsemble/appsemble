@@ -48,7 +48,7 @@ displayed in the order that they are defined in the list.
 
 > Note: This field is not required if `type` is set to `flow`.
 
-## `flowPages`\*
+## `subPages`\*
 
 The list of _subpages_. When visiting the page, the first _subpage_ gets displayed by default.
 Subpages are structured similarly to pages, albeit simplified. Each subpage consists the properties

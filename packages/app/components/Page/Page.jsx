@@ -47,9 +47,9 @@ export default class Page extends React.Component {
       async data => {
         const { currentPage } = this.state;
         const { page } = this.props;
-        const { flowPages } = page;
+        const { subPages } = page;
 
-        if (currentPage + 1 === flowPages.length) {
+        if (currentPage + 1 === subPages.length) {
           this.actions.onFlowFinish.dispatch(data);
           return data;
         }
@@ -128,7 +128,7 @@ export default class Page extends React.Component {
       getBlockDefs(
         [
           ...new Set(
-            page.flowPages
+            page.subPages
               .map(f => f.blocks)
               .flat()
               .map(b => JSON.stringify({ type: b.type, version: b.version })),
@@ -158,7 +158,7 @@ export default class Page extends React.Component {
       this.setupEvents();
 
       if (page.type === 'flow') {
-        this.applyBulmaThemes(app, page.flowPages[currentPage]);
+        this.applyBulmaThemes(app, page.subPages[currentPage]);
       } else {
         this.applyBulmaThemes(app, page);
         getBlockDefs(page.blocks);
@@ -235,11 +235,12 @@ export default class Page extends React.Component {
 
     switch (type) {
       case 'flow':
+      case 'tab':
         return (
           <React.Fragment>
             <TitleBar>{page.name}</TitleBar>
             <div className={styles.dotContainer}>
-              {page.flowPages.map((sub, index) => (
+              {page.subPages.map((sub, index) => (
                 <div
                   key={sub.name}
                   className={`${styles.dot} ${index < currentPage && styles.previous} ${index ===
@@ -248,7 +249,7 @@ export default class Page extends React.Component {
               ))}
             </div>
             <TransitionGroup className={styles.transitionGroup}>
-              {page.flowPages[currentPage].blocks.map((block, index) => (
+              {page.subPages[currentPage].blocks.map((block, index) => (
                 <CSSTransition
                   // Since blocks are in a static list, using the index as a key should be fine.
                   // eslint-disable-next-line react/no-array-index-key
