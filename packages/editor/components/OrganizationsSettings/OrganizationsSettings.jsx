@@ -54,6 +54,26 @@ export default class OrganizationsSettings extends Component {
     });
   }
 
+  onNewOrganizationChange = event => {
+    const { name, value } = event.target;
+
+    this.setState(({ newOrganizationId, newOrganizationName }) => {
+      const updatedName = name === 'newOrganizationName' ? value : newOrganizationName;
+      let updatedId = newOrganizationId;
+
+      if (name === 'newOrganizationId') {
+        updatedId = normalize(value);
+      } else if (normalize(newOrganizationName) === newOrganizationId) {
+        updatedId = normalize(value);
+      }
+
+      return {
+        newOrganizationName: updatedName,
+        newOrganizationId: updatedId,
+      };
+    });
+  };
+
   onChange = event => {
     const value =
       event.target.name === 'newOrganizationId'
@@ -323,24 +343,6 @@ export default class OrganizationsSettings extends Component {
         </h2>
         <Form onSubmit={this.onSubmitNewOrganization}>
           <div className="field">
-            <label className="label" htmlFor="newOrganizationId">
-              <FormattedMessage {...messages.organizationId} />
-            </label>
-            <div className={`control has-icons-left ${styles.field}`}>
-              <input
-                className="input"
-                disabled={submittingOrganization}
-                id="newOrganizationId"
-                name="newOrganizationId"
-                onChange={this.onChange}
-                placeholder={intl.formatMessage(messages.organizationId)}
-                value={newOrganizationId}
-              />
-              <Icon className="is-left" icon="briefcase" />
-            </div>
-          </div>
-
-          <div className="field">
             <label className="label" htmlFor="newOrganizationName">
               <FormattedMessage {...messages.organizationName} />
             </label>
@@ -350,9 +352,27 @@ export default class OrganizationsSettings extends Component {
                 disabled={submittingOrganization}
                 id="newOrganizationName"
                 name="newOrganizationName"
-                onChange={this.onChange}
+                onChange={this.onNewOrganizationChange}
                 placeholder={intl.formatMessage(messages.organizationName)}
                 value={newOrganizationName}
+              />
+              <Icon className="is-left" icon="briefcase" />
+            </div>
+          </div>
+
+          <div className="field">
+            <label className="label" htmlFor="newOrganizationId">
+              <FormattedMessage {...messages.organizationId} />
+            </label>
+            <div className={`control has-icons-left ${styles.field}`}>
+              <input
+                className="input"
+                disabled={submittingOrganization}
+                id="newOrganizationId"
+                name="newOrganizationId"
+                onChange={this.onNewOrganizationChange}
+                placeholder={intl.formatMessage(messages.organizationId)}
+                value={newOrganizationId}
               />
               <Icon className="is-left" icon="briefcase" />
             </div>
