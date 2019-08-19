@@ -56,20 +56,21 @@ export default class OrganizationsSettings extends Component {
 
   onNewOrganizationChange = event => {
     const { name, value } = event.target;
-    const { newOrganizationId, newOrganizationName } = this.state;
 
-    const updatedName = name === 'newOrganizationName' ? value : newOrganizationName;
-    let updatedId = newOrganizationId;
+    this.setState(({ newOrganizationId, newOrganizationName }) => {
+      const updatedName = name === 'newOrganizationName' ? value : newOrganizationName;
+      let updatedId = newOrganizationId;
 
-    if (name === 'newOrganizationId') {
-      updatedId = normalize(value);
-    } else if (normalize(newOrganizationName) === newOrganizationId) {
-      updatedId = normalize(value);
-    }
+      if (name === 'newOrganizationId') {
+        updatedId = normalize(value);
+      } else if (normalize(newOrganizationName) === newOrganizationId) {
+        updatedId = normalize(value);
+      }
 
-    this.setState({
-      newOrganizationName: updatedName,
-      newOrganizationId: updatedId,
+      return {
+        newOrganizationName: updatedName,
+        newOrganizationId: updatedId,
+      };
     });
   };
 
