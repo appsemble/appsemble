@@ -1,5 +1,7 @@
-import { Theme } from '@appsemble/types';
+import { Block, Message, Theme } from '@appsemble/types';
 import { Promisable } from 'type-fest';
+
+export { Message, Theme };
 
 interface BaseAction {
   /**
@@ -44,70 +46,6 @@ export interface LinkAction extends BaseAction {
 export type Action = SimpleAction | LinkAction;
 
 export type Actions<A> = { [K in keyof A]: Action };
-
-/**
- * A block that is displayed on a page.
- */
-export interface Block<P = any, A = {}> {
-  /**
-   * The type of the block.
-   *
-   * A block type follow the format `@organization/name`.
-   * If the organization is _appsemble_, it may be omitted.
-   *
-   * Pattern:
-   * ^(@[a-z]([a-z\d-]{0,30}[a-z\d])?\/)?[a-z]([a-z\d-]{0,30}[a-z\d])$
-   *
-   * Examples:
-   * - `form`
-   * - `@amsterdam/splash`
-   */
-  type: string;
-
-  /**
-   * A [semver](https://semver.org) representation of the block version.
-   *
-   * Pattern:
-   * ^\d+\.\d+\.\d+$
-   */
-  version: string;
-
-  /**
-   * A free form mapping of named paramters.
-   *
-   * The exact meaning of the parameters depends on the block type.
-   */
-  parameters?: P;
-
-  /**
-   * A mapping of actions that can be fired by the block to action handlers.
-   *
-   * The exact meaning of the parameters depends on the block type.
-   */
-  actions?: A;
-}
-
-export interface Message {
-  /**
-   * The content of the message to display.
-   */
-  body: string;
-
-  /**
-   * The color to use for the message.
-   */
-  color?: 'primary' | 'info' | 'success' | 'warning' | 'danger';
-
-  /**
-   * The timeout period for this message (in milliseconds).
-   */
-  timeout?: number;
-
-  /**
-   * Whether or not to show the dismiss button.
-   */
-  dismissable?: boolean;
-}
 
 export interface PageParameters {
   [parameter: string]: string;

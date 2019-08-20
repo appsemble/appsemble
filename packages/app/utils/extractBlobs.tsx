@@ -3,9 +3,25 @@
  */
 export const placeholder = Symbol('resourceFiles.placeholder');
 
-function defaultReplacer() {
+function defaultReplacer(): symbol {
   return placeholder;
 }
+
+export type RecursiveValue<T = never> =
+  | boolean
+  | number
+  | string
+  | symbol
+  | T
+  | RecursiveObject<T>
+  | RecursiveArray<T>;
+
+export interface RecursiveObject<T = never> {
+  [key: string]: RecursiveValue<T>;
+}
+
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface RecursiveArray<T> extends Array<RecursiveValue<T>> {}
 
 /**
  * Extract blobs from an object.
@@ -19,7 +35,10 @@ function defaultReplacer() {
  * @returns {Array<Object,Array<Blob>>} An array whose first element is the object with the blobs
  * replaced, and the second argument an array of all extracted blobs.
  */
-export default function extractBlobs(object, replacer = defaultReplacer) {
+export default function extractBlobs(
+  object: RecursiveValue<Blob>,
+  replacer: (blob?: Blob) => RecursiveValue = defaultReplacer,
+): [RecursiveValue, Blob[]] {
   let result;
   const files = [];
   if (object instanceof Blob) {
@@ -32,7 +51,7 @@ export default function extractBlobs(object, replacer = defaultReplacer) {
       return nestedResult;
     });
   } else if (object instanceof Object) {
-    result = Object.entries(object).reduce((acc, [key, value]) => {
+    result = Object.entries(object).reduce<RecursiveObject>((acc, [key, value]) => {
       const [nestedResult, nestedFiles] = extractBlobs(value, replacer);
       files.push(...nestedFiles);
       acc[key] = nestedResult;

@@ -7,6 +7,17 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.8.4] - 2019-08-20
+
+### Added
+
+- Server: `$created` and `$updated` are exposed in the API.
+
+### Fixed
+
+- App: Inverted Bulma colors are calculated properly.
+- Editor: Regression causing Appsemble to crash when editing resources.
+
 ## [0.8.3] - 2019-08-16
 
 ### Added

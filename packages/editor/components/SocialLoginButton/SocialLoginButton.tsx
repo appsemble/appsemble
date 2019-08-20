@@ -1,21 +1,17 @@
 import { Icon } from '@appsemble/react-components';
+import { IconName } from '@fortawesome/fontawesome-common-types';
 import classNames from 'classnames';
-import PropTypes from 'prop-types';
 import React from 'react';
 
-export default class SocialLoginButton extends React.Component {
-  static propTypes = {
-    className: PropTypes.string,
-    children: PropTypes.node.isRequired,
-    providerUri: PropTypes.string.isRequired,
-    iconClass: PropTypes.string.isRequired,
-  };
+export interface SocialLoginButtonProps {
+  className: string;
+  children: React.ReactChild;
+  providerUri: string;
+  iconClass: IconName;
+}
 
-  static defaultProps = {
-    className: null,
-  };
-
-  render() {
+export default class SocialLoginButton extends React.Component<SocialLoginButtonProps> {
+  render(): JSX.Element {
     const { className, providerUri, iconClass, children, ...props } = this.props;
 
     return (
