@@ -1,11 +1,11 @@
 {
   "name": "@appsemble/react",
-  "version": "0.8.3",
+  "version": "0.8.4",
   "dependencies": {
     "react-shadow-dom-retarget-events": "^1.0.10"
   },
   "peerDependencies": {
-    "@appsemble/sdk": "^0.8.3",
+    "@appsemble/sdk": "^0.8.4",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
     "react-intl": "^3.0.0"
