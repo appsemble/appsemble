@@ -11,6 +11,6 @@
     "fs-extra": "^8.1.0",
     "inquirer": "^6.5.1",
     "sort-package-json": "^1.22.1",
-    "yargs": "^13.3.0"
+    "yargs": "^14.0.0"
   }
 }
