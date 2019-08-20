@@ -1,11 +1,11 @@
 import { shallow } from 'enzyme';
 import React from 'react';
 
-import Message, { IncomingMessage } from './Message';
+import Message, { UniqueMessage } from './Message';
 
 describe('Message', () => {
   it('should render messages', () => {
-    const messages: IncomingMessage[] = [
+    const messages: UniqueMessage[] = [
       { id: 1, body: 'Foo' },
       { id: 2, body: 'Bar', color: 'info' },
     ];
