@@ -3,7 +3,7 @@ module.exports = {
   coveragePathIgnorePatterns: [/\.json$/, /\/__fixtures__\//, /\/__snapshots__\//, /\/dist\//].map(
     regex => regex.source,
   ),
-  moduleFileExtensions: ['js', 'jsx', 'ts', 'tsx', 'd.ts', 'json'],
+  moduleFileExtensions: ['js', 'jsx', 'ts', 'tsx', 'json'],
   moduleNameMapper: {
     [/\.css$/.source]: 'identity-obj-proxy',
   },
