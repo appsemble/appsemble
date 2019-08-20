@@ -6,11 +6,10 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Link, Redirect, Route, Switch } from 'react-router-dom';
-import { CSSTransition, TransitionGroup } from 'react-transition-group';
 
 import checkScope from '../../utils/checkScope';
 import makeActions from '../../utils/makeActions';
-import Block from '../Block';
+import BlockList from '../BlockList';
 import Login from '../Login';
 import PageDialog from '../PageDialog';
 import TitleBar from '../TitleBar';
@@ -264,35 +263,20 @@ export default class Page extends React.Component {
                 />
               ))}
             </div>
-            <TransitionGroup className={styles.transitionGroup}>
-              {page.subPages[currentPage].blocks.map((block, index) => (
-                <CSSTransition
-                  // Since blocks are in a static list, using the index as a key should be fine.
-                  // eslint-disable-next-line react/no-array-index-key
-                  key={`${currentPage}.${index}.${counter}`}
-                  classNames={{
-                    enter: styles.pageEnter,
-                    enterActive: styles.pageEnterActive,
-                    exit: styles.pageExit,
-                    exitActive: styles.pageExitActive,
-                  }}
-                  timeout={300}
-                >
-                  <div className={styles.transitionWrapper}>
-                    <Block
-                      block={block}
-                      className="foo"
-                      data={data}
-                      emitEvent={this.emitEvent}
-                      flowActions={this.flowActions}
-                      offEvent={this.offEvent}
-                      onEvent={this.onEvent}
-                      showDialog={this.showDialog}
-                    />
-                  </div>
-                </CSSTransition>
-              ))}
-            </TransitionGroup>
+
+            <BlockList
+              blocks={page.subPages[currentPage].blocks}
+              counter={counter}
+              currentPage={currentPage}
+              data={data}
+              emitEvent={this.emitEvent}
+              flowActions={this.flowActions}
+              offEvent={this.offEvent}
+              onEvent={this.onEvent}
+              showDialog={this.showDialog}
+              transitions
+            />
+
             <PageDialog
               dialog={dialog}
               emitEvent={this.emitEvent}
@@ -325,22 +309,18 @@ export default class Page extends React.Component {
                   key={name}
                   exact
                   path={`${match.path}/${normalize(name)}`}
-                  render={() =>
-                    blocks.map((block, index) => (
-                      <Block
-                        // eslint-disable-next-line react/no-array-index-key
-                        key={`${name}.${index}.${counter}`}
-                        block={block}
-                        className="foo"
-                        data={data}
-                        emitEvent={this.emitEvent}
-                        flowActions={this.flowActions}
-                        offEvent={this.offEvent}
-                        onEvent={this.onEvent}
-                        showDialog={this.showDialog}
-                      />
-                    ))
-                  }
+                  render={() => (
+                    <BlockList
+                      blocks={blocks}
+                      counter={counter}
+                      data={data}
+                      emitEvent={this.emitEvent}
+                      flowActions={this.flowActions}
+                      offEvent={this.offEvent}
+                      onEvent={this.onEvent}
+                      showDialog={this.showDialog}
+                    />
+                  )}
                 />
               ))}
 
@@ -354,19 +334,16 @@ export default class Page extends React.Component {
         return (
           <>
             {type !== 'subPage' && <TitleBar>{page.name}</TitleBar>}
-            {page.blocks.map((block, index) => (
-              <Block
-                // As long as blocks are in a static list, using the index as a key should be fine.
-                // eslint-disable-next-line react/no-array-index-key
-                key={`${index}.${counter}`}
-                block={block}
-                emitEvent={this.emitEvent}
-                flowActions={this.flowActions}
-                offEvent={this.offEvent}
-                onEvent={this.onEvent}
-                showDialog={this.showDialog}
-              />
-            ))}
+            <BlockList
+              blocks={page.blocks}
+              counter={counter}
+              data={data}
+              emitEvent={this.emitEvent}
+              flowActions={this.flowActions}
+              offEvent={this.offEvent}
+              onEvent={this.onEvent}
+              showDialog={this.showDialog}
+            />
             <PageDialog
               dialog={dialog}
               emitEvent={this.emitEvent}

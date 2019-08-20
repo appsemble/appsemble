@@ -28,7 +28,11 @@ export interface SimpleAction extends BaseAction {
     | 'resource.query'
     | 'resource.create'
     | 'resource.update'
-    | 'resource.delete';
+    | 'resource.delete'
+    | 'flow.back'
+    | 'flow.cancel'
+    | 'flow.finish'
+    | 'flow.next';
 }
 
 export interface LinkAction extends BaseAction {

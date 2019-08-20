@@ -5,6 +5,29 @@ import { IconName } from '@fortawesome/fontawesome-common-types';
  */
 export type BulmaColor = 'dark' | 'primary' | 'link' | 'info' | 'success' | 'warning' | 'danger';
 
+export interface BlockDefinition {
+  /**
+   * A definition for a block.
+   * pattern: ^@[a-z]([a-z\d-]{0,30}[a-z\d])?\/[a-z]([a-z\d-]{0,30}[a-z\d])$
+   * The name of a block.
+   */
+  name: string;
+  /*
+   * A human readable description of the block.
+   */
+  description: string;
+
+  /**
+   * The type of layout to be used for the block.
+   */
+  layout: 'float' | 'static' | 'grow';
+
+  /**
+   * Array of urls associated to the files of the block.
+   */
+  files: string[];
+}
+
 export interface Theme {
   /**
    * The color primarily featured in the color scheme.
@@ -102,6 +125,11 @@ export interface Block<P = any, A = {}> {
   version: string;
 
   /**
+   * The theme of the block.
+   */
+  theme: Theme;
+
+  /**
    * A free form mapping of named paramters.
    *
    * The exact meaning of the parameters depends on the block type.
@@ -120,9 +148,13 @@ export interface Page {
   name: string;
   icon: IconName;
   parameters: string[];
+  theme: Theme;
 }
 
 export interface App {
+  id?: number;
+  organizationId?: string;
   navigation?: 'bottom';
   pages: Page[];
+  theme: Theme;
 }
