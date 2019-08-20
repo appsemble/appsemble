@@ -5,6 +5,6 @@
   "dependencies": {
     "@appsemble/react": "^0.8.4",
     "@appsemble/sdk": "^0.8.4",
-    "react": "^16.8.6"
+    "react": "^16.9.0"
   }
 }

@@ -240,7 +240,7 @@ export default class FilterBlock extends React.Component<
     });
 
     return (
-      <React.Fragment>
+      <>
         <div className={styles.container}>
           <Modal isActive={isOpen} onClose={this.onClose}>
             <div className="card">
@@ -297,7 +297,7 @@ export default class FilterBlock extends React.Component<
             </div>
           )}
           {showModal && (
-            <React.Fragment>
+            <>
               <button
                 className={classNames('button', styles.filterDialogButton)}
                 disabled={!activeFilters}
@@ -319,7 +319,7 @@ export default class FilterBlock extends React.Component<
                   <i className="fas fa-filter" />
                 </span>
               </button>
-            </React.Fragment>
+            </>
           )}
         </div>
         {newData.length > 0 && (
@@ -337,7 +337,7 @@ export default class FilterBlock extends React.Component<
             </div>
           </article>
         )}
-      </React.Fragment>
+      </>
     );
   }
 }

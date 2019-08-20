@@ -50,7 +50,7 @@ export default class AppList extends React.Component {
     const filteredApps = apps.filter(app => app.name.toLowerCase().includes(filter.toLowerCase()));
 
     return (
-      <React.Fragment>
+      <>
         <HelmetIntl title={messages.title} />
         <div className={`field ${styles.filter}`}>
           <p className="control has-icons-left">
@@ -88,7 +88,7 @@ export default class AppList extends React.Component {
             </span>
           </div>
         )}
-      </React.Fragment>
+      </>
     );
   }
 }

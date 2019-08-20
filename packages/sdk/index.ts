@@ -1,5 +1,7 @@
-import { Theme } from '@appsemble/types';
+import { Message, Theme } from '@appsemble/types';
 import { Promisable } from 'type-fest';
+
+export { Message, Theme };
 
 interface BaseAction {
   /**
@@ -85,28 +87,6 @@ export interface Block<P = any, A = {}> {
    * The exact meaning of the parameters depends on the block type.
    */
   actions?: A;
-}
-
-export interface Message {
-  /**
-   * The content of the message to display.
-   */
-  body: string;
-
-  /**
-   * The color to use for the message.
-   */
-  color?: 'primary' | 'info' | 'success' | 'warning' | 'danger';
-
-  /**
-   * The timeout period for this message (in milliseconds).
-   */
-  timeout?: number;
-
-  /**
-   * Whether or not to show the dismiss button.
-   */
-  dismissable?: boolean;
 }
 
 export interface PageParameters {

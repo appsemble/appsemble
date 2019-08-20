@@ -3,6 +3,6 @@
   "version": "0.8.4",
   "dependencies": {
     "@appsemble/types": "0.8.4",
-    "type-fest": "^0.6.0"
+    "type-fest": "^0.7.1"
   }
 }

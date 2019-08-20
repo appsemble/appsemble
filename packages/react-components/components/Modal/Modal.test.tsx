@@ -1,12 +1,16 @@
 import { shallow } from 'enzyme';
 import React from 'react';
-import { IntlProvider } from 'react-intl';
+import { createIntl, IntlShape } from 'react-intl';
 
 import Modal from './Modal';
 
+let intl: IntlShape;
+
+beforeEach(() => {
+  intl = createIntl({ locale: 'en' });
+});
+
 it('should not render a bulma modal when it is inactive', () => {
-  const intlProvider = new IntlProvider({ locale: 'en' }, {});
-  const { intl } = intlProvider.getChildContext();
   const wrapper = shallow(
     <Modal intl={intl} isActive={false} onClose={() => {}}>
       test
@@ -16,8 +20,6 @@ it('should not render a bulma modal when it is inactive', () => {
 });
 
 it('should render a bulma modal when it is active', () => {
-  const intlProvider = new IntlProvider({ locale: 'en' }, {});
-  const { intl } = intlProvider.getChildContext();
   const wrapper = shallow(
     <Modal intl={intl} isActive onClose={() => {}}>
       test
@@ -27,8 +29,6 @@ it('should render a bulma modal when it is active', () => {
 });
 
 it('should close the modal when the close button is clicked', () => {
-  const intlProvider = new IntlProvider({ locale: 'en' }, {});
-  const { intl } = intlProvider.getChildContext();
   const onClose = jest.fn();
   const wrapper = shallow(
     <Modal intl={intl} isActive onClose={onClose}>
@@ -40,8 +40,6 @@ it('should close the modal when the close button is clicked', () => {
 });
 
 it('should close the modal when the background is clicked', () => {
-  const intlProvider = new IntlProvider({ locale: 'en' }, {});
-  const { intl } = intlProvider.getChildContext();
   const onClose = jest.fn();
   const wrapper = shallow(
     <Modal intl={intl} isActive onClose={onClose}>
@@ -53,8 +51,6 @@ it('should close the modal when the background is clicked', () => {
 });
 
 it('should close the modal escape is pressed on the background', () => {
-  const intlProvider = new IntlProvider({ locale: 'en' }, {});
-  const { intl } = intlProvider.getChildContext();
   const onClose = jest.fn();
   const wrapper = shallow(
     <Modal intl={intl} isActive onClose={onClose}>
@@ -66,8 +62,6 @@ it('should close the modal escape is pressed on the background', () => {
 });
 
 it('should not close the modal another key is pressed on the background', () => {
-  const intlProvider = new IntlProvider({ locale: 'en' }, {});
-  const { intl } = intlProvider.getChildContext();
   const onClose = jest.fn();
   const wrapper = shallow(
     <Modal intl={intl} isActive onClose={onClose}>

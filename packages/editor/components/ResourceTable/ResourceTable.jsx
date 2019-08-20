@@ -249,10 +249,10 @@ export default class ResourceTable extends React.Component {
     if (!loading && resources === undefined) {
       if (!app.resources[resourceName]) {
         return (
-          <React.Fragment>
+          <>
             <HelmetIntl title={messages.title} titleValues={{ name: app.name, resourceName }} />
             <FormattedMessage {...messages.notFound} />
-          </React.Fragment>
+          </>
         );
       }
 
@@ -276,7 +276,7 @@ export default class ResourceTable extends React.Component {
     const keys = ['id', ...Object.keys(schema?.properties || {})];
 
     return (
-      <React.Fragment>
+      <>
         <HelmetIntl title={messages.title} titleValues={{ name: app.name, resourceName }} />
         <h1 className="title">Resource {resourceName}</h1>
         <Link className="button is-primary" to={`${match.url}/new`}>
@@ -417,7 +417,7 @@ export default class ResourceTable extends React.Component {
             </footer>
           </div>
         </Modal>
-      </React.Fragment>
+      </>
     );
   }
 }
