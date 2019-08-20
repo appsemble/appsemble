@@ -1,6 +1,17 @@
-import PropTypes from 'prop-types';
 import React from 'react';
 import ReactDOM from 'react-dom';
+
+interface PortalProps {
+  /**
+   * The child node to mount. This may only result in a single top level HTML node.
+   */
+  children: React.ReactChildren;
+
+  /**
+   * The HTML element to render the children into.
+   */
+  element: Element;
+}
 
 /**
  * A portal which replaces the HTML content.
@@ -9,33 +20,24 @@ import ReactDOM from 'react-dom';
  *
  * This component doesn’t handle the lifecycle of receiving new props.
  */
-export default class Portal extends React.Component {
-  static propTypes = {
-    /**
-     * The child node to mount. This may only result in a single top level HTML node.
-     */
-    children: PropTypes.node.isRequired,
-    /**
-     * The HTML element to render the children into.
-     */
-    element: PropTypes.instanceOf(HTMLElement).isRequired,
-  };
+export default class Portal extends React.Component<PortalProps> {
+  fragment: DocumentFragment;
 
-  componentDidMount() {
+  componentDidMount(): void {
     const { element } = this.props;
 
     const fragment = document.createDocumentFragment();
-    element.childNodes.forEach(::fragment.appendChild);
+    element.childNodes.forEach(child => fragment.appendChild(child));
     this.fragment = fragment;
   }
 
-  componentWillUnmount() {
+  componentWillUnmount(): void {
     const { element } = this.props;
 
     element.appendChild(this.fragment);
   }
 
-  render() {
+  render(): React.ReactPortal {
     const { children, element } = this.props;
 
     return ReactDOM.createPortal(React.Children.only(children), element);

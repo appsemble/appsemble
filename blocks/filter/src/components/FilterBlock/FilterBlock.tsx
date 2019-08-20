@@ -18,14 +18,14 @@ interface FilterBlockState {
   isOpen?: boolean;
   loading?: boolean;
   lastRefreshedDate?: Date;
-  typingTimer?: number;
+  typingTimer?: NodeJS.Timeout;
 }
 
 export default class FilterBlock extends React.Component<
   BlockProps<Parameters, Actions>,
   FilterBlockState
 > {
-  refreshTimer: number = null;
+  refreshTimer: NodeJS.Timeout = null;
 
   state: FilterBlockState = {
     lastRefreshedDate: undefined,

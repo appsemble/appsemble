@@ -3,6 +3,6 @@
   "exclude": [],
   "compilerOptions": {
     "lib": ["dom", "esnext"],
-    "types": ["babel-plugin-react-intl-auto", "css-modules", "jest", "node-env"]
+    "types": ["babel-plugin-react-intl-auto", "css-modules", "jest", "node"]
   }
 }
