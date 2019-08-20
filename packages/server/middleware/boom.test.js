@@ -34,7 +34,7 @@ describe('boomMiddleware', () => {
       throw error;
     });
 
-    await expect(boomMiddleware(ctx, mockNext)).rejects.toEqual(error);
+    await expect(boomMiddleware(ctx, mockNext)).rejects.toStrictEqual(error);
     expect(mockNext).toHaveBeenCalledTimes(1);
   });
 

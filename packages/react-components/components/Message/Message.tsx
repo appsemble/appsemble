@@ -1,29 +1,22 @@
+import { Message as IncomingMessage } from '@appsemble/types';
 import classNames from 'classnames';
-import * as PropTypes from 'prop-types';
 import * as React from 'react';
+import { WrappedComponentProps } from 'react-intl';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 
 import styles from './Message.css';
+import msgs from './messages';
 
-interface IncomingMessage {
-  body: string;
-  color?: 'danger' | 'dark' | 'info' | 'link' | 'primary' | 'success' | 'warning';
+export interface UniqueMessage extends IncomingMessage {
   id: number;
-  timeout: number;
-  dismissable: boolean;
 }
 
-export interface MessageProps {
-  messages: IncomingMessage[];
-  remove: (message: IncomingMessage) => void;
+export interface MessageProps extends WrappedComponentProps {
+  messages: UniqueMessage[];
+  remove: (message: UniqueMessage) => void;
 }
 
 export default class Message extends React.Component<MessageProps> {
-  static propTypes = {
-    messages: PropTypes.arrayOf(PropTypes.shape({})),
-    remove: PropTypes.func.isRequired,
-  };
-
   static defaultProps: Partial<MessageProps> = {
     messages: [],
   };
@@ -47,14 +40,14 @@ export default class Message extends React.Component<MessageProps> {
     }
   }
 
-  onDismiss(message: IncomingMessage): void {
+  onDismiss(message: UniqueMessage): void {
     const { remove } = this.props;
 
     remove(message);
   }
 
   render(): React.ReactNode {
-    const { messages } = this.props;
+    const { intl, messages } = this.props;
 
     return (
       <div className={styles.root}>
@@ -80,6 +73,7 @@ export default class Message extends React.Component<MessageProps> {
                   <span>{message && message.body}</span>
                   {message.dismissable && (
                     <button
+                      aria-label={intl.formatMessage(msgs.dismiss)}
                       className={`delete ${styles.deleteButton}`}
                       onClick={() => this.onDismiss(message)}
                       type="button"

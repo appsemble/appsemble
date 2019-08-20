@@ -1,5 +1,4 @@
 import classNames from 'classnames';
-import * as PropTypes from 'prop-types';
 import * as React from 'react';
 import { FormattedMessage } from 'react-intl';
 
@@ -43,14 +42,6 @@ interface EmailLoginState {
  * A form which will let the user login based on an app definition.
  */
 export default class EmailLogin extends React.Component<EmailLoginProps, EmailLoginState> {
-  static propTypes = {
-    /**
-     * The authentication instance for which to render an email login form.
-     */
-    authentication: PropTypes.shape({}).isRequired,
-    passwordLogin: PropTypes.func.isRequired,
-  };
-
   state: EmailLoginState = {
     dirty: false,
     error: false,

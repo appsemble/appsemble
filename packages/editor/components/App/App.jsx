@@ -39,7 +39,7 @@ export default class App extends React.Component {
     }
 
     return (
-      <IntlProvider defaultLocale="en-US" locale="en-US" textComponent={React.Fragment}>
+      <IntlProvider defaultLocale="en-US" locale="en-US">
         <BrowserRouter>
           <ErrorHandler fallback={ErrorFallback}>
             <Helmet defaultTitle="Appsemble" titleTemplate="Appsemble · %s" />

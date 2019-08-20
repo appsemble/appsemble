@@ -1,11 +1,14 @@
 import { shallow } from 'enzyme';
 import React from 'react';
 
-import Message from './Message';
+import Message, { UniqueMessage } from './Message';
 
 describe('Message', () => {
   it('should render messages', () => {
-    const messages = [{ id: 1, body: 'Foo' }, { id: 2, body: 'Bar', color: 'info' }];
+    const messages: UniqueMessage[] = [
+      { id: 1, body: 'Foo' },
+      { id: 2, body: 'Bar', color: 'info' },
+    ];
     const result = shallow(<Message messages={messages} remove={() => {}} />);
 
     expect(result).toMatchSnapshot();

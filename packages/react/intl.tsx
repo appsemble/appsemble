@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { IntlProvider } from 'react-intl';
+import { IntlConfig, IntlProvider } from 'react-intl';
 
 import { BlockProps } from '.';
 
@@ -9,15 +9,10 @@ import { BlockProps } from '.';
 // eslint-disable-next-line import/prefer-default-export
 export function provideIntl<P = any, A = {}>(
   Component: React.ComponentType<BlockProps<P, A>>,
-  intlProviderProps?: IntlProvider.Props,
+  intlProviderProps?: Partial<IntlConfig>,
 ): React.ComponentType<BlockProps<P, A>> {
   return props => (
-    <IntlProvider
-      defaultLocale="en-US"
-      locale="en-US"
-      {...intlProviderProps}
-      textComponent={React.Fragment}
-    >
+    <IntlProvider defaultLocale="en-US" locale="en-US" {...intlProviderProps}>
       <Component {...props} />
     </IntlProvider>
   );

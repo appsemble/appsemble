@@ -12,14 +12,14 @@ import messages from './messages';
 export default class ErrorFallback extends React.Component {
   render() {
     return (
-      <React.Fragment>
+      <>
         <TitleBar>
           <FormattedMessage {...messages.title} />
         </TitleBar>
         <div className={classNames('container', styles.container)} role="alert">
           <FormattedMessage {...messages.message} />
         </div>
-      </React.Fragment>
+      </>
     );
   }
 }

@@ -1,7 +1,7 @@
 import { BlockProps } from '@appsemble/react';
 import { Location } from '@appsemble/react-components';
 import React from 'react';
-import { InjectedIntlProps } from 'react-intl';
+import { WrappedComponentProps } from 'react-intl';
 
 import iconUrl from '../../../../../themes/amsterdam/core/marker.svg';
 import { BlockActions, BlockParameters, Remappers } from '../../../types';
@@ -37,7 +37,7 @@ interface CardState {
  * A single card in the feed.
  */
 export default class Card extends React.Component<
-  BlockProps<BlockParameters, BlockActions> & InjectedIntlProps & CardProps,
+  BlockProps<BlockParameters, BlockActions> & WrappedComponentProps & CardProps,
   CardState
 > {
   replyContainer = React.createRef<HTMLDivElement>();
@@ -225,7 +225,7 @@ export default class Card extends React.Component<
           )}
 
           {actions.onLoadReply.type !== 'noop' && (
-            <React.Fragment>
+            <>
               <div ref={this.replyContainer} className={styles.replies}>
                 {replies.map(reply => {
                   const author = remappers.author(reply);
@@ -262,7 +262,7 @@ export default class Card extends React.Component<
                   </span>
                 </button>
               </form>
-            </React.Fragment>
+            </>
           )}
         </div>
       </article>

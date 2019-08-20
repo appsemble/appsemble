@@ -17,7 +17,7 @@ export default class CMSRoot extends React.Component {
     const { app, match } = this.props;
 
     return (
-      <React.Fragment>
+      <>
         <HelmetIntl title={messages.title} titleValues={{ name: app.name }} />
         {app.resources ? (
           <div className="content">
@@ -44,7 +44,7 @@ export default class CMSRoot extends React.Component {
             </span>
           </div>
         )}
-      </React.Fragment>
+      </>
     );
   }
 }

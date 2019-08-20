@@ -1,8 +1,10 @@
 import * as React from 'react';
 import { Redirect, Route, RouteComponentProps } from 'react-router-dom';
 
+import { User } from '../../types';
+
 export interface ProtectedRouteProps extends RouteComponentProps {
-  user: any;
+  user: User;
 }
 
 export default class ProtectedRoute extends React.Component<ProtectedRouteProps> {

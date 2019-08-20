@@ -78,7 +78,7 @@ export default class Input extends React.Component<InputProps> {
     return (
       <FormComponent iconLeft={iconLeft} id={id} label={label} required={required}>
         <Component
-          {...(props as React.HTMLProps<HTMLInputElement & HTMLTextAreaElement>)}
+          {...(props as (React.HTMLProps<HTMLInputElement & HTMLTextAreaElement>))}
           className={classNames('input', { 'is-danger': error })}
           id={id}
           name={name}

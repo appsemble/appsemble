@@ -235,10 +235,10 @@ export default class Page extends React.Component {
 
     if (!checkScope(page.scope, user)) {
       return (
-        <React.Fragment>
+        <>
           <TitleBar>{page.name}</TitleBar>
           <Login />
-        </React.Fragment>
+        </>
       );
     }
 
@@ -253,7 +253,7 @@ export default class Page extends React.Component {
     switch (type) {
       case 'flow':
         return (
-          <React.Fragment>
+          <>
             <TitleBar>{page.name}</TitleBar>
             <div className={styles.dotContainer}>
               {page.subPages.map((sub, index) => (
@@ -299,11 +299,11 @@ export default class Page extends React.Component {
               offEvent={this.offEvent}
               onEvent={this.onEvent}
             />
-          </React.Fragment>
+          </>
         );
       case 'tabs':
         return (
-          <React.Fragment>
+          <>
             <TitleBar>{page.name}</TitleBar>
             <div className="tabs is-centered is-medium">
               <ul>
@@ -346,13 +346,13 @@ export default class Page extends React.Component {
 
               <Redirect to={`${match.url}/${normalize(page.subPages[0].name)}`} />
             </Switch>
-          </React.Fragment>
+          </>
         );
       case 'page':
       case 'subPage':
       default:
         return (
-          <React.Fragment>
+          <>
             {type !== 'subPage' && <TitleBar>{page.name}</TitleBar>}
             {page.blocks.map((block, index) => (
               <Block
@@ -373,7 +373,7 @@ export default class Page extends React.Component {
               offEvent={this.offEvent}
               onEvent={this.onEvent}
             />
-          </React.Fragment>
+          </>
         );
     }
   }

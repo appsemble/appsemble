@@ -2,7 +2,7 @@ import { BlockProps } from '@appsemble/react';
 import { Loader } from '@appsemble/react-components';
 import { compileFilters, Context, MapperFunction } from '@appsemble/utils';
 import React from 'react';
-import { FormattedMessage, InjectedIntlProps } from 'react-intl';
+import { FormattedMessage, WrappedComponentProps } from 'react-intl';
 
 import { BlockActions, BlockParameters, Remappers } from '../../../types';
 import Card from '../Card';
@@ -22,7 +22,7 @@ interface FeedBlockState {
  * The top level component for the feed block.
  */
 export default class FeedBlock extends React.Component<
-  BlockProps<BlockParameters, BlockActions> & InjectedIntlProps,
+  BlockProps<BlockParameters, BlockActions> & WrappedComponentProps,
   FeedBlockState
 > {
   state: FeedBlockState = {

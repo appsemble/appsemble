@@ -40,7 +40,7 @@ export default class SideMenu extends React.Component {
     const { children, closeMenu, isOpen } = this.props;
 
     return (
-      <React.Fragment>
+      <>
         <aside
           className={classNames(styles.menu, {
             [styles.active]: isOpen,
@@ -49,13 +49,13 @@ export default class SideMenu extends React.Component {
           {children}
         </aside>
         <div
+          aria-hidden
           className={classNames(styles.backdrop, { [styles.active]: isOpen })}
           onClick={closeMenu}
           onKeyDown={this.onKeyDown}
-          role="button"
           tabIndex="-1"
         />
-      </React.Fragment>
+      </>
     );
   }
 }

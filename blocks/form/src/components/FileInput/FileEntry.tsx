@@ -129,7 +129,7 @@ export default class FileEntry extends React.Component<FileEntryProps> {
             type="file"
           />
           {url ? (
-            <React.Fragment>
+            <>
               <figure className={classNames('image', styles.image)}>
                 <img alt={title} className={styles.img} src={url} />
               </figure>
@@ -142,7 +142,7 @@ export default class FileEntry extends React.Component<FileEntryProps> {
                   <i className="fas fa-times" />
                 </span>
               </button>
-            </React.Fragment>
+            </>
           ) : (
             <span className={classNames('image is-128x128', styles.empty)}>
               <span className="file-label">
