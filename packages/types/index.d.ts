@@ -1,5 +1,10 @@
 import { IconName } from '@fortawesome/fontawesome-common-types';
 
+/**
+ * A color know to Bulma.
+ */
+export type BulmaColor = 'dark' | 'primary' | 'link' | 'info' | 'success' | 'warning' | 'danger';
+
 export interface Theme {
   /**
    * The color primarily featured in the color scheme.
@@ -45,6 +50,28 @@ export interface Theme {
    * The link to the tile layer used for Leaflet maps.
    */
   tileLayer: string;
+}
+
+export interface Message {
+  /**
+   * The content of the message to display.
+   */
+  body: string;
+
+  /**
+   * The color to use for the message.
+   */
+  color?: BulmaColor;
+
+  /**
+   * The timeout period for this message (in milliseconds).
+   */
+  timeout?: number;
+
+  /**
+   * Whether or not to show the dismiss button.
+   */
+  dismissable?: boolean;
 }
 
 /**

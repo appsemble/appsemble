@@ -218,10 +218,10 @@ export default class Page extends React.Component {
 
     if (!checkScope(page.scope, user)) {
       return (
-        <React.Fragment>
+        <>
           <TitleBar>{page.name}</TitleBar>
           <Login />
-        </React.Fragment>
+        </>
       );
     }
 
@@ -236,7 +236,7 @@ export default class Page extends React.Component {
     switch (type) {
       case 'flow':
         return (
-          <React.Fragment>
+          <>
             <TitleBar>{page.name}</TitleBar>
             <div className={styles.dotContainer}>
               {page.flowPages.map((sub, index) => (
@@ -282,12 +282,12 @@ export default class Page extends React.Component {
               offEvent={this.offEvent}
               onEvent={this.onEvent}
             />
-          </React.Fragment>
+          </>
         );
       case 'page':
       default:
         return (
-          <React.Fragment>
+          <>
             <TitleBar>{page.name}</TitleBar>
             {page.blocks.map((block, index) => (
               <Block
@@ -308,7 +308,7 @@ export default class Page extends React.Component {
               offEvent={this.offEvent}
               onEvent={this.onEvent}
             />
-          </React.Fragment>
+          </>
         );
     }
   }

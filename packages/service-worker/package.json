@@ -1,8 +1,8 @@
 {
   "name": "@appsemble/service-worker",
-  "version": "0.8.3",
+  "version": "0.8.4",
   "private": true,
   "dependencies": {
-    "type-fest": "^0.6.0"
+    "type-fest": "^0.7.1"
   }
 }

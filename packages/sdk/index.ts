@@ -1,5 +1,7 @@
-import { Block, Theme } from '@appsemble/types';
+import { Block, Message, Theme } from '@appsemble/types';
 import { Promisable } from 'type-fest';
+
+export { Message, Theme };
 
 interface BaseAction {
   /**
@@ -44,28 +46,6 @@ export interface LinkAction extends BaseAction {
 export type Action = SimpleAction | LinkAction;
 
 export type Actions<A> = { [K in keyof A]: Action };
-
-export interface Message {
-  /**
-   * The content of the message to display.
-   */
-  body: string;
-
-  /**
-   * The color to use for the message.
-   */
-  color?: 'primary' | 'info' | 'success' | 'warning' | 'danger';
-
-  /**
-   * The timeout period for this message (in milliseconds).
-   */
-  timeout?: number;
-
-  /**
-   * Whether or not to show the dismiss button.
-   */
-  dismissable?: boolean;
-}
 
 export interface PageParameters {
   [parameter: string]: string;

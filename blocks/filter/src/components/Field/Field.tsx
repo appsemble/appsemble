@@ -1,13 +1,13 @@
 import classNames from 'classnames';
 import React from 'react';
-import { InjectedIntlProps } from 'react-intl';
+import { WrappedComponentProps } from 'react-intl';
 
 import { Filter, FilterField, RangeFilter } from '../../../types';
 import Control from '../Control';
 import styles from './Field.css';
 import messages from './messages';
 
-export interface FieldProps {
+export interface FieldProps extends WrappedComponentProps {
   displayLabel?: boolean;
   filter: Filter;
   loading: boolean;
@@ -19,7 +19,7 @@ export interface FieldProps {
     | React.ChangeEventHandler<HTMLSelectElement>;
 }
 
-export default class Field extends React.Component<FieldProps & FilterField & InjectedIntlProps> {
+export default class Field extends React.Component<FieldProps & FilterField> {
   static defaultProps: Partial<FieldProps & FilterField> = {
     displayLabel: true,
     label: undefined,
@@ -58,7 +58,7 @@ export default class Field extends React.Component<FieldProps & FilterField & In
         )}
         <div className={classNames('field field-body', { 'is-grouped': range })}>
           {range ? (
-            <React.Fragment>
+            <>
               <Control
                 id={`from${name}`}
                 name={name}
@@ -75,7 +75,7 @@ export default class Field extends React.Component<FieldProps & FilterField & In
                 value={filter[name] && (filter[name] as RangeFilter).to}
                 {...props}
               />
-            </React.Fragment>
+            </>
           ) : (
             <Control
               className={styles.control}

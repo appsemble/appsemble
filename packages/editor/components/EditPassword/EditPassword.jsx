@@ -45,7 +45,7 @@ export default class EditPassword extends React.Component {
   render() {
     const { password, error, submitting, success } = this.state;
     return (
-      <React.Fragment>
+      <>
         <HelmetIntl title={messages.title} />
         {success ? (
           <div className={classNames('container', styles.root)}>
@@ -85,7 +85,7 @@ export default class EditPassword extends React.Component {
             </button>
           </Form>
         )}
-      </React.Fragment>
+      </>
     );
   }
 }

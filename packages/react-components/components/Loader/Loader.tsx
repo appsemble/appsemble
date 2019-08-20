@@ -1,5 +1,4 @@
 import classNames from 'classnames';
-import * as PropTypes from 'prop-types';
 import * as React from 'react';
 
 import styles from './Loader.css';
@@ -10,11 +9,6 @@ export interface LoaderProps {
 }
 
 export default class Loader extends React.Component<LoaderProps> {
-  static propTypes = {
-    className: PropTypes.string,
-    component: PropTypes.string,
-  };
-
   static defaultProps: LoaderProps = {
     className: null,
     component: 'div',
