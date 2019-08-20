@@ -2,14 +2,18 @@
 import h from '.';
 
 it('should assign properties', () => {
-  const button = <button className="is-primary" type="button" />;
-  expect(button).toBeInstanceOf(HTMLButtonElement);
+  const button = <span className="is-primary" />;
+  expect(button).toBeInstanceOf(HTMLSpanElement);
   expect(button.className).toBe('is-primary');
 });
 
 it('should add event handlers', () => {
   const handler = jest.fn();
-  const button = <button onclick={handler} type="button" />;
+  const button = (
+    <button onclick={handler} type="button">
+      Click
+    </button>
+  );
   button.dispatchEvent(new Event('click'));
   expect(handler).toHaveBeenCalledTimes(1);
 });

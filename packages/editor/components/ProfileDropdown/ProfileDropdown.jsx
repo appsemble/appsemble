@@ -36,7 +36,7 @@ export default class ProfileDropdown extends Component {
     const { open } = this.state;
 
     return (
-      <React.Fragment>
+      <>
         <div className={classNames('dropdown', 'is-right', { 'is-active': open })}>
           <div className="dropdown-trigger">
             <button
@@ -96,7 +96,7 @@ export default class ProfileDropdown extends Component {
             </div>
           </div>
         </div>
-      </React.Fragment>
+      </>
     );
   }
 }

@@ -29,7 +29,7 @@ export default class FileRenderer extends React.Component<RendererProps> {
     const { field, value } = this.props;
 
     return (
-      <React.Fragment>
+      <>
         {field.label && <h6 className="title is-6">{field.label}</h6>}
         {field.repeated ? (
           <div className={classNames('container', styles.repeated)}>
@@ -58,7 +58,7 @@ export default class FileRenderer extends React.Component<RendererProps> {
             />
           </figure>
         )}
-      </React.Fragment>
+      </>
     );
   }
 }

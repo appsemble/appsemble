@@ -2,7 +2,7 @@ import { BlockProps } from '@appsemble/react';
 import { Loader } from '@appsemble/react-components';
 import { remapData } from '@appsemble/utils';
 import React from 'react';
-import { FormattedMessage, InjectedIntlProps } from 'react-intl';
+import { FormattedMessage, WrappedComponentProps } from 'react-intl';
 
 import { Actions, Parameters } from '../../../types';
 import styles from './ListBlock.css';
@@ -19,7 +19,7 @@ interface ListBlockState {
 }
 
 export default class ListBlock extends React.Component<
-  BlockProps<Parameters, Actions> & InjectedIntlProps,
+  BlockProps<Parameters, Actions> & WrappedComponentProps,
   ListBlockState
 > {
   state: ListBlockState = { data: undefined, error: false, loading: true };

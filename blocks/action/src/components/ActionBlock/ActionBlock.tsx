@@ -56,7 +56,7 @@ export default class ActionBlock extends React.Component<BlockProps<Parameters, 
                 )}
               </button>
               {field.enum && field.enum.length && (
-                <React.Fragment>
+                <>
                   <label className={styles.actionLabel} htmlFor={`${field.name}.${index}`}>
                     {field.label || ''}
                   </label>
@@ -73,7 +73,7 @@ export default class ActionBlock extends React.Component<BlockProps<Parameters, 
                       ))}
                     </select>
                   </div>
-                </React.Fragment>
+                </>
               )}
             </div>
           );

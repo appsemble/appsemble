@@ -1,4 +1,3 @@
-import * as PropTypes from 'prop-types';
 import * as React from 'react';
 
 interface FormProps {
@@ -19,11 +18,6 @@ interface FormProps {
 export default class Form extends React.Component<
   FormProps & React.DetailedHTMLProps<React.FormHTMLAttributes<HTMLFormElement>, HTMLFormElement>
 > {
-  static propTypes = {
-    children: PropTypes.node.isRequired,
-    onSubmit: PropTypes.func.isRequired,
-  };
-
   render(): React.ReactNode {
     return <form {...this.props} noValidate />;
   }

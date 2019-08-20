@@ -69,7 +69,8 @@ describe('resource controller', () => {
     expect(response.body).toStrictEqual({
       id: resource.id,
       foo: 'bar',
-      created: expect.any(String),
+      $created: expect.any(String),
+      $updated: expect.any(String),
     });
   });
 
@@ -100,8 +101,8 @@ describe('resource controller', () => {
 
     expect(response.status).toBe(200);
     expect(response.body).toStrictEqual([
-      { id: resourceA.id, foo: 'bar', created: expect.any(String) },
-      { id: resourceB.id, foo: 'baz', created: expect.any(String) },
+      { id: resourceA.id, foo: 'bar', $created: expect.any(String), $updated: expect.any(String) },
+      { id: resourceB.id, foo: 'baz', $created: expect.any(String), $updated: expect.any(String) },
     ]);
   });
 
@@ -115,7 +116,7 @@ describe('resource controller', () => {
 
     expect(response.status).toBe(200);
     expect(response.body).toStrictEqual([
-      { id: resourceA.id, foo: 'bar', created: expect.any(String) },
+      { id: resourceA.id, foo: 'bar', $created: expect.any(String), $updated: expect.any(String) },
     ]);
   });
 
@@ -134,13 +135,13 @@ describe('resource controller', () => {
 
     expect(responseA.status).toBe(200);
     expect(responseA.body).toStrictEqual([
-      { id: resourceA.id, foo: 'bar', created: expect.any(String) },
-      { id: resourceB.id, foo: 'baz', created: expect.any(String) },
+      { id: resourceA.id, foo: 'bar', $created: expect.any(String), $updated: expect.any(String) },
+      { id: resourceB.id, foo: 'baz', $created: expect.any(String), $updated: expect.any(String) },
     ]);
     expect(responseB.status).toBe(200);
     expect(responseB.body).toStrictEqual([
-      { id: resourceB.id, foo: 'baz', created: expect.any(String) },
-      { id: resourceA.id, foo: 'bar', created: expect.any(String) },
+      { id: resourceB.id, foo: 'baz', $created: expect.any(String), $updated: expect.any(String) },
+      { id: resourceA.id, foo: 'bar', $created: expect.any(String), $updated: expect.any(String) },
     ]);
   });
 
@@ -167,7 +168,12 @@ describe('resource controller', () => {
 
     expect(response.status).toBe(200);
     expect(response.body).toStrictEqual([
-      { id: resource.id, ...resource.data, created: expect.any(String) },
+      {
+        id: resource.id,
+        ...resource.data,
+        $created: expect.any(String),
+        $updated: expect.any(String),
+      },
     ]);
   });
 
@@ -185,7 +191,12 @@ describe('resource controller', () => {
 
     expect(response.status).toBe(200);
     expect(response.body).toStrictEqual([
-      { id: resource.id, ...resource.data, created: expect.any(String) },
+      {
+        id: resource.id,
+        ...resource.data,
+        $created: expect.any(String),
+        $updated: expect.any(String),
+      },
     ]);
   });
 
