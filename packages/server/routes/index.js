@@ -20,6 +20,6 @@ router.get(
   iconHandler,
 );
 router.get('/:id(\\d+)/manifest.json', manifestHandler);
-router.get('/:path([a-z\\d-]+)/(.*)?', indexHandler);
+router.get('/:organizationId(@[a-z][a-z\\d-]*[a-z\\d])/:appId([a-z\\d-]+)/(.*)?', indexHandler);
 
 export default router.routes();
