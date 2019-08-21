@@ -1,18 +1,16 @@
-import { normalize } from '@appsemble/utils';
-import classNames from 'classnames';
 import EventEmitter from 'events';
 import throttle from 'lodash.throttle';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
-import { Link, Redirect, Route, Switch } from 'react-router-dom';
 
 import checkScope from '../../utils/checkScope';
 import makeActions from '../../utils/makeActions';
 import BlockList from '../BlockList';
-import DotProgressBar from '../DotProgressBar';
+import FlowPage from '../FlowPage';
 import Login from '../Login';
 import PageDialog from '../PageDialog';
+import TabsPage from '../TabsPage';
 import TitleBar from '../TitleBar';
 import messages from './messages';
 import styles from './Page.css';
@@ -229,7 +227,7 @@ export default class Page extends React.Component {
   }
 
   render() {
-    const { hasErrors, page, user, match } = this.props;
+    const { hasErrors, page, user } = this.props;
     const { dialog, counter, currentPage, data } = this.state;
     const { type } = page;
 
@@ -250,101 +248,62 @@ export default class Page extends React.Component {
       );
     }
 
-    switch (type) {
-      case 'flow':
-        return (
-          <>
-            <TitleBar>{page.name}</TitleBar>
-            <DotProgressBar active={currentPage} amount={page.subPages.length} />
-
-            <BlockList
-              blocks={page.subPages[currentPage].blocks}
-              counter={counter}
-              currentPage={currentPage}
-              data={data}
-              emitEvent={this.emitEvent}
-              flowActions={this.flowActions}
-              offEvent={this.offEvent}
-              onEvent={this.onEvent}
-              showDialog={this.showDialog}
-              transitions
-            />
-
-            <PageDialog
-              dialog={dialog}
-              emitEvent={this.emitEvent}
-              offEvent={this.offEvent}
-              onEvent={this.onEvent}
-            />
-          </>
-        );
-      case 'tabs':
-        return (
-          <>
-            <TitleBar>{page.name}</TitleBar>
-            <div className="tabs is-centered is-medium">
-              <ul>
-                {page.subPages.map(({ name }) => (
-                  <li
-                    key={name}
-                    className={classNames({
-                      'is-active': normalize(name) === match.params.subPage,
-                    })}
-                  >
-                    <Link to={`${normalize(name)}`}>{name}</Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <Switch>
-              {page.subPages.map(({ name, blocks }) => (
-                <Route
-                  key={name}
-                  exact
-                  path={`${match.path}/${normalize(name)}`}
-                  render={() => (
-                    <BlockList
-                      blocks={blocks}
-                      counter={counter}
-                      data={data}
-                      emitEvent={this.emitEvent}
-                      flowActions={this.flowActions}
-                      offEvent={this.offEvent}
-                      onEvent={this.onEvent}
-                      showDialog={this.showDialog}
-                    />
-                  )}
+    return (
+      <>
+        <TitleBar>{page.name}</TitleBar>
+        {(() => {
+          switch (type) {
+            case 'flow':
+              return (
+                <FlowPage
+                  blocks={page.subPages[currentPage].blocks}
+                  counter={counter}
+                  currentPage={currentPage}
+                  data={data}
+                  emitEvent={this.emitEvent}
+                  flowActions={this.flowActions}
+                  offEvent={this.offEvent}
+                  onEvent={this.onEvent}
+                  showDialog={this.showDialog}
+                  subPages={page.subPages}
                 />
-              ))}
-
-              <Redirect to={`${match.url}/${normalize(page.subPages[0].name)}`} />
-            </Switch>
-          </>
-        );
-      case 'page':
-      case 'subPage':
-      default:
-        return (
-          <>
-            {type !== 'subPage' && <TitleBar>{page.name}</TitleBar>}
-            <BlockList
-              blocks={page.blocks}
-              counter={counter}
-              data={data}
-              emitEvent={this.emitEvent}
-              flowActions={this.flowActions}
-              offEvent={this.offEvent}
-              onEvent={this.onEvent}
-              showDialog={this.showDialog}
-            />
-            <PageDialog
-              dialog={dialog}
-              emitEvent={this.emitEvent}
-              offEvent={this.offEvent}
-              onEvent={this.onEvent}
-            />
-          </>
-        );
-    }
+              );
+            case 'tabs':
+              return (
+                <TabsPage
+                  counter={counter}
+                  data={data}
+                  emitEvent={this.emitEvent}
+                  flowActions={this.flowActions}
+                  offEvent={this.offEvent}
+                  onEvent={this.onEvent}
+                  showDialog={this.showDialog}
+                  subPages={page.subPages}
+                />
+              );
+            case 'page':
+            default:
+              return (
+                <BlockList
+                  blocks={page.blocks}
+                  counter={counter}
+                  data={data}
+                  emitEvent={this.emitEvent}
+                  flowActions={this.flowActions}
+                  offEvent={this.offEvent}
+                  onEvent={this.onEvent}
+                  showDialog={this.showDialog}
+                />
+              );
+          }
+        })()}
+        <PageDialog
+          dialog={dialog}
+          emitEvent={this.emitEvent}
+          offEvent={this.offEvent}
+          onEvent={this.onEvent}
+        />
+      </>
+    );
   }
 }

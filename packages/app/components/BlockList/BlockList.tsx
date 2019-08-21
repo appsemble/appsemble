@@ -5,10 +5,11 @@ import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import Block from '../Block';
 import styles from './BlockList.css';
 
-interface BlockListProps {
+export interface BlockListProps {
   counter: number;
   currentPage?: number;
   blocks: BlockType[];
+  data?: any;
   emitEvent(name: string, data: any): void;
   flowActions: {};
   offEvent(name: string, callback: Function): void;
@@ -20,6 +21,7 @@ interface BlockListProps {
 export default class BlockList extends React.Component<BlockListProps> {
   static defaultProps: Partial<BlockListProps> = {
     transitions: false,
+    data: undefined,
   };
 
   render(): ReactNode {
@@ -27,6 +29,7 @@ export default class BlockList extends React.Component<BlockListProps> {
       blocks,
       counter,
       currentPage,
+      data,
       emitEvent,
       flowActions,
       offEvent,
@@ -42,6 +45,7 @@ export default class BlockList extends React.Component<BlockListProps> {
           // eslint-disable-next-line react/no-array-index-key
           key={`${index}.${counter}`}
           block={block}
+          data={data}
           emitEvent={emitEvent}
           flowActions={flowActions}
           offEvent={offEvent}
