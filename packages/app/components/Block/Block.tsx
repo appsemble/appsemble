@@ -1,4 +1,5 @@
 // eslint-disable-next-line max-classes-per-file
+import { Events } from '@appsemble/sdk';
 import { App, Block as BlockType, BlockDefinition, Message } from '@appsemble/types';
 import { baseTheme, normalize } from '@appsemble/utils';
 import React from 'react';
@@ -21,26 +22,41 @@ class BlockComponent<P, S = {}> extends React.Component<P, S> {
 export interface BlockProps {
   app: App;
   data?: any;
+
   /**
    * A function for emitting an event.
    */
-  emitEvent(name: string, data: any): void;
+  emitEvent: Events['emit'];
+
   /**
    * A function to deregister an event listener.
    */
-  offEvent(name: string, callback: Function): void;
+  offEvent: Events['off'];
+
   /**
    * A function to register an event listener.
    */
-  onEvent(name: string, callback: Function): void;
+  onEvent: Events['on'];
 
+  /**
+   * XXX: Define this type
+   */
   actionCreators: any;
+
   /**
    * The block to render.
    */
   block: BlockType;
   blockDef: BlockDefinition;
+
+  /**
+   * XXX: Define this type
+   */
   flowActions: any;
+
+  /**
+   * XXX: Define this type
+   */
   showDialog: Function;
   showMessage(message: Message): void;
 }

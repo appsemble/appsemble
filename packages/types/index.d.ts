@@ -12,6 +12,15 @@ export interface BlockDefinition {
    * The name of a block.
    */
   name: string;
+
+  /**
+   * A [semver](https://semver.org) representation of the block version.
+   *
+   * Pattern:
+   * ^\d+\.\d+\.\d+$
+   */
+  version: string;
+
   /*
    * A human readable description of the block.
    */
@@ -26,6 +35,11 @@ export interface BlockDefinition {
    * Array of urls associated to the files of the block.
    */
   files: string[];
+
+  actions?: {
+    type: string;
+    required: boolean;
+  };
 }
 
 export interface Theme {
@@ -144,17 +158,18 @@ export interface Block<P = any, A = {}> {
   actions?: A;
 }
 
-export interface Page {
+export interface Page<A = {}> {
   name: string;
   icon: IconName;
   parameters: string[];
   theme: Theme;
+  actions?: A;
 }
 
 export interface App {
   id?: number;
   organizationId?: string;
   navigation?: 'bottom';
-  pages: Page[];
+  pages: Page<any>[];
   theme: Theme;
 }
