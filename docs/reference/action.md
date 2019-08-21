@@ -23,9 +23,26 @@ used as the `type`.
 
 The link action can be used to redirect the user to other pages.
 
-| Parameter | Required | Description                      |
-| --------- | -------- | -------------------------------- |
-| to        | true     | The name of the page to link to. |
+| Parameter | Required | Description                                                                |
+| --------- | -------- | -------------------------------------------------------------------------- |
+| to        | true     | The name of the page to link to. Subpages can be referred to using arrays. |
+
+### Example
+
+```yaml
+type: link
+to: Example Page
+```
+
+```yaml
+type: link
+to:
+  - Example Page
+  - Sub Page
+
+# Alternatively
+to: [Example Page, Sub Page]
+```
 
 ## `log`
 

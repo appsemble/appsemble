@@ -36,10 +36,14 @@ The type of the page. Type currently supports the following options:
 
 - page (default)
 - flow
+- tabs
 
 Setting this value to `flow` will result in the page displaying like a flow page, in which the page
 is divided into _subpages_, allowing for users to be guided through several steps. Flow page actions
 can be used to facilitate navigating through flow pages.
+
+Setting this value to `tabs` will result in the page displaying tabs at the top of the page. Each
+tab corresponds to a _subpage_ which can be linked to directly using the [link action](action#link).
 
 ## `blocks`\*
 
