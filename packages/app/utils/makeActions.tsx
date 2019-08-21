@@ -1,19 +1,25 @@
+import { Actions, Events } from '@appsemble/sdk';
+import { App, Block, BlockDefinition, Page } from '@appsemble/types';
 import { remapData } from '@appsemble/utils';
+import { RouteComponentProps } from 'react-router-dom';
 
 import actionCreators from './actions';
 
 export default function makeActions(
-  blockDef,
-  app,
-  context,
-  history,
-  showDialog,
-  events,
-  extraCreators,
-  flowActions,
-) {
+  blockDef: BlockDefinition,
+  app: App,
+  context: Page | Block,
+  history: RouteComponentProps['history'],
+  /**
+   * XXX: Define this type
+   */
+  showDialog: Function,
+  events: Events,
+  extraCreators: any,
+  flowActions: {},
+): Actions<any> {
   return Object.entries(blockDef.actions || {}).reduce((acc, [on, { required }]) => {
-    let definition;
+    let definition: typeof context.actions;
     let type;
     if (!context.actions || !Object.hasOwnProperty.call(context.actions, on)) {
       if (required) {
@@ -63,9 +69,9 @@ export default function makeActions(
     });
     const { dispatch } = action;
     if (definition && Object.hasOwnProperty.call(definition, 'remap')) {
-      action.dispatch = async args => dispatch(remapData(definition.remap, args));
+      action.dispatch = async (args: any) => dispatch(remapData(definition.remap, args));
     } else if (dispatch.constructor.name !== 'AsyncFunction') {
-      action.dipatch = async args => dispatch(args);
+      action.dipatch = async (args: any) => dispatch(args);
     }
     action.type = type;
     acc[on] = action;
