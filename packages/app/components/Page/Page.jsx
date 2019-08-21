@@ -10,6 +10,7 @@ import { Link, Redirect, Route, Switch } from 'react-router-dom';
 import checkScope from '../../utils/checkScope';
 import makeActions from '../../utils/makeActions';
 import BlockList from '../BlockList';
+import DotProgressBar from '../DotProgressBar';
 import Login from '../Login';
 import PageDialog from '../PageDialog';
 import TitleBar from '../TitleBar';
@@ -254,15 +255,7 @@ export default class Page extends React.Component {
         return (
           <>
             <TitleBar>{page.name}</TitleBar>
-            <div className={styles.dotContainer}>
-              {page.subPages.map((sub, index) => (
-                <div
-                  key={sub.name}
-                  className={`${styles.dot} ${index < currentPage && styles.previous} ${index ===
-                    currentPage && styles.active}`}
-                />
-              ))}
-            </div>
+            <DotProgressBar active={currentPage} amount={page.subPages.length} />
 
             <BlockList
               blocks={page.subPages[currentPage].blocks}
