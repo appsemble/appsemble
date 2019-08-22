@@ -283,6 +283,7 @@ export default class Editor extends React.Component {
       icon,
       iconURL,
       warningDialog,
+      organizationId,
     } = this.state;
     const {
       intl,
@@ -449,7 +450,7 @@ export default class Editor extends React.Component {
             <iframe
               ref={this.frame}
               className={styles.appFrame}
-              src={`/${path}`}
+              src={`/@${organizationId}/${path}`}
               title={intl.formatMessage(messages.iframeTitle)}
             />
           )}

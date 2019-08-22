@@ -11,8 +11,7 @@ import { bulmaHandler, faHandler } from './styleHandler';
 const router = new Router();
 router.get(bulmaURL, bulmaHandler);
 router.get(faURL, faHandler);
-router.get('/', editorHandler);
-router.get('/_/([a-z\\d/-]+)?', editorHandler);
+router.get('/([a-z\\d/-]+)?', editorHandler);
 router.get('/favicon.ico', faviconHandler);
 router.get('/:id(\\d+)?/(fav)?icon-:width(\\d+).:format(png|jpg|tiff|webp)', iconHandler);
 router.get(
@@ -20,6 +19,9 @@ router.get(
   iconHandler,
 );
 router.get('/:id(\\d+)/manifest.json', manifestHandler);
-router.get('/:organizationId(@[a-z][a-z\\d-]*[a-z\\d])/:appId([a-z\\d-]+)/(.*)?', indexHandler);
+router.get(
+  '/:organizationId(@[a-z][a-z\\d-]*[a-z\\d])/:appId([a-z\\d-]+[a-z\\d])/(.*)?',
+  indexHandler,
+);
 
 export default router.routes();
