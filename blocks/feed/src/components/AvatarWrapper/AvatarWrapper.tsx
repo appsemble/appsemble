@@ -1,11 +1,11 @@
-import { LinkAction, SimpleAction } from '@appsemble/sdk';
+import { Action } from '@appsemble/sdk';
 import React from 'react';
 
 import styles from './AvatarWrapper.css';
 
 export interface CardProps {
   onAvatarClick: React.MouseEventHandler<HTMLElement>;
-  action: SimpleAction | LinkAction;
+  action: Action;
 }
 
 export default class AvatarWrapper extends React.Component<CardProps> {

@@ -1,49 +1,71 @@
-import { Block, Message, Theme } from '@appsemble/types';
+import { Block, HTTPMethods, Message, Theme } from '@appsemble/types';
 import { Promisable } from 'type-fest';
 
 export { Message, Theme };
 
-interface BaseAction {
+export interface BaseAction<T extends string> {
+  /**
+   * The type of the action.
+   */
+  type: T;
+
   /**
    * A function which can be called to dispatch the action.
    */
   dispatch: (data?: any) => Promise<any>;
 }
 
-/**
- * An action that can be called from within a block.
- */
-export interface SimpleAction extends BaseAction {
-  /**
-   * The type of the action.
-   */
-  type:
-    | 'dialog'
-    | 'dialog.error'
-    | 'dialog.ok'
-    | 'log'
-    | 'noop'
-    | 'request'
-    | 'resource.get'
-    | 'resource.query'
-    | 'resource.create'
-    | 'resource.update'
-    | 'resource.delete';
-}
-
-export interface LinkAction extends BaseAction {
-  type: 'link';
-
+export interface LinkAction extends BaseAction<'link'> {
   /**
    * Get the link that the action would link to if the given data was passed.
    */
   href: (data?: any) => string;
 }
 
+export interface LogAction extends BaseAction<'log'> {
+  /**
+   * The logging level.
+   */
+  level: 'info' | 'warn' | 'error';
+}
+
+export interface RequestAction<T extends string = 'request'> extends BaseAction<T> {
+  /**
+   * The HTTP method used to make the request.
+   */
+  method: HTTPMethods;
+  /**
+   * The URL to which the request will be made.
+   */
+  url: string;
+}
+
+export type ResourceGetAction = RequestAction<'resource.get'>;
+export type ResourceQueryAction = RequestAction<'resource.query'>;
+export type ResourceCreateAction = RequestAction<'resource.create'>;
+export type ResourceUpdateAction = RequestAction<'resource.update'>;
+export type ResourceDeleteAction = RequestAction<'resource.delete'>;
+
 /**
  * An action that can be called from within a block.
  */
-export type Action = SimpleAction | LinkAction;
+export type Action =
+  | BaseAction<'dialog'>
+  | BaseAction<'dialog.error'>
+  | BaseAction<'dialog.ok'>
+  | BaseAction<'flow.back'>
+  | BaseAction<'flow.cancel'>
+  | BaseAction<'flow.finish'>
+  | BaseAction<'flow.next'>
+  | BaseAction<'noop'>
+  | LinkAction
+  | LogAction
+  | RequestAction
+  | ResourceGetAction
+  | ResourceQueryAction
+  | ResourceCreateAction
+  | ResourceUpdateAction
+  | ResourceDeleteAction;
 
 export type Actions<A> = { [K in keyof A]: Action };
 
