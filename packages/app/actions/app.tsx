@@ -1,4 +1,6 @@
-import getDB from '@appsemble/utils/getDB';
+import { App } from '@appsemble/types';
+import { Action } from 'redux';
+import { ThunkAction } from 'redux-thunk';
 
 import resolveJsonPointers from '../utils/resolveJsonPointers';
 
@@ -7,12 +9,32 @@ export const GET_SUCCESS = 'app/GET_SUCCESS';
 export const GET_ERROR = 'app/GET_ERROR';
 const EDIT_SUCCESS = 'editor/EDIT_SUCCESS';
 
-const initialState = {
+interface AppState {
+  app: App;
+  error: Error;
+}
+
+const initialState: AppState = {
   app: null,
   error: null,
 };
 
-export default (state = initialState, action) => {
+interface GetSuccessAction extends Action<typeof GET_SUCCESS> {
+  app: App;
+}
+
+interface GetErrorAction extends Action<typeof GET_ERROR> {
+  error: Error;
+}
+
+interface EditAction extends Action<typeof EDIT_SUCCESS> {
+  app: App;
+}
+
+type AppAction = Action<typeof GET_START> | GetSuccessAction | GetErrorAction | EditAction;
+type AppThunk = ThunkAction<void, AppState, null, AppAction>;
+
+export default (state: AppState = initialState, action: AppAction): AppState => {
   switch (action.type) {
     case GET_START:
       return {
@@ -45,18 +67,16 @@ export default (state = initialState, action) => {
 /**
  * Get the app for the app id in the base URI.
  */
-export function getApp() {
+export function getApp(): AppThunk {
   return async dispatch => {
     dispatch({
       type: GET_START,
     });
     try {
-      const app = resolveJsonPointers(window.settings.app);
-      const db = await getDB(app);
+      const app = resolveJsonPointers(window.settings.app) as App;
       dispatch({
         type: GET_SUCCESS,
         app,
-        db,
       });
     } catch (error) {
       dispatch({
