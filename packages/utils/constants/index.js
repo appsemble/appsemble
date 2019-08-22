@@ -1,2 +1,2 @@
-// eslint-disable-next-line import/prefer-default-export
 export { default as baseTheme } from './baseTheme';
+export { default as asciiLogo } from './asciiLogo';

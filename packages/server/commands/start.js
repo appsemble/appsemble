@@ -1,4 +1,5 @@
 import { logger } from '@appsemble/node-utils';
+import { asciiLogo } from '@appsemble/utils';
 import * as Sentry from '@sentry/node';
 import Koa from 'koa';
 
@@ -149,6 +150,7 @@ export async function handler(argv, { webpackConfigs, syncDB } = {}) {
   await createServer({ app, argv, db, grantConfig, secret: argv.oauthSecret });
 
   app.listen(argv.port || PORT, '0.0.0.0', () => {
+    logger.info(asciiLogo);
     logger.info(api(argv).info.description);
   });
 }
