@@ -12,22 +12,22 @@ const GET_ERROR = 'blockDefs/GET_ERROR';
 /**
  * A block definition as defined in an app definition.
  *
- * @param type The name of the block.
+ * @param name The name of the block.
  * @param version The semver version of the block.
  */
 interface BlockDefinition {
-  type: string;
+  name: string;
   version: string;
 }
 
 export interface BlockDefState {
-  blockDefs: BlockDefinition[];
+  blockDefs: Record<string, BlockDefinition>;
   errored: Set<string>;
   pending: Block[];
 }
 
 const initialState: BlockDefState = {
-  blockDefs: [],
+  blockDefs: {},
   errored: new Set(),
   pending: [],
 };
@@ -37,7 +37,7 @@ interface StartAction extends Action<typeof GET_START> {
 }
 
 interface SuccessAction extends Action<typeof GET_SUCCESS> {
-  blockDef: any;
+  blockDef: BlockDefinition;
 }
 
 interface ErrorAction extends Action<typeof GET_ERROR> {
@@ -65,7 +65,7 @@ export default (state = initialState, action: BlockDefAction): BlockDefState => 
     case GET_ERROR:
       return {
         ...state,
-        blockDefs: [],
+        blockDefs: {},
         errored: new Set([...state.errored, action.blockDefId]),
       };
     default:
