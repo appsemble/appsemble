@@ -1,9 +1,57 @@
 import { IconName } from '@fortawesome/fontawesome-common-types';
 
 /**
+ * An object containing information about an authentication method.
+ */
+export interface Authentication {
+  url: string;
+  refreshURL: string;
+  clientId: string;
+  scope: string[];
+  clientSecret: string;
+}
+
+/**
  * A color know to Bulma.
  */
 export type BulmaColor = 'dark' | 'primary' | 'link' | 'info' | 'success' | 'warning' | 'danger';
+
+export interface BlockDefinition {
+  /**
+   * A definition for a block.
+   * pattern: ^@[a-z]([a-z\d-]{0,30}[a-z\d])?\/[a-z]([a-z\d-]{0,30}[a-z\d])$
+   * The name of a block.
+   */
+  name: string;
+
+  /**
+   * A [semver](https://semver.org) representation of the block version.
+   *
+   * Pattern:
+   * ^\d+\.\d+\.\d+$
+   */
+  version: string;
+
+  /*
+   * A human readable description of the block.
+   */
+  description: string;
+
+  /**
+   * The type of layout to be used for the block.
+   */
+  layout: 'float' | 'static' | 'grow';
+
+  /**
+   * Array of urls associated to the files of the block.
+   */
+  files: string[];
+
+  actions?: {
+    type: string;
+    required: boolean;
+  };
+}
 
 export interface Theme {
   /**
@@ -123,6 +171,8 @@ export interface Page {
 }
 
 export interface App {
+  authentication: Authentication[];
+  theme: Theme;
   navigation?: 'bottom';
   pages: Page[];
 }

@@ -1,4 +1,7 @@
+import { Block } from '@appsemble/types';
 import axios from 'axios';
+import { Action } from 'redux';
+import { ThunkAction } from 'redux-thunk';
 
 import { blockToString, normalizeBlockName } from '../utils/blockUtils';
 
@@ -6,18 +9,49 @@ const GET_START = 'blockDefs/GET_START';
 const GET_SUCCESS = 'blockDefs/GET_SUCCESS';
 const GET_ERROR = 'blockDefs/GET_ERROR';
 
-const initialState = {
-  blockDefs: {},
+/**
+ * A block definition as defined in an app definition.
+ *
+ * @param type The name of the block.
+ * @param version The semver version of the block.
+ */
+interface BlockDefinition {
+  type: string;
+  version: string;
+}
+
+export interface BlockDefState {
+  blockDefs: BlockDefinition[];
+  errored: Set<string>;
+  pending: Block[];
+}
+
+const initialState: BlockDefState = {
+  blockDefs: [],
   errored: new Set(),
   pending: [],
 };
 
-export default (state = initialState, action) => {
+interface StartAction extends Action<typeof GET_START> {
+  pending: Block[];
+}
+
+interface SuccessAction extends Action<typeof GET_SUCCESS> {
+  blockDef: any;
+}
+
+interface ErrorAction extends Action<typeof GET_ERROR> {
+  blockDefId: string;
+}
+
+type BlockDefAction = StartAction | SuccessAction | ErrorAction;
+type BlockDefThunk = ThunkAction<void, BlockDefState, null, BlockDefAction>;
+
+export default (state = initialState, action: BlockDefAction): BlockDefState => {
   switch (action.type) {
     case GET_START:
       return {
         ...state,
-        error: null,
         pending: [...state.pending, ...action.pending],
       };
     case GET_SUCCESS:
@@ -27,7 +61,6 @@ export default (state = initialState, action) => {
           ...state.blockDefs,
           [`${action.blockDef.name}@${action.blockDef.version}`]: action.blockDef,
         },
-        error: null,
       };
     case GET_ERROR:
       return {
@@ -45,7 +78,7 @@ export default (state = initialState, action) => {
  *
  * @param {string[]} blockDefIds The ids of the block definitions to fetch.
  */
-export function getBlockDefs(blocks) {
+export function getBlockDefs(blocks: Block[]): BlockDefThunk {
   return async (dispatch, getState) => {
     const state = getState().blockDefs;
     const filtered = blocks.filter(

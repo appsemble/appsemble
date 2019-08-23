@@ -9,7 +9,7 @@ export const GET_SUCCESS = 'app/GET_SUCCESS';
 export const GET_ERROR = 'app/GET_ERROR';
 const EDIT_SUCCESS = 'editor/EDIT_SUCCESS';
 
-interface AppState {
+export interface AppState {
   app: App;
   error: Error;
 }
