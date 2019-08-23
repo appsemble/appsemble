@@ -1,5 +1,5 @@
 types:
-  parameter: Parameters
+  parameters: Parameters
 
 actions:
   onLoad:
