@@ -271,7 +271,7 @@ export function passwordLogin(
 export function oauthLogin(
   url: string,
   token: string,
-  refreshToken: string,
+  _refreshToken: string,
   refreshURL: string,
   clientId: string,
   clientSecret: string,
