@@ -1,6 +1,6 @@
+import { BlobUploadType } from '@appsemble/types';
 import axios, { AxiosResponse } from 'axios';
 
-import { BlobUploadType } from './actions/request';
 import extractBlobs, { RecursiveValue } from './extractBlobs';
 
 type IdResponse = AxiosResponse<{ id: string } | string>;

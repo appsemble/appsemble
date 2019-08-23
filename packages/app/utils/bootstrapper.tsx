@@ -1,19 +1,26 @@
+import { AppsembleBootstrapEvent, BootstrapFunction, BootstrapParams } from '@appsemble/sdk';
+import { BlockDefinition } from '@appsemble/types';
+import { Promisable } from 'type-fest';
+
 import { prefixURL } from './blockUtils';
 
-const bootstrappers = new Map();
-const resolvers = new Map();
-const loadedBlocks = new Set();
+const bootstrappers = new Map<string, BootstrapFunction>();
+const resolvers = new Map<string, ((fn: BootstrapFunction) => void)[]>();
+const loadedBlocks = new Set<string>();
 
 /**
  * Register a bootstrap function for a block.
  *
- * @param {HTMLScriptElement} scriptNode The script node on which to register the bootstrap
- * function.
- * @param {CustomEvent} event the event that was used to register the bootstrap function.
- * @param {string} blockDefId The id of the block definition for which a boostrap function is being
+ * @param scriptNode The script node on which to register the bootstrap function.
+ * @param event the event that was used to register the bootstrap function.
+ * @param blockDefId The id of the block definition for which a boostrap function is being
  * registered.
  */
-export function register(scriptNode, event, blockDefId) {
+export function register(
+  scriptNode: HTMLScriptElement,
+  event: AppsembleBootstrapEvent,
+  blockDefId: string,
+): void {
   const { document, fn } = event.detail;
   if (scriptNode !== event.target || scriptNode !== document.currentScript) {
     throw new Error(
@@ -39,7 +46,7 @@ export function register(scriptNode, event, blockDefId) {
   callbacks.forEach(resolve => resolve(fn));
 }
 
-function getBootstrap(blockDefId) {
+function getBootstrap(blockDefId: string): Promisable<BootstrapFunction> {
   if (bootstrappers.has(blockDefId)) {
     return bootstrappers.get(blockDefId);
   }
@@ -55,17 +62,20 @@ function getBootstrap(blockDefId) {
 /**
  * Call the bootstrap function for a block definition
  *
- * @param {Object} blockDef The block definition whose bootstrap function to call.
- * @param {Object} params any named parameters that will be passed to the block boostrap function.
+ * @param blockDef The block definition whose bootstrap function to call.
+ * @param params any named parameters that will be passed to the block boostrap function.
  */
-export async function callBootstrap(blockDef, params) {
+export async function callBootstrap(
+  blockDef: BlockDefinition,
+  params: BootstrapParams,
+): Promise<void> {
   if (!loadedBlocks.has(blockDef.name)) {
     blockDef.files
       .filter(url => url.endsWith('.js'))
       .forEach(url => {
         const script = document.createElement('script');
         script.src = prefixURL({ type: blockDef.name, version: blockDef.version }, url);
-        script.addEventListener('AppsembleBootstrap', event => {
+        script.addEventListener('AppsembleBootstrap', (event: AppsembleBootstrapEvent) => {
           event.stopImmediatePropagation();
           event.preventDefault();
           register(script, event, blockDef.name);

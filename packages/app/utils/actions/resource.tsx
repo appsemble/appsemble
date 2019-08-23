@@ -1,26 +1,22 @@
 import {
-  Action,
   ResourceCreateAction,
   ResourceDeleteAction,
   ResourceGetAction,
   ResourceQueryAction,
   ResourceUpdateAction,
 } from '@appsemble/sdk';
-import { Resource } from '@appsemble/types';
+import {
+  BlobUploadType,
+  Resource,
+  ResourceCreateActionDefinition,
+  ResourceDeleteActionDefinition,
+  ResourceGetActionDefinition,
+  ResourceQueryActionDefinition,
+  ResourceUpdateActionDefinition,
+} from '@appsemble/types';
 
 import { MakeActionParameters } from '../../types';
-import request, { BlobUploadType, RequestLikeActionDefinition } from './request';
-
-interface ResourceActionDefinition<T extends Action['type'] = Action['type']>
-  extends RequestLikeActionDefinition<T> {
-  resource: string;
-}
-
-type ResourceCreateActionDefinition = ResourceActionDefinition<'resource.create'>;
-type ResourceDeleteActionDefinition = ResourceActionDefinition<'resource.delete'>;
-type ResourceGetActionDefinition = ResourceActionDefinition<'resource.get'>;
-type ResourceQueryActionDefinition = ResourceActionDefinition<'resource.query'>;
-type ResourceUpdateActionDefinition = ResourceActionDefinition<'resource.update'>;
+import { requestLikeAction } from './request';
 
 function getBlobs(resource: Resource): BlobUploadType {
   const { blobs } = resource;
@@ -42,7 +38,7 @@ function get(args: MakeActionParameters<ResourceGetActionDefinition>): ResourceG
   const id = resource.id || 'id';
 
   return {
-    ...request({
+    ...requestLikeAction({
       ...args,
       definition: {
         ...definition,
@@ -66,7 +62,7 @@ function query(args: MakeActionParameters<ResourceQueryActionDefinition>): Resou
     `/api/apps/${app.id}/resources/${definition.resource}`;
 
   return {
-    ...request({
+    ...requestLikeAction({
       ...args,
       definition: {
         ...definition,
@@ -90,7 +86,7 @@ function create(args: MakeActionParameters<ResourceCreateActionDefinition>): Res
     `/api/apps/${app.id}/resources/${definition.resource}`;
 
   return {
-    ...request({
+    ...requestLikeAction({
       ...args,
       definition: {
         ...definition,
@@ -115,7 +111,7 @@ function update(args: MakeActionParameters<ResourceUpdateActionDefinition>): Res
   const id = resource.id || 'id';
 
   return {
-    ...request({
+    ...requestLikeAction({
       ...args,
       definition: {
         ...definition,
@@ -140,10 +136,11 @@ function remove(args: MakeActionParameters<ResourceDeleteActionDefinition>): Res
   const id = resource.id || 'id';
 
   return {
-    ...request({
+    ...requestLikeAction({
       ...args,
       definition: {
         ...definition,
+        type: 'resource.delete',
         blobs: getBlobs(resource),
         method,
         url: `${url}${url.endsWith('/') ? '' : '/'}{${id}}`,
