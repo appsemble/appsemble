@@ -16,12 +16,12 @@ export type RecursiveValue<T = never> =
   | RecursiveObject<T>
   | RecursiveArray<T>;
 
-export interface RecursiveObject<T = never> {
+interface RecursiveObject<T = never> {
   [key: string]: RecursiveValue<T>;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface RecursiveArray<T> extends Array<RecursiveValue<T>> {}
+interface RecursiveArray<T> extends Array<RecursiveValue<T>> {}
 
 /**
  * Extract blobs from an object.

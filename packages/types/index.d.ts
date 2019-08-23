@@ -1,6 +1,36 @@
 import { IconName } from '@fortawesome/fontawesome-common-types';
 
 /**
+ * HTTP methods that support a request body.
+ */
+export type BodyHTTPMethodsUpper = 'PATCH' | 'POST' | 'PUT';
+
+/**
+ * HTTP methods that support a request body, but lower case.
+ */
+export type BodyHTTPMethodsLower = 'patch' | 'post' | 'put';
+
+/**
+ * HTTP methods that support a request body, but all upper case or all lower case..
+ */
+export type BodyHTTPMethods = BodyHTTPMethodsUpper | BodyHTTPMethodsLower;
+
+/**
+ * Common HTTP methods.
+ */
+export type HTTPMethodsUpper = 'DELETE' | 'GET' | BodyHTTPMethodsUpper;
+
+/**
+ * Common HTTP methods, but lower case.
+ */
+export type HTTPMethodsLower = 'delete' | 'get' | BodyHTTPMethodsLower;
+
+/**
+ * Common HTTP methods, but either all upper case or all lower case.
+ */
+export type HTTPMethods = HTTPMethodsUpper | HTTPMethodsLower;
+
+/**
  * A color know to Bulma.
  */
 export type BulmaColor = 'dark' | 'primary' | 'link' | 'info' | 'success' | 'warning' | 'danger';
@@ -158,6 +188,33 @@ export interface Block<P = any, A = {}> {
   actions?: A;
 }
 
+export interface ResourceCall {
+  method: HTTPMethods;
+  url: string;
+}
+
+export interface Resource {
+  create: ResourceCall;
+  delete: ResourceCall;
+  get: ResourceCall;
+  query: ResourceCall;
+  update: ResourceCall;
+  blobs?: {
+    type?: 'upload';
+    method?: 'POST' | 'PUT';
+    url?: string;
+    serialize?: 'custom';
+  };
+  id?: number;
+  // XXX add type
+  schema: any;
+  url?: string;
+}
+
+export interface Resources {
+  [name: string]: Resource;
+}
+
 export interface Page<A = {}> {
   name: string;
   icon: IconName;
@@ -171,5 +228,6 @@ export interface App {
   organizationId?: string;
   navigation?: 'bottom';
   pages: Page<any>[];
+  resources: Resources;
   theme: Theme;
 }

@@ -19,7 +19,6 @@ export default function validate(schema, data) {
         resolve();
         return;
       }
-
       const err = new SchemaValidationError('Schema Validation Failed');
       err.data = errors.reduce((acc, error) => {
         const path = error.path.join('.');

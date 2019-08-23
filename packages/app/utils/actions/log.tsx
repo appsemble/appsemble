@@ -1,20 +1,19 @@
-import { Action } from '@appsemble/sdk';
+import { LogAction } from '@appsemble/sdk';
 
-interface LogDefinition {
-  level: 'error' | 'warn' | 'info';
+import { ActionDefinition, MakeActionParameters } from '../../types';
+
+interface LogActionDefinition extends ActionDefinition<'log'> {
+  level: LogAction['level'];
 }
 
-export default function log({
-  definition,
-}: {
-  definition: LogDefinition;
-}): Action & { level: LogDefinition['level'] } {
+export default function log({ definition }: MakeActionParameters<LogActionDefinition>): LogAction {
   const { level = 'info' } = definition;
 
   return {
-    async dispatch(...args) {
+    type: 'log',
+    async dispatch(data) {
       // eslint-disable-next-line no-console
-      console[level](...args);
+      console[level](data);
     },
     level,
   };
