@@ -1,11 +1,11 @@
 import { Authentication } from '@appsemble/types';
-import { AUTH, RW } from '@appsemble/utils/getDB';
 import axios from 'axios';
 import jwtDecode from 'jwt-decode';
 import { Action } from 'redux';
 import { ThunkAction, ThunkDispatch } from 'redux-thunk';
 
 import { User } from '../types';
+import { AUTH, RW } from '../utils/getDB';
 import { State } from './index';
 
 // The buffer between the access token expiration and the refresh token request. A minute should be

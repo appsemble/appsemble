@@ -10,7 +10,7 @@ import user, { UserState } from './user';
 export interface State {
   app: AppState;
   blockDefs: BlockDefState;
-  db: IDBDatabase;
+  db: ReturnType<typeof db>;
   menu: MenuState;
   message: MessageState;
   user: UserState;
