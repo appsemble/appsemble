@@ -53,7 +53,7 @@ export function getFromContext({ dir, actions, parameters, types = {} }, fullPat
   });
   return {
     actions,
-    parameters: generator.getSchemaForSymbol('Parameters'),
+    parameters: generator.getSchemaForSymbol(parametersInterface),
   };
 }
 
