@@ -24,7 +24,7 @@ function getBlobs(resource: Resource): BlobUploadType {
   const method = (blobs && blobs.method) || 'post';
   const url = (blobs && blobs.url) || '/api/assets';
 
-  return { type, method, url, serialize: blobs.serialize };
+  return { type, method, url, serialize: blobs && blobs.serialize ? blobs.serialize : null };
 }
 
 function get(args: MakeActionParameters<ResourceGetActionDefinition>): ResourceGetAction {

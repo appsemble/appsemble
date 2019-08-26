@@ -368,7 +368,7 @@ interface RequestLikeActionDefinition<T extends RequestLikeActionTypes = Request
   /**
    * How to serialize the request body.
    */
-  serialize: string;
+  serialize: 'formdata';
 
   /**
    * An additional action to execute after the request has succeeded.
