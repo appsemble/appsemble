@@ -2,7 +2,9 @@ import { App } from '@appsemble/types';
 import { Action } from 'redux';
 import { ThunkAction } from 'redux-thunk';
 
+import getDB from '../utils/getDB';
 import resolveJsonPointers from '../utils/resolveJsonPointers';
+import { State } from './index';
 
 export const GET_START = 'app/GET_START';
 export const GET_SUCCESS = 'app/GET_SUCCESS';
@@ -21,6 +23,7 @@ const initialState: AppState = {
 
 interface GetSuccessAction extends Action<typeof GET_SUCCESS> {
   app: App;
+  db: IDBDatabase;
 }
 
 interface GetErrorAction extends Action<typeof GET_ERROR> {
@@ -31,8 +34,8 @@ interface EditAction extends Action<typeof EDIT_SUCCESS> {
   app: App;
 }
 
-type AppAction = Action<typeof GET_START> | GetSuccessAction | GetErrorAction | EditAction;
-type AppThunk = ThunkAction<void, AppState, null, AppAction>;
+export type AppAction = Action<typeof GET_START> | GetSuccessAction | GetErrorAction | EditAction;
+type AppThunk = ThunkAction<void, State, null, AppAction>;
 
 export default (state: AppState = initialState, action: AppAction): AppState => {
   switch (action.type) {
@@ -74,9 +77,11 @@ export function getApp(): AppThunk {
     });
     try {
       const app = resolveJsonPointers(window.settings.app) as App;
+      const db = ((await getDB(app)) as unknown) as IDBDatabase;
       dispatch({
         type: GET_SUCCESS,
         app,
+        db,
       });
     } catch (error) {
       dispatch({
