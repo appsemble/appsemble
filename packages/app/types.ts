@@ -5,6 +5,20 @@ import { RouteComponentProps } from 'react-router-dom';
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface User {}
 
+declare global {
+  interface Window {
+    settings: {
+      app: App;
+      enableRegistration: boolean;
+      loginMethods: Set<string>;
+      sentryDsn: string;
+    };
+  }
+}
+export interface ActionDefinition<T extends Action['type']> {
+  type: T;
+}
+
 interface ShowDialogParams {
   actionCreators: Record<string, () => Action>;
   blocks: Block[];

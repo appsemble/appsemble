@@ -1,11 +1,21 @@
+import { Action } from 'redux';
+import { ThunkAction } from 'redux-thunk';
+
 const OPEN = 'menu/OPEN';
 const CLOSE = 'menu/CLOSE';
 
-const initialState = {
+export interface MenuState {
+  isOpen: boolean;
+}
+
+const initialState: MenuState = {
   isOpen: false,
 };
 
-export default (state = initialState, action) => {
+type MenuAction = Action<typeof OPEN> | Action<typeof CLOSE>;
+type MenuThunk = ThunkAction<void, MenuState, null, MenuAction>;
+
+export default (state = initialState, action: MenuAction): MenuState => {
   switch (action.type) {
     case OPEN:
       return {
@@ -23,7 +33,7 @@ export default (state = initialState, action) => {
 /**
  * Open the side menu.
  */
-export function openMenu() {
+export function openMenu(): MenuThunk {
   return dispatch => {
     dispatch({
       type: OPEN,
@@ -34,7 +44,7 @@ export function openMenu() {
 /**
  * Close the side menu.
  */
-export function closeMenu() {
+export function closeMenu(): MenuThunk {
   return dispatch => {
     dispatch({
       type: CLOSE,

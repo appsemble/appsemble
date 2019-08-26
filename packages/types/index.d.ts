@@ -2,6 +2,17 @@ import { IconName } from '@fortawesome/fontawesome-common-types';
 import { OpenAPIV3 } from 'openapi-types';
 
 /**
+ * An object containing information about an authentication method.
+ */
+export interface Authentication {
+  url: string;
+  refreshURL: string;
+  clientId: string;
+  scope: string[];
+  clientSecret: string;
+}
+
+/*
  * HTTP methods that support a request body.
  */
 export type BodyHTTPMethodsUpper = 'PATCH' | 'POST' | 'PUT';
@@ -498,6 +509,8 @@ export interface Page {
 }
 
 export interface App {
+  authentication: Authentication[];
+  theme: Theme;
   /**
    * The unique identifier for the app.
    *
