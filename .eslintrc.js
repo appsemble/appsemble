@@ -77,6 +77,7 @@ module.exports = {
       rules: {
         'no-undef': 'off',
         'no-unused-vars': 'off',
+        'no-use-before-define': 'off',
         'filenames/match-regex': ['error', /^\.?[a-z]+(\.config|\.test|\.d)?$/i, true],
         'import/no-unresolved': 'off',
         'react/jsx-filename-extension': 'off',

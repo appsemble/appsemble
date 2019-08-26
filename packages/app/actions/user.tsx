@@ -117,7 +117,7 @@ function setupAuth(
   if (exp) {
     const timeout = exp * 1e3 - REFRESH_BUFFER - new Date().getTime();
     if (refreshToken) {
-      // eslint-disable-next-line @typescript-eslint/no-use-before-define, no-use-before-define
+      // eslint-disable-next-line @typescript-eslint/no-use-before-define
       timeoutId = setTimeout(refreshTokenLogin, timeout, url, db, dispatch);
     } else {
       timeoutId = setTimeout(doLogout, timeout, dispatch, null, db);
