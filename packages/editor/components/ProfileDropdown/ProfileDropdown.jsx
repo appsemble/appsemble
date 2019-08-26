@@ -23,14 +23,14 @@ export default class ProfileDropdown extends Component {
   node = React.createRef();
 
   componentDidMount() {
-    document.addEventListener('click', this.handleOutsideClick);
+    document.addEventListener('click', this.onOutsideClick);
   }
 
   componentWillUnmount() {
-    document.removeEventListener('click', this.handleOutsideClick);
+    document.removeEventListener('click', this.onOutsideClick);
   }
 
-  handleOutsideClick = event => {
+  onOutsideClick = event => {
     if (this.node.current.contains(event.target)) {
       return;
     }
@@ -38,7 +38,7 @@ export default class ProfileDropdown extends Component {
     this.setState({ open: false });
   };
 
-  handleClick = () => {
+  onClick = () => {
     this.setState(({ open }) => {
       return { open: !open };
     });
@@ -58,13 +58,7 @@ export default class ProfileDropdown extends Component {
       <div ref={this.node}>
         <div className={classNames('dropdown', 'is-right', { 'is-active': open })}>
           <div className="dropdown-trigger">
-            <button
-              aria-controls="dropdown-menu"
-              aria-haspopup="true"
-              className="button"
-              onClick={this.handleClick}
-              type="button"
-            >
+            <button aria-haspopup="true" className="button" onClick={this.onClick} type="button">
               <figure className="image is-32x32">
                 <img
                   alt="profile"
@@ -77,8 +71,7 @@ export default class ProfileDropdown extends Component {
           </div>
           <div
             className="dropdown-menu"
-            id="dropdown-menu-content"
-            onClick={this.handleClick}
+            onClick={this.onClick}
             onKeyDown={this.onKeyDown}
             role="menu"
             tabIndex={0}
