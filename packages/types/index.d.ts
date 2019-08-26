@@ -1,4 +1,5 @@
 import { IconName } from '@fortawesome/fontawesome-common-types';
+import { OpenAPIV3 } from 'openapi-types';
 
 /**
  * HTTP methods that support a request body.
@@ -164,8 +165,7 @@ export interface Resource {
     serialize?: 'custom';
   };
   id?: number;
-  // XXX add type
-  schema: any;
+  schema: OpenAPIV3.SchemaObject;
   url?: string;
 }
 
@@ -270,11 +270,9 @@ interface LogActionDefinition extends BaseActionDefinition<'log'> {
 
 interface RequestLikeActionDefinition<T extends RequestLikeActionTypes = RequestLikeActionTypes>
   extends BaseActionDefinition<T> {
-  // XXX specify schema type
   blobs: BlobUploadType;
   method: HTTPMethods;
-  // XXX specify schema type
-  schema: any;
+  schema: OpenAPIV3.SchemaObject;
   query: Record<string, string>;
   url: string;
   serialize: string;
