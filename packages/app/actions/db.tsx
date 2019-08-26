@@ -1,8 +1,10 @@
+import { IDBPDatabase } from 'idb';
+
 import { AppAction, GET_ERROR, GET_START, GET_SUCCESS } from './app';
 
-const initialState: IDBDatabase = null;
+const initialState: IDBPDatabase = null;
 
-export default (state: IDBDatabase = initialState, action: AppAction): IDBDatabase => {
+export default (state: IDBPDatabase = initialState, action: AppAction): IDBPDatabase => {
   switch (action.type) {
     case GET_START:
       return null;

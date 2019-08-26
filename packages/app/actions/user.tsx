@@ -1,5 +1,6 @@
 import { Authentication } from '@appsemble/types';
 import axios from 'axios';
+import { IDBPDatabase } from 'idb';
 import jwtDecode from 'jwt-decode';
 import { Action } from 'redux';
 import { ThunkAction, ThunkDispatch } from 'redux-thunk';
@@ -109,7 +110,7 @@ function setupAuth(
   accessToken: string,
   refreshToken: string,
   url: string,
-  db: IDBDatabase,
+  db: IDBPDatabase,
   dispatch: UserDispatch,
 ): { id: string; scope: string } {
   const payload = jwtDecode<JwtPayload>(accessToken);
@@ -133,7 +134,7 @@ function setupAuth(
 async function requestToken(
   url: string,
   params: OAuth2Params,
-  db: IDBDatabase,
+  db: IDBPDatabase,
   dispatch: UserDispatch,
   refreshURL: string,
 ): Promise<ReturnType<typeof setupAuth>> {
@@ -154,7 +155,7 @@ async function requestToken(
 
 async function refreshTokenLogin(
   url: string,
-  db: IDBDatabase,
+  db: IDBPDatabase,
   dispatch: UserDispatch,
 ): Promise<void> {
   const { refreshToken, clientId, clientSecret } = ((await db

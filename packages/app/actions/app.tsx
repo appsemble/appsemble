@@ -1,4 +1,5 @@
 import { App } from '@appsemble/types';
+import { IDBPDatabase } from 'idb';
 import { Action } from 'redux';
 import { ThunkAction } from 'redux-thunk';
 
@@ -23,7 +24,7 @@ const initialState: AppState = {
 
 interface GetSuccessAction extends Action<typeof GET_SUCCESS> {
   app: App;
-  db: IDBDatabase;
+  db: IDBPDatabase;
 }
 
 interface GetErrorAction extends Action<typeof GET_ERROR> {
@@ -77,7 +78,7 @@ export function getApp(): AppThunk {
     });
     try {
       const app = resolveJsonPointers(window.settings.app) as App;
-      const db = ((await getDB(app)) as unknown) as IDBDatabase;
+      const db = await getDB(app);
       dispatch({
         type: GET_SUCCESS,
         app,
