@@ -510,7 +510,7 @@ export interface Page {
 
 export interface App {
   authentication: Authentication[];
-  theme: Theme;
+
   /**
    * The unique identifier for the app.
    *
