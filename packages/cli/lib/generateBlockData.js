@@ -30,7 +30,7 @@ export function getFromContext({ dir, actions, parameters, types = {} }, fullPat
   const { file = 'types.ts', parameters: parametersInterface } = types;
   if (parameters && parametersInterface) {
     throw new AppsembleError(
-      'Exacly one of ‘parameters’ and types.parameters’ should be specified. Got both.',
+      'Exacly one of ‘parameters’ and ‘types.parameters’ should be specified. Got both.',
     );
   }
   if (actions && parameters) {
