@@ -411,7 +411,7 @@ export type ActionDefinition =
   | ResourceQueryActionDefinition
   | ResourceUpdateActionDefinition
 
-  // This shouldn’t be here, but TypeScript won’t shut up without it.
+  // XXX This shouldn’t be here, but TypeScript won’t shut up without it.
   | RequestLikeActionDefinition;
 
 export interface ActionType {
