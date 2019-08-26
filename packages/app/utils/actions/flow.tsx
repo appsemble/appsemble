@@ -1,11 +1,11 @@
-import { BaseAction } from '@appsemble/sdk';
+import { BaseAction, BaseActionDefinition } from '@appsemble/types';
 
-import { ActionDefinition, MakeActionParameters } from '../../types';
+import { MakeActionParameters } from '../../types';
 
 // See Page.jsx
 function next({
   flowActions,
-}: MakeActionParameters<ActionDefinition<'flow.next'>>): BaseAction<'flow.next'> {
+}: MakeActionParameters<BaseActionDefinition<'flow.next'>>): BaseAction<'flow.next'> {
   return {
     type: 'flow.next',
     async dispatch(data) {
@@ -16,7 +16,7 @@ function next({
 
 function finish({
   flowActions,
-}: MakeActionParameters<ActionDefinition<'flow.finish'>>): BaseAction<'flow.finish'> {
+}: MakeActionParameters<BaseActionDefinition<'flow.finish'>>): BaseAction<'flow.finish'> {
   return {
     type: 'flow.finish',
     async dispatch(data) {
@@ -27,7 +27,7 @@ function finish({
 
 function back({
   flowActions,
-}: MakeActionParameters<ActionDefinition<'flow.back'>>): BaseAction<'flow.back'> {
+}: MakeActionParameters<BaseActionDefinition<'flow.back'>>): BaseAction<'flow.back'> {
   return {
     type: 'flow.back',
     async dispatch(data) {
@@ -38,7 +38,7 @@ function back({
 
 function cancel({
   flowActions,
-}: MakeActionParameters<ActionDefinition<'flow.cancel'>>): BaseAction<'flow.cancel'> {
+}: MakeActionParameters<BaseActionDefinition<'flow.cancel'>>): BaseAction<'flow.cancel'> {
   return {
     type: 'flow.cancel',
     async dispatch(data) {

@@ -65,7 +65,7 @@ export default class ProfileDropdown extends Component {
             tabIndex={0}
           >
             <div className="dropdown-content">
-              <Link className="dropdown-item" to="/_/settings">
+              <Link className="dropdown-item" to="/settings">
                 <Icon icon="wrench" />
                 <span>
                   <FormattedMessage {...messages.settings} />

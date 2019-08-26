@@ -1,6 +1,7 @@
 import { SchemaValidationError, validate } from '@appsemble/utils';
 import Boom from '@hapi/boom';
 import parseOData from '@wesselkuipers/odata-sequelize';
+import crypto from 'crypto';
 
 function verifyResourceDefinition(app, resourceType) {
   if (!app) {
@@ -43,10 +44,18 @@ function verifyResourceDefinition(app, resourceType) {
   };
 }
 
-function generateQuery(ctx) {
+function generateQuery(ctx, { updatedHash, createdHash }) {
   if (ctx.querystring) {
     try {
-      return parseOData(decodeURIComponent(ctx.querystring.replace(/\+/g, '%20')), ctx.db);
+      return parseOData(
+        decodeURIComponent(
+          ctx.querystring
+            .replace(/\+/g, '%20')
+            .replace('$updated', updatedHash)
+            .replace('$created', createdHash),
+        ),
+        ctx.db,
+      );
     } catch (e) {
       return {};
     }
@@ -60,7 +69,7 @@ function generateQuery(ctx) {
  * @param {Object} object Object to iterate through
  * @param {string[]} keys Keys to match with
  */
-const deepRename = (object, keys) => {
+const deepRename = (object, keys, { updatedHash, createdHash }) => {
   if (!object) {
     return {};
   }
@@ -81,8 +90,14 @@ const deepRename = (object, keys) => {
       delete obj[key];
     }
 
+    if (value === updatedHash) {
+      obj[key] = 'updated';
+    } else if (value === createdHash) {
+      obj[key] = 'created';
+    }
+
     if (!!obj[key] && (obj[key] instanceof Object || Array.isArray(obj[key]))) {
-      obj[key] = deepRename(obj[key], keys);
+      obj[key] = deepRename(obj[key], keys, { updatedHash, createdHash });
     }
   });
 
@@ -90,7 +105,10 @@ const deepRename = (object, keys) => {
 };
 
 export async function queryResources(ctx) {
-  const query = generateQuery(ctx);
+  const updatedHash = `updated${crypto.randomBytes(5).toString('hex')}`;
+  const createdHash = `created${crypto.randomBytes(5).toString('hex')}`;
+
+  const query = generateQuery(ctx, { updatedHash, createdHash });
   const { appId, resourceType } = ctx.params;
   const { App } = ctx.db.models;
 
@@ -99,7 +117,7 @@ export async function queryResources(ctx) {
 
   const keys = Object.keys(properties);
   // the data is stored in the ´data´ column as json
-  const renamedQuery = deepRename(query, keys);
+  const renamedQuery = deepRename(query, keys, { updatedHash, createdHash });
 
   try {
     const resources = await app.getResources({
