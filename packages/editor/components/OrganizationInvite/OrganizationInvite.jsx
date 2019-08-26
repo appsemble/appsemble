@@ -144,12 +144,12 @@ export default class OrganizationInvite extends React.Component {
                 values={{
                   organization: <strong>{organization.name || organization.id}</strong>,
                   makeApps: (
-                    <Link to="/_/apps">
+                    <Link to="/apps">
                       <FormattedMessage {...messages.appSettings} />
                     </Link>
                   ),
                   viewOrganization: (
-                    <Link to="/_/settings/organizations">
+                    <Link to="/settings/organizations">
                       <FormattedMessage {...messages.organizationSettings} />
                     </Link>
                   ),
@@ -160,7 +160,7 @@ export default class OrganizationInvite extends React.Component {
                 {...messages.successDeclined}
                 values={{
                   makeApps: (
-                    <Link to="/_/apps">
+                    <Link to="/apps">
                       <FormattedMessage {...messages.here} />
                     </Link>
                   ),

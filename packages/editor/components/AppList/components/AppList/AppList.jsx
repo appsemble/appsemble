@@ -79,7 +79,7 @@ export default class AppList extends React.Component {
                 {...messages.createOrganizationInstruction}
                 values={{
                   link: (
-                    <Link to="/_/settings/organizations">
+                    <Link to="/settings/organizations">
                       <FormattedMessage {...messages.here} />
                     </Link>
                   ),
