@@ -1,4 +1,4 @@
-import { Block } from '@appsemble/types';
+import { Block, BlockDefinition } from '@appsemble/types';
 import axios from 'axios';
 import { Action } from 'redux';
 import { ThunkAction } from 'redux-thunk';
@@ -8,17 +8,6 @@ import { blockToString, normalizeBlockName } from '../utils/blockUtils';
 const GET_START = 'blockDefs/GET_START';
 const GET_SUCCESS = 'blockDefs/GET_SUCCESS';
 const GET_ERROR = 'blockDefs/GET_ERROR';
-
-/**
- * A block definition as defined in an app definition.
- *
- * @param name The name of the block.
- * @param version The semver version of the block.
- */
-interface BlockDefinition {
-  name: string;
-  version: string;
-}
 
 export interface BlockDefState {
   blockDefs: Record<string, BlockDefinition>;
