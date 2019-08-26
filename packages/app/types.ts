@@ -1,6 +1,5 @@
 import { Action } from '@appsemble/sdk';
 import { ActionDefinition, App, Block } from '@appsemble/types';
-import { DBSchema, IDBPObjectStore } from 'idb';
 import { RouteComponentProps } from 'react-router-dom';
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface

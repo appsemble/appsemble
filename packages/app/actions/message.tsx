@@ -43,8 +43,10 @@ export default (state: MessageState = initialState, action: MessageAction): Mess
       return state;
   }
 };
+
 export function push(message: Message | string): MessageThunk {
   const payload = typeof message === 'string' ? { body: message } : message;
+
   return dispatch => {
     dispatch({
       type: PUSH,
@@ -52,6 +54,7 @@ export function push(message: Message | string): MessageThunk {
     });
   };
 }
+
 export function remove(message: UniqueMessage): MessageThunk {
   return dispatch => {
     dispatch({
