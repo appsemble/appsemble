@@ -43,7 +43,7 @@ export function respond(request: Request): Promise<Response> {
     return cacheFirst(request);
   }
   // If the URL either consists of a normalized path, it should be remapped to the cached url which
-  // consists of the client URL path. E.g. '/my-app', '/my-app/home'.
+  // consists of the client URL path. E.g. '@my-org/my-app', '@my-org/my-app/home'.
   const match = pathname.match(/^(\/@[a-z][a-z\d-]*[a-z\d]\/[a-z\d-]+[a-z\d])(\/[a-z\d/-]+)*$/);
   if (match) {
     // eslint-disable-next-line compat/compat

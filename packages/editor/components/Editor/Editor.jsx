@@ -290,6 +290,7 @@ export default class Editor extends React.Component {
       location: { hash: tab },
     } = this.props;
     const filename = icon ? icon.name : 'Icon';
+    const appUrl = `/@${organizationId}/${path}`;
 
     if (!recipe) {
       return <Loader />;
@@ -365,7 +366,7 @@ export default class Editor extends React.Component {
                   )}
                 </span>
                 <span className="navbar-item">
-                  <a className="button" href={`/${path}`} rel="noopener noreferrer" target="_blank">
+                  <a className="button" href={appUrl} rel="noopener noreferrer" target="_blank">
                     <FormattedMessage {...messages.viewLive} />
                   </a>
                 </span>
@@ -450,7 +451,7 @@ export default class Editor extends React.Component {
             <iframe
               ref={this.frame}
               className={styles.appFrame}
-              src={`/@${organizationId}/${path}`}
+              src={appUrl}
               title={intl.formatMessage(messages.iframeTitle)}
             />
           )}
