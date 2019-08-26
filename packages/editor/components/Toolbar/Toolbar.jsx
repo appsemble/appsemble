@@ -44,7 +44,7 @@ export default class Toolbar extends React.Component {
             {isLoggedIn ? (
               <ProfileDropdown />
             ) : (
-              <Link className="button" to="/_/login">
+              <Link className="button" to="/login">
                 <FormattedMessage {...messages.login} />
               </Link>
             )}

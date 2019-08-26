@@ -34,21 +34,21 @@ describe('respond', () => {
   });
 
   it('should try to request app index URL first', async () => {
-    const request = new Request('http://localhost/123');
+    const request = new Request('http://localhost/@foo/test123');
     await respond(request);
     expect(utils.requestFirst).toHaveBeenCalledWith(
       expect.objectContaining({
-        url: 'http://localhost/123',
+        url: 'http://localhost/@foo/test123',
       }),
     );
   });
 
   it('should remap nested app URLs', async () => {
-    const request = new Request('http://localhost/asd/foo/bar-1');
+    const request = new Request('http://localhost/@foo/asd/foo/bar-1');
     await respond(request);
     expect(utils.requestFirst).toHaveBeenCalledWith(
       expect.objectContaining({
-        url: 'http://localhost/asd',
+        url: 'http://localhost/@foo/asd',
       }),
     );
   });
@@ -78,13 +78,13 @@ describe('respond', () => {
   });
 
   it('should pass internal requests', async () => {
-    const request = new Request('http://localhost/_/apps');
+    const request = new Request('http://localhost/apps');
     await respond(request);
     expect(fetch).toHaveBeenCalledWith(request);
   });
 
   it('should try to get static assets from the cache first', async () => {
-    const request = new Request('http://localhost/app/76fade46f4eac.js');
+    const request = new Request('http://localhost/@foo/app/76fade46f4eac.js');
     await respond(request);
     expect(utils.cacheFirst).toHaveBeenCalledWith(request);
   });

@@ -1,35 +1,21 @@
-import { Action, RequestAction } from '@appsemble/sdk';
-import { BodyHTTPMethods, HTTPMethods, HTTPMethodsUpper } from '@appsemble/types';
+import {
+  HTTPMethodsUpper,
+  RequestAction,
+  RequestLikeAction,
+  RequestLikeActionDefinition,
+  RequestLikeActionTypes,
+} from '@appsemble/types';
 import { compileFilters, MapperFunction, validate } from '@appsemble/utils';
 import axios, { AxiosRequestConfig } from 'axios';
 
-import { ActionDefinition, MakeActionParameters } from '../../types';
+import { MakeActionParameters } from '../../types';
 import uploadBlobs from '../uploadBlobs';
 
-export interface BlobUploadType {
-  type?: 'upload';
-  method?: BodyHTTPMethods;
-  serialize?: 'custom';
-  url?: string;
-}
-
-export interface RequestLikeActionDefinition<T extends Action['type']> extends ActionDefinition<T> {
-  blobs: BlobUploadType;
-  method: HTTPMethods;
-  // XXX specify schema type
-  schema: any;
-  query: Record<string, string>;
-  url: string;
-  serialize: 'formdata';
-}
-
-// type RequestActionDefinition = RequestLikeActionDefinition<'request'>;
-
-export default function request({
+export function requestLikeAction<T extends RequestLikeActionTypes>({
   definition: { blobs = {}, method = 'GET', schema, query, url, serialize },
   onSuccess,
   onError,
-}: MakeActionParameters<RequestLikeActionDefinition<Action['type']>>): RequestAction {
+}: MakeActionParameters<RequestLikeActionDefinition<T>>): RequestLikeAction<'request'> {
   const regex = /{(.+?)}/g;
   const urlMatch = url.match(regex);
   const mappers =
@@ -115,4 +101,10 @@ export default function request({
     method,
     url,
   };
+}
+
+export default function request(
+  args: MakeActionParameters<RequestLikeActionDefinition<'request'>>,
+): RequestAction {
+  return requestLikeAction(args);
 }

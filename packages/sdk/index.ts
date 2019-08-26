@@ -1,71 +1,34 @@
-import { Block, HTTPMethods, Message, Theme } from '@appsemble/types';
+import {
+  Action,
+  BaseAction,
+  Block,
+  LinkAction,
+  LogAction,
+  Message,
+  RequestAction,
+  ResourceCreateAction,
+  ResourceDeleteAction,
+  ResourceGetAction,
+  ResourceQueryAction,
+  ResourceUpdateAction,
+  Theme,
+} from '@appsemble/types';
 import { Promisable } from 'type-fest';
 
-export { Message, Theme };
-
-export interface BaseAction<T extends string> {
-  /**
-   * The type of the action.
-   */
-  type: T;
-
-  /**
-   * A function which can be called to dispatch the action.
-   */
-  dispatch: (data?: any) => Promise<any>;
-}
-
-export interface LinkAction extends BaseAction<'link'> {
-  /**
-   * Get the link that the action would link to if the given data was passed.
-   */
-  href: (data?: any) => string;
-}
-
-export interface LogAction extends BaseAction<'log'> {
-  /**
-   * The logging level.
-   */
-  level: 'info' | 'warn' | 'error';
-}
-
-export interface RequestAction<T extends string = 'request'> extends BaseAction<T> {
-  /**
-   * The HTTP method used to make the request.
-   */
-  method: HTTPMethods;
-  /**
-   * The URL to which the request will be made.
-   */
-  url: string;
-}
-
-export type ResourceGetAction = RequestAction<'resource.get'>;
-export type ResourceQueryAction = RequestAction<'resource.query'>;
-export type ResourceCreateAction = RequestAction<'resource.create'>;
-export type ResourceUpdateAction = RequestAction<'resource.update'>;
-export type ResourceDeleteAction = RequestAction<'resource.delete'>;
-
-/**
- * An action that can be called from within a block.
- */
-export type Action =
-  | BaseAction<'dialog'>
-  | BaseAction<'dialog.error'>
-  | BaseAction<'dialog.ok'>
-  | BaseAction<'flow.back'>
-  | BaseAction<'flow.cancel'>
-  | BaseAction<'flow.finish'>
-  | BaseAction<'flow.next'>
-  | BaseAction<'noop'>
-  | LinkAction
-  | LogAction
-  | RequestAction
-  | ResourceGetAction
-  | ResourceQueryAction
-  | ResourceCreateAction
-  | ResourceUpdateAction
-  | ResourceDeleteAction;
+export {
+  Action,
+  BaseAction,
+  LinkAction,
+  LogAction,
+  Message,
+  RequestAction,
+  ResourceCreateAction,
+  ResourceDeleteAction,
+  ResourceGetAction,
+  ResourceQueryAction,
+  ResourceUpdateAction,
+  Theme,
+};
 
 export type Actions<A> = { [K in keyof A]: Action };
 
@@ -164,19 +127,34 @@ export interface BootstrapParams<P = any, A = {}> {
 }
 
 /**
+ * @private
+ */
+export type BootstrapFunction<P = any, A = {}> = (
+  params: BootstrapParams<P, A>,
+) => Promisable<void>;
+
+/**
+ * @private
+ */
+export interface AppsembleBootstrapEvent extends CustomEvent {
+  detail: {
+    fn: BootstrapFunction;
+    document: Document;
+  };
+}
+
+/**
  * Register a boostrap function.
  *
  * @param fn The bootstrap function to register
  */
-export function bootstrap<P = any, A = {}>(
-  fn: (params: BootstrapParams<P, A>) => Promisable<void>,
-): void {
+export function bootstrap<P = any, A = {}>(fn: BootstrapFunction<P, A>): void {
   const event = new CustomEvent('AppsembleBootstrap', {
     detail: {
       fn,
       document,
     },
-  });
+  }) as AppsembleBootstrapEvent;
   if (document.currentScript) {
     document.currentScript.dispatchEvent(event);
   }

@@ -1,12 +1,7 @@
 import { BaseAction } from '@appsemble/sdk';
-import { Block } from '@appsemble/types';
+import { DialogActionDefinition } from '@appsemble/types';
 
-import { ActionDefinition, MakeActionParameters } from '../../types';
-
-interface DialogActionDefinition extends ActionDefinition<'dialog'> {
-  fullscreen?: boolean;
-  blocks: Block[];
-}
+import { MakeActionParameters } from '../../types';
 
 export default function dialog({
   definition,
