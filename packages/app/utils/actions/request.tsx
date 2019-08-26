@@ -20,7 +20,7 @@ export interface RequestLikeActionDefinition<T extends Action['type']> extends A
   schema: any;
   query: Record<string, string>;
   url: string;
-  serialize: string;
+  serialize: 'formdata';
 }
 
 // type RequestActionDefinition = RequestLikeActionDefinition<'request'>;
