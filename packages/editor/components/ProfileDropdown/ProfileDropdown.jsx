@@ -20,15 +20,34 @@ export default class ProfileDropdown extends Component {
     open: false,
   };
 
-  componentDidMount() {}
+  node = React.createRef();
 
-  toggleDropdown = () => {
-    const { open } = this.state;
-    this.setState({ open: !open });
+  componentDidMount() {
+    document.addEventListener('click', this.handleOutsideClick);
+  }
+
+  componentWillUnmount() {
+    document.removeEventListener('click', this.handleOutsideClick);
+  }
+
+  handleOutsideClick = event => {
+    if (this.node.current.contains(event.target)) {
+      return;
+    }
+
+    this.setState({ open: false });
   };
 
-  closeDropdown = () => {
-    this.setState({ open: false });
+  handleClick = () => {
+    this.setState(({ open }) => {
+      return { open: !open };
+    });
+  };
+
+  onKeyDown = event => {
+    if (event.key === 'Escape') {
+      this.setState({ open: false });
+    }
   };
 
   render() {
@@ -36,14 +55,14 @@ export default class ProfileDropdown extends Component {
     const { open } = this.state;
 
     return (
-      <>
+      <div ref={this.node}>
         <div className={classNames('dropdown', 'is-right', { 'is-active': open })}>
           <div className="dropdown-trigger">
             <button
               aria-controls="dropdown-menu"
               aria-haspopup="true"
               className="button"
-              onClick={this.toggleDropdown}
+              onClick={this.handleClick}
               type="button"
             >
               <figure className="image is-32x32">
@@ -58,9 +77,9 @@ export default class ProfileDropdown extends Component {
           </div>
           <div
             className="dropdown-menu"
-            id="dropdown-menu"
-            onClick={this.closeDropdown}
-            onKeyDown={this.closeDropdown}
+            id="dropdown-menu-content"
+            onClick={this.handleClick}
+            onKeyDown={this.onKeyDown}
             role="menu"
             tabIndex={0}
           >
@@ -96,7 +115,7 @@ export default class ProfileDropdown extends Component {
             </div>
           </div>
         </div>
-      </>
+      </div>
     );
   }
 }
