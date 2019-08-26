@@ -31,7 +31,7 @@ export default class Login extends React.Component {
     }
 
     const qs = new URLSearchParams(location.search);
-    const redirect = qs.has('redirect') ? qs.get('redirect') : '/_/apps';
+    const redirect = qs.has('redirect') ? qs.get('redirect') : '/apps';
     history.replace(redirect);
   }
 
@@ -40,13 +40,13 @@ export default class Login extends React.Component {
     const qs = new URLSearchParams(location.search);
 
     await passwordLogin(...args);
-    const redirect = qs.has('redirect') ? qs.get('redirect') : '/_/apps';
+    const redirect = qs.has('redirect') ? qs.get('redirect') : '/apps';
     history.replace(redirect);
   };
 
   render() {
     const { location } = this.props;
-    const returnUri = new URLSearchParams({ returnUri: '/_/connect' });
+    const returnUri = new URLSearchParams({ returnUri: '/connect' });
 
     return (
       <div>
@@ -66,12 +66,12 @@ export default class Login extends React.Component {
           {window.settings.enableRegistration && (
             <Link
               className={styles.registerLink}
-              to={{ pathname: '/_/register', search: location.search, hash: location.hash }}
+              to={{ pathname: '/register', search: location.search, hash: location.hash }}
             >
               <FormattedMessage {...messages.registerLink} />
             </Link>
           )}
-          <Link to="/_/reset-password">
+          <Link to="/reset-password">
             <FormattedMessage {...messages.forgotPasswordLink} />
           </Link>
         </div>

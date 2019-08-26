@@ -36,7 +36,7 @@ export default class AppCard extends React.Component {
         <footer className={classNames('card-footer', styles.appCardFooter)}>
           <a
             className="card-footer-item"
-            href={`/${app.path}`}
+            href={`/@${app.organizationId}/${app.path}`}
             rel="noopener noreferrer"
             target="_blank"
           >

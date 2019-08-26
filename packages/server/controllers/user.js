@@ -105,7 +105,7 @@ export async function addEmail(ctx) {
   await dbUser.createEmailAuthorization({ email, key });
 
   await mailer.sendEmail({ email, name: dbUser.name }, 'emailAdded', {
-    url: `${ctx.origin}/_/verify?token=${key}`,
+    url: `${ctx.origin}/verify?token=${key}`,
   });
 
   ctx.status = 201;

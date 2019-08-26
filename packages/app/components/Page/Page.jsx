@@ -248,55 +248,57 @@ export default class Page extends React.Component {
       );
     }
 
+    let component;
+    switch (type) {
+      case 'flow':
+        component = (
+          <FlowPage
+            blocks={page.subPages[currentPage].blocks}
+            counter={counter}
+            currentPage={currentPage}
+            data={data}
+            emitEvent={this.emitEvent}
+            flowActions={this.flowActions}
+            offEvent={this.offEvent}
+            onEvent={this.onEvent}
+            showDialog={this.showDialog}
+            subPages={page.subPages}
+          />
+        );
+        break;
+      case 'tabs':
+        component = (
+          <TabsPage
+            counter={counter}
+            data={data}
+            emitEvent={this.emitEvent}
+            flowActions={this.flowActions}
+            offEvent={this.offEvent}
+            onEvent={this.onEvent}
+            showDialog={this.showDialog}
+            subPages={page.subPages}
+          />
+        );
+        break;
+      default:
+        component = (
+          <BlockList
+            blocks={page.blocks}
+            counter={counter}
+            data={data}
+            emitEvent={this.emitEvent}
+            flowActions={this.flowActions}
+            offEvent={this.offEvent}
+            onEvent={this.onEvent}
+            showDialog={this.showDialog}
+          />
+        );
+    }
+
     return (
       <>
         <TitleBar>{page.name}</TitleBar>
-        {(() => {
-          switch (type) {
-            case 'flow':
-              return (
-                <FlowPage
-                  blocks={page.subPages[currentPage].blocks}
-                  counter={counter}
-                  currentPage={currentPage}
-                  data={data}
-                  emitEvent={this.emitEvent}
-                  flowActions={this.flowActions}
-                  offEvent={this.offEvent}
-                  onEvent={this.onEvent}
-                  showDialog={this.showDialog}
-                  subPages={page.subPages}
-                />
-              );
-            case 'tabs':
-              return (
-                <TabsPage
-                  counter={counter}
-                  data={data}
-                  emitEvent={this.emitEvent}
-                  flowActions={this.flowActions}
-                  offEvent={this.offEvent}
-                  onEvent={this.onEvent}
-                  showDialog={this.showDialog}
-                  subPages={page.subPages}
-                />
-              );
-            case 'page':
-            default:
-              return (
-                <BlockList
-                  blocks={page.blocks}
-                  counter={counter}
-                  data={data}
-                  emitEvent={this.emitEvent}
-                  flowActions={this.flowActions}
-                  offEvent={this.offEvent}
-                  onEvent={this.onEvent}
-                  showDialog={this.showDialog}
-                />
-              );
-          }
-        })()}
+        {component}
         <PageDialog
           dialog={dialog}
           emitEvent={this.emitEvent}

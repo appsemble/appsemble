@@ -14,6 +14,12 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - App: Add `tabs` page type.
 - Server: `$created` and `$updated` are exposed in the API.
 
+### Changed
+
+- Server: Remove `/_/` routing. Apps are now served from `@organization/appname` and all `/_/`
+  routes serve from `/`. This allows for app names no longer being unique for the entirety of
+  Appsemble but instead within the organization.
+
 ### Fixed
 
 - App: Inverted Bulma colors are calculated properly.

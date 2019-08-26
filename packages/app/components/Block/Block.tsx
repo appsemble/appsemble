@@ -1,4 +1,3 @@
-// eslint-disable-next-line max-classes-per-file
 import { Events } from '@appsemble/sdk';
 import { App, Block as BlockType, BlockDefinition, Message } from '@appsemble/types';
 import { baseTheme, normalize } from '@appsemble/utils';
@@ -6,6 +5,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { RouteComponentProps } from 'react-router-dom';
 
+import { ShowDialogAction } from '../../types';
 import { prefixURL } from '../../utils/blockUtils';
 import { callBootstrap } from '../../utils/bootstrapper';
 import makeActions from '../../utils/makeActions';
@@ -14,10 +14,6 @@ import styles from './Block.css';
 const FA_URL = Array.from(document.styleSheets, sheet => sheet.href).find(
   href => href && href.startsWith(`${window.location.origin}/fa/`),
 );
-
-class BlockComponent<P, S = {}> extends React.Component<P, S> {
-  attached: boolean;
-}
 
 export interface BlockProps {
   app: App;
@@ -57,7 +53,7 @@ export interface BlockProps {
   /**
    * XXX: Define this type
    */
-  showDialog: Function;
+  showDialog: ShowDialogAction;
   showMessage(message: Message): void;
 }
 
@@ -67,13 +63,15 @@ export interface BlockProps {
  * A shadow DOM is created for the block. All CSS files for each block definition are added to the
  * shadow DOM. Then the bootstrap function of the block definition is called.
  */
-export default class Block extends BlockComponent<BlockProps & RouteComponentProps> {
+export default class Block extends React.Component<BlockProps & RouteComponentProps> {
   static defaultProps: Partial<BlockProps> = {
     actionCreators: null,
     blockDef: null,
     data: undefined,
     showDialog: null,
   };
+
+  attached: boolean;
 
   cleanups: Function[] = [];
 
@@ -128,7 +126,6 @@ export default class Block extends BlockComponent<BlockProps & RouteComponentPro
       block,
       history,
       showDialog,
-      events,
       actionCreators,
       flowActions,
     );

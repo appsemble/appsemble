@@ -1,24 +1,24 @@
-import { BootstrapParams } from '@appsemble/sdk';
+import { AppsembleBootstrapEvent, BootstrapFunction, BootstrapParams } from '@appsemble/sdk';
 import { BlockDefinition } from '@appsemble/types';
+import { Promisable } from 'type-fest';
 
 import { prefixURL } from './blockUtils';
 
-const bootstrappers = new Map();
-const resolvers = new Map();
-const loadedBlocks = new Set();
+const bootstrappers = new Map<string, BootstrapFunction>();
+const resolvers = new Map<string, ((fn: BootstrapFunction) => void)[]>();
+const loadedBlocks = new Set<string>();
 
 /**
  * Register a bootstrap function for a block.
  *
- * @param {HTMLScriptElement} scriptNode The script node on which to register the bootstrap
- * function.
- * @param {CustomEvent} event the event that was used to register the bootstrap function.
- * @param {string} blockDefId The id of the block definition for which a boostrap function is being
+ * @param scriptNode The script node on which to register the bootstrap function.
+ * @param event the event that was used to register the bootstrap function.
+ * @param blockDefId The id of the block definition for which a boostrap function is being
  * registered.
  */
 export function register(
   scriptNode: HTMLScriptElement,
-  event: CustomEvent,
+  event: AppsembleBootstrapEvent,
   blockDefId: string,
 ): void {
   const { document, fn } = event.detail;
@@ -43,12 +43,10 @@ export function register(
   if (!callbacks) {
     throw new Error('This block shouldn’t have been loaded. What’s going on?');
   }
-  callbacks.forEach((resolve: Function) => resolve(fn));
+  callbacks.forEach(resolve => resolve(fn));
 }
 
-function getBootstrap(
-  blockDefId: string,
-): Promise<(bootstrapParams: BootstrapParams) => Promise<void>> {
+function getBootstrap(blockDefId: string): Promisable<BootstrapFunction> {
   if (bootstrappers.has(blockDefId)) {
     return bootstrappers.get(blockDefId);
   }
@@ -77,7 +75,7 @@ export async function callBootstrap(
       .forEach(url => {
         const script = document.createElement('script');
         script.src = prefixURL({ type: blockDef.name, version: blockDef.version }, url);
-        script.addEventListener('AppsembleBootstrap', (event: CustomEvent) => {
+        script.addEventListener('AppsembleBootstrap', (event: AppsembleBootstrapEvent) => {
           event.stopImmediatePropagation();
           event.preventDefault();
           register(script, event, blockDef.name);

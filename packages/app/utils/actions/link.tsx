@@ -1,13 +1,9 @@
 import { LinkAction } from '@appsemble/sdk';
+import { LinkActionDefinition } from '@appsemble/types';
 import { compileFilters, normalize } from '@appsemble/utils';
 
-import { ActionDefinition, MakeActionParameters } from '../../types';
+import { MakeActionParameters } from '../../types';
 import mapValues from '../mapValues';
-
-interface LinkActionDefinition extends ActionDefinition<'link'> {
-  to: string;
-  parameters?: Record<string, any>;
-}
 
 export default function link({
   definition: { to, parameters = {} },

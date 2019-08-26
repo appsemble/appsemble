@@ -42,17 +42,14 @@ export function respond(request: Request): Promise<Response> {
   if (pathname.includes('.')) {
     return cacheFirst(request);
   }
-  // Requests made to the Appsemble API should not be cached.
-  if (pathname.startsWith('/_')) {
-    return fetch(request);
-  }
   // If the URL either consists of a normalized path, it should be remapped to the cached url which
-  // consists of the client URL path. E.g. '/my-app', '/my-app/home'.
-  const match = pathname.match(/^(\/[a-z\d-]+)(\/[a-z\d/-]+)*$/);
+  // consists of the client URL path. E.g. '@my-org/my-app', '@my-org/my-app/home'.
+  const match = pathname.match(/^(\/@[a-z][a-z\d-]*[a-z\d]\/[a-z\d-]+[a-z\d])(\/[a-z\d/-]+)*$/);
   if (match) {
     // eslint-disable-next-line compat/compat
     return requestFirst(new Request(`${origin}${match[1]}`));
   }
+
   // This is unhandled. Let’s just use the default browser behaviour to be safe.
   return fetch(request);
 }
