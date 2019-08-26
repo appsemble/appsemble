@@ -1,3 +1,4 @@
+import { Authentication } from '@appsemble/types';
 import classNames from 'classnames';
 import * as React from 'react';
 import { FormattedMessage } from 'react-intl';
@@ -6,13 +7,6 @@ import Form from '../Form';
 import Input from '../Input';
 import styles from './EmailLogin.css';
 import messages from './messages';
-
-interface Authentication {
-  url: string;
-  refreshURL: string;
-  clientId: string;
-  scope: string[];
-}
 
 interface EmailLoginValues {
   username: string;

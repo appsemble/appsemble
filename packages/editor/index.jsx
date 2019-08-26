@@ -1,6 +1,5 @@
 import './index.css';
 
-import getDb from '@appsemble/utils/getDB';
 import { init } from '@sentry/browser';
 import React from 'react';
 import ReactDOM from 'react-dom';
@@ -10,12 +9,13 @@ import thunk from 'redux-thunk';
 
 import * as actions from './actions';
 import App from './components/App';
+import getDB from './utils/getDB';
 
 const { sentryDsn } = window.settings;
 init({ dsn: sentryDsn });
 
 async function getStore() {
-  const idb = await getDb({ id: 'appsemble-editor' });
+  const idb = await getDB();
 
   const composeEnhancers =
     (process.env.NODE_ENV !== 'production' && window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__) ||
