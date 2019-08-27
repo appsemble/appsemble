@@ -4,7 +4,7 @@ import { ThunkAction } from 'redux-thunk';
 const OPEN = 'menu/OPEN';
 const CLOSE = 'menu/CLOSE';
 
-export interface MenuState {
+interface MenuState {
   isOpen: boolean;
 }
 

@@ -502,10 +502,14 @@ export interface Page {
    */
   actions?: Record<string, ActionDefinition>;
 
+  blocks: Block[];
+
   /**
    * The global theme for the page.
    */
   theme: Theme;
+
+  subPages: Pick<Page, 'blocks' | 'name'>[];
 }
 
 export interface App {

@@ -67,7 +67,6 @@ export default class Block extends React.Component<BlockProps & RouteComponentPr
   static defaultProps: Partial<BlockProps> = {
     actionCreators: null,
     blockDef: null,
-    data: undefined,
     showDialog: null,
   };
 

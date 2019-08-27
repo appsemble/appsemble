@@ -18,7 +18,7 @@ const LOGIN_SUCCESS = 'user/LOGIN_SUCCESS';
 const LOGOUT = 'user/LOGOUT';
 let timeoutId: NodeJS.Timeout;
 
-export interface UserState {
+interface UserState {
   initialized: boolean;
   user: User;
 }
