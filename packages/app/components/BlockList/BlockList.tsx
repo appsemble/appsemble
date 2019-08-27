@@ -1,7 +1,8 @@
-import { Block as BlockType, Message } from '@appsemble/types';
-import React, { ReactNode } from 'react';
+import { Block as BlockType } from '@appsemble/types';
+import React from 'react';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 
+import { ShowDialogAction } from '../../types';
 import Block from '../Block';
 import styles from './BlockList.css';
 
@@ -14,7 +15,7 @@ export interface BlockListProps {
   flowActions: {};
   offEvent(name: string, callback: Function): void;
   onEvent(name: string, callback: Function): void;
-  showDialog(message: Message): void;
+  showDialog: ShowDialogAction;
   transitions?: boolean;
 }
 
@@ -24,7 +25,7 @@ export default class BlockList extends React.Component<BlockListProps> {
     data: undefined,
   };
 
-  render(): ReactNode {
+  render(): React.ReactNode {
     const {
       blocks,
       counter,
