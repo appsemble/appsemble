@@ -102,6 +102,19 @@ export function builder(yargs) {
       desc:
         'The external host on which the server is available. This should include the protocol, hostname, and optionally the port.',
       default: 'http://localhost:9999',
+    })
+    .option('ssl', {
+      desc:
+        'Enable SSL. This is a development flag. It is not the recommended way to use SSL in production.',
+      implies: ['ssl-key', 'ssl-cert'],
+    })
+    .option('ssl-key', {
+      desc: 'The SSL key to use, either as a string or as a file path.',
+      implies: ['ssl', 'ssl-cert'],
+    })
+    .option('ssl-cert', {
+      desc: 'The SSL certificate to use, either as a string or as a file path.',
+      implies: ['ssl', 'ssl-key'],
     });
 }
 
