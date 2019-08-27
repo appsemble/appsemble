@@ -3,13 +3,14 @@ import throttle from 'lodash.throttle';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
-import { CSSTransition, TransitionGroup } from 'react-transition-group';
 
 import checkScope from '../../utils/checkScope';
 import makeActions from '../../utils/makeActions';
-import Block from '../Block';
+import BlockList from '../BlockList';
+import FlowPage from '../FlowPage';
 import Login from '../Login';
 import PageDialog from '../PageDialog';
+import TabsPage from '../TabsPage';
 import TitleBar from '../TitleBar';
 import messages from './messages';
 import styles from './Page.css';
@@ -23,6 +24,7 @@ export default class Page extends React.Component {
     getBlockDefs: PropTypes.func.isRequired,
     hasErrors: PropTypes.bool.isRequired,
     history: PropTypes.shape().isRequired,
+    match: PropTypes.shape().isRequired,
     /**
      * The page definition to render
      */
@@ -47,9 +49,9 @@ export default class Page extends React.Component {
       async data => {
         const { currentPage } = this.state;
         const { page } = this.props;
-        const { flowPages } = page;
+        const { subPages } = page;
 
-        if (currentPage + 1 === flowPages.length) {
+        if (currentPage + 1 === subPages.length) {
           this.actions.onFlowFinish.dispatch(data);
           return data;
         }
@@ -108,27 +110,30 @@ export default class Page extends React.Component {
     this.applyBulmaThemes(app, page);
     this.setupEvents();
 
-    if (page.type === 'flow') {
-      const actions = makeActions(
-        { actions: { onFlowFinish: {}, onFlowCancel: {} } },
-        app,
-        page,
-        history,
-        this.showDialog,
-        {
-          emit: this.emitEvent,
-          off: this.offEvent,
-          on: this.onEvent,
-        },
-        {},
-        this.flowActions,
-      );
+    if (page.type === 'tabs' || page.type === 'flow') {
+      if (page.type === 'flow') {
+        const actions = makeActions(
+          { actions: { onFlowFinish: {}, onFlowCancel: {} } },
+          app,
+          page,
+          history,
+          this.showDialog,
+          {
+            emit: this.emitEvent,
+            off: this.offEvent,
+            on: this.onEvent,
+          },
+          {},
+          this.flowActions,
+        );
 
-      this.actions = actions;
+        this.actions = actions;
+      }
+
       getBlockDefs(
         [
           ...new Set(
-            page.flowPages
+            page.subPages
               .map(f => f.blocks)
               .flat()
               .map(b => JSON.stringify({ type: b.type, version: b.version })),
@@ -157,12 +162,22 @@ export default class Page extends React.Component {
       this.teardownEvents();
       this.setupEvents();
 
-      if (page.type === 'flow') {
-        this.applyBulmaThemes(app, page.flowPages[currentPage]);
+      if (page.type === 'flow' || page.type === 'tabs') {
+        getBlockDefs(
+          [
+            ...new Set(
+              page.subPages
+                .map(f => f.blocks)
+                .flat()
+                .map(b => JSON.stringify({ type: b.type, version: b.version })),
+            ),
+          ].map(block => JSON.parse(block)),
+        );
       } else {
-        this.applyBulmaThemes(app, page);
         getBlockDefs(page.blocks);
       }
+
+      this.applyBulmaThemes(app, page);
     }
   }
 
@@ -233,83 +248,64 @@ export default class Page extends React.Component {
       );
     }
 
+    let component;
     switch (type) {
       case 'flow':
-        return (
-          <>
-            <TitleBar>{page.name}</TitleBar>
-            <div className={styles.dotContainer}>
-              {page.flowPages.map((sub, index) => (
-                <div
-                  key={sub.name}
-                  className={`${styles.dot} ${index < currentPage && styles.previous} ${index ===
-                    currentPage && styles.active}`}
-                />
-              ))}
-            </div>
-            <TransitionGroup className={styles.transitionGroup}>
-              {page.flowPages[currentPage].blocks.map((block, index) => (
-                <CSSTransition
-                  // Since blocks are in a static list, using the index as a key should be fine.
-                  // eslint-disable-next-line react/no-array-index-key
-                  key={`${currentPage}.${index}.${counter}`}
-                  classNames={{
-                    enter: styles.pageEnter,
-                    enterActive: styles.pageEnterActive,
-                    exit: styles.pageExit,
-                    exitActive: styles.pageExitActive,
-                  }}
-                  timeout={300}
-                >
-                  <div className={styles.transitionWrapper}>
-                    <Block
-                      block={block}
-                      className="foo"
-                      data={data}
-                      emitEvent={this.emitEvent}
-                      flowActions={this.flowActions}
-                      offEvent={this.offEvent}
-                      onEvent={this.onEvent}
-                      showDialog={this.showDialog}
-                    />
-                  </div>
-                </CSSTransition>
-              ))}
-            </TransitionGroup>
-            <PageDialog
-              dialog={dialog}
-              emitEvent={this.emitEvent}
-              offEvent={this.offEvent}
-              onEvent={this.onEvent}
-            />
-          </>
+        component = (
+          <FlowPage
+            blocks={page.subPages[currentPage].blocks}
+            counter={counter}
+            currentPage={currentPage}
+            data={data}
+            emitEvent={this.emitEvent}
+            flowActions={this.flowActions}
+            offEvent={this.offEvent}
+            onEvent={this.onEvent}
+            showDialog={this.showDialog}
+            subPages={page.subPages}
+          />
         );
-      case 'page':
+        break;
+      case 'tabs':
+        component = (
+          <TabsPage
+            counter={counter}
+            data={data}
+            emitEvent={this.emitEvent}
+            flowActions={this.flowActions}
+            offEvent={this.offEvent}
+            onEvent={this.onEvent}
+            showDialog={this.showDialog}
+            subPages={page.subPages}
+          />
+        );
+        break;
       default:
-        return (
-          <>
-            <TitleBar>{page.name}</TitleBar>
-            {page.blocks.map((block, index) => (
-              <Block
-                // As long as blocks are in a static list, using the index as a key should be fine.
-                // eslint-disable-next-line react/no-array-index-key
-                key={`${index}.${counter}`}
-                block={block}
-                emitEvent={this.emitEvent}
-                flowActions={this.flowActions}
-                offEvent={this.offEvent}
-                onEvent={this.onEvent}
-                showDialog={this.showDialog}
-              />
-            ))}
-            <PageDialog
-              dialog={dialog}
-              emitEvent={this.emitEvent}
-              offEvent={this.offEvent}
-              onEvent={this.onEvent}
-            />
-          </>
+        component = (
+          <BlockList
+            blocks={page.blocks}
+            counter={counter}
+            data={data}
+            emitEvent={this.emitEvent}
+            flowActions={this.flowActions}
+            offEvent={this.offEvent}
+            onEvent={this.onEvent}
+            showDialog={this.showDialog}
+          />
         );
     }
+
+    return (
+      <>
+        <TitleBar>{page.name}</TitleBar>
+        {component}
+        <PageDialog
+          dialog={dialog}
+          emitEvent={this.emitEvent}
+          offEvent={this.offEvent}
+          onEvent={this.onEvent}
+        />
+      </>
+    );
   }
 }

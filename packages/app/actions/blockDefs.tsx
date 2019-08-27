@@ -9,7 +9,7 @@ const GET_START = 'blockDefs/GET_START';
 const GET_SUCCESS = 'blockDefs/GET_SUCCESS';
 const GET_ERROR = 'blockDefs/GET_ERROR';
 
-export interface BlockDefState {
+interface BlockDefState {
   blockDefs: Record<string, BlockDefinition>;
   errored: Set<string>;
   pending: Block[];

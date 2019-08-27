@@ -144,6 +144,11 @@ export interface Block<P = any, A = {}> {
   version: string;
 
   /**
+   * The theme of the block.
+   */
+  theme: Theme;
+
+  /**
    * A free form mapping of named paramters.
    *
    * The exact meaning of the parameters depends on the block type.
@@ -496,17 +501,31 @@ export interface Page {
    * A mapping of actions that can be fired by the page to action handlers.
    */
   actions?: Record<string, ActionDefinition>;
+
+  blocks: Block[];
+
+  /**
+   * The global theme for the page.
+   */
+  theme: Theme;
+
+  subPages: Pick<Page, 'blocks' | 'name'>[];
 }
 
 export interface App {
   authentication: Authentication[];
-  theme: Theme;
+
   /**
    * The unique identifier for the app.
    *
    * This value will be generated automatically by the API.
    */
-  id: number;
+  id?: number;
+
+  /**
+   * The id of the organization to which this app belongs.
+   */
+  organizationId?: string;
 
   /**
    * The navigation type to use.
@@ -524,4 +543,9 @@ export interface App {
    * Resource definitions that may be used by the app.
    */
   resources: Record<string, Resource>;
+
+  /**
+   * The global theme for the app.
+   */
+  theme: Theme;
 }

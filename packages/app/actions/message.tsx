@@ -6,7 +6,7 @@ import { ThunkAction } from 'redux-thunk';
 const PUSH = 'message/PUSH';
 const REMOVE = 'message/REMOVE';
 
-export interface MessageState {
+interface MessageState {
   queue: UniqueMessage[];
   counter: number;
 }
