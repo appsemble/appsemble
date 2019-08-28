@@ -8,6 +8,6 @@
     "@appsemble/sdk": "^0.8.4",
     "classnames": "^2.2.6",
     "react": "^16.9.0",
-    "react-intl": "^3.1.9"
+    "react-intl": "^3.1.13"
   }
 }
