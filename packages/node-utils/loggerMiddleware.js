@@ -6,7 +6,7 @@ import { logger } from './logger';
 export default function loggerMiddleware() {
   return async (ctx, next) => {
     const start = Date.now();
-    logger.info(`${ctx.method} ${ctx.url}`);
+    logger.info(`${ctx.method} ${ctx.url} — ${ctx.ip}`);
 
     function message(status, msg) {
       const formattedMessage = `${ctx.method} ${ctx.url} ${status} ${msg} ${Date.now() - start}ms`;

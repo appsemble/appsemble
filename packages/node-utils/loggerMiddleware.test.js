@@ -11,6 +11,8 @@ let request;
 beforeEach(() => {
   jest.spyOn(logger, 'info').mockImplementation(() => {});
   jest.spyOn(logger, 'log').mockImplementation(() => {});
+  jest.spyOn(logger, 'warn').mockImplementation(() => {});
+  jest.spyOn(logger, 'error').mockImplementation(() => {});
   jest.spyOn(Date, 'now').mockImplementation(() => now);
   now = 0;
   app = new Koa();
@@ -21,7 +23,7 @@ beforeEach(() => {
 
 it('should log requests', async () => {
   await request.get('/pizza');
-  expect(logger.info).toHaveBeenCalledWith('GET /pizza');
+  expect(logger.info).toHaveBeenCalledWith('GET /pizza — ::ffff:127.0.0.1');
 });
 
 it('should log success responses as info', async () => {
@@ -30,7 +32,7 @@ it('should log success responses as info', async () => {
     ctx.status = 200;
   });
   await request.get('/fries');
-  expect(logger.log).toHaveBeenCalledWith('info', 'GET /fries 200 OK 1ms');
+  expect(logger.info).toHaveBeenCalledWith('GET /fries 200 OK 1ms');
 });
 
 it('should log bad responses as warn', async () => {
@@ -39,7 +41,7 @@ it('should log bad responses as warn', async () => {
     ctx.status = 400;
   });
   await request.get('/burrito');
-  expect(logger.log).toHaveBeenCalledWith('warn', 'GET /burrito 400 Bad Request 3ms');
+  expect(logger.warn).toHaveBeenCalledWith('GET /burrito 400 Bad Request 3ms');
 });
 
 it('should log error responses as error', async () => {
@@ -48,7 +50,7 @@ it('should log error responses as error', async () => {
     ctx.status = 503;
   });
   await request.get('/wrap');
-  expect(logger.log).toHaveBeenCalledWith('error', 'GET /wrap 503 Service Unavailable 53ms');
+  expect(logger.error).toHaveBeenCalledWith('GET /wrap 503 Service Unavailable 53ms');
 });
 
 it('should log errors as internal server errors and rethrow', async () => {
@@ -60,7 +62,7 @@ it('should log errors as internal server errors and rethrow', async () => {
   });
   await request.get('/taco');
   expect(spy).toHaveBeenCalled();
-  expect(logger.log).toHaveBeenCalledWith('error', 'GET /taco 500 Internal Server Error 86ms');
+  expect(logger.error).toHaveBeenCalledWith('GET /taco 500 Internal Server Error 86ms');
 });
 
 it('should append the response length if it is defined', async () => {
@@ -70,5 +72,5 @@ it('should append the response length if it is defined', async () => {
     ctx.body = '{}';
   });
   await request.get('/fries');
-  expect(logger.log).toHaveBeenCalledWith('info', 'GET /fries 200 OK 1ms');
+  expect(logger.info).toHaveBeenCalledWith('GET /fries 200 OK 1ms');
 });
