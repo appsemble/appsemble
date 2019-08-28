@@ -1,6 +1,6 @@
+/** @jsx h */
 import classNames from 'classnames';
-import React from 'react';
-import { FormattedMessage } from 'react-intl';
+import { Component, Fragment, h, VNode } from 'preact';
 
 import { InputProps } from '../../../block';
 import styles from './FileEntry.css';
@@ -35,7 +35,7 @@ function getDerivedStateFromProps(
   };
 }
 
-export default class FileEntry extends React.Component<FileEntryProps> {
+export default class FileEntry extends Component<FileEntryProps> {
   static defaultProps: Partial<FileEntryProps> = {
     value: null,
   };
@@ -44,28 +44,20 @@ export default class FileEntry extends React.Component<FileEntryProps> {
 
   static getDerivedStateFromProps = getDerivedStateFromProps;
 
-  inputRef = (node: HTMLInputElement) => {
-    if (node == null) {
-      return;
+  onSelect = async (event: Event) => {
+    const {
+      onChange,
+      field: { maxWidth, maxHeight, quality },
+    } = this.props;
+    let value: Blob = (event.target as HTMLInputElement).files[0];
+    // eslint-disable-next-line no-param-reassign
+    (event.target as HTMLInputElement).value = null;
+
+    if (value && value.type.match('image/*') && (maxWidth || maxHeight || quality)) {
+      value = await this.resize(value, maxWidth, maxHeight, quality / 100);
     }
 
-    // XXX A native event listener is used, to prevent the same event to be fired twice because of
-    // the shadow DOM hackery.
-    node.addEventListener('change', async event => {
-      const {
-        onChange,
-        field: { maxWidth, maxHeight, quality },
-      } = this.props;
-      let value: Blob = (event.target as HTMLInputElement).files[0];
-      // eslint-disable-next-line no-param-reassign
-      node.value = null;
-
-      if (value && value.type.match('image/*') && (maxWidth || maxHeight || quality)) {
-        value = await this.resize(value, maxWidth, maxHeight, quality / 100);
-      }
-
-      onChange(event, value);
-    });
+    onChange(event, value);
   };
 
   resize = async (
@@ -109,10 +101,10 @@ export default class FileEntry extends React.Component<FileEntryProps> {
   onRemove = () => {
     const { onChange, name } = this.props;
 
-    onChange({ target: { name } }, null);
+    onChange(({ target: { name } } as any) as Event, null);
   };
 
-  render(): JSX.Element {
+  render(): VNode {
     const { field, name } = this.props;
     const { url } = this.state;
 
@@ -122,14 +114,14 @@ export default class FileEntry extends React.Component<FileEntryProps> {
       <div className={classNames('file', styles.root)}>
         <label className="file-label" htmlFor={field.name}>
           <input
-            ref={this.inputRef}
             className={classNames('file-input', styles.input)}
             id={field.name}
             name={name}
+            onChange={this.onSelect}
             type="file"
           />
           {url ? (
-            <>
+            <Fragment>
               <figure className={classNames('image', styles.image)}>
                 <img alt={title} className={styles.img} src={url} />
               </figure>
@@ -142,12 +134,10 @@ export default class FileEntry extends React.Component<FileEntryProps> {
                   <i className="fas fa-times" />
                 </span>
               </button>
-            </>
+            </Fragment>
           ) : (
             <span className={classNames('image is-128x128', styles.empty)}>
-              <span className="file-label">
-                <FormattedMessage {...messages.clickAction} />
-              </span>
+              <span className="file-label">{messages.clickAction}</span>
             </span>
           )}
         </label>

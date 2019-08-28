@@ -24,16 +24,7 @@ export interface Field {
   type?: 'integer';
 }
 
-interface FakeTarget extends Partial<EventTarget> {
-  name?: string;
-  value?: string;
-}
-
-export interface FakeEvent<E extends FakeTarget = FakeTarget> {
-  target: E;
-}
-
-export interface InputProps<T, E extends FakeTarget = FakeTarget> {
+export interface InputProps<T> {
   /**
    * A field error object.
    */
@@ -47,7 +38,7 @@ export interface InputProps<T, E extends FakeTarget = FakeTarget> {
   /**
    * A callback for when the value changes.
    */
-  onChange: (event: FakeEvent<E>, value: T) => void;
+  onChange: (event: Event, value: T) => void;
 
   /**
    * The current value.

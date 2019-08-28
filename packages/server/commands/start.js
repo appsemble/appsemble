@@ -1,4 +1,4 @@
-import { logger } from '@appsemble/node-utils';
+import { logger, loggerMiddleware } from '@appsemble/node-utils';
 import { asciiLogo } from '@appsemble/utils';
 import * as Sentry from '@sentry/node';
 import http from 'http';
@@ -6,7 +6,6 @@ import http2 from 'http2';
 import Koa from 'koa';
 
 import api from '../api';
-import loggerMiddleware from '../middleware/logger';
 import migrations from '../migrations';
 import pkg from '../package.json';
 import configureStatic from '../utils/configureStatic';
