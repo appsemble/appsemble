@@ -3,7 +3,7 @@ import classNames from 'classnames';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import { Actions, FakeEvent, Parameters } from '../../../block';
+import { Actions, FakeEvent, Field, Parameters } from '../../../block';
 import BooleanInput from '../BooleanInput';
 import EnumInput from '../EnumInput';
 import FileInput from '../FileInput';
@@ -17,11 +17,15 @@ type FormBlockProps = BlockProps<Parameters, Actions>;
 
 type Values = Record<string, any>;
 
+type Validator = (field: Field, event: FakeEvent, value: any) => boolean;
+
 interface FormBlockState {
   errors: {
     [name: string]: string;
   };
-  pristine: boolean;
+  validity: {
+    [name: string]: boolean;
+  };
   submitting: boolean;
   values: Values;
 }
@@ -37,13 +41,40 @@ const inputs = {
   bool: BooleanInput,
 };
 
+const validateInput: Validator = (_field, event) => {
+  return (event.target as HTMLInputElement).validity.valid;
+};
+
+const validators: { [name: string]: Validator } = {
+  file: validateInput,
+  geocoordinates: (_, _event, value: { longitude: number; latitude: number }) => {
+    return !!(value.latitude && value.longitude);
+  },
+  hidden: (): boolean => true,
+  string: validateInput,
+  number: validateInput,
+  integer: validateInput,
+  boolean: () => true,
+  bool: () => true,
+};
+
 /**
  * Render Material UI based a form based on a JSON schema
  */
 export default class FormBlock extends React.Component<FormBlockProps, FormBlockState> {
   state: FormBlockState = {
     errors: {},
-    pristine: true,
+    validity: {
+      ...this.props.block.parameters.fields.reduce<{ [name: string]: boolean }>(
+        (acc, { name, defaultValue, required, type }) => {
+          acc[name] =
+            (!required && !defaultValue) ||
+            ((type as any) === 'boolean' || (type as any) === 'bool');
+          return acc;
+        },
+        {},
+      ),
+    },
     submitting: false,
     values: {
       ...this.props.block.parameters.fields.reduce<Values>(
@@ -57,13 +88,35 @@ export default class FormBlock extends React.Component<FormBlockProps, FormBlock
     },
   };
 
+  validateField = (event: FakeEvent, value: any): boolean => {
+    const {
+      block: {
+        parameters: { fields },
+      },
+    } = this.props;
+
+    const { name } = event.target as HTMLInputElement;
+    const field = fields.find(f => f.name === name);
+
+    if (!field.required) {
+      // Non-required fields are always considered valid.
+      return true;
+    }
+
+    return validators[field.type](field, event, value);
+  };
+
   onChange = (event: FakeEvent, value: any) => {
-    this.setState(({ values }) => ({
-      pristine: false,
+    const { name } = event.target as HTMLInputElement;
+    const valid = this.validateField(event, value);
+
+    this.setState(({ values, errors, validity }) => ({
       values: {
         ...values,
-        [event.target.name]: value,
+        [name]: value,
       },
+      errors: { ...errors, [name]: (!valid).toString() },
+      validity: { ...validity, [name]: valid },
     }));
   };
 
@@ -101,7 +154,7 @@ export default class FormBlock extends React.Component<FormBlockProps, FormBlock
 
   render(): JSX.Element {
     const { block } = this.props;
-    const { errors, pristine, submitting, values } = this.state;
+    const { errors, validity, submitting, values } = this.state;
 
     return (
       <form className={styles.root} noValidate onSubmit={this.onSubmit}>
@@ -143,7 +196,11 @@ export default class FormBlock extends React.Component<FormBlockProps, FormBlock
         <div className={styles.buttonWrapper}>
           <button
             className={classNames('button', 'is-primary', styles.submit)}
-            disabled={pristine || submitting || Object.keys(errors).length !== 0}
+            disabled={
+              !Object.values(validity).every(v => v) ||
+              submitting ||
+              Object.keys(errors).length !== 0
+            }
             type="submit"
           >
             <FormattedMessage {...messages.submit} />
