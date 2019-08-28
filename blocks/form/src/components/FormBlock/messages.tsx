@@ -1,6 +1,4 @@
-import { defineMessages } from 'react-intl';
-
-export default defineMessages({
+export default {
   submit: 'Submit',
-  unsupported: 'Field “{name}” of type “{type}” is not supported.',
-});
+  unsupported: 'The field of this type is not supported',
+};

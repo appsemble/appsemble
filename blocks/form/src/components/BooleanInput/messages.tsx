@@ -1,5 +1,3 @@
-import { defineMessages } from 'react-intl';
-
-export default defineMessages({
+export default {
   invalid: 'This value is invalid',
-});
+};
