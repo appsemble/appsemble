@@ -3,6 +3,6 @@
   "exclude": [],
   "compilerOptions": {
     "lib": ["dom", "esnext"],
-    "types": ["css-modules", "node"]
+    "types": ["jest"]
   }
 }

@@ -1,4 +1,4 @@
-import { withBlock } from '@appsemble/react';
+import { withBlock } from '@appsemble/preact';
 
 import GeoCoordinatesInput from './GeoCoordinatesInput';
 
