@@ -50,6 +50,7 @@ export default (state = initialState, action: BlockDefAction): BlockDefState => 
           ...state.blockDefs,
           [`${action.blockDef.name}@${action.blockDef.version}`]: action.blockDef,
         },
+        pending: [],
       };
     case GET_ERROR:
       return {
