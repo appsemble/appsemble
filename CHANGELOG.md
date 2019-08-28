@@ -11,6 +11,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
+- App: Add `tabs` page type.
 - Server: `$created` and `$updated` are exposed in the API.
 
 ### Changed

@@ -1,15 +1,17 @@
-import { logger } from '@appsemble/node-utils';
+import { logger, loggerMiddleware } from '@appsemble/node-utils';
 import { asciiLogo } from '@appsemble/utils';
 import * as Sentry from '@sentry/node';
+import http from 'http';
+import http2 from 'http2';
 import Koa from 'koa';
 
 import api from '../api';
-import loggerMiddleware from '../middleware/logger';
 import migrations from '../migrations';
 import pkg from '../package.json';
 import configureStatic from '../utils/configureStatic';
 import createServer from '../utils/createServer';
 import migrate from '../utils/migrate';
+import readFileOrString from '../utils/readFileOrString';
 import setupModels, { handleDbException } from '../utils/setupModels';
 import databaseBuilder from './builder/database';
 
@@ -148,8 +150,17 @@ export async function handler(argv, { webpackConfigs, syncDB } = {}) {
   }
 
   await createServer({ app, argv, db, grantConfig, secret: argv.oauthSecret });
+  const httpServer = argv.ssl
+    ? http2.createSecureServer(
+        {
+          key: await readFileOrString(argv.sslKey),
+          cert: await readFileOrString(argv.sslCert),
+        },
+        app.callback(),
+      )
+    : http.createServer(app.callback());
 
-  app.listen(argv.port || PORT, '0.0.0.0', () => {
+  httpServer.listen(argv.port || PORT, '0.0.0.0', () => {
     logger.info(asciiLogo);
     logger.info(api(argv).info.description);
   });

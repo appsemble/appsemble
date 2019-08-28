@@ -12,12 +12,10 @@
     "output": "dist"
   },
   "dependencies": {
-    "@appsemble/react": "0.8.4",
+    "@appsemble/preact": "0.8.4",
     "classnames": "^2.2.6",
     "leaflet": "^1.5.1",
-    "react": "^16.9.0",
-    "react-dom": "^16.9.0",
-    "react-intl": "^3.1.9",
+    "preact": "^10.0.0-rc.1",
     "read-blob": "^1.1.0"
   }
 }

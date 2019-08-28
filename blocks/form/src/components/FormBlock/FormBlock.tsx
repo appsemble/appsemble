@@ -1,9 +1,9 @@
-import { BlockProps } from '@appsemble/react';
+/** @jsx h */
+import { BlockProps } from '@appsemble/preact';
 import classNames from 'classnames';
-import React from 'react';
-import { FormattedMessage } from 'react-intl';
+import { Component, h, VNode } from 'preact';
 
-import { Actions, FakeEvent, Field, Parameters } from '../../../block';
+import { Actions, Field, Parameters } from '../../../block';
 import BooleanInput from '../BooleanInput';
 import EnumInput from '../EnumInput';
 import FileInput from '../FileInput';
@@ -17,7 +17,7 @@ type FormBlockProps = BlockProps<Parameters, Actions>;
 
 type Values = Record<string, any>;
 
-type Validator = (field: Field, event: FakeEvent, value: any) => boolean;
+type Validator = (field: Field, event: Event, value: any) => boolean;
 
 interface FormBlockState {
   errors: {
@@ -61,7 +61,7 @@ const validators: { [name: string]: Validator } = {
 /**
  * Render Material UI based a form based on a JSON schema
  */
-export default class FormBlock extends React.Component<FormBlockProps, FormBlockState> {
+export default class FormBlock extends Component<FormBlockProps, FormBlockState> {
   state: FormBlockState = {
     errors: {},
     validity: {
@@ -88,7 +88,7 @@ export default class FormBlock extends React.Component<FormBlockProps, FormBlock
     },
   };
 
-  validateField = (event: FakeEvent, value: any): boolean => {
+  validateField = (event: Event, value: any): boolean => {
     const {
       block: {
         parameters: { fields },
@@ -106,21 +106,21 @@ export default class FormBlock extends React.Component<FormBlockProps, FormBlock
     return validators[field.type](field, event, value);
   };
 
-  onChange = (event: FakeEvent, value: any) => {
+  onChange = (event: Event, value: any) => {
     const { name } = event.target as HTMLInputElement;
     const valid = this.validateField(event, value);
 
-    this.setState(({ values, errors, validity }) => ({
+    this.setState(({ errors, validity, values }) => ({
       values: {
         ...values,
-        [name]: value,
+        [(event.target as HTMLInputElement).name]: value,
       },
       errors: { ...errors, [name]: (!valid).toString() },
       validity: { ...validity, [name]: valid },
     }));
   };
 
-  onSubmit = (event: React.FormEvent) => {
+  onSubmit = (event: Event) => {
     event.preventDefault();
 
     this.setState(({ submitting, values }, { actions }) => {
@@ -152,7 +152,7 @@ export default class FormBlock extends React.Component<FormBlockProps, FormBlock
     });
   };
 
-  render(): JSX.Element {
+  render(): VNode {
     const { block } = this.props;
     const { errors, validity, submitting, values } = this.state;
 
@@ -171,20 +171,11 @@ export default class FormBlock extends React.Component<FormBlockProps, FormBlock
             );
           }
           if (!Object.prototype.hasOwnProperty.call(inputs, field.type)) {
-            return (
-              <FormattedMessage
-                key={field.name}
-                values={{
-                  name: field.name,
-                  type: field.type,
-                }}
-                {...messages.unsupported}
-              />
-            );
+            return messages.unsupported;
           }
-          const Component = inputs[field.type];
+          const Comp = inputs[field.type];
           return (
-            <Component
+            <Comp
               key={field.name}
               error={errors[field.name]}
               field={field}
@@ -203,7 +194,7 @@ export default class FormBlock extends React.Component<FormBlockProps, FormBlock
             }
             type="submit"
           >
-            <FormattedMessage {...messages.submit} />
+            {messages.submit}
           </button>
         </div>
       </form>

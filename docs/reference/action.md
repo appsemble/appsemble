@@ -23,9 +23,26 @@ used as the `type`.
 
 The link action can be used to redirect the user to other pages.
 
-| Parameter | Required | Description                      |
-| --------- | -------- | -------------------------------- |
-| to        | true     | The name of the page to link to. |
+| Parameter | Required | Description                                                                |
+| --------- | -------- | -------------------------------------------------------------------------- |
+| to        | true     | The name of the page to link to. Subpages can be referred to using arrays. |
+
+### Example
+
+```yaml
+type: link
+to: Example Page
+```
+
+```yaml
+type: link
+to:
+  - Example Page
+  - Sub Page
+
+# Alternatively
+to: [Example Page, Sub Page]
+```
 
 ## `log`
 
@@ -39,23 +56,21 @@ required.
 
 ## `flow.next`
 
-On [flow pages](page#flowpages), proceed to the next page if it is present. Otherwise, the flow is
+On [flow pages](page#subpages), proceed to the next page if it is present. Otherwise, the flow is
 considered to be complete and [`flow.finish`](#flowfinish) will be called instead.
 
 ## `flow.back`
 
-On [flow pages](page#flowpages), return to the previous page if it is present. If this is called on
+On [flow pages](page#subpages), return to the previous page if it is present. If this is called on
 the first page, nothing happens.
 
 ## `flow.finish`
 
-On [flow pages](page#flowpages), triggers the [`onFlowFinish`](page#onflowfinish) action on the
-page.
+On [flow pages](page#subpages), triggers the [`onFlowFinish`](page#onflowfinish) action on the page.
 
 ## `flow.cancel`
 
-On [flow pages](page#flowpages), triggers the [`onFlowCancel`](page#onflowfinish) action on the
-page.
+On [flow pages](page#subpages), triggers the [`onFlowCancel`](page#onflowfinish) action on the page.
 
 ## `resource`
 

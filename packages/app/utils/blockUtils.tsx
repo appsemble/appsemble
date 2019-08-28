@@ -7,10 +7,10 @@ export function normalizeBlockName(name: string): string {
   return `@appsemble/${name}`;
 }
 
-export function blockToString({ type, version }: Block): string {
+export function blockToString({ type, version }: Pick<Block, 'type' | 'version'>): string {
   return `${normalizeBlockName(type)}@${version}`;
 }
 
-export function prefixURL(block: Block, url: string): string {
+export function prefixURL(block: Pick<Block, 'type' | 'version'>, url: string): string {
   return `/api/blocks/${normalizeBlockName(block.type)}/versions/${block.version}/${url}`;
 }

@@ -1,16 +1,61 @@
+import { Events } from '@appsemble/sdk';
+import { App, Block as BlockType, BlockDefinition, Message } from '@appsemble/types';
 import { baseTheme, normalize } from '@appsemble/utils';
-import PropTypes from 'prop-types';
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { RouteComponentProps } from 'react-router-dom';
 
+import { ShowDialogAction } from '../../types';
 import { prefixURL } from '../../utils/blockUtils';
 import { callBootstrap } from '../../utils/bootstrapper';
 import makeActions from '../../utils/makeActions';
 import styles from './Block.css';
 
-const FA_URL = Array.from(document.styleSheets, sheet => sheet.href).find(href =>
-  href?.startsWith(`${window.location.origin}/fa/`),
+const FA_URL = Array.from(document.styleSheets, sheet => sheet.href).find(
+  href => href && href.startsWith(`${window.location.origin}/fa/`),
 );
+
+export interface BlockProps {
+  app: App;
+  data?: any;
+
+  /**
+   * A function for emitting an event.
+   */
+  emitEvent: Events['emit'];
+
+  /**
+   * A function to deregister an event listener.
+   */
+  offEvent: Events['off'];
+
+  /**
+   * A function to register an event listener.
+   */
+  onEvent: Events['on'];
+
+  /**
+   * XXX: Define this type
+   */
+  actionCreators: any;
+
+  /**
+   * The block to render.
+   */
+  block: BlockType;
+  blockDef: BlockDefinition;
+
+  /**
+   * XXX: Define this type
+   */
+  flowActions: any;
+
+  /**
+   * XXX: Define this type
+   */
+  showDialog: ShowDialogAction;
+  showMessage(message: Message): void;
+}
 
 /**
  * Render a block on a page.
@@ -18,56 +63,28 @@ const FA_URL = Array.from(document.styleSheets, sheet => sheet.href).find(href =
  * A shadow DOM is created for the block. All CSS files for each block definition are added to the
  * shadow DOM. Then the bootstrap function of the block definition is called.
  */
-export default class Block extends React.Component {
-  static propTypes = {
-    actionCreators: PropTypes.shape(),
-    app: PropTypes.shape().isRequired,
-    /**
-     * The block to render.
-     */
-    block: PropTypes.shape().isRequired,
-    blockDef: PropTypes.shape(),
-    data: PropTypes.shape(),
-    /**
-     * A function for emitting an event.
-     */
-    emitEvent: PropTypes.func.isRequired,
-    history: PropTypes.shape().isRequired,
-    location: PropTypes.shape().isRequired,
-    match: PropTypes.shape().isRequired,
-    flowActions: PropTypes.shape().isRequired,
-    /**
-     * A function to deregister an event listener.
-     */
-    offEvent: PropTypes.func.isRequired,
-    /**
-     * A function to register an event listener.
-     */
-    onEvent: PropTypes.func.isRequired,
-    showDialog: PropTypes.func,
-    showMessage: PropTypes.func.isRequired,
-  };
-
-  static defaultProps = {
+export default class Block extends React.Component<BlockProps & RouteComponentProps> {
+  static defaultProps: Partial<BlockProps> = {
     actionCreators: null,
     blockDef: null,
-    data: undefined,
     showDialog: null,
   };
 
-  cleanups = [];
+  attached: boolean;
 
-  componentWillUnmount() {
+  cleanups: Function[] = [];
+
+  componentWillUnmount(): void {
     // Run all cleanups asynchronously, so they are run in parallel, and a failing cleanup won’t
     // block the others.
     this.cleanups.forEach(async fn => fn());
   }
 
-  addCleanup = fn => {
+  addCleanup = (fn: Function) => {
     this.cleanups.push(fn);
   };
 
-  ref = async div => {
+  ref = async (div: HTMLDivElement) => {
     const {
       actionCreators,
       app,
@@ -94,6 +111,7 @@ export default class Block extends React.Component {
     }
 
     this.attached = true;
+
     const shadowRoot = div.attachShadow({ mode: 'closed' });
     const events = {
       emit: emitEvent,
@@ -107,14 +125,13 @@ export default class Block extends React.Component {
       block,
       history,
       showDialog,
-      events,
       actionCreators,
       flowActions,
     );
     const { theme: pageTheme } = app.pages.find(
       page => normalize(page.name) === match.path.slice(1).split('/')[0],
     );
-    const BULMA_URL = document.querySelector('#bulma-style-app');
+    const BULMA_URL = document.querySelector('#bulma-style-app') as HTMLLinkElement;
     const [bulmaBase] = BULMA_URL.href.split('?');
     const theme = {
       ...baseTheme,
@@ -156,7 +173,7 @@ export default class Block extends React.Component {
 
     const sharedStyle = document.getElementById('appsemble-style-shared');
     if (sharedStyle) {
-      const cloneNode = sharedStyle.cloneNode(true);
+      const cloneNode = sharedStyle.cloneNode(true) as HTMLElement;
       cloneNode.removeAttribute('id');
       shadowRoot.appendChild(cloneNode);
     }
@@ -177,7 +194,7 @@ export default class Block extends React.Component {
     });
   };
 
-  render() {
+  render(): React.ReactNode {
     const { blockDef } = this.props;
 
     if (blockDef == null) {

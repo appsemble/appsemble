@@ -1,30 +1,31 @@
-import React from 'react';
+/** @jsx h */
+import { Component, h, VNode } from 'preact';
 
-import { FakeEvent, InputProps } from '../../../block';
+import { InputProps } from '../../../block';
 import FileEntry from './FileEntry';
 import styles from './FileInput.css';
 
 type FileInputProps = InputProps<string | Blob | (string | Blob)[]>;
 
-export default class FileInput extends React.Component<FileInputProps> {
+export default class FileInput extends Component<FileInputProps> {
   static defaultProps: Partial<FileInputProps> = {
     value: [],
   };
 
-  onChange = (event: FakeEvent, val: string) => {
+  onChange = (event: Event, val: string) => {
     const { field, onChange, value } = this.props;
 
     const copy = [...value];
-    const index = Number(event.target.name.split('.').pop());
+    const index = Number((event.target as HTMLInputElement).name.split('.').pop());
     if (val == null) {
       copy.splice(index, 1);
     } else {
       copy[index] = val;
     }
-    onChange({ target: { name: field.name } }, copy);
+    onChange(({ target: { name: field.name } } as any) as Event, copy);
   };
 
-  render(): JSX.Element {
+  render(): VNode {
     const { field, onChange, value } = this.props;
 
     return field.repeated ? (

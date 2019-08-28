@@ -1,19 +1,14 @@
 import { combineReducers } from 'redux';
 
-import app, { AppState } from './app';
-import blockDefs, { BlockDefState } from './blockDefs';
+import app from './app';
+import blockDefs from './blockDefs';
 import db from './db';
-import menu, { MenuState } from './menu';
-import message, { MessageState } from './message';
-import user, { UserState } from './user';
+import menu from './menu';
+import message from './message';
+import user from './user';
 
-export interface State {
-  app: AppState;
-  blockDefs: BlockDefState;
-  db: ReturnType<typeof db>;
-  menu: MenuState;
-  message: MessageState;
-  user: UserState;
-}
+const actions = combineReducers({ app, db, blockDefs, menu, message, user });
 
-export default combineReducers({ app, db, blockDefs, menu, message, user });
+export default actions;
+
+export type State = ReturnType<typeof actions>;
