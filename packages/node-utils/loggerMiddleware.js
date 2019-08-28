@@ -1,23 +1,22 @@
-import { logger as log } from '@appsemble/node-utils';
+import { logger } from './logger';
 
 /**
  * Koa middleware for logging requests using the Appsemble logger.
  */
-export default function logger() {
+export default function loggerMiddleware() {
   return async (ctx, next) => {
     const start = Date.now();
-    log.info(`${ctx.method} ${ctx.url}`);
+    logger.info(`${ctx.method} ${ctx.url}`);
 
     function message(status, msg) {
-      let level;
+      const formattedMessage = `${ctx.method} ${ctx.url} ${status} ${msg} ${Date.now() - start}ms`;
       if (status < 300) {
-        level = 'info';
+        logger.info(formattedMessage);
       } else if (status < 500) {
-        level = 'warn';
+        logger.warn(formattedMessage);
       } else {
-        level = 'error';
+        logger.error(formattedMessage);
       }
-      log.log(level, `${ctx.method} ${ctx.url} ${status} ${msg} ${Date.now() - start}ms`);
     }
 
     try {
