@@ -8,6 +8,7 @@ function mapStateToProps(state, ownProps) {
   return {
     app: state.app.app,
     user: state.user.user,
+    pending: !!state.blockDefs.pending.length,
     hasErrors:
       ownProps.page.type && (ownProps.page.type === 'flow' || ownProps.page.type === 'tabs')
         ? ownProps.page.subPages.some(sub =>

@@ -1,3 +1,4 @@
+import { Loader } from '@appsemble/react-components';
 import EventEmitter from 'events';
 import throttle from 'lodash.throttle';
 import PropTypes from 'prop-types';
@@ -29,6 +30,7 @@ export default class Page extends React.Component {
      * The page definition to render
      */
     page: PropTypes.shape().isRequired,
+    pending: PropTypes.bool.isRequired,
     user: PropTypes.shape(),
   };
 
@@ -227,7 +229,7 @@ export default class Page extends React.Component {
   }
 
   render() {
-    const { hasErrors, page, user } = this.props;
+    const { hasErrors, page, user, pending } = this.props;
     const { dialog, counter, currentPage, data } = this.state;
     const { type } = page;
 
@@ -246,6 +248,10 @@ export default class Page extends React.Component {
           <FormattedMessage {...messages.error} />
         </p>
       );
+    }
+
+    if (pending) {
+      return <Loader />;
     }
 
     let component;
