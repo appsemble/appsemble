@@ -38,7 +38,6 @@ const inputs = {
   number: NumberInput,
   integer: NumberInput,
   boolean: BooleanInput,
-  bool: BooleanInput,
 };
 
 const validateInput: Validator = (_field, event) => {
