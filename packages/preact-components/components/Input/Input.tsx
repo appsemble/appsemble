@@ -1,12 +1,20 @@
 /** @jsx h */
 import classNames from 'classnames';
-import { ClassAttributes, Component, ComponentChild, h, PreactDOMAttributes, VNode } from 'preact';
+import {
+  ClassAttributes,
+  Component,
+  ComponentChild,
+  h,
+  JSX,
+  PreactDOMAttributes,
+  VNode,
+} from 'preact';
 
 import FormComponent, { FormComponentProps } from '../FormComponent';
 import Icon from '../Icon';
 
 type InputProps = FormComponentProps &
-  Omit<PreactDOMAttributes & ClassAttributes<any>, 'label' | 'onInput'> & {
+  Omit<JSX.HTMLAttributes & PreactDOMAttributes & ClassAttributes<any>, 'label' | 'onInput'> & {
     /**
      * An error message to render.
      */
@@ -45,10 +53,6 @@ type InputProps = FormComponentProps &
       | 'text'
       | 'textarea'
       | 'url';
-
-    placeholder?: string;
-    readOnly?: boolean;
-    value: any;
   };
 
 /**

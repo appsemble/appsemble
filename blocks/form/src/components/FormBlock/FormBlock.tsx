@@ -46,7 +46,23 @@ const validateInput: Validator = (_field, event) => {
 };
 
 const validators: { [name: string]: Validator } = {
-  file: validateInput,
+  file: (field, _event, value) => {
+    if (!field.required) {
+      return true;
+    }
+
+    if (field.accept) {
+      if (field.repeated) {
+        return (
+          (value as File[]).every(file => field.accept.includes(file.type)) &&
+          (value as File[]).length >= 1
+        );
+      }
+      return field.accept.includes((value as File).type);
+    }
+
+    return true;
+  },
   geocoordinates: (_, _event, value: { longitude: number; latitude: number }) => {
     return !!(value.latitude && value.longitude);
   },

@@ -1,4 +1,5 @@
 /** @jsx h */
+import { Select } from '@appsemble/preact-components';
 import { h, VNode } from 'preact';
 
 import { InputProps } from '../../../block';
@@ -11,34 +12,19 @@ type EnumInputProps = InputProps<string>;
  */
 export default function EnumInput({ field, onInput, value = '' }: EnumInputProps): VNode {
   return (
-    <div className="field is-horizontal">
-      <div className="field-label is-normal">
-        <label className="label" htmlFor={field.name}>
-          {field.label || field.name}
-        </label>
-      </div>
-      <div className="field-body">
-        <div className="field">
-          <div className="control">
-            <div className="select">
-              <select
-                className={value ? null : 'empty'}
-                id={field.name}
-                name={field.name}
-                onInput={event => onInput(event, (event.target as HTMLInputElement).value)}
-                value={value}
-              >
-                {!value && <option className={styles.hidden}>{field.label}</option>}
-                {field.enum.map(choice => (
-                  <option key={choice.value} value={choice.value}>
-                    {choice.label || choice.value}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+    <Select
+      id={field.name}
+      label={field.label || field.name}
+      name={field.name}
+      onInput={onInput}
+      value={value}
+    >
+      {!value && <option className={styles.hidden}>{field.label}</option>}
+      {field.enum.map(choice => (
+        <option key={choice.value} value={choice.value}>
+          {choice.label || choice.value}
+        </option>
+      ))}
+    </Select>
   );
 }

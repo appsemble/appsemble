@@ -4,6 +4,7 @@ interface Choice {
 }
 
 export interface Field {
+  accept?: string[];
   enum: Choice[];
   defaultValue: any;
   label?: string;
