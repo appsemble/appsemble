@@ -9,7 +9,7 @@ type EnumInputProps = InputProps<string>;
 /**
  * Render a select box which offers choices a JSON schema enum.
  */
-export default function EnumInput({ field, onChange, value = '' }: EnumInputProps): VNode {
+export default function EnumInput({ field, onInput, value = '' }: EnumInputProps): VNode {
   return (
     <div className="field is-horizontal">
       <div className="field-label is-normal">
@@ -25,7 +25,7 @@ export default function EnumInput({ field, onChange, value = '' }: EnumInputProp
                 className={value ? null : 'empty'}
                 id={field.name}
                 name={field.name}
-                onChange={event => onChange(event, (event.target as HTMLInputElement).value)}
+                onInput={event => onInput(event, (event.target as HTMLInputElement).value)}
                 value={value}
               >
                 {!value && <option className={styles.hidden}>{field.label}</option>}

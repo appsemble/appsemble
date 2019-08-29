@@ -13,7 +13,7 @@ type BooleanInputProps = InputProps<boolean>;
 export default function BooleanInput({
   error,
   field,
-  onChange,
+  onInput,
   value = false,
 }: BooleanInputProps): VNode {
   return (
@@ -32,8 +32,8 @@ export default function BooleanInput({
                 className={classNames({ 'is-danger': error })}
                 id={field.name}
                 name={field.name}
-                onChange={event => {
-                  onChange(event, (event.target as HTMLInputElement).checked);
+                onInput={event => {
+                  onInput(event, (event.target as HTMLInputElement).checked);
                 }}
                 readOnly={field.readOnly}
                 required={field.required}

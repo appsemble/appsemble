@@ -67,9 +67,14 @@ export default class FormBlock extends Component<FormBlockProps, FormBlockState>
     validity: {
       ...this.props.block.parameters.fields.reduce<{ [name: string]: boolean }>(
         (acc, { name, defaultValue, required, type }) => {
-          acc[name] =
-            (!required && !defaultValue) ||
-            ((type as any) === 'boolean' || (type as any) === 'bool');
+          let valid = !required;
+          if (required && defaultValue === undefined) {
+            valid = false;
+          }
+          if ((type as any) === 'boolean') {
+            valid = true;
+          }
+          acc[name] = valid;
           return acc;
         },
         {},
@@ -115,7 +120,7 @@ export default class FormBlock extends Component<FormBlockProps, FormBlockState>
         ...values,
         [(event.target as HTMLInputElement).name]: value,
       },
-      errors: { ...errors, [name]: (!valid).toString() },
+      errors: { ...errors, [name]: valid ? null : 'Invalid' },
       validity: { ...validity, [name]: valid },
     }));
   };
@@ -165,7 +170,7 @@ export default class FormBlock extends Component<FormBlockProps, FormBlockState>
                 key={field.name}
                 error={errors[field.name]}
                 field={field}
-                onChange={this.onChange}
+                onInput={this.onChange}
                 value={values[field.name]}
               />
             );
@@ -179,7 +184,7 @@ export default class FormBlock extends Component<FormBlockProps, FormBlockState>
               key={field.name}
               error={errors[field.name]}
               field={field}
-              onChange={this.onChange}
+              onInput={this.onChange}
               value={values[field.name]}
             />
           );
@@ -187,11 +192,7 @@ export default class FormBlock extends Component<FormBlockProps, FormBlockState>
         <div className={styles.buttonWrapper}>
           <button
             className={classNames('button', 'is-primary', styles.submit)}
-            disabled={
-              !Object.values(validity).every(v => v) ||
-              submitting ||
-              Object.keys(errors).length !== 0
-            }
+            disabled={!Object.values(validity).every(v => v) || submitting}
             type="submit"
           >
             {messages.submit}

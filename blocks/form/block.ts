@@ -38,7 +38,7 @@ export interface InputProps<T> {
   /**
    * A callback for when the value changes.
    */
-  onChange: (event: Event, value: T) => void;
+  onInput: (event: Event, value: T) => void;
 
   /**
    * The current value.

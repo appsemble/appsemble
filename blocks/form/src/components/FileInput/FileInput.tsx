@@ -12,8 +12,8 @@ export default class FileInput extends Component<FileInputProps> {
     value: [],
   };
 
-  onChange = (event: Event, val: string) => {
-    const { field, onChange, value } = this.props;
+  onInput = (event: Event, val: string) => {
+    const { field, onInput, value } = this.props;
 
     const copy = [...value];
     const index = Number((event.target as HTMLInputElement).name.split('.').pop());
@@ -22,18 +22,18 @@ export default class FileInput extends Component<FileInputProps> {
     } else {
       copy[index] = val;
     }
-    onChange(({ target: { name: field.name } } as any) as Event, copy);
+    onInput(({ target: { name: field.name } } as any) as Event, copy);
   };
 
   render(): VNode {
-    const { field, onChange, value } = this.props;
+    const { field, onInput, value } = this.props;
 
     return field.repeated ? (
       <div className={styles.repeatedContainer}>
         <FileEntry
           field={field}
           name={`${field.name}.${(value as string[]).length}`}
-          onChange={this.onChange}
+          onInput={this.onInput}
         />
         {(value as string[]).map((val, index) => (
           <FileEntry
@@ -41,13 +41,13 @@ export default class FileInput extends Component<FileInputProps> {
             key={index}
             field={field}
             name={`${field.name}.${index}`}
-            onChange={this.onChange}
+            onInput={this.onInput}
             value={val}
           />
         ))}
       </div>
     ) : (
-      <FileEntry field={field} name={field.name} onChange={onChange} value={value as string} />
+      <FileEntry field={field} name={field.name} onInput={onInput} value={value as string} />
     );
   }
 }

@@ -10,7 +10,7 @@ type NumberInputProps = InputProps<number>;
 /**
  * An input element for a number type schema.
  */
-export default function NumberInput({ error, field, onChange, value }: NumberInputProps): VNode {
+export default function NumberInput({ error, field, onInput, value }: NumberInputProps): VNode {
   return (
     <div className="field is-horizontal">
       <div className="field-label is-normal">
@@ -27,8 +27,8 @@ export default function NumberInput({ error, field, onChange, value }: NumberInp
               max={field.max}
               min={field.min}
               name={field.name}
-              onChange={event => {
-                onChange(
+              onInput={event => {
+                onInput(
                   event,
                   field.type === 'integer'
                     ? Math.floor((event.target as HTMLInputElement).valueAsNumber)
