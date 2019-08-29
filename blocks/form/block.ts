@@ -22,6 +22,7 @@ export interface Field {
   required?: boolean;
   step?: number;
   type?: 'integer';
+  format?: 'email' | 'url';
 }
 
 export interface InputProps<T> {

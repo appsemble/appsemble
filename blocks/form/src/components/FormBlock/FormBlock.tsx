@@ -103,11 +103,6 @@ export default class FormBlock extends Component<FormBlockProps, FormBlockState>
     const { name } = event.target as HTMLInputElement;
     const field = fields.find(f => f.name === name);
 
-    if (!field.required) {
-      // Non-required fields are always considered valid.
-      return true;
-    }
-
     return validators[field.type](field, event, value);
   };
 

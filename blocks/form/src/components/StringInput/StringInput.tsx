@@ -12,7 +12,7 @@ type StringInputProps = InputProps<string>;
  */
 export default function StringInput({
   error,
-  field: { multiline, name, placeholder, label, readOnly, required },
+  field: { multiline, name, placeholder, label, readOnly, required, format },
   onInput,
   value = '',
 }: StringInputProps): VNode {
@@ -26,7 +26,7 @@ export default function StringInput({
       placeholder={placeholder || label || name}
       readOnly={readOnly}
       required={required}
-      type={multiline ? 'textarea' : 'text'}
+      type={multiline ? 'textarea' : format || 'text'}
       value={value}
     />
   );
