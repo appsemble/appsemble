@@ -12,6 +12,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ### Added
 
 - App: Add `tabs` page type.
+- Block: Add support for client-side validation in Form block by setting `required: true`.
 - Server: `$created` and `$updated` are exposed in the API.
 
 ### Changed
