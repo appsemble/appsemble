@@ -17,7 +17,7 @@
     "output": "dist"
   },
   "dependencies": {
-    "@appsemble/jsx-dom": "0.8.4",
-    "@appsemble/sdk": "0.8.4"
+    "@appsemble/sdk": "0.8.4",
+    "mini-jsx": "^1.0.1"
   }
 }

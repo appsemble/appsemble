@@ -10200,6 +10200,11 @@ mini-html-webpack-plugin@^0.2.3:
   dependencies:
     webpack-sources "^1.1.0"
 
+mini-jsx@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/mini-jsx/-/mini-jsx-1.0.1.tgz#b2d0091e5b2f4144445ed511cb89885b1547b837"
+  integrity sha512-DYVhkQiqDVy1vfuuWXTu71nzAntNa8t6cLMO/YG3hxTtByIntwlFISE4C0vzMVMvp2+FMjOsLC63BvM/AdOYTw==
+
 minimalistic-assert@^1.0.0, minimalistic-assert@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/minimalistic-assert/-/minimalistic-assert-1.0.1.tgz#2e194de044626d4a10e7f7fbc00ce73e83e4d5c7"

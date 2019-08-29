@@ -1,6 +1,6 @@
 /** @jsx h */
-import h from '@appsemble/jsx-dom';
 import { attach } from '@appsemble/sdk';
+import h from 'mini-jsx';
 
 import { Actions, Parameters } from '../block';
 import animationLoop from './animation-loop.gif';
@@ -13,13 +13,22 @@ import styles from './index.css';
 const ANIMATION_LENGTH = 2190;
 
 attach<Parameters, Actions>(({ actions, data }) => {
-  const loading = (
-    <img alt="Loading…" className={styles.loading} src={animationStart} />
-  ) as HTMLImageElement;
+  let loading: HTMLImageElement;
+  const root = (
+    <div className={styles.root}>
+      <img
+        ref={node => {
+          loading = node;
+        }}
+        alt="Loading…"
+        className={styles.loading}
+        src={animationStart}
+      />
+    </div>
+  );
   setTimeout(() => {
     loading.src = animationLoop;
   }, ANIMATION_LENGTH);
-  const root = <div className={styles.root}>{loading}</div>;
   actions.onLoad.dispatch(data).then(
     response => {
       setTimeout(() => {

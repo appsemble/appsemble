@@ -1,8 +1,0 @@
-{
-  "extends": "../../tsconfig.json",
-  "exclude": [],
-  "compilerOptions": {
-    "lib": ["dom", "esnext"],
-    "types": ["jest"]
-  }
-}
