@@ -4,6 +4,7 @@ interface Choice {
 }
 
 export interface Field {
+  accept?: string[];
   enum: Choice[];
   defaultValue: any;
   label?: string;
@@ -22,6 +23,7 @@ export interface Field {
   required?: boolean;
   step?: number;
   type?: 'integer';
+  format?: 'email' | 'url';
 }
 
 export interface InputProps<T> {
@@ -38,7 +40,7 @@ export interface InputProps<T> {
   /**
    * A callback for when the value changes.
    */
-  onChange: (event: Event, value: T) => void;
+  onInput: (event: Event, value: T) => void;
 
   /**
    * The current value.

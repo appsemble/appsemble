@@ -18,16 +18,17 @@ A block used for inputting and submitting sets of data.
 
 ## Parameters
 
-| Parameter             | Default      | Description                                                             |
-| --------------------- | ------------ | ----------------------------------------------------------------------- |
-| fields                |              | A list of objects describing each field that can be entered in the form |
-| fields[].defaultValue |              | The default value for the field.                                        |
-| fields[].name         |              | The name used when storing this field                                   |
-| fields[].label        | field[].name | User-facing label describing the field                                  |
-| fields[].type         | string       | The type of the data                                                    |
-| fields[].maxWidth     |              | The maximum width of uploaded images                                    |
-| fields[].maxHeight    |              | The maximum height of uploaded images                                   |
-| fields[].quality      |              | The quality modifier to use when uploading images, in percentages       |
+| Parameter             | Default      | Description                                                                               |
+| --------------------- | ------------ | ----------------------------------------------------------------------------------------- |
+| fields                |              | A list of objects describing each field that can be entered in the form                   |
+| fields[].defaultValue |              | The default value for the field.                                                          |
+| fields[].name         |              | The name used when storing this field                                                     |
+| fields[].label        | field[].name | User-facing label describing the field                                                    |
+| fields[].type         | string       | The type of the data                                                                      |
+| fields[].maxWidth     |              | The maximum width of uploaded images                                                      |
+| fields[].maxHeight    |              | The maximum height of uploaded images                                                     |
+| fields[].quality      |              | The quality modifier to use when uploading images, in percentages                         |
+| fields[].required     | false        | Whether the field is required or not. The form input will be validated based on its type. |
 
 #### Field types
 
@@ -55,7 +56,7 @@ former allowing for decimals.
 | fields[].max  | The maximum allowed value                                   |
 | fields[].step | The size of a step whenever the increment button is pressed |
 
-##### `bool` or `boolean`
+##### `boolean`
 
 A checkbox that returns `true` when checked and `false` when not.
 

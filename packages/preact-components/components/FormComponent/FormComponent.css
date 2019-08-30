@@ -1,0 +1,13 @@
+.label {
+  display: flex;
+  flex-flow: wrap row;
+  justify-content: space-between;
+}
+
+.labelContent {
+  word-break: break-word;
+}
+
+.optional {
+  margin-left: auto;
+}

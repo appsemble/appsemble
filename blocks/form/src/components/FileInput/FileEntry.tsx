@@ -46,7 +46,7 @@ export default class FileEntry extends Component<FileEntryProps> {
 
   onSelect = async (event: Event) => {
     const {
-      onChange,
+      onInput,
       field: { maxWidth, maxHeight, quality },
     } = this.props;
     let value: Blob = (event.target as HTMLInputElement).files[0];
@@ -57,7 +57,7 @@ export default class FileEntry extends Component<FileEntryProps> {
       value = await this.resize(value, maxWidth, maxHeight, quality / 100);
     }
 
-    onChange(event, value);
+    onInput(event, value);
   };
 
   resize = async (
@@ -99,9 +99,9 @@ export default class FileEntry extends Component<FileEntryProps> {
   };
 
   onRemove = () => {
-    const { onChange, name } = this.props;
+    const { onInput, name } = this.props;
 
-    onChange(({ target: { name } } as any) as Event, null);
+    onInput(({ target: { name } } as any) as Event, null);
   };
 
   render(): VNode {

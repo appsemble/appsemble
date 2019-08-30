@@ -3,7 +3,7 @@ import { BlockProps } from '@appsemble/preact';
 import classNames from 'classnames';
 import { Component, h, VNode } from 'preact';
 
-import { Actions, Parameters } from '../../../block';
+import { Actions, Field, Parameters } from '../../../block';
 import BooleanInput from '../BooleanInput';
 import EnumInput from '../EnumInput';
 import FileInput from '../FileInput';
@@ -17,11 +17,15 @@ type FormBlockProps = BlockProps<Parameters, Actions>;
 
 type Values = Record<string, any>;
 
+type Validator = (field: Field, event: Event, value: any) => boolean;
+
 interface FormBlockState {
   errors: {
     [name: string]: string;
   };
-  pristine: boolean;
+  validity: {
+    [name: string]: boolean;
+  };
   submitting: boolean;
   values: Values;
 }
@@ -34,7 +38,39 @@ const inputs = {
   number: NumberInput,
   integer: NumberInput,
   boolean: BooleanInput,
-  bool: BooleanInput,
+};
+
+const validateInput: Validator = (_field, event) => {
+  return (event.target as HTMLInputElement).validity.valid;
+};
+
+const validators: { [name: string]: Validator } = {
+  file: (field, _event, value) => {
+    if (!field.required) {
+      return true;
+    }
+
+    if (field.accept) {
+      if (field.repeated) {
+        return (
+          (value as File[]).every(file => field.accept.includes(file.type)) &&
+          (value as File[]).length >= 1
+        );
+      }
+      return field.accept.includes((value as File).type);
+    }
+
+    return true;
+  },
+  geocoordinates: (_, _event, value: { longitude: number; latitude: number }) => {
+    return !!(value.latitude && value.longitude);
+  },
+  hidden: (): boolean => true,
+  string: validateInput,
+  number: validateInput,
+  integer: validateInput,
+  boolean: () => true,
+  bool: () => true,
 };
 
 /**
@@ -43,7 +79,22 @@ const inputs = {
 export default class FormBlock extends Component<FormBlockProps, FormBlockState> {
   state: FormBlockState = {
     errors: {},
-    pristine: true,
+    validity: {
+      ...this.props.block.parameters.fields.reduce<{ [name: string]: boolean }>(
+        (acc, { name, defaultValue, required, type }) => {
+          let valid = !required;
+          if (required && defaultValue === undefined) {
+            valid = false;
+          }
+          if ((type as any) === 'boolean') {
+            valid = true;
+          }
+          acc[name] = valid;
+          return acc;
+        },
+        {},
+      ),
+    },
     submitting: false,
     values: {
       ...this.props.block.parameters.fields.reduce<Values>(
@@ -57,13 +108,30 @@ export default class FormBlock extends Component<FormBlockProps, FormBlockState>
     },
   };
 
+  validateField = (event: Event, value: any): boolean => {
+    const {
+      block: {
+        parameters: { fields },
+      },
+    } = this.props;
+
+    const { name } = event.target as HTMLInputElement;
+    const field = fields.find(f => f.name === name);
+
+    return validators[field.type](field, event, value);
+  };
+
   onChange = (event: Event, value: any) => {
-    this.setState(({ values }) => ({
-      pristine: false,
+    const { name } = event.target as HTMLInputElement;
+    const valid = this.validateField(event, value);
+
+    this.setState(({ errors, validity, values }) => ({
       values: {
         ...values,
         [(event.target as HTMLInputElement).name]: value,
       },
+      errors: { ...errors, [name]: valid ? null : 'Invalid' },
+      validity: { ...validity, [name]: valid },
     }));
   };
 
@@ -101,7 +169,7 @@ export default class FormBlock extends Component<FormBlockProps, FormBlockState>
 
   render(): VNode {
     const { block } = this.props;
-    const { errors, pristine, submitting, values } = this.state;
+    const { errors, validity, submitting, values } = this.state;
 
     return (
       <form className={styles.root} noValidate onSubmit={this.onSubmit}>
@@ -112,7 +180,7 @@ export default class FormBlock extends Component<FormBlockProps, FormBlockState>
                 key={field.name}
                 error={errors[field.name]}
                 field={field}
-                onChange={this.onChange}
+                onInput={this.onChange}
                 value={values[field.name]}
               />
             );
@@ -126,7 +194,7 @@ export default class FormBlock extends Component<FormBlockProps, FormBlockState>
               key={field.name}
               error={errors[field.name]}
               field={field}
-              onChange={this.onChange}
+              onInput={this.onChange}
               value={values[field.name]}
             />
           );
@@ -134,7 +202,7 @@ export default class FormBlock extends Component<FormBlockProps, FormBlockState>
         <div className={styles.buttonWrapper}>
           <button
             className={classNames('button', 'is-primary', styles.submit)}
-            disabled={pristine || submitting || Object.keys(errors).length !== 0}
+            disabled={!Object.values(validity).every(v => v) || submitting}
             type="submit"
           >
             {messages.submit}

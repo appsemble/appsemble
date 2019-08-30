@@ -26,7 +26,7 @@ export default class GeoCoordinatesInput extends Component<GeoCoordinatesInputPr
   componentDidMount(): void {
     const {
       field,
-      onChange,
+      onInput,
       utils,
       theme: { tileLayer },
     } = this.props;
@@ -46,7 +46,7 @@ export default class GeoCoordinatesInput extends Component<GeoCoordinatesInputPr
       })
       .on('move', () => {
         const { lng, lat } = map.getCenter();
-        onChange(({ target: { name: field.name } } as any) as Event, {
+        onInput(({ target: { name: field.name } } as any) as Event, {
           latitude: lat,
           longitude: lng,
         });
