@@ -1,9 +1,9 @@
 {
   "name": "@appsemble/utils",
-  "version": "0.8.4",
+  "version": "0.8.5",
   "private": true,
   "dependencies": {
-    "@appsemble/types": "0.8.4",
+    "@appsemble/types": "0.8.5",
     "openapi-types": "^1.3.5",
     "postcss": "^7.0.17",
     "z-schema": "^4.1.1"

@@ -7,6 +7,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.8.5] - 2019-09-01
+
 ### Added
 
 - Server: Log the IP address from which requests are made.
@@ -14,7 +16,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Changed
 
-- Editor: Form labels inputs are now aligned vertically.
+- Block: Form labels inputs are now aligned vertically in the form block.
 
 ### Fixed
 

@@ -34,7 +34,7 @@ export default {
         blocks: [
           {
             type: 'list',
-            version: '0.8.4',
+            version: '0.8.5',
             parameters: {
               fields: [
                 {
@@ -60,7 +60,7 @@ export default {
           },
           {
             type: 'action-button',
-            version: '0.8.4',
+            version: '0.8.5',
             actions: {
               onClick: {
                 to: 'Person Registration Form',
@@ -75,7 +75,7 @@ export default {
         blocks: [
           {
             type: 'form',
-            version: '0.8.4',
+            version: '0.8.5',
             actions: {
               onSubmit: {
                 type: 'resource.create',
@@ -120,7 +120,7 @@ export default {
         blocks: [
           {
             type: 'detail-viewer',
-            version: '0.8.4',
+            version: '0.8.5',
             actions: {
               onLoad: {
                 type: 'resource.get',

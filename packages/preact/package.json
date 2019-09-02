@@ -1,8 +1,8 @@
 {
   "name": "@appsemble/preact",
-  "version": "0.8.4",
+  "version": "0.8.5",
   "peerDependencies": {
-    "@appsemble/sdk": "^0.8.4",
+    "@appsemble/sdk": "^0.8.5",
     "preact": "^10.0.0-rc.1"
   }
 }

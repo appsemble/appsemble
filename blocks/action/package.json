@@ -1,10 +1,10 @@
 {
   "name": "@amsterdam/action",
-  "version": "0.8.4",
+  "version": "0.8.5",
   "private": true,
   "dependencies": {
-    "@appsemble/react": "^0.8.4",
-    "@appsemble/sdk": "^0.8.4",
+    "@appsemble/react": "^0.8.5",
+    "@appsemble/sdk": "^0.8.5",
     "react": "^16.9.0"
   }
 }
