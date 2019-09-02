@@ -7,6 +7,21 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.8.5] - 2019-09-01
+
+### Added
+
+- Server: Log the IP address from which requests are made.
+- Server: Partial support for SSL on localhost.
+
+### Changed
+
+- Block: Form labels inputs are now aligned vertically in the form block.
+
+### Fixed
+
+- App: Fix some caching issues in the service worker.
+
 ## [0.8.4] - 2019-08-20
 
 ### Added
