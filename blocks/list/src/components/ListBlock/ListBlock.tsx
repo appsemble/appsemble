@@ -1,8 +1,8 @@
-import { BlockProps } from '@appsemble/react';
-import { Loader } from '@appsemble/react-components';
+/** @jsx h */
+import { BlockProps } from '@appsemble/preact';
+import { Loader } from '@appsemble/preact-components';
 import { remapData } from '@appsemble/utils';
-import React from 'react';
-import { FormattedMessage, WrappedComponentProps } from 'react-intl';
+import { Component, h, VNode } from 'preact';
 
 import styles from './ListBlock.css';
 import messages from './messages';
@@ -31,8 +31,8 @@ interface ListBlockState {
   loading: boolean;
 }
 
-export default class ListBlock extends React.Component<
-  BlockProps<BlockParameters, BlockActions> & WrappedComponentProps,
+export default class ListBlock extends Component<
+  BlockProps<BlockParameters, BlockActions>,
   ListBlockState
 > {
   state: ListBlockState = { data: undefined, error: false, loading: true };
@@ -56,8 +56,8 @@ export default class ListBlock extends React.Component<
     }
   }
 
-  render(): React.ReactNode {
-    const { block, actions, intl } = this.props;
+  render(): string | VNode {
+    const { block, actions } = this.props;
     const { data, error, loading } = this.state;
     const { fields } = block.parameters;
 
@@ -66,11 +66,11 @@ export default class ListBlock extends React.Component<
     }
 
     if (error) {
-      return <FormattedMessage {...messages.error} />;
+      return messages.error;
     }
 
     if (!data.length) {
-      return <FormattedMessage {...messages.noData} />;
+      return messages.noData;
     }
 
     return (
@@ -90,7 +90,7 @@ export default class ListBlock extends React.Component<
               onClick={() => this.onClick(item)}
             >
               {fields.map(field => {
-                const value = remapData(field.name, item, { intl });
+                const value = remapData(field.name, item);
 
                 return (
                   <td key={field.name}>

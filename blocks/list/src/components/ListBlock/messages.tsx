@@ -1,6 +1,4 @@
-import { defineMessages } from 'react-intl';
-
-export default defineMessages({
+export default {
   error: 'An error occurred when fetching the data.',
   noData: 'No data.',
-});
+};

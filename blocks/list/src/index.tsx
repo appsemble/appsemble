@@ -1,6 +1,5 @@
-import { bootstrap } from '@appsemble/react';
-import { provideIntl } from '@appsemble/react/intl';
+import { bootstrap } from '@appsemble/preact';
 
 import ListBlock from './components/ListBlock';
 
-bootstrap(provideIntl(ListBlock));
+bootstrap(ListBlock);
