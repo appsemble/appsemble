@@ -61,6 +61,7 @@ export default class BlockList extends React.Component<BlockListProps, BlockList
     } = this.props;
 
     const { blockStatus } = this.state;
+    const isLoading = Object.values(blockStatus).some(s => !s);
 
     const list = blocks.map((block, index) => {
       const content = (
@@ -69,7 +70,7 @@ export default class BlockList extends React.Component<BlockListProps, BlockList
           // eslint-disable-next-line react/no-array-index-key
           key={`${index}.${counter}`}
           block={block}
-          className={blockStatus[`${block.type}${index}`] ? '' : 'is-hidden'}
+          className={isLoading ? 'is-hidden' : ''}
           data={data}
           emitEvent={emitEvent}
           flowActions={flowActions}
@@ -102,7 +103,7 @@ export default class BlockList extends React.Component<BlockListProps, BlockList
 
     return (
       <>
-        {Object.values(blockStatus).some(s => !s) && <Loader />}
+        {isLoading && <Loader />}
         {transitions ? (
           <TransitionGroup className={styles.transitionGroup}>{list}</TransitionGroup>
         ) : (
