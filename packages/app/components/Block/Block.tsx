@@ -1,6 +1,7 @@
 import { Events } from '@appsemble/sdk';
 import { App, Block as BlockType, BlockDefinition, Message } from '@appsemble/types';
 import { baseTheme, normalize } from '@appsemble/utils';
+import classNames from 'classnames';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { RouteComponentProps } from 'react-router-dom';
@@ -18,6 +19,7 @@ const FA_URL = Array.from(document.styleSheets, sheet => sheet.href).find(
 export interface BlockProps {
   app: App;
   data?: any;
+  className?: string;
 
   /**
    * A function for emitting an event.
@@ -55,6 +57,7 @@ export interface BlockProps {
    */
   showDialog: ShowDialogAction;
   showMessage(message: Message): void;
+  ready(): void;
 }
 
 /**
@@ -100,6 +103,7 @@ export default class Block extends React.Component<BlockProps & RouteComponentPr
       showDialog,
       showMessage,
       flowActions,
+      ready,
     } = this.props;
 
     if (div == null) {
@@ -192,10 +196,12 @@ export default class Block extends React.Component<BlockProps & RouteComponentPr
       shadowRoot,
       utils,
     });
+
+    ready();
   };
 
   render(): React.ReactNode {
-    const { blockDef } = this.props;
+    const { blockDef, className } = this.props;
 
     if (blockDef == null) {
       return null;
@@ -204,13 +210,13 @@ export default class Block extends React.Component<BlockProps & RouteComponentPr
     switch (blockDef.layout) {
       case 'float':
         return ReactDOM.createPortal(
-          <div ref={this.ref} className={styles.float} />,
+          <div ref={this.ref} className={classNames(styles.float, className)} />,
           document.body,
         );
       case 'static':
-        return <div ref={this.ref} className={styles.static} />;
+        return <div ref={this.ref} className={classNames(styles.static, className)} />;
       default:
-        return <div ref={this.ref} className={styles.grow} />;
+        return <div ref={this.ref} className={classNames(styles.grow, className)} />;
     }
   }
 }
