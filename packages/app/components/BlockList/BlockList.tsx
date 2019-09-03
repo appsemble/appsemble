@@ -1,5 +1,5 @@
 import { Loader } from '@appsemble/react-components';
-import { Block as BlockType } from '@appsemble/types';
+import { Action, Block as BlockType } from '@appsemble/types';
 import React from 'react';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 
@@ -8,6 +8,7 @@ import Block from '../Block';
 import styles from './BlockList.css';
 
 export interface BlockListProps {
+  actionCreators: Record<string, () => Action>;
   counter: number;
   currentPage?: number;
   blocks: BlockType[];
@@ -48,6 +49,7 @@ export default class BlockList extends React.Component<BlockListProps, BlockList
 
   render(): React.ReactNode {
     const {
+      actionCreators,
       blocks,
       counter,
       currentPage,
@@ -69,6 +71,7 @@ export default class BlockList extends React.Component<BlockListProps, BlockList
           // As long as blocks are in a static list, using the index as a key should be fine.
           // eslint-disable-next-line react/no-array-index-key
           key={`${index}.${counter}`}
+          actionCreators={actionCreators}
           block={block}
           className={isLoading ? 'is-hidden' : ''}
           data={data}
