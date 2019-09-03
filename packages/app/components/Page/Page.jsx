@@ -112,39 +112,41 @@ export default class Page extends React.Component {
     this.applyBulmaThemes(app, page);
     this.setupEvents();
 
-    if (page.type === 'tabs' || page.type === 'flow') {
-      if (page.type === 'flow') {
-        const actions = makeActions(
-          { actions: { onFlowFinish: {}, onFlowCancel: {} } },
-          app,
-          page,
-          history,
-          this.showDialog,
-          {
-            emit: this.emitEvent,
-            off: this.offEvent,
-            on: this.onEvent,
-          },
-          {},
-          this.flowActions,
-        );
-
-        this.actions = actions;
-      }
-
-      getBlockDefs(
-        [
-          ...new Set(
-            page.subPages
-              .map(f => f.blocks)
-              .flat()
-              .map(b => JSON.stringify({ type: b.type, version: b.version })),
-          ),
-        ].map(block => JSON.parse(block)),
+    if (page.type === 'flow') {
+      const actions = makeActions(
+        { actions: { onFlowFinish: {}, onFlowCancel: {} } },
+        app,
+        page,
+        history,
+        this.showDialog,
+        {
+          emit: this.emitEvent,
+          off: this.offEvent,
+          on: this.onEvent,
+        },
+        {},
+        this.flowActions,
       );
-    } else {
-      getBlockDefs(page.blocks);
+
+      this.actions = actions;
     }
+
+    const blocks = [
+      ...(page.type === 'tabs' || page.type === 'flow'
+        ? page.subPages.map(f => f.blocks).flat()
+        : []),
+      ...(!page.type || page.type === 'page' ? page.blocks : []),
+    ];
+
+    const actionBlocks = blocks
+      .map(block => {
+        return Object.entries(block.actions)
+          .filter(([, action]) => action.type === 'dialog')
+          .map(([, action]) => action.blocks);
+      })
+      .flat(2);
+
+    getBlockDefs([...new Set([...blocks, ...actionBlocks])]);
   }
 
   static getDerivedStateFromProps(props, state) {
