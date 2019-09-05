@@ -1,6 +1,12 @@
 import resolveJsonPointers from './resolveJsonPointers';
 
-const fixtures = [
+interface Fixture {
+  name: string;
+  actual: any;
+  expected: any;
+}
+
+const fixtures: Fixture[] = [
   {
     name: 'convert an empty object to an empty object',
     actual: {},

@@ -1,22 +1,24 @@
+import { App } from '@appsemble/types';
 import classNames from 'classnames';
-import PropTypes from 'prop-types';
 import React from 'react';
+import { WrappedComponentProps } from 'react-intl';
 
 import messages from './messages';
 import styles from './SideMenuButton.css';
 
+export interface SideMenuButtonProps {
+  app: App;
+  isOpen: boolean;
+  openMenu: () => void;
+}
+
 /**
  * A toolbar button which can be used to open the side menu.
  */
-export default class SideMenuButton extends React.Component {
-  static propTypes = {
-    app: PropTypes.shape().isRequired,
-    intl: PropTypes.shape().isRequired,
-    isOpen: PropTypes.bool.isRequired,
-    openMenu: PropTypes.func.isRequired,
-  };
-
-  render() {
+export default class SideMenuButton extends React.Component<
+  SideMenuButtonProps & WrappedComponentProps
+> {
+  render(): React.ReactNode {
     const { app, intl, isOpen, openMenu } = this.props;
 
     if (!app || app.navigation) {
