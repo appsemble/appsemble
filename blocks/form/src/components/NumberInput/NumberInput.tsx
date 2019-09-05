@@ -1,9 +1,9 @@
 /** @jsx h */
+import { FormattedMessage } from '@appsemble/preact';
 import { Input } from '@appsemble/preact-components';
 import { h, VNode } from 'preact';
 
 import { InputProps } from '../../../block';
-import messages from './messages';
 
 type NumberInputProps = InputProps<number>;
 
@@ -13,7 +13,7 @@ type NumberInputProps = InputProps<number>;
 export default function NumberInput({ error, field, onInput, value }: NumberInputProps): VNode {
   return (
     <Input
-      error={error && messages.invalid}
+      error={error && <FormattedMessage id="invalid" />}
       id={field.name}
       label={field.label || field.name}
       max={field.max}
@@ -30,7 +30,7 @@ export default function NumberInput({ error, field, onInput, value }: NumberInpu
       placeholder={field.placeholder}
       readOnly={field.readOnly}
       required={field.required}
-      step={field.step || field.type === 'integer' ? 1 : 'any'}
+      step={field.step || field.type === 'integer' ? 1 : undefined}
       type="number"
       value={value}
     />

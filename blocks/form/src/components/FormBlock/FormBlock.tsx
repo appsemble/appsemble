@@ -1,5 +1,5 @@
 /** @jsx h */
-import { BlockProps } from '@appsemble/preact';
+import { BlockProps, FormattedMessage } from '@appsemble/preact';
 import classNames from 'classnames';
 import { Component, h, VNode } from 'preact';
 
@@ -11,7 +11,6 @@ import GeoCoordinatesInput from '../GeoCoordinatesInput';
 import NumberInput from '../NumberInput';
 import StringInput from '../StringInput';
 import styles from './FormBlock.css';
-import messages from './messages';
 
 type FormBlockProps = BlockProps<Parameters, Actions>;
 
@@ -186,7 +185,7 @@ export default class FormBlock extends Component<FormBlockProps, FormBlockState>
             );
           }
           if (!Object.prototype.hasOwnProperty.call(inputs, field.type)) {
-            return messages.unsupported;
+            return <FormattedMessage id="unsupported" />;
           }
           const Comp = inputs[field.type];
           return (
@@ -205,7 +204,7 @@ export default class FormBlock extends Component<FormBlockProps, FormBlockState>
             disabled={!Object.values(validity).every(v => v) || submitting}
             type="submit"
           >
-            {messages.submit}
+            <FormattedMessage id="submit" />
           </button>
         </div>
       </form>

@@ -1,11 +1,10 @@
 /** @jsx h */
-import { BlockProps } from '@appsemble/preact';
+import { BlockProps, FormattedMessage } from '@appsemble/preact';
 import { Loader } from '@appsemble/preact-components';
 import { remapData } from '@appsemble/utils';
 import { Component, h, VNode } from 'preact';
 
 import styles from './ListBlock.css';
-import messages from './messages';
 
 interface Field {
   name: string;
@@ -56,7 +55,7 @@ export default class ListBlock extends Component<
     }
   }
 
-  render(): string | VNode {
+  render(): VNode {
     const { block, actions } = this.props;
     const { data, error, loading } = this.state;
     const { fields } = block.parameters;
@@ -66,11 +65,11 @@ export default class ListBlock extends Component<
     }
 
     if (error) {
-      return messages.error;
+      return <FormattedMessage id="error" />;
     }
 
     if (!data.length) {
-      return messages.noData;
+      return <FormattedMessage id="noData" />;
     }
 
     return (

@@ -1,9 +1,9 @@
 /** @jsx h */
+import { FormattedMessage } from '@appsemble/preact';
 import classNames from 'classnames';
 import { h, VNode } from 'preact';
 
 import { InputProps } from '../../../block';
-import messages from './messages';
 
 type BooleanInputProps = InputProps<boolean>;
 
@@ -42,7 +42,9 @@ export default function BooleanInput({
               {field.labelText || field.label || field.name}
             </label>
             {error && (
-              <p className={classNames('help', { 'is-danger': error })}>{messages.invalid}</p>
+              <p className={classNames('help', { 'is-danger': error })}>
+                <FormattedMessage id="invalid" />
+              </p>
             )}
           </div>
         </div>

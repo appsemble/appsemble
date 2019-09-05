@@ -1,6 +1,8 @@
 /** @jsx h */
 import { bootstrap as sdkBootstrap, BootstrapParams } from '@appsemble/sdk';
-import { ComponentType, createContext, h, render, VNode } from 'preact';
+import IntlMessageFormat from 'intl-messageformat';
+import { ComponentType, createContext, Fragment, h, render, VNode } from 'preact';
+import { useContext } from 'preact/hooks';
 
 // XXX Remove this when updating preact. https://github.com/preactjs/preact/pull/1887
 declare module 'preact/src/jsx' {
@@ -16,30 +18,41 @@ export interface BlockProps<P = any, A = {}> extends BootstrapParams<P, A> {
   /**
    * The DOM node on which the block is mounted.
    */
-  preactRoot: HTMLElement;
+  preactRoot: Element;
+
+  messages: Record<string, IntlMessageFormat>;
 }
 
-const { Consumer, Provider } = createContext<BlockProps>(null);
+const Context = createContext<BlockProps>(null);
 
 /**
  * Mount a Preact component returned by a bootstrap function in the shadow DOM of a block.
  */
 export function mount<P, A = {}>(
   Component: ComponentType<BlockProps<P, A>>,
-  root?: HTMLElement,
+  messages?: Record<string, string>,
+  createRoot: () => Element = () => document.createElement('div'),
 ): (params: BootstrapParams<P, A>) => void {
   return params => {
-    const preactRoot = params.shadowRoot.appendChild(
-      root ? root.cloneNode() : document.createElement('div'),
-    ) as HTMLElement;
+    const preactRoot = params.shadowRoot.appendChild(createRoot());
+
     const props = {
       ...params,
       preactRoot,
+      messages: messages
+        ? Object.entries(messages).reduce(
+            (acc: Record<string, IntlMessageFormat>, [key, message]) => {
+              acc[key] = new IntlMessageFormat(message);
+              return acc;
+            },
+            {},
+          )
+        : {},
     };
     const component = (
-      <Provider value={props}>
+      <Context.Provider value={props}>
         <Component {...props} />
-      </Provider>
+      </Context.Provider>
     );
     render(component, preactRoot);
     params.utils.addCleanup(() => render(null, preactRoot, preactRoot));
@@ -48,16 +61,38 @@ export function mount<P, A = {}>(
 
 export function bootstrap<P, A = {}>(
   Component: ComponentType<BlockProps<P, A>>,
-  reactRoot?: HTMLElement,
+  messages?: Record<string, string>,
+  reactRoot?: () => Element,
 ): void {
-  sdkBootstrap<P, A>(mount(Component, reactRoot));
+  sdkBootstrap<P, A>(mount(Component, messages, reactRoot));
 }
 
 /**
  * A HOC which passes the Appsemble block values to he wrapped Preact component.
  */
-export function withBlock<P extends {}>(
-  Component: ComponentType<P | BlockProps>,
+export function withBlock<P extends object>(
+  Component: ComponentType<Omit<BlockProps, keyof P> & P>,
 ): ComponentType<P> {
-  return (props: P): VNode => <Consumer>{values => <Component {...values} {...props} />}</Consumer>;
+  return (props: P) => (
+    // @ts-ignore
+    <Context.Consumer>{values => <Component {...props} {...values} />}</Context.Consumer>
+  );
+}
+
+export function useBlock(): BlockProps {
+  return useContext(Context);
+}
+
+export interface FormattedMessageProps {
+  id: string;
+  values?: Record<string, string | ((str: string) => VNode)>;
+}
+
+export function FormattedMessage({ id, values }: FormattedMessageProps): VNode {
+  const { messages } = useBlock();
+  if (!Object.prototype.hasOwnProperty.call(messages, id)) {
+    return <Fragment>{'Untranslated message ID: '}message</Fragment>;
+  }
+  const formattedMessage = messages[id].formatHTMLMessage(values);
+  return <Fragment>{formattedMessage}</Fragment>;
 }

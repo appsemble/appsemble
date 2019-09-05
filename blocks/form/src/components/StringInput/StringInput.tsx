@@ -1,9 +1,9 @@
 /** @jsx h */
+import { FormattedMessage } from '@appsemble/preact';
 import { Input } from '@appsemble/preact-components';
 import { h, VNode } from 'preact';
 
 import { InputProps } from '../../../block';
-import messages from './messages';
 
 type StringInputProps = InputProps<string>;
 
@@ -18,7 +18,7 @@ export default function StringInput({
 }: StringInputProps): VNode {
   return (
     <Input
-      error={error && messages.invalid}
+      error={error && <FormattedMessage id="invalid" />}
       id={name}
       label={label || name}
       name={name}
