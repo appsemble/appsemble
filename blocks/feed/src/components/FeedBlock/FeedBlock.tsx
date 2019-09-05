@@ -1,16 +1,15 @@
-import { BlockProps } from '@appsemble/react';
-import { Loader } from '@appsemble/react-components';
-import { compileFilters, Context, MapperFunction } from '@appsemble/utils';
-import React from 'react';
-import { FormattedMessage, WrappedComponentProps } from 'react-intl';
+/** @jsx h */
+import { BlockProps, FormattedMessage } from '@appsemble/preact';
+import { Loader } from '@appsemble/preact-components';
+import { compileFilters, MapperFunction } from '@appsemble/utils';
+import { Component, h, VNode } from 'preact';
 
 import { BlockActions, BlockParameters, Remappers } from '../../../types';
 import Card from '../Card';
 import styles from './FeedBlock.css';
-import messages from './messages';
 
-function createRemapper(mapper: any, context: Context): MapperFunction {
-  return mapper ? compileFilters(mapper, context) : () => null;
+function createRemapper(mapper: any): MapperFunction {
+  return mapper ? compileFilters(mapper) : () => null;
 }
 
 interface FeedBlockState {
@@ -21,8 +20,8 @@ interface FeedBlockState {
 /**
  * The top level component for the feed block.
  */
-export default class FeedBlock extends React.Component<
-  BlockProps<BlockParameters, BlockActions> & WrappedComponentProps,
+export default class FeedBlock extends Component<
+  BlockProps<BlockParameters, BlockActions>,
   FeedBlockState
 > {
   state: FeedBlockState = {
@@ -33,22 +32,22 @@ export default class FeedBlock extends React.Component<
   remappers: Remappers;
 
   async componentDidMount(): Promise<void> {
-    const { actions, block, events, intl } = this.props;
+    const { actions, block, events } = this.props;
     const { parameters } = block;
 
     this.remappers = {
-      title: createRemapper(parameters.title, { intl }),
-      subtitle: createRemapper(parameters.subtitle, { intl }),
-      heading: createRemapper(parameters.heading, { intl }),
-      picture: createRemapper(parameters.picture, { intl }),
-      pictures: createRemapper(parameters.pictures, { intl }),
-      description: createRemapper(parameters.description, { intl }),
+      title: createRemapper(parameters.title),
+      subtitle: createRemapper(parameters.subtitle),
+      heading: createRemapper(parameters.heading),
+      picture: createRemapper(parameters.picture),
+      pictures: createRemapper(parameters.pictures),
+      description: createRemapper(parameters.description),
       ...(parameters.reply && {
-        author: createRemapper(parameters.reply.author, { intl }),
-        content: createRemapper(parameters.reply.content, { intl }),
+        author: createRemapper(parameters.reply.author),
+        content: createRemapper(parameters.reply.content),
       }),
-      latitude: createRemapper(parameters.latitude, { intl }),
-      longitude: createRemapper(parameters.longitude, { intl }),
+      latitude: createRemapper(parameters.latitude),
+      longitude: createRemapper(parameters.longitude),
     };
 
     if (parameters.listen) {
@@ -72,7 +71,7 @@ export default class FeedBlock extends React.Component<
     this.setState({ data: data.map(entry => (entry.id === resource.id ? resource : entry)) });
   };
 
-  render(): React.ReactNode {
+  render(): VNode | VNode[] {
     const { data, loading } = this.state;
 
     if (loading) {
@@ -82,7 +81,7 @@ export default class FeedBlock extends React.Component<
     if (!data.length) {
       return (
         <div className={styles.empty}>
-          <FormattedMessage {...messages.empty} />
+          <FormattedMessage id="empty" />
         </div>
       );
     }

@@ -1,6 +1,16 @@
-import { bootstrap } from '@appsemble/react';
-import { provideIntl } from '@appsemble/react/intl';
+import { bootstrap } from '@appsemble/preact';
 
 import FilterBlock from './components/FilterBlock';
 
-bootstrap(provideIntl(FilterBlock));
+const messages = {
+  from: 'From',
+  to: 'To',
+  cancel: 'Cancel',
+  filter: 'Filter',
+  refreshData: `Show {amount} new {amount, plural,
+    one {item}
+    other {items}
+  }`,
+};
+
+bootstrap(FilterBlock, messages);

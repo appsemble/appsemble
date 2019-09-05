@@ -85,7 +85,7 @@ export function useBlock(): BlockProps {
 
 export interface FormattedMessageProps {
   id: string;
-  values?: Record<string, string | ((str: string) => VNode)>;
+  values?: Record<string, number | string | ((str: string) => VNode)>;
 }
 
 export function FormattedMessage({ id, values }: FormattedMessageProps): VNode {

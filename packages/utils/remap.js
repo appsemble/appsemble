@@ -1,8 +1,16 @@
 const property = '.';
 const filter = '|';
 
+const dateTimeFormat = new Intl.DateTimeFormat(undefined, {
+  year: 'numeric',
+  month: 'short',
+  day: 'numeric',
+  hour: '2-digit',
+  minute: '2-digit',
+});
+
 const filters = {
-  date: ({ intl }) => object => `${intl.formatDate(object)} ${intl.formatTime(object)}`,
+  date: () => object => dateTimeFormat.format(object),
   get: (context, name) => object => {
     if (object == null) {
       return undefined;

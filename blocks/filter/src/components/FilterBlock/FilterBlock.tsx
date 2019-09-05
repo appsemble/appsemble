@@ -1,14 +1,14 @@
-import { BlockProps } from '@appsemble/react';
-import { Modal } from '@appsemble/react-components';
+/** @jsx h */
+import { HTMLEvent } from '@appsemble/dom-types';
+import { BlockProps, FormattedMessage } from '@appsemble/preact';
+import { Modal } from '@appsemble/preact-components';
 import classNames from 'classnames';
-import React from 'react';
-import { FormattedMessage } from 'react-intl';
+import { Component, Fragment, h, VNode } from 'preact';
 
 import { Actions, Filter, Parameters, RangeFilter } from '../../../types';
 import toOData from '../../utils/toOData';
 import Field from '../Field';
 import styles from './FilterBlock.css';
-import messages from './messages';
 
 interface FilterBlockState {
   currentFilter?: Filter;
@@ -21,7 +21,7 @@ interface FilterBlockState {
   typingTimer?: NodeJS.Timeout;
 }
 
-export default class FilterBlock extends React.Component<
+export default class FilterBlock extends Component<
   BlockProps<Parameters, Actions>,
   FilterBlockState
 > {
@@ -97,7 +97,7 @@ export default class FilterBlock extends React.Component<
     });
   };
 
-  resetFilter = (e?: React.MouseEvent<HTMLButtonElement>) => {
+  resetFilter = (e?: Event) => {
     const {
       events,
       block: {
@@ -151,7 +151,7 @@ export default class FilterBlock extends React.Component<
     this.setState({ newData: [], data: updatedData });
   };
 
-  onChange = async ({ target }: React.ChangeEvent<HTMLInputElement>) => {
+  onChange = async ({ target }: HTMLEvent<HTMLInputElement>) => {
     this.setState(({ filter, typingTimer }, { block: { parameters: { fields, highlight } } }) => {
       const newFilter = {
         ...filter,
@@ -173,7 +173,7 @@ export default class FilterBlock extends React.Component<
     });
   };
 
-  onRangeChange = ({ target: { id, name, value } }: React.ChangeEvent<HTMLInputElement>) => {
+  onRangeChange = ({ target: { id, name, value } }: HTMLEvent<HTMLInputElement>) => {
     this.setState(({ filter }) => {
       return {
         filter: {
@@ -217,13 +217,13 @@ export default class FilterBlock extends React.Component<
     this.setState({ isOpen: false });
   };
 
-  onFilterKeyDown = (event: React.KeyboardEvent): void => {
+  onFilterKeyDown = (event: KeyboardEvent): void => {
     if (event.key === 'Escape') {
       this.onClose();
     }
   };
 
-  render(): JSX.Element {
+  render(): VNode {
     const { block } = this.props;
     const { currentFilter, filter, isOpen, loading, newData } = this.state;
     const { fields, highlight } = block.parameters;
@@ -240,13 +240,13 @@ export default class FilterBlock extends React.Component<
     });
 
     return (
-      <>
+      <Fragment>
         <div className={styles.container}>
           <Modal isActive={isOpen} onClose={this.onClose}>
             <div className="card">
               <header className="card-header">
                 <p className="card-header-title">
-                  <FormattedMessage {...messages.filter} />
+                  <FormattedMessage id="filter" />
                 </p>
               </header>
               <div className="card-content">
@@ -272,14 +272,14 @@ export default class FilterBlock extends React.Component<
                   role="button"
                   tabIndex={-1}
                 >
-                  <FormattedMessage {...messages.cancel} />
+                  <FormattedMessage id="cancel" />
                 </a>
                 <button
                   className={`card-footer-item button is-primary ${styles.cardFooterButton}`}
                   onClick={this.onFilter}
                   type="button"
                 >
-                  <FormattedMessage {...messages.filter} />
+                  <FormattedMessage id="filter" />
                 </button>
               </footer>
             </div>
@@ -297,7 +297,7 @@ export default class FilterBlock extends React.Component<
             </div>
           )}
           {showModal && (
-            <>
+            <Fragment>
               <button
                 className={classNames('button', styles.filterDialogButton)}
                 disabled={!activeFilters}
@@ -319,14 +319,14 @@ export default class FilterBlock extends React.Component<
                   <i className="fas fa-filter" />
                 </span>
               </button>
-            </>
+            </Fragment>
           )}
         </div>
         {newData.length > 0 && (
           <article className={`message ${styles.newDataBar}`}>
             <div className="message-header">
               <button className={styles.newDataButton} onClick={this.onMergeRefresh} type="button">
-                <FormattedMessage {...messages.refreshData} values={{ amount: newData.length }} />
+                <FormattedMessage id="refreshData" values={{ amount: newData.length }} />
               </button>
               <button
                 aria-label="delete"
@@ -337,7 +337,7 @@ export default class FilterBlock extends React.Component<
             </div>
           </article>
         )}
-      </>
+      </Fragment>
     );
   }
 }

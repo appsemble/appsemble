@@ -7,7 +7,8 @@
     "@appsemble/types": "0.8.5",
     "@fortawesome/fontawesome-common-types": "^0.2.22",
     "classnames": "^2.2.6",
-    "leaflet": "^1.5.1"
+    "leaflet": "^1.5.1",
+    "preact-transition-group": "^1.1.1"
   },
   "peerDependencies": {
     "preact": "^10.0.0-rc.1"

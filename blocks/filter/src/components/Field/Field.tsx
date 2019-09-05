@@ -1,92 +1,78 @@
+/** @jsx h */
+import { useBlock } from '@appsemble/preact';
 import classNames from 'classnames';
-import React from 'react';
-import { WrappedComponentProps } from 'react-intl';
+import { Fragment, h, VNode } from 'preact';
 
 import { Filter, FilterField, RangeFilter } from '../../../types';
 import Control from '../Control';
 import styles from './Field.css';
-import messages from './messages';
 
-export interface FieldProps extends WrappedComponentProps {
+export interface FieldProps {
   displayLabel?: boolean;
   filter: Filter;
   loading: boolean;
-  onChange:
-    | React.ChangeEventHandler<HTMLInputElement>
-    | React.ChangeEventHandler<HTMLSelectElement>;
-  onRangeChange:
-    | React.ChangeEventHandler<HTMLInputElement>
-    | React.ChangeEventHandler<HTMLSelectElement>;
+  onChange: (event: Event) => void;
+  onRangeChange: (event: Event) => void;
 }
 
-export default class Field extends React.Component<FieldProps & FilterField> {
-  static defaultProps: Partial<FieldProps & FilterField> = {
-    displayLabel: true,
-    label: undefined,
-    range: false,
-    type: null,
-    icon: undefined,
-  };
+export default function Field({
+  displayLabel = true,
+  filter,
+  name,
+  onRangeChange,
+  onChange,
+  range = false,
+  label = name,
+  icon,
+  ...props
+}: FieldProps & FilterField): VNode {
+  const { messages } = useBlock();
 
-  render(): JSX.Element {
-    const {
-      displayLabel,
-      filter,
-      intl,
-      name,
-      onRangeChange,
-      onChange,
-      range,
-      label = name,
-      icon,
-      ...props
-    } = this.props;
-
-    return (
-      <div className="field is-horizontal">
-        {displayLabel && (
-          <div className="field-label is-normal">
-            <label className="label" htmlFor={`filter${name}`}>
-              {icon && (
-                <span className="icon">
-                  <i className={`fas fa-${icon}`} />
-                </span>
-              )}
-              {label}
-            </label>
-          </div>
-        )}
-        <div className={classNames('field field-body', { 'is-grouped': range })}>
-          {range ? (
-            <>
-              <Control
-                id={`from${name}`}
-                name={name}
-                onChange={onRangeChange}
-                placeholder={intl.formatMessage(messages.from)}
-                value={filter[name] && (filter[name] as RangeFilter).from}
-                {...props}
-              />
-              <Control
-                id={`to${name}`}
-                name={name}
-                onChange={onRangeChange}
-                placeholder={intl.formatMessage(messages.to)}
-                value={filter[name] && (filter[name] as RangeFilter).to}
-                {...props}
-              />
-            </>
-          ) : (
+  return (
+    <div className="field is-horizontal">
+      {displayLabel && (
+        <div className="field-label is-normal">
+          <label className="label" htmlFor={`filter${name}`}>
+            {icon && (
+              <span className="icon">
+                <i className={`fas fa-${icon}`} />
+              </span>
+            )}
+            {label}
+          </label>
+        </div>
+      )}
+      <div className={classNames('field field-body', { 'is-grouped': range })}>
+        {range ? (
+          <Fragment>
             <Control
-              className={styles.control}
+              id={`from${name}`}
               name={name}
-              onChange={onChange}
-              value={filter[name]}
+              onChange={onRangeChange}
+              placeholder={messages.from.format()}
+              value={filter[name] && (filter[name] as RangeFilter).from}
               {...props}
             />
-          )}
-        </div>
+            <Control
+              id={`to${name}`}
+              name={name}
+              onChange={onRangeChange}
+              placeholder={messages.to.format()}
+              value={filter[name] && (filter[name] as RangeFilter).to}
+              {...props}
+            />
+          </Fragment>
+        ) : (
+          <Control
+            className={styles.control}
+            id={name}
+            name={name}
+            onChange={onChange}
+            value={filter[name]}
+            {...props}
+          />
+        )}
       </div>
-    );
-  }
+    </div>
+  );
 }
