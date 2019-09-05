@@ -8,6 +8,7 @@ export interface Authentication {
   url: string;
   refreshURL: string;
   clientId: string;
+  method: 'email';
   scope: string[];
   clientSecret: string;
 }
