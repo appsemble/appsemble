@@ -18,6 +18,6 @@
   },
   "dependencies": {
     "@appsemble/sdk": "0.8.5",
-    "mini-jsx": "^1.0.1"
+    "mini-jsx": "^1.0.2"
   }
 }

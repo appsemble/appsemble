@@ -117,7 +117,10 @@ export default class FormBlock extends Component<FormBlockProps, FormBlockState>
     const { name } = event.target as HTMLInputElement;
     const field = fields.find(f => f.name === name);
 
-    return validators[field.type](field, event, value);
+    if (Object.prototype.hasOwnProperty.call(validators, field.type)) {
+      return validators[field.type](field, event, value);
+    }
+    return true;
   };
 
   onChange = (event: Event, value: any) => {
