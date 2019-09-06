@@ -1,6 +1,5 @@
 import { Loader } from '@appsemble/react-components';
 import EventEmitter from 'events';
-import throttle from 'lodash.throttle';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
@@ -47,58 +46,42 @@ export default class Page extends React.Component {
   };
 
   flowActions = {
-    next: throttle(
-      async data => {
-        const { currentPage } = this.state;
-        const { page } = this.props;
-        const { subPages } = page;
+    next: async data => {
+      const { currentPage } = this.state;
+      const { page } = this.props;
+      const { subPages } = page;
 
-        if (currentPage + 1 === subPages.length) {
-          this.actions.onFlowFinish.dispatch(data);
-          return data;
-        }
-
-        this.setState({ data, currentPage: currentPage + 1 });
-        return data;
-      },
-      50,
-      { leading: false },
-    ),
-
-    finish: throttle(
-      async data => {
+      if (currentPage + 1 === subPages.length) {
         this.actions.onFlowFinish.dispatch(data);
-        this.setState({ data });
         return data;
-      },
-      50,
-      { leading: false },
-    ),
+      }
 
-    back: throttle(
-      async data => {
-        const { currentPage } = this.state;
+      this.setState({ data, currentPage: currentPage + 1 });
+      return data;
+    },
 
-        if (currentPage <= 0) {
-          // Don't do anything if a previous page does not exist
-          return data;
-        }
+    finish: async data => {
+      this.actions.onFlowFinish.dispatch(data);
+      this.setState({ data });
+      return data;
+    },
 
-        this.setState({ data, currentPage: currentPage - 1 });
+    back: async data => {
+      const { currentPage } = this.state;
+
+      if (currentPage <= 0) {
+        // Don't do anything if a previous page does not exist
         return data;
-      },
-      50,
-      { leading: false },
-    ),
+      }
 
-    cancel: throttle(
-      async data => {
-        this.actions.onFlowCancel.dispatch(data);
-        this.setState({ data });
-      },
-      50,
-      { leading: false },
-    ),
+      this.setState({ data, currentPage: currentPage - 1 });
+      return data;
+    },
+
+    cancel: async data => {
+      this.actions.onFlowCancel.dispatch(data);
+      this.setState({ data });
+    },
   };
 
   constructor(props) {

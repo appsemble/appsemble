@@ -14,7 +14,6 @@
     "idb": "^4.0.4",
     "jsonpointer": "^4.0.1",
     "jwt-decode": "^2.2.0",
-    "lodash.throttle": "^4.1.1",
     "prop-types": "^15.7.2",
     "react": "^16.9.0",
     "react-dom": "^16.9.0",
