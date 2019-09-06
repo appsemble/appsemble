@@ -83,8 +83,8 @@ export default class FormBlock extends Component<FormBlockProps, FormBlockState>
       ...this.props.block.parameters.fields.reduce<{ [name: string]: boolean }>(
         (acc, { name, defaultValue, required, type }) => {
           let valid = !required;
-          if (required && defaultValue === undefined) {
-            valid = false;
+          if (required) {
+            valid = defaultValue !== undefined;
           }
           if ((type as any) === 'boolean') {
             valid = true;
