@@ -1,17 +1,17 @@
-import PropTypes from 'prop-types';
+import { App } from '@appsemble/types';
 import React from 'react';
 
 import EmailLogin from '../EmailLogin';
 
+export interface LoginProps {
+  app: App;
+}
+
 /**
  * Render all different authentication methods for an app.
  */
-export default class Login extends React.Component {
-  static propTypes = {
-    app: PropTypes.shape().isRequired,
-  };
-
-  render() {
+export default class Login extends React.Component<LoginProps> {
+  render(): React.ReactNode {
     const { app } = this.props;
 
     return app.authentication.map(authentication => {

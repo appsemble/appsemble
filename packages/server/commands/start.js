@@ -2,7 +2,7 @@ import { logger, loggerMiddleware } from '@appsemble/node-utils';
 import { asciiLogo } from '@appsemble/utils';
 import * as Sentry from '@sentry/node';
 import http from 'http';
-import http2 from 'http2';
+import https from 'https';
 import Koa from 'koa';
 
 import api from '../api';
@@ -151,7 +151,7 @@ export async function handler(argv, { webpackConfigs, syncDB } = {}) {
 
   await createServer({ app, argv, db, grantConfig, secret: argv.oauthSecret });
   const httpServer = argv.ssl
-    ? http2.createSecureServer(
+    ? https.createServer(
         {
           key: await readFileOrString(argv.sslKey),
           cert: await readFileOrString(argv.sslCert),

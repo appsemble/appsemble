@@ -20,7 +20,7 @@ export interface EmailLoginProps {
     values: EmailLoginValues,
     refreshURL: string,
     clientId: string,
-    scope: string[],
+    scope: string | string[],
   ) => void;
 }
 

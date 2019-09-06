@@ -1,33 +1,33 @@
 import classNames from 'classnames';
-import PropTypes from 'prop-types';
 import React from 'react';
+import { RouteComponentProps } from 'react-router-dom';
 
 import styles from './SideMenu.css';
+
+export interface SideMenuProps {
+  isOpen: boolean;
+  closeMenu: () => void;
+}
 
 /**
  * A side menu whose open state is managed by the redux state.
  */
-export default class SideMenu extends React.Component {
-  static propTypes = {
-    children: PropTypes.node.isRequired,
-    closeMenu: PropTypes.func.isRequired,
-    history: PropTypes.shape().isRequired,
-    isOpen: PropTypes.bool.isRequired,
-  };
+export default class SideMenu extends React.Component<SideMenuProps & RouteComponentProps> {
+  unlisten: () => void;
 
-  componentDidMount() {
+  componentDidMount(): void {
     const { closeMenu, history } = this.props;
 
     document.addEventListener('keydown', this.onKeyDown, false);
     this.unlisten = history.listen(closeMenu);
   }
 
-  componentWillUnmount() {
+  componentWillUnmount(): void {
     document.removeEventListener('keydown', this.onKeyDown, false);
     this.unlisten();
   }
 
-  onKeyDown = event => {
+  onKeyDown = (event: KeyboardEvent | React.KeyboardEvent) => {
     const { closeMenu } = this.props;
 
     // Close menu if the Escape key is pressed.
@@ -36,7 +36,7 @@ export default class SideMenu extends React.Component {
     }
   };
 
-  render() {
+  render(): React.ReactNode {
     const { children, closeMenu, isOpen } = this.props;
 
     return (
@@ -53,7 +53,7 @@ export default class SideMenu extends React.Component {
           className={classNames(styles.backdrop, { [styles.active]: isOpen })}
           onClick={closeMenu}
           onKeyDown={this.onKeyDown}
-          tabIndex="-1"
+          tabIndex={-1}
         />
       </>
     );

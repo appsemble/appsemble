@@ -1,39 +1,35 @@
 import { Icon } from '@appsemble/react-components';
+import { App } from '@appsemble/types';
 import { normalize } from '@appsemble/utils';
 import classNames from 'classnames';
-import PropTypes from 'prop-types';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 import { NavLink } from 'react-router-dom';
 
+import { User } from '../../types';
 import SideMenu from '../SideMenu';
 import messages from './messages';
 import styles from './SideNavigation.css';
 
+export interface SideNavigationProps {
+  app: App;
+  closeMenu: () => void;
+  logout: () => void;
+  user: User;
+}
+
 /**
  * The app navigation that is displayed in the side menu.
  */
-export default class SideNavigation extends React.Component {
-  static propTypes = {
-    app: PropTypes.shape(),
-    closeMenu: PropTypes.func.isRequired,
-    logout: PropTypes.func.isRequired,
-    user: PropTypes.shape(),
-  };
-
-  static defaultProps = {
-    app: null,
-    user: null,
-  };
-
-  onLogout = () => {
+export default class SideNavigation extends React.Component<SideNavigationProps> {
+  onLogout = (): void => {
     const { closeMenu, logout } = this.props;
 
     logout();
     closeMenu();
   };
 
-  render() {
+  render(): React.ReactNode {
     const { app, user } = this.props;
 
     if (app.navigation != null) {

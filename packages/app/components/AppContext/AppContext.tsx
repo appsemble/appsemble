@@ -1,29 +1,27 @@
 import { Loader } from '@appsemble/react-components';
-import PropTypes from 'prop-types';
+import { App, Authentication } from '@appsemble/types';
 import React from 'react';
+import { RouteComponentProps } from 'react-router-dom';
+
+export interface AppContextProps {
+  app: App;
+  children: React.ReactChildren;
+  getApp: () => void;
+  initAuth: (authentication: Authentication) => void;
+  ready: boolean;
+}
 
 /**
  * A wrapper which fetches the app definition and makes sure it is available to its children.
  */
-export default class AppContext extends React.Component {
-  static propTypes = {
-    app: PropTypes.shape(),
-    children: PropTypes.node.isRequired,
-    getApp: PropTypes.func.isRequired,
-    initAuth: PropTypes.func.isRequired,
-    location: PropTypes.shape().isRequired,
-    ready: PropTypes.bool.isRequired,
-  };
-
-  static defaultProps = { app: null };
-
-  async componentDidMount() {
+export default class AppContext extends React.Component<AppContextProps & RouteComponentProps> {
+  async componentDidMount(): Promise<void> {
     const { getApp } = this.props;
 
     await getApp();
   }
 
-  async componentDidUpdate(prevProps) {
+  async componentDidUpdate(prevProps: AppContextProps): Promise<void> {
     const { app, initAuth } = this.props;
     let authentication;
     if (app.authentication) {
@@ -35,7 +33,7 @@ export default class AppContext extends React.Component {
     }
   }
 
-  render() {
+  render(): React.ReactNode {
     const { children, location, ready } = this.props;
 
     if (!ready) {
@@ -43,7 +41,7 @@ export default class AppContext extends React.Component {
     }
 
     return React.Children.map(children, child =>
-      React.cloneElement(child, {
+      React.cloneElement(child as React.ReactElement, {
         location,
       }),
     );

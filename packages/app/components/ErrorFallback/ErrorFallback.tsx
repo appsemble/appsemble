@@ -10,7 +10,7 @@ import messages from './messages';
  * Capture renderer errors using Sentry.
  */
 export default class ErrorFallback extends React.Component {
-  render() {
+  render(): React.ReactNode {
     return (
       <>
         <TitleBar>

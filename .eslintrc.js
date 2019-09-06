@@ -82,6 +82,7 @@ module.exports = {
         'import/no-unresolved': 'off',
         'react/jsx-filename-extension': 'off',
         'react/no-unknown-property': 'off',
+        'react/prop-types': 'off',
         '@typescript-eslint/adjacent-overload-signatures': 'error',
         '@typescript-eslint/array-type': 'error',
         '@typescript-eslint/ban-types': 'error',
