@@ -3,8 +3,7 @@
   "version": "0.8.5",
   "private": true,
   "dependencies": {
-    "@appsemble/react": "^0.8.5",
     "@appsemble/sdk": "^0.8.5",
-    "react": "^16.9.0"
+    "mini-jsx": "^1.0.2"
   }
 }

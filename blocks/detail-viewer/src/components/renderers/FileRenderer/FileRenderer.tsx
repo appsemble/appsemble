@@ -1,6 +1,7 @@
+/** @jsx h */
 import { remapData } from '@appsemble/utils';
 import classNames from 'classnames';
-import React from 'react';
+import { Component, Fragment, h, VNode } from 'preact';
 
 import { RendererProps } from '../../../../block';
 import styles from './FileRenderer.css';
@@ -8,7 +9,7 @@ import styles from './FileRenderer.css';
 /**
  * Render a string as is.
  */
-export default class FileRenderer extends React.Component<RendererProps> {
+export default class FileRenderer extends Component<RendererProps> {
   getSrc = (value: string | Blob) => {
     const { block, utils } = this.props;
 
@@ -25,11 +26,11 @@ export default class FileRenderer extends React.Component<RendererProps> {
     return value;
   };
 
-  render(): JSX.Element {
+  render(): VNode {
     const { field, value } = this.props;
 
     return (
-      <>
+      <Fragment>
         {field.label && <h6 className="title is-6">{field.label}</h6>}
         {field.repeated ? (
           <div className={classNames('container', styles.repeated)}>
@@ -58,7 +59,7 @@ export default class FileRenderer extends React.Component<RendererProps> {
             />
           </figure>
         )}
-      </>
+      </Fragment>
     );
   }
 }

@@ -1,8 +1,31 @@
+import { parseISO } from 'date-fns';
+
 const property = '.';
 const filter = '|';
 
+const dateTimeFormat = new Intl.DateTimeFormat(undefined, {
+  year: 'numeric',
+  month: 'short',
+  day: 'numeric',
+  hour: '2-digit',
+  minute: '2-digit',
+});
+
 const filters = {
-  date: ({ intl }) => object => `${intl.formatDate(object)} ${intl.formatTime(object)}`,
+  date: () => object => {
+    let date;
+    if (object instanceof Number) {
+      date = new Date(object);
+    } else if (typeof object === 'string') {
+      date = parseISO(object);
+    } else {
+      date = object;
+    }
+    if (date instanceof Date) {
+      return dateTimeFormat.format(date);
+    }
+    return date;
+  },
   get: (context, name) => object => {
     if (object == null) {
       return undefined;

@@ -1,59 +1,84 @@
 /** @jsx h */
 import classNames from 'classnames';
-import {
-  ClassAttributes,
-  Component,
-  ComponentChild,
-  h,
-  JSX,
-  PreactDOMAttributes,
-  VNode,
-} from 'preact';
+import { Component, ComponentChild, h, VNode } from 'preact';
 
 import FormComponent, { FormComponentProps } from '../FormComponent';
 import Icon from '../Icon';
 
-type InputProps = FormComponentProps &
-  Omit<JSX.HTMLAttributes & PreactDOMAttributes & ClassAttributes<any>, 'label' | 'onInput'> & {
-    /**
-     * An error message to render.
-     */
-    error?: ComponentChild;
+type InputEventHandler<T> = (event: Event, value: T) => void;
 
-    /**
-     * A help message to render.
-     */
-    help?: ComponentChild;
+interface GenericInputProps<T, H extends string> extends Omit<FormComponentProps, 'children'> {
+  /**
+   * The HTML input type.
+   *
+   * This may be extended if necessary.
+   */
+  type: H;
 
-    /**
-     * The name of the HTML element.
-     */
-    name: string;
+  /**
+   * An error message to render.
+   */
+  error?: ComponentChild;
 
-    /**
-     * This is fired when the input value has changed.
-     *
-     * If the input type is `checkbox`, the value is a boolean. If the input type is `number`, the
-     * value is a number, otherwise it is a string.
-     */
-    onInput: (event: Event, value: number | string) => void;
+  /**
+   * A help message to render.
+   */
+  help?: ComponentChild;
 
-    /**
-     * The HTML input type.
-     *
-     * This may be extended if necessary.
-     */
-    type?:
-      | 'color'
-      | 'email'
-      | 'number'
-      | 'password'
-      | 'search'
-      | 'tel'
-      | 'text'
-      | 'textarea'
-      | 'url';
-  };
+  /**
+   * The name of the HTML element.
+   */
+  name: string;
+
+  /**
+   * This is fired when the input value has changed.
+   *
+   * If the input type is `checkbox`, the value is a boolean. If the input type is `number`, the
+   * value is a number, otherwise it is a string.
+   */
+  onInput: InputEventHandler<T>;
+
+  /**
+   * A placeholder to render if the input is empty,
+   */
+  placeholder?: string;
+
+  /**
+   * The current value of the input.
+   */
+  value: T;
+
+  /**
+   * Mark the input as read only.
+   */
+  readOnly?: boolean;
+}
+
+export type BooleanInputProps = GenericInputProps<boolean, 'checkbox'>;
+
+export interface NumberInputProps extends GenericInputProps<number, 'number'> {
+  /**
+   * A maximum numeric value.
+   */
+  max?: number;
+
+  /**
+   * A minimum numeric value.
+   */
+  min?: number;
+
+  /**
+   * By how much to increment or decrement a numeric input.
+   */
+  step?: number;
+}
+
+export type StringInputProps = GenericInputProps<
+  string,
+  'color' | 'email' | 'password' | 'search' | 'tel' | 'text' | 'textarea' | 'url' | null | undefined
+>;
+
+export type InputProps = BooleanInputProps | NumberInputProps | StringInputProps;
 
 /**
  * A Bulma styled form input element.
@@ -63,7 +88,13 @@ export default class Input extends Component<InputProps> {
     const { onInput, type } = this.props;
 
     const target = event.target as HTMLInputElement;
-    onInput(event, type === 'number' ? target.valueAsNumber : target.value);
+    if (type === 'number') {
+      (onInput as InputEventHandler<number>)(event, target.valueAsNumber);
+    } else if (type === 'checkbox') {
+      (onInput as InputEventHandler<boolean>)(event, target.checked);
+    } else {
+      (onInput as InputEventHandler<string>)(event, target.value);
+    }
   };
 
   render(): VNode {
@@ -76,8 +107,7 @@ export default class Input extends Component<InputProps> {
       onInput,
       required,
       type,
-      placeholder,
-      readOnly,
+      value,
       id = name,
       ...props
     } = this.props;
@@ -87,15 +117,15 @@ export default class Input extends Component<InputProps> {
     return (
       <FormComponent iconLeft={iconLeft} id={id} label={label} required={required}>
         <Comp
-          {...props}
+          checked={type === 'checkbox' ? (value as boolean) : undefined}
           className={classNames(type === 'textarea' ? 'textarea' : 'input', { 'is-danger': error })}
           id={id}
           name={name}
           onInput={this.onInput}
-          placeholder={placeholder}
-          readOnly={readOnly}
           required={required}
           type={type !== 'textarea' ? type : undefined}
+          value={`${value}`}
+          {...props}
         />
         {iconLeft && <Icon className="is-left" icon={iconLeft} />}
         {help && <p className="help">{help}</p>}

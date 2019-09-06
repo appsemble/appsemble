@@ -1,10 +1,10 @@
 /** @jsx h */
+import { FormattedMessage } from '@appsemble/preact';
 import classNames from 'classnames';
 import { Component, Fragment, h, VNode } from 'preact';
 
 import { InputProps } from '../../../block';
 import styles from './FileEntry.css';
-import messages from './messages';
 
 interface FileEntryProps extends InputProps<string | Blob> {
   name: string;
@@ -137,7 +137,9 @@ export default class FileEntry extends Component<FileEntryProps> {
             </Fragment>
           ) : (
             <span className={classNames('image is-128x128', styles.empty)}>
-              <span className="file-label">{messages.clickAction}</span>
+              <span className="file-label">
+                <FormattedMessage id="emptyFileLabel" />
+              </span>
             </span>
           )}
         </label>

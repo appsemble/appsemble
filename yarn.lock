@@ -4559,7 +4559,7 @@ date-fns@^1.27.2:
   resolved "https://registry.yarnpkg.com/date-fns/-/date-fns-1.30.1.tgz#2e71bf0b119153dbb4cc4e88d9ea5acfb50dc05c"
   integrity sha512-hBSVCvSmWC+QypYObzwGOd9wqdDpOt+0wl0KbU+R+uuZBS1jN8VsD1ss3irQDknRj5NvxiTF6oj/nDRnN/UQNw==
 
-date-fns@^2.0.0:
+date-fns@^2.0.0, date-fns@^2.0.1:
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/date-fns/-/date-fns-2.0.1.tgz#c5f30e31d3294918e6b6a82753a4e719120e203d"
   integrity sha512-C14oTzTZy8DH1Eq8N78owrCWvf3+cnJw88BTK/N3DYWVxDJuJzPaNdplzYxDYuuXXGvqBcO4Vy5SOrwAooXSWw==
@@ -7709,6 +7709,11 @@ intl-format-cache@^4.1.15:
   resolved "https://registry.yarnpkg.com/intl-format-cache/-/intl-format-cache-4.1.15.tgz#325e6e45656ac12aa7ba528a800a57b0ee9c799a"
   integrity sha512-b/wDoQRAV0wzwmYMMmUGt36pXNxTq4I4KVJa0q1CTvex2dsCpivCFwLcf44D+fhFQ09LMxq9a+P9F+4CYXTDIg==
 
+intl-format-cache@^4.1.19:
+  version "4.1.19"
+  resolved "https://registry.yarnpkg.com/intl-format-cache/-/intl-format-cache-4.1.19.tgz#43da8f621693dbd770683caacdae049ff3e6f31a"
+  integrity sha512-LIkxfB1KriplBCKsrmWNdmk/fYNFDFkPtmEmPr0zoErypdEsxN9Fpq8VOkIg/JvJk0VMFaDCyjaJ+JRCDqbi2g==
+
 intl-locales-supported@^1.4.5:
   version "1.4.5"
   resolved "https://registry.yarnpkg.com/intl-locales-supported/-/intl-locales-supported-1.4.5.tgz#be9774e6d4ea518f000165ecfe78c78d5bee7de5"
@@ -7719,6 +7724,11 @@ intl-messageformat-parser@^3.0.7:
   resolved "https://registry.yarnpkg.com/intl-messageformat-parser/-/intl-messageformat-parser-3.0.7.tgz#d28493501a1bc40a094239b7ef26fe9412558e72"
   integrity sha512-L16VbbV3NFaiZV65XwOIH9fBe52TS2EkOR0k8Y4ratsgTE7KPEbcUCUrz/iEQwJo7BcWY4ohkZbeYZRgAiPR1Q==
 
+intl-messageformat-parser@^3.1.0:
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/intl-messageformat-parser/-/intl-messageformat-parser-3.1.0.tgz#747e3dbafaf1c1fd07dffa6e4f54ed60e0336ca7"
+  integrity sha512-HUa6oLTy3Q+X0mpmk3g5as8WiM1F2AtssfsmNbFUu4yf+y/eD6aggpbnfjxT4uTJFL9JhcsE2gQfzAF2PTTsFg==
+
 intl-messageformat@^7.1.0:
   version "7.1.0"
   resolved "https://registry.yarnpkg.com/intl-messageformat/-/intl-messageformat-7.1.0.tgz#496965b200cbf273096c0a0da8a54c7a206653e6"
@@ -7726,6 +7736,14 @@ intl-messageformat@^7.1.0:
   dependencies:
     intl-format-cache "^4.1.15"
     intl-messageformat-parser "^3.0.7"
+
+intl-messageformat@^7.1.6:
+  version "7.1.6"
+  resolved "https://registry.yarnpkg.com/intl-messageformat/-/intl-messageformat-7.1.6.tgz#3844b0c65d07eabdf016c1f0a5f1964d24f364a5"
+  integrity sha512-ef0s+0tNrgNQCZkD3qA1MfYodbMq+pFrqe52E8p9A3lt0euOMtAAUFCKWloT1Ia5bdsjIffdO2F8J1s3LxPoVg==
+  dependencies:
+    intl-format-cache "^4.1.19"
+    intl-messageformat-parser "^3.1.0"
 
 invariant@^2.1.1, invariant@^2.2.2, invariant@^2.2.3, invariant@^2.2.4:
   version "2.2.4"
@@ -10195,10 +10213,10 @@ mini-html-webpack-plugin@^0.2.3:
   dependencies:
     webpack-sources "^1.1.0"
 
-mini-jsx@^1.0.1:
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/mini-jsx/-/mini-jsx-1.0.1.tgz#b2d0091e5b2f4144445ed511cb89885b1547b837"
-  integrity sha512-DYVhkQiqDVy1vfuuWXTu71nzAntNa8t6cLMO/YG3hxTtByIntwlFISE4C0vzMVMvp2+FMjOsLC63BvM/AdOYTw==
+mini-jsx@^1.0.2:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/mini-jsx/-/mini-jsx-1.0.2.tgz#b6a77093962527065460e8805aa3248bd1e70126"
+  integrity sha512-VzGMoQmqIMcvI9OiBR1Ciodwk3jY8da9WufT+6703u4kBR9u9LRySIda5/ZMtieOiFy3CQUflLuD6Uhms3HbAg==
 
 minimalistic-assert@^1.0.0, minimalistic-assert@^1.0.1:
   version "1.0.1"

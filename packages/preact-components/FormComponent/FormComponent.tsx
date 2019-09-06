@@ -1,12 +1,14 @@
 /** @jsx h */
 import { IconName } from '@fortawesome/fontawesome-common-types';
 import classNames from 'classnames';
-import { Component, ComponentChild, h, VNode } from 'preact';
+import { ComponentChildren, h, VNode } from 'preact';
 
 import styles from './FormComponent.css';
 import messages from './messages';
 
 export interface FormComponentProps {
+  children: ComponentChildren;
+
   /**
    * An optional id for the HTML element. If not set, this will fall back to `name`.
    */
@@ -20,7 +22,7 @@ export interface FormComponentProps {
   /**
    * The label element to render.
    */
-  label: ComponentChild;
+  label: ComponentChildren;
 
   /**
    * Whether or not the input is required.
@@ -31,24 +33,26 @@ export interface FormComponentProps {
 /**
  * A wrapper for creating consistent form components.
  */
-export default class FormComponent extends Component<FormComponentProps> {
-  render(): VNode {
-    const { children, iconLeft, id, label, required } = this.props;
-
-    return (
-      <div className="field">
-        <label className={`label ${styles.label}`} htmlFor={id}>
-          <span className={styles.labelContent}>{label}</span>
-          {required || (
-            <span
-              className={`is-inline has-text-weight-normal has-text-grey-light ${styles.optional}`}
-            >
-              ({messages.optional})
-            </span>
-          )}
-        </label>
-        <div className={classNames('control', { 'has-icons-left': iconLeft })}>{children}</div>
-      </div>
-    );
-  }
+export default function FormComponent({
+  children,
+  iconLeft,
+  id,
+  label,
+  required,
+}: FormComponentProps): VNode {
+  return (
+    <div className="field">
+      <label className={`label ${styles.label}`} htmlFor={id}>
+        <span className={styles.labelContent}>{label}</span>
+        {required || (
+          <span
+            className={`is-inline has-text-weight-normal has-text-grey-light ${styles.optional}`}
+          >
+            ({messages.optional})
+          </span>
+        )}
+      </label>
+      <div className={classNames('control', { 'has-icons-left': iconLeft })}>{children}</div>
+    </div>
+  );
 }

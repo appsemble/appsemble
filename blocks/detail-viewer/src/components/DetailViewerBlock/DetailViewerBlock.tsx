@@ -1,7 +1,8 @@
-import { BlockProps } from '@appsemble/react';
-import { Loader } from '@appsemble/react-components';
+/** @jsx h */
+import { BlockProps } from '@appsemble/preact';
+import { Loader } from '@appsemble/preact-components';
 import { remapData } from '@appsemble/utils';
-import React from 'react';
+import { Component, h, VNode } from 'preact';
 
 import { Actions, Parameters } from '../../../block';
 import FileRenderer from '../renderers/FileRenderer';
@@ -22,7 +23,7 @@ const renderers = {
 /**
  * The main component for the Appsemble detail-viewer block.
  */
-export default class DetailViewerBlock extends React.Component<
+export default class DetailViewerBlock extends Component<
   BlockProps<Parameters, Actions>,
   DetailViewerBlockState
 > {
@@ -37,7 +38,7 @@ export default class DetailViewerBlock extends React.Component<
     this.setState({ data });
   }
 
-  render(): JSX.Element {
+  render(): VNode {
     const { block, theme } = this.props;
     const { data } = this.state;
 
@@ -49,10 +50,10 @@ export default class DetailViewerBlock extends React.Component<
       <div className={styles.root}>
         {block.parameters.fields.map((field, index) => {
           // Always default to string if type is not supported in renderers list.
-          const Component = renderers[field.type] || renderers.string;
+          const Comp = renderers[field.type] || renderers.string;
 
           return (
-            <Component
+            <Comp
               key={field.name || field.label || `${field.type}.${index}`}
               block={block}
               data={data}
