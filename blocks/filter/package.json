@@ -3,12 +3,11 @@
   "version": "0.8.5",
   "private": true,
   "dependencies": {
-    "@appsemble/dom-types": "0.8.5",
-    "@appsemble/preact": "0.8.5",
-    "@appsemble/preact-components": "0.8.5",
-    "@appsemble/sdk": "0.8.5",
-    "@appsemble/utils": "0.8.5",
+    "@appsemble/react": "^0.8.5",
+    "@appsemble/react-components": "^0.8.5",
+    "@appsemble/sdk": "^0.8.5",
     "classnames": "^2.2.6",
-    "preact": "^10.0.0-rc.1"
+    "react": "^16.9.0",
+    "react-intl": "^3.1.13"
   }
 }
