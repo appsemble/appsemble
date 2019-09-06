@@ -91,7 +91,7 @@ export interface FormattedMessageProps {
 export function FormattedMessage({ id, values }: FormattedMessageProps): VNode {
   const { messages } = useBlock();
   if (!Object.prototype.hasOwnProperty.call(messages, id)) {
-    return <Fragment>{'Untranslated message ID: '}message</Fragment>;
+    return <Fragment>Untranslated message ID: {id}</Fragment>;
   }
   const formattedMessage = messages[id].formatHTMLMessage(values);
   return <Fragment>{formattedMessage}</Fragment>;
