@@ -11,6 +11,20 @@ declare module '*.gif' {
 }
 
 /**
+ * A static JPEG asset.
+ */
+declare module '*.jpg' {
+  export default file;
+}
+
+/**
+ * A static PNG asset.
+ */
+declare module '*.png' {
+  export default file;
+}
+
+/**
  * A static SVG asset.
  */
 declare module '*.svg' {
