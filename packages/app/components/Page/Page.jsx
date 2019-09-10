@@ -52,7 +52,7 @@ export default class Page extends React.Component {
       const { subPages } = page;
 
       if (currentPage + 1 === subPages.length) {
-        this.actions.onFlowFinish.dispatch(data);
+        await this.actions.onFlowFinish.dispatch(data);
         return data;
       }
 
@@ -61,7 +61,7 @@ export default class Page extends React.Component {
     },
 
     finish: async data => {
-      this.actions.onFlowFinish.dispatch(data);
+      await this.actions.onFlowFinish.dispatch(data);
       this.setState({ data });
       return data;
     },
@@ -79,7 +79,7 @@ export default class Page extends React.Component {
     },
 
     cancel: async data => {
-      this.actions.onFlowCancel.dispatch(data);
+      await this.actions.onFlowCancel.dispatch(data);
       this.setState({ data });
     },
   };
