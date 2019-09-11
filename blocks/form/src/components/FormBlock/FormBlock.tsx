@@ -98,7 +98,7 @@ export default class FormBlock extends Component<FormBlockProps, FormBlockState>
     values: {
       ...this.props.block.parameters.fields.reduce<Values>(
         (acc, { name, defaultValue, repeated }) => {
-          acc[name] = defaultValue || (repeated && []);
+          acc[name] = defaultValue !== undefined ? defaultValue : repeated && [];
           return acc;
         },
         {},

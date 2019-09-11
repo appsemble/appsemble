@@ -22,6 +22,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 - App: Fix some caching issues in the service worker.
 - Block(`@appsemble/form`): Fix issue where `defaultValue` was considered invalid by default.
+- Block(`@appsemble/form`): Fix issue where `defaultValue` was not used if value was falsy.
 
 ## [0.8.4] - 2019-08-20
 
