@@ -37,7 +37,7 @@ attach<BlockParameters, BlockActions>(
         }
         locationMarker.setLatLng(latlng).addTo(map);
       })
-      .locate({ watch: true });
+      .locate({ watch: true, timeout: 1e3, maximumAge: 60e3 });
     if (!Number.isNaN(lat) && !Number.isNaN(lng)) {
       map.setView([lat, lng], 18);
     }
