@@ -7,6 +7,12 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- CLI: Convert TypeScript interfaces to JSON schema for block parameter validation.
+- CLI: Upload a JSON schema to validate block parameters.
+- Server: Blocks are now validated against a JSON schema.
+
 ## [0.8.5] - 2019-09-01
 
 ### Added
