@@ -324,7 +324,10 @@ export default class Editor extends React.Component {
               <div className="navbar-brand">
                 <span className="navbar-item">
                   <button className="button" disabled={!dirty} type="submit">
-                    <FormattedMessage {...messages.preview} />
+                    <Icon icon="vial" />
+                    <span>
+                      <FormattedMessage {...messages.preview} />
+                    </span>
                   </button>
                 </span>
                 <span className="navbar-item">
@@ -334,7 +337,10 @@ export default class Editor extends React.Component {
                     onClick={this.onUpload}
                     type="button"
                   >
-                    <FormattedMessage {...messages.publish} />
+                    <Icon icon="save" />
+                    <span>
+                      <FormattedMessage {...messages.publish} />
+                    </span>
                   </button>
                 </span>
                 <span className="navbar-item">
@@ -349,9 +355,7 @@ export default class Editor extends React.Component {
                         type="file"
                       />
                       <span className="file-cta">
-                        <span className="file-icon">
-                          <i className="fas fa-upload" />
-                        </span>
+                        <Icon icon="upload" />
                         <span className="file-label">
                           <FormattedMessage {...messages.icon} />
                         </span>
@@ -367,8 +371,19 @@ export default class Editor extends React.Component {
                 </span>
                 <span className="navbar-item">
                   <a className="button" href={appUrl} rel="noopener noreferrer" target="_blank">
-                    <FormattedMessage {...messages.viewLive} />
+                    <Icon icon="share-square" />
+                    <span>
+                      <FormattedMessage {...messages.viewLive} />
+                    </span>
                   </a>
+                </span>
+                <span className="navbar-item">
+                  <button className="button is-danger" type="submit">
+                    <Icon icon="trash-alt" />
+                    <span>
+                      <FormattedMessage {...messages.delete} />
+                    </span>
+                  </button>
                 </span>
               </div>
             </nav>

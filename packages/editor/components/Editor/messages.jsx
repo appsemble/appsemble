@@ -7,6 +7,7 @@ export default defineMessages({
   appNotFound: 'App does not exist',
   yamlNotFound:
     'Unable to restore original YAML. Formatting may be different from what was previously published.',
+  delete: 'Delete',
   error: 'Something went wrong trying to load this app',
   errorUpdate: 'Something went wrong trying to update the app recipe',
   errorUpdateIcon: 'Something went wrong trying to update the app icon',
