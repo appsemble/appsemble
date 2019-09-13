@@ -192,6 +192,26 @@ export async function updateApp(ctx) {
   }
 }
 
+export async function deleteApp(ctx) {
+  const { appId } = ctx.params;
+  const { App } = ctx.db.models;
+  const {
+    user: { organizations },
+  } = ctx.state;
+
+  const app = await App.findByPk(appId);
+
+  if (!app) {
+    throw Boom.notFound('App not found');
+  }
+
+  if (!organizations.some(organization => organization.id === app.OrganizationId)) {
+    throw Boom.forbidden("User does not belong in this App's organization.");
+  }
+
+  await app.destroy();
+}
+
 export async function getAppIcon(ctx) {
   const { appId } = ctx.params;
   const { App } = ctx.db.models;
