@@ -7,9 +7,52 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.8.5] - 2019-09-01
+
 ### Added
 
-- Block: Make Leaflet `tileLayer` configurable using `theme` object.
+- Server: Log the IP address from which requests are made.
+- Server: Partial support for SSL on localhost.
+
+### Changed
+
+- Block(`@appsemble/form`): Form labels inputs are now aligned vertically.
+
+### Fixed
+
+- App: Fix some caching issues in the service worker.
+- Block(`@appsemble/form`): Fix issue where `defaultValue` was considered invalid by default.
+- Block(`@appsemble/form`): Fix issue where `defaultValue` was not used if value was falsy.
+
+## [0.8.4] - 2019-08-20
+
+### Added
+
+- App: Add `tabs` page type.
+- Block(`@appsemble/form`): Add support for client-side validation by setting `required: true`.
+- Server: `$created` and `$updated` are exposed in the API.
+
+### Changed
+
+- Block(`@appsemble/form`): Drop support for `bool`. Use `boolean` instead.
+- Server: Remove `/_/` routing. Apps are now served from `@organization/appname` and all `/_/`
+  routes serve from `/`. This allows for app names no longer being unique for the entirety of
+  Appsemble but instead within the organization.
+
+### Fixed
+
+- App: Inverted Bulma colors are calculated properly.
+- Editor: Regression causing Appsemble to crash when editing resources.
+
+## [0.8.3] - 2019-08-16
+
+### Added
+
+- App: Add ability to specify different navigation types. Currently only `bottom` is supported,
+  which renders a navigation pane at the bottom of the screen. The default is a side menu on the
+  left.
+- App: Support page icons. These will be rendered in the navigation menu.
+- App: Make Leaflet `tileLayer` configurable using `theme` object.
 - Editor: Add a toggle for making apps private by default.
 - SDK: Add a `theme` object representing the combined theme of the base theme, app theme, page theme
   and block theme to the SDK.
@@ -24,9 +67,9 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 - App: Allow to load media from any source.
 - App: Prepend every action with `on`, for example: `click` → `onClick`.
-- Block: Add support for `number`, `integer`, and `boolean` input types in form block.
-- Block: Add optional button to feed block.
-- Block: Make replies section in feed block optional.
+- Block(`@appsemble/form`): Add support for `number`, `integer`, and `boolean` input types.
+- Block(`@appsemble/feed`): Add optional button.
+- Block(`@appsemble/feed`): Make replies section optional.
 - CLI: Parse JSON compatible values for `appsemble config set`.
 - Editor: Allow viewing apps without logging in.
 - Editor: Redirect back to previous page when logging in.
@@ -54,8 +97,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
-- Block: Add support for hidden for hidden form field in form block.
-- Block: Add support for resolution limits for uploading images in form block.
+- Block(`@appsemble/form`): Add support for hidden for hidden form field.
+- Block(`@appsemble/form`): Add support for resolution limits for uploading images.
 - Editor: Support basic organization management.
 - Server: Support basic organization management.
 
@@ -93,7 +136,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - App: Allow `splash` actions to not be full screen. They can still be made full screen by passing
   `fullscreen: true` to the action.
 - App: Rename `splash` action to `dialog`.
-- Block: Add new feed block for showing content similar to social media feeds.
+- Block(`@appsemble/feed`): Add new feed block for showing content similar to social media feeds.
 - Editor: Render a user friendly error page if an unexpected error occurs.
 - Editor: Report errors to Sentry if this is configured.
 - SDK: Add support for the events API.
@@ -117,8 +160,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - App: Add ´resource´ action type. This further simplifies the data flow for retrieving and creating
   data.
 - App: Add support for building query strings for `resource` and `request` actions.
-- Block: Add List block.
-- Block: Add Markdown block.
+- Block(`@appsemble/list`): Add List block.
+- Block(`@appsemble/markdown`): Add Markdown block.
 - CLI: Add support for authentication.
 - Editor: Add support for app description field.
 - Editor: Add `Person App`, `Holiday App`, and `Unlittered App` app templates.
@@ -127,8 +170,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ### Changed
 
 - App: Rename ´definitions´ to ´resources´ in app definition.
-- Block: Rewrite and simplify detail-viewer block.
-- Block: Replace usage of resource in map block with a load action.
+- Block(`@appsemble/detail-viewer`): Rewrite and simplify block.
+- Block(`@appsemble/map`): Replace usage of resource with a load action.
 - Server: Add security scopes for API calls.
 
 ## [0.4.2] - 2019-02-26

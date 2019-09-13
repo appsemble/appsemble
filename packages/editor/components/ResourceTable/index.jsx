@@ -7,7 +7,6 @@ import ResourceTable from './ResourceTable';
 function mapStateToProps(state, ownProps) {
   return {
     app: state.apps.apps.find(app => app.id === Number(ownProps.match.params.id)),
-    resourceName: ownProps.match.params.resourceName,
   };
 }
 

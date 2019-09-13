@@ -1,9 +1,10 @@
+/** @jsx h */
 import 'leaflet/dist/leaflet.css';
 
-import { BlockProps } from '@appsemble/react';
+import { BlockProps } from '@appsemble/preact';
 import classNames from 'classnames';
 import { CircleMarker, LocationEvent, Map, TileLayer } from 'leaflet';
-import React from 'react';
+import { Component, createRef, h, VNode } from 'preact';
 
 import { InputProps } from '../../../block';
 import styles from './GeoCoordinatesInput.css';
@@ -13,19 +14,19 @@ type GeoCoordinatesInputProps = InputProps<{}> & BlockProps;
 /**
  * An input element for an object type schema which implements GeoCoordinates.
  */
-export default class GeoCoordinatesInput extends React.Component<GeoCoordinatesInputProps> {
+export default class GeoCoordinatesInput extends Component<GeoCoordinatesInputProps> {
   locationMarker = new CircleMarker(null, {
     color: this.props.theme.primaryColor,
   });
 
-  ref = React.createRef<HTMLDivElement>();
+  ref = createRef<HTMLDivElement>();
 
   map: Map;
 
   componentDidMount(): void {
     const {
       field,
-      onChange,
+      onInput,
       utils,
       theme: { tileLayer },
     } = this.props;
@@ -48,13 +49,10 @@ export default class GeoCoordinatesInput extends React.Component<GeoCoordinatesI
       })
       .on('move', () => {
         const { lng, lat } = map.getCenter();
-        onChange(
-          { target: { name: field.name } },
-          {
-            latitude: lat,
-            longitude: lng,
-          },
-        );
+        onInput(({ target: { name: field.name } } as any) as Event, {
+          latitude: lat,
+          longitude: lng,
+        });
       })
       .locate({ watch: true });
     this.map = map;
@@ -64,7 +62,7 @@ export default class GeoCoordinatesInput extends React.Component<GeoCoordinatesI
     this.map.setView(this.locationMarker.getLatLng(), 16);
   };
 
-  render(): JSX.Element {
+  render(): VNode {
     return (
       <div className={styles.root}>
         <div ref={this.ref} className={styles.map} />

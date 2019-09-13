@@ -1,4 +1,4 @@
-import { BlockProps } from '@appsemble/react';
+import { BlockProps } from '@appsemble/preact';
 
 export interface Field {
   label?: string;

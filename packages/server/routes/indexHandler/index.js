@@ -9,7 +9,7 @@ import { bulmaURL, faURL } from '../../utils/styleURL';
  * https://developers.google.com/web/fundamentals/web-app-manifest
  */
 export default async function indexHandler(ctx) {
-  const { path } = ctx.params;
+  const { organizationId, appId } = ctx.params;
   const { App } = ctx.db.models;
   ctx.type = 'text/html';
   const { render } = ctx.state;
@@ -28,10 +28,14 @@ export default async function indexHandler(ctx) {
     'media-src': ['*', 'blob:', 'data:'],
     'style-src': ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
     'font-src': ["'self'", 'data:', 'https://fonts.gstatic.com'],
+    'frame-src': ["'self'", '*.vimeo.com', '*.youtube.com'],
   };
 
   try {
-    const app = await App.findOne({ where: { path } }, { raw: true });
+    const app = await App.findOne(
+      { where: { path: appId, OrganizationId: organizationId.slice(1) } },
+      { raw: true },
+    );
     if (app == null) {
       ctx.body = await render('error.html', {
         bulmaURL,

@@ -20,6 +20,11 @@ The name of the page. This field is always required and must be unique within th
 it is not possible to have two pages with the same name. The name of the page is displayed at the
 top of each page as well as in the side navigational menu.
 
+## `icon`
+
+An Font Awesome icon to render in the navigation menu to represent the page. All supported icons can
+be found on the [Font Awesome website](https://fontawesome.com/icons?m=free).
+
 ## `scope`
 
 A list of `OAuth scopes` that are allowed to view this page. Adding `'*'` to the list of scopes
@@ -31,10 +36,14 @@ The type of the page. Type currently supports the following options:
 
 - page (default)
 - flow
+- tabs
 
 Setting this value to `flow` will result in the page displaying like a flow page, in which the page
 is divided into _subpages_, allowing for users to be guided through several steps. Flow page actions
 can be used to facilitate navigating through flow pages.
+
+Setting this value to `tabs` will result in the page displaying tabs at the top of the page. Each
+tab corresponds to a _subpage_ which can be linked to directly using the [link action](action#link).
 
 ## `blocks`\*
 
@@ -43,7 +52,7 @@ displayed in the order that they are defined in the list.
 
 > Note: This field is not required if `type` is set to `flow`.
 
-## `flowPages`\*
+## `subPages`\*
 
 The list of _subpages_. When visiting the page, the first _subpage_ gets displayed by default.
 Subpages are structured similarly to pages, albeit simplified. Each subpage consists the properties

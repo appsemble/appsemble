@@ -51,9 +51,9 @@ it('should serve a PWA manifest', async () => {
     ],
     name: 'Test App',
     orientation: 'any',
-    scope: '/test-app',
+    scope: '/@manitest/test-app',
     short_name: 'Test App',
-    start_url: '/test-app/test-page',
+    start_url: '/@manitest/test-app/test-page',
     theme_color: '#fa86ff',
   });
 });
@@ -83,9 +83,9 @@ it('should fallback to sane defaults', async () => {
     ],
     name: 'Test App',
     orientation: 'any',
-    scope: '/test-app',
+    scope: '/@manitest/test-app',
     short_name: 'Test App',
-    start_url: '/test-app/test-page',
+    start_url: '/@manitest/test-app/test-page',
     theme_color: '#ffffff',
   });
 });

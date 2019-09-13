@@ -1,8 +1,10 @@
 import * as React from 'react';
 import { Redirect, Route, RouteComponentProps } from 'react-router-dom';
 
+import { User } from '../../types';
+
 export interface ProtectedRouteProps extends RouteComponentProps {
-  user: any;
+  user: User;
 }
 
 export default class ProtectedRoute extends React.Component<ProtectedRouteProps> {
@@ -13,7 +15,7 @@ export default class ProtectedRoute extends React.Component<ProtectedRouteProps>
       const { location } = props;
       const search = new URLSearchParams();
       search.set('redirect', `${location.pathname}${location.search}${location.hash}`);
-      return <Redirect to={{ pathname: '/_/login', search: `?${search}` }} />;
+      return <Redirect to={{ pathname: '/login', search: `?${search}` }} />;
     }
 
     return <Route {...props} />;

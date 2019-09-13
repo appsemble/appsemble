@@ -36,7 +36,7 @@ export default class Register extends React.Component {
     }
 
     const qs = new URLSearchParams(location.search);
-    const redirect = qs.has('redirect') ? qs.get('redirect') : '/_/apps';
+    const redirect = qs.has('redirect') ? qs.get('redirect') : '/apps';
     history.replace(redirect);
   }
 
@@ -100,7 +100,7 @@ export default class Register extends React.Component {
     const { email, password, submitting } = this.state;
 
     return (
-      <React.Fragment>
+      <>
         <HelmetIntl title={messages.title} />
         <Form className={classNames('container', styles.root)} onSubmit={this.onSubmit}>
           <Input
@@ -136,7 +136,7 @@ export default class Register extends React.Component {
             <FormattedMessage {...messages.registerButton} />
           </button>
         </Form>
-      </React.Fragment>
+      </>
     );
   }
 }

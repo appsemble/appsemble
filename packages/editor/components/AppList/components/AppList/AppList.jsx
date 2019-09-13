@@ -1,4 +1,4 @@
-import { Loader } from '@appsemble/react-components';
+import { Icon, Loader } from '@appsemble/react-components';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
@@ -50,7 +50,7 @@ export default class AppList extends React.Component {
     const filteredApps = apps.filter(app => app.name.toLowerCase().includes(filter.toLowerCase()));
 
     return (
-      <React.Fragment>
+      <>
         <HelmetIntl title={messages.title} />
         <div className={`field ${styles.filter}`}>
           <p className="control has-icons-left">
@@ -60,9 +60,7 @@ export default class AppList extends React.Component {
               placeholder={intl.formatMessage(messages.search)}
               value={filter}
             />
-            <span className="icon is-small is-left">
-              <i className="fas fa-search" />
-            </span>
+            <Icon className="is-left" icon="search" size="small" />
           </p>
         </div>
         <div className={styles.appList}>
@@ -81,7 +79,7 @@ export default class AppList extends React.Component {
                 {...messages.createOrganizationInstruction}
                 values={{
                   link: (
-                    <Link to="/_/settings/organizations">
+                    <Link to="/settings/organizations">
                       <FormattedMessage {...messages.here} />
                     </Link>
                   ),
@@ -90,7 +88,7 @@ export default class AppList extends React.Component {
             </span>
           </div>
         )}
-      </React.Fragment>
+      </>
     );
   }
 }

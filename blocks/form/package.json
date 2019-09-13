@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/form",
-  "version": "0.8.2",
+  "version": "0.8.5",
   "private": true,
   "appsemble": {
     "actions": {
@@ -12,12 +12,11 @@
     "output": "dist"
   },
   "dependencies": {
-    "@appsemble/react": "0.8.2",
+    "@appsemble/preact-components": "0.8.5",
+    "@appsemble/preact": "0.8.5",
     "classnames": "^2.2.6",
     "leaflet": "^1.5.1",
-    "react": "^16.8.6",
-    "react-dom": "^16.8.6",
-    "react-intl": "^2.9.0",
+    "preact": "^10.0.0-rc.1",
     "read-blob": "^1.1.0"
   }
 }

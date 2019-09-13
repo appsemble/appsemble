@@ -1,4 +1,4 @@
-import { Form, Input, Loader, Modal } from '@appsemble/react-components';
+import { Form, Icon, Input, Loader, Modal } from '@appsemble/react-components';
 import axios from 'axios';
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
@@ -15,7 +15,6 @@ export default class ResourceTable extends React.Component {
     app: PropTypes.shape().isRequired,
     match: PropTypes.shape().isRequired,
     history: PropTypes.shape().isRequired,
-    resourceName: PropTypes.string.isRequired,
     push: PropTypes.func.isRequired,
     intl: PropTypes.shape().isRequired,
   };
@@ -53,13 +52,12 @@ export default class ResourceTable extends React.Component {
 
   async componentDidUpdate(prevProps) {
     const {
-      resourceName,
       match: {
-        params: { mode, resourceId },
+        params: { mode, resourceId, resourceName },
       },
     } = this.props;
 
-    if (prevProps.resourceName !== resourceName) {
+    if (prevProps.match.params.resourceName !== resourceName) {
       await this.loadResource();
     }
 
@@ -82,8 +80,8 @@ export default class ResourceTable extends React.Component {
     if (name === 'id') {
       return;
     }
-    this.setState(({ editingResource }, { app, resourceName }) => {
-      const { type } = app.resources[resourceName].properties[name];
+    this.setState(({ editingResource }, { app, match }) => {
+      const { type } = app.resources[match.params.resourceName].schema.properties[name];
 
       return {
         editingResource: {
@@ -117,7 +115,6 @@ export default class ResourceTable extends React.Component {
 
     const {
       app,
-      resourceName,
       push,
       intl: { formatMessage },
       match,
@@ -127,7 +124,7 @@ export default class ResourceTable extends React.Component {
 
     try {
       const { data } = await axios.post(
-        `/api/apps/${app.id}/resources/${resourceName}`,
+        `/api/apps/${app.id}/resources/${match.params.resourceName}`,
         editingResource,
       );
 
@@ -149,7 +146,6 @@ export default class ResourceTable extends React.Component {
 
     const {
       app,
-      resourceName,
       push,
       intl: { formatMessage },
       match,
@@ -159,7 +155,7 @@ export default class ResourceTable extends React.Component {
 
     try {
       await axios.put(
-        `/api/apps/${app.id}/resources/${resourceName}/${match.params.resourceId}`,
+        `/api/apps/${app.id}/resources/${match.params.resourceName}/${match.params.resourceId}`,
         editingResource,
       );
 
@@ -185,14 +181,16 @@ export default class ResourceTable extends React.Component {
   deleteResource = async () => {
     const {
       app,
-      resourceName,
+      match,
       push,
       intl: { formatMessage },
     } = this.props;
     const { deletingResource, resources } = this.state;
 
     try {
-      await axios.delete(`/api/apps/${app.id}/resources/${resourceName}/${deletingResource.id}`);
+      await axios.delete(
+        `/api/apps/${app.id}/resources/${match.params.resourceName}/${deletingResource.id}`,
+      );
       push({
         body: formatMessage(messages.deleteSuccess, { id: deletingResource.id }),
         color: 'primary',
@@ -208,8 +206,9 @@ export default class ResourceTable extends React.Component {
   };
 
   async loadResource() {
-    const { app, resourceName } = this.props;
+    const { app, match } = this.props;
     const { loading } = this.state;
+    const { resourceName } = match.params;
 
     if (!loading) {
       this.setState({ loading: true, error: false, resources: [] });
@@ -232,9 +231,8 @@ export default class ResourceTable extends React.Component {
   render() {
     const {
       app,
-      resourceName,
       match: {
-        params: { mode },
+        params: { mode, resourceName },
         ...match
       },
     } = this.props;
@@ -251,10 +249,10 @@ export default class ResourceTable extends React.Component {
     if (!loading && resources === undefined) {
       if (!app.resources[resourceName]) {
         return (
-          <React.Fragment>
+          <>
             <HelmetIntl title={messages.title} titleValues={{ name: app.name, resourceName }} />
             <FormattedMessage {...messages.notFound} />
-          </React.Fragment>
+          </>
         );
       }
 
@@ -278,13 +276,11 @@ export default class ResourceTable extends React.Component {
     const keys = ['id', ...Object.keys(schema?.properties || {})];
 
     return (
-      <React.Fragment>
+      <>
         <HelmetIntl title={messages.title} titleValues={{ name: app.name, resourceName }} />
         <h1 className="title">Resource {resourceName}</h1>
         <Link className="button is-primary" to={`${match.url}/new`}>
-          <span className="icon">
-            <i className="fas fa-plus-square" />
-          </span>
+          <Icon icon="plus-square" />
           <span>
             <FormattedMessage {...messages.createButton} />
           </span>
@@ -304,18 +300,14 @@ export default class ResourceTable extends React.Component {
                 <tr key={resource.id}>
                   <td className={styles.actionsCell}>
                     <Link className="button" to={`${match.url}/edit/${resource.id}`}>
-                      <span className="icon is-small has-text-info">
-                        <i className="fas fa-pen" />
-                      </span>
+                      <Icon className="has-text-info" icon="pen" size="small" />
                     </Link>
                     <button
                       className="button"
                       onClick={() => this.promptDeleteResource(resource)}
                       type="button"
                     >
-                      <span className="icon is-small has-text-danger">
-                        <i className="fas fa-trash" />
-                      </span>
+                      <Icon className="has-text-danger" icon="trash" size="small" />
                     </button>
                   </td>
                   {keys.map(key => (
@@ -425,7 +417,7 @@ export default class ResourceTable extends React.Component {
             </footer>
           </div>
         </Modal>
-      </React.Fragment>
+      </>
     );
   }
 }

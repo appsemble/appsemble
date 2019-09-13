@@ -16,9 +16,10 @@ export default async function manifestHandler(ctx) {
     throw Boom.notFound('App not found');
   }
 
-  const { path } = record;
+  const { OrganizationId, path } = record;
   const { defaultPage, description, name, theme = { baseTheme } } = record.definition;
   const { themeColor = '#ffffff', splashColor = themeColor } = theme;
+  const scope = `/@${OrganizationId}/${path}`;
 
   ctx.body = {
     background_color: splashColor,
@@ -31,9 +32,9 @@ export default async function manifestHandler(ctx) {
     })),
     name,
     orientation: 'any',
-    scope: `/${path}`,
+    scope,
     short_name: name,
-    start_url: `/${path}/${normalize(defaultPage)}`,
+    start_url: `${scope}/${normalize(defaultPage)}`,
     theme_color: themeColor,
   };
   ctx.type = 'application/manifest+json';

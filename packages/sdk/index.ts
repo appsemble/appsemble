@@ -1,98 +1,36 @@
-import { Theme } from '@appsemble/types';
+import {
+  Action,
+  BaseAction,
+  Block,
+  LinkAction,
+  LogAction,
+  Message,
+  RequestAction,
+  ResourceCreateAction,
+  ResourceDeleteAction,
+  ResourceGetAction,
+  ResourceQueryAction,
+  ResourceUpdateAction,
+  Theme,
+} from '@appsemble/types';
 import { Promisable } from 'type-fest';
 
-interface BaseAction {
-  /**
-   * A function which can be called to dispatch the action.
-   */
-  dispatch: (data?: any) => Promise<any>;
-}
-
-/**
- * An action that can be called from within a block.
- */
-export interface SimpleAction extends BaseAction {
-  /**
-   * The type of the action.
-   */
-  type:
-    | 'dialog'
-    | 'dialog.error'
-    | 'dialog.ok'
-    | 'log'
-    | 'noop'
-    | 'request'
-    | 'resource.get'
-    | 'resource.query'
-    | 'resource.create'
-    | 'resource.update'
-    | 'resource.delete';
-}
-
-export interface LinkAction extends BaseAction {
-  type: 'link';
-
-  /**
-   * Get the link that the action would link to if the given data was passed.
-   */
-  href: (data?: any) => string;
-}
-
-/**
- * An action that can be called from within a block.
- */
-export type Action = SimpleAction | LinkAction;
+export {
+  Action,
+  BaseAction,
+  LinkAction,
+  LogAction,
+  Message,
+  RequestAction,
+  ResourceCreateAction,
+  ResourceDeleteAction,
+  ResourceGetAction,
+  ResourceQueryAction,
+  ResourceUpdateAction,
+  Theme,
+};
 
 export type Actions<A> = { [K in keyof A]: Action };
-
-/**
- * A block that is displayed on a page.
- */
-export interface Block<P = any, A = {}> {
-  /**
-   * The type of the block.
-   *
-   * A block type follow the format `@organization/name`.
-   * If the organization is _appsemble_, it may be omitted.
-   *
-   * Pattern:
-   * ^(@[a-z]([a-z\d-]{0,30}[a-z\d])?\/)?[a-z]([a-z\d-]{0,30}[a-z\d])$
-   *
-   * Examples:
-   * - `form`
-   * - `@amsterdam/splash`
-   */
-  type: string;
-
-  /**
-   * A [semver](https://semver.org) representation of the block version.
-   *
-   * Pattern:
-   * ^\d+\.\d+\.\d+$
-   */
-  version: string;
-
-  /**
-   * A free form mapping of named paramters.
-   *
-   * The exact meaning of the parameters depends on the block type.
-   */
-  parameters?: P;
-
-  /**
-   * A mapping of actions that can be fired by the block to action handlers.
-   *
-   * The exact meaning of the parameters depends on the block type.
-   */
-  actions?: A;
-}
-
-export interface Message {
-  /**
-   * The content of the message to display.
-   */
-  body: string;
-}
 
 export interface PageParameters {
   [parameter: string]: string;
@@ -189,19 +127,34 @@ export interface BootstrapParams<P = any, A = {}> {
 }
 
 /**
+ * @private
+ */
+export type BootstrapFunction<P = any, A = {}> = (
+  params: BootstrapParams<P, A>,
+) => Promisable<void>;
+
+/**
+ * @private
+ */
+export interface AppsembleBootstrapEvent extends CustomEvent {
+  detail: {
+    fn: BootstrapFunction;
+    document: Document;
+  };
+}
+
+/**
  * Register a boostrap function.
  *
  * @param fn The bootstrap function to register
  */
-export function bootstrap<P = any, A = {}>(
-  fn: (params: BootstrapParams<P, A>) => Promisable<void>,
-): void {
+export function bootstrap<P = any, A = {}>(fn: BootstrapFunction<P, A>): void {
   const event = new CustomEvent('AppsembleBootstrap', {
     detail: {
       fn,
       document,
     },
-  });
+  }) as AppsembleBootstrapEvent;
   if (document.currentScript) {
     document.currentScript.dispatchEvent(event);
   }

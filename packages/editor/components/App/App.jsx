@@ -39,28 +39,28 @@ export default class App extends React.Component {
     }
 
     return (
-      <IntlProvider defaultLocale="en-US" locale="en-US" textComponent={React.Fragment}>
+      <IntlProvider defaultLocale="en-US" locale="en-US">
         <BrowserRouter>
           <ErrorHandler fallback={ErrorFallback}>
             <Helmet defaultTitle="Appsemble" titleTemplate="Appsemble · %s" />
             <Toolbar />
             <Switch>
-              <Route component={AppList} exact path="/_/apps" />
-              <ProtectedRoute component={Settings} path="/_/settings" />
-              <ProtectedRoute component={AppContext} path="/_/apps/:id(\d+)" />
-              <ProtectedRoute component={EditPassword} exact path="/_/edit-password" />
-              <ProtectedRoute component={OrganizationInvite} exact path="/_/organization-invite" />
-              <Route component={VerifyEmail} exact path="/_/verify" />
-              <Route component={AppList} exact path="/_/apps" />
-              <Route component={ConnectOAuth} exact path="/_/connect" />
-              <Route component={Login} exact path="/_/login" />
+              <Route component={AppList} exact path="/apps" />
+              <ProtectedRoute component={Settings} path="/settings" />
+              <ProtectedRoute component={AppContext} path="/apps/:id(\d+)" />
+              <ProtectedRoute component={EditPassword} exact path="/edit-password" />
+              <ProtectedRoute component={OrganizationInvite} exact path="/organization-invite" />
+              <Route component={VerifyEmail} exact path="/verify" />
+              <Route component={AppList} exact path="/apps" />
+              <Route component={ConnectOAuth} exact path="/connect" />
+              <Route component={Login} exact path="/login" />
               {window.settings.enableRegistration && (
-                <Route component={Register} exact path="/_/register" />
+                <Route component={Register} exact path="/register" />
               )}
-              <Route component={ResetPassword} exact path="/_/reset-password" />
-              <Route component={EditPassword} exact path="/_/edit-password" />
-              <Route component={VerifyEmail} exact path="/_/verify" />
-              <Redirect to="/_/apps" />
+              <Route component={ResetPassword} exact path="/reset-password" />
+              <Route component={EditPassword} exact path="/edit-password" />
+              <Route component={VerifyEmail} exact path="/verify" />
+              <Redirect to="/apps" />
             </Switch>
             <Message />
           </ErrorHandler>

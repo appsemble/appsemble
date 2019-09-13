@@ -4,6 +4,7 @@ interface Choice {
 }
 
 export interface Field {
+  accept?: string[];
   enum: Choice[];
   defaultValue: any;
   label?: string;
@@ -22,18 +23,10 @@ export interface Field {
   required?: boolean;
   step?: number;
   type?: 'integer';
+  format?: 'email' | 'url';
 }
 
-interface FakeTarget extends Partial<EventTarget> {
-  name?: string;
-  value?: string;
-}
-
-export interface FakeEvent<E extends FakeTarget = FakeTarget> {
-  target: E;
-}
-
-export interface InputProps<T, E extends FakeTarget = FakeTarget> {
+export interface InputProps<T> {
   /**
    * A field error object.
    */
@@ -47,7 +40,7 @@ export interface InputProps<T, E extends FakeTarget = FakeTarget> {
   /**
    * A callback for when the value changes.
    */
-  onChange: (event: FakeEvent<E>, value: T) => void;
+  onInput: (event: Event, value: T) => void;
 
   /**
    * The current value.

@@ -1,6 +1,5 @@
-import { withBlock } from '@appsemble/react';
-import { injectIntl } from 'react-intl';
+import { withBlock } from '@appsemble/preact';
 
 import Card, { CardProps } from './Card';
 
-export default withBlock<CardProps>(injectIntl(Card));
+export default withBlock<CardProps>(Card);

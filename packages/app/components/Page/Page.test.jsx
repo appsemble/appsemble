@@ -1,7 +1,7 @@
 import { shallow } from 'enzyme';
 import React from 'react';
 
-import Block from '../Block';
+import BlockList from '../BlockList';
 import Page from './Page';
 
 beforeEach(() => {
@@ -11,7 +11,16 @@ beforeEach(() => {
 it('should render the blocks for a page', () => {
   const page = { name: 'Test Page', blocks: [{}, {}] };
   const app = { pages: [page] };
-  const wrapper = shallow(<Page app={app} getBlockDefs={() => {}} hasErrors={false} page={page} />);
+  const wrapper = shallow(
+    <Page
+      app={app}
+      getBlockDefs={() => {}}
+      hasErrors={false}
+      history={{}}
+      match={{}}
+      page={page}
+    />,
+  );
 
   expect(wrapper).toMatchSnapshot();
 });
@@ -19,9 +28,18 @@ it('should render the blocks for a page', () => {
 it('should call event listeners when an event is emitted', () => {
   const page = { name: 'Test Page', blocks: [{}] };
   const app = { pages: [page] };
-  const wrapper = shallow(<Page app={app} getBlockDefs={() => {}} hasErrors={false} page={page} />);
+  const wrapper = shallow(
+    <Page
+      app={app}
+      getBlockDefs={() => {}}
+      hasErrors={false}
+      history={{}}
+      match={{}}
+      page={page}
+    />,
+  );
 
-  const blockProps = wrapper.find(Block).props();
+  const blockProps = wrapper.find(BlockList).props();
   const spy = jest.fn();
   blockProps.onEvent('test', spy);
   blockProps.emitEvent('test', 'data');

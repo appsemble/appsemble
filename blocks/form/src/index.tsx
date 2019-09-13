@@ -1,11 +1,12 @@
-import { bootstrap } from '@appsemble/react';
-import { provideIntl } from '@appsemble/react/intl';
+import { bootstrap } from '@appsemble/preact';
 
 import FormBlock from './components/FormBlock';
 
-// XXX This is only for Amsterdam
 const messages = {
-  'blocks.form.components.FormBlock.submit': 'Verstuur',
+  invalid: 'This value is invalid',
+  emptyFileLabel: ' ',
+  submit: 'Submit',
+  unsupported: 'This file type is not supported',
 };
 
-bootstrap(provideIntl(FormBlock, { messages }));
+bootstrap(FormBlock, messages);

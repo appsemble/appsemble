@@ -1,13 +1,13 @@
-import { BlockProps } from '@appsemble/react';
-import { Location } from '@appsemble/react-components';
-import React from 'react';
-import { InjectedIntlProps } from 'react-intl';
+/** @jsx h */
+import { HTMLEvent } from '@appsemble/dom-types';
+import { BlockProps, FormattedMessage } from '@appsemble/preact';
+import { Location } from '@appsemble/preact-components';
+import { Component, createRef, Fragment, h, VNode } from 'preact';
 
 import iconUrl from '../../../../../themes/amsterdam/core/marker.svg';
 import { BlockActions, BlockParameters, Remappers } from '../../../types';
 import AvatarWrapper from '../AvatarWrapper';
 import styles from './Card.css';
-import messages from './messages';
 
 export interface CardProps {
   /**
@@ -36,11 +36,11 @@ interface CardState {
 /**
  * A single card in the feed.
  */
-export default class Card extends React.Component<
-  BlockProps<BlockParameters, BlockActions> & InjectedIntlProps & CardProps,
+export default class Card extends Component<
+  BlockProps<BlockParameters, BlockActions> & CardProps,
   CardState
 > {
-  replyContainer = React.createRef<HTMLDivElement>();
+  replyContainer = createRef<HTMLDivElement>();
 
   state: CardState = {
     message: '',
@@ -61,7 +61,7 @@ export default class Card extends React.Component<
     }
   }
 
-  onAvatarClick: React.MouseEventHandler = async event => {
+  onAvatarClick = async (event: Event): Promise<void> => {
     event.preventDefault();
     const { actions, content, onUpdate } = this.props;
     const data = await actions.onAvatarClick.dispatch(content);
@@ -71,7 +71,7 @@ export default class Card extends React.Component<
     }
   };
 
-  onButtonClick: React.MouseEventHandler = async event => {
+  onButtonClick = async (event: Event): Promise<void> => {
     event.preventDefault();
     const { actions, content, onUpdate } = this.props;
     const data = await actions.onButtonClick.dispatch(content);
@@ -81,16 +81,16 @@ export default class Card extends React.Component<
     }
   };
 
-  onChange: React.ChangeEventHandler<HTMLInputElement> = event => {
+  onChange = (event: HTMLEvent<HTMLInputElement>): void => {
     this.setState({ message: event.target.value, valid: event.target.validity.valid });
   };
 
-  onSubmit: React.FormEventHandler = event => {
+  onSubmit = (event: Event): void => {
     event.preventDefault();
   };
 
   onClick = async () => {
-    const { actions, block, content, utils, intl } = this.props;
+    const { actions, block, content, utils, messages } = this.props;
     const { message, replies, valid } = this.state;
 
     if (!valid) {
@@ -117,12 +117,12 @@ export default class Card extends React.Component<
       // Scroll to the bottom of the reply container
       this.replyContainer.current.scrollTop = this.replyContainer.current.scrollHeight;
     } catch (e) {
-      utils.showMessage(intl.formatMessage(messages.replyError));
+      utils.showMessage(messages.replyError.format());
     }
   };
 
-  render(): React.ReactNode {
-    const { actions, block, content, intl, remappers, theme } = this.props;
+  render(): VNode {
+    const { actions, block, content, messages, remappers, theme } = this.props;
     const { message, replies, valid } = this.state;
 
     const title: string = remappers.title(content);
@@ -225,7 +225,7 @@ export default class Card extends React.Component<
           )}
 
           {actions.onLoadReply.type !== 'noop' && (
-            <React.Fragment>
+            <Fragment>
               <div ref={this.replyContainer} className={styles.replies}>
                 {replies.map(reply => {
                   const author = remappers.author(reply);
@@ -233,7 +233,7 @@ export default class Card extends React.Component<
                   return (
                     <div key={reply.id} className="content">
                       <h6 className="is-marginless">
-                        {author || intl.formatMessage(messages.anonymous)}
+                        {author || <FormattedMessage id="anonymous" />}
                       </h6>
                       <p>{replyContent}</p>
                     </div>
@@ -244,7 +244,7 @@ export default class Card extends React.Component<
                 <input
                   className="input"
                   onChange={this.onChange}
-                  placeholder={intl.formatMessage(messages.reply)}
+                  placeholder={messages.reply.format()}
                   required
                   value={message}
                 />
@@ -262,7 +262,7 @@ export default class Card extends React.Component<
                   </span>
                 </button>
               </form>
-            </React.Fragment>
+            </Fragment>
           )}
         </div>
       </article>

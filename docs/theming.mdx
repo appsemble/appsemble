@@ -32,7 +32,7 @@ The supported variables are:
 The `themeColor` and `splashColor` variables are not visible at all times. These define the colors
 that appear when starting up the app after installing it on a mobile device.
 
-Each variable can be assigned with a [hexadecimal value](hex) representing the desired color.
+Each variable can be assigned with a [hexadecimal value][hex] representing the desired color.
 
 They can be accessed in the CSS using custom variables using kebab-case, for example:
 `background-color: var(--primary-color)`. An appropriately readable shade for the text of each color
@@ -81,6 +81,17 @@ variables Bulma uses. The list of extensions is as follows:
 
 - [Checkradio](https://wikiki.github.io/form/checkradio/)
 
+### Appsemble classes
+
+In addition to Bulma classes, Appsemble has defined the following classes in the core part of
+Appsemble. These may also be used for styling.
+
+| CSS Class               | Context               | Description                |
+| ----------------------- | --------------------- | -------------------------- |
+| `.bottom-nav`           | Bottom app navigation | The container element.     |
+| `.bottom-nav-item`      | Bottom app navigation | A navigation list item.    |
+| `.bottom-nav-item-link` | Bottom app navigation | A link inside a list item. |
+
 ## Custom Styling
 
 Custom styling is supported using a hierarchical model by allowing developers to upload CSS which
@@ -121,7 +132,7 @@ core modules _do not_ get applied to blocks.
 
 **Shared**-module styling gets applied to each individual block as well as the Appsemble core
 modules. This is useful for applying styles to elements that can appear in both the core modules as
-well as blocks, such as input fields. It can also be used to apply [CSS variables](css-variables)
+well as blocks, such as input fields. It can also be used to apply [CSS variables][css-variables]
 
 ### Applying themes for an application
 

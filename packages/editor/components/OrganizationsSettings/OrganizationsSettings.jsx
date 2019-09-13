@@ -1,4 +1,4 @@
-import { Form, Loader, Modal } from '@appsemble/react-components';
+import { Form, Icon, Loader, Modal } from '@appsemble/react-components';
 import { normalize } from '@appsemble/utils';
 import axios from 'axios';
 import PropTypes from 'prop-types';
@@ -53,6 +53,26 @@ export default class OrganizationsSettings extends Component {
       selectedOrganization,
     });
   }
+
+  onNewOrganizationChange = event => {
+    const { name, value } = event.target;
+
+    this.setState(({ newOrganizationId, newOrganizationName }) => {
+      const updatedName = name === 'newOrganizationName' ? value : newOrganizationName;
+      let updatedId = newOrganizationId;
+
+      if (name === 'newOrganizationId') {
+        updatedId = normalize(value);
+      } else if (normalize(newOrganizationName) === newOrganizationId) {
+        updatedId = normalize(value);
+      }
+
+      return {
+        newOrganizationName: updatedName,
+        newOrganizationId: updatedId,
+      };
+    });
+  };
 
   onChange = event => {
     const value =
@@ -323,26 +343,6 @@ export default class OrganizationsSettings extends Component {
         </h2>
         <Form onSubmit={this.onSubmitNewOrganization}>
           <div className="field">
-            <label className="label" htmlFor="newOrganizationId">
-              <FormattedMessage {...messages.organizationId} />
-            </label>
-            <div className={`control has-icons-left ${styles.field}`}>
-              <input
-                className="input"
-                disabled={submittingOrganization}
-                id="newOrganizationId"
-                name="newOrganizationId"
-                onChange={this.onChange}
-                placeholder={intl.formatMessage(messages.organizationId)}
-                value={newOrganizationId}
-              />
-              <span className="icon is-left">
-                <i className="fas fa-briefcase" />
-              </span>
-            </div>
-          </div>
-
-          <div className="field">
             <label className="label" htmlFor="newOrganizationName">
               <FormattedMessage {...messages.organizationName} />
             </label>
@@ -352,13 +352,29 @@ export default class OrganizationsSettings extends Component {
                 disabled={submittingOrganization}
                 id="newOrganizationName"
                 name="newOrganizationName"
-                onChange={this.onChange}
+                onChange={this.onNewOrganizationChange}
                 placeholder={intl.formatMessage(messages.organizationName)}
                 value={newOrganizationName}
               />
-              <span className="icon is-left">
-                <i className="fas fa-briefcase" />
-              </span>
+              <Icon className="is-left" icon="briefcase" />
+            </div>
+          </div>
+
+          <div className="field">
+            <label className="label" htmlFor="newOrganizationId">
+              <FormattedMessage {...messages.organizationId} />
+            </label>
+            <div className={`control has-icons-left ${styles.field}`}>
+              <input
+                className="input"
+                disabled={submittingOrganization}
+                id="newOrganizationId"
+                name="newOrganizationId"
+                onChange={this.onNewOrganizationChange}
+                placeholder={intl.formatMessage(messages.organizationId)}
+                value={newOrganizationId}
+              />
+              <Icon className="is-left" icon="briefcase" />
             </div>
           </div>
 
@@ -370,7 +386,7 @@ export default class OrganizationsSettings extends Component {
         </Form>
 
         {!!organizations.length && (
-          <React.Fragment>
+          <>
             <h2>
               <FormattedMessage {...messages.manageOrganization} />
             </h2>
@@ -413,9 +429,7 @@ export default class OrganizationsSettings extends Component {
                     type="email"
                     value={memberEmail}
                   />
-                  <span className="icon is-left">
-                    <i className="fas fa-envelope" />
-                  </span>
+                  <Icon className="is-left" icon="envelope" />
                 </div>
               </div>
               <div className="control">
@@ -465,9 +479,7 @@ export default class OrganizationsSettings extends Component {
                               onClick={() => this.onRemoveMemberClick(member.id)}
                               type="button"
                             >
-                              <span className="icon is-small">
-                                <i className="fas fa-sign-out-alt" />
-                              </span>
+                              <Icon icon="sign-out-alt" size="small" />
                             </button>
                           </p>
                         )}
@@ -478,9 +490,7 @@ export default class OrganizationsSettings extends Component {
                               onClick={() => this.onRemoveMemberClick(member.id)}
                               type="button"
                             >
-                              <span className="icon is-small">
-                                <i className="fas fa-trash-alt" />
-                              </span>
+                              <Icon icon="trash-alt" size="small" />
                             </button>
                           </p>
                         )}
@@ -508,9 +518,7 @@ export default class OrganizationsSettings extends Component {
                             onClick={() => this.onRemoveInviteClick(invite)}
                             type="button"
                           >
-                            <span className="icon is-small">
-                              <i className="fas fa-trash-alt" />
-                            </span>
+                            <Icon icon="trash-alt" size="small" />
                           </button>
                         </p>
                       </div>
@@ -519,7 +527,7 @@ export default class OrganizationsSettings extends Component {
                 ))}
               </tbody>
             </table>
-          </React.Fragment>
+          </>
         )}
 
         <Modal isActive={!!removingInvite} onClose={this.onCloseInviteDialog}>

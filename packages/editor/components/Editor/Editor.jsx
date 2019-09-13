@@ -1,4 +1,4 @@
-import { Form, Loader, Modal } from '@appsemble/react-components';
+import { Form, Icon, Loader, Modal } from '@appsemble/react-components';
 import { normalize, SchemaValidationError, validate, validateStyle } from '@appsemble/utils';
 import axios from 'axios';
 import classNames from 'classnames';
@@ -283,12 +283,14 @@ export default class Editor extends React.Component {
       icon,
       iconURL,
       warningDialog,
+      organizationId,
     } = this.state;
     const {
       intl,
       location: { hash: tab },
     } = this.props;
     const filename = icon ? icon.name : 'Icon';
+    const appUrl = `/@${organizationId}/${path}`;
 
     if (!recipe) {
       return <Loader />;
@@ -364,7 +366,7 @@ export default class Editor extends React.Component {
                   )}
                 </span>
                 <span className="navbar-item">
-                  <a className="button" href={`/${path}`} rel="noopener noreferrer" target="_blank">
+                  <a className="button" href={appUrl} rel="noopener noreferrer" target="_blank">
                     <FormattedMessage {...messages.viewLive} />
                   </a>
                 </span>
@@ -374,9 +376,7 @@ export default class Editor extends React.Component {
               <ul>
                 <li className={classNames({ 'is-active': tab === '#editor' })} value="editor">
                   <Link to="#editor">
-                    <span className="icon">
-                      <i className="fas fa-file-code" />
-                    </span>
+                    <Icon icon="file-code" />
                     <FormattedMessage {...messages.recipe} />
                   </Link>
                 </li>
@@ -385,9 +385,7 @@ export default class Editor extends React.Component {
                   value="style-core"
                 >
                   <Link to="#style-core">
-                    <span className="icon">
-                      <i className="fas fa-brush" />
-                    </span>
+                    <Icon icon="brush" />
                     <FormattedMessage {...messages.coreStyle} />
                   </Link>
                 </li>
@@ -396,9 +394,7 @@ export default class Editor extends React.Component {
                   value="style-shared"
                 >
                   <Link to="#style-shared">
-                    <span className="icon">
-                      <i className="fas fa-brush" />
-                    </span>
+                    <Icon icon="brush" />
                     <FormattedMessage {...messages.sharedStyle} />
                   </Link>
                 </li>
@@ -455,7 +451,7 @@ export default class Editor extends React.Component {
             <iframe
               ref={this.frame}
               className={styles.appFrame}
-              src={`/${path}`}
+              src={appUrl}
               title={intl.formatMessage(messages.iframeTitle)}
             />
           )}

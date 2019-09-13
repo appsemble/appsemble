@@ -1,6 +1,6 @@
 {
   "name": "@amsterdam/splash",
-  "version": "0.8.2",
+  "version": "0.8.5",
   "private": true,
   "appsemble": {
     "actions": {
@@ -17,7 +17,7 @@
     "output": "dist"
   },
   "dependencies": {
-    "@appsemble/jsx-dom": "0.8.2",
-    "@appsemble/sdk": "0.8.2"
+    "@appsemble/sdk": "0.8.5",
+    "mini-jsx": "^1.0.2"
   }
 }

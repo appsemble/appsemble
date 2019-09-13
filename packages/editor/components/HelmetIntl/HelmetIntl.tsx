@@ -1,13 +1,13 @@
 import React from 'react';
 import Helmet from 'react-helmet';
-import { FormattedMessage, InjectedIntlProps } from 'react-intl';
+import { MessageDescriptor, WrappedComponentProps } from 'react-intl';
 
-export interface HelmIntlProps {
-  title: FormattedMessage.MessageDescriptor;
+export interface HelmIntlProps extends WrappedComponentProps {
+  title: MessageDescriptor;
   titleValues?: Record<string, string>;
 }
 
-export default class HelmetIntl extends React.Component<HelmIntlProps & InjectedIntlProps> {
+export default class HelmetIntl extends React.Component<HelmIntlProps> {
   static defaultProps = {
     titleValues: {},
   };

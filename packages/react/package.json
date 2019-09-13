@@ -1,15 +1,13 @@
 {
   "name": "@appsemble/react",
-  "version": "0.8.2",
+  "version": "0.8.5",
   "dependencies": {
-    "@types/react-intl": "^2.3.18",
-    "prop-types": "^15.7.2",
     "react-shadow-dom-retarget-events": "^1.0.10"
   },
   "peerDependencies": {
-    "@appsemble/sdk": "^0.8.2",
-    "react": "^16.4.2",
-    "react-dom": "^16.4.2",
-    "react-intl": "^2.4.0"
+    "@appsemble/sdk": "^0.8.5",
+    "react": "^16.9.0",
+    "react-dom": "^16.9.0",
+    "react-intl": "^3.0.0"
   }
 }
