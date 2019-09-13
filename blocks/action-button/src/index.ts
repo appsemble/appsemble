@@ -13,7 +13,7 @@ attach<Parameters, Actions>(({ actions, data, block }) => {
     node = document.createElement('button');
     node.type = 'button';
   }
-  node.classList.add('fas', block.parameters.icon);
+  node.classList.add('fas', `fa-${block.parameters.icon}`);
   node.addEventListener(
     'click',
     event => {
