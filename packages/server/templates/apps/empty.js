@@ -15,6 +15,9 @@ export default {
           {
             type: 'action-button',
             version: '0.8.5',
+            parameters: {
+              icon: 'arrow-right',
+            },
             actions: {
               onClick: {
                 type: 'link',
@@ -30,6 +33,9 @@ export default {
           {
             type: 'action-button',
             version: '0.8.5',
+            parameters: {
+              icon: 'arrow-left',
+            },
             actions: {
               onClick: {
                 type: 'link',
