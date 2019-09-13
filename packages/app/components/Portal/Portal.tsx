@@ -5,7 +5,7 @@ interface PortalProps {
   /**
    * The child node to mount. This may only result in a single top level HTML node.
    */
-  children: React.ReactChildren;
+  children: React.ReactChild;
 
   /**
    * The HTML element to render the children into.

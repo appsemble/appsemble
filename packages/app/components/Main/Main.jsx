@@ -32,7 +32,9 @@ export default class Main extends React.Component {
       const path = `/${[
         normalize(page.name),
         ...(page.parameters || []).map(parameter => `:${parameter}`),
+        ...((page.subPages && [':subPage?']) || []),
       ].join('/')}`;
+
       if (page.name === app.defaultPage) {
         defaultPath = path;
       }

@@ -459,7 +459,7 @@ pages:
     expect(response.status).toBe(409);
     expect(response.body).toStrictEqual({
       error: 'Conflict',
-      message: 'Another app with path “a” already exists',
+      message: `Another app with path “@${organizationId}/a” already exists`,
       statusCode: 409,
     });
   });

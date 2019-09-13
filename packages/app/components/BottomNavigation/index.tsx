@@ -1,9 +1,9 @@
 import { connect } from 'react-redux';
 
-import BottomNavigation, { BottomNavigationProps } from './BottomNavigation';
+import { State } from '../../actions';
+import BottomNavigation from './BottomNavigation';
 
-// XXX fix state type
-function mapStateToProps(state: any): Pick<BottomNavigationProps, 'app'> {
+function mapStateToProps(state: State): Partial<React.ComponentProps<typeof BottomNavigation>> {
   return {
     app: state.app.app,
   };

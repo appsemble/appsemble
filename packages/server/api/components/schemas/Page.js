@@ -15,7 +15,7 @@ export default {
         },
         type: {
           type: 'string',
-          enum: ['flow', 'page'],
+          enum: ['flow', 'page', 'tabs'],
         },
         icon: {
           type: 'string',
@@ -56,12 +56,12 @@ export default {
             $ref: '#/components/schemas/Block',
           },
         },
-        flowPages: {
+        subPages: {
           type: 'array',
           minItems: 1,
           description: "Sub pages belonging to this page's flow.",
           items: {
-            $ref: '#/components/schemas/FlowPage',
+            $ref: '#/components/schemas/SubPage',
           },
         },
         actions: {
@@ -76,7 +76,7 @@ export default {
     {
       type: 'object',
       description: 'This describes what a page will look like in the app.',
-      required: ['name', 'flowPages'],
+      required: ['name', 'subPages'],
       properties: {
         name: {
           type: 'string',
@@ -88,7 +88,7 @@ export default {
         },
         type: {
           type: 'string',
-          enum: ['flow', 'page'],
+          enum: ['flow', 'page', 'tabs'],
         },
         icon: {
           type: 'string',
@@ -121,12 +121,12 @@ export default {
         theme: {
           $ref: '#/components/schemas/Theme',
         },
-        flowPages: {
+        subPages: {
           type: 'array',
           minItems: 1,
           description: "Sub pages belonging to this page's flow.",
           items: {
-            $ref: '#/components/schemas/FlowPage',
+            $ref: '#/components/schemas/SubPage',
           },
         },
         actions: {

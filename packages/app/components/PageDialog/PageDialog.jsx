@@ -3,7 +3,7 @@ import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import React from 'react';
 
-import Block from '../Block';
+import BlockList from '../BlockList';
 import styles from './PageDialog.css';
 
 /**
@@ -45,16 +45,12 @@ export default class PageDialog extends React.Component {
       <Modal isActive={!!dialog} onClose={dialog && dialog.close}>
         {dialog && (
           <div className={classNames('card', { [styles.fullscreen]: dialog.fullscreen })}>
-            {dialog.blocks.map((block, index) => (
-              <Block
-                // eslint-disable-next-line react/no-array-index-key
-                key={index}
-                actionCreators={dialog.actionCreators}
-                block={block}
-                data={dialog.data}
-                {...props}
-              />
-            ))}
+            <BlockList
+              actionCreators={dialog.actionCreators}
+              blocks={dialog.blocks}
+              data={dialog.data}
+              {...props}
+            />
           </div>
         )}
       </Modal>

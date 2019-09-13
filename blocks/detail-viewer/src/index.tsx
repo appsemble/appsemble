@@ -1,4 +1,4 @@
-import { bootstrap } from '@appsemble/react';
+import { bootstrap } from '@appsemble/preact';
 
 import DetailBlock from './components/DetailViewerBlock';
 

@@ -1,4 +1,4 @@
-import { withBlock } from '@appsemble/react';
+import { withBlock } from '@appsemble/preact';
 
 import { RendererProps } from '../../../../block';
 import FileRenderer from './FileRenderer';

@@ -146,7 +146,7 @@ export async function inviteMember(ctx) {
     'organizationInvite',
     {
       organization: organization.id,
-      url: `${ctx.origin}/_/organization-invite?token=${key}`,
+      url: `${ctx.origin}/organization-invite?token=${key}`,
     },
   );
 
@@ -179,7 +179,7 @@ export async function resendInvitation(ctx) {
 
   await mailer.sendEmail({ email, ...(user && { name: user.name }) }, 'organizationInvite', {
     organization: organization.id,
-    url: `${ctx.origin}/_/organization-invite?token=${invite.key}`,
+    url: `${ctx.origin}/organization-invite?token=${invite.key}`,
   });
 
   ctx.body = 204;

@@ -63,7 +63,9 @@ async function checkBlocks(app, db) {
 
 function handleAppValidationError(error, app) {
   if (error instanceof UniqueConstraintError) {
-    throw Boom.conflict(`Another app with path “${app.path}” already exists`);
+    throw Boom.conflict(
+      `Another app with path “@${app.OrganizationId}/${app.path}” already exists`,
+    );
   }
 
   if (error instanceof StyleValidationError) {
