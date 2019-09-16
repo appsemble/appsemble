@@ -8,6 +8,7 @@ export default sequelize => {
       version: { type: DataTypes.STRING, primaryKey: true, unique: 'blockVersionComposite' },
       layout: { type: DataTypes.STRING },
       actions: { type: DataTypes.JSON },
+      parameters: { type: DataTypes.JSON },
       resources: { type: DataTypes.JSON },
     },
     {

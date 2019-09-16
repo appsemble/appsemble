@@ -3,9 +3,7 @@ types:
   parameters: Parameters
 
 actions:
-  onSubmit:
+  onLoad:
     required: true
-  onSuccess: {}
-  onError: {}
 
 output: dist

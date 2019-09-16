@@ -36,6 +36,13 @@ describe('app controller', () => {
     await BlockVersion.create({
       name: '@appsemble/test',
       version: '0.0.0',
+      parameters: {
+        properties: {
+          foo: {
+            type: 'number',
+          },
+        },
+      },
     });
   });
 
@@ -375,10 +382,10 @@ pages:
 
     expect(body).toStrictEqual({
       data: {
-        'pages.0.blocks.0': 'Unknown block version “@non/existent@0.0.0”',
+        'pages.0.blocks.0': 'Unknown block type “@non/existent”',
       },
       error: 'Bad Request',
-      message: 'Unknown blocks or block versions found',
+      message: 'Block validation failed',
       statusCode: 400,
     });
   });
@@ -409,10 +416,55 @@ pages:
 
     expect(body).toStrictEqual({
       data: {
-        'pages.0.blocks.0': 'Unknown block version “@appsemble/test@0.0.1”',
+        'pages.0.blocks.0': 'Unknown block type “@appsemble/test”',
       },
       error: 'Bad Request',
-      message: 'Unknown blocks or block versions found',
+      message: 'Block validation failed',
+      statusCode: 400,
+    });
+  });
+
+  it('should not allow to create an app using invalid block parameters', async () => {
+    const { body } = await request(server)
+      .post('/api/apps')
+      .set('Authorization', token)
+      .field(
+        'app',
+        JSON.stringify({
+          name: 'Test App',
+          defaultPage: 'Test Page',
+          pages: [
+            {
+              name: 'Test Page',
+              blocks: [
+                {
+                  type: 'test',
+                  version: '0.0.0',
+                  parameters: {
+                    foo: 'invalid',
+                  },
+                },
+              ],
+            },
+          ],
+        }),
+      )
+      .field('organizationId', organizationId);
+
+    expect(body).toStrictEqual({
+      data: {
+        'pages.0.blocks.0.parameters.foo': {
+          dataPath: '.foo',
+          keyword: 'type',
+          message: 'should be number',
+          params: {
+            type: 'number',
+          },
+          schemaPath: '#/properties/foo/type',
+        },
+      },
+      error: 'Bad Request',
+      message: 'Block validation failed',
       statusCode: 400,
     });
   });
@@ -1265,10 +1317,10 @@ pages:
 
     expect(body).toStrictEqual({
       data: {
-        'pages.0.blocks.0': 'Unknown block version “@appsemble/test@0.0.1”',
+        'pages.0.blocks.0': 'Unknown block type “@appsemble/test”',
       },
       error: 'Bad Request',
-      message: 'Unknown blocks or block versions found',
+      message: 'Block validation failed',
       statusCode: 400,
     });
   });

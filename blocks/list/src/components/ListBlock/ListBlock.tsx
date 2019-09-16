@@ -4,21 +4,8 @@ import { Loader } from '@appsemble/preact-components';
 import { remapData } from '@appsemble/utils';
 import { Component, h, VNode } from 'preact';
 
+import { Actions, Parameters } from '../../../types';
 import styles from './ListBlock.css';
-
-interface Field {
-  name: string;
-  label?: string;
-}
-
-interface BlockParameters {
-  fields: Field[];
-}
-
-interface BlockActions {
-  onLoad: {};
-  onClick: {};
-}
 
 interface Item {
   id?: number;
@@ -30,10 +17,7 @@ interface ListBlockState {
   loading: boolean;
 }
 
-export default class ListBlock extends Component<
-  BlockProps<BlockParameters, BlockActions>,
-  ListBlockState
-> {
+export default class ListBlock extends Component<BlockProps<Parameters, Actions>, ListBlockState> {
   state: ListBlockState = { data: undefined, error: false, loading: true };
 
   async componentDidMount(): Promise<void> {

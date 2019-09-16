@@ -2,11 +2,9 @@ import './index.css';
 
 import { attach } from '@appsemble/sdk';
 
-interface BlockActions {
-  onClick: {};
-}
+import { Actions, Parameters } from '../block';
 
-attach<{}, BlockActions>(({ actions, data }) => {
+attach<Parameters, Actions>(({ actions, data, block }) => {
   let node;
   if (actions.onClick.type === 'link') {
     node = document.createElement('a');
@@ -15,7 +13,7 @@ attach<{}, BlockActions>(({ actions, data }) => {
     node = document.createElement('button');
     node.type = 'button';
   }
-  node.classList.add('fas', 'fa-plus');
+  node.classList.add('fas', `fa-${block.parameters.icon}`);
   node.addEventListener(
     'click',
     event => {

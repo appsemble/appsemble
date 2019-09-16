@@ -163,6 +163,8 @@ Clicking it results in being redirected to the other page.
 ```yaml
 - type: action-button
   version: 0.8.5
+  parameters:
+    icon: plus
   actions:
     onClick:
       to: Person Registration Form # Or `Person List` in case of the Person Registration Form
@@ -258,6 +260,8 @@ pages:
             resource: person
       - type: action-button
         version: 0.8.5
+        parameters:
+          icon: plus
         actions:
           click:
             to: Person Registration Form

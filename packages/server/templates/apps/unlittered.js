@@ -140,6 +140,9 @@ export default {
           {
             type: 'action-button',
             version: '0.8.5',
+            parameters: {
+              icon: 'plus',
+            },
             actions: {
               onClick: {
                 to: 'Report litter',

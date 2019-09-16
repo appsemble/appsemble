@@ -1,0 +1,10 @@
+types:
+  file: src/createGetters.ts
+  parameters: BlockParameters
+
+actions:
+  onMarkerClick: {}
+  onLoad:
+    required: true
+
+output: dist

@@ -5,7 +5,6 @@ types:
 actions:
   onSubmit:
     required: true
-  onSuccess: {}
-  onError: {}
+  onSubmitSuccess: {}
 
 output: dist

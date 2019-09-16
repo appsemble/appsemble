@@ -36,6 +36,14 @@ export default {
       `,
       additionalProperties: true,
     },
+    parameters: {
+      type: 'object',
+      description: `A draft 7 JSON schema to use for block parameter validation.
+
+        If the parameters of a block definition don’t conform to this schema, the app definition
+        will be considered invalid.
+      `,
+    },
     resources: {
       type: 'object',
       description: 'deprecated',
