@@ -65,7 +65,7 @@ export default class Location extends Component<LocationProps & BlockProps> {
       .on('locationfound', ({ latlng }: LocationEvent) => {
         locationMarker.setLatLng(latlng).addTo(map);
       })
-      .locate({ watch: true });
+      .locate({ watch: true, timeout: 1e3, maximumAge: 60e3 });
   }
 
   render(): VNode {
