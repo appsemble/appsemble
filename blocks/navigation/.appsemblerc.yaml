@@ -1,0 +1,7 @@
+layout: static
+
+types:
+  file: src/index.tsx
+  parameters: Parameters
+
+output: dist

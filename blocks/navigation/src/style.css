@@ -1,0 +1,15 @@
+.container {
+  margin: 10px;
+  min-height: 2.25em;
+  position: relative;
+}
+
+.backButton {
+  left: 0;
+  position: absolute;
+}
+
+.forwardButton {
+  position: absolute;
+  right: 0;
+}
