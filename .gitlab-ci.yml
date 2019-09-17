@@ -67,6 +67,7 @@ stages:
     - yarn block form
     - yarn block map
     - yarn block markdown
+    - yarn block navigation
     - yarn block splash
     - node -r esm ./config/bin/register.js
     - yarn appsemble login --email "$APPSEMBLE_EMAIL" --password "$APPSEMBLE_PASSWORD"
@@ -79,6 +80,7 @@ stages:
     - yarn appsemble block register blocks/form
     - yarn appsemble block register blocks/map
     - yarn appsemble block register blocks/markdown
+    - yarn appsemble block register blocks/navigation
     - yarn appsemble block register blocks/splash
 
 ###################################################################################################
