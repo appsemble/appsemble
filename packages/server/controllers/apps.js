@@ -209,6 +209,7 @@ export async function deleteApp(ctx) {
     throw Boom.forbidden("User does not belong in this App's organization.");
   }
 
+  await app.update({ path: null });
   await app.destroy();
 }
 
