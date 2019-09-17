@@ -19,7 +19,11 @@ export default function EnumInput({ field, onInput, value = '' }: EnumInputProps
       onInput={onInput}
       value={value}
     >
-      {!value && <option className={styles.hidden}>{field.label}</option>}
+      {!value && (
+        <option className={styles.hidden} value={null}>
+          {field.label}
+        </option>
+      )}
       {field.enum.map(choice => (
         <option key={choice.value} value={choice.value}>
           {choice.label || choice.value}
