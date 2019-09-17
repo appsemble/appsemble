@@ -25,15 +25,7 @@ export default class Control extends React.Component<ControlProps> {
   };
 
   render(): JSX.Element {
-    const {
-      enum: enumerator,
-      defaultValue,
-      loading,
-      onChange,
-      value,
-      emptyLabel,
-      ...props
-    } = this.props;
+    const { enum: enumerator, defaultValue, loading, value, emptyLabel, ...props } = this.props;
 
     return (
       <div className={classNames('control', { 'is-loading': loading })}>
