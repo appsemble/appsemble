@@ -1,5 +1,6 @@
 {
-  "extends": "../../tsconfig.json",
+  "extends": "../../tsconfig",
+  "exclude": [],
   "compilerOptions": {
     "lib": ["dom", "esnext"],
     "strictNullChecks": false,
