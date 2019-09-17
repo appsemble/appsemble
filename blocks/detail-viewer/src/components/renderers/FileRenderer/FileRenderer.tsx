@@ -3,13 +3,13 @@ import { remapData } from '@appsemble/utils';
 import classNames from 'classnames';
 import { Component, Fragment, h, VNode } from 'preact';
 
-import { RendererProps } from '../../../../block';
+import { FileField, RendererProps } from '../../../../block';
 import styles from './FileRenderer.css';
 
 /**
  * Render a string as is.
  */
-export default class FileRenderer extends Component<RendererProps> {
+export default class FileRenderer extends Component<RendererProps<FileField>> {
   getSrc = (value: string | Blob) => {
     const { block, utils } = this.props;
 

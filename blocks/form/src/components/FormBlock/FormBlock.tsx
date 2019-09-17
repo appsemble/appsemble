@@ -3,7 +3,7 @@ import { BlockProps, FormattedMessage } from '@appsemble/preact';
 import classNames from 'classnames';
 import { Component, h, VNode } from 'preact';
 
-import { Actions, Field, Parameters } from '../../../block';
+import { Actions, Field, FileField, Parameters } from '../../../block';
 import BooleanInput from '../BooleanInput';
 import EnumInput from '../EnumInput';
 import FileInput from '../FileInput';
@@ -30,6 +30,7 @@ interface FormBlockState {
 }
 
 const inputs = {
+  enum: EnumInput,
   file: FileInput,
   geocoordinates: GeoCoordinatesInput,
   hidden: (): null => null,
@@ -44,7 +45,7 @@ const validateInput: Validator = (_field, event) => {
 };
 
 const validators: { [name: string]: Validator } = {
-  file: (field, _event, value) => {
+  file: (field: FileField, _event, value) => {
     if (!field.required) {
       return true;
     }
@@ -69,7 +70,6 @@ const validators: { [name: string]: Validator } = {
   number: validateInput,
   integer: validateInput,
   boolean: () => true,
-  bool: () => true,
 };
 
 /**
@@ -97,7 +97,7 @@ export default class FormBlock extends Component<FormBlockProps, FormBlockState>
     submitting: false,
     values: {
       ...this.props.block.parameters.fields.reduce<Values>(
-        (acc, { name, defaultValue, repeated }) => {
+        (acc, { name, defaultValue, repeated }: FileField) => {
           acc[name] = defaultValue !== undefined ? defaultValue : repeated && [];
           return acc;
         },
@@ -176,27 +176,15 @@ export default class FormBlock extends Component<FormBlockProps, FormBlockState>
     return (
       <form className={styles.root} noValidate onSubmit={this.onSubmit}>
         {block.parameters.fields.map(field => {
-          if (field.enum) {
-            return (
-              <EnumInput
-                key={field.name}
-                error={errors[field.name]}
-                field={field}
-                onInput={this.onChange}
-                value={values[field.name]}
-              />
-            );
-          }
-          if (!Object.prototype.hasOwnProperty.call(inputs, field.type)) {
-            return <FormattedMessage id="unsupported" />;
-          }
           const Comp = inputs[field.type];
           return (
             <Comp
               key={field.name}
               error={errors[field.name]}
+              // @ts-ignore
               field={field}
               onInput={this.onChange}
+              // @ts-ignore
               value={values[field.name]}
             />
           );

@@ -57,6 +57,7 @@ export default class DetailViewerBlock extends Component<
               key={field.name || field.label || `${field.type}.${index}`}
               block={block}
               data={data}
+              // @ts-ignore
               field={field}
               theme={theme}
               value={field.name ? remapData(field.name, data) : null}

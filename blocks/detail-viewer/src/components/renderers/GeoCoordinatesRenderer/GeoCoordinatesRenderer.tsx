@@ -4,7 +4,7 @@ import { remapData } from '@appsemble/utils';
 import { h, VNode } from 'preact';
 
 import iconUrl from '../../../../../../themes/amsterdam/core/marker.svg';
-import { RendererProps } from '../../../../block';
+import { GeoCoordinatesField, RendererProps } from '../../../../block';
 import styles from './GeoCoordinatesRenderer.css';
 
 /**
@@ -17,7 +17,7 @@ export default function GeoCoordinatesRenderer({
   field: { label, latitude, longitude },
   value = {},
   theme,
-}: RendererProps): VNode {
+}: RendererProps<GeoCoordinatesField>): VNode {
   let lat: number;
   let lng: number;
 

@@ -3,10 +3,10 @@ import { FormattedMessage } from '@appsemble/preact';
 import classNames from 'classnames';
 import { Component, Fragment, h, VNode } from 'preact';
 
-import { InputProps } from '../../../block';
+import { FileField, InputProps } from '../../../block';
 import styles from './FileEntry.css';
 
-interface FileEntryProps extends InputProps<string | Blob> {
+interface FileEntryProps extends InputProps<string | Blob, FileField> {
   name: string;
 }
 

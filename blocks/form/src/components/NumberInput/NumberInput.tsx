@@ -3,9 +3,9 @@ import { FormattedMessage } from '@appsemble/preact';
 import { Input } from '@appsemble/preact-components';
 import { h, VNode } from 'preact';
 
-import { InputProps } from '../../../block';
+import { InputProps, NumberField } from '../../../block';
 
-type NumberInputProps = InputProps<number>;
+type NumberInputProps = InputProps<number, NumberField>;
 
 /**
  * An input element for a number type schema.

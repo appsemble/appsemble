@@ -3,9 +3,9 @@ import { FormattedMessage } from '@appsemble/preact';
 import { Input } from '@appsemble/preact-components';
 import { h, VNode } from 'preact';
 
-import { InputProps } from '../../../block';
+import { InputProps, StringField } from '../../../block';
 
-type StringInputProps = InputProps<string>;
+type StringInputProps = InputProps<string, StringField>;
 
 /**
  * An input element for a text type schema.
