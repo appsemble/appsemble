@@ -57,7 +57,7 @@ export default {
         blocks: [
           {
             type: 'form',
-            version: '0.8.5',
+            version: '0.8.7',
             parameters: {
               fields: [
                 {
@@ -117,7 +117,7 @@ export default {
         blocks: [
           {
             type: 'map',
-            version: '0.8.5',
+            version: '0.8.7',
             parameters: {
               latitude: 'location.latitude',
               longitude: 'location.longitude',
@@ -139,7 +139,10 @@ export default {
           },
           {
             type: 'action-button',
-            version: '0.8.5',
+            version: '0.8.7',
+            parameters: {
+              icon: 'plus',
+            },
             actions: {
               onClick: {
                 to: 'Report litter',
@@ -155,7 +158,7 @@ export default {
         blocks: [
           {
             type: 'detail-viewer',
-            version: '0.8.5',
+            version: '0.8.7',
             parameters: {
               fileBase: '/api/assets',
               fields: [

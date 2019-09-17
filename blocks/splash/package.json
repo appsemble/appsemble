@@ -1,23 +1,9 @@
 {
   "name": "@amsterdam/splash",
-  "version": "0.8.5",
+  "version": "0.8.7",
   "private": true,
-  "appsemble": {
-    "actions": {
-      "onLoad": {
-        "required": true
-      },
-      "onSuccess": {
-        "required": true
-      },
-      "onError": {
-        "required": true
-      }
-    },
-    "output": "dist"
-  },
   "dependencies": {
-    "@appsemble/sdk": "0.8.5",
+    "@appsemble/sdk": "0.8.7",
     "mini-jsx": "^1.0.2"
   }
 }

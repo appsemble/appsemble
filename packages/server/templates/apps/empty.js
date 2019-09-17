@@ -14,7 +14,10 @@ export default {
         blocks: [
           {
             type: 'action-button',
-            version: '0.8.5',
+            version: '0.8.7',
+            parameters: {
+              icon: 'arrow-right',
+            },
             actions: {
               onClick: {
                 type: 'link',
@@ -29,7 +32,10 @@ export default {
         blocks: [
           {
             type: 'action-button',
-            version: '0.8.5',
+            version: '0.8.7',
+            parameters: {
+              icon: 'arrow-left',
+            },
             actions: {
               onClick: {
                 type: 'link',

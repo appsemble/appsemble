@@ -42,6 +42,9 @@ export default class GeoCoordinatesInput extends Component<GeoCoordinatesInputPr
         });
       })
       .on('locationfound', ({ latlng }: LocationEvent) => {
+        if (!this.locationMarker.getLatLng()) {
+          map.setView(latlng, 18);
+        }
         this.locationMarker.setLatLng(latlng).addTo(map);
       })
       .on('move', () => {
@@ -51,7 +54,7 @@ export default class GeoCoordinatesInput extends Component<GeoCoordinatesInputPr
           longitude: lng,
         });
       })
-      .locate({ setView: true });
+      .locate({ watch: true, timeout: 1e3, maximumAge: 60e3 });
     this.map = map;
   }
 

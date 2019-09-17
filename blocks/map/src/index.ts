@@ -13,6 +13,8 @@ attach<BlockParameters, BlockActions>(
     const fetched = new Set<number>();
 
     const get = createGetters(block.parameters);
+    const lat = Number(get.lat(data));
+    const lng = Number(get.lng(data));
     const locationMarker = new CircleMarker(null, {
       color: primaryColor,
     });
@@ -30,14 +32,13 @@ attach<BlockParameters, BlockActions>(
         });
       })
       .on('locationfound', ({ latlng }: LocationEvent) => {
+        if (Number.isNaN(lat) || Number.isNaN(lng)) {
+          map.setView(latlng, 18);
+        }
         locationMarker.setLatLng(latlng).addTo(map);
       })
-      .locate({ watch: true });
-    const lat = Number(get.lat(data));
-    const lng = Number(get.lng(data));
-    if (Number.isNaN(lat) || Number.isNaN(lng)) {
-      map.locate({ setView: true });
-    } else {
+      .locate({ watch: true, timeout: 1e3, maximumAge: 60e3 });
+    if (!Number.isNaN(lat) && !Number.isNaN(lng)) {
       map.setView([lat, lng], 18);
     }
   },

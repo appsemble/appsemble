@@ -1,19 +1,10 @@
 {
   "name": "@appsemble/map",
-  "version": "0.8.5",
+  "version": "0.8.7",
   "private": true,
-  "appsemble": {
-    "actions": {
-      "onMarkerClick": {},
-      "onLoad": {
-        "required": true
-      }
-    },
-    "output": "dist"
-  },
   "dependencies": {
-    "@appsemble/sdk": "0.8.5",
-    "@appsemble/utils": "0.8.5",
+    "@appsemble/sdk": "0.8.7",
+    "@appsemble/utils": "0.8.7",
     "leaflet": "^1.5.1"
   }
 }

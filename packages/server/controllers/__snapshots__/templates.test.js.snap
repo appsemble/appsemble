@@ -17,8 +17,11 @@ Object {
               "type": "link",
             },
           },
+          "parameters": Object {
+            "icon": "arrow-right",
+          },
           "type": "action-button",
-          "version": "0.8.5",
+          "version": "0.8.7",
         },
       ],
       "name": "Example Page A",
@@ -32,8 +35,11 @@ Object {
               "type": "link",
             },
           },
+          "parameters": Object {
+            "icon": "arrow-left",
+          },
           "type": "action-button",
-          "version": "0.8.5",
+          "version": "0.8.7",
         },
       ],
       "name": "Example Page B",
@@ -52,7 +58,9 @@ pages:
   - name: Example Page A
     blocks:
       - type: action-button
-        version: 0.8.5
+        version: 0.8.7
+        parameters:
+          icon: arrow-right
         actions:
           onClick:
             type: link
@@ -60,7 +68,9 @@ pages:
   - name: Example Page B
     blocks:
       - type: action-button
-        version: 0.8.5
+        version: 0.8.7
+        parameters:
+          icon: arrow-left
         actions:
           onClick:
             type: link

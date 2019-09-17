@@ -1,3 +1,6 @@
+types:
+  parameters: Parameters
+
 actions:
   onLoad:
     required: true
