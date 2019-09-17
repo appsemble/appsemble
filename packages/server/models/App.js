@@ -8,7 +8,7 @@ export default sequelize => {
       definition: { type: DataTypes.JSON, allowNull: false },
       description: { type: DataTypes.STRING(80), allowNull: true },
       icon: { type: DataTypes.BLOB('long') },
-      path: { type: DataTypes.STRING, unique: 'UniquePathIndex', allowNull: false },
+      path: { type: DataTypes.STRING, unique: 'UniquePathIndex', allowNull: true },
       style: { type: DataTypes.TEXT('long') },
       sharedStyle: { type: DataTypes.TEXT('long') },
       yaml: { type: DataTypes.TEXT('long') },

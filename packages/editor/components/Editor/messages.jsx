@@ -7,7 +7,12 @@ export default defineMessages({
   appNotFound: 'App does not exist',
   yamlNotFound:
     'Unable to restore original YAML. Formatting may be different from what was previously published.',
+  delete: 'Delete',
+  deleteWarningTitle: 'Deleting app',
+  deleteWarning: 'Are you sure you want to delete this app? This action cannot be reverted.',
   error: 'Something went wrong trying to load this app',
+  deleteSuccess: 'Succesfully deleted app {name}',
+  errorDelete: 'Something went wrong trying to delete this app',
   errorUpdate: 'Something went wrong trying to update the app recipe',
   errorUpdateIcon: 'Something went wrong trying to update the app icon',
   forbidden: 'User is not allowed to update this app',

@@ -972,6 +972,65 @@ pages:
     expect(response.status).toBe(409);
   });
 
+  it('should delete an app', async () => {
+    const {
+      body: { id },
+    } = await request(server)
+      .post('/api/apps')
+      .set('Authorization', token)
+      .field(
+        'app',
+        JSON.stringify({
+          name: 'Test App',
+          defaultPage: 'Test Page',
+          pages: [
+            {
+              name: 'Test Page',
+              blocks: [
+                {
+                  type: 'test',
+                  version: '0.0.0',
+                },
+              ],
+            },
+          ],
+        }),
+      )
+      .field('organizationId', organizationId);
+
+    const response = await request(server)
+      .delete(`/api/apps/${id}`)
+      .set('Authorization', token);
+
+    expect(response.status).toBe(204);
+  });
+
+  it('should not delete non-existent apps', async () => {
+    const response = await request(server)
+      .delete('/api/apps/0')
+      .set('Authorization', token);
+
+    expect(response.status).toBe(404);
+  });
+
+  it('should not delete apps from other organizations', async () => {
+    const organization = await Organization.create({ id: 'testorganizationb' });
+    const app = await App.create(
+      {
+        path: 'test-app',
+        definition: { name: 'Test App', defaultPage: 'Test Page' },
+        OrganizationId: organization.id,
+      },
+      { raw: true },
+    );
+
+    const response = await request(server)
+      .delete(`/api/apps/${app.id}`)
+      .set('Authorization', token);
+
+    expect(response.status).toBe(403);
+  });
+
   it('should validate and update css when updating an app', async () => {
     const app = await App.create(
       {

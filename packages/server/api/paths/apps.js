@@ -156,6 +156,17 @@ export default {
       },
       security: [{ apiUser: ['apps:write'] }],
     },
+    delete: {
+      tags: ['app'],
+      description: 'Delete an existing app',
+      operationId: 'deleteApp',
+      responses: {
+        204: {
+          description: 'The app was successfully deleted.',
+        },
+      },
+      security: [{ apiUser: ['apps:write'] }],
+    },
   },
   '/api/apps/{appId}/icon': {
     parameters: [{ $ref: '#/components/parameters/appId' }],

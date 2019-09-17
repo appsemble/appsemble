@@ -7,6 +7,11 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- Editor: Add support for deleting apps.
+- Server: Add support for deleting apps.
+
 ## [0.8.7] - 2019-09-16
 
 ### Fixes

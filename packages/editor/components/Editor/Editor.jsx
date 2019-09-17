@@ -42,6 +42,7 @@ export default class Editor extends React.Component {
     icon: undefined,
     iconURL: undefined,
     warningDialog: false,
+    deleteDialog: false,
     organizationId: undefined,
   };
 
@@ -219,6 +220,27 @@ export default class Editor extends React.Component {
     });
   };
 
+  onDelete = async () => {
+    const { intl, push, match, history } = this.props;
+    const { appName, organizationId } = this.state;
+    const { id } = match.params;
+
+    try {
+      await axios.delete(`/api/apps/${id}`);
+      push({
+        body: intl.formatMessage(messages.deleteSuccess, { name: `@${organizationId}/${appName}` }),
+        color: 'info',
+      });
+      history.push('/apps');
+    } catch (e) {
+      push(intl.formatMessage(messages.errorDelete));
+    }
+  };
+
+  onDeleteClick = async () => {
+    this.setState({ deleteDialog: true });
+  };
+
   onUpload = async () => {
     const { recipe, initialRecipe, valid } = this.state;
 
@@ -268,7 +290,7 @@ export default class Editor extends React.Component {
   };
 
   onClose = () => {
-    this.setState({ warningDialog: false });
+    this.setState({ warningDialog: false, deleteDialog: false });
   };
 
   render() {
@@ -283,6 +305,7 @@ export default class Editor extends React.Component {
       icon,
       iconURL,
       warningDialog,
+      deleteDialog,
       organizationId,
     } = this.state;
     const {
@@ -324,7 +347,10 @@ export default class Editor extends React.Component {
               <div className="navbar-brand">
                 <span className="navbar-item">
                   <button className="button" disabled={!dirty} type="submit">
-                    <FormattedMessage {...messages.preview} />
+                    <Icon icon="vial" />
+                    <span>
+                      <FormattedMessage {...messages.preview} />
+                    </span>
                   </button>
                 </span>
                 <span className="navbar-item">
@@ -334,7 +360,10 @@ export default class Editor extends React.Component {
                     onClick={this.onUpload}
                     type="button"
                   >
-                    <FormattedMessage {...messages.publish} />
+                    <Icon icon="save" />
+                    <span>
+                      <FormattedMessage {...messages.publish} />
+                    </span>
                   </button>
                 </span>
                 <span className="navbar-item">
@@ -349,9 +378,7 @@ export default class Editor extends React.Component {
                         type="file"
                       />
                       <span className="file-cta">
-                        <span className="file-icon">
-                          <i className="fas fa-upload" />
-                        </span>
+                        <Icon icon="upload" />
                         <span className="file-label">
                           <FormattedMessage {...messages.icon} />
                         </span>
@@ -367,8 +394,19 @@ export default class Editor extends React.Component {
                 </span>
                 <span className="navbar-item">
                   <a className="button" href={appUrl} rel="noopener noreferrer" target="_blank">
-                    <FormattedMessage {...messages.viewLive} />
+                    <Icon icon="share-square" />
+                    <span>
+                      <FormattedMessage {...messages.viewLive} />
+                    </span>
                   </a>
+                </span>
+                <span className="navbar-item">
+                  <button className="button is-danger" onClick={this.onDeleteClick} type="button">
+                    <Icon icon="trash-alt" />
+                    <span>
+                      <FormattedMessage {...messages.delete} />
+                    </span>
+                  </button>
                 </span>
               </div>
             </nav>
@@ -439,6 +477,42 @@ export default class Editor extends React.Component {
                     type="button"
                   >
                     <FormattedMessage {...messages.publish} />
+                  </button>
+                </footer>
+              </div>
+            </Modal>
+            <Modal isActive={deleteDialog} onClose={this.onClose}>
+              <div className="card">
+                <header className="card-header">
+                  <p className="card-header-title">
+                    <FormattedMessage {...messages.deleteWarningTitle} />
+                  </p>
+                </header>
+                <div className="card-content">
+                  <FormattedMessage {...messages.deleteWarning} />
+                </div>
+                <footer className="card-footer">
+                  {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
+                  <a
+                    className="card-footer-item is-link"
+                    onClick={this.onClose}
+                    onKeyDown={this.onKeyDown}
+                    role="button"
+                    tabIndex="-1"
+                  >
+                    <FormattedMessage {...messages.cancel} />
+                  </a>
+                  <button
+                    className={classNames(
+                      'card-footer-item',
+                      'button',
+                      'is-danger',
+                      styles.cardFooterButton,
+                    )}
+                    onClick={this.onDelete}
+                    type="button"
+                  >
+                    <FormattedMessage {...messages.delete} />
                   </button>
                 </footer>
               </div>
