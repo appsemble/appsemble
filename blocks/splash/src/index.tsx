@@ -37,7 +37,7 @@ attach<Parameters, Actions>(({ actions, data }) => {
             <div className={styles.circle}>
               <img alt="Success" className={styles.icon} src={check} />
             </div>
-            <h2 className={styles.header}>Gelukt</h2>
+            <h2 className={`has-text-primary ${styles.header}`}>Gelukt</h2>
             <span className={styles.subheader}>Dankjewel</span>
           </header>,
           loading,
@@ -61,7 +61,7 @@ attach<Parameters, Actions>(({ actions, data }) => {
           >
             <img alt="Action failed" className={styles.icon} src={cross} />
           </button>
-          <h2 className={styles.header}>Fout</h2>
+          <h2 className={`has-text-primary ${styles.header}`}>Fout</h2>
           <span className={styles.subheader}>
             Druk op de bovenstaande knop om het opnieuw te proberen
           </span>

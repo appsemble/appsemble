@@ -1,1 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80"><defs><style>.cls-1{fill:#eb0000;}.cls-2{fill:none;stroke:#fff;stroke-linecap:round;stroke-miterlimit:10;stroke-width:3.06px;}</style></defs><title>message</title><g id="Layer_8" data-name="Layer 8"><circle class="cls-1" cx="40" cy="40" r="30"/><line class="cls-2" x1="26.04" y1="26.04" x2="53.96" y2="53.96"/><line class="cls-2" x1="53.96" y1="26.04" x2="26.04" y2="53.96"/></g></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80">
+  <line stroke="#fff" stroke-linecap="round" stroke-width="3px" x1="26.04" y1="26.04" x2="53.96" y2="53.96"/>
+  <line stroke="#fff" stroke-linecap="round" stroke-width="3px" x1="53.96" y1="26.04" x2="26.04" y2="53.96"/>
+</svg>
