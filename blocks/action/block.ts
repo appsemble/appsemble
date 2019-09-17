@@ -12,7 +12,7 @@ export interface Field {
   enum?: EnumField[];
   icon: IconName;
   label?: string;
-  value: string;
+  value?: string;
 }
 
 export interface Actions {

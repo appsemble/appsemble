@@ -3,30 +3,72 @@ interface Choice {
   value: string;
 }
 
-export interface Field {
-  accept?: string[];
-  enum: Choice[];
-  defaultValue: any;
+interface AbstractField {
   label?: string;
-  labelText?: string;
-  max?: number;
-  maxHeight?: number;
-  maxLength?: number;
-  maxWidth?: number;
-  min?: number;
-  multiline?: boolean;
   name: string;
   placeholder?: string;
-  quality?: number;
   readOnly?: boolean;
-  repeated?: true;
   required?: boolean;
-  step?: number;
-  type?: 'integer';
-  format?: 'email' | 'url';
 }
 
-export interface InputProps<T> {
+export interface BooleanField extends AbstractField {
+  defaultValue?: boolean;
+  labelText?: string;
+  type: 'boolean';
+}
+
+export interface EnumField extends AbstractField {
+  defaultValue?: any;
+  enum: Choice[];
+  type: 'enum';
+}
+
+export interface FileField extends AbstractField {
+  defaultValue?: any;
+  accept?: string[];
+  maxHeight?: number;
+  maxWidth?: number;
+  repeated?: true;
+  quality?: number;
+  type: 'file';
+}
+
+export interface GeoCoordinatesField extends AbstractField {
+  defaultValue?: object;
+  type: 'geocoordinates';
+}
+
+export interface HiddenField extends AbstractField {
+  defaultValue?: any;
+  type: 'hidden';
+}
+
+export interface NumberField extends AbstractField {
+  defaultValue?: number;
+  max?: number;
+  min?: number;
+  step?: number;
+  type: 'integer' | 'number';
+}
+
+export interface StringField extends AbstractField {
+  defaultValue?: string;
+  format?: 'email' | 'url';
+  maxLength?: number;
+  multiline?: boolean;
+  type: 'string';
+}
+
+export type Field =
+  | BooleanField
+  | EnumField
+  | FileField
+  | GeoCoordinatesField
+  | HiddenField
+  | NumberField
+  | StringField;
+
+export interface InputProps<T, F extends Field> {
   /**
    * A field error object.
    */
@@ -35,7 +77,7 @@ export interface InputProps<T> {
   /**
    * The field to render.
    */
-  field: Field;
+  field: F;
 
   /**
    * A callback for when the value changes.

@@ -2,7 +2,7 @@ import { MapperFunction } from '@appsemble/utils';
 
 interface Reply {
   parentId?: string;
-  author: string;
+  author?: string;
   content?: string;
 }
 
@@ -22,18 +22,16 @@ export interface Remappers {
 export interface BlockParameters {
   buttonLabel?: string;
   reply?: Reply;
-  pictureBase: string;
+  pictureBase?: string;
   listen?: string;
-  title: string;
-  subtitle: string;
-  heading: string;
-  picture: string;
-  pictures: string[];
-  description: string;
-  author: string;
-  content: string;
-  latitude: number;
-  longitude: number;
+  title?: string;
+  subtitle?: string;
+  heading?: string;
+  picture?: string;
+  pictures?: string[];
+  description?: string;
+  latitude?: string;
+  longitude?: string;
 }
 
 export interface BlockActions {

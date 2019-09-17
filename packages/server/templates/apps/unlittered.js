@@ -66,6 +66,7 @@ export default {
                   label: 'Location',
                 },
                 {
+                  type: 'enum',
                   enum: [
                     {
                       value: 'Bicycle Collection',

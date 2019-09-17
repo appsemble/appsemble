@@ -6,7 +6,7 @@ export interface Enum {
 }
 
 export interface FilterField {
-  defaultValue: string | number;
+  defaultValue?: string | number;
   label?: string;
   enum?: Enum[];
   icon?: IconName;

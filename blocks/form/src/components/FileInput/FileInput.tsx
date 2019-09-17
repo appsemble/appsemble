@@ -1,11 +1,11 @@
 /** @jsx h */
 import { Component, h, VNode } from 'preact';
 
-import { InputProps } from '../../../block';
+import { FileField, InputProps } from '../../../block';
 import FileEntry from './FileEntry';
 import styles from './FileInput.css';
 
-type FileInputProps = InputProps<string | Blob | (string | Blob)[]>;
+type FileInputProps = InputProps<string | Blob | (string | Blob)[], FileField>;
 
 export default class FileInput extends Component<FileInputProps> {
   static defaultProps: Partial<FileInputProps> = {

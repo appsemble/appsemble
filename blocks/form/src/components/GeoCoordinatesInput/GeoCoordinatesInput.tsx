@@ -6,10 +6,10 @@ import classNames from 'classnames';
 import { CircleMarker, LocationEvent, Map, TileLayer } from 'leaflet';
 import { Component, createRef, h, VNode } from 'preact';
 
-import { InputProps } from '../../../block';
+import { GeoCoordinatesField, InputProps } from '../../../block';
 import styles from './GeoCoordinatesInput.css';
 
-type GeoCoordinatesInputProps = InputProps<{}> & BlockProps;
+type GeoCoordinatesInputProps = InputProps<{}, GeoCoordinatesField> & BlockProps;
 
 /**
  * An input element for an object type schema which implements GeoCoordinates.

@@ -3,9 +3,9 @@ import { FormattedMessage } from '@appsemble/preact';
 import classNames from 'classnames';
 import { h, VNode } from 'preact';
 
-import { InputProps } from '../../../block';
+import { BooleanField, InputProps } from '../../../block';
 
-type BooleanInputProps = InputProps<boolean>;
+type BooleanInputProps = InputProps<boolean, BooleanField>;
 
 /**
  * An input element for a boolean value.

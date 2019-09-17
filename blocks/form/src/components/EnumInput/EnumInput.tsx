@@ -2,10 +2,10 @@
 import { Select } from '@appsemble/preact-components';
 import { h, VNode } from 'preact';
 
-import { InputProps } from '../../../block';
+import { EnumField, InputProps } from '../../../block';
 import styles from './EnumInput.css';
 
-type EnumInputProps = InputProps<string>;
+type EnumInputProps = InputProps<string, EnumField>;
 
 /**
  * Render a select box which offers choices a JSON schema enum.
