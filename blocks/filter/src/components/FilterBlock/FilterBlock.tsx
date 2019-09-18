@@ -157,6 +157,7 @@ export default class FilterBlock extends React.Component<
         ...filter,
         [target.name]: target.value,
       };
+
       if (highlight && target.name === highlight) {
         if (!fields.find(field => field.name === highlight).enum) {
           // wait 300ms, then submit
@@ -169,6 +170,7 @@ export default class FilterBlock extends React.Component<
         }
         setTimeout(this.onFilter, 0);
       }
+
       return { filter: newFilter };
     });
   };

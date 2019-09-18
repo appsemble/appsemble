@@ -3,7 +3,9 @@ import React from 'react';
 import { WrappedComponentProps } from 'react-intl';
 
 import { Filter, FilterField, RangeFilter } from '../../../types';
-import Control from '../Control';
+import DateField from '../DateField';
+import EnumField from '../EnumField';
+import StringField from '../StringField';
 import styles from './Field.css';
 import messages from './messages';
 
@@ -22,25 +24,91 @@ export interface FieldProps extends WrappedComponentProps {
 export default class Field extends React.Component<FieldProps & FilterField> {
   static defaultProps: Partial<FieldProps & FilterField> = {
     displayLabel: true,
+    emptyLabel: '',
     label: undefined,
     range: false,
     type: null,
     icon: undefined,
   };
 
-  render(): JSX.Element {
+  generateField = () => {
     const {
-      displayLabel,
-      filter,
-      intl,
-      name,
-      onRangeChange,
-      onChange,
+      enum: enumerator,
+      type,
       range,
-      label = name,
-      icon,
+      onRangeChange,
+      intl,
+      filter,
+      name,
+      onChange,
+      displayLabel,
       ...props
     } = this.props;
+
+    if (enumerator) {
+      switch (type) {
+        default: {
+          return (
+            <EnumField
+              defaultValue={props.defaultValue}
+              emptyLabel={props.emptyLabel}
+              enumerator={enumerator}
+              value={filter[name]}
+            />
+          );
+        }
+      }
+    } else {
+      switch (type) {
+        case 'date':
+          return range ? (
+            <>
+              <DateField
+                id={`from${name}`}
+                name={name}
+                onChange={onRangeChange}
+                placeholder={intl.formatMessage(messages.from)}
+                value={filter[name] && (filter[name] as RangeFilter).from}
+                {...props}
+              />
+              <DateField
+                id={`to${name}`}
+                name={name}
+                onChange={onRangeChange}
+                placeholder={intl.formatMessage(messages.to)}
+                value={filter[name] && (filter[name] as RangeFilter).to}
+                {...props}
+              />
+            </>
+          ) : (
+            <DateField
+              id={`from${name}`}
+              name={name}
+              onChange={onRangeChange}
+              placeholder={intl.formatMessage(messages.from)}
+              value={filter[name] && (filter[name] as RangeFilter).from}
+              {...props}
+            />
+          );
+        default: {
+          return (
+            <StringField
+              className={styles.control}
+              name={name}
+              onChange={onChange}
+              value={filter[name]}
+              {...props}
+            />
+          );
+        }
+      }
+    }
+  };
+
+  render(): JSX.Element {
+    const { displayLabel, name, range, label = name, icon } = this.props;
+
+    const Control = this.generateField();
 
     return (
       <div className="field is-horizontal">
@@ -56,36 +124,7 @@ export default class Field extends React.Component<FieldProps & FilterField> {
             </label>
           </div>
         )}
-        <div className={classNames('field field-body', { 'is-grouped': range })}>
-          {range ? (
-            <>
-              <Control
-                id={`from${name}`}
-                name={name}
-                onChange={onRangeChange}
-                placeholder={intl.formatMessage(messages.from)}
-                value={filter[name] && (filter[name] as RangeFilter).from}
-                {...props}
-              />
-              <Control
-                id={`to${name}`}
-                name={name}
-                onChange={onRangeChange}
-                placeholder={intl.formatMessage(messages.to)}
-                value={filter[name] && (filter[name] as RangeFilter).to}
-                {...props}
-              />
-            </>
-          ) : (
-            <Control
-              className={styles.control}
-              name={name}
-              onChange={onChange}
-              value={filter[name]}
-              {...props}
-            />
-          )}
-        </div>
+        <div className={classNames('field field-body', { 'is-grouped': range })}>{Control}</div>
       </div>
     );
   }

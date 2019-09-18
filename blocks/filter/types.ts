@@ -3,16 +3,18 @@ import { IconName } from '@fortawesome/fontawesome-common-types';
 export interface Enum {
   value: string;
   label?: string;
+  icon?: string;
 }
 
 export interface FilterField {
+  emptyLabel?: string;
   defaultValue?: string | number;
   label?: string;
   enum?: Enum[];
   icon?: IconName;
   name: string;
   range?: boolean;
-  type?: string;
+  type?: 'date' | 'checkbox' | 'radio';
 }
 
 export interface RangeFilter {
