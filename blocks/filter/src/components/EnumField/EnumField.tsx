@@ -7,6 +7,7 @@ const EnumField: React.StatelessComponent<{
   defaultValue?: any;
   emptyLabel?: string;
   enumerator: Enum[];
+  onChange: React.ChangeEventHandler<HTMLElement>;
 }> = p => {
   const { defaultValue, emptyLabel, enumerator, value, ...props } = p;
   return (

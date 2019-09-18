@@ -70,7 +70,7 @@ export default class FilterBlock extends React.Component<
     // Convert date fields to unix timestamps without mutating filter itself
     const convertedFilter = Object.entries(filter).reduce<Filter>((acc, [key, value]) => {
       const field = fields.find(f => f.name === key);
-      if (field.type === 'date') {
+      if (field.type && field.type === 'date') {
         if (field.range) {
           acc[key] = {};
           if ((value as RangeFilter).to) {

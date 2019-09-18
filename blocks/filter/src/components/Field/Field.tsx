@@ -42,6 +42,7 @@ export default class Field extends React.Component<FieldProps & FilterField> {
       name,
       onChange,
       displayLabel,
+      emptyLabel,
       ...props
     } = this.props;
 
@@ -51,9 +52,11 @@ export default class Field extends React.Component<FieldProps & FilterField> {
           return (
             <EnumField
               defaultValue={props.defaultValue}
-              emptyLabel={props.emptyLabel}
+              emptyLabel={emptyLabel}
               enumerator={enumerator}
+              onChange={onChange}
               value={filter[name]}
+              {...props}
             />
           );
         }
