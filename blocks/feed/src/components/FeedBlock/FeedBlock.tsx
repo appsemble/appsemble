@@ -66,7 +66,7 @@ export default class FeedBlock extends Component<
     }
   }
 
-  onUpdate = (resource: any) => {
+  onUpdate = (resource: any): void => {
     const { data } = this.state;
     this.setState({ data: data.map(entry => (entry.id === resource.id ? resource : entry)) });
   };

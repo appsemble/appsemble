@@ -30,7 +30,7 @@ type CheckboxProps = FormComponentProps &
  * A Bulma styled form select element.
  */
 export default class Checkbox extends React.Component<CheckboxProps> {
-  onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  onChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
     const { onChange } = this.props;
 
     onChange(event, event.target.checked);

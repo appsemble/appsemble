@@ -19,7 +19,7 @@ type SelectProps = FormComponentProps &
  * A Bulma styled form select element.
  */
 export default class Select extends React.Component<SelectProps> {
-  onChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+  onChange = (event: React.ChangeEvent<HTMLSelectElement>): void => {
     const { onChange } = this.props;
 
     onChange(event, event.target.value);

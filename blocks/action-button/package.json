@@ -4,6 +4,6 @@
   "private": true,
   "dependencies": {
     "@appsemble/sdk": "0.8.7",
-    "@fortawesome/fontawesome-common-types": "^0.2.21"
+    "@fortawesome/fontawesome-common-types": "^0.2.25"
   }
 }

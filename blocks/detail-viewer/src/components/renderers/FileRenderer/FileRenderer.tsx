@@ -10,7 +10,7 @@ import styles from './FileRenderer.css';
  * Render a string as is.
  */
 export default class FileRenderer extends Component<RendererProps<FileField>> {
-  getSrc = (value: string | Blob) => {
+  getSrc = (value: string | Blob): string => {
     const { block, utils } = this.props;
 
     if (value instanceof Blob) {

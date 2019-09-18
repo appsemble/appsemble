@@ -27,7 +27,7 @@ export default class SideMenu extends React.Component<SideMenuProps & RouteCompo
     this.unlisten();
   }
 
-  onKeyDown = (event: KeyboardEvent | React.KeyboardEvent) => {
+  onKeyDown = (event: KeyboardEvent | React.KeyboardEvent): void => {
     const { closeMenu } = this.props;
 
     // Close menu if the Escape key is pressed.
