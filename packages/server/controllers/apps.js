@@ -43,16 +43,19 @@ async function checkBlocks(app, db) {
     if (!versions.has(block.version)) {
       return { ...acc, [loc]: `Unknown block version “${type}@${block.version}”` };
     }
-    const validate = ajv.compile(versions.get(block.version).parameters);
-    const valid = validate(block.parameters);
-    if (!valid) {
-      return validate.errors.reduce(
-        (accumulator, error) => ({
-          ...accumulator,
-          [`${loc}.parameters${error.dataPath}`]: error,
-        }),
-        acc,
-      );
+    const version = versions.get(block.version);
+    if (Object.prototype.hasOwnProperty.call(version, 'parameters')) {
+      const validate = ajv.compile(version.parameters);
+      const valid = validate(block.parameters);
+      if (!valid) {
+        return validate.errors.reduce(
+          (accumulator, error) => ({
+            ...accumulator,
+            [`${loc}.parameters${error.dataPath}`]: error,
+          }),
+          acc,
+        );
+      }
     }
     return acc;
   }, null);
