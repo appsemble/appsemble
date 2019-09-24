@@ -18,11 +18,11 @@ export default class StringField extends React.Component<StringFieldProps> {
   };
 
   render(): JSX.Element {
-    const { loading, value, ...props } = this.props;
+    const { loading, value, className, ...props } = this.props;
 
     return (
       <div className={classNames('control', { 'is-loading': loading })}>
-        <input className="input" type="text" value={value} {...props} />{' '}
+        <input className={classNames('input', className)} type="text" value={value} {...props} />{' '}
       </div>
     );
   }
