@@ -2,7 +2,8 @@ import classNames from 'classnames';
 import React from 'react';
 import { WrappedComponentProps } from 'react-intl';
 
-import { Filter, FilterField, RangeFilter } from '../../../types';
+import { CheckBoxFilter, Filter, FilterField, RangeFilter } from '../../../types';
+import CheckBoxField from '../CheckBoxField';
 import DateField from '../DateField';
 import EnumField from '../EnumField';
 import StringField from '../StringField';
@@ -48,6 +49,16 @@ export default class Field extends React.Component<FieldProps & FilterField> {
 
     if (enumerator) {
       switch (type) {
+        case 'checkbox': {
+          return (
+            <CheckBoxField
+              enumerator={enumerator}
+              onChange={onChange}
+              value={filter[name] as CheckBoxFilter}
+              {...props}
+            />
+          );
+        }
         default: {
           return (
             <EnumField

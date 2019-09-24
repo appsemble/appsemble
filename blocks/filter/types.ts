@@ -3,7 +3,7 @@ import { IconName } from '@fortawesome/fontawesome-common-types';
 export interface Enum {
   value: string;
   label?: string;
-  icon?: string;
+  icon?: IconName;
 }
 
 export interface FilterField {
@@ -22,8 +22,12 @@ export interface RangeFilter {
   to?: string | number;
 }
 
+export interface CheckBoxFilter {
+  [key: string]: string | number | boolean;
+}
+
 export interface Filter {
-  [filter: string]: string | number | RangeFilter;
+  [filter: string]: string | number | RangeFilter | CheckBoxFilter;
 }
 
 export interface Parameters {
