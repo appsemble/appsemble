@@ -175,6 +175,32 @@ export default class FilterBlock extends React.Component<
     });
   };
 
+  onCheckBoxChange = async ({
+    target: { name, checked, value },
+  }: React.ChangeEvent<HTMLInputElement>) => {
+    this.setState(({ filter }) => {
+      const entry = filter[name] as string[];
+      if (checked) {
+        if (entry.includes(value)) {
+          return null;
+        }
+
+        return {
+          filter: {
+            ...filter,
+            [name]: [...entry, value],
+          },
+        };
+      }
+      return {
+        filter: {
+          ...filter,
+          [name]: entry.filter(e => e !== value),
+        },
+      };
+    });
+  };
+
   onRangeChange = ({ target: { id, name, value } }: React.ChangeEvent<HTMLInputElement>) => {
     this.setState(({ filter }) => {
       return {
@@ -261,6 +287,7 @@ export default class FilterBlock extends React.Component<
                       filter={filter}
                       loading={loading}
                       onChange={this.onChange}
+                      onCheckBoxChange={this.onCheckBoxChange}
                       onRangeChange={this.onRangeChange}
                     />
                   ))}

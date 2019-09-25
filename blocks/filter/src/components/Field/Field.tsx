@@ -2,7 +2,7 @@ import classNames from 'classnames';
 import React from 'react';
 import { WrappedComponentProps } from 'react-intl';
 
-import { CheckBoxFilter, Filter, FilterField, RangeFilter } from '../../../types';
+import { Filter, FilterField, RangeFilter } from '../../../types';
 import CheckBoxField from '../CheckBoxField';
 import DateField from '../DateField';
 import EnumField from '../EnumField';
@@ -18,6 +18,9 @@ export interface FieldProps extends WrappedComponentProps {
     | React.ChangeEventHandler<HTMLInputElement>
     | React.ChangeEventHandler<HTMLSelectElement>;
   onRangeChange:
+    | React.ChangeEventHandler<HTMLInputElement>
+    | React.ChangeEventHandler<HTMLSelectElement>;
+  onCheckBoxChange?:
     | React.ChangeEventHandler<HTMLInputElement>
     | React.ChangeEventHandler<HTMLSelectElement>;
 }
@@ -38,14 +41,16 @@ export default class Field extends React.Component<FieldProps & FilterField> {
       type,
       range,
       onRangeChange,
+      onCheckBoxChange,
       intl,
       filter,
-      name,
       onChange,
       displayLabel,
       emptyLabel,
       ...props
     } = this.props;
+
+    const { name } = this.props;
 
     if (enumerator) {
       switch (type) {
@@ -53,8 +58,8 @@ export default class Field extends React.Component<FieldProps & FilterField> {
           return (
             <CheckBoxField
               enumerator={enumerator}
-              onChange={onChange}
-              value={filter[name] as CheckBoxFilter}
+              onChange={onCheckBoxChange}
+              value={filter[name] as string[]}
               {...props}
             />
           );

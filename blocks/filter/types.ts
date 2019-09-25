@@ -22,12 +22,8 @@ export interface RangeFilter {
   to?: string | number;
 }
 
-export interface CheckBoxFilter {
-  [key: string]: string | number | boolean;
-}
-
 export interface Filter {
-  [filter: string]: string | number | RangeFilter | CheckBoxFilter;
+  [filter: string]: string | number | RangeFilter | string[];
 }
 
 export interface Parameters {

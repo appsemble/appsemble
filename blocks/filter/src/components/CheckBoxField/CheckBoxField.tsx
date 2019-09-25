@@ -16,6 +16,7 @@ const CheckBoxField: React.StatelessComponent<{
           <input
             checked={parentValue && parentValue[value] !== undefined}
             type="checkbox"
+            value={value}
             {...props}
           />
           {icon && <Icon icon={icon} />} {label || value}
