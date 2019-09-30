@@ -358,6 +358,7 @@ export default class OrganizationsSettings extends Component {
             name="newOrganizationId"
             onChange={this.onNewOrganizationChange}
             placeholder={intl.formatMessage(messages.organizationId)}
+            required
             value={newOrganizationId}
           />
 
@@ -404,6 +405,7 @@ export default class OrganizationsSettings extends Component {
                 name="memberEmail"
                 onChange={this.onMemberEmailChange}
                 placeholder={intl.formatMessage(messages.email)}
+                required
                 type="email"
                 value={memberEmail}
               />

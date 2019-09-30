@@ -182,6 +182,7 @@ export default class UserSettings extends Component {
             name="newEmail"
             onChange={this.onNewEmailChange}
             placeholder={intl.formatMessage(messages.email)}
+            required
             type="email"
             value={newEmail}
           />
