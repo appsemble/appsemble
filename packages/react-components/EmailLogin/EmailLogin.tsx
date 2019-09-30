@@ -50,7 +50,7 @@ export default class EmailLogin extends React.Component<EmailLoginProps, EmailLo
     },
   };
 
-  onChange = (event: React.ChangeEvent<HTMLInputElement>, value: string) => {
+  onChange = (event: React.ChangeEvent<HTMLInputElement>, value: string): void => {
     const { target } = event;
 
     this.setState(({ errors, values }) => ({

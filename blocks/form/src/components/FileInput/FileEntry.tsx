@@ -44,7 +44,7 @@ export default class FileEntry extends Component<FileEntryProps> {
 
   static getDerivedStateFromProps = getDerivedStateFromProps;
 
-  onSelect = async (event: Event) => {
+  onSelect = async (event: Event): Promise<void> => {
     const {
       onInput,
       field: { maxWidth, maxHeight, quality },
@@ -98,7 +98,7 @@ export default class FileEntry extends Component<FileEntryProps> {
     });
   };
 
-  onRemove = () => {
+  onRemove = (): void => {
     const { onInput, name } = this.props;
 
     onInput(({ target: { name } } as any) as Event, null);

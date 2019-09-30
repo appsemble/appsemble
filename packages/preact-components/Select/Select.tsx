@@ -20,7 +20,7 @@ type SelectProps = FormComponentProps &
  * A Bulma styled form select element.
  */
 export default class Select extends Component<SelectProps> {
-  onInput = (event: Event) => {
+  onInput = (event: Event): void => {
     const { onInput } = this.props;
 
     onInput(event, (event.target as HTMLSelectElement).value);

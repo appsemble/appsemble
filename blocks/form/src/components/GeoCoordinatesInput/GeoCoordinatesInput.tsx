@@ -58,7 +58,7 @@ export default class GeoCoordinatesInput extends Component<GeoCoordinatesInputPr
     this.map = map;
   }
 
-  onReset = () => {
+  onReset = (): void => {
     this.map.setView(this.locationMarker.getLatLng(), 16);
   };
 

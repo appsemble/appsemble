@@ -84,7 +84,7 @@ export type InputProps = BooleanInputProps | NumberInputProps | StringInputProps
  * A Bulma styled form input element.
  */
 export default class Input extends Component<InputProps> {
-  onInput = (event: Event) => {
+  onInput = (event: Event): void => {
     const { onInput, type } = this.props;
 
     const target = event.target as HTMLInputElement;

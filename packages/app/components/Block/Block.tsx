@@ -83,11 +83,11 @@ export default class Block extends React.Component<BlockProps & RouteComponentPr
     this.cleanups.forEach(async fn => fn());
   }
 
-  addCleanup = (fn: Function) => {
+  addCleanup = (fn: Function): void => {
     this.cleanups.push(fn);
   };
 
-  ref = async (div: HTMLDivElement) => {
+  ref = async (div: HTMLDivElement): Promise<void> => {
     const {
       actionCreators,
       app,

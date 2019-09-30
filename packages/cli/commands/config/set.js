@@ -17,9 +17,9 @@ export function builder(yargs) {
 }
 
 export async function handler({ key, value }) {
-  const { path, package: pkg } = await readPkgUp({ normalize: false });
-  if (!Object.prototype.hasOwnProperty.call(pkg, 'appsembleServer')) {
-    pkg.appsembleServer = {};
+  const { path, packageJson } = await readPkgUp({ normalize: false });
+  if (!Object.prototype.hasOwnProperty.call(packageJson, 'appsembleServer')) {
+    packageJson.appsembleServer = {};
   }
   let parsed;
   try {
@@ -27,8 +27,8 @@ export async function handler({ key, value }) {
   } catch (err) {
     parsed = value;
   }
-  pkg.appsembleServer[key] = parsed;
-  await fs.writeJson(path, pkg, { spaces: 2 });
+  packageJson.appsembleServer[key] = parsed;
+  await fs.writeJson(path, packageJson, { spaces: 2 });
   logger.info(
     `Set option appsembleServer.${key} to ${inspect(parsed, { colors: true })} in ${path}`,
   );
