@@ -1,4 +1,4 @@
-import { Form, Icon, Loader, Modal } from '@appsemble/react-components';
+import { Form, Icon, Input, Loader, Modal } from '@appsemble/react-components';
 import axios from 'axios';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
@@ -156,25 +156,15 @@ export default class UserSettings extends Component {
       <div className="content">
         <HelmetIntl title={messages.title} />
         <Form onSubmit={this.onSaveProfile}>
-          <div className="field">
-            <label className="label">
-              <FormattedMessage {...messages.displayName} />
-            </label>
-            <div className={`control has-icons-left ${styles.field}`}>
-              <input
-                className="input"
-                name="name"
-                onChange={this.onNameChange}
-                placeholder={intl.formatMessage(messages.displayName)}
-                type="text"
-                value={newUser.name || ''}
-              />
-              <Icon className="is-left" icon="user" size="small" />
-              <p className="help">
-                <FormattedMessage {...messages.displayNameHelp} />
-              </p>
-            </div>
-          </div>
+          <Input
+            icon="user"
+            label={<FormattedMessage {...messages.displayName} />}
+            name="name"
+            onChange={this.onNameChange}
+            placeholder={intl.formatMessage(messages.displayName)}
+            type="text"
+            value={newUser.name || ''}
+          />
           <div className="control">
             <button className="button is-primary" disabled={submittingName} type="submit">
               <FormattedMessage {...messages.saveProfile} />
@@ -186,22 +176,15 @@ export default class UserSettings extends Component {
           <FormattedMessage {...messages.emails} />
         </h4>
         <Form onSubmit={this.onAddNewEmail}>
-          <div className="field">
-            <label className="label">
-              <FormattedMessage {...messages.addEmail} />
-            </label>
-            <div className={`control has-icons-left ${styles.field}`}>
-              <input
-                className="input"
-                name="newEmail"
-                onChange={this.onNewEmailChange}
-                placeholder={intl.formatMessage(messages.email)}
-                type="email"
-                value={newEmail}
-              />
-              <Icon className="is-left" icon="envelope" size="small" />
-            </div>
-          </div>
+          <Input
+            icon="envelope"
+            label={<FormattedMessage {...messages.addEmail} />}
+            name="newEmail"
+            onChange={this.onNewEmailChange}
+            placeholder={intl.formatMessage(messages.email)}
+            type="email"
+            value={newEmail}
+          />
           <div className="control">
             <button className="button is-info" disabled={submittingEmail} type="submit">
               <FormattedMessage {...messages.addEmail} />
