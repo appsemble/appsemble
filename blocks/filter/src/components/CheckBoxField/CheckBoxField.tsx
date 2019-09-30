@@ -1,10 +1,10 @@
 import { Icon } from '@appsemble/react-components';
 import React from 'react';
 
-import { CheckBoxFilter, Enum } from '../../../types';
+import { Enum } from '../../../types';
 
 const CheckBoxField: React.StatelessComponent<{
-  value: CheckBoxFilter;
+  value: string[];
   enumerator: Enum[];
   onChange: React.ChangeEventHandler<HTMLElement>;
 }> = p => {
@@ -13,12 +13,7 @@ const CheckBoxField: React.StatelessComponent<{
     <div>
       {enumerator.map(({ icon, value, label }) => (
         <label key={value}>
-          <input
-            checked={parentValue && parentValue[value] !== undefined}
-            type="checkbox"
-            value={value}
-            {...props}
-          />
+          <input checked={parentValue.includes(value)} type="checkbox" value={value} {...props} />
           {icon && <Icon icon={icon} />} {label || value}
         </label>
       ))}

@@ -109,10 +109,13 @@ export default class FilterBlock extends React.Component<
       return;
     }
 
-    const defaultFilter = fields.reduce<Filter>((acc, { name, defaultValue }) => {
+    const defaultFilter = fields.reduce<Filter>((acc, { name, defaultValue, type }) => {
       if (defaultValue) {
         acc[name] = defaultValue;
+      } else if (type === 'checkbox') {
+        acc[name] = [];
       }
+
       return acc;
     }, {});
 
@@ -179,7 +182,7 @@ export default class FilterBlock extends React.Component<
     target: { name, checked, value },
   }: React.ChangeEvent<HTMLInputElement>) => {
     this.setState(({ filter }) => {
-      const entry = filter[name] as string[];
+      const entry = (filter[name] as string[]) || [];
       if (checked) {
         if (entry.includes(value)) {
           return null;

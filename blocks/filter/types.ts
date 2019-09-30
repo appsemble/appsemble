@@ -14,7 +14,7 @@ export interface FilterField {
   icon?: IconName;
   name: string;
   range?: boolean;
-  type?: 'date' | 'checkbox' | 'radio';
+  type?: 'date' | 'checkbox' | 'radio' | 'string';
 }
 
 export interface RangeFilter {

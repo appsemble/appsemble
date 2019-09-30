@@ -9,7 +9,7 @@ export default function toOData(fields: FilterField[], filter: Filter): string {
 
       const field = fields.find(f => f.name === key);
 
-      if (field.type === 'string') {
+      if (!field.type || field.type === 'string') {
         return `substringof('${data}',${key})`;
       }
 
@@ -18,6 +18,10 @@ export default function toOData(fields: FilterField[], filter: Filter): string {
         const f = from == null || from === '' ? null : `${key} ge ${from}`;
         const t = to == null || to === '' ? null : `${key} le ${to}`;
         return [f, t];
+      }
+
+      if (field.type === 'checkbox') {
+        return `(${(data as string[]).map(value => `${key} eq '${value}'`).join(' or ')})`;
       }
 
       return `${key} eq '${data}'`;
