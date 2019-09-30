@@ -115,15 +115,15 @@ export default class OrganizationsSettings extends Component {
         name: newOrganizationName,
       });
 
+      organizations.push(organization);
+      updateUser({ ...user, organizations });
+
       this.setState({
         newOrganizationId: '',
         newOrganizationName: '',
         submittingOrganization: false,
         selectedOrganization: organization.id,
       });
-
-      organizations.push(organization);
-      updateUser({ ...user, organizations });
 
       push({
         body: intl.formatMessage(messages.createOrganizationSuccess, {
