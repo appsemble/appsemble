@@ -105,7 +105,6 @@ export default class OrganizationsSettings extends Component {
 
     const { intl, push, user, updateUser } = this.props;
     const { newOrganizationId, newOrganizationName } = this.state;
-    const organizations = [...user.organizations];
 
     this.setState({ submittingOrganization: true });
 
@@ -115,8 +114,7 @@ export default class OrganizationsSettings extends Component {
         name: newOrganizationName,
       });
 
-      organizations.push(organization);
-      updateUser({ ...user, organizations });
+      updateUser({ ...user, organizations: [...user.organizations, organization] });
 
       this.setState({
         newOrganizationId: '',
