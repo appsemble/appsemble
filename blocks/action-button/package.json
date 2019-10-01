@@ -1,9 +1,9 @@
 {
   "name": "@appsemble/action-button",
-  "version": "0.8.7",
+  "version": "0.8.8",
   "private": true,
   "dependencies": {
-    "@appsemble/sdk": "0.8.7",
+    "@appsemble/sdk": "0.8.8",
     "@fortawesome/fontawesome-common-types": "^0.2.25"
   }
 }
