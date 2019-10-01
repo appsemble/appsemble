@@ -35,23 +35,16 @@ export default class FormComponent extends React.Component<FormComponentProps> {
     const { children, iconLeft, id, label, required } = this.props;
 
     return (
-      <div className="field is-horizontal">
-        <div className="field-label is-normal">
-          <label className="label" htmlFor={id}>
-            {label}
-            {required || (
-              <span className="is-inline has-text-weight-normal">
-                {' — '}
-                <FormattedMessage {...messages.optional} />
-              </span>
-            )}
-          </label>
-        </div>
-        <div className="field-body">
-          <div className="field">
-            <div className={classNames('control', { 'has-icons-left': iconLeft })}>{children}</div>
-          </div>
-        </div>
+      <div className="field">
+        <label className="label" htmlFor={id}>
+          {label}
+          {required || (
+            <span className="is-pulled-right has-text-weight-normal">
+              (<FormattedMessage {...messages.optional} />)
+            </span>
+          )}
+        </label>
+        <div className={classNames('control', { 'has-icons-left': iconLeft })}>{children}</div>
       </div>
     );
   }

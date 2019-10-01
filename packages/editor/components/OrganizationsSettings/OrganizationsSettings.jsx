@@ -1,4 +1,4 @@
-import { Form, Icon, Loader, Modal } from '@appsemble/react-components';
+import { Form, Icon, Input, Loader, Modal } from '@appsemble/react-components';
 import { normalize } from '@appsemble/utils';
 import axios from 'axios';
 import PropTypes from 'prop-types';
@@ -340,41 +340,25 @@ export default class OrganizationsSettings extends Component {
           <FormattedMessage {...messages.createOrganization} />
         </h2>
         <Form onSubmit={this.onSubmitNewOrganization}>
-          <div className="field">
-            <label className="label" htmlFor="newOrganizationName">
-              <FormattedMessage {...messages.organizationName} />
-            </label>
-            <div className={`control has-icons-left ${styles.field}`}>
-              <input
-                className="input"
-                disabled={submittingOrganization}
-                id="newOrganizationName"
-                name="newOrganizationName"
-                onChange={this.onNewOrganizationChange}
-                placeholder={intl.formatMessage(messages.organizationName)}
-                value={newOrganizationName}
-              />
-              <Icon className="is-left" icon="briefcase" />
-            </div>
-          </div>
-
-          <div className="field">
-            <label className="label" htmlFor="newOrganizationId">
-              <FormattedMessage {...messages.organizationId} />
-            </label>
-            <div className={`control has-icons-left ${styles.field}`}>
-              <input
-                className="input"
-                disabled={submittingOrganization}
-                id="newOrganizationId"
-                name="newOrganizationId"
-                onChange={this.onNewOrganizationChange}
-                placeholder={intl.formatMessage(messages.organizationId)}
-                value={newOrganizationId}
-              />
-              <Icon className="is-left" icon="briefcase" />
-            </div>
-          </div>
+          <Input
+            disabled={submittingOrganization}
+            iconLeft="briefcase"
+            label={<FormattedMessage {...messages.organizationName} />}
+            name="newOrganizationName"
+            onChange={this.onNewOrganizationChange}
+            placeholder={intl.formatMessage(messages.organizationName)}
+            value={newOrganizationName}
+          />
+          <Input
+            disabled={submittingOrganization}
+            iconLeft="briefcase"
+            label={<FormattedMessage {...messages.organizationId} />}
+            name="newOrganizationId"
+            onChange={this.onNewOrganizationChange}
+            placeholder={intl.formatMessage(messages.organizationId)}
+            required
+            value={newOrganizationId}
+          />
 
           <div className="control">
             <button className="button is-primary" disabled={submittingOrganization} type="submit">
@@ -412,24 +396,17 @@ export default class OrganizationsSettings extends Component {
             </div>
 
             <Form onSubmit={this.onInviteMember}>
-              <div className="field">
-                <label className="label" htmlFor="memberEmail">
-                  <FormattedMessage {...messages.addMemberEmail} />
-                </label>
-                <div className={`control has-icons-left ${styles.field}`}>
-                  <input
-                    className="input"
-                    disabled={submittingMember}
-                    id="memberEmail"
-                    name="memberEmail"
-                    onChange={this.onMemberEmailChange}
-                    placeholder={intl.formatMessage(messages.email)}
-                    type="email"
-                    value={memberEmail}
-                  />
-                  <Icon className="is-left" icon="envelope" />
-                </div>
-              </div>
+              <Input
+                disabled={submittingMember}
+                iconLeft="envelope"
+                label={<FormattedMessage {...messages.addMemberEmail} />}
+                name="memberEmail"
+                onChange={this.onMemberEmailChange}
+                placeholder={intl.formatMessage(messages.email)}
+                required
+                type="email"
+                value={memberEmail}
+              />
               <div className="control">
                 <button className="button is-primary" disabled={submittingMember} type="submit">
                   <FormattedMessage {...messages.inviteMember} />
