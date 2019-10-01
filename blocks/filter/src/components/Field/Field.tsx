@@ -127,20 +127,18 @@ export default class Field extends React.Component<FieldProps & FilterField> {
     const Control = this.generateField();
 
     return (
-      <div className="field is-horizontal">
+      <div className="field ">
         {displayLabel && (
-          <div className="field-label is-normal">
-            <label className="label" htmlFor={`filter${name}`}>
-              {icon && (
-                <span className="icon">
-                  <i className={`fas fa-${icon}`} />
-                </span>
-              )}
-              {label}
-            </label>
-          </div>
+          <label className="label" htmlFor={`filter${name}`}>
+            {icon && (
+              <span className="icon">
+                <i className={`fas fa-${icon}`} />
+              </span>
+            )}
+            {label}
+          </label>
         )}
-        <div className={classNames('field field-body', { 'is-grouped': range })}>{Control}</div>
+        <div className={classNames('field', { 'is-grouped': range })}>{Control}</div>
       </div>
     );
   }
