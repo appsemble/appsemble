@@ -21,6 +21,10 @@ export default function toOData(fields: FilterField[], filter: Filter): string {
       }
 
       if (field.type === 'checkbox') {
+        if (!(data as string[]).length) {
+          return '';
+        }
+
         return `(${(data as string[]).map(value => `${key} eq '${value}'`).join(' or ')})`;
       }
 
