@@ -57,7 +57,7 @@ export default class FilterBlock extends React.Component<
     }
   }
 
-  fetchData = (filterParams?: Filter) => {
+  fetchData = (filterParams?: Filter): Promise<any> => {
     const {
       actions,
       block: {
@@ -97,7 +97,7 @@ export default class FilterBlock extends React.Component<
     });
   };
 
-  resetFilter = (e?: React.MouseEvent<HTMLButtonElement>) => {
+  resetFilter = (e?: React.MouseEvent<HTMLButtonElement>): void => {
     const {
       events,
       block: {
@@ -126,7 +126,7 @@ export default class FilterBlock extends React.Component<
     });
   };
 
-  onRefresh = async () => {
+  onRefresh = async (): Promise<void> => {
     const { lastRefreshedDate = new Date(), newData } = this.state;
     const refreshDate = new Date();
 
@@ -135,11 +135,11 @@ export default class FilterBlock extends React.Component<
     this.setState({ lastRefreshedDate: refreshDate, newData: [...fetchedItems, ...newData] });
   };
 
-  onDismissRefresh = () => {
+  onDismissRefresh = (): void => {
     this.setState({ newData: [] });
   };
 
-  onMergeRefresh = () => {
+  onMergeRefresh = (): void => {
     const { newData, data } = this.state;
     const {
       events,
@@ -154,7 +154,7 @@ export default class FilterBlock extends React.Component<
     this.setState({ newData: [], data: updatedData });
   };
 
-  onChange = async ({ target }: React.ChangeEvent<HTMLInputElement>) => {
+  onChange = ({ target }: React.ChangeEvent<HTMLInputElement>): void => {
     this.setState(({ filter, typingTimer }, { block: { parameters: { fields, highlight } } }) => {
       const newFilter = {
         ...filter,
@@ -180,7 +180,7 @@ export default class FilterBlock extends React.Component<
 
   onCheckBoxChange = async ({
     target: { name, checked, value },
-  }: React.ChangeEvent<HTMLInputElement>) => {
+  }: React.ChangeEvent<HTMLInputElement>): Promise<void> => {
     this.setState(({ filter }) => {
       const entry = (filter[name] as string[]) || [];
       if (checked) {
@@ -204,7 +204,7 @@ export default class FilterBlock extends React.Component<
     });
   };
 
-  onRangeChange = ({ target: { id, name, value } }: React.ChangeEvent<HTMLInputElement>) => {
+  onRangeChange = ({ target: { id, name, value } }: React.ChangeEvent<HTMLInputElement>): void => {
     this.setState(({ filter }) => {
       return {
         filter: {
@@ -218,7 +218,7 @@ export default class FilterBlock extends React.Component<
     });
   };
 
-  onFilter = async () => {
+  onFilter = async (): Promise<void> => {
     const {
       block: {
         parameters: { event },
@@ -226,12 +226,12 @@ export default class FilterBlock extends React.Component<
       events,
     } = this.props;
 
-    await this.setState({ loading: true });
+    this.setState({ loading: true });
 
     const data = await this.fetchData();
     events.emit(event, data);
 
-    await this.setState(({ filter }) => ({
+    this.setState(({ filter }) => ({
       loading: false,
       isOpen: false,
       currentFilter: filter,
@@ -240,11 +240,11 @@ export default class FilterBlock extends React.Component<
     }));
   };
 
-  onOpen = () => {
+  onOpen = (): void => {
     this.setState({ isOpen: true });
   };
 
-  onClose = () => {
+  onClose = (): void => {
     this.setState({ isOpen: false });
   };
 

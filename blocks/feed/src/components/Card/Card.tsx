@@ -89,7 +89,7 @@ export default class Card extends Component<
     event.preventDefault();
   };
 
-  onClick = async () => {
+  onClick = async (): Promise<void> => {
     const { actions, block, content, utils, messages } = this.props;
     const { message, replies, valid } = this.state;
 

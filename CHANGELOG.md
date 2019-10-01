@@ -9,6 +9,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
+- Block(`@appsemble/form`): Add support for field icons.
 - Editor: Add support for deleting apps.
 - Server: Add support for deleting apps.
 

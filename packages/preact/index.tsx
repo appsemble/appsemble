@@ -4,16 +4,6 @@ import IntlMessageFormat from 'intl-messageformat';
 import { ComponentType, createContext, Fragment, h, render, VNode } from 'preact';
 import { useContext } from 'preact/hooks';
 
-// XXX Remove this when updating preact. https://github.com/preactjs/preact/pull/1887
-declare module 'preact/src/jsx' {
-  // eslint-disable-next-line @typescript-eslint/no-namespace
-  namespace JSXInternal {
-    interface IntrinsicAttributes {
-      key?: any;
-    }
-  }
-}
-
 export interface BlockProps<P = any, A = {}> extends BootstrapParams<P, A> {
   /**
    * The DOM node on which the block is mounted.

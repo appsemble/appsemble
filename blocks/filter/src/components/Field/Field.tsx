@@ -35,7 +35,7 @@ export default class Field extends React.Component<FieldProps & FilterField> {
     icon: undefined,
   };
 
-  generateField = () => {
+  generateField = (): React.ReactNode => {
     const {
       enum: enumerator,
       type,
