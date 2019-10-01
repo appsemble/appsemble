@@ -12,18 +12,14 @@ interface DateFieldProps {
   onChange: React.ChangeEventHandler<HTMLElement>;
 }
 
-export default class DateField extends React.Component<DateFieldProps> {
-  static defaultProps: Partial<DateFieldProps> = {
-    value: '',
-  };
-
-  render(): JSX.Element {
-    const { loading, value, ...props } = this.props;
-
-    return (
-      <div className={classNames('control', { 'is-loading': loading })}>
-        <input className="input" type="date" value={value} {...props} />{' '}
-      </div>
-    );
-  }
+export default function DateField({
+  loading,
+  value = '',
+  ...props
+}: DateFieldProps): React.ReactElement {
+  return (
+    <div className={classNames('control', { 'is-loading': loading })}>
+      <input className="input" type="date" value={value} {...props} />
+    </div>
+  );
 }

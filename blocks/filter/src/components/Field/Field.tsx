@@ -54,7 +54,7 @@ export default class Field extends React.Component<FieldProps & FilterField> {
 
     if (enumerator) {
       switch (type) {
-        case 'checkbox': {
+        case 'checkbox':
           return (
             <CheckBoxField
               enumerator={enumerator}
@@ -63,8 +63,7 @@ export default class Field extends React.Component<FieldProps & FilterField> {
               {...props}
             />
           );
-        }
-        default: {
+        default:
           return (
             <EnumField
               defaultValue={props.defaultValue}
@@ -75,7 +74,6 @@ export default class Field extends React.Component<FieldProps & FilterField> {
               {...props}
             />
           );
-        }
       }
     } else {
       switch (type) {
@@ -109,7 +107,7 @@ export default class Field extends React.Component<FieldProps & FilterField> {
               {...props}
             />
           );
-        default: {
+        default:
           return (
             <StringField
               className={styles.control}
@@ -119,7 +117,6 @@ export default class Field extends React.Component<FieldProps & FilterField> {
               {...props}
             />
           );
-        }
       }
     }
   };

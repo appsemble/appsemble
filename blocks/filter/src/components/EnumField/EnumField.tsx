@@ -2,14 +2,21 @@ import React from 'react';
 
 import { Enum } from '../../../types';
 
-const EnumField: React.StatelessComponent<{
+interface EnumFieldProps {
   value: any;
   defaultValue?: any;
   emptyLabel?: string;
   enumerator: Enum[];
   onChange: React.ChangeEventHandler<HTMLElement>;
-}> = p => {
-  const { defaultValue, emptyLabel, enumerator, value, ...props } = p;
+}
+
+export default function EnumField({
+  defaultValue,
+  emptyLabel,
+  enumerator,
+  value,
+  ...props
+}: EnumFieldProps): React.ReactElement {
   return (
     <div className="select is-fullwidth">
       <select value={value} {...props}>
@@ -22,6 +29,4 @@ const EnumField: React.StatelessComponent<{
       </select>
     </div>
   );
-};
-
-export default EnumField;
+}
