@@ -13,6 +13,7 @@ type EnumInputProps = InputProps<string, EnumField>;
 export default function EnumInput({ field, onInput, value = '' }: EnumInputProps): VNode {
   return (
     <Select
+      iconLeft={field.icon}
       id={field.name}
       label={field.label || field.name}
       name={field.name}

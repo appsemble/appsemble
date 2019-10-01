@@ -2,6 +2,7 @@
 import { ClassAttributes, Component, h, JSX, PreactDOMAttributes, VNode } from 'preact';
 
 import FormComponent, { FormComponentProps } from '../FormComponent';
+import Icon from '../Icon';
 
 type SelectProps = FormComponentProps &
   Omit<JSX.HTMLAttributes & PreactDOMAttributes & ClassAttributes<any>, 'label' | 'onInput'> & {
@@ -27,10 +28,10 @@ export default class Select extends Component<SelectProps> {
   };
 
   render(): VNode {
-    const { label, name, required, id = name, ...props } = this.props;
+    const { iconLeft, label, name, required, id = name, ...props } = this.props;
 
     return (
-      <FormComponent id={id} label={label} required={required}>
+      <FormComponent iconLeft={iconLeft} id={id} label={label} required={required}>
         <div className="select is-fullwidth">
           <select
             {...props}
@@ -41,6 +42,7 @@ export default class Select extends Component<SelectProps> {
             required={required}
           />
         </div>
+        {iconLeft && <Icon className="is-left" icon={iconLeft} />}
       </FormComponent>
     );
   }
