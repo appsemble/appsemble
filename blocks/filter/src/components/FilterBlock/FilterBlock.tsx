@@ -130,7 +130,7 @@ export default class FilterBlock extends React.Component<
     const { lastRefreshedDate = new Date(), newData } = this.state;
     const refreshDate = new Date();
 
-    const fetchedItems = await this.fetchData({ created: { from: lastRefreshedDate.getTime() } });
+    const fetchedItems = await this.fetchData({ $created: { from: lastRefreshedDate.getTime() } });
 
     this.setState({ lastRefreshedDate: refreshDate, newData: [...fetchedItems, ...newData] });
   };

@@ -9,7 +9,7 @@ export default function toOData(fields: FilterField[], filter: Filter): string {
 
       const field = fields.find(f => f.name === key);
 
-      if (!field.type || field.type === 'string') {
+      if (field.type === undefined || field.type === 'string') {
         return `substringof('${data}',${key})`;
       }
 
