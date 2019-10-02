@@ -48,7 +48,7 @@ export default class App extends React.Component {
               <Route component={AppList} exact path="/apps" />
               <ProtectedRoute component={Settings} path="/settings" />
               <ProtectedRoute component={AppContext} path="/apps/:id(\d+)" />
-              <ProtectedRoute component={EditPassword} exact path="/edit-password" />
+              <Route component={EditPassword} exact path="/edit-password" />
               <ProtectedRoute component={OrganizationInvite} exact path="/organization-invite" />
               <Route component={VerifyEmail} exact path="/verify" />
               <Route component={AppList} exact path="/apps" />
