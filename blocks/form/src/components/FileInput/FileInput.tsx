@@ -12,7 +12,7 @@ export default class FileInput extends Component<FileInputProps> {
     value: [],
   };
 
-  onInput = (event: Event, val: string) => {
+  onInput = (event: Event, val: string): void => {
     const { field, onInput, value } = this.props;
 
     const copy = [...value];

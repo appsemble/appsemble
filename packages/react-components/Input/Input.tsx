@@ -52,7 +52,7 @@ type InputProps = FormComponentProps &
  * A Bulma styled form input element.
  */
 export default class Input extends React.Component<InputProps> {
-  onChange = (event: React.ChangeEvent<InteractiveElement>) => {
+  onChange = (event: React.ChangeEvent<InteractiveElement>): void => {
     const { onChange, type } = this.props;
 
     const target = event.target as HTMLInputElement;

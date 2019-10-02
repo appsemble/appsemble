@@ -20,11 +20,11 @@ export default class ResetPassword extends React.Component<ResetPasswordProps> {
     success: false,
   };
 
-  onChange = (event: React.ChangeEvent<HTMLInputElement>, value: string) => {
+  onChange = (event: React.ChangeEvent<HTMLInputElement>, value: string): void => {
     this.setState({ [event.target.name]: value, error: false });
   };
 
-  onSubmit = async (event: React.FormEvent) => {
+  onSubmit = async (event: React.FormEvent): Promise<void> => {
     event.preventDefault();
 
     const { email } = this.state;

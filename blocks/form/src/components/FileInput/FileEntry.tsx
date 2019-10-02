@@ -44,20 +44,20 @@ export default class FileEntry extends Component<FileEntryProps> {
 
   static getDerivedStateFromProps = getDerivedStateFromProps;
 
-  onSelect = async (event: Event) => {
+  onSelect = async (event: Event): Promise<void> => {
     const {
       onInput,
       field: { maxWidth, maxHeight, quality },
     } = this.props;
-    let value: Blob = (event.target as HTMLInputElement).files[0];
-    // eslint-disable-next-line no-param-reassign
-    (event.target as HTMLInputElement).value = null;
+    const target = event.target as HTMLInputElement;
+    let value: Blob = target.files[0];
+    target.value = null;
 
     if (value && value.type.match('image/*') && (maxWidth || maxHeight || quality)) {
       value = await this.resize(value, maxWidth, maxHeight, quality / 100);
     }
 
-    onInput(event, value);
+    onInput(({ target } as any) as Event, value);
   };
 
   resize = async (
@@ -98,7 +98,7 @@ export default class FileEntry extends Component<FileEntryProps> {
     });
   };
 
-  onRemove = () => {
+  onRemove = (): void => {
     const { onInput, name } = this.props;
 
     onInput(({ target: { name } } as any) as Event, null);

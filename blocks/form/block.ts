@@ -1,9 +1,12 @@
+import { IconName } from '@fortawesome/fontawesome-common-types';
+
 interface Choice {
   label?: string;
   value: string;
 }
 
 interface AbstractField {
+  icon?: IconName;
   label?: string;
   name: string;
   placeholder?: string;

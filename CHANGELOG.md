@@ -7,9 +7,12 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.8.8] - 2019-10-01
+
 ### Added
 
 - Block(`@amsterdam/navigation`): Add navigation block.
+- Block(`@appsemble/form`): Add support for field icons.
 - Editor: Add support for deleting apps.
 - Server: Add support for deleting apps.
 

@@ -14,6 +14,7 @@ export default function NumberInput({ error, field, onInput, value }: NumberInpu
   return (
     <Input
       error={error && <FormattedMessage id="invalid" />}
+      iconLeft={field.icon}
       id={field.name}
       label={field.label || field.name}
       max={field.max}
