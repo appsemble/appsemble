@@ -7,6 +7,10 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- CLI: Add support for `@import` in organization style sheets.
+
 ### Fixed
 
 - Block(`@appsemble/form`): Fix `maxLength` not being passed to string input fields.
