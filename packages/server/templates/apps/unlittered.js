@@ -132,7 +132,7 @@ export default {
                 type: 'resource.query',
                 resource: 'litter',
                 query: {
-                  $orderBy: 'created desc',
+                  $orderby: '$created desc',
                   $top: 50,
                 },
               },
