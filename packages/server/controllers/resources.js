@@ -90,6 +90,12 @@ const deepRename = (object, keys, { updatedHash, createdHash }) => {
       delete obj[key];
     }
 
+    if (value === updatedHash) {
+      obj[key] = 'updated';
+    } else if (value === createdHash) {
+      obj[key] = 'created';
+    }
+
     if (key === updatedHash) {
       obj.updated = obj[key];
       delete obj[key];
