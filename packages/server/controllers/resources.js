@@ -51,8 +51,8 @@ function generateQuery(ctx, { updatedHash, createdHash }) {
         decodeURIComponent(
           ctx.querystring
             .replace(/\+/g, '%20')
-            .replace('$updated', updatedHash)
-            .replace('$created', createdHash),
+            .replace(/\$updated/g, updatedHash)
+            .replace(/\$created/g, createdHash),
         ),
         ctx.db,
       );
