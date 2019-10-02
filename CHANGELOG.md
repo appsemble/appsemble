@@ -10,6 +10,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ### Added
 
 - Block(`@amsterdam/navigation`): Add navigation block.
+- CLI: Add support for `@import` in organization style sheets.
 
 ## [0.8.9] - 2019-10-02
 
