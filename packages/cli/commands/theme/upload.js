@@ -3,6 +3,7 @@ import FormData from 'form-data';
 import fs from 'fs-extra';
 import { join } from 'path';
 import postcss from 'postcss';
+import postcssImport from 'postcss-import';
 import postcssrc from 'postcss-load-config';
 import postcssUrl from 'postcss-url';
 
@@ -44,7 +45,9 @@ async function handleUpload(file, organization, type, block) {
 
   const data = await fs.readFile(file, 'utf8');
   const postcssConfig = await postcssrc();
-  const postCss = postcss(postcssConfig).use(postcssUrl({ url: 'inline' }));
+  const postCss = postcss(postcssConfig)
+    .use(postcssImport())
+    .use(postcssUrl({ url: 'inline' }));
 
   const { css } = await postCss.process(data, { from: file, to: null });
   const formData = new FormData();

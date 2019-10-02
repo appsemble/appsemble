@@ -7,6 +7,10 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- CLI: Add support for `@import` in organization style sheets.
+
 ## [0.8.9] - 2019-10-02
 
 ### Fixed
