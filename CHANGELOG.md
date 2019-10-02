@@ -7,9 +7,16 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
-### Fixes
+### Fixed
 
 - Block(`@appsemble/form`): Fix `maxLength` not being passed to string input fields.
+
+## [0.8.9] - 2019-10-02
+
+### Fixed
+
+- Editor: Don’t require a login to reset a forgotten password.
+- Server: Fix issues related to OData filtering.
 
 ## [0.8.8] - 2019-10-01
 
@@ -21,7 +28,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [0.8.7] - 2019-09-16
 
-### Fixes
+### Fixed
 
 - Server: Add missing migration from 0.8.6.
 

@@ -1,11 +1,11 @@
 {
   "name": "@appsemble/filter",
-  "version": "0.8.8",
+  "version": "0.8.9",
   "private": true,
   "dependencies": {
-    "@appsemble/react": "^0.8.8",
-    "@appsemble/react-components": "^0.8.8",
-    "@appsemble/sdk": "^0.8.8",
+    "@appsemble/react": "^0.8.9",
+    "@appsemble/react-components": "^0.8.9",
+    "@appsemble/sdk": "^0.8.9",
     "classnames": "^2.2.6",
     "react": "^16.9.0",
     "react-intl": "^3.3.1"
