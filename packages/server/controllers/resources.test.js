@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken';
-import sinon from 'sinon';
+import lolex from 'lolex';
 import request from 'supertest';
 
 import createServer from '../utils/createServer';
@@ -53,11 +53,11 @@ describe('resource controller', () => {
     await truncate(db);
     token = await testToken(request, server, db, 'apps:write apps:read');
     organizationId = jwt.decode(token.substring(7)).user.organizations[0].id;
-    clock = sinon.useFakeTimers();
+    clock = lolex.install();
   });
 
   afterEach(() => {
-    clock.restore();
+    clock.uninstall();
   });
 
   afterAll(async () => {
