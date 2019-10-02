@@ -1,11 +1,11 @@
 {
   "name": "@appsemble/editor",
-  "version": "0.8.8",
+  "version": "0.8.9",
   "private": true,
   "dependencies": {
-    "@appsemble/react-components": "0.8.8",
-    "@appsemble/types": "0.8.8",
-    "@appsemble/utils": "0.8.8",
+    "@appsemble/react-components": "0.8.9",
+    "@appsemble/types": "0.8.9",
+    "@appsemble/utils": "0.8.9",
     "@sentry/browser": "^5.6.3",
     "axios": "^0.19.0",
     "classnames": "^2.2.6",
