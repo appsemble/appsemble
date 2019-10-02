@@ -7,6 +7,13 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.8.9] - 2019-10-02
+
+### Fixed
+
+- Editor: Don’t require a login to reset a forgotten password.
+- Server: Fix issues related to OData filtering.
+
 ## [0.8.8] - 2019-10-01
 
 ### Added
