@@ -12,7 +12,7 @@ attach<Parameters>(({ block }) => {
     <div className={styles.container}>
       {backLabel && (
         <button
-          className={`button is-primary is-outlined ${styles.backButton}`}
+          className="button is-primary is-outlined is-pulled-left"
           onclick={() => window.history.back()}
           type="button"
         >
@@ -25,7 +25,7 @@ attach<Parameters>(({ block }) => {
 
       {forwardLabel && (
         <button
-          className={`button is-primary is-outlined ${styles.forwardButton}`}
+          className="button is-primary is-outlined is-pulled-right"
           onclick={() => window.history.forward()}
           type="button"
         >
