@@ -2224,10 +2224,10 @@
     text-table "^0.2.0"
     webpack-log "^1.1.2"
 
-"@wesselkuipers/odata-sequelize@^1.0.13":
-  version "1.0.13"
-  resolved "https://registry.yarnpkg.com/@wesselkuipers/odata-sequelize/-/odata-sequelize-1.0.13.tgz#b9ca6ad8b94c39ce9230189cded0b3329ad2a976"
-  integrity sha512-LEtJFiQXsDCW9RV53xU0+w6lhlkuo4gl2ayUC6qKGp/9mWtOW8mnHZ4xP5qWRxLiaUJZBkwJVwZHIcYHV4slVg==
+"@wesselkuipers/odata-sequelize@^1.0.14":
+  version "1.0.14"
+  resolved "https://registry.yarnpkg.com/@wesselkuipers/odata-sequelize/-/odata-sequelize-1.0.14.tgz#bc63d6b1738952d971fff931c848f78fc916ae4d"
+  integrity sha512-VaHdR7pd0ACAW1kKn6mVkbRVncCGFPeIypzF90sgu18qOsdPk2Y62Q+i2rRc4btzIS6S9PWYF4bNqBxuuOD8mw==
   dependencies:
     odata-parser "^1.4.1"
 
