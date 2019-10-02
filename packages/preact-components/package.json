@@ -1,10 +1,10 @@
 {
   "name": "@appsemble/preact-components",
-  "version": "0.8.8",
+  "version": "0.8.9",
   "private": true,
   "dependencies": {
-    "@appsemble/preact": "0.8.8",
-    "@appsemble/types": "0.8.8",
+    "@appsemble/preact": "0.8.9",
+    "@appsemble/types": "0.8.9",
     "@fortawesome/fontawesome-common-types": "^0.2.25",
     "classnames": "^2.2.6",
     "leaflet": "^1.5.1"

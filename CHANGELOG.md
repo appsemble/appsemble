@@ -7,11 +7,21 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- Block(`@amsterdam/navigation`): Add navigation block.
+
+## [0.8.9] - 2019-10-02
+
+### Fixed
+
+- Editor: Don’t require a login to reset a forgotten password.
+- Server: Fix issues related to OData filtering.
+
 ## [0.8.8] - 2019-10-01
 
 ### Added
 
-- Block(`@amsterdam/navigation`): Add navigation block.
 - Block(`@appsemble/form`): Add support for field icons.
 - Editor: Add support for deleting apps.
 - Server: Add support for deleting apps.
