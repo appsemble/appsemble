@@ -1,4 +1,4 @@
 export interface Parameters {
-  backLabel: string;
+  backLabel?: string;
   forwardLabel?: string;
 }
