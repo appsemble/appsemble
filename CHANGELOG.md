@@ -7,6 +7,10 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Fixes
+
+- Block(`@appsemble/form`): Fix `maxLength` not being passed to string input fields.
+
 ## [0.8.8] - 2019-10-01
 
 ### Added
