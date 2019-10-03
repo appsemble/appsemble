@@ -24,7 +24,7 @@ export default function BottomNavigation({ app }: BottomNavigationProps): React.
     <nav className="bottom-nav">
       <ul className={styles.list}>
         {app.pages
-          .filter(page => !page.parameters)
+          .filter(page => !page.parameters && !page.hideFromMenu)
           .map(page => (
             <li key={page.name} className="bottom-nav-item">
               <NavLink

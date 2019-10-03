@@ -45,7 +45,7 @@ export default function SideNavigation({
       <nav>
         <ul className={classNames('menu-list', styles.menuList)}>
           {app.pages
-            .filter(page => !page.parameters)
+            .filter(page => !page.parameters && !page.hideFromMenu)
             .map(page => (
               <li key={page.name}>
                 <NavLink activeClassName={styles.active} to={`/${normalize(page.name)}`}>

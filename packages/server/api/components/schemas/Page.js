@@ -74,6 +74,11 @@ export default {
         navigation: {
           $ref: '#/components/schemas/App/properties/navigation',
         },
+        hideFromMenu: {
+          type: 'boolean',
+          description: 'Whether or not the page should be displayed in navigational menus.',
+          default: false,
+        },
       },
     },
     {
@@ -141,6 +146,11 @@ export default {
         },
         navigation: {
           $ref: '#/components/schemas/App/properties/navigation',
+        },
+        hideFromMenu: {
+          type: 'boolean',
+          description: 'Whether or not the page should be displayed in navigational menus.',
+          default: false,
         },
       },
     },

@@ -520,6 +520,11 @@ export interface Page {
    * If this is omitted, a collapsable side navigation menu will be rendered on the left.
    */
   navigation?: Navigation;
+
+  /**
+   * Whether or not the page should be displayed in navigational menus.
+   */
+  hideFromMenu?: boolean;
 }
 
 export interface App {
