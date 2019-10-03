@@ -1,4 +1,4 @@
-import { normalize, StyleValidationError, validateStyle } from '@appsemble/utils';
+import { StyleValidationError, validateStyle } from '@appsemble/utils';
 import Boom from '@hapi/boom';
 import crypto from 'crypto';
 import { UniqueConstraintError } from 'sequelize';
@@ -36,10 +36,7 @@ export async function createOrganization(ctx) {
   } = ctx.state;
 
   try {
-    const organization = await Organization.create(
-      { id: normalize(id), name },
-      { include: [User] },
-    );
+    const organization = await Organization.create({ id, name }, { include: [User] });
 
     await organization.addUser(userId);
     await organization.reload();
