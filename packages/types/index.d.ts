@@ -547,6 +547,11 @@ export interface App {
    */
   defaultPage: string;
 
+  /*
+   * A domain name on which this app should be served.
+   */
+  domain?: string;
+
   /**
    * The navigation type to use.
    *

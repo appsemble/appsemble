@@ -101,6 +101,7 @@ export async function createApp(ctx) {
       style: validateStyle(style),
       sharedStyle: validateStyle(sharedStyle),
       path: app.path || normalize(app.name),
+      domain: app.domain,
       yaml: jsYaml.safeDump(app),
     };
 
@@ -173,6 +174,7 @@ export async function updateApp(ctx) {
       style: validateStyle(style && style.contents),
       sharedStyle: validateStyle(sharedStyle && sharedStyle.contents),
       path: definition.path || normalize(definition.name),
+      domain: definition.domain,
       yaml: yaml && yaml.toString('utf8'),
     };
 
