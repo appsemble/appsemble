@@ -71,6 +71,9 @@ export default {
             type: 'object',
           },
         },
+        navigation: {
+          $ref: '#/components/schemas/App/properties/navigation',
+        },
       },
     },
     {
@@ -135,6 +138,9 @@ export default {
           additionalProperties: {
             type: 'object',
           },
+        },
+        navigation: {
+          $ref: '#/components/schemas/App/properties/navigation',
         },
       },
     },

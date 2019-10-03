@@ -48,7 +48,7 @@ export default {
       description: 'Determines whether this app should be included when fetching all apps.',
     },
     navigation: {
-      enum: ['bottom'],
+      enum: ['bottom', 'left', 'hidden'],
       description: `The navigation type to use.
 
         If this is omitted, a collapsable side navigation menu will be rendered on the left.
