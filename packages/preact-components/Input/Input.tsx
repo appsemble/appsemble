@@ -73,10 +73,22 @@ export interface NumberInputProps extends GenericInputProps<number, 'number'> {
   step?: number;
 }
 
-export type StringInputProps = GenericInputProps<
-  string,
-  'color' | 'email' | 'password' | 'search' | 'tel' | 'text' | 'textarea' | 'url' | null | undefined
->;
+export interface StringInputProps
+  extends GenericInputProps<
+    string,
+    | 'color'
+    | 'email'
+    | 'password'
+    | 'search'
+    | 'tel'
+    | 'text'
+    | 'textarea'
+    | 'url'
+    | null
+    | undefined
+  > {
+  maxLength?: number;
+}
 
 export type InputProps = BooleanInputProps | NumberInputProps | StringInputProps;
 
