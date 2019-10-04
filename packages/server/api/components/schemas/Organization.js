@@ -1,3 +1,5 @@
+import { normalized } from '@appsemble/utils';
+
 export default {
   type: 'object',
   description: 'An organization groups a set of users, apps, themes, and permissions together',
@@ -5,7 +7,9 @@ export default {
   properties: {
     id: {
       type: 'string',
-      pattern: /^[a-z\d]([a-z\d-]{0,30}[a-z\d])$/,
+      pattern: normalized,
+      minLength: 1,
+      maxLength: 30,
       description: 'The unique identifier for the organization.',
     },
     name: {
