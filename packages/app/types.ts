@@ -19,7 +19,7 @@ export interface ActionDefinition<T extends Action['type']> {
   type: T;
 }
 
-interface ShowDialogParams {
+export interface ShowDialogParams {
   actionCreators: Record<string, () => Action>;
   blocks: Block[];
   data: any;
