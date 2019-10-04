@@ -61,6 +61,28 @@ Subpages are structured similarly to pages, albeit simplified. Each subpage cons
 
 > Note: This field is not required if `type` is not set `flow`.
 
+## `navigation`
+
+The type of navigation displayed on the page. This overrides the navigation property of the app
+itself. Defaults to `left` if navigation or App navigation are not set.
+
+Set to `bottom` to use a navigation pane at the bottom of the screen instead of the default side
+menu. Set to `hidden` to display no navigational menus at all.
+
+See also: [App](app#navigation)
+
+## `hideFromMenu`
+
+This determines whether the page should be added to the menu or not. By default all pages without
+[parameters](#parameters) are added to navigational menus. Set to `true` to hide the page from
+menus.
+
+## `parameters`
+
+Page parameters can be used for linking to a page that should display a single resource. This
+defined as a list of strings representing the properties to pass through. More often than not
+passing `id` through is sufficient, depending on the block.
+
 ## Actions
 
 Page actions follow the same structure as the actions seen in `blocks`, with the exception that they
@@ -75,13 +97,3 @@ previous subpage gets sent, instead of the individual block that triggered this 
 ### `onFlowCancel`
 
 This action gets triggered when `flow.cancel` gets called.
-
-## Navigation
-
-The type of navigation displayed on the page. This overrides the navigation property of the app
-itself. Defaults to `left` if navigation or App navigation are not set.
-
-Set to `bottom` to use a navigation pane at the bottom of the screen instead of the default side
-menu. Set to `hidden` to display no navigational menus at all.
-
-See also: [App](app#navigation)
