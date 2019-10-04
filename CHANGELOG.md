@@ -9,6 +9,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
+- App: Add `navigation` property to `page`.
+- App: Add `hidden` and `left-menu` navigation types.
 - Block(`@amsterdam/navigation`): Add navigation block.
 - CLI: Add support for `@import` in organization style sheets.
 
