@@ -66,12 +66,22 @@ Subpages are structured similarly to pages, albeit simplified. Each subpage cons
 Page actions follow the same structure as the actions seen in `blocks`, with the exception that they
 are only available when `type` is set to `flow`.
 
-## `onFlowFinish`
+### `onFlowFinish`
 
 This action gets triggered when `flow.finish` gets called, or when `flow.next` gets called on the
 final subpage. This action has a special property in which the cumulative input data from each
 previous subpage gets sent, instead of the individual block that triggered this action.
 
-## `onFlowCancel`
+### `onFlowCancel`
 
 This action gets triggered when `flow.cancel` gets called.
+
+## Navigation
+
+The type of navigation displayed on the page. This overrides the navigation property of the app
+itself. Defaults to `left` if navigation or App navigation are not set.
+
+Set to `bottom` to use a navigation pane at the bottom of the screen instead of the default side
+menu. Set to `hidden` to display no navigational menus at all.
+
+See also: [App](app#navigation)
