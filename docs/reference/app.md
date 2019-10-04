@@ -36,9 +36,9 @@ the app index.
 
 ## `navigation`
 
-Set a navigation type for the app. This defaults to `left` for a left side menu. Set to `bottom` to
-use a navigation pane at the bottom of the screen instead of the default side menu. Set to `hidden`
-to display no navigational menus at all.
+Set a navigation type for the app. This defaults to `left-menu` for a left side menu. Set to
+`bottom` to use a navigation pane at the bottom of the screen instead of the default side menu. Set
+to `hidden` to display no navigational menus at all.
 
 ## `pages`\*
 

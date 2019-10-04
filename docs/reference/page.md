@@ -64,7 +64,7 @@ Subpages are structured similarly to pages, albeit simplified. Each subpage cons
 ## `navigation`
 
 The type of navigation displayed on the page. This overrides the navigation property of the app
-itself. Defaults to `left` if navigation or App navigation are not set.
+itself. Defaults to `left-menu` if navigation or App navigation are not set.
 
 Set to `bottom` to use a navigation pane at the bottom of the screen instead of the default side
 menu. Set to `hidden` to display no navigational menus at all.

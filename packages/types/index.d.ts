@@ -117,7 +117,7 @@ export interface Message {
   dismissable?: boolean;
 }
 
-export type Navigation = 'bottom' | 'left' | 'hidden';
+export type Navigation = 'bottom' | 'left-menu' | 'hidden';
 
 /**
  * A block that is displayed on a page.
