@@ -7,6 +7,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.8.10] - 2019-10-04
+
 ### Added
 
 - App: Add `navigation` property to `page`.
