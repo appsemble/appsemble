@@ -11,7 +11,7 @@ import styles from './Main.css';
  *
  * This maps the page to a route and displays a page depending on URL.
  */
-const Main = ({ app = null }) => {
+export default function Main({ app = null }) {
   if (app == null) {
     return null;
   }
@@ -38,14 +38,9 @@ const Main = ({ app = null }) => {
       </Switch>
     </main>
   );
-};
+}
 
 Main.propTypes = {
+  // eslint-disable-next-line react/require-default-props
   app: PropTypes.shape(),
 };
-
-Main.defaultProps = {
-  app: null,
-};
-
-export default Main;
