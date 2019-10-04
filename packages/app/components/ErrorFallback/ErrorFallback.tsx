@@ -9,17 +9,15 @@ import messages from './messages';
 /**
  * Capture renderer errors using Sentry.
  */
-export default class ErrorFallback extends React.Component {
-  render(): React.ReactNode {
-    return (
-      <>
-        <TitleBar>
-          <FormattedMessage {...messages.title} />
-        </TitleBar>
-        <div className={classNames('container', styles.container)} role="alert">
-          <FormattedMessage {...messages.message} />
-        </div>
-      </>
-    );
-  }
+export default function ErrorFallback(): React.ReactElement {
+  return (
+    <>
+      <TitleBar>
+        <FormattedMessage {...messages.title} />
+      </TitleBar>
+      <div className={classNames('container', styles.container)} role="alert">
+        <FormattedMessage {...messages.message} />
+      </div>
+    </>
+  );
 }

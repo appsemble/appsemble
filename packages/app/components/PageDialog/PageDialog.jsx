@@ -1,7 +1,7 @@
 import { Modal } from '@appsemble/react-components';
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { useEffect } from 'react';
 
 import BlockList from '../BlockList';
 import styles from './PageDialog.css';
@@ -9,51 +9,36 @@ import styles from './PageDialog.css';
 /**
  * The dialog component to render on a page when the `dialog` action is dispatched.
  */
-export default class PageDialog extends React.Component {
-  static propTypes = {
-    /**
-     * The dialog definition to render.
-     */
-    dialog: PropTypes.shape(),
-    getBlockDefs: PropTypes.func.isRequired,
-  };
-
-  static defaultProps = {
-    dialog: null,
-  };
-
-  componentDidMount() {
-    const { dialog, getBlockDefs } = this.props;
-
+const PageDialog = ({ dialog = null, getBlockDefs, ...props }) => {
+  useEffect(() => {
     if (dialog) {
       getBlockDefs(dialog.blocks);
     }
-  }
+  });
 
-  componentDidUpdate() {
-    const { dialog, getBlockDefs } = this.props;
+  return (
+    <Modal isActive={!!dialog} onClose={dialog && dialog.close}>
+      {dialog && (
+        <div className={classNames('card', { [styles.fullscreen]: dialog.fullscreen })}>
+          <BlockList
+            actionCreators={dialog.actionCreators}
+            blocks={dialog.blocks}
+            data={dialog.data}
+            {...props}
+          />
+        </div>
+      )}
+    </Modal>
+  );
+};
 
-    if (dialog) {
-      getBlockDefs(dialog.blocks);
-    }
-  }
+PageDialog.propTypes = {
+  dialog: PropTypes.shape(),
+  getBlockDefs: PropTypes.func.isRequired,
+};
 
-  render() {
-    const { dialog, ...props } = this.props;
+PageDialog.defaultProps = {
+  dialog: null,
+};
 
-    return (
-      <Modal isActive={!!dialog} onClose={dialog && dialog.close}>
-        {dialog && (
-          <div className={classNames('card', { [styles.fullscreen]: dialog.fullscreen })}>
-            <BlockList
-              actionCreators={dialog.actionCreators}
-              blocks={dialog.blocks}
-              data={dialog.data}
-              {...props}
-            />
-          </div>
-        )}
-      </Modal>
-    );
-  }
-}
+export default PageDialog;
