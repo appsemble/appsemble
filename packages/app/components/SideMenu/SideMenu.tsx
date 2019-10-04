@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import React, { useEffect } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 
 import styles from './SideMenu.css';
@@ -20,12 +20,15 @@ export default function SideMenu({
   history,
   isOpen,
 }: SideMenuProps & RouteComponentProps): React.ReactElement {
-  const onKeyDown = (event: KeyboardEvent | React.KeyboardEvent): void => {
-    // Close menu if the Escape key is pressed.
-    if (event.keyCode === 27) {
-      closeMenu();
-    }
-  };
+  const onKeyDown = useCallback(
+    (event: KeyboardEvent | React.KeyboardEvent): void => {
+      // Close menu if the Escape key is pressed.
+      if (event.keyCode === 27) {
+        closeMenu();
+      }
+    },
+    [closeMenu],
+  );
 
   useEffect(() => {
     document.addEventListener('keydown', onKeyDown, false);
@@ -35,8 +38,7 @@ export default function SideMenu({
       document.removeEventListener('keydown', onKeyDown, false);
       unlisten();
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [closeMenu, history, onKeyDown]);
 
   return (
     <>
