@@ -20,7 +20,7 @@ router.get(
 );
 router.get('/:id(\\d+)/manifest.json', manifestHandler);
 router.get(
-  '/:organizationId(@[a-z][a-z\\d-]*[a-z\\d])/:appId([a-z\\d-]+[a-z\\d])/(.*)?',
+  '/:organizationId(@[a-z\\d][a-z\\d-]*[a-z\\d])/:appId([a-z\\d-]+[a-z\\d])/(.*)?',
   indexHandler,
 );
 

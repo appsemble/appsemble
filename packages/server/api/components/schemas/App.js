@@ -1,3 +1,5 @@
+import { normalized } from '@appsemble/utils';
+
 export default {
   type: 'object',
   description: 'An app recipe defines what an app will look like.',
@@ -36,7 +38,7 @@ export default {
       type: 'string',
       minLength: 1,
       maxLength: 30,
-      pattern: /^[a-z\d-]+$/,
+      pattern: normalized,
       description: `The URL path segment on which this app is reachable.
 
         This may only contain lower case characters, numbers, and hyphens. By default this is a

@@ -5,21 +5,12 @@ export default {
       description: 'Create a new organization.',
       operationId: 'createOrganization',
       requestBody: {
-        description: 'The name of the new organization.',
+        description: 'The organization to create',
         required: true,
         content: {
           'application/json': {
             schema: {
-              type: 'object',
-              required: ['id'],
-              properties: {
-                id: {
-                  type: 'string',
-                },
-                name: {
-                  type: 'string',
-                },
-              },
+              $ref: '#/components/schemas/Organization',
             },
           },
         },
