@@ -20,8 +20,6 @@ export default function SideMenu({
   history,
   isOpen,
 }: SideMenuProps & RouteComponentProps): React.ReactElement {
-  let unlisten: () => void;
-
   const onKeyDown = (event: KeyboardEvent | React.KeyboardEvent): void => {
     // Close menu if the Escape key is pressed.
     if (event.keyCode === 27) {
@@ -31,12 +29,13 @@ export default function SideMenu({
 
   useEffect(() => {
     document.addEventListener('keydown', onKeyDown, false);
-    unlisten = history.listen(closeMenu);
+    const unlisten = history.listen(closeMenu);
 
     return () => {
       document.removeEventListener('keydown', onKeyDown, false);
       unlisten();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

@@ -8,6 +8,7 @@ module.exports = {
   root: true,
   extends: [
     'airbnb',
+    'airbnb/hooks',
     'plugin:eslint-comments/recommended',
     'plugin:compat/recommended',
     'plugin:prettier/recommended',

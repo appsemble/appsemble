@@ -29,6 +29,7 @@ export default function Portal({ element, children }: PortalProps): React.ReactE
     return () => {
       element.appendChild(fragment);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return ReactDOM.createPortal(React.Children.only(children), element);
