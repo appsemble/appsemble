@@ -1,0 +1,10 @@
+{
+  "extends": "../../tsconfig",
+  "exclude": [],
+  "compilerOptions": {
+    "lib": ["dom", "esnext"],
+    "strictNullChecks": false,
+    "noImplicitAny": true,
+    "types": ["css-modules"]
+  }
+}

@@ -1,3 +1,5 @@
+import { normalized } from '@appsemble/utils';
+
 export default {
   type: 'object',
   description: 'An app recipe defines what an app will look like.',
@@ -36,7 +38,7 @@ export default {
       type: 'string',
       minLength: 1,
       maxLength: 30,
-      pattern: /^[a-z\d-]+$/,
+      pattern: normalized,
       description: `The URL path segment on which this app is reachable.
 
         This may only contain lower case characters, numbers, and hyphens. By default this is a
@@ -48,7 +50,7 @@ export default {
       description: 'Determines whether this app should be included when fetching all apps.',
     },
     navigation: {
-      enum: ['bottom'],
+      enum: ['bottom', 'left-menu', 'hidden'],
       description: `The navigation type to use.
 
         If this is omitted, a collapsable side navigation menu will be rendered on the left.

@@ -79,7 +79,7 @@ describe('organization controller', () => {
     const { body: organization } = await request(server)
       .post('/api/organizations')
       .set('Authorization', token)
-      .send({ id: 'Foo', name: 'Foooo' });
+      .send({ id: 'foo', name: 'Foooo' });
 
     expect(organization).toStrictEqual({
       id: 'foo',
@@ -99,7 +99,7 @@ describe('organization controller', () => {
     await request(server)
       .post('/api/organizations')
       .set('Authorization', token)
-      .send({ id: 'Foo', name: 'Foooo' });
+      .send({ id: 'foo', name: 'Foooo' });
 
     const response = await request(server)
       .post('/api/organizations')

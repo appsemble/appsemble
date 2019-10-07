@@ -117,6 +117,8 @@ export interface Message {
   dismissable?: boolean;
 }
 
+export type Navigation = 'bottom' | 'left-menu' | 'hidden';
+
 /**
  * A block that is displayed on a page.
  */
@@ -511,6 +513,18 @@ export interface Page {
   theme: Theme;
 
   subPages: Pick<Page, 'blocks' | 'name'>[];
+
+  /**
+   * The navigation type to use.
+   *
+   * If this is omitted, a collapsable side navigation menu will be rendered on the left.
+   */
+  navigation?: Navigation;
+
+  /**
+   * Whether or not the page should be displayed in navigational menus.
+   */
+  hideFromMenu?: boolean;
 }
 
 export interface App {
@@ -533,7 +547,7 @@ export interface App {
    *
    * If this is omitted, a collapsable side navigation menu will be rendered on the left.
    */
-  navigation?: 'bottom';
+  navigation?: Navigation;
 
   /**
    * The pages of the app.

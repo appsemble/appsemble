@@ -77,6 +77,7 @@ yarn block filter
 yarn block form
 yarn block map
 yarn block markdown
+yarn block navigation
 yarn block splash
 ```
 
@@ -96,6 +97,7 @@ yarn appsemble block register blocks/filter
 yarn appsemble block register blocks/form
 yarn appsemble block register blocks/map
 yarn appsemble block register blocks/markdown
+yarn appsemble block register blocks/navigation
 yarn appsemble block register blocks/splash
 ```
 

@@ -51,8 +51,8 @@ function generateQuery(ctx, { updatedHash, createdHash }) {
         decodeURIComponent(
           ctx.querystring
             .replace(/\+/g, '%20')
-            .replace('$updated', updatedHash)
-            .replace('$created', createdHash),
+            .replace(/\$updated/g, updatedHash)
+            .replace(/\$created/g, createdHash),
         ),
         ctx.db,
       );
@@ -94,6 +94,14 @@ const deepRename = (object, keys, { updatedHash, createdHash }) => {
       obj[key] = 'updated';
     } else if (value === createdHash) {
       obj[key] = 'created';
+    }
+
+    if (key === updatedHash) {
+      obj.updated = obj[key];
+      delete obj[key];
+    } else if (key === createdHash) {
+      obj.created = obj[key];
+      delete obj[key];
     }
 
     if (!!obj[key] && (obj[key] instanceof Object || Array.isArray(obj[key]))) {

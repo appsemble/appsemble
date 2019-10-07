@@ -7,6 +7,28 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.8.10] - 2019-10-04
+
+### Added
+
+- App: Add `navigation` property to `page`.
+- App: Add `hidden` and `left-menu` navigation types.
+- Block(`@amsterdam/navigation`): Add navigation block.
+- CLI: Add support for `@import` in organization style sheets.
+
+### Fixed
+
+- Block(`@appsemble/form`): Fix `maxLength` not being passed to string input fields.
+
+## [0.8.9] - 2019-10-02
+
+### Fixed
+
+- Editor: Don’t require a login to reset a forgotten password.
+- Server: Fix issues related to OData filtering.
+
+## [0.8.8] - 2019-10-01
+
 ### Added
 
 - Block(`@appsemble/form`): Add support for field icons.
@@ -15,7 +37,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [0.8.7] - 2019-09-16
 
-### Fixes
+### Fixed
 
 - Server: Add missing migration from 0.8.6.
 
