@@ -45,9 +45,7 @@ attach<Parameters, Actions>(({ actions, block, data }) => {
               <span className="icon is-small">
                 <i className={`fas fa-${field.icon || 'bolt'}`} />
               </span>
-              {(field.enum && field.enum.length) || (
-                <span className={styles.actionLabel}>{field.label || ''}</span>
-              )}
+              {!field.enum && <span className={styles.actionLabel}>{field.label || ''}</span>}
             </button>
             {field.enum &&
               field.enum.length && [
