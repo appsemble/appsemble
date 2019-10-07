@@ -31,7 +31,7 @@ export default function CheckBoxField({
             {...props}
           />
           <label className={styles.label} htmlFor={`${name}${value}`}>
-            {icon && <Icon className={styles.icon} icon={icon} />}
+            {icon && <Icon icon={icon} />}
             <span>{label || value}</span>
           </label>
         </div>
