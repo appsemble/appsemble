@@ -23,6 +23,7 @@ import raw from 'raw-body';
 import api from '../api';
 import * as operations from '../controllers';
 import boom from '../middleware/boom';
+import frontend from '../middleware/frontend';
 import oauth2 from '../middleware/oauth2';
 import routes from '../routes';
 import Mailer from './email/Mailer';
@@ -33,6 +34,7 @@ export default async function createServer({
   argv = {},
   db,
   secret = 'appsemble',
+  webpackConfigs,
 }) {
   // eslint-disable-next-line no-param-reassign
   app.keys = [secret];
@@ -51,6 +53,10 @@ export default async function createServer({
 
   if (process.env.NODE_ENV === 'production') {
     app.use(compress());
+  }
+
+  if (process.env.NODE_ENV !== 'test') {
+    app.use(await frontend(webpackConfigs));
   }
 
   app.use(

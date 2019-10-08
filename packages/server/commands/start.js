@@ -8,7 +8,6 @@ import Koa from 'koa';
 import api from '../api';
 import migrations from '../migrations';
 import pkg from '../package.json';
-import configureStatic from '../utils/configureStatic';
 import createServer from '../utils/createServer';
 import migrate from '../utils/migrate';
 import readFileOrString from '../utils/readFileOrString';
@@ -101,7 +100,6 @@ export async function handler(argv, { webpackConfigs, syncDB } = {}) {
   }
 
   const app = new Koa();
-  await configureStatic(app, webpackConfigs);
   if (argv.sentryDsn) {
     Sentry.init({ dsn: argv.sentryDsn });
   }
@@ -117,16 +115,16 @@ export async function handler(argv, { webpackConfigs, syncDB } = {}) {
     });
   });
 
-  await createServer({ app, argv, db, secret: argv.oauthSecret });
+  const callback = await createServer({ app, argv, db, secret: argv.oauthSecret, webpackConfigs });
   const httpServer = argv.ssl
     ? https.createServer(
         {
           key: await readFileOrString(argv.sslKey),
           cert: await readFileOrString(argv.sslCert),
         },
-        app.callback(),
+        callback,
       )
-    : http.createServer(app.callback());
+    : http.createServer(callback);
 
   httpServer.listen(argv.port || PORT, '0.0.0.0', () => {
     logger.info(asciiLogo);
