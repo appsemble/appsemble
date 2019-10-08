@@ -1,16 +1,15 @@
 import Router from 'koa-router';
 
-import { bulmaURL, faURL } from '../utils/styleURL';
+import { bulmaURL } from '../utils/styleURL';
+import bulmaHandler from './bulmaHandler';
 import editorHandler from './editorHandler';
 import faviconHandler from './faviconHandler';
 import iconHandler from './iconHandler';
 import indexHandler from './indexHandler';
 import manifestHandler from './manifestHandler';
-import { bulmaHandler, faHandler } from './styleHandler';
 
 const router = new Router();
 router.get(bulmaURL, bulmaHandler);
-router.get(faURL, faHandler);
 router.get('/([a-z\\d/-]+)?', editorHandler);
 router.get('/favicon.ico', faviconHandler);
 router.get('/:id(\\d+)?/(fav)?icon-:width(\\d+).:format(png|jpg|tiff|webp)', iconHandler);
