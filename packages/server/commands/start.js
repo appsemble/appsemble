@@ -1,4 +1,4 @@
-import { logger, loggerMiddleware } from '@appsemble/node-utils';
+import { logger } from '@appsemble/node-utils';
 import { asciiLogo } from '@appsemble/utils';
 import * as Sentry from '@sentry/node';
 import http from 'http';
@@ -101,7 +101,6 @@ export async function handler(argv, { webpackConfigs, syncDB } = {}) {
   }
 
   const app = new Koa();
-  app.use(loggerMiddleware());
   await configureStatic(app, webpackConfigs);
   if (argv.sentryDsn) {
     Sentry.init({ dsn: argv.sentryDsn });

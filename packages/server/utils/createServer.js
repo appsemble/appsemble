@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { loggerMiddleware } from '@appsemble/node-utils';
 import faPkg from '@fortawesome/fontawesome-free/package.json';
 import Koa from 'koa';
 import compress from 'koa-compress';
@@ -35,6 +36,7 @@ export default async function createServer({
 }) {
   // eslint-disable-next-line no-param-reassign
   app.keys = [secret];
+  app.use(loggerMiddleware());
   app.use(session(app));
 
   app.use(boom);
