@@ -2,7 +2,7 @@ import bcrypt from 'bcrypt';
 import crypto from 'crypto';
 import jwt from 'jsonwebtoken';
 
-export default function oauth2Model({ db, grant, secret }) {
+export default function oauth2Model({ db, secret }) {
   const {
     EmailAuthorization,
     Organization,
@@ -133,28 +133,17 @@ export default function oauth2Model({ db, grant, secret }) {
         clientId === 'appsemble-editor'
           ? { ...clause, redirectUri: '/editor' }
           : await OAuthClient.findOne({ where: clause });
-      const config = grant
-        ? Object.values(grant.config).find(
-            entry => entry.key === clientId && entry.secret === clientSecret,
-          )
-        : undefined;
 
-      if (!client && !config) {
+      if (!client) {
         return false;
       }
 
-      return config
-        ? {
-            id: config.key,
-            secret: config.secret,
-            grants: ['authorization_code', 'refresh_token'],
-          }
-        : {
-            id: client.clientId,
-            secret: client.clientSecret,
-            redirect_uris: [client.redirectUri],
-            grants: ['password', 'refresh_token', 'authorization_code'],
-          };
+      return {
+        id: client.clientId,
+        secret: client.clientSecret,
+        redirect_uris: [client.redirectUri],
+        grants: ['password', 'refresh_token', 'authorization_code'],
+      };
     },
 
     async getUser(username, password) {

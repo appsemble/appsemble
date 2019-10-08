@@ -43,6 +43,7 @@ it('should pass login options from argv to the editor', async () => {
     app,
     argv: {
       disableRegistration: true,
+      host: 'http://localhost:9999',
       oauthGitlabKey: 'GitLab secret',
       oauthGoogleKey: 'Google secret',
       sentryDsn: 'https://secret@sentry.io/path',

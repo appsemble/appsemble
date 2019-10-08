@@ -118,38 +118,7 @@ export async function handler(argv, { webpackConfigs, syncDB } = {}) {
     });
   });
 
-  let grantConfig;
-  if (argv.oauthGitlabKey || argv.oauthGoogleKey) {
-    const { protocol, host } = new URL(argv.host);
-    grantConfig = {
-      server: {
-        // URL.protocol leaves a ´:´ in.
-        protocol: protocol.replace(':', ''),
-        host,
-        path: '/api/oauth',
-        callback: '/api/oauth/callback',
-      },
-      ...(argv.oauthGitlabKey && {
-        gitlab: {
-          key: argv.oauthGitlabKey,
-          secret: argv.oauthGitlabSecret,
-          scope: ['read_user'],
-          callback: '/api/oauth/callback/gitlab',
-        },
-      }),
-      ...(argv.oauthGoogleKey && {
-        google: {
-          key: argv.oauthGoogleKey,
-          secret: argv.oauthGoogleSecret,
-          scope: ['email', 'profile', 'openid'],
-          callback: '/api/oauth/callback/google',
-          custom_params: { access_type: 'offline' },
-        },
-      }),
-    };
-  }
-
-  await createServer({ app, argv, db, grantConfig, secret: argv.oauthSecret });
+  await createServer({ app, argv, db, secret: argv.oauthSecret });
   const httpServer = argv.ssl
     ? https.createServer(
         {
