@@ -45,9 +45,9 @@ async function handleUpload(file, organization, type, block) {
 
   const data = await fs.readFile(file, 'utf8');
   const postcssConfig = await postcssrc();
-  const postCss = postcss(postcssConfig)
-    .use(postcssImport())
-    .use(postcssUrl({ url: 'inline' }));
+  const postCss = postcss(postcssConfig);
+  postCss.use(postcssUrl({ url: 'inline' }));
+  postCss.use(postcssImport({ plugins: postCss.plugins }));
 
   const { css } = await postCss.process(data, { from: file, to: null });
   const formData = new FormData();
