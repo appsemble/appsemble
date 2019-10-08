@@ -41,7 +41,7 @@ export default async function createServer({
   app.use(loggerMiddleware());
   app.use(session(app));
 
-  app.use(boom);
+  app.use(boom());
   app.use(range);
   Object.assign(app.context, { argv, db, mailer: new Mailer(argv) });
 
