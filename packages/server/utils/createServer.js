@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { loggerMiddleware } from '@appsemble/node-utils';
+import { logger, loggerMiddleware } from '@appsemble/node-utils';
 import faPkg from '@fortawesome/fontawesome-free/package.json';
 import Koa from 'koa';
 import compress from 'koa-compress';
@@ -22,6 +22,7 @@ import raw from 'raw-body';
 
 import api from '../api';
 import * as operations from '../controllers';
+import appMapper from '../middleware/appMapper';
 import boom from '../middleware/boom';
 import frontend from '../middleware/frontend';
 import oauth2 from '../middleware/oauth2';
@@ -63,6 +64,23 @@ export default async function createServer({
     mount(
       `/fa/${faPkg.version}`,
       serve(path.dirname(require.resolve('@fortawesome/fontawesome-free/package.json'))),
+    ),
+  );
+
+  app.use(
+    appMapper(
+      (ctx, next) => {
+        logger.info('Calling in platform context');
+        return next();
+      },
+      (ctx, next) => {
+        logger.info(`Calling in app context ${ctx.state.app.id}`);
+        return next();
+      },
+      (ctx, next) => {
+        logger.info('Calling in fallback context');
+        return next();
+      },
     ),
   );
 
