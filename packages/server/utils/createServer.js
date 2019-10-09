@@ -26,7 +26,9 @@ import appMapper from '../middleware/appMapper';
 import boom from '../middleware/boom';
 import frontend from '../middleware/frontend';
 import oauth2 from '../middleware/oauth2';
-import routes from '../routes';
+import tinyRouter from '../middleware/tinyRouter';
+import { appRouter, editorRouter } from '../routes';
+import bulmaHandler from '../routes/bulmaHandler';
 import Mailer from './email/Mailer';
 import oauth2Model from './oauth2Model';
 
@@ -56,10 +58,6 @@ export default async function createServer({
     app.use(compress());
   }
 
-  if (process.env.NODE_ENV !== 'test') {
-    app.use(await frontend(webpackConfigs));
-  }
-
   app.use(
     mount(
       `/fa/${faPkg.version}`,
@@ -68,20 +66,12 @@ export default async function createServer({
   );
 
   app.use(
-    appMapper(
-      (ctx, next) => {
-        logger.info('Calling in platform context');
-        return next();
+    tinyRouter([
+      {
+        route: /^\/bulma/,
+        get: bulmaHandler,
       },
-      (ctx, next) => {
-        logger.info(`Calling in app context ${ctx.state.app.id}`);
-        return next();
-      },
-      (ctx, next) => {
-        logger.info('Calling in fallback context');
-        return next();
-      },
-    ),
+    ]),
   );
 
   app.use(
@@ -101,7 +91,17 @@ export default async function createServer({
       koasOperations({ operations }),
     ]),
   );
-  app.use(routes);
+
+  if (process.env.NODE_ENV !== 'test') {
+    app.use(await frontend(webpackConfigs));
+  }
+
+  app.use(
+    appMapper(editorRouter, appRouter, (ctx, next) => {
+      logger.info('Calling in fallback context');
+      return next();
+    }),
+  );
 
   return app.callback();
 }

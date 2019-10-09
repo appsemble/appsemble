@@ -1,3 +1,4 @@
+import { normalize } from '@appsemble/utils';
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -26,7 +27,10 @@ export default class AppCard extends React.Component {
         <div className={classNames('card-content', styles.appCardContent)}>
           <div className="media">
             <figure className={classNames('image', 'is-64x64', styles.image)}>
-              <img alt={intl.formatMessage(messages.icon)} src={`/${app.id}/icon-64.png`} />
+              <img
+                alt={intl.formatMessage(messages.icon)}
+                src={`/@${app.organizationId}/${app.path || normalize(app.name)}/icon-64.png`}
+              />
             </figure>
           </div>
           {app.description && (

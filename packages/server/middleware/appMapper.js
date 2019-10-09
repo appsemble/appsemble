@@ -21,6 +21,7 @@ export default function appMapper(platformMiddleware, appMiddleware, fallbackMid
       if (!app && isIp(hostname)) {
         return platformMiddleware(ctx, next);
       }
+      ctx.state.base = '';
     }
 
     if (app) {

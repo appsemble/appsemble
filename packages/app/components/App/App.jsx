@@ -10,6 +10,8 @@ import Main from '../Main';
 import Message from '../Message';
 import SideNavigation from '../SideNavigation';
 
+const [base] = document.head.getElementsByTagName('base');
+
 /**
  * The main entry point of the React app.
  *
@@ -19,7 +21,7 @@ export default function App() {
   return (
     <IntlProvider defaultLocale="en-US" locale="en-US">
       <ErrorHandler fallback={ErrorFallback}>
-        <BrowserRouter basename={new URL(document.baseURI).pathname}>
+        <BrowserRouter basename={base && new URL(base.href).pathname}>
           <AppContext>
             <Main />
             <SideNavigation />

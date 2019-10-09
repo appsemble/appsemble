@@ -1,5 +1,4 @@
-import { baseTheme, normalize } from '@appsemble/utils';
-import Boom from '@hapi/boom';
+import { baseTheme, normalize, prefix } from '@appsemble/utils';
 
 const iconSizes = [48, 144, 192, 512];
 
@@ -7,34 +6,25 @@ const iconSizes = [48, 144, 192, 512];
  * https://developers.google.com/web/fundamentals/web-app-manifest
  */
 export default async function manifestHandler(ctx) {
-  const { id } = ctx.params;
-  const { App } = ctx.db.models;
+  const { app, base } = ctx.state;
 
-  const record = await App.findByPk(id, { raw: true });
-
-  if (!record) {
-    throw Boom.notFound('App not found');
-  }
-
-  const { OrganizationId, path } = record;
-  const { defaultPage, description, name, theme = { baseTheme } } = record.definition;
+  const { defaultPage, description, name, theme = { baseTheme } } = app.definition;
   const { themeColor = '#ffffff', splashColor = themeColor } = theme;
-  const scope = `/@${OrganizationId}/${path}`;
 
   ctx.body = {
     background_color: splashColor,
     description,
     display: 'standalone',
     icons: iconSizes.map(size => ({
-      src: `/${id}/icon-${size}.png`,
+      src: prefix(`/icon-${size}.png`, base),
       type: 'image/png',
       sizes: `${size}x${size}`,
     })),
     name,
     orientation: 'any',
-    scope,
+    scope: base || '/',
     short_name: name,
-    start_url: `${scope}/${normalize(defaultPage)}`,
+    start_url: prefix(`/${normalize(defaultPage)}`, base),
     theme_color: themeColor,
   };
   ctx.type = 'application/manifest+json';

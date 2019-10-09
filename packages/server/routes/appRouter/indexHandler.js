@@ -9,10 +9,8 @@ import { bulmaURL, faURL } from '../../utils/styleURL';
  * https://developers.google.com/web/fundamentals/web-app-manifest
  */
 export default async function indexHandler(ctx) {
-  const { organizationId, appId } = ctx.params;
-  const { App } = ctx.db.models;
   ctx.type = 'text/html';
-  const { render } = ctx.state;
+  const { app, base, render } = ctx.state;
   const { sentryDsn } = ctx.argv;
   const reportUri = sentryDsnToReportUri(sentryDsn);
   const csp = {
@@ -31,38 +29,26 @@ export default async function indexHandler(ctx) {
     'frame-src': ["'self'", '*.vimeo.com', '*.youtube.com'],
   };
 
-  try {
-    const app = await App.findOne(
-      { where: { path: appId, OrganizationId: organizationId.slice(1) } },
-      { raw: true },
-    );
-    if (app == null) {
-      ctx.body = await render('error.html', {
-        bulmaURL,
-        faURL,
-        message: 'The app you are looking for could not be found.',
-      });
-      ctx.status = 404;
-    } else {
-      const [settingsHash, settings] = createSettings({
-        app: { ...app.definition, id: app.id, organizationId: app.OrganizationId },
-        sentryDsn,
-      });
-      csp['script-src'].push(settingsHash);
-      ctx.body = await render('app.html', {
-        app,
-        bulmaURL: `${bulmaURL}?${qs.stringify(app.definition.theme)}`,
-        faURL,
-        settings,
-      });
-    }
-    ctx.set('Content-Security-Policy', makeCSP(csp));
-  } catch (error) {
+  if (app == null) {
     ctx.body = await render('error.html', {
       bulmaURL,
       faURL,
-      message: 'There was a problem loading the app. Please try again later.',
+      message: 'The app you are looking for could not be found.',
     });
-    ctx.status = 500;
+    ctx.status = 404;
+  } else {
+    const [settingsHash, settings] = createSettings({
+      app: { ...app.definition, id: app.id, organizationId: app.OrganizationId },
+      sentryDsn,
+    });
+    csp['script-src'].push(settingsHash);
+    ctx.body = await render('app.html', {
+      app,
+      base,
+      bulmaURL: `${bulmaURL}?${qs.stringify(app.definition.theme)}`,
+      faURL,
+      settings,
+    });
   }
+  ctx.set('Content-Security-Policy', makeCSP(csp));
 }
