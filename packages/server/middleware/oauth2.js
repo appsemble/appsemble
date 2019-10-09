@@ -53,7 +53,7 @@ export default function oauth2(argv) {
       // unsupported provider
       throw Boom.notFound('Unsupported provider');
     }
-    const data = await handler(code);
+    const data = await handler(code.access_token);
     if (!data) {
       throw Boom.internal('Unsupported provider');
     }
