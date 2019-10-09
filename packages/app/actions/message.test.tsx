@@ -3,8 +3,16 @@ import thunk, { ThunkDispatch } from 'redux-thunk';
 
 import reducer, { initialState, MessageAction, MessageState, push, remove } from './message';
 
-describe('Message reducer', () => {
-  it('should return the initial state', () => {
+describe('Message Redux', () => {
+  let store: MockStoreEnhanced<MessageState, ThunkDispatch<MessageState, undefined, MessageAction>>;
+
+  beforeEach(() => {
+    store = createMockStore<MessageState, ThunkDispatch<MessageState, undefined, MessageAction>>([
+      thunk,
+    ])(initialState);
+  });
+
+  it('should return the default state', () => {
     expect(
       reducer(undefined, ({ type: 'NONEXISTANT ACTION' } as unknown) as MessageAction),
     ).toStrictEqual(initialState);
@@ -56,16 +64,6 @@ describe('Message reducer', () => {
       counter: 2,
       queue: [{ id: 1, body: 'foo' }, { id: 2, body: 'foo', color: 'danger', timeout: 1000 }],
     });
-  });
-});
-
-describe('Message action creators', () => {
-  let store: MockStoreEnhanced<MessageState, ThunkDispatch<MessageState, undefined, MessageAction>>;
-
-  beforeEach(() => {
-    store = createMockStore<MessageState, ThunkDispatch<MessageState, undefined, MessageAction>>([
-      thunk,
-    ])(initialState);
   });
 
   it('should create a push action', async () => {

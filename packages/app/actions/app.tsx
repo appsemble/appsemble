@@ -17,7 +17,7 @@ interface AppState {
   error: Error;
 }
 
-const initialState: AppState = {
+export const initialState: AppState = {
   app: null,
   error: null,
 };
