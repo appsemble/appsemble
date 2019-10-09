@@ -60,13 +60,15 @@ export default class Modal extends React.Component<ModalProps> {
             onKeyDown={this.onKeyDown}
             role="presentation"
           />
-          <div className="modal-content">{children}</div>
-          <button
-            aria-label={intl.formatMessage(messages.closeDialog)}
-            className="modal-close is-large"
-            onClick={onClose}
-            type="button"
-          />
+          <div className="modal-content">
+            <button
+              aria-label={intl.formatMessage(messages.closeDialog)}
+              className={`modal-close is-large ${styles.closeButton}`}
+              onClick={onClose}
+              type="button"
+            />
+            {children}
+          </div>
         </div>
       </CSSTransition>
     );
