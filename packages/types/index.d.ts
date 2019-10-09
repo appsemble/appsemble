@@ -543,6 +543,11 @@ export interface App {
   organizationId?: string;
 
   /**
+   * The default page of the app.
+   */
+  defaultPage: string;
+
+  /**
    * The navigation type to use.
    *
    * If this is omitted, a collapsable side navigation menu will be rendered on the left.

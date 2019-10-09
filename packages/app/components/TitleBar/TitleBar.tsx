@@ -14,23 +14,15 @@ export interface TitleBarProps {
  *
  * This displays the app name,
  */
-export default class TitleBar extends React.Component<TitleBarProps> {
-  static defaultProps = {
-    children: 'Appsemble',
-  };
-
-  render(): React.ReactNode {
-    const { children } = this.props;
-
-    return (
-      <Portal element={document.getElementsByClassName('navbar')[0]}>
-        <div className={classNames('navbar-brand', styles.brand)}>
-          <span>
-            <SideMenuButton />
-          </span>
-          <h2 className="navbar-item title is-4">{children}</h2>
-        </div>
-      </Portal>
-    );
-  }
+export default function TitleBar({ children }: TitleBarProps): React.ReactElement {
+  return (
+    <Portal element={document.getElementsByClassName('navbar')[0]}>
+      <div className={classNames('navbar-brand', styles.brand)}>
+        <span>
+          <SideMenuButton />
+        </span>
+        <h2 className="navbar-item title is-4">{children}</h2>
+      </div>
+    </Portal>
+  );
 }
