@@ -2,54 +2,57 @@ import Boom from '@hapi/boom';
 import Koa from 'koa';
 import request from 'supertest';
 
-import boomMiddleware from './boom';
+import boom from './boom';
 
 describe('boomMiddleware', () => {
-  it('should catch boom errors', async () => {
-    const ctx = {};
+  let app;
 
-    const mockNext = jest.fn(() => {
+  beforeEach(() => {
+    app = new Koa();
+    app.use(boom());
+  });
+
+  it('should catch boom errors', async () => {
+    app.use(() => {
       throw Boom.notFound('Error not found', "It's nowhere to be seen!");
     });
 
-    await boomMiddleware(ctx, mockNext);
+    const response = await request(app.callback()).get('/');
 
-    expect(ctx.body).toBeDefined();
-    expect(ctx.body).toStrictEqual({
+    expect(response.status).toBe(404);
+    expect(response.body).toStrictEqual({
       statusCode: 404,
       error: 'Not Found',
       message: 'Error not found',
       data: "It's nowhere to be seen!",
     });
-    expect(ctx.status).toBe(404);
-
-    expect(mockNext).toHaveBeenCalledTimes(1);
   });
 
   it('should rethrow non-boom errors', async () => {
-    const ctx = {};
     const error = new Error('This is a test error');
+    let result;
 
-    const mockNext = jest.fn(() => {
+    app.use(() => {
       throw error;
     });
+    app.on('error', err => {
+      result = err;
+    });
 
-    await expect(boomMiddleware(ctx, mockNext)).rejects.toStrictEqual(error);
-    expect(mockNext).toHaveBeenCalledTimes(1);
+    await request(app.callback()).get('/');
+
+    expect(result).toBe(error);
   });
 
   it('should set Koa headers correctly', async () => {
-    const koa = new Koa();
-    koa.use(boomMiddleware);
-    koa.use(async () => {
+    app.use(() => {
       throw Boom.unauthorized('Not authorized!', [
         'Basic realm="Access to test data", charset="UTF-8"',
       ]);
     });
 
-    const response = await request(koa.callback()).get('/');
+    const response = await request(app.callback()).get('/');
 
-    expect(response.headers).toBeDefined();
     expect(response.headers['www-authenticate']).toBe(
       'Basic realm="Access to test data", charset="UTF-8"',
     );

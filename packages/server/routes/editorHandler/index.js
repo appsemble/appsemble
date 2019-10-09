@@ -25,7 +25,7 @@ export default async function editorHandler(ctx) {
   const csp = makeCSP({
     'report-uri': [reportUri],
     // This is needed for Webpack.
-    'connect-src': [(process.env.NODE_ENV = process.env.NODE_ENV !== 'production' && '*')],
+    'connect-src': [process.env.NODE_ENV !== 'production' && '*'],
     'default-src': ["'self'"],
     'img-src': ['https://www.gravatar.com', "'self'", 'blob:', 'data:'],
     'script-src': [

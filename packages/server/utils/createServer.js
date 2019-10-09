@@ -1,13 +1,11 @@
 #!/usr/bin/env node
+import { loggerMiddleware } from '@appsemble/node-utils';
 import faPkg from '@fortawesome/fontawesome-free/package.json';
-import boom from '@hapi/boom';
-import Grant from 'grant-koa';
 import Koa from 'koa';
 import compress from 'koa-compress';
 import mount from 'koa-mount';
 import koaQuerystring from 'koa-qs';
 import range from 'koa-range';
-import Router from 'koa-router';
 import session from 'koa-session';
 import serve from 'koa-static';
 import koasBodyParser from 'koas-body-parser';
@@ -20,95 +18,45 @@ import koasSpecHandler from 'koas-spec-handler';
 import koasStatusCode from 'koas-status-code';
 import koasSwaggerUI from 'koas-swagger-ui';
 import path from 'path';
-import querystring from 'querystring';
 import raw from 'raw-body';
 
 import api from '../api';
 import * as operations from '../controllers';
-import boomMiddleware from '../middleware/boom';
-import oauth2Handlers from '../middleware/oauth2Handlers';
-import oauth2Model from '../middleware/oauth2Model';
+import boom from '../middleware/boom';
+import frontend from '../middleware/frontend';
+import oauth2 from '../middleware/oauth2';
 import routes from '../routes';
 import Mailer from './email/Mailer';
+import oauth2Model from './oauth2Model';
 
 export default async function createServer({
   app = new Koa(),
   argv = {},
   db,
-  grantConfig,
   secret = 'appsemble',
+  webpackConfigs,
 }) {
   // eslint-disable-next-line no-param-reassign
   app.keys = [secret];
+  app.use(loggerMiddleware());
   app.use(session(app));
 
-  app.use(boomMiddleware);
+  app.use(boom());
   app.use(range);
   Object.assign(app.context, { argv, db, mailer: new Mailer(argv) });
 
-  let grant;
-  if (grantConfig) {
-    grant = new Grant(grantConfig);
-    const oauthRouter = new Router();
-    oauthRouter.get('/api/oauth/connect/:provider', (ctx, next) => {
-      const { returnUri, ...query } = ctx.query;
-      if (returnUri) {
-        ctx.session.returnUri = returnUri;
-        ctx.query = query;
-      }
-      return next();
-    });
-    oauthRouter.get('/api/oauth/callback/:provider', async ctx => {
-      const code = ctx.query;
-      const { provider } = ctx.params;
-      const { OAuthAuthorization } = ctx.db.models;
-      const config = grant.config[provider];
-      const handler = oauth2Handlers[provider];
-      if (!handler) {
-        // unsupported provider
-        throw boom.notFound('Unsupported provider');
-      }
-      const data = await handler(code, config);
-      if (!data) {
-        throw boom.internal('Unsupported provider');
-      }
-      const [auth] = await OAuthAuthorization.findOrCreate({
-        where: { provider, id: data.id },
-        defaults: {
-          id: data.id,
-          provider,
-          token: code.access_token,
-          expiresAt: code.raw.expires_in ? code.raw.expires_in : null,
-          refreshToken: code.refresh_token,
-          verified: data.verified,
-        },
-      });
-      const qs =
-        auth.verified && auth.UserId
-          ? querystring.stringify({
-              access_token: code.access_token,
-              refresh_token: code.refresh_token,
-              verified: auth.verified,
-              userId: auth.UserId,
-            })
-          : querystring.stringify({
-              access_token: code.access_token,
-              refresh_token: code.refresh_token,
-              provider,
-              ...data,
-            });
-      const returnUri = ctx.session.returnUri ? `${ctx.session.returnUri}?${qs}` : `/?${qs}`;
-      ctx.session.returnUri = null;
-      ctx.redirect(returnUri);
-    });
-    app.use(oauthRouter.routes());
-    app.use(mount('/api/oauth', grant));
+  if (argv.oauthGitlabKey || argv.oauthGoogleKey) {
+    app.use(oauth2(argv));
   }
 
   koaQuerystring(app);
 
   if (process.env.NODE_ENV === 'production') {
     app.use(compress());
+  }
+
+  if (process.env.NODE_ENV !== 'test') {
+    app.use(await frontend(webpackConfigs));
   }
 
   app.use(
@@ -122,7 +70,7 @@ export default async function createServer({
     await koas(api(), [
       koasSpecHandler(),
       koasSwaggerUI({ url: '/api-explorer' }),
-      koasOAuth2Server(oauth2Model({ db, grant, secret })),
+      koasOAuth2Server(oauth2Model({ db, secret })),
       koasParameters(),
       koasBodyParser({
         '*/*': (body, mediaTypeObject, ctx) =>
