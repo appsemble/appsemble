@@ -149,7 +149,7 @@ export interface Block<P = any, A = {}> {
   /**
    * The theme of the block.
    */
-  theme: Theme;
+  theme?: Theme;
 
   /**
    * A free form mapping of named paramters.
