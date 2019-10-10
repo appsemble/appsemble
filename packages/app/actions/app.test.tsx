@@ -48,23 +48,7 @@ describe('App Redux', () => {
       reducer(initialState, {
         type: GET_SUCCESS,
         db: null,
-        app: {
-          id: 1,
-          authentication: [],
-          pages: [],
-          resources: {},
-          theme: {
-            dangerColor: '',
-            infoColor: '',
-            linkColor: '',
-            primaryColor: '',
-            splashColor: '',
-            successColor: '',
-            themeColor: '',
-            tileLayer: '',
-            warningColor: '',
-          },
-        },
+        app: emptyApp,
       }),
     ).toStrictEqual({ app: emptyApp, error: null });
   });
