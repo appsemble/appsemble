@@ -493,12 +493,12 @@ export interface Page {
    *
    * This will be displayed in the navigation menu.
    */
-  icon: IconName;
+  icon?: IconName;
 
   /**
    * Page parameters can be used for linking to a page that should display a single resource.
    */
-  parameters: string[];
+  parameters?: string[];
 
   /**
    * A mapping of actions that can be fired by the page to action handlers.
@@ -510,9 +510,9 @@ export interface Page {
   /**
    * The global theme for the page.
    */
-  theme: Theme;
+  theme?: Theme;
 
-  subPages: Pick<Page, 'blocks' | 'name'>[];
+  subPages?: Pick<Page, 'blocks' | 'name'>[];
 
   /**
    * The navigation type to use.
