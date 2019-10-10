@@ -9,8 +9,6 @@ declare global {
   interface Window {
     settings: {
       app: App;
-      enableRegistration: boolean;
-      loginMethods: Set<string>;
       sentryDsn: string;
     };
   }

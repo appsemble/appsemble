@@ -562,5 +562,5 @@ export interface App {
   /**
    * The global theme for the app.
    */
-  theme: Theme;
+  theme?: Theme;
 }

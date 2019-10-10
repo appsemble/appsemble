@@ -67,7 +67,7 @@ describe('Message Redux', () => {
   });
 
   it('should create a push action', async () => {
-    await store.dispatch(push('Foo'));
+    store.dispatch(push('Foo'));
     expect(store.getActions()[0]).toStrictEqual({
       type: 'message/PUSH',
       message: { body: 'Foo' },
@@ -75,7 +75,7 @@ describe('Message Redux', () => {
   });
 
   it('should create a remove action', async () => {
-    await store.dispatch(remove({ id: 1, body: 'foo' }));
+    store.dispatch(remove({ id: 1, body: 'foo' }));
     expect(store.getActions()[0]).toStrictEqual({
       type: 'message/REMOVE',
       message: { id: 1, body: 'foo' },

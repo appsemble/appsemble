@@ -10,8 +10,9 @@ import thunk from 'redux-thunk';
 import * as actions from './actions';
 import App from './components/App';
 import getDB from './utils/getDB';
+import settings from './utils/settings';
 
-const { sentryDsn } = window.settings;
+const { sentryDsn } = settings;
 init({ dsn: sentryDsn });
 
 async function getStore() {
