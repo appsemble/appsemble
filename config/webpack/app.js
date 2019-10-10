@@ -38,6 +38,12 @@ module.exports = (env, argv) => {
         minify,
         chunks: [],
       }),
+      new HtmlWebpackPlugin({
+        template: path.join(appEntry, 'fallback.html'),
+        filename: 'fallback.html',
+        minify,
+        chunks: [],
+      }),
       new ServiceWorkerWebpackPlugin({
         entry: require.resolve('@appsemble/service-worker/index.ts'),
         filename: 'service-worker.js',

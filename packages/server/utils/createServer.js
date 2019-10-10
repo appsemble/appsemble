@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { logger, loggerMiddleware } from '@appsemble/node-utils';
+import { loggerMiddleware } from '@appsemble/node-utils';
 import faPkg from '@fortawesome/fontawesome-free/package.json';
 import Koa from 'koa';
 import compress from 'koa-compress';
@@ -27,7 +27,7 @@ import boom from '../middleware/boom';
 import frontend from '../middleware/frontend';
 import oauth2 from '../middleware/oauth2';
 import tinyRouter from '../middleware/tinyRouter';
-import { appRouter, editorRouter } from '../routes';
+import { appRouter, editorRouter, fallbackRouter } from '../routes';
 import bulmaHandler from '../routes/bulmaHandler';
 import Mailer from './email/Mailer';
 import oauth2Model from './oauth2Model';
@@ -96,12 +96,7 @@ export default async function createServer({
     app.use(await frontend(webpackConfigs));
   }
 
-  app.use(
-    appMapper(editorRouter, appRouter, (ctx, next) => {
-      logger.info('Calling in fallback context');
-      return next();
-    }),
-  );
+  app.use(appMapper(editorRouter, appRouter, fallbackRouter));
 
   return app.callback();
 }
