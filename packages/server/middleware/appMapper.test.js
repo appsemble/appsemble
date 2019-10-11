@@ -58,7 +58,7 @@ it('should call app middleware if the request matches an app domain', async () =
   expect(app.context.db.models.App.findOne).toHaveBeenCalledWith({
     where: { domain: 'not.localhost' },
   });
-  expect(context.state.base).toBeUndefined();
+  expect(context.state.base).toBe('');
   expect(platformMiddleware).not.toHaveBeenCalled();
   expect(appMiddleware).toHaveBeenCalledWith(context, expect.any(Function));
   expect(fallbackMiddleware).not.toHaveBeenCalled();
@@ -84,7 +84,7 @@ it('should call fallback middleware if the request matches an custom domain not 
   expect(app.context.db.models.App.findOne).toHaveBeenCalledWith({
     where: { domain: 'example.com' },
   });
-  expect(context.state.base).toBeUndefined();
+  expect(context.state.base).toBe('');
   expect(platformMiddleware).not.toHaveBeenCalled();
   expect(appMiddleware).not.toHaveBeenCalled();
   expect(fallbackMiddleware).toHaveBeenCalledWith(context, expect.any(Function));
