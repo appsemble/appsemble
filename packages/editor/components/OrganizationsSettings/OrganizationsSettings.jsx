@@ -333,256 +333,252 @@ export default class OrganizationsSettings extends Component {
     const organization = organizations.find(o => o.id === selectedOrganization);
 
     return (
-      <div className="content">
-        <HelmetIntl title={messages.title} />
+      <>
+        <div className="content">
+          <HelmetIntl title={messages.title} />
 
-        <h2>
-          <FormattedMessage {...messages.createOrganization} />
-        </h2>
-        <Form onSubmit={this.onSubmitNewOrganization}>
-          <Input
-            disabled={submittingOrganization}
-            iconLeft="briefcase"
-            label={<FormattedMessage {...messages.organizationName} />}
-            name="newOrganizationName"
-            onChange={this.onNewOrganizationChange}
-            placeholder={intl.formatMessage(messages.organizationName)}
-            value={newOrganizationName}
-          />
-          <Input
-            disabled={submittingOrganization}
-            iconLeft="briefcase"
-            label={<FormattedMessage {...messages.organizationId} />}
-            name="newOrganizationId"
-            onChange={this.onNewOrganizationChange}
-            placeholder={intl.formatMessage(messages.organizationId)}
-            required
-            value={newOrganizationId}
-          />
+          <h2>
+            <FormattedMessage {...messages.createOrganization} />
+          </h2>
+          <Form onSubmit={this.onSubmitNewOrganization}>
+            <Input
+              disabled={submittingOrganization}
+              iconLeft="briefcase"
+              label={<FormattedMessage {...messages.organizationName} />}
+              name="newOrganizationName"
+              onChange={this.onNewOrganizationChange}
+              placeholder={intl.formatMessage(messages.organizationName)}
+              value={newOrganizationName}
+            />
+            <Input
+              disabled={submittingOrganization}
+              iconLeft="briefcase"
+              label={<FormattedMessage {...messages.organizationId} />}
+              name="newOrganizationId"
+              onChange={this.onNewOrganizationChange}
+              placeholder={intl.formatMessage(messages.organizationId)}
+              required
+              value={newOrganizationId}
+            />
 
-          <div className="control">
-            <button className="button is-primary" disabled={submittingOrganization} type="submit">
-              <FormattedMessage {...messages.create} />
-            </button>
-          </div>
-        </Form>
+            <div className="control">
+              <button className="button is-primary" disabled={submittingOrganization} type="submit">
+                <FormattedMessage {...messages.create} />
+              </button>
+            </div>
+          </Form>
 
-        {!!organizations.length && (
-          <>
-            <h2>
-              <FormattedMessage {...messages.manageOrganization} />
-            </h2>
-            <div className="field">
-              <label className="label" htmlFor="selectedOrganization">
-                <FormattedMessage {...messages.selectedOrganization} />
-              </label>
-              <div className={`control ${styles.field}`}>
-                <div className="select">
-                  <select
-                    disabled={organizations.length === 1}
-                    id="selectedOrganization"
-                    name="selectedOrganization"
-                    onChange={this.onOrganizationChange}
-                    value={selectedOrganization}
-                  >
-                    {organizations.map(org => (
-                      <option key={org.id} value={org.id}>
-                        {org.name}
-                      </option>
-                    ))}
-                  </select>
+          {!!organizations.length && (
+            <>
+              <h2>
+                <FormattedMessage {...messages.manageOrganization} />
+              </h2>
+              <div className="field">
+                <label className="label" htmlFor="selectedOrganization">
+                  <FormattedMessage {...messages.selectedOrganization} />
+                </label>
+                <div className={`control ${styles.field}`}>
+                  <div className="select">
+                    <select
+                      disabled={organizations.length === 1}
+                      id="selectedOrganization"
+                      name="selectedOrganization"
+                      onChange={this.onOrganizationChange}
+                      value={selectedOrganization}
+                    >
+                      {organizations.map(org => (
+                        <option key={org.id} value={org.id}>
+                          {org.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <Form onSubmit={this.onInviteMember}>
-              <Input
-                disabled={submittingMember}
-                iconLeft="envelope"
-                label={<FormattedMessage {...messages.addMemberEmail} />}
-                name="memberEmail"
-                onChange={this.onMemberEmailChange}
-                placeholder={intl.formatMessage(messages.email)}
-                required
-                type="email"
-                value={memberEmail}
-              />
-              <div className="control">
-                <button className="button is-primary" disabled={submittingMember} type="submit">
-                  <FormattedMessage {...messages.inviteMember} />
-                </button>
-              </div>
-            </Form>
+              <Form onSubmit={this.onInviteMember}>
+                <Input
+                  disabled={submittingMember}
+                  iconLeft="envelope"
+                  label={<FormattedMessage {...messages.addMemberEmail} />}
+                  name="memberEmail"
+                  onChange={this.onMemberEmailChange}
+                  placeholder={intl.formatMessage(messages.email)}
+                  required
+                  type="email"
+                  value={memberEmail}
+                />
+                <div className="control">
+                  <button className="button is-primary" disabled={submittingMember} type="submit">
+                    <FormattedMessage {...messages.inviteMember} />
+                  </button>
+                </div>
+              </Form>
 
-            <h3>
-              <FormattedMessage
-                {...messages.organizationMembers}
-                values={{ organization: organization.name }}
-              />
-            </h3>
-            <table className="table is-hoverable is-striped">
-              <thead>
-                <tr>
-                  <th>
-                    <FormattedMessage {...messages.member} />
-                  </th>
-                  <th className="has-text-right">
-                    <FormattedMessage {...messages.actions} />
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {organization.members.map(member => (
-                  <tr key={member.id}>
-                    <td>
-                      <span>{member.name || member.primaryEmail || member.id}</span>{' '}
-                      <div className={`tags ${styles.tags}`}>
-                        {member.id === user.id && (
-                          <span className="tag is-success">
-                            <FormattedMessage {...messages.you} />
-                          </span>
-                        )}
-                      </div>
-                    </td>
-                    <td className="has-text-right">
+              <h3>
+                <FormattedMessage
+                  {...messages.organizationMembers}
+                  values={{ organization: organization.name }}
+                />
+              </h3>
+              <table className="table is-hoverable is-striped">
+                <thead>
+                  <tr>
+                    <th>
                       <FormattedMessage {...messages.member} />
-                      <div className={`field is-grouped ${styles.tags}`}>
-                        {member.id === user.id && organization.members.length > 1 && (
+                    </th>
+                    <th className="has-text-right">
+                      <FormattedMessage {...messages.actions} />
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {organization.members.map(member => (
+                    <tr key={member.id}>
+                      <td>
+                        <span>{member.name || member.primaryEmail || member.id}</span>{' '}
+                        <div className={`tags ${styles.tags}`}>
+                          {member.id === user.id && (
+                            <span className="tag is-success">
+                              <FormattedMessage {...messages.you} />
+                            </span>
+                          )}
+                        </div>
+                      </td>
+                      <td className="has-text-right">
+                        <FormattedMessage {...messages.member} />
+                        <div className={`field is-grouped ${styles.tags}`}>
+                          {member.id === user.id && organization.members.length > 1 && (
+                            <p className={`control ${styles.memberButton}`}>
+                              <button
+                                className="button is-danger"
+                                onClick={() => this.onRemoveMemberClick(member.id)}
+                                type="button"
+                              >
+                                <Icon icon="sign-out-alt" size="small" />
+                              </button>
+                            </p>
+                          )}
+                          {member.id !== user.id && (
+                            <p className={`control ${styles.memberButton}`}>
+                              <button
+                                className="button is-danger"
+                                onClick={() => this.onRemoveMemberClick(member.id)}
+                                type="button"
+                              >
+                                <Icon icon="trash-alt" size="small" />
+                              </button>
+                            </p>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                  {organization.invites.map(invite => (
+                    <tr key={invite.email}>
+                      <td>{invite.email}</td>
+                      <td className="has-text-right">
+                        <div className={`field is-grouped ${styles.tags}`}>
                           <p className={`control ${styles.memberButton}`}>
                             <button
-                              className="button is-danger"
-                              onClick={() => this.onRemoveMemberClick(member.id)}
+                              className="control button is-outlined"
+                              onClick={() => this.resendInvitation(invite)}
                               type="button"
                             >
-                              <Icon icon="sign-out-alt" size="small" />
+                              <FormattedMessage {...messages.resendInvitation} />
                             </button>
                           </p>
-                        )}
-                        {member.id !== user.id && (
                           <p className={`control ${styles.memberButton}`}>
                             <button
                               className="button is-danger"
-                              onClick={() => this.onRemoveMemberClick(member.id)}
+                              onClick={() => this.onRemoveInviteClick(invite)}
                               type="button"
                             >
                               <Icon icon="trash-alt" size="small" />
                             </button>
                           </p>
-                        )}
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-                {organization.invites.map(invite => (
-                  <tr key={invite.email}>
-                    <td>{invite.email}</td>
-                    <td className="has-text-right">
-                      <div className={`field is-grouped ${styles.tags}`}>
-                        <p className={`control ${styles.memberButton}`}>
-                          <button
-                            className="control button is-outlined"
-                            onClick={() => this.resendInvitation(invite)}
-                            type="button"
-                          >
-                            <FormattedMessage {...messages.resendInvitation} />
-                          </button>
-                        </p>
-                        <p className={`control ${styles.memberButton}`}>
-                          <button
-                            className="button is-danger"
-                            onClick={() => this.onRemoveInviteClick(invite)}
-                            type="button"
-                          >
-                            <Icon icon="trash-alt" size="small" />
-                          </button>
-                        </p>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </>
-        )}
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </>
+          )}
+        </div>
 
-        <Modal isActive={!!removingInvite} onClose={this.onCloseInviteDialog}>
-          <div className="card">
-            <header className="card-header">
-              <p className="card-header-title">
-                <FormattedMessage {...messages.removeInviteWarningTitle} />
-              </p>
-            </header>
-            <div className="card-content">
-              <FormattedMessage {...messages.removeInviteWarning} />
-            </div>
-            <footer className="card-footer">
-              {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
-              <a
-                className="card-footer-item is-link"
-                onClick={this.onCloseInviteDialog}
-                onKeyDown={this.onCloseInviteDialog}
-                role="button"
-                tabIndex="-1"
-              >
-                <FormattedMessage {...messages.cancel} />
-              </a>
-              <button
-                className={`card-footer-item button is-danger ${styles.cardFooterButton}`}
-                onClick={this.onRemoveInvite}
-                type="button"
-              >
-                <FormattedMessage {...messages.removeInvite} />
-              </button>
-            </footer>
+        <Modal
+          className="is-paddingless"
+          isActive={!!removingInvite}
+          onClose={this.onCloseInviteDialog}
+          title={intl.formatMessage(messages.removeInviteWarningTitle)}
+        >
+          <div className={styles.dialogContent}>
+            <FormattedMessage {...messages.removeInviteWarning} />
           </div>
+          <footer className="card-footer">
+            {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
+            <a
+              className="card-footer-item is-link"
+              onClick={this.onCloseInviteDialog}
+              onKeyDown={this.onCloseInviteDialog}
+              role="button"
+              tabIndex="-1"
+            >
+              <FormattedMessage {...messages.cancel} />
+            </a>
+            <button
+              className={`card-footer-item button is-danger ${styles.cardFooterButton}`}
+              onClick={this.onRemoveInvite}
+              type="button"
+            >
+              <FormattedMessage {...messages.removeInvite} />
+            </button>
+          </footer>
         </Modal>
 
-        <Modal isActive={!!removingMember} onClose={this.onCloseDeleteDialog}>
-          <div className="card">
-            <header className="card-header">
-              <p className="card-header-title">
-                {removingMember === user.id ? (
-                  <FormattedMessage {...messages.leaveOrganizationWarningTitle} />
-                ) : (
-                  <FormattedMessage {...messages.removeMemberWarningTitle} />
-                )}
-              </p>
-            </header>
-            <div className="card-content">
+        <Modal
+          className="is-paddingless"
+          isActive={!!removingMember}
+          onClose={this.onCloseDeleteDialog}
+          title={
+            removingMember === user.id
+              ? intl.formatMessage(messages.leaveOrganizationWarningTitle)
+              : intl.formatMessage(messages.removeMemberWarningTitle)
+          }
+        >
+          <div className={styles.dialogContent}>
+            {removingMember === user.id ? (
+              <FormattedMessage {...messages.leaveOrganizationWarning} />
+            ) : (
+              <FormattedMessage {...messages.removeMemberWarning} />
+            )}
+          </div>
+          <footer className="card-footer">
+            {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
+            <a
+              className="card-footer-item is-link"
+              onClick={this.onCloseDeleteDialog}
+              onKeyDown={this.onCloseDeleteDialog}
+              role="button"
+              tabIndex="-1"
+            >
+              <FormattedMessage {...messages.cancel} />
+            </a>
+            <button
+              className={`card-footer-item button is-danger ${styles.cardFooterButton}`}
+              onClick={removingMember === user.id ? this.onLeaveOrganization : this.onRemoveMember}
+              type="button"
+            >
               {removingMember === user.id ? (
-                <FormattedMessage {...messages.leaveOrganizationWarning} />
+                <FormattedMessage {...messages.leaveOrganization} />
               ) : (
-                <FormattedMessage {...messages.removeMemberWarning} />
+                <FormattedMessage {...messages.removeMember} />
               )}
-            </div>
-            <footer className="card-footer">
-              {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
-              <a
-                className="card-footer-item is-link"
-                onClick={this.onCloseDeleteDialog}
-                onKeyDown={this.onCloseDeleteDialog}
-                role="button"
-                tabIndex="-1"
-              >
-                <FormattedMessage {...messages.cancel} />
-              </a>
-              <button
-                className={`card-footer-item button is-danger ${styles.cardFooterButton}`}
-                onClick={
-                  removingMember === user.id ? this.onLeaveOrganization : this.onRemoveMember
-                }
-                type="button"
-              >
-                {removingMember === user.id ? (
-                  <FormattedMessage {...messages.leaveOrganization} />
-                ) : (
-                  <FormattedMessage {...messages.removeMember} />
-                )}
-              </button>
-            </footer>
-          </div>
+            </button>
+          </footer>
         </Modal>
-      </div>
+      </>
     );
   }
 }

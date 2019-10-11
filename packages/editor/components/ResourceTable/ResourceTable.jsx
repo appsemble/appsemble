@@ -231,8 +231,9 @@ export default class ResourceTable extends React.Component {
   render() {
     const {
       app,
+      intl,
       match: {
-        params: { mode, resourceName },
+        params: { mode, resourceName, resourceId },
         ...match
       },
     } = this.props;
@@ -322,9 +323,21 @@ export default class ResourceTable extends React.Component {
             })}
           </tbody>
         </table>
-        <Modal isActive={mode === 'edit' || mode === 'new'} onClose={this.onClose}>
-          <Form className="card" onSubmit={mode === 'edit' ? this.submitEdit : this.submitCreate}>
-            <div className="card-content">
+        <Modal
+          className="is-paddingless"
+          isActive={mode === 'edit' || mode === 'new'}
+          onClose={this.onClose}
+          title={
+            mode === 'edit'
+              ? intl.formatMessage(messages.editTitle, {
+                  resource: resourceName,
+                  id: resourceId,
+                })
+              : intl.formatMessage(messages.newTitle, { resource: resourceName })
+          }
+        >
+          <Form onSubmit={mode === 'edit' ? this.submitEdit : this.submitCreate}>
+            <div className={styles.dialogContent}>
               {keys.map(key => {
                 const properties = schema?.properties[key] || {};
                 let value = '';
@@ -381,41 +394,39 @@ export default class ResourceTable extends React.Component {
             </footer>
           </Form>
         </Modal>
-        <Modal isActive={warningDialog} onClose={this.onClose}>
-          <div className="card">
-            <header className="card-header">
-              <p className="card-header-title">
-                <FormattedMessage {...messages.resourceWarningTitle} />
-              </p>
-            </header>
-            <div className="card-content">
-              <FormattedMessage {...messages.resourceWarning} />
-            </div>
-            <footer className="card-footer">
-              {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
-              <a
-                className="card-footer-item is-link"
-                onClick={this.onClose}
-                onKeyDown={this.onKeyDown}
-                role="button"
-                tabIndex="-1"
-              >
-                <FormattedMessage {...messages.cancelButton} />
-              </a>
-              <button
-                className={classNames(
-                  'card-footer-item',
-                  'button',
-                  'is-danger',
-                  styles.cardFooterButton,
-                )}
-                onClick={this.deleteResource}
-                type="button"
-              >
-                <FormattedMessage {...messages.deleteButton} />
-              </button>
-            </footer>
+        <Modal
+          className="is-paddingless"
+          isActive={warningDialog}
+          onClose={this.onClose}
+          title={intl.formatMessage(messages.resourceWarningTitle)}
+        >
+          <div className={styles.dialogContent}>
+            <FormattedMessage {...messages.resourceWarning} />
           </div>
+          <footer className="card-footer">
+            {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
+            <a
+              className="card-footer-item is-link"
+              onClick={this.onClose}
+              onKeyDown={this.onKeyDown}
+              role="button"
+              tabIndex="-1"
+            >
+              <FormattedMessage {...messages.cancelButton} />
+            </a>
+            <button
+              className={classNames(
+                'card-footer-item',
+                'button',
+                'is-danger',
+                styles.cardFooterButton,
+              )}
+              onClick={this.deleteResource}
+              type="button"
+            >
+              <FormattedMessage {...messages.deleteButton} />
+            </button>
+          </footer>
         </Modal>
       </>
     );

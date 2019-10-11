@@ -35,7 +35,7 @@ it('should close the modal when the close button is clicked', () => {
       test
     </Modal>,
   );
-  wrapper.find('.modal-close').simulate('click');
+  wrapper.find('.delete').simulate('click');
   expect(onClose).toHaveBeenCalled();
 });
 

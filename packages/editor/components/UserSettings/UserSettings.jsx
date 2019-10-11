@@ -153,144 +153,145 @@ export default class UserSettings extends Component {
     }
 
     return (
-      <div className="content">
-        <HelmetIntl title={messages.title} />
-        <Form onSubmit={this.onSaveProfile}>
-          <Input
-            icon="user"
-            label={<FormattedMessage {...messages.displayName} />}
-            name="name"
-            onChange={this.onNameChange}
-            placeholder={intl.formatMessage(messages.displayName)}
-            type="text"
-            value={newUser.name || ''}
-          />
-          <div className="control">
-            <button className="button is-primary" disabled={submittingName} type="submit">
-              <FormattedMessage {...messages.saveProfile} />
-            </button>
-          </div>
-        </Form>
-        <hr />
-        <h4>
-          <FormattedMessage {...messages.emails} />
-        </h4>
-        <Form onSubmit={this.onAddNewEmail}>
-          <Input
-            icon="envelope"
-            label={<FormattedMessage {...messages.addEmail} />}
-            name="newEmail"
-            onChange={this.onNewEmailChange}
-            placeholder={intl.formatMessage(messages.email)}
-            required
-            type="email"
-            value={newEmail}
-          />
-          <div className="control">
-            <button className="button is-info" disabled={submittingEmail} type="submit">
-              <FormattedMessage {...messages.addEmail} />
-            </button>
-          </div>
-        </Form>
-        <hr />
-        <table className="table">
-          <thead>
-            <tr>
-              <th>
-                <FormattedMessage {...messages.email} />
-              </th>
-              <th className="has-text-right">
-                <FormattedMessage {...messages.actions} />
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {user.emails.map(email => (
-              <tr key={email.email}>
-                <td>
-                  <span>{email.email}</span>
-                  <div className={`tags ${styles.tags}`}>
-                    {email.primary && (
-                      <span className="tag is-primary">
-                        <FormattedMessage {...messages.primary} />
-                      </span>
-                    )}
-                    {email.verified ? (
-                      <span className="tag is-success">
-                        <FormattedMessage {...messages.verified} />
-                      </span>
-                    ) : (
-                      <span className="tag is-warning">
-                        <FormattedMessage {...messages.unverified} />
-                      </span>
-                    )}
-                  </div>
-                </td>
-                <td className={`has-text-right ${styles.buttonGroup}`}>
-                  {email.verified && !email.primary && (
-                    <button
-                      className="control button is-info"
-                      onClick={() => this.setPrimaryEmail(email)}
-                      type="button"
-                    >
-                      <FormattedMessage {...messages.setPrimaryEmail} />
-                    </button>
-                  )}
-                  {!email.verified && (
-                    <button
-                      className="control button is-outlined"
-                      onClick={() => this.resendVerification(email)}
-                      type="button"
-                    >
-                      <FormattedMessage {...messages.resendVerification} />
-                    </button>
-                  )}
-                  {!email.primary && (
-                    <button
-                      className="control button is-danger"
-                      onClick={() => this.onDeleteEmailClick(email)}
-                      type="button"
-                    >
-                      <Icon icon="trash-alt" size="small" />
-                    </button>
-                  )}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-        <Modal isActive={!!deletingEmail} onClose={this.onCloseDeleteDialog}>
-          <div className="card">
-            <header className="card-header">
-              <p className="card-header-title">
-                <FormattedMessage {...messages.emailWarningTitle} />
-              </p>
-            </header>
-            <div className="card-content">
-              <FormattedMessage {...messages.emailWarning} />
-            </div>
-            <footer className="card-footer">
-              {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
-              <a
-                className="card-footer-item is-link"
-                onClick={this.onCloseDeleteDialog}
-                onKeyDown={this.onCloseDeleteDialog}
-                role="button"
-                tabIndex="-1"
-              >
-                <FormattedMessage {...messages.cancel} />
-              </a>
-              <button
-                className={`card-footer-item button is-danger ${styles.cardFooterButton}`}
-                onClick={this.deleteEmail}
-                type="button"
-              >
-                <FormattedMessage {...messages.deleteEmail} />
+      <>
+        <div className="content">
+          <HelmetIntl title={messages.title} />
+          <Form onSubmit={this.onSaveProfile}>
+            <Input
+              icon="user"
+              label={<FormattedMessage {...messages.displayName} />}
+              name="name"
+              onChange={this.onNameChange}
+              placeholder={intl.formatMessage(messages.displayName)}
+              type="text"
+              value={newUser.name || ''}
+            />
+            <div className="control">
+              <button className="button is-primary" disabled={submittingName} type="submit">
+                <FormattedMessage {...messages.saveProfile} />
               </button>
-            </footer>
+            </div>
+          </Form>
+          <hr />
+          <h4>
+            <FormattedMessage {...messages.emails} />
+          </h4>
+          <Form onSubmit={this.onAddNewEmail}>
+            <Input
+              icon="envelope"
+              label={<FormattedMessage {...messages.addEmail} />}
+              name="newEmail"
+              onChange={this.onNewEmailChange}
+              placeholder={intl.formatMessage(messages.email)}
+              required
+              type="email"
+              value={newEmail}
+            />
+            <div className="control">
+              <button className="button is-info" disabled={submittingEmail} type="submit">
+                <FormattedMessage {...messages.addEmail} />
+              </button>
+            </div>
+          </Form>
+          <hr />
+          <table className="table">
+            <thead>
+              <tr>
+                <th>
+                  <FormattedMessage {...messages.email} />
+                </th>
+                <th className="has-text-right">
+                  <FormattedMessage {...messages.actions} />
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {user.emails.map(email => (
+                <tr key={email.email}>
+                  <td>
+                    <span>{email.email}</span>
+                    <div className={`tags ${styles.tags}`}>
+                      {email.primary && (
+                        <span className="tag is-primary">
+                          <FormattedMessage {...messages.primary} />
+                        </span>
+                      )}
+                      {email.verified ? (
+                        <span className="tag is-success">
+                          <FormattedMessage {...messages.verified} />
+                        </span>
+                      ) : (
+                        <span className="tag is-warning">
+                          <FormattedMessage {...messages.unverified} />
+                        </span>
+                      )}
+                    </div>
+                  </td>
+                  <td className={`has-text-right ${styles.buttonGroup}`}>
+                    {email.verified && !email.primary && (
+                      <button
+                        className="control button is-info"
+                        onClick={() => this.setPrimaryEmail(email)}
+                        type="button"
+                      >
+                        <FormattedMessage {...messages.setPrimaryEmail} />
+                      </button>
+                    )}
+                    {!email.verified && (
+                      <button
+                        className="control button is-outlined"
+                        onClick={() => this.resendVerification(email)}
+                        type="button"
+                      >
+                        <FormattedMessage {...messages.resendVerification} />
+                      </button>
+                    )}
+                    {!email.primary && (
+                      <button
+                        className="control button is-danger"
+                        onClick={() => this.onDeleteEmailClick(email)}
+                        type="button"
+                      >
+                        <Icon icon="trash-alt" size="small" />
+                      </button>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        <Modal
+          className="is-paddingless"
+          isActive={!!deletingEmail}
+          onClose={this.onCloseDeleteDialog}
+          title={intl.formatMessage(messages.emailWarningTitle)}
+        >
+          <div className={styles.dialogContent}>
+            <FormattedMessage {...messages.emailWarning} />
           </div>
+          <footer className="card-footer">
+            {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
+            <a
+              className="card-footer-item is-link"
+              onClick={this.onCloseDeleteDialog}
+              onKeyDown={this.onCloseDeleteDialog}
+              role="button"
+              tabIndex="-1"
+            >
+              <FormattedMessage {...messages.cancel} />
+            </a>
+            <button
+              className={`card-footer-item button is-danger ${styles.cardFooterButton}`}
+              onClick={this.deleteEmail}
+              type="button"
+            >
+              <FormattedMessage {...messages.deleteEmail} />
+            </button>
+          </footer>
         </Modal>
-      </div>
+      </>
     );
   }
 }

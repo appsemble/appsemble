@@ -25,9 +25,4 @@
   right: 10px;
   top: 10px;
   z-index: 1;
-
-  &::after,
-  &::before {
-    background-color: hsl(0, 0%, 29%);
-  }
 }

@@ -25,6 +25,7 @@ interface ShowDialogParams {
   data: any;
   close: () => void;
   fullscreen: boolean;
+  title?: string;
 }
 
 export type ShowDialogAction = (params: ShowDialogParams) => () => void;

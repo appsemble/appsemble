@@ -2,7 +2,7 @@ import { BlockProps } from '@appsemble/react';
 import { Modal } from '@appsemble/react-components';
 import classNames from 'classnames';
 import React from 'react';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, WrappedComponentProps } from 'react-intl';
 
 import { Actions, Filter, Parameters, RangeFilter } from '../../../types';
 import toOData from '../../utils/toOData';
@@ -21,10 +21,9 @@ interface FilterBlockState {
   typingTimer?: NodeJS.Timeout;
 }
 
-export default class FilterBlock extends React.Component<
-  BlockProps<Parameters, Actions>,
-  FilterBlockState
-> {
+export type FilterBlockProps = BlockProps<Parameters, Actions> & WrappedComponentProps;
+
+export default class FilterBlock extends React.Component<FilterBlockProps, FilterBlockState> {
   refreshTimer: NodeJS.Timeout = null;
 
   state: FilterBlockState = {
@@ -224,7 +223,7 @@ export default class FilterBlock extends React.Component<
   };
 
   render(): JSX.Element {
-    const { block } = this.props;
+    const { block, intl } = this.props;
     const { currentFilter, filter, isOpen, loading, newData } = this.state;
     const { fields, highlight } = block.parameters;
     const highlightedField = highlight && fields.find(field => field.name === highlight);
@@ -242,47 +241,42 @@ export default class FilterBlock extends React.Component<
     return (
       <>
         <div className={styles.container}>
-          <Modal isActive={isOpen} onClose={this.onClose}>
-            <div className="card">
-              <header className="card-header">
-                <p className="card-header-title">
-                  <FormattedMessage {...messages.filter} />
-                </p>
-              </header>
-              <div className="card-content">
-                {fields
-                  .filter(field => field.name !== highlight)
-                  .map(field => (
-                    <Field
-                      {...field}
-                      key={field.name}
-                      filter={filter}
-                      loading={loading}
-                      onChange={this.onChange}
-                      onRangeChange={this.onRangeChange}
-                    />
-                  ))}
-              </div>
-              <footer className="card-footer">
-                {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
-                <a
-                  className="card-footer-item is-link"
-                  onClick={this.onClose}
-                  onKeyDown={this.onFilterKeyDown}
-                  role="button"
-                  tabIndex={-1}
-                >
-                  <FormattedMessage {...messages.cancel} />
-                </a>
-                <button
-                  className={`card-footer-item button is-primary ${styles.cardFooterButton}`}
-                  onClick={this.onFilter}
-                  type="button"
-                >
-                  <FormattedMessage {...messages.filter} />
-                </button>
-              </footer>
-            </div>
+          <Modal
+            isActive={isOpen}
+            onClose={this.onClose}
+            title={intl.formatMessage(messages.filter)}
+          >
+            {fields
+              .filter(field => field.name !== highlight)
+              .map(field => (
+                <Field
+                  {...field}
+                  key={field.name}
+                  filter={filter}
+                  loading={loading}
+                  onChange={this.onChange}
+                  onRangeChange={this.onRangeChange}
+                />
+              ))}
+            <footer className="card-footer">
+              {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
+              <a
+                className="card-footer-item is-link"
+                onClick={this.onClose}
+                onKeyDown={this.onFilterKeyDown}
+                role="button"
+                tabIndex={-1}
+              >
+                <FormattedMessage {...messages.cancel} />
+              </a>
+              <button
+                className={`card-footer-item button is-primary ${styles.cardFooterButton}`}
+                onClick={this.onFilter}
+                type="button"
+              >
+                <FormattedMessage {...messages.filter} />
+              </button>
+            </footer>
           </Modal>
           {highlightedField && (
             <div className={styles.highlighted}>

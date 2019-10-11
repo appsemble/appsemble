@@ -7,6 +7,8 @@ export default defineMessages({
   createButton: 'Create',
   deleteButton: 'Delete',
   editButton: 'Update',
+  newTitle: 'Creating new {resource}',
+  editTitle: 'Editing {resource} {id}',
   createError: 'Something went wrong when creating a new resource.',
   deleteError: 'Something went wrong when deleting this resource.',
   updateError: 'Something went wrong when updating this resource.',
