@@ -42,48 +42,51 @@ describe('App Redux', () => {
   });
 
   it('should return the default state', () => {
-    expect(reducer(undefined, ({} as unknown) as AppAction)).toStrictEqual(initialState);
+    const result = reducer(undefined, ({} as unknown) as AppAction);
+    expect(result).toStrictEqual(initialState);
   });
 
   it('should handle GET_START actions', () => {
-    expect(
-      reducer(
-        {
-          app: emptyApp,
-          error: Error('Beep'),
-        },
-        { type: GET_START },
-      ),
-    ).toStrictEqual(initialState);
+    const result = reducer(
+      {
+        app: emptyApp,
+        error: Error('Beep'),
+      },
+      { type: GET_START },
+    );
+
+    expect(result).toStrictEqual(initialState);
   });
 
   it('should handle GET_ERROR actions', () => {
-    expect(reducer(initialState, { type: GET_ERROR, error: Error('Example') })).toStrictEqual({
+    const result = reducer(initialState, { type: GET_ERROR, error: Error('Example') });
+
+    expect(result).toStrictEqual({
       app: null,
       error: Error('Example'),
     });
   });
 
   it('should handle GET_SUCCESS actions', () => {
-    expect(
-      reducer(initialState, {
-        type: GET_SUCCESS,
-        db: null,
-        app: emptyApp,
-      }),
-    ).toStrictEqual({ app: emptyApp, error: null });
+    const result = reducer(initialState, {
+      type: GET_SUCCESS,
+      db: null,
+      app: emptyApp,
+    });
+
+    expect(result).toStrictEqual({ app: emptyApp, error: null });
   });
 
   it('should handle EDIT_SUCCESS actions', () => {
-    expect(
-      reducer(
-        { app: emptyApp, error: null },
-        {
-          type: 'editor/EDIT_SUCCESS',
-          app: { ...emptyApp, pages: [{ name: 'Test Page', blocks: [] }] },
-        },
-      ),
-    ).toStrictEqual({
+    const result = reducer(
+      { app: emptyApp, error: null },
+      {
+        type: 'editor/EDIT_SUCCESS',
+        app: { ...emptyApp, pages: [{ name: 'Test Page', blocks: [] }] },
+      },
+    );
+
+    expect(result).toStrictEqual({
       error: null,
       app: { ...emptyApp, pages: [{ name: 'Test Page', blocks: [] }] },
     });

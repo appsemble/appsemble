@@ -2,23 +2,23 @@ import reducer, { initialState, UserAction } from './user';
 
 describe('User Redux', () => {
   it('should return the default state', () => {
-    expect(reducer(undefined, ({} as unknown) as UserAction)).toStrictEqual(initialState);
+    const result = reducer(undefined, ({} as unknown) as UserAction);
+    expect(result).toStrictEqual(initialState);
   });
 
   it('should handle LOGIN_SUCCESS actions', () => {
-    expect(reducer(initialState, { type: 'user/LOGIN_SUCCESS', user: { id: 1234 } })).toStrictEqual(
-      { initialized: false, user: { id: 1234 } },
-    );
+    const result = reducer(initialState, { type: 'user/LOGIN_SUCCESS', user: { id: 1234 } });
+    expect(result).toStrictEqual({ initialized: false, user: { id: 1234 } });
   });
 
   it('should handle LOGOUT actions', () => {
-    expect(
-      reducer({ initialized: true, user: { id: 1234 } }, { type: 'user/LOGOUT' }),
-    ).toStrictEqual({ initialized: true, user: null });
+    const result = reducer({ initialized: true, user: { id: 1234 } }, { type: 'user/LOGOUT' });
+    expect(result).toStrictEqual({ initialized: true, user: null });
   });
 
   it('should handle INITIALIZED actions', () => {
-    expect(reducer(initialState, { type: 'user/INITIALIZED', user: { id: 1234 } })).toStrictEqual({
+    const result = reducer(initialState, { type: 'user/INITIALIZED', user: { id: 1234 } });
+    expect(result).toStrictEqual({
       initialized: true,
       user: { id: 1234 },
     });

@@ -5,24 +5,27 @@ import reducer from './db';
 
 describe('Database Redux', () => {
   it('should return the default state', () => {
-    expect(reducer(null, ({} as unknown) as AppAction)).toBeNull();
+    const result = reducer(null, ({} as unknown) as AppAction);
+    expect(result).toBeNull();
   });
 
   it('should handle GET_START actions', () => {
-    expect(reducer(null, { type: GET_START })).toBeNull();
+    const result = reducer(null, { type: GET_START });
+    expect(result).toBeNull();
   });
 
   it('should handle GET_ERROR actions', () => {
-    expect(reducer(null, { type: GET_ERROR, error: Error('Sum Ting Wong') })).toBeNull();
+    const result = reducer(null, { type: GET_ERROR, error: Error('Sum Ting Wong') });
+    expect(result).toBeNull();
   });
 
   it('should handle GET_SUCCESS actions', () => {
-    expect(
-      reducer(null, {
-        type: GET_SUCCESS,
-        app: null,
-        db: ({} as unknown) as IDBPDatabase,
-      }),
-    ).toStrictEqual(({} as unknown) as IDBPDatabase);
+    const result = reducer(null, {
+      type: GET_SUCCESS,
+      app: null,
+      db: ({} as unknown) as IDBPDatabase,
+    });
+
+    expect(result).toStrictEqual(({} as unknown) as IDBPDatabase);
   });
 });

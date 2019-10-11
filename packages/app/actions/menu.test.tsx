@@ -13,15 +13,18 @@ describe('Menu Redux', () => {
   });
 
   it('should return the default state', () => {
-    expect(reducer(undefined, ({} as unknown) as MenuAction)).toStrictEqual(initialState);
+    const result = reducer(undefined, ({} as unknown) as MenuAction);
+    expect(result).toStrictEqual(initialState);
   });
 
   it('handles OPEN actions', () => {
-    expect(reducer(initialState, { type: 'menu/OPEN' })).toStrictEqual({ isOpen: true });
+    const result = reducer(initialState, { type: 'menu/OPEN' });
+    expect(result).toStrictEqual({ isOpen: true });
   });
 
   it('handles CLOSE actions', () => {
-    expect(reducer({ isOpen: true }, { type: 'menu/CLOSE' })).toStrictEqual({ isOpen: false });
+    const result = reducer({ isOpen: true }, { type: 'menu/CLOSE' });
+    expect(result).toStrictEqual({ isOpen: false });
   });
 
   it('should create an open action', async () => {
