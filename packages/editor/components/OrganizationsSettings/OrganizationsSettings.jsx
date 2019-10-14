@@ -62,9 +62,9 @@ export default class OrganizationsSettings extends Component {
       let updatedId = newOrganizationId;
 
       if (name === 'newOrganizationId') {
-        updatedId = normalize(value);
-      } else if (normalize(newOrganizationName) === newOrganizationId) {
-        updatedId = normalize(value);
+        updatedId = normalize(value, false);
+      } else if (normalize(newOrganizationName, false) === newOrganizationId) {
+        updatedId = normalize(value, false);
       }
 
       return {
@@ -77,7 +77,7 @@ export default class OrganizationsSettings extends Component {
   onChange = event => {
     const value =
       event.target.name === 'newOrganizationId'
-        ? normalize(event.target.value)
+        ? normalize(event.target.value, false)
         : event.target.value;
     this.setState({ [event.target.name]: value });
   };
