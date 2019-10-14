@@ -49,19 +49,19 @@ export function builder(yargs) {
     })
     .option('oauth-google-key', {
       desc: 'The application key to be used for Google OAuth2.',
-      implies: ['host', 'oauth-google-secret'],
+      implies: ['oauth-google-secret'],
     })
     .option('oauth-google-secret', {
       desc: 'The secret key to be used for Google OAuth2.',
-      implies: ['host', 'oauth-google-key'],
+      implies: ['oauth-google-key'],
     })
     .option('oauth-gitlab-key', {
       desc: 'The application key to be used for GitLab OAuth2.',
-      implies: ['host', 'oauth-gitlab-secret'],
+      implies: ['oauth-gitlab-secret'],
     })
     .option('oauth-gitlab-secret', {
       desc: 'The secret key to be used for GitLab OAuth2.',
-      implies: ['host', 'oauth-gitlab-key'],
+      implies: ['oauth-gitlab-key'],
     })
     .option('oauth-secret', {
       desc: 'Secret key used to sign JWTs and cookies',
@@ -75,6 +75,7 @@ export function builder(yargs) {
     .option('host', {
       desc:
         'The external host on which the server is available. This should include the protocol, hostname, and optionally port.',
+      required: true,
     });
 }
 
