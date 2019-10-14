@@ -53,12 +53,14 @@ spec:
                 secretKeyRef:
                   name: {{ include "call-nested" (list . "mysql" "mysql.secretName") }}
                   key: mysql-password
-            {{ if .Values.ingress.enabled -}}
             - name: HOST
+              {{ if .Values.ingress.enabled -}}
               {{- range .Values.ingress.hosts }}
-              value: {{ . | quote }}
+              value: {{ include "appsemble.protocol" $ }}{{ . }}
               {{- end }}
-            {{- end }}
+              {{- else }}
+              value: http://{{ include "appsemble.fullname" . }}
+              {{- end }}
             {{- with .Values.smtpSecret }}
             - name: SMTP_HOST
               valueFrom:

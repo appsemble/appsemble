@@ -38,6 +38,14 @@ Create chart name and version as used by the chart label.
 {{- end -}}
 
 {{/*
+Get the protocol on which Appsemble is accessible.
+*/}}
+{{- define "appsemble.protocol" -}}
+http{{ if .Values.ingress.tls }}s{{ end }}://
+{{- end -}}
+
+
+{{/*
 Call a subchart template with a subchart context.
 
 https://github.com/helm/helm/issues/4535#issuecomment-416022809
