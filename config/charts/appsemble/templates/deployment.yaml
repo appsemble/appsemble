@@ -55,9 +55,7 @@ spec:
                   key: mysql-password
             - name: HOST
               {{ if .Values.ingress.enabled -}}
-              {{- range .Values.ingress.hosts }}
-              value: {{ include "appsemble.protocol" $ }}{{ . }}
-              {{- end }}
+              value: {{ include "appsemble.protocol" $ }}{{ .Values.ingress.host }}
               {{- else }}
               value: http://{{ include "appsemble.fullname" . }}
               {{- end }}
