@@ -39,8 +39,6 @@ export default class Editor extends React.Component {
     initialRecipe: '',
     valid: false,
     dirty: true,
-    icon: undefined,
-    iconURL: undefined,
     warningDialog: false,
     deleteDialog: false,
     organizationId: undefined,
@@ -89,7 +87,6 @@ export default class Editor extends React.Component {
         sharedStyle,
         initialRecipe: recipe,
         path,
-        iconURL: `/api/apps/${id}/icon`,
         organizationId,
       });
     } catch (e) {
@@ -163,7 +160,7 @@ export default class Editor extends React.Component {
 
   uploadApp = async () => {
     const { intl, match, push, updateApp } = this.props;
-    const { recipe, style, sharedStyle, icon, valid, organizationId } = this.state;
+    const { recipe, style, sharedStyle, valid, organizationId } = this.state;
 
     if (!valid) {
       return;
@@ -181,9 +178,7 @@ export default class Editor extends React.Component {
       formData.append('yaml', new Blob([recipe], { type: 'text/x-yaml' }));
       formData.append('style', new Blob([style], { type: 'text/css' }));
       formData.append('sharedStyle', new Blob([sharedStyle], { type: 'text/css' }));
-      if (icon) {
-        formData.append('icon', icon, { type: icon.type });
-      }
+
       ({
         data: { path },
       } = await axios.put(`/api/apps/${id}`, formData));
@@ -199,16 +194,6 @@ export default class Editor extends React.Component {
       }
 
       return;
-    }
-
-    if (icon) {
-      try {
-        await axios.post(`/api/apps/${id}/icon`, icon, {
-          headers: { 'Content-Type': icon.type },
-        });
-      } catch (e) {
-        push(intl.formatMessage(messages.errorUpdateIcon));
-      }
     }
 
     this.setState({
@@ -277,18 +262,6 @@ export default class Editor extends React.Component {
     }
   };
 
-  onIconChange = e => {
-    const { match } = this.props;
-    const { id } = match.params;
-    const file = e.target.files[0];
-
-    this.setState({
-      icon: file,
-      iconURL: file ? URL.createObjectURL(file) : `/api/apps/${id}/icon`,
-      dirty: true,
-    });
-  };
-
   onClose = () => {
     this.setState({ warningDialog: false, deleteDialog: false });
   };
@@ -302,8 +275,6 @@ export default class Editor extends React.Component {
       path,
       valid,
       dirty,
-      icon,
-      iconURL,
       warningDialog,
       deleteDialog,
       organizationId,
@@ -312,7 +283,6 @@ export default class Editor extends React.Component {
       intl,
       location: { hash: tab },
     } = this.props;
-    const filename = icon ? icon.name : 'Icon';
     const appUrl = `/@${organizationId}/${path}`;
 
     if (!recipe) {
@@ -365,32 +335,6 @@ export default class Editor extends React.Component {
                       <FormattedMessage {...messages.publish} />
                     </span>
                   </button>
-                </span>
-                <span className="navbar-item">
-                  <div className={classNames('file', icon && 'has-name')}>
-                    <label className="file-label" htmlFor="icon-upload">
-                      <input
-                        accept="image/jpeg, image/png, image/tiff, image/webp, image/xml+svg"
-                        className="file-input"
-                        id="icon-upload"
-                        name="icon"
-                        onChange={this.onIconChange}
-                        type="file"
-                      />
-                      <span className="file-cta">
-                        <Icon icon="upload" />
-                        <span className="file-label">
-                          <FormattedMessage {...messages.icon} />
-                        </span>
-                      </span>
-                      {icon && <span className="file-name">{filename}</span>}
-                    </label>
-                  </div>
-                  {iconURL && (
-                    <figure className={classNames('image', 'is-32x32', styles.iconPreview)}>
-                      <img alt="Icon" src={iconURL} />
-                    </figure>
-                  )}
                 </span>
                 <span className="navbar-item">
                   <a className="button" href={appUrl} rel="noopener noreferrer" target="_blank">
