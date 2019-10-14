@@ -58,6 +58,12 @@ export default class AppSideMenu extends React.Component {
               ))}
           </ul>
         )}
+        <NavLink className={styles.menuItem} exact={!isCollapsed} to={`${match.url}/settings`}>
+          <Icon icon="cogs" size="medium" />
+          <span className={classNames({ 'is-hidden': isCollapsed })}>
+            <FormattedMessage {...messages.settings} />
+          </span>
+        </NavLink>
       </SideMenu>
     );
   }

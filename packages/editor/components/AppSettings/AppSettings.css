@@ -1,0 +1,11 @@
+.icon {
+  margin-bottom: 0.5em;
+}
+
+.private {
+  margin-bottom: 0.75rem;
+}
+
+.private div {
+  margin-bottom: 0 !important;
+}

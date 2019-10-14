@@ -538,6 +538,13 @@ export interface App {
   id?: number;
 
   /**
+   * The name of the app.
+   *
+   * This determines the default path of the app.
+   */
+  name?: string;
+
+  /**
    * The id of the organization to which this app belongs.
    */
   organizationId?: string;
