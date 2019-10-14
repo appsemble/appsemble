@@ -8,6 +8,7 @@ import Koa from 'koa';
 import api from '../api';
 import migrations from '../migrations';
 import pkg from '../package.json';
+import addDBHooks from '../utils/addDBHooks';
 import createServer from '../utils/createServer';
 import migrate from '../utils/migrate';
 import readFileOrString from '../utils/readFileOrString';
@@ -72,6 +73,24 @@ export function builder(yargs) {
       type: 'boolean',
       default: false,
     })
+    .option('app-domain-strategy', {
+      desc: 'How to link app domain names to apps',
+      choices: ['kubernetes-ingress'],
+    })
+    .option('ingress-name', {
+      desc: 'The name of the ingress to patch if app-domain-strategy is set to kubernetes-ingress',
+      implies: ['ingress-service-name', 'ingress-service-port'],
+    })
+    .option('ingress-service-name', {
+      desc:
+        'The name of the service to which the ingress should point if app-domain-strategy is set to kubernetes-ingress',
+      implies: ['ingress-name', 'ingress-service-port'],
+    })
+    .option('ingress-ingress-port', {
+      desc:
+        'The port of the service to which the ingress should point if app-domain-strategy is set to kubernetes-ingress',
+      implies: ['ingress-name', 'ingress-service-name'],
+    })
     .option('host', {
       desc:
         'The external host on which the server is available. This should include the protocol, hostname, and optionally port.',
@@ -99,6 +118,8 @@ export async function handler(argv, { webpackConfigs, syncDB } = {}) {
   if (syncDB) {
     await migrate(db, pkg.version, migrations);
   }
+
+  await addDBHooks(db, argv);
 
   const app = new Koa();
   if (argv.sentryDsn) {
