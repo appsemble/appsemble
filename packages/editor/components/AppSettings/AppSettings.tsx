@@ -1,8 +1,8 @@
 import { Checkbox, Form, FormComponent, Icon, Input } from '@appsemble/react-components';
-import { App } from '@appsemble/types';
+import { App, Message } from '@appsemble/types';
 import { normalize } from '@appsemble/utils';
 import axios from 'axios';
-import React, { ReactText } from 'react';
+import React, { FormEvent, ReactText } from 'react';
 import { FormattedMessage, WrappedComponentProps } from 'react-intl';
 import { RouteComponentProps } from 'react-router-dom';
 
@@ -11,6 +11,7 @@ import messages from './messages';
 
 export interface AppSettingsProps extends RouteComponentProps<{ id: string }> {
   app: App;
+  push: (message: Message | string) => void;
 }
 
 interface AppSettingsState {
@@ -18,6 +19,8 @@ interface AppSettingsState {
   icon: File;
   iconUrl: string;
   private: boolean;
+  originalValues: { path: string; private: boolean };
+  dirty: boolean;
 }
 
 export default class AppSettings extends React.Component<
@@ -25,10 +28,12 @@ export default class AppSettings extends React.Component<
   AppSettingsState
 > {
   state: AppSettingsState = {
-    private: false,
+    private: undefined,
     path: undefined,
     icon: undefined,
     iconUrl: `/api/apps/${this.props.match.params.id}/icon`,
+    originalValues: undefined,
+    dirty: false,
   };
 
   async componentDidMount(): Promise<void> {
@@ -39,19 +44,41 @@ export default class AppSettings extends React.Component<
     } = this.props;
 
     const { data: settings } = await axios.get(`/api/apps/${id}/settings`);
-    this.setState({ path: settings.path, private: settings.private });
+    this.setState({ path: settings.path, private: settings.private, originalValues: settings });
   }
 
-  onSubmit = async (): Promise<void> => {
-    const { app } = this.props;
-    const { path, private: isPrivate } = this.state;
+  onSubmit = async (event: FormEvent): Promise<void> => {
+    event.preventDefault();
 
-    await axios.put(`/api/apps/1/settings/${app.id}/settings`, { path, private: isPrivate });
+    const { app, push, intl } = this.props;
+    const { path, private: isPrivate, icon, originalValues } = this.state;
+
+    const data = new FormData();
+
+    if (path !== originalValues.path) {
+      data.set('path', path);
+    }
+
+    if (isPrivate !== originalValues.private) {
+      data.set('private', String(isPrivate));
+    }
+
+    if (icon) {
+      data.set('icon', icon);
+    }
+
+    try {
+      const response = await axios.patch(`/api/apps/${app.id}/settings`, data);
+      this.setState({ ...response.data, dirty: false, originalValues: response.data });
+      push({ color: 'success', body: intl.formatMessage(messages.updateSuccess) });
+    } catch (ex) {
+      push({ color: 'danger', body: intl.formatMessage(messages.updateError) });
+    }
   };
 
   onChange = (event: React.ChangeEvent<HTMLInputElement>, value: ReactText | boolean): void => {
     // See: https://github.com/Microsoft/TypeScript/issues/13948
-    this.setState({ [event.target.name]: value } as any);
+    this.setState({ [event.target.name]: value, dirty: true } as any);
   };
 
   onIconChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
@@ -66,7 +93,7 @@ export default class AppSettings extends React.Component<
   };
 
   render(): JSX.Element {
-    const { iconUrl, icon, private: isPrivate, path } = this.state;
+    const { iconUrl, icon, private: isPrivate, path, dirty } = this.state;
     const { app } = this.props;
 
     return (
@@ -128,6 +155,9 @@ export default class AppSettings extends React.Component<
           placeholder={normalize(app.name)}
           value={path}
         />
+        <button className="button" disabled={!dirty} type="submit">
+          <FormattedMessage {...messages.saveChanges} />
+        </button>
       </Form>
     );
   }

@@ -2,6 +2,7 @@ import { App } from '@appsemble/types';
 import { injectIntl } from 'react-intl';
 import { connect } from 'react-redux';
 
+import { push } from '../../actions/message';
 import AppSettings, { AppSettingsProps } from './AppSettings';
 
 function mapStateToProps(
@@ -13,4 +14,9 @@ function mapStateToProps(
   };
 }
 
-export default injectIntl(connect(mapStateToProps)(AppSettings));
+export default injectIntl(
+  connect(
+    mapStateToProps,
+    { push },
+  )(AppSettings),
+);
