@@ -67,7 +67,7 @@ spec:
             - name: INGRESS_SERVICE_NAME
               value: {{ include "appsemble.fullname" . }}
             - name: INGRESS_SERVICE_PORT
-              value: http
+              value: {{ .Values.service.port | quote }}
             {{- end }}
             {{- with .Values.smtpSecret }}
             - name: SMTP_HOST
