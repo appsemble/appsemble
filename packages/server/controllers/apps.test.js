@@ -1,4 +1,5 @@
 import jwt from 'jsonwebtoken';
+import path from 'path';
 import request from 'supertest';
 
 import createServer from '../utils/createServer';
@@ -1029,6 +1030,73 @@ pages:
       .set('Authorization', token);
 
     expect(response.status).toBe(403);
+  });
+
+  it('should fetch the app settings', async () => {
+    const app = await App.create(
+      {
+        definition: { name: 'Test App', defaultPage: 'Test Page' },
+        path: 'bar',
+        private: true,
+        OrganizationId: organizationId,
+      },
+      { raw: true },
+    );
+
+    const response = await request(server).get(`/api/apps/${app.id}/settings`);
+    expect(response.body).toStrictEqual({ path: 'bar', private: true });
+  });
+
+  it('should update parts of the app settings', async () => {
+    const app = await App.create(
+      {
+        definition: { name: 'Test App', defaultPage: 'Test Page' },
+        path: 'bar',
+        private: true,
+        OrganizationId: organizationId,
+      },
+      { raw: true },
+    );
+
+    const responsePrivate = await request(server)
+      .patch(`/api/apps/${app.id}/settings`)
+      .set('Authorization', token)
+      .field('private', true);
+
+    const responsePath = await request(server)
+      .patch(`/api/apps/${app.id}/settings`)
+      .set('Authorization', token)
+      .field('path', 'baz');
+
+    const responseIcon = await request(server)
+      .patch(`/api/apps/${app.id}/settings`)
+      .set('Authorization', token)
+      .attach('icon', path.join(__dirname, '__fixtures__', 'testpattern.png'), {
+        filename: 'image.png',
+        contentType: 'image/png',
+      });
+
+    // XXX: Figure out how to test this properly.
+    /*
+      const { body: icon } = await request(server)
+      .get(`/api/apps/${app.id}/icon`)
+      .buffer()
+      .parse((res, callback) => {
+        res.setEncoding('binary');
+        res.data = '';
+        res.on('data', chunk => {
+          res.data += chunk;
+        });
+        res.on('end', () => {
+          callback(null, Buffer.from(res.data, 'binary'));
+        });
+      });
+    */
+    expect(responsePrivate.body).toStrictEqual({ private: true, path: 'bar' });
+    expect(responsePath.body).toStrictEqual({ private: true, path: 'baz' });
+    expect(responseIcon.body).toStrictEqual({ private: true, path: 'baz' });
+    // XXX: Fix icon test
+    // expect(icon).toMatchImageSnapshot();
   });
 
   it('should validate and update css when updating an app', async () => {

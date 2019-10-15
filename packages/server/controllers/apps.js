@@ -375,6 +375,8 @@ export async function patchAppSettings(ctx) {
 
     await app.update(result, { where: { id: appId } });
 
+    // Icon should not be returned in the settings response, it is available at a different path.
+    delete result.icon;
     ctx.body = { private: Boolean(app.private), path: app.path, ...result };
   } catch (error) {
     handleAppValidationError(error, { ...app, ...result });
