@@ -511,7 +511,7 @@ export default class OrganizationsSettings extends Component {
           className="is-paddingless"
           isActive={!!removingInvite}
           onClose={this.onCloseInviteDialog}
-          title={intl.formatMessage(messages.removeInviteWarningTitle)}
+          title={<FormattedMessage {...messages.removeInviteWarningTitle} />}
         >
           <div className={styles.dialogContent}>
             <FormattedMessage {...messages.removeInviteWarning} />
@@ -542,9 +542,11 @@ export default class OrganizationsSettings extends Component {
           isActive={!!removingMember}
           onClose={this.onCloseDeleteDialog}
           title={
-            removingMember === user.id
-              ? intl.formatMessage(messages.leaveOrganizationWarningTitle)
-              : intl.formatMessage(messages.removeMemberWarningTitle)
+            removingMember === user.id ? (
+              <FormattedMessage {...messages.leaveOrganizationWarningTitle} />
+            ) : (
+              <FormattedMessage {...messages.removeMemberWarningTitle} />
+            )
           }
         >
           <div className={styles.dialogContent}>

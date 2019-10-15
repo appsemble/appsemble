@@ -449,7 +449,7 @@ export default class Editor extends React.Component {
               className="is-paddingless"
               isActive={warningDialog}
               onClose={this.onClose}
-              title={intl.formatMessage(messages.resourceWarningTitle)}
+              title={<FormattedMessage {...messages.resourceWarningTitle} />}
             >
               <FormattedMessage {...messages.resourceWarning} />
               <footer className="card-footer">
@@ -483,7 +483,7 @@ export default class Editor extends React.Component {
               className="is-paddingless"
               isActive={deleteDialog}
               onClose={this.onClose}
-              title={intl.formatMessage(messages.deleteWarningTitle)}
+              title={<FormattedMessage {...messages.deleteWarningTitle} />}
             >
               <div className={styles.dialogContent}>
                 <FormattedMessage {...messages.deleteWarning} />

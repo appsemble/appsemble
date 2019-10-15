@@ -143,7 +143,7 @@ export default class CreateAppCard extends React.Component {
           className="is-paddingless"
           isActive={modalOpen}
           onClose={this.onClose}
-          title={formatMessage(messages.createAppTitle)}
+          title={<FormattedMessage {...messages.createAppTitle} />}
         >
           <Form onSubmit={this.onCreate}>
             <div className={styles.controls}>

@@ -266,7 +266,7 @@ export default class UserSettings extends Component {
           className="is-paddingless"
           isActive={!!deletingEmail}
           onClose={this.onCloseDeleteDialog}
-          title={intl.formatMessage(messages.emailWarningTitle)}
+          title={<FormattedMessage {...messages.emailWarningTitle} />}
         >
           <div className={styles.dialogContent}>
             <FormattedMessage {...messages.emailWarning} />
