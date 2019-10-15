@@ -25,6 +25,48 @@ it('should render the blocks for a page', () => {
   expect(wrapper).toMatchSnapshot();
 });
 
+it('should render tabs pages', () => {
+  const page = {
+    name: 'Test Page',
+    type: 'tabs',
+    subPages: [{ name: 'Sub A', blocks: [{}, {}] }, { name: 'Sub B', blocks: [{}, {}] }],
+  };
+  const app = { pages: [page] };
+  const wrapper = shallow(
+    <Page
+      app={app}
+      getBlockDefs={() => {}}
+      hasErrors={false}
+      history={{}}
+      match={{}}
+      page={page}
+    />,
+  );
+
+  expect(wrapper).toMatchSnapshot();
+});
+
+it('should render flow page', () => {
+  const page = {
+    name: 'Test Page',
+    type: 'flow',
+    subPages: [{ name: 'Sub A', blocks: [{}, {}] }, { name: 'Sub B', blocks: [{}, {}] }],
+  };
+  const app = { pages: [page] };
+  const wrapper = shallow(
+    <Page
+      app={app}
+      getBlockDefs={() => {}}
+      hasErrors={false}
+      history={{}}
+      match={{}}
+      page={page}
+    />,
+  );
+
+  expect(wrapper).toMatchSnapshot();
+});
+
 it('should call event listeners when an event is emitted', () => {
   const page = { name: 'Test Page', blocks: [{}] };
   const app = { pages: [page] };

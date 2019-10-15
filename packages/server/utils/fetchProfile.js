@@ -1,9 +1,9 @@
 import axios from 'axios';
 
-const oauth2Handlers = {
-  async gitlab(token) {
+export default {
+  async gitlab(accessToken) {
     const { data } = await axios.get('https://gitlab.com/api/v4/user', {
-      headers: { Authorization: `Bearer ${token.access_token}` },
+      headers: { Authorization: `Bearer ${accessToken}` },
     });
 
     if (data) {
@@ -18,9 +18,9 @@ const oauth2Handlers = {
     return null;
   },
 
-  async google(token) {
+  async google(accessToken) {
     const { data } = await axios.get('https://www.googleapis.com/userinfo/v2/me', {
-      headers: { Authorization: `Bearer ${token.access_token}` },
+      headers: { Authorization: `Bearer ${accessToken}` },
     });
 
     if (data) {
@@ -30,9 +30,9 @@ const oauth2Handlers = {
     return null;
   },
 
-  async facebook(token) {
+  async facebook(accessToken) {
     const { data } = await axios.get('https://graph.facebook.com/v3.2/me?fields=name,email', {
-      headers: { Authorization: `Bearer ${token.access_token}` },
+      headers: { Authorization: `Bearer ${accessToken}` },
     });
 
     if (data) {
@@ -47,5 +47,3 @@ const oauth2Handlers = {
     return null;
   },
 };
-
-export default oauth2Handlers;
