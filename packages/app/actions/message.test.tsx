@@ -3,15 +3,15 @@ import thunk, { ThunkDispatch } from 'redux-thunk';
 
 import reducer, { initialState, MessageAction, MessageState, push, remove } from './message';
 
-describe('Message Redux', () => {
-  let store: MockStoreEnhanced<MessageState, ThunkDispatch<MessageState, undefined, MessageAction>>;
+let store: MockStoreEnhanced<MessageState, ThunkDispatch<MessageState, undefined, MessageAction>>;
 
-  beforeEach(() => {
-    store = createMockStore<MessageState, ThunkDispatch<MessageState, undefined, MessageAction>>([
-      thunk,
-    ])(initialState);
-  });
+beforeEach(() => {
+  store = createMockStore<MessageState, ThunkDispatch<MessageState, undefined, MessageAction>>([
+    thunk,
+  ])(initialState);
+});
 
+describe('reducer', () => {
   it('should return the default state', () => {
     const result = reducer(undefined, ({ type: 'NONEXISTANT ACTION' } as unknown) as MessageAction);
     expect(result).toStrictEqual(initialState);
@@ -66,7 +66,9 @@ describe('Message Redux', () => {
       queue: [{ id: 1, body: 'foo' }, { id: 2, body: 'foo', color: 'danger', timeout: 1000 }],
     });
   });
+});
 
+describe('push', () => {
   it('should create a push action', async () => {
     store.dispatch(push('Foo'));
     expect(store.getActions()[0]).toStrictEqual({
@@ -74,7 +76,9 @@ describe('Message Redux', () => {
       message: { body: 'Foo' },
     });
   });
+});
 
+describe('remove', () => {
   it('should create a remove action', async () => {
     store.dispatch(remove({ id: 1, body: 'foo' }));
     expect(store.getActions()[0]).toStrictEqual({

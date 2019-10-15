@@ -3,7 +3,7 @@ import { IDBPDatabase } from 'idb';
 import { AppAction, GET_ERROR, GET_START, GET_SUCCESS } from './app';
 import reducer from './db';
 
-describe('Database Redux', () => {
+describe('reducer', () => {
   it('should return the default state', () => {
     const result = reducer(null, ({} as unknown) as AppAction);
     expect(result).toBeNull();

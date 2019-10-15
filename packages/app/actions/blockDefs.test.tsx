@@ -2,7 +2,7 @@ import { Block, BlockDefinition } from '@appsemble/types';
 
 import reducer, { BlockDefAction, initialState } from './blockDefs';
 
-describe('BlockDefs Redux', () => {
+describe('reducer', () => {
   const exampleBlock: Block = { type: '@appsemble/test', version: '0.0.0' };
 
   it('returns the default state', () => {

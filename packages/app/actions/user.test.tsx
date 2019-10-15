@@ -1,6 +1,6 @@
 import reducer, { initialState, UserAction } from './user';
 
-describe('User Redux', () => {
+describe('reducer', () => {
   it('should return the default state', () => {
     const result = reducer(undefined, ({} as unknown) as UserAction);
     expect(result).toStrictEqual(initialState);

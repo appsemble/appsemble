@@ -32,15 +32,15 @@ jest.mock('../utils/settings', () => ({
   },
 }));
 
-describe('App Redux', () => {
-  let store: MockStoreEnhanced<AppState, ThunkDispatch<AppState, undefined, AppAction>>;
+let store: MockStoreEnhanced<AppState, ThunkDispatch<AppState, undefined, AppAction>>;
 
-  beforeEach(() => {
-    store = createMockStore<AppState, ThunkDispatch<AppState, undefined, AppAction>>([thunk])(
-      initialState,
-    );
-  });
+beforeEach(() => {
+  store = createMockStore<AppState, ThunkDispatch<AppState, undefined, AppAction>>([thunk])(
+    initialState,
+  );
+});
 
+describe('reducer', () => {
   it('should return the default state', () => {
     const result = reducer(undefined, ({} as unknown) as AppAction);
     expect(result).toStrictEqual(initialState);
@@ -91,7 +91,9 @@ describe('App Redux', () => {
       app: { ...emptyApp, pages: [{ name: 'Test Page', blocks: [] }] },
     });
   });
+});
 
+describe('getApp', () => {
   it('should create getApp actions when app does not exist', async () => {
     const error = Error('This is a test error');
     const spy = jest.spyOn(getDB, 'default');
