@@ -1,5 +1,12 @@
-.icon {
+.iconContainer {
   margin-bottom: 0.5em;
+}
+
+.icon {
+  height: 128px;
+  /* stylelint-disable-next-line plugin/no-unsupported-browser-features */
+  object-fit: contain;
+  width: 128px;
 }
 
 .private {

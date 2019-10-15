@@ -72,8 +72,8 @@ export default class AppSettings extends React.Component<
     return (
       <Form onSubmit={this.onSubmit}>
         <FormComponent id="icon-upload" label={<FormattedMessage {...messages.icon} />}>
-          <figure className={`image is-128x128 ${styles.icon}`}>
-            <img alt="Icon" className="image is-128x128" src={iconUrl} />
+          <figure className={`image is-128x128 ${styles.iconContainer}`}>
+            <img alt="Icon" className={styles.icon} src={iconUrl} />
           </figure>
           <div className="file has-name">
             <label className="file-label" htmlFor="icon-upload">
