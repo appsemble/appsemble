@@ -226,6 +226,20 @@ export default {
       security: [{ apiUser: ['apps:write'] }],
     },
   },
+  '/api/apps/{appId}/settings': {
+    parameters: [{ $ref: '#/components/parameters/appId' }],
+    get: {
+      tags: ['app'],
+      description: 'Get the app settings.',
+      operationId: 'getAppSettings',
+      responses: {
+        200: {
+          description: 'The settings of the app.',
+          $ref: '#/components/responses/appSettings',
+        },
+      },
+    },
+  },
   '/api/apps/{appId}/style/core': {
     parameters: [{ $ref: '#/components/parameters/appId' }],
     get: {

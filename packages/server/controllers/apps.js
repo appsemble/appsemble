@@ -295,6 +295,22 @@ export async function deleteAppIcon(ctx) {
   ctx.status = 204;
 }
 
+export async function getAppSettings(ctx) {
+  const { appId } = ctx.params;
+  const { App } = ctx.db.models;
+
+  const app = await App.findByPk(appId, { raw: true });
+
+  if (!app) {
+    throw Boom.notFound('App not found');
+  }
+
+  ctx.body = {
+    private: app.private,
+    path: app.path,
+  };
+}
+
 export async function getAppCoreStyle(ctx) {
   const { appId } = ctx.params;
   const { App } = ctx.db.models;
