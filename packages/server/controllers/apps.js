@@ -306,9 +306,79 @@ export async function getAppSettings(ctx) {
   }
 
   ctx.body = {
-    private: app.private,
+    private: Boolean(app.private),
     path: app.path,
   };
+}
+
+export async function updateAppSettings(ctx) {
+  const { db } = ctx;
+  const { appId } = ctx.params;
+  const {
+    user: { organizations },
+  } = ctx.state;
+  const { App } = db.models;
+  const { path, private: isPrivate, icon } = ctx.request.body;
+
+  const result = { path: normalize(path), icon, private: isPrivate };
+  const app = await App.findOne({ where: { id: appId } });
+
+  try {
+    if (!app) {
+      throw Boom.notFound('App not found');
+    }
+
+    if (!organizations.some(organization => organization.id === app.OrganizationId)) {
+      throw Boom.forbidden("User does not belong in this App's organization.");
+    }
+
+    await app.update(result, { where: { id: appId } });
+
+    ctx.body = { private: Boolean(app.private), path: app.path, ...result };
+  } catch (error) {
+    handleAppValidationError(error, { ...app, ...result });
+  }
+}
+
+export async function patchAppSettings(ctx) {
+  const { db } = ctx;
+  const { appId } = ctx.params;
+  const {
+    user: { organizations },
+  } = ctx.state;
+  const { App } = db.models;
+  const { path, private: isPrivate, icon } = ctx.request.body;
+
+  const result = {};
+  const app = await App.findOne({ where: { id: appId } });
+
+  try {
+    if (!app) {
+      throw Boom.notFound('App not found');
+    }
+
+    if (!organizations.some(organization => organization.id === app.OrganizationId)) {
+      throw Boom.forbidden("User does not belong in this App's organization.");
+    }
+
+    if (path) {
+      result.path = path;
+    }
+
+    if (isPrivate !== undefined) {
+      result.private = Boolean(isPrivate);
+    }
+
+    if (icon) {
+      result.icon = icon;
+    }
+
+    await app.update(result, { where: { id: appId } });
+
+    ctx.body = { private: Boolean(app.private), path: app.path, ...result };
+  } catch (error) {
+    handleAppValidationError(error, { ...app, ...result });
+  }
 }
 
 export async function getAppCoreStyle(ctx) {

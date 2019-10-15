@@ -239,6 +239,65 @@ export default {
         },
       },
     },
+    put: {
+      tags: ['app'],
+      description: "Update an app's settings",
+      operationId: 'updateAppSettings',
+      requestBody: {
+        content: {
+          'multipart/form-data': {
+            schema: {
+              required: ['private', 'path', 'icon'],
+              properties: {
+                private: { type: 'boolean' },
+                path: { type: 'string' },
+                icon: {
+                  type: 'string',
+                  format: 'binary',
+                  description: 'The app icon.',
+                },
+              },
+            },
+          },
+        },
+      },
+      responses: {
+        200: {
+          description: 'The updated app settings',
+          $ref: '#/components/responses/appSettings',
+        },
+      },
+      security: [{ apiUser: ['apps:write'] }],
+    },
+    patch: {
+      tags: ['app'],
+      description: "Update an app's settings",
+      operationId: 'patchAppSettings',
+      requestBody: {
+        content: {
+          'multipart/form-data': {
+            schema: {
+              properties: {
+                private: { type: 'boolean' },
+                path: { type: 'string' },
+                icon: {
+                  type: 'string',
+                  format: 'binary',
+                  description: 'The app icon.',
+                },
+              },
+            },
+          },
+        },
+      },
+      responses: {
+        200: {
+          description: 'The updated app settings',
+          $ref: '#/components/responses/appSettings',
+        },
+      },
+      security: [{ apiUser: ['apps:write'] }],
+    },
   },
   '/api/apps/{appId}/style/core': {
     parameters: [{ $ref: '#/components/parameters/appId' }],
