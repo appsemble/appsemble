@@ -1,5 +1,5 @@
 # Build the frontend
-FROM node:10-slim AS frontend
+FROM node:12-slim AS frontend
 WORKDIR /app
 COPY . .
 RUN yarn --frozen-lockfile \
@@ -7,7 +7,7 @@ RUN yarn --frozen-lockfile \
  && yarn build:editor
 
 # Setup the backend
-FROM node:10-slim AS backend
+FROM node:12-slim AS backend
 WORKDIR /app
 COPY packages/server packages/server
 COPY packages/node-utils packages/node-utils
@@ -19,7 +19,7 @@ RUN yarn --frozen-lockfile --production \
  && rm -r yarn.lock
 
 # Setup the production docker image.
-FROM node:10-slim
+FROM node:12-slim
 COPY --from=backend /app /app
 COPY --from=frontend /app/dist /app/dist
 WORKDIR /app
