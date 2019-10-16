@@ -27,44 +27,36 @@ attach<Parameters, Actions>(({ actions, block, data }) => {
   }
 
   return (
-    <div className={`content ${styles.container}`}>
-      <h1>{title}</h1>
+    <div className={styles.container}>
+      <h1 className={styles.title}>{title}</h1>
       {fields.map((field, index) => {
         const { backgroundColor, color } = field;
-        return (
-          <div className={styles.actionField}>
-            <button
-              className="button"
-              disabled={!!(field.enum && field.enum.length)}
-              onclick={
-                field.enum && field.enum.length ? undefined : event => onUpdate(event, field)
-              }
-              style={{ backgroundColor, color }}
-              type="button"
-            >
-              <span className="icon is-small">
-                <i className={`fas fa-${field.icon || 'bolt'}`} />
-              </span>
-              {!field.enum && <span className={styles.actionLabel}>{field.label || ''}</span>}
-            </button>
-            {field.enum &&
-              field.enum.length && [
-                <label className={styles.actionLabel} htmlFor={`${field.name}.${index}`}>
-                  {field.label || ''}
-                </label>,
-                <div className={`select ${styles.enum}`}>
-                  <select
-                    id={`${field.name}.${index}`}
-                    onchange={event => onUpdate(event, field)}
-                    value={data[field.name]}
-                  >
-                    {field.enum.map(entry => (
-                      <option value={`${entry.value}`}>{entry.label || entry.value}</option>
-                    ))}
-                  </select>
-                </div>,
-              ]}
+        return field.enum && field.enum.length ? (
+          <div className={`${styles.actionField} ${styles.enumField}`}>
+            <label htmlFor={`${field.name}.${index}`}>{field.label || ''}</label>
+            <div className="select">
+              <select
+                className={styles.enum}
+                id={`${field.name}.${index}`}
+                onchange={event => onUpdate(event, field)}
+                value={data[field.name]}
+              >
+                {field.enum.map(entry => (
+                  <option value={`${entry.value}`}>{entry.label || entry.value}</option>
+                ))}
+              </select>
+            </div>
           </div>
+        ) : (
+          <button
+            className={`button ${styles.button} ${styles.actionField}`}
+            disabled={!!(field.enum && field.enum.length)}
+            onclick={field.enum && field.enum.length ? undefined : event => onUpdate(event, field)}
+            style={{ backgroundColor, color, borderColor: color }}
+            type="button"
+          >
+            {!field.enum && <span className={styles.actionLabel}>{field.label || ''}</span>}
+          </button>
         );
       })}
     </div>
