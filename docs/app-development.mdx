@@ -53,8 +53,7 @@ this data to the server, effectively updating the app.
 
 ## Example app
 
-An app definition at the very least contains a name, the path it has been assigned to and a list of
-`pages`.
+An app definition at the very least contains a name and a list of `pages`.
 
 Each `page` is provided with a name as well as a list of `blocks`.
 
@@ -218,7 +217,6 @@ The final result should look like this:
 
 ```yaml
 name: Person App
-path: person-app
 defaultPage: Person List
 
 resources:
@@ -315,5 +313,9 @@ pages:
             - name: description
               label: Description
 ```
+
+## Advanced
+
+- To link a custom domain name to the app, see [DNS](dns)
 
 [yaml]: https://learnxinyminutes.com/docs/yaml/
