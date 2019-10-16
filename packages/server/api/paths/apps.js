@@ -134,11 +134,6 @@ export default {
                   format: 'binary',
                   description: 'The original YAML definition used to define the app.',
                 },
-                icon: {
-                  type: 'string',
-                  format: 'binary',
-                  description: 'The app icon.',
-                },
               },
             },
             encoding: {
@@ -187,30 +182,6 @@ export default {
         },
       },
     },
-    post: {
-      tags: ['app'],
-      description: `Change the app icon.
-
-        If no icon has been specified, the Appsemble icon will be served.
-      `,
-      operationId: 'setAppIcon',
-      requestBody: {
-        description: 'The new app icon.',
-        content: {
-          'image/png': {},
-          'image/jpg': {},
-          'image/svg+xml': {},
-          'image/tiff': {},
-          'image/webp': {},
-        },
-      },
-      responses: {
-        204: {
-          description: 'The icon has been updated succesfully.',
-        },
-      },
-      security: [{ apiUser: ['apps:write'] }],
-    },
     delete: {
       tags: ['app'],
       description: `Delete the app icon from the database.
@@ -248,15 +219,7 @@ export default {
           'multipart/form-data': {
             schema: {
               required: ['private', 'path', 'icon'],
-              properties: {
-                private: { type: 'boolean' },
-                path: { type: 'string' },
-                icon: {
-                  type: 'string',
-                  format: 'binary',
-                  description: 'The app icon.',
-                },
-              },
+              $ref: '#/components/schemas/AppSettings',
             },
             encoding: {
               icon: {
@@ -276,21 +239,13 @@ export default {
     },
     patch: {
       tags: ['app'],
-      description: "Update an app's settings",
+      description: 'Update an app’s settings',
       operationId: 'patchAppSettings',
       requestBody: {
         content: {
           'multipart/form-data': {
             schema: {
-              properties: {
-                private: { type: 'boolean' },
-                path: { type: 'string' },
-                icon: {
-                  type: 'string',
-                  format: 'binary',
-                  description: 'The app icon.',
-                },
-              },
+              $ref: '#/components/schemas/AppSettings',
             },
             encoding: {
               icon: {

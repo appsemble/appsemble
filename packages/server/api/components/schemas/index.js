@@ -1,4 +1,5 @@
 import App from './App';
+import AppSettings from './AppSettings';
 import Asset from './Asset';
 import Block from './Block';
 import BlockDefinition from './BlockDefinition';
@@ -16,6 +17,7 @@ import User from './User';
 
 export default {
   App,
+  AppSettings,
   Asset,
   BlockDefinition,
   Block,

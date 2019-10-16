@@ -82,7 +82,6 @@ describe('app controller', () => {
     expect(body).toHaveLength(2);
     expect(body).toContainEqual({
       id: appA.id,
-      path: 'test-app',
       ...appA.definition,
       organizationId: appA.OrganizationId,
       yaml: `name: Test App
@@ -91,7 +90,6 @@ defaultPage: Test Page
     });
     expect(body).toContainEqual({
       id: appB.id,
-      path: 'another-app',
       ...appB.definition,
       organizationId: appB.OrganizationId,
       yaml: `name: Another App
@@ -112,7 +110,8 @@ defaultPage: Another Page
     await App.create(
       {
         path: 'another-app',
-        definition: { name: 'Another App', defaultPage: 'Another Page', private: true },
+        private: true,
+        definition: { name: 'Another App', defaultPage: 'Another Page' },
         OrganizationId: organizationId,
       },
       { raw: true },
@@ -122,7 +121,6 @@ defaultPage: Another Page
     expect(body).toHaveLength(1);
     expect(body).toContainEqual({
       id: appA.id,
-      path: 'test-app',
       ...appA.definition,
       organizationId: appA.OrganizationId,
       yaml: `name: Test App
@@ -151,7 +149,6 @@ defaultPage: Test Page
 
     expect(body).toStrictEqual({
       id: appA.id,
-      path: 'test-app',
       ...appA.definition,
       organizationId,
       yaml: `name: Test App
@@ -195,7 +192,6 @@ defaultPage: Test Page
       {
         ...appA.definition,
         id: appA.id,
-        path: appA.path,
         organizationId: appA.OrganizationId,
         yaml: `name: Test App
 defaultPage: Test Page
@@ -206,7 +202,6 @@ defaultPage: Test Page
       {
         ...appA.definition,
         id: appA.id,
-        path: appA.path,
         organizationId: appA.OrganizationId,
         yaml: `name: Test App
 defaultPage: Test Page
@@ -215,7 +210,6 @@ defaultPage: Test Page
       {
         ...appB.definition,
         id: appB.id,
-        path: appB.path,
         organizationId: appB.OrganizationId,
         yaml: `name: Test App B
 defaultPage: Test Page
@@ -252,7 +246,6 @@ defaultPage: Test Page
       id: expect.any(Number),
       name: 'Test App',
       defaultPage: 'Test Page',
-      path: 'test-app',
       pages: [
         {
           name: 'Test Page',
@@ -479,7 +472,6 @@ pages:
         JSON.stringify({
           name: 'Test App',
           defaultPage: 'Test Page',
-          path: 'a',
           pages: [
             {
               name: 'Test Page',
@@ -497,7 +489,6 @@ pages:
         JSON.stringify({
           name: 'Test App',
           defaultPage: 'Test Page',
-          path: 'a',
           pages: [
             {
               name: 'Test Page',
@@ -508,12 +499,48 @@ pages:
       )
       .field('organizationId', organizationId);
 
-    expect(response.status).toBe(409);
-    expect(response.body).toStrictEqual({
-      error: 'Conflict',
-      message: `Another app with path “@${organizationId}/a” already exists`,
-      statusCode: 409,
-    });
+    const { body: settings } = await request(server).get(`/api/apps/${response.body.id}/settings`);
+
+    expect(response.status).toBe(201);
+    expect(settings.path).toStrictEqual('test-app-2');
+  });
+
+  it('should fall back to append random bytes to the end of the app path after 10 attempts', async () => {
+    for (let i = 1; i < 11; i += 1) {
+      // eslint-disable-next-line no-await-in-loop
+      await App.create(
+        {
+          path: i === 1 ? 'test-app' : `test-app-${i}`,
+          definition: { name: 'Test App', defaultPage: 'Test Page' },
+          OrganizationId: organizationId,
+        },
+        { raw: true },
+      );
+    }
+
+    const response = await request(server)
+      .post('/api/apps')
+      .set('Authorization', token)
+      .field(
+        'app',
+        JSON.stringify({
+          name: 'Test App',
+          defaultPage: 'Test Page',
+          pages: [
+            {
+              name: 'Test Page',
+              blocks: [{ type: 'test', version: '0.0.0' }],
+            },
+          ],
+        }),
+      )
+      .field('organizationId', organizationId);
+
+    const { body: settings } = await request(server).get(`/api/apps/${response.body.id}/settings`);
+
+    expect(response.status).toStrictEqual(201);
+    const regex = /test-app-(\w){10}/;
+    expect(regex.test(settings.path)).toBe(true);
   });
 
   it('should allow stylesheets to be included when creating an app', async () => {
@@ -562,7 +589,6 @@ pages:
         JSON.stringify({
           name: 'Test App',
           defaultPage: 'Test Page',
-          path: 'a',
           pages: [
             {
               name: 'Test Page',
@@ -584,7 +610,6 @@ pages:
         JSON.stringify({
           name: 'Test App',
           defaultPage: 'Test Page',
-          path: 'a',
           pages: [
             {
               name: 'Test Page',
@@ -676,7 +701,6 @@ pages:
   it('should update an app', async () => {
     const appA = await App.create(
       {
-        path: 'test-app',
         definition: { name: 'Test App', defaultPage: 'Test Page' },
         OrganizationId: organizationId,
       },
@@ -703,7 +727,6 @@ pages:
     expect(response.body).toStrictEqual({
       id: appA.id,
       name: 'Foobar',
-      path: 'foobar',
       defaultPage: appA.definition.defaultPage,
       pages: [
         {
@@ -935,7 +958,7 @@ pages:
     expect(response.status).toBe(400);
   });
 
-  it('should prevent path conflicts when updating an app', async () => {
+  it('should prevent path conflicts when updating an app’s settings', async () => {
     await App.create(
       {
         path: 'foo',
@@ -953,22 +976,9 @@ pages:
       { raw: true },
     );
     const response = await request(server)
-      .put(`/api/apps/${appA.id}`)
+      .patch(`/api/apps/${appA.id}/settings`)
       .set('Authorization', token)
-      .field(
-        'app',
-        JSON.stringify({
-          path: 'foo',
-          name: 'Foobar',
-          defaultPage: appA.definition.defaultPage,
-          pages: [
-            {
-              name: 'Test Page',
-              blocks: [{ type: 'test', version: '0.0.0' }],
-            },
-          ],
-        }),
-      );
+      .field('path', 'foo');
 
     expect(response.status).toBe(409);
   });
@@ -1147,7 +1157,6 @@ pages:
       .field(
         'app',
         JSON.stringify({
-          path: 'foo',
           name: 'Foobar',
           defaultPage: app.definition.defaultPage,
           pages: [

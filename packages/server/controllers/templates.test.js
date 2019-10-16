@@ -26,13 +26,14 @@ describe('Template API', () => {
   let server;
   let token;
   let organizationId;
+  let App;
   let Resource;
 
   beforeAll(async () => {
     db = await testSchema('assets');
 
     server = await createServer({ db });
-    ({ Resource } = db.models);
+    ({ App, Resource } = db.models);
   }, 10e3);
 
   beforeEach(async () => {
@@ -94,7 +95,7 @@ describe('Template API', () => {
     );
   });
 
-  it('should not create a new app using a template with a duplicate name', async () => {
+  it('should append a number when creating a new app using a template with a duplicate name', async () => {
     await request(server)
       .post('/api/templates')
       .set('Authorization', token)
@@ -105,7 +106,41 @@ describe('Template API', () => {
         organizationId,
       });
 
-    const { status } = await request(server)
+    const {
+      status,
+      body: { id },
+    } = await request(server)
+      .post('/api/templates')
+      .set('Authorization', token)
+      .send({
+        template: templates[0].name,
+        name: 'Test app',
+        description: 'This is a test app',
+        organizationId,
+      });
+    const { body: settings } = await request(server).get(`/api/apps/${id}/settings`);
+
+    expect(status).toStrictEqual(201);
+    expect(settings.path).toStrictEqual('test-app-2');
+  });
+
+  it('should fall back to append random bytes to the end of the app path after 10 attempts', async () => {
+    for (let i = 1; i < 11; i += 1) {
+      // eslint-disable-next-line no-await-in-loop
+      await App.create(
+        {
+          path: i === 1 ? 'test-app' : `test-app-${i}`,
+          definition: { name: 'Test App', defaultPage: 'Test Page' },
+          OrganizationId: organizationId,
+        },
+        { raw: true },
+      );
+    }
+
+    const {
+      status,
+      body: { id },
+    } = await request(server)
       .post('/api/templates')
       .set('Authorization', token)
       .send({
@@ -115,6 +150,10 @@ describe('Template API', () => {
         organizationId,
       });
 
-    expect(status).toStrictEqual(409);
+    const { body: settings } = await request(server).get(`/api/apps/${id}/settings`);
+
+    expect(status).toStrictEqual(201);
+    const regex = /test-app-(\w){10}/;
+    expect(regex.test(settings.path)).toBe(true);
   });
 });

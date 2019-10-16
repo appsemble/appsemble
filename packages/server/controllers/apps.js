@@ -1,6 +1,7 @@
 import { normalize, StyleValidationError, validateStyle } from '@appsemble/utils';
 import Boom from '@hapi/boom';
 import Ajv from 'ajv';
+import crypto from 'crypto';
 import jsYaml from 'js-yaml';
 import { isEqual, uniqWith } from 'lodash';
 import { Op, UniqueConstraintError } from 'sequelize';
@@ -95,12 +96,14 @@ export async function createApp(ctx) {
   let result;
 
   try {
+    const path = normalize(app.name);
+
     result = {
       definition: app,
       OrganizationId: organizationId,
       style: validateStyle(style),
       sharedStyle: validateStyle(sharedStyle),
-      path: app.path || normalize(app.name),
+      path,
       yaml: jsYaml.safeDump(app),
     };
 
@@ -110,7 +113,29 @@ export async function createApp(ctx) {
 
     await checkBlocks(app, db);
 
-    const record = await App.create(result, { raw: true });
+    let record;
+    for (let i = 2; i < 12; i += 1) {
+      try {
+        // eslint-disable-next-line no-await-in-loop
+        record = await App.create(result, { raw: true });
+
+        if (record) {
+          break;
+        }
+      } catch (ex) {
+        if (ex instanceof UniqueConstraintError) {
+          result.path = `${path}-${i}`;
+        } else {
+          throw ex;
+        }
+      }
+    }
+
+    if (!record) {
+      // Fallback if a suitable ID could not be found after trying for a while
+      result.path = `${path}-${crypto.randomBytes(5).toString('hex')}`;
+      record = await App.create(result, { raw: true });
+    }
 
     ctx.body = getAppFromRecord(record);
     ctx.status = 201;
@@ -136,7 +161,7 @@ export async function queryApps(ctx) {
   const { App } = ctx.db.models;
 
   const apps = await App.findAll({
-    where: { definition: { private: { [Op.or]: { [Op.eq]: false, [Op.eq]: null } } } },
+    where: { private: false },
     raw: true,
   });
   ctx.body = apps.map(getAppFromRecord);

@@ -64,7 +64,7 @@ export default {
                   description: 'Include example resources.',
                 },
                 private: {
-                  $ref: '#/components/schemas/App/properties/private',
+                  $ref: '#/components/schemas/AppSettings/properties/private',
                 },
               },
             },

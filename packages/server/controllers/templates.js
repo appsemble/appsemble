@@ -1,5 +1,6 @@
 import { normalize } from '@appsemble/utils';
 import Boom from '@hapi/boom';
+import crypto from 'crypto';
 import { UniqueConstraintError } from 'sequelize';
 
 import templates from '../templates/apps';
@@ -36,28 +37,50 @@ export async function createTemplateApp(ctx) {
   }
 
   try {
-    const app = await App.create(
-      {
-        definition: {
-          ...template.definition,
-          description,
-          name: name || template,
-          private: isPrivate,
-        },
-        OrganizationId: organizationId,
-        path: name ? normalize(name) : normalize(template),
-        ...(resources && {
-          Resources: [].concat(
-            ...Object.keys(template.resources).map(key =>
-              template.resources[key].map(r => ({ type: key, data: r })),
-            ),
-          ),
-        }),
+    const path = name ? normalize(name) : normalize(template);
+    const result = {
+      definition: {
+        ...template.definition,
+        description,
+        name: name || template,
+        private: isPrivate,
       },
-      { include: [Resource], raw: true },
-    );
+      OrganizationId: organizationId,
+      path,
+      ...(resources && {
+        Resources: [].concat(
+          ...Object.keys(template.resources).map(key =>
+            template.resources[key].map(r => ({ type: key, data: r })),
+          ),
+        ),
+      }),
+    };
 
-    ctx.body = getAppFromRecord(app);
+    let record;
+    for (let i = 2; i < 12; i += 1) {
+      try {
+        // eslint-disable-next-line no-await-in-loop
+        record = await App.create(result, { raw: true, include: [Resource] });
+
+        if (record) {
+          break;
+        }
+      } catch (ex) {
+        if (ex instanceof UniqueConstraintError) {
+          result.path = `${path}-${i}`;
+        } else {
+          throw ex;
+        }
+      }
+    }
+
+    if (!record) {
+      // Fallback if a suitable ID could not be found after trying for a while
+      result.path = `${path}-${crypto.randomBytes(5).toString('hex')}`;
+      record = await App.create(result, { raw: true, include: [Resource] });
+    }
+
+    ctx.body = getAppFromRecord(record);
     ctx.status = 201;
   } catch (error) {
     if (error instanceof UniqueConstraintError) {

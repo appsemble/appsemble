@@ -45,7 +45,6 @@ Object {
       "name": "Example Page B",
     },
   ],
-  "path": "test-app",
   "private": true,
   "theme": Object {
     "themeColor": "#000000",
