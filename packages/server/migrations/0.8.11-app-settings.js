@@ -1,7 +1,7 @@
 import { DataTypes } from 'sequelize';
 
 export default {
-  key: '0.8.10',
+  key: '0.8.11',
 
   async up(db) {
     const queryInterface = db.getQueryInterface();

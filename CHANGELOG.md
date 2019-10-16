@@ -7,6 +7,18 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- Editor: Add App settings page
+- Server: Add support for editing app settings. These settings include `path`, `icon`, and
+  `private`.
+
+### Removed
+
+- Editor: Remove icon
+- Server: Remove support for `private` and `path` properties in App. These have been moved to
+  `/api/apps/{appId}/settings`.
+
 ## [0.8.10] - 2019-10-04
 
 ### Added
