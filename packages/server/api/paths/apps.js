@@ -258,6 +258,11 @@ export default {
                 },
               },
             },
+            encoding: {
+              icon: {
+                contentType: 'image/png, image/jpg, image/svg+xml, image/tiff, image/webp',
+              },
+            },
           },
         },
       },
@@ -285,6 +290,11 @@ export default {
                   format: 'binary',
                   description: 'The app icon.',
                 },
+              },
+            },
+            encoding: {
+              icon: {
+                contentType: 'image/png, image/jpg, image/svg+xml, image/tiff, image/webp',
               },
             },
           },
