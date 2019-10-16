@@ -1044,7 +1044,42 @@ pages:
     );
 
     const response = await request(server).get(`/api/apps/${app.id}/settings`);
-    expect(response.body).toStrictEqual({ path: 'bar', private: true });
+    expect(response.body).toStrictEqual({
+      path: 'bar',
+      private: true,
+      icon: `/api/apps/${app.id}/icon`,
+    });
+  });
+
+  it('should update the app settings', async () => {
+    const app = await App.create(
+      {
+        definition: { name: 'Test App', defaultPage: 'Test Page' },
+        path: 'bar',
+        private: false,
+        OrganizationId: organizationId,
+      },
+      { raw: true },
+    );
+
+    const response = await request(server)
+      .patch(`/api/apps/${app.id}/settings`)
+      .set('Authorization', token)
+      .field('private', true)
+      .field('path', 'baz')
+      .attach('icon', path.join(__dirname, '__fixtures__', 'testpattern.png'), {
+        filename: 'image.png',
+        contentType: 'image/png',
+      });
+
+    const { body: icon } = await request(server).get(`/api/apps/${app.id}/icon`);
+
+    expect(response.body).toStrictEqual({
+      private: true,
+      path: 'baz',
+      icon: `/api/apps/${app.id}/icon`,
+    });
+    expect(icon).toMatchImageSnapshot();
   });
 
   it('should update parts of the app settings', async () => {
@@ -1052,7 +1087,7 @@ pages:
       {
         definition: { name: 'Test App', defaultPage: 'Test Page' },
         path: 'bar',
-        private: true,
+        private: false,
         OrganizationId: organizationId,
       },
       { raw: true },
@@ -1076,27 +1111,24 @@ pages:
         contentType: 'image/png',
       });
 
-    // XXX: Figure out how to test this properly.
-    /*
-      const { body: icon } = await request(server)
-      .get(`/api/apps/${app.id}/icon`)
-      .buffer()
-      .parse((res, callback) => {
-        res.setEncoding('binary');
-        res.data = '';
-        res.on('data', chunk => {
-          res.data += chunk;
-        });
-        res.on('end', () => {
-          callback(null, Buffer.from(res.data, 'binary'));
-        });
-      });
-    */
-    expect(responsePrivate.body).toStrictEqual({ private: true, path: 'bar' });
-    expect(responsePath.body).toStrictEqual({ private: true, path: 'baz' });
-    expect(responseIcon.body).toStrictEqual({ private: true, path: 'baz' });
-    // XXX: Fix icon test
-    // expect(icon).toMatchImageSnapshot();
+    const { body: icon } = await request(server).get(`/api/apps/${app.id}/icon`);
+
+    expect(responsePrivate.body).toStrictEqual({
+      private: true,
+      path: 'bar',
+      icon: `/api/apps/${app.id}/icon`,
+    });
+    expect(responsePath.body).toStrictEqual({
+      private: true,
+      path: 'baz',
+      icon: `/api/apps/${app.id}/icon`,
+    });
+    expect(responseIcon.body).toStrictEqual({
+      private: true,
+      path: 'baz',
+      icon: `/api/apps/${app.id}/icon`,
+    });
+    expect(icon).toMatchImageSnapshot();
   });
 
   it('should validate and update css when updating an app', async () => {

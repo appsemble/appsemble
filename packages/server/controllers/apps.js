@@ -308,6 +308,7 @@ export async function getAppSettings(ctx) {
   ctx.body = {
     private: Boolean(app.private),
     path: app.path,
+    icon: `/api/apps/${app.id}/icon`,
   };
 }
 
@@ -320,7 +321,7 @@ export async function updateAppSettings(ctx) {
   const { App } = db.models;
   const { path, private: isPrivate, icon } = ctx.request.body;
 
-  const result = { path: normalize(path), icon, private: isPrivate };
+  const result = { path: normalize(path), icon: icon.contents, private: isPrivate };
   const app = await App.findOne({ where: { id: appId } });
 
   try {
@@ -334,7 +335,12 @@ export async function updateAppSettings(ctx) {
 
     await app.update(result, { where: { id: appId } });
 
-    ctx.body = { private: Boolean(app.private), path: app.path, ...result };
+    ctx.body = {
+      private: Boolean(app.private),
+      path: app.path,
+      icon: `/api/apps/${app.id}/icon`,
+      ...result,
+    };
   } catch (error) {
     handleAppValidationError(error, { ...app, ...result });
   }
@@ -370,14 +376,19 @@ export async function patchAppSettings(ctx) {
     }
 
     if (icon) {
-      result.icon = icon;
+      result.icon = icon.contents;
     }
 
     await app.update(result, { where: { id: appId } });
 
     // Icon should not be returned in the settings response, it is available at a different path.
     delete result.icon;
-    ctx.body = { private: Boolean(app.private), path: app.path, ...result };
+    ctx.body = {
+      private: Boolean(app.private),
+      path: app.path,
+      icon: `/api/apps/${app.id}/icon`,
+      ...result,
+    };
   } catch (error) {
     handleAppValidationError(error, { ...app, ...result });
   }
