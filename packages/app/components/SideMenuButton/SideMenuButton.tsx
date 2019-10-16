@@ -43,9 +43,9 @@ export default function SideMenuButton({
       onClick={openMenu}
       type="button"
     >
-      <span aria-hidden="true" />
-      <span aria-hidden="true" />
-      <span aria-hidden="true" />
+      <span aria-hidden />
+      <span aria-hidden />
+      <span aria-hidden />
     </button>
   );
 }
