@@ -15,6 +15,7 @@ import reducer, {
 
 const emptyApp: App = {
   id: 1,
+  defaultPage: '',
   authentication: [],
   pages: [],
   resources: {},
@@ -25,6 +26,7 @@ jest.mock('../utils/settings', () => ({
   default: {
     app: {
       id: 1,
+      defaultPage: '',
       authentication: [],
       pages: [],
       resources: {},
