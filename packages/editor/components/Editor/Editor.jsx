@@ -451,7 +451,9 @@ export default class Editor extends React.Component {
               onClose={this.onClose}
               title={intl.formatMessage(messages.resourceWarningTitle)}
             >
-              <FormattedMessage {...messages.resourceWarning} />
+              <div className={styles.dialogContent}>
+                <FormattedMessage {...messages.resourceWarning} />
+              </div>
               <footer className="card-footer">
                 {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
                 <a
