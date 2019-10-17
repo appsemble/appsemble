@@ -1,5 +1,5 @@
 import { Form, Icon, Loader, Modal } from '@appsemble/react-components';
-import { normalize, SchemaValidationError, validate, validateStyle } from '@appsemble/utils';
+import { SchemaValidationError, validate, validateStyle } from '@appsemble/utils';
 import axios from 'axios';
 import classNames from 'classnames';
 import yaml from 'js-yaml';
@@ -64,30 +64,27 @@ export default class Editor extends React.Component {
 
     try {
       await getOpenApiSpec();
-      // Destructuring path, id and organizationId also hides these technical details for the user
-      const { id: dataId, path, organizationId, ...data } = app;
+      // Destructuring path, and organizationId also hides these technical details for the user
+      const { path, OrganizationId, definition } = app;
       let { yaml: recipe } = app;
 
       if (!recipe) {
-        recipe = yaml.safeDump({
-          ...data,
-          ...(normalize(data.name) !== path && { path }),
-        });
+        recipe = yaml.safeDump(definition);
 
         push({ body: formatMessage(messages.yamlNotFound), color: 'info' });
       }
-      // Include path if the normalized app name does not equal path
+
       const { data: style } = await axios.get(`/api/apps/${id}/style/core`);
       const { data: sharedStyle } = await axios.get(`/api/apps/${id}/style/shared`);
 
       this.setState({
-        appName: data.name,
+        appName: definition.name,
         recipe,
         style,
         sharedStyle,
         initialRecipe: recipe,
         path,
-        organizationId,
+        organizationId: OrganizationId,
       });
     } catch (e) {
       if (e.response && (e.response.status === 404 || e.response.status === 401)) {
@@ -106,16 +103,11 @@ export default class Editor extends React.Component {
     }
 
     this.setState(
-      (
-        { recipe, style, sharedStyle, organizationId },
-        { intl: { formatMessage }, match, openApiSpec, push },
-      ) => {
-        let app;
+      ({ recipe, style, sharedStyle }, { intl: { formatMessage }, openApiSpec, push }) => {
+        const app = {};
         // Attempt to parse the YAML into a JSON object
         try {
-          app = yaml.safeLoad(recipe);
-          app.organizationId = organizationId;
-          app.id = Number(match.params.id);
+          app.definition = yaml.safeLoad(recipe);
         } catch (error) {
           push(formatMessage(messages.invalidYaml));
           return { valid: false, dirty: false };
@@ -160,32 +152,31 @@ export default class Editor extends React.Component {
 
   uploadApp = async () => {
     const { intl, match, push, updateApp } = this.props;
-    const { recipe, style, sharedStyle, valid, organizationId } = this.state;
+    const { recipe, style, sharedStyle, valid } = this.state;
 
     if (!valid) {
       return;
     }
 
     const { id } = match.params;
-    const app = yaml.safeLoad(recipe);
-    let { path } = app;
+    const definition = yaml.safeLoad(recipe);
+    let path;
 
     try {
       const formData = new FormData();
-      formData.append('app', JSON.stringify(app));
+      formData.append('app', JSON.stringify({ definition }));
       // The MIME type for YAML is not officially registered in IANA.
       // For the time being, x-yaml is used. See also: http://www.iana.org/assignments/media-types/media-types.xhtml
       formData.append('yaml', new Blob([recipe], { type: 'text/x-yaml' }));
       formData.append('style', new Blob([style], { type: 'text/css' }));
       formData.append('sharedStyle', new Blob([sharedStyle], { type: 'text/css' }));
 
-      ({
-        data: { path },
-      } = await axios.put(`/api/apps/${id}`, formData));
+      const { data } = await axios.patch(`/api/apps/${id}`, formData);
+      path = data.path;
       push({ body: intl.formatMessage(messages.updateSuccess), color: 'success' });
 
       // Update Redux state
-      updateApp({ ...app, organizationId, id: Number(match.params.id) });
+      updateApp(data);
     } catch (e) {
       if (e.response && e.response.status === 403) {
         push(intl.formatMessage(messages.forbidden));
@@ -197,7 +188,7 @@ export default class Editor extends React.Component {
     }
 
     this.setState({
-      appName: app.name,
+      appName: definition.name,
       dirty: true,
       warningDialog: false,
       initialRecipe: recipe,

@@ -202,8 +202,8 @@ export function initAuth(authentication: Authentication): UserThunk {
     let user = null;
     if (token != null) {
       const auth = (authentication ||
-        state.app.app.authentication ||
-        state.app.app.authentication[0]) as Authentication;
+        state.app.app.definition.authentication ||
+        state.app.app.definition.authentication[0]) as Authentication;
       user = setupAuth(
         token.accessToken,
         token.refreshToken,

@@ -11,7 +11,7 @@ export interface LoginProps {
  * Render all different authentication methods for an app.
  */
 export default function Login({ app }: LoginProps): React.ReactElement[] {
-  return app.authentication.map(authentication => {
+  return app.definition.authentication.map(authentication => {
     switch (authentication.method) {
       case 'email':
         return <EmailLogin key={JSON.stringify(authentication)} authentication={authentication} />;

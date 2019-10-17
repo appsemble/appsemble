@@ -29,9 +29,12 @@ export default function SideMenuButton({
     return null;
   }
 
-  const currentPage = app.pages.find(p => normalize(p.name) === location.pathname.split('/')[1]);
+  const currentPage = app.definition.pages.find(
+    p => normalize(p.name) === location.pathname.split('/')[1],
+  );
 
-  const navigation = (currentPage && currentPage.navigation) || app.navigation || 'left-menu';
+  const navigation =
+    (currentPage && currentPage.navigation) || app.definition.navigation || 'left-menu';
   if (navigation !== 'left-menu') {
     return null;
   }

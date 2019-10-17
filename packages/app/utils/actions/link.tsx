@@ -7,7 +7,9 @@ import mapValues from '../mapValues';
 
 export default function link({
   definition: { to, parameters = {} },
-  app: { pages },
+  app: {
+    definition: { pages },
+  },
   history,
 }: MakeActionParameters<LinkActionDefinition>): LinkAction {
   const [toBase, toSub] = [].concat(to);

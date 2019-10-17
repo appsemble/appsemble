@@ -37,14 +37,9 @@ export default class AppSettings extends React.Component<
   };
 
   async componentDidMount(): Promise<void> {
-    const {
-      match: {
-        params: { id },
-      },
-    } = this.props;
+    const { app } = this.props;
 
-    const { data: settings } = await axios.get(`/api/apps/${id}/settings`);
-    this.setState({ path: settings.path, private: settings.private, originalValues: settings });
+    this.setState({ path: app.path, private: app.private, originalValues: app });
   }
 
   onSubmit = async (event: FormEvent): Promise<void> => {
@@ -54,22 +49,32 @@ export default class AppSettings extends React.Component<
     const { path, private: isPrivate, icon, originalValues } = this.state;
 
     const data = new FormData();
+    const newSettings: Partial<App> = {};
 
     if (path !== originalValues.path) {
-      data.set('path', path);
+      newSettings.path = path;
     }
 
     if (isPrivate !== originalValues.private) {
-      data.set('private', String(isPrivate));
+      newSettings.private = Boolean(isPrivate);
     }
 
     if (icon) {
       data.set('icon', icon);
     }
 
+    if (newSettings.path || newSettings.private !== undefined) {
+      data.set('app', JSON.stringify(newSettings));
+    }
+
     try {
-      const response = await axios.patch(`/api/apps/${app.id}/settings`, data);
-      this.setState({ ...response.data, dirty: false, originalValues: response.data });
+      const { data: response } = await axios.patch(`/api/apps/${app.id}`, data);
+      this.setState({
+        path: response.path,
+        private: response.private,
+        dirty: false,
+        originalValues: response,
+      });
       push({ color: 'success', body: intl.formatMessage(messages.updateSuccess) });
     } catch (ex) {
       push({ color: 'danger', body: intl.formatMessage(messages.updateError) });
@@ -87,6 +92,7 @@ export default class AppSettings extends React.Component<
     const file = e.target.files[0];
 
     this.setState({
+      dirty: true,
       icon: file,
       iconUrl: file ? URL.createObjectURL(file) : `/api/apps/${id}/icon`,
     });
@@ -146,13 +152,13 @@ export default class AppSettings extends React.Component<
           help={
             <FormattedMessage
               {...messages.pathDescription}
-              values={{ basePath: `${window.location.origin}/@${app.organizationId}/` }}
+              values={{ basePath: `${window.location.origin}/@${app.OrganizationId}/` }}
             />
           }
           label={<FormattedMessage {...messages.path} />}
           name="path"
           onChange={this.onChange}
-          placeholder={normalize(app.name)}
+          placeholder={normalize(app.definition.name)}
           value={path}
         />
         <button className="button" disabled={!dirty} type="submit">

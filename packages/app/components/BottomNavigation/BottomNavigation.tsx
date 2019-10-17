@@ -13,9 +13,11 @@ export interface BottomNavigationProps {
 
 export default function BottomNavigation({ app }: BottomNavigationProps): React.ReactElement {
   const location = useLocation();
-  const currentPage = app.pages.find(p => normalize(p.name) === location.pathname.split('/')[1]);
+  const currentPage = app.definition.pages.find(
+    p => normalize(p.name) === location.pathname.split('/')[1],
+  );
 
-  const navigation = (currentPage && currentPage.navigation) || app.navigation;
+  const navigation = (currentPage && currentPage.navigation) || app.definition.navigation;
   if (navigation !== 'bottom') {
     return null;
   }
@@ -23,7 +25,7 @@ export default function BottomNavigation({ app }: BottomNavigationProps): React.
   return (
     <nav className="bottom-nav">
       <ul className={styles.list}>
-        {app.pages
+        {app.definition.pages
           .filter(page => !page.parameters && !page.hideFromMenu)
           .map(page => (
             <li key={page.name} className="bottom-nav-item">

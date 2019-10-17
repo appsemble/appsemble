@@ -24,8 +24,8 @@ export default class AppContext extends React.Component<AppContextProps & RouteC
   async componentDidUpdate(prevProps: AppContextProps): Promise<void> {
     const { app, initAuth } = this.props;
     let authentication;
-    if (app.authentication) {
-      [authentication] = app.authentication;
+    if (app.definition.authentication) {
+      [authentication] = app.definition.authentication;
     }
 
     if (app && app !== prevProps.app) {

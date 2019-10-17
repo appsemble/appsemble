@@ -34,8 +34,11 @@ export default function SideNavigation({
     closeMenu();
   };
 
-  const currentPage = app.pages.find(p => normalize(p.name) === location.pathname.split('/')[1]);
-  const navigation = (currentPage && currentPage.navigation) || app.navigation || 'left-menu';
+  const currentPage = app.definition.pages.find(
+    p => normalize(p.name) === location.pathname.split('/')[1],
+  );
+  const navigation =
+    (currentPage && currentPage.navigation) || app.definition.navigation || 'left-menu';
   if (navigation !== 'left-menu') {
     return null;
   }
@@ -44,7 +47,7 @@ export default function SideNavigation({
     <SideMenu>
       <nav>
         <ul className={classNames('menu-list', styles.menuList)}>
-          {app.pages
+          {app.definition.pages
             .filter(page => !page.parameters && !page.hideFromMenu)
             .map(page => (
               <li key={page.name}>

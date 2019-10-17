@@ -45,9 +45,9 @@ export default class AppSideMenu extends React.Component {
             <FormattedMessage {...messages.resources} />
           </span>
         </NavLink>
-        {app.resources && !isCollapsed && (
+        {app.definition.resources && !isCollapsed && (
           <ul>
-            {Object.keys(app.resources)
+            {Object.keys(app.definition.resources)
               .sort()
               .map(resource => (
                 <li key={resource}>

@@ -21,7 +21,7 @@ export async function createTemplateApp(ctx) {
     description,
     organizationId,
     resources,
-    private: isPrivate = true,
+    private: isPrivate,
   } = ctx.request.body;
   const { App, Resource } = ctx.db.models;
   const { user } = ctx.state;
@@ -43,10 +43,9 @@ export async function createTemplateApp(ctx) {
         ...template.definition,
         description,
         name: name || template,
-        private: isPrivate,
       },
+      private: Boolean(isPrivate),
       OrganizationId: organizationId,
-      path,
       ...(resources && {
         Resources: [].concat(
           ...Object.keys(template.resources).map(key =>
@@ -56,29 +55,22 @@ export async function createTemplateApp(ctx) {
       }),
     };
 
-    let record;
-    for (let i = 2; i < 12; i += 1) {
-      try {
-        // eslint-disable-next-line no-await-in-loop
-        record = await App.create(result, { raw: true, include: [Resource] });
-
-        if (record) {
-          break;
-        }
-      } catch (ex) {
-        if (ex instanceof UniqueConstraintError) {
-          result.path = `${path}-${i}`;
-        } else {
-          throw ex;
-        }
+    for (let i = 1; i < 11; i += 1) {
+      const p = i === 1 ? path : `${path}-${i}`;
+      // eslint-disable-next-line no-await-in-loop
+      const count = await App.count({ where: { path: p } });
+      if (count === 0) {
+        result.path = p;
+        break;
       }
     }
 
-    if (!record) {
+    if (!result.path) {
       // Fallback if a suitable ID could not be found after trying for a while
       result.path = `${path}-${crypto.randomBytes(5).toString('hex')}`;
-      record = await App.create(result, { raw: true, include: [Resource] });
     }
+
+    const record = await App.create(result, { raw: true, include: [Resource] });
 
     ctx.body = getAppFromRecord(record);
     ctx.status = 201;

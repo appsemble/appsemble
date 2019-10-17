@@ -10,7 +10,7 @@ beforeEach(() => {
 
 it('should render the blocks for a page', () => {
   const page = { name: 'Test Page', blocks: [{}, {}] };
-  const app = { pages: [page] };
+  const app = { definition: { pages: [page] } };
   const wrapper = shallow(
     <Page
       app={app}
@@ -31,7 +31,7 @@ it('should render tabs pages', () => {
     type: 'tabs',
     subPages: [{ name: 'Sub A', blocks: [{}, {}] }, { name: 'Sub B', blocks: [{}, {}] }],
   };
-  const app = { pages: [page] };
+  const app = { definition: { pages: [page] } };
   const wrapper = shallow(
     <Page
       app={app}
@@ -52,7 +52,7 @@ it('should render flow page', () => {
     type: 'flow',
     subPages: [{ name: 'Sub A', blocks: [{}, {}] }, { name: 'Sub B', blocks: [{}, {}] }],
   };
-  const app = { pages: [page] };
+  const app = { definition: { pages: [page] } };
   const wrapper = shallow(
     <Page
       app={app}
@@ -69,7 +69,7 @@ it('should render flow page', () => {
 
 it('should call event listeners when an event is emitted', () => {
   const page = { name: 'Test Page', blocks: [{}] };
-  const app = { pages: [page] };
+  const app = { definition: { pages: [page] } };
   const wrapper = shallow(
     <Page
       app={app}

@@ -17,14 +17,14 @@ export default function Main({ app = null }) {
   }
 
   let defaultPath;
-  const routes = app.pages.map(page => {
+  const routes = app.definition.pages.map(page => {
     const path = `/${[
       normalize(page.name),
       ...(page.parameters || []).map(parameter => `:${parameter}`),
       ...((page.subPages && [':subPage?']) || []),
     ].join('/')}`;
 
-    if (page.name === app.defaultPage) {
+    if (page.name === app.definition.defaultPage) {
       defaultPath = path;
     }
     return <Route key={path} exact path={path} render={props => <Page page={page} {...props} />} />;

@@ -528,8 +528,6 @@ export interface Page {
 }
 
 export interface App {
-  authentication: Authentication[];
-
   /**
    * The unique identifier for the app.
    *
@@ -538,41 +536,48 @@ export interface App {
   id?: number;
 
   /**
-   * The name of the app.
-   *
-   * This determines the default path of the app.
-   */
-  name?: string;
-
-  /**
    * The id of the organization to which this app belongs.
    */
-  organizationId?: string;
+  OrganizationId?: string;
 
-  /**
-   * The default page of the app.
-   */
-  defaultPage: string;
+  path: string;
+  private: boolean;
 
-  /**
-   * The navigation type to use.
-   *
-   * If this is omitted, a collapsable side navigation menu will be rendered on the left.
-   */
-  navigation?: Navigation;
+  definition: {
+    /**
+     * The name of the app.
+     *
+     * This determines the default path of the app.
+     */
+    name?: string;
 
-  /**
-   * The pages of the app.
-   */
-  pages: Page[];
+    authentication: Authentication[];
 
-  /**
-   * Resource definitions that may be used by the app.
-   */
-  resources: Record<string, Resource>;
+    /**
+     * The default page of the app.
+     */
+    defaultPage: string;
 
-  /**
-   * The global theme for the app.
-   */
-  theme: Theme;
+    /**
+     * The navigation type to use.
+     *
+     * If this is omitted, a collapsable side navigation menu will be rendered on the left.
+     */
+    navigation?: Navigation;
+
+    /**
+     * The pages of the app.
+     */
+    pages: Page[];
+
+    /**
+     * Resource definitions that may be used by the app.
+     */
+    resources: Record<string, Resource>;
+
+    /**
+     * The global theme for the app.
+     */
+    theme: Theme;
+  };
 }

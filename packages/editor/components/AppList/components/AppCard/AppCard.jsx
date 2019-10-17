@@ -21,7 +21,7 @@ export default class AppCard extends React.Component {
     return (
       <div className={classNames('card', styles.appCard)}>
         <header className="card-header">
-          <p className="card-header-title">{app.name}</p>
+          <p className="card-header-title">{app.definition.name}</p>
         </header>
         <div className={classNames('card-content', styles.appCardContent)}>
           <div className="media">
@@ -29,14 +29,16 @@ export default class AppCard extends React.Component {
               <img alt={intl.formatMessage(messages.icon)} src={`/${app.id}/icon-64.png`} />
             </figure>
           </div>
-          {app.description && (
-            <div className={classNames('content', styles.appDescription)}>{app.description}</div>
+          {app.definition.description && (
+            <div className={classNames('content', styles.appDescription)}>
+              {app.definition.description}
+            </div>
           )}
         </div>
         <footer className={classNames('card-footer', styles.appCardFooter)}>
           <a
             className="card-footer-item"
-            href={`/@${app.organizationId}/${app.path}`}
+            href={`/@${app.OrganizationId}/${app.path}`}
             rel="noopener noreferrer"
             target="_blank"
           >

@@ -183,7 +183,7 @@ export default class Page extends React.Component {
 
   createBulmaQueryString = () => {
     const { app, page } = this.props;
-    const params = { ...app.theme, ...page.theme };
+    const params = { ...app.definition.theme, ...page.theme };
     const queryStringParams = new URLSearchParams(params);
     queryStringParams.sort();
 
@@ -194,7 +194,9 @@ export default class Page extends React.Component {
     const bulmaStyle = document.getElementById('bulma-style-app');
     const [bulmaUrl] = bulmaStyle.href.split('?');
     bulmaStyle.href =
-      app.theme || page.theme ? `${bulmaUrl}?${this.createBulmaQueryString()}` : bulmaUrl;
+      app.definition.theme || page.theme
+        ? `${bulmaUrl}?${this.createBulmaQueryString()}`
+        : bulmaUrl;
   };
 
   showDialog = dialog => {

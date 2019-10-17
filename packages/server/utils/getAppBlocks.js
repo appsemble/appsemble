@@ -7,7 +7,8 @@
  */
 export default function getAppBlocks(app) {
   const blocks = {};
-  app.pages.forEach((page, pageIndex) => {
+
+  app.definition.pages.forEach((page, pageIndex) => {
     const parseBlocks = (block, blockIndex) => {
       const blockPath = `pages.${pageIndex}.blocks.${blockIndex}`;
       blocks[blockPath] = block;
