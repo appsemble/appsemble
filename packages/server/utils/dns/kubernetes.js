@@ -63,10 +63,13 @@ export default async function kubernetes({
     };
   }
 
-  async function add(domain) {
+  async function add(...domains) {
+    domains.forEach(domain => {
+      logger.info(`Registering ingress rule for ${domain}`);
+    });
     await axios.patch(
       url,
-      [
+      domains.flatMap(domain => [
         {
           op: 'add',
           path: '/spec/rules/-',
@@ -77,7 +80,7 @@ export default async function kubernetes({
           path: '/spec/tls/-',
           value: formatTLS(domain),
         },
-      ],
+      ]),
       config,
     );
   }
@@ -88,6 +91,7 @@ export default async function kubernetes({
         spec: { rules, tls },
       },
     } = await axios.get(url, config);
+    logger.info(`Changing ingress rule for ${oldDomain} to ${newDomain}`);
     const ops = [];
     const ruleIndex = rules.findIndex(rule => rule.host === oldDomain);
     const tlsIndex = tls.findIndex(t => t.hosts.includes(newDomain));
