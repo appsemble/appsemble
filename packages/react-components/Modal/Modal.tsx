@@ -23,7 +23,7 @@ export interface ModalProps extends WrappedComponentProps {
   /**
    * The title that is displayed at the top of the modal.
    */
-  title?: string;
+  title?: React.ReactNode;
 
   /**
    * The CSS class applied to the body

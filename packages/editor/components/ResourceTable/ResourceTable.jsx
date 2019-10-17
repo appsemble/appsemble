@@ -231,7 +231,6 @@ export default class ResourceTable extends React.Component {
   render() {
     const {
       app,
-      intl,
       match: {
         params: { mode, resourceName, resourceId },
         ...match
@@ -328,12 +327,14 @@ export default class ResourceTable extends React.Component {
           isActive={mode === 'edit' || mode === 'new'}
           onClose={this.onClose}
           title={
-            mode === 'edit'
-              ? intl.formatMessage(messages.editTitle, {
-                  resource: resourceName,
-                  id: resourceId,
-                })
-              : intl.formatMessage(messages.newTitle, { resource: resourceName })
+            mode === 'edit' ? (
+              <FormattedMessage
+                {...messages.editTitle}
+                values={{ resource: resourceName, id: resourceId }}
+              />
+            ) : (
+              <FormattedMessage {...messages.newTitle} values={{ resource: resourceName }} />
+            )
           }
         >
           <Form onSubmit={mode === 'edit' ? this.submitEdit : this.submitCreate}>
@@ -398,7 +399,7 @@ export default class ResourceTable extends React.Component {
           className="is-paddingless"
           isActive={warningDialog}
           onClose={this.onClose}
-          title={intl.formatMessage(messages.resourceWarningTitle)}
+          title={<FormattedMessage {...messages.resourceWarningTitle} />}
         >
           <div className={styles.dialogContent}>
             <FormattedMessage {...messages.resourceWarning} />

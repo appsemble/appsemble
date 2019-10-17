@@ -36,9 +36,6 @@ export interface BlockProps {
    */
   onEvent: Events['on'];
 
-  /**
-   * XXX: Define this type
-   */
   actionCreators: any;
 
   /**
@@ -52,9 +49,6 @@ export interface BlockProps {
    */
   flowActions: any;
 
-  /**
-   * XXX: Define this type
-   */
   showDialog: ShowDialogAction;
   showMessage(message: Message): void;
   ready(): void;

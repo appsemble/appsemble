@@ -7004,14 +7004,7 @@ graceful-fs@^4.1.11, graceful-fs@^4.1.15, graceful-fs@^4.1.2, graceful-fs@^4.1.6
   resolved "https://registry.yarnpkg.com/graceful-fs/-/graceful-fs-4.2.2.tgz#6f0952605d0140c1cfdb138ed005775b92d67b02"
   integrity sha512-IItsdsea19BoLC7ELy13q1iJFNmd7ofZH5+X/pJr90/nRoPEX0DJo1dHDbgtYWOhJhcCgMDTOw84RZ72q6lB+Q==
 
-grant-koa@^4.6.3:
-  version "4.6.3"
-  resolved "https://registry.yarnpkg.com/grant-koa/-/grant-koa-4.6.3.tgz#75bc33724a4ffe8189efaff82274c6131992ee67"
-  integrity sha512-eNfik+wUDwxYnv7mwGFTYsf/sNh2RgR4Bs7WYHkm+w7lCmpQYMTlyJfnyMq1JGiWPQXekY1kWaAf/eFsJoJqqw==
-  dependencies:
-    grant "4.6.3"
-
-grant@4.6.3:
+grant@^4.6.3:
   version "4.6.3"
   resolved "https://registry.yarnpkg.com/grant/-/grant-4.6.3.tgz#d0666c0adb0d1fefb97c5ea1d788a898daefd208"
   integrity sha512-Qz3gSDFYUmH05HAhcyLpHVE4XqeHR77t8YqqHmhG6UG8WYertli4W2tgnNWhRtOBWLxT/RRJFWsfDht7sesmaA==

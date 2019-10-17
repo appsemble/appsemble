@@ -2,7 +2,7 @@ import { BlockProps } from '@appsemble/react';
 import { Modal } from '@appsemble/react-components';
 import classNames from 'classnames';
 import React from 'react';
-import { FormattedMessage, WrappedComponentProps } from 'react-intl';
+import { FormattedMessage } from 'react-intl';
 
 import { Actions, Filter, Parameters, RangeFilter } from '../../../types';
 import toOData from '../../utils/toOData';
@@ -21,7 +21,7 @@ interface FilterBlockState {
   typingTimer?: NodeJS.Timeout;
 }
 
-export type FilterBlockProps = BlockProps<Parameters, Actions> & WrappedComponentProps;
+export type FilterBlockProps = BlockProps<Parameters, Actions>;
 
 export default class FilterBlock extends React.Component<FilterBlockProps, FilterBlockState> {
   refreshTimer: NodeJS.Timeout = null;
@@ -223,7 +223,7 @@ export default class FilterBlock extends React.Component<FilterBlockProps, Filte
   };
 
   render(): JSX.Element {
-    const { block, intl } = this.props;
+    const { block } = this.props;
     const { currentFilter, filter, isOpen, loading, newData } = this.state;
     const { fields, highlight } = block.parameters;
     const highlightedField = highlight && fields.find(field => field.name === highlight);
@@ -244,7 +244,7 @@ export default class FilterBlock extends React.Component<FilterBlockProps, Filte
           <Modal
             isActive={isOpen}
             onClose={this.onClose}
-            title={intl.formatMessage(messages.filter)}
+            title={<FormattedMessage {...messages.filter} />}
           >
             {fields
               .filter(field => field.name !== highlight)
