@@ -21,7 +21,7 @@ export default {
     await Promise.all(
       apps.map(({ id }) =>
         db.query(
-          "UPDATE `App` SET private = true, definition = JSON_REMOVE(`definition`, '$.private') WHERE id = ?",
+          "UPDATE `App` SET private = true, definition = JSON_REMOVE(`definition`, '$.private'), yaml = REPLACE(yaml, 'private: true', '') WHERE id = ?",
           {
             replacements: [id],
             type: db.QueryTypes.UPDATE,
@@ -43,7 +43,7 @@ export default {
     await Promise.all(
       apps.map(({ id }) =>
         db.query(
-          "UPDATE `App` SET definition = JSON_INSERT(`definition`, '$.private', true) WHERE id = ?",
+          "UPDATE `App` SET definition = JSON_INSERT(`definition`, '$.private', true), yaml = CONCAT('private: true', CHAR(13), yaml) WHERE id = ?",
           { replacements: [id], type: db.QueryTypes.UPDATE },
         ),
       ),
