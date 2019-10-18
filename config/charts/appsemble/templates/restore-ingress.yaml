@@ -19,7 +19,7 @@ spec:
     spec:
       restartPolicy: Never
       containers:
-        - name: {{ include "appsemble.fullname" . }}-migrate
+        - name: {{ include "appsemble.fullname" . }}-restore-ingress
           image: "{{ .Values.image.repository }}:{{ include "appsemble.tag" . }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           command:

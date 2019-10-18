@@ -3,9 +3,8 @@ import dns from '../utils/dns';
 import setupModels, { handleDbException } from '../utils/setupModels';
 import databaseBuilder from './builder/database';
 
-export const PORT = 9999;
-export const command = 'start';
-export const description = 'Start the Appsemble server';
+export const command = 'restore-dns';
+export const description = 'Restore the app DNS settings from the database in the host platform';
 
 export function builder(yargs) {
   return databaseBuilder(yargs)
