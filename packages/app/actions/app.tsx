@@ -5,19 +5,19 @@ import { ThunkAction } from 'redux-thunk';
 
 import getDB from '../utils/getDB';
 import resolveJsonPointers from '../utils/resolveJsonPointers';
-import { State } from './index';
+import settings from '../utils/settings';
 
 export const GET_START = 'app/GET_START';
 export const GET_SUCCESS = 'app/GET_SUCCESS';
 export const GET_ERROR = 'app/GET_ERROR';
 const EDIT_SUCCESS = 'editor/EDIT_SUCCESS';
 
-interface AppState {
+export interface AppState {
   app: App;
   error: Error;
 }
 
-const initialState: AppState = {
+export const initialState: AppState = {
   app: null,
   error: null,
 };
@@ -36,7 +36,7 @@ interface EditAction extends Action<typeof EDIT_SUCCESS> {
 }
 
 export type AppAction = Action<typeof GET_START> | GetSuccessAction | GetErrorAction | EditAction;
-type AppThunk = ThunkAction<void, State, null, AppAction>;
+type AppThunk = ThunkAction<void, AppState, null, AppAction>;
 
 export default (state: AppState = initialState, action: AppAction): AppState => {
   switch (action.type) {
@@ -77,7 +77,7 @@ export function getApp(): AppThunk {
       type: GET_START,
     });
     try {
-      const app = resolveJsonPointers(window.settings.app) as App;
+      const app = resolveJsonPointers(settings.app) as App;
       const db = await getDB(app);
       dispatch({
         type: GET_SUCCESS,

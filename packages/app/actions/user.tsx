@@ -51,7 +51,7 @@ interface DBUser {
   clientSecret: string;
 }
 
-const initialState: UserState = {
+export const initialState: UserState = {
   initialized: false,
   user: null,
 };
@@ -64,7 +64,7 @@ interface LoginSuccessAction extends Action<typeof LOGIN_SUCCESS> {
   user: User;
 }
 
-type UserAction = InitializeAction | LoginSuccessAction | Action<typeof LOGOUT>;
+export type UserAction = InitializeAction | LoginSuccessAction | Action<typeof LOGOUT>;
 type UserThunk = ThunkAction<void, State, null, UserAction>;
 type UserDispatch = ThunkDispatch<State, null, UserAction>;
 

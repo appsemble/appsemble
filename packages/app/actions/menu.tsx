@@ -4,15 +4,15 @@ import { ThunkAction } from 'redux-thunk';
 const OPEN = 'menu/OPEN';
 const CLOSE = 'menu/CLOSE';
 
-interface MenuState {
+export interface MenuState {
   isOpen: boolean;
 }
 
-const initialState: MenuState = {
+export const initialState: MenuState = {
   isOpen: false,
 };
 
-type MenuAction = Action<typeof OPEN> | Action<typeof CLOSE>;
+export type MenuAction = Action<typeof OPEN> | Action<typeof CLOSE>;
 type MenuThunk = ThunkAction<void, MenuState, null, MenuAction>;
 
 export default (state = initialState, action: MenuAction): MenuState => {
