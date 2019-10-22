@@ -10,19 +10,25 @@ import thunk from 'redux-thunk';
 import runtime from 'serviceworker-webpack-plugin/lib/runtime';
 
 import reducers from './actions';
+import { registerServiceWorker, registerServiceWorkerError } from './actions/serviceWorker';
 import App from './components/App';
 import resolveJsonPointers from './utils/resolveJsonPointers';
 
 const { sentryDsn } = document.documentElement.dataset;
 init({ dsn: sentryDsn });
 
-if ('serviceWorker' in navigator) {
-  runtime.register();
-}
-
 const composeEnhancers =
   (process.env.NODE_ENV !== 'production' && window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__) || compose;
 const store = createStore(reducers, composeEnhancers(applyMiddleware(thunk)));
+
+if ('serviceWorker' in navigator) {
+  runtime
+    .register()
+    .then(registration => {
+      store.dispatch(registerServiceWorker(registration));
+    })
+    .catch(store.dispatch(registerServiceWorkerError));
+}
 
 // Used by the live editor to communicate new app recipes
 window.addEventListener('message', event => {
