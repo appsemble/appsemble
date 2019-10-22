@@ -4,6 +4,7 @@ import crypto from 'crypto';
 import { UniqueConstraintError } from 'sequelize';
 
 import templates from '../templates/apps';
+import generateVapidToken from '../utils/generateVapidToken';
 import getAppFromRecord from '../utils/getAppFromRecord';
 
 export async function getAppTemplates(ctx) {
@@ -60,7 +61,7 @@ export async function createTemplateApp(ctx) {
     for (let i = 2; i < 12; i += 1) {
       try {
         // eslint-disable-next-line no-await-in-loop
-        record = await App.create(result, { raw: true, include: [Resource] });
+        record = await App.create(result, { include: [Resource] });
 
         if (record) {
           break;
@@ -77,8 +78,10 @@ export async function createTemplateApp(ctx) {
     if (!record) {
       // Fallback if a suitable ID could not be found after trying for a while
       result.path = `${path}-${crypto.randomBytes(5).toString('hex')}`;
-      record = await App.create(result, { raw: true, include: [Resource] });
+      record = await App.create(result, { include: [Resource] });
     }
+
+    await record.createAppNotificationKey(generateVapidToken());
 
     ctx.body = getAppFromRecord(record);
     ctx.status = 201;

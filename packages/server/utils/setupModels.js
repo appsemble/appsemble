@@ -40,6 +40,8 @@ function importModels(db) {
   db.import('../models/AppBlockStyle');
   db.import('../models/OrganizationBlockStyle');
   db.import('../models/Meta');
+  db.import('../models/AppNotificationKey');
+  db.import('../models/AppSubscription');
 }
 
 export default async function setupModels({

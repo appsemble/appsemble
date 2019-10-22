@@ -7,6 +7,7 @@ import { isEqual, uniqWith } from 'lodash';
 import { Op, UniqueConstraintError } from 'sequelize';
 import sharp from 'sharp';
 
+import generateVapidToken from '../utils/generateVapidToken';
 import getAppBlocks from '../utils/getAppBlocks';
 import getAppFromRecord from '../utils/getAppFromRecord';
 import getDefaultIcon from '../utils/getDefaultIcon';
@@ -117,7 +118,7 @@ export async function createApp(ctx) {
     for (let i = 2; i < 12; i += 1) {
       try {
         // eslint-disable-next-line no-await-in-loop
-        record = await App.create(result, { raw: true });
+        record = await App.create(result);
 
         if (record) {
           break;
@@ -134,8 +135,10 @@ export async function createApp(ctx) {
     if (!record) {
       // Fallback if a suitable ID could not be found after trying for a while
       result.path = `${path}-${crypto.randomBytes(5).toString('hex')}`;
-      record = await App.create(result, { raw: true });
+      record = await App.create(result);
     }
+
+    await record.createAppNotificationKey(generateVapidToken());
 
     ctx.body = getAppFromRecord(record);
     ctx.status = 201;
