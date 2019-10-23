@@ -58,7 +58,7 @@ export default class ProfileDropdown extends Component {
       <div ref={this.node}>
         <div className={classNames('dropdown', 'is-right', { 'is-active': open })}>
           <div className="dropdown-trigger">
-            <button aria-haspopup="true" className="button" onClick={this.onClick} type="button">
+            <button aria-haspopup className="button" onClick={this.onClick} type="button">
               <figure className="image is-32x32">
                 <img
                   alt="profile"

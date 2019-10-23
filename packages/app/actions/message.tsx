@@ -6,12 +6,12 @@ import { ThunkAction } from 'redux-thunk';
 const PUSH = 'message/PUSH';
 const REMOVE = 'message/REMOVE';
 
-interface MessageState {
+export interface MessageState {
   queue: UniqueMessage[];
   counter: number;
 }
 
-const initialState: MessageState = {
+export const initialState: MessageState = {
   queue: [],
   counter: 0,
 };
@@ -24,7 +24,7 @@ interface RemoveAction extends Action<typeof REMOVE> {
   message: UniqueMessage;
 }
 
-type MessageAction = PushAction | RemoveAction;
+export type MessageAction = PushAction | RemoveAction;
 type MessageThunk = ThunkAction<void, MessageState, null, MessageAction>;
 
 export default (state: MessageState = initialState, action: MessageAction): MessageState => {
