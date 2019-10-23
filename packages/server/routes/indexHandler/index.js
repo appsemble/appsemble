@@ -10,7 +10,7 @@ import { bulmaURL, faURL } from '../../utils/styleURL';
  */
 export default async function indexHandler(ctx) {
   const { organizationId, appId } = ctx.params;
-  const { App } = ctx.db.models;
+  const { App, AppNotificationKey } = ctx.db.models;
   ctx.type = 'text/html';
   const { render } = ctx.state;
   const { sentryDsn } = ctx.argv;
@@ -33,9 +33,13 @@ export default async function indexHandler(ctx) {
 
   try {
     const app = await App.findOne(
-      { where: { path: appId, OrganizationId: organizationId.slice(1) } },
+      {
+        where: { path: appId, OrganizationId: organizationId.slice(1) },
+        include: [AppNotificationKey],
+      },
       { raw: true },
     );
+
     if (app == null) {
       ctx.body = await render('error.html', {
         bulmaURL,
@@ -46,6 +50,7 @@ export default async function indexHandler(ctx) {
     } else {
       const [settingsHash, settings] = createSettings({
         app: { ...app.definition, id: app.id, organizationId: app.OrganizationId },
+        vapidPublicKey: app.AppNotificationKey.publicKey,
         sentryDsn,
       });
       csp['script-src'].push(settingsHash);
