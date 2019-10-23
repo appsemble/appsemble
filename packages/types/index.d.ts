@@ -527,6 +527,44 @@ export interface Page {
   hideFromMenu?: boolean;
 }
 
+export interface AppDefinition {
+  /**
+   * The name of the app.
+   *
+   * This determines the default path of the app.
+   */
+  name?: string;
+
+  authentication: Authentication[];
+
+  /**
+   * The default page of the app.
+   */
+  defaultPage: string;
+
+  /**
+   * The navigation type to use.
+   *
+   * If this is omitted, a collapsable side navigation menu will be rendered on the left.
+   */
+  navigation?: Navigation;
+
+  /**
+   * The pages of the app.
+   */
+  pages: Page[];
+
+  /**
+   * Resource definitions that may be used by the app.
+   */
+  resources: Record<string, Resource>;
+
+  /**
+   * The global theme for the app.
+   */
+  theme?: Theme;
+}
+
 export interface App {
   /**
    * The unique identifier for the app.
@@ -543,41 +581,5 @@ export interface App {
   path: string;
   private: boolean;
 
-  definition: {
-    /**
-     * The name of the app.
-     *
-     * This determines the default path of the app.
-     */
-    name?: string;
-
-    authentication: Authentication[];
-
-    /**
-     * The default page of the app.
-     */
-    defaultPage: string;
-
-    /**
-     * The navigation type to use.
-     *
-     * If this is omitted, a collapsable side navigation menu will be rendered on the left.
-     */
-    navigation?: Navigation;
-
-    /**
-     * The pages of the app.
-     */
-    pages: Page[];
-
-    /**
-     * Resource definitions that may be used by the app.
-     */
-    resources: Record<string, Resource>;
-
-    /**
-     * The global theme for the app.
-     */
-    theme?: Theme;
-  };
+  definition: AppDefinition;
 }

@@ -254,7 +254,7 @@ export async function patchApp(ctx) {
         result.path = app.path;
       }
 
-      if (app.private) {
+      if (app.private !== undefined) {
         result.private = app.private;
       }
     }

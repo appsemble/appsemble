@@ -1,5 +1,5 @@
 import { Events } from '@appsemble/sdk';
-import { App, Block as BlockType, BlockDefinition, Message } from '@appsemble/types';
+import { AppDefinition, Block as BlockType, BlockDefinition, Message } from '@appsemble/types';
 import { baseTheme, normalize } from '@appsemble/utils';
 import classNames from 'classnames';
 import React from 'react';
@@ -10,6 +10,7 @@ import { ShowDialogAction } from '../../types';
 import { prefixURL } from '../../utils/blockUtils';
 import { callBootstrap } from '../../utils/bootstrapper';
 import makeActions from '../../utils/makeActions';
+import settings from '../../utils/settings';
 import styles from './Block.css';
 
 const FA_URL = Array.from(document.styleSheets, sheet => sheet.href).find(
@@ -17,7 +18,7 @@ const FA_URL = Array.from(document.styleSheets, sheet => sheet.href).find(
 );
 
 export interface BlockProps {
-  app: App;
+  definition: AppDefinition;
   data?: any;
   className?: string;
 
@@ -84,7 +85,7 @@ export default class Block extends React.Component<BlockProps & RouteComponentPr
   ref = async (div: HTMLDivElement): Promise<void> => {
     const {
       actionCreators,
-      app,
+      definition,
       block,
       blockDef,
       emitEvent,
@@ -118,22 +119,23 @@ export default class Block extends React.Component<BlockProps & RouteComponentPr
     };
 
     const actions = makeActions(
+      settings.id,
       blockDef,
-      app,
+      definition,
       block,
       history,
       showDialog,
       actionCreators,
       flowActions,
     );
-    const { theme: pageTheme } = app.definition.pages.find(
+    const { theme: pageTheme } = definition.pages.find(
       page => normalize(page.name) === match.path.slice(1).split('/')[0],
     );
     const BULMA_URL = document.querySelector('#bulma-style-app') as HTMLLinkElement;
     const [bulmaBase] = BULMA_URL.href.split('?');
     const theme = {
       ...baseTheme,
-      ...app.definition.theme,
+      ...definition.theme,
       ...pageTheme,
       ...block.theme,
     };
@@ -142,16 +144,16 @@ export default class Block extends React.Component<BlockProps & RouteComponentPr
     urlParams.sort();
 
     const bulmaUrl =
-      app.definition.theme || pageTheme || block.theme ? `${bulmaBase}?${urlParams}` : bulmaBase;
+      definition.theme || pageTheme || block.theme ? `${bulmaBase}?${urlParams}` : bulmaBase;
 
     await Promise.all(
       [
         bulmaUrl,
         FA_URL,
         ...blockDef.files.filter(url => url.endsWith('.css')).map(url => prefixURL(block, url)),
-        `${window.location.origin}/api/organizations/${app.OrganizationId}/style/shared`,
-        `${window.location.origin}/api/organizations/${app.OrganizationId}/style/block/${blockDef.name}`,
-        `${window.location.origin}/api/apps/${app.id}/style/block/${blockDef.name}`,
+        `${window.location.origin}/api/organizations/${settings.organizationId}/style/shared`,
+        `${window.location.origin}/api/organizations/${settings.organizationId}/style/block/${blockDef.name}`,
+        `${window.location.origin}/api/apps/${settings.id}/style/block/${blockDef.name}`,
       ].map(
         url =>
           new Promise(resolve => {

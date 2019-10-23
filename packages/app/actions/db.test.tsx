@@ -22,7 +22,7 @@ describe('reducer', () => {
   it('should handle GET_SUCCESS actions', () => {
     const result = reducer(null, {
       type: GET_SUCCESS,
-      app: null,
+      definition: null,
       db: ({} as unknown) as IDBPDatabase,
     });
 

@@ -1,7 +1,7 @@
 import { Action, Actions } from '@appsemble/sdk';
 import {
   ActionDefinition,
-  App,
+  AppDefinition,
   Block,
   BlockDefinition,
   Page,
@@ -14,8 +14,9 @@ import { FlowActions, ShowDialogAction } from '../types';
 import actionCreators, { ActionCreator, ActionCreators } from './actions';
 
 export default function makeActions(
+  appId: number,
   blockDef: BlockDefinition,
-  app: App,
+  definition: AppDefinition,
   context: Block<any, Record<string, ActionDefinition>> | Page,
   history: RouteComponentProps['history'],
   showDialog: ShowDialogAction,
@@ -24,7 +25,7 @@ export default function makeActions(
 ): Actions<any> {
   return Object.entries(blockDef.actions || {}).reduce<Record<string, Action>>(
     (acc, [on, { required }]) => {
-      let definition: ActionDefinition;
+      let actionDefinition: ActionDefinition;
       let type: Action['type'];
       if (!context.actions || !Object.hasOwnProperty.call(context.actions, on)) {
         if (required) {
@@ -32,43 +33,46 @@ export default function makeActions(
         }
         type = 'noop';
       } else {
-        definition = context.actions[on];
-        ({ type } = definition);
+        actionDefinition = context.actions[on];
+        ({ type } = actionDefinition);
       }
 
       const actionCreator: ActionCreator = actionCreators[type] || extraCreators[type];
       const action = actionCreator({
-        definition,
-        app,
+        appId,
+        definition: actionDefinition,
+        app: definition,
         history,
         showDialog,
         flowActions,
         onSuccess:
           (type === 'request' || type.startsWith('resource.')) &&
-          (definition as RequestLikeActionDefinition).onSuccess &&
-          (definition as RequestLikeActionDefinition).onSuccess.type &&
-          actionCreators[(definition as RequestLikeActionDefinition).onSuccess.type]({
-            definition: (definition as RequestLikeActionDefinition).onSuccess,
-            app,
+          (actionDefinition as RequestLikeActionDefinition).onSuccess &&
+          (actionDefinition as RequestLikeActionDefinition).onSuccess.type &&
+          actionCreators[(actionDefinition as RequestLikeActionDefinition).onSuccess.type]({
+            appId,
+            definition: (actionDefinition as RequestLikeActionDefinition).onSuccess,
+            app: definition,
             history,
             showDialog,
             flowActions,
           }),
         onError:
           (type === 'request' || type.startsWith('resource.')) &&
-          (definition as RequestLikeActionDefinition).onError &&
-          (definition as RequestLikeActionDefinition).onError.type &&
-          actionCreators[(definition as RequestLikeActionDefinition).onError.type]({
-            definition: (definition as RequestLikeActionDefinition).onError,
-            app,
+          (actionDefinition as RequestLikeActionDefinition).onError &&
+          (actionDefinition as RequestLikeActionDefinition).onError.type &&
+          actionCreators[(actionDefinition as RequestLikeActionDefinition).onError.type]({
+            appId,
+            definition: (actionDefinition as RequestLikeActionDefinition).onError,
+            app: definition,
             history,
             showDialog,
             flowActions,
           }),
       });
       const { dispatch } = action;
-      if (definition && Object.hasOwnProperty.call(definition, 'remap')) {
-        action.dispatch = async (args: any) => dispatch(remapData(definition.remap, args));
+      if (actionDefinition && Object.hasOwnProperty.call(actionDefinition, 'remap')) {
+        action.dispatch = async (args: any) => dispatch(remapData(actionDefinition.remap, args));
       }
       acc[on] = action;
       return acc;

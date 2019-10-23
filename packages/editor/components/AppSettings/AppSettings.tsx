@@ -100,13 +100,13 @@ export default class AppSettings extends React.Component<
 
   render(): JSX.Element {
     const { iconUrl, icon, private: isPrivate, path, dirty } = this.state;
-    const { app } = this.props;
+    const { app, intl } = this.props;
 
     return (
       <Form onSubmit={this.onSubmit}>
         <FormComponent id="icon-upload" label={<FormattedMessage {...messages.icon} />}>
           <figure className={`image is-128x128 ${styles.iconContainer}`}>
-            <img alt="Icon" className={styles.icon} src={iconUrl} />
+            <img alt={intl.formatMessage(messages.icon)} className={styles.icon} src={iconUrl} />
           </figure>
           <div className="file has-name">
             <label className="file-label" htmlFor="icon-upload">

@@ -1,10 +1,10 @@
 import { Loader } from '@appsemble/react-components';
-import { App, Authentication } from '@appsemble/types';
+import { AppDefinition, Authentication } from '@appsemble/types';
 import React from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 
 export interface AppContextProps {
-  app: App;
+  definition: AppDefinition;
   children: React.ReactChildren;
   getApp: () => void;
   initAuth: (authentication: Authentication) => void;
@@ -22,13 +22,13 @@ export default class AppContext extends React.Component<AppContextProps & RouteC
   }
 
   async componentDidUpdate(prevProps: AppContextProps): Promise<void> {
-    const { app, initAuth } = this.props;
+    const { definition, initAuth } = this.props;
     let authentication;
-    if (app.definition.authentication) {
-      [authentication] = app.definition.authentication;
+    if (definition.authentication) {
+      [authentication] = definition.authentication;
     }
 
-    if (app && app !== prevProps.app) {
+    if (definition && definition !== prevProps.definition) {
       await initAuth(authentication);
     }
   }

@@ -1,7 +1,6 @@
 import qs from 'querystring';
 
 import createSettings from '../../utils/createSettings';
-import getAppFromRecord from '../../utils/getAppFromRecord';
 import makeCSP from '../../utils/makeCSP';
 import sentryDsnToReportUri from '../../utils/sentryDsnToReportUri';
 import { bulmaURL, faURL } from '../../utils/styleURL';
@@ -46,7 +45,9 @@ export default async function indexHandler(ctx) {
       ctx.status = 404;
     } else {
       const [settingsHash, settings] = createSettings({
-        app: getAppFromRecord(app),
+        id: app.id,
+        organizationId: app.OrganizationId,
+        definition: app.definition,
         sentryDsn,
       });
       csp['script-src'].push(settingsHash);
