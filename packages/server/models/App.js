@@ -6,7 +6,6 @@ export default sequelize => {
     {
       id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
       definition: { type: DataTypes.JSON, allowNull: false },
-      description: { type: DataTypes.STRING(80), allowNull: true },
       /**
        * The maximum length of a domain name is 255 bytes as per
        * https://tools.ietf.org/html/rfc1034#section-3.1. The reason the maximum length of the field
@@ -15,6 +14,7 @@ export default sequelize => {
       domain: { type: DataTypes.STRING(253), allowNull: true },
       icon: { type: DataTypes.BLOB('long') },
       path: { type: DataTypes.STRING, unique: 'UniquePathIndex', allowNull: true },
+      private: { type: DataTypes.BOOLEAN, defaultValue: false, allowNull: false },
       style: { type: DataTypes.TEXT('long') },
       sharedStyle: { type: DataTypes.TEXT('long') },
       yaml: { type: DataTypes.TEXT('long') },

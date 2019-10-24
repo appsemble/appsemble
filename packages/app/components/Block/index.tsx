@@ -9,9 +9,9 @@ import Block from './Block';
 function mapStateToProps(
   state: State,
   ownProps: Block['props'],
-): Pick<Block['props'], 'app' | 'blockDef'> {
+): Pick<Block['props'], 'definition' | 'blockDef'> {
   return {
-    app: state.app.app,
+    definition: state.app.definition,
     blockDef: state.blockDefs.blockDefs[blockToString(ownProps.block)],
   };
 }

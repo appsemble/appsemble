@@ -5,6 +5,7 @@ import Helmet from 'react-helmet';
 import { IntlProvider } from 'react-intl';
 import { BrowserRouter, Redirect, Route, Switch } from 'react-router-dom';
 
+import settings from '../../utils/settings';
 import AppContext from '../AppContext';
 import AppList from '../AppList';
 import ConnectOAuth from '../ConnectOAuth';
@@ -54,9 +55,7 @@ export default class App extends React.Component {
               <Route component={AppList} exact path="/apps" />
               <Route component={ConnectOAuth} exact path="/connect" />
               <Route component={Login} exact path="/login" />
-              {window.settings.enableRegistration && (
-                <Route component={Register} exact path="/register" />
-              )}
+              {settings.enableRegistration && <Route component={Register} exact path="/register" />}
               <Route component={ResetPassword} exact path="/reset-password" />
               <Route component={EditPassword} exact path="/edit-password" />
               <Route component={VerifyEmail} exact path="/verify" />

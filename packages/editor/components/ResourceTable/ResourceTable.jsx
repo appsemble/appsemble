@@ -81,7 +81,7 @@ export default class ResourceTable extends React.Component {
       return;
     }
     this.setState(({ editingResource }, { app, match }) => {
-      const { type } = app.resources[match.params.resourceName].schema.properties[name];
+      const { type } = app.definition.resources[match.params.resourceName].schema.properties[name];
 
       return {
         editingResource: {
@@ -214,7 +214,7 @@ export default class ResourceTable extends React.Component {
       this.setState({ loading: true, error: false, resources: [] });
     }
 
-    if (app.resources[resourceName]?.schema) {
+    if (app.definition.resources[resourceName]?.schema) {
       try {
         const { data: resources } = await axios.get(
           `/api/apps/${app.id}/resources/${resourceName}`,
@@ -247,16 +247,19 @@ export default class ResourceTable extends React.Component {
     }
 
     if (!loading && resources === undefined) {
-      if (!app.resources[resourceName]) {
+      if (!app.definition.resources[resourceName]) {
         return (
           <>
-            <HelmetIntl title={messages.title} titleValues={{ name: app.name, resourceName }} />
+            <HelmetIntl
+              title={messages.title}
+              titleValues={{ name: app.definition.name, resourceName }}
+            />
             <FormattedMessage {...messages.notFound} />
           </>
         );
       }
 
-      const { url } = app.resources[resourceName];
+      const { url } = app.definition.resources[resourceName];
 
       return (
         <FormattedMessage
@@ -272,12 +275,15 @@ export default class ResourceTable extends React.Component {
       );
     }
 
-    const { schema } = app.resources[resourceName];
+    const { schema } = app.definition.resources[resourceName];
     const keys = ['id', ...Object.keys(schema?.properties || {})];
 
     return (
       <>
-        <HelmetIntl title={messages.title} titleValues={{ name: app.name, resourceName }} />
+        <HelmetIntl
+          title={messages.title}
+          titleValues={{ name: app.definition.name, resourceName }}
+        />
         <h1 className="title">Resource {resourceName}</h1>
         <Link className="button is-primary" to={`${match.url}/new`}>
           <Icon icon="plus-square" />

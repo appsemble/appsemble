@@ -1,5 +1,5 @@
 import { Form, Icon, Loader, Modal } from '@appsemble/react-components';
-import { normalize, SchemaValidationError, validate, validateStyle } from '@appsemble/utils';
+import { SchemaValidationError, validate, validateStyle } from '@appsemble/utils';
 import axios from 'axios';
 import classNames from 'classnames';
 import yaml from 'js-yaml';
@@ -39,11 +39,8 @@ export default class Editor extends React.Component {
     initialRecipe: '',
     valid: false,
     dirty: true,
-    icon: undefined,
-    iconURL: undefined,
     warningDialog: false,
     deleteDialog: false,
-    organizationId: undefined,
   };
 
   frame = React.createRef();
@@ -66,31 +63,26 @@ export default class Editor extends React.Component {
 
     try {
       await getOpenApiSpec();
-      // Destructuring path, id and organizationId also hides these technical details for the user
-      const { id: dataId, path, organizationId, ...data } = app;
+      // Destructuring path, and organizationId also hides these technical details for the user
+      const { path, definition } = app;
       let { yaml: recipe } = app;
 
       if (!recipe) {
-        recipe = yaml.safeDump({
-          ...data,
-          ...(normalize(data.name) !== path && { path }),
-        });
+        recipe = yaml.safeDump(definition);
 
         push({ body: formatMessage(messages.yamlNotFound), color: 'info' });
       }
-      // Include path if the normalized app name does not equal path
+
       const { data: style } = await axios.get(`/api/apps/${id}/style/core`);
       const { data: sharedStyle } = await axios.get(`/api/apps/${id}/style/shared`);
 
       this.setState({
-        appName: data.name,
+        appName: definition.name,
         recipe,
         style,
         sharedStyle,
         initialRecipe: recipe,
         path,
-        iconURL: `/api/apps/${id}/icon`,
-        organizationId,
       });
     } catch (e) {
       if (e.response && (e.response.status === 404 || e.response.status === 401)) {
@@ -109,16 +101,11 @@ export default class Editor extends React.Component {
     }
 
     this.setState(
-      (
-        { recipe, style, sharedStyle, organizationId },
-        { intl: { formatMessage }, match, openApiSpec, push },
-      ) => {
-        let app;
+      ({ recipe, style, sharedStyle }, { intl: { formatMessage }, openApiSpec, push }) => {
+        const app = {};
         // Attempt to parse the YAML into a JSON object
         try {
-          app = yaml.safeLoad(recipe);
-          app.organizationId = organizationId;
-          app.id = Number(match.params.id);
+          app.definition = yaml.safeLoad(recipe);
         } catch (error) {
           push(formatMessage(messages.invalidYaml));
           return { valid: false, dirty: false };
@@ -163,34 +150,31 @@ export default class Editor extends React.Component {
 
   uploadApp = async () => {
     const { intl, match, push, updateApp } = this.props;
-    const { recipe, style, sharedStyle, icon, valid, organizationId } = this.state;
+    const { recipe, style, sharedStyle, valid } = this.state;
 
     if (!valid) {
       return;
     }
 
     const { id } = match.params;
-    const app = yaml.safeLoad(recipe);
-    let { path } = app;
+    const definition = yaml.safeLoad(recipe);
+    let path;
 
     try {
       const formData = new FormData();
-      formData.append('app', JSON.stringify(app));
+      formData.append('app', JSON.stringify({ definition }));
       // The MIME type for YAML is not officially registered in IANA.
       // For the time being, x-yaml is used. See also: http://www.iana.org/assignments/media-types/media-types.xhtml
       formData.append('yaml', new Blob([recipe], { type: 'text/x-yaml' }));
       formData.append('style', new Blob([style], { type: 'text/css' }));
       formData.append('sharedStyle', new Blob([sharedStyle], { type: 'text/css' }));
-      if (icon) {
-        formData.append('icon', icon, { type: icon.type });
-      }
-      ({
-        data: { path },
-      } = await axios.put(`/api/apps/${id}`, formData));
+
+      const { data } = await axios.patch(`/api/apps/${id}`, formData);
+      path = data.path;
       push({ body: intl.formatMessage(messages.updateSuccess), color: 'success' });
 
       // Update Redux state
-      updateApp({ ...app, organizationId, id: Number(match.params.id) });
+      updateApp(data);
     } catch (e) {
       if (e.response && e.response.status === 403) {
         push(intl.formatMessage(messages.forbidden));
@@ -201,18 +185,8 @@ export default class Editor extends React.Component {
       return;
     }
 
-    if (icon) {
-      try {
-        await axios.post(`/api/apps/${id}/icon`, icon, {
-          headers: { 'Content-Type': icon.type },
-        });
-      } catch (e) {
-        push(intl.formatMessage(messages.errorUpdateIcon));
-      }
-    }
-
     this.setState({
-      appName: app.name,
+      appName: definition.name,
       dirty: true,
       warningDialog: false,
       initialRecipe: recipe,
@@ -221,14 +195,16 @@ export default class Editor extends React.Component {
   };
 
   onDelete = async () => {
-    const { intl, push, match, history } = this.props;
-    const { appName, organizationId } = this.state;
+    const { app, intl, push, match, history } = this.props;
+    const { appName } = this.state;
     const { id } = match.params;
 
     try {
       await axios.delete(`/api/apps/${id}`);
       push({
-        body: intl.formatMessage(messages.deleteSuccess, { name: `@${organizationId}/${appName}` }),
+        body: intl.formatMessage(messages.deleteSuccess, {
+          name: `@${app.OrganizationId}/${appName}`,
+        }),
         color: 'info',
       });
       history.push('/apps');
@@ -277,18 +253,6 @@ export default class Editor extends React.Component {
     }
   };
 
-  onIconChange = e => {
-    const { match } = this.props;
-    const { id } = match.params;
-    const file = e.target.files[0];
-
-    this.setState({
-      icon: file,
-      iconURL: file ? URL.createObjectURL(file) : `/api/apps/${id}/icon`,
-      dirty: true,
-    });
-  };
-
   onClose = () => {
     this.setState({ warningDialog: false, deleteDialog: false });
   };
@@ -302,18 +266,15 @@ export default class Editor extends React.Component {
       path,
       valid,
       dirty,
-      icon,
-      iconURL,
       warningDialog,
       deleteDialog,
-      organizationId,
     } = this.state;
     const {
+      app,
       intl,
       location: { hash: tab },
     } = this.props;
-    const filename = icon ? icon.name : 'Icon';
-    const appUrl = `/@${organizationId}/${path}`;
+    const appUrl = `/@${app.OrganizationId}/${path}`;
 
     if (!recipe) {
       return <Loader />;
@@ -365,32 +326,6 @@ export default class Editor extends React.Component {
                       <FormattedMessage {...messages.publish} />
                     </span>
                   </button>
-                </span>
-                <span className="navbar-item">
-                  <div className={classNames('file', icon && 'has-name')}>
-                    <label className="file-label" htmlFor="icon-upload">
-                      <input
-                        accept="image/jpeg, image/png, image/tiff, image/webp, image/xml+svg"
-                        className="file-input"
-                        id="icon-upload"
-                        name="icon"
-                        onChange={this.onIconChange}
-                        type="file"
-                      />
-                      <span className="file-cta">
-                        <Icon icon="upload" />
-                        <span className="file-label">
-                          <FormattedMessage {...messages.icon} />
-                        </span>
-                      </span>
-                      {icon && <span className="file-name">{filename}</span>}
-                    </label>
-                  </div>
-                  {iconURL && (
-                    <figure className={classNames('image', 'is-32x32', styles.iconPreview)}>
-                      <img alt="Icon" src={iconURL} />
-                    </figure>
-                  )}
                 </span>
                 <span className="navbar-item">
                   <a className="button" href={appUrl} rel="noopener noreferrer" target="_blank">

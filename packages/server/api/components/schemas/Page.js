@@ -72,7 +72,7 @@ export default {
           },
         },
         navigation: {
-          $ref: '#/components/schemas/App/properties/navigation',
+          $ref: '#/components/schemas/App/properties/definition/properties/navigation',
         },
         hideFromMenu: {
           type: 'boolean',
@@ -145,7 +145,7 @@ export default {
           },
         },
         navigation: {
-          $ref: '#/components/schemas/App/properties/navigation',
+          $ref: '#/components/schemas/App/properties/definition/properties/navigation',
         },
         hideFromMenu: {
           type: 'boolean',

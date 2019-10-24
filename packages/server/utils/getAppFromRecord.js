@@ -2,10 +2,15 @@ import yaml from 'js-yaml';
 
 export default function getAppFromRecord(record) {
   return {
-    ...record.definition,
     id: record.id,
+    $created: record.created,
+    $updated: record.updated,
+    domain: record.domain,
     path: record.path,
-    organizationId: record.OrganizationId,
+    private: Boolean(record.private),
+    iconUrl: `/api/apps/${record.id}/icon`,
+    definition: record.definition,
     yaml: record.yaml || yaml.safeDump(record.definition),
+    OrganizationId: record.OrganizationId,
   };
 }

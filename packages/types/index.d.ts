@@ -149,7 +149,7 @@ export interface Block<P = any, A = {}> {
   /**
    * The theme of the block.
    */
-  theme: Theme;
+  theme?: Theme;
 
   /**
    * A free form mapping of named paramters.
@@ -493,12 +493,12 @@ export interface Page {
    *
    * This will be displayed in the navigation menu.
    */
-  icon: IconName;
+  icon?: IconName;
 
   /**
    * Page parameters can be used for linking to a page that should display a single resource.
    */
-  parameters: string[];
+  parameters?: string[];
 
   /**
    * A mapping of actions that can be fired by the page to action handlers.
@@ -510,9 +510,9 @@ export interface Page {
   /**
    * The global theme for the page.
    */
-  theme: Theme;
+  theme?: Theme;
 
-  subPages: Pick<Page, 'blocks' | 'name'>[];
+  subPages?: Pick<Page, 'blocks' | 'name'>[];
 
   /**
    * The navigation type to use.
@@ -527,30 +527,20 @@ export interface Page {
   hideFromMenu?: boolean;
 }
 
-export interface App {
-  authentication: Authentication[];
-
+export interface AppDefinition {
   /**
-   * The unique identifier for the app.
+   * The name of the app.
    *
-   * This value will be generated automatically by the API.
+   * This determines the default path of the app.
    */
-  id?: number;
+  name?: string;
 
-  /**
-   * The id of the organization to which this app belongs.
-   */
-  organizationId?: string;
+  authentication: Authentication[];
 
   /**
    * The default page of the app.
    */
   defaultPage: string;
-
-  /*
-   * A domain name on which this app should be served.
-   */
-  domain?: string;
 
   /**
    * The navigation type to use.
@@ -572,5 +562,29 @@ export interface App {
   /**
    * The global theme for the app.
    */
-  theme: Theme;
+  theme?: Theme;
+}
+
+export interface App {
+  /**
+   * The unique identifier for the app.
+   *
+   * This value will be generated automatically by the API.
+   */
+  id?: number;
+
+  /*
+   * A domain name on which this app should be served.
+   */
+  domain?: string;
+
+  /**
+   * The id of the organization to which this app belongs.
+   */
+  OrganizationId?: string;
+
+  path: string;
+  private: boolean;
+
+  definition: AppDefinition;
 }
