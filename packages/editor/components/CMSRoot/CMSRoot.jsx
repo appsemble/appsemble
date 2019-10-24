@@ -18,14 +18,14 @@ export default class CMSRoot extends React.Component {
 
     return (
       <>
-        <HelmetIntl title={messages.title} titleValues={{ name: app.name }} />
-        {app.resources ? (
+        <HelmetIntl title={messages.title} titleValues={{ name: app.definition.name }} />
+        {app.definition.resources ? (
           <div className="content">
             <p>
               <FormattedMessage {...messages.hasResources} />
             </p>
             <ul>
-              {Object.keys(app.resources)
+              {Object.keys(app.definition.resources)
                 .sort()
                 .map(resource => (
                   <li key={resource}>

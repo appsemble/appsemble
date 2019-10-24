@@ -527,20 +527,15 @@ export interface Page {
   hideFromMenu?: boolean;
 }
 
-export interface App {
-  authentication: Authentication[];
-
+export interface AppDefinition {
   /**
-   * The unique identifier for the app.
+   * The name of the app.
    *
-   * This value will be generated automatically by the API.
+   * This determines the default path of the app.
    */
-  id?: number;
+  name?: string;
 
-  /**
-   * The id of the organization to which this app belongs.
-   */
-  organizationId?: string;
+  authentication: Authentication[];
 
   /**
    * The default page of the app.
@@ -568,4 +563,23 @@ export interface App {
    * The global theme for the app.
    */
   theme?: Theme;
+}
+
+export interface App {
+  /**
+   * The unique identifier for the app.
+   *
+   * This value will be generated automatically by the API.
+   */
+  id?: number;
+
+  /**
+   * The id of the organization to which this app belongs.
+   */
+  OrganizationId?: string;
+
+  path: string;
+  private: boolean;
+
+  definition: AppDefinition;
 }

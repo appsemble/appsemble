@@ -6,9 +6,9 @@ export default sequelize => {
     {
       id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
       definition: { type: DataTypes.JSON, allowNull: false },
-      description: { type: DataTypes.STRING(80), allowNull: true },
       icon: { type: DataTypes.BLOB('long') },
       path: { type: DataTypes.STRING, unique: 'UniquePathIndex', allowNull: true },
+      private: { type: DataTypes.BOOLEAN, defaultValue: false, allowNull: false },
       style: { type: DataTypes.TEXT('long') },
       sharedStyle: { type: DataTypes.TEXT('long') },
       yaml: { type: DataTypes.TEXT('long') },

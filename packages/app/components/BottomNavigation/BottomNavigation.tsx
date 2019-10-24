@@ -1,5 +1,5 @@
 import { Icon } from '@appsemble/react-components';
-import { App } from '@appsemble/types';
+import { AppDefinition } from '@appsemble/types';
 import { normalize } from '@appsemble/utils';
 import * as React from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
@@ -7,15 +7,19 @@ import { NavLink, useLocation } from 'react-router-dom';
 import styles from './BottomNavigation.css';
 
 export interface BottomNavigationProps {
-  app: App;
+  definition: AppDefinition;
   children: React.ReactChild;
 }
 
-export default function BottomNavigation({ app }: BottomNavigationProps): React.ReactElement {
+export default function BottomNavigation({
+  definition,
+}: BottomNavigationProps): React.ReactElement {
   const location = useLocation();
-  const currentPage = app.pages.find(p => normalize(p.name) === location.pathname.split('/')[1]);
+  const currentPage = definition.pages.find(
+    p => normalize(p.name) === location.pathname.split('/')[1],
+  );
 
-  const navigation = (currentPage && currentPage.navigation) || app.navigation;
+  const navigation = (currentPage && currentPage.navigation) || definition.navigation;
   if (navigation !== 'bottom') {
     return null;
   }
@@ -23,7 +27,7 @@ export default function BottomNavigation({ app }: BottomNavigationProps): React.
   return (
     <nav className="bottom-nav">
       <ul className={styles.list}>
-        {app.pages
+        {definition.pages
           .filter(page => !page.parameters && !page.hideFromMenu)
           .map(page => (
             <li key={page.name} className="bottom-nav-item">

@@ -1,4 +1,4 @@
-import { App } from '@appsemble/types';
+import { AppDefinition } from '@appsemble/types';
 import { IDBPDatabase } from 'idb';
 import { Action } from 'redux';
 import { ThunkAction } from 'redux-thunk';
@@ -13,17 +13,17 @@ export const GET_ERROR = 'app/GET_ERROR';
 const EDIT_SUCCESS = 'editor/EDIT_SUCCESS';
 
 export interface AppState {
-  app: App;
+  definition: AppDefinition;
   error: Error;
 }
 
 export const initialState: AppState = {
-  app: null,
+  definition: null,
   error: null,
 };
 
 interface GetSuccessAction extends Action<typeof GET_SUCCESS> {
-  app: App;
+  definition: AppDefinition;
   db: IDBPDatabase;
 }
 
@@ -32,7 +32,7 @@ interface GetErrorAction extends Action<typeof GET_ERROR> {
 }
 
 interface EditAction extends Action<typeof EDIT_SUCCESS> {
-  app: App;
+  definition: AppDefinition;
 }
 
 export type AppAction = Action<typeof GET_START> | GetSuccessAction | GetErrorAction | EditAction;
@@ -43,25 +43,25 @@ export default (state: AppState = initialState, action: AppAction): AppState => 
     case GET_START:
       return {
         ...state,
-        app: null,
+        definition: null,
         error: null,
       };
     case GET_SUCCESS:
       return {
         ...state,
-        app: action.app,
+        definition: action.definition,
         error: null,
       };
     case GET_ERROR:
       return {
         ...state,
-        app: null,
+        definition: null,
         error: action.error,
       };
     case EDIT_SUCCESS:
       return {
         ...state,
-        app: action.app,
+        definition: action.definition,
       };
     default:
       return state;
@@ -77,11 +77,11 @@ export function getApp(): AppThunk {
       type: GET_START,
     });
     try {
-      const app = resolveJsonPointers(settings.app) as App;
-      const db = await getDB(app);
+      const definition = resolveJsonPointers(settings.definition) as AppDefinition;
+      const db = await getDB(settings.id);
       dispatch({
         type: GET_SUCCESS,
-        app,
+        definition,
         db,
       });
     } catch (error) {

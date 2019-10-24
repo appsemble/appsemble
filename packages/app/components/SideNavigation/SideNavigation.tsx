@@ -1,5 +1,5 @@
 import { Icon } from '@appsemble/react-components';
-import { App } from '@appsemble/types';
+import { AppDefinition } from '@appsemble/types';
 import { normalize } from '@appsemble/utils';
 import classNames from 'classnames';
 import React from 'react';
@@ -12,7 +12,7 @@ import messages from './messages';
 import styles from './SideNavigation.css';
 
 export interface SideNavigationProps {
-  app: App;
+  definition: AppDefinition;
   closeMenu: () => void;
   logout: () => void;
   user: User;
@@ -22,7 +22,7 @@ export interface SideNavigationProps {
  * The app navigation that is displayed in the side menu.
  */
 export default function SideNavigation({
-  app,
+  definition,
   user,
   logout,
   closeMenu,
@@ -34,8 +34,11 @@ export default function SideNavigation({
     closeMenu();
   };
 
-  const currentPage = app.pages.find(p => normalize(p.name) === location.pathname.split('/')[1]);
-  const navigation = (currentPage && currentPage.navigation) || app.navigation || 'left-menu';
+  const currentPage = definition.pages.find(
+    p => normalize(p.name) === location.pathname.split('/')[1],
+  );
+  const navigation =
+    (currentPage && currentPage.navigation) || definition.navigation || 'left-menu';
   if (navigation !== 'left-menu') {
     return null;
   }
@@ -44,7 +47,7 @@ export default function SideNavigation({
     <SideMenu>
       <nav>
         <ul className={classNames('menu-list', styles.menuList)}>
-          {app.pages
+          {definition.pages
             .filter(page => !page.parameters && !page.hideFromMenu)
             .map(page => (
               <li key={page.name}>

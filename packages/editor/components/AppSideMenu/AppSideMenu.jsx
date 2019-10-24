@@ -45,9 +45,9 @@ export default class AppSideMenu extends React.Component {
             <FormattedMessage {...messages.resources} />
           </span>
         </NavLink>
-        {app.resources && !isCollapsed && (
+        {app.definition.resources && !isCollapsed && (
           <ul>
-            {Object.keys(app.resources)
+            {Object.keys(app.definition.resources)
               .sort()
               .map(resource => (
                 <li key={resource}>
@@ -58,6 +58,12 @@ export default class AppSideMenu extends React.Component {
               ))}
           </ul>
         )}
+        <NavLink className={styles.menuItem} exact={!isCollapsed} to={`${match.url}/settings`}>
+          <Icon icon="cogs" size="medium" />
+          <span className={classNames({ 'is-hidden': isCollapsed })}>
+            <FormattedMessage {...messages.settings} />
+          </span>
+        </NavLink>
       </SideMenu>
     );
   }

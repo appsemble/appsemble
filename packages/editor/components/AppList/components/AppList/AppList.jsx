@@ -47,7 +47,9 @@ export default class AppList extends React.Component {
       return <Loader />;
     }
 
-    const filteredApps = apps.filter(app => app.name.toLowerCase().includes(filter.toLowerCase()));
+    const filteredApps = apps.filter(app =>
+      app.definition.name.toLowerCase().includes(filter.toLowerCase()),
+    );
 
     return (
       <>

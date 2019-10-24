@@ -20,7 +20,8 @@ import styles from './Page.css';
  */
 export default class Page extends React.Component {
   static propTypes = {
-    app: PropTypes.shape().isRequired,
+    appId: PropTypes.number.isRequired,
+    definition: PropTypes.shape().isRequired,
     getBlockDefs: PropTypes.func.isRequired,
     hasErrors: PropTypes.bool.isRequired,
     history: PropTypes.shape().isRequired,
@@ -90,15 +91,16 @@ export default class Page extends React.Component {
   }
 
   componentDidMount() {
-    const { app, getBlockDefs, page, history } = this.props;
+    const { appId, definition, getBlockDefs, page, history } = this.props;
 
-    this.applyBulmaThemes(app, page);
+    this.applyBulmaThemes(definition, page);
     this.setupEvents();
 
     if (page.type === 'flow') {
       const actions = makeActions(
+        appId,
         { actions: { onFlowFinish: {}, onFlowCancel: {} } },
-        app,
+        definition,
         page,
         history,
         this.showDialog,
@@ -143,7 +145,7 @@ export default class Page extends React.Component {
   }
 
   componentDidUpdate({ page: prevPage }, { prevCurrentPage }) {
-    const { app, getBlockDefs, page } = this.props;
+    const { definition, getBlockDefs, page } = this.props;
     const { currentPage } = this.state;
 
     if (page !== prevPage || prevCurrentPage !== currentPage) {
@@ -165,7 +167,7 @@ export default class Page extends React.Component {
         getBlockDefs(page.blocks);
       }
 
-      this.applyBulmaThemes(app, page);
+      this.applyBulmaThemes(definition, page);
     }
   }
 
@@ -182,19 +184,19 @@ export default class Page extends React.Component {
   }
 
   createBulmaQueryString = () => {
-    const { app, page } = this.props;
-    const params = { ...app.theme, ...page.theme };
+    const { definition, page } = this.props;
+    const params = { ...definition.theme, ...page.theme };
     const queryStringParams = new URLSearchParams(params);
     queryStringParams.sort();
 
     return queryStringParams.toString();
   };
 
-  applyBulmaThemes = (app, page) => {
+  applyBulmaThemes = (definition, page) => {
     const bulmaStyle = document.getElementById('bulma-style-app');
     const [bulmaUrl] = bulmaStyle.href.split('?');
     bulmaStyle.href =
-      app.theme || page.theme ? `${bulmaUrl}?${this.createBulmaQueryString()}` : bulmaUrl;
+      definition.theme || page.theme ? `${bulmaUrl}?${this.createBulmaQueryString()}` : bulmaUrl;
   };
 
   showDialog = dialog => {
