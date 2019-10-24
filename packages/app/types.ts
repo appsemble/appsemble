@@ -9,6 +9,7 @@ declare global {
   interface Window {
     settings: {
       app: App;
+      vapidPublicKey: string;
       sentryDsn: string;
     };
   }

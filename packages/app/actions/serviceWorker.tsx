@@ -1,14 +1,22 @@
+import axios from 'axios';
 import { Action } from 'redux';
 import { ThunkAction } from 'redux-thunk';
 
+import settings from '../utils/settings';
+import urlB64ToUint8Array from '../utils/urlB64ToUint8Array';
 import { State } from '.';
 
 interface ServiceWorkerState {
   registration: ServiceWorkerRegistration;
   permission: 'unknown' | 'pending' | 'granted' | 'default' | 'denied';
+  subscribed: boolean;
 }
 
-const initialState: ServiceWorkerState = { registration: null, permission: 'unknown' };
+const initialState: ServiceWorkerState = {
+  registration: null,
+  permission: 'unknown',
+  subscribed: false,
+};
 
 const REGISTER_SUCCESS = 'serviceWorker/REGISTER_SUCCESS';
 const REGISTER_ERROR = 'serviceWorker/REGISTER_ERROR';
@@ -16,9 +24,14 @@ const PERMISSION_START = 'serviceWorker/PERMISSION_START';
 const PERMISSION_GRANTED = 'serviceWorker/PERMISSION_GRANTED';
 const PERMISSION_DEFAULT = 'serviceWorker/PERMISSION_DEFAULT';
 const PERMISSION_DENIED = 'serviceWorker/PERMISSION_DENIED';
+const SET_SUBSCRIBED = 'serviceWorker/SET_SUBSCRIBED';
 
 interface RegisterSuccessAction extends Action<typeof REGISTER_SUCCESS> {
   registration: ServiceWorkerRegistration;
+}
+
+interface SetSubscribedAction extends Action<typeof SET_SUBSCRIBED> {
+  subscribed: boolean;
 }
 
 type ServiceWorkerAction =
@@ -27,7 +40,8 @@ type ServiceWorkerAction =
   | Action<typeof PERMISSION_START>
   | Action<typeof PERMISSION_GRANTED>
   | Action<typeof PERMISSION_DEFAULT>
-  | Action<typeof PERMISSION_DENIED>;
+  | Action<typeof PERMISSION_DENIED>
+  | SetSubscribedAction;
 type ServiceWorkerThunk = ThunkAction<void, State, null, ServiceWorkerAction>;
 
 export default (
@@ -47,6 +61,8 @@ export default (
       return { ...state, permission: 'default' };
     case PERMISSION_DENIED:
       return { ...state, permission: 'denied' };
+    case SET_SUBSCRIBED:
+      return { ...state, subscribed: true };
     default:
       return state;
   }
@@ -68,7 +84,7 @@ export function registerServiceWorkerError(): Action<typeof REGISTER_ERROR> {
 }
 
 export function requestPermission(): ServiceWorkerThunk {
-  return async dispatch => {
+  return async (dispatch, getState) => {
     dispatch({ type: PERMISSION_START });
 
     const permission = await window.Notification.requestPermission();
@@ -84,6 +100,29 @@ export function requestPermission(): ServiceWorkerThunk {
 
     if (permission === 'denied') {
       dispatch({ type: PERMISSION_DENIED });
+    }
+  };
+}
+
+export function subscribe(): ServiceWorkerThunk {
+  return async (dispatch, getState) => {
+    const { registration } = getState().serviceWorker;
+    const { vapidPublicKey, id } = settings;
+    const options = {
+      applicationServerKey: urlB64ToUint8Array(vapidPublicKey),
+      userVisibleOnly: true,
+    };
+
+    let subscription = await registration.pushManager.getSubscription();
+
+    if (!subscription) {
+      subscription = await registration.pushManager.subscribe(options);
+
+      await axios.post(`/api/apps/${id}/subscriptions`, subscription);
+
+      dispatch({ type: SET_SUBSCRIBED, subscribed: true });
+    } else {
+      dispatch({ type: SET_SUBSCRIBED, subscribed: true });
     }
   };
 }

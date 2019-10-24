@@ -10,7 +10,12 @@ import thunk from 'redux-thunk';
 import runtime from 'serviceworker-webpack-plugin/lib/runtime';
 
 import reducers from './actions';
-import { registerServiceWorker, registerServiceWorkerError } from './actions/serviceWorker';
+import {
+  registerServiceWorker,
+  registerServiceWorkerError,
+  requestPermission,
+  subscribe,
+} from './actions/serviceWorker';
 import App from './components/App';
 import resolveJsonPointers from './utils/resolveJsonPointers';
 
@@ -26,6 +31,8 @@ if ('serviceWorker' in navigator) {
     .register()
     .then(registration => {
       store.dispatch(registerServiceWorker(registration));
+      requestPermission()(store.dispatch, store.getState);
+      subscribe()(store.dispatch, store.getState);
     })
     .catch(store.dispatch(registerServiceWorkerError));
 }
