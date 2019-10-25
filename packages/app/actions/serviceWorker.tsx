@@ -107,7 +107,7 @@ export function requestPermission(): ServiceWorkerThunk {
 export function subscribe(): ServiceWorkerThunk {
   return async (dispatch, getState) => {
     const { registration } = getState().serviceWorker;
-    const { vapidPublicKey, app } = settings;
+    const { vapidPublicKey, id } = settings;
     const options = {
       applicationServerKey: urlB64ToUint8Array(vapidPublicKey),
       userVisibleOnly: true,
@@ -118,7 +118,7 @@ export function subscribe(): ServiceWorkerThunk {
     if (!subscription) {
       subscription = await registration.pushManager.subscribe(options);
 
-      await axios.post(`/api/apps/${app.id}/subscriptions`, subscription);
+      await axios.post(`/api/apps/${id}/subscriptions`, subscription);
 
       dispatch({ type: SET_SUBSCRIBED, subscribed: true });
     } else {

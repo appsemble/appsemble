@@ -1,4 +1,3 @@
-import { App } from '@appsemble/types';
 import createMockStore, { MockStoreEnhanced } from 'redux-mock-store';
 import thunk, { ThunkDispatch } from 'redux-thunk';
 
@@ -13,19 +12,23 @@ import reducer, {
   initialState,
 } from './app';
 
-const emptyApp: App = {
+const emptyApp: any = {
   id: 1,
-  defaultPage: '',
-  authentication: [],
-  pages: [],
-  resources: {},
+  organizationId: 'foo',
+  definition: {
+    defaultPage: '',
+    authentication: [],
+    pages: [],
+    resources: {},
+  },
 };
 
 jest.mock('../utils/settings', () => ({
   __esModule: true,
   default: {
-    app: {
-      id: 1,
+    id: 1,
+    organizationId: 'foo',
+    definition: {
       defaultPage: '',
       authentication: [],
       pages: [],
@@ -51,7 +54,7 @@ describe('reducer', () => {
   it('should handle GET_START actions', () => {
     const result = reducer(
       {
-        app: emptyApp,
+        definition: emptyApp.definition,
         error: Error('Beep'),
       },
       { type: GET_START },
@@ -64,7 +67,7 @@ describe('reducer', () => {
     const result = reducer(initialState, { type: GET_ERROR, error: Error('Example') });
 
     expect(result).toStrictEqual({
-      app: null,
+      definition: null,
       error: Error('Example'),
     });
   });
@@ -73,24 +76,27 @@ describe('reducer', () => {
     const result = reducer(initialState, {
       type: GET_SUCCESS,
       db: null,
-      app: emptyApp,
+      definition: emptyApp.definition,
     });
 
-    expect(result).toStrictEqual({ app: emptyApp, error: null });
+    expect(result).toStrictEqual({ definition: emptyApp.definition, error: null });
   });
 
   it('should handle EDIT_SUCCESS actions', () => {
     const result = reducer(
-      { app: emptyApp, error: null },
+      { definition: emptyApp.definition, error: null },
       {
         type: 'editor/EDIT_SUCCESS',
-        app: { ...emptyApp, pages: [{ name: 'Test Page', blocks: [] }] },
+        definition: {
+          ...emptyApp.definition,
+          pages: [{ name: 'Test Page', blocks: [] }],
+        },
       },
     );
 
     expect(result).toStrictEqual({
       error: null,
-      app: { ...emptyApp, pages: [{ name: 'Test Page', blocks: [] }] },
+      definition: { ...emptyApp.definition, pages: [{ name: 'Test Page', blocks: [] }] },
     });
   });
 });
@@ -125,11 +131,12 @@ describe('getApp', () => {
       {
         type: GET_SUCCESS,
         db: {},
-        app: emptyApp,
+        definition: emptyApp.definition,
       },
     ]);
 
-    expect(spy).toHaveBeenCalledWith(emptyApp);
+    // This is expected to call settings.id
+    expect(spy).toHaveBeenCalledWith(emptyApp.id);
     spy.mockRestore();
   });
 });

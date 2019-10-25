@@ -93,52 +93,44 @@ export async function createApp(ctx) {
   const { db } = ctx;
   const { App } = db.models;
   const { user } = ctx.state;
-  const { app, organizationId, style, sharedStyle } = ctx.request.body;
+  const { app, style, sharedStyle } = ctx.request.body;
 
   let result;
 
   try {
-    const path = normalize(app.name);
+    const path = normalize(app.definition.name);
 
     result = {
-      definition: app,
-      OrganizationId: organizationId,
+      definition: app.definition,
+      OrganizationId: app.OrganizationId,
       style: validateStyle(style),
       sharedStyle: validateStyle(sharedStyle),
-      path,
-      yaml: jsYaml.safeDump(app),
+      private: Boolean(app.private),
+      yaml: jsYaml.safeDump(app.definition),
     };
 
-    if (!user.organizations.some(organization => organization.id === organizationId)) {
+    if (!user.organizations.some(organization => organization.id === app.OrganizationId)) {
       throw Boom.forbidden('User does not belong in this organization.');
     }
 
     await checkBlocks(app, db);
 
-    let record;
-    for (let i = 2; i < 12; i += 1) {
-      try {
-        // eslint-disable-next-line no-await-in-loop
-        record = await App.create(result);
-
-        if (record) {
-          break;
-        }
-      } catch (ex) {
-        if (ex instanceof UniqueConstraintError) {
-          result.path = `${path}-${i}`;
-        } else {
-          throw ex;
-        }
+    for (let i = 1; i < 11; i += 1) {
+      const p = i === 1 ? path : `${path}-${i}`;
+      // eslint-disable-next-line no-await-in-loop
+      const count = await App.count({ where: { path: p } });
+      if (count === 0) {
+        result.path = p;
+        break;
       }
     }
 
-    if (!record) {
+    if (!result.path) {
       // Fallback if a suitable ID could not be found after trying for a while
       result.path = `${path}-${crypto.randomBytes(5).toString('hex')}`;
-      record = await App.create(result);
     }
 
+    const record = await App.create(result);
     await record.createAppNotificationKey(generateVapidToken());
 
     ctx.body = getAppFromRecord(record);
@@ -191,17 +183,16 @@ export async function updateApp(ctx) {
     user: { organizations },
   } = ctx.state;
   const { App } = db.models;
-  const { app: definition, organizationId, style, sharedStyle, yaml } = ctx.request.body;
+  const { app, style, sharedStyle, yaml } = ctx.request.body;
 
   let result;
 
   try {
     result = {
-      definition,
-      OrganizationId: organizationId,
+      definition: app.definition,
       style: validateStyle(style && style.contents),
       sharedStyle: validateStyle(sharedStyle && sharedStyle.contents),
-      path: definition.path || normalize(definition.name),
+      path: app.path || normalize(app.definition.name),
       yaml: yaml && yaml.toString('utf8'),
     };
 
@@ -215,18 +206,18 @@ export async function updateApp(ctx) {
       }
 
       // The YAML should be the same when converted to JSON.
-      if (!isEqual(appFromYaml, definition)) {
+      if (!isEqual(appFromYaml, app.definition)) {
         throw Boom.badRequest('Provided YAML was not equal to definition when converted.');
       }
     } else {
-      result.yaml = jsYaml.safeDump(definition);
+      result.yaml = jsYaml.safeDump(app.definition);
     }
 
-    await checkBlocks(result.definition, db);
+    await checkBlocks(app, db);
 
-    const app = await App.findOne({ where: { id: appId } });
+    const dbApp = await App.findOne({ where: { id: appId } });
 
-    if (!app) {
+    if (!dbApp) {
       throw Boom.notFound('App not found');
     }
 
@@ -234,9 +225,85 @@ export async function updateApp(ctx) {
       throw Boom.forbidden("User does not belong in this App's organization.");
     }
 
-    await app.update(result, { where: { id: appId } });
+    await dbApp.update(result, { where: { id: appId } });
 
     ctx.body = getAppFromRecord({ ...app.dataValues, ...result });
+  } catch (error) {
+    handleAppValidationError(error, result);
+  }
+}
+
+export async function patchApp(ctx) {
+  const { db } = ctx;
+  const { appId } = ctx.params;
+  const {
+    user: { organizations },
+  } = ctx.state;
+  const { App } = db.models;
+  const { app, style, sharedStyle, yaml, icon } = ctx.request.body;
+
+  let result;
+
+  try {
+    result = {};
+
+    if (app) {
+      if (app.definition) {
+        result.definition = app.definition;
+        await checkBlocks(app, db);
+      }
+
+      if (app.path) {
+        result.path = app.path;
+      }
+
+      if (app.private !== undefined) {
+        result.private = app.private;
+      }
+    }
+
+    if (style) {
+      result.style = validateStyle(style.contents);
+    }
+
+    if (sharedStyle) {
+      result.sharedStyle = validateStyle(sharedStyle.contents);
+    }
+
+    if (icon) {
+      result.icon = icon.contents;
+    }
+
+    if (yaml) {
+      let appFromYaml;
+      try {
+        // The YAML should be valid YAML.
+        appFromYaml = jsYaml.safeLoad(yaml);
+      } catch (exception) {
+        throw Boom.badRequest('Provided YAML was invalid.');
+      }
+
+      // The YAML should be the same when converted to JSON.
+      if (!isEqual(appFromYaml, app.definition)) {
+        throw Boom.badRequest('Provided YAML was not equal to definition when converted.');
+      }
+    } else if (app && app.definition) {
+      result.yaml = jsYaml.safeDump(app.definition);
+    }
+
+    const dbApp = await App.findOne({ where: { id: appId } });
+
+    if (!dbApp) {
+      throw Boom.notFound('App not found');
+    }
+
+    if (!organizations.some(organization => organization.id === dbApp.OrganizationId)) {
+      throw Boom.forbidden("User does not belong in this App's organization.");
+    }
+
+    await dbApp.update(result, { where: { id: appId } });
+
+    ctx.body = getAppFromRecord({ ...dbApp.dataValues, ...result });
   } catch (error) {
     handleAppValidationError(error, result);
   }
@@ -322,105 +389,6 @@ export async function deleteAppIcon(ctx) {
   await app.update({ icon: null });
 
   ctx.status = 204;
-}
-
-export async function getAppSettings(ctx) {
-  const { appId } = ctx.params;
-  const { App } = ctx.db.models;
-
-  const app = await App.findByPk(appId, { raw: true });
-
-  if (!app) {
-    throw Boom.notFound('App not found');
-  }
-
-  ctx.body = {
-    private: Boolean(app.private),
-    path: app.path,
-    icon: `/api/apps/${app.id}/icon`,
-  };
-}
-
-export async function updateAppSettings(ctx) {
-  const { db } = ctx;
-  const { appId } = ctx.params;
-  const {
-    user: { organizations },
-  } = ctx.state;
-  const { App } = db.models;
-  const { path, private: isPrivate, icon } = ctx.request.body;
-
-  const result = { path: normalize(path), icon: icon.contents, private: isPrivate };
-  const app = await App.findOne({ where: { id: appId } });
-
-  try {
-    if (!app) {
-      throw Boom.notFound('App not found');
-    }
-
-    if (!organizations.some(organization => organization.id === app.OrganizationId)) {
-      throw Boom.forbidden("User does not belong in this App's organization.");
-    }
-
-    await app.update(result, { where: { id: appId } });
-
-    ctx.body = {
-      private: Boolean(app.private),
-      path: app.path,
-      icon: `/api/apps/${app.id}/icon`,
-      ...result,
-    };
-  } catch (error) {
-    handleAppValidationError(error, { ...app, ...result });
-  }
-}
-
-export async function patchAppSettings(ctx) {
-  const { db } = ctx;
-  const { appId } = ctx.params;
-  const {
-    user: { organizations },
-  } = ctx.state;
-  const { App } = db.models;
-  const { path, private: isPrivate, icon } = ctx.request.body;
-
-  const result = {};
-  const app = await App.findOne({ where: { id: appId } });
-
-  try {
-    if (!app) {
-      throw Boom.notFound('App not found');
-    }
-
-    if (!organizations.some(organization => organization.id === app.OrganizationId)) {
-      throw Boom.forbidden("User does not belong in this App's organization.");
-    }
-
-    if (path) {
-      result.path = path;
-    }
-
-    if (isPrivate !== undefined) {
-      result.private = Boolean(isPrivate);
-    }
-
-    if (icon) {
-      result.icon = icon.contents;
-    }
-
-    await app.update(result, { where: { id: appId } });
-
-    // Icon should not be returned in the settings response, it is available at a different path.
-    delete result.icon;
-    ctx.body = {
-      private: Boolean(app.private),
-      path: app.path,
-      icon: `/api/apps/${app.id}/icon`,
-      ...result,
-    };
-  } catch (error) {
-    handleAppValidationError(error, { ...app, ...result });
-  }
 }
 
 export async function addSubscription(ctx) {
@@ -566,11 +534,15 @@ export async function setAppBlockStyle(ctx) {
       throw Boom.notFound('Block not found.');
     }
 
-    await AppBlockStyle.upsert({
-      style: css.length ? css.toString() : null,
-      AppId: app.id,
-      BlockDefinitionId: block.id,
-    });
+    if (css.length) {
+      await AppBlockStyle.upsert({
+        style: css.toString(),
+        AppId: app.id,
+        BlockDefinitionId: block.id,
+      });
+    } else {
+      await AppBlockStyle.destroy({ where: { AppId: app.id, BlockDefinitionId: block.id } });
+    }
 
     ctx.status = 204;
   } catch (e) {

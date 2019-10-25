@@ -51,10 +51,10 @@ export default {
                   description: 'The name of the template.',
                 },
                 name: {
-                  $ref: '#/components/schemas/App/properties/name',
+                  $ref: '#/components/schemas/App/properties/definition/properties/name',
                 },
                 description: {
-                  $ref: '#/components/schemas/App/properties/description',
+                  $ref: '#/components/schemas/App/properties/definition/properties/description',
                 },
                 organizationId: {
                   $ref: '#/components/schemas/Organization/properties/id',
@@ -64,7 +64,7 @@ export default {
                   description: 'Include example resources.',
                 },
                 private: {
-                  $ref: '#/components/schemas/AppSettings/properties/private',
+                  $ref: '#/components/schemas/App/properties/private',
                 },
               },
             },

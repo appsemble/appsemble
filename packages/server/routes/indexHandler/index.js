@@ -49,8 +49,10 @@ export default async function indexHandler(ctx) {
       ctx.status = 404;
     } else {
       const [settingsHash, settings] = createSettings({
-        app: { ...app.definition, id: app.id, organizationId: app.OrganizationId },
+        id: app.id,
         vapidPublicKey: app.AppNotificationKey.publicKey,
+        organizationId: app.OrganizationId,
+        definition: app.definition,
         sentryDsn,
       });
       csp['script-src'].push(settingsHash);

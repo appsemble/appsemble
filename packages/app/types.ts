@@ -1,5 +1,5 @@
 import { Action } from '@appsemble/sdk';
-import { ActionDefinition, App, Block } from '@appsemble/types';
+import { ActionDefinition, AppDefinition, Block } from '@appsemble/types';
 import { RouteComponentProps } from 'react-router-dom';
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
@@ -8,8 +8,10 @@ export interface User {}
 declare global {
   interface Window {
     settings: {
-      app: App;
       vapidPublicKey: string;
+      id: number;
+      organizationId: string;
+      definition: AppDefinition;
       sentryDsn: string;
     };
   }
@@ -36,7 +38,8 @@ export interface FlowActions {
 }
 
 export interface MakeActionParameters<D extends ActionDefinition> {
-  app: App;
+  appId: number;
+  app: AppDefinition;
   definition: D;
   flowActions: FlowActions;
   history: RouteComponentProps['history'];
