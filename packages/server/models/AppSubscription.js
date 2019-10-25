@@ -18,7 +18,7 @@ export default sequelize => {
   );
 
   AppSubscription.associate = ({ App, User }) => {
-    App.hasOne(AppSubscription);
+    App.hasMany(AppSubscription);
     AppSubscription.belongsTo(App, { foreignKey: { allowNull: false } });
     AppSubscription.belongsTo(User, { foreignKey: { allowNull: true } });
   };

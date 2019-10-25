@@ -6,6 +6,7 @@ import jsYaml from 'js-yaml';
 import { isEqual, uniqWith } from 'lodash';
 import { Op, UniqueConstraintError } from 'sequelize';
 import sharp from 'sharp';
+import webpush, { WebPushError } from 'web-push';
 
 import generateVapidToken from '../utils/generateVapidToken';
 import getAppBlocks from '../utils/getAppBlocks';
@@ -420,6 +421,83 @@ export async function patchAppSettings(ctx) {
   } catch (error) {
     handleAppValidationError(error, { ...app, ...result });
   }
+}
+
+export async function addSubscription(ctx) {
+  const { appId } = ctx.params;
+  const { App, AppSubscription } = ctx.db.models;
+  const { user } = ctx.state;
+  const { endpoint, keys } = ctx.request.body;
+
+  const app = await App.findByPk(appId, { include: [AppSubscription] });
+
+  if (!app) {
+    throw Boom.notFound('App not found');
+  }
+
+  await app.createAppSubscription({
+    endpoint,
+    p256dh: keys.p256dh,
+    auth: keys.auth,
+    UserId: user ? user.id : null,
+  });
+}
+
+export async function broadcast(ctx) {
+  const { appId } = ctx.params;
+  const { App, AppSubscription, AppNotificationKey } = ctx.db.models;
+  const { user } = ctx.state;
+  const { title, body } = ctx.request.body;
+
+  const app = await App.findByPk(appId, {
+    include: [AppSubscription, AppNotificationKey],
+  });
+
+  const { publicKey, privateKey } = app.AppNotificationKey;
+
+  if (!app) {
+    throw Boom.notFound('App not found');
+  }
+
+  if (!user.organizations.some(organization => organization.id === app.OrganizationId)) {
+    throw Boom.forbidden('User does not belong in this app’s organization.');
+  }
+
+  // XXX: Replace with paginated requests
+  app.AppSubscriptions.forEach(async subscription => {
+    try {
+      await webpush.sendNotification(
+        {
+          endpoint: subscription.endpoint,
+          keys: { auth: subscription.auth, p256dh: subscription.p256dh },
+        },
+        JSON.stringify({
+          title,
+          body,
+          icon: 'http://localhost:9999/4/icon-96.png',
+          badge: 'http://localhost:9999/4/icon-96.png',
+          timestamp: Date.now(),
+        }),
+        {
+          vapidDetails: {
+            subject: 'mailto: support@appsemble.com',
+            publicKey,
+            privateKey,
+          },
+        },
+      );
+    } catch (error) {
+      if (error instanceof WebPushError) {
+        if (error.statusCode === 410) {
+          await subscription.destroy();
+        } else {
+          throw error;
+        }
+      } else {
+        throw error;
+      }
+    }
+  });
 }
 
 export async function getAppCoreStyle(ctx) {

@@ -55,10 +55,6 @@ export default async function createServer({
     app.use(compress());
   }
 
-  if (process.env.NODE_ENV !== 'test') {
-    app.use(await frontend(webpackConfigs));
-  }
-
   app.use(
     mount(
       `/fa/${faPkg.version}`,
@@ -83,6 +79,11 @@ export default async function createServer({
       koasOperations({ operations }),
     ]),
   );
+
+  if (process.env.NODE_ENV !== 'test') {
+    app.use(await frontend(webpackConfigs));
+  }
+
   app.use(routes);
 
   return app.callback();
