@@ -5,7 +5,7 @@ export default function getAppFromRecord(record) {
     id: record.id,
     $created: record.created,
     $updated: record.updated,
-    domain: record.domain,
+    domain: record.domain || null,
     path: record.path,
     private: Boolean(record.private),
     iconUrl: `/api/apps/${record.id}/icon`,

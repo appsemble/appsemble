@@ -158,9 +158,7 @@ describe('Template API', () => {
         organizationId,
       });
 
-    const regex = /test-app-(\w){10}/;
-
     expect(status).toStrictEqual(201);
-    expect(regex.test(path)).toBe(true);
+    expect(path).toMatch(/test-app-(\w){10}/);
   });
 });
