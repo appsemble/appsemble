@@ -442,8 +442,8 @@ export async function broadcast(ctx) {
         JSON.stringify({
           title,
           body,
-          icon: `http://localhost:9999/${app.id}/icon-96.png`,
-          badge: `http://localhost:9999/${app.id}/icon-96.png`,
+          icon: `${ctx.argv.host}/${app.id}/icon-96.png`,
+          badge: `${ctx.argv.host}/${app.id}/icon-96.png`,
           timestamp: Date.now(),
         }),
         {
