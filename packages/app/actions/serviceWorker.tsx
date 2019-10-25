@@ -84,7 +84,7 @@ export function registerServiceWorkerError(): Action<typeof REGISTER_ERROR> {
 }
 
 export function requestPermission(): ServiceWorkerThunk {
-  return async (dispatch, getState) => {
+  return async dispatch => {
     dispatch({ type: PERMISSION_START });
 
     const permission = await window.Notification.requestPermission();
