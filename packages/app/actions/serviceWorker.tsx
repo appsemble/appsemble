@@ -22,7 +22,7 @@ const initialState: ServiceWorkerState = {
 
 const REGISTER_SUCCESS = 'serviceWorker/REGISTER_SUCCESS';
 const REGISTER_ERROR = 'serviceWorker/REGISTER_ERROR';
-const PERMISSION_START = 'serviceWorker/PERMISSION_START';
+const PERMISSION_PENDING = 'serviceWorker/PERMISSION_PENDING';
 const PERMISSION_GRANTED = 'serviceWorker/PERMISSION_GRANTED';
 const PERMISSION_DEFAULT = 'serviceWorker/PERMISSION_DEFAULT';
 const PERMISSION_DENIED = 'serviceWorker/PERMISSION_DENIED';
@@ -41,7 +41,7 @@ interface SetSubscribedAction extends Action<typeof SET_SUBSCRIBED> {
 type ServiceWorkerAction =
   | RegisterSuccessAction
   | Action<typeof REGISTER_ERROR>
-  | Action<typeof PERMISSION_START>
+  | Action<typeof PERMISSION_PENDING>
   | Action<typeof PERMISSION_GRANTED>
   | Action<typeof PERMISSION_DEFAULT>
   | Action<typeof PERMISSION_DENIED>
@@ -57,7 +57,7 @@ export default (
       return { ...state, registration: action.registration, subscribed: action.subscribed };
     case REGISTER_ERROR:
       return { ...state, registration: null };
-    case PERMISSION_START:
+    case PERMISSION_PENDING:
       return { ...state, permission: 'pending' };
     case PERMISSION_GRANTED:
       return { ...state, permission: 'granted' };
@@ -93,7 +93,9 @@ export function registerServiceWorkerError(): Action<typeof REGISTER_ERROR> {
 
 export function requestPermission(): ServiceWorkerThunk {
   return async (dispatch): Promise<Permission> => {
-    dispatch({ type: PERMISSION_START });
+    if (window.Notification.permission === 'default') {
+      dispatch({ type: PERMISSION_PENDING });
+    }
 
     const permission = await window.Notification.requestPermission();
     if (permission === 'granted') {
