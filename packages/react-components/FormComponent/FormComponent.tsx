@@ -19,7 +19,7 @@ export interface FormComponentProps {
   /**
    * The label element to render.
    */
-  label: JSX.Element;
+  label?: JSX.Element;
 
   /**
    * Whether or not the input is required.
@@ -36,14 +36,16 @@ export default class FormComponent extends React.Component<FormComponentProps> {
 
     return (
       <div className="field">
-        <label className="label" htmlFor={id}>
-          {label}
-          {required || (
-            <span className="is-pulled-right has-text-weight-normal">
-              (<FormattedMessage {...messages.optional} />)
-            </span>
-          )}
-        </label>
+        {label && (
+          <label className="label" htmlFor={id}>
+            {label}
+            {required || (
+              <span className="is-pulled-right has-text-weight-normal">
+                (<FormattedMessage {...messages.optional} />)
+              </span>
+            )}
+          </label>
+        )}
         <div className={classNames('control', { 'has-icons-left': iconLeft })}>{children}</div>
       </div>
     );

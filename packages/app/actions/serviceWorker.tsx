@@ -6,15 +6,17 @@ import settings from '../utils/settings';
 import urlB64ToUint8Array from '../utils/urlB64ToUint8Array';
 import { State } from '.';
 
+export type Permission = NotificationPermission | 'pending';
+
 interface ServiceWorkerState {
   registration: ServiceWorkerRegistration;
-  permission: 'unknown' | 'pending' | 'granted' | 'default' | 'denied';
+  permission: Permission;
   subscribed: boolean;
 }
 
 const initialState: ServiceWorkerState = {
   registration: null,
-  permission: 'unknown',
+  permission: 'default',
   subscribed: false,
 };
 
@@ -28,6 +30,8 @@ const SET_SUBSCRIBED = 'serviceWorker/SET_SUBSCRIBED';
 
 interface RegisterSuccessAction extends Action<typeof REGISTER_SUCCESS> {
   registration: ServiceWorkerRegistration;
+  subscribed: boolean;
+  permission: Permission;
 }
 
 interface SetSubscribedAction extends Action<typeof SET_SUBSCRIBED> {
@@ -50,7 +54,7 @@ export default (
 ): ServiceWorkerState => {
   switch (action.type) {
     case REGISTER_SUCCESS:
-      return { ...state, registration: action.registration };
+      return { ...state, registration: action.registration, subscribed: action.subscribed };
     case REGISTER_ERROR:
       return { ...state, registration: null };
     case PERMISSION_START:
@@ -62,18 +66,22 @@ export default (
     case PERMISSION_DENIED:
       return { ...state, permission: 'denied' };
     case SET_SUBSCRIBED:
-      return { ...state, subscribed: true };
+      return { ...state, subscribed: action.subscribed };
     default:
       return state;
   }
 };
 
-export function registerServiceWorker(
-  registration: ServiceWorkerRegistration,
-): RegisterSuccessAction {
-  return {
-    type: REGISTER_SUCCESS,
-    registration,
+export function registerServiceWorker(registration: ServiceWorkerRegistration): ServiceWorkerThunk {
+  return async dispatch => {
+    const subscription = await registration.pushManager.getSubscription();
+
+    dispatch({
+      type: REGISTER_SUCCESS,
+      registration,
+      subscribed: !!subscription,
+      permission: window.Notification.permission,
+    });
   };
 }
 
@@ -84,23 +92,26 @@ export function registerServiceWorkerError(): Action<typeof REGISTER_ERROR> {
 }
 
 export function requestPermission(): ServiceWorkerThunk {
-  return async dispatch => {
+  return async (dispatch): Promise<Permission> => {
     dispatch({ type: PERMISSION_START });
 
     const permission = await window.Notification.requestPermission();
     if (permission === 'granted') {
       dispatch({ type: PERMISSION_GRANTED });
-      return;
+      return permission;
     }
 
     if (permission === 'default') {
       dispatch({ type: PERMISSION_DEFAULT });
-      return;
+      return permission;
     }
 
     if (permission === 'denied') {
       dispatch({ type: PERMISSION_DENIED });
+      return permission;
     }
+
+    return permission;
   };
 }
 
@@ -124,5 +135,16 @@ export function subscribe(): ServiceWorkerThunk {
     } else {
       dispatch({ type: SET_SUBSCRIBED, subscribed: true });
     }
+  };
+}
+
+export function unsubscribe(): ServiceWorkerThunk {
+  return async (dispatch, getState) => {
+    const { registration } = getState().serviceWorker;
+    const subscription = await registration.pushManager.getSubscription();
+    if (subscription) {
+      await subscription.unsubscribe();
+    }
+    dispatch({ type: SET_SUBSCRIBED, subscribed: false });
   };
 }

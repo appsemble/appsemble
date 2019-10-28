@@ -4,6 +4,7 @@ import React from 'react';
 import { Redirect, Route, Switch } from 'react-router-dom';
 
 import settings from '../../utils/settings';
+import AppSettings from '../AppSettings';
 import Page from '../Page';
 import styles from './Main.css';
 
@@ -42,6 +43,7 @@ export default function Main({ definition = null }) {
     <main className={styles.root}>
       <Switch>
         {routes}
+        <Route component={AppSettings} exact path="/Settings" sensitive />
         <Redirect to={defaultPath} />
       </Switch>
     </main>

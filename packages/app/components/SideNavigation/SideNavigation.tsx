@@ -37,6 +37,7 @@ export default function SideNavigation({
   const currentPage = definition.pages.find(
     p => normalize(p.name) === location.pathname.split('/')[1],
   );
+
   const navigation =
     (currentPage && currentPage.navigation) || definition.navigation || 'left-menu';
   if (navigation !== 'left-menu') {
@@ -59,15 +60,21 @@ export default function SideNavigation({
             ))}
         </ul>
 
-        {user && (
-          <ul className="menu-list">
+        <ul className="menu-list">
+          <NavLink activeClassName={styles.active} to="/Settings">
+            <Icon className={styles.icon} icon="cog" />
+            <span>
+              <FormattedMessage {...messages.settings} />
+            </span>
+          </NavLink>
+          {user && (
             <li>
               <button className={styles.logoutButton} onClick={onLogout} type="button">
                 <FormattedMessage {...messages.logout} />
               </button>
             </li>
-          </ul>
-        )}
+          )}
+        </ul>
       </nav>
     </SideMenu>
   );

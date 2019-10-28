@@ -28,7 +28,7 @@ type CheckboxProps = FormComponentProps &
     /**
      * The label element to render.
      */
-    label: JSX.Element;
+    label?: JSX.Element;
   };
 
 /**
@@ -55,7 +55,7 @@ export default class Checkbox extends React.Component<CheckboxProps> {
           onChange={this.onChange}
           type="checkbox"
         />
-        <label htmlFor={id}>{help}</label>
+        {help && <label htmlFor={id}>{help}</label>}
       </FormComponent>
     );
   }
