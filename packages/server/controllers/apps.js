@@ -103,7 +103,6 @@ export async function createApp(ctx) {
       OrganizationId: app.OrganizationId,
       style: validateStyle(style),
       sharedStyle: validateStyle(sharedStyle),
-      path: app.path || normalize(app.definition.name),
       domain: app.domain || null,
       private: Boolean(app.private),
       yaml: jsYaml.safeDump(app.definition),
