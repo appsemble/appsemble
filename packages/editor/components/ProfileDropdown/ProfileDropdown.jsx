@@ -10,6 +10,8 @@ import messages from './messages';
 import styles from './ProfileDropdown.css';
 
 export default class ProfileDropdown extends Component {
+  node = React.createRef();
+
   static propTypes = {
     intl: PropTypes.shape().isRequired,
     logout: PropTypes.func.isRequired,
@@ -19,8 +21,6 @@ export default class ProfileDropdown extends Component {
   state = {
     open: false,
   };
-
-  node = React.createRef();
 
   componentDidMount() {
     document.addEventListener('click', this.onOutsideClick);

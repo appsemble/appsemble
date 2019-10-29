@@ -6,8 +6,8 @@
   },
   "peerDependencies": {
     "@appsemble/sdk": "^0.8.10",
-    "react": "^16.9.0",
-    "react-dom": "^16.9.0",
-    "react-intl": "^3.0.0"
+    "react": "^16.11.0",
+    "react-dom": "^16.11.0",
+    "react-intl": "^3.4.0"
   }
 }

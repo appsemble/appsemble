@@ -15,6 +15,8 @@ import styles from './Editor.css';
 import messages from './messages';
 
 export default class Editor extends React.Component {
+  frame = React.createRef();
+
   static propTypes = {
     app: PropTypes.shape().isRequired,
     getOpenApiSpec: PropTypes.func.isRequired,
@@ -43,8 +45,6 @@ export default class Editor extends React.Component {
     deleteDialog: false,
     organizationId: undefined,
   };
-
-  frame = React.createRef();
 
   async componentDidMount() {
     const {

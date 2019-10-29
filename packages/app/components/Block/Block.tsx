@@ -62,15 +62,15 @@ export interface BlockProps {
  * shadow DOM. Then the bootstrap function of the block definition is called.
  */
 export default class Block extends React.Component<BlockProps & RouteComponentProps> {
+  attached: boolean;
+
+  cleanups: Function[] = [];
+
   static defaultProps: Partial<BlockProps> = {
     actionCreators: null,
     blockDef: null,
     showDialog: null,
   };
-
-  attached: boolean;
-
-  cleanups: Function[] = [];
 
   componentWillUnmount(): void {
     // Run all cleanups asynchronously, so they are run in parallel, and a failing cleanup won’t

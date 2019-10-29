@@ -124,11 +124,9 @@ export default class AppSettings extends React.Component<
                   <FormattedMessage {...messages.icon} />
                 </span>
               </span>
-              {
-                <span className="file-name">
-                  {(icon && icon.name) || <FormattedMessage {...messages.noFile} />}
-                </span>
-              }
+              <span className="file-name">
+                {(icon && icon.name) || <FormattedMessage {...messages.noFile} />}
+              </span>
             </label>
           </div>
           <p className="help">
