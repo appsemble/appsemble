@@ -4,6 +4,7 @@ import yargs from 'yargs';
 
 import * as health from './commands/health';
 import * as migrate from './commands/migrate';
+import * as restoreDNS from './commands/restoreDNS';
 import * as start from './commands/start';
 
 /**
@@ -36,6 +37,7 @@ function main(argv) {
     .command(health)
     .command(start)
     .command(migrate)
+    .command(restoreDNS)
     .fail(handleError)
     .help('help', 'Show this help message.')
     .alias('h', 'help')

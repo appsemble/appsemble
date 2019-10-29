@@ -53,11 +53,21 @@ spec:
                 secretKeyRef:
                   name: {{ include "call-nested" (list . "mysql" "mysql.secretName") }}
                   key: mysql-password
-            {{ if .Values.ingress.enabled -}}
             - name: HOST
-              {{- range .Values.ingress.hosts }}
-              value: {{ . | quote }}
+              {{ if .Values.ingress.enabled -}}
+              value: {{ include "appsemble.protocol" $ }}{{ .Values.ingress.host }}
+              {{- else }}
+              value: http://{{ include "appsemble.fullname" . }}
               {{- end }}
+            {{ if .Values.ingress.enabled -}}
+            - name: APP_DOMAIN_STRATEGY
+              value: kubernetes-ingress
+            - name: INGRESS_NAME
+              value: {{ include "appsemble.fullname" . }}
+            - name: INGRESS_SERVICE_NAME
+              value: {{ include "appsemble.fullname" . }}
+            - name: INGRESS_SERVICE_PORT
+              value: {{ .Values.service.port | quote }}
             {{- end }}
             {{- with .Values.smtpSecret }}
             - name: SMTP_HOST

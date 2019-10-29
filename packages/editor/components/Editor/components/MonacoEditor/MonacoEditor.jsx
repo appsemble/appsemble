@@ -12,6 +12,10 @@ import ResizeObserver from 'resize-observer-polyfill';
 import styles from './MonacoEditor.css';
 
 export default class MonacoEditor extends React.Component {
+  node = React.createRef();
+
+  observer = null;
+
   static propTypes = {
     value: PropTypes.string,
     language: PropTypes.string.isRequired,
@@ -28,10 +32,6 @@ export default class MonacoEditor extends React.Component {
     theme: 'vs',
     options: { insertSpaces: true, tabSize: 2, minimap: { enabled: false } },
   };
-
-  node = React.createRef();
-
-  observer = null;
 
   componentDidMount() {
     const { value, language, onValueChange, onSave, options } = this.props;

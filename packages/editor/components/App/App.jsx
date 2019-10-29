@@ -6,6 +6,7 @@ import { IntlProvider } from 'react-intl';
 import { BrowserRouter, Redirect, Route, Switch } from 'react-router-dom';
 
 import settings from '../../utils/settings';
+import AnonymousRoute from '../AnonymousRoute';
 import AppContext from '../AppContext';
 import AppList from '../AppList';
 import ConnectOAuth from '../ConnectOAuth';
@@ -49,13 +50,15 @@ export default class App extends React.Component {
               <Route component={AppList} exact path="/apps" />
               <ProtectedRoute component={Settings} path="/settings" />
               <ProtectedRoute component={AppContext} path="/apps/:id(\d+)" />
-              <Route component={EditPassword} exact path="/edit-password" />
+              <AnonymousRoute component={EditPassword} exact path="/edit-password" />
               <ProtectedRoute component={OrganizationInvite} exact path="/organization-invite" />
               <Route component={VerifyEmail} exact path="/verify" />
               <Route component={AppList} exact path="/apps" />
               <Route component={ConnectOAuth} exact path="/connect" />
-              <Route component={Login} exact path="/login" />
-              {settings.enableRegistration && <Route component={Register} exact path="/register" />}
+              <AnonymousRoute component={Login} exact path="/login" />
+              {settings.enableRegistration && (
+                <AnonymousRoute component={Register} exact path="/register" />
+              )}
               <Route component={ResetPassword} exact path="/reset-password" />
               <Route component={EditPassword} exact path="/edit-password" />
               <Route component={VerifyEmail} exact path="/verify" />

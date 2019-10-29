@@ -7,7 +7,7 @@ import Icon from '../Icon';
 type InteractiveElement = HTMLInputElement | HTMLTextAreaElement;
 
 type InputProps = FormComponentProps &
-  Omit<React.HTMLProps<InteractiveElement>, 'label' | 'onChange'> & {
+  Omit<React.ComponentProps<'input' | 'textarea'>, 'label' | 'onChange' | 'ref'> & {
     /**
      * An error message to render.
      */

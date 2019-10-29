@@ -1,4 +1,9 @@
-import { Form, Input } from '@appsemble/react-components';
+import {
+  SimpleForm,
+  SimpleFormError,
+  SimpleInput,
+  SimpleSubmit,
+} from '@appsemble/react-components';
 import classNames from 'classnames';
 import * as React from 'react';
 import { FormattedMessage } from 'react-intl';
@@ -12,78 +17,57 @@ export interface ResetPasswordProps {
   requestResetPassword: (email: string) => Promise<void>;
 }
 
-export default class ResetPassword extends React.Component<ResetPasswordProps> {
-  state = {
-    email: '',
-    error: false,
-    submitting: false,
-    success: false,
-  };
+interface FormValues {
+  email: string;
+}
 
-  onChange = (event: React.ChangeEvent<HTMLInputElement>, value: string): void => {
-    this.setState({ [event.target.name]: value, error: false });
-  };
+export default function ResetPassword({
+  requestResetPassword,
+}: ResetPasswordProps): React.ReactElement {
+  const [success, setSuccess] = React.useState(false);
 
-  onSubmit = async (event: React.FormEvent): Promise<void> => {
-    event.preventDefault();
-
-    const { email } = this.state;
-    const { requestResetPassword } = this.props;
-
-    this.setState({ submitting: true, error: false });
-
-    try {
+  const submit = React.useCallback(
+    async ({ email }: FormValues): Promise<void> => {
       await requestResetPassword(email);
-      this.setState({ submitting: false, success: true });
-    } catch (error) {
-      this.setState({ error: true, submitting: false, success: false });
-    }
-  };
+      setSuccess(true);
+    },
+    [requestResetPassword],
+  );
 
-  render(): JSX.Element {
-    const { email, error, submitting, success } = this.state;
-
-    return (
-      <>
-        <HelmetIntl title={messages.title} />
-        {success ? (
-          <div className={classNames('container', styles.root)}>
-            <article className="message is-success">
-              <div className="message-body">
-                <FormattedMessage {...messages.requestSuccess} />
-              </div>
-            </article>
-          </div>
-        ) : (
-          <Form className={classNames('container', styles.root)} onSubmit={this.onSubmit}>
-            {error && (
-              <article className="message is-danger">
-                <div className="message-body">
-                  <FormattedMessage {...messages.requestFailed} />
-                </div>
-              </article>
-            )}
-            <Input
-              autoComplete="email"
-              disabled={submitting}
-              iconLeft="envelope"
-              label={<FormattedMessage {...messages.emailLabel} />}
-              name="email"
-              onChange={this.onChange}
-              required
-              type="email"
-              value={email}
-            />
-            <button
-              className={classNames('button', 'is-primary', styles.submit)}
-              disabled={submitting}
-              type="submit"
-            >
-              <FormattedMessage {...messages.requestButton} />
-            </button>
-          </Form>
-        )}
-      </>
-    );
-  }
+  return (
+    <>
+      <HelmetIntl title={messages.title} />
+      {success ? (
+        <div className={classNames('container', styles.root)}>
+          <article className="message is-success">
+            <div className="message-body">
+              <FormattedMessage {...messages.requestSuccess} />
+            </div>
+          </article>
+        </div>
+      ) : (
+        <SimpleForm
+          className={`container ${styles.root}`}
+          defaultValues={{ email: '' }}
+          onSubmit={submit}
+          resetOnSuccess
+        >
+          <SimpleFormError>
+            {() => <FormattedMessage {...messages.requestFailed} />}
+          </SimpleFormError>
+          <SimpleInput
+            autoComplete="email"
+            iconLeft="envelope"
+            label={<FormattedMessage {...messages.emailLabel} />}
+            name="email"
+            required
+            type="email"
+          />
+          <SimpleSubmit className="is-pulled-right">
+            <FormattedMessage {...messages.requestButton} />
+          </SimpleSubmit>
+        </SimpleForm>
+      )}
+    </>
+  );
 }

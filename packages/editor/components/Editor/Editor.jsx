@@ -15,6 +15,8 @@ import styles from './Editor.css';
 import messages from './messages';
 
 export default class Editor extends React.Component {
+  frame = React.createRef();
+
   static propTypes = {
     app: PropTypes.shape().isRequired,
     getOpenApiSpec: PropTypes.func.isRequired,
@@ -41,10 +43,7 @@ export default class Editor extends React.Component {
     dirty: true,
     warningDialog: false,
     deleteDialog: false,
-    organizationId: undefined,
   };
-
-  frame = React.createRef();
 
   async componentDidMount() {
     const {
@@ -65,7 +64,7 @@ export default class Editor extends React.Component {
     try {
       await getOpenApiSpec();
       // Destructuring path, and organizationId also hides these technical details for the user
-      const { path, OrganizationId, definition } = app;
+      const { path, definition } = app;
       let { yaml: recipe } = app;
 
       if (!recipe) {
@@ -84,7 +83,6 @@ export default class Editor extends React.Component {
         sharedStyle,
         initialRecipe: recipe,
         path,
-        organizationId: OrganizationId,
       });
     } catch (e) {
       if (e.response && (e.response.status === 404 || e.response.status === 401)) {
@@ -197,14 +195,16 @@ export default class Editor extends React.Component {
   };
 
   onDelete = async () => {
-    const { intl, push, match, history } = this.props;
-    const { appName, organizationId } = this.state;
+    const { app, intl, push, match, history } = this.props;
+    const { appName } = this.state;
     const { id } = match.params;
 
     try {
       await axios.delete(`/api/apps/${id}`);
       push({
-        body: intl.formatMessage(messages.deleteSuccess, { name: `@${organizationId}/${appName}` }),
+        body: intl.formatMessage(messages.deleteSuccess, {
+          name: `@${app.OrganizationId}/${appName}`,
+        }),
         color: 'info',
       });
       history.push('/apps');
@@ -268,13 +268,13 @@ export default class Editor extends React.Component {
       dirty,
       warningDialog,
       deleteDialog,
-      organizationId,
     } = this.state;
     const {
+      app,
       intl,
       location: { hash: tab },
     } = this.props;
-    const appUrl = `/@${organizationId}/${path}`;
+    const appUrl = `/@${app.OrganizationId}/${path}`;
 
     if (!recipe) {
       return <Loader />;
@@ -380,77 +380,75 @@ export default class Editor extends React.Component {
               onValueChange={onValueChange}
               value={value}
             />
-            <Modal isActive={warningDialog} onClose={this.onClose}>
-              <div className="card">
-                <header className="card-header">
-                  <p className="card-header-title">
-                    <FormattedMessage {...messages.resourceWarningTitle} />
-                  </p>
-                </header>
-                <div className="card-content">
-                  <FormattedMessage {...messages.resourceWarning} />
-                </div>
-                <footer className="card-footer">
-                  {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
-                  <a
-                    className="card-footer-item is-link"
-                    onClick={this.onClose}
-                    onKeyDown={this.onKeyDown}
-                    role="button"
-                    tabIndex="-1"
-                  >
-                    <FormattedMessage {...messages.cancel} />
-                  </a>
-                  <button
-                    className={classNames(
-                      'card-footer-item',
-                      'button',
-                      'is-warning',
-                      styles.cardFooterButton,
-                    )}
-                    onClick={this.uploadApp}
-                    type="button"
-                  >
+            <Modal
+              className="is-paddingless"
+              isActive={warningDialog}
+              onClose={this.onClose}
+              title={<FormattedMessage {...messages.resourceWarningTitle} />}
+            >
+              <div className={styles.dialogContent}>
+                <FormattedMessage {...messages.resourceWarning} />
+              </div>
+              <footer className="card-footer">
+                {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
+                <a
+                  className="card-footer-item is-link"
+                  onClick={this.onClose}
+                  onKeyDown={this.onKeyDown}
+                  role="button"
+                  tabIndex="-1"
+                >
+                  <FormattedMessage {...messages.cancel} />
+                </a>
+                <button
+                  className={classNames(
+                    'card-footer-item',
+                    'button',
+                    'is-warning',
+                    styles.cardFooterButton,
+                  )}
+                  onClick={this.uploadApp}
+                  type="button"
+                >
+                  <div className={styles.dialogContent}>
                     <FormattedMessage {...messages.publish} />
-                  </button>
-                </footer>
-              </div>
+                  </div>
+                </button>
+              </footer>
             </Modal>
-            <Modal isActive={deleteDialog} onClose={this.onClose}>
-              <div className="card">
-                <header className="card-header">
-                  <p className="card-header-title">
-                    <FormattedMessage {...messages.deleteWarningTitle} />
-                  </p>
-                </header>
-                <div className="card-content">
-                  <FormattedMessage {...messages.deleteWarning} />
-                </div>
-                <footer className="card-footer">
-                  {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
-                  <a
-                    className="card-footer-item is-link"
-                    onClick={this.onClose}
-                    onKeyDown={this.onKeyDown}
-                    role="button"
-                    tabIndex="-1"
-                  >
-                    <FormattedMessage {...messages.cancel} />
-                  </a>
-                  <button
-                    className={classNames(
-                      'card-footer-item',
-                      'button',
-                      'is-danger',
-                      styles.cardFooterButton,
-                    )}
-                    onClick={this.onDelete}
-                    type="button"
-                  >
-                    <FormattedMessage {...messages.delete} />
-                  </button>
-                </footer>
+            <Modal
+              className="is-paddingless"
+              isActive={deleteDialog}
+              onClose={this.onClose}
+              title={<FormattedMessage {...messages.deleteWarningTitle} />}
+            >
+              <div className={styles.dialogContent}>
+                <FormattedMessage {...messages.deleteWarning} />
               </div>
+              <footer className="card-footer">
+                {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
+                <a
+                  className="card-footer-item is-link"
+                  onClick={this.onClose}
+                  onKeyDown={this.onKeyDown}
+                  role="button"
+                  tabIndex="-1"
+                >
+                  <FormattedMessage {...messages.cancel} />
+                </a>
+                <button
+                  className={classNames(
+                    'card-footer-item',
+                    'button',
+                    'is-danger',
+                    styles.cardFooterButton,
+                  )}
+                  onClick={this.onDelete}
+                  type="button"
+                >
+                  <FormattedMessage {...messages.delete} />
+                </button>
+              </footer>
             </Modal>
           </Form>
         </div>

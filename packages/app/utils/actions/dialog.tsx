@@ -35,6 +35,7 @@ export default function dialog({
             close();
           },
           fullscreen: definition.fullscreen,
+          title: definition.title,
         });
       });
     },

@@ -332,6 +332,11 @@ interface DialogActionDefinition extends BaseActionDefinition<'dialog'> {
    * Blocks to render on the dialog.
    */
   blocks: Block[];
+
+  /**
+   * The title to show in the dialog.
+   */
+  title?: string;
 }
 
 interface LinkActionDefinition extends BaseActionDefinition<'link'> {
@@ -572,6 +577,11 @@ export interface App {
    * This value will be generated automatically by the API.
    */
   id?: number;
+
+  /*
+   * A domain name on which this app should be served.
+   */
+  domain?: string;
 
   /**
    * The id of the organization to which this app belongs.

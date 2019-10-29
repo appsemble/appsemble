@@ -51,6 +51,7 @@ Object {
       "themeColor": "#000000",
     },
   },
+  "domain": null,
   "iconUrl": "/api/apps/1/icon",
   "id": 1,
   "path": "test-app",

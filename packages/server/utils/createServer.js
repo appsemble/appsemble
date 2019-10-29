@@ -22,10 +22,13 @@ import raw from 'raw-body';
 
 import api from '../api';
 import * as operations from '../controllers';
+import appMapper from '../middleware/appMapper';
 import boom from '../middleware/boom';
 import frontend from '../middleware/frontend';
 import oauth2 from '../middleware/oauth2';
-import routes from '../routes';
+import tinyRouter from '../middleware/tinyRouter';
+import { appRouter, editorRouter, fallbackRouter } from '../routes';
+import bulmaHandler from '../routes/bulmaHandler';
 import Mailer from './email/Mailer';
 import oauth2Model from './oauth2Model';
 
@@ -63,6 +66,15 @@ export default async function createServer({
   );
 
   app.use(
+    tinyRouter([
+      {
+        route: /^\/bulma/,
+        get: bulmaHandler,
+      },
+    ]),
+  );
+
+  app.use(
     await koas(api(), [
       koasSpecHandler(),
       koasSwaggerUI({ url: '/api-explorer' }),
@@ -84,7 +96,7 @@ export default async function createServer({
     app.use(await frontend(webpackConfigs));
   }
 
-  app.use(routes);
+  app.use(appMapper(editorRouter, appRouter, fallbackRouter));
 
   return app.callback();
 }

@@ -27,6 +27,15 @@ export default {
         normalized version of the app name.
       `,
     },
+    domain: {
+      type: 'string',
+      format: 'hostname',
+      description: `The domain name on which this app should be served.
+
+        If this is unspecified, the app will be served from the path on the domain of the server
+        \`HOSTNAME\` variable.
+      `,
+    },
     private: {
       type: 'boolean',
       description: 'Determines whether this app should be included when fetching all apps.',

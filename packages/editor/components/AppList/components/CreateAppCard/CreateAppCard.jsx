@@ -139,14 +139,14 @@ export default class CreateAppCard extends React.Component {
             <FormattedMessage {...messages.createApp} />
           </div>
         </div>
-        <Modal isActive={modalOpen} onClose={this.onClose}>
-          <Form className="card" onSubmit={this.onCreate}>
-            <header className="card-header">
-              <div className="card-header-title">
-                <FormattedMessage {...messages.createAppTitle} />
-              </div>
-            </header>
-            <div className="card-content">
+        <Modal
+          className="is-paddingless"
+          isActive={modalOpen}
+          onClose={this.onClose}
+          title={<FormattedMessage {...messages.createAppTitle} />}
+        >
+          <Form onSubmit={this.onCreate}>
+            <div className={styles.controls}>
               <Input
                 label={<FormattedMessage {...messages.name} />}
                 maxLength={30}

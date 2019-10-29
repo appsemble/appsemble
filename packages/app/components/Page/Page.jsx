@@ -19,33 +19,6 @@ import styles from './Page.css';
  * Render an app page definition.
  */
 export default class Page extends React.Component {
-  static propTypes = {
-    appId: PropTypes.number.isRequired,
-    definition: PropTypes.shape().isRequired,
-    getBlockDefs: PropTypes.func.isRequired,
-    hasErrors: PropTypes.bool.isRequired,
-    history: PropTypes.shape().isRequired,
-    match: PropTypes.shape().isRequired,
-    /**
-     * The page definition to render
-     */
-    page: PropTypes.shape().isRequired,
-    pending: PropTypes.bool.isRequired,
-    user: PropTypes.shape(),
-  };
-
-  static defaultProps = {
-    user: null,
-  };
-
-  state = {
-    dialog: null,
-    actions: {},
-    counter: 0,
-    currentPage: 0,
-    data: {},
-  };
-
   flowActions = {
     next: async data => {
       const { currentPage } = this.state;
@@ -83,6 +56,33 @@ export default class Page extends React.Component {
       await this.actions.onFlowCancel.dispatch(data);
       this.setState({ data });
     },
+  };
+
+  static propTypes = {
+    appId: PropTypes.number.isRequired,
+    definition: PropTypes.shape().isRequired,
+    getBlockDefs: PropTypes.func.isRequired,
+    hasErrors: PropTypes.bool.isRequired,
+    history: PropTypes.shape().isRequired,
+    match: PropTypes.shape().isRequired,
+    /**
+     * The page definition to render
+     */
+    page: PropTypes.shape().isRequired,
+    pending: PropTypes.bool.isRequired,
+    user: PropTypes.shape(),
+  };
+
+  static defaultProps = {
+    user: null,
+  };
+
+  state = {
+    dialog: null,
+    actions: {},
+    counter: 0,
+    currentPage: 0,
+    data: {},
   };
 
   constructor(props) {

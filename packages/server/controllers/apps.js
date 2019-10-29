@@ -105,6 +105,7 @@ export async function createApp(ctx) {
       OrganizationId: app.OrganizationId,
       style: validateStyle(style),
       sharedStyle: validateStyle(sharedStyle),
+      domain: app.domain || null,
       private: Boolean(app.private),
       yaml: jsYaml.safeDump(app.definition),
     };
@@ -192,6 +193,7 @@ export async function updateApp(ctx) {
       definition: app.definition,
       style: validateStyle(style && style.contents),
       sharedStyle: validateStyle(sharedStyle && sharedStyle.contents),
+      domain: app.domain,
       path: app.path || normalize(app.definition.name),
       yaml: yaml && yaml.toString('utf8'),
     };
@@ -259,6 +261,10 @@ export async function patchApp(ctx) {
 
       if (app.private !== undefined) {
         result.private = app.private;
+      }
+
+      if (app.domain != null) {
+        result.domain = app.domain;
       }
     }
 
