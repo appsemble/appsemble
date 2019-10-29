@@ -27,9 +27,9 @@ export default function PageDialog({
   });
 
   return (
-    <Modal isActive={!!dialog} onClose={dialog && dialog.close}>
+    <Modal isActive={!!dialog} onClose={dialog && dialog.close} title={dialog && dialog.title}>
       {dialog && (
-        <div className={classNames('card', { [styles.fullscreen]: dialog.fullscreen })}>
+        <div className={classNames({ [styles.fullscreen]: dialog.fullscreen })}>
           <BlockList
             actionCreators={dialog.actionCreators}
             blocks={dialog.blocks}

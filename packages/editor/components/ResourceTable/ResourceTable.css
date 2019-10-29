@@ -24,8 +24,8 @@
 }
 
 .cardFooterButton {
-  /* background: none !important; */
   border: none;
+  border-radius: 0;
   color: var(--link-color);
   cursor: pointer;
   font: inherit;
@@ -35,4 +35,8 @@
   &:hover {
     color: hsl(0, 0%, 21%);
   }
+}
+
+.dialogContent {
+  padding: 20px;
 }

@@ -380,77 +380,75 @@ export default class Editor extends React.Component {
               onValueChange={onValueChange}
               value={value}
             />
-            <Modal isActive={warningDialog} onClose={this.onClose}>
-              <div className="card">
-                <header className="card-header">
-                  <p className="card-header-title">
-                    <FormattedMessage {...messages.resourceWarningTitle} />
-                  </p>
-                </header>
-                <div className="card-content">
-                  <FormattedMessage {...messages.resourceWarning} />
-                </div>
-                <footer className="card-footer">
-                  {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
-                  <a
-                    className="card-footer-item is-link"
-                    onClick={this.onClose}
-                    onKeyDown={this.onKeyDown}
-                    role="button"
-                    tabIndex="-1"
-                  >
-                    <FormattedMessage {...messages.cancel} />
-                  </a>
-                  <button
-                    className={classNames(
-                      'card-footer-item',
-                      'button',
-                      'is-warning',
-                      styles.cardFooterButton,
-                    )}
-                    onClick={this.uploadApp}
-                    type="button"
-                  >
+            <Modal
+              className="is-paddingless"
+              isActive={warningDialog}
+              onClose={this.onClose}
+              title={<FormattedMessage {...messages.resourceWarningTitle} />}
+            >
+              <div className={styles.dialogContent}>
+                <FormattedMessage {...messages.resourceWarning} />
+              </div>
+              <footer className="card-footer">
+                {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
+                <a
+                  className="card-footer-item is-link"
+                  onClick={this.onClose}
+                  onKeyDown={this.onKeyDown}
+                  role="button"
+                  tabIndex="-1"
+                >
+                  <FormattedMessage {...messages.cancel} />
+                </a>
+                <button
+                  className={classNames(
+                    'card-footer-item',
+                    'button',
+                    'is-warning',
+                    styles.cardFooterButton,
+                  )}
+                  onClick={this.uploadApp}
+                  type="button"
+                >
+                  <div className={styles.dialogContent}>
                     <FormattedMessage {...messages.publish} />
-                  </button>
-                </footer>
-              </div>
+                  </div>
+                </button>
+              </footer>
             </Modal>
-            <Modal isActive={deleteDialog} onClose={this.onClose}>
-              <div className="card">
-                <header className="card-header">
-                  <p className="card-header-title">
-                    <FormattedMessage {...messages.deleteWarningTitle} />
-                  </p>
-                </header>
-                <div className="card-content">
-                  <FormattedMessage {...messages.deleteWarning} />
-                </div>
-                <footer className="card-footer">
-                  {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
-                  <a
-                    className="card-footer-item is-link"
-                    onClick={this.onClose}
-                    onKeyDown={this.onKeyDown}
-                    role="button"
-                    tabIndex="-1"
-                  >
-                    <FormattedMessage {...messages.cancel} />
-                  </a>
-                  <button
-                    className={classNames(
-                      'card-footer-item',
-                      'button',
-                      'is-danger',
-                      styles.cardFooterButton,
-                    )}
-                    onClick={this.onDelete}
-                    type="button"
-                  >
-                    <FormattedMessage {...messages.delete} />
-                  </button>
-                </footer>
+            <Modal
+              className="is-paddingless"
+              isActive={deleteDialog}
+              onClose={this.onClose}
+              title={<FormattedMessage {...messages.deleteWarningTitle} />}
+            >
+              <div className={styles.dialogContent}>
+                <FormattedMessage {...messages.deleteWarning} />
               </div>
+              <footer className="card-footer">
+                {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
+                <a
+                  className="card-footer-item is-link"
+                  onClick={this.onClose}
+                  onKeyDown={this.onKeyDown}
+                  role="button"
+                  tabIndex="-1"
+                >
+                  <FormattedMessage {...messages.cancel} />
+                </a>
+                <button
+                  className={classNames(
+                    'card-footer-item',
+                    'button',
+                    'is-danger',
+                    styles.cardFooterButton,
+                  )}
+                  onClick={this.onDelete}
+                  type="button"
+                >
+                  <FormattedMessage {...messages.delete} />
+                </button>
+              </footer>
             </Modal>
           </Form>
         </div>

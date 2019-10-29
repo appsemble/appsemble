@@ -19,3 +19,7 @@
 .buttonGroup > button:not(:first-child) {
   margin-left: 0.75rem;
 }
+
+.dialogContent {
+  padding: 20px;
+}

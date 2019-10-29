@@ -332,6 +332,11 @@ interface DialogActionDefinition extends BaseActionDefinition<'dialog'> {
    * Blocks to render on the dialog.
    */
   blocks: Block[];
+
+  /**
+   * The title to show in the dialog.
+   */
+  title?: string;
 }
 
 interface LinkActionDefinition extends BaseActionDefinition<'link'> {
