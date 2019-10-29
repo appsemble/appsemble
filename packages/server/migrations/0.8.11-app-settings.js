@@ -7,6 +7,10 @@ export default {
     const queryInterface = db.getQueryInterface();
 
     await queryInterface.removeColumn('App', 'description');
+    await queryInterface.addColumn('App', 'domain', {
+      type: DataTypes.STRING(253),
+      allowNull: true,
+    });
     await queryInterface.addColumn('App', 'private', {
       type: DataTypes.BOOLEAN,
       defaultValue: false,
@@ -49,6 +53,7 @@ export default {
       ),
     );
 
+    await queryInterface.removeColumn('App', 'domain');
     await queryInterface.removeColumn('App', 'private');
     await queryInterface.addColumn('App', 'description', {
       type: DataTypes.STRING(80),
