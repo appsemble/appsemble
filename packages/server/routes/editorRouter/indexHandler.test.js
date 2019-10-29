@@ -1,7 +1,7 @@
 import Koa from 'koa';
 import request from 'supertest';
 
-import createServer from '../../utils/createServer';
+import editorRouter from '.';
 
 let app;
 let templateName;
@@ -9,6 +9,7 @@ let templateData;
 
 beforeEach(() => {
   app = new Koa();
+  app.context.argv = {};
   app.use(async (ctx, next) => {
     ctx.state.render = async (template, data) => {
       templateName = template;
@@ -17,11 +18,11 @@ beforeEach(() => {
     };
     return next();
   });
+  app.use(editorRouter);
 });
 
 it('should serve the editor index page with correct headers', async () => {
-  const server = await createServer({ app, db: { models: {} } });
-  const response = await request(server).get('/');
+  const response = await request(app.callback()).get('/');
   expect(response.type).toBe('text/html');
   expect(response.text).toBe('<!doctype html>');
   expect(response.headers['content-security-policy']).toBe(
@@ -39,18 +40,14 @@ it('should serve the editor index page with correct headers', async () => {
 });
 
 it('should pass login options from argv to the editor', async () => {
-  const server = await createServer({
-    app,
-    argv: {
-      disableRegistration: true,
-      host: 'http://localhost:9999',
-      oauthGitlabKey: 'GitLab secret',
-      oauthGoogleKey: 'Google secret',
-      sentryDsn: 'https://secret@sentry.io/path',
-    },
-    db: { models: {} },
-  });
-  const response = await request(server).get('/');
+  app.context.argv = {
+    disableRegistration: true,
+    host: 'http://localhost:9999',
+    oauthGitlabKey: 'GitLab secret',
+    oauthGoogleKey: 'Google secret',
+    sentryDsn: 'https://secret@sentry.io/path',
+  };
+  const response = await request(app.callback()).get('/');
   expect(response.type).toBe('text/html');
   expect(response.text).toBe('<!doctype html>');
   expect(response.headers['content-security-policy']).toBe(
@@ -65,12 +62,6 @@ it('should pass login options from argv to the editor', async () => {
   expect(templateName).toBe('editor.html');
   expect(templateData).toStrictEqual({
     settings:
-      '<script>' +
-      'window.settings={' +
-      '"enableRegistration":false,' +
-      '"logins":["gitlab","google"],' +
-      '"sentryDsn":"https://secret@sentry.io/path"' +
-      '}' +
-      '</script>',
+      '<script>window.settings={"enableRegistration":false,"logins":["gitlab","google"],"sentryDsn":"https://secret@sentry.io/path"}</script>',
   });
 });

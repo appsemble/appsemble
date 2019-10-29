@@ -70,7 +70,7 @@ helm upgrade my-release config/charts/appsemble --set 'mysql.existingSecret=mysq
 | `service.port`           | 80                    | The HTTP port on which the Appsemble service will be exposed to the cluster.                                                                                |
 | `ingress.enabled`        | `true`                | Whether or not the the service should be exposed through an ingress.                                                                                        |
 | `ingress.annotations`    |                       | Annotations for the Appsemble ingress.                                                                                                                      |
-| `ingress.hosts`          | `[]`                  | The hosts names on which the ingress will expose the service.                                                                                               |
+| `ingress.host`           | `''`                  | The hosts name on which the ingress will expose the service.                                                                                                |
 | `ingress.tls.secretName` | `nil`                 | The secret name to use to configure TLS.                                                                                                                    |
 | `resources`              | `{}`                  |                                                                                                                                                             |
 | `nodeSelector`           | `{}`                  |                                                                                                                                                             |

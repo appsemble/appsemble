@@ -1,5 +1,9 @@
 /**
- * A pattern for matching a lower case hyphen separated string.
+ * A pattern for extracting a normalized string.
  */
-// eslint-disable-next-line import/prefer-default-export
-export const normalized = /^[a-z\d](((?!.*--)[a-z\d-])*[a-z\d])?$/;
+export const partialNormalized = /([a-z\d](?:(?!.*--)[a-z\d-]*[a-z\d])?)/;
+
+/**
+ * A pattern for exactly matching a lower case hyphen separated string.
+ */
+export const normalized = new RegExp(`^${partialNormalized.source}$`);

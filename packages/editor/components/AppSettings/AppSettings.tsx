@@ -15,11 +15,12 @@ export interface AppSettingsProps extends RouteComponentProps<{ id: string }> {
 }
 
 interface AppSettingsState {
+  domain?: string;
   path: string;
   icon: File;
   iconUrl: string;
   private: boolean;
-  originalValues: { path: string; private: boolean };
+  originalValues: { domain?: string; path: string; private: boolean };
   dirty: boolean;
 }
 
@@ -28,8 +29,9 @@ export default class AppSettings extends React.Component<
   AppSettingsState
 > {
   state: AppSettingsState = {
-    private: undefined,
-    path: undefined,
+    domain: '',
+    private: null,
+    path: '',
     icon: undefined,
     iconUrl: `/api/apps/${this.props.match.params.id}/icon`,
     originalValues: undefined,
@@ -39,17 +41,26 @@ export default class AppSettings extends React.Component<
   async componentDidMount(): Promise<void> {
     const { app } = this.props;
 
-    this.setState({ path: app.path, private: app.private, originalValues: app });
+    this.setState({
+      domain: app.domain,
+      path: app.path,
+      private: app.private,
+      originalValues: app,
+    });
   }
 
   onSubmit = async (event: FormEvent): Promise<void> => {
     event.preventDefault();
 
     const { app, push, intl } = this.props;
-    const { path, private: isPrivate, icon, originalValues } = this.state;
+    const { domain, path, private: isPrivate, icon, originalValues } = this.state;
 
     const data = new FormData();
     const newSettings: Partial<App> = {};
+
+    if (domain !== originalValues.domain) {
+      newSettings.domain = domain;
+    }
 
     if (path !== originalValues.path) {
       newSettings.path = path;
@@ -63,7 +74,7 @@ export default class AppSettings extends React.Component<
       data.set('icon', icon);
     }
 
-    if (newSettings.path || newSettings.private !== undefined) {
+    if (Object.keys(newSettings).length) {
       data.set('app', JSON.stringify(newSettings));
     }
 
@@ -99,7 +110,7 @@ export default class AppSettings extends React.Component<
   };
 
   render(): JSX.Element {
-    const { iconUrl, icon, private: isPrivate, path, dirty } = this.state;
+    const { domain, iconUrl, icon, private: isPrivate, path, dirty } = this.state;
     const { app, intl } = this.props;
 
     return (
@@ -157,7 +168,15 @@ export default class AppSettings extends React.Component<
           name="path"
           onChange={this.onChange}
           placeholder={normalize(app.definition.name)}
+          required
           value={path}
+        />
+        <Input
+          help={<FormattedMessage {...messages.domainDescription} />}
+          label={<FormattedMessage {...messages.domain} />}
+          name="domain"
+          onChange={this.onChange}
+          value={domain}
         />
         <button className="button" disabled={!dirty} type="submit">
           <FormattedMessage {...messages.saveChanges} />

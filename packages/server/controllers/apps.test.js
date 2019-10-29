@@ -91,6 +91,7 @@ describe('app controller', () => {
       id: appA.id,
       $created: new Date(clock.now).toJSON(),
       $updated: new Date(clock.now).toJSON(),
+      domain: null,
       private: false,
       path: 'test-app',
       iconUrl: `/api/apps/${appA.id}/icon`,
@@ -104,6 +105,7 @@ defaultPage: Test Page
       id: appB.id,
       $created: new Date(clock.now).toJSON(),
       $updated: new Date(clock.now).toJSON(),
+      domain: null,
       private: false,
       path: 'another-app',
       iconUrl: `/api/apps/${appB.id}/icon`,
@@ -140,6 +142,7 @@ defaultPage: Another Page
       id: appA.id,
       $created: new Date(clock.now).toJSON(),
       $updated: new Date(clock.now).toJSON(),
+      domain: null,
       private: false,
       path: 'test-app',
       iconUrl: `/api/apps/${appA.id}/icon`,
@@ -173,6 +176,7 @@ defaultPage: Test Page
       id: appA.id,
       $created: new Date(clock.now).toJSON(),
       $updated: new Date(clock.now).toJSON(),
+      domain: null,
       private: false,
       path: 'test-app',
       iconUrl: `/api/apps/${appA.id}/icon`,
@@ -220,6 +224,7 @@ defaultPage: Test Page
         id: appA.id,
         $created: new Date(clock.now).toJSON(),
         $updated: new Date(clock.now).toJSON(),
+        domain: null,
         private: false,
         path: 'test-app',
         iconUrl: `/api/apps/${appA.id}/icon`,
@@ -235,6 +240,7 @@ defaultPage: Test Page
         id: appA.id,
         $created: new Date(clock.now).toJSON(),
         $updated: new Date(clock.now).toJSON(),
+        domain: null,
         private: false,
         path: 'test-app',
         iconUrl: `/api/apps/${appA.id}/icon`,
@@ -248,6 +254,7 @@ defaultPage: Test Page
         id: appB.id,
         $created: new Date(clock.now).toJSON(),
         $updated: new Date(clock.now).toJSON(),
+        domain: null,
         private: false,
         path: 'test-app-b',
         iconUrl: `/api/apps/${appB.id}/icon`,
@@ -291,6 +298,7 @@ defaultPage: Test Page
       id: created.id,
       $created: new Date(clock.now).toJSON(),
       $updated: new Date(clock.now).toJSON(),
+      domain: null,
       private: false,
       path: 'test-app',
       iconUrl: `/api/apps/${created.id}/icon`,
@@ -612,9 +620,8 @@ pages:
         }),
       );
 
-    const regex = /test-app-(\w){10}/;
     expect(response.status).toStrictEqual(201);
-    expect(regex.test(response.body.path)).toBe(true);
+    expect(response.body.path).toMatch(/test-app-(\w){10}/);
   });
 
   it('should allow stylesheets to be included when creating an app', async () => {
@@ -826,6 +833,7 @@ pages:
       id: appA.id,
       $created: new Date(clock.now).toJSON(),
       $updated: new Date(clock.now).toJSON(),
+      domain: null,
       private: false,
       path: 'test-app',
       iconUrl: `/api/apps/${appA.id}/icon`,

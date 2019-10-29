@@ -101,7 +101,7 @@ export function builder(yargs) {
     .option('host', {
       desc:
         'The external host on which the server is available. This should include the protocol, hostname, and optionally the port.',
-      default: 'http://localhost:9999',
+      required: true,
     })
     .option('ssl', {
       desc:

@@ -43,7 +43,6 @@ export default class Editor extends React.Component {
     dirty: true,
     warningDialog: false,
     deleteDialog: false,
-    organizationId: undefined,
   };
 
   async componentDidMount() {
@@ -65,7 +64,7 @@ export default class Editor extends React.Component {
     try {
       await getOpenApiSpec();
       // Destructuring path, and organizationId also hides these technical details for the user
-      const { path, OrganizationId, definition } = app;
+      const { path, definition } = app;
       let { yaml: recipe } = app;
 
       if (!recipe) {
@@ -84,7 +83,6 @@ export default class Editor extends React.Component {
         sharedStyle,
         initialRecipe: recipe,
         path,
-        organizationId: OrganizationId,
       });
     } catch (e) {
       if (e.response && (e.response.status === 404 || e.response.status === 401)) {
@@ -197,14 +195,16 @@ export default class Editor extends React.Component {
   };
 
   onDelete = async () => {
-    const { intl, push, match, history } = this.props;
-    const { appName, organizationId } = this.state;
+    const { app, intl, push, match, history } = this.props;
+    const { appName } = this.state;
     const { id } = match.params;
 
     try {
       await axios.delete(`/api/apps/${id}`);
       push({
-        body: intl.formatMessage(messages.deleteSuccess, { name: `@${organizationId}/${appName}` }),
+        body: intl.formatMessage(messages.deleteSuccess, {
+          name: `@${app.OrganizationId}/${appName}`,
+        }),
         color: 'info',
       });
       history.push('/apps');
@@ -268,13 +268,13 @@ export default class Editor extends React.Component {
       dirty,
       warningDialog,
       deleteDialog,
-      organizationId,
     } = this.state;
     const {
+      app,
       intl,
       location: { hash: tab },
     } = this.props;
-    const appUrl = `/@${organizationId}/${path}`;
+    const appUrl = `/@${app.OrganizationId}/${path}`;
 
     if (!recipe) {
       return <Loader />;

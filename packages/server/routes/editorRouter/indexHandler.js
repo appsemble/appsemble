@@ -5,7 +5,7 @@ import sentryDsnToReportUri from '../../utils/sentryDsnToReportUri';
 /**
  * Serve `index.html` for editor related routes.
  */
-export default async function editorHandler(ctx) {
+export default async function indexHandler(ctx) {
   const { render } = ctx.state;
   const { argv } = ctx;
   const { disableRegistration, sentryDsn } = argv;

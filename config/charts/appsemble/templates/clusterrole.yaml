@@ -1,0 +1,24 @@
+{{- if .Values.ingress.enabled -}}
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: {{ include "appsemble.fullname" . }}
+  labels:
+    app: {{ .Values.app }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    app.kubernetes.io/name: {{ include "appsemble.name" . }}
+    app.kubernetes.io/version: {{ .Chart.AppVersion }}
+    helm.sh/chart: {{ include "appsemble.chart" . }}
+rules:
+  - apiGroups:
+      - networking.k8s.io
+    resources:
+      - ingresses
+    verbs:
+      - get
+      - patch
+    resourceNames:
+      # This should match the name of the ingress
+      - {{ include "appsemble.fullname" . }}
+{{ end }}

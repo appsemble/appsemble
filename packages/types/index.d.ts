@@ -578,6 +578,11 @@ export interface App {
    */
   id?: number;
 
+  /*
+   * A domain name on which this app should be served.
+   */
+  domain?: string;
+
   /**
    * The id of the organization to which this app belongs.
    */
