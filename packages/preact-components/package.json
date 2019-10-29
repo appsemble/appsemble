@@ -10,6 +10,6 @@
     "leaflet": "^1.5.1"
   },
   "peerDependencies": {
-    "preact": "^10.0.0"
+    "preact": "^10.0.3"
   }
 }
