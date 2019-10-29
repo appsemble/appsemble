@@ -4,7 +4,7 @@ import classNames from 'classnames';
 import React from 'react';
 
 export interface SocialLoginButtonProps {
-  className: string;
+  className?: string;
   children: React.ReactChild;
   providerUri: string;
   iconClass: IconName;

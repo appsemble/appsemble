@@ -10,3 +10,7 @@ export { default as Location } from './Location';
 export { default as Message, UniqueMessage } from './Message';
 export { default as Modal } from './Modal';
 export { default as Select } from './Select';
+export { default as SimpleForm } from './SimpleForm';
+export { default as SimpleFormError } from './SimpleFormError';
+export { default as SimpleInput } from './SimpleInput';
+export { default as SimpleSubmit } from './SimpleSubmit';
