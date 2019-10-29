@@ -17,9 +17,7 @@ export default function SimpleFormError({
     <div
       className={classNames('message is-danger', styles.root, { [styles.hidden]: !submitError })}
     >
-      <div className="message-body">
-        <Children error={submitError} />
-      </div>
+      <div className="message-body">{submitError && <Children error={submitError} />}</div>
     </div>
   );
 }
