@@ -4,7 +4,7 @@ import * as React from 'react';
 import FormComponent, { FormComponentProps } from '../FormComponent';
 
 type CheckboxProps = FormComponentProps &
-  Omit<React.HTMLProps<HTMLInputElement>, 'value'> & {
+  Omit<React.HTMLProps<HTMLInputElement>, 'value' | 'label' | 'onChange'> & {
     /**
      * The name of the HTML element.
      */
@@ -24,6 +24,11 @@ type CheckboxProps = FormComponentProps &
      * Whether or not the checkbox is checked.
      */
     value: boolean;
+
+    /**
+     * The label element to render.
+     */
+    label: JSX.Element;
   };
 
 /**

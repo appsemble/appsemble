@@ -368,7 +368,7 @@ export default class OrganizationsSettings extends Component {
             </div>
           </Form>
 
-          {!!organizations.length && (
+          {!!organizations.length && organization && (
             <>
               <h2>
                 <FormattedMessage {...messages.manageOrganization} />

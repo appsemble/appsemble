@@ -20,7 +20,8 @@ export default sequelize => {
     },
     {
       freezeTableName: true,
-      paranoid: true,
+      // XXX: Setting this to true causes issues with the test truncate() function.
+      paranoid: false,
       createdAt: 'created',
       updatedAt: 'updated',
       deletedAt: 'deleted',

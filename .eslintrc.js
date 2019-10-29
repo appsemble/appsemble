@@ -165,7 +165,7 @@ module.exports = {
         'jest/prefer-todo': 'error',
         'jest/prefer-spy-on': 'error',
         'jest/prefer-strict-equal': 'error',
-        'jest/require-tothrow-message': 'error',
+        'jest/require-to-throw-message': 'error',
         'jest/valid-describe': 'error',
         'jest/valid-expect-in-promise': 'error',
         'jest/valid-expect': 'error',

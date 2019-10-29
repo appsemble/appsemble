@@ -10,6 +10,8 @@ import messages from './messages';
 import styles from './ProfileDropdown.css';
 
 export default class ProfileDropdown extends Component {
+  node = React.createRef();
+
   static propTypes = {
     intl: PropTypes.shape().isRequired,
     logout: PropTypes.func.isRequired,
@@ -19,8 +21,6 @@ export default class ProfileDropdown extends Component {
   state = {
     open: false,
   };
-
-  node = React.createRef();
 
   componentDidMount() {
     document.addEventListener('click', this.onOutsideClick);
@@ -58,7 +58,7 @@ export default class ProfileDropdown extends Component {
       <div ref={this.node}>
         <div className={classNames('dropdown', 'is-right', { 'is-active': open })}>
           <div className="dropdown-trigger">
-            <button aria-haspopup="true" className="button" onClick={this.onClick} type="button">
+            <button aria-haspopup className="button" onClick={this.onClick} type="button">
               <figure className="image is-32x32">
                 <img
                   alt="profile"

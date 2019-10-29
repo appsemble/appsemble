@@ -5,7 +5,7 @@ import BottomNavigation from './BottomNavigation';
 
 function mapStateToProps(state: State): Partial<React.ComponentProps<typeof BottomNavigation>> {
   return {
-    app: state.app.app,
+    definition: state.app.definition,
   };
 }
 

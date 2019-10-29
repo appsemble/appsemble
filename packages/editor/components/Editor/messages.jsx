@@ -14,7 +14,6 @@ export default defineMessages({
   deleteSuccess: 'Succesfully deleted app {name}',
   errorDelete: 'Something went wrong trying to delete this app',
   errorUpdate: 'Something went wrong trying to update the app recipe',
-  errorUpdateIcon: 'Something went wrong trying to update the app icon',
   forbidden: 'User is not allowed to update this app',
   invalidYaml: 'Invalid YAML',
   invalidStyle: 'Invalid CSS',
@@ -23,7 +22,6 @@ export default defineMessages({
   resourceWarningTitle: 'Resource warning',
   resourceWarning:
     'The resource definitions in this app recipe contain different data from the original. This may cause unexpected results when using older data.',
-  icon: 'Icon',
   preview: 'Preview',
   publish: 'Publish',
   viewLive: 'View live',

@@ -4,12 +4,13 @@ import React from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Link } from 'react-router-dom';
 
+import settings from '../../utils/settings';
 import HelmetIntl from '../HelmetIntl';
 import SocialLoginButton from '../SocialLoginButton';
 import styles from './Login.css';
 import messages from './messages';
 
-const loginMethods = new Set(window.settings.logins);
+const loginMethods = new Set(settings.logins);
 
 export default class Login extends React.Component {
   static propTypes = {
@@ -63,7 +64,7 @@ export default class Login extends React.Component {
           passwordLogin={this.onPasswordLogin}
         />
         <div className={styles.links}>
-          {window.settings.enableRegistration && (
+          {settings.enableRegistration && (
             <Link
               className={styles.registerLink}
               to={{ pathname: '/register', search: location.search, hash: location.hash }}
