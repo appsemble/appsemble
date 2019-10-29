@@ -15,8 +15,7 @@ import styles from './EditPassword.css';
 import messages from './messages';
 
 interface EditPasswordProps {
-  // XXX define type
-  resetPassword: any;
+  resetPassword: (token: string, password: string) => Promise<void>;
 }
 
 export default function EditPassword({ resetPassword }: EditPasswordProps): React.ReactElement {

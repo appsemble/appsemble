@@ -18,10 +18,14 @@ interface RegistrationFormValues {
 }
 
 interface RegisterProps {
-  // XXX define type
-  registerEmail: any;
-  // XXX define type
-  passwordLogin: any;
+  registerEmail: (email: string, password: string) => Promise<void>;
+  passwordLogin: (
+    url: string,
+    { username, password }: { username: string; password: string },
+    refreshURL: string,
+    clientId: string,
+    scope: string,
+  ) => Promise<void>;
 }
 
 export default function Register({

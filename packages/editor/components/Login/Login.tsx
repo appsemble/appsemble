@@ -20,8 +20,13 @@ interface LoginFormValues {
 }
 
 interface LoginProps {
-  // XXX define type
-  passwordLogin: any;
+  passwordLogin: (
+    url: string,
+    { username, password }: { username: string; password: string },
+    refreshURL: string,
+    clientId: string,
+    scope: string,
+  ) => Promise<void>;
 }
 
 const loginMethods = new Set(settings.logins);
