@@ -7,7 +7,7 @@ export default defineMessages({
   registerSuccess:
     'Successfully registered! Please check your email for instructions on verifying your account.',
   passwordLabel: 'Password',
-  usernameLabel: 'Email',
+  emailLabel: 'Email',
   organizationLabel: 'Organization',
   optional: 'Optional',
   emailConflict: 'This email address has already been registered.',

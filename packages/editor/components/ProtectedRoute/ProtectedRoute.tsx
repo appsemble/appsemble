@@ -1,23 +1,25 @@
 import * as React from 'react';
-import { Redirect, Route, RouteComponentProps } from 'react-router-dom';
+import { Redirect, Route, RouteComponentProps, useLocation } from 'react-router-dom';
 
+import useQuery from '../../hooks/useQuery';
 import { User } from '../../types';
 
 export interface ProtectedRouteProps extends RouteComponentProps {
   user: User;
 }
 
-export default class ProtectedRoute extends React.Component<ProtectedRouteProps> {
-  render(): React.ReactNode {
-    const { user, ...props } = this.props;
+export default function ProtectedRoute({
+  user,
+  ...props
+}: ProtectedRouteProps): React.ReactElement {
+  const location = useLocation();
+  const qs = useQuery();
 
-    if (!user) {
-      const { location } = props;
-      const search = new URLSearchParams();
-      search.set('redirect', `${location.pathname}${location.search}${location.hash}`);
-      return <Redirect to={{ pathname: '/login', search: `?${search}` }} />;
-    }
-
-    return <Route {...props} />;
+  if (!user) {
+    const search = new URLSearchParams(qs);
+    search.set('redirect', `${location.pathname}${location.search}${location.hash}`);
+    return <Redirect to={{ pathname: '/login', search: `?${search}` }} />;
   }
+
+  return <Route {...props} />;
 }

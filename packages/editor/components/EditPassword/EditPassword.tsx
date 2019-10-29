@@ -5,34 +5,35 @@ import {
   SimpleSubmit,
 } from '@appsemble/react-components';
 import classNames from 'classnames';
-import * as React from 'react';
+import React from 'react';
 import { FormattedMessage } from 'react-intl';
+import { Redirect } from 'react-router-dom';
 
+import useQuery from '../../hooks/useQuery';
 import HelmetIntl from '../HelmetIntl';
+import styles from './EditPassword.css';
 import messages from './messages';
-import styles from './ResetPassword.css';
 
-export interface ResetPasswordProps {
-  // XXX ReturnType<actions.user.requestResetPassword>
-  requestResetPassword: (email: string) => Promise<void>;
+interface EditPasswordProps {
+  // XXX define type
+  resetPassword: any;
 }
 
-interface FormValues {
-  email: string;
-}
-
-export default function ResetPassword({
-  requestResetPassword,
-}: ResetPasswordProps): React.ReactElement {
+export default function EditPassword({ resetPassword }: EditPasswordProps): React.ReactElement {
+  const qs = useQuery();
   const [success, setSuccess] = React.useState(false);
-
+  const token = qs.get('token');
   const submit = React.useCallback(
-    async ({ email }: FormValues): Promise<void> => {
-      await requestResetPassword(email);
+    async ({ password }) => {
+      await resetPassword(token, password);
       setSuccess(true);
     },
-    [requestResetPassword],
+    [resetPassword, token],
   );
+
+  if (!token) {
+    return <Redirect to="/apps" />;
+  }
 
   return (
     <>
@@ -46,22 +47,16 @@ export default function ResetPassword({
           </article>
         </div>
       ) : (
-        <SimpleForm
-          className={`container ${styles.root}`}
-          defaultValues={{ email: '' }}
-          onSubmit={submit}
-          resetOnSuccess
-        >
+        <SimpleForm className={styles.root} defaultValues={{ password: '' }} onSubmit={submit}>
           <SimpleFormError>
             {() => <FormattedMessage {...messages.requestFailed} />}
           </SimpleFormError>
           <SimpleInput
-            autoComplete="email"
-            iconLeft="envelope"
-            label={<FormattedMessage {...messages.emailLabel} />}
-            name="email"
+            autoComplete="new-password"
+            label={<FormattedMessage {...messages.passwordLabel} />}
+            name="password"
             required
-            type="email"
+            type="password"
           />
           <SimpleSubmit className="is-pulled-right">
             <FormattedMessage {...messages.requestButton} />
