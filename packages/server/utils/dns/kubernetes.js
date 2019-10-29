@@ -69,18 +69,20 @@ export default async function kubernetes({
     });
     await axios.patch(
       url,
-      domains.flatMap(domain => [
-        {
-          op: 'add',
-          path: '/spec/rules/-',
-          value: formatRule(domain),
-        },
-        {
-          op: 'add',
-          path: '/spec/tls/-',
-          value: formatTLS(domain),
-        },
-      ]),
+      [].concat(
+        ...domains.map(domain => [
+          {
+            op: 'add',
+            path: '/spec/rules/-',
+            value: formatRule(domain),
+          },
+          {
+            op: 'add',
+            path: '/spec/tls/-',
+            value: formatTLS(domain),
+          },
+        ]),
+      ),
       config,
     );
   }
