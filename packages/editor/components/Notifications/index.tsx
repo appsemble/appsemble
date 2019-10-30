@@ -8,7 +8,7 @@ import Notifications, { NotificationsProps } from './Notifications';
 function mapStateToProps(
   state: { apps: { apps: App[] } },
   ownProps: NotificationsProps,
-): NotificationsProps {
+): Partial<NotificationsProps> {
   return {
     app: state.apps.apps.find(app => app.id === Number(ownProps.match.params.id)),
   };

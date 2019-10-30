@@ -22,6 +22,7 @@ beforeEach(() => {
       App: {
         findOne: jest.fn(),
       },
+      AppNotificationKey: {},
     },
   };
   app.use((ctx, next) => {
@@ -43,6 +44,7 @@ it('should call app middleware if the request matches an app path', async () => 
   app.context.db.models.App.findOne.mockReturnValue(Promise.resolve({}));
   await request(app.callback()).get('/@organization/app');
   expect(app.context.db.models.App.findOne).toHaveBeenCalledWith({
+    include: [{}],
     raw: true,
     where: { OrganizationId: 'organization', path: 'app' },
   });
@@ -57,6 +59,7 @@ it('should call app middleware if the request matches an app domain', async () =
   app.context.db.models.App.findOne.mockReturnValue(Promise.resolve({}));
   await request(app.callback()).get('/');
   expect(app.context.db.models.App.findOne).toHaveBeenCalledWith({
+    include: [{}],
     raw: true,
     where: { domain: 'not.localhost' },
   });
@@ -71,6 +74,7 @@ it('should call platform middleware if the request matches an ip address, but no
   app.context.db.models.App.findOne.mockReturnValue(Promise.resolve(null));
   await request(app.callback()).get('/');
   expect(app.context.db.models.App.findOne).toHaveBeenCalledWith({
+    include: [{}],
     raw: true,
     where: { domain: '192.168.13.37' },
   });
@@ -85,6 +89,7 @@ it('should call fallback middleware if the request matches an custom domain not 
   app.context.db.models.App.findOne.mockReturnValue(Promise.resolve(null));
   await request(app.callback()).get('/');
   expect(app.context.db.models.App.findOne).toHaveBeenCalledWith({
+    include: [{}],
     raw: true,
     where: { domain: 'example.com' },
   });

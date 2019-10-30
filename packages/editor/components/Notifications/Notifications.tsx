@@ -3,13 +3,14 @@ import { App, Message } from '@appsemble/types';
 import axios from 'axios';
 import React from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
+import { RouteComponentProps } from 'react-router-dom';
 
 import { push } from '../../actions/message';
 import HelmetIntl from '../HelmetIntl';
 import messages from './messages';
 import styles from './Notifications.css';
 
-export interface NotificationsProps {
+export interface NotificationsProps extends RouteComponentProps<{ id: string }> {
   app: App;
   push: (message: Message) => void;
 }
