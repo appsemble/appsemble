@@ -10,17 +10,18 @@ export interface SimpleSubmitProps extends Omit<React.HTMLProps<HTMLButtonElemen
 
 export default function SimpleSubmit({
   className,
+  disabled,
   name,
   disabled,
   ...props
 }: SimpleSubmitProps): React.ReactElement {
-  const { pristine, submitting } = useSimpleForm();
+  const { formErrors, pristine, submitting } = useSimpleForm();
 
   return (
     <button
       {...props}
       className={classNames('button is-primary', className, { 'is-loading': submitting })}
-      disabled={disabled || pristine || submitting}
+      disabled={disabled || pristine || submitting || Object.values(formErrors).some(Boolean)}
       type="submit"
     />
   );
