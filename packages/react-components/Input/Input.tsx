@@ -3,6 +3,7 @@ import * as React from 'react';
 
 import FormComponent, { FormComponentProps } from '../FormComponent';
 import Icon from '../Icon';
+import styles from './Input.css';
 
 type InteractiveElement = HTMLInputElement | HTMLTextAreaElement;
 
@@ -17,6 +18,8 @@ type InputProps = FormComponentProps &
      * A help message to render.
      */
     help?: React.ReactNode;
+
+    inputRef?: React.Ref<InteractiveElement>;
 
     /**
      * The name of the HTML element.
@@ -64,6 +67,7 @@ export default class Input extends React.Component<InputProps> {
       error,
       iconLeft,
       help,
+      inputRef,
       label,
       name,
       onChange,
@@ -79,6 +83,7 @@ export default class Input extends React.Component<InputProps> {
       <FormComponent iconLeft={iconLeft} id={id} label={label} required={required}>
         <Component
           {...(props as (React.HTMLProps<HTMLInputElement & HTMLTextAreaElement>))}
+          ref={inputRef as React.Ref<any>}
           className={classNames('input', { 'is-danger': error })}
           id={id}
           name={name}
@@ -87,8 +92,9 @@ export default class Input extends React.Component<InputProps> {
           type={type}
         />
         {iconLeft && <Icon className="is-left" icon={iconLeft} />}
-        {help && <p className="help">{help}</p>}
-        {React.isValidElement(error) && <p className="help is-danger">{error}</p>}
+        <p className={classNames('help', styles.help, { 'is-danger': error })}>
+          {React.isValidElement(error) ? error : help}
+        </p>
       </FormComponent>
     );
   }

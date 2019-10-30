@@ -6,4 +6,5 @@ export default defineMessages({
   requestFailed: 'Request failed. Token may be invalid.',
   requestSuccess: 'Password succesfully reset!',
   passwordLabel: 'Password',
+  passwordRequired: 'A new password is required',
 });

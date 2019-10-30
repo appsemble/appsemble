@@ -56,6 +56,9 @@ export default function EditPassword({ resetPassword }: EditPasswordProps): Reac
             name="password"
             required
             type="password"
+            validityMessages={{
+              valueMissing: <FormattedMessage {...messages.passwordRequired} />,
+            }}
           />
           <SimpleSubmit className="is-pulled-right">
             <FormattedMessage {...messages.requestButton} />

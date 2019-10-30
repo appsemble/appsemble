@@ -69,6 +69,10 @@ export default function Register({
         name="email"
         required
         type="email"
+        validityMessages={{
+          typeMismatch: <FormattedMessage {...messages.emailInvalid} />,
+          valueMissing: <FormattedMessage {...messages.emailRequired} />,
+        }}
       />
       <SimpleInput
         autoComplete="new-password"
@@ -77,6 +81,9 @@ export default function Register({
         name="password"
         required
         type="password"
+        validityMessages={{
+          valueMissing: <FormattedMessage {...messages.passwordRequired} />,
+        }}
       />
       <SimpleSubmit className="is-pulled-right">
         <FormattedMessage {...messages.registerButton} />
