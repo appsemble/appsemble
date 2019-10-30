@@ -62,6 +62,10 @@ export default function ResetPassword({
             name="email"
             required
             type="email"
+            validityMessages={{
+              valueMissing: <FormattedMessage {...messages.emailRequired} />,
+              typeMismatch: <FormattedMessage {...messages.emailMissing} />,
+            }}
           />
           <SimpleSubmit className="is-pulled-right">
             <FormattedMessage {...messages.requestButton} />

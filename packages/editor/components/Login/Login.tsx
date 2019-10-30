@@ -59,6 +59,10 @@ export default function Login({ passwordLogin }: LoginProps): React.ReactElement
           name="email"
           required
           type="email"
+          validityMessages={{
+            typeMismatch: <FormattedMessage {...messages.emailInvalid} />,
+            valueMissing: <FormattedMessage {...messages.emailRequired} />,
+          }}
         />
         <SimpleInput
           autoComplete="current-password"
@@ -67,6 +71,9 @@ export default function Login({ passwordLogin }: LoginProps): React.ReactElement
           name="password"
           required
           type="password"
+          validityMessages={{
+            valueMissing: <FormattedMessage {...messages.passwordRequired} />,
+          }}
         />
         <div className={styles.loginBottom}>
           <div>

@@ -3,10 +3,6 @@ import { Promisable } from 'type-fest';
 
 import Form from '../Form';
 
-type ChangeEvent = React.ChangeEvent<{ name: string; value?: any }>;
-
-type ChangeHandler = (event: ChangeEvent, value: any) => void;
-
 interface SimpleFormProps<T> extends Omit<React.ComponentProps<typeof Form>, 'onSubmit' | 'ref'> {
   children: React.ReactNode;
   defaultValues: T;
@@ -15,9 +11,10 @@ interface SimpleFormProps<T> extends Omit<React.ComponentProps<typeof Form>, 'on
 }
 
 interface SimpleFormContext {
-  onChange: ChangeHandler;
+  formErrors: Record<string, React.ReactNode>;
   pristine: boolean;
-  setValue: (name: string, value: any) => void;
+  setFormError: (name: string, errorMessage: React.ReactNode) => void;
+  setValue: (name: string, value: any, errorMessage?: React.ReactNode) => void;
   setValues: (values: Record<string, any>) => void;
   submitError?: Error;
   submitting: boolean;
@@ -35,50 +32,65 @@ export default function SimpleForm<T extends {}>({
 }: SimpleFormProps<T>): React.ReactElement {
   const [values, setValues] = React.useState(defaultValues);
   const [submitError, setSubmitError] = React.useState<Error>(null);
+  const [formErrors, setFormErrors] = React.useState<Record<string, React.ReactNode>>({});
   const [pristine, setPristine] = React.useState(true);
   const [submitting, setSubmitting] = React.useState(false);
 
-  function reset(): void {
+  const reset = React.useCallback(() => {
     setValues(defaultValues);
     setPristine(true);
-  }
+  }, [defaultValues]);
 
-  async function doSubmit(event: React.FormEvent<HTMLFormElement>): Promise<void> {
-    event.preventDefault();
-    setSubmitError(null);
-    setSubmitting(true);
-    try {
-      await onSubmit(values);
-    } catch (err) {
-      setSubmitError(err);
-      return;
-    } finally {
-      setSubmitting(false);
-    }
-    setSubmitError(null);
-    if (resetOnSuccess) {
-      reset();
-    }
-  }
+  const doSubmit = React.useCallback(
+    async (event: React.FormEvent<HTMLFormElement>) => {
+      event.preventDefault();
+      setSubmitError(null);
+      setSubmitting(true);
+      try {
+        await onSubmit(values);
+      } catch (err) {
+        setSubmitError(err);
+        return;
+      } finally {
+        setSubmitting(false);
+      }
+      setSubmitError(null);
+      if (resetOnSuccess) {
+        reset();
+      }
+    },
+    [onSubmit, reset, resetOnSuccess, values],
+  );
 
-  function setValue(name: string, value: any): void {
-    setPristine(false);
-    setValues({
-      ...values,
-      [name]: value,
-    });
-  }
+  const setFormError = React.useCallback(
+    (name: string, errorMessage?: React.ReactNode) => {
+      setFormErrors({
+        ...formErrors,
+        [name]: errorMessage,
+      });
+    },
+    [formErrors],
+  );
 
-  function onChange({ target }: ChangeEvent, value = target.value): void {
-    setValue(target.name, value);
-  }
+  const setValue = React.useCallback(
+    (name: string, value: any, errorMessage?: React.ReactNode) => {
+      setPristine(false);
+      setValues({
+        ...values,
+        [name]: value,
+      });
+      setFormError(name, errorMessage);
+    },
+    [setFormError, values],
+  );
 
   return (
     <Form {...props} onSubmit={doSubmit}>
       <Context.Provider
         value={{
-          onChange,
+          formErrors,
           pristine,
+          setFormError,
           setValue,
           setValues,
           submitError,
