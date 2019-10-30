@@ -13,10 +13,6 @@
   }
 }
 
-.overlay {
-  z-index: 2000;
-}
-
 .subscribeButton {
   margin-right: 0.75rem;
 }

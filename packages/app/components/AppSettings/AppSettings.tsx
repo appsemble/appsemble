@@ -1,5 +1,6 @@
 import { Checkbox, FormComponent } from '@appsemble/react-components';
 import { Message } from '@appsemble/sdk';
+import { AppDefinition } from '@appsemble/types';
 import React from 'react';
 import { FormattedMessage, WrappedComponentProps } from 'react-intl';
 
@@ -9,7 +10,7 @@ import styles from './AppSettings.css';
 import messages from './messages';
 
 export interface AppSettingsProps {
-  permission: Permission;
+  definition: AppDefinition;
   subscribed: boolean;
   requestPermission: () => Promise<Permission>;
   subscribe: () => Promise<void>;
@@ -23,11 +24,11 @@ export interface AppSettingsProps {
  * This configures all providers and sets up the global app structure.
  */
 export default function AppSettings({
+  definition,
   requestPermission,
   subscribe,
   unsubscribe,
   subscribed,
-  permission,
   intl,
   push,
 }: AppSettingsProps & WrappedComponentProps): React.ReactElement {
@@ -61,22 +62,23 @@ export default function AppSettings({
       <TitleBar>
         <FormattedMessage {...messages.settings} />
       </TitleBar>
-      {permission === 'pending' && <div className={`modal-background ${styles.overlay}`} />}
       <div className={styles.root}>
-        <FormComponent label={<FormattedMessage {...messages.notifications} />} required>
-          <div className={styles.setting}>
-            <p className={styles.settingDescription}>
-              <FormattedMessage {...messages.suscribeDescription} />
-            </p>
-            <Checkbox
-              className={styles.checkbox}
-              help={<FormattedMessage {...messages.subscribe} />}
-              name="subscribe"
-              onChange={onSubscribeClick}
-              value={subscribed}
-            />
-          </div>
-        </FormComponent>
+        {definition.notifications !== undefined && (
+          <FormComponent label={<FormattedMessage {...messages.notifications} />} required>
+            <div className={styles.setting}>
+              <p className={styles.settingDescription}>
+                <FormattedMessage {...messages.suscribeDescription} />
+              </p>
+              <Checkbox
+                className={styles.checkbox}
+                help={<FormattedMessage {...messages.subscribe} />}
+                name="subscribe"
+                onChange={onSubscribeClick}
+                value={subscribed}
+              />
+            </div>
+          </FormComponent>
+        )}
       </div>
     </>
   );

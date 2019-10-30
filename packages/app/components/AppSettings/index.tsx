@@ -8,8 +8,8 @@ import AppSettings, { AppSettingsProps } from './AppSettings';
 
 function mapStateToProps(state: State): Partial<AppSettingsProps> {
   return {
+    definition: state.app.definition,
     subscribed: state.serviceWorker.subscribed,
-    permission: state.serviceWorker.permission,
   };
 }
 

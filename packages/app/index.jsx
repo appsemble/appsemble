@@ -24,8 +24,8 @@ const store = createStore(reducers, composeEnhancers(applyMiddleware(thunk)));
 if ('serviceWorker' in navigator) {
   runtime
     .register()
-    .then(registration => {
-      registerServiceWorker(registration)(store.dispatch, store.getState);
+    .then(async registration => {
+      await registerServiceWorker(registration)(store.dispatch, store.getState);
     })
     .catch(store.dispatch(registerServiceWorkerError));
 }

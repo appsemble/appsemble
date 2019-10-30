@@ -40,17 +40,22 @@ export default function Main({ definition = null }) {
   });
 
   return (
-    <main className={styles.root}>
-      <Switch>
-        <Route component={AppSettings} exact path="/Settings" sensitive />
-        {routes}
-        <Redirect to={defaultPath} />
-      </Switch>
-    </main>
+    <>
+      <main className={styles.root}>
+        <Switch>
+          <Route component={AppSettings} exact path="/Settings" sensitive />
+          {routes}
+          <Redirect to={defaultPath} />
+        </Switch>
+      </main>
+    </>
   );
 }
 
 Main.propTypes = {
   // eslint-disable-next-line react/require-default-props
   definition: PropTypes.shape(),
+  permission: PropTypes.string.isRequired,
+  requestPermission: PropTypes.func.isRequired,
+  subscribe: PropTypes.func.isRequired,
 };

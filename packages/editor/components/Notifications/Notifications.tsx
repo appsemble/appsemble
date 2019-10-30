@@ -3,12 +3,11 @@ import { App, Message } from '@appsemble/types';
 import axios from 'axios';
 import React from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { RouteComponentProps } from 'react-router-dom';
+import { Link, RouteComponentProps } from 'react-router-dom';
 
 import { push } from '../../actions/message';
 import HelmetIntl from '../HelmetIntl';
 import messages from './messages';
-import styles from './Notifications.css';
 
 export interface NotificationsProps extends RouteComponentProps<{ id: string }> {
   app: App;
@@ -27,32 +26,58 @@ export default function Notifications({ app }: NotificationsProps): React.ReactE
     }
   };
 
+  const { notifications } = app.definition;
+  const disabled = notifications === undefined;
+
   return (
     <>
       <HelmetIntl title={messages.title} />
 
-      <SimpleForm
-        className={styles.root}
-        defaultValues={{ title: '', body: '' }}
-        onSubmit={submit}
-        resetOnSuccess
-      >
-        <SimpleInput
-          label={<FormattedMessage {...messages.titleLabel} />}
-          name="title"
-          required
-          type="text"
-        />
-        <SimpleInput
-          label={<FormattedMessage {...messages.bodyLabel} />}
-          name="body"
-          required
-          type="text"
-        />
-        <SimpleSubmit>
-          <FormattedMessage {...messages.requestButton} />
-        </SimpleSubmit>
-      </SimpleForm>
+      <div className="content">
+        {disabled && (
+          <p>
+            <FormattedMessage
+              {...messages.enableInstructions}
+              values={{
+                appDefinition: (
+                  <Link to={`/apps/${app.id}/edit#editor`}>
+                    <FormattedMessage {...messages.appDefinition} />
+                  </Link>
+                ),
+                navigation: (
+                  <a
+                    href="https://appsemble.dev/reference/app#notification"
+                    rel="noopener noreferrer"
+                    target="_blank"
+                  >
+                    notification
+                  </a>
+                ),
+              }}
+            />
+          </p>
+        )}
+
+        <SimpleForm defaultValues={{ title: '', body: '' }} onSubmit={submit} resetOnSuccess>
+          <SimpleInput
+            disabled={disabled}
+            label={<FormattedMessage {...messages.titleLabel} />}
+            name="title"
+            required
+            type="text"
+          />
+          <SimpleInput
+            disabled={disabled}
+            label={<FormattedMessage {...messages.bodyLabel} />}
+            name="body"
+            required
+            type="text"
+          />
+          <SimpleSubmit disabled={disabled}>
+            <FormattedMessage {...messages.requestButton} />
+          </SimpleSubmit>
+        </SimpleForm>
+      </div>
     </>
   );
 }
