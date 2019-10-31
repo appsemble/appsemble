@@ -9,8 +9,8 @@ import sass from 'node-sass';
  */
 function processStyle(params) {
   const bulmaPath = require.resolve('bulma/bulma.sass');
-  const functionPath = require.resolve('bulma/sass/utilities/functions.sass');
   const checkRadioPath = require.resolve('bulma-checkradio/src/sass/index.sass');
+
   return `
     @charset "utf-8";
     @import url(https://fonts.googleapis.com/css?family=Libre+Franklin|Open+Sans);
@@ -23,17 +23,6 @@ function processStyle(params) {
     $danger: ${params.dangerColor || baseTheme.dangerColor};
     $themeColor: ${params.themeColor || baseTheme.themeColor};
     $splashColor: ${params.splashColor || baseTheme.splashColor};
-
-    // XXX: Remove when https://github.com/jgthms/bulma/pull/2594 is merged.
-    @import "${functionPath}";
-    $primary-invert: findColorInvert($primary);
-    $link-invert: findColorInvert($link);
-    $info-invert: findColorInvert($info);
-    $success-invert: findColorInvert($success);
-    $warning-invert: findColorInvert($warning);
-    $danger-invert: findColorInvert($danger);
-    $themeColor-invert: findColorInvert($themeColor);
-    $splashColor-invert: findColorInvert($splashColor);
 
     @import "${bulmaPath}";
     @import "${checkRadioPath}";
