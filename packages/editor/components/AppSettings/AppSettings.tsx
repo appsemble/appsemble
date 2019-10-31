@@ -172,7 +172,18 @@ export default class AppSettings extends React.Component<
           value={path}
         />
         <Input
-          help={<FormattedMessage {...messages.domainDescription} />}
+          help={
+            <FormattedMessage
+              {...messages.domainDescription}
+              values={{
+                documentation: (
+                  <a href="https://appsemble.dev/dns">
+                    <FormattedMessage {...messages.documentation} />
+                  </a>
+                ),
+              }}
+            />
+          }
           label={<FormattedMessage {...messages.domain} />}
           name="domain"
           onChange={this.onChange}
