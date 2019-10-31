@@ -996,6 +996,44 @@ pages:
     expect(response.status).toBe(200);
   });
 
+  it('should update the app domain', async () => {
+    const appA = await App.create(
+      {
+        path: 'foo',
+        definition: { name: 'Test App', defaultPage: 'Test Page' },
+        OrganizationId: organizationId,
+      },
+      { raw: true },
+    );
+
+    const response = await request(server)
+      .patch(`/api/apps/${appA.id}`)
+      .set('Authorization', token)
+      .field('app', JSON.stringify({ domain: 'appsemble.app' }));
+
+    expect(response.status).toBe(200);
+    expect(response.body.domain).toStrictEqual('appsemble.app');
+  });
+
+  it('should set the app domain to null', async () => {
+    const appA = await App.create(
+      {
+        path: 'foo',
+        definition: { name: 'Test App', defaultPage: 'Test Page' },
+        OrganizationId: organizationId,
+      },
+      { raw: true },
+    );
+
+    const response = await request(server)
+      .patch(`/api/apps/${appA.id}`)
+      .set('Authorization', token)
+      .field('app', JSON.stringify({ domain: null }));
+
+    expect(response.status).toBe(200);
+    expect(response.body.domain).toBeNull();
+  });
+
   it('should save formatted YAML when updating an app', async () => {
     const appA = await App.create(
       {

@@ -12,6 +12,7 @@ import messages from './messages';
 export interface AppSettingsProps extends RouteComponentProps<{ id: string }> {
   app: App;
   push: (message: Message | string) => void;
+  updateApp: (app: App) => void;
 }
 
 interface AppSettingsState {
@@ -52,14 +53,14 @@ export default class AppSettings extends React.Component<
   onSubmit = async (event: FormEvent): Promise<void> => {
     event.preventDefault();
 
-    const { app, push, intl } = this.props;
+    const { app, push, updateApp, intl } = this.props;
     const { domain, path, private: isPrivate, icon, originalValues } = this.state;
 
     const data = new FormData();
     const newSettings: Partial<App> = {};
 
     if (domain !== originalValues.domain) {
-      newSettings.domain = domain;
+      newSettings.domain = domain || null;
     }
 
     if (path !== originalValues.path) {
@@ -80,12 +81,14 @@ export default class AppSettings extends React.Component<
 
     try {
       const { data: response } = await axios.patch(`/api/apps/${app.id}`, data);
+
       this.setState({
         path: response.path,
         private: response.private,
         dirty: false,
         originalValues: response,
       });
+      updateApp(response);
       push({ color: 'success', body: intl.formatMessage(messages.updateSuccess) });
     } catch (ex) {
       push({ color: 'danger', body: intl.formatMessage(messages.updateError) });
@@ -172,7 +175,18 @@ export default class AppSettings extends React.Component<
           value={path}
         />
         <Input
-          help={<FormattedMessage {...messages.domainDescription} />}
+          help={
+            <FormattedMessage
+              {...messages.domainDescription}
+              values={{
+                documentation: (
+                  <a href="https://appsemble.dev/dns" rel="noopener noreferrer" target="_blank">
+                    <FormattedMessage {...messages.documentation} />
+                  </a>
+                ),
+              }}
+            />
+          }
           label={<FormattedMessage {...messages.domain} />}
           name="domain"
           onChange={this.onChange}

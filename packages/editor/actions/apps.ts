@@ -1,4 +1,7 @@
+import { App, Resource } from '@appsemble/types';
 import axios from 'axios';
+import { Action } from 'redux';
+import { ThunkAction } from 'redux-thunk';
 
 export const GET_START = 'apps/GET_START';
 export const GET_SUCCESS = 'apps/GET_SUCCESS';
@@ -8,12 +11,46 @@ export const UPDATE = 'apps/UPDATE';
 
 const CREATE_SUCCESS = 'app/CREATE_SUCCESS';
 
-const initialState = {
+interface AppState {
+  apps: App[];
+  error: Error;
+}
+
+interface GetSuccessAction extends Action<typeof GET_SUCCESS> {
+  apps: App[];
+}
+
+interface GetAppSuccessAction extends Action<typeof APP_GET_SUCCESS> {
+  app: App;
+}
+
+interface GetAppCreateSuccessAction extends Action<typeof CREATE_SUCCESS> {
+  app: App;
+}
+
+interface GetAppUpdateAction extends Action<typeof UPDATE> {
+  app: App;
+}
+
+interface GetErrorAction extends Action<typeof GET_ERROR> {
+  error: Error;
+}
+
+export type AppAction =
+  | Action<typeof GET_START>
+  | GetSuccessAction
+  | GetAppSuccessAction
+  | GetErrorAction
+  | GetAppCreateSuccessAction
+  | GetAppUpdateAction;
+type AppThunk = ThunkAction<void, AppState, null, AppAction>;
+
+const initialState: AppState = {
   apps: [],
   error: null,
 };
 
-export default (state = initialState, action) => {
+export default (state: AppState = initialState, action: AppAction): AppState => {
   switch (action.type) {
     case GET_START:
       return {
@@ -56,7 +93,7 @@ export default (state = initialState, action) => {
   }
 };
 
-export function getPublicApps() {
+export function getPublicApps(): AppThunk {
   return async dispatch => {
     dispatch({
       type: GET_START,
@@ -76,7 +113,7 @@ export function getPublicApps() {
   };
 }
 
-export function getApps() {
+export function getApps(): AppThunk {
   return async dispatch => {
     dispatch({
       type: GET_START,
@@ -96,7 +133,7 @@ export function getApps() {
   };
 }
 
-export function getApp(id) {
+export function getApp(id: number): AppThunk {
   return async dispatch => {
     dispatch({
       type: GET_START,
@@ -116,7 +153,7 @@ export function getApp(id) {
   };
 }
 
-export function createApp(recipe, organization) {
+export function createApp(recipe: App, organization: { id: string }): AppThunk {
   return async dispatch => {
     const formData = new FormData();
     formData.append('app', JSON.stringify(recipe));
@@ -133,9 +170,21 @@ export function createApp(recipe, organization) {
 }
 
 export function createTemplateApp(
-  { template, name, description, isPrivate, resources },
-  organization,
-) {
+  {
+    template,
+    name,
+    description,
+    isPrivate,
+    resources,
+  }: {
+    template: string;
+    name: string;
+    description: string;
+    isPrivate: boolean;
+    resources: Resource[];
+  },
+  organization: { id: string },
+): AppThunk {
   return async dispatch => {
     const { data: app } = await axios.post('/api/templates', {
       template,
@@ -155,7 +204,7 @@ export function createTemplateApp(
   };
 }
 
-export function updateApp(app) {
+export function updateApp(app: App): AppThunk {
   return async dispatch => {
     dispatch({
       type: UPDATE,
