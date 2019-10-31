@@ -1034,6 +1034,51 @@ pages:
     expect(response.body.domain).toBeNull();
   });
 
+  it('should save formatted YAML when updating an app', async () => {
+    const appA = await App.create(
+      {
+        path: 'test-app',
+        definition: { name: 'Test App', defaultPage: 'Test Page' },
+        OrganizationId: organizationId,
+      },
+      { raw: true },
+    );
+
+    const yaml = `# Hi I'm a comment
+name: Foobar
+defaultPage: &titlePage 'Test Page' # This page is used for testing!
+
+pages:
+  - blocks:
+      - type: test
+        version: 0.0.0
+    name: *titlePage`;
+    const buffer = Buffer.from(yaml);
+
+    const response = await request(server)
+      .patch(`/api/apps/${appA.id}`)
+      .set('Authorization', token)
+      .field(
+        'app',
+        JSON.stringify({
+          definition: {
+            name: 'Foobar',
+            defaultPage: appA.definition.defaultPage,
+            pages: [
+              {
+                name: 'Test Page',
+                blocks: [{ type: 'test', version: '0.0.0' }],
+              },
+            ],
+          },
+        }),
+      )
+      .attach('yaml', buffer);
+
+    const responseBuffer = Buffer.from(response.body.yaml);
+    expect(responseBuffer).toStrictEqual(buffer);
+  });
+
   it('should not update an app of another organization', async () => {
     const newOrganization = await Organization.create({ id: 'Test Organization 2' });
     const appA = await App.create(
