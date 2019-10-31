@@ -80,8 +80,7 @@
     "core-js": "^3.3.4",
     "css-loader": "^3.2.0",
     "dictionary-en-us": "^2.1.1",
-    "docz": "^1.3.2",
-    "docz-theme-default": "^1.2.0",
+    "docz": "2.0.0-rc.67",
     "enzyme": "^3.10.0",
     "enzyme-adapter-react-16": "^1.15.1",
     "enzyme-to-json": "^3.4.3",
@@ -162,6 +161,9 @@
     "webpack-cli": "^3.3.9",
     "webpack-merge": "^4.2.2",
     "webpack-stats-plugin": "^0.3.0"
+  },
+  "resolutions": {
+    "react-transition-group": "4.0.0"
   },
   "appsembleServer": {
     "database-host": "localhost",
