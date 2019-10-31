@@ -9,6 +9,7 @@ import sass from 'node-sass';
  */
 function processStyle(params) {
   const bulmaPath = require.resolve('bulma/bulma.sass');
+  const functionPath = require.resolve('bulma/sass/utilities/functions.sass');
   const checkRadioPath = require.resolve('bulma-checkradio/src/sass/index.sass');
 
   return `
@@ -23,6 +24,10 @@ function processStyle(params) {
     $danger: ${params.dangerColor || baseTheme.dangerColor};
     $themeColor: ${params.themeColor || baseTheme.themeColor};
     $splashColor: ${params.splashColor || baseTheme.splashColor};
+
+    @import "${functionPath}";
+    $themeColor-invert: findColorInvert($themeColor);
+    $splashColor-invert: findColorInvert($splashColor);
 
     @import "${bulmaPath}";
     @import "${checkRadioPath}";
