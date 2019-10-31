@@ -180,7 +180,7 @@ export default class AppSettings extends React.Component<
               {...messages.domainDescription}
               values={{
                 documentation: (
-                  <a href="https://appsemble.dev/dns">
+                  <a href="https://appsemble.dev/dns" rel="noopener noreferrer" target="_blank">
                     <FormattedMessage {...messages.documentation} />
                   </a>
                 ),
