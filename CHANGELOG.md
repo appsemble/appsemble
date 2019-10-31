@@ -13,9 +13,10 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   settings page. More strategies for receiving push notifications will be added in the future.
 - App: Add settings page
 - Editor: Add App settings page
-- Server: Add support for editing app settings. These settings include `path`, `icon`, and
-  `private`.
 - Server: Add support for broadcasting push notifications.
+- Server: Add support for editing app settings. These settings include `path`, `icon`, `private`,
+  and `domain`.
+- Server: Add support for customizing the domain at which the app is served.
 
 ### Removed
 
