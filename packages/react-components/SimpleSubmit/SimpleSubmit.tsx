@@ -12,7 +12,6 @@ export default function SimpleSubmit({
   className,
   disabled,
   name,
-  disabled,
   ...props
 }: SimpleSubmitProps): React.ReactElement {
   const { formErrors, pristine, submitting } = useSimpleForm();
