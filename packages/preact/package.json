@@ -6,6 +6,6 @@
   },
   "peerDependencies": {
     "@appsemble/sdk": "^0.8.10",
-    "preact": "^10.0.3"
+    "preact": "^10.0.4"
   }
 }
