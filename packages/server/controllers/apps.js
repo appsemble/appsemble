@@ -260,7 +260,7 @@ export async function patchApp(ctx) {
         result.private = app.private;
       }
 
-      if (app.domain != null) {
+      if (app.domain !== undefined) {
         result.domain = app.domain;
       }
     }

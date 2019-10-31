@@ -59,7 +59,7 @@ export default class AppSettings extends React.Component<
     const newSettings: Partial<App> = {};
 
     if (domain !== originalValues.domain) {
-      newSettings.domain = domain;
+      newSettings.domain = domain || null;
     }
 
     if (path !== originalValues.path) {
