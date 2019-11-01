@@ -69,10 +69,12 @@ export default class Input extends React.Component<InputProps> {
       help,
       inputRef,
       label,
+      maxLength,
       name,
       onChange,
       required,
       type,
+      value,
       id = name,
       ...props
     } = this.props;
@@ -86,15 +88,24 @@ export default class Input extends React.Component<InputProps> {
           ref={inputRef as React.Ref<any>}
           className={classNames('input', { 'is-danger': error })}
           id={id}
+          maxLength={maxLength}
           name={name}
           onChange={this.onChange}
           required={required}
           type={type}
+          value={value}
         />
         {iconLeft && <Icon className="is-left" icon={iconLeft} />}
-        <p className={classNames('help', styles.help, { 'is-danger': error })}>
-          {React.isValidElement(error) ? error : help}
-        </p>
+        <div className={styles.help}>
+          <p className={classNames('help', { 'is-danger': error })}>
+            {React.isValidElement(error) ? error : help}
+          </p>
+          {maxLength ? (
+            <span className={`help ${styles.counter}`}>{`${
+              `${value}`.length
+            } / ${maxLength}`}</span>
+          ) : null}
+        </div>
       </FormComponent>
     );
   }
