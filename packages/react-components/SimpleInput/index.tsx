@@ -7,7 +7,7 @@ type ValidityMessages = {
   [_ in keyof Omit<ValidityState, 'valid'>]?: React.ReactNode;
 };
 
-interface SimpleInputProps extends Omit<React.ComponentProps<typeof Input>, 'onChange'> {
+interface SimpleInputProps extends Omit<React.ComponentPropsWithoutRef<typeof Input>, 'onChange'> {
   name: string;
   validityMessages?: ValidityMessages;
 }
