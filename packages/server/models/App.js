@@ -18,6 +18,8 @@ export default sequelize => {
       style: { type: DataTypes.TEXT('long') },
       sharedStyle: { type: DataTypes.TEXT('long') },
       yaml: { type: DataTypes.TEXT('long') },
+      vapidPublicKey: { type: DataTypes.STRING, allowNull: false },
+      vapidPrivateKey: { type: DataTypes.STRING, allowNull: false },
       OrganizationId: {
         type: DataTypes.STRING,
         unique: 'UniquePathIndex',

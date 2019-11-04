@@ -2,9 +2,9 @@ import { normalize } from '@appsemble/utils';
 import Boom from '@hapi/boom';
 import crypto from 'crypto';
 import { UniqueConstraintError } from 'sequelize';
+import { generateVAPIDKeys } from 'web-push';
 
 import templates from '../templates/apps';
-import generateVapidToken from '../utils/generateVapidToken';
 import getAppFromRecord from '../utils/getAppFromRecord';
 
 export async function getAppTemplates(ctx) {
@@ -39,6 +39,7 @@ export async function createTemplateApp(ctx) {
 
   try {
     const path = name ? normalize(name) : normalize(template);
+    const keys = generateVAPIDKeys();
     const result = {
       definition: {
         ...template.definition,
@@ -46,6 +47,8 @@ export async function createTemplateApp(ctx) {
         name: name || template,
       },
       private: Boolean(isPrivate),
+      vapidPublicKey: keys.publicKey,
+      vapidPrivateKey: keys.privateKey,
       OrganizationId: organizationId,
       ...(resources && {
         Resources: [].concat(
@@ -72,7 +75,6 @@ export async function createTemplateApp(ctx) {
     }
 
     const record = await App.create(result, { include: [Resource] });
-    await record.createAppNotificationKey(generateVapidToken());
 
     ctx.body = getAppFromRecord(record);
     ctx.status = 201;

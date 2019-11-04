@@ -39,7 +39,7 @@ export default async function indexHandler(ctx) {
   } else {
     const [settingsHash, settings] = createSettings({
       id: app.id,
-      vapidPublicKey: app['AppNotificationKey.publicKey'],
+      vapidPublicKey: app.vapidPublicKey,
       organizationId: app.OrganizationId,
       definition: app.definition,
       sentryDsn,

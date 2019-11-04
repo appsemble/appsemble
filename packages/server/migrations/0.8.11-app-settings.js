@@ -1,6 +1,5 @@
 import { DataTypes } from 'sequelize';
-
-import generateVapidToken from '../utils/generateVapidToken';
+import { generateVAPIDKeys } from 'web-push';
 
 export default {
   key: '0.8.11',
@@ -16,6 +15,14 @@ export default {
     await queryInterface.addColumn('App', 'private', {
       type: DataTypes.BOOLEAN,
       defaultValue: false,
+      allowNull: false,
+    });
+    await queryInterface.addColumn('App', 'vapidPublicKey', {
+      type: DataTypes.STRING,
+      allowNull: false,
+    });
+    await queryInterface.addColumn('App', 'vapidPrivateKey', {
+      type: DataTypes.STRING,
       allowNull: false,
     });
 
@@ -35,22 +42,6 @@ export default {
         ),
       ),
     );
-
-    await queryInterface.createTable('AppNotificationKey', {
-      publicKey: { type: DataTypes.STRING, primaryKey: true, allowNull: false },
-      privateKey: { type: DataTypes.STRING, primaryKey: true, allowNull: false },
-      AppId: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        references: {
-          model: 'App',
-          key: 'id',
-        },
-      },
-      created: { allowNull: false, type: DataTypes.DATE },
-      updated: { allowNull: false, type: DataTypes.DATE },
-      deleted: { allowNull: true, type: DataTypes.DATE },
-    });
 
     await queryInterface.createTable('AppSubscription', {
       id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
@@ -84,8 +75,8 @@ export default {
     });
     await Promise.all(
       allApps.map(({ id }) => {
-        const keys = generateVapidToken();
-        return db.query('INSERT INTO `AppNotificationKey` VALUES (?, ?, ?, NOW(), NOW(), null)', {
+        const keys = generateVAPIDKeys();
+        return db.query('UPDATE `App` SET vapidPublicKey = ?, vapidPrivateKey = ? WHERE id = ?', {
           replacements: [keys.publicKey, keys.privateKey, id],
           type: db.QueryTypes.UPDATE,
         });
@@ -113,12 +104,12 @@ export default {
 
     await queryInterface.removeColumn('App', 'domain');
     await queryInterface.removeColumn('App', 'private');
+    await queryInterface.removeColumn('App', 'vapidPublicKey');
+    await queryInterface.removeColumn('App', 'vapidPrivateKey');
     await queryInterface.addColumn('App', 'description', {
       type: DataTypes.STRING(80),
       allowNull: true,
     });
-
-    await queryInterface.dropTable('AppNotificationKey');
     await queryInterface.dropTable('AppSubscription');
   },
 };

@@ -6,7 +6,7 @@ const appURLPattern = new RegExp(`^/@${partialNormalized.source}/${partialNormal
 export default function appMapper(platformMiddleware, appMiddleware, fallbackMiddleware) {
   return async (ctx, next) => {
     const { argv, db, hostname, path } = ctx;
-    const { App, AppNotificationKey } = db.models;
+    const { App } = db.models;
 
     let app;
 
@@ -18,14 +18,12 @@ export default function appMapper(platformMiddleware, appMiddleware, fallbackMid
       app = await App.findOne({
         raw: true,
         where: { OrganizationId: match[1], path: match[2] },
-        include: [AppNotificationKey],
       });
       [ctx.state.base] = match;
     } else {
       app = await App.findOne({
         raw: true,
         where: { domain: hostname },
-        include: [AppNotificationKey],
       });
       if (!app && isIp(hostname)) {
         return platformMiddleware(ctx, next);

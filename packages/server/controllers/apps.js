@@ -6,9 +6,8 @@ import jsYaml from 'js-yaml';
 import { isEqual, uniqWith } from 'lodash';
 import { Op, UniqueConstraintError } from 'sequelize';
 import sharp from 'sharp';
-import webpush, { WebPushError } from 'web-push';
+import { generateVAPIDKeys, sendNotification, WebPushError } from 'web-push';
 
-import generateVapidToken from '../utils/generateVapidToken';
 import getAppBlocks from '../utils/getAppBlocks';
 import getAppFromRecord from '../utils/getAppFromRecord';
 import getDefaultIcon from '../utils/getDefaultIcon';
@@ -99,6 +98,7 @@ export async function createApp(ctx) {
 
   try {
     const path = normalize(app.definition.name);
+    const keys = generateVAPIDKeys();
 
     result = {
       definition: app.definition,
@@ -108,6 +108,8 @@ export async function createApp(ctx) {
       domain: app.domain || null,
       private: Boolean(app.private),
       yaml: jsYaml.safeDump(app.definition),
+      vapidPublicKey: keys.publicKey,
+      vapidPrivateKey: keys.privateKey,
     };
 
     if (!user.organizations.some(organization => organization.id === app.OrganizationId)) {
@@ -132,7 +134,6 @@ export async function createApp(ctx) {
     }
 
     const record = await App.create(result);
-    await record.createAppNotificationKey(generateVapidToken());
 
     ctx.body = getAppFromRecord(record);
     ctx.status = 201;
@@ -421,15 +422,15 @@ export async function addSubscription(ctx) {
 
 export async function broadcast(ctx) {
   const { appId } = ctx.params;
-  const { App, AppSubscription, AppNotificationKey } = ctx.db.models;
+  const { App, AppSubscription } = ctx.db.models;
   const { user } = ctx.state;
   const { title, body } = ctx.request.body;
 
   const app = await App.findByPk(appId, {
-    include: [AppSubscription, AppNotificationKey],
+    include: [AppSubscription],
   });
 
-  const { publicKey, privateKey } = app.AppNotificationKey;
+  const { vapidPublicKey: publicKey, vapidPrivateKey: privateKey } = app;
 
   if (!app) {
     throw Boom.notFound('App not found');
@@ -442,7 +443,7 @@ export async function broadcast(ctx) {
   // XXX: Replace with paginated requests
   app.AppSubscriptions.forEach(async subscription => {
     try {
-      await webpush.sendNotification(
+      await sendNotification(
         {
           endpoint: subscription.endpoint,
           keys: { auth: subscription.auth, p256dh: subscription.p256dh },
@@ -456,6 +457,7 @@ export async function broadcast(ctx) {
         }),
         {
           vapidDetails: {
+            // XXX: Make this configurable
             subject: 'mailto: support@appsemble.com',
             publicKey,
             privateKey,
@@ -463,15 +465,11 @@ export async function broadcast(ctx) {
         },
       );
     } catch (error) {
-      if (error instanceof WebPushError) {
-        if (error.statusCode === 410) {
-          await subscription.destroy();
-        } else {
-          throw error;
-        }
-      } else {
+      if (!(error instanceof WebPushError && error.statusCode === 410)) {
         throw error;
       }
+
+      await subscription.destroy();
     }
   });
 }

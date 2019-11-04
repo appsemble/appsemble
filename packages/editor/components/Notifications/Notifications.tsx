@@ -50,7 +50,7 @@ export default function Notifications({ app }: NotificationsProps): React.ReactE
                     rel="noopener noreferrer"
                     target="_blank"
                   >
-                    notification
+                    <code>notifications</code>
                   </a>
                 ),
               }}
