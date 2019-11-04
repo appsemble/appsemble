@@ -1,9 +1,9 @@
 {
   "name": "@amsterdam/navigation",
-  "version": "0.8.10",
+  "version": "0.8.11",
   "private": true,
   "dependencies": {
-    "@appsemble/sdk": "0.8.10",
+    "@appsemble/sdk": "0.8.11",
     "mini-jsx": "^1.0.2"
   }
 }
