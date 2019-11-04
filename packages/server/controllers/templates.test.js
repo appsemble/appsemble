@@ -138,6 +138,8 @@ describe('Template API', () => {
           {
             path: index + 1 === 1 ? 'test-app' : `test-app-${index + 1}`,
             definition: { name: 'Test App', defaultPage: 'Test Page' },
+            vapidPublicKey: 'a',
+            vapidPrivateKey: 'b',
             OrganizationId: organizationId,
           },
           { raw: true },
