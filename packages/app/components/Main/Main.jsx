@@ -40,15 +40,13 @@ export default function Main({ definition = null }) {
   });
 
   return (
-    <>
-      <main className={styles.root}>
-        <Switch>
-          <Route component={AppSettings} exact path="/Settings" sensitive />
-          {routes}
-          <Redirect to={defaultPath} />
-        </Switch>
-      </main>
-    </>
+    <main className={styles.root}>
+      <Switch>
+        <Route component={AppSettings} exact path="/Settings" sensitive />
+        {routes}
+        <Redirect to={defaultPath} />
+      </Switch>
+    </main>
   );
 }
 

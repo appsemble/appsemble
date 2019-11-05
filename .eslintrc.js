@@ -54,6 +54,7 @@ module.exports = {
       },
     ],
     'import/no-cycle': ['error', { maxDepth: 1 }],
+    'react/jsx-no-useless-fragment': 'error',
     'react/jsx-props-no-spreading': 'off',
     'react/jsx-sort-props': 'error',
     'simple-import-sort/sort': 'error',
