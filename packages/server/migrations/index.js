@@ -6,6 +6,7 @@ import uniquePath from './0.8.4-unique-path';
 import blockParameters from './0.8.7-block-parameters';
 import nullablePath from './0.8.8-nullable-path';
 import appSettings from './0.8.11-app-settings';
+import notifications from './0.8.12-notifications';
 
 export default [
   initial,
@@ -16,4 +17,5 @@ export default [
   blockParameters,
   nullablePath,
   appSettings,
+  notifications,
 ];

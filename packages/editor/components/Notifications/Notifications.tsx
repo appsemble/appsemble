@@ -17,14 +17,17 @@ export interface NotificationsProps extends RouteComponentProps<{ id: string }> 
 export default function Notifications({ app }: NotificationsProps): React.ReactElement {
   const intl = useIntl();
 
-  const submit = async ({ title, body }: { title: string; body: string }): Promise<void> => {
-    try {
-      await axios.post(`/api/apps/${app.id}/broadcast`, { title, body });
-      push({ body: intl.formatMessage(messages.submitSuccess), color: 'danger' });
-    } catch (error) {
-      push({ body: intl.formatMessage(messages.submitError), color: 'danger' });
-    }
-  };
+  const submit = React.useCallback(
+    async ({ title, body }: { title: string; body: string }): Promise<void> => {
+      try {
+        await axios.post(`/api/apps/${app.id}/broadcast`, { title, body });
+        push({ body: intl.formatMessage(messages.submitSuccess), color: 'danger' });
+      } catch (error) {
+        push({ body: intl.formatMessage(messages.submitError), color: 'danger' });
+      }
+    },
+    [app.id, intl],
+  );
 
   const { notifications } = app.definition;
   const disabled = notifications === undefined;

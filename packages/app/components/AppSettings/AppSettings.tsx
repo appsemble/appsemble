@@ -34,26 +34,29 @@ export default function AppSettings({
 }: AppSettingsProps & WrappedComponentProps): React.ReactElement {
   const onSubscribeClick = async (event: React.ChangeEvent<HTMLInputElement>): Promise<void> => {
     event.preventDefault();
-    if (!subscribed) {
-      if (window.Notification && window.Notification.permission === 'denied') {
-        push({ body: intl.formatMessage(messages.blocked), color: 'warning' });
-        return;
-      }
 
-      const result = await requestPermission();
-      if (result === 'granted') {
-        try {
-          await subscribe();
-          push({ body: intl.formatMessage(messages.subscribeSuccessful), color: 'success' });
-        } catch (error) {
-          push({ body: intl.formatMessage(messages.subscribeError), color: 'danger' });
-        }
-      } else {
-        push({ body: intl.formatMessage(messages.permissionDenied), color: 'danger' });
-      }
-    } else {
+    if (subscribed) {
       await unsubscribe();
       push({ body: intl.formatMessage(messages.unsubscribeSuccess), color: 'info' });
+      return;
+    }
+
+    if (window.Notification && window.Notification.permission === 'denied') {
+      push({ body: intl.formatMessage(messages.blocked), color: 'warning' });
+      return;
+    }
+
+    const result = await requestPermission();
+    if (result !== 'granted') {
+      push({ body: intl.formatMessage(messages.permissionDenied), color: 'danger' });
+      return;
+    }
+
+    try {
+      await subscribe();
+      push({ body: intl.formatMessage(messages.subscribeSuccessful), color: 'success' });
+    } catch (error) {
+      push({ body: intl.formatMessage(messages.subscribeError), color: 'danger' });
     }
   };
 
