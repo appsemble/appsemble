@@ -7,24 +7,46 @@ type ValidityMessages = {
   [_ in keyof Omit<ValidityState, 'valid'>]?: React.ReactNode;
 };
 
-interface SimpleInputProps extends Omit<React.ComponentPropsWithoutRef<typeof Input>, 'onChange'> {
+interface MinimalHTMLElement {
+  value: any;
+  validity?: ValidityState;
+}
+
+interface ComponentProps {
+  disabled: boolean;
+  error: React.ReactNode;
+  name: string;
+  onChange: (event: React.ChangeEvent<MinimalHTMLElement>, value: any) => void;
+}
+
+interface SimpleInputProps<C extends React.ComponentType> {
+  component?: C;
+  disabled?: boolean;
   name: string;
   validityMessages?: ValidityMessages;
 }
 
-export default function SimpleInput({
+type FooProps<C extends React.ComponentType> = Omit<
+  React.ComponentPropsWithoutRef<C>,
+  keyof ComponentProps
+> &
+  SimpleInputProps<C>;
+
+export default function SimpleInput<C extends React.ComponentType = typeof Input>({
+  // @ts-ignore
+  component: Component = Input,
   disabled,
   name,
   validityMessages = {},
   ...props
-}: SimpleInputProps): React.ReactElement {
+}: FooProps<C>): React.ReactElement {
   const { formErrors, pristine, setFormError, setValue, submitting, values } = useSimpleForm();
-  const ref = React.useRef<HTMLInputElement>(null);
+  const ref = React.useRef<MinimalHTMLElement>(null);
   const onChange = React.useCallback(
-    ({ target }: React.ChangeEvent<HTMLInputElement>, value: string = target.value) => {
+    ({ target }: React.ChangeEvent<MinimalHTMLElement>, value = target.value) => {
       const { validity } = target;
       let message: React.ReactNode;
-      if (!validity.valid) {
+      if (validity && !validity.valid) {
         const reason = Object.entries(validityMessages).find(
           ([validityType]: [keyof ValidityMessages, React.ReactNode]) => validity[validityType],
         );
@@ -37,15 +59,17 @@ export default function SimpleInput({
 
   React.useEffect(() => {
     if (!(name in formErrors)) {
-      setFormError(name, !ref.current.validity.valid);
+      const { validity } = ref.current;
+      setFormError(name, validity && !validity.valid);
     }
   }, [formErrors, name, setFormError]);
 
   return (
-    <Input
+    // @ts-ignore
+    <Component
+      ref={ref}
       disabled={disabled || submitting}
       error={!pristine && formErrors[name]}
-      inputRef={ref}
       name={name}
       onChange={onChange}
       value={values[name]}

@@ -1,4 +1,5 @@
 import {
+  PasswordInput,
   SimpleForm,
   SimpleFormError,
   SimpleInput,
@@ -76,11 +77,10 @@ export default function Register({
       />
       <SimpleInput
         autoComplete="new-password"
-        iconLeft="unlock"
+        component={PasswordInput}
         label={<FormattedMessage {...messages.passwordLabel} />}
         name="password"
         required
-        type="password"
         validityMessages={{
           valueMissing: <FormattedMessage {...messages.passwordRequired} />,
         }}
