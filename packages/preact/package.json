@@ -1,11 +1,11 @@
 {
   "name": "@appsemble/preact",
-  "version": "0.8.10",
+  "version": "0.8.11",
   "dependencies": {
     "intl-messageformat": "^7.3.3"
   },
   "peerDependencies": {
-    "@appsemble/sdk": "^0.8.10",
+    "@appsemble/sdk": "^0.8.11",
     "preact": "^10.0.4"
   }
 }

@@ -7,6 +7,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.8.11] - 2019-11-01
+
 ### Added
 
 - Editor: Add App settings page
