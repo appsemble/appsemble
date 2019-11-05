@@ -10,6 +10,7 @@ import axios, { AxiosRequestConfig } from 'axios';
 
 import { MakeActionParameters } from '../../types';
 import uploadBlobs from '../uploadBlobs';
+import xmlToJson from '../xmlToJson';
 
 export function requestLikeAction<T extends RequestLikeActionTypes>({
   definition: { blobs = {}, method = 'GET', schema, query, url, serialize },
@@ -84,6 +85,13 @@ export function requestLikeAction<T extends RequestLikeActionTypes>({
 
       try {
         const response = await axios(req);
+        const contentType = response.headers['content-type'];
+
+        if (['text/xml', 'application/xml'].includes(contentType)) {
+          const parser = new DOMParser();
+          const xml = parser.parseFromString(response.data, contentType);
+          response.data = xmlToJson(xml);
+        }
 
         if (onSuccess) {
           return onSuccess.dispatch(response.data);
