@@ -1,10 +1,10 @@
-export default function xmlToJson(src: XMLDocument | Element): {} {
+export default function xmlToJson(src: Element): {} {
   const children = [...((src.children as unknown) as Element[])];
 
-  const result: any = {};
+  let result: any = {};
 
   if (!children.length) {
-    return src.textContent;
+    return src.innerHTML;
   }
 
   for (let index = 0; index < children.length; index += 1) {
@@ -13,16 +13,22 @@ export default function xmlToJson(src: XMLDocument | Element): {} {
     const childIsArray =
       children.filter(eachChild => eachChild.nodeName === child.nodeName).length > 1;
 
-    // XXX: Consider also checking for attributes and converting that to an object as well
     if (childIsArray) {
-      if (result[child.nodeName] === undefined) {
-        result[child.nodeName] = [xmlToJson(child)];
-      } else {
-        result[child.nodeName].push(xmlToJson(child));
-      }
+      result[child.nodeName] = [...(result[child.nodeName] || []), xmlToJson(child)];
     } else {
       result[child.nodeName] = xmlToJson(child);
     }
+  }
+
+  if (src.hasAttributes && src.hasAttributes()) {
+    const { attributes } = src;
+    const output: any = {};
+
+    for (let index = attributes.length - 1; index >= 0; index -= 1) {
+      output[attributes[index].name] = attributes[index].value;
+    }
+
+    result = { ...output, ...result };
   }
 
   return result;

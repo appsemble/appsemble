@@ -90,7 +90,7 @@ export function requestLikeAction<T extends RequestLikeActionTypes>({
         if (['text/xml', 'application/xml'].includes(contentType)) {
           const parser = new DOMParser();
           const xml = parser.parseFromString(response.data, contentType);
-          response.data = xmlToJson(xml);
+          response.data = xmlToJson((xml as unknown) as Element);
         }
 
         if (base) {
