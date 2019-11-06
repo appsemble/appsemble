@@ -5,7 +5,7 @@ import {
   RequestLikeActionDefinition,
   RequestLikeActionTypes,
 } from '@appsemble/types';
-import { compileFilters, MapperFunction, validate } from '@appsemble/utils';
+import { compileFilters, MapperFunction, remapData, validate } from '@appsemble/utils';
 import axios, { AxiosRequestConfig } from 'axios';
 
 import { MakeActionParameters } from '../../types';
@@ -13,7 +13,7 @@ import uploadBlobs from '../uploadBlobs';
 import xmlToJson from '../xmlToJson';
 
 export function requestLikeAction<T extends RequestLikeActionTypes>({
-  definition: { blobs = {}, method = 'GET', schema, query, url, serialize },
+  definition: { base, blobs = {}, method = 'GET', schema, query, url, serialize },
   onSuccess,
   onError,
 }: MakeActionParameters<RequestLikeActionDefinition<T>>): RequestLikeAction<'request'> {
@@ -91,6 +91,10 @@ export function requestLikeAction<T extends RequestLikeActionTypes>({
           const parser = new DOMParser();
           const xml = parser.parseFromString(response.data, contentType);
           response.data = xmlToJson(xml);
+        }
+
+        if (base) {
+          response.data = remapData(base, response.data);
         }
 
         if (onSuccess) {
