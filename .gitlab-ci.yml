@@ -175,16 +175,16 @@ stylelint:
 test:
   extends: .yarn
   services:
-    - name: mysql:8
-      command: [--default-authentication-plugin=mysql_native_password]
+    - name: postgres:12
   only:
     - branches
     - merge_requests
     - tags
   variables:
-    MYSQL_DATABASE: testAppsemble
-    MYSQL_ROOT_PASSWORD: password
-    DATABASE_URL: 'mysql://root:password@mysql:3306'
+    POSTGRES_DB: testAppsemble
+    POSTGRES_USER: admin
+    POSTGRES_PASSWORD: password
+    DATABASE_URL: 'postgres://admin:password@postgres:5432/testAppsemble'
   script:
     - yarn jest --coverage --reporters default --reporters jest-junit
   artifacts:

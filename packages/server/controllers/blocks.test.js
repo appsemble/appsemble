@@ -120,6 +120,7 @@ describe('blocks', () => {
       name: '@xkcd/standing',
       layout: null,
       resources: null,
+      parameters: null,
       version: '1.32.9',
     });
     expect(status).toBe(201);
@@ -168,6 +169,7 @@ describe('blocks', () => {
       actions: null,
       files: ['build/standing.png', 'build/testblock.js'],
       name: '@xkcd/standing',
+      parameters: null,
       layout: null,
       resources: null,
       version: '1.32.9',
@@ -224,7 +226,9 @@ describe('blocks', () => {
       .post('/api/blocks')
       .set('Authorization', token)
       .send({ id: '@xkcd/standing' });
-    const { body: created } = await request(server)
+    const {
+      body: { parameters, ...created },
+    } = await request(server)
       .post('/api/blocks/@xkcd/standing/versions')
       .set('Authorization', token)
       .attach('build/standing.png', path.join(__dirname, '__fixtures__/standing.png'))
