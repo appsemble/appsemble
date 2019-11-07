@@ -175,7 +175,7 @@ stylelint:
 test:
   extends: .yarn
   services:
-    - name: postgres:12
+    - name: postgres:11
   only:
     - branches
     - merge_requests

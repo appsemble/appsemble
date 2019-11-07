@@ -243,8 +243,19 @@ describe('blocks', () => {
       headers: { ...headers.headers, ...formData.getHeaders() },
     });
 
-    const { data } = await instance.post('/api/blocks/@xkcd/standing/versions', formData, {
-      headers: { ...headers.headers, ...formData.getHeaders() },
+    const formData2 = new FormData();
+    formData2.append('data', JSON.stringify({ version: '1.32.9' }));
+    formData2.append(
+      'build/standing.png',
+      fs.createReadStream(path.join(__dirname, '__fixtures__/standing.png')),
+    );
+    formData2.append(
+      'build/testblock.js',
+      fs.createReadStream(path.join(__dirname, '__fixtures__/testblock.js')),
+    );
+
+    const { data } = await instance.post('/api/blocks/@xkcd/standing/versions', formData2, {
+      headers: { ...headers.headers, ...formData2.getHeaders() },
     });
 
     expect(data).toStrictEqual({
@@ -324,7 +335,9 @@ describe('blocks', () => {
     await instance.post('/api/blocks/@xkcd/standing/versions', formData, {
       headers: { ...headers.headers, ...formData.getHeaders() },
     });
-    const png = await instance.get('/api/blocks/@xkcd/standing/versions/1.32.9/standing.png');
+    const png = await instance.get('/api/blocks/@xkcd/standing/versions/1.32.9/standing.png', {
+      responseType: 'arraybuffer',
+    });
     expect(png.status).toBe(200);
     expect(png.headers['content-type']).toBe('image/png');
     expect(png.data).toStrictEqual(
@@ -332,8 +345,8 @@ describe('blocks', () => {
     );
     const js = await instance.get('/api/blocks/@xkcd/standing/versions/1.32.9/testblock.js');
     expect(js.status).toBe(200);
-    expect(js.headers['content-type']).toBe('application/javascript');
-    expect(js.text).toStrictEqual(
+    expect(js.headers['content-type']).toBe('application/javascript; charset=utf-8');
+    expect(js.data).toStrictEqual(
       await fs.readFile(path.join(__dirname, '__fixtures__/testblock.js'), 'utf-8'),
     );
   });
