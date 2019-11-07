@@ -1,3 +1,5 @@
+import { createInstance } from 'axios-test-instance';
+import FormData from 'form-data';
 import fs from 'fs-extra';
 import path from 'path';
 import request from 'supertest';
@@ -11,6 +13,8 @@ describe('blocks', () => {
   let db;
   let server;
   let token;
+  let instance;
+  let headers;
 
   beforeAll(async () => {
     db = await testSchema('blocks');
@@ -21,6 +25,12 @@ describe('blocks', () => {
   beforeEach(async () => {
     await truncate(db);
     token = await testToken(request, server, db, 'blocks:write');
+    headers = { headers: { Authorization: token } };
+    instance = await createInstance(server);
+  });
+
+  afterEach(async () => {
+    await instance.close();
   });
 
   afterAll(async () => {
@@ -28,35 +38,41 @@ describe('blocks', () => {
   });
 
   it('should be possible to register a block definition', async () => {
-    const { body } = await request(server)
-      .post('/api/blocks')
-      .set('Authorization', token)
-      .send({
+    const { data } = await instance.post(
+      '/api/blocks',
+      {
         id: '@appsemble/test',
         description: 'This block has been uploaded for the purpose of unit testing.',
-      });
-    expect(body).toStrictEqual({
+      },
+      headers,
+    );
+
+    expect(data).toStrictEqual({
       id: '@appsemble/test',
       description: 'This block has been uploaded for the purpose of unit testing.',
     });
   });
 
   it('should not be possible to register the same block definition twice', async () => {
-    await request(server)
-      .post('/api/blocks')
-      .set('Authorization', token)
-      .send({
+    await instance.post(
+      '/api/blocks',
+      {
         id: '@appsemble/test',
         description: 'This block has been uploaded for the purpose of unit testing.',
-      });
-    const { body } = await request(server)
-      .post('/api/blocks')
-      .set('Authorization', token)
-      .send({
+      },
+      headers,
+    );
+
+    const { data } = await instance.post(
+      '/api/blocks',
+      {
         id: '@appsemble/test',
         description: 'This block has been uploaded for the purpose of unit testing.',
-      });
-    expect(body).toStrictEqual({
+      },
+      headers,
+    );
+
+    expect(data).toStrictEqual({
       error: 'Conflict',
       message: 'Another block definition with id “@appsemble/test” already exists',
       statusCode: 409,
@@ -64,20 +80,22 @@ describe('blocks', () => {
   });
 
   it('should be possible to retrieve a block definition', async () => {
-    const { body: original } = await request(server)
-      .post('/api/blocks')
-      .set('Authorization', token)
-      .send({
+    const { data: original } = await instance.post(
+      '/api/blocks',
+      {
         id: '@appsemble/test',
         description: 'This block has been uploaded for the purpose of unit testing.',
-      });
-    const { body: retrieved } = await request(server).get('/api/blocks/@appsemble/test');
+      },
+      headers,
+    );
+
+    const { data: retrieved } = await instance.get('/api/blocks/@appsemble/test');
     expect(retrieved).toStrictEqual(original);
   });
 
   it('should return a 404 if the requested block definition doesn’t exist', async () => {
-    const { body } = await request(server).get('/api/blocks/@non/existent');
-    expect(body).toStrictEqual({
+    const { data } = await instance.get('/api/blocks/@non/existent');
+    expect(data).toStrictEqual({
       error: 'Not Found',
       message: 'Block definition not found',
       statusCode: 404,
@@ -85,36 +103,47 @@ describe('blocks', () => {
   });
 
   it('should be possible to query block definitions', async () => {
-    const { body: apple } = await request(server)
-      .post('/api/blocks')
-      .set('Authorization', token)
-      .send({
+    const { data: apple } = await instance.post(
+      '/api/blocks',
+      {
         id: '@appsemble/apple',
         description: 'I’ve got an apple.',
-      });
-    const { body: pen } = await request(server)
-      .post('/api/blocks')
-      .set('Authorization', token)
-      .send({
+      },
+      headers,
+    );
+
+    const { data: pen } = await instance.post(
+      '/api/blocks',
+      {
         id: '@appsemble/pen',
         description: 'I’ve got a pen.',
-      });
-    const { body: bam } = await request(server).get('/api/blocks');
+      },
+      headers,
+    );
+
+    const { data: bam } = await instance.get('/api/blocks');
     expect(bam).toStrictEqual([apple, pen]);
   });
 
   it('should be possible to upload block versions where data is sent as the first parameter', async () => {
-    await request(server)
-      .post('/api/blocks')
-      .set('Authorization', token)
-      .send({ id: '@xkcd/standing' });
-    const { body, status } = await request(server)
-      .post('/api/blocks/@xkcd/standing/versions')
-      .set('Authorization', token)
-      .field('data', JSON.stringify({ version: '1.32.9' }))
-      .attach('build/standing.png', path.join(__dirname, '__fixtures__/standing.png'))
-      .attach('build/testblock.js', path.join(__dirname, '__fixtures__/testblock.js'));
-    expect(body).toStrictEqual({
+    await instance.post('/api/blocks', { id: '@xkcd/standing' }, headers);
+
+    const formData = new FormData();
+    formData.append('data', JSON.stringify({ version: '1.32.9' }));
+    formData.append(
+      'build/standing.png',
+      fs.createReadStream(path.join(__dirname, '__fixtures__/standing.png')),
+    );
+    formData.append(
+      'build/testblock.js',
+      fs.createReadStream(path.join(__dirname, '__fixtures__/testblock.js')),
+    );
+
+    const { data, status } = await instance.post('/api/blocks/@xkcd/standing/versions', formData, {
+      headers: { ...headers.headers, ...formData.getHeaders() },
+    });
+
+    expect(data).toStrictEqual({
       actions: null,
       files: ['build/standing.png', 'build/testblock.js'],
       name: '@xkcd/standing',
@@ -123,31 +152,36 @@ describe('blocks', () => {
       parameters: null,
       version: '1.32.9',
     });
+
     expect(status).toBe(201);
   });
 
   it('should be possible to fetch uploaded block versions', async () => {
-    await request(server)
-      .post('/api/blocks')
-      .set('Authorization', token)
-      .send({ id: '@xkcd/standing' });
+    await instance.post('/api/blocks', { id: '@xkcd/standing' }, headers);
 
-    await request(server)
-      .post('/api/blocks/@xkcd/standing/versions')
-      .set('Authorization', token)
-      .attach('build/standing.png', path.join(__dirname, '__fixtures__/standing.png'))
-      .attach('build/testblock.js', path.join(__dirname, '__fixtures__/testblock.js'))
-      .field('data', JSON.stringify({ version: '1.32.9' }));
+    const formData = new FormData();
+    formData.append('data', JSON.stringify({ version: '1.32.9' }));
+    formData.append(
+      'build/standing.png',
+      fs.createReadStream(path.join(__dirname, '__fixtures__/standing.png')),
+    );
+    formData.append(
+      'build/testblock.js',
+      fs.createReadStream(path.join(__dirname, '__fixtures__/testblock.js')),
+    );
+    await instance.post('/api/blocks/@xkcd/standing/versions', formData, {
+      headers: { ...headers.headers, ...formData.getHeaders() },
+    });
 
-    const { body } = await request(server).get('/api/blocks/@xkcd/standing/versions');
-    expect(body).toStrictEqual([
+    const { data } = await instance.get('/api/blocks/@xkcd/standing/versions');
+    expect(data).toStrictEqual([
       { actions: null, layout: null, resources: null, version: '1.32.9' },
     ]);
   });
 
   it('should not be possible to fetch block versions of non-existent blocks', async () => {
-    const { body } = await request(server).get('/api/blocks/@xkcd/standing/versions');
-    expect(body).toStrictEqual({
+    const { data } = await instance.get('/api/blocks/@xkcd/standing/versions');
+    expect(data).toStrictEqual({
       statusCode: 404,
       error: 'Not Found',
       message: 'Block definition not found',
@@ -155,17 +189,24 @@ describe('blocks', () => {
   });
 
   it('should be possible to upload block versions where data is sent as the last parameter', async () => {
-    await request(server)
-      .post('/api/blocks')
-      .set('Authorization', token)
-      .send({ id: '@xkcd/standing' });
-    const { body, status } = await request(server)
-      .post('/api/blocks/@xkcd/standing/versions')
-      .set('Authorization', token)
-      .attach('build/standing.png', path.join(__dirname, '__fixtures__/standing.png'))
-      .attach('build/testblock.js', path.join(__dirname, '__fixtures__/testblock.js'))
-      .field('data', JSON.stringify({ version: '1.32.9' }));
-    expect(body).toStrictEqual({
+    await instance.post('/api/blocks', { id: '@xkcd/standing' }, headers);
+
+    const formData = new FormData();
+    formData.append('data', JSON.stringify({ version: '1.32.9' }));
+    formData.append(
+      'build/standing.png',
+      fs.createReadStream(path.join(__dirname, '__fixtures__/standing.png')),
+    );
+    formData.append(
+      'build/testblock.js',
+      fs.createReadStream(path.join(__dirname, '__fixtures__/testblock.js')),
+    );
+
+    const { data, status } = await instance.post('/api/blocks/@xkcd/standing/versions', formData, {
+      headers: { ...headers.headers, ...formData.getHeaders() },
+    });
+
+    expect(data).toStrictEqual({
       actions: null,
       files: ['build/standing.png', 'build/testblock.js'],
       name: '@xkcd/standing',
@@ -178,26 +219,35 @@ describe('blocks', () => {
   });
 
   it('should not be possible to register the same block version twice', async () => {
-    await request(server)
-      .post('/api/blocks')
-      .set('Authorization', token)
-      .send({
+    await instance.post(
+      '/api/blocks',
+      {
         id: '@xkcd/standing',
         description: 'This block has been uploaded for the purpose of unit testing.',
-      });
-    await request(server)
-      .post('/api/blocks/@xkcd/standing/versions')
-      .set('Authorization', token)
-      .field('data', JSON.stringify({ version: '1.32.9' }))
-      .attach('build/standing.png', path.join(__dirname, '__fixtures__/standing.png'))
-      .attach('build/testblock.js', path.join(__dirname, '__fixtures__/testblock.js'));
-    const { body } = await request(server)
-      .post('/api/blocks/@xkcd/standing/versions')
-      .set('Authorization', token)
-      .field('data', JSON.stringify({ version: '1.32.9' }))
-      .attach('build/standing.png', path.join(__dirname, '__fixtures__/standing.png'))
-      .attach('build/testblock.js', path.join(__dirname, '__fixtures__/testblock.js'));
-    expect(body).toStrictEqual({
+      },
+      headers,
+    );
+
+    const formData = new FormData();
+    formData.append('data', JSON.stringify({ version: '1.32.9' }));
+    formData.append(
+      'build/standing.png',
+      fs.createReadStream(path.join(__dirname, '__fixtures__/standing.png')),
+    );
+    formData.append(
+      'build/testblock.js',
+      fs.createReadStream(path.join(__dirname, '__fixtures__/testblock.js')),
+    );
+
+    await instance.post('/api/blocks/@xkcd/standing/versions', formData, {
+      headers: { ...headers.headers, ...formData.getHeaders() },
+    });
+
+    const { data } = await instance.post('/api/blocks/@xkcd/standing/versions', formData, {
+      headers: { ...headers.headers, ...formData.getHeaders() },
+    });
+
+    expect(data).toStrictEqual({
       error: 'Conflict',
       message: 'Block version “@xkcd/standing@1.32.9” already exists',
       statusCode: 409,
@@ -205,15 +255,15 @@ describe('blocks', () => {
   });
 
   it('should require at least one file', async () => {
-    await request(server)
-      .post('/api/blocks')
-      .set('Authorization', token)
-      .send({ id: '@xkcd/standing' });
-    const { body, status } = await request(server)
-      .post('/api/blocks/@xkcd/standing/versions')
-      .set('Authorization', token)
-      .field('data', JSON.stringify({ version: '1.32.9' }));
-    expect(body).toStrictEqual({
+    await instance.post('/api/blocks', { id: '@xkcd/standing' }, headers);
+    const formData = new FormData();
+    formData.append('data', JSON.stringify({ version: '1.32.9' }));
+
+    const { data, status } = await instance.post('/api/blocks/@xkcd/standing/versions', formData, {
+      headers: { ...headers.headers, ...formData.getHeaders() },
+    });
+
+    expect(data).toStrictEqual({
       error: 'Bad Request',
       message: 'At least one file should be uploaded',
       statusCode: 400,
@@ -222,29 +272,35 @@ describe('blocks', () => {
   });
 
   it('should be possible to retrieve block versions', async () => {
-    await request(server)
-      .post('/api/blocks')
-      .set('Authorization', token)
-      .send({ id: '@xkcd/standing' });
-    const {
-      body: { parameters, ...created },
-    } = await request(server)
-      .post('/api/blocks/@xkcd/standing/versions')
-      .set('Authorization', token)
-      .attach('build/standing.png', path.join(__dirname, '__fixtures__/standing.png'))
-      .attach('build/testblock.js', path.join(__dirname, '__fixtures__/testblock.js'))
-      .field('data', JSON.stringify({ version: '1.32.9' }));
-    const { body: retrieved, status } = await request(server).get(
+    await instance.post('/api/blocks', { id: '@xkcd/standing' }, headers);
+
+    const formData = new FormData();
+    formData.append('data', JSON.stringify({ version: '1.32.9' }));
+    formData.append(
+      'build/standing.png',
+      fs.createReadStream(path.join(__dirname, '__fixtures__/standing.png')),
+    );
+    formData.append(
+      'build/testblock.js',
+      fs.createReadStream(path.join(__dirname, '__fixtures__/testblock.js')),
+    );
+
+    const { data: created } = await instance.post('/api/blocks/@xkcd/standing/versions', formData, {
+      headers: { ...headers.headers, ...formData.getHeaders() },
+    });
+
+    const { data: retrieved, status } = await instance.get(
       '/api/blocks/@xkcd/standing/versions/1.32.9',
     );
+
     expect(retrieved).toStrictEqual(created);
     expect(status).toBe(200);
   });
 
   it('should respond with 404 when trying to fetch a non existing block version', async () => {
-    const { body, status } = await request(server).get('/api/blocks/@xkcd/standing/versions/3.1.4');
+    const { data, status } = await instance.get('/api/blocks/@xkcd/standing/versions/3.1.4');
     expect(status).toBe(404);
-    expect(body).toStrictEqual({
+    expect(data).toStrictEqual({
       error: 'Not Found',
       message: 'Block version not found',
       statusCode: 404,
@@ -252,37 +308,38 @@ describe('blocks', () => {
   });
 
   it('should be possible to download block assets', async () => {
-    await request(server)
-      .post('/api/blocks')
-      .set('Authorization', token)
-      .send({ id: '@xkcd/standing' });
-    await request(server)
-      .post('/api/blocks/@xkcd/standing/versions')
-      .set('Authorization', token)
-      .attach('standing.png', path.join(__dirname, '__fixtures__/standing.png'))
-      .attach('testblock.js', path.join(__dirname, '__fixtures__/testblock.js'))
-      .field('data', JSON.stringify({ version: '1.32.9' }));
-    const png = await request(server).get(
-      '/api/blocks/@xkcd/standing/versions/1.32.9/standing.png',
+    await instance.post('/api/blocks', { id: '@xkcd/standing' }, headers);
+
+    const formData = new FormData();
+    formData.append('data', JSON.stringify({ version: '1.32.9' }));
+    formData.append(
+      'standing.png',
+      fs.createReadStream(path.join(__dirname, '__fixtures__/standing.png')),
     );
+    formData.append(
+      'testblock.js',
+      fs.createReadStream(path.join(__dirname, '__fixtures__/testblock.js')),
+    );
+
+    await instance.post('/api/blocks/@xkcd/standing/versions', formData, {
+      headers: { ...headers.headers, ...formData.getHeaders() },
+    });
+    const png = await instance.get('/api/blocks/@xkcd/standing/versions/1.32.9/standing.png');
     expect(png.status).toBe(200);
-    expect(png.type).toBe('image/png');
-    expect(png.body).toStrictEqual(
+    expect(png.headers['content-type']).toBe('image/png');
+    expect(png.data).toStrictEqual(
       await fs.readFile(path.join(__dirname, '__fixtures__/standing.png')),
     );
-    const js = await request(server).get('/api/blocks/@xkcd/standing/versions/1.32.9/testblock.js');
+    const js = await instance.get('/api/blocks/@xkcd/standing/versions/1.32.9/testblock.js');
     expect(js.status).toBe(200);
-    expect(js.type).toBe('application/javascript');
+    expect(js.headers['content-type']).toBe('application/javascript');
     expect(js.text).toStrictEqual(
       await fs.readFile(path.join(__dirname, '__fixtures__/testblock.js'), 'utf-8'),
     );
   });
 
   it('should respond with 404 when trying to fetch a non existing block asset', async () => {
-    const { body, status } = await request(server).get(
-      '/api/blocks/@xkcd/standing/versions/3.1.4/sitting.png',
-    );
+    const { status } = await instance.get('/api/blocks/@xkcd/standing/versions/3.1.4/sitting.png');
     expect(status).toBe(404);
-    expect(body).toStrictEqual({});
   });
 });
