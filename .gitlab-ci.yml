@@ -26,7 +26,7 @@ stages:
   image:
     # This is the most official Helm image at the moment.
     # https://github.com/helm/helm/issues/5682#issuecomment-490084864
-    name: lachlanevenson/k8s-helm:v2.14.1
+    name: lachlanevenson/k8s-helm:v3.0.0-rc.2
     entrypoint: [/bin/sh, -c]
   dependencies: []
 
@@ -301,13 +301,15 @@ review:
       --set "image.pullPolicy=Always"
       --set "image.repository=$CI_REGISTRY_IMAGE"
       --set "image.tag=$CI_COMMIT_REF_NAME"
+      --set "ingress.annotations.cert-manager\.io/issuer=letsencrypt-dev"
+      --set "ingress.annotations.kubernetes\.io/ingress\.class=nginx"
+      --set "ingress.annotations.nginx\.ingress\.kubernetes\.io/proxy-body-size=50m"
       --set "ingress.enabled=true"
       --set "ingress.host=${CI_ENVIRONMENT_URL/https:\/\//}"
       --set "ingress.tls.secretName=$CI_ENVIRONMENT_SLUG-tls"
       --set "migrateTo=999.999.999"
-      --set "mysql.existingSecret=mysql"
-      --set "mysql.fullnameOverride=$CI_ENVIRONMENT_SLUG-mysql"
-      --set "mysql.persistence.enabled=false"
+      --set "global.postgresql.existingSecret=postgresql"
+      --set "postgresql.fullnameOverride=$CI_ENVIRONMENT_SLUG-postgresql"
       --set "sentrySecret=sentry"
     - echo -n "$CI_ENVIRONMENT_URL" > environment-url.txt
   artifacts:
@@ -344,6 +346,8 @@ review docs:
       --install
       --set "git.commit.sha=$CI_COMMIT_SHA"
       --set "image.tag=$CI_COMMIT_REF_NAME"
+      --set "ingress.annotations.cert-manager\.io/issuer=letsencrypt-dev"
+      --set "ingress.annotations.kubernetes\.io/ingress\.class=nginx"
       --set "url=$CI_ENVIRONMENT_URL"
 
 # Stop a review environment.
@@ -376,13 +380,15 @@ staging:
       --set "image.pullPolicy=Always"
       --set "image.repository=$CI_REGISTRY_IMAGE"
       --set "image.tag=master"
+      --set "ingress.annotations.cert-manager\.io/issuer=letsencrypt-dev"
+      --set "ingress.annotations.kubernetes\.io/ingress\.class=nginx"
+      --set "ingress.annotations.nginx\.ingress\.kubernetes\.io/proxy-body-size=50m"
       --set "ingress.enabled=true"
       --set "ingress.host=staging.appsemble.app"
       --set "ingress.tls.secretName=staging-tls"
       --set "migrateTo=999.999.999"
-      --set "mysql.existingSecret=mysql"
-      --set "mysql.fullnameOverride=staging-mysql"
-      --set "mysql.persistence.enabled=false"
+      --set "global.postgresql.existingSecret=postgresql"
+      --set "postgresql.fullnameOverride=staging-postgresql"
       --set "sentrySecret=sentry"
 
 # Deploy the docs for the staging environment.
@@ -403,6 +409,8 @@ staging docs:
       --install
       --set "git.commit.sha=$CI_COMMIT_SHA"
       --set "image.tag=$CI_COMMIT_REF_NAME"
+      --set "ingress.annotations.cert-manager\.io/issuer=letsencrypt-dev"
+      --set "ingress.annotations.kubernetes\.io/ingress\.class=nginx"
       --set "url=$CI_ENVIRONMENT_URL"
 
 # Wipe the staging environment, reset the staging environment to the latest release, and upgrade to master.
@@ -417,19 +425,20 @@ reset staging:
   script:
     # We can’s use `--replace` because of https://github.com/helm/helm/issues/3134
     - helm delete --purge staging
-    - helm install config/charts/appsemble
+    - helm install staging config/charts/appsemble
       --atomic
-      --name staging
       --set "app=$CI_ENVIRONMENT_SLUG"
       --set "image.pullPolicy=Always"
       --set "image.repository=$CI_REGISTRY_IMAGE"
       --set "image.tag=master"
+      --set "ingress.annotations.cert-manager\.io/issuer=letsencrypt-dev"
+      --set "ingress.annotations.kubernetes\.io/ingress\.class=nginx"
+      --set "ingress.annotations.nginx\.ingress\.kubernetes\.io/proxy-body-size=50m"
       --set "ingress.enabled=true"
       --set "ingress.host=staging.appsemble.app"
       --set "ingress.tls.secretName=staging-tls"
-      --set "mysql.existingSecret=mysql"
-      --set "mysql.fullnameOverride=staging-mysql"
-      --set "mysql.persistence.enabled=false"
+      --set "global.postgresql.existingSecret=postgresql-secret"
+      --set "postgresql.fullnameOverride=staging-postgresql"
       --set "sentrySecret=sentry"
 
 .production:
@@ -444,12 +453,15 @@ reset staging:
   script:
     - helm upgrade appsemble config/charts/appsemble
       --set "app=$CI_ENVIRONMENT_SLUG"
+      --set "ingress.annotations.cert-manager\.io/issuer=letsencrypt-prod"
+      --set "ingress.annotations.kubernetes\.io/ingress\.class=nginx"
+      --set "ingress.annotations.nginx\.ingress\.kubernetes\.io/proxy-body-size=50m"
       --set "ingress.enabled=true"
       --set "ingress.host=appsemble.app"
       --set "ingress.tls.secretName=tls-secret"
-      --set "mysql.existingSecret=mysql-secret"
-      --set "mysql.fullnameOverride=appsemble-mysql"
-      --set "mysql.persistence.existingClaim=appsemble-mysql"
+      --set "global.postgresql.existingSecret=postgresql"
+      --set "postgresql.enabled=false"
+      --set "postgresql.fullnameOverride=XXX"
       --wait
 
 # Deploy the docs for production.
@@ -468,6 +480,8 @@ production docs:
       --install
       --set "git.commit.sha=$CI_COMMIT_SHA"
       --set "image.tag=$CI_COMMIT_REF_NAME"
+      --set "ingress.annotations.cert-manager\.io/issuer=letsencrypt-prod"
+      --set "ingress.annotations.kubernetes\.io/ingress\.class=nginx"
       --set "url=$CI_ENVIRONMENT_URL"
 
 ###################################################################################################
@@ -488,12 +502,14 @@ migrate staging:
     - helm upgrade staging config/charts/appsemble
       --atomic
       --set "app=$CI_ENVIRONMENT_SLUG"
+      --set "ingress.annotations.cert-manager\.io/issuer=letsencrypt-dev"
+      --set "ingress.annotations.kubernetes\.io/ingress\.class=nginx"
+      --set "ingress.annotations.nginx\.ingress\.kubernetes\.io/proxy-body-size=50m"
       --set "ingress.enabled=true"
       --set "ingress.host=staging.appsemble.app"
       --set "ingress.tls.secretName=staging-tls"
-      --set "mysql.existingSecret=mysql"
-      --set "mysql.fullnameOverride=staging-mysql"
-      --set "mysql.persistence.enabled=false"
+      --set "global.postgresql.existingSecret=postgresql"
+      --set "postgresql.fullnameOverride=staging-postgresql"
       --set "sentrySecret=sentry"
     # Upgrade to master
     - helm upgrade staging config/charts/appsemble
@@ -502,13 +518,15 @@ migrate staging:
       --set "image.pullPolicy=Always"
       --set "image.repository=$CI_REGISTRY_IMAGE"
       --set "image.tag=master"
+      --set "ingress.annotations.cert-manager\.io/issuer=letsencrypt-dev"
+      --set "ingress.annotations.kubernetes\.io/ingress\.class=nginx"
+      --set "ingress.annotations.nginx\.ingress\.kubernetes\.io/proxy-body-size=50m"
       --set "ingress.enabled=true"
       --set "ingress.host=staging.appsemble.app"
       --set "ingress.tls.secretName=staging-tls"
       --set "migrateTo=999.999.999"
-      --set "mysql.existingSecret=mysql"
-      --set "mysql.fullnameOverride=staging-mysql"
-      --set "mysql.persistence.enabled=false"
+      --set "global.postgresql.existingSecret=postgresql"
+      --set "postgresql.fullnameOverride=staging-postgresql"
       --set "sentrySecret=sentry"
 
 ###################################################################################################
