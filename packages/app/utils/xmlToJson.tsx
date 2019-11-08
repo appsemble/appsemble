@@ -4,7 +4,7 @@ export default function xmlToJson(src: Element): {} {
   let result: any = {};
 
   if (!children.length) {
-    return src.innerHTML;
+    return src.textContent;
   }
 
   for (let index = 0; index < children.length; index += 1) {

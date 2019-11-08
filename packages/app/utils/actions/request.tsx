@@ -85,11 +85,11 @@ export function requestLikeAction<T extends RequestLikeActionTypes>({
 
       try {
         const response = await axios(req);
-        const contentType = response.headers['content-type'];
+        const [contentType] = response.headers['content-type'].split(';');
 
-        if (['text/xml', 'application/xml'].includes(contentType)) {
+        if (['text/xml', 'application/xml', 'application/rss+xml'].includes(contentType)) {
           const parser = new DOMParser();
-          const xml = parser.parseFromString(response.data, contentType);
+          const xml = parser.parseFromString(response.data, 'application/xml');
           response.data = xmlToJson((xml as unknown) as Element);
         }
 
