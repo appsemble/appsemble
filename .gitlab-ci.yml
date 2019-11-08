@@ -34,8 +34,7 @@ stages:
 .helm:
   extends: .helm-simple
   before_script:
-    - helm init --client-only
-    - helm repo remove local
+    - helm repo add stable https //kubernetes-charts.storage.googleapis.com
     - helm dependency build config/charts/*
 
 # A job preset for deleting Helm Charts.
@@ -44,7 +43,7 @@ stages:
   variables:
     GIT_STRATEGY: none
   script:
-    - helm delete --purge "$CI_ENVIRONMENT_SLUG"
+    - helm delete "$CI_ENVIRONMENT_SLUG"
 
 # A preconfigured environment for using Yarn.
 .yarn:
@@ -424,7 +423,7 @@ reset staging:
     url: https://staging.appsemble.app
   script:
     # We can’s use `--replace` because of https://github.com/helm/helm/issues/3134
-    - helm delete --purge staging
+    - helm delete staging
     - helm install staging config/charts/appsemble
       --atomic
       --set "app=$CI_ENVIRONMENT_SLUG"
