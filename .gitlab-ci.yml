@@ -34,7 +34,6 @@ stages:
 .helm:
   extends: .helm-simple
   before_script:
-    - helm repo add stable https://kubernetes-charts.storage.googleapis.com
     - helm dependency build config/charts/appsemble
 
 # A job preset for deleting Helm Charts.
