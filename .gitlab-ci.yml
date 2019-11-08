@@ -300,7 +300,7 @@ review:
       --set "image.pullPolicy=Always"
       --set "image.repository=$CI_REGISTRY_IMAGE"
       --set "image.tag=$CI_COMMIT_REF_NAME"
-      --set "ingress.annotations.cert-manager\.io/issuer=letsencrypt-dev"
+      --set "ingress.annotations.cert-manager\.io/cluster-issuer=letsencrypt-dev"
       --set "ingress.annotations.kubernetes\.io/ingress\.class=nginx"
       --set "ingress.annotations.nginx\.ingress\.kubernetes\.io/proxy-body-size=50m"
       --set "ingress.enabled=true"
@@ -345,7 +345,7 @@ review docs:
       --install
       --set "git.commit.sha=$CI_COMMIT_SHA"
       --set "image.tag=$CI_COMMIT_REF_NAME"
-      --set "ingress.annotations.cert-manager\.io/issuer=letsencrypt-dev"
+      --set "ingress.annotations.cert-manager\.io/cluster-issuer=letsencrypt-dev"
       --set "ingress.annotations.kubernetes\.io/ingress\.class=nginx"
       --set "url=$CI_ENVIRONMENT_URL"
 
@@ -379,7 +379,7 @@ staging:
       --set "image.pullPolicy=Always"
       --set "image.repository=$CI_REGISTRY_IMAGE"
       --set "image.tag=master"
-      --set "ingress.annotations.cert-manager\.io/issuer=letsencrypt-dev"
+      --set "ingress.annotations.cert-manager\.io/cluster-issuer=letsencrypt-dev"
       --set "ingress.annotations.kubernetes\.io/ingress\.class=nginx"
       --set "ingress.annotations.nginx\.ingress\.kubernetes\.io/proxy-body-size=50m"
       --set "ingress.enabled=true"
@@ -408,7 +408,7 @@ staging docs:
       --install
       --set "git.commit.sha=$CI_COMMIT_SHA"
       --set "image.tag=$CI_COMMIT_REF_NAME"
-      --set "ingress.annotations.cert-manager\.io/issuer=letsencrypt-dev"
+      --set "ingress.annotations.cert-manager\.io/cluster-issuer=letsencrypt-dev"
       --set "ingress.annotations.kubernetes\.io/ingress\.class=nginx"
       --set "url=$CI_ENVIRONMENT_URL"
 
@@ -430,7 +430,7 @@ reset staging:
       --set "image.pullPolicy=Always"
       --set "image.repository=$CI_REGISTRY_IMAGE"
       --set "image.tag=master"
-      --set "ingress.annotations.cert-manager\.io/issuer=letsencrypt-dev"
+      --set "ingress.annotations.cert-manager\.io/cluster-issuer=letsencrypt-dev"
       --set "ingress.annotations.kubernetes\.io/ingress\.class=nginx"
       --set "ingress.annotations.nginx\.ingress\.kubernetes\.io/proxy-body-size=50m"
       --set "ingress.enabled=true"
@@ -452,7 +452,7 @@ reset staging:
   script:
     - helm upgrade appsemble config/charts/appsemble
       --set "app=$CI_ENVIRONMENT_SLUG"
-      --set "ingress.annotations.cert-manager\.io/issuer=letsencrypt-prod"
+      --set "ingress.annotations.cert-manager\.io/cluster-issuer=letsencrypt-prod"
       --set "ingress.annotations.kubernetes\.io/ingress\.class=nginx"
       --set "ingress.annotations.nginx\.ingress\.kubernetes\.io/proxy-body-size=50m"
       --set "ingress.enabled=true"
@@ -479,7 +479,7 @@ production docs:
       --install
       --set "git.commit.sha=$CI_COMMIT_SHA"
       --set "image.tag=$CI_COMMIT_REF_NAME"
-      --set "ingress.annotations.cert-manager\.io/issuer=letsencrypt-prod"
+      --set "ingress.annotations.cert-manager\.io/cluster-issuer=letsencrypt-prod"
       --set "ingress.annotations.kubernetes\.io/ingress\.class=nginx"
       --set "url=$CI_ENVIRONMENT_URL"
 
@@ -501,7 +501,7 @@ migrate staging:
     - helm upgrade staging config/charts/appsemble
       --atomic
       --set "app=$CI_ENVIRONMENT_SLUG"
-      --set "ingress.annotations.cert-manager\.io/issuer=letsencrypt-dev"
+      --set "ingress.annotations.cert-manager\.io/cluster-issuer=letsencrypt-dev"
       --set "ingress.annotations.kubernetes\.io/ingress\.class=nginx"
       --set "ingress.annotations.nginx\.ingress\.kubernetes\.io/proxy-body-size=50m"
       --set "ingress.enabled=true"
@@ -517,7 +517,7 @@ migrate staging:
       --set "image.pullPolicy=Always"
       --set "image.repository=$CI_REGISTRY_IMAGE"
       --set "image.tag=master"
-      --set "ingress.annotations.cert-manager\.io/issuer=letsencrypt-dev"
+      --set "ingress.annotations.cert-manager\.io/cluster-issuer=letsencrypt-dev"
       --set "ingress.annotations.kubernetes\.io/ingress\.class=nginx"
       --set "ingress.annotations.nginx\.ingress\.kubernetes\.io/proxy-body-size=50m"
       --set "ingress.enabled=true"
