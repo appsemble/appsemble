@@ -127,7 +127,7 @@ helm lint:
     changes:
       - config/charts/**/*.*
   script:
-    - helm lint --strict config/charts/*
+    - helm lint config/charts/*
 
 # Check formatting using prettier.
 prettier:
