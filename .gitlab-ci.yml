@@ -306,7 +306,7 @@ review:
       --set "ingress.host=${CI_ENVIRONMENT_URL/https:\/\//}"
       --set "ingress.tls.secretName=$CI_ENVIRONMENT_SLUG-tls"
       --set "migrateTo=999.999.999"
-      --set "global.postgresql.existingSecret=postgresql"
+      --set "global.postgresql.existingSecret=postgresql-secret"
       --set "postgresql.fullnameOverride=$CI_ENVIRONMENT_SLUG-postgresql"
       --set "sentrySecret=sentry"
     - echo -n "$CI_ENVIRONMENT_URL" > environment-url.txt
@@ -385,7 +385,7 @@ staging:
       --set "ingress.host=staging.appsemble.app"
       --set "ingress.tls.secretName=staging-tls"
       --set "migrateTo=999.999.999"
-      --set "global.postgresql.existingSecret=postgresql"
+      --set "global.postgresql.existingSecret=postgresql-secret"
       --set "postgresql.fullnameOverride=staging-postgresql"
       --set "sentrySecret=sentry"
 
@@ -457,7 +457,7 @@ reset staging:
       --set "ingress.enabled=true"
       --set "ingress.host=appsemble.app"
       --set "ingress.tls.secretName=tls-secret"
-      --set "global.postgresql.existingSecret=postgresql"
+      --set "global.postgresql.existingSecret=postgresql-secret"
       --set "postgresql.enabled=false"
       --set "postgresql.fullnameOverride=XXX"
       --wait
@@ -506,7 +506,7 @@ migrate staging:
       --set "ingress.enabled=true"
       --set "ingress.host=staging.appsemble.app"
       --set "ingress.tls.secretName=staging-tls"
-      --set "global.postgresql.existingSecret=postgresql"
+      --set "global.postgresql.existingSecret=postgresql-secret"
       --set "postgresql.fullnameOverride=staging-postgresql"
       --set "sentrySecret=sentry"
     # Upgrade to master
@@ -523,7 +523,7 @@ migrate staging:
       --set "ingress.host=staging.appsemble.app"
       --set "ingress.tls.secretName=staging-tls"
       --set "migrateTo=999.999.999"
-      --set "global.postgresql.existingSecret=postgresql"
+      --set "global.postgresql.existingSecret=postgresql-secret"
       --set "postgresql.fullnameOverride=staging-postgresql"
       --set "sentrySecret=sentry"
 
