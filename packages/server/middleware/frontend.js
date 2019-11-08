@@ -21,12 +21,12 @@ export default async function frontend(webpackConfigs) {
   const { default: koaWebpack } = await import('koa-webpack');
   const { default: webpack } = await import('webpack');
   const { default: webpackConfigApp } = await import('../../../config/webpack/app');
-  const { default: webpackConfigEditor } = await import('../../../config/webpack/editor');
+  const { default: webpackConfigStudio } = await import('../../../config/webpack/studio');
   const configApp = webpackConfigApp(null, { mode: 'development' });
-  const configEditor = webpackConfigEditor(null, { mode: 'development' });
+  const configStudio = webpackConfigStudio(null, { mode: 'development' });
   configApp.output.path = configApp.output.publicPath;
-  configEditor.output.path = configEditor.output.publicPath;
-  const compiler = webpack([configApp, configEditor, ...webpackConfigs]);
+  configStudio.output.path = configStudio.output.publicPath;
+  const compiler = webpack([configApp, configStudio, ...webpackConfigs]);
   const middleware = await koaWebpack({
     compiler,
     config: null,

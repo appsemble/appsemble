@@ -39,7 +39,7 @@ export default function Login({ passwordLogin }: LoginProps): React.ReactElement
         '/api/oauth/token',
         { username: email, password },
         '/api/oauth/token',
-        'appsemble-editor',
+        'appsemble-studio',
         'apps:read apps:write',
       ),
     [passwordLogin],

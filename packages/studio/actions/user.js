@@ -219,8 +219,8 @@ export function oauthLogin(token) {
       {
         grant_type: 'authorization_code',
         code: token,
-        client_id: 'appsemble-editor',
-        client_secret: 'appsemble-editor-secret',
+        client_id: 'appsemble-studio',
+        client_secret: 'appsemble-studio-secret',
         scope: 'apps:read apps:write',
       },
       db,

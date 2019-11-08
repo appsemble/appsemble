@@ -15,37 +15,37 @@ const minify = require('./html-minifier.json');
 const publicPath = '/';
 
 /**
- * This webpack configuration is used by the Appsemble editor.
+ * This webpack configuration is used by the Appsemble studio.
  */
 module.exports = (env, argv) => {
   const { mode } = argv;
   const production = mode === 'production';
-  const editorEntry = path.resolve(__dirname, '../../packages/editor');
+  const studioEntry = path.resolve(__dirname, '../../packages/studio');
 
   return merge.smart(core(env, argv), {
-    name: 'Appsemble Editor',
-    entry: [editorEntry],
+    name: 'Appsemble Studio',
+    entry: [studioEntry],
     output: {
-      filename: production ? '_/[hash].js' : '_/editor/[name].js',
+      filename: production ? '_/[hash].js' : '_/studio/[name].js',
       publicPath,
     },
     plugins: [
       new HtmlWebpackPlugin({
-        template: path.join(editorEntry, 'index.html'),
+        template: path.join(studioEntry, 'index.html'),
         templateParameters: {
           bulmaURL: `/bulma/${bulmaPkg.version}/bulma.min.css`,
           faURL: `/fa/${faPkg.version}/css/all.min.css`,
         },
-        filename: 'editor.html',
+        filename: 'studio.html',
         minify,
       }),
       new UnusedFilesWebpackPlugin({
         failOnUnused: production,
-        patterns: ['editor/**/*.*'],
+        patterns: ['studio/**/*.*'],
         globOptions: { ignore: ['**/node_modules/**', '**/package.json', '**/*.test.{js,jsx}'] },
       }),
       new MiniCssExtractPlugin({
-        filename: production ? '_/[hash].css' : '_/editor/[name].css',
+        filename: production ? '_/[hash].css' : '_/studio/[name].css',
       }),
       new MonacoWebpackPlugin({ languages: ['css', 'json', 'yaml'] }),
     ],

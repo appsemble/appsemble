@@ -2,7 +2,7 @@ import makeCSP from '../../utils/makeCSP';
 import sentryDsnToReportUri from '../../utils/sentryDsnToReportUri';
 
 /**
- * Serve `index.html` for editor related routes.
+ * Serve `index.html` for studio related routes.
  */
 export default async function indexHandler(ctx) {
   const { render } = ctx.state;
