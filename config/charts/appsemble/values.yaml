@@ -15,10 +15,7 @@ service:
 
 ingress:
   enabled: true
-  annotations:
-    certmanager.k8s.io/cluster-issuer: letsencrypt-prod
-    kubernetes.io/ingress.class: nginx
-    nginx.ingress.kubernetes.io/proxy-body-size: 50m
+  annotations: {}
   host: ''
   tls:
     {}
@@ -45,24 +42,13 @@ sentrySecret: {}
 
 migrateTo: {}
 
-mysql:
-  existingSecret: null
-  fullnameOverride: null
-  imagePullSecrets: null
-  mysqlAllowEmptyPassword: false
-  mysqlDatabase: appsemble
-  mysqlPassword: null
-  mysqlRootPassword: null
-  mysqlUser: appsemble
-  nameOverride: null
+global:
+  postgresql:
+    postgresqlDatabase: appsemble
+    postgresqlUsername: appsemble
+    existingSecret: appsemble-postgresql-secret
+
+postgresql:
+  fullnameOverride: appsemble-postgresql
   persistence:
-    existingClaim: null
-    storageClass: null
-    subPath: null
-  priorityClassName: null
-  schedulerName: null
-  service:
-    loadBalancerIP: null
-    nodePort: null
-  subPath: null
-  timezone: null
+    enabled: false

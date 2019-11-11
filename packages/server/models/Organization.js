@@ -6,8 +6,8 @@ export default sequelize => {
     {
       id: { type: DataTypes.STRING, primaryKey: true },
       name: { type: DataTypes.STRING },
-      coreStyle: { type: DataTypes.TEXT('long') },
-      sharedStyle: { type: DataTypes.TEXT('long') },
+      coreStyle: { type: DataTypes.TEXT },
+      sharedStyle: { type: DataTypes.TEXT },
     },
     {
       freezeTableName: true,

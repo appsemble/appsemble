@@ -14,7 +14,7 @@ export default sequelize => {
       id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
       filename: { type: DataTypes.STRING },
       mime: { type: DataTypes.STRING },
-      content: { type: DataTypes.BLOB('long') },
+      content: { type: DataTypes.BLOB },
     },
     {
       freezeTableName: true,

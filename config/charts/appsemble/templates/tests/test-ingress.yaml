@@ -1,7 +1,8 @@
+{{- if .Values.ingress.enabled -}}
 apiVersion: v1
 kind: Pod
 metadata:
-  name: "{{ include "appsemble.fullname" . }}-test-connection"
+  name: "{{ include "appsemble.fullname" . }}-test-ingress"
   labels:
     app.kubernetes.io/instance: {{ .Release.Name }}
     app.kubernetes.io/managed-by: {{ .Release.Service }}
@@ -15,5 +16,6 @@ spec:
     - name: wget
       image: busybox
       command: ['wget']
-      args:  ['{{ include "appsemble.fullname" . }}:{{ .Values.service.port }}/api/health']
+      args: ['{{ include "appsemble.protocol" $ }}{{ .Values.ingress.host }}/api/health']
   restartPolicy: Never
+{{- end -}}
