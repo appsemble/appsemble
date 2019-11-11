@@ -22,7 +22,7 @@ export default React.forwardRef<HTMLInputElement, PasswordInputProps>((props, re
     <Input
       {...props}
       ref={ref}
-      control={<IconButton icon="eye" onClick={toggle} />}
+      control={<IconButton icon={visible ? 'eye-slash' : 'eye'} onClick={toggle} />}
       iconLeft="unlock"
       type={visible ? 'text' : 'password'}
     />
