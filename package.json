@@ -69,6 +69,7 @@
     "@typescript-eslint/parser": "^2.5.0",
     "axios": "^0.19.0",
     "axios-mock-adapter": "^1.17.0",
+    "axios-test-instance": "^1.0.1",
     "babel-eslint": "^10.0.3",
     "babel-jest": "^24.9.0",
     "babel-loader": "^8.0.6",
@@ -168,7 +169,7 @@
   "appsembleServer": {
     "database-host": "localhost",
     "database-name": "appsemble",
-    "database-user": "root",
+    "database-user": "admin",
     "database-password": "password",
     "host": "http://localhost:9999",
     "oauth-gitlab-key": "9739ffe4a5007fb7ac0bac53e2d70f7286add09190b73f40eeac33259cb81f15",

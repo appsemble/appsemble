@@ -17,11 +17,11 @@ export function builder(yargs) {
     .option('database-port', {
       desc: 'The port of the database to connect to.',
       type: 'number',
-      default: 3306,
+      default: 5432,
     })
     .option('database-dialect', {
       desc: 'The dialect of the database.',
-      default: 'mysql',
+      default: 'postgres',
       choices: ['mysql', 'postgres'],
     })
     .option('database-name', {

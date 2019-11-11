@@ -31,16 +31,16 @@ spec:
             - -vv
           env:
             - name: DATABASE_HOST
-              value: {{ include "call-nested" (list . "mysql" "mysql.fullname") }}
+              value: {{ .Values.postgresql.fullnameOverride }}
             - name: DATABASE_NAME
-              value: {{ .Values.mysql.mysqlDatabase }}
+              value: {{ .Values.global.postgresql.postgresqlDatabase }}
             - name: DATABASE_USER
-              value: {{ .Values.mysql.mysqlUser }}
+              value: {{ .Values.global.postgresql.postgresqlUsername }}
             - name: DATABASE_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{ include "call-nested" (list . "mysql" "mysql.secretName") }}
-                  key: mysql-password
+                  name: {{ .Values.global.postgresql.existingSecret }}
+                  key: postgresql-password
             - name: APP_DOMAIN_STRATEGY
               value: kubernetes-ingress
             - name: INGRESS_NAME
