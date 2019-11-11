@@ -7,7 +7,7 @@ export default sequelize => {
       id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
       mime: { type: DataTypes.STRING, allowNull: true },
       filename: { type: DataTypes.STRING, allowNull: true },
-      data: { type: DataTypes.BLOB('long'), allowNull: false },
+      data: { type: DataTypes.BLOB, allowNull: false },
     },
     {
       freezeTableName: true,
