@@ -6,4 +6,7 @@ git:
   commit:
     sha: ''
 
+ingress:
+  annotations: {}
+
 url: ''
