@@ -8,7 +8,7 @@
   "scripts": {
     "block": "webpack --config config/webpack/block.js --mode production --env",
     "build:app": "webpack --config config/webpack/app.js --mode production",
-    "build:editor": "webpack --config config/webpack/editor.js --mode production",
+    "build:studio": "webpack --config config/webpack/studio.js --mode production",
     "eslint": "eslint --max-warnings 0 --ext js,jsx,md,ts,tsx",
     "prettier": "prettier --check '**/*.{html,json,md,scss,yaml,yml}'",
     "start": "appsemble start",

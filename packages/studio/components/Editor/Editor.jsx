@@ -90,8 +90,6 @@ export default class Editor extends React.Component {
       } else {
         push(formatMessage(messages.error));
       }
-
-      history.push('/editor');
     }
   }
 

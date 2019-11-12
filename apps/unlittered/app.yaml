@@ -71,7 +71,7 @@ resources:
 authentication:
   - method: email
     url: /api/oauth/token
-    clientId: appsemble-editor
+    clientId: appsemble-studio
     scope: apps:read
 
 pages:

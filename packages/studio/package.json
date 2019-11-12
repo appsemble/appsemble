@@ -1,5 +1,5 @@
 {
-  "name": "@appsemble/editor",
+  "name": "@appsemble/studio",
   "version": "0.8.11",
   "private": true,
   "dependencies": {

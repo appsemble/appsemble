@@ -122,7 +122,7 @@ export default function oauth2Model({ db, secret }) {
         expiresAt,
         user: { id: token.UserId, organizations },
         // XXX: Figure out how to determine the client ID properly.
-        client: { id: 'appsemble-editor' },
+        client: { id: 'appsemble-studio' },
         scope: 'apps:read apps:write organizations:read organizations:style organizations:write',
       };
     },
@@ -130,8 +130,8 @@ export default function oauth2Model({ db, secret }) {
     async getClient(clientId, clientSecret) {
       const clause = clientSecret ? { clientId, clientSecret } : { clientId };
       const client =
-        clientId === 'appsemble-editor'
-          ? { ...clause, redirectUri: '/editor' }
+        clientId === 'appsemble-studio'
+          ? { ...clause, redirectUri: '/' }
           : await OAuthClient.findOne({ where: clause });
 
       if (!client) {
