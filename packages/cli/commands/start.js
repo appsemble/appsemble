@@ -27,11 +27,6 @@ export function builder(yargs) {
       type: 'number',
       default: 5432,
     })
-    .option('database-dialect', {
-      desc: 'The dialect of the database.',
-      default: 'postgres',
-      choices: ['mysql', 'postgres'],
-    })
     .option('database-name', {
       desc: 'The name of the database to connect to.',
       implies: ['database-user', 'database-password'],

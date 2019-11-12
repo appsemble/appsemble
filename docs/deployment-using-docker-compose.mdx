@@ -14,7 +14,7 @@ services:
   appsemble:
     image: appsemble/appsemble:latest
     depends_on:
-      - mysql
+      - postgresql
     restart: always
     environment:
       DATABASE_NAME: appsemble_database_name
@@ -24,19 +24,17 @@ services:
       # Expose Appsemble at port 8000.
       - '8000:9999'
 
-  mysql:
-    image: mysql:8
-    command: --default-authentication-plugin=mysql_native_password
+  postgresql:
+    image: postgres:11
     restart: always
     environment:
-      MYSQL_DATABASE: appsemble_database_name
-      MYSQL_USER: appsemble_database_user
-      MYSQL_PASSWORD: appsemble_database_password
-      MYSQL_RANDOM_ROOT_PASSWORD: 'yes'
+      POSTGRES_DB: appsemble_database_name
+      POSTGRES_USER: appsemble_database_user
+      POSTGRES_PASSWORD: appsemble_database_password
     volumes:
-      - ./mysql_data:/var/lib/mysql
+      - ./postgresql_data:/var/lib/postgresql/data
     ports:
-      - '3306:3306'
+      - '5432:5432'
 ```
 
 It is highly recommended to specify the version of the `appsemble/appsemble` image to use. Replace
