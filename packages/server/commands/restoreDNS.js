@@ -40,7 +40,6 @@ export async function handler(argv) {
   try {
     db = await setupModels({
       host: argv.databaseHost,
-      dialect: argv.databaseDialect,
       port: argv.databasePort,
       username: argv.databaseUser,
       password: argv.databasePassword,

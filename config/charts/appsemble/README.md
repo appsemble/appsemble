@@ -4,7 +4,7 @@
 
 ### New installation
 
-It is recommended to create a MySQL secret beforehand.
+It is recommended to create a PostgreSQL secret beforehand.
 
 ```sh
 kubectl create secret generic postgresql-secret \
@@ -12,10 +12,7 @@ kubectl create secret generic postgresql-secret \
   --from-literal 'postgresql-replication-password=my-postgresql-replication-password'
 ```
 
-However, this step **may** be skipped. In this case don’t pass the `mysql.existingSecret` and Helm
-will create a random password.
-
-> **Caution**: Make sure not to lose the MySQL passwords!
+> **Caution**: Make sure not to lose the PostgreSQL passwords!
 
 Next an SMTP secret is needed for sending emails.
 
@@ -43,7 +40,7 @@ Now the chart can be installed.
 
 ```sh
 helm dependency update config/charts/appsemble
-helm install --name my-release config/charts/appsemble --set 'mysql.existingSecret=mysql-secret'
+helm install --name my-release config/charts/appsemble --set 'global.postgresql.existingSecret=postgresql-secret'
 ```
 
 > **Note**: Appsemble isn’t published yet. Clone the repository and specify the path to the chart.
@@ -52,7 +49,7 @@ helm install --name my-release config/charts/appsemble --set 'mysql.existingSecr
 
 ```sh
 helm dependency update config/charts/appsemble
-helm upgrade my-release config/charts/appsemble --set 'mysql.existingSecret=mysql-secret'
+helm upgrade my-release config/charts/appsemble --set 'global.postgresql.existingSecret=postgresql-secret'
 ```
 
 ## Variables
@@ -88,18 +85,4 @@ helm upgrade my-release config/charts/appsemble --set 'mysql.existingSecret=mysq
 | `postgresql.enabled`                   | `true`                        | Set this to false explicitly to not include a PostgreSQL installation. This is useful if the database is managed by another service.                        |
 | `postgresql.persistence.enabled`       | `false`                       | Enable to create a persistent volume for the data.                                                                                                          |
 
-## Secrets
-
-### MySQL
-
-Appsemble uses the [MySQL subchart][]. If `mysql.existingSecret` is set, Appsemble will use this
-secret to connect to the MySQL database. Otherwise, the MySQL subchart will create this secret for
-you and Appsemble will use that one.
-
-### SMTP
-
-Appsemble requires SMTP variables to send emails. These should be stored in a predefined SMTP
-secret.
-
-[mysql subchart]: https://hub.helm.sh/charts/stable/mysql
 [sentry]: https://sentry.io
