@@ -7,6 +7,12 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- App: Add support for basic XML parsing.
+- App: Add `base` property for `request` actions.
+- App: Add support for absolute URLs in `link` actions.
+
 ## [0.8.11] - 2019-11-01
 
 ### Added
