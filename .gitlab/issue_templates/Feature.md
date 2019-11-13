@@ -37,7 +37,7 @@ Content-Type: application/json
 
 <!-- Remove the labels that don’t apply. -->
 
-/label ~App ~Block ~CLI ~Docker ~Editor ~Server
+/label ~App ~Block ~CLI ~Docker ~Server ~Studio
 
 /label ~Feature
 

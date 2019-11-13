@@ -1,9 +1,9 @@
 import * as React from 'react';
 
-import FormComponent, { FormComponentProps } from '../FormComponent';
+import FormComponent from '../FormComponent';
 
-type SelectProps = FormComponentProps &
-  React.HTMLProps<HTMLSelectElement> & {
+type SelectProps = React.ComponentPropsWithoutRef<typeof FormComponent> &
+  React.ComponentPropsWithoutRef<'select'> & {
     /**
      * The name of the HTML element.
      */

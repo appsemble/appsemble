@@ -2,7 +2,7 @@ import { normalize } from '@appsemble/utils';
 import Boom from '@hapi/boom';
 import bcrypt from 'bcrypt';
 import crypto from 'crypto';
-import { UniqueConstraintError } from 'sequelize';
+import { DatabaseError, UniqueConstraintError } from 'sequelize';
 
 async function mayRegister({ argv }) {
   if (argv.disableRegistration) {
@@ -54,6 +54,12 @@ export async function registerEmail(ctx) {
       } else {
         throw Boom.conflict('This organization already exists.');
       }
+    }
+
+    if (e instanceof DatabaseError) {
+      // XXX: Postgres throws a generic transaction aborted error
+      // if there is a way to read the internal error, replace this code.
+      throw Boom.conflict('User with this email address already exists.');
     }
 
     throw e;

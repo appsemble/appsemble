@@ -1,4 +1,5 @@
 import {
+  PasswordInput,
   SimpleForm,
   SimpleFormError,
   SimpleInput,
@@ -39,7 +40,7 @@ export default function Register({
         '/api/oauth/token',
         { username: email, password },
         '/api/oauth/token',
-        'appsemble-editor',
+        'appsemble-studio',
         'apps:read apps:write',
       );
     },
@@ -76,11 +77,10 @@ export default function Register({
       />
       <SimpleInput
         autoComplete="new-password"
-        iconLeft="unlock"
+        component={PasswordInput}
         label={<FormattedMessage {...messages.passwordLabel} />}
         name="password"
         required
-        type="password"
         validityMessages={{
           valueMissing: <FormattedMessage {...messages.passwordRequired} />,
         }}

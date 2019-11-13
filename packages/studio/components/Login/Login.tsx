@@ -1,4 +1,5 @@
 import {
+  PasswordInput,
   SimpleForm,
   SimpleFormError,
   SimpleInput,
@@ -39,7 +40,7 @@ export default function Login({ passwordLogin }: LoginProps): React.ReactElement
         '/api/oauth/token',
         { username: email, password },
         '/api/oauth/token',
-        'appsemble-editor',
+        'appsemble-studio',
         'apps:read apps:write',
       ),
     [passwordLogin],
@@ -66,11 +67,10 @@ export default function Login({ passwordLogin }: LoginProps): React.ReactElement
         />
         <SimpleInput
           autoComplete="current-password"
-          iconLeft="unlock"
+          component={PasswordInput}
           label={<FormattedMessage {...messages.passwordLabel} />}
           name="password"
           required
-          type="password"
           validityMessages={{
             valueMissing: <FormattedMessage {...messages.passwordRequired} />,
           }}

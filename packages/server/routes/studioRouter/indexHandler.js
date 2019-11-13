@@ -43,6 +43,6 @@ export default async function indexHandler(ctx) {
     'font-src': ["'self'", 'https://fonts.gstatic.com'],
   });
   ctx.set('Content-Security-Policy', csp);
-  ctx.body = await render('editor.html', { settings });
+  ctx.body = await render('studio.html', { settings });
   ctx.type = 'text/html';
 }

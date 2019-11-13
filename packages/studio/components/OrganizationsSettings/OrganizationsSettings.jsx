@@ -354,6 +354,7 @@ export default class OrganizationsSettings extends Component {
               disabled={submittingOrganization}
               iconLeft="briefcase"
               label={<FormattedMessage {...messages.organizationId} />}
+              maxLength={30}
               name="newOrganizationId"
               onChange={this.onNewOrganizationChange}
               placeholder={intl.formatMessage(messages.organizationId)}
