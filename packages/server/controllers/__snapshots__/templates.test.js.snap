@@ -23,7 +23,7 @@ Object {
               "icon": "arrow-right",
             },
             "type": "action-button",
-            "version": "0.8.10",
+            "version": "0.9.0",
           },
         ],
         "name": "Example Page A",
@@ -41,7 +41,7 @@ Object {
               "icon": "arrow-left",
             },
             "type": "action-button",
-            "version": "0.8.10",
+            "version": "0.9.0",
           },
         ],
         "name": "Example Page B",
@@ -64,7 +64,7 @@ pages:
   - name: Example Page A
     blocks:
       - type: action-button
-        version: 0.8.10
+        version: 0.9.0
         parameters:
           icon: arrow-right
         actions:
@@ -74,7 +74,7 @@ pages:
   - name: Example Page B
     blocks:
       - type: action-button
-        version: 0.8.10
+        version: 0.9.0
         parameters:
           icon: arrow-left
         actions:

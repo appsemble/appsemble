@@ -1,10 +1,10 @@
 import classNames from 'classnames';
 import * as React from 'react';
 
-import FormComponent, { FormComponentProps } from '../FormComponent';
+import FormComponent from '../FormComponent';
 
-type CheckboxProps = FormComponentProps &
-  Omit<React.HTMLProps<HTMLInputElement>, 'value' | 'label' | 'onChange'> & {
+type CheckboxProps = React.PropsWithoutRef<typeof FormComponent> &
+  Omit<React.ComponentPropsWithoutRef<'input'>, 'value' | 'label' | 'onChange'> & {
     /**
      * The name of the HTML element.
      */

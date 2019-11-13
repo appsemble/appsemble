@@ -34,7 +34,7 @@ if ('serviceWorker' in navigator) {
 window.addEventListener('message', event => {
   if (event.data.type === 'editor/EDIT_SUCCESS') {
     const app = resolveJsonPointers(event.data.app);
-    store.dispatch({ type: event.data.type, app });
+    store.dispatch({ type: event.data.type, definition: app.definition });
 
     const replaceStyle = (id, style) => {
       const oldNode = document.getElementById(id);

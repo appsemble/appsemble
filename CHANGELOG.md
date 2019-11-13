@@ -7,6 +7,21 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.9.0] - 2019-11-12
+
+### Added
+
+- Helm: Add support for self managed databases.
+- Helm: Test ingress in the success hook.
+
+### Changed
+
+- Helm: Replace MySQL with PostgreSQL.
+- Helm: Use Helm 3, dropping support for Helm 2.
+- Server: Replace MySQL with PostgreSQL.
+
+## [0.8.11] - 2019-11-01
+
 ### Added
 
 - App: Add support for push notifications. Users can subscribe to notifications in the app’s

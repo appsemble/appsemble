@@ -188,7 +188,7 @@ describe('organization controller', () => {
   it('should not send an invite to members of an organization', async () => {
     const userB = await EmailAuthorization.create({ email: 'test2@example.com', verified: true });
     const { id } = await userB.createUser({ primaryEmail: 'test2@example.com', name: 'John' });
-    const organization = await Organization.findByPk('testOrganization');
+    const organization = await Organization.findByPk('testorganization');
     await organization.addUser(id);
 
     const response = await request(server)

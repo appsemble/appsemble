@@ -27,7 +27,7 @@ import boom from '../middleware/boom';
 import frontend from '../middleware/frontend';
 import oauth2 from '../middleware/oauth2';
 import tinyRouter from '../middleware/tinyRouter';
-import { appRouter, editorRouter, fallbackRouter } from '../routes';
+import { appRouter, fallbackRouter, studioRouter } from '../routes';
 import bulmaHandler from '../routes/bulmaHandler';
 import Mailer from './email/Mailer';
 import oauth2Model from './oauth2Model';
@@ -96,7 +96,7 @@ export default async function createServer({
     app.use(await frontend(webpackConfigs));
   }
 
-  app.use(appMapper(editorRouter, appRouter, fallbackRouter));
+  app.use(appMapper(studioRouter, appRouter, fallbackRouter));
 
   return app.callback();
 }

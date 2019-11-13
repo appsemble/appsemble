@@ -57,7 +57,7 @@ export default {
         blocks: [
           {
             type: 'form',
-            version: '0.8.10',
+            version: '0.9.0',
             parameters: {
               fields: [
                 {
@@ -118,7 +118,7 @@ export default {
         blocks: [
           {
             type: 'map',
-            version: '0.8.10',
+            version: '0.9.0',
             parameters: {
               latitude: 'location.latitude',
               longitude: 'location.longitude',
@@ -140,7 +140,7 @@ export default {
           },
           {
             type: 'action-button',
-            version: '0.8.10',
+            version: '0.9.0',
             parameters: {
               icon: 'plus',
             },
@@ -159,7 +159,7 @@ export default {
         blocks: [
           {
             type: 'detail-viewer',
-            version: '0.8.10',
+            version: '0.9.0',
             parameters: {
               fileBase: '/api/assets',
               fields: [

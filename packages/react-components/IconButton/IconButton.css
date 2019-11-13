@@ -1,0 +1,16 @@
+.root {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font: inherit;
+  outline: none;
+  pointer-events: initial !important;
+
+  &:active,
+  &:focus,
+  &:hover {
+    /* stylelint-disable-next-line plugin/no-unsupported-browser-features */
+    background-image: radial-gradient(circle closest-side, hsla(218, 100%, 66%, 0.43), transparent);
+    color: var(--primary-color) !important;
+  }
+}

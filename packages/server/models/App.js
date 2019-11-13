@@ -12,12 +12,12 @@ export default sequelize => {
        * is 253, is explained on https://devblogs.microsoft.com/oldnewthing/20120412-00/?p=7873.
        */
       domain: { type: DataTypes.STRING(253), allowNull: true },
-      icon: { type: DataTypes.BLOB('long') },
+      icon: { type: DataTypes.BLOB },
       path: { type: DataTypes.STRING, unique: 'UniquePathIndex', allowNull: true },
       private: { type: DataTypes.BOOLEAN, defaultValue: false, allowNull: false },
-      style: { type: DataTypes.TEXT('long') },
-      sharedStyle: { type: DataTypes.TEXT('long') },
-      yaml: { type: DataTypes.TEXT('long') },
+      style: { type: DataTypes.TEXT },
+      sharedStyle: { type: DataTypes.TEXT },
+      yaml: { type: DataTypes.TEXT },
       vapidPublicKey: { type: DataTypes.STRING, allowNull: false },
       vapidPrivateKey: { type: DataTypes.STRING, allowNull: false },
       OrganizationId: {

@@ -1,13 +1,13 @@
 {
   "name": "@appsemble/form",
-  "version": "0.8.10",
+  "version": "0.9.0",
   "private": true,
   "dependencies": {
-    "@appsemble/preact": "0.8.10",
-    "@appsemble/preact-components": "0.8.10",
+    "@appsemble/preact": "0.9.0",
+    "@appsemble/preact-components": "0.9.0",
     "classnames": "^2.2.6",
     "leaflet": "^1.5.1",
-    "preact": "^10.0.3",
+    "preact": "^10.0.4",
     "read-blob": "^1.1.0"
   }
 }

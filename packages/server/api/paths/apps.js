@@ -134,7 +134,7 @@ export default {
               style: { contentType: 'text/css' },
               sharedStyle: { contentType: 'text/css' },
               icon: {
-                contentType: 'image/png, image/jpg, image/svg+xml, image/tiff, image/webp',
+                contentType: 'image/png,image/jpg,image/svg+xml,image/tiff,image/webp',
               },
             },
           },
@@ -184,7 +184,7 @@ export default {
               style: { contentType: 'text/css' },
               sharedStyle: { contentType: 'text/css' },
               icon: {
-                contentType: 'image/png, image/jpg, image/svg+xml, image/tiff, image/webp',
+                contentType: 'image/png,image/jpg,image/svg+xml,image/tiff,image/webp',
               },
             },
           },
