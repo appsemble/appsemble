@@ -2,7 +2,7 @@ import { DataTypes } from 'sequelize';
 import { generateVAPIDKeys } from 'web-push';
 
 export default {
-  key: '0.8.11',
+  key: '0.9.1',
 
   async up(db) {
     const queryInterface = db.getQueryInterface();
