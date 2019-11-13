@@ -1,22 +1,31 @@
 import { normalize } from '@appsemble/utils';
 import Boom from '@hapi/boom';
 import crypto from 'crypto';
-import { UniqueConstraintError } from 'sequelize';
+import { col, fn, UniqueConstraintError } from 'sequelize';
 
-import templates from '../templates/apps';
 import getAppFromRecord from '../utils/getAppFromRecord';
 
 export async function getAppTemplates(ctx) {
-  ctx.body = templates.map(({ name, description, resources }) => ({
+  const { App, Resource } = ctx.db.models;
+
+  const templates = await App.findAll({
+    where: { template: true },
+    attributes: ['id', 'definition', [fn('COUNT', col('Resources.id')), 'ResourceCount']],
+    include: [{ model: Resource, attributes: [], duplicating: false }],
+    group: ['App.id'],
+  });
+
+  ctx.body = templates.map(({ id, definition: { description, name }, ResourceCount }) => ({
+    id,
     name,
     description,
-    resources: !!resources,
+    resources: !!ResourceCount,
   }));
 }
 
 export async function createTemplateApp(ctx) {
   const {
-    template: reqTemplate,
+    templateId,
     name,
     description,
     organizationId,
@@ -26,14 +35,14 @@ export async function createTemplateApp(ctx) {
   const { App, Resource } = ctx.db.models;
   const { user } = ctx.state;
 
-  const template = templates.find(t => t.name === reqTemplate);
+  const template = App.findOne({ where: { id: templateId, template: true }, include: [Resource] });
 
   if (!user.organizations.some(organization => organization.id === organizationId)) {
     throw Boom.forbidden('User does not belong in this organization.');
   }
 
   if (!template) {
-    throw Boom.notFound(`Template ${template} does not exist.`);
+    throw Boom.notFound(`Template with ID ${templateId} does not exist.`);
   }
 
   try {
