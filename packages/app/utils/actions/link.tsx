@@ -1,12 +1,14 @@
 import { LinkAction } from '@appsemble/sdk';
 import { LinkActionDefinition } from '@appsemble/types';
-import { compileFilters, normalize } from '@appsemble/utils';
+import { compileFilters, normalize, partialNormalized, remapData } from '@appsemble/utils';
 
 import { MakeActionParameters } from '../../types';
 import mapValues from '../mapValues';
 
+const URLRegex = new RegExp(`^${partialNormalized.source}:`);
+
 export default function link({
-  definition: { to, parameters = {} },
+  definition: { to, parameters = {}, remap = '' },
   app: { pages },
   history,
 }: MakeActionParameters<LinkActionDefinition>): LinkAction {
@@ -22,6 +24,10 @@ export default function link({
   const mappers = mapValues(parameters || {}, compileFilters);
 
   function href(data: any = {}): string {
+    if (URLRegex.test(data)) {
+      return data;
+    }
+
     return `/${[
       normalize(toPage.name),
       ...(toPage.parameters || []).map(name =>
@@ -33,9 +39,18 @@ export default function link({
 
   return {
     type: 'link',
-    async dispatch(data) {
+    async dispatch(data = {}) {
+      const target = href(data);
+
+      if (URLRegex.test(target)) {
+        window.open(data, '_blank', 'noreferrer');
+        return;
+      }
+
       history.push(href(data), data);
     },
-    href,
+    href(args: any = {}) {
+      return href(remapData(remap, args));
+    },
   };
 }

@@ -17,12 +17,7 @@ export function builder(yargs) {
     .option('database-port', {
       desc: 'The port of the database to connect to.',
       type: 'number',
-      default: 3306,
-    })
-    .option('database-dialect', {
-      desc: 'The dialect of the database.',
-      default: 'mysql',
-      choices: ['mysql', 'postgres'],
+      default: 5432,
     })
     .option('database-name', {
       desc: 'The name of the database to connect to.',

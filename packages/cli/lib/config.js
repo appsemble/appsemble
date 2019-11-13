@@ -65,7 +65,7 @@ export async function requestToken(remote, username, password) {
       grant_type: 'password',
       username,
       password,
-      client_id: 'appsemble-editor',
+      client_id: 'appsemble-studio',
       scope: 'apps:read apps:write blocks:write organizations:style',
     }),
   );
@@ -98,8 +98,8 @@ export async function getToken(remote = axios.defaults.baseURL) {
       querystring.stringify({
         grant_type: 'refresh_token',
         refresh_token: refreshToken,
-        client_id: 'appsemble-editor',
-        client_secret: 'appsemble-editor-secret',
+        client_id: 'appsemble-studio',
+        client_secret: 'appsemble-studio-secret',
       }),
     );
 

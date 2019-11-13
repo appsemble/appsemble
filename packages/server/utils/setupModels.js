@@ -43,8 +43,7 @@ function importModels(db) {
 }
 
 export default async function setupModels({
-  dialect = 'mysql',
-  host = process.env.NODE_ENV === 'production' ? 'mysql' : 'localhost',
+  host = process.env.NODE_ENV === 'production' ? 'postgres' : 'localhost',
   port,
   username,
   password,
@@ -61,7 +60,7 @@ export default async function setupModels({
   } else {
     args = [
       Object.assign(options, {
-        dialect,
+        dialect: 'postgres',
         host,
         port,
         username,

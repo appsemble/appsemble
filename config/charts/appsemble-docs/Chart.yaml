@@ -1,8 +1,9 @@
 apiVersion: v1
 name: appsemble-docs
-version: 0.8.11
+version: 0.9.0
 description: A Helm chart for Kubernetes
+icon: https://gitlab.com/uploads/-/system/project/avatar/7050597/bitmap.png
 home: https://appsemble.com
 sources:
   - https://gitlab.com/appsemble/appsemble
-appVersion: 0.8.11
+appVersion: 0.9.0

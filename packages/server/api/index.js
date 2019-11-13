@@ -40,7 +40,7 @@ export default ({ port = 9999, host = `http://localhost:${port}` } = {}) => {
       description: `
         Welcome to the Appsemble API.
 
-        The app editor can be found on
+        The app studio can be found on
         > ${host}
 
         The OpenAPI explorer can be found on

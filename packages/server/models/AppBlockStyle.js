@@ -16,7 +16,7 @@ export default sequelize => {
         allowNull: false,
         references: { model: 'BlockDefinition' },
       },
-      style: { type: DataTypes.TEXT('long') },
+      style: { type: DataTypes.TEXT },
     },
     {
       freezeTableName: true,

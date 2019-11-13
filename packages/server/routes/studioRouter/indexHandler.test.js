@@ -1,7 +1,7 @@
 import Koa from 'koa';
 import request from 'supertest';
 
-import editorRouter from '.';
+import studioRouter from '.';
 
 let app;
 let templateName;
@@ -18,10 +18,10 @@ beforeEach(() => {
     };
     return next();
   });
-  app.use(editorRouter);
+  app.use(studioRouter);
 });
 
-it('should serve the editor index page with correct headers', async () => {
+it('should serve the studio index page with correct headers', async () => {
   const response = await request(app.callback()).get('/');
   expect(response.type).toBe('text/html');
   expect(response.text).toBe('<!doctype html>');
@@ -33,13 +33,13 @@ it('should serve the editor index page with correct headers', async () => {
       "; script-src 'self' 'sha256-9sOokSPGKu0Vo4/TBZI1T7Bm5ThrXz9qTWATwd3augo=' 'unsafe-eval'" +
       "; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
   );
-  expect(templateName).toBe('editor.html');
+  expect(templateName).toBe('studio.html');
   expect(templateData).toStrictEqual({
     settings: '<script>window.settings={"enableRegistration":true,"logins":[]}</script>',
   });
 });
 
-it('should pass login options from argv to the editor', async () => {
+it('should pass login options from argv to the studio', async () => {
   app.context.argv = {
     disableRegistration: true,
     host: 'http://localhost:9999',
@@ -59,7 +59,7 @@ it('should pass login options from argv to the editor', async () => {
       "; script-src 'self' 'sha256-u7Lwg39nDVoG/C+KUi2A+femGRBoDntSTyJiVRgbfqc=' 'unsafe-eval'" +
       "; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
   );
-  expect(templateName).toBe('editor.html');
+  expect(templateName).toBe('studio.html');
   expect(templateData).toStrictEqual({
     settings:
       '<script>window.settings={"enableRegistration":false,"logins":["gitlab","google"],"sentryDsn":"https://secret@sentry.io/path"}</script>',

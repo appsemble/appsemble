@@ -15,6 +15,8 @@ export function compileFilters(mapperString: string, context?: Context): MapperF
 export function remapData(mapperData: any, inputData: any, context?: Context): any;
 
 export function normalize(input: string): string;
+export const normalized: RegExp;
+export const partialNormalized: RegExp;
 
 export function validate(schema: OpenAPIV3.SchemaObject, data: any): Promise<void>;
 export class SchemaValidationError extends Error {}

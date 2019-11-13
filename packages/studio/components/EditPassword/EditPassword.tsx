@@ -1,4 +1,5 @@
 import {
+  PasswordInput,
   SimpleForm,
   SimpleFormError,
   SimpleInput,
@@ -52,10 +53,10 @@ export default function EditPassword({ resetPassword }: EditPasswordProps): Reac
           </SimpleFormError>
           <SimpleInput
             autoComplete="new-password"
+            component={PasswordInput}
             label={<FormattedMessage {...messages.passwordLabel} />}
             name="password"
             required
-            type="password"
             validityMessages={{
               valueMissing: <FormattedMessage {...messages.passwordRequired} />,
             }}
