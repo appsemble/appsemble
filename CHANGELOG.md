@@ -7,6 +7,13 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- App: Add support for push notifications. Users can subscribe to notifications in the app’s
+  settings page. More strategies for receiving push notifications will be added in the future.
+- App: Add settings page
+- Server: Add support for broadcasting push notifications.
+
 ## [0.9.0] - 2019-11-12
 
 ### Added
@@ -19,15 +26,6 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Helm: Replace MySQL with PostgreSQL.
 - Helm: Use Helm 3, dropping support for Helm 2.
 - Server: Replace MySQL with PostgreSQL.
-
-## [0.8.11] - 2019-11-01
-
-### Added
-
-- App: Add support for push notifications. Users can subscribe to notifications in the app’s
-  settings page. More strategies for receiving push notifications will be added in the future.
-- App: Add settings page
-- Server: Add support for broadcasting push notifications.
 
 ## [0.8.11] - 2019-11-01
 
