@@ -311,6 +311,11 @@ export interface BlobUploadType {
 
 interface BaseActionDefinition<T extends Action['type']> {
   /**
+   * The element to use as the base when returning the response data.
+   */
+  base: string;
+
+  /**
    * The type of the action.
    */
   type: T;

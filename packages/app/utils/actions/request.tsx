@@ -7,10 +7,10 @@ import {
 } from '@appsemble/types';
 import { compileFilters, MapperFunction, remapData, validate } from '@appsemble/utils';
 import axios, { AxiosRequestConfig } from 'axios';
+import xml2js from 'xml2js';
 
 import { MakeActionParameters } from '../../types';
 import uploadBlobs from '../uploadBlobs';
-import xmlToJson from '../xmlToJson';
 
 export function requestLikeAction<T extends RequestLikeActionTypes>({
   definition: { base, blobs = {}, method = 'GET', schema, query, url, serialize },
@@ -86,9 +86,11 @@ export function requestLikeAction<T extends RequestLikeActionTypes>({
       try {
         const response = await axios(req);
         if (/^(application|text)\/(.+\+)?xml;/.test(response.headers['content-type'])) {
-          const parser = new DOMParser();
-          const xml = parser.parseFromString(response.data, 'application/xml');
-          response.data = xmlToJson((xml as unknown) as Element);
+          const xml = await xml2js.parseStringPromise(response.data, {
+            explicitArray: false,
+            mergeAttrs: true,
+          });
+          response.data = xml;
         }
 
         if (base) {
