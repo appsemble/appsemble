@@ -43,7 +43,7 @@ export default function link({
       const target = href(data);
 
       if (URLRegex.test(target)) {
-        window.open(data, '_blank', 'noreferrer');
+        window.open(data, '_blank', 'noopener,noreferrer');
         return;
       }
 
