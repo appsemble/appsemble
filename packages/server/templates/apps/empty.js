@@ -14,7 +14,7 @@ export default {
         blocks: [
           {
             type: 'action-button',
-            version: '0.9.0',
+            version: '0.9.1',
             parameters: {
               icon: 'arrow-right',
             },
@@ -32,7 +32,7 @@ export default {
         blocks: [
           {
             type: 'action-button',
-            version: '0.9.0',
+            version: '0.9.1',
             parameters: {
               icon: 'arrow-left',
             },
