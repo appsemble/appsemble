@@ -57,26 +57,21 @@ export default class AppSettings extends React.Component<
     const { domain, path, private: isPrivate, icon, originalValues } = this.state;
 
     const data = new FormData();
-    const newSettings: Partial<App> = {};
 
     if (domain !== originalValues.domain) {
-      newSettings.domain = domain || null;
+      data.set('domain', domain);
     }
 
     if (path !== originalValues.path) {
-      newSettings.path = path;
+      data.set('path', path);
     }
 
     if (isPrivate !== originalValues.private) {
-      newSettings.private = Boolean(isPrivate);
+      data.set('private', String(isPrivate));
     }
 
     if (icon) {
       data.set('icon', icon);
-    }
-
-    if (Object.keys(newSettings).length) {
-      data.set('app', JSON.stringify(newSettings));
     }
 
     try {

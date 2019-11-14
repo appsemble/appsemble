@@ -28,7 +28,7 @@ export default {
       `,
     },
     domain: {
-      oneOf: [{ enum: [null] }, { type: 'string', format: 'hostname' }],
+      oneOf: [{ type: 'string', maxLength: 0 }, { type: 'string', format: 'hostname' }],
       description: `The domain name on which this app should be served.
 
         If this is unspecified, the app will be served from the path on the domain of the server
