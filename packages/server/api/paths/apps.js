@@ -30,6 +30,11 @@ export default {
                 OrganizationId: {
                   $ref: '#/components/schemas/App/properties/OrganizationId',
                 },
+                icon: {
+                  type: 'string',
+                  format: 'binary',
+                  description: 'The app icon.',
+                },
                 style: {
                   type: 'string',
                   format: 'binary',
@@ -49,6 +54,13 @@ export default {
         201: {
           description: 'The app that was created.',
           $ref: '#/components/responses/app',
+        },
+      },
+      encoding: {
+        style: { contentType: 'text/css' },
+        sharedStyle: { contentType: 'text/css' },
+        icon: {
+          contentType: 'image/png,image/jpg,image/svg+xml,image/tiff,image/webp',
         },
       },
       security: [{ apiUser: ['apps:write'] }],

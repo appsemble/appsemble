@@ -97,6 +97,7 @@ export async function createApp(ctx) {
     domain,
     private: isPrivate = true,
     yaml,
+    icon,
     style,
     sharedStyle,
   } = ctx.request.body;
@@ -114,6 +115,7 @@ export async function createApp(ctx) {
       domain: domain || null,
       private: Boolean(isPrivate),
       yaml: yaml || jsYaml.safeDump(definition),
+      icon,
     };
 
     if (yaml) {
