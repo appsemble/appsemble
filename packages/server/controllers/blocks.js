@@ -1,3 +1,4 @@
+import { logger } from '@appsemble/node-utils';
 import Boom from '@hapi/boom';
 import { isEmpty } from 'lodash';
 import { DatabaseError, UniqueConstraintError } from 'sequelize';
@@ -73,15 +74,18 @@ export async function createBlockVersion(ctx) {
         version,
       } = await BlockVersion.create({ ...data, name }, { transaction });
 
+      Object.keys(files).forEach(filename => {
+        logger.verbose(`Creating block assets for ${name}@${data.version}: ${filename}`);
+      });
       await BlockAsset.bulkCreate(
-        Object.entries(files).map(([key, file]) => ({
+        Object.entries(files).map(([filename, file]) => ({
           name,
           version: data.version,
-          filename: key,
+          filename,
           mime: file.mime,
           content: file.contents,
         })),
-        { transaction },
+        { logging: false, transaction },
       );
 
       const fileKeys = Object.entries(files).map(([key]) => key);
