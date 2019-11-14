@@ -7,6 +7,13 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.9.1] - 2019-11-14
+
+### Fixed
+
+- Server: Reduce log size when creating blocks.
+- Server: Remove old migrations that depended on MySQL.
+
 ## [0.9.0] - 2019-11-12
 
 ### Added

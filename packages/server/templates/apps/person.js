@@ -34,7 +34,7 @@ export default {
         blocks: [
           {
             type: 'list',
-            version: '0.9.0',
+            version: '0.9.1',
             parameters: {
               fields: [
                 {
@@ -60,7 +60,7 @@ export default {
           },
           {
             type: 'action-button',
-            version: '0.9.0',
+            version: '0.9.1',
             parameters: {
               icon: 'plus',
             },
@@ -78,7 +78,7 @@ export default {
         blocks: [
           {
             type: 'form',
-            version: '0.9.0',
+            version: '0.9.1',
             actions: {
               onSubmit: {
                 type: 'resource.create',
@@ -123,7 +123,7 @@ export default {
         blocks: [
           {
             type: 'detail-viewer',
-            version: '0.9.0',
+            version: '0.9.1',
             actions: {
               onLoad: {
                 type: 'resource.get',
