@@ -271,26 +271,23 @@ defaultPage: Test Page
     const { body: created } = await request(server)
       .post('/api/apps')
       .set('Authorization', token)
+      .field('OrganizationId', organizationId)
       .field(
-        'app',
+        'definition',
         JSON.stringify({
-          OrganizationId: organizationId,
-          private: false,
-          definition: {
-            name: 'Test App',
-            defaultPage: 'Test Page',
-            pages: [
-              {
-                name: 'Test Page',
-                blocks: [
-                  {
-                    type: 'test',
-                    version: '0.0.0',
-                  },
-                ],
-              },
-            ],
-          },
+          name: 'Test App',
+          defaultPage: 'Test Page',
+          pages: [
+            {
+              name: 'Test Page',
+              blocks: [
+                {
+                  type: 'test',
+                  version: '0.0.0',
+                },
+              ],
+            },
+          ],
         }),
       );
 
@@ -299,7 +296,7 @@ defaultPage: Test Page
       $created: new Date(clock.now).toJSON(),
       $updated: new Date(clock.now).toJSON(),
       domain: null,
-      private: false,
+      private: true,
       path: 'test-app',
       iconUrl: `/api/apps/${created.id}/icon`,
       definition: {
@@ -348,24 +345,21 @@ pages:
       .post('/api/apps')
       .set('Authorization', token)
       .field(
-        'app',
+        'definition',
         JSON.stringify({
-          private: false,
-          definition: {
-            name: 'Test App',
-            defaultPage: 'Test Page',
-            pages: [
-              {
-                name: 'Test Page',
-                blocks: [
-                  {
-                    type: 'test',
-                    version: '0.0.1',
-                  },
-                ],
-              },
-            ],
-          },
+          name: 'Test App',
+          defaultPage: 'Test Page',
+          pages: [
+            {
+              name: 'Test Page',
+              blocks: [
+                {
+                  type: 'test',
+                  version: '0.0.1',
+                },
+              ],
+            },
+          ],
         }),
       );
 
@@ -374,9 +368,8 @@ pages:
         {
           code: 'OBJECT_MISSING_REQUIRED_PROPERTY',
           message: 'Missing required property: OrganizationId',
-          description: 'An app recipe defines what an app will look like.',
           params: ['OrganizationId'],
-          path: ['app'],
+          path: [],
         },
       ],
       message: 'JSON schema validation failed',
@@ -387,26 +380,23 @@ pages:
     const { body } = await request(server)
       .post('/api/apps')
       .set('Authorization', token)
+      .field('OrganizationId', 'a')
       .field(
-        'app',
+        'definition',
         JSON.stringify({
-          private: false,
-          OrganizationId: 'a',
-          definition: {
-            name: 'Test App',
-            defaultPage: 'Test Page',
-            pages: [
-              {
-                name: 'Test Page',
-                blocks: [
-                  {
-                    type: 'test',
-                    version: '0.0.1',
-                  },
-                ],
-              },
-            ],
-          },
+          name: 'Test App',
+          defaultPage: 'Test Page',
+          pages: [
+            {
+              name: 'Test Page',
+              blocks: [
+                {
+                  type: 'test',
+                  version: '0.0.1',
+                },
+              ],
+            },
+          ],
         }),
       );
 
@@ -421,26 +411,23 @@ pages:
     const { body } = await request(server)
       .post('/api/apps')
       .set('Authorization', token)
+      .field('OrganizationId', organizationId)
       .field(
-        'app',
+        'definition',
         JSON.stringify({
-          private: false,
-          OrganizationId: organizationId,
-          definition: {
-            name: 'Test App',
-            defaultPage: 'Test Page',
-            pages: [
-              {
-                name: 'Test Page',
-                blocks: [
-                  {
-                    type: '@non/existent',
-                    version: '0.0.0',
-                  },
-                ],
-              },
-            ],
-          },
+          name: 'Test App',
+          defaultPage: 'Test Page',
+          pages: [
+            {
+              name: 'Test Page',
+              blocks: [
+                {
+                  type: '@non/existent',
+                  version: '0.0.0',
+                },
+              ],
+            },
+          ],
         }),
       );
 
@@ -458,26 +445,23 @@ pages:
     const { body } = await request(server)
       .post('/api/apps')
       .set('Authorization', token)
+      .field('OrganizationId', organizationId)
       .field(
-        'app',
+        'definition',
         JSON.stringify({
-          private: false,
-          OrganizationId: organizationId,
-          definition: {
-            name: 'Test App',
-            defaultPage: 'Test Page',
-            pages: [
-              {
-                name: 'Test Page',
-                blocks: [
-                  {
-                    type: 'test',
-                    version: '0.0.1',
-                  },
-                ],
-              },
-            ],
-          },
+          name: 'Test App',
+          defaultPage: 'Test Page',
+          pages: [
+            {
+              name: 'Test Page',
+              blocks: [
+                {
+                  type: 'test',
+                  version: '0.0.1',
+                },
+              ],
+            },
+          ],
         }),
       );
 
@@ -495,29 +479,26 @@ pages:
     const { body } = await request(server)
       .post('/api/apps')
       .set('Authorization', token)
+      .field('OrganizationId', organizationId)
       .field(
-        'app',
+        'definition',
         JSON.stringify({
-          private: false,
-          OrganizationId: organizationId,
-          definition: {
-            name: 'Test App',
-            defaultPage: 'Test Page',
-            pages: [
-              {
-                name: 'Test Page',
-                blocks: [
-                  {
-                    type: 'test',
-                    version: '0.0.0',
-                    parameters: {
-                      foo: 'invalid',
-                    },
+          name: 'Test App',
+          defaultPage: 'Test Page',
+          pages: [
+            {
+              name: 'Test Page',
+              blocks: [
+                {
+                  type: 'test',
+                  version: '0.0.0',
+                  parameters: {
+                    foo: 'invalid',
                   },
-                ],
-              },
-            ],
-          },
+                },
+              ],
+            },
+          ],
         }),
       );
 
@@ -543,41 +524,35 @@ pages:
     await request(server)
       .post('/api/apps')
       .set('Authorization', token)
+      .field('OrganizationId', organizationId)
       .field(
-        'app',
+        'definition',
         JSON.stringify({
-          private: false,
-          OrganizationId: organizationId,
-          definition: {
-            name: 'Test App',
-            defaultPage: 'Test Page',
-            pages: [
-              {
-                name: 'Test Page',
-                blocks: [{ type: 'test', version: '0.0.0' }],
-              },
-            ],
-          },
+          name: 'Test App',
+          defaultPage: 'Test Page',
+          pages: [
+            {
+              name: 'Test Page',
+              blocks: [{ type: 'test', version: '0.0.0' }],
+            },
+          ],
         }),
       );
     const response = await request(server)
       .post('/api/apps')
       .set('Authorization', token)
+      .field('OrganizationId', organizationId)
       .field(
-        'app',
+        'definition',
         JSON.stringify({
-          private: false,
-          OrganizationId: organizationId,
-          definition: {
-            name: 'Test App',
-            defaultPage: 'Test Page',
-            pages: [
-              {
-                name: 'Test Page',
-                blocks: [{ type: 'test', version: '0.0.0' }],
-              },
-            ],
-          },
+          name: 'Test App',
+          defaultPage: 'Test Page',
+          pages: [
+            {
+              name: 'Test Page',
+              blocks: [{ type: 'test', version: '0.0.0' }],
+            },
+          ],
         }),
       );
 
@@ -602,21 +577,18 @@ pages:
     const response = await request(server)
       .post('/api/apps')
       .set('Authorization', token)
+      .field('OrganizationId', organizationId)
       .field(
-        'app',
+        'definition',
         JSON.stringify({
-          private: false,
-          OrganizationId: organizationId,
-          definition: {
-            name: 'Test App',
-            defaultPage: 'Test Page',
-            pages: [
-              {
-                name: 'Test Page',
-                blocks: [{ type: 'test', version: '0.0.0' }],
-              },
-            ],
-          },
+          name: 'Test App',
+          defaultPage: 'Test Page',
+          pages: [
+            {
+              name: 'Test Page',
+              blocks: [{ type: 'test', version: '0.0.0' }],
+            },
+          ],
         }),
       );
 
@@ -628,21 +600,18 @@ pages:
     const response = await request(server)
       .post('/api/apps')
       .set('Authorization', token)
+      .field('OrganizationId', organizationId)
       .field(
-        'app',
+        'definition',
         JSON.stringify({
-          private: false,
-          OrganizationId: organizationId,
-          definition: {
-            name: 'Foobar',
-            defaultPage: 'Test Page',
-            pages: [
-              {
-                name: 'Test Page',
-                blocks: [{ type: 'test', version: '0.0.0' }],
-              },
-            ],
-          },
+          name: 'Foobar',
+          defaultPage: 'Test Page',
+          pages: [
+            {
+              name: 'Test Page',
+              blocks: [{ type: 'test', version: '0.0.0' }],
+            },
+          ],
         }),
       )
       .attach('style', Buffer.from('body { color: blue; }'), {
@@ -668,21 +637,18 @@ pages:
     const responseA = await request(server)
       .post('/api/apps')
       .set('Authorization', token)
+      .field('OrganizationId', organizationId)
       .field(
-        'app',
+        'definition',
         JSON.stringify({
-          private: false,
-          OrganizationId: organizationId,
-          definition: {
-            name: 'Test App',
-            defaultPage: 'Test Page',
-            pages: [
-              {
-                name: 'Test Page',
-                blocks: [{ type: 'test', version: '0.0.0' }],
-              },
-            ],
-          },
+          name: 'Test App',
+          defaultPage: 'Test Page',
+          pages: [
+            {
+              name: 'Test Page',
+              blocks: [{ type: 'test', version: '0.0.0' }],
+            },
+          ],
         }),
       )
       .attach('style', Buffer.from('this is invalid css'), {
@@ -693,21 +659,18 @@ pages:
     const responseB = await request(server)
       .post('/api/apps')
       .set('Authorization', token)
+      .field('OrganizationId', organizationId)
       .field(
-        'app',
+        'definition',
         JSON.stringify({
-          private: false,
-          OrganizationId: organizationId,
-          definition: {
-            name: 'Test App',
-            defaultPage: 'Test Page',
-            pages: [
-              {
-                name: 'Test Page',
-                blocks: [{ type: 'test' }],
-              },
-            ],
-          },
+          name: 'Test App',
+          defaultPage: 'Test Page',
+          pages: [
+            {
+              name: 'Test Page',
+              blocks: [{ type: 'test' }],
+            },
+          ],
         }),
       )
       .attach('style', Buffer.from('.foo { margin: 0 auto; }'), {
@@ -723,22 +686,19 @@ pages:
     const responseA = await request(server)
       .post('/api/apps')
       .set('Authorization', token)
+      .field('OrganizationId', organizationId)
       .field(
-        'app',
+        'definition',
         JSON.stringify({
-          private: false,
-          OrganizationId: organizationId,
-          definition: {
-            name: 'Test App',
-            defaultPage: 'Test Page',
-            path: 'a',
-            pages: [
-              {
-                name: 'Test Page',
-                blocks: [{ type: 'testblock' }],
-              },
-            ],
-          },
+          name: 'Test App',
+          defaultPage: 'Test Page',
+          path: 'a',
+          pages: [
+            {
+              name: 'Test Page',
+              blocks: [{ type: 'testblock' }],
+            },
+          ],
         }),
       )
       .attach('sharedStyle', Buffer.from('this is invalid css'), {
@@ -749,22 +709,19 @@ pages:
     const responseB = await request(server)
       .post('/api/apps')
       .set('Authorization', token)
+      .field('OrganizationId', organizationId)
       .field(
-        'app',
+        'definition',
         JSON.stringify({
-          private: false,
-          OrganizationId: organizationId,
-          definition: {
-            name: 'Test App',
-            defaultPage: 'Test Page',
-            path: 'a',
-            pages: [
-              {
-                name: 'Test Page',
-                blocks: [{ type: 'testblock' }],
-              },
-            ],
-          },
+          name: 'Test App',
+          defaultPage: 'Test Page',
+          path: 'a',
+          pages: [
+            {
+              name: 'Test Page',
+              blocks: [{ type: 'testblock' }],
+            },
+          ],
         }),
       )
       .attach('sharedStyle', Buffer.from('.foo { margin: 0 auto; }'), {
@@ -781,18 +738,16 @@ pages:
       .patch('/api/apps/1')
       .set('Authorization', token)
       .field(
-        'app',
+        'definition',
         JSON.stringify({
-          definition: {
-            name: 'Foobar',
-            defaultPage: 'Test Page',
-            pages: [
-              {
-                name: 'Test Page',
-                blocks: [{ type: 'test', version: '0.0.0' }],
-              },
-            ],
-          },
+          name: 'Foobar',
+          defaultPage: 'Test Page',
+          pages: [
+            {
+              name: 'Test Page',
+              blocks: [{ type: 'test', version: '0.0.0' }],
+            },
+          ],
         }),
       );
 
@@ -812,19 +767,18 @@ pages:
     const response = await request(server)
       .patch(`/api/apps/${appA.id}`)
       .set('Authorization', token)
+      .field('private', true)
       .field(
-        'app',
+        'definition',
         JSON.stringify({
-          definition: {
-            name: 'Foobar',
-            defaultPage: appA.definition.defaultPage,
-            pages: [
-              {
-                name: 'Test Page',
-                blocks: [{ type: 'test', version: '0.0.0' }],
-              },
-            ],
-          },
+          name: 'Foobar',
+          defaultPage: appA.definition.defaultPage,
+          pages: [
+            {
+              name: 'Test Page',
+              blocks: [{ type: 'test', version: '0.0.0' }],
+            },
+          ],
         }),
       );
 
@@ -834,7 +788,7 @@ pages:
       $created: new Date(clock.now).toJSON(),
       $updated: new Date(clock.now).toJSON(),
       domain: null,
-      private: false,
+      private: true,
       path: 'test-app',
       iconUrl: `/api/apps/${appA.id}/icon`,
       OrganizationId: organizationId,
@@ -872,18 +826,16 @@ pages:
       .patch(`/api/apps/${appA.id}`)
       .set('Authorization', token)
       .field(
-        'app',
+        'definition',
         JSON.stringify({
-          definition: {
-            name: 'Foobar',
-            defaultPage: appA.definition.defaultPage,
-            pages: [
-              {
-                name: 'Test Page',
-                blocks: [{ type: 'test', version: '0.0.0' }],
-              },
-            ],
-          },
+          name: 'Foobar',
+          defaultPage: appA.definition.defaultPage,
+          pages: [
+            {
+              name: 'Test Page',
+              blocks: [{ type: 'test', version: '0.0.0' }],
+            },
+          ],
         }),
       )
       .attach(
@@ -919,18 +871,16 @@ pages:
       .patch(`/api/apps/${appA.id}`)
       .set('Authorization', token)
       .field(
-        'app',
+        'definition',
         JSON.stringify({
-          definition: {
-            name: 'Foobar',
-            defaultPage: appA.definition.defaultPage,
-            pages: [
-              {
-                name: 'Test Page',
-                blocks: [{ type: 'test', version: '0.0.0' }],
-              },
-            ],
-          },
+          name: 'Foobar',
+          defaultPage: appA.definition.defaultPage,
+          pages: [
+            {
+              name: 'Test Page',
+              blocks: [{ type: 'test', version: '0.0.0' }],
+            },
+          ],
         }),
       )
       .attach(
@@ -977,18 +927,16 @@ pages:
       .patch(`/api/apps/${appA.id}`)
       .set('Authorization', token)
       .field(
-        'app',
+        'definition',
         JSON.stringify({
-          definition: {
-            name: 'Foobar',
-            defaultPage: appA.definition.defaultPage,
-            pages: [
-              {
-                name: 'Test Page',
-                blocks: [{ type: 'test', version: '0.0.0' }],
-              },
-            ],
-          },
+          name: 'Foobar',
+          defaultPage: appA.definition.defaultPage,
+          pages: [
+            {
+              name: 'Test Page',
+              blocks: [{ type: 'test', version: '0.0.0' }],
+            },
+          ],
         }),
       )
       .attach('yaml', Buffer.from(yaml));
@@ -1009,7 +957,7 @@ pages:
     const response = await request(server)
       .patch(`/api/apps/${appA.id}`)
       .set('Authorization', token)
-      .field('app', JSON.stringify({ domain: 'appsemble.app' }));
+      .field('domain', 'appsemble.app');
 
     expect(response.status).toBe(200);
     expect(response.body.domain).toStrictEqual('appsemble.app');
@@ -1028,7 +976,7 @@ pages:
     const response = await request(server)
       .patch(`/api/apps/${appA.id}`)
       .set('Authorization', token)
-      .field('app', JSON.stringify({ domain: null }));
+      .field('domain', '');
 
     expect(response.status).toBe(200);
     expect(response.body.domain).toBeNull();
@@ -1059,18 +1007,16 @@ pages:
       .patch(`/api/apps/${appA.id}`)
       .set('Authorization', token)
       .field(
-        'app',
+        'definition',
         JSON.stringify({
-          definition: {
-            name: 'Foobar',
-            defaultPage: appA.definition.defaultPage,
-            pages: [
-              {
-                name: 'Test Page',
-                blocks: [{ type: 'test', version: '0.0.0' }],
-              },
-            ],
-          },
+          name: 'Foobar',
+          defaultPage: appA.definition.defaultPage,
+          pages: [
+            {
+              name: 'Test Page',
+              blocks: [{ type: 'test', version: '0.0.0' }],
+            },
+          ],
         }),
       )
       .attach('yaml', buffer);
@@ -1094,18 +1040,16 @@ pages:
       .patch(`/api/apps/${appA.id}`)
       .set('Authorization', token)
       .field(
-        'app',
+        'definition',
         JSON.stringify({
-          definition: {
-            name: 'Foobar',
-            defaultPage: appA.definition.defaultPage,
-            pages: [
-              {
-                name: 'Test Page',
-                blocks: [{ type: 'test', version: '0.0.0' }],
-              },
-            ],
-          },
+          name: 'Foobar',
+          defaultPage: appA.definition.defaultPage,
+          pages: [
+            {
+              name: 'Test Page',
+              blocks: [{ type: 'test', version: '0.0.0' }],
+            },
+          ],
         }),
       );
 
@@ -1137,7 +1081,7 @@ pages:
     const response = await request(server)
       .put(`/api/apps/${appA.id}`)
       .set('Authorization', token)
-      .field('app', JSON.stringify({ name: 'Foobar' }));
+      .field('definition', JSON.stringify({ name: 'Foobar' }));
 
     expect(response.status).toBe(400);
   });
@@ -1169,26 +1113,23 @@ pages:
     } = await request(server)
       .post('/api/apps')
       .set('Authorization', token)
+      .field('OrganizationId', organizationId)
       .field(
-        'app',
+        'definition',
         JSON.stringify({
-          private: false,
-          OrganizationId: organizationId,
-          definition: {
-            name: 'Test App',
-            defaultPage: 'Test Page',
-            pages: [
-              {
-                name: 'Test Page',
-                blocks: [
-                  {
-                    type: 'test',
-                    version: '0.0.0',
-                  },
-                ],
-              },
-            ],
-          },
+          name: 'Test App',
+          defaultPage: 'Test Page',
+          pages: [
+            {
+              name: 'Test Page',
+              blocks: [
+                {
+                  type: 'test',
+                  version: '0.0.0',
+                },
+              ],
+            },
+          ],
         }),
       );
 
@@ -1239,18 +1180,16 @@ pages:
       .patch(`/api/apps/${app.id}`)
       .set('Authorization', token)
       .field(
-        'app',
+        'definition',
         JSON.stringify({
-          definition: {
-            name: 'Foobar',
-            defaultPage: app.definition.defaultPage,
-            pages: [
-              {
-                name: 'Test Page',
-                blocks: [{ type: 'test', version: '0.0.0' }],
-              },
-            ],
-          },
+          name: 'Foobar',
+          defaultPage: app.definition.defaultPage,
+          pages: [
+            {
+              name: 'Test Page',
+              blocks: [{ type: 'test', version: '0.0.0' }],
+            },
+          ],
         }),
       )
       .attach('style', Buffer.from('body { color: yellow; }'), {
@@ -1286,7 +1225,7 @@ pages:
       .put(`/api/apps/${app.id}`)
       .set('Authorization', token)
       .field(
-        'app',
+        'definition',
         JSON.stringify({
           name: 'Test App',
           defaultPage: 'Test Page',
@@ -1308,7 +1247,7 @@ pages:
       .put(`/api/apps/${app.id}`)
       .set('Authorization', token)
       .field(
-        'app',
+        'definition',
         JSON.stringify({
           name: 'Test App',
           defaultPage: 'Test Page',
@@ -1344,7 +1283,7 @@ pages:
       .put(`/api/apps/${app.id}`)
       .set('Authorization', token)
       .field(
-        'app',
+        'definition',
         JSON.stringify({
           name: 'Test App',
           defaultPage: 'Test Page',
@@ -1366,7 +1305,7 @@ pages:
       .put(`/api/apps/${app.id}`)
       .set('Authorization', token)
       .field(
-        'app',
+        'definition',
         JSON.stringify({
           name: 'Test App',
           defaultPage: 'Test Page',
@@ -1523,7 +1462,7 @@ pages:
       .put('/api/apps/1')
       .set('Authorization', token)
       .field(
-        'app',
+        'definition',
         JSON.stringify({
           name: 'Test App',
           defaultPage: 'Test Page',
@@ -1550,23 +1489,21 @@ pages:
       .patch('/api/apps/1')
       .set('Authorization', token)
       .field(
-        'app',
+        'definition',
         JSON.stringify({
-          definition: {
-            name: 'Test App',
-            defaultPage: 'Test Page',
-            pages: [
-              {
-                name: 'Test Page',
-                blocks: [
-                  {
-                    type: 'test',
-                    version: '0.0.1',
-                  },
-                ],
-              },
-            ],
-          },
+          name: 'Test App',
+          defaultPage: 'Test Page',
+          pages: [
+            {
+              name: 'Test Page',
+              blocks: [
+                {
+                  type: 'test',
+                  version: '0.0.1',
+                },
+              ],
+            },
+          ],
         }),
       );
 
