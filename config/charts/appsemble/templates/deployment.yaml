@@ -44,6 +44,12 @@ spec:
           env:
             - name: DATABASE_HOST
               value: {{ .Values.postgresql.fullnameOverride }}
+            {{ if .Values.postgresSSL }}
+            - name: DATABASE_SSL
+              value: 'true'
+            {{ end }}
+            - name: DATABASE_PORT
+              value: {{ .Values.global.postgresql.servicePort | quote }}
             - name: DATABASE_NAME
               value: {{ .Values.global.postgresql.postgresqlDatabase }}
             - name: DATABASE_USER

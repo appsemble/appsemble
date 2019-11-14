@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/cli",
-  "version": "0.9.1",
+  "version": "0.9.2",
   "license": "MIT",
   "author": "Appsemble <support@appsemble.com> (https://appsemble.com)",
   "main": "main.js",
@@ -11,7 +11,7 @@
     "tsc": "../../config/bin/tscstub.js"
   },
   "dependencies": {
-    "@appsemble/node-utils": "0.9.1",
+    "@appsemble/node-utils": "0.9.2",
     "appdirectory": "^0.1.0",
     "axios": "^0.19.0",
     "chalk": "^2.4.2",
