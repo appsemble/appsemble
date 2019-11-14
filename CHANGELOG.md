@@ -7,6 +7,12 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.9.2] - 2019-11-14
+
+### Fixed
+
+- Server: Add support connection to PostgreSQL databases over SSL.
+
 ## [0.9.1] - 2019-11-14
 
 ### Fixed
