@@ -7,7 +7,7 @@
     "@appsemble/preact-components": "0.9.2",
     "classnames": "^2.2.6",
     "leaflet": "^1.5.1",
-    "preact": "^10.0.4",
+    "preact": "^10.0.5",
     "read-blob": "^1.1.0"
   }
 }
