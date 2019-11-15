@@ -1,9 +1,8 @@
 {{- if .Values.ingress.enabled -}}
-{{- $fullName := include "appsemble.fullname" . -}}
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: {{ $fullName }}
+  name: {{ include "appsemble.fullname" . }}
   labels:
     app: {{ .Values.app }}
     app.kubernetes.io/instance: {{ .Release.Name }}
@@ -19,19 +18,15 @@ spec:
 {{- if .Values.ingress.tls }}
   tls:
     - hosts:
-      {{- range $.Values.ingress.hosts }}
-        - {{ . | quote }}
-      {{- end }}
+      - {{ .Values.ingress.host }}
       secretName: {{ .Values.ingress.tls.secretName }}
 {{- end }}
   rules:
-  {{- range .Values.ingress.hosts }}
-    - host: {{ . | quote }}
+    - host: {{ .Values.ingress.host }}
       http:
         paths:
           - path: /
             backend:
-              serviceName: {{ $fullName }}
+              serviceName: {{ include "appsemble.fullname" . }}
               servicePort: http
-  {{- end }}
 {{- end }}

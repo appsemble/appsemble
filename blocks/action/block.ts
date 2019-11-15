@@ -9,6 +9,9 @@ export interface Field {
   backgroundColor?: string;
   color?: string;
   name: string;
+  /**
+   * @minItems 1
+   */
   enum?: EnumField[];
   icon: IconName;
   label?: string;

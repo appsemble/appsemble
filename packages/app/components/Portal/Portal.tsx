@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import ReactDOM from 'react-dom';
 
 interface PortalProps {
@@ -20,26 +20,16 @@ interface PortalProps {
  *
  * This component doesn’t handle the lifecycle of receiving new props.
  */
-export default class Portal extends React.Component<PortalProps> {
-  fragment: DocumentFragment;
-
-  componentDidMount(): void {
-    const { element } = this.props;
-
+export default function Portal({ element, children }: PortalProps): React.ReactElement {
+  useEffect(() => {
     const fragment = document.createDocumentFragment();
     element.childNodes.forEach(child => fragment.appendChild(child));
-    this.fragment = fragment;
-  }
 
-  componentWillUnmount(): void {
-    const { element } = this.props;
+    // Cleanup function
+    return () => {
+      element.appendChild(fragment);
+    };
+  }, [element]);
 
-    element.appendChild(this.fragment);
-  }
-
-  render(): React.ReactPortal {
-    const { children, element } = this.props;
-
-    return ReactDOM.createPortal(React.Children.only(children), element);
-  }
+  return ReactDOM.createPortal(React.Children.only(children), element);
 }

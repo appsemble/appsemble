@@ -1,10 +1,10 @@
 import classNames from 'classnames';
 import * as React from 'react';
 
-import FormComponent, { FormComponentProps } from '../FormComponent';
+import FormComponent from '../FormComponent';
 
-type CheckboxProps = FormComponentProps &
-  Omit<React.HTMLProps<HTMLInputElement>, 'value'> & {
+type CheckboxProps = React.PropsWithoutRef<typeof FormComponent> &
+  Omit<React.ComponentPropsWithoutRef<'input'>, 'value' | 'label' | 'onChange'> & {
     /**
      * The name of the HTML element.
      */
@@ -24,13 +24,18 @@ type CheckboxProps = FormComponentProps &
      * Whether or not the checkbox is checked.
      */
     value: boolean;
+
+    /**
+     * The label element to render.
+     */
+    label: JSX.Element;
   };
 
 /**
  * A Bulma styled form select element.
  */
 export default class Checkbox extends React.Component<CheckboxProps> {
-  onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  onChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
     const { onChange } = this.props;
 
     onChange(event, event.target.checked);

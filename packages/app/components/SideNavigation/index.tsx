@@ -8,15 +8,12 @@ import SideNavigation from './SideNavigation';
 
 function mapStateToProps(state: State): Partial<ComponentProps<typeof SideNavigation>> {
   return {
-    app: state.app.app,
+    definition: state.app.definition,
     user: state.user.user,
   };
 }
 
-export default connect(
-  mapStateToProps,
-  {
-    closeMenu,
-    logout,
-  },
-)(SideNavigation);
+export default connect(mapStateToProps, {
+  closeMenu,
+  logout,
+})(SideNavigation);

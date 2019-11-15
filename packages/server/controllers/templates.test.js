@@ -1,6 +1,7 @@
 import { validate } from '@appsemble/utils';
 import RefParser from 'json-schema-ref-parser';
 import jwt from 'jsonwebtoken';
+import lolex from 'lolex';
 import request from 'supertest';
 
 import schema from '../api';
@@ -26,19 +27,27 @@ describe('Template API', () => {
   let server;
   let token;
   let organizationId;
+  let App;
   let Resource;
 
+  let clock;
+
   beforeAll(async () => {
-    db = await testSchema('assets');
+    db = await testSchema('templates');
 
     server = await createServer({ db });
-    ({ Resource } = db.models);
+    ({ App, Resource } = db.models);
   }, 10e3);
 
   beforeEach(async () => {
     await truncate(db);
     token = await testToken(request, server, db, 'apps:read apps:write');
     organizationId = jwt.decode(token.substring(7)).user.organizations[0].id;
+    clock = lolex.install();
+  });
+
+  afterEach(() => {
+    clock.uninstall();
   });
 
   afterAll(async () => {
@@ -94,7 +103,7 @@ describe('Template API', () => {
     );
   });
 
-  it('should not create a new app using a template with a duplicate name', async () => {
+  it('should append a number when creating a new app using a template with a duplicate name', async () => {
     await request(server)
       .post('/api/templates')
       .set('Authorization', token)
@@ -105,7 +114,41 @@ describe('Template API', () => {
         organizationId,
       });
 
-    const { status } = await request(server)
+    const {
+      status,
+      body: { path },
+    } = await request(server)
+      .post('/api/templates')
+      .set('Authorization', token)
+      .send({
+        template: templates[0].name,
+        name: 'Test app',
+        description: 'This is also a test app',
+        organizationId,
+      });
+
+    expect(status).toStrictEqual(201);
+    expect(path).toStrictEqual('test-app-2');
+  });
+
+  it('should fall back to append random bytes to the end of the app path after 10 attempts', async () => {
+    await Promise.all(
+      [...new Array(11)].map((_, index) =>
+        App.create(
+          {
+            path: index + 1 === 1 ? 'test-app' : `test-app-${index + 1}`,
+            definition: { name: 'Test App', defaultPage: 'Test Page' },
+            OrganizationId: organizationId,
+          },
+          { raw: true },
+        ),
+      ),
+    );
+
+    const {
+      status,
+      body: { path },
+    } = await request(server)
       .post('/api/templates')
       .set('Authorization', token)
       .send({
@@ -115,6 +158,7 @@ describe('Template API', () => {
         organizationId,
       });
 
-    expect(status).toStrictEqual(409);
+    expect(status).toStrictEqual(201);
+    expect(path).toMatch(/test-app-(\w){10}/);
   });
 });

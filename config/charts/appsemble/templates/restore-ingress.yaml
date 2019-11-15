@@ -1,0 +1,64 @@
+{{- if .Values.ingress.enabled -}}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "appsemble.fullname" . }}-restore-ingress
+  labels:
+    app: {{ .Values.app }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    app.kubernetes.io/name: {{ include "appsemble.name" . }}
+    app.kubernetes.io/version: {{ .Chart.AppVersion }}
+    helm.sh/chart: {{ include "appsemble.chart" . }}
+  annotations:
+    helm.sh/hook: post-install,post-upgrade
+    helm.sh/hook-delete-policy: hook-succeeded
+    helm.sh/hook-weight: '1'
+spec:
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: {{ include "appsemble.fullname" . }}-restore-ingress
+          image: "{{ .Values.image.repository }}:{{ include "appsemble.tag" . }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command:
+            - node
+            - -r
+            - esm
+            - packages/server
+            - restore-dns
+            - -vv
+          env:
+            - name: DATABASE_HOST
+              value: {{ .Values.postgresql.fullnameOverride }}
+            {{ if .Values.postgresSSL }}
+            - name: DATABASE_SSL
+              value: 'true'
+            {{ end }}
+            - name: DATABASE_PORT
+              value: {{ .Values.global.postgresql.servicePort | quote }}
+            - name: DATABASE_NAME
+              value: {{ .Values.global.postgresql.postgresqlDatabase }}
+            - name: DATABASE_USER
+              value: {{ .Values.global.postgresql.postgresqlUsername }}
+            - name: DATABASE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.global.postgresql.existingSecret }}
+                  key: postgresql-password
+            - name: APP_DOMAIN_STRATEGY
+              value: kubernetes-ingress
+            - name: INGRESS_NAME
+              value: {{ include "appsemble.fullname" . }}
+            - name: INGRESS_SERVICE_NAME
+              value: {{ include "appsemble.fullname" . }}
+            - name: INGRESS_SERVICE_PORT
+              value: {{ .Values.service.port | quote }}
+            - name: HOST
+              {{ if .Values.ingress.enabled -}}
+              value: {{ include "appsemble.protocol" $ }}{{ .Values.ingress.host }}
+              {{- else }}
+              value: http://{{ include "appsemble.fullname" . }}
+              {{- end }}
+{{ end }}

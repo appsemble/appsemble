@@ -25,16 +25,27 @@ exports[`should not render a bulma modal when it is inactive 1`] = `
       role="presentation"
     />
     <div
-      className="modal-content"
+      className="modal-card"
     >
-      test
+      <div
+        className="modal-card-head"
+      >
+        <p
+          className="modal-card-title"
+        />
+        <button
+          aria-label="Close dialog"
+          className="delete is-large"
+          onClick={[Function]}
+          type="button"
+        />
+      </div>
+      <div
+        className="modal-card-body"
+      >
+        test
+      </div>
     </div>
-    <button
-      aria-label="Close dialog"
-      className="modal-close is-large"
-      onClick={[Function]}
-      type="button"
-    />
   </div>
 </CSSTransition>
 `;
@@ -64,16 +75,27 @@ exports[`should render a bulma modal when it is active 1`] = `
       role="presentation"
     />
     <div
-      className="modal-content"
+      className="modal-card"
     >
-      test
+      <div
+        className="modal-card-head"
+      >
+        <p
+          className="modal-card-title"
+        />
+        <button
+          aria-label="Close dialog"
+          className="delete is-large"
+          onClick={[Function]}
+          type="button"
+        />
+      </div>
+      <div
+        className="modal-card-body"
+      >
+        test
+      </div>
     </div>
-    <button
-      aria-label="Close dialog"
-      className="modal-close is-large"
-      onClick={[Function]}
-      type="button"
-    />
   </div>
 </CSSTransition>
 `;

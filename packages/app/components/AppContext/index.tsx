@@ -8,17 +8,14 @@ import AppContext, { AppContextProps } from './AppContext';
 
 function mapStateToProps(state: State): Partial<AppContextProps> {
   return {
-    app: state.app.app,
+    definition: state.app.definition,
     ready: !!state.user.initialized,
   };
 }
 
 export default withRouter(
-  connect(
-    mapStateToProps,
-    {
-      getApp,
-      initAuth,
-    },
-  )(AppContext),
+  connect(mapStateToProps, {
+    getApp,
+    initAuth,
+  })(AppContext),
 );

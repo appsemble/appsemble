@@ -1,0 +1,25 @@
+.field {
+  max-width: 480px;
+}
+
+.tags {
+  display: inline;
+  margin-left: 0.5rem;
+}
+
+.cardFooterButton {
+  border: none;
+  border-radius: 0;
+  cursor: pointer;
+  font: inherit;
+  height: auto;
+  padding: 0 !important;
+}
+
+.buttonGroup > button:not(:first-child) {
+  margin-left: 0.75rem;
+}
+
+.dialogContent {
+  padding: 20px;
+}

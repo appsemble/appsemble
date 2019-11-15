@@ -117,6 +117,8 @@ export interface Message {
   dismissable?: boolean;
 }
 
+export type Navigation = 'bottom' | 'left-menu' | 'hidden';
+
 /**
  * A block that is displayed on a page.
  */
@@ -147,7 +149,7 @@ export interface Block<P = any, A = {}> {
   /**
    * The theme of the block.
    */
-  theme: Theme;
+  theme?: Theme;
 
   /**
    * A free form mapping of named paramters.
@@ -330,6 +332,11 @@ interface DialogActionDefinition extends BaseActionDefinition<'dialog'> {
    * Blocks to render on the dialog.
    */
   blocks: Block[];
+
+  /**
+   * The title to show in the dialog.
+   */
+  title?: string;
 }
 
 interface LinkActionDefinition extends BaseActionDefinition<'link'> {
@@ -491,12 +498,12 @@ export interface Page {
    *
    * This will be displayed in the navigation menu.
    */
-  icon: IconName;
+  icon?: IconName;
 
   /**
    * Page parameters can be used for linking to a page that should display a single resource.
    */
-  parameters: string[];
+  parameters?: string[];
 
   /**
    * A mapping of actions that can be fired by the page to action handlers.
@@ -508,32 +515,44 @@ export interface Page {
   /**
    * The global theme for the page.
    */
-  theme: Theme;
+  theme?: Theme;
 
-  subPages: Pick<Page, 'blocks' | 'name'>[];
-}
-
-export interface App {
-  authentication: Authentication[];
-
-  /**
-   * The unique identifier for the app.
-   *
-   * This value will be generated automatically by the API.
-   */
-  id?: number;
-
-  /**
-   * The id of the organization to which this app belongs.
-   */
-  organizationId?: string;
+  subPages?: Pick<Page, 'blocks' | 'name'>[];
 
   /**
    * The navigation type to use.
    *
    * If this is omitted, a collapsable side navigation menu will be rendered on the left.
    */
-  navigation?: 'bottom';
+  navigation?: Navigation;
+
+  /**
+   * Whether or not the page should be displayed in navigational menus.
+   */
+  hideFromMenu?: boolean;
+}
+
+export interface AppDefinition {
+  /**
+   * The name of the app.
+   *
+   * This determines the default path of the app.
+   */
+  name?: string;
+
+  authentication: Authentication[];
+
+  /**
+   * The default page of the app.
+   */
+  defaultPage: string;
+
+  /**
+   * The navigation type to use.
+   *
+   * If this is omitted, a collapsable side navigation menu will be rendered on the left.
+   */
+  navigation?: Navigation;
 
   /**
    * The pages of the app.
@@ -548,5 +567,29 @@ export interface App {
   /**
    * The global theme for the app.
    */
-  theme: Theme;
+  theme?: Theme;
+}
+
+export interface App {
+  /**
+   * The unique identifier for the app.
+   *
+   * This value will be generated automatically by the API.
+   */
+  id?: number;
+
+  /*
+   * A domain name on which this app should be served.
+   */
+  domain?: string;
+
+  /**
+   * The id of the organization to which this app belongs.
+   */
+  OrganizationId?: string;
+
+  path: string;
+  private: boolean;
+
+  definition: AppDefinition;
 }

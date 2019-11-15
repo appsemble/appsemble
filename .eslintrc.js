@@ -8,6 +8,7 @@ module.exports = {
   root: true,
   extends: [
     'airbnb',
+    'airbnb/hooks',
     'plugin:eslint-comments/recommended',
     'plugin:compat/recommended',
     'plugin:prettier/recommended',
@@ -48,7 +49,10 @@ module.exports = {
     'import/order': [
       'error',
       {
-        groups: [['builtin', 'external', 'internal'], ['index', 'sibling', 'parent']],
+        groups: [
+          ['builtin', 'external', 'internal'],
+          ['index', 'sibling', 'parent'],
+        ],
         'newlines-between': 'always',
       },
     ],
@@ -164,7 +168,7 @@ module.exports = {
         'jest/prefer-todo': 'error',
         'jest/prefer-spy-on': 'error',
         'jest/prefer-strict-equal': 'error',
-        'jest/require-tothrow-message': 'error',
+        'jest/require-to-throw-message': 'error',
         'jest/valid-describe': 'error',
         'jest/valid-expect-in-promise': 'error',
         'jest/valid-expect': 'error',

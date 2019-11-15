@@ -10,26 +10,26 @@ import Main from '../Main';
 import Message from '../Message';
 import SideNavigation from '../SideNavigation';
 
+const [base] = document.head.getElementsByTagName('base');
+
 /**
  * The main entry point of the React app.
  *
  * This configures all providers and sets up the global app structure.
  */
-export default class App extends React.Component {
-  render() {
-    return (
-      <IntlProvider defaultLocale="en-US" locale="en-US">
-        <ErrorHandler fallback={ErrorFallback}>
-          <BrowserRouter basename={new URL(document.baseURI).pathname}>
-            <AppContext>
-              <Main />
-              <SideNavigation />
-              <BottomNavigation />
-              <Message />
-            </AppContext>
-          </BrowserRouter>
-        </ErrorHandler>
-      </IntlProvider>
-    );
-  }
+export default function App() {
+  return (
+    <IntlProvider defaultLocale="en-US" locale="en-US">
+      <ErrorHandler fallback={ErrorFallback}>
+        <BrowserRouter basename={base && new URL(base.href).pathname}>
+          <AppContext>
+            <Main />
+            <SideNavigation />
+            <BottomNavigation />
+            <Message />
+          </AppContext>
+        </BrowserRouter>
+      </ErrorHandler>
+    </IntlProvider>
+  );
 }

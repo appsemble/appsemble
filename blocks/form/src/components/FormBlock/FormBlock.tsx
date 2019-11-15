@@ -123,7 +123,7 @@ export default class FormBlock extends Component<FormBlockProps, FormBlockState>
     return true;
   };
 
-  onChange = (event: Event, value: any) => {
+  onChange = (event: Event, value: any): void => {
     const { name } = event.target as HTMLInputElement;
     const valid = this.validateField(event, value);
 
@@ -137,7 +137,7 @@ export default class FormBlock extends Component<FormBlockProps, FormBlockState>
     }));
   };
 
-  onSubmit = (event: Event) => {
+  onSubmit = (event: Event): void => {
     event.preventDefault();
 
     this.setState(({ submitting, values }, { actions }) => {

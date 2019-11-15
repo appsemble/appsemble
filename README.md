@@ -28,8 +28,8 @@ cd appsemble
 yarn
 ```
 
-The project requires a MySQL database. This project contains a [docker-compose][] configuration to
-spin up a preconfigured database with ease.
+The project requires a PostgreSQL database. This project contains a [docker-compose][] configuration
+to spin up a preconfigured database with ease.
 
 ```sh
 docker-compose up -d
@@ -77,6 +77,7 @@ yarn block filter
 yarn block form
 yarn block map
 yarn block markdown
+yarn block navigation
 yarn block splash
 ```
 
@@ -96,6 +97,7 @@ yarn appsemble block register blocks/filter
 yarn appsemble block register blocks/form
 yarn appsemble block register blocks/map
 yarn appsemble block register blocks/markdown
+yarn appsemble block register blocks/navigation
 yarn appsemble block register blocks/splash
 ```
 
@@ -115,7 +117,7 @@ By default, database tests are run against the database as specified in
 Multiple test databases are created at runtime.
 
 ```sh
-DATABASE_URL=mysql://root:password@localhost:3306 yarn test
+DATABASE_URL=postgres://admin:password@localhost:5432 yarn test
 ```
 
 ### Documentation

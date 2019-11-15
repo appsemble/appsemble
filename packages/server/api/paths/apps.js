@@ -8,11 +8,11 @@ export default {
         content: {
           'multipart/form-data': {
             schema: {
-              required: ['app', 'organizationId'],
+              required: ['app'],
               properties: {
-                app: { $ref: '#/components/schemas/App' },
-                organizationId: {
-                  description: 'The organization for which the app is made.',
+                app: {
+                  required: ['OrganizationId', 'private'],
+                  $ref: '#/components/schemas/App',
                 },
                 style: {
                   type: 'string',
@@ -24,21 +24,7 @@ export default {
                   format: 'binary',
                   description: 'The custom style to apply to all parts of app.',
                 },
-                yaml: {
-                  type: 'string',
-                  format: 'binary',
-                  description: 'The original YAML definition used to define the app.',
-                },
-                icon: {
-                  type: 'string',
-                  format: 'binary',
-                  description: 'The app icon.',
-                },
               },
-            },
-            encoding: {
-              style: { contentType: 'text/css' },
-              sharedStyle: { contentType: 'text/css' },
             },
           },
         },
@@ -116,7 +102,60 @@ export default {
         content: {
           'multipart/form-data': {
             schema: {
-              required: ['app'],
+              required: ['app', 'style', 'sharedStyle', 'yaml', 'icon'],
+              properties: {
+                app: {
+                  $ref: '#/components/schemas/App',
+                  required: ['definition', 'private', 'path'],
+                },
+                style: {
+                  type: 'string',
+                  format: 'binary',
+                  description: 'The custom style to apply to the core app.',
+                },
+                sharedStyle: {
+                  type: 'string',
+                  format: 'binary',
+                  description: 'The custom style to apply to all parts of app.',
+                },
+                yaml: {
+                  type: 'string',
+                  format: 'binary',
+                  description: 'The original YAML definition used to define the app.',
+                },
+                icon: {
+                  type: 'string',
+                  format: 'binary',
+                  description: 'The app icon.',
+                },
+              },
+            },
+            encoding: {
+              style: { contentType: 'text/css' },
+              sharedStyle: { contentType: 'text/css' },
+              icon: {
+                contentType: 'image/png,image/jpg,image/svg+xml,image/tiff,image/webp',
+              },
+            },
+          },
+        },
+      },
+      responses: {
+        200: {
+          description: 'The updated app.',
+          $ref: '#/components/responses/app',
+        },
+      },
+      security: [{ apiUser: ['apps:write'] }],
+    },
+    patch: {
+      tags: ['app'],
+      description: 'Update parts of an existing app',
+      operationId: 'patchApp',
+      requestBody: {
+        content: {
+          'multipart/form-data': {
+            schema: {
               properties: {
                 app: { $ref: '#/components/schemas/App' },
                 style: {
@@ -144,6 +183,9 @@ export default {
             encoding: {
               style: { contentType: 'text/css' },
               sharedStyle: { contentType: 'text/css' },
+              icon: {
+                contentType: 'image/png,image/jpg,image/svg+xml,image/tiff,image/webp',
+              },
             },
           },
         },
@@ -186,30 +228,6 @@ export default {
           },
         },
       },
-    },
-    post: {
-      tags: ['app'],
-      description: `Change the app icon.
-
-        If no icon has been specified, the Appsemble icon will be served.
-      `,
-      operationId: 'setAppIcon',
-      requestBody: {
-        description: 'The new app icon.',
-        content: {
-          'image/png': {},
-          'image/jpg': {},
-          'image/svg+xml': {},
-          'image/tiff': {},
-          'image/webp': {},
-        },
-      },
-      responses: {
-        204: {
-          description: 'The icon has been updated succesfully.',
-        },
-      },
-      security: [{ apiUser: ['apps:write'] }],
     },
     delete: {
       tags: ['app'],

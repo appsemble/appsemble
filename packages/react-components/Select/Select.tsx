@@ -1,9 +1,9 @@
 import * as React from 'react';
 
-import FormComponent, { FormComponentProps } from '../FormComponent';
+import FormComponent from '../FormComponent';
 
-type SelectProps = FormComponentProps &
-  React.HTMLProps<HTMLSelectElement> & {
+type SelectProps = React.ComponentPropsWithoutRef<typeof FormComponent> &
+  React.ComponentPropsWithoutRef<'select'> & {
     /**
      * The name of the HTML element.
      */
@@ -19,7 +19,7 @@ type SelectProps = FormComponentProps &
  * A Bulma styled form select element.
  */
 export default class Select extends React.Component<SelectProps> {
-  onChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+  onChange = (event: React.ChangeEvent<HTMLSelectElement>): void => {
     const { onChange } = this.props;
 
     onChange(event, event.target.value);

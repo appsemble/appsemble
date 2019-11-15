@@ -73,10 +73,22 @@ export interface NumberInputProps extends GenericInputProps<number, 'number'> {
   step?: number;
 }
 
-export type StringInputProps = GenericInputProps<
-  string,
-  'color' | 'email' | 'password' | 'search' | 'tel' | 'text' | 'textarea' | 'url' | null | undefined
->;
+export interface StringInputProps
+  extends GenericInputProps<
+    string,
+    | 'color'
+    | 'email'
+    | 'password'
+    | 'search'
+    | 'tel'
+    | 'text'
+    | 'textarea'
+    | 'url'
+    | null
+    | undefined
+  > {
+  maxLength?: number;
+}
 
 export type InputProps = BooleanInputProps | NumberInputProps | StringInputProps;
 
@@ -84,7 +96,7 @@ export type InputProps = BooleanInputProps | NumberInputProps | StringInputProps
  * A Bulma styled form input element.
  */
 export default class Input extends Component<InputProps> {
-  onInput = (event: Event) => {
+  onInput = (event: Event): void => {
     const { onInput, type } = this.props;
 
     const target = event.target as HTMLInputElement;

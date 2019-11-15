@@ -1,0 +1,44 @@
+.sideMenuContainer {
+  border-right: 1px solid hsl(0, 0%, 86%);
+  transition: 0.3s;
+
+  @media screen and (min-width: 769px) {
+    flex: 0 1 16vw;
+    max-width: 16vw;
+
+    &.collapsed {
+      flex: 0 1 56px;
+      max-width: 56px;
+    }
+  }
+}
+
+.sideMenu {
+  position: relative;
+  text-transform: capitalize;
+
+  @media screen and (min-width: 769px) {
+    height: 100%;
+  }
+}
+
+.collapseButton {
+  border-bottom: none;
+  border-left: none;
+  border-radius: 0;
+  border-right: none;
+  bottom: 0;
+  overflow: hidden;
+  position: absolute;
+  width: 100%;
+
+  @media screen and (max-width: 768px) {
+    display: none;
+  }
+}
+
+.menuItem {
+  align-items: center;
+  display: flex !important;
+  overflow: hidden;
+}

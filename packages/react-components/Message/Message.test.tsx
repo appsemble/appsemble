@@ -17,7 +17,10 @@ describe('Message', () => {
   it('should call remove after 5 seconds', () => {
     jest.useFakeTimers();
 
-    const messages = [{ id: 1, body: 'Foo' }, { id: 2, body: 'Bar', color: 'info' }];
+    const messages = [
+      { id: 1, body: 'Foo' },
+      { id: 2, body: 'Bar', color: 'info' },
+    ];
     const mock = jest.fn();
     const result = shallow(<Message messages={[]} remove={mock} />);
 

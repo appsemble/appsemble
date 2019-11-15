@@ -8,14 +8,9 @@ import SideMenuButton from './SideMenuButton';
 
 function mapStateToProps(state: State): Partial<ComponentProps<typeof SideMenuButton>> {
   return {
-    app: state.app.app,
+    definition: state.app.definition,
     isOpen: state.menu.isOpen,
   };
 }
 
-export default injectIntl(
-  connect(
-    mapStateToProps,
-    { openMenu },
-  )(SideMenuButton),
-);
+export default injectIntl(connect(mapStateToProps, { openMenu })(SideMenuButton));

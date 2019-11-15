@@ -1,4 +1,5 @@
 import jwt from 'jsonwebtoken';
+import lolex from 'lolex';
 import request from 'supertest';
 
 import createServer from '../utils/createServer';
@@ -13,6 +14,7 @@ describe('resource controller', () => {
   let server;
   let token;
   let organizationId;
+  let clock;
 
   const exampleApp = orgId => {
     return {
@@ -51,6 +53,11 @@ describe('resource controller', () => {
     await truncate(db);
     token = await testToken(request, server, db, 'apps:write apps:read');
     organizationId = jwt.decode(token.substring(7)).user.organizations[0].id;
+    clock = lolex.install();
+  });
+
+  afterEach(() => {
+    clock.uninstall();
   });
 
   afterAll(async () => {
@@ -69,8 +76,8 @@ describe('resource controller', () => {
     expect(response.body).toStrictEqual({
       id: resource.id,
       foo: 'bar',
-      $created: expect.any(String),
-      $updated: expect.any(String),
+      $created: new Date(0).toJSON(),
+      $updated: new Date(0).toJSON(),
     });
   });
 
@@ -101,8 +108,18 @@ describe('resource controller', () => {
 
     expect(response.status).toBe(200);
     expect(response.body).toStrictEqual([
-      { id: resourceA.id, foo: 'bar', $created: expect.any(String), $updated: expect.any(String) },
-      { id: resourceB.id, foo: 'baz', $created: expect.any(String), $updated: expect.any(String) },
+      {
+        id: resourceA.id,
+        foo: 'bar',
+        $created: new Date(0).toJSON(),
+        $updated: new Date(0).toJSON(),
+      },
+      {
+        id: resourceB.id,
+        foo: 'baz',
+        $created: new Date(0).toJSON(),
+        $updated: new Date(0).toJSON(),
+      },
     ]);
   });
 
@@ -116,7 +133,12 @@ describe('resource controller', () => {
 
     expect(response.status).toBe(200);
     expect(response.body).toStrictEqual([
-      { id: resourceA.id, foo: 'bar', $created: expect.any(String), $updated: expect.any(String) },
+      {
+        id: resourceA.id,
+        foo: 'bar',
+        $created: new Date(0).toJSON(),
+        $updated: new Date(0).toJSON(),
+      },
     ]);
   });
 
@@ -124,6 +146,7 @@ describe('resource controller', () => {
     const app = await App.create(exampleApp(organizationId));
 
     const resourceA = await app.createResource({ type: 'testResource', data: { foo: 'bar' } });
+    clock.tick(20e3);
     const resourceB = await app.createResource({ type: 'testResource', data: { foo: 'baz' } });
 
     const responseA = await request(server).get(
@@ -132,17 +155,48 @@ describe('resource controller', () => {
     const responseB = await request(server).get(
       `/api/apps/${app.id}/resources/testResource?$orderby=foo desc`,
     );
+    const responseC = await request(server).get(
+      `/api/apps/${app.id}/resources/testResource?$orderby=$created asc`,
+    );
+    const responseD = await request(server).get(
+      `/api/apps/${app.id}/resources/testResource?$orderby=$created desc`,
+    );
 
     expect(responseA.status).toBe(200);
-    expect(responseA.body).toStrictEqual([
-      { id: resourceA.id, foo: 'bar', $created: expect.any(String), $updated: expect.any(String) },
-      { id: resourceB.id, foo: 'baz', $created: expect.any(String), $updated: expect.any(String) },
-    ]);
     expect(responseB.status).toBe(200);
-    expect(responseB.body).toStrictEqual([
-      { id: resourceB.id, foo: 'baz', $created: expect.any(String), $updated: expect.any(String) },
-      { id: resourceA.id, foo: 'bar', $created: expect.any(String), $updated: expect.any(String) },
+    expect(responseC.status).toBe(200);
+    expect(responseD.status).toBe(200);
+
+    expect(responseA.body).toStrictEqual([
+      {
+        id: resourceA.id,
+        foo: 'bar',
+        $created: new Date(0).toJSON(),
+        $updated: new Date(0).toJSON(),
+      },
+      {
+        id: resourceB.id,
+        foo: 'baz',
+        $created: new Date(clock.now).toJSON(),
+        $updated: new Date(clock.now).toJSON(),
+      },
     ]);
+    expect(responseB.body).toStrictEqual([
+      {
+        id: resourceB.id,
+        foo: 'baz',
+        $created: new Date(clock.now).toJSON(),
+        $updated: new Date(clock.now).toJSON(),
+      },
+      {
+        id: resourceA.id,
+        foo: 'bar',
+        $created: new Date(0).toJSON(),
+        $updated: new Date(0).toJSON(),
+      },
+    ]);
+    expect(responseC.body).toStrictEqual(responseA.body);
+    expect(responseD.body).toStrictEqual(responseB.body);
   });
 
   it('should be able to select fields when fetching resources', async () => {
@@ -171,8 +225,8 @@ describe('resource controller', () => {
       {
         id: resource.id,
         ...resource.data,
-        $created: expect.any(String),
-        $updated: expect.any(String),
+        $created: new Date(0).toJSON(),
+        $updated: new Date(0).toJSON(),
       },
     ]);
   });
@@ -186,7 +240,7 @@ describe('resource controller', () => {
     await app.createResource({ type: 'testResource', data: { foo: 'bar', bar: 2 } });
 
     const response = await request(server).get(
-      `/api/apps/${app.id}/resources/testResource?$filter=foo eq 'foo' and id le ${resource.id}`,
+      `/api/apps/${app.id}/resources/testResource?$filter=substringof('oo', foo) and id le ${resource.id}`,
     );
 
     expect(response.status).toBe(200);
@@ -194,8 +248,39 @@ describe('resource controller', () => {
       {
         id: resource.id,
         ...resource.data,
-        $created: expect.any(String),
-        $updated: expect.any(String),
+        $created: new Date(0).toJSON(),
+        $updated: new Date(0).toJSON(),
+      },
+    ]);
+  });
+
+  it('should be able to combine multiple functions when fetching resources', async () => {
+    const app = await App.create(exampleApp(organizationId));
+    const resource = await app.createResource({
+      type: 'testResource',
+      data: { foo: 'foo', bar: 1 },
+    });
+    clock.tick(20e3);
+    const resourceB = await app.createResource({
+      type: 'testResource',
+      data: { foo: 'bar', bar: 2 },
+    });
+
+    const response = await request(server).get(
+      `/api/apps/${app.id}/resources/testResource?$filter=substringof('oo', foo) or foo eq 'bar'&$orderby=$updated desc&$select=id,$created,$updated`,
+    );
+
+    expect(response.status).toBe(200);
+    expect(response.body).toStrictEqual([
+      {
+        id: resourceB.id,
+        $created: new Date(clock.now).toJSON(),
+        $updated: new Date(clock.now).toJSON(),
+      },
+      {
+        id: resource.id,
+        $created: new Date(0).toJSON(),
+        $updated: new Date(0).toJSON(),
       },
     ]);
   });
@@ -253,6 +338,8 @@ describe('resource controller', () => {
       data: { foo: 'I am Foo.' },
     });
 
+    clock.tick(20e3);
+
     const response = await request(server)
       .put(`/api/apps/${app.id}/resources/testResource/${resource.id}`)
       .set('Authorization', token)
@@ -261,6 +348,9 @@ describe('resource controller', () => {
     expect(response.status).toBe(200);
     expect(response.body.foo).toStrictEqual('I am not Foo.');
     expect(response.body.id).toBe(resource.id);
+    expect(response.body.$updated).not.toStrictEqual(response.body.$created);
+    expect(new Date(response.body.$created).getTime()).toStrictEqual(0);
+    expect(new Date(response.body.$updated).getTime()).toStrictEqual(20e3);
 
     const responseB = await request(server).get(
       `/api/apps/${app.id}/resources/testResource/${resource.id}`,
@@ -269,6 +359,8 @@ describe('resource controller', () => {
     expect(responseB.status).toBe(200);
     expect(responseB.body.foo).toStrictEqual('I am not Foo.');
     expect(responseB.body.id).toBe(resource.id);
+    expect(new Date(responseB.body.$created).getTime()).toStrictEqual(0);
+    expect(new Date(responseB.body.$updated).getTime()).toStrictEqual(20e3);
   });
 
   it('should not be possible to update an existing resource through another resource', async () => {
