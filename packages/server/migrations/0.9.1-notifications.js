@@ -9,12 +9,10 @@ export default {
 
     await queryInterface.addColumn('App', 'vapidPublicKey', {
       type: DataTypes.STRING,
-      allowNull: false,
     });
 
     await queryInterface.addColumn('App', 'vapidPrivateKey', {
       type: DataTypes.STRING,
-      allowNull: false,
     });
 
     await queryInterface.createTable('AppSubscription', {
@@ -43,7 +41,7 @@ export default {
       deleted: { allowNull: true, type: DataTypes.DATE },
     });
 
-    const allApps = await db.query('SELECT id FROM `App`', {
+    const allApps = await db.query('SELECT id FROM "App"', {
       raw: true,
       type: db.QueryTypes.SELECT,
     });
@@ -51,12 +49,24 @@ export default {
     await Promise.all(
       allApps.map(({ id }) => {
         const keys = generateVAPIDKeys();
-        return db.query('UPDATE `App` SET vapidPublicKey = ?, vapidPrivateKey = ? WHERE id = ?', {
-          replacements: [keys.publicKey, keys.privateKey, id],
-          type: db.QueryTypes.UPDATE,
-        });
+        return db.query(
+          'UPDATE "App" SET "vapidPublicKey" = ?, "vapidPrivateKey" = ? WHERE id = ?',
+          {
+            replacements: [keys.publicKey, keys.privateKey, id],
+            type: db.QueryTypes.UPDATE,
+          },
+        );
       }),
     );
+
+    await queryInterface.changeColumn('App', 'vapidPublicKey', {
+      type: DataTypes.STRING,
+      allowNull: false,
+    });
+    await queryInterface.changeColumn('App', 'vapidPrivateKey', {
+      type: DataTypes.STRING,
+      allowNull: false,
+    });
   },
 
   async down(db) {
