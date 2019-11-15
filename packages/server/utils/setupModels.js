@@ -50,6 +50,7 @@ export default async function setupModels({
   password,
   database,
   uri,
+  ssl = false,
 }) {
   const options = {
     logging: logSQL,
@@ -67,6 +68,9 @@ export default async function setupModels({
         username,
         password,
         database,
+        dialectOptions: {
+          ssl,
+        },
       }),
     ];
   }

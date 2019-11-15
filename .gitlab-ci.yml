@@ -26,7 +26,7 @@ stages:
   image:
     # This is the most official Helm image at the moment.
     # https://github.com/helm/helm/issues/5682#issuecomment-490084864
-    name: lachlanevenson/k8s-helm:v3.0.0-rc.2
+    name: lachlanevenson/k8s-helm:v3.0.0
     entrypoint: [/bin/sh, -c]
   dependencies: []
 

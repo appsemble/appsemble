@@ -14,6 +14,19 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - App: Add settings page
 - Server: Add support for broadcasting push notifications.
 
+## [0.9.2] - 2019-11-14
+
+### Fixed
+
+- Server: Add support connection to PostgreSQL databases over SSL.
+
+## [0.9.1] - 2019-11-14
+
+### Fixed
+
+- Server: Reduce log size when creating blocks.
+- Server: Remove old migrations that depended on MySQL.
+
 ## [0.9.0] - 2019-11-12
 
 ### Added

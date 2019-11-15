@@ -442,9 +442,12 @@ export async function broadcast(ctx) {
   const { vapidPublicKey: publicKey, vapidPrivateKey: privateKey } = app;
 
   // XXX: Replace with paginated requests
+  logger.verbose(`Sending ${app.AppSubscriptions.length} notifications for app ${app.id}`);
   app.AppSubscriptions.forEach(async subscription => {
     try {
-      logger.debug(`Sending push notification for app ${app.id}`);
+      logger.verbose(
+        `Sending push notification based on subscription ${subscription.id} for app ${app.id}`,
+      );
       await webpush.sendNotification(
         {
           endpoint: subscription.endpoint,
@@ -471,7 +474,9 @@ export async function broadcast(ctx) {
         throw error;
       }
 
-      logger.debug(`Removing push notification subscription ${subscription.id} for app ${app.id}`);
+      logger.verbose(
+        `Removing push notification subscription ${subscription.id} for app ${app.id}`,
+      );
       await subscription.destroy();
     }
   });
