@@ -16,9 +16,4 @@ function mapStateToProps(
   };
 }
 
-export default withRouter(
-  connect(
-    mapStateToProps,
-    { showMessage: push },
-  )(Block),
-);
+export default withRouter(connect(mapStateToProps, { showMessage: push })(Block));

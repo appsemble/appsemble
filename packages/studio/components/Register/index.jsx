@@ -13,10 +13,5 @@ function mapStateToProps(state) {
 }
 
 export default withRouter(
-  injectIntl(
-    connect(
-      mapStateToProps,
-      { registerEmail, passwordLogin, push },
-    )(Register),
-  ),
+  injectIntl(connect(mapStateToProps, { registerEmail, passwordLogin, push })(Register)),
 );

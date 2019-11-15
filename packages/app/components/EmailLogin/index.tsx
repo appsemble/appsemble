@@ -3,9 +3,6 @@ import { connect } from 'react-redux';
 
 import { passwordLogin } from '../../actions/user';
 
-export default connect(
-  null,
-  {
-    passwordLogin,
-  },
-)(EmailLogin);
+export default connect(null, {
+  passwordLogin,
+})(EmailLogin);

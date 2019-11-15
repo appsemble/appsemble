@@ -1,15 +1,16 @@
 import { normalized, partialNormalized } from './patterns';
 
 describe('partialNormalized', () => {
-  it.each([['Ffoo', 'foo'], ['barB', 'bar'], ['I am victorous', 'am']])(
-    'should match %j as %j',
-    (input, expected) => {
-      const match = input.match(partialNormalized);
-      expect(match).not.toBeNull();
-      expect(match).toHaveLength(2);
-      expect(Array.from(match)).toStrictEqual([expected, expected]);
-    },
-  );
+  it.each([
+    ['Ffoo', 'foo'],
+    ['barB', 'bar'],
+    ['I am victorous', 'am'],
+  ])('should match %j as %j', (input, expected) => {
+    const match = input.match(partialNormalized);
+    expect(match).not.toBeNull();
+    expect(match).toHaveLength(2);
+    expect(Array.from(match)).toStrictEqual([expected, expected]);
+  });
 
   it('should be reusable to compose a new regular expression', () => {
     const composed = new RegExp(`^@${partialNormalized.source}/${partialNormalized.source}$`);

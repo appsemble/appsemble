@@ -10,9 +10,4 @@ function mapStateToProps(state) {
   };
 }
 
-export default injectIntl(
-  connect(
-    mapStateToProps,
-    { logout },
-  )(ProfileDropdown),
-);
+export default injectIntl(connect(mapStateToProps, { logout })(ProfileDropdown));

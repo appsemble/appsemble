@@ -11,7 +11,4 @@ function mapStateToProps(state: State): Pick<React.ComponentProps<typeof Message
   };
 }
 
-export default connect(
-  mapStateToProps,
-  { remove },
-)(Message);
+export default connect(mapStateToProps, { remove })(Message);

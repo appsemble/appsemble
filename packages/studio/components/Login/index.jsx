@@ -11,10 +11,7 @@ function mapStateToProps(state) {
   };
 }
 
-export default connect(
-  mapStateToProps,
-  {
-    oauthLogin,
-    passwordLogin,
-  },
-)(Login);
+export default connect(mapStateToProps, {
+  oauthLogin,
+  passwordLogin,
+})(Login);

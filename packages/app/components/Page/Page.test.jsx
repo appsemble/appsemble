@@ -30,7 +30,10 @@ it('should render tabs pages', () => {
   const page = {
     name: 'Test Page',
     type: 'tabs',
-    subPages: [{ name: 'Sub A', blocks: [{}, {}] }, { name: 'Sub B', blocks: [{}, {}] }],
+    subPages: [
+      { name: 'Sub A', blocks: [{}, {}] },
+      { name: 'Sub B', blocks: [{}, {}] },
+    ],
   };
   const definition = { pages: [page] };
   const wrapper = shallow(
@@ -52,7 +55,10 @@ it('should render flow page', () => {
   const page = {
     name: 'Test Page',
     type: 'flow',
-    subPages: [{ name: 'Sub A', blocks: [{}, {}] }, { name: 'Sub B', blocks: [{}, {}] }],
+    subPages: [
+      { name: 'Sub A', blocks: [{}, {}] },
+      { name: 'Sub B', blocks: [{}, {}] },
+    ],
   };
   const definition = { pages: [page] };
   const wrapper = shallow(

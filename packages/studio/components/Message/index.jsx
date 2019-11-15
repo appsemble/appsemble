@@ -9,7 +9,4 @@ function mapStateToProps(state) {
   };
 }
 
-export default connect(
-  mapStateToProps,
-  { remove },
-)(Message);
+export default connect(mapStateToProps, { remove })(Message);
