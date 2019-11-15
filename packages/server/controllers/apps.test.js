@@ -1079,30 +1079,9 @@ pages:
       { raw: true },
     );
     const response = await request(server)
-      .put(`/api/apps/${appA.id}`)
+      .patch(`/api/apps/${appA.id}`)
       .set('Authorization', token)
       .field('definition', JSON.stringify({ name: 'Foobar' }));
-
-    expect(response.status).toBe(400);
-  });
-
-  it('should not allow an upload without an app when updating an app', async () => {
-    const app = await App.create(
-      {
-        path: 'test-app',
-        definition: { name: 'Test App', defaultPage: 'Test Page' },
-        OrganizationId: organizationId,
-      },
-      { raw: true },
-    );
-
-    const response = await request(server)
-      .put(`/api/apps/${app.id}`)
-      .set('Authorization', token)
-      .attach('style', Buffer.from('body { color: red; }'), {
-        contentType: 'text/css',
-        filename: 'style.css',
-      });
 
     expect(response.status).toBe(400);
   });
@@ -1222,7 +1201,7 @@ pages:
     );
 
     const responseA = await request(server)
-      .put(`/api/apps/${app.id}`)
+      .patch(`/api/apps/${app.id}`)
       .set('Authorization', token)
       .field(
         'definition',
@@ -1244,7 +1223,7 @@ pages:
       });
 
     const responseB = await request(server)
-      .put(`/api/apps/${app.id}`)
+      .patch(`/api/apps/${app.id}`)
       .set('Authorization', token)
       .field(
         'definition',
@@ -1280,7 +1259,7 @@ pages:
     );
 
     const responseA = await request(server)
-      .put(`/api/apps/${app.id}`)
+      .patch(`/api/apps/${app.id}`)
       .set('Authorization', token)
       .field(
         'definition',
@@ -1302,7 +1281,7 @@ pages:
       });
 
     const responseB = await request(server)
-      .put(`/api/apps/${app.id}`)
+      .patch(`/api/apps/${app.id}`)
       .set('Authorization', token)
       .field(
         'definition',
@@ -1459,7 +1438,7 @@ pages:
 
   it('should not allow to update an app using non-existent blocks', async () => {
     const { status } = await request(server)
-      .put('/api/apps/1')
+      .patch('/api/apps/1')
       .set('Authorization', token)
       .field(
         'definition',
