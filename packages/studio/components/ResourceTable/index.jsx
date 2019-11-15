@@ -10,9 +10,4 @@ function mapStateToProps(state, ownProps) {
   };
 }
 
-export default injectIntl(
-  connect(
-    mapStateToProps,
-    { push },
-  )(ResourceTable),
-);
+export default injectIntl(connect(mapStateToProps, { push })(ResourceTable));

@@ -55,9 +55,10 @@ export default class UserSettings extends Component {
 
       updateUser({
         ...user,
-        emails: [...user.emails, { email: newEmail, verified: false, primary: false }].sort(
-          (a, b) => a.email.localeCompare(b.email),
-        ),
+        emails: [
+          ...user.emails,
+          { email: newEmail, verified: false, primary: false },
+        ].sort((a, b) => a.email.localeCompare(b.email)),
       });
 
       this.setState({

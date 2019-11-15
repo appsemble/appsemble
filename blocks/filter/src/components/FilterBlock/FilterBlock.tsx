@@ -151,25 +151,34 @@ export default class FilterBlock extends React.Component<FilterBlockProps, Filte
   };
 
   onChange = ({ target }: React.ChangeEvent<HTMLInputElement>): void => {
-    this.setState(({ filter, typingTimer }, { block: { parameters: { fields, highlight } } }) => {
-      const newFilter = {
-        ...filter,
-        [target.name]: target.value,
-      };
-      if (highlight && target.name === highlight) {
-        if (!fields.find(field => field.name === highlight).enum) {
-          // wait 300ms, then submit
-          clearTimeout(typingTimer);
+    this.setState(
+      (
+        { filter, typingTimer },
+        {
+          block: {
+            parameters: { fields, highlight },
+          },
+        },
+      ) => {
+        const newFilter = {
+          ...filter,
+          [target.name]: target.value,
+        };
+        if (highlight && target.name === highlight) {
+          if (!fields.find(field => field.name === highlight).enum) {
+            // wait 300ms, then submit
+            clearTimeout(typingTimer);
 
-          return {
-            filter: newFilter,
-            typingTimer: setTimeout(this.onFilter, 300),
-          };
+            return {
+              filter: newFilter,
+              typingTimer: setTimeout(this.onFilter, 300),
+            };
+          }
+          setTimeout(this.onFilter, 0);
         }
-        setTimeout(this.onFilter, 0);
-      }
-      return { filter: newFilter };
-    });
+        return { filter: newFilter };
+      },
+    );
   };
 
   onRangeChange = ({ target: { id, name, value } }: React.ChangeEvent<HTMLInputElement>): void => {

@@ -12,9 +12,4 @@ function mapStateToProps(state) {
   };
 }
 
-export default injectIntl(
-  connect(
-    mapStateToProps,
-    { getApps, getPublicApps },
-  )(AppList),
-);
+export default injectIntl(connect(mapStateToProps, { getApps, getPublicApps })(AppList));

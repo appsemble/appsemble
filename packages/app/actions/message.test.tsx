@@ -35,7 +35,10 @@ describe('reducer', () => {
 
     expect(resultB).toStrictEqual({
       counter: 2,
-      queue: [{ id: 1, body: 'foo' }, { id: 2, body: 'foo', color: 'danger', timeout: 1000 }],
+      queue: [
+        { id: 1, body: 'foo' },
+        { id: 2, body: 'foo', color: 'danger', timeout: 1000 },
+      ],
     });
   });
 
@@ -43,14 +46,21 @@ describe('reducer', () => {
     const result = reducer(
       {
         counter: 3,
-        queue: [{ id: 1, body: 'foo' }, { id: 2, body: 'foo' }, { id: 3, body: 'foo' }],
+        queue: [
+          { id: 1, body: 'foo' },
+          { id: 2, body: 'foo' },
+          { id: 3, body: 'foo' },
+        ],
       },
       { type: 'message/REMOVE', message: { id: 2, body: 'foo' } },
     );
 
     expect(result).toStrictEqual({
       counter: 3,
-      queue: [{ id: 1, body: 'foo' }, { id: 3, body: 'foo' }],
+      queue: [
+        { id: 1, body: 'foo' },
+        { id: 3, body: 'foo' },
+      ],
     });
 
     const resultB = reducer(
@@ -63,7 +73,10 @@ describe('reducer', () => {
 
     expect(resultB).toStrictEqual({
       counter: 2,
-      queue: [{ id: 1, body: 'foo' }, { id: 2, body: 'foo', color: 'danger', timeout: 1000 }],
+      queue: [
+        { id: 1, body: 'foo' },
+        { id: 2, body: 'foo', color: 'danger', timeout: 1000 },
+      ],
     });
   });
 });

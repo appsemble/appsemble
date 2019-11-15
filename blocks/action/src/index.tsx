@@ -1,6 +1,6 @@
 /** @jsx h */
 import { attach } from '@appsemble/sdk';
-import h from 'mini-jsx';
+import { h } from 'mini-jsx';
 
 import { Actions, Field, Parameters } from '../block';
 import styles from './index.css';
