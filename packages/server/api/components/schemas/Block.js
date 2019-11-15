@@ -10,7 +10,7 @@ export default {
     },
     type: {
       type: 'string',
-      pattern: `^(@${partialNormalized.source})?/${partialNormalized.source}$`,
+      pattern: `^(@${partialNormalized.source}/)?${partialNormalized.source}$`,
       description: `The type of the block.
 
         A block type follows the format \`@organization/name\`. If the organization is _appsemble_,
