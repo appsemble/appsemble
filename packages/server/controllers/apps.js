@@ -1,3 +1,4 @@
+import { logger } from '@appsemble/node-utils';
 import { normalize, StyleValidationError, validateStyle } from '@appsemble/utils';
 import Boom from '@hapi/boom';
 import Ajv from 'ajv';
@@ -6,7 +7,7 @@ import jsYaml from 'js-yaml';
 import { isEqual, uniqWith } from 'lodash';
 import { Op, UniqueConstraintError } from 'sequelize';
 import sharp from 'sharp';
-import { generateVAPIDKeys, sendNotification, WebPushError } from 'web-push';
+import * as webpush from 'web-push';
 
 import getAppBlocks from '../utils/getAppBlocks';
 import getAppFromRecord from '../utils/getAppFromRecord';
@@ -98,7 +99,7 @@ export async function createApp(ctx) {
 
   try {
     const path = normalize(app.definition.name);
-    const keys = generateVAPIDKeys();
+    const keys = webpush.generateVAPIDKeys();
 
     result = {
       definition: app.definition,
@@ -430,8 +431,6 @@ export async function broadcast(ctx) {
     include: [AppSubscription],
   });
 
-  const { vapidPublicKey: publicKey, vapidPrivateKey: privateKey } = app;
-
   if (!app) {
     throw Boom.notFound('App not found');
   }
@@ -440,10 +439,13 @@ export async function broadcast(ctx) {
     throw Boom.forbidden('User does not belong in this app’s organization.');
   }
 
+  const { vapidPublicKey: publicKey, vapidPrivateKey: privateKey } = app;
+
   // XXX: Replace with paginated requests
   app.AppSubscriptions.forEach(async subscription => {
     try {
-      await sendNotification(
+      logger.debug(`Sending push notification for app ${app.id}`);
+      await webpush.sendNotification(
         {
           endpoint: subscription.endpoint,
           keys: { auth: subscription.auth, p256dh: subscription.p256dh },
@@ -465,10 +467,11 @@ export async function broadcast(ctx) {
         },
       );
     } catch (error) {
-      if (!(error instanceof WebPushError && error.statusCode === 410)) {
+      if (!(error instanceof webpush.WebPushError && error.statusCode === 410)) {
         throw error;
       }
 
+      logger.debug(`Removing push notification subscription ${subscription.id} for app ${app.id}`);
       await subscription.destroy();
     }
   });

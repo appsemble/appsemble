@@ -5,7 +5,6 @@ import React from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link, RouteComponentProps } from 'react-router-dom';
 
-import { push } from '../../actions/message';
 import HelmetIntl from '../HelmetIntl';
 import messages from './messages';
 
@@ -14,19 +13,19 @@ export interface NotificationsProps extends RouteComponentProps<{ id: string }> 
   push: (message: Message) => void;
 }
 
-export default function Notifications({ app }: NotificationsProps): React.ReactElement {
+export default function Notifications({ app, push }: NotificationsProps): React.ReactElement {
   const intl = useIntl();
 
   const submit = React.useCallback(
     async ({ title, body }: { title: string; body: string }): Promise<void> => {
       try {
         await axios.post(`/api/apps/${app.id}/broadcast`, { title, body });
-        push({ body: intl.formatMessage(messages.submitSuccess), color: 'danger' });
+        push({ body: intl.formatMessage(messages.submitSuccess), color: 'success' });
       } catch (error) {
         push({ body: intl.formatMessage(messages.submitError), color: 'danger' });
       }
     },
-    [app.id, intl],
+    [app.id, intl, push],
   );
 
   const { notifications } = app.definition;
