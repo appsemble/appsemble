@@ -12,11 +12,8 @@ function mapStateToProps(state) {
 }
 
 export default withRouter(
-  connect(
-    mapStateToProps,
-    {
-      getApp,
-      initAuth,
-    },
-  )(AppContext),
+  connect(mapStateToProps, {
+    getApp,
+    initAuth,
+  })(AppContext),
 );

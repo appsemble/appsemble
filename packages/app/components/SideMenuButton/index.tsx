@@ -13,9 +13,4 @@ function mapStateToProps(state: State): Partial<ComponentProps<typeof SideMenuBu
   };
 }
 
-export default injectIntl(
-  connect(
-    mapStateToProps,
-    { openMenu },
-  )(SideMenuButton),
-);
+export default injectIntl(connect(mapStateToProps, { openMenu })(SideMenuButton));

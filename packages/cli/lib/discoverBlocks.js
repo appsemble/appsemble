@@ -27,5 +27,12 @@ export default async function discoverBlocks(root) {
   return dirs
     .concat(root)
     .map(getBlockConfig)
-    .reduce((acc, result) => result.then(async config => [...(await acc), config], () => acc), []);
+    .reduce(
+      (acc, result) =>
+        result.then(
+          async config => [...(await acc), config],
+          () => acc,
+        ),
+      [],
+    );
 }

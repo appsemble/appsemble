@@ -11,9 +11,4 @@ function mapStateToProps(state) {
   };
 }
 
-export default injectIntl(
-  connect(
-    mapStateToProps,
-    { push, updateUser },
-  )(OrganizationsSettings),
-);
+export default injectIntl(connect(mapStateToProps, { push, updateUser })(OrganizationsSettings));
