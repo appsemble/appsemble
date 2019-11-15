@@ -160,7 +160,7 @@ export default class Editor extends React.Component {
 
     try {
       const formData = new FormData();
-      formData.append('app', JSON.stringify({ definition }));
+      formData.append('definition', JSON.stringify(definition));
       // The MIME type for YAML is not officially registered in IANA.
       // For the time being, x-yaml is used. See also: http://www.iana.org/assignments/media-types/media-types.xhtml
       formData.append('yaml', new Blob([recipe], { type: 'text/x-yaml' }));
