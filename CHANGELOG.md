@@ -9,6 +9,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
+- App: Add support for absolute URLs in `link` actions.
 - App: Add support for push notifications. Users can subscribe to notifications in the app’s
   settings page. More strategies for receiving push notifications will be added in the future.
 - App: Add settings page
