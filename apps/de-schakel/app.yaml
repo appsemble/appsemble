@@ -1,0 +1,971 @@
+name: De Schakel
+theme:
+  themeColor: '#000000'
+  primaryColor: '#FF9800'
+defaultPage: Colofon
+description: De app met nieuws uit de gemeente Berkel Enschot.
+resources:
+  schakel:
+    schema:
+      type: object
+      required:
+        - title
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+  item:
+    schema:
+      type: object
+      required:
+        - type
+        - title
+        - location
+      properties:
+        type:
+          type: string
+          enum:
+            - lost
+            - found
+        title:
+          type: string
+        location:
+          type: object
+          required:
+            - latitude
+            - longitude
+          properties:
+            latitude:
+              type: number
+            longitude:
+              type: number
+        photos:
+          type: array
+          items:
+            type: string
+            appsembleFile:
+              type:
+                - image/jpeg
+pages:
+  - name: Schakeltjes
+    blocks:
+      - type: feed
+        version: 0.9.0
+        actions:
+          onLoad:
+            type: resource.query
+            resource: schakel
+            query:
+              $orderby: '$created desc'
+              $top: 50
+          onButtonClick:
+            type: link
+            to: Schakel
+        parameters:
+          title: title
+          subtitle: $created|date
+          buttonLabel: Lees meer…
+      - type: action-button
+        version: 0.9.0
+        actions:
+          onClick:
+            type: link
+            to: Schakel Aanmaken
+        parameters:
+          icon: plus
+  - name: Schakel Aanmaken
+    hideFromMenu: true
+    blocks:
+      - type: form
+        version: 0.9.0
+        actions:
+          onSubmit:
+            type: resource.create
+            resource: schakel
+          onSubmitSuccess:
+            type: link
+            to: Schakeltjes
+        parameters:
+          fields:
+            - name: title
+              label: Titel
+              type: string
+              required: true
+            - name: description
+              label: Beschrijving
+              type: string
+              required: true
+              multiline: true
+  - name: Schakel
+    parameters:
+      - id
+    blocks:
+      - type: detail-viewer
+        version: 0.9.0
+        actions:
+          onLoad:
+            type: resource.get
+            resource: schakel
+        parameters:
+          fileBase: /api/asset
+          fields:
+            - name: title
+              label: Titel
+            - name: $created|date
+              label: Datum
+            - name: description
+              label: Beschrijving
+  - name: Voorwerp Melden
+    hideFromMenu: true
+    blocks:
+      - type: form
+        version: 0.9.0
+        actions:
+          onSubmit:
+            type: resource.create
+            resource: item
+          onSubmitSuccess:
+            type: link
+            to: Gevonden en Verloren
+        parameters:
+          fields:
+            - name: location
+              label: Locatie
+              type: geocoordinates
+            - name: type
+              label: Gevonden of Verloren
+              type: enum
+              required: true
+              defaultValue: found
+              enum:
+                - value: found
+                  label: Gevonden
+                - value: lost
+                  label: Verloren
+            - name: title
+              label: Titel
+              type: string
+              required: true
+            - name: description
+              label: Beschrijving
+              type: string
+              required: true
+              multiline: true
+            - name: photos
+              label: Foto’s
+              type: file
+              accept:
+                - image/jpeg
+              repeated: true
+
+  - name: Gevonden en Verloren
+    type: tabs
+    subPages:
+      - name: LOST
+        blocks:
+          - type: feed
+            version: 0.9.0
+            actions:
+              onLoad:
+                type: resource.query
+                resource: item
+                query:
+                  $filter: type eq 'lost'
+                  $orderby: $updated desc
+              onButtonClick:
+                type: link
+                to: Voorwerp
+            parameters:
+              title: title
+              subtitle: $created|date
+              description: description
+              picture: photos.0
+              pictureBase: /api/assets
+              buttonLabel: Details
+          - type: action-button
+            version: 0.9.0
+            actions:
+              onClick:
+                type: link
+                to: Voorwerp Melden
+            parameters:
+              icon: plus
+      - name: FOUND
+        blocks:
+          - type: feed
+            version: 0.9.0
+            actions:
+              onLoad:
+                type: resource.query
+                resource: item
+                query:
+                  $filter: type eq 'found'
+                  $orderby: $updated desc
+              onButtonClick:
+                type: link
+                to: Voorwerp
+            parameters:
+              title: title
+              subtitle: $created|date
+              description: description
+              picture: photos.0
+              pictureBase: /api/assets
+              buttonLabel: Details
+          - type: action-button
+            version: 0.9.0
+            actions:
+              onClick:
+                type: link
+                to: Voorwerp Melden
+            parameters:
+              icon: plus
+  - name: Voorwerp
+    parameters:
+      - id
+    blocks:
+      - type: detail-viewer
+        version: 0.9.0
+        actions:
+          onLoad:
+            type: resource.get
+            resource: item
+        parameters:
+          fileBase: /api/assets
+          fields:
+            - name: location
+              label: Locatie
+              type: geocoordinates
+              longitude: longitude
+              latitude: latitude
+            - name: type
+              label: Gevonden of verloren?
+            - name: title
+              label: Naam
+            - name: description
+              label: Beschrijving
+            - name: photos
+              label: Foto's
+              type: file
+              repeated: true
+  - name: Nieuws
+    blocks:
+      - type: feed
+        actions:
+          onLoad:
+            url: https://cors-anywhere.herokuapp.com/https://www.schakel-nu.nl/feed/
+            type: request
+            base: rss.channel.item
+          onButtonClick:
+            type: link
+            remap: link
+            to: Nieuws
+        version: 0.9.0
+        parameters:
+          title: title
+          subtitle: dc:creator
+          heading: pubDate|date
+          buttonLabel: Lees meer…
+
+  - name: Service-Agenda
+    blocks:
+      - type: markdown
+        version: 0.9.0
+        parameters:
+          content: |
+            # Alarmnummer
+            **112 Alarmnummer**
+            Met spoed politie, brandweer en ambulance 0900 - 88 44 voor alle overige politiezaken.
+
+            # Wijkagenten 0900-88 44
+            Onze wijkagenten Goof van Bragt en Nihat Karacan zijn rechtstreeks bereikbaar via mail: Goof.van.Bragt@politie.nl, Nihat.Karacan@politie.nl en cluster-2.groene-beemden@politie.nl
+
+            # Huisartsenpost 085-53 70 300
+            Werkdagen 17:00-08:00, het weekend en op feestdagen.
+            Lage Witsiebaan 2a Tilburg. Op telefonische afspraak.
+  - name: Bedrijven Contacten
+    blocks:
+      - type: markdown
+        version: 0.9.0
+        parameters:
+          content: |
+            # Overheid
+
+            ## GEMEENTE TILBURG
+
+            Voor vragen, het doorgeven van een verhuizing of het maken van een afspraak in de stadswinkel ga naar: www.tilburg.nl. Handige apps zijn: "Buitenbeter" (meldingen doen over het openbaar gebied), "Afvalwijzer" (over ophalen huisvuil) en "Over uw buurt" (publicatie bestemmingsplannen en vergunningen). Bellen kan ook: 14 013 (lokaal Tarief)
+
+            ## DORPSRAAD BERKEL-ENSCHOT
+
+            Website: www.dorpsraadberkelenschot.nl
+            E-mail: info@dorpsraadberkelenschot.nl
+
+            # Dorpsinformatiepunt Loket BE
+
+            Voor al uw vragen over zorg – welzijn – wonen – maatschappelijke diensten of een hulpvraag. Donderdagochtend van 10-12 uur in zorgcentrum Torentjeshoef.
+
+            Telefoonnummer tijdens openingstijden 06-53768978 of via e-mail Loket-BE@dorpsraadberkelenschot.nl
+
+            # WELZIJN
+
+            ## ContourdeTwern
+
+            voor ondersteuning van bewoners en vrijwilligers(groepen) & mantelzorgondersteuning.
+            chantalvandenbroek@contourdetwern.nl 0610932179
+
+            ## KBO B-E
+
+            www.kbo-berkelenschot.nl secr. 013-5333162
+
+            ## MAALTIJDENEXPRES & Boodschappenservice
+
+            Bel 013-5442513 voor bestelformulier.
+
+            ## Stichting Hulpcentrale UBE
+
+            tel.nr. 013 50 30 919
+
+            # Advocaten, Juristen & Notarissen
+
+            ## BG.legal | Den Bosch – Eindhoven - Tilburg
+
+            Marc Heuvelmans – Advocaat voor Ondernemers
+            www.bg.legal | 088-1410807
+
+            ## KZO|013 Advocaten - mensen in de rechten
+
+            familierecht-arbeidsrecht-ondernemingsrecht
+            www.kzoadvocaten.nl 013-53 66 555
+
+            ## Snikkenburg-Verbraak Advocaten
+
+            specialisten in Familie- en erfrecht
+            085-4891233, www.svadvocaten.nl
+
+            ## VAN RAAK ADVOCATUUR & MEDIATION
+
+            Udenhout www.vanraakadvocatuur.nl 013-5908877
+
+            ## JURISTEN
+
+            Letselschade? **Damen Letselschade BV**
+            Voor vrijblijvend advies: www.damenletselschade.nl,
+            info@damenletselschade.nl, 013-4676305
+
+            ## NOTARISSEN
+
+            **Daamen de Kort van Tuijl Notarissen** Vestiging Udenhout
+            (013) 549 49 39 - Vestiging Tilburg (013) 549 49 49
+            www.dktnotarissen.nl
+
+            # Banken
+
+            ## RABOBANK HART VAN BRABANT
+
+            Contact particulieren (013) 508 81 00,
+            Contact bedrijven (013) 508 82 00,
+            www.rabobank.nl/hartvanbrabant
+
+            # Bouw & Aanverante Bedrijven
+
+            ## Boomrooierij Weijtmans
+
+            www.boomrooierijweijtmans.nl
+            013-5111483 | Bomen rooien, snoeien, stronken frezen
+
+            ## Renovatiebedrijf Paul van Rooij
+
+            voor badkamer en keuken, ook voor nieuwbouw en algemene renovatie-verbouwingen
+            www.renovatiebedrijf.info
+            of Tel: 06-51017511
+
+            ## Retail Compleet Bouw bv
+
+            Ombouw, verbouw en afbouw van winkels, horeca, enz.
+            013-303 00 33
+            www.retailcompleetbouw.nl
+
+            ## STAATS KEUKENS
+
+            Telefoon 013-5336643
+            www.staatskeukens.nl
+
+            ## TDF – DAKRENOVATIE
+
+            06-36486079
+
+            ## VAN ANTWERPEN ELEKTROTECHNIEK
+
+            Elektra & verlichting voor nieuwbouw, onderhoud en renovatie.
+            ZONNEPANELEN, 24-uur storingsdienst, verkoop elektromaterialen.
+            Rhijnkant 12
+            Tel.: 013-5333012
+
+            ## VU-RIO
+
+            riolering ontstoppen, rioolinspectie, opsporen stankoverlast.
+            Frans en Drik van Vught, 5333864.
+
+            # SCHILDERS
+
+            ## Gerard van Berkel Schilderwerken
+
+            06-52688933
+            info@vanberkelschilderwerken.nl
+
+            ## Heinz Franken schilderwerken en vastgoedonderhoud
+
+            06-54666960
+
+            ## HERMAN PETERS SCHILDERWERKEN
+
+            06-29218145
+
+            ## Marcel Schilders Schilderwerken
+
+            www.marcelschildersschilderwerken.nl
+            06-51261453
+
+            ## SCHILDERWERKEN TON VAN DE WOUW
+
+            TEL. 06-51108539
+
+            # Culterele Instellingen & Kunst
+
+            ## Cultureel Centrum de Schalm Ons Koningsoord
+
+            Trappistinnentuin 77
+            Tel. 013-5331333
+            info@deschalm.net / www.deschalm.net
+
+            # Diverse
+
+            ## COMPUTERHULP EN ELEKTRONICA
+
+            ### Reparatie TV, LCD, Plasma
+
+            Ben van Etten
+            013-5336365
+
+            ### Computerhulp aan huis
+
+            Louis Verstappen
+            06-45540629
+
+            ## TAXIBEDRIJVEN
+
+            ### Taxi Korthout
+
+            24 uur.
+            013-4555555
+            Alle ziekenvervoer o.a. VGZ, CZ, ACHMEA
+
+            ### TAXIBEDRIJF VAN DER HEIJDEN
+
+            013-533 33 50
+            taxivanderheijden@gmail.com
+
+            # Gezondheid
+
+            ## DIERENARTS
+
+            ### AniCura Dierenziekenhuis Tilburg
+
+            Alle medische zorg voor uw huisdier onder 1 dak
+            Koningsoordlaan 2, Berkel-Enschot 013-5400215
+
+            ## GEZONDHEID
+
+            ### APOTHEEK DE LANGE STIGHT
+
+            T: 013 540 80 80
+            Ma t/m vr 08.00-17.30u, za/zo bereikbaar dmv kluisjes.
+            info: www.delangestight.nl. Buiten openingsuren:
+
+            ### Dienstapotheek te Tilburg
+
+            0900 235 73 23
+
+            ## COACHING
+
+            ### 3-dees KINDERCOACHING
+
+            ondersteuning aan huis voor kind en ouder.
+            www.3-dees.nl
+            T 06-50278012
+
+            ### EigenWijzer – Praktijk voor kind, jeugd en opvoeders
+
+            www.praktijkeigenwijzer.nl | 06-11151057
+
+            ### JuistTalent Loopbaancoach - Maxime Quax
+
+            Pandgang 2
+            06-24206515
+            www.juisttalent.nl
+
+            ### MINDFULNESS +/YOGA/COACHING bij Anite Jonkers
+
+            www.freebodyfreemind.nl
+            Tel: 06-150547004
+
+            ## FYSIOTHERAPIE
+
+            ### TOPFYSIOTHERAPIE BERKEL-ENSCHOT
+
+            Groels & Klijn Fysiotherapie | Manuele Therapie | Geriatrie
+            Fysiotherapie | Medische Fitness. Akkerweg 2
+            tel: 013-5333307 | www.topfysiotherapie.nl/Berkel-Enschot
+
+            ### Berko fysio<, FYSIOTHERAPIE & LEEFTSTIJL
+
+            Eikenbosch 23, 06-15384252, www.berko-fysio.nl
+
+            ### OSTEOPATHIE VAN EIJCK D.O.-MRO lid NVO/NRO
+
+            013-4566490 | www.osteopathievaneijck.nl
+
+            ### FYSIOTHERAPIE DE HOOGE RIJT
+
+            www.dehoogerijt.nl
+            Fysiotherapie, manuele therapie en sportrevalidatie
+            Tel 013-5335689, Enschotsebaan 6 Berkel-Enschot
+
+            ### FYSIOTHERAPIE UDENHOUT / manuele therapie
+
+            Kreitenmolenstraat 26F, ook ’s avonds geopend
+            tel. 013-5110097
+            www.fysiotherapieudenhout.nl
+
+            ### FYSIO OP MAAT Berkel-Enschot, FYSIOTHERAPIE
+
+            Diverse specialisaties, Ruime openingstijden. Meer info:
+            Eikenbosch 2, tel: 013-3030069, www.fysio-op-maat.nl
+
+            ### OSTEOPATHIE MAURA JANSEN. Osteopaat DO.-MRO
+
+            Tel. 06-24981499
+            www.osteopathie-maurajansen.nl
+
+            ## PEDICURES
+
+            ### IL Mio Sogno Schoonheidsverzorging & Medisch-Pedicure
+
+            Kruisakker 5 B-E - 06-22657699
+            www.ilmiosogno.org
+
+            ### De Pedicuresalon, lid ProVoet.
+
+            06-51272199
+            Klaproosstraat 2c B-E
+            www.depedicuresalon.nl
+
+            ### Salon Wouw, kapsalon - visagie - pedicure en medisch pedicure. Wendy van de Wouw
+
+            Tel: 06-13951265
+            Baaneind 6 Heukelom
+
+            ## TANDARTSEN
+
+            ### Naaijkens & Maes
+
+            Raadhuisstraat 37 / Tel. 013-5333755
+            www.mjmnaaijkens.nl
+
+            ## THERAPEUTEN
+
+            ### Voor psychotherapeut (BIG)
+
+            www.bonnechance.nl
+
+            ### FONKEL therapie en training.
+
+            Psychosociale therapie en EMDR
+            www.fonkel.nu
+            013-5333937
+            Lid NVPA/RBCZ.
+
+            ### Pradána praktijk voor natuurgerichte therapie
+
+            www.pradana.nl
+            013-8509808
+
+            ### Praktijk OrigIne
+
+            voor psychosociale therapie, verlies en rouw, trauma, relatietherapie
+            www.orig-ine.nl
+            5333722
+
+            ### Praktijk voor klassieke homeopathie & opstellingen
+
+            www.miriamvanmierlo.nl
+            013 533 45 58
+
+            ### Scheepens en Klijssen Podotherapie
+
+            Tel. 013 511 0182
+            www.skpodotherapie.nl
+
+            ### THERAPEUTISCH CENTRUM DE ZICHT
+
+            PAUL VAN DER LUGT
+            Acupunctuur | Toegepaste Kinesiologie | Coaching
+            Re-integratie | Dru Yoga | Dru Meditatie
+            De Zicht 21, 013-5332865
+            www.centrumdezicht.nl
+
+            ## THUISZORG
+
+            ### Standby Thuiszorg
+
+            specialist in complexe zorg aan huis
+            013-2086800
+            www.standbythuiszorg.nl
+
+            ## SCHOONHEIDSSPECIALISTEN EN HUIDTHERAPIE
+
+            ### DermaVision centum voor Huidzorg - Huidtherapeuten
+
+            Lijsterbestaan 58 - 013-8894673 - dermavision.nl
+
+            ### PUUR wellness & massage
+
+            Tel: 0651225761
+
+            ### SCHOONHEIDSSALON C`EST MOI
+
+            Puccinilaan 10
+            Berkel-Enschot.
+            www.hkcestmoi.nl
+            06-42025849
+
+            ### YOUR BEAUTY INSPIRATION, voor Huidverbetering & Wellness.
+
+            De Ploegschaar 161, B-E
+            06-21237460
+
+            # Kappers en Schoonheidsspecialisten
+
+            ## ANTHÉ-KAPPERS
+
+            Kerkstraat 25B
+            Behandeling op afspraak. Heren mogen ook ZONDER afspraak.
+            Charlotte 06-34089921
+            Monique en Mara, Lotte 06-38166531
+            algemeen nr. 013-5331561
+            Di. t/m Vrij. 9.00-18.00 Zat. 9.00-16.00 uur.
+
+            ## ASJA HAIRSTYLING
+
+            Klaproosstraat 33, B-E.
+            Dames, heren & kinderen. Afspraak: 013-5339830
+
+            ## FABULOUS HAIRDESIGN Dames- en Herenkapper
+
+            Kerkstraat 9A B-E - 013-5336809. Op afspraak.
+
+            ## KAPPER & CO, dames, heren & kinderen
+
+            Eikenbosch 21 Berkel-Enschot
+            013-5332756
+            www.kapperenco.nl
+
+            ## MONIQUE’S HAIRSTYLING
+
+            Dom. S Dubuissonstraat 28a
+            Tel. 013- 5442832 Behandeling op afspraak.
+
+            ## SALON ORTEGA, KAPSALON
+
+            013 590 77 86
+            Sint Willibrordstraat 14 - 5056 HV - Berkel-Enschot
+
+            # Uitvaartbegeleiding
+
+            ## Monuta Tom van Dijk | De steun bij ieder afscheid
+
+            Mét eigen uitvaartcentrum in Tilburg (naast crematorium)
+            www.monutatomvandijk.nl | (013) 822 65 27
+
+            ## Uitvaartbegeleiding Harriet van der Vleuten
+
+            Iedere uitvaart bijzonder.
+            013-5920048 of www.harrietvandervleuten.nl
+
+            ## Uitvaartbegeleiding In Harmonie
+
+            en **Het Afscheidshuis**
+            013-5721822
+            www.uitvaartbegeleidinginharmonie.nl
+
+            # Kinderopvang
+
+            ## Kinderopvang Humankind
+
+            Kinderopvang- en ontwikkeling.
+            KDV Pepino en BSO Berkeloo (bij basisschool Berkeloo)
+            Peuteropvang Peuterplaza (bij basisschool Rennevoirt)
+            VVE gecertificeerd voor 0 tot 4 jarigen
+            Informatie: 073-711400 of
+            www.humankind.nl
+
+            ## Kinderopvangorganisatie De Kleine Wereld
+
+            Kinderopvang met aandacht, waar kinderen ontmoeten, ontdekken en ontwikkelen.
+            Dagverblijf De Wijde Wereld, Dagverblijf De Speelwereld,
+            Dagopvang De Koningswereld, BSO De Toverwereld,
+            BSO De Speelwereld, BSO en Peuterspeelzaal De Speelwereld.
+            Informatie: 013-2056010 of www.dekleinewereld.org
+
+  - name: Bedrijven in beeld
+    blocks:
+      - type: markdown
+        version: 0.9.0
+        parameters:
+          content: |
+            [STEUNKOUSENADVIES](https://www.steunkousenadvies.nl/)
+            ![Image Steunkousenadvies](https://api.appsemble.com/files/5ffc05bdbfb0478792fd9af11fddb0bd)
+
+            [WAGNERPLEIN TILBURG NOORD](https://www.schakel-nu.nl/het-wagnerplein-is-de-huiskamer-van-noord/)
+            ![Image Wagnerplein Tilburg Noord](https://api.appsemble.com/files/aa88b46229314a288a28eee79df70cdf)
+
+            [FELLOW FASHION](https://www.schakel-nu.nl/fellow-fashion-bestaat-5-jaar/)
+            ![Fellow Fashion](https://api.appsemble.com/files/9828238037b44b4caa4591f9837502e7)
+
+            [TOONAANGEVEND](https://www.schakel-nu.nl/jeroen-granneman-van-muziekschool-toonaangevend-neemt-muziekschool-de-piano-over/)
+            ![Toonaangevend](https://api.appsemble.com/files/67b7cf5d3cc64d4cb4f33d966701a2fb)
+  - name: Kunst en Cultuur
+    blocks:
+      - type: markdown
+        version: 0.9.0
+        parameters:
+          content: |
+            # Kunst en Cultuur
+            ## TIENDE KUNSTMARKT IN BERKEL-ENSCHOT
+            Het Mysterie van Museum Mauzz waarin kinderen speels en geraffineerd in contact komen met di- verse beroemde kunstwerken.
+
+            Ook hier zijn er daarnaast nog verschillende optre- dens. De jonge muzikanten van Modesto treden op en ook René van den Bosch, muziekdocent van Factorium gaat met zijn leerlingen aan de slag.
+
+            ## Gratis op en neer per huifkar
+
+            Omdat de locaties een paar honderd meter van elkaar liggen, bieden we bezoekers van 12.00 uur tot 15.00 uur de mogelijkheid om per huifkar met accordeonmuziek van het winkelcentrum naar Ko- ningsoord en terug te reizen.
+
+            Wanneer: zaterdag 8 juni
+            Waar: winkelcentrum Eikenbosch en in Ons Koningsoord
+            Tijd: 11.00 - 16.00 uur
+
+            Op zaterdag 8 juni vindt er in Berkel-Enschot voor de tiende keer, de jaarlijkse kunstmarkt plaats. Een jubileum dus!
+
+            ## Door wie...
+
+            Tien jaar geleden zijn de initiatiefnemers St. EXPO, Bibliotheek Midden-Brabant en Cultureel Centrum de Schalm i.s.m. de Winkeliersvereniging Eiken- bosch van start gegaan. Sponsoren werden be- naderd, (semi)kunstenaars en diverse edities volg- den. Na enige jaren kwam er ook diverse keren een kunst-route.
+
+            Kunstenaars, semi-kunstenaars en hobbyisten kunnen hier letterlijk hun ei kwijt. Opvallend is dat verscheidene kunstenaars van buiten de streek het ook de moeite waard vinden om mee te doen.
+
+            ## Voor wie....
+
+            De kunstmarkt in het winkelcentrum en exposties in Ons Koningsoord zijn bedoeld voor iedereen met een creatieve interesse... en.... wie heeft dat niet! In de kraampjes op het plein vindt u schilderijen, keramiek, sieraden, viltwerk, glas-in-lood alsook tweede hands kunstboeken tot boekvouwkunst. Op het terras is koffie en thee gratis.
+
+            ## Voor elk wat wils dus!
+
+            Diverse muzikale nevenactiviteiten, muziek en dansvoorstelling zorgen voor een feestelijk accent.
+
+            **Deze tiende keer hebben we iets bijzonders!**
+
+            In de prachtig gerestaureerde abdij Koningsoord wordt vanaf 8 juni een expositie georganiseerd van kunstenaars uit heel Brabant. Schilderijen en tekeningen van uiteenlopende aard en ook drie- dimensionaal werk zijn er te bewonderen. In de ruimte van de fotoclub is een nieuwe selectie van foto’s te zien. Op deze zaterdag zijn de kunste- naars aanwezig om te vertellen over hun werk.
+
+            In de kerkzaal wordt ‘s middags een professionele jeugdvoorstelling opgevoerd:
+
+            **KOM KIJKEN EN MEEGENIETEN VAN BEELD, MUZIEK EN DANS OP DE TIENDE KUNST- MARKT IN BERKEL-ENSCHOT!**
+
+            **“BELLE EN HET BEEST” IN OISTERWIJKS OPENLUCHTTHEATER**
+
+            **Eind mei, begin juni opent het Oisterwijkse Na- tuurtheater het theaterseizoen opnieuw met muzikale, kleurrijke familievoorstellingen van Theatergroep Trappaf. Ditmaal brengen zij een eigen toneelbewerking vol muziek, dans en liedjes van het oude, tot de verbeelding spre- kende verhaal “Belle en het Beest”.**
+
+            **Midden in het schitterende Oisterwijkse bos- en vennengebied wordt u verwend met ’n mooie voorstelling vol spanning en humor die alle leeftijden bekoort.**
+
+            **De uitvoeringen zijn op 26 en 30 mei en op 1, 2, 9, en 10 juni 2019. De aanvang is telkens om 14.30 uur behalve 1 juni, dat betreft een avond- voorstelling die start om 19.00 uur.**
+
+            **Theatergroep Trappaf staat al 30 jaar in dit the- ater met shows als “Aladdin” en “Alice in Wonderland”.**
+
+            **Alle disciplines zijn in eigen huis wat de entree- prijs bijzonder laag kan houden. € 5,- voor ’n heerlijke theatermiddag (of avond)! Kijk voor alle info op: www.theatergroeptrappaf.nl**
+
+  - name: Kerkberichten
+    blocks:
+      - type: markdown
+        version: 0.9.0
+        parameters:
+          content: |
+            # Kerkberichten
+            ![Johannes XXIII Parochie](https://johannesxxiiiparochie.nl/wp-content/uploads/2017/10/logo.jpg)
+            ## Bereikbaarheid:
+
+            Voor een spoedgeval kunt u bellen met:
+
+            pastoor Van Eijk: 06-12849284
+            pastor Looyaard: 06-51110960
+            diaken Szejnoga: 06-24397932
+
+            Voor alle andere gevallen die niet spoedeisend zijn vragen wij u tijdens kantooruren contact op te nemen met het parochiesecretariaat:
+
+            Berkel: 013-5331216
+            Enschot: 013-5331215
+            Udenhout 013-5111215
+            of via: info@johannesxxiiiparochie.nl
+
+            ## OPSTEKERTJE
+
+            Opbouw of afbraak.
+
+            Ik dacht bij het schrijven van dit opstekertje: “Wat toevallig, dat ik juist nu dit boek weer pak van de boekenplank.” Maar misschien toch niet zo toevallig. Ik zal u uitleggen waarom. Het boek waarop ik doel is van prof. dr. Erik Borgman en heeft als titel “Waar blijft de kerk?” De titel is een prikkelende vraag. Niet gesteld om concrete zaken zoals hoe we ons inzetten voor de opbouw van de kerk. Het is vooral een vraag over wat het betekent om kerk te zijn. De suggestie van Erik Borgman in de inleiding vind ik prikkelend. Hij stelt dat alle berichtgeving over krimp en prognoses over afbraak een list zijn van de heilige Geest. De heilige Geest die bij ons de reactie opwekt: Maar dit kan toch niet! Naast het noemen van allerlei praktische zaken en bewegingen vraagt prof. Borgman vooral meer aandacht voor de heilige Geest. We kunnen alleen gered worden door de Geest waarvan de evangelist Johannes zegt: ‘De Geest is als de wind: hij waait waar hij wil; je hoort hem waaien, maar je weet niet waar hij vandaan komt en waar hij heen gaat. Zo is het ook met ieder die geboren is uit de Geest.’ (Joh. 3, 8). We moeten niet allereerst iets doen, maar allereerst iets ontvangen: Namelijk signalen van de heilige Geest. In onze parochiegemeenschap H. Johannes XXIII proberen we de signalen van de heilige Geest te verstaan. Signalen die we voorzichtig proberen te vertalen in concrete daden. Dat is een uitdagende weg om te gaan. Een weg van vallen en opstaan en opnieuw proberen. We zijn op dit moment concreet in onze parochie H. Johannes XXIII aan de slag gegaan met een kleine groep vrijwilligers die nadenken over hoe deze weg van opbouw, van vitalisering, er uit zou kunnen zien. Ik bid en hoop dat de heilige Geest ons allemaal mag inspireren om de plannen tot vitalisering van onze parochie mee te helpen uitvoeren. De parochiegemeenschap omvat ons allemaal en laat ons allemaal uitroepen: ‘Maar dit kan toch niet!’ Laat het niet bij roepen blijven. Maar doe mee! Bouw mee op!
+
+            Diaken Ton.
+
+            ## VERSCHIJNEN VIERKLANK
+
+            De nieuwe Vierklank herfst-editie ligt weer voor u klaar. U kunt een exemplaar meenemen op verschillende plaatsen in onze parochie. De Vierklank ligt vanaf zondag 13 oktober in alle kerkportalen, in Udenhout ook bij de Eikelaar, de bibliotheek en De Peppel, in Berkel-Enschot bij de bibliotheek en Torentjeshoef.
+
+            ## AGENDA
+
+            St. Willibrorduskerk:
+            Maandag 14 oktober 20.00 uur: bijeenkomst Parochiebestuur.
+
+            St. Caeciliakerk:
+            Donderdag 17 oktober 20.00 uur: kersttocht.
+
+            ## VIERINGEN VOOR DE KOMENDE WEKEN
+
+            Zaterdag 12 oktober:
+            19.00 uur St. Lambertuskerk: Eucharistieviering mmv Seniorenkoor.
+            Celebrant: pastoor van Eijk.
+
+            Zondag 13 oktober: Patroonsfeest van de Heilige Paus Johannes XXIII.
+
+            10.00 uur St. Lambertuskerk: Géén viering!
+
+            11.00 uur St. Caeciliakerk: Eucharistieviering mmv de gemengde koren St. Caecilia en St. Willebrord.
+            Celebrant: pastoor van Eijk.
+
+            Intenties: Dré Verhagen (1e jrgt.) en Toos Verhagen- van Kasteren; Rietje Smeets-Walstra (jrgt.); Thijs van Oosterhout; Ad van Gorp (1e jrgt) en Marguerite van Gorp-van Heijst.
+            Na de viering bent u van harte welkom op de koffie.
+
+            Maandag 14 oktober:
+            19.00 uur St. Willibrorduskerk: Eucharistieviering.
+
+            Dinsdag 15 oktober:
+            09.00 uur St. Caeciliakerk: Eucharistieviering.
+            Na de viering bent u van harte welkom op de koffie.
+
+            Donderdag 17 oktober:
+            19.00 uur St. Willibrorduskerk: Eucharistieviering.
+
+            Vrijdag 18 oktober:
+            09.00 uur St. Willibrorduskerk: Eucharistieviering.
+
+            ## PROTESTANTSE GEMEENTE OISTERWIJK C.A.
+
+            Kerkgebouw: Kerkstraat 64 Oisterwijk
+            Predikant: Ds. Winanda de Vroe.
+            e-mail wdevroe@pkn-oisterwijk.nl
+            telefoon 013-5282175 (niet bereikbaar op woensdag)
+
+            Scriba: Marjan van Wijngaarden
+            e-mail scriba@pkn-oisterwijk.nl
+            telefoon 013-5332129
+
+            Ontmoetingscentrum De Voorhof, Kerkstraat 62
+
+            Voor gebruik:
+            Jan van Ekris
+            e-mail: janvanekris@home.nl
+            telefoon 013-5211057
+
+            Zondag 13 oktober: ds. Hester Radstake uit Alblasserdam,
+
+            10.15 uur
+
+            Op het leesrooster staat 2 Samuël 1:1-16. David is lang door Saul opgejaagd. Toch is hij verdrietig wanneer een bediende hem vertelt dat koning Saul dood is.
+
+            De collectes zijn voor Kerk in Actie: wereldvoedseldag en voor het werk van onze kerk.
+
+            Er is kindernevendienst en crèche.
+
+            ## Agenda
+
+            9 oktober 14.30: Gespreksgroep ‘Verhalen rond de Bijbel’
+
+            16 oktober 10.00: Gespreksgroep voor ouderen
+
+            Over alle activiteiten van onze kerk leest u meer op onze website: www.pkn-oisterwijk.nl
+
+  - name: Advertenties
+    blocks:
+      - type: markdown
+        version: 0.9.0
+        parameters:
+          content: |
+            ![Latenzo Fashion Lifestyle](https://api.appsemble.com/files/ea179931ca2b413490b4e92c434d4682)
+            ![Rabo Clubkas Campagne](https://api.appsemble.com/files/25464f4c58d14eada7954d13c108c7e1)
+  - name: Colofon
+    blocks:
+      - type: markdown
+        version: 0.9.0
+        parameters:
+          content: |
+            # Colofon
+            ## Informatie en advertentieverkoop:
+            Bosscheweg 8
+            5056 PP Berkel-Enschot
+            06 207 80000
+            info@schakel-nu.nl
+            www.schakel-nu.nl
+
+            ## Inleveren schakeltjes:
+            Particulier: Tot zaterdag 17:00 uur tegen betaling bij Geerts Schoenen, Eikenbosch 11.
+            Bedrijven: Voor maandagochtend 10:00 uur mailen naar info@schakel-nu.nl.
+            Betaling op rekening.
+
+            Verschijningsdatum: wekelijks op woensdag
+            Oplage: 5300
+            Druk: Elka Sikkers
+
+            ## Activiteitenkalender:
+            activiteitenkalender@schakel-nu.nl
+
+            ## Hoofdredactie:
+            Ingrid Roets
+            06 207 80000
+
+            ## Correspondenten:
+            Annebelle Nootenboom, Sabine Doevendans, Kelly Heijzelaar, Jan van der Straaten, Ellen van Slooten
+
+            ## Fotografen:
+            Bas Haans, Coen Brekelmans
+
+            ## Filmers:
+            Marcel Panis, Bart van Rijsewijk, André Oude Vrielink, Piet Denissen
+
+            ## Donateursrekening:
+            **IBAN: NL50RABO 0106847953**
+            _t.n.v. de nieuwe schakel_
+  - name: Neem contact met ons op
+    blocks:
+      - type: markdown
+        version: 0.9.0
+        parameters:
+          content: |
+            **De Schakel Berkel-Enschot Heukelom**
+
+            <a href="tel:06 207 800 00">
+              <span class="icon">
+                <i class="fas fa-phone"></i>
+              </span>
+              06 207 800 00
+            </a>
+            <br />
+            <a href="mailto:info@schakel-nu.nl">
+              <span class="icon">
+                <i class="fas fa-envelope"></i>
+              </span>
+              info@schakel-nu.nl
+            </a>
