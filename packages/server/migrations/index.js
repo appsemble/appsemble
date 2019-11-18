@@ -7,7 +7,7 @@ import blockParameters from './0.8.7-block-parameters';
 import nullablePath from './0.8.8-nullable-path';
 import appSettings from './0.8.11-app-settings';
 import postgresql from './0.9.0-postgresql';
-import templates from './0.9.1-app-templates';
+import templates from './0.9.4-app-templates';
 
 export default [
   initial,
