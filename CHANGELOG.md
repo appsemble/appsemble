@@ -7,6 +7,13 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- App: Add support for push notifications. Users can subscribe to notifications in the app’s
+  settings page. More strategies for receiving push notifications will be added in the future.
+- App: Add settings page
+- Server: Add support for broadcasting push notifications.
+
 ## [0.9.2] - 2019-11-14
 
 ### Fixed

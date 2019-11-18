@@ -39,6 +39,8 @@ describe('resource controller', () => {
         },
       },
       path: 'test-app',
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
       OrganizationId: orgId,
     };
   };
@@ -322,6 +324,8 @@ describe('resource controller', () => {
     const app = await App.create({
       definition: { name: 'Test App', defaultPage: 'Test Page' },
       path: 'test-app',
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
       OrganizationId: organizationId,
     });
     const response = await request(server).get(`/api/apps/${app.id}/resources/thisDoesNotExist`);

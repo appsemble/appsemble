@@ -1,0 +1,30 @@
+.root {
+  margin: 0 auto;
+  max-width: 960px;
+  padding: 10px;
+  width: 100%;
+}
+
+.checkbox {
+  margin: initial;
+
+  & + label {
+    white-space: nowrap;
+  }
+}
+
+.subscribeButton {
+  margin-right: 0.75rem;
+}
+
+.setting {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.setting :global(div.field) {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}

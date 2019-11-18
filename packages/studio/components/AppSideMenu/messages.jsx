@@ -4,4 +4,5 @@ export default defineMessages({
   editor: 'Editor',
   resources: 'Resources',
   settings: 'Settings',
+  notifications: 'Notifications',
 });

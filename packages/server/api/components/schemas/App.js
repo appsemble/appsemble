@@ -28,7 +28,10 @@ export default {
       `,
     },
     domain: {
-      oneOf: [{ type: 'string', maxLength: 0 }, { type: 'string', format: 'hostname' }],
+      oneOf: [
+        { type: 'string', maxLength: 0 },
+        { type: 'string', format: 'hostname' },
+      ],
       description: `The domain name on which this app should be served.
 
         If this is unspecified, the app will be served from the path on the domain of the server
@@ -66,6 +69,11 @@ export default {
 
             If this is omitted, a collapsable side navigation menu will be rendered on the left.
           `,
+        },
+        notifications: {
+          enum: ['opt-in', 'startup'],
+          type: 'string',
+          description: 'The strategy to use for apps to subscribe to push notifications.',
         },
         defaultPage: {
           $ref: '#/components/schemas/Page/oneOf/1/properties/name',

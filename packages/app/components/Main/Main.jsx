@@ -4,6 +4,7 @@ import React from 'react';
 import { Redirect, Route, Switch } from 'react-router-dom';
 
 import settings from '../../utils/settings';
+import AppSettings from '../AppSettings';
 import Page from '../Page';
 import styles from './Main.css';
 
@@ -41,6 +42,7 @@ export default function Main({ definition = null }) {
   return (
     <main className={styles.root}>
       <Switch>
+        <Route component={AppSettings} exact path="/Settings" sensitive />
         {routes}
         <Redirect to={defaultPath} />
       </Switch>
@@ -51,4 +53,7 @@ export default function Main({ definition = null }) {
 Main.propTypes = {
   // eslint-disable-next-line react/require-default-props
   definition: PropTypes.shape(),
+  permission: PropTypes.string.isRequired,
+  requestPermission: PropTypes.func.isRequired,
+  subscribe: PropTypes.func.isRequired,
 };

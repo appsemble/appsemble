@@ -84,5 +84,6 @@ export function FormattedMessage({ id, values }: FormattedMessageProps): VNode {
     return <Fragment>Untranslated message ID: {id}</Fragment>;
   }
   const formattedMessage = messages[id].formatHTMLMessage(values);
+  // eslint-disable-next-line react/jsx-no-useless-fragment
   return <Fragment>{formattedMessage}</Fragment>;
 }

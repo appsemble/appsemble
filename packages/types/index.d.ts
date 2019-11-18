@@ -555,6 +555,13 @@ export interface AppDefinition {
   navigation?: Navigation;
 
   /**
+   * The strategy to use for apps to subscribe to push notifications.
+   *
+   * If this is omitted, push notifications can not be sent.
+   */
+  notifications?: 'opt-in' | 'startup';
+
+  /**
    * The pages of the app.
    */
   pages: Page[];
