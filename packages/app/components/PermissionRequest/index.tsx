@@ -8,7 +8,4 @@ function mapStateToProps(state: State): Partial<PermissionRequestProps> {
   return { definition: state.app.definition, permission: state.serviceWorker.permission };
 }
 
-export default connect(
-  mapStateToProps,
-  { subscribe, requestPermission },
-)(PermissionRequest);
+export default connect(mapStateToProps, { subscribe, requestPermission })(PermissionRequest);

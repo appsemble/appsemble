@@ -16,8 +16,8 @@ import getDefaultIcon from '../utils/getDefaultIcon';
 const ajv = new Ajv();
 ajv.addFormat('fontawesome', () => true);
 
-async function checkBlocks(app, db) {
-  const blocks = getAppBlocks(app);
+async function checkBlocks(definition, db) {
+  const blocks = getAppBlocks(definition);
   const blockVersions = await db.models.BlockVersion.findAll({
     raw: true,
     where: {
@@ -93,31 +93,48 @@ export async function createApp(ctx) {
   const { db } = ctx;
   const { App } = db.models;
   const { user } = ctx.state;
-  const { app, style, sharedStyle } = ctx.request.body;
+  const {
+    definition,
+    OrganizationId,
+    domain,
+    private: isPrivate = true,
+    yaml,
+    style,
+    sharedStyle,
+  } = ctx.request.body;
 
   let result;
 
   try {
-    const path = normalize(app.definition.name);
+    const path = normalize(definition.name);
     const keys = webpush.generateVAPIDKeys();
 
     result = {
-      definition: app.definition,
-      OrganizationId: app.OrganizationId,
+      definition,
+      OrganizationId,
       style: validateStyle(style),
       sharedStyle: validateStyle(sharedStyle),
-      domain: app.domain || null,
-      private: Boolean(app.private),
-      yaml: jsYaml.safeDump(app.definition),
+      domain: domain || null,
+      private: Boolean(isPrivate),
+      yaml: yaml || jsYaml.safeDump(definition),
       vapidPublicKey: keys.publicKey,
       vapidPrivateKey: keys.privateKey,
     };
 
-    if (!user.organizations.some(organization => organization.id === app.OrganizationId)) {
+    if (yaml) {
+      try {
+        // The YAML should be valid YAML.
+        jsYaml.safeLoad(yaml);
+      } catch (exception) {
+        throw Boom.badRequest('Provided YAML was invalid.');
+      }
+    }
+
+    if (!user.organizations.some(organization => organization.id === OrganizationId)) {
       throw Boom.forbidden('User does not belong in this organization.');
     }
 
-    await checkBlocks(app, db);
+    await checkBlocks(definition, db);
 
     for (let i = 1; i < 11; i += 1) {
       const p = i === 1 ? path : `${path}-${i}`;
@@ -186,17 +203,17 @@ export async function updateApp(ctx) {
     user: { organizations },
   } = ctx.state;
   const { App } = db.models;
-  const { app, style, sharedStyle, yaml } = ctx.request.body;
+  const { definition, domain, path, style, sharedStyle, yaml, OrganizationId } = ctx.request.body;
 
   let result;
 
   try {
     result = {
-      definition: app.definition,
+      definition,
       style: validateStyle(style && style.contents),
       sharedStyle: validateStyle(sharedStyle && sharedStyle.contents),
-      domain: app.domain,
-      path: app.path || normalize(app.definition.name),
+      domain,
+      path: path || normalize(definition.name),
       yaml: yaml && yaml.toString('utf8'),
     };
 
@@ -210,14 +227,14 @@ export async function updateApp(ctx) {
       }
 
       // The YAML should be the same when converted to JSON.
-      if (!isEqual(appFromYaml, app.definition)) {
+      if (!isEqual(appFromYaml, definition)) {
         throw Boom.badRequest('Provided YAML was not equal to definition when converted.');
       }
     } else {
-      result.yaml = jsYaml.safeDump(app.definition);
+      result.yaml = jsYaml.safeDump(definition);
     }
 
-    await checkBlocks(app, db);
+    await checkBlocks(definition, db);
 
     const dbApp = await App.findOne({ where: { id: appId } });
 
@@ -225,13 +242,13 @@ export async function updateApp(ctx) {
       throw Boom.notFound('App not found');
     }
 
-    if (!organizations.some(organization => organization.id === app.OrganizationId)) {
+    if (!organizations.some(organization => organization.id === OrganizationId)) {
       throw Boom.forbidden("User does not belong in this App's organization.");
     }
 
     await dbApp.update(result, { where: { id: appId } });
 
-    ctx.body = getAppFromRecord({ ...app.dataValues, ...result });
+    ctx.body = getAppFromRecord({ ...dbApp.dataValues, ...result });
   } catch (error) {
     handleAppValidationError(error, result);
   }
@@ -244,30 +261,37 @@ export async function patchApp(ctx) {
     user: { organizations },
   } = ctx.state;
   const { App } = db.models;
-  const { app, style, sharedStyle, yaml, icon } = ctx.request.body;
+  const {
+    definition,
+    path,
+    domain,
+    private: isPrivate,
+    style,
+    sharedStyle,
+    yaml,
+    icon,
+  } = ctx.request.body;
 
   let result;
 
   try {
     result = {};
 
-    if (app) {
-      if (app.definition) {
-        result.definition = app.definition;
-        await checkBlocks(app, db);
-      }
+    if (definition) {
+      result.definition = definition;
+      await checkBlocks(definition, db);
+    }
 
-      if (app.path) {
-        result.path = app.path;
-      }
+    if (path) {
+      result.path = path;
+    }
 
-      if (app.private !== undefined) {
-        result.private = app.private;
-      }
+    if (isPrivate !== undefined) {
+      result.private = isPrivate;
+    }
 
-      if (app.domain !== undefined) {
-        result.domain = app.domain;
-      }
+    if (domain !== undefined) {
+      result.domain = domain;
     }
 
     if (style) {
@@ -292,13 +316,13 @@ export async function patchApp(ctx) {
       }
 
       // The YAML should be the same when converted to JSON.
-      if (!isEqual(appFromYaml, app.definition)) {
+      if (!isEqual(appFromYaml, definition)) {
         throw Boom.badRequest('Provided YAML was not equal to definition when converted.');
       }
 
       result.yaml = yaml.contents;
-    } else if (app && app.definition) {
-      result.yaml = jsYaml.safeDump(app.definition);
+    } else if (definition) {
+      result.yaml = jsYaml.safeDump(definition);
     }
 
     const dbApp = await App.findOne({ where: { id: appId } });

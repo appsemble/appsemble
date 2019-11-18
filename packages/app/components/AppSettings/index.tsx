@@ -14,8 +14,5 @@ function mapStateToProps(state: State): Partial<AppSettingsProps> {
 }
 
 export default injectIntl(
-  connect(
-    mapStateToProps,
-    { requestPermission, subscribe, push, unsubscribe },
-  )(AppSettings),
+  connect(mapStateToProps, { requestPermission, subscribe, push, unsubscribe })(AppSettings),
 );
