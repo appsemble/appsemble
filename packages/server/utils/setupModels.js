@@ -40,6 +40,7 @@ function importModels(db) {
   db.import('../models/AppBlockStyle');
   db.import('../models/OrganizationBlockStyle');
   db.import('../models/Meta');
+  db.import('../models/AppSubscription');
 }
 
 export default async function setupModels({
@@ -49,6 +50,7 @@ export default async function setupModels({
   password,
   database,
   uri,
+  ssl = false,
 }) {
   const options = {
     logging: logSQL,
@@ -66,6 +68,9 @@ export default async function setupModels({
         username,
         password,
         database,
+        dialectOptions: {
+          ssl,
+        },
       }),
     ];
   }

@@ -122,10 +122,10 @@ export default {
         },
       },
     },
-    put: {
+    patch: {
       tags: ['app'],
-      description: 'Update an existing app',
-      operationId: 'updateApp',
+      description: 'Update parts of an existing app',
+      operationId: 'patchApp',
       requestBody: {
         content: {
           'multipart/form-data': {
@@ -156,77 +156,6 @@ export default {
                   type: 'string',
                   format: 'binary',
                   description: 'The original YAML definition used to define the app.',
-                },
-                style: {
-                  type: 'string',
-                  format: 'binary',
-                  description: 'The custom style to apply to the core app.',
-                },
-                sharedStyle: {
-                  type: 'string',
-                  format: 'binary',
-                  description: 'The custom style to apply to all parts of app.',
-                },
-                icon: {
-                  type: 'string',
-                  format: 'binary',
-                  description: 'The app icon.',
-                },
-              },
-            },
-            encoding: {
-              style: { contentType: 'text/css' },
-              sharedStyle: { contentType: 'text/css' },
-              icon: {
-                contentType: 'image/png,image/jpg,image/svg+xml,image/tiff,image/webp',
-              },
-            },
-          },
-        },
-      },
-      responses: {
-        200: {
-          description: 'The updated app.',
-          $ref: '#/components/responses/app',
-        },
-      },
-      security: [{ apiUser: ['apps:write'] }],
-    },
-    patch: {
-      tags: ['app'],
-      description: 'Update parts of an existing app',
-      operationId: 'patchApp',
-      requestBody: {
-        content: {
-          'multipart/form-data': {
-            schema: {
-              properties: {
-                definition: {
-                  $ref: '#/components/schemas/App/properties/definition',
-                },
-                domain: {
-                  $ref: '#/components/schemas/App/properties/domain',
-                },
-                path: {
-                  $ref: '#/components/schemas/App/properties/path',
-                },
-                private: {
-                  $ref: '#/components/schemas/App/properties/private',
-                },
-                yaml: {
-                  type: 'string',
-                  format: 'binary',
-                  description: 'The original YAML definition used to define the app.',
-                },
-                style: {
-                  type: 'string',
-                  format: 'binary',
-                  description: 'The custom style to apply to the core app.',
-                },
-                sharedStyle: {
-                  type: 'string',
-                  format: 'binary',
-                  description: 'The custom style to apply to all parts of app.',
                 },
                 icon: {
                   type: 'string',
@@ -294,6 +223,82 @@ export default {
       responses: {
         204: {
           description: 'The icon has been deleted succesfully.',
+        },
+      },
+      security: [{ apiUser: ['apps:write'] }],
+    },
+  },
+  '/api/apps/{appId}/subscriptions': {
+    parameters: [{ $ref: '#/components/parameters/appId' }],
+    post: {
+      tags: ['app'],
+      description: 'Subscribe to an app’s push notifications',
+      operationId: 'addSubscription',
+      requestBody: {
+        content: {
+          'application/json': {
+            schema: {
+              type: 'object',
+              description: 'A serialized PushSubscription object',
+              required: ['endpoint', 'keys'],
+              properties: {
+                endpoint: {
+                  type: 'string',
+                },
+                expirationTime: {
+                  oneOf: [{ enum: [null] }, { type: 'number' }],
+                },
+                keys: {
+                  type: 'object',
+                  required: ['p256dh', 'auth'],
+                  properties: {
+                    p256dh: { type: 'string' },
+                    auth: { type: 'string' },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+      responses: {
+        204: {
+          description: 'The subscription has successfully been registered.',
+        },
+      },
+    },
+  },
+  '/api/apps/{appId}/broadcast': {
+    parameters: [{ $ref: '#/components/parameters/appId' }],
+    post: {
+      tags: ['app'],
+      description: 'Broadcast a push notification to every subscriber of the app.',
+      operationId: 'broadcast',
+      requestBody: {
+        content: {
+          'application/json': {
+            schema: {
+              type: 'object',
+              description: 'The data to include in the notification',
+              required: ['body'],
+              properties: {
+                title: {
+                  description:
+                    'The title of the notification. This defaults to the name of the app if not otherwise specified.',
+                  type: 'string',
+                },
+                body: {
+                  description: 'The content of the notification',
+                  type: 'string',
+                },
+              },
+            },
+          },
+        },
+      },
+      responses: {
+        204: {
+          description: 'The notification has been successfully broadcasted.',
         },
       },
       security: [{ apiUser: ['apps:write'] }],

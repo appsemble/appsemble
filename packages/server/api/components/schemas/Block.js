@@ -1,3 +1,5 @@
+import { partialNormalized } from '@appsemble/utils';
+
 export default {
   type: 'object',
   description: 'A block that is displayed on a page.',
@@ -8,7 +10,7 @@ export default {
     },
     type: {
       type: 'string',
-      pattern: /^(@[a-z]([a-z\d-]{0,30}[a-z\d])?\/)?[a-z]([a-z\d-]{0,30}[a-z\d])$/,
+      pattern: `^(@${partialNormalized.source}/)?${partialNormalized.source}$`,
       description: `The type of the block.
 
         A block type follows the format \`@organization/name\`. If the organization is _appsemble_,

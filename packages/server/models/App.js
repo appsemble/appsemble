@@ -19,6 +19,8 @@ export default sequelize => {
       style: { type: DataTypes.TEXT },
       sharedStyle: { type: DataTypes.TEXT },
       yaml: { type: DataTypes.TEXT },
+      vapidPublicKey: { type: DataTypes.STRING, allowNull: false },
+      vapidPrivateKey: { type: DataTypes.STRING, allowNull: false },
       OrganizationId: {
         type: DataTypes.STRING,
         unique: 'UniquePathIndex',

@@ -14,11 +14,8 @@ function mapStateToProps(state: State): Partial<AppContextProps> {
 }
 
 export default withRouter(
-  connect(
-    mapStateToProps,
-    {
-      getApp,
-      initAuth,
-    },
-  )(AppContext),
+  connect(mapStateToProps, {
+    getApp,
+    initAuth,
+  })(AppContext),
 );

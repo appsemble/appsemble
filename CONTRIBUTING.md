@@ -138,7 +138,7 @@ directory.
 
 ### `docs`
 
-The _docs_ directory contains documentation that will be rendered on [dev.appsemble.io].
+The _docs_ directory contains documentation that will be rendered on [appsemble.dev].
 
 ### `editor`
 
@@ -195,3 +195,4 @@ changes.
 [openapi]: https://swagger.io/specification/v2/
 [redux]: https://redux.js.org
 [stylelint]: https://stylelint.io
+[appsemble.dev]: https://appsemble.dev

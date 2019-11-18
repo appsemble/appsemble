@@ -71,6 +71,8 @@ describe('app controller', () => {
       {
         path: 'test-app',
         definition: { name: 'Test App', defaultPage: 'Test Page' },
+        vapidPublicKey: 'a',
+        vapidPrivateKey: 'b',
         OrganizationId: organizationId,
       },
       { raw: true },
@@ -79,6 +81,8 @@ describe('app controller', () => {
       {
         path: 'another-app',
         definition: { name: 'Another App', defaultPage: 'Another Page' },
+        vapidPublicKey: 'a',
+        vapidPrivateKey: 'b',
         OrganizationId: organizationId,
       },
       { raw: true },
@@ -122,6 +126,8 @@ defaultPage: Another Page
       {
         path: 'test-app',
         definition: { name: 'Test App', defaultPage: 'Test Page' },
+        vapidPublicKey: 'a',
+        vapidPrivateKey: 'b',
         OrganizationId: organizationId,
       },
       { raw: true },
@@ -131,6 +137,8 @@ defaultPage: Another Page
         path: 'another-app',
         private: true,
         definition: { name: 'Another App', defaultPage: 'Another Page' },
+        vapidPublicKey: 'a',
+        vapidPrivateKey: 'b',
         OrganizationId: organizationId,
       },
       { raw: true },
@@ -166,6 +174,8 @@ defaultPage: Test Page
       {
         path: 'test-app',
         definition: { name: 'Test App', defaultPage: 'Test Page' },
+        vapidPublicKey: 'a',
+        vapidPrivateKey: 'b',
         OrganizationId: organizationId,
       },
       { raw: true },
@@ -193,6 +203,8 @@ defaultPage: Test Page
       {
         path: 'test-app',
         definition: { name: 'Test App', defaultPage: 'Test Page' },
+        vapidPublicKey: 'a',
+        vapidPrivateKey: 'b',
         OrganizationId: organizationId,
       },
       { raw: true },
@@ -203,6 +215,8 @@ defaultPage: Test Page
       {
         path: 'test-app-b',
         definition: { name: 'Test App B', defaultPage: 'Test Page' },
+        vapidPublicKey: 'a',
+        vapidPrivateKey: 'b',
         OrganizationId: organizationB.id,
       },
       { raw: true },
@@ -567,6 +581,8 @@ pages:
           {
             path: index + 1 === 1 ? 'test-app' : `test-app-${index + 1}`,
             definition: { name: 'Test App', defaultPage: 'Test Page' },
+            vapidPublicKey: `a${index}`,
+            vapidPrivateKey: `b${index}`,
             OrganizationId: organizationId,
           },
           { raw: true },
@@ -760,6 +776,8 @@ pages:
       {
         definition: { name: 'Test App', defaultPage: 'Test Page' },
         path: 'test-app',
+        vapidPublicKey: 'a',
+        vapidPrivateKey: 'b',
         OrganizationId: organizationId,
       },
       { raw: true },
@@ -818,6 +836,8 @@ pages:
       {
         path: 'test-app',
         definition: { name: 'Test App', defaultPage: 'Test Page' },
+        vapidPublicKey: 'a',
+        vapidPrivateKey: 'b',
         OrganizationId: organizationId,
       },
       { raw: true },
@@ -863,6 +883,8 @@ pages:
       {
         path: 'test-app',
         definition: { name: 'Test App', defaultPage: 'Test Page' },
+        vapidPublicKey: 'a',
+        vapidPrivateKey: 'b',
         OrganizationId: organizationId,
       },
       { raw: true },
@@ -908,6 +930,8 @@ pages:
       {
         path: 'test-app',
         definition: { name: 'Test App', defaultPage: 'Test Page' },
+        vapidPublicKey: 'a',
+        vapidPrivateKey: 'b',
         OrganizationId: organizationId,
       },
       { raw: true },
@@ -949,6 +973,8 @@ pages:
       {
         path: 'foo',
         definition: { name: 'Test App', defaultPage: 'Test Page' },
+        vapidPublicKey: 'a',
+        vapidPrivateKey: 'b',
         OrganizationId: organizationId,
       },
       { raw: true },
@@ -968,6 +994,8 @@ pages:
       {
         path: 'foo',
         definition: { name: 'Test App', defaultPage: 'Test Page' },
+        vapidPublicKey: 'a',
+        vapidPrivateKey: 'b',
         OrganizationId: organizationId,
       },
       { raw: true },
@@ -987,6 +1015,8 @@ pages:
       {
         path: 'test-app',
         definition: { name: 'Test App', defaultPage: 'Test Page' },
+        vapidPublicKey: 'a',
+        vapidPrivateKey: 'b',
         OrganizationId: organizationId,
       },
       { raw: true },
@@ -1031,6 +1061,8 @@ pages:
       {
         path: 'test-app',
         definition: { name: 'Test App', defaultPage: 'Test Page' },
+        vapidPublicKey: 'a',
+        vapidPrivateKey: 'b',
         OrganizationId: newOrganization.id,
       },
       { raw: true },
@@ -1074,35 +1106,16 @@ pages:
       {
         path: 'foo',
         definition: { name: 'Test App', defaultPage: 'Test Page' },
+        vapidPublicKey: 'a',
+        vapidPrivateKey: 'b',
         OrganizationId: organizationId,
       },
       { raw: true },
     );
     const response = await request(server)
-      .put(`/api/apps/${appA.id}`)
+      .patch(`/api/apps/${appA.id}`)
       .set('Authorization', token)
       .field('definition', JSON.stringify({ name: 'Foobar' }));
-
-    expect(response.status).toBe(400);
-  });
-
-  it('should not allow an upload without an app when updating an app', async () => {
-    const app = await App.create(
-      {
-        path: 'test-app',
-        definition: { name: 'Test App', defaultPage: 'Test Page' },
-        OrganizationId: organizationId,
-      },
-      { raw: true },
-    );
-
-    const response = await request(server)
-      .put(`/api/apps/${app.id}`)
-      .set('Authorization', token)
-      .attach('style', Buffer.from('body { color: red; }'), {
-        contentType: 'text/css',
-        filename: 'style.css',
-      });
 
     expect(response.status).toBe(400);
   });
@@ -1154,6 +1167,8 @@ pages:
       {
         path: 'test-app',
         definition: { name: 'Test App', defaultPage: 'Test Page' },
+        vapidPublicKey: 'a',
+        vapidPrivateKey: 'b',
         OrganizationId: organization.id,
       },
       { raw: true },
@@ -1171,6 +1186,8 @@ pages:
       {
         path: 'bar',
         definition: { name: 'Test App', defaultPage: 'Test Page' },
+        vapidPublicKey: 'a',
+        vapidPrivateKey: 'b',
         OrganizationId: organizationId,
       },
       { raw: true },
@@ -1216,13 +1233,15 @@ pages:
       {
         path: 'bar',
         definition: { name: 'Test App', defaultPage: 'Test Page' },
+        vapidPublicKey: 'a',
+        vapidPrivateKey: 'b',
         OrganizationId: organizationId,
       },
       { raw: true },
     );
 
     const responseA = await request(server)
-      .put(`/api/apps/${app.id}`)
+      .patch(`/api/apps/${app.id}`)
       .set('Authorization', token)
       .field(
         'definition',
@@ -1244,7 +1263,7 @@ pages:
       });
 
     const responseB = await request(server)
-      .put(`/api/apps/${app.id}`)
+      .patch(`/api/apps/${app.id}`)
       .set('Authorization', token)
       .field(
         'definition',
@@ -1274,13 +1293,15 @@ pages:
       {
         path: 'bar',
         definition: { name: 'Test App', defaultPage: 'Test Page' },
+        vapidPublicKey: 'a',
+        vapidPrivateKey: 'b',
         OrganizationId: organizationId,
       },
       { raw: true },
     );
 
     const responseA = await request(server)
-      .put(`/api/apps/${app.id}`)
+      .patch(`/api/apps/${app.id}`)
       .set('Authorization', token)
       .field(
         'definition',
@@ -1302,7 +1323,7 @@ pages:
       });
 
     const responseB = await request(server)
-      .put(`/api/apps/${app.id}`)
+      .patch(`/api/apps/${app.id}`)
       .set('Authorization', token)
       .field(
         'definition',
@@ -1337,6 +1358,8 @@ pages:
       {
         path: 'bar',
         definition: { name: 'Test App', defaultPage: 'Test Page' },
+        vapidPublicKey: 'a',
+        vapidPrivateKey: 'b',
         OrganizationId: organizationId,
       },
       { raw: true },
@@ -1377,6 +1400,8 @@ pages:
       path: 'b',
       private: false,
       definition: { name: 'Test App', defaultPage: 'Test Page' },
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
       OrganizationId: organizationId,
     });
 
@@ -1418,6 +1443,8 @@ pages:
       {
         path: 'bar',
         definition: { name: 'Test App', defaultPage: 'Test Page' },
+        vapidPublicKey: 'a',
+        vapidPrivateKey: 'b',
         OrganizationId: organizationId,
       },
       { raw: true },
@@ -1443,6 +1470,8 @@ pages:
       {
         path: 'bar',
         definition: { name: 'Test App', defaultPage: 'Test Page' },
+        vapidPublicKey: 'a',
+        vapidPrivateKey: 'b',
         OrganizationId: organizationId,
       },
       { raw: true },
@@ -1459,7 +1488,7 @@ pages:
 
   it('should not allow to update an app using non-existent blocks', async () => {
     const { status } = await request(server)
-      .put('/api/apps/1')
+      .patch('/api/apps/1')
       .set('Authorization', token)
       .field(
         'definition',

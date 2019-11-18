@@ -100,5 +100,13 @@ export function setLogLevel(level = DEFAULT_LEVEL) {
  * @param {number} argv.verbose The verbosity count.
  */
 export function configureLogger({ quiet = 0, verbose = 0 }) {
+  process.on('warning', warning => {
+    logger.warn(warning);
+  });
+
+  process.on('unhandledRejection', error => {
+    logger.error(error);
+  });
+
   setLogLevel(DEFAULT_LEVEL + verbose - quiet);
 }

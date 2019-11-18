@@ -8,15 +8,13 @@ export interface User {}
 declare global {
   interface Window {
     settings: {
+      vapidPublicKey: string;
       id: number;
       organizationId: string;
       definition: AppDefinition;
       sentryDsn: string;
     };
   }
-}
-export interface ActionDefinition<T extends Action['type']> {
-  type: T;
 }
 
 export interface ShowDialogParams {

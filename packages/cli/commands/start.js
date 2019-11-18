@@ -27,6 +27,10 @@ export function builder(yargs) {
       type: 'number',
       default: 5432,
     })
+    .option('database-ssl', {
+      desc: 'Use SSL to connect to the database.',
+      type: 'boolean',
+    })
     .option('database-name', {
       desc: 'The name of the database to connect to.',
       implies: ['database-user', 'database-password'],
