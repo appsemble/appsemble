@@ -76,12 +76,20 @@ async function traverseAppDirectory(path, formData) {
  * @param {string} params.organizationId The ID of the organization to upload for.
  * @param {string} params.path The path in which the App YAML is located.
  * @param {boolean} params.private Whether the App should be marked as private.
+ * @param {boolean} params.template Whether the App should be marked as a template.
  */
-export default async function createApp({ organizationId, path, private: isPrivate, remote }) {
+export default async function createApp({
+  organizationId,
+  path,
+  remote,
+  private: isPrivate,
+  template,
+}) {
   try {
     const file = await fs.stat(path);
     const formData = new FormData();
     formData.append('private', String(isPrivate));
+    formData.append('template', String(template));
     formData.append('OrganizationId', organizationId);
 
     if (file.isFile()) {

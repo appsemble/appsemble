@@ -22,6 +22,9 @@ export default {
                 private: {
                   $ref: '#/components/schemas/App/properties/private',
                 },
+                template: {
+                  $ref: '#/components/schemas/App/properties/template',
+                },
                 yaml: {
                   type: 'string',
                   format: 'binary',
@@ -151,6 +154,9 @@ export default {
                 },
                 private: {
                   $ref: '#/components/schemas/App/properties/private',
+                },
+                template: {
+                  $ref: '#/components/schemas/App/properties/template',
                 },
                 yaml: {
                   type: 'string',

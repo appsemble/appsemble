@@ -20,12 +20,17 @@ export function builder(yargs) {
       describe: 'Whether the App should be marked as private.',
       default: true,
       type: 'boolean',
+    })
+    .option('template', {
+      describe: 'Whether the App should be marked as a template.',
+      default: false,
+      type: 'boolean',
     });
 }
 
-export async function handler({ organization, path, private: isPrivate, remote }) {
+export async function handler({ organization, path, private: isPrivate, remote, template }) {
   await getToken(remote);
   const organizationId = organization.startsWith('@') ? organization.slice(1) : organization;
   logger.info(`Creating App for @${organizationId}`);
-  await createApp({ organizationId, path, private: isPrivate, remote });
+  await createApp({ organizationId, path, private: isPrivate, remote, template });
 }

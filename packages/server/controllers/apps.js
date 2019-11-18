@@ -98,6 +98,7 @@ export async function createApp(ctx) {
     OrganizationId,
     domain,
     private: isPrivate = true,
+    template = false,
     yaml,
     icon,
     style,
@@ -117,6 +118,7 @@ export async function createApp(ctx) {
       sharedStyle: validateStyle(sharedStyle),
       domain: domain || null,
       private: Boolean(isPrivate),
+      template: Boolean(template),
       yaml: yaml || jsYaml.safeDump(definition),
       icon,
       vapidPublicKey: keys.publicKey,
@@ -268,6 +270,7 @@ export async function patchApp(ctx) {
     path,
     domain,
     private: isPrivate,
+    template,
     style,
     sharedStyle,
     yaml,
@@ -290,6 +293,10 @@ export async function patchApp(ctx) {
 
     if (isPrivate !== undefined) {
       result.private = isPrivate;
+    }
+
+    if (template !== undefined) {
+      result.template = template;
     }
 
     if (domain !== undefined) {
