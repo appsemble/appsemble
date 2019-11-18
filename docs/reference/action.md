@@ -21,11 +21,11 @@ used as the `type`.
 
 ## `link`
 
-The link action can be used to redirect the user to other pages.
+The link action can be used to redirect the user to other pages or absolute URLs.
 
-| Parameter | Required | Description                                                                |
-| --------- | -------- | -------------------------------------------------------------------------- |
-| to        | true     | The name of the page to link to. Subpages can be referred to using arrays. |
+| Parameter | Required | Description                                                                                                                                                                         |
+| --------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| to        | true     | The name of the page to link to. Subpages can be referred to using arrays. If this matches with an absolute URL, link will open this instead of matching it with a page or subpage. |
 
 ### Example
 
@@ -42,6 +42,11 @@ to:
 
 # Alternatively
 to: [Example Page, Sub Page]
+```
+
+```yaml
+type: link
+to: http://example.com
 ```
 
 ## `log`
