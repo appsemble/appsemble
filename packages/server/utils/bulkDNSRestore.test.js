@@ -22,6 +22,8 @@ it('should add DNS settings for all apps', async () => {
       await db.models.App.create({
         domain: `app${index}.example.com`,
         definition: {},
+        vapidPublicKey: 'a',
+        vapidPrivateKey: 'b',
         OrganizationId: 'test',
       });
     }),
@@ -40,6 +42,8 @@ it('should skip the last bulk of apps if it is empty', async () => {
       await db.models.App.create({
         domain: `app${index}.example.com`,
         definition: {},
+        vapidPublicKey: `a${index}`,
+        vapidPrivateKey: `b${index}`,
         OrganizationId: 'test',
       });
     }),

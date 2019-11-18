@@ -7,6 +7,7 @@ import AppSettings from '../AppSettings';
 import AppSideMenu from '../AppSideMenu';
 import CMS from '../CMS';
 import Editor from '../Editor';
+import Notifications from '../Notifications';
 import styles from './AppContext.css';
 
 /**
@@ -41,6 +42,7 @@ export default class AppContext extends React.Component {
             <Route component={Editor} exact path={`${match.path}/edit`} />
             <Route component={CMS} path={`${match.path}/resources`} />
             <Route component={AppSettings} path={`${match.path}/settings`} />
+            <Route component={Notifications} path={`${match.path}/notifications`} />
             <Redirect to={`${match.path}/edit`} />
           </Switch>
         </div>

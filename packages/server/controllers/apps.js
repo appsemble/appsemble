@@ -1,3 +1,4 @@
+import { logger } from '@appsemble/node-utils';
 import { normalize, StyleValidationError, validateStyle } from '@appsemble/utils';
 import Boom from '@hapi/boom';
 import Ajv from 'ajv';
@@ -6,6 +7,7 @@ import jsYaml from 'js-yaml';
 import { isEqual, uniqWith } from 'lodash';
 import { Op, UniqueConstraintError } from 'sequelize';
 import sharp from 'sharp';
+import * as webpush from 'web-push';
 
 import getAppBlocks from '../utils/getAppBlocks';
 import getAppFromRecord from '../utils/getAppFromRecord';
@@ -105,6 +107,7 @@ export async function createApp(ctx) {
 
   try {
     const path = normalize(definition.name);
+    const keys = webpush.generateVAPIDKeys();
 
     result = {
       definition,
@@ -114,6 +117,8 @@ export async function createApp(ctx) {
       domain: domain || null,
       private: Boolean(isPrivate),
       yaml: yaml || jsYaml.safeDump(definition),
+      vapidPublicKey: keys.publicKey,
+      vapidPrivateKey: keys.privateKey,
     };
 
     if (yaml) {
@@ -146,7 +151,7 @@ export async function createApp(ctx) {
       result.path = `${path}-${crypto.randomBytes(5).toString('hex')}`;
     }
 
-    const record = await App.create(result, { raw: true });
+    const record = await App.create(result);
 
     ctx.body = getAppFromRecord(record);
     ctx.status = 201;
@@ -418,6 +423,87 @@ export async function deleteAppIcon(ctx) {
   await app.update({ icon: null });
 
   ctx.status = 204;
+}
+
+export async function addSubscription(ctx) {
+  const { appId } = ctx.params;
+  const { App, AppSubscription } = ctx.db.models;
+  const { user } = ctx.state;
+  const { endpoint, keys } = ctx.request.body;
+
+  const app = await App.findByPk(appId, { include: [AppSubscription] });
+
+  if (!app) {
+    throw Boom.notFound('App not found');
+  }
+
+  await app.createAppSubscription({
+    endpoint,
+    p256dh: keys.p256dh,
+    auth: keys.auth,
+    UserId: user ? user.id : null,
+  });
+}
+
+export async function broadcast(ctx) {
+  const { appId } = ctx.params;
+  const { App, AppSubscription } = ctx.db.models;
+  const { user } = ctx.state;
+  const { title, body } = ctx.request.body;
+
+  const app = await App.findByPk(appId, {
+    include: [AppSubscription],
+  });
+
+  if (!app) {
+    throw Boom.notFound('App not found');
+  }
+
+  if (!user.organizations.some(organization => organization.id === app.OrganizationId)) {
+    throw Boom.forbidden('User does not belong in this app’s organization.');
+  }
+
+  const { vapidPublicKey: publicKey, vapidPrivateKey: privateKey } = app;
+
+  // XXX: Replace with paginated requests
+  logger.verbose(`Sending ${app.AppSubscriptions.length} notifications for app ${app.id}`);
+  app.AppSubscriptions.forEach(async subscription => {
+    try {
+      logger.verbose(
+        `Sending push notification based on subscription ${subscription.id} for app ${app.id}`,
+      );
+      await webpush.sendNotification(
+        {
+          endpoint: subscription.endpoint,
+          keys: { auth: subscription.auth, p256dh: subscription.p256dh },
+        },
+        JSON.stringify({
+          title,
+          body,
+          icon: `${ctx.argv.host}/${app.id}/icon-96.png`,
+          badge: `${ctx.argv.host}/${app.id}/icon-96.png`,
+          timestamp: Date.now(),
+        }),
+        {
+          vapidDetails: {
+            // XXX: Make this configurable
+            subject: 'mailto: support@appsemble.com',
+            publicKey,
+            privateKey,
+          },
+        },
+      );
+    } catch (error) {
+      if (!(error instanceof webpush.WebPushError && error.statusCode === 410)) {
+        throw error;
+      }
+
+      logger.verbose(
+        `Removing push notification subscription ${subscription.id} for app ${app.id}`,
+      );
+      await subscription.destroy();
+    }
+  });
 }
 
 export async function getAppCoreStyle(ctx) {

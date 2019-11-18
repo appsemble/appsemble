@@ -8,6 +8,7 @@ export interface User {}
 declare global {
   interface Window {
     settings: {
+      vapidPublicKey: string;
       id: number;
       organizationId: string;
       definition: AppDefinition;

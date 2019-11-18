@@ -217,6 +217,82 @@ export default {
       security: [{ apiUser: ['apps:write'] }],
     },
   },
+  '/api/apps/{appId}/subscriptions': {
+    parameters: [{ $ref: '#/components/parameters/appId' }],
+    post: {
+      tags: ['app'],
+      description: 'Subscribe to an app’s push notifications',
+      operationId: 'addSubscription',
+      requestBody: {
+        content: {
+          'application/json': {
+            schema: {
+              type: 'object',
+              description: 'A serialized PushSubscription object',
+              required: ['endpoint', 'keys'],
+              properties: {
+                endpoint: {
+                  type: 'string',
+                },
+                expirationTime: {
+                  oneOf: [{ enum: [null] }, { type: 'number' }],
+                },
+                keys: {
+                  type: 'object',
+                  required: ['p256dh', 'auth'],
+                  properties: {
+                    p256dh: { type: 'string' },
+                    auth: { type: 'string' },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+      responses: {
+        204: {
+          description: 'The subscription has successfully been registered.',
+        },
+      },
+    },
+  },
+  '/api/apps/{appId}/broadcast': {
+    parameters: [{ $ref: '#/components/parameters/appId' }],
+    post: {
+      tags: ['app'],
+      description: 'Broadcast a push notification to every subscriber of the app.',
+      operationId: 'broadcast',
+      requestBody: {
+        content: {
+          'application/json': {
+            schema: {
+              type: 'object',
+              description: 'The data to include in the notification',
+              required: ['body'],
+              properties: {
+                title: {
+                  description:
+                    'The title of the notification. This defaults to the name of the app if not otherwise specified.',
+                  type: 'string',
+                },
+                body: {
+                  description: 'The content of the notification',
+                  type: 'string',
+                },
+              },
+            },
+          },
+        },
+      },
+      responses: {
+        204: {
+          description: 'The notification has been successfully broadcasted.',
+        },
+      },
+      security: [{ apiUser: ['apps:write'] }],
+    },
+  },
   '/api/apps/{appId}/style/core': {
     parameters: [{ $ref: '#/components/parameters/appId' }],
     get: {

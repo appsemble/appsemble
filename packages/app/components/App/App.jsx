@@ -8,6 +8,7 @@ import BottomNavigation from '../BottomNavigation';
 import ErrorFallback from '../ErrorFallback';
 import Main from '../Main';
 import Message from '../Message';
+import PermissionRequest from '../PermissionRequest';
 import SideNavigation from '../SideNavigation';
 
 const [base] = document.head.getElementsByTagName('base');
@@ -23,6 +24,7 @@ export default function App() {
       <ErrorHandler fallback={ErrorFallback}>
         <BrowserRouter basename={base && new URL(base.href).pathname}>
           <AppContext>
+            <PermissionRequest />
             <Main />
             <SideNavigation />
             <BottomNavigation />

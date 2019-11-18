@@ -70,6 +70,11 @@ export default {
             If this is omitted, a collapsable side navigation menu will be rendered on the left.
           `,
         },
+        notifications: {
+          enum: ['opt-in', 'startup'],
+          type: 'string',
+          description: 'The strategy to use for apps to subscribe to push notifications.',
+        },
         defaultPage: {
           $ref: '#/components/schemas/Page/oneOf/1/properties/name',
           description: `The name of the page that should be displayed when the app is initially loaded.

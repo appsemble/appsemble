@@ -46,7 +46,7 @@ to: [Example Page, Sub Page]
 
 ```yaml
 type: link
-to: http://example.com
+to: https://example.com
 ```
 
 ## `log`

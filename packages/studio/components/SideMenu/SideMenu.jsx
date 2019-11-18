@@ -35,7 +35,7 @@ export default class SideMenu extends React.Component {
             onClick={toggleCollapse}
             type="button"
           >
-            <Icon icon={isCollapsed ? 'angle-double-right' : 'angle-double-right'} size="medium" />
+            <Icon icon={isCollapsed ? 'angle-double-right' : 'angle-double-left'} size="medium" />
             <span className={classNames({ 'is-hidden': isCollapsed })}>
               <FormattedMessage {...messages.collapse} />
             </span>
