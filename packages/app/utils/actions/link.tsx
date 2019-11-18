@@ -49,11 +49,11 @@ export default function link({
       const target = href(data);
 
       if (urlRegex.test(target)) {
-        window.open(data, '_blank', 'noopener,noreferrer');
+        window.open(target, '_blank', 'noopener,noreferrer');
         return;
       }
 
-      history.push(href(data), data);
+      history.push(target, data);
     },
     href(args: any = {}) {
       return href(remapData(remap, args));
