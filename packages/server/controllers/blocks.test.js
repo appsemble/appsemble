@@ -11,20 +11,19 @@ import truncate from '../utils/test/truncate';
 describe('blocks', () => {
   let db;
   let server;
-  let token;
   let instance;
   let headers;
 
   beforeAll(async () => {
     db = await testSchema('blocks');
 
-    server = await createServer({ db });
+    server = await createServer({ db, argv: { host: window.location, secret: 'test' } });
   }, 10e3);
 
   beforeEach(async () => {
     await truncate(db);
-    token = await testToken(server, db, 'blocks:write');
-    headers = { headers: { Authorization: token } };
+    const { clientToken } = await testToken(db, 'blocks:write');
+    headers = { headers: { authorization: `Bearer ${clientToken}` } };
     instance = await createInstance(server);
   });
 

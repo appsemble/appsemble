@@ -1,4 +1,3 @@
-import jwt from 'jsonwebtoken';
 import request from 'supertest';
 
 import createServer from '../utils/createServer';
@@ -13,15 +12,17 @@ describe('organization controller', () => {
   let OrganizationInvite;
   let User;
   let EmailAuthorization;
+  let token;
+  let clientToken;
   let db;
   let server;
-  let token;
   let organizationId;
+  let user;
 
   beforeAll(async () => {
     db = await testSchema('organizations');
 
-    server = await createServer({ db });
+    server = await createServer({ db, argv: { host: window.location, secret: 'test' } });
     ({
       BlockDefinition,
       EmailAuthorization,
@@ -34,13 +35,14 @@ describe('organization controller', () => {
 
   beforeEach(async () => {
     await truncate(db);
-    organizationId = 'testorganization';
-    token = await testToken(
-      server,
+    ({ clientToken, authorization: token, user } = await testToken(
       db,
-      'organizations:read organizations:style organizations:write',
-      organizationId,
-    );
+      'organizations:styles:write',
+    ));
+    ({ id: organizationId } = await user.createOrganization({
+      id: 'testorganization',
+      name: 'Test Organization',
+    }));
   });
 
   afterAll(async () => {
@@ -247,10 +249,9 @@ describe('organization controller', () => {
   it('should leave the organization if there are other members', async () => {
     const organization = await Organization.findByPk('testorganization');
     await organization.createUser();
-    const userId = jwt.decode(token.substring(7)).user.id;
 
     const { status } = await request(server)
-      .delete(`/api/organizations/testorganization/members/${userId}`)
+      .delete(`/api/organizations/testorganization/members/${user.id}`)
       .set('Authorization', token);
 
     expect(status).toBe(204);
@@ -268,10 +269,8 @@ describe('organization controller', () => {
   });
 
   it('should not remove the only remaining member in an organization', async () => {
-    const userId = jwt.decode(token.substring(7)).user.id;
-
     const response = await request(server)
-      .delete(`/api/organizations/testorganization/members/${userId}`)
+      .delete(`/api/organizations/testorganization/members/${user.id}`)
       .set('Authorization', token);
 
     expect(response.status).toStrictEqual(406);
@@ -295,7 +294,7 @@ describe('organization controller', () => {
   it('should validate and update shared stylesheets when uploading shared stylesheets for an organization', async () => {
     const responseA = await request(server)
       .post(`/api/organizations/${organizationId}/style/shared`)
-      .set('Authorization', token)
+      .set('Authorization', `Bearer ${clientToken}`)
       .attach('style', Buffer.from('body { color: red; }'), {
         contentType: 'text/css',
         filename: 'style.css',
@@ -314,7 +313,7 @@ describe('organization controller', () => {
   it('should set shared stylesheets to null when uploading empty stylesheets for an organization', async () => {
     const responseA = await request(server)
       .post(`/api/organizations/${organizationId}/style/core`)
-      .set('Authorization', token)
+      .set('Authorization', `Bearer ${clientToken}`)
       .attach('style', Buffer.from('body { color: blue; }'), {
         contentType: 'text/css',
         filename: 'style.css',
@@ -322,7 +321,7 @@ describe('organization controller', () => {
 
     const responseB = await request(server)
       .post(`/api/organizations/${organizationId}/style/shared`)
-      .set('Authorization', token)
+      .set('Authorization', `Bearer ${clientToken}`)
       .attach('style', Buffer.from(' '), {
         contentType: 'text/css',
         filename: 'style.css',
@@ -338,7 +337,7 @@ describe('organization controller', () => {
   it('should not allow invalid stylesheets when uploading shared stylesheets to an organization', async () => {
     const response = await request(server)
       .post(`/api/organizations/${organizationId}/style/shared`)
-      .set('Authorization', token)
+      .set('Authorization', `Bearer ${clientToken}`)
       .attach('style', Buffer.from('invalidCss'));
     expect(response.body).toStrictEqual({
       statusCode: 400,
@@ -358,7 +357,7 @@ describe('organization controller', () => {
   it('should not allow uploading shared stylesheets to non-existant organizations', async () => {
     const response = await request(server)
       .post('/api/organizations/test/style/shared')
-      .set('Authorization', token)
+      .set('Authorization', `Bearer ${clientToken}`)
       .attach('style', Buffer.from('body { color: red; }'), {
         contentType: 'text/css',
         filename: 'style.css',
@@ -374,7 +373,7 @@ describe('organization controller', () => {
   it('should validate and update core stylesheets when uploading core stylesheets for an organization', async () => {
     const responseA = await request(server)
       .post(`/api/organizations/${organizationId}/style/core`)
-      .set('Authorization', token)
+      .set('Authorization', `Bearer ${clientToken}`)
       .attach('style', Buffer.from('body { color: blue; }'), {
         contentType: 'text/css',
         filename: 'style.css',
@@ -390,7 +389,7 @@ describe('organization controller', () => {
   it('should set core stylesheets to null when uploading empty stylesheets for an organization', async () => {
     const responseA = await request(server)
       .post(`/api/organizations/${organizationId}/style/core`)
-      .set('Authorization', token)
+      .set('Authorization', `Bearer ${clientToken}`)
       .attach('style', Buffer.from('body { color: blue; }'), {
         contentType: 'text/css',
         filename: 'style.css',
@@ -398,7 +397,7 @@ describe('organization controller', () => {
 
     const responseB = await request(server)
       .post(`/api/organizations/${organizationId}/style/core`)
-      .set('Authorization', token)
+      .set('Authorization', `Bearer ${clientToken}`)
       .attach('style', Buffer.from(' '), {
         contentType: 'text/css',
         filename: 'style.css',
@@ -414,7 +413,7 @@ describe('organization controller', () => {
   it('should not allow invalid stylesheets when uploading core stylesheets to an organization', async () => {
     const response = await request(server)
       .post(`/api/organizations/${organizationId}/style/core`)
-      .set('Authorization', token)
+      .set('Authorization', `Bearer ${clientToken}`)
       .attach('style', Buffer.from('invalidCss'));
     expect(response.body).toStrictEqual({
       statusCode: 400,
@@ -426,7 +425,7 @@ describe('organization controller', () => {
   it('should not allow uploading core stylesheets to non-existant organizations', async () => {
     const response = await request(server)
       .post('/api/organizations/fake/style/core')
-      .set('Authorization', token)
+      .set('Authorization', `Bearer ${clientToken}`)
       .attach('style', Buffer.from('body { color: red; }'), {
         contentType: 'text/css',
         filename: 'style.css',
@@ -455,7 +454,7 @@ describe('organization controller', () => {
 
     const responseA = await request(server)
       .post(`/api/organizations/${organizationId}/style/block/@appsemble/testblock`)
-      .set('Authorization', token)
+      .set('Authorization', `Bearer ${clientToken}`)
       .attach('style', Buffer.from('body { color: blue; }'), {
         contentType: 'text/css',
         filename: 'style.css',
@@ -478,7 +477,7 @@ describe('organization controller', () => {
 
     const responseA = await request(server)
       .post(`/api/organizations/${organizationId}/style/block/@appsemble/testblock`)
-      .set('Authorization', token)
+      .set('Authorization', `Bearer ${clientToken}`)
       .attach('style', Buffer.from('body { color: blue; }'), {
         contentType: 'text/css',
         filename: 'style.css',
@@ -486,7 +485,7 @@ describe('organization controller', () => {
 
     const responseB = await request(server)
       .post(`/api/organizations/${organizationId}/style/block/@appsemble/testblock`)
-      .set('Authorization', token)
+      .set('Authorization', `Bearer ${clientToken}`)
       .attach('style', Buffer.from(' '), {
         contentType: 'text/css',
         filename: 'style.css',
@@ -509,7 +508,7 @@ describe('organization controller', () => {
 
     const response = await request(server)
       .post(`/api/organizations/${organizationId}/style/block/@appsemble/testblock`)
-      .set('Authorization', token)
+      .set('Authorization', `Bearer ${clientToken}`)
       .attach('style', Buffer.from('invalidCss'));
     expect(response.body).toStrictEqual({
       statusCode: 400,
@@ -526,7 +525,7 @@ describe('organization controller', () => {
 
     const response = await request(server)
       .post('/api/organizations/fake/style/block/@appsemble/testblock')
-      .set('Authorization', token)
+      .set('Authorization', `Bearer ${clientToken}`)
       .attach('style', Buffer.from('body { color: red; }'), {
         contentType: 'text/css',
         filename: 'style.css',
@@ -542,7 +541,7 @@ describe('organization controller', () => {
   it('should not allow uploading block stylesheets for non-existant blocks', async () => {
     const response = await request(server)
       .post(`/api/organizations/${organizationId}/style/block/@appsemble/doesntexist`)
-      .set('Authorization', token)
+      .set('Authorization', `Bearer ${clientToken}`)
       .attach('style', Buffer.from('body { color: red; }'), {
         contentType: 'text/css',
         filename: 'style.css',

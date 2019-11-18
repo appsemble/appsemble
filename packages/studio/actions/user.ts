@@ -129,9 +129,9 @@ async function setupAuth(
   url: string,
   db: IDBPDatabase,
   dispatch: UserDispatch,
-): Promise<User & { scope: string }> {
-  const payload = jwtDecode<JwtPayload>(accessToken);
-  const { exp, scopes, sub } = payload;
+) {
+  const payload: JwtPayload = jwtDecode(accessToken);
+  const { exp, sub } = payload;
 
   const timeout = exp * 1e3 - REFRESH_BUFFER - new Date().getTime();
 
@@ -147,8 +147,7 @@ async function setupAuth(
     const user = await requestUser();
     return {
       ...user,
-      id: Number(sub),
-      scope: scopes,
+      id: sub,
     };
   } catch (exception) {
     await doLogout(dispatch, null, db);
@@ -263,28 +262,19 @@ export function logout(): UserThunk {
  * @param {string} clientId Client ID of application to authenticate to.
  * @param {string} scope Requested permission scope(s), separated by spaces.
  */
-export function passwordLogin(
-  url: string,
-  { username, password }: { username: string; password: string },
-  refreshURL: string,
-  clientId: string,
-  scope: string,
-): UserThunk {
+export function passwordLogin(email: string, password: string): UserThunk {
   return async (dispatch, getState) => {
     const { db } = getState();
-    const user = await requestToken(
-      url,
-      {
-        grant_type: 'password',
-        username,
-        password,
-        ...(clientId && { client_id: clientId }),
-        ...(scope && { scope }),
+    const {
+      data: { access_token: accessToken, refresh_token: refreshToken },
+    } = await axios.post('/api/login', undefined, {
+      headers: {
+        authorization: `Basic ${btoa(`${email}:${password}`)}`,
       },
-      db,
-      dispatch,
-      refreshURL,
-    );
+    });
+    const tx = db.transaction(AUTH, RW);
+    await tx.objectStore(AUTH).put({ accessToken, refreshToken }, 0);
+    const user = await setupAuth(accessToken, refreshToken, 'XXX', db, dispatch);
     dispatch({
       type: LOGIN_SUCCESS,
       user,
@@ -333,8 +323,20 @@ export function requestResetPassword(email: string) {
   return async () => axios.post('/api/email/reset/request', { email });
 }
 
-export function registerEmail(email: string, password: string, organization: string) {
-  return async () => axios.post('/api/email', { email, password, organization });
+export function registerEmail(email: string, password: string): UserThunk {
+  return async (dispatch, getState) => {
+    const { db } = getState();
+    const {
+      data: { access_token: accessToken, refresh_token: refreshToken },
+    } = await axios.post('/api/email', { email, password });
+    const tx = db.transaction(AUTH, RW);
+    await tx.objectStore(AUTH).put({ accessToken, refreshToken }, 0);
+    const user = await setupAuth(accessToken, refreshToken, 'XXX', db, dispatch);
+    dispatch({
+      type: LOGIN_SUCCESS,
+      user,
+    });
+  };
 }
 
 export function verifyEmail(token: string) {

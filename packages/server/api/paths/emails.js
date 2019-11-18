@@ -1,6 +1,7 @@
 export default {
   '/api/email': {
     post: {
+      tags: ['user'],
       description: 'Register a new account using an email address and a password.',
       operationId: 'registerEmail',
       requestBody: {
@@ -19,9 +20,6 @@ export default {
                 password: {
                   type: 'string',
                 },
-                organization: {
-                  type: 'string',
-                },
               },
             },
           },
@@ -36,6 +34,7 @@ export default {
   },
   '/api/email/verify': {
     post: {
+      tags: ['user'],
       description: 'Verify the email address of a registered user.',
       operationId: 'verifyEmail',
       requestBody: {
@@ -64,6 +63,7 @@ export default {
   },
   '/api/email/resend': {
     post: {
+      tags: ['user'],
       description: 'Resend the verification code for a registered email.',
       operationId: 'resendEmailVerification',
       requestBody: {
@@ -88,10 +88,12 @@ export default {
           description: 'The verification email was sent if an account was found in the database.',
         },
       },
+      security: [{ studio: [] }],
     },
   },
   '/api/email/reset/request': {
     post: {
+      tags: ['user'],
       description: 'Request a reset token for resetting passwords.',
       operationId: 'requestResetPassword',
       requestBody: {
@@ -120,6 +122,7 @@ export default {
   },
   '/api/email/reset': {
     post: {
+      tags: ['user'],
       description: 'Reset a password using a password reset token.',
       operationId: 'resetPassword',
       requestBody: {

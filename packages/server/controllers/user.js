@@ -1,6 +1,8 @@
 import Boom from '@hapi/boom';
 import crypto from 'crypto';
 
+import createJWTResponse from '../utils/createJWTResponse';
+
 export async function getUser(ctx) {
   const { User, Organization, EmailAuthorization } = ctx.db.models;
   const { user } = ctx.state;
@@ -144,4 +146,10 @@ export async function removeEmail(ctx) {
   await dbEmail.destroy();
 
   ctx.status = 204;
+}
+
+export async function emailLogin(ctx) {
+  const { argv, state } = ctx;
+
+  ctx.body = createJWTResponse(state.user.id, argv);
 }

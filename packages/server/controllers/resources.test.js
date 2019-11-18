@@ -1,4 +1,3 @@
-import jwt from 'jsonwebtoken';
 import lolex from 'lolex';
 import request from 'supertest';
 
@@ -15,6 +14,7 @@ describe('resource controller', () => {
   let token;
   let organizationId;
   let clock;
+  let user;
 
   const exampleApp = orgId => ({
     definition: {
@@ -45,14 +45,17 @@ describe('resource controller', () => {
 
   beforeAll(async () => {
     db = await testSchema('resources');
-    server = await createServer({ db });
+    server = await createServer({ db, argv: { host: window.location, secret: 'test' } });
     ({ App, Resource } = db.models);
   }, 10e3);
 
   beforeEach(async () => {
     await truncate(db);
-    token = await testToken(server, db, 'apps:write apps:read');
-    organizationId = jwt.decode(token.substring(7)).user.organizations[0].id;
+    ({ authorization: token, user } = await testToken(db));
+    ({ id: organizationId } = await user.createOrganization({
+      id: 'testorganization',
+      name: 'Test Organization',
+    }));
     clock = lolex.install();
   });
 

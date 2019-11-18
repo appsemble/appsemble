@@ -2,7 +2,7 @@ import { logger } from '@appsemble/node-utils';
 import fs from 'fs-extra';
 import { join } from 'path';
 
-import { getToken } from '../../lib/config';
+import { authenticate } from '../../lib/authentication';
 import getBlockConfig from '../../lib/getBlockConfig';
 import publish from '../../lib/publish';
 import registerBlock from '../../lib/registerBlock';
@@ -27,8 +27,8 @@ export function builder(yargs) {
     });
 }
 
-export async function handler({ ignoreConflict, path, remote, all }) {
-  await getToken(remote);
+export async function handler({ clientCredentials, ignoreConflict, path, remote }) {
+  await authenticate(remote, 'blocks:write', clientCredentials);
 
   if (all) {
     const directories = (await fs.readdir(path)).filter(subDir =>

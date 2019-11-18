@@ -18,6 +18,7 @@ export default {
           $ref: '#/components/responses/invite',
         },
       },
+      security: [{ studio: [] }],
     },
   },
 };

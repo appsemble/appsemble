@@ -21,13 +21,7 @@ interface LoginFormValues {
 }
 
 interface LoginProps {
-  passwordLogin: (
-    url: string,
-    { username, password }: { username: string; password: string },
-    refreshURL: string,
-    clientId: string,
-    scope: string,
-  ) => Promise<void>;
+  passwordLogin: (email: string, password: string) => Promise<void>;
 }
 
 const loginMethods = new Set(settings.logins);
@@ -35,14 +29,7 @@ const loginMethods = new Set(settings.logins);
 export default function Login({ passwordLogin }: LoginProps): React.ReactElement {
   const location = useLocation();
   const onPasswordLogin = React.useCallback(
-    ({ email, password }: LoginFormValues) =>
-      passwordLogin(
-        '/api/oauth/token',
-        { username: email, password },
-        '/api/oauth/token',
-        'appsemble-studio',
-        'apps:read apps:write',
-      ),
+    ({ email, password }: LoginFormValues) => passwordLogin(email, password),
     [passwordLogin],
   );
 
@@ -104,10 +91,7 @@ export default function Login({ passwordLogin }: LoginProps): React.ReactElement
           </SocialLoginButton>
         )}
         {loginMethods.has('gitlab') && (
-          <SocialLoginButton
-            iconClass="gitlab"
-            providerUri={`/api/oauth/connect/gitlab?${returnUri}`}
-          >
+          <SocialLoginButton iconClass="gitlab" providerUri="/connect/gitlab">
             <FormattedMessage {...messages.login} values={{ provider: 'GitLab' }} />
           </SocialLoginButton>
         )}

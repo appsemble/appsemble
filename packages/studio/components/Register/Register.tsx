@@ -20,13 +20,7 @@ interface RegistrationFormValues {
 
 interface RegisterProps {
   registerEmail: (email: string, password: string) => Promise<void>;
-  passwordLogin: (
-    url: string,
-    { username, password }: { username: string; password: string },
-    refreshURL: string,
-    clientId: string,
-    scope: string,
-  ) => Promise<void>;
+  passwordLogin: (email: string, password: string) => Promise<void>;
 }
 
 export default function Register({
@@ -36,13 +30,7 @@ export default function Register({
   const register = React.useCallback(
     async ({ email, password }: RegistrationFormValues) => {
       await registerEmail(email, password);
-      await passwordLogin(
-        '/api/oauth/token',
-        { username: email, password },
-        '/api/oauth/token',
-        'appsemble-studio',
-        'apps:read apps:write',
-      );
+      await passwordLogin(email, password);
     },
     [passwordLogin, registerEmail],
   );

@@ -19,14 +19,12 @@ export default sequelize => {
 
   User.associate = ({
     Organization,
-    OAuthToken,
     OAuthAuthorization,
     EmailAuthorization,
     ResetPasswordToken,
     Member,
   }) => {
     User.belongsToMany(Organization, { through: Member });
-    User.hasMany(OAuthToken);
     User.hasMany(OAuthAuthorization);
     User.hasMany(EmailAuthorization);
     User.hasMany(ResetPasswordToken, {

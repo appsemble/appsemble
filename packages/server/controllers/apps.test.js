@@ -1,6 +1,5 @@
 import { createInstance } from 'axios-test-instance';
 import FormData from 'form-data';
-import jwt from 'jsonwebtoken';
 import lolex from 'lolex';
 
 import createServer from '../utils/createServer';
@@ -15,7 +14,6 @@ describe('app controller', () => {
   let BlockDefinition;
   let BlockVersion;
   let Organization;
-  let User;
   let db;
   let request;
   let server;
@@ -23,11 +21,12 @@ describe('app controller', () => {
   let organizationId;
   let userId;
   let clock;
+  let user;
+  let User;
 
   beforeAll(async () => {
     db = await testSchema('apps');
-
-    server = await createServer({ db });
+    server = await createServer({ db, argv: { host: window.location, secret: 'test' } });
     ({
       App,
       AppBlockStyle,
@@ -44,10 +43,11 @@ describe('app controller', () => {
     clock = lolex.install();
 
     await truncate(db);
-    authorization = await testToken(server, db, 'apps:read apps:write');
-    const decodedToken = jwt.decode(authorization.substring(7));
-    organizationId = decodedToken.user.organizations[0].id;
-    userId = decodedToken.user.id;
+    ({ user, authorization } = await testToken(db));
+    ({ id: organizationId } = await user.createOrganization({
+      id: 'testorganization',
+      name: 'Test Organization',
+    }));
 
     await BlockDefinition.create({
       id: '@appsemble/test',
@@ -303,8 +303,7 @@ defaultPage: Test Page
 
     const responseA = await request.get('/api/apps/me', { headers: { authorization } });
 
-    const users = await User.findAll();
-    await users[0].addOrganization(organizationB);
+    await user.addOrganization(organizationB);
 
     const responseB = await request.get('/api/apps/me', { headers: { authorization } });
 
@@ -435,8 +434,12 @@ pages:
     });
 
     expect(response).toMatchObject({
-      status: 400,
-      data: {},
+      status: 403,
+      data: {
+        error: 'Forbidden',
+        message: 'Forbidden',
+        statusCode: 403,
+      },
     });
   });
 

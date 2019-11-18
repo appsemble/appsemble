@@ -9,6 +9,7 @@ import { col, fn, literal, Op, UniqueConstraintError } from 'sequelize';
 import sharp from 'sharp';
 import * as webpush from 'web-push';
 
+import checkRole from '../utils/checkRole';
 import getAppBlocks from '../utils/getAppBlocks';
 import getAppFromRecord from '../utils/getAppFromRecord';
 import getDefaultIcon from '../utils/getDefaultIcon';
@@ -92,7 +93,6 @@ function handleAppValidationError(error, app) {
 export async function createApp(ctx) {
   const { db } = ctx;
   const { App } = db.models;
-  const { user } = ctx.state;
   const {
     definition,
     OrganizationId,
@@ -134,10 +134,7 @@ export async function createApp(ctx) {
       }
     }
 
-    if (!user.organizations.some(organization => organization.id === OrganizationId)) {
-      throw Boom.forbidden('User does not belong in this organization.');
-    }
-
+    await checkRole(ctx, OrganizationId);
     await checkBlocks(definition, db);
 
     for (let i = 1; i < 11; i += 1) {
@@ -210,11 +207,14 @@ export async function queryApps(ctx) {
 }
 
 export async function queryMyApps(ctx) {
-  const { App, AppRating } = ctx.db.models;
-  const {
-    user: { organizations },
-  } = ctx.state;
+  const { App, AppRating, Member } = ctx.db.models;
+  const { user } = ctx.state;
 
+  const memberships = await Member.findAll({
+    attributes: ['OrganizationId'],
+    raw: true,
+    where: { UserId: user.id },
+  });
   const apps = await App.findAll({
     attributes: {
       include: [
@@ -226,7 +226,7 @@ export async function queryMyApps(ctx) {
     include: [{ model: AppRating, attributes: [] }],
     group: ['App.id'],
     order: [literal('"RatingAverage" DESC NULLS LAST'), ['id', 'ASC']],
-    where: { OrganizationId: { [Op.in]: organizations.map(o => o.id) } },
+    where: { OrganizationId: { [Op.in]: memberships.map(m => m.OrganizationId) } },
   });
   const ignoredFields = ['yaml'];
   ctx.body = apps.map(app => getAppFromRecord(app, ignoredFields));
@@ -235,11 +235,8 @@ export async function queryMyApps(ctx) {
 export async function updateApp(ctx) {
   const { db } = ctx;
   const { appId } = ctx.params;
-  const {
-    user: { organizations },
-  } = ctx.state;
   const { App } = db.models;
-  const { definition, domain, path, style, sharedStyle, yaml, OrganizationId } = ctx.request.body;
+  const { definition, domain, path, style, sharedStyle, yaml } = ctx.request.body;
 
   let result;
 
@@ -278,9 +275,7 @@ export async function updateApp(ctx) {
       throw Boom.notFound('App not found');
     }
 
-    if (!organizations.some(organization => organization.id === OrganizationId)) {
-      throw Boom.forbidden("User does not belong in this App's organization.");
-    }
+    await checkRole(ctx, dbApp.OrganizationId);
 
     await dbApp.update(result, { where: { id: appId } });
 
@@ -293,9 +288,6 @@ export async function updateApp(ctx) {
 export async function patchApp(ctx) {
   const { db } = ctx;
   const { appId } = ctx.params;
-  const {
-    user: { organizations },
-  } = ctx.state;
   const { App } = db.models;
   const {
     definition,
@@ -372,9 +364,7 @@ export async function patchApp(ctx) {
       throw Boom.notFound('App not found');
     }
 
-    if (!organizations.some(organization => organization.id === dbApp.OrganizationId)) {
-      throw Boom.forbidden("User does not belong in this App's organization.");
-    }
+    await checkRole(ctx, dbApp.OrganizationId);
 
     await dbApp.update(result, { where: { id: appId } });
 
@@ -387,9 +377,6 @@ export async function patchApp(ctx) {
 export async function deleteApp(ctx) {
   const { appId } = ctx.params;
   const { App } = ctx.db.models;
-  const {
-    user: { organizations },
-  } = ctx.state;
 
   const app = await App.findByPk(appId);
 
@@ -397,9 +384,7 @@ export async function deleteApp(ctx) {
     throw Boom.notFound('App not found');
   }
 
-  if (!organizations.some(organization => organization.id === app.OrganizationId)) {
-    throw Boom.forbidden("User does not belong in this App's organization.");
-  }
+  await checkRole(ctx, app.OrganizationId);
 
   await app.update({ path: null });
   await app.destroy();

@@ -66,7 +66,7 @@ export default {
           $ref: '#/components/responses/app',
         },
       },
-      security: [{ apiUser: ['apps:write'] }],
+      security: [{ studio: [] }],
     },
     get: {
       tags: ['app'],
@@ -87,6 +87,7 @@ export default {
           },
         },
       },
+      security: [{ studio: [] }, {}],
     },
   },
   '/api/apps/me': {
@@ -109,7 +110,7 @@ export default {
           },
         },
       },
-      security: [{ apiUser: ['apps:read'] }],
+      security: [{ studio: [] }],
     },
   },
   '/api/apps/{appId}': {
@@ -124,6 +125,7 @@ export default {
           $ref: '#/components/responses/app',
         },
       },
+      security: [{ studio: [] }, {}],
     },
     patch: {
       tags: ['app'],
@@ -187,7 +189,7 @@ export default {
           $ref: '#/components/responses/app',
         },
       },
-      security: [{ apiUser: ['apps:write'] }],
+      security: [{ studio: [] }],
     },
     delete: {
       tags: ['app'],
@@ -198,7 +200,7 @@ export default {
           description: 'The app was successfully deleted.',
         },
       },
-      security: [{ apiUser: ['apps:write'] }],
+      security: [{ studio: [] }],
     },
   },
   '/api/apps/{appId}/icon': {
@@ -232,7 +234,7 @@ export default {
           description: 'The icon has been deleted succesfully.',
         },
       },
-      security: [{ apiUser: ['apps:write'] }],
+      security: [{ studio: [] }],
     },
   },
   '/api/apps/{appId}/subscriptions': {
@@ -445,7 +447,7 @@ export default {
           description: 'The block style has been updated succesfully.',
         },
       },
-      security: [{ apiUser: ['apps:write'] }],
+      security: [{ studio: [] }],
     },
   },
 };

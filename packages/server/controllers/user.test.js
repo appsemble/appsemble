@@ -1,4 +1,3 @@
-import jwt from 'jsonwebtoken';
 import request from 'supertest';
 
 import createServer from '../utils/createServer';
@@ -8,6 +7,7 @@ import truncate from '../utils/test/truncate';
 
 describe('user', () => {
   let db;
+  let user;
   let server;
   let token;
   let EmailAuthorization;
@@ -15,13 +15,17 @@ describe('user', () => {
   beforeAll(async () => {
     db = await testSchema('user');
 
-    server = await createServer({ db });
+    server = await createServer({ db, argv: { host: window.location, secret: 'test' } });
     ({ EmailAuthorization } = db.models);
   }, 10e3);
 
   beforeEach(async () => {
     await truncate(db);
-    token = await testToken(server, db, 'apps:read');
+    ({ authorization: token, user } = await testToken(db));
+    await user.createOrganization({
+      id: 'testorganization',
+      name: 'Test Organization',
+    });
   });
 
   afterAll(async () => {
@@ -29,11 +33,11 @@ describe('user', () => {
   });
 
   it('should return a user profile', async () => {
-    const { body: user } = await request(server)
+    const { body } = await request(server)
       .get('/api/user')
       .set('Authorization', token);
 
-    expect(user).toStrictEqual({
+    expect(body).toStrictEqual({
       id: expect.any(Number),
       name: 'Test User',
       primaryEmail: 'test@example.com',
@@ -48,11 +52,11 @@ describe('user', () => {
   });
 
   it('should update the user display name', async () => {
-    const { body: user } = await request(server)
+    const { body } = await request(server)
       .put('/api/user')
       .set('Authorization', token)
       .send({ name: 'John', primaryEmail: 'test@example.com' });
-    expect(user.name).toStrictEqual('John');
+    expect(body.name).toStrictEqual('John');
   });
 
   it('should be possible to add new email addresses', async () => {
@@ -63,10 +67,10 @@ describe('user', () => {
 
     expect(response.status).toStrictEqual(201);
 
-    const { body: user } = await request(server)
+    const { body } = await request(server)
       .get('/api/user')
       .set('Authorization', token);
-    expect(user.emails).toContainEqual({
+    expect(body.emails).toContainEqual({
       email: 'test2@example.com',
       verified: false,
       primary: false,
@@ -83,17 +87,17 @@ describe('user', () => {
   });
 
   it('should set a verified email as primary email', async () => {
-    const {
-      user: { id },
-    } = jwt.decode(token.substring(7));
+    await EmailAuthorization.create({
+      email: 'test2@example.com',
+      verified: true,
+      UserId: user.id,
+    });
 
-    await EmailAuthorization.create({ email: 'test2@example.com', verified: true, UserId: id });
-
-    const { body: user } = await request(server)
+    const { body } = await request(server)
       .put('/api/user')
       .set('Authorization', token)
       .send({ name: 'Test User', primaryEmail: 'test2@example.com' });
-    expect(user.primaryEmail).toStrictEqual('test2@example.com');
+    expect(body.primaryEmail).toStrictEqual('test2@example.com');
   });
 
   it('should not set a non-existent email as primary email', async () => {
@@ -128,11 +132,11 @@ describe('user', () => {
   });
 
   it('should delete emails', async () => {
-    const {
-      user: { id },
-    } = jwt.decode(token.substring(7));
-
-    await EmailAuthorization.create({ email: 'test2@example.com', verified: true, UserId: id });
+    await EmailAuthorization.create({
+      email: 'test2@example.com',
+      verified: true,
+      UserId: user.id,
+    });
 
     const response = await request(server)
       .delete('/api/user/email')
@@ -141,11 +145,11 @@ describe('user', () => {
 
     expect(response.status).toStrictEqual(204);
 
-    const { body: user } = await request(server)
+    const { body } = await request(server)
       .get('/api/user')
       .set('Authorization', token);
 
-    expect(user.emails).not.toContainEqual({
+    expect(body.emails).not.toContainEqual({
       email: 'test2@example.com',
       verified: true,
       primary: false,

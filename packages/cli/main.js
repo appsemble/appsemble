@@ -20,6 +20,9 @@ export default async function main(argv) {
       description: 'The Appsemble host that should be used.',
       default: 'http://localhost:9999',
     })
+    .option('client-credentials', {
+      description: 'OAuth2 client credentials formatted as "client_id:client_secret".',
+    })
     .pkgConf('appsembleServer')
     .middleware([configureLogger, initAxios])
     .commandDir(path.join(__dirname, 'commands'))

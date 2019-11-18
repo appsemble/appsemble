@@ -9,11 +9,11 @@ import settings from '../../utils/settings';
 import AnonymousRoute from '../AnonymousRoute';
 import AppContext from '../AppContext';
 import AppList from '../AppList';
-import ConnectOAuth from '../ConnectOAuth';
 import EditPassword from '../EditPassword';
 import ErrorFallback from '../ErrorFallback';
 import Login from '../Login';
 import Message from '../Message';
+import OAuth2Connect from '../OAuth2Connect';
 import OrganizationInvite from '../OrganizationInvite';
 import ProtectedRoute from '../ProtectedRoute';
 import Register from '../Register';
@@ -54,7 +54,7 @@ export default class App extends React.Component {
               <ProtectedRoute component={OrganizationInvite} exact path="/organization-invite" />
               <Route component={VerifyEmail} exact path="/verify" />
               <Route component={AppList} exact path="/apps" />
-              <Route component={ConnectOAuth} exact path="/connect" />
+              <Route component={OAuth2Connect} exact path="/connect/:provider/callback" />
               <AnonymousRoute component={Login} exact path="/login" />
               {settings.enableRegistration && (
                 <AnonymousRoute component={Register} exact path="/register" />

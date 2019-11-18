@@ -33,6 +33,7 @@ export default {
           },
         },
       },
+      security: [{ studio: [] }],
     },
     post: {
       tags: ['template'],
@@ -76,7 +77,7 @@ export default {
           $ref: '#/components/responses/app',
         },
       },
-      security: [{ apiUser: ['apps:write'] }],
+      security: [{ studio: [] }],
     },
   },
 };

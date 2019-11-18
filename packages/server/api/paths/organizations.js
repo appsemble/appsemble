@@ -20,7 +20,7 @@ export default {
           $ref: '#/components/responses/organization',
         },
       },
-      security: [{ apiUser: [] }],
+      security: [{ studio: [] }],
     },
   },
   '/api/organizations/{organizationId}': {
@@ -34,6 +34,7 @@ export default {
           $ref: '#/components/responses/organization',
         },
       },
+      security: [{ studio: [] }],
     },
   },
   '/api/organizations/{organizationId}/invites/resend': {
@@ -64,6 +65,7 @@ export default {
           description: 'The invite has been sent.',
         },
       },
+      security: [{ studio: [] }],
     },
   },
   '/api/organizations/{organizationId}/join': {
@@ -99,7 +101,7 @@ export default {
           description: 'The response has been processed.',
         },
       },
-      security: [{ apiUser: [] }],
+      security: [{ studio: [] }],
     },
   },
   '/api/organizations/{organizationId}/invites': {
@@ -138,7 +140,7 @@ export default {
           },
         },
       },
-      security: [{ apiUser: [] }],
+      security: [{ studio: [] }],
     },
     delete: {
       tags: ['organization'],
@@ -167,7 +169,7 @@ export default {
           description: 'The invitation has been successfully revoked.',
         },
       },
-      security: [{ apiUser: [] }],
+      security: [{ studio: [] }],
     },
   },
   '/api/organizations/{organizationId}/members/{memberId}': {
@@ -190,7 +192,7 @@ export default {
           description: 'The member has been successfully removed.',
         },
       },
-      security: [{ apiUser: [] }],
+      security: [{ studio: [] }],
     },
   },
   '/api/organizations/{organizationId}/style/shared': {
@@ -233,7 +235,7 @@ export default {
           description: 'The shared style has been updated succesfully.',
         },
       },
-      security: [{ apiUser: ['organizations:style'] }],
+      security: [{ cli: ['organizations:styles:write'] }],
     },
   },
   '/api/organizations/{organizationId}/style/core': {
@@ -276,7 +278,7 @@ export default {
           description: 'The shared style has been updated succesfully.',
         },
       },
-      security: [{ apiUser: ['organizations:style'] }],
+      security: [{ cli: ['organizations:styles:write'] }],
     },
   },
   '/api/organizations/{organizationId}/style/block/@{blockOrganizationId}/{blockId}': {
@@ -327,7 +329,7 @@ export default {
           description: 'The block style has been updated succesfully.',
         },
       },
-      security: [{ apiUser: ['organizations:style'] }],
+      security: [{ cli: ['organizations:styles:write'] }],
     },
   },
 };

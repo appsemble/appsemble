@@ -1,7 +1,16 @@
 export default {
+  '/api/login': {
+    post: {
+      tags: ['user'],
+      description: 'Login using the Appsemble studio.',
+      operationId: 'emailLogin',
+      responses: { 200: { description: 'Logged in successfully.' } },
+      security: [{ basic: [] }],
+    },
+  },
   '/api/user': {
     get: {
-      tags: ['template'],
+      tags: ['user'],
       description: "Fetch the logged in user's profile.",
       operationId: 'getUser',
       responses: {
@@ -16,10 +25,10 @@ export default {
           },
         },
       },
-      security: [{ apiUser: [] }],
+      security: [{ studio: [] }],
     },
     put: {
-      tags: ['template'],
+      tags: ['user'],
       description: "Update the logged in user's profile.",
       operationId: 'updateUser',
       requestBody: {
@@ -38,12 +47,12 @@ export default {
           },
         },
       },
-      security: [{ apiUser: [] }],
+      security: [{ studio: [] }],
     },
   },
   '/api/user/email': {
     post: {
-      tags: ['template'],
+      tags: ['user'],
       description: "Register a new email to logged in user's account.",
       operationId: 'addEmail',
       requestBody: {
@@ -68,10 +77,10 @@ export default {
           description: 'The email address has been added succesfully.',
         },
       },
-      security: [{ apiUser: [] }],
+      security: [{ studio: [] }],
     },
     delete: {
-      tags: ['template'],
+      tags: ['user'],
       description: "Remove an existing email to logged in user's account.",
       operationId: 'removeEmail',
       requestBody: {
@@ -96,7 +105,7 @@ export default {
           description: 'The email address has been removed succesfully.',
         },
       },
-      security: [{ apiUser: [] }],
+      security: [{ studio: [] }],
     },
   },
 };

@@ -3,7 +3,7 @@ import FormData from 'form-data';
 import fs from 'fs-extra';
 import { join } from 'path';
 
-import { getToken } from '../../lib/config';
+import { authenticate } from '../../lib/authentication';
 import processCss from '../../lib/processCss';
 import { post } from '../../lib/request';
 
@@ -69,9 +69,17 @@ function determineType(shared, core, block) {
   return null;
 }
 
-export async function handler({ path, organization, shared, core, block, remote }) {
+export async function handler({
+  block,
+  clientCredentials,
+  core,
+  organization,
+  path,
+  remote,
+  shared,
+}) {
   const themeDir = await fs.stat(path);
-  await getToken(remote);
+  await authenticate(remote, 'organizations:styles:write', clientCredentials);
 
   if (themeDir.isFile()) {
     // Path was not a directory, assume it's a file

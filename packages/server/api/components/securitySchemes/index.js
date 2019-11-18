@@ -1,3 +1,5 @@
-import apiUser from './apiUser';
+import basic from './basic';
+import cli from './cli';
+import studio from './studio';
 
-export default { apiUser };
+export default { basic, cli, studio };

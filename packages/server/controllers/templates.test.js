@@ -1,4 +1,3 @@
-import jwt from 'jsonwebtoken';
 import lolex from 'lolex';
 import request from 'supertest';
 
@@ -11,24 +10,26 @@ describe('Template API', () => {
   let db;
   let server;
   let token;
-  let organizationId;
   let App;
   let Resource;
   let templates;
-
+  let user;
   let clock;
 
   beforeAll(async () => {
     db = await testSchema('templates');
 
-    server = await createServer({ db });
+    server = await createServer({ db, argv: { host: window.location, secret: 'test' } });
     ({ App, Resource } = db.models);
   }, 10e3);
 
   beforeEach(async () => {
     await truncate(db);
-    token = await testToken(server, db, 'apps:read apps:write');
-    organizationId = jwt.decode(token.substring(7)).user.organizations[0].id;
+    ({ authorization: token, user } = await testToken(db));
+    await user.createOrganization({
+      id: 'testorganization',
+      name: 'Test Organization',
+    });
     clock = lolex.install();
 
     const template = {
@@ -36,7 +37,7 @@ describe('Template API', () => {
       template: true,
       vapidPublicKey: 'a',
       vapidPrivateKey: 'b',
-      OrganizationId: organizationId,
+      OrganizationId: 'testorganization',
       definition: {
         name: 'Test Template',
         description: 'Description',
@@ -70,7 +71,9 @@ describe('Template API', () => {
   });
 
   it('should return a list of available templates', async () => {
-    const { body: result } = await request(server).get('/api/templates');
+    const { body: result } = await request(server)
+      .get('/api/templates')
+      .set('authorization', token);
 
     expect(result).toHaveLength(2);
     expect(result).toStrictEqual([
@@ -97,7 +100,7 @@ describe('Template API', () => {
         templateId: templates[0].id,
         name: 'Test app',
         description: 'This is a test app',
-        organizationId,
+        organizationId: 'testorganization',
       });
 
     expect(result).toMatchSnapshot();
@@ -112,7 +115,7 @@ describe('Template API', () => {
         templateId: template.id,
         name: 'Test app',
         description: 'This is a test app',
-        organizationId,
+        organizationId: 'testorganization',
         resources: true,
       });
 
@@ -130,7 +133,7 @@ describe('Template API', () => {
         templateId: templates[0].id,
         name: 'Test app',
         description: 'This is a test app',
-        organizationId,
+        organizationId: 'testorganization',
       });
 
     const {
@@ -143,7 +146,7 @@ describe('Template API', () => {
         templateId: templates[0].id,
         name: 'Test app',
         description: 'This is also a test app',
-        organizationId,
+        organizationId: 'testorganization',
       });
 
     expect(status).toStrictEqual(201);
@@ -159,7 +162,7 @@ describe('Template API', () => {
             definition: { name: 'Test App', defaultPage: 'Test Page' },
             vapidPublicKey: 'a',
             vapidPrivateKey: 'b',
-            OrganizationId: organizationId,
+            OrganizationId: 'testorganization',
           },
           { raw: true },
         ),
@@ -176,7 +179,7 @@ describe('Template API', () => {
         templateId: templates[0].id,
         name: 'Test app',
         description: 'This is a test app',
-        organizationId,
+        organizationId: 'testorganization',
       });
 
     expect(status).toStrictEqual(201);

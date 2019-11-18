@@ -2,6 +2,7 @@
 import { loggerMiddleware } from '@appsemble/node-utils';
 import faPkg from '@fortawesome/fontawesome-free/package.json';
 import Koa from 'koa';
+import compose from 'koa-compose';
 import compress from 'koa-compress';
 import mount from 'koa-mount';
 import koaQuerystring from 'koa-qs';
@@ -10,9 +11,9 @@ import session from 'koa-session';
 import serve from 'koa-static';
 import koasBodyParser from 'koas-body-parser';
 import koas from 'koas-core';
-import koasOAuth2Server from 'koas-oauth2-server';
 import koasOperations from 'koas-operations';
 import koasParameters from 'koas-parameters';
+import koasSecurity from 'koas-security';
 import koasSerializer from 'koas-serializer';
 import koasSpecHandler from 'koas-spec-handler';
 import koasStatusCode from 'koas-status-code';
@@ -29,18 +30,12 @@ import oauth2 from '../middleware/oauth2';
 import tinyRouter from '../middleware/tinyRouter';
 import { appRouter, fallbackRouter, studioRouter } from '../routes';
 import bulmaHandler from '../routes/bulmaHandler';
+import authentication from './authentication';
 import Mailer from './email/Mailer';
-import oauth2Model from './oauth2Model';
 
-export default async function createServer({
-  app = new Koa(),
-  argv = {},
-  db,
-  secret = 'appsemble',
-  webpackConfigs,
-}) {
+export default async function createServer({ app = new Koa(), argv = {}, db, webpackConfigs }) {
   // eslint-disable-next-line no-param-reassign
-  app.keys = [secret];
+  app.keys = [argv.secret];
   app.use(loggerMiddleware());
   app.use(session(app));
 
@@ -48,9 +43,9 @@ export default async function createServer({
   app.use(range);
   Object.assign(app.context, { argv, db, mailer: new Mailer(argv) });
 
-  if (argv.oauthGitlabKey || argv.oauthGoogleKey) {
-    app.use(oauth2(argv));
-  }
+  // if (argv.oauthGitlabKey || argv.oauthGoogleKey) {
+  //   app.use(oauth2(argv));
+  // }
 
   koaQuerystring(app);
 
@@ -78,7 +73,13 @@ export default async function createServer({
     await koas(api(), [
       koasSpecHandler(),
       koasSwaggerUI({ url: '/api-explorer' }),
-      koasOAuth2Server(oauth2Model({ db, secret })),
+      koasSecurity(authentication(argv, db.models)),
+      () => (ctx, next) => {
+        if (ctx.users) {
+          [ctx.state.user] = Object.values(ctx.users);
+        }
+        return next();
+      },
       koasParameters(),
       koasBodyParser({
         '*/*': (body, mediaTypeObject, ctx) =>
@@ -96,7 +97,7 @@ export default async function createServer({
     app.use(await frontend(webpackConfigs));
   }
 
-  app.use(appMapper(studioRouter, appRouter, fallbackRouter));
+  app.use(appMapper(compose([studioRouter, oauth2(argv)]), appRouter, fallbackRouter));
 
   return app.callback();
 }
