@@ -13,10 +13,7 @@ function mapStateToProps(state: State): Partial<ComponentProps<typeof SideNaviga
   };
 }
 
-export default connect(
-  mapStateToProps,
-  {
-    closeMenu,
-    logout,
-  },
-)(SideNavigation);
+export default connect(mapStateToProps, {
+  closeMenu,
+  logout,
+})(SideNavigation);

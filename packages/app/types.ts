@@ -15,9 +15,6 @@ declare global {
     };
   }
 }
-export interface ActionDefinition<T extends Action['type']> {
-  type: T;
-}
 
 export interface ShowDialogParams {
   actionCreators: Record<string, () => Action>;

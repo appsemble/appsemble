@@ -8,11 +8,27 @@ export default {
         content: {
           'multipart/form-data': {
             schema: {
-              required: ['app'],
+              required: ['OrganizationId', 'definition'],
               properties: {
-                app: {
-                  required: ['OrganizationId', 'private'],
-                  $ref: '#/components/schemas/App',
+                definition: {
+                  $ref: '#/components/schemas/App/properties/definition',
+                },
+                domain: {
+                  $ref: '#/components/schemas/App/properties/domain',
+                },
+                path: {
+                  $ref: '#/components/schemas/App/properties/path',
+                },
+                private: {
+                  $ref: '#/components/schemas/App/properties/private',
+                },
+                yaml: {
+                  type: 'string',
+                  format: 'binary',
+                  description: 'The original YAML definition used to define the app.',
+                },
+                OrganizationId: {
+                  $ref: '#/components/schemas/App/properties/OrganizationId',
                 },
                 style: {
                   type: 'string',
@@ -94,60 +110,6 @@ export default {
         },
       },
     },
-    put: {
-      tags: ['app'],
-      description: 'Update an existing app',
-      operationId: 'updateApp',
-      requestBody: {
-        content: {
-          'multipart/form-data': {
-            schema: {
-              required: ['app', 'style', 'sharedStyle', 'yaml', 'icon'],
-              properties: {
-                app: {
-                  $ref: '#/components/schemas/App',
-                  required: ['definition', 'private', 'path'],
-                },
-                style: {
-                  type: 'string',
-                  format: 'binary',
-                  description: 'The custom style to apply to the core app.',
-                },
-                sharedStyle: {
-                  type: 'string',
-                  format: 'binary',
-                  description: 'The custom style to apply to all parts of app.',
-                },
-                yaml: {
-                  type: 'string',
-                  format: 'binary',
-                  description: 'The original YAML definition used to define the app.',
-                },
-                icon: {
-                  type: 'string',
-                  format: 'binary',
-                  description: 'The app icon.',
-                },
-              },
-            },
-            encoding: {
-              style: { contentType: 'text/css' },
-              sharedStyle: { contentType: 'text/css' },
-              icon: {
-                contentType: 'image/png,image/jpg,image/svg+xml,image/tiff,image/webp',
-              },
-            },
-          },
-        },
-      },
-      responses: {
-        200: {
-          description: 'The updated app.',
-          $ref: '#/components/responses/app',
-        },
-      },
-      security: [{ apiUser: ['apps:write'] }],
-    },
     patch: {
       tags: ['app'],
       description: 'Update parts of an existing app',
@@ -157,7 +119,23 @@ export default {
           'multipart/form-data': {
             schema: {
               properties: {
-                app: { $ref: '#/components/schemas/App' },
+                definition: {
+                  $ref: '#/components/schemas/App/properties/definition',
+                },
+                domain: {
+                  $ref: '#/components/schemas/App/properties/domain',
+                },
+                path: {
+                  $ref: '#/components/schemas/App/properties/path',
+                },
+                private: {
+                  $ref: '#/components/schemas/App/properties/private',
+                },
+                yaml: {
+                  type: 'string',
+                  format: 'binary',
+                  description: 'The original YAML definition used to define the app.',
+                },
                 style: {
                   type: 'string',
                   format: 'binary',
@@ -167,11 +145,6 @@ export default {
                   type: 'string',
                   format: 'binary',
                   description: 'The custom style to apply to all parts of app.',
-                },
-                yaml: {
-                  type: 'string',
-                  format: 'binary',
-                  description: 'The original YAML definition used to define the app.',
                 },
                 icon: {
                   type: 'string',

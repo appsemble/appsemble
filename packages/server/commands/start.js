@@ -109,6 +109,7 @@ export async function handler(argv, { webpackConfigs, syncDB } = {}) {
       username: argv.databaseUser,
       password: argv.databasePassword,
       database: argv.databaseName,
+      ssl: argv.databaseSsl,
       uri: argv.databaseUrl,
     });
   } catch (dbException) {

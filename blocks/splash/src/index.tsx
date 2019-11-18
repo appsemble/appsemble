@@ -1,6 +1,6 @@
 /** @jsx h */
 import { attach } from '@appsemble/sdk';
-import h from 'mini-jsx';
+import { h } from 'mini-jsx';
 
 import { Actions, Parameters } from '../block';
 import animationLoop from './animation-loop.gif';

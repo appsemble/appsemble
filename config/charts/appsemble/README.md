@@ -84,5 +84,6 @@ helm upgrade my-release config/charts/appsemble --set 'global.postgresql.existin
 | `postgresql.fullnameOverride`          | `appsemble-postgresql`        | The name used for the PostgreSQL database.                                                                                                                  |
 | `postgresql.enabled`                   | `true`                        | Set this to false explicitly to not include a PostgreSQL installation. This is useful if the database is managed by another service.                        |
 | `postgresql.persistence.enabled`       | `false`                       | Enable to create a persistent volume for the data.                                                                                                          |
+| `postgresSSL`                          | `false`                       | If `true`, connect establish the PosgreSQL connection over SSL.                                                                                             |
 
 [sentry]: https://sentry.io
