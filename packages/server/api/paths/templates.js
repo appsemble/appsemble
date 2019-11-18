@@ -44,7 +44,7 @@ export default {
           'application/json': {
             schema: {
               type: 'object',
-              required: ['template', 'organizationId'],
+              required: ['templateId', 'organizationId'],
               properties: {
                 templateId: {
                   type: 'number',

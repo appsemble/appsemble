@@ -11,17 +11,27 @@ export async function getAppTemplates(ctx) {
 
   const templates = await App.findAll({
     where: { template: true },
-    attributes: ['id', 'definition', [fn('COUNT', col('Resources.id')), 'ResourceCount']],
-    include: [{ model: Resource, attributes: [], duplicating: false }],
+    attributes: {
+      include: ['id', 'definition', [fn('COUNT', col('Resources.id')), 'ResourceCount']],
+    },
+    include: [{ model: Resource, attributes: [] }],
     group: ['App.id'],
   });
 
-  ctx.body = templates.map(({ id, definition: { description, name }, ResourceCount }) => ({
-    id,
-    name,
-    description,
-    resources: !!ResourceCount,
-  }));
+  ctx.body = templates.map(
+    ({
+      dataValues: {
+        id,
+        definition: { description, name },
+        ResourceCount,
+      },
+    }) => ({
+      id,
+      name,
+      description,
+      resources: Number(ResourceCount) > 0,
+    }),
+  );
 }
 
 export async function createTemplateApp(ctx) {
@@ -36,7 +46,10 @@ export async function createTemplateApp(ctx) {
   const { App, Resource } = ctx.db.models;
   const { user } = ctx.state;
 
-  const template = App.findOne({ where: { id: templateId, template: true }, include: [Resource] });
+  const template = await App.findOne({
+    where: { id: templateId, template: true },
+    include: [Resource],
+  });
 
   if (!user.organizations.some(organization => organization.id === organizationId)) {
     throw Boom.forbidden('User does not belong in this organization.');
@@ -61,9 +74,7 @@ export async function createTemplateApp(ctx) {
       OrganizationId: organizationId,
       ...(resources && {
         Resources: [].concat(
-          ...Object.keys(template.resources).map(key =>
-            template.resources[key].map(r => ({ type: key, data: r })),
-          ),
+          template.Resources.map(({ dataValues: { type, data } }) => ({ type, data })),
         ),
       }),
     };

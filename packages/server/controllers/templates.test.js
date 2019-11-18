@@ -1,26 +1,11 @@
-import { validate } from '@appsemble/utils';
-import RefParser from 'json-schema-ref-parser';
 import jwt from 'jsonwebtoken';
 import lolex from 'lolex';
 import request from 'supertest';
 
-import schema from '../api';
-import templates from '../templates/apps';
 import createServer from '../utils/createServer';
 import testSchema from '../utils/test/testSchema';
 import testToken from '../utils/test/testToken';
 import truncate from '../utils/test/truncate';
-
-describe('App Templates', () => {
-  templates.map(template =>
-    it(`should validate ${template.name}`, async () => {
-      const spec = await RefParser.dereference(schema());
-      const appSchema = spec.components.schemas.App;
-      const result = await validate(appSchema, template.definition);
-      expect(result).toBeUndefined();
-    }),
-  );
-});
 
 describe('Template API', () => {
   let db;
@@ -55,12 +40,20 @@ describe('Template API', () => {
   });
 
   it('should return a list of available templates', async () => {
+    const template = {
+      path: 'test-template',
+      template: true,
+      OrganizationId: organizationId,
+      definition: {
+        name: 'Test Template',
+        description: 'Description',
+        pages: [],
+      },
+    };
+    const { id } = await App.create(template);
+
     const { body: result } = await request(server).get('/api/templates');
-    const expected = templates.map(({ name, description, resources }) => ({
-      name,
-      description,
-      resources: !!resources,
-    }));
+    const expected = [{ ...template, id, resources: false }];
 
     expect(result).toStrictEqual(expected);
   });
