@@ -1,6 +1,5 @@
 name: Unlittered App
-description:
-  An app featuring a form in which litter can be reported and displayed on an interactive map.
+description: An app in which litter can be reported and displayed on an interactive map.
 defaultPage: Report litter
 theme:
   themeColor: '#eb0000'

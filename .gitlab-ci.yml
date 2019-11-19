@@ -81,6 +81,10 @@ stages:
     - yarn appsemble block register blocks/markdown
     - yarn appsemble block register blocks/navigation
     - yarn appsemble block register blocks/splash
+    - yarn appsemble app create --template --organization @appsemble apps/empty
+    - yarn appsemble app create --template --organization @appsemble apps/holiday
+    - yarn appsemble app create --template --organization @appsemble apps/person
+    - yarn appsemble app create --template --organization @appsemble apps/unlittered-template
 
 ###################################################################################################
 #  Test Stage                                                                                     #
