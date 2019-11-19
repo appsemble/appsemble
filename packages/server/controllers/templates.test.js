@@ -14,6 +14,7 @@ describe('Template API', () => {
   let organizationId;
   let App;
   let Resource;
+  let templates;
 
   let clock;
 
@@ -29,6 +30,35 @@ describe('Template API', () => {
     token = await testToken(request, server, db, 'apps:read apps:write');
     organizationId = jwt.decode(token.substring(7)).user.organizations[0].id;
     clock = lolex.install();
+
+    const template = {
+      path: 'test-template',
+      template: true,
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organizationId,
+      definition: {
+        name: 'Test Template',
+        description: 'Description',
+        pages: [],
+      },
+    };
+
+    const t1 = await App.create(template, { raw: true });
+    const t2 = await App.create(
+      {
+        ...template,
+        path: 'test-template-2',
+        definition: { ...template.definition, name: 'Test App 2' },
+        resources: {
+          test: { schema: { type: 'object', properties: { name: { type: 'string' } } } },
+        },
+      },
+      { raw: true },
+    );
+    await Resource.create({ type: 'test', data: { name: 'foo' }, AppId: t2.id });
+
+    templates = [t1, t2];
   });
 
   afterEach(() => {
@@ -40,22 +70,23 @@ describe('Template API', () => {
   });
 
   it('should return a list of available templates', async () => {
-    const template = {
-      path: 'test-template',
-      template: true,
-      OrganizationId: organizationId,
-      definition: {
-        name: 'Test Template',
-        description: 'Description',
-        pages: [],
-      },
-    };
-    const { id } = await App.create(template);
-
     const { body: result } = await request(server).get('/api/templates');
-    const expected = [{ ...template, id, resources: false }];
 
-    expect(result).toStrictEqual(expected);
+    expect(result).toHaveLength(2);
+    expect(result).toStrictEqual([
+      {
+        id: templates[0].id,
+        name: templates[0].definition.name,
+        description: templates[0].definition.description,
+        resources: false,
+      },
+      {
+        id: templates[1].id,
+        name: templates[1].definition.name,
+        description: templates[1].definition.description,
+        resources: true,
+      },
+    ]);
   });
 
   it('should create a new app using a template', async () => {
@@ -63,7 +94,7 @@ describe('Template API', () => {
       .post('/api/templates')
       .set('Authorization', token)
       .send({
-        template: templates[0].name,
+        templateId: templates[0].id,
         name: 'Test app',
         description: 'This is a test app',
         organizationId,
@@ -73,12 +104,12 @@ describe('Template API', () => {
   });
 
   it('should create a new app with example resources', async () => {
-    const template = templates.find(t => t.name === 'Person App');
+    const template = templates[1];
     const { body: result } = await request(server)
       .post('/api/templates')
       .set('Authorization', token)
       .send({
-        template: template.name,
+        templateId: template.id,
         name: 'Test app',
         description: 'This is a test app',
         organizationId,
@@ -86,14 +117,9 @@ describe('Template API', () => {
       });
 
     const { id } = result;
-    const resources = await Resource.findAll(
-      { where: { AppId: id, type: 'person' } },
-      { raw: true },
-    );
+    const resources = await Resource.findAll({ where: { AppId: id, type: 'test' } }, { raw: true });
 
-    expect(resources.map(r => r.data)).toStrictEqual(
-      expect.arrayContaining(template.resources.person),
-    );
+    expect(resources.map(r => r.data)).toStrictEqual([{ name: 'foo' }]);
   });
 
   it('should append a number when creating a new app using a template with a duplicate name', async () => {
@@ -101,7 +127,7 @@ describe('Template API', () => {
       .post('/api/templates')
       .set('Authorization', token)
       .send({
-        template: templates[0].name,
+        templateId: templates[0].id,
         name: 'Test app',
         description: 'This is a test app',
         organizationId,
@@ -114,7 +140,7 @@ describe('Template API', () => {
       .post('/api/templates')
       .set('Authorization', token)
       .send({
-        template: templates[0].name,
+        templateId: templates[0].id,
         name: 'Test app',
         description: 'This is also a test app',
         organizationId,
@@ -147,7 +173,7 @@ describe('Template API', () => {
       .post('/api/templates')
       .set('Authorization', token)
       .send({
-        template: templates[0].name,
+        templateId: templates[0].id,
         name: 'Test app',
         description: 'This is a test app',
         organizationId,
