@@ -50,6 +50,13 @@ export default {
                 },
               },
             },
+            encoding: {
+              style: { contentType: 'text/css' },
+              sharedStyle: { contentType: 'text/css' },
+              icon: {
+                contentType: 'image/png,image/jpg,image/svg+xml,image/tiff,image/webp',
+              },
+            },
           },
         },
       },
@@ -57,13 +64,6 @@ export default {
         201: {
           description: 'The app that was created.',
           $ref: '#/components/responses/app',
-        },
-      },
-      encoding: {
-        style: { contentType: 'text/css' },
-        sharedStyle: { contentType: 'text/css' },
-        icon: {
-          contentType: 'image/png,image/jpg,image/svg+xml,image/tiff,image/webp',
         },
       },
       security: [{ apiUser: ['apps:write'] }],
@@ -133,15 +133,6 @@ export default {
         content: {
           'multipart/form-data': {
             schema: {
-              required: [
-                'definition',
-                'domain',
-                'path',
-                'private',
-                'OrganizationId',
-                'yaml',
-                'icon',
-              ],
               properties: {
                 definition: {
                   $ref: '#/components/schemas/App/properties/definition',
@@ -167,6 +158,16 @@ export default {
                   type: 'string',
                   format: 'binary',
                   description: 'The app icon.',
+                },
+                style: {
+                  type: 'string',
+                  format: 'binary',
+                  description: 'The custom style to apply to the core app.',
+                },
+                sharedStyle: {
+                  type: 'string',
+                  format: 'binary',
+                  description: 'The custom style to apply to all parts of app.',
                 },
               },
             },
