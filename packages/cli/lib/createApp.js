@@ -47,7 +47,7 @@ async function traverseAppDirectory(path, formData) {
       if (coreCss) {
         logger.info('Including core style');
         const css = await processCss(join(path, theme, core, coreCss));
-        formData.append('style', Buffer.from(css));
+        formData.append('style', Buffer.from(css), coreCss);
       } else {
         logger.warn('Found core style directory but couldn‘t find “index.css”, skipping');
       }
@@ -59,7 +59,7 @@ async function traverseAppDirectory(path, formData) {
       if (sharedCss) {
         logger.info('Including shared style');
         const css = await processCss(join(path, theme, shared, sharedCss));
-        formData.append('sharedStyle', Buffer.from(css));
+        formData.append('sharedStyle', Buffer.from(css), sharedCss);
       } else {
         logger.warn('Found shared style directory but couldn‘t find “index.css”, skipping');
       }
@@ -67,6 +67,64 @@ async function traverseAppDirectory(path, formData) {
   }
 
   return true;
+}
+
+async function handleBlockThemeUpload(file, organization, appId, block) {
+  logger.info(`Upload ${organization}/${block} stylesheet for app ${appId}`);
+
+  const css = await processCss(file);
+  const formData = new FormData();
+  formData.append('style', Buffer.from(css), 'style.css');
+
+  await post(`/api/apps/${appId}/style/block/${organization}/${block}`, formData);
+
+  logger.info(`Upload of ${organization}/${block} stylesheet successful! 🎉`);
+}
+
+async function traverseBlockThemes(path, appId) {
+  if (!fs.existsSync(join(path, 'theme'))) {
+    return;
+  }
+
+  const themeDir = (await fs.readdir(join(path, 'theme'))).filter(
+    sub => fs.lstatSync(join(path, 'theme', sub)).isDirectory() && sub.startsWith('@'),
+  );
+
+  if (themeDir.length === 0) {
+    return;
+  }
+
+  logger.info(`Traversing block themes for ${themeDir.length} organizations`);
+
+  await themeDir.reduce(async (acc, org) => {
+    await acc;
+    logger.info(`Traversing themes for organization ${org}`);
+    const orgDir = (await fs.readdir(join(path, 'theme', org))).filter(sub =>
+      fs.lstatSync(join(path, 'theme', org, sub)).isDirectory(),
+    );
+
+    if (!orgDir.length) {
+      logger.warn(`No subdirectories found in ${join(path, 'theme', orgDir)}, skipping`);
+      return;
+    }
+
+    await orgDir.reduce(async (accumulator, blockDir) => {
+      await accumulator;
+      const blockStyleDir = await fs.readdir(join(path, 'theme', org, blockDir));
+      const indexCss = blockStyleDir.find(fname => fname.toLowerCase() === 'index.css');
+      if (!indexCss) {
+        logger.warn(`No index.css found, skipping directory ${join(path, 'theme', org, blockDir)}`);
+        return;
+      }
+
+      await handleBlockThemeUpload(
+        join(path, 'theme', org, blockDir, indexCss),
+        org,
+        appId,
+        blockDir,
+      );
+    }, null);
+  }, null);
 }
 
 /**
@@ -107,6 +165,12 @@ export default async function createApp({
     }
 
     const response = await post('/api/apps', formData);
+
+    if (file.isDirectory()) {
+      // After uploading the app, upload block styles if they are available
+      await traverseBlockThemes(path, response.id);
+    }
+
     logger.info(`Successfully created App ${response.definition.name}! 🙌`);
     logger.info(`View App: ${remote}/@${organizationId}/${response.path}`);
     logger.info(`Edit App: ${remote}/apps/${response.id}/edit`);
