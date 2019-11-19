@@ -3,7 +3,7 @@ import FormData from 'form-data';
 import fs from 'fs-extra';
 import yaml from 'js-yaml';
 
-import { post } from './request';
+import { patch } from './request';
 import traverseAppDirectory from './traverseAppDirectory';
 import traverseBlockThemes from './traverseBlockThemes';
 
@@ -11,24 +11,17 @@ import traverseBlockThemes from './traverseBlockThemes';
  * Create a new App.
  *
  * @param {Object} params
- * @param {string} params.organizationId The ID of the organization to upload for.
- * @param {string} params.path The path in which the App YAML is located.
- * @param {boolean} params.private Whether the App should be marked as private.
- * @param {boolean} params.template Whether the App should be marked as a template.
+ * @param {number} params.appId The ID of the app to update.
+ * @param {string} params.path The path in which the app YAML is located.
+ * @param {boolean} params.private Whether the app should be marked as private.
+ * @param {boolean} params.template Whether the app should be marked as a template.
  */
-export default async function createApp({
-  organizationId,
-  path,
-  remote,
-  private: isPrivate,
-  template,
-}) {
+export default async function updateApp({ appId, path, remote, private: isPrivate, template }) {
   try {
     const file = await fs.stat(path);
     const formData = new FormData();
     formData.append('private', String(isPrivate));
     formData.append('template', String(template));
-    formData.append('OrganizationId', organizationId);
 
     if (file.isFile()) {
       // Assuming file is App YAML
@@ -44,15 +37,15 @@ export default async function createApp({
       }
     }
 
-    const response = await post('/api/apps', formData);
+    const response = await patch(`/api/apps/${appId}`, formData);
 
     if (file.isDirectory()) {
       // After uploading the app, upload block styles if they are available
       await traverseBlockThemes(path, response.id);
     }
 
-    logger.info(`Successfully created App ${response.definition.name}! 🙌`);
-    logger.info(`View App: ${remote}/@${organizationId}/${response.path}`);
+    logger.info(`Successfully updated App ${response.definition.name}! 🙌`);
+    logger.info(`View App: ${remote}/@${response.OrganizationId}/${response.path}`);
     logger.info(`Edit App: ${remote}/apps/${response.id}/edit`);
   } catch (error) {
     if (error instanceof yaml.YAMLException) {

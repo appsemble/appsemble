@@ -4,7 +4,7 @@ import { getToken } from '../../lib/config';
 import createApp from '../../lib/createApp';
 
 export const command = 'create <path>';
-export const description = 'Create a new App based on a specified YAML file.';
+export const description = 'Create a new App based on a specified YAML file or directory.';
 
 export function builder(yargs) {
   return yargs
