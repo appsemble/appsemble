@@ -18,6 +18,13 @@ const filters = {
       date = new Date(object);
     } else if (typeof object === 'string') {
       date = parseISO(object);
+      if (Number.isNaN(date.getTime())) {
+        date = new Date(object);
+
+        if (Number.isNaN(date)) {
+          date = undefined;
+        }
+      }
     } else {
       date = object;
     }

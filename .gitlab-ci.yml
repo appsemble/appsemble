@@ -2,7 +2,6 @@ image: node:10-slim
 
 stages:
   - test
-  - build
   - publish
   - deploy
   - migrate
@@ -90,6 +89,35 @@ stages:
 #  Test Stage                                                                                     #
 ###################################################################################################
 
+# Build the Docker image.
+build docker image:
+  extends: .docker
+  only:
+    - branches
+    - merge_requests
+    - tags
+  except:
+    - schedules
+  script:
+    - docker build -t "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME" .
+    - docker push "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME"
+
+# Build the Docker image.
+build docs image:
+  extends: .docker
+  only:
+    - branches
+    - merge_requests
+    - tags
+  except:
+    - schedules
+  script:
+    - docker build .
+      --build-arg "CI_COMMIT_REF_NAME=$CI_COMMIT_REF_NAME"
+      --file config/docs/Dockerfile
+      --tag "$CI_REGISTRY_IMAGE/docs:$CI_COMMIT_REF_NAME"
+    - docker push "$CI_REGISTRY_IMAGE/docs:$CI_COMMIT_REF_NAME"
+
 # Scan for dependency vulnerabilities.
 dependency scanning:
   extends: .yarn
@@ -132,6 +160,21 @@ helm lint:
       - config/charts/**/*.*
   script:
     - helm lint config/charts/*
+
+# Build the npm packages that should be published.
+pack:
+  except:
+    - schedules
+  script:
+    - yarn workspace @appsemble/cli pack
+    - yarn workspace @appsemble/node-utils pack
+    - yarn workspace @appsemble/react pack
+    - yarn workspace @appsemble/sdk pack
+    - yarn workspace @appsemble/server pack
+    - yarn workspace create-appsemble pack
+  artifacts:
+    paths:
+      - packages/**/*.tgz
 
 # Check formatting using prettier.
 prettier:
@@ -204,58 +247,6 @@ tsc:
   script:
     - yarn tsc
     - yarn workspaces run tsc
-
-###################################################################################################
-#  Build Stage                                                                                    #
-###################################################################################################
-
-# Build the Docker image.
-build docker image:
-  extends: .docker
-  stage: build
-  only:
-    - branches
-    - merge_requests
-    - tags
-  except:
-    - schedules
-  script:
-    - docker build -t "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME" .
-    - docker push "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME"
-
-# Build the Docker image.
-build docs image:
-  extends: .docker
-  stage: build
-  only:
-    - branches
-    - merge_requests
-    - tags
-  except:
-    - schedules
-  script:
-    - docker build .
-      --build-arg "CI_COMMIT_REF_NAME=$CI_COMMIT_REF_NAME"
-      --file config/docs/Dockerfile
-      --tag "$CI_REGISTRY_IMAGE/docs:$CI_COMMIT_REF_NAME"
-    - docker push "$CI_REGISTRY_IMAGE/docs:$CI_COMMIT_REF_NAME"
-
-# Build the npm packages that should be published.
-pack:
-  stage: build
-  except:
-    - schedules
-  dependencies: []
-  script:
-    - yarn workspace @appsemble/cli pack
-    - yarn workspace @appsemble/node-utils pack
-    - yarn workspace @appsemble/react pack
-    - yarn workspace @appsemble/sdk pack
-    - yarn workspace @appsemble/server pack
-    - yarn workspace create-appsemble pack
-  artifacts:
-    paths:
-      - packages/**/*.tgz
 
 ###################################################################################################
 #  Publish Stage                                                                                  #
