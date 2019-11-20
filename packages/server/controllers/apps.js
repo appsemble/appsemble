@@ -5,7 +5,7 @@ import Ajv from 'ajv';
 import crypto from 'crypto';
 import jsYaml from 'js-yaml';
 import { isEqual, uniqWith } from 'lodash';
-import { Op, UniqueConstraintError } from 'sequelize';
+import { col, fn, Op, UniqueConstraintError } from 'sequelize';
 import sharp from 'sharp';
 import * as webpush from 'web-push';
 
@@ -162,9 +162,20 @@ export async function createApp(ctx) {
 
 export async function getAppById(ctx) {
   const { appId } = ctx.params;
-  const { App } = ctx.db.models;
+  const { App, AppRating } = ctx.db.models;
 
-  const app = await App.findByPk(appId, { raw: true });
+  const app = await App.findByPk(appId, {
+    raw: true,
+    attributes: {
+      include: [
+        'App.*',
+        [fn('AVG', col('AppRatings.rating')), 'RatingAverage'],
+        [fn('COUNT', col('AppRatings.AppId')), 'RatingCount'],
+      ],
+    },
+    include: [{ model: AppRating, attributes: [] }],
+    group: ['App.id'],
+  });
 
   if (!app) {
     throw Boom.notFound('App not found');
@@ -177,10 +188,12 @@ export async function queryApps(ctx) {
   const { App } = ctx.db.models;
 
   const apps = await App.findAll({
+    attributes: { exclude: ['yaml'] },
     where: { private: false },
     raw: true,
   });
-  ctx.body = apps.map(getAppFromRecord);
+  const ignoredFields = ['yaml'];
+  ctx.body = apps.map(app => getAppFromRecord(app, ignoredFields));
 }
 
 export async function queryMyApps(ctx) {
@@ -190,10 +203,11 @@ export async function queryMyApps(ctx) {
   } = ctx.state;
 
   const apps = await App.findAll({
+    attributes: { exclude: ['yaml'] },
     where: { OrganizationId: { [Op.in]: organizations.map(o => o.id) } },
   });
-
-  ctx.body = apps.map(getAppFromRecord);
+  const ignoredFields = ['yaml'];
+  ctx.body = apps.map(app => getAppFromRecord(app, ignoredFields));
 }
 
 export async function updateApp(ctx) {
