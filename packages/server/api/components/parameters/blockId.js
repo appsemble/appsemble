@@ -1,3 +1,5 @@
+import { normalized } from '@appsemble/utils';
+
 export default {
   name: 'blockId',
   in: 'path',
@@ -6,6 +8,6 @@ export default {
   required: true,
   schema: {
     type: 'string',
-    pattern: /^[a-z]([a-z\d-]{0,30}[a-z\d])$/,
+    pattern: normalized,
   },
 };

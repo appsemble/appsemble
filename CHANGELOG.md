@@ -7,6 +7,57 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.9.3] - 2019-11-18
+
+### Added
+
+- App: Add support for absolute URLs in `link` actions.
+- App: Add support for push notifications. Users can subscribe to notifications in the app’s
+  settings page. More strategies for receiving push notifications will be added in the future.
+- App: Add settings page
+- Server: Add support for broadcasting push notifications.
+
+## [0.9.2] - 2019-11-14
+
+### Fixed
+
+- Server: Add support connection to PostgreSQL databases over SSL.
+
+## [0.9.1] - 2019-11-14
+
+### Fixed
+
+- Server: Reduce log size when creating blocks.
+- Server: Remove old migrations that depended on MySQL.
+
+## [0.9.0] - 2019-11-12
+
+### Added
+
+- Helm: Add support for self managed databases.
+- Helm: Test ingress in the success hook.
+
+### Changed
+
+- Helm: Replace MySQL with PostgreSQL.
+- Helm: Use Helm 3, dropping support for Helm 2.
+- Server: Replace MySQL with PostgreSQL.
+
+## [0.8.11] - 2019-11-01
+
+### Added
+
+- Editor: Add App settings page
+- Server: Add support for editing app settings. These settings include `path`, `icon`, `private`,
+  and `domain`.
+- Server: Add support for customizing the domain at which the app is served.
+
+### Removed
+
+- Editor: Remove icon
+- Server: Remove support for `private` and `path` properties in App. These have been moved to
+  `/api/apps/{appId}/settings`.
+
 ## [0.8.10] - 2019-10-04
 
 ### Added

@@ -1,4 +1,5 @@
 import jwt from 'jsonwebtoken';
+import lolex from 'lolex';
 import request from 'supertest';
 
 import createServer from '../utils/createServer';
@@ -17,6 +18,7 @@ describe('app controller', () => {
   let server;
   let token;
   let organizationId;
+  let clock;
 
   beforeAll(async () => {
     db = await testSchema('apps');
@@ -26,6 +28,8 @@ describe('app controller', () => {
   }, 10e3);
 
   beforeEach(async () => {
+    clock = lolex.install();
+
     await truncate(db);
     token = await testToken(request, server, db, 'apps:read apps:write');
     organizationId = jwt.decode(token.substring(7)).user.organizations[0].id;
@@ -46,6 +50,10 @@ describe('app controller', () => {
     });
   });
 
+  afterEach(() => {
+    clock.uninstall();
+  });
+
   afterAll(async () => {
     await db.close();
   });
@@ -63,6 +71,8 @@ describe('app controller', () => {
       {
         path: 'test-app',
         definition: { name: 'Test App', defaultPage: 'Test Page' },
+        vapidPublicKey: 'a',
+        vapidPrivateKey: 'b',
         OrganizationId: organizationId,
       },
       { raw: true },
@@ -71,6 +81,8 @@ describe('app controller', () => {
       {
         path: 'another-app',
         definition: { name: 'Another App', defaultPage: 'Another Page' },
+        vapidPublicKey: 'a',
+        vapidPrivateKey: 'b',
         OrganizationId: organizationId,
       },
       { raw: true },
@@ -81,18 +93,28 @@ describe('app controller', () => {
     expect(body).toHaveLength(2);
     expect(body).toContainEqual({
       id: appA.id,
+      $created: new Date(clock.now).toJSON(),
+      $updated: new Date(clock.now).toJSON(),
+      domain: null,
+      private: false,
       path: 'test-app',
-      ...appA.definition,
-      organizationId: appA.OrganizationId,
+      iconUrl: `/api/apps/${appA.id}/icon`,
+      definition: appA.definition,
+      OrganizationId: appA.OrganizationId,
       yaml: `name: Test App
 defaultPage: Test Page
 `,
     });
     expect(body).toContainEqual({
       id: appB.id,
+      $created: new Date(clock.now).toJSON(),
+      $updated: new Date(clock.now).toJSON(),
+      domain: null,
+      private: false,
       path: 'another-app',
-      ...appB.definition,
-      organizationId: appB.OrganizationId,
+      iconUrl: `/api/apps/${appB.id}/icon`,
+      definition: appB.definition,
+      OrganizationId: appB.OrganizationId,
       yaml: `name: Another App
 defaultPage: Another Page
 `,
@@ -104,6 +126,8 @@ defaultPage: Another Page
       {
         path: 'test-app',
         definition: { name: 'Test App', defaultPage: 'Test Page' },
+        vapidPublicKey: 'a',
+        vapidPrivateKey: 'b',
         OrganizationId: organizationId,
       },
       { raw: true },
@@ -111,7 +135,10 @@ defaultPage: Another Page
     await App.create(
       {
         path: 'another-app',
-        definition: { name: 'Another App', defaultPage: 'Another Page', private: true },
+        private: true,
+        definition: { name: 'Another App', defaultPage: 'Another Page' },
+        vapidPublicKey: 'a',
+        vapidPrivateKey: 'b',
         OrganizationId: organizationId,
       },
       { raw: true },
@@ -121,9 +148,14 @@ defaultPage: Another Page
     expect(body).toHaveLength(1);
     expect(body).toContainEqual({
       id: appA.id,
+      $created: new Date(clock.now).toJSON(),
+      $updated: new Date(clock.now).toJSON(),
+      domain: null,
+      private: false,
       path: 'test-app',
-      ...appA.definition,
-      organizationId: appA.OrganizationId,
+      iconUrl: `/api/apps/${appA.id}/icon`,
+      definition: appA.definition,
+      OrganizationId: appA.OrganizationId,
       yaml: `name: Test App
 defaultPage: Test Page
 `,
@@ -142,6 +174,8 @@ defaultPage: Test Page
       {
         path: 'test-app',
         definition: { name: 'Test App', defaultPage: 'Test Page' },
+        vapidPublicKey: 'a',
+        vapidPrivateKey: 'b',
         OrganizationId: organizationId,
       },
       { raw: true },
@@ -150,9 +184,14 @@ defaultPage: Test Page
 
     expect(body).toStrictEqual({
       id: appA.id,
+      $created: new Date(clock.now).toJSON(),
+      $updated: new Date(clock.now).toJSON(),
+      domain: null,
+      private: false,
       path: 'test-app',
-      ...appA.definition,
-      organizationId,
+      iconUrl: `/api/apps/${appA.id}/icon`,
+      definition: appA.definition,
+      OrganizationId: organizationId,
       yaml: `name: Test App
 defaultPage: Test Page
 `,
@@ -164,6 +203,8 @@ defaultPage: Test Page
       {
         path: 'test-app',
         definition: { name: 'Test App', defaultPage: 'Test Page' },
+        vapidPublicKey: 'a',
+        vapidPrivateKey: 'b',
         OrganizationId: organizationId,
       },
       { raw: true },
@@ -174,6 +215,8 @@ defaultPage: Test Page
       {
         path: 'test-app-b',
         definition: { name: 'Test App B', defaultPage: 'Test Page' },
+        vapidPublicKey: 'a',
+        vapidPrivateKey: 'b',
         OrganizationId: organizationB.id,
       },
       { raw: true },
@@ -192,10 +235,15 @@ defaultPage: Test Page
 
     expect(requestA.body).toStrictEqual([
       {
-        ...appA.definition,
         id: appA.id,
-        path: appA.path,
-        organizationId: appA.OrganizationId,
+        $created: new Date(clock.now).toJSON(),
+        $updated: new Date(clock.now).toJSON(),
+        domain: null,
+        private: false,
+        path: 'test-app',
+        iconUrl: `/api/apps/${appA.id}/icon`,
+        definition: appA.definition,
+        OrganizationId: appA.OrganizationId,
         yaml: `name: Test App
 defaultPage: Test Page
 `,
@@ -203,19 +251,29 @@ defaultPage: Test Page
     ]);
     expect(requestB.body).toStrictEqual([
       {
-        ...appA.definition,
         id: appA.id,
-        path: appA.path,
-        organizationId: appA.OrganizationId,
+        $created: new Date(clock.now).toJSON(),
+        $updated: new Date(clock.now).toJSON(),
+        domain: null,
+        private: false,
+        path: 'test-app',
+        iconUrl: `/api/apps/${appA.id}/icon`,
+        definition: appA.definition,
+        OrganizationId: appA.OrganizationId,
         yaml: `name: Test App
 defaultPage: Test Page
 `,
       },
       {
-        ...appB.definition,
         id: appB.id,
-        path: appB.path,
-        organizationId: appB.OrganizationId,
+        $created: new Date(clock.now).toJSON(),
+        $updated: new Date(clock.now).toJSON(),
+        domain: null,
+        private: false,
+        path: 'test-app-b',
+        iconUrl: `/api/apps/${appB.id}/icon`,
+        definition: appB.definition,
+        OrganizationId: appB.OrganizationId,
         yaml: `name: Test App B
 defaultPage: Test Page
 `,
@@ -227,8 +285,9 @@ defaultPage: Test Page
     const { body: created } = await request(server)
       .post('/api/apps')
       .set('Authorization', token)
+      .field('OrganizationId', organizationId)
       .field(
-        'app',
+        'definition',
         JSON.stringify({
           name: 'Test App',
           defaultPage: 'Test Page',
@@ -244,26 +303,32 @@ defaultPage: Test Page
             },
           ],
         }),
-      )
-      .field('organizationId', organizationId);
+      );
 
     expect(created).toStrictEqual({
-      id: expect.any(Number),
-      name: 'Test App',
-      defaultPage: 'Test Page',
+      id: created.id,
+      $created: new Date(clock.now).toJSON(),
+      $updated: new Date(clock.now).toJSON(),
+      domain: null,
+      private: true,
       path: 'test-app',
-      pages: [
-        {
-          name: 'Test Page',
-          blocks: [
-            {
-              type: 'test',
-              version: '0.0.0',
-            },
-          ],
-        },
-      ],
-      organizationId,
+      iconUrl: `/api/apps/${created.id}/icon`,
+      definition: {
+        name: 'Test App',
+        defaultPage: 'Test Page',
+        pages: [
+          {
+            name: 'Test Page',
+            blocks: [
+              {
+                type: 'test',
+                version: '0.0.0',
+              },
+            ],
+          },
+        ],
+      },
+      OrganizationId: organizationId,
       yaml: `name: Test App
 defaultPage: Test Page
 pages:
@@ -274,7 +339,7 @@ pages:
 `,
     });
     const { body: retrieved } = await request(server).get(`/api/apps/${created.id}`);
-    expect(retrieved).toStrictEqual({ ...created, organizationId });
+    expect(retrieved).toStrictEqual({ ...created, OrganizationId: organizationId });
   });
 
   it('should not allow an upload without an app when creating an app', async () => {
@@ -294,7 +359,7 @@ pages:
       .post('/api/apps')
       .set('Authorization', token)
       .field(
-        'app',
+        'definition',
         JSON.stringify({
           name: 'Test App',
           defaultPage: 'Test Page',
@@ -316,8 +381,8 @@ pages:
       errors: [
         {
           code: 'OBJECT_MISSING_REQUIRED_PROPERTY',
-          message: 'Missing required property: organizationId',
-          params: ['organizationId'],
+          message: 'Missing required property: OrganizationId',
+          params: ['OrganizationId'],
           path: [],
         },
       ],
@@ -329,8 +394,9 @@ pages:
     const { body } = await request(server)
       .post('/api/apps')
       .set('Authorization', token)
+      .field('OrganizationId', 'a')
       .field(
-        'app',
+        'definition',
         JSON.stringify({
           name: 'Test App',
           defaultPage: 'Test Page',
@@ -346,8 +412,7 @@ pages:
             },
           ],
         }),
-      )
-      .field('organizationId', organizationId + 1);
+      );
 
     expect(body).toStrictEqual({
       error: 'Forbidden',
@@ -360,8 +425,9 @@ pages:
     const { body } = await request(server)
       .post('/api/apps')
       .set('Authorization', token)
+      .field('OrganizationId', organizationId)
       .field(
-        'app',
+        'definition',
         JSON.stringify({
           name: 'Test App',
           defaultPage: 'Test Page',
@@ -377,8 +443,7 @@ pages:
             },
           ],
         }),
-      )
-      .field('organizationId', organizationId);
+      );
 
     expect(body).toStrictEqual({
       data: {
@@ -394,8 +459,9 @@ pages:
     const { body } = await request(server)
       .post('/api/apps')
       .set('Authorization', token)
+      .field('OrganizationId', organizationId)
       .field(
-        'app',
+        'definition',
         JSON.stringify({
           name: 'Test App',
           defaultPage: 'Test Page',
@@ -411,8 +477,7 @@ pages:
             },
           ],
         }),
-      )
-      .field('organizationId', organizationId);
+      );
 
     expect(body).toStrictEqual({
       data: {
@@ -428,8 +493,9 @@ pages:
     const { body } = await request(server)
       .post('/api/apps')
       .set('Authorization', token)
+      .field('OrganizationId', organizationId)
       .field(
-        'app',
+        'definition',
         JSON.stringify({
           name: 'Test App',
           defaultPage: 'Test Page',
@@ -448,8 +514,7 @@ pages:
             },
           ],
         }),
-      )
-      .field('organizationId', organizationId);
+      );
 
     expect(body).toStrictEqual({
       data: {
@@ -473,12 +538,12 @@ pages:
     await request(server)
       .post('/api/apps')
       .set('Authorization', token)
+      .field('OrganizationId', organizationId)
       .field(
-        'app',
+        'definition',
         JSON.stringify({
           name: 'Test App',
           defaultPage: 'Test Page',
-          path: 'a',
           pages: [
             {
               name: 'Test Page',
@@ -486,17 +551,16 @@ pages:
             },
           ],
         }),
-      )
-      .field('organizationId', organizationId);
+      );
     const response = await request(server)
       .post('/api/apps')
       .set('Authorization', token)
+      .field('OrganizationId', organizationId)
       .field(
-        'app',
+        'definition',
         JSON.stringify({
           name: 'Test App',
           defaultPage: 'Test Page',
-          path: 'a',
           pages: [
             {
               name: 'Test Page',
@@ -504,23 +568,57 @@ pages:
             },
           ],
         }),
-      )
-      .field('organizationId', organizationId);
+      );
 
-    expect(response.status).toBe(409);
-    expect(response.body).toStrictEqual({
-      error: 'Conflict',
-      message: `Another app with path “@${organizationId}/a” already exists`,
-      statusCode: 409,
-    });
+    expect(response.status).toBe(201);
+    expect(response.body.path).toStrictEqual('test-app-2');
+  });
+
+  it('should fall back to append random bytes to the end of the app path after 10 attempts', async () => {
+    await Promise.all(
+      [...new Array(11)].map((_, index) =>
+        App.create(
+          {
+            path: index + 1 === 1 ? 'test-app' : `test-app-${index + 1}`,
+            definition: { name: 'Test App', defaultPage: 'Test Page' },
+            vapidPublicKey: `a${index}`,
+            vapidPrivateKey: `b${index}`,
+            OrganizationId: organizationId,
+          },
+          { raw: true },
+        ),
+      ),
+    );
+
+    const response = await request(server)
+      .post('/api/apps')
+      .set('Authorization', token)
+      .field('OrganizationId', organizationId)
+      .field(
+        'definition',
+        JSON.stringify({
+          name: 'Test App',
+          defaultPage: 'Test Page',
+          pages: [
+            {
+              name: 'Test Page',
+              blocks: [{ type: 'test', version: '0.0.0' }],
+            },
+          ],
+        }),
+      );
+
+    expect(response.status).toStrictEqual(201);
+    expect(response.body.path).toMatch(/test-app-(\w){10}/);
   });
 
   it('should allow stylesheets to be included when creating an app', async () => {
     const response = await request(server)
       .post('/api/apps')
       .set('Authorization', token)
+      .field('OrganizationId', organizationId)
       .field(
-        'app',
+        'definition',
         JSON.stringify({
           name: 'Foobar',
           defaultPage: 'Test Page',
@@ -532,7 +630,6 @@ pages:
           ],
         }),
       )
-      .field('organizationId', organizationId)
       .attach('style', Buffer.from('body { color: blue; }'), {
         contentType: 'text/css',
         filename: 'test.css',
@@ -556,12 +653,12 @@ pages:
     const responseA = await request(server)
       .post('/api/apps')
       .set('Authorization', token)
+      .field('OrganizationId', organizationId)
       .field(
-        'app',
+        'definition',
         JSON.stringify({
           name: 'Test App',
           defaultPage: 'Test Page',
-          path: 'a',
           pages: [
             {
               name: 'Test Page',
@@ -578,12 +675,12 @@ pages:
     const responseB = await request(server)
       .post('/api/apps')
       .set('Authorization', token)
+      .field('OrganizationId', organizationId)
       .field(
-        'app',
+        'definition',
         JSON.stringify({
           name: 'Test App',
           defaultPage: 'Test Page',
-          path: 'a',
           pages: [
             {
               name: 'Test Page',
@@ -605,8 +702,9 @@ pages:
     const responseA = await request(server)
       .post('/api/apps')
       .set('Authorization', token)
+      .field('OrganizationId', organizationId)
       .field(
-        'app',
+        'definition',
         JSON.stringify({
           name: 'Test App',
           defaultPage: 'Test Page',
@@ -627,8 +725,9 @@ pages:
     const responseB = await request(server)
       .post('/api/apps')
       .set('Authorization', token)
+      .field('OrganizationId', organizationId)
       .field(
-        'app',
+        'definition',
         JSON.stringify({
           name: 'Test App',
           defaultPage: 'Test Page',
@@ -652,10 +751,10 @@ pages:
 
   it('should not update a non-existent app', async () => {
     const response = await request(server)
-      .put('/api/apps/1')
+      .patch('/api/apps/1')
       .set('Authorization', token)
       .field(
-        'app',
+        'definition',
         JSON.stringify({
           name: 'Foobar',
           defaultPage: 'Test Page',
@@ -675,17 +774,20 @@ pages:
   it('should update an app', async () => {
     const appA = await App.create(
       {
-        path: 'test-app',
         definition: { name: 'Test App', defaultPage: 'Test Page' },
+        path: 'test-app',
+        vapidPublicKey: 'a',
+        vapidPrivateKey: 'b',
         OrganizationId: organizationId,
       },
       { raw: true },
     );
     const response = await request(server)
-      .put(`/api/apps/${appA.id}`)
+      .patch(`/api/apps/${appA.id}`)
       .set('Authorization', token)
+      .field('private', true)
       .field(
-        'app',
+        'definition',
         JSON.stringify({
           name: 'Foobar',
           defaultPage: appA.definition.defaultPage,
@@ -701,15 +803,23 @@ pages:
     expect(response.status).toBe(200);
     expect(response.body).toStrictEqual({
       id: appA.id,
-      name: 'Foobar',
-      path: 'foobar',
-      defaultPage: appA.definition.defaultPage,
-      pages: [
-        {
-          name: 'Test Page',
-          blocks: [{ type: 'test', version: '0.0.0' }],
-        },
-      ],
+      $created: new Date(clock.now).toJSON(),
+      $updated: new Date(clock.now).toJSON(),
+      domain: null,
+      private: true,
+      path: 'test-app',
+      iconUrl: `/api/apps/${appA.id}/icon`,
+      OrganizationId: organizationId,
+      definition: {
+        name: 'Foobar',
+        defaultPage: appA.definition.defaultPage,
+        pages: [
+          {
+            name: 'Test Page',
+            blocks: [{ type: 'test', version: '0.0.0' }],
+          },
+        ],
+      },
       yaml: `name: Foobar
 defaultPage: Test Page
 pages:
@@ -726,15 +836,17 @@ pages:
       {
         path: 'test-app',
         definition: { name: 'Test App', defaultPage: 'Test Page' },
+        vapidPublicKey: 'a',
+        vapidPrivateKey: 'b',
         OrganizationId: organizationId,
       },
       { raw: true },
     );
     const response = await request(server)
-      .put(`/api/apps/${appA.id}`)
+      .patch(`/api/apps/${appA.id}`)
       .set('Authorization', token)
       .field(
-        'app',
+        'definition',
         JSON.stringify({
           name: 'Foobar',
           defaultPage: appA.definition.defaultPage,
@@ -771,15 +883,17 @@ pages:
       {
         path: 'test-app',
         definition: { name: 'Test App', defaultPage: 'Test Page' },
+        vapidPublicKey: 'a',
+        vapidPrivateKey: 'b',
         OrganizationId: organizationId,
       },
       { raw: true },
     );
     const response = await request(server)
-      .put(`/api/apps/${appA.id}`)
+      .patch(`/api/apps/${appA.id}`)
       .set('Authorization', token)
       .field(
-        'app',
+        'definition',
         JSON.stringify({
           name: 'Foobar',
           defaultPage: appA.definition.defaultPage,
@@ -816,6 +930,8 @@ pages:
       {
         path: 'test-app',
         definition: { name: 'Test App', defaultPage: 'Test Page' },
+        vapidPublicKey: 'a',
+        vapidPrivateKey: 'b',
         OrganizationId: organizationId,
       },
       { raw: true },
@@ -832,10 +948,10 @@ pages:
     name: *titlePage`;
 
     const response = await request(server)
-      .put(`/api/apps/${appA.id}`)
+      .patch(`/api/apps/${appA.id}`)
       .set('Authorization', token)
       .field(
-        'app',
+        'definition',
         JSON.stringify({
           name: 'Foobar',
           defaultPage: appA.definition.defaultPage,
@@ -852,22 +968,111 @@ pages:
     expect(response.status).toBe(200);
   });
 
+  it('should update the app domain', async () => {
+    const appA = await App.create(
+      {
+        path: 'foo',
+        definition: { name: 'Test App', defaultPage: 'Test Page' },
+        vapidPublicKey: 'a',
+        vapidPrivateKey: 'b',
+        OrganizationId: organizationId,
+      },
+      { raw: true },
+    );
+
+    const response = await request(server)
+      .patch(`/api/apps/${appA.id}`)
+      .set('Authorization', token)
+      .field('domain', 'appsemble.app');
+
+    expect(response.status).toBe(200);
+    expect(response.body.domain).toStrictEqual('appsemble.app');
+  });
+
+  it('should set the app domain to null', async () => {
+    const appA = await App.create(
+      {
+        path: 'foo',
+        definition: { name: 'Test App', defaultPage: 'Test Page' },
+        vapidPublicKey: 'a',
+        vapidPrivateKey: 'b',
+        OrganizationId: organizationId,
+      },
+      { raw: true },
+    );
+
+    const response = await request(server)
+      .patch(`/api/apps/${appA.id}`)
+      .set('Authorization', token)
+      .field('domain', '');
+
+    expect(response.status).toBe(200);
+    expect(response.body.domain).toBeNull();
+  });
+
+  it('should save formatted YAML when updating an app', async () => {
+    const appA = await App.create(
+      {
+        path: 'test-app',
+        definition: { name: 'Test App', defaultPage: 'Test Page' },
+        vapidPublicKey: 'a',
+        vapidPrivateKey: 'b',
+        OrganizationId: organizationId,
+      },
+      { raw: true },
+    );
+
+    const yaml = `# Hi I'm a comment
+name: Foobar
+defaultPage: &titlePage 'Test Page' # This page is used for testing!
+
+pages:
+  - blocks:
+      - type: test
+        version: 0.0.0
+    name: *titlePage`;
+    const buffer = Buffer.from(yaml);
+
+    const response = await request(server)
+      .patch(`/api/apps/${appA.id}`)
+      .set('Authorization', token)
+      .field(
+        'definition',
+        JSON.stringify({
+          name: 'Foobar',
+          defaultPage: appA.definition.defaultPage,
+          pages: [
+            {
+              name: 'Test Page',
+              blocks: [{ type: 'test', version: '0.0.0' }],
+            },
+          ],
+        }),
+      )
+      .attach('yaml', buffer);
+
+    const responseBuffer = Buffer.from(response.body.yaml);
+    expect(responseBuffer).toStrictEqual(buffer);
+  });
+
   it('should not update an app of another organization', async () => {
     const newOrganization = await Organization.create({ id: 'Test Organization 2' });
     const appA = await App.create(
       {
         path: 'test-app',
         definition: { name: 'Test App', defaultPage: 'Test Page' },
+        vapidPublicKey: 'a',
+        vapidPrivateKey: 'b',
         OrganizationId: newOrganization.id,
       },
       { raw: true },
     );
 
     const response = await request(server)
-      .put(`/api/apps/${appA.id}`)
+      .patch(`/api/apps/${appA.id}`)
       .set('Authorization', token)
       .field(
-        'app',
+        'definition',
         JSON.stringify({
           name: 'Foobar',
           defaultPage: appA.definition.defaultPage,
@@ -901,75 +1106,18 @@ pages:
       {
         path: 'foo',
         definition: { name: 'Test App', defaultPage: 'Test Page' },
+        vapidPublicKey: 'a',
+        vapidPrivateKey: 'b',
         OrganizationId: organizationId,
       },
       { raw: true },
     );
     const response = await request(server)
-      .put(`/api/apps/${appA.id}`)
+      .patch(`/api/apps/${appA.id}`)
       .set('Authorization', token)
       .field('app', JSON.stringify({ name: 'Foobar' }));
 
     expect(response.status).toBe(400);
-  });
-
-  it('should not allow an upload without an app when updating an app', async () => {
-    const app = await App.create(
-      {
-        path: 'test-app',
-        definition: { name: 'Test App', defaultPage: 'Test Page' },
-        OrganizationId: organizationId,
-      },
-      { raw: true },
-    );
-
-    const response = await request(server)
-      .put(`/api/apps/${app.id}`)
-      .set('Authorization', token)
-      .attach('style', Buffer.from('body { color: red; }'), {
-        contentType: 'text/css',
-        filename: 'style.css',
-      });
-
-    expect(response.status).toBe(400);
-  });
-
-  it('should prevent path conflicts when updating an app', async () => {
-    await App.create(
-      {
-        path: 'foo',
-        definition: { name: 'Test App', defaultPage: 'Test Page' },
-        OrganizationId: organizationId,
-      },
-      { raw: true },
-    );
-    const appA = await App.create(
-      {
-        path: 'bar',
-        definition: { name: 'Test App', defaultPage: 'Test Page' },
-        OrganizationId: organizationId,
-      },
-      { raw: true },
-    );
-    const response = await request(server)
-      .put(`/api/apps/${appA.id}`)
-      .set('Authorization', token)
-      .field(
-        'app',
-        JSON.stringify({
-          path: 'foo',
-          name: 'Foobar',
-          defaultPage: appA.definition.defaultPage,
-          pages: [
-            {
-              name: 'Test Page',
-              blocks: [{ type: 'test', version: '0.0.0' }],
-            },
-          ],
-        }),
-      );
-
-    expect(response.status).toBe(409);
   });
 
   it('should delete an app', async () => {
@@ -978,8 +1126,9 @@ pages:
     } = await request(server)
       .post('/api/apps')
       .set('Authorization', token)
+      .field('OrganizationId', organizationId)
       .field(
-        'app',
+        'definition',
         JSON.stringify({
           name: 'Test App',
           defaultPage: 'Test Page',
@@ -995,8 +1144,7 @@ pages:
             },
           ],
         }),
-      )
-      .field('organizationId', organizationId);
+      );
 
     const response = await request(server)
       .delete(`/api/apps/${id}`)
@@ -1019,6 +1167,8 @@ pages:
       {
         path: 'test-app',
         definition: { name: 'Test App', defaultPage: 'Test Page' },
+        vapidPublicKey: 'a',
+        vapidPrivateKey: 'b',
         OrganizationId: organization.id,
       },
       { raw: true },
@@ -1036,18 +1186,19 @@ pages:
       {
         path: 'bar',
         definition: { name: 'Test App', defaultPage: 'Test Page' },
+        vapidPublicKey: 'a',
+        vapidPrivateKey: 'b',
         OrganizationId: organizationId,
       },
       { raw: true },
     );
 
     const response = await request(server)
-      .put(`/api/apps/${app.id}`)
+      .patch(`/api/apps/${app.id}`)
       .set('Authorization', token)
       .field(
-        'app',
+        'definition',
         JSON.stringify({
-          path: 'foo',
           name: 'Foobar',
           defaultPage: app.definition.defaultPage,
           pages: [
@@ -1082,16 +1233,18 @@ pages:
       {
         path: 'bar',
         definition: { name: 'Test App', defaultPage: 'Test Page' },
+        vapidPublicKey: 'a',
+        vapidPrivateKey: 'b',
         OrganizationId: organizationId,
       },
       { raw: true },
     );
 
     const responseA = await request(server)
-      .put(`/api/apps/${app.id}`)
+      .patch(`/api/apps/${app.id}`)
       .set('Authorization', token)
       .field(
-        'app',
+        'definition',
         JSON.stringify({
           name: 'Test App',
           defaultPage: 'Test Page',
@@ -1110,10 +1263,10 @@ pages:
       });
 
     const responseB = await request(server)
-      .put(`/api/apps/${app.id}`)
+      .patch(`/api/apps/${app.id}`)
       .set('Authorization', token)
       .field(
-        'app',
+        'definition',
         JSON.stringify({
           name: 'Test App',
           defaultPage: 'Test Page',
@@ -1140,16 +1293,18 @@ pages:
       {
         path: 'bar',
         definition: { name: 'Test App', defaultPage: 'Test Page' },
+        vapidPublicKey: 'a',
+        vapidPrivateKey: 'b',
         OrganizationId: organizationId,
       },
       { raw: true },
     );
 
     const responseA = await request(server)
-      .put(`/api/apps/${app.id}`)
+      .patch(`/api/apps/${app.id}`)
       .set('Authorization', token)
       .field(
-        'app',
+        'definition',
         JSON.stringify({
           name: 'Test App',
           defaultPage: 'Test Page',
@@ -1168,10 +1323,10 @@ pages:
       });
 
     const responseB = await request(server)
-      .put(`/api/apps/${app.id}`)
+      .patch(`/api/apps/${app.id}`)
       .set('Authorization', token)
       .field(
-        'app',
+        'definition',
         JSON.stringify({
           name: 'Test App',
           defaultPage: 'Test Page',
@@ -1193,7 +1348,7 @@ pages:
     expect(responseB.status).toBe(400);
   });
 
-  it('should set block stylesheets to null when uploading empty stylesheets for an app', async () => {
+  it('should delete block stylesheet when uploading empty stylesheets for an app', async () => {
     await BlockDefinition.create({
       id: '@appsemble/testblock',
       description: 'This is a test block for testing purposes.',
@@ -1203,6 +1358,8 @@ pages:
       {
         path: 'bar',
         definition: { name: 'Test App', defaultPage: 'Test Page' },
+        vapidPublicKey: 'a',
+        vapidPrivateKey: 'b',
         OrganizationId: organizationId,
       },
       { raw: true },
@@ -1230,28 +1387,29 @@ pages:
 
     expect(responseA.status).toBe(204);
     expect(responseB.status).toBe(204);
-    expect(style.style).toBeNull();
+    expect(style).toBeNull();
   });
 
   it('should not allow invalid stylesheets when uploading block stylesheets to an app', async () => {
     await BlockDefinition.create({
-      id: '@appsemble/testblock',
+      id: '@appsemble/styledblock',
       description: 'This is a test block for testing purposes.',
     });
 
-    const { id } = await App.create(
-      {
-        path: 'bar',
-        definition: { name: 'Test App', defaultPage: 'Test Page' },
-        OrganizationId: organizationId,
-      },
-      { raw: true },
-    );
+    const { id } = await App.create({
+      path: 'b',
+      private: false,
+      definition: { name: 'Test App', defaultPage: 'Test Page' },
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organizationId,
+    });
 
     const response = await request(server)
-      .post(`/api/apps/${id}/style/block/@appsemble/testblock`)
+      .post(`/api/apps/${id}/style/block/@appsemble/styledblock`)
       .set('Authorization', token)
       .attach('style', Buffer.from('invalidCss'));
+
     expect(response.body).toStrictEqual({
       statusCode: 400,
       error: 'Bad Request',
@@ -1261,12 +1419,12 @@ pages:
 
   it('should not allow uploading block stylesheets to non-existant apps', async () => {
     await BlockDefinition.create({
-      id: '@appsemble/testblock',
+      id: '@appsemble/block',
       description: 'This is a test block for testing purposes.',
     });
 
     const response = await request(server)
-      .post('/api/apps/0/style/block/@appsemble/testblock')
+      .post('/api/apps/0/style/block/@appsemble/block')
       .set('Authorization', token)
       .attach('style', Buffer.from('body { color: red; }'), {
         contentType: 'text/css',
@@ -1285,6 +1443,8 @@ pages:
       {
         path: 'bar',
         definition: { name: 'Test App', defaultPage: 'Test Page' },
+        vapidPublicKey: 'a',
+        vapidPrivateKey: 'b',
         OrganizationId: organizationId,
       },
       { raw: true },
@@ -1310,6 +1470,8 @@ pages:
       {
         path: 'bar',
         definition: { name: 'Test App', defaultPage: 'Test Page' },
+        vapidPublicKey: 'a',
+        vapidPrivateKey: 'b',
         OrganizationId: organizationId,
       },
       { raw: true },
@@ -1326,10 +1488,10 @@ pages:
 
   it('should not allow to update an app using non-existent blocks', async () => {
     const { status } = await request(server)
-      .put('/api/apps/1')
+      .patch('/api/apps/1')
       .set('Authorization', token)
       .field(
-        'app',
+        'definition',
         JSON.stringify({
           name: 'Test App',
           defaultPage: 'Test Page',
@@ -1353,10 +1515,10 @@ pages:
 
   it('should not allow to update an app using non-existent block versions', async () => {
     const { body } = await request(server)
-      .put('/api/apps/1')
+      .patch('/api/apps/1')
       .set('Authorization', token)
       .field(
-        'app',
+        'definition',
         JSON.stringify({
           name: 'Test App',
           defaultPage: 'Test Page',

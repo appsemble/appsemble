@@ -1,10 +1,10 @@
 {
   "name": "@appsemble/map",
-  "version": "0.8.10",
+  "version": "0.9.3",
   "private": true,
   "dependencies": {
-    "@appsemble/sdk": "0.8.10",
-    "@appsemble/utils": "0.8.10",
+    "@appsemble/sdk": "0.9.3",
+    "@appsemble/utils": "0.9.3",
     "leaflet": "^1.5.1"
   }
 }

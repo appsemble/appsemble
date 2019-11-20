@@ -1,10 +1,13 @@
+import { logger } from '@appsemble/node-utils';
 import { normalize, StyleValidationError, validateStyle } from '@appsemble/utils';
 import Boom from '@hapi/boom';
 import Ajv from 'ajv';
+import crypto from 'crypto';
 import jsYaml from 'js-yaml';
 import { isEqual, uniqWith } from 'lodash';
 import { Op, UniqueConstraintError } from 'sequelize';
 import sharp from 'sharp';
+import * as webpush from 'web-push';
 
 import getAppBlocks from '../utils/getAppBlocks';
 import getAppFromRecord from '../utils/getAppFromRecord';
@@ -13,8 +16,8 @@ import getDefaultIcon from '../utils/getDefaultIcon';
 const ajv = new Ajv();
 ajv.addFormat('fontawesome', () => true);
 
-async function checkBlocks(app, db) {
-  const blocks = getAppBlocks(app);
+async function checkBlocks(definition, db) {
+  const blocks = getAppBlocks(definition);
   const blockVersions = await db.models.BlockVersion.findAll({
     raw: true,
     where: {
@@ -90,27 +93,65 @@ export async function createApp(ctx) {
   const { db } = ctx;
   const { App } = db.models;
   const { user } = ctx.state;
-  const { app, organizationId, style, sharedStyle } = ctx.request.body;
+  const {
+    definition,
+    OrganizationId,
+    domain,
+    private: isPrivate = true,
+    yaml,
+    style,
+    sharedStyle,
+  } = ctx.request.body;
 
   let result;
 
   try {
+    const path = normalize(definition.name);
+    const keys = webpush.generateVAPIDKeys();
+
     result = {
-      definition: app,
-      OrganizationId: organizationId,
+      definition,
+      OrganizationId,
       style: validateStyle(style),
       sharedStyle: validateStyle(sharedStyle),
-      path: app.path || normalize(app.name),
-      yaml: jsYaml.safeDump(app),
+      domain: domain || null,
+      private: Boolean(isPrivate),
+      yaml: yaml || jsYaml.safeDump(definition),
+      vapidPublicKey: keys.publicKey,
+      vapidPrivateKey: keys.privateKey,
     };
 
-    if (!user.organizations.some(organization => organization.id === organizationId)) {
+    if (yaml) {
+      try {
+        // The YAML should be valid YAML.
+        jsYaml.safeLoad(yaml);
+      } catch (exception) {
+        throw Boom.badRequest('Provided YAML was invalid.');
+      }
+    }
+
+    if (!user.organizations.some(organization => organization.id === OrganizationId)) {
       throw Boom.forbidden('User does not belong in this organization.');
     }
 
-    await checkBlocks(app, db);
+    await checkBlocks(definition, db);
 
-    const record = await App.create(result, { raw: true });
+    for (let i = 1; i < 11; i += 1) {
+      const p = i === 1 ? path : `${path}-${i}`;
+      // eslint-disable-next-line no-await-in-loop
+      const count = await App.count({ where: { path: p } });
+      if (count === 0) {
+        result.path = p;
+        break;
+      }
+    }
+
+    if (!result.path) {
+      // Fallback if a suitable ID could not be found after trying for a while
+      result.path = `${path}-${crypto.randomBytes(5).toString('hex')}`;
+    }
+
+    const record = await App.create(result);
 
     ctx.body = getAppFromRecord(record);
     ctx.status = 201;
@@ -136,7 +177,7 @@ export async function queryApps(ctx) {
   const { App } = ctx.db.models;
 
   const apps = await App.findAll({
-    where: { definition: { private: { [Op.or]: { [Op.eq]: false, [Op.eq]: null } } } },
+    where: { private: false },
     raw: true,
   });
   ctx.body = apps.map(getAppFromRecord);
@@ -162,17 +203,17 @@ export async function updateApp(ctx) {
     user: { organizations },
   } = ctx.state;
   const { App } = db.models;
-  const { app: definition, organizationId, style, sharedStyle, yaml } = ctx.request.body;
+  const { definition, domain, path, style, sharedStyle, yaml, OrganizationId } = ctx.request.body;
 
   let result;
 
   try {
     result = {
       definition,
-      OrganizationId: organizationId,
       style: validateStyle(style && style.contents),
       sharedStyle: validateStyle(sharedStyle && sharedStyle.contents),
-      path: definition.path || normalize(definition.name),
+      domain,
+      path: path || normalize(definition.name),
       yaml: yaml && yaml.toString('utf8'),
     };
 
@@ -193,21 +234,110 @@ export async function updateApp(ctx) {
       result.yaml = jsYaml.safeDump(definition);
     }
 
-    await checkBlocks(result.definition, db);
+    await checkBlocks(definition, db);
 
-    const app = await App.findOne({ where: { id: appId } });
+    const dbApp = await App.findOne({ where: { id: appId } });
 
-    if (!app) {
+    if (!dbApp) {
       throw Boom.notFound('App not found');
     }
 
-    if (!organizations.some(organization => organization.id === app.OrganizationId)) {
+    if (!organizations.some(organization => organization.id === OrganizationId)) {
       throw Boom.forbidden("User does not belong in this App's organization.");
     }
 
-    await app.update(result, { where: { id: appId } });
+    await dbApp.update(result, { where: { id: appId } });
 
-    ctx.body = getAppFromRecord({ ...app.dataValues, ...result });
+    ctx.body = getAppFromRecord({ ...dbApp.dataValues, ...result });
+  } catch (error) {
+    handleAppValidationError(error, result);
+  }
+}
+
+export async function patchApp(ctx) {
+  const { db } = ctx;
+  const { appId } = ctx.params;
+  const {
+    user: { organizations },
+  } = ctx.state;
+  const { App } = db.models;
+  const {
+    definition,
+    path,
+    domain,
+    private: isPrivate,
+    style,
+    sharedStyle,
+    yaml,
+    icon,
+  } = ctx.request.body;
+
+  let result;
+
+  try {
+    result = {};
+
+    if (definition) {
+      result.definition = definition;
+      await checkBlocks(definition, db);
+    }
+
+    if (path) {
+      result.path = path;
+    }
+
+    if (isPrivate !== undefined) {
+      result.private = isPrivate;
+    }
+
+    if (domain !== undefined) {
+      result.domain = domain;
+    }
+
+    if (style) {
+      result.style = validateStyle(style.contents);
+    }
+
+    if (sharedStyle) {
+      result.sharedStyle = validateStyle(sharedStyle.contents);
+    }
+
+    if (icon) {
+      result.icon = icon.contents;
+    }
+
+    if (yaml) {
+      let appFromYaml;
+      try {
+        // The YAML should be valid YAML.
+        appFromYaml = jsYaml.safeLoad(yaml);
+      } catch (exception) {
+        throw Boom.badRequest('Provided YAML was invalid.');
+      }
+
+      // The YAML should be the same when converted to JSON.
+      if (!isEqual(appFromYaml, definition)) {
+        throw Boom.badRequest('Provided YAML was not equal to definition when converted.');
+      }
+
+      result.yaml = yaml.contents;
+    } else if (definition) {
+      result.yaml = jsYaml.safeDump(definition);
+    }
+
+    const dbApp = await App.findOne({ where: { id: appId } });
+
+    if (!dbApp) {
+      throw Boom.notFound('App not found');
+    }
+
+    if (!organizations.some(organization => organization.id === dbApp.OrganizationId)) {
+      throw Boom.forbidden("User does not belong in this App's organization.");
+    }
+
+    await dbApp.update(result, { where: { id: appId } });
+
+    ctx.body = getAppFromRecord({ ...dbApp.dataValues, ...result });
   } catch (error) {
     handleAppValidationError(error, result);
   }
@@ -295,6 +425,87 @@ export async function deleteAppIcon(ctx) {
   ctx.status = 204;
 }
 
+export async function addSubscription(ctx) {
+  const { appId } = ctx.params;
+  const { App, AppSubscription } = ctx.db.models;
+  const { user } = ctx.state;
+  const { endpoint, keys } = ctx.request.body;
+
+  const app = await App.findByPk(appId, { include: [AppSubscription] });
+
+  if (!app) {
+    throw Boom.notFound('App not found');
+  }
+
+  await app.createAppSubscription({
+    endpoint,
+    p256dh: keys.p256dh,
+    auth: keys.auth,
+    UserId: user ? user.id : null,
+  });
+}
+
+export async function broadcast(ctx) {
+  const { appId } = ctx.params;
+  const { App, AppSubscription } = ctx.db.models;
+  const { user } = ctx.state;
+  const { title, body } = ctx.request.body;
+
+  const app = await App.findByPk(appId, {
+    include: [AppSubscription],
+  });
+
+  if (!app) {
+    throw Boom.notFound('App not found');
+  }
+
+  if (!user.organizations.some(organization => organization.id === app.OrganizationId)) {
+    throw Boom.forbidden('User does not belong in this app’s organization.');
+  }
+
+  const { vapidPublicKey: publicKey, vapidPrivateKey: privateKey } = app;
+
+  // XXX: Replace with paginated requests
+  logger.verbose(`Sending ${app.AppSubscriptions.length} notifications for app ${app.id}`);
+  app.AppSubscriptions.forEach(async subscription => {
+    try {
+      logger.verbose(
+        `Sending push notification based on subscription ${subscription.id} for app ${app.id}`,
+      );
+      await webpush.sendNotification(
+        {
+          endpoint: subscription.endpoint,
+          keys: { auth: subscription.auth, p256dh: subscription.p256dh },
+        },
+        JSON.stringify({
+          title,
+          body,
+          icon: `${ctx.argv.host}/${app.id}/icon-96.png`,
+          badge: `${ctx.argv.host}/${app.id}/icon-96.png`,
+          timestamp: Date.now(),
+        }),
+        {
+          vapidDetails: {
+            // XXX: Make this configurable
+            subject: 'mailto: support@appsemble.com',
+            publicKey,
+            privateKey,
+          },
+        },
+      );
+    } catch (error) {
+      if (!(error instanceof webpush.WebPushError && error.statusCode === 410)) {
+        throw error;
+      }
+
+      logger.verbose(
+        `Removing push notification subscription ${subscription.id} for app ${app.id}`,
+      );
+      await subscription.destroy();
+    }
+  });
+}
+
 export async function getAppCoreStyle(ctx) {
   const { appId } = ctx.params;
   const { App } = ctx.db.models;
@@ -361,11 +572,15 @@ export async function setAppBlockStyle(ctx) {
       throw Boom.notFound('Block not found.');
     }
 
-    await AppBlockStyle.upsert({
-      style: css.length ? css.toString() : null,
-      AppId: app.id,
-      BlockDefinitionId: block.id,
-    });
+    if (css.length) {
+      await AppBlockStyle.upsert({
+        style: css.toString(),
+        AppId: app.id,
+        BlockDefinitionId: block.id,
+      });
+    } else {
+      await AppBlockStyle.destroy({ where: { AppId: app.id, BlockDefinitionId: block.id } });
+    }
 
     ctx.status = 204;
   } catch (e) {

@@ -1,4 +1,4 @@
-import { logger, loggerMiddleware } from '@appsemble/node-utils';
+import { logger } from '@appsemble/node-utils';
 import { asciiLogo } from '@appsemble/utils';
 import * as Sentry from '@sentry/node';
 import http from 'http';
@@ -8,7 +8,7 @@ import Koa from 'koa';
 import api from '../api';
 import migrations from '../migrations';
 import pkg from '../package.json';
-import configureStatic from '../utils/configureStatic';
+import addDBHooks from '../utils/addDBHooks';
 import createServer from '../utils/createServer';
 import migrate from '../utils/migrate';
 import readFileOrString from '../utils/readFileOrString';
@@ -50,19 +50,19 @@ export function builder(yargs) {
     })
     .option('oauth-google-key', {
       desc: 'The application key to be used for Google OAuth2.',
-      implies: ['host', 'oauth-google-secret'],
+      implies: ['oauth-google-secret'],
     })
     .option('oauth-google-secret', {
       desc: 'The secret key to be used for Google OAuth2.',
-      implies: ['host', 'oauth-google-key'],
+      implies: ['oauth-google-key'],
     })
     .option('oauth-gitlab-key', {
       desc: 'The application key to be used for GitLab OAuth2.',
-      implies: ['host', 'oauth-gitlab-secret'],
+      implies: ['oauth-gitlab-secret'],
     })
     .option('oauth-gitlab-secret', {
       desc: 'The secret key to be used for GitLab OAuth2.',
-      implies: ['host', 'oauth-gitlab-key'],
+      implies: ['oauth-gitlab-key'],
     })
     .option('oauth-secret', {
       desc: 'Secret key used to sign JWTs and cookies',
@@ -73,9 +73,29 @@ export function builder(yargs) {
       type: 'boolean',
       default: false,
     })
+    .option('app-domain-strategy', {
+      desc: 'How to link app domain names to apps',
+      choices: ['kubernetes-ingress'],
+    })
+    .option('ingress-name', {
+      desc: 'The name of the ingress to patch if app-domain-strategy is set to kubernetes-ingress',
+      implies: ['ingress-service-name', 'ingress-service-port'],
+    })
+    .option('ingress-service-name', {
+      desc:
+        'The name of the service to which the ingress should point if app-domain-strategy is set to kubernetes-ingress',
+      implies: ['ingress-name', 'ingress-service-port'],
+    })
+    .option('ingress-service-port', {
+      desc:
+        'The port of the service to which the ingress should point if app-domain-strategy is set to kubernetes-ingress',
+      implies: ['ingress-name', 'ingress-service-name'],
+      type: 'number',
+    })
     .option('host', {
       desc:
         'The external host on which the server is available. This should include the protocol, hostname, and optionally port.',
+      required: true,
     });
 }
 
@@ -85,11 +105,11 @@ export async function handler(argv, { webpackConfigs, syncDB } = {}) {
   try {
     db = await setupModels({
       host: argv.databaseHost,
-      dialect: argv.databaseDialect,
       port: argv.databasePort,
       username: argv.databaseUser,
       password: argv.databasePassword,
       database: argv.databaseName,
+      ssl: argv.databaseSsl,
       uri: argv.databaseUrl,
     });
   } catch (dbException) {
@@ -100,9 +120,9 @@ export async function handler(argv, { webpackConfigs, syncDB } = {}) {
     await migrate(db, pkg.version, migrations);
   }
 
+  await addDBHooks(db, argv);
+
   const app = new Koa();
-  app.use(loggerMiddleware());
-  await configureStatic(app, webpackConfigs);
   if (argv.sentryDsn) {
     Sentry.init({ dsn: argv.sentryDsn });
   }
@@ -118,47 +138,16 @@ export async function handler(argv, { webpackConfigs, syncDB } = {}) {
     });
   });
 
-  let grantConfig;
-  if (argv.oauthGitlabKey || argv.oauthGoogleKey) {
-    const { protocol, host } = new URL(argv.host);
-    grantConfig = {
-      server: {
-        // URL.protocol leaves a ´:´ in.
-        protocol: protocol.replace(':', ''),
-        host,
-        path: '/api/oauth',
-        callback: '/api/oauth/callback',
-      },
-      ...(argv.oauthGitlabKey && {
-        gitlab: {
-          key: argv.oauthGitlabKey,
-          secret: argv.oauthGitlabSecret,
-          scope: ['read_user'],
-          callback: '/api/oauth/callback/gitlab',
-        },
-      }),
-      ...(argv.oauthGoogleKey && {
-        google: {
-          key: argv.oauthGoogleKey,
-          secret: argv.oauthGoogleSecret,
-          scope: ['email', 'profile', 'openid'],
-          callback: '/api/oauth/callback/google',
-          custom_params: { access_type: 'offline' },
-        },
-      }),
-    };
-  }
-
-  await createServer({ app, argv, db, grantConfig, secret: argv.oauthSecret });
+  const callback = await createServer({ app, argv, db, secret: argv.oauthSecret, webpackConfigs });
   const httpServer = argv.ssl
     ? https.createServer(
         {
           key: await readFileOrString(argv.sslKey),
           cert: await readFileOrString(argv.sslCert),
         },
-        app.callback(),
+        callback,
       )
-    : http.createServer(app.callback());
+    : http.createServer(callback);
 
   httpServer.listen(argv.port || PORT, '0.0.0.0', () => {
     logger.info(asciiLogo);

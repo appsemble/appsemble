@@ -1,5 +1,5 @@
 {
   "name": "@appsemble/dom-types",
-  "version": "0.8.10",
+  "version": "0.9.3",
   "description": "Additional convenience types for working with the DOM."
 }

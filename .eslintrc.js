@@ -8,6 +8,7 @@ module.exports = {
   root: true,
   extends: [
     'airbnb',
+    'airbnb/hooks',
     'plugin:eslint-comments/recommended',
     'plugin:compat/recommended',
     'plugin:prettier/recommended',
@@ -34,7 +35,7 @@ module.exports = {
       },
     ],
     'no-inline-comments': 'error',
-    'filenames/match-regex': ['error', /^\.?[a-z]+(\.config|\.test)?$/i, true],
+    'filenames/match-regex': ['error', /^\.?[a-z\d]+(\.config|\.test)?$/i, true],
     'filenames/match-exported': 'error',
     'react/prefer-stateless-function': 'off',
     'no-invalid-this': 'off',
@@ -48,11 +49,15 @@ module.exports = {
     'import/order': [
       'error',
       {
-        groups: [['builtin', 'external', 'internal'], ['index', 'sibling', 'parent']],
+        groups: [
+          ['builtin', 'external', 'internal'],
+          ['index', 'sibling', 'parent'],
+        ],
         'newlines-between': 'always',
       },
     ],
     'import/no-cycle': ['error', { maxDepth: 1 }],
+    'react/jsx-no-useless-fragment': 'error',
     'react/jsx-props-no-spreading': 'off',
     'react/jsx-sort-props': 'error',
     'simple-import-sort/sort': 'error',
@@ -164,7 +169,7 @@ module.exports = {
         'jest/prefer-todo': 'error',
         'jest/prefer-spy-on': 'error',
         'jest/prefer-strict-equal': 'error',
-        'jest/require-tothrow-message': 'error',
+        'jest/require-to-throw-message': 'error',
         'jest/valid-describe': 'error',
         'jest/valid-expect-in-promise': 'error',
         'jest/valid-expect': 'error',

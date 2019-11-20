@@ -1,13 +1,14 @@
 import classNames from 'classnames';
 import * as React from 'react';
 
-import FormComponent, { FormComponentProps } from '../FormComponent';
+import FormComponent from '../FormComponent';
 import Icon from '../Icon';
+import styles from './Input.css';
 
-type InteractiveElement = HTMLInputElement | HTMLTextAreaElement;
+type InputProps = Omit<React.ComponentPropsWithoutRef<typeof FormComponent>, 'children'> &
+  Omit<React.ComponentPropsWithoutRef<'input'>, 'label' | 'onChange'> & {
+    control?: React.ReactElement;
 
-type InputProps = FormComponentProps &
-  Omit<React.HTMLProps<InteractiveElement>, 'label' | 'onChange'> & {
     /**
      * An error message to render.
      */
@@ -29,67 +30,79 @@ type InputProps = FormComponentProps &
      * If the input type is `checkbox`, the value is a boolean. If the input type is `number`, the
      * value is a number, otherwise it is a string.
      */
-    onChange: (event: React.ChangeEvent<InteractiveElement>, value: number | string) => void;
+    onChange: (event: React.ChangeEvent<HTMLInputElement>, value: number | string) => void;
 
     /**
      * The HTML input type.
      *
      * This may be extended if necessary.
      */
-    type?:
-      | 'color'
-      | 'email'
-      | 'number'
-      | 'password'
-      | 'search'
-      | 'tel'
-      | 'text'
-      | 'textarea'
-      | 'url';
+    type?: 'color' | 'email' | 'number' | 'password' | 'search' | 'tel' | 'text' | 'url';
   };
 
 /**
  * A Bulma styled form input element.
  */
-export default class Input extends React.Component<InputProps> {
-  onChange = (event: React.ChangeEvent<InteractiveElement>): void => {
-    const { onChange, type } = this.props;
-
-    const target = event.target as HTMLInputElement;
-    onChange(event, type === 'number' ? target.valueAsNumber : target.value);
-  };
-
-  render(): JSX.Element {
-    const {
+export default React.forwardRef<HTMLInputElement, InputProps>(
+  (
+    {
+      control,
       error,
       iconLeft,
       help,
       label,
+      maxLength,
       name,
       onChange,
       required,
       type,
+      value,
       id = name,
       ...props
-    } = this.props;
-
-    const Component = type === 'textarea' ? 'textarea' : 'input';
+    },
+    ref,
+  ) => {
+    const handleChange = React.useCallback(
+      (event: React.ChangeEvent<HTMLInputElement>) => {
+        const { target } = event;
+        onChange(event, type === 'number' ? target.valueAsNumber : target.value);
+      },
+      [onChange, type],
+    );
 
     return (
-      <FormComponent iconLeft={iconLeft} id={id} label={label} required={required}>
-        <Component
-          {...(props as (React.HTMLProps<HTMLInputElement & HTMLTextAreaElement>))}
+      <FormComponent
+        iconLeft={iconLeft}
+        iconRight={!!control}
+        id={id}
+        label={label}
+        required={required}
+      >
+        <input
+          {...props}
+          ref={ref}
           className={classNames('input', { 'is-danger': error })}
           id={id}
+          maxLength={maxLength}
           name={name}
-          onChange={this.onChange}
+          onChange={handleChange}
           required={required}
           type={type}
+          value={value}
         />
         {iconLeft && <Icon className="is-left" icon={iconLeft} />}
-        {help && <p className="help">{help}</p>}
-        {React.isValidElement(error) && <p className="help is-danger">{error}</p>}
+        {control && React.cloneElement(control, { className: 'is-right' })}
+        <div className={styles.help}>
+          <p className={classNames('help', { 'is-danger': error })}>
+            {React.isValidElement(error) ? error : help}
+          </p>
+          {maxLength ? (
+            <span className={`help ${styles.counter}`}>{`${
+              `${value}`.length
+            } / ${maxLength}`}</span>
+          ) : null}
+        </div>
       </FormComponent>
     );
-  }
-}
+  },
+);

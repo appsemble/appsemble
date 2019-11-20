@@ -1,6 +1,8 @@
 import { normalize } from '@appsemble/utils';
 import Boom from '@hapi/boom';
+import crypto from 'crypto';
 import { UniqueConstraintError } from 'sequelize';
+import { generateVAPIDKeys } from 'web-push';
 
 import templates from '../templates/apps';
 import getAppFromRecord from '../utils/getAppFromRecord';
@@ -20,7 +22,7 @@ export async function createTemplateApp(ctx) {
     description,
     organizationId,
     resources,
-    private: isPrivate = true,
+    private: isPrivate,
   } = ctx.request.body;
   const { App, Resource } = ctx.db.models;
   const { user } = ctx.state;
@@ -36,28 +38,45 @@ export async function createTemplateApp(ctx) {
   }
 
   try {
-    const app = await App.create(
-      {
-        definition: {
-          ...template.definition,
-          description,
-          name: name || template,
-          private: isPrivate,
-        },
-        OrganizationId: organizationId,
-        path: name ? normalize(name) : normalize(template),
-        ...(resources && {
-          Resources: [].concat(
-            ...Object.keys(template.resources).map(key =>
-              template.resources[key].map(r => ({ type: key, data: r })),
-            ),
-          ),
-        }),
+    const path = name ? normalize(name) : normalize(template);
+    const keys = generateVAPIDKeys();
+    const result = {
+      definition: {
+        ...template.definition,
+        description,
+        name: name || template,
       },
-      { include: [Resource], raw: true },
-    );
+      private: Boolean(isPrivate),
+      vapidPublicKey: keys.publicKey,
+      vapidPrivateKey: keys.privateKey,
+      OrganizationId: organizationId,
+      ...(resources && {
+        Resources: [].concat(
+          ...Object.keys(template.resources).map(key =>
+            template.resources[key].map(r => ({ type: key, data: r })),
+          ),
+        ),
+      }),
+    };
 
-    ctx.body = getAppFromRecord(app);
+    for (let i = 1; i < 11; i += 1) {
+      const p = i === 1 ? path : `${path}-${i}`;
+      // eslint-disable-next-line no-await-in-loop
+      const count = await App.count({ where: { path: p } });
+      if (count === 0) {
+        result.path = p;
+        break;
+      }
+    }
+
+    if (!result.path) {
+      // Fallback if a suitable ID could not be found after trying for a while
+      result.path = `${path}-${crypto.randomBytes(5).toString('hex')}`;
+    }
+
+    const record = await App.create(result, { include: [Resource] });
+
+    ctx.body = getAppFromRecord(record);
     ctx.status = 201;
   } catch (error) {
     if (error instanceof UniqueConstraintError) {

@@ -1,16 +1,16 @@
 {
   "name": "create-appsemble",
-  "version": "0.8.10",
+  "version": "0.9.3",
   "bin": "./bin/create-appsemble",
   "scripts": {
     "tsc": "../../config/bin/tscstub.js"
   },
   "dependencies": {
-    "@appsemble/node-utils": "^0.8.10",
+    "@appsemble/node-utils": "^0.9.3",
     "esm": "^3.2.25",
     "fs-extra": "^8.1.0",
     "inquirer": "^7.0.0",
-    "sort-package-json": "^1.22.1",
-    "yargs": "^14.0.0"
+    "sort-package-json": "^1.23.1",
+    "yargs": "^14.2.0"
   }
 }

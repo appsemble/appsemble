@@ -1,3 +1,4 @@
+import classNames from 'classnames';
 import * as React from 'react';
 import { WrappedComponentProps } from 'react-intl';
 import { CSSTransition } from 'react-transition-group';
@@ -18,6 +19,16 @@ export interface ModalProps extends WrappedComponentProps {
    * A function that will be called when the user closes the modal.
    */
   onClose?: React.ReactEventHandler;
+
+  /**
+   * The title that is displayed at the top of the modal.
+   */
+  title?: React.ReactNode;
+
+  /**
+   * The CSS class applied to the body
+   */
+  className?: string;
 }
 
 /**
@@ -38,7 +49,7 @@ export default class Modal extends React.Component<ModalProps> {
   };
 
   render(): JSX.Element {
-    const { children, intl, isActive, onClose } = this.props;
+    const { children, className, intl, isActive, onClose, title } = this.props;
 
     return (
       <CSSTransition
@@ -60,13 +71,18 @@ export default class Modal extends React.Component<ModalProps> {
             onKeyDown={this.onKeyDown}
             role="presentation"
           />
-          <div className="modal-content">{children}</div>
-          <button
-            aria-label={intl.formatMessage(messages.closeDialog)}
-            className="modal-close is-large"
-            onClick={onClose}
-            type="button"
-          />
+          <div className="modal-card">
+            <div className="modal-card-head">
+              <p className="modal-card-title">{title}</p>
+              <button
+                aria-label={intl.formatMessage(messages.closeDialog)}
+                className="delete is-large"
+                onClick={onClose}
+                type="button"
+              />
+            </div>
+            <div className={classNames('modal-card-body', className)}>{children}</div>
+          </div>
         </div>
       </CSSTransition>
     );

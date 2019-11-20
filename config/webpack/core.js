@@ -5,7 +5,7 @@ const shared = require('./shared');
 /**
  * This webpack configuration is used by the Appsemble core parts.
  *
- * This includes the app and editor, but not blocks.
+ * This includes the app and studio, but not blocks.
  */
 module.exports = (env, argv) => {
   const { mode, publicPath } = argv;

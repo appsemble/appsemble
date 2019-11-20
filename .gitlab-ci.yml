@@ -2,7 +2,6 @@ image: node:10-slim
 
 stages:
   - test
-  - build
   - publish
   - deploy
   - migrate
@@ -26,7 +25,7 @@ stages:
   image:
     # This is the most official Helm image at the moment.
     # https://github.com/helm/helm/issues/5682#issuecomment-490084864
-    name: lachlanevenson/k8s-helm:v2.14.1
+    name: lachlanevenson/k8s-helm:v3.0.0
     entrypoint: [/bin/sh, -c]
   dependencies: []
 
@@ -34,9 +33,8 @@ stages:
 .helm:
   extends: .helm-simple
   before_script:
-    - helm init --client-only
-    - helm repo remove local
-    - helm dependency build config/charts/*
+    - helm repo add stable https://kubernetes-charts.storage.googleapis.com
+    - helm dependency build config/charts/appsemble
 
 # A job preset for deleting Helm Charts.
 .helm-delete:
@@ -44,7 +42,7 @@ stages:
   variables:
     GIT_STRATEGY: none
   script:
-    - helm delete --purge "$CI_ENVIRONMENT_SLUG"
+    - helm delete "$CI_ENVIRONMENT_SLUG"
 
 # A preconfigured environment for using Yarn.
 .yarn:
@@ -87,6 +85,35 @@ stages:
 #  Test Stage                                                                                     #
 ###################################################################################################
 
+# Build the Docker image.
+build docker image:
+  extends: .docker
+  only:
+    - branches
+    - merge_requests
+    - tags
+  except:
+    - schedules
+  script:
+    - docker build -t "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME" .
+    - docker push "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME"
+
+# Build the Docker image.
+build docs image:
+  extends: .docker
+  only:
+    - branches
+    - merge_requests
+    - tags
+  except:
+    - schedules
+  script:
+    - docker build .
+      --build-arg "CI_COMMIT_REF_NAME=$CI_COMMIT_REF_NAME"
+      --file config/docs/Dockerfile
+      --tag "$CI_REGISTRY_IMAGE/docs:$CI_COMMIT_REF_NAME"
+    - docker push "$CI_REGISTRY_IMAGE/docs:$CI_COMMIT_REF_NAME"
+
 # Scan for dependency vulnerabilities.
 dependency scanning:
   extends: .yarn
@@ -128,7 +155,22 @@ helm lint:
     changes:
       - config/charts/**/*.*
   script:
-    - helm lint --strict config/charts/*
+    - helm lint config/charts/*
+
+# Build the npm packages that should be published.
+pack:
+  except:
+    - schedules
+  script:
+    - yarn workspace @appsemble/cli pack
+    - yarn workspace @appsemble/node-utils pack
+    - yarn workspace @appsemble/react pack
+    - yarn workspace @appsemble/sdk pack
+    - yarn workspace @appsemble/server pack
+    - yarn workspace create-appsemble pack
+  artifacts:
+    paths:
+      - packages/**/*.tgz
 
 # Check formatting using prettier.
 prettier:
@@ -175,16 +217,16 @@ stylelint:
 test:
   extends: .yarn
   services:
-    - name: mysql:8
-      command: [--default-authentication-plugin=mysql_native_password]
+    - name: postgres:11
   only:
     - branches
     - merge_requests
     - tags
   variables:
-    MYSQL_DATABASE: testAppsemble
-    MYSQL_ROOT_PASSWORD: password
-    DATABASE_URL: 'mysql://root:password@mysql:3306'
+    POSTGRES_DB: testAppsemble
+    POSTGRES_USER: admin
+    POSTGRES_PASSWORD: password
+    DATABASE_URL: 'postgres://admin:password@postgres:5432/testAppsemble'
   script:
     - yarn jest --coverage --reporters default --reporters jest-junit
   artifacts:
@@ -201,58 +243,6 @@ tsc:
   script:
     - yarn tsc
     - yarn workspaces run tsc
-
-###################################################################################################
-#  Build Stage                                                                                    #
-###################################################################################################
-
-# Build the Docker image.
-build docker image:
-  extends: .docker
-  stage: build
-  only:
-    - branches
-    - merge_requests
-    - tags
-  except:
-    - schedules
-  script:
-    - docker build -t "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME" .
-    - docker push "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME"
-
-# Build the Docker image.
-build docs image:
-  extends: .docker
-  stage: build
-  only:
-    - branches
-    - merge_requests
-    - tags
-  except:
-    - schedules
-  script:
-    - docker build .
-      --build-arg "CI_COMMIT_REF_NAME=$CI_COMMIT_REF_NAME"
-      --file config/docs/Dockerfile
-      --tag "$CI_REGISTRY_IMAGE/docs:$CI_COMMIT_REF_NAME"
-    - docker push "$CI_REGISTRY_IMAGE/docs:$CI_COMMIT_REF_NAME"
-
-# Build the npm packages that should be published.
-pack:
-  stage: build
-  except:
-    - schedules
-  dependencies: []
-  script:
-    - yarn workspace @appsemble/cli pack
-    - yarn workspace @appsemble/node-utils pack
-    - yarn workspace @appsemble/react pack
-    - yarn workspace @appsemble/sdk pack
-    - yarn workspace @appsemble/server pack
-    - yarn workspace create-appsemble pack
-  artifacts:
-    paths:
-      - packages/**/*.tgz
 
 ###################################################################################################
 #  Publish Stage                                                                                  #
@@ -301,13 +291,15 @@ review:
       --set "image.pullPolicy=Always"
       --set "image.repository=$CI_REGISTRY_IMAGE"
       --set "image.tag=$CI_COMMIT_REF_NAME"
+      --set "ingress.annotations.cert-manager\.io/cluster-issuer=letsencrypt-dev"
+      --set "ingress.annotations.kubernetes\.io/ingress\.class=nginx"
+      --set "ingress.annotations.nginx\.ingress\.kubernetes\.io/proxy-body-size=50m"
       --set "ingress.enabled=true"
-      --set "ingress.hosts={${CI_ENVIRONMENT_URL/https:\/\//}}"
+      --set "ingress.host=${CI_ENVIRONMENT_URL/https:\/\//}"
       --set "ingress.tls.secretName=$CI_ENVIRONMENT_SLUG-tls"
       --set "migrateTo=999.999.999"
-      --set "mysql.existingSecret=mysql"
-      --set "mysql.fullnameOverride=$CI_ENVIRONMENT_SLUG-mysql"
-      --set "mysql.persistence.enabled=false"
+      --set "global.postgresql.existingSecret=postgresql-secret"
+      --set "postgresql.fullnameOverride=$CI_ENVIRONMENT_SLUG-postgresql"
       --set "sentrySecret=sentry"
     - echo -n "$CI_ENVIRONMENT_URL" > environment-url.txt
   artifacts:
@@ -344,6 +336,8 @@ review docs:
       --install
       --set "git.commit.sha=$CI_COMMIT_SHA"
       --set "image.tag=$CI_COMMIT_REF_NAME"
+      --set "ingress.annotations.cert-manager\.io/cluster-issuer=letsencrypt-dev"
+      --set "ingress.annotations.kubernetes\.io/ingress\.class=nginx"
       --set "url=$CI_ENVIRONMENT_URL"
 
 # Stop a review environment.
@@ -376,13 +370,15 @@ staging:
       --set "image.pullPolicy=Always"
       --set "image.repository=$CI_REGISTRY_IMAGE"
       --set "image.tag=master"
+      --set "ingress.annotations.cert-manager\.io/cluster-issuer=letsencrypt-dev"
+      --set "ingress.annotations.kubernetes\.io/ingress\.class=nginx"
+      --set "ingress.annotations.nginx\.ingress\.kubernetes\.io/proxy-body-size=50m"
       --set "ingress.enabled=true"
-      --set "ingress.hosts={staging.appsemble.app}"
+      --set "ingress.host=staging.appsemble.app"
       --set "ingress.tls.secretName=staging-tls"
       --set "migrateTo=999.999.999"
-      --set "mysql.existingSecret=mysql"
-      --set "mysql.fullnameOverride=staging-mysql"
-      --set "mysql.persistence.enabled=false"
+      --set "global.postgresql.existingSecret=postgresql-secret"
+      --set "postgresql.fullnameOverride=staging-postgresql"
       --set "sentrySecret=sentry"
 
 # Deploy the docs for the staging environment.
@@ -403,6 +399,8 @@ staging docs:
       --install
       --set "git.commit.sha=$CI_COMMIT_SHA"
       --set "image.tag=$CI_COMMIT_REF_NAME"
+      --set "ingress.annotations.cert-manager\.io/cluster-issuer=letsencrypt-dev"
+      --set "ingress.annotations.kubernetes\.io/ingress\.class=nginx"
       --set "url=$CI_ENVIRONMENT_URL"
 
 # Wipe the staging environment, reset the staging environment to the latest release, and upgrade to master.
@@ -416,23 +414,24 @@ reset staging:
     url: https://staging.appsemble.app
   script:
     # We can’s use `--replace` because of https://github.com/helm/helm/issues/3134
-    - helm delete --purge staging
-    - helm install config/charts/appsemble
+    - helm delete staging
+    - helm install staging config/charts/appsemble
       --atomic
-      --name staging
       --set "app=$CI_ENVIRONMENT_SLUG"
       --set "image.pullPolicy=Always"
       --set "image.repository=$CI_REGISTRY_IMAGE"
       --set "image.tag=master"
+      --set "ingress.annotations.cert-manager\.io/cluster-issuer=letsencrypt-dev"
+      --set "ingress.annotations.kubernetes\.io/ingress\.class=nginx"
+      --set "ingress.annotations.nginx\.ingress\.kubernetes\.io/proxy-body-size=50m"
       --set "ingress.enabled=true"
-      --set "ingress.hosts={staging.appsemble.app}"
+      --set "ingress.host=staging.appsemble.app"
       --set "ingress.tls.secretName=staging-tls"
-      --set "mysql.existingSecret=mysql"
-      --set "mysql.fullnameOverride=staging-mysql"
-      --set "mysql.persistence.enabled=false"
+      --set "global.postgresql.existingSecret=postgresql-secret"
+      --set "postgresql.fullnameOverride=staging-postgresql"
       --set "sentrySecret=sentry"
 
-.production:
+production:
   extends: .helm
   stage: deploy
   only:
@@ -444,12 +443,19 @@ reset staging:
   script:
     - helm upgrade appsemble config/charts/appsemble
       --set "app=$CI_ENVIRONMENT_SLUG"
+      --set "global.postgresql.existingSecret=$POSTGRESQL_SECRET"
+      --set "global.postgresql.postgresqlDatabase=$POSTGRESQL_DATABASE"
+      --set "global.postgresql.postgresqlUsername=$POSTGRESQL_USERNAME"
+      --set "global.postgresql.servicePort=$POSTGRESQL_PORT"
+      --set "ingress.annotations.cert-manager\.io/cluster-issuer=letsencrypt-prod"
+      --set "ingress.annotations.kubernetes\.io/ingress\.class=nginx"
+      --set "ingress.annotations.nginx\.ingress\.kubernetes\.io/proxy-body-size=50m"
       --set "ingress.enabled=true"
-      --set "ingress.hosts={appsemble.app}"
-      --set "ingress.tls.secretName=tls-secret"
-      --set "mysql.existingSecret=mysql-secret"
-      --set "mysql.fullnameOverride=appsemble-mysql"
-      --set "mysql.persistence.existingClaim=appsemble-mysql"
+      --set "ingress.host=appsemble.app"
+      --set "ingress.tls.secretName=$INGRESS_TLS_SECRET_NAME"
+      --set "postgresql.fullnameOverride=$POSTGRESQL_HOST"
+      --set "postgresql.enabled=false"
+      --set 'postgresSSL=true'
       --wait
 
 # Deploy the docs for production.
@@ -468,6 +474,8 @@ production docs:
       --install
       --set "git.commit.sha=$CI_COMMIT_SHA"
       --set "image.tag=$CI_COMMIT_REF_NAME"
+      --set "ingress.annotations.cert-manager\.io/cluster-issuer=letsencrypt-prod"
+      --set "ingress.annotations.kubernetes\.io/ingress\.class=nginx"
       --set "url=$CI_ENVIRONMENT_URL"
 
 ###################################################################################################
@@ -488,12 +496,14 @@ migrate staging:
     - helm upgrade staging config/charts/appsemble
       --atomic
       --set "app=$CI_ENVIRONMENT_SLUG"
+      --set "ingress.annotations.cert-manager\.io/cluster-issuer=letsencrypt-dev"
+      --set "ingress.annotations.kubernetes\.io/ingress\.class=nginx"
+      --set "ingress.annotations.nginx\.ingress\.kubernetes\.io/proxy-body-size=50m"
       --set "ingress.enabled=true"
-      --set "ingress.hosts={staging.appsemble.app}"
+      --set "ingress.host=staging.appsemble.app"
       --set "ingress.tls.secretName=staging-tls"
-      --set "mysql.existingSecret=mysql"
-      --set "mysql.fullnameOverride=staging-mysql"
-      --set "mysql.persistence.enabled=false"
+      --set "global.postgresql.existingSecret=postgresql-secret"
+      --set "postgresql.fullnameOverride=staging-postgresql"
       --set "sentrySecret=sentry"
     # Upgrade to master
     - helm upgrade staging config/charts/appsemble
@@ -502,13 +512,15 @@ migrate staging:
       --set "image.pullPolicy=Always"
       --set "image.repository=$CI_REGISTRY_IMAGE"
       --set "image.tag=master"
+      --set "ingress.annotations.cert-manager\.io/cluster-issuer=letsencrypt-dev"
+      --set "ingress.annotations.kubernetes\.io/ingress\.class=nginx"
+      --set "ingress.annotations.nginx\.ingress\.kubernetes\.io/proxy-body-size=50m"
       --set "ingress.enabled=true"
-      --set "ingress.hosts={staging.appsemble.app}"
+      --set "ingress.host=staging.appsemble.app"
       --set "ingress.tls.secretName=staging-tls"
       --set "migrateTo=999.999.999"
-      --set "mysql.existingSecret=mysql"
-      --set "mysql.fullnameOverride=staging-mysql"
-      --set "mysql.persistence.enabled=false"
+      --set "global.postgresql.existingSecret=postgresql-secret"
+      --set "postgresql.fullnameOverride=staging-postgresql"
       --set "sentrySecret=sentry"
 
 ###################################################################################################

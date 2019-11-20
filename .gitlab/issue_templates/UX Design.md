@@ -13,7 +13,7 @@ Also add any relevant files: screenshots, videos, etc.
 
 <!-- Remove the labels that don’t apply. -->
 
-/label ~App ~Block ~Editor
+/label ~App ~Block ~Studio
 
 /label ~UX
 

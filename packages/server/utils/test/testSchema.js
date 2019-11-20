@@ -11,7 +11,7 @@ import setupModels from '../setupModels';
  * @param {Object} options Additional sequelize options.
  */
 export default async function testSchema(spec, options = {}) {
-  const database = process.env.DATABASE_URL || 'mysql://root:password@localhost:3306';
+  const database = process.env.DATABASE_URL || 'postgres://admin:password@localhost:5432/appsemble';
   const root = new Sequelize(database, {
     logging: false,
     retry: { max: 3 },

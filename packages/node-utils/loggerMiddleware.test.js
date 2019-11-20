@@ -1,4 +1,5 @@
 import { logger } from '@appsemble/node-utils';
+import chalk from 'chalk';
 import Koa from 'koa';
 import lolex from 'lolex';
 import supertest from 'supertest';
@@ -33,7 +34,9 @@ afterEach(() => {
 
 it('should log requests', async () => {
   await request.get('/pizza');
-  expect(logger.info).toHaveBeenCalledWith('GET https://example.com:1337/pizza — ::ffff:127.0.0.1');
+  expect(logger.info).toHaveBeenCalledWith(
+    `${chalk.bold('GET')} https://example.com:1337/pizza — ${chalk.white('::ffff:127.0.0.1')}`,
+  );
 });
 
 it('should log success responses as info', async () => {
@@ -42,7 +45,24 @@ it('should log success responses as info', async () => {
     ctx.status = 200;
   });
   await request.get('/fries');
-  expect(logger.info).toHaveBeenCalledWith('GET https://example.com:1337/fries 200 OK 1ms');
+  expect(logger.info).toHaveBeenCalledWith(
+    `${chalk.bold('GET')} https://example.com:1337/fries ${chalk.green('200 OK')} ${chalk.green(
+      '1ms',
+    )}`,
+  );
+});
+
+it('should log redirect responses as info', async () => {
+  app.use(ctx => {
+    clock.tick(33);
+    ctx.redirect('/');
+  });
+  await request.get('/fries');
+  expect(logger.info).toHaveBeenCalledWith(
+    `${chalk.bold('GET')} https://example.com:1337/fries ${chalk.cyan(
+      '302 Found → /',
+    )} ${chalk.green('33ms')}`,
+  );
 });
 
 it('should log bad responses as warn', async () => {
@@ -52,7 +72,9 @@ it('should log bad responses as warn', async () => {
   });
   await request.get('/burrito');
   expect(logger.warn).toHaveBeenCalledWith(
-    'GET https://example.com:1337/burrito 400 Bad Request 3ms',
+    `${chalk.bold('GET')} https://example.com:1337/burrito ${chalk.yellow(
+      '400 Bad Request',
+    )} ${chalk.green('3ms')}`,
   );
 });
 
@@ -63,7 +85,35 @@ it('should log error responses as error', async () => {
   });
   await request.get('/wrap');
   expect(logger.error).toHaveBeenCalledWith(
-    'GET https://example.com:1337/wrap 503 Service Unavailable 53ms',
+    `${chalk.bold('GET')} https://example.com:1337/wrap ${chalk.red(
+      '503 Service Unavailable',
+    )} ${chalk.green('53ms')}`,
+  );
+});
+
+it('should log long request lengths yellow', async () => {
+  app.use(ctx => {
+    clock.tick(400);
+    ctx.status = 200;
+  });
+  await request.get('/banana');
+  expect(logger.info).toHaveBeenCalledWith(
+    `${chalk.bold('GET')} https://example.com:1337/banana ${chalk.green('200 OK')} ${chalk.yellow(
+      '400ms',
+    )}`,
+  );
+});
+
+it('should log extremely long request lengths red', async () => {
+  app.use(ctx => {
+    clock.tick(1337);
+    ctx.status = 200;
+  });
+  await request.get('/pepperoni');
+  expect(logger.info).toHaveBeenCalledWith(
+    `${chalk.bold('GET')} https://example.com:1337/pepperoni ${chalk.green('200 OK')} ${chalk.red(
+      '1337ms',
+    )}`,
   );
 });
 
@@ -77,7 +127,9 @@ it('should log errors as internal server errors and rethrow', async () => {
   await request.get('/taco');
   expect(spy).toHaveBeenCalled();
   expect(logger.error).toHaveBeenCalledWith(
-    'GET https://example.com:1337/taco 500 Internal Server Error 86ms',
+    `${chalk.bold('GET')} https://example.com:1337/taco ${chalk.red(
+      '500 Internal Server Error',
+    )} ${chalk.green('86ms')}`,
   );
 });
 
@@ -88,5 +140,9 @@ it('should append the response length if it is defined', async () => {
     ctx.body = '{}';
   });
   await request.get('/fries');
-  expect(logger.info).toHaveBeenCalledWith('GET https://example.com:1337/fries 200 OK 1ms');
+  expect(logger.info).toHaveBeenCalledWith(
+    `${chalk.bold('GET')} https://example.com:1337/fries ${chalk.green('200 OK')} ${chalk.green(
+      '1ms',
+    )}`,
+  );
 });

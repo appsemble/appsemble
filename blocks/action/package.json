@@ -1,9 +1,9 @@
 {
   "name": "@amsterdam/action",
-  "version": "0.8.10",
+  "version": "0.9.3",
   "private": true,
   "dependencies": {
-    "@appsemble/sdk": "^0.8.10",
-    "mini-jsx": "^1.0.2"
+    "@appsemble/sdk": "^0.9.3",
+    "mini-jsx": "^2.0.0"
   }
 }

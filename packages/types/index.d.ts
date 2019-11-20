@@ -149,7 +149,7 @@ export interface Block<P = any, A = {}> {
   /**
    * The theme of the block.
    */
-  theme: Theme;
+  theme?: Theme;
 
   /**
    * A free form mapping of named paramters.
@@ -332,6 +332,11 @@ interface DialogActionDefinition extends BaseActionDefinition<'dialog'> {
    * Blocks to render on the dialog.
    */
   blocks: Block[];
+
+  /**
+   * The title to show in the dialog.
+   */
+  title?: string;
 }
 
 interface LinkActionDefinition extends BaseActionDefinition<'link'> {
@@ -493,12 +498,12 @@ export interface Page {
    *
    * This will be displayed in the navigation menu.
    */
-  icon: IconName;
+  icon?: IconName;
 
   /**
    * Page parameters can be used for linking to a page that should display a single resource.
    */
-  parameters: string[];
+  parameters?: string[];
 
   /**
    * A mapping of actions that can be fired by the page to action handlers.
@@ -510,9 +515,9 @@ export interface Page {
   /**
    * The global theme for the page.
    */
-  theme: Theme;
+  theme?: Theme;
 
-  subPages: Pick<Page, 'blocks' | 'name'>[];
+  subPages?: Pick<Page, 'blocks' | 'name'>[];
 
   /**
    * The navigation type to use.
@@ -527,20 +532,20 @@ export interface Page {
   hideFromMenu?: boolean;
 }
 
-export interface App {
+export interface AppDefinition {
+  /**
+   * The name of the app.
+   *
+   * This determines the default path of the app.
+   */
+  name?: string;
+
   authentication: Authentication[];
 
   /**
-   * The unique identifier for the app.
-   *
-   * This value will be generated automatically by the API.
+   * The default page of the app.
    */
-  id?: number;
-
-  /**
-   * The id of the organization to which this app belongs.
-   */
-  organizationId?: string;
+  defaultPage: string;
 
   /**
    * The navigation type to use.
@@ -548,6 +553,13 @@ export interface App {
    * If this is omitted, a collapsable side navigation menu will be rendered on the left.
    */
   navigation?: Navigation;
+
+  /**
+   * The strategy to use for apps to subscribe to push notifications.
+   *
+   * If this is omitted, push notifications can not be sent.
+   */
+  notifications?: 'opt-in' | 'startup';
 
   /**
    * The pages of the app.
@@ -562,5 +574,29 @@ export interface App {
   /**
    * The global theme for the app.
    */
-  theme: Theme;
+  theme?: Theme;
+}
+
+export interface App {
+  /**
+   * The unique identifier for the app.
+   *
+   * This value will be generated automatically by the API.
+   */
+  id?: number;
+
+  /*
+   * A domain name on which this app should be served.
+   */
+  domain?: string;
+
+  /**
+   * The id of the organization to which this app belongs.
+   */
+  OrganizationId?: string;
+
+  path: string;
+  private: boolean;
+
+  definition: AppDefinition;
 }

@@ -8,7 +8,7 @@ attach<Parameters, Actions>(({ actions, data, block }) => {
   let node;
   if (actions.onClick.type === 'link') {
     node = document.createElement('a');
-    node.href = actions.onClick.href();
+    node.href = actions.onClick.href(data);
   } else {
     node = document.createElement('button');
     node.type = 'button';

@@ -6,7 +6,7 @@ import Page from './Page';
 
 function mapStateToProps(state, ownProps) {
   return {
-    app: state.app.app,
+    definition: state.app.definition,
     user: state.user.user,
     pending: !!state.blockDefs.pending.length,
     hasErrors:
@@ -19,10 +19,7 @@ function mapStateToProps(state, ownProps) {
 }
 
 export default withRouter(
-  connect(
-    mapStateToProps,
-    {
-      getBlockDefs,
-    },
-  )(Page),
+  connect(mapStateToProps, {
+    getBlockDefs,
+  })(Page),
 );

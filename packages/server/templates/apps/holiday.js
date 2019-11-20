@@ -17,7 +17,7 @@ export default {
                 type: 'request',
               },
             },
-            version: '0.8.10',
+            version: '0.9.3',
             parameters: {
               fields: [
                 {
@@ -49,7 +49,7 @@ export default {
                 type: 'request',
               },
             },
-            version: '0.8.10',
+            version: '0.9.3',
             parameters: {
               fields: [
                 {
@@ -77,7 +77,7 @@ export default {
                 type: 'request',
               },
             },
-            version: '0.8.10',
+            version: '0.9.3',
             parameters: {
               fields: [
                 {
@@ -109,7 +109,7 @@ export default {
                 type: 'request',
               },
             },
-            version: '0.8.10',
+            version: '0.9.3',
             parameters: {
               fields: [
                 {

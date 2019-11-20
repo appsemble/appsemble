@@ -1,0 +1,20 @@
+.root {
+  margin: 0 auto;
+  max-width: 480px;
+  padding: 10px;
+}
+
+.loginBottom {
+  display: flex;
+  justify-content: space-between;
+}
+
+.formLink {
+  display: block;
+}
+
+.socialLogins {
+  box-sizing: border-box;
+  flex-flow: column;
+  margin-top: 20px;
+}
