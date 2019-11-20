@@ -1,4 +1,4 @@
-import { logger } from '@appsemble/node-utils';
+import { AppsembleError, logger } from '@appsemble/node-utils';
 import fs from 'fs-extra';
 import yaml from 'js-yaml';
 import { join } from 'path';
@@ -8,18 +8,15 @@ import processCss from './processCss';
 /**
  * Traverses an app directory and appends the files it finds to the given FormData object.
  *
- * @param {string} path
- * @param {FormData} formData
- *
- * @returns {boolean} Whether an “app.yaml” file was found or not.
+ * @param {string} path The path of the app directory to traverse.
+ * @param {FormData} formData The FormData object to append the results into.
  */
 export default async function traverseAppDirectory(path, formData) {
   logger.info('Traversing directory for App files 🕵');
   const dir = await fs.readdir(path);
 
   if (!dir.includes('app.yaml')) {
-    logger.error('No file named “app.yaml” found, aborting');
-    return false;
+    throw new AppsembleError(`No file named “app.yaml” found at ${path}`);
   }
 
   const data = await fs.readFile(join(path, 'app.yaml'), 'utf8');
@@ -66,6 +63,4 @@ export default async function traverseAppDirectory(path, formData) {
       }
     }
   }
-
-  return true;
 }
