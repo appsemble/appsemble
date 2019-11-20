@@ -42,6 +42,10 @@ export default {
       type: 'boolean',
       description: 'Determines whether this app should be included when fetching all apps.',
     },
+    template: {
+      type: 'boolean',
+      description: 'Determines whether this app should be included when fetching for templates.',
+    },
     definition: {
       type: 'object',
       required: ['name', 'defaultPage', 'pages'],

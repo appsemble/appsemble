@@ -7,6 +7,15 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- CLI: Add `app` subcommand for creating apps
+- Server: Add option to mark existing apps as templates
+
+### Removed
+
+- Server: Remove file-based app templates
+
 ## [0.9.3] - 2019-11-18
 
 ### Added

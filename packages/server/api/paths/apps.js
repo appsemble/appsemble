@@ -22,6 +22,9 @@ export default {
                 private: {
                   $ref: '#/components/schemas/App/properties/private',
                 },
+                template: {
+                  $ref: '#/components/schemas/App/properties/template',
+                },
                 yaml: {
                   type: 'string',
                   format: 'binary',
@@ -29,6 +32,11 @@ export default {
                 },
                 OrganizationId: {
                   $ref: '#/components/schemas/App/properties/OrganizationId',
+                },
+                icon: {
+                  type: 'string',
+                  format: 'binary',
+                  description: 'The app icon.',
                 },
                 style: {
                   type: 'string',
@@ -40,6 +48,13 @@ export default {
                   format: 'binary',
                   description: 'The custom style to apply to all parts of app.',
                 },
+              },
+            },
+            encoding: {
+              style: { contentType: 'text/css' },
+              sharedStyle: { contentType: 'text/css' },
+              icon: {
+                contentType: 'image/png,image/jpg,image/svg+xml,image/tiff,image/webp',
               },
             },
           },
@@ -131,10 +146,18 @@ export default {
                 private: {
                   $ref: '#/components/schemas/App/properties/private',
                 },
+                template: {
+                  $ref: '#/components/schemas/App/properties/template',
+                },
                 yaml: {
                   type: 'string',
                   format: 'binary',
                   description: 'The original YAML definition used to define the app.',
+                },
+                icon: {
+                  type: 'string',
+                  format: 'binary',
+                  description: 'The app icon.',
                 },
                 style: {
                   type: 'string',
@@ -145,11 +168,6 @@ export default {
                   type: 'string',
                   format: 'binary',
                   description: 'The custom style to apply to all parts of app.',
-                },
-                icon: {
-                  type: 'string',
-                  format: 'binary',
-                  description: 'The app icon.',
                 },
               },
             },
