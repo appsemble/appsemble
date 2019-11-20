@@ -431,7 +431,7 @@ reset staging:
       --set "postgresql.fullnameOverride=staging-postgresql"
       --set "sentrySecret=sentry"
 
-.production:
+production:
   extends: .helm
   stage: deploy
   only:
@@ -443,15 +443,19 @@ reset staging:
   script:
     - helm upgrade appsemble config/charts/appsemble
       --set "app=$CI_ENVIRONMENT_SLUG"
+      --set "global.postgresql.existingSecret=$POSTGRESQL_SECRET"
+      --set "global.postgresql.postgresqlDatabase=$POSTGRESQL_DATABASE"
+      --set "global.postgresql.postgresqlUsername=$POSTGRESQL_USERNAME"
+      --set "global.postgresql.servicePort=$POSTGRESQL_PORT"
       --set "ingress.annotations.cert-manager\.io/cluster-issuer=letsencrypt-prod"
       --set "ingress.annotations.kubernetes\.io/ingress\.class=nginx"
       --set "ingress.annotations.nginx\.ingress\.kubernetes\.io/proxy-body-size=50m"
       --set "ingress.enabled=true"
       --set "ingress.host=appsemble.app"
-      --set "ingress.tls.secretName=tls-secret"
-      --set "global.postgresql.existingSecret=postgresql-secret"
+      --set "ingress.tls.secretName=$INGRESS_TLS_SECRET_NAME"
+      --set "postgresql.fullnameOverride=$POSTGRESQL_HOST"
       --set "postgresql.enabled=false"
-      --set "postgresql.fullnameOverride=XXX"
+      --set 'postgresSSL=true'
       --wait
 
 # Deploy the docs for production.
