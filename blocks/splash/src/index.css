@@ -28,7 +28,7 @@
   margin: 0 auto;
   max-height: 60vh;
   max-width: 80vw;
-  position: absolute;
+  position: fixed;
   top: 13%;
 }
 
