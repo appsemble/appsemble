@@ -5,7 +5,7 @@ import Ajv from 'ajv';
 import crypto from 'crypto';
 import jsYaml from 'js-yaml';
 import { isEqual, uniqWith } from 'lodash';
-import { col, fn, Op, UniqueConstraintError } from 'sequelize';
+import { col, fn, literal, Op, UniqueConstraintError } from 'sequelize';
 import sharp from 'sharp';
 import * as webpush from 'web-push';
 
@@ -168,10 +168,10 @@ export async function getAppById(ctx) {
     raw: true,
     attributes: {
       include: [
-        'App.*',
         [fn('AVG', col('AppRatings.rating')), 'RatingAverage'],
         [fn('COUNT', col('AppRatings.AppId')), 'RatingCount'],
       ],
+      exclude: ['icon', 'style', 'sharedStyle'],
     },
     include: [{ model: AppRating, attributes: [] }],
     group: ['App.id'],
@@ -185,11 +185,20 @@ export async function getAppById(ctx) {
 }
 
 export async function queryApps(ctx) {
-  const { App } = ctx.db.models;
+  const { App, AppRating } = ctx.db.models;
 
   const apps = await App.findAll({
-    attributes: { exclude: ['yaml'] },
+    attributes: {
+      include: [
+        [fn('AVG', col('AppRatings.rating')), 'RatingAverage'],
+        [fn('COUNT', col('AppRatings.AppId')), 'RatingCount'],
+      ],
+      exclude: ['yaml', 'icon', 'style', 'sharedStyle'],
+    },
     where: { private: false },
+    include: [{ model: AppRating, attributes: [] }],
+    group: ['App.id'],
+    order: [literal('"RatingAverage" DESC NULLS LAST'), ['id', 'ASC']],
     raw: true,
   });
   const ignoredFields = ['yaml'];
@@ -197,13 +206,22 @@ export async function queryApps(ctx) {
 }
 
 export async function queryMyApps(ctx) {
-  const { App } = ctx.db.models;
+  const { App, AppRating } = ctx.db.models;
   const {
     user: { organizations },
   } = ctx.state;
 
   const apps = await App.findAll({
-    attributes: { exclude: ['yaml'] },
+    attributes: {
+      include: [
+        [fn('AVG', col('AppRatings.rating')), 'RatingAverage'],
+        [fn('COUNT', col('AppRatings.AppId')), 'RatingCount'],
+      ],
+      exclude: ['yaml', 'icon', 'style', 'sharedStyle'],
+    },
+    include: [{ model: AppRating, attributes: [] }],
+    group: ['App.id'],
+    order: [literal('"RatingAverage" DESC NULLS LAST'), ['id', 'ASC']],
     where: { OrganizationId: { [Op.in]: organizations.map(o => o.id) } },
   });
   const ignoredFields = ['yaml'];
