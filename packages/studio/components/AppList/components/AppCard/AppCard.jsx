@@ -5,6 +5,7 @@ import React from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Link } from 'react-router-dom';
 
+import Rating from '../../../Rating';
 import styles from './AppCard.css';
 import messages from './messages';
 
@@ -38,6 +39,11 @@ export default class AppCard extends React.Component {
               {app.definition.description}
             </div>
           )}
+          <Rating
+            className={styles.rating}
+            count={app.rating.count}
+            value={app.rating.average || 0}
+          />
         </div>
         <footer className={classNames('card-footer', styles.appCardFooter)}>
           <a
