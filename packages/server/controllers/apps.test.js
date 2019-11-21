@@ -1195,7 +1195,7 @@ pages:
     const response = await request(server)
       .patch(`/api/apps/${appA.id}`)
       .set('Authorization', token)
-      .field('app', JSON.stringify({ name: 'Foobar' }));
+      .field('definition', JSON.stringify({ name: 'Foobar' }));
 
     expect(response.status).toBe(400);
   });

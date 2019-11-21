@@ -73,10 +73,10 @@ export default class CreateAppCard extends React.Component {
     } = this.state;
 
     try {
-      const { name, resources } = templates[selectedTemplate];
+      const { id, resources } = templates[selectedTemplate];
       const app = await createTemplateApp(
         {
-          template: name,
+          templateId: id,
           name: appName,
           isPrivate,
           description: appDescription,

@@ -28,7 +28,7 @@ export interface Actions {
 }
 
 export interface Parameters {
-  fileBase: string;
+  fileBase?: string;
   fields: Field[];
 }
 

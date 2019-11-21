@@ -5,6 +5,11 @@ export default {
 
   async up(db) {
     const queryInterface = db.getQueryInterface();
+    await queryInterface.addColumn('App', 'template', {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+      allowNull: false,
+    });
 
     await queryInterface.createTable('AppRating', {
       rating: { type: DataTypes.INTEGER, allowNull: false },
@@ -34,7 +39,7 @@ export default {
 
   async down(db) {
     const queryInterface = db.getQueryInterface();
-
+    await queryInterface.removeColumn('App', 'template');
     await queryInterface.dropTable('AppRating');
   },
 };
