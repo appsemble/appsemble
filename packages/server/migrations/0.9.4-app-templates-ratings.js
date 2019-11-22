@@ -15,6 +15,7 @@ export default {
       rating: { type: DataTypes.INTEGER, allowNull: false },
       description: { type: DataTypes.TEXT },
       AppId: {
+        primaryKey: true,
         type: DataTypes.INTEGER,
         allowNull: false,
         unique: 'UniqueRatingIndex',
@@ -24,6 +25,7 @@ export default {
         },
       },
       UserId: {
+        primaryKey: true,
         type: DataTypes.INTEGER,
         allowNull: false,
         unique: 'UniqueRatingIndex',
