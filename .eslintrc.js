@@ -111,6 +111,7 @@ module.exports = {
       rules: {
         'filenames/match-regex': 'off',
         'max-classes-per-file': 'off',
+        'no-useless-constructor': 'off',
       },
     },
     {
