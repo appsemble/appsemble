@@ -122,7 +122,7 @@ export default class CreateAppCard extends React.Component {
       isPrivate,
     } = this.state;
 
-    if (loading) {
+    if (loading || !templates.length) {
       return null;
     }
 
