@@ -405,6 +405,43 @@ export async function deleteApp(ctx) {
   await app.destroy();
 }
 
+export async function getAppRatings(ctx) {
+  const { appId } = ctx.params;
+  const { AppRating, User } = ctx.db.models;
+
+  const ratings = await AppRating.findAll({ where: { AppId: appId }, include: [User], raw: true });
+  ctx.body = ratings.map(({ rating, description, UserId, created, updated, ...r }) => ({
+    rating,
+    description,
+    UserId,
+    name: r['User.name'] ? r['User.name'] : 'Anonymous',
+    $created: created,
+    $updated: updated,
+  }));
+}
+
+export async function submitAppRating(ctx) {
+  const { appId: AppId } = ctx.params;
+  const { App, AppRating } = ctx.db.models;
+  const {
+    user: { id: UserId },
+  } = ctx.state;
+  const { rating, description } = ctx.request.body;
+
+  const app = await App.findByPk(AppId);
+
+  if (!app) {
+    throw Boom.notFound('App not found');
+  }
+
+  const [result] = await AppRating.upsert(
+    { rating, description, UserId, AppId },
+    { returning: true },
+  );
+
+  ctx.body = result;
+}
+
 export async function getAppIcon(ctx) {
   const { appId } = ctx.params;
   const { App } = ctx.db.models;

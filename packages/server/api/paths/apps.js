@@ -275,6 +275,63 @@ export default {
       },
     },
   },
+  '/api/apps/{appId}/ratings': {
+    parameters: [{ $ref: '#/components/parameters/appId' }],
+    get: {
+      tags: ['app'],
+      description: 'Fetch all ratings of an app.',
+      operationId: 'getAppRatings',
+      responses: {
+        200: {
+          description: 'The list of apps ratings.',
+          content: {
+            'application/json': {
+              schema: {
+                type: 'array',
+                items: {
+                  $ref: '#/components/schemas/Rating',
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    post: {
+      tags: ['app'],
+      description: 'Submit an app rating.',
+      operationId: 'submitAppRating',
+      requestBody: {
+        content: {
+          'application/json': {
+            schema: {
+              type: 'object',
+              required: ['rating'],
+              properties: {
+                rating: {
+                  $ref: '#/components/schemas/Rating/properties/rating',
+                },
+                description: {
+                  $ref: '#/components/schemas/Rating/properties/description',
+                },
+              },
+            },
+          },
+        },
+      },
+      responses: {
+        200: {
+          description: 'The submitted app rating.',
+          content: {
+            'application/json': {
+              schema: { $ref: '#/components/schemas/Asset/properties/id' },
+            },
+          },
+        },
+      },
+      security: [{ apiUser: ['apps:write'] }],
+    },
+  },
   '/api/apps/{appId}/broadcast': {
     parameters: [{ $ref: '#/components/parameters/appId' }],
     post: {
