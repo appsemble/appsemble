@@ -53,7 +53,7 @@ describe('resource controller', () => {
 
   beforeEach(async () => {
     await truncate(db);
-    token = await testToken(request, server, db, 'apps:write apps:read');
+    token = await testToken(server, db, 'apps:write apps:read');
     organizationId = jwt.decode(token.substring(7)).user.organizations[0].id;
     clock = lolex.install();
   });

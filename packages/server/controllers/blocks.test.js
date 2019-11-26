@@ -2,7 +2,6 @@ import { createInstance } from 'axios-test-instance';
 import FormData from 'form-data';
 import fs from 'fs-extra';
 import path from 'path';
-import request from 'supertest';
 
 import createServer from '../utils/createServer';
 import testSchema from '../utils/test/testSchema';
@@ -24,7 +23,7 @@ describe('blocks', () => {
 
   beforeEach(async () => {
     await truncate(db);
-    token = await testToken(request, server, db, 'blocks:write');
+    token = await testToken(server, db, 'blocks:write');
     headers = { headers: { Authorization: token } };
     instance = await createInstance(server);
   });

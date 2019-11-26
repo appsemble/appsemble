@@ -27,7 +27,7 @@ describe('Template API', () => {
 
   beforeEach(async () => {
     await truncate(db);
-    token = await testToken(request, server, db, 'apps:read apps:write');
+    token = await testToken(server, db, 'apps:read apps:write');
     organizationId = jwt.decode(token.substring(7)).user.organizations[0].id;
     clock = lolex.install();
 
