@@ -9,16 +9,15 @@
   position: relative;
 }
 
-.container .starsActive {
+.starsActive {
   color: hsl(48, 99%, 47%);
   float: left;
   overflow: hidden;
   position: relative;
   white-space: nowrap;
-  z-index: 10;
 }
 
-.container .starsInactive {
+.starsInactive {
   color: hsl(0, 0%, 50%);
   left: 0;
   position: absolute;

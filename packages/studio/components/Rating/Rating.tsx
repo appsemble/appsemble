@@ -14,13 +14,6 @@ export default function Rating({ className, count, value }: RatingProps): React.
   return (
     <span className={classNames(styles.container, className)}>
       <div className={styles.wrapper}>
-        <span className={styles.starsActive} style={{ width: `${value * 20}%` }}>
-          <Icon icon="star" />
-          <Icon icon="star" />
-          <Icon icon="star" />
-          <Icon icon="star" />
-          <Icon icon="star" />
-        </span>
         <span className={styles.starsInactive}>
           <Icon icon="star" prefix="far" />
           <Icon icon="star" prefix="far" />
@@ -28,8 +21,15 @@ export default function Rating({ className, count, value }: RatingProps): React.
           <Icon icon="star" prefix="far" />
           <Icon icon="star" prefix="far" />
         </span>
+        <span className={styles.starsActive} style={{ width: `${value * 20}%` }}>
+          <Icon icon="star" />
+          <Icon icon="star" />
+          <Icon icon="star" />
+          <Icon icon="star" />
+          <Icon icon="star" />
+        </span>
       </div>
-      {count !== undefined && <span>({count})</span>}
+      {count == null && <span>({count})</span>}
     </span>
   );
 }
