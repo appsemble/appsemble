@@ -9,18 +9,32 @@
   position: relative;
 }
 
-.container .starsActive {
-  color: hsl(48, 99%, 47%);
+.starsActive {
   float: left;
   overflow: hidden;
   position: relative;
   white-space: nowrap;
-  z-index: 10;
+  & * {
+    color: hsl(48, 99%, 47%) !important;
+  }
 }
 
-.container .starsInactive {
-  color: hsl(0, 0%, 50%);
+.starsInactive {
   left: 0;
   position: absolute;
   top: 0;
+  & * {
+    color: hsl(0, 0%, 50%) !important;
+  }
+}
+
+.starButton,
+.starButton:hover,
+.starButton:focus,
+.starButton:active {
+  background: none;
+  border: none;
+  cursor: pointer;
+  outline: none;
+  padding: 0;
 }

@@ -540,6 +540,11 @@ export interface AppDefinition {
    */
   name?: string;
 
+  /**
+   * The description of the app.
+   */
+  description?: string;
+
   authentication: Authentication[];
 
   /**

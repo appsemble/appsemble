@@ -1,0 +1,13 @@
+.titleContainer {
+  align-items: center;
+  display: flex;
+  margin-bottom: 0.5em;
+}
+
+.titleContainer > figure {
+  margin-right: 1em !important;
+}
+
+.ratingButton {
+  margin-bottom: 1em;
+}
