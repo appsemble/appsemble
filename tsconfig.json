@@ -12,7 +12,7 @@
     "strictNullChecks": false,
     "lib": ["esnext"],
     "types": ["jest", "node", "@appsemble/node-utils"],
-    "target": "esnext"
+    "target": "es2018"
   },
   "exclude": ["blocks/*", "packages/*"]
 }
