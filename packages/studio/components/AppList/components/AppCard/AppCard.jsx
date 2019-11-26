@@ -41,8 +41,8 @@ export default class AppCard extends React.Component {
           )}
           <Rating
             className={styles.rating}
-            count={app.rating.count}
-            value={app.rating.average || 0}
+            count={(app.rating && app.rating.count) || 0}
+            value={(app.rating && app.rating.average) || 0}
           />
         </div>
         <footer className={classNames('card-footer', styles.appCardFooter)}>
