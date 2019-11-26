@@ -1,14 +1,12 @@
-import { App } from '@appsemble/types';
 import { injectIntl } from 'react-intl';
 import { connect } from 'react-redux';
 
+import { State } from '../../actions';
 import AppDetails, { AppDetailsProps } from './AppDetails';
 
-function mapStateToProps(
-  state: { apps: { apps: App[] } },
-  ownProps: AppDetailsProps,
-): Partial<AppDetailsProps> {
+function mapStateToProps(state: State, ownProps: AppDetailsProps): Partial<AppDetailsProps> {
   return {
+    user: state.user.user,
     app: state.apps.apps.find(app => app.id === Number(ownProps.match.params.id)),
   };
 }

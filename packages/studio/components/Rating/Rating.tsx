@@ -1,4 +1,3 @@
-import { Icon } from '@appsemble/react-components';
 import classNames from 'classnames';
 import React from 'react';
 

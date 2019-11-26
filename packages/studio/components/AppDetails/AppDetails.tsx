@@ -5,6 +5,7 @@ import React, { useEffect, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { RouteComponentProps } from 'react-router-dom';
 
+import { User } from '../../types';
 import RateApp from '../RateApp';
 import Rating from '../Rating';
 import styles from './AppDetails.css';
@@ -12,6 +13,7 @@ import messages from './messages';
 
 export interface AppDetailsProps extends RouteComponentProps<{ id: string }> {
   app: App;
+  user: User;
 }
 
 export interface Rating {
@@ -26,7 +28,7 @@ export interface Organization {
   name: string;
 }
 
-export default function AppDetails({ app }: AppDetailsProps): JSX.Element {
+export default function AppDetails({ app, user }: AppDetailsProps): JSX.Element {
   const [organization, setOrganization] = useState<Organization>(undefined);
   const [ratings, setRatings] = useState<Rating[]>([]);
 
@@ -69,7 +71,7 @@ export default function AppDetails({ app }: AppDetailsProps): JSX.Element {
           <FormattedMessage {...messages.ratings} />
         </h3>
       </div>
-      <RateApp className={styles.ratingButton} />
+      {user && <RateApp className={styles.ratingButton} />}
       <div className="content">
         {ratings.map(rating => (
           <div key={rating.$created}>
