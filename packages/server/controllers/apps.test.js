@@ -10,6 +10,7 @@ import truncate from '../utils/test/truncate';
 describe('app controller', () => {
   let App;
   let AppBlockStyle;
+  let AppRating;
   let BlockDefinition;
   let BlockVersion;
   let Organization;
@@ -18,13 +19,22 @@ describe('app controller', () => {
   let server;
   let token;
   let organizationId;
+  let userId;
   let clock;
 
   beforeAll(async () => {
     db = await testSchema('apps');
 
     server = await createServer({ db });
-    ({ App, AppBlockStyle, BlockDefinition, BlockVersion, Organization, User } = db.models);
+    ({
+      App,
+      AppBlockStyle,
+      AppRating,
+      BlockDefinition,
+      BlockVersion,
+      Organization,
+      User,
+    } = db.models);
   }, 10e3);
 
   beforeEach(async () => {
@@ -32,7 +42,9 @@ describe('app controller', () => {
 
     await truncate(db);
     token = await testToken(request, server, db, 'apps:read apps:write');
-    organizationId = jwt.decode(token.substring(7)).user.organizations[0].id;
+    const decodedToken = jwt.decode(token.substring(7));
+    organizationId = decodedToken.user.organizations[0].id;
+    userId = decodedToken.user.id;
 
     await BlockDefinition.create({
       id: '@appsemble/test',
@@ -100,10 +112,11 @@ describe('app controller', () => {
       path: 'test-app',
       iconUrl: `/api/apps/${appA.id}/icon`,
       definition: appA.definition,
+      rating: {
+        average: null,
+        count: 0,
+      },
       OrganizationId: appA.OrganizationId,
-      yaml: `name: Test App
-defaultPage: Test Page
-`,
     });
     expect(body).toContainEqual({
       id: appB.id,
@@ -114,10 +127,11 @@ defaultPage: Test Page
       path: 'another-app',
       iconUrl: `/api/apps/${appB.id}/icon`,
       definition: appB.definition,
+      rating: {
+        average: null,
+        count: 0,
+      },
       OrganizationId: appB.OrganizationId,
-      yaml: `name: Another App
-defaultPage: Another Page
-`,
     });
   });
 
@@ -155,11 +169,67 @@ defaultPage: Another Page
       path: 'test-app',
       iconUrl: `/api/apps/${appA.id}/icon`,
       definition: appA.definition,
+      rating: {
+        average: null,
+        count: 0,
+      },
       OrganizationId: appA.OrganizationId,
-      yaml: `name: Test App
-defaultPage: Test Page
-`,
     });
+  });
+
+  it('should sort apps by its rating', async () => {
+    const userB = await User.create();
+    const appA = await App.create({
+      path: 'test-app',
+      definition: { name: 'Test App', defaultPage: 'Test Page' },
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organizationId,
+    });
+    await AppRating.create({
+      AppId: appA.id,
+      UserId: userId,
+      rating: 5,
+      description: 'This is a test rating',
+    });
+    await AppRating.create({
+      AppId: appA.id,
+      UserId: userB.id,
+      rating: 4,
+      description: 'This is also a test rating',
+    });
+
+    const appB = await App.create({
+      path: 'another-app',
+      definition: { name: 'Test App', defaultPage: 'Test Page' },
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organizationId,
+    });
+
+    const appC = await await App.create({
+      path: 'yet-another-app',
+      definition: { name: 'Another App', defaultPage: 'Another Page' },
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organizationId,
+    });
+    await AppRating.create({
+      AppId: appC.id,
+      UserId: userId,
+      rating: 3,
+      description: 'This is a test rating',
+    });
+
+    const { body } = await request(server).get('/api/apps');
+
+    expect(body).toHaveLength(3);
+    expect(body[0].id).toStrictEqual(appA.id);
+    expect(body[0].rating).toStrictEqual({ count: 2, average: 4.5 });
+    expect(body[1].id).toStrictEqual(appC.id);
+    expect(body[1].rating).toStrictEqual({ count: 1, average: 3 });
+    expect(body[2].id).toStrictEqual(appB.id);
+    expect(body[2].rating).toStrictEqual({ count: 0, average: null });
   });
 
   it('should return 404 when fetching a non-existent app', async () => {
@@ -181,7 +251,6 @@ defaultPage: Test Page
       { raw: true },
     );
     const { body } = await request(server).get(`/api/apps/${appA.id}`);
-
     expect(body).toStrictEqual({
       id: appA.id,
       $created: new Date(clock.now).toJSON(),
@@ -192,6 +261,10 @@ defaultPage: Test Page
       iconUrl: `/api/apps/${appA.id}/icon`,
       definition: appA.definition,
       OrganizationId: organizationId,
+      rating: {
+        average: null,
+        count: 0,
+      },
       yaml: `name: Test App
 defaultPage: Test Page
 `,
@@ -243,10 +316,11 @@ defaultPage: Test Page
         path: 'test-app',
         iconUrl: `/api/apps/${appA.id}/icon`,
         definition: appA.definition,
+        rating: {
+          average: null,
+          count: 0,
+        },
         OrganizationId: appA.OrganizationId,
-        yaml: `name: Test App
-defaultPage: Test Page
-`,
       },
     ]);
     expect(requestB.body).toStrictEqual([
@@ -259,10 +333,11 @@ defaultPage: Test Page
         path: 'test-app',
         iconUrl: `/api/apps/${appA.id}/icon`,
         definition: appA.definition,
+        rating: {
+          average: null,
+          count: 0,
+        },
         OrganizationId: appA.OrganizationId,
-        yaml: `name: Test App
-defaultPage: Test Page
-`,
       },
       {
         id: appB.id,
@@ -273,10 +348,11 @@ defaultPage: Test Page
         path: 'test-app-b',
         iconUrl: `/api/apps/${appB.id}/icon`,
         definition: appB.definition,
+        rating: {
+          average: null,
+          count: 0,
+        },
         OrganizationId: appB.OrganizationId,
-        yaml: `name: Test App B
-defaultPage: Test Page
-`,
       },
     ]);
   });
@@ -339,7 +415,11 @@ pages:
 `,
     });
     const { body: retrieved } = await request(server).get(`/api/apps/${created.id}`);
-    expect(retrieved).toStrictEqual({ ...created, OrganizationId: organizationId });
+    expect(retrieved).toStrictEqual({
+      ...created,
+      OrganizationId: organizationId,
+      rating: { average: null, count: 0 },
+    });
   });
 
   it('should not allow an upload without an app when creating an app', async () => {

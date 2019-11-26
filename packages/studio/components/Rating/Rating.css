@@ -1,0 +1,25 @@
+.container {
+  display: block;
+  overflow: hidden;
+  position: relative;
+}
+
+.wrapper {
+  display: inline-flex;
+  position: relative;
+}
+
+.starsActive {
+  color: hsl(48, 99%, 47%);
+  float: left;
+  overflow: hidden;
+  position: relative;
+  white-space: nowrap;
+}
+
+.starsInactive {
+  color: hsl(0, 0%, 50%);
+  left: 0;
+  position: absolute;
+  top: 0;
+}
