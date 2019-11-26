@@ -2,12 +2,9 @@ import { logger } from '@appsemble/node-utils';
 import FormData from 'form-data';
 import fs from 'fs-extra';
 import { join } from 'path';
-import postcss from 'postcss';
-import postcssImport from 'postcss-import';
-import postcssrc from 'postcss-load-config';
-import postcssUrl from 'postcss-url';
 
 import { getToken } from '../../lib/config';
+import processCss from '../../lib/processCss';
 import { post } from '../../lib/request';
 
 export const command = 'upload <path>';
@@ -43,13 +40,7 @@ export function builder(yargs) {
 async function handleUpload(file, organization, type, block) {
   logger.info(`Upload ${type} stylesheet for organization ${organization}`);
 
-  const data = await fs.readFile(file, 'utf8');
-  const postcssConfig = await postcssrc();
-  const postCss = postcss(postcssConfig);
-  postCss.use(postcssUrl({ url: 'inline' }));
-  postCss.use(postcssImport({ plugins: postCss.plugins }));
-
-  const { css } = await postCss.process(data, { from: file, to: null });
+  const css = await processCss(file);
   const formData = new FormData();
   formData.append('style', Buffer.from(css), 'style.css');
 

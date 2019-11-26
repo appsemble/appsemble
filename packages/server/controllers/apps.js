@@ -98,7 +98,9 @@ export async function createApp(ctx) {
     OrganizationId,
     domain,
     private: isPrivate = true,
+    template = false,
     yaml,
+    icon,
     style,
     sharedStyle,
   } = ctx.request.body;
@@ -116,7 +118,9 @@ export async function createApp(ctx) {
       sharedStyle: validateStyle(sharedStyle),
       domain: domain || null,
       private: Boolean(isPrivate),
+      template: Boolean(template),
       yaml: yaml || jsYaml.safeDump(definition),
+      icon,
       vapidPublicKey: keys.publicKey,
       vapidPrivateKey: keys.privateKey,
     };
@@ -266,6 +270,7 @@ export async function patchApp(ctx) {
     path,
     domain,
     private: isPrivate,
+    template,
     style,
     sharedStyle,
     yaml,
@@ -288,6 +293,10 @@ export async function patchApp(ctx) {
 
     if (isPrivate !== undefined) {
       result.private = isPrivate;
+    }
+
+    if (template !== undefined) {
+      result.template = template;
     }
 
     if (domain !== undefined) {
@@ -320,7 +329,7 @@ export async function patchApp(ctx) {
         throw Boom.badRequest('Provided YAML was not equal to definition when converted.');
       }
 
-      result.yaml = yaml.contents;
+      result.yaml = yaml.contents || yaml;
     } else if (definition) {
       result.yaml = jsYaml.safeDump(definition);
     }

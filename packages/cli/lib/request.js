@@ -32,3 +32,20 @@ export function post(url, data, headers = {}) {
   }
   return request({ method: 'post', url, data, headers });
 }
+
+/**
+ * Make an HTTP PATCH request.
+ *
+ * @param {string} url The URL endpoint to make the PATCH request to.
+ * @param data The data to send. If this is a `FormData` instance, headers will be handled
+ *   automatically.
+ * @param {Object} headers The HTTP request headers to send.
+ * @returns The response body.
+ * @throws If the request failed, or a bad HTTP status code was returned.
+ */
+export function patch(url, data, headers = {}) {
+  if (data instanceof FormData) {
+    Object.assign(headers, data.getHeaders());
+  }
+  return request({ method: 'patch', url, data, headers });
+}

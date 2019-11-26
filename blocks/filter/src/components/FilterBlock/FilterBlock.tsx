@@ -272,8 +272,9 @@ export default class FilterBlock extends React.Component<FilterBlockProps, Filte
       if (value == null) {
         return false;
       }
+
       const field = fields.find(f => f.name === key);
-      return field && field.defaultValue === value;
+      return field && field.defaultValue !== undefined ? field.defaultValue === value : true;
     });
 
     return (
@@ -334,7 +335,7 @@ export default class FilterBlock extends React.Component<FilterBlockProps, Filte
               <button
                 className={classNames('button', styles.filterDialogButton)}
                 disabled={!activeFilters}
-                onClick={this.resetFilter}
+                onClick={activeFilters && this.resetFilter}
                 type="button"
               >
                 <span className="icon">

@@ -44,11 +44,11 @@ export default {
           'application/json': {
             schema: {
               type: 'object',
-              required: ['template', 'organizationId'],
+              required: ['templateId', 'organizationId'],
               properties: {
-                template: {
-                  type: 'string',
-                  description: 'The name of the template.',
+                templateId: {
+                  type: 'number',
+                  description: 'The ID of the template.',
                 },
                 name: {
                   $ref: '#/components/schemas/App/properties/definition/properties/name',
