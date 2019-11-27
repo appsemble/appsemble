@@ -69,12 +69,14 @@ export default function AppDetails({ app, user, push, intl }: AppDetailsProps): 
       {user && <RateApp app={app} className={styles.ratingButton} onRate={onRate} />}
       <div className="content">
         {ratings.map(rating => (
-          <div key={rating.$created}>
+          <div key={rating.$created} className={styles.rating}>
             <span className="is-block has-text-weight-bold">
               {rating.name || <FormattedMessage {...messages.anonymous} />}
-              <span className={`tag is-success ${styles.tag}`}>
-                <FormattedMessage {...messages.you} />
-              </span>
+              {user && rating.UserId === Number(user.id) && (
+                <span className={`tag is-success ${styles.tag}`}>
+                  <FormattedMessage {...messages.you} />
+                </span>
+              )}
             </span>
             <StarRating className="is-inline" value={rating.rating} />
             <span className="is-inline has-text-grey-light is-size-7">
