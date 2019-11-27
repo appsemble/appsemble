@@ -54,7 +54,7 @@ export default function AppDetails({ app, user, push, intl }: AppDetailsProps): 
       <div className="content">
         <div className={styles.titleContainer}>
           <figure className="image is-64x64 is-marginless	">
-            <img alt="App logo" src={`/api/apps/${app.id}/icon`} />
+            <img alt={intl.formatMessage(messages.appLogo)} src={`/api/apps/${app.id}/icon`} />
           </figure>
           <div className="is-block">
             <h1 className="is-marginless">{app.definition.name}</h1>
