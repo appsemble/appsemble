@@ -1,8 +1,8 @@
-import { Icon, Loader } from '@appsemble/react-components';
-import { App } from '@appsemble/types';
+import { Loader } from '@appsemble/react-components';
+import { App, Message } from '@appsemble/types';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, WrappedComponentProps } from 'react-intl';
 import { RouteComponentProps } from 'react-router-dom';
 
 import { User } from '../../types';
@@ -11,16 +11,20 @@ import Rating from '../Rating';
 import styles from './AppDetails.css';
 import messages from './messages';
 
-export interface AppDetailsProps extends RouteComponentProps<{ id: string }> {
+export type AppDetailsProps = {
   app: App;
   user: User;
-}
+  push: (message: Message) => void;
+} & WrappedComponentProps &
+  RouteComponentProps<{ id: string }>;
 
 export interface Rating {
   rating: number;
   description: string;
   name: string;
+  UserId: number;
   $created: string;
+  $updated: string;
 }
 
 export interface Organization {
@@ -28,7 +32,7 @@ export interface Organization {
   name: string;
 }
 
-export default function AppDetails({ app, user }: AppDetailsProps): JSX.Element {
+export default function AppDetails({ app, user, push, intl }: AppDetailsProps): JSX.Element {
   const [organization, setOrganization] = useState<Organization>(undefined);
   const [ratings, setRatings] = useState<Rating[]>([]);
 
@@ -39,7 +43,7 @@ export default function AppDetails({ app, user }: AppDetailsProps): JSX.Element 
     };
 
     fetchOrganization();
-  }, [app.OrganizationId, organization]);
+  }, [app.OrganizationId]);
 
   useEffect(() => {
     const fetchOrganization = async (): Promise<void> => {
@@ -48,7 +52,12 @@ export default function AppDetails({ app, user }: AppDetailsProps): JSX.Element 
     };
 
     fetchOrganization();
-  }, [app.OrganizationId, app.id, organization]);
+  }, [app.OrganizationId, app.id]);
+
+  const onRate = (rating: Rating): void => {
+    setRatings(ratings.map(r => (r.UserId === rating.UserId ? rating : r)));
+    push({ color: 'success', body: intl.formatMessage(messages.ratingSuccessful) });
+  };
 
   if (!organization) {
     return <Loader />;
@@ -71,18 +80,23 @@ export default function AppDetails({ app, user }: AppDetailsProps): JSX.Element 
           <FormattedMessage {...messages.ratings} />
         </h3>
       </div>
-      {user && <RateApp className={styles.ratingButton} />}
+      {user && <RateApp className={styles.ratingButton} onRate={onRate} />}
       <div className="content">
         {ratings.map(rating => (
           <div key={rating.$created}>
             <span className="is-block has-text-weight-bold">
               {rating.name || <FormattedMessage {...messages.anonymous} />}
+              <span className={`tag is-success ${styles.tag}`}>
+                <FormattedMessage {...messages.you} />
+              </span>
             </span>
             <Rating className="is-inline" value={rating.rating} />{' '}
             <span className="is-inline has-text-grey-light is-size-7">
-              {new Date(rating.$created).toLocaleString()}
+              {new Date(rating.$updated).toLocaleString()}
             </span>
-            {rating.description.length > 0 && <blockquote>{rating.description}</blockquote>}
+            {rating.description && (
+              <blockquote className={styles.description}>{rating.description}</blockquote>
+            )}
           </div>
         ))}
       </div>

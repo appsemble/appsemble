@@ -2,6 +2,7 @@ import { injectIntl } from 'react-intl';
 import { connect } from 'react-redux';
 
 import { State } from '../../actions';
+import { push } from '../../actions/message';
 import AppDetails, { AppDetailsProps } from './AppDetails';
 
 function mapStateToProps(state: State, ownProps: AppDetailsProps): Partial<AppDetailsProps> {
@@ -11,4 +12,4 @@ function mapStateToProps(state: State, ownProps: AppDetailsProps): Partial<AppDe
   };
 }
 
-export default injectIntl(connect(mapStateToProps)(AppDetails));
+export default injectIntl(connect(mapStateToProps, { push })(AppDetails));

@@ -1,20 +1,25 @@
 import { Form, FormComponent, Icon, Modal } from '@appsemble/react-components';
+import { Message } from '@appsemble/types';
 import axios from 'axios';
 import classNames from 'classnames';
 import React from 'react';
 import { FormattedMessage, WrappedComponentProps } from 'react-intl';
 
-import Rating from '../Rating';
+import { Rating } from '../AppDetails/AppDetails';
+import StarRating from '../Rating';
 import messages from './messages';
 import styles from './RateApp.css';
 
 interface RateAppProps {
   className: string;
+  onRate: (rate: Rating) => void;
+  push: (message: Message) => void;
 }
 
 export default function RateApp({
   className,
   intl,
+  onRate,
 }: RateAppProps & WrappedComponentProps): JSX.Element {
   const [isOpen, setIsOpen] = React.useState(false);
   const [rating, setRating] = React.useState(0);
@@ -24,8 +29,12 @@ export default function RateApp({
 
   const onDescriptionChange = (event: React.ChangeEvent<HTMLTextAreaElement>): void =>
     setDescription(event.target.value);
-  const submit = async (): Promise<void> => {
-    await axios.post('/api/apps/1/ratings', { rating });
+  const submit = async (event: React.FormEvent<HTMLFormElement>): Promise<void> => {
+    event.preventDefault();
+    const { data } = await axios.post('/api/apps/1/ratings', { rating, description });
+    onRate(data);
+    setRating(0);
+    setDescription('');
     closeDialog();
   };
 
@@ -47,31 +56,39 @@ export default function RateApp({
         onClose={closeDialog}
         title={<FormattedMessage {...messages.rateApp} />}
       >
-        <Form className={styles.controls} onSubmit={submit}>
-          <FormComponent label={<FormattedMessage {...messages.rating} />} required>
-            <Rating onClick={value => setRating(value)} value={rating} />
-          </FormComponent>
-          <FormComponent label={<FormattedMessage {...messages.review} />}>
-            <textarea
-              className="textarea"
-              name="description"
-              onChange={onDescriptionChange}
-              placeholder={intl.formatMessage(messages.descriptionPlaceholder)}
-              value={description}
-            />
-          </FormComponent>
+        <Form onSubmit={submit}>
+          <div className={styles.controls}>
+            <FormComponent label={<FormattedMessage {...messages.rating} />} required>
+              <StarRating onClick={value => setRating(value)} value={rating} />
+            </FormComponent>
+            <FormComponent label={<FormattedMessage {...messages.review} />}>
+              <textarea
+                className="textarea"
+                name="description"
+                onChange={onDescriptionChange}
+                placeholder={intl.formatMessage(messages.descriptionPlaceholder)}
+                value={description}
+              />
+            </FormComponent>
+          </div>
+
+          <footer className="card-footer">
+            <button
+              className={`card-footer-item button is-white ${styles.cardFooterButton}`}
+              onClick={closeDialog}
+              type="button"
+            >
+              <FormattedMessage {...messages.cancel} />
+            </button>
+            <button
+              className={`card-footer-item button is-primary ${styles.cardFooterButton}`}
+              disabled={rating === 0}
+              type="submit"
+            >
+              <FormattedMessage {...messages.submit} />
+            </button>
+          </footer>
         </Form>
-        <footer className="card-footer">
-          <button className="card-footer-item" onClick={closeDialog} type="button">
-            <FormattedMessage {...messages.cancel} />
-          </button>
-          <button
-            className={classNames('card-footer-item', 'is-primary', styles.cardFooterButton)}
-            type="submit"
-          >
-            <FormattedMessage {...messages.submit} />
-          </button>
-        </footer>
       </Modal>
     </>
   );
