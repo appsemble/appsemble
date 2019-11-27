@@ -15,7 +15,7 @@ export default class FileInput extends Component<FileInputProps> {
   onInput = (event: Event, val: string): void => {
     const { field, onInput, value } = this.props;
 
-    const copy = [...value];
+    const copy = [].concat(value);
     const index = Number((event.target as HTMLInputElement).name.split('.').pop());
     if (val == null) {
       copy.splice(index, 1);

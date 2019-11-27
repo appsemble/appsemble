@@ -76,7 +76,7 @@ export default function AppDetails({ app, user, push, intl }: AppDetailsProps): 
                 <FormattedMessage {...messages.you} />
               </span>
             </span>
-            <StarRating className="is-inline" value={rating.rating} />{' '}
+            <StarRating className="is-inline" value={rating.rating} />
             <span className="is-inline has-text-grey-light is-size-7">
               {new Date(rating.$updated).toLocaleString()}
             </span>
