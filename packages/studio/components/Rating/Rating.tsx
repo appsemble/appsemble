@@ -1,3 +1,4 @@
+import { Icon } from '@appsemble/react-components';
 import classNames from 'classnames';
 import React from 'react';
 
@@ -26,7 +27,7 @@ export default function Rating({
     if (onClick !== undefined) {
       activeIcons.push(
         <button
-          key={`active${i + 1}`}
+          key={i}
           className={`icon ${styles.starButton} is-medium`}
           onClick={() => onClick(i + 1)}
           onMouseEnter={() => setLocalRating(i + 1)}
@@ -38,7 +39,7 @@ export default function Rating({
       );
       inactiveIcons.push(
         <button
-          key={`inActive${i + 1}`}
+          key={i}
           className={`icon ${styles.starButton} is-medium`}
           onClick={() => onClick(i + 1)}
           onMouseEnter={() => setLocalRating(i + 1)}
@@ -49,16 +50,8 @@ export default function Rating({
         </button>,
       );
     } else {
-      activeIcons.push(
-        <span key={`active${i + 1}`} className="icon">
-          <i className="fas fa-star" />
-        </span>,
-      );
-      inactiveIcons.push(
-        <span key={`inActive${i + 1}`} className="icon">
-          <i className="far fa-star" />
-        </span>,
-      );
+      activeIcons.push(<Icon key={i} icon="star" prefix="fas" />);
+      inactiveIcons.push(<Icon key={i} icon="star" prefix="far" />);
     }
   }
 
