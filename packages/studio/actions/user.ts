@@ -129,7 +129,7 @@ async function setupAuth(
   url: string,
   db: IDBPDatabase,
   dispatch: UserDispatch,
-): Promise<User & { id: string; scope: string }> {
+): Promise<User & { scope: string }> {
   const payload = jwtDecode<JwtPayload>(accessToken);
   const { exp, scopes, sub } = payload;
 
@@ -147,7 +147,7 @@ async function setupAuth(
     const user = await requestUser();
     return {
       ...user,
-      id: sub,
+      id: Number(sub),
       scope: scopes,
     };
   } catch (exception) {
