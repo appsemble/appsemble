@@ -692,6 +692,150 @@ pages:
     expect(response.body.path).toMatch(/test-app-(\w){10}/);
   });
 
+  it('should fetch app ratings', async () => {
+    const app = await App.create(
+      {
+        path: 'test-app',
+        definition: { name: 'Test App', defaultPage: 'Test Page' },
+        vapidPublicKey: 'a',
+        vapidPrivateKey: 'b',
+        OrganizationId: organizationId,
+      },
+      { raw: true },
+    );
+
+    const userB = await User.create();
+    await AppRating.create({
+      AppId: app.id,
+      UserId: userId,
+      rating: 5,
+      description: 'This app is great!',
+    });
+    await AppRating.create({
+      AppId: app.id,
+      UserId: userB.id,
+      rating: 2,
+      description: 'This app is so-so..',
+    });
+
+    const response = await request(server).get(`/api/apps/${app.id}/ratings`);
+    expect(response).toMatchObject({
+      status: 200,
+      body: [
+        {
+          UserId: userId,
+          name: 'Test User',
+          rating: 5,
+          description: 'This app is great!',
+          $created: new Date(clock.now).toJSON(),
+          $updated: new Date(clock.now).toJSON(),
+        },
+        {
+          UserId: userB.id,
+          name: null,
+          rating: 2,
+          description: 'This app is so-so..',
+          $created: new Date(clock.now).toJSON(),
+          $updated: new Date(clock.now).toJSON(),
+        },
+      ],
+    });
+  });
+
+  it('should rate an app', async () => {
+    const app = await App.create(
+      {
+        path: 'test-app',
+        definition: { name: 'Test App', defaultPage: 'Test Page' },
+        vapidPublicKey: 'a',
+        vapidPrivateKey: 'b',
+        OrganizationId: organizationId,
+      },
+      { raw: true },
+    );
+
+    const response = await request(server)
+      .post(`/api/apps/${app.id}/ratings`)
+      .set('Authorization', token)
+      .send({ rating: 5, description: 'This app is great!' });
+
+    expect(response).toMatchObject({
+      status: 200,
+      body: {
+        UserId: userId,
+        rating: 5,
+        description: 'This app is great!',
+        $created: new Date(clock.now).toJSON(),
+        $updated: new Date(clock.now).toJSON(),
+      },
+    });
+  });
+
+  it('should replace existing ratings on app', async () => {
+    const app = await App.create(
+      {
+        path: 'test-app',
+        definition: { name: 'Test App', defaultPage: 'Test Page' },
+        vapidPublicKey: 'a',
+        vapidPrivateKey: 'b',
+        OrganizationId: organizationId,
+      },
+      { raw: true },
+    );
+
+    await AppRating.create({
+      AppId: app.id,
+      UserId: userId,
+      rating: 5,
+      description: 'This app is great!',
+    });
+
+    const responseA = await request(server).get(`/api/apps/${app.id}/ratings`);
+    clock.tick(20e3);
+    const responseB = await request(server)
+      .post(`/api/apps/${app.id}/ratings`)
+      .set('Authorization', token)
+      .send({ rating: 2, description: 'This app is so-so..' });
+    const responseC = await request(server).get(`/api/apps/${app.id}/ratings`);
+
+    expect(responseA).toMatchObject({
+      status: 200,
+      body: [
+        {
+          UserId: userId,
+          rating: 5,
+          description: 'This app is great!',
+          $created: new Date(0).toJSON(),
+          $updated: new Date(0).toJSON(),
+        },
+      ],
+    });
+
+    expect(responseB).toMatchObject({
+      status: 200,
+      body: {
+        UserId: userId,
+        rating: 2,
+        description: 'This app is so-so..',
+        $created: new Date(0).toJSON(),
+        $updated: new Date(clock.now).toJSON(),
+      },
+    });
+
+    expect(responseC).toMatchObject({
+      status: 200,
+      body: [
+        {
+          UserId: userId,
+          rating: 2,
+          description: 'This app is so-so..',
+          $created: new Date(0).toJSON(),
+          $updated: new Date(clock.now).toJSON(),
+        },
+      ],
+    });
+  });
+
   it('should allow stylesheets to be included when creating an app', async () => {
     const response = await request(server)
       .post('/api/apps')
