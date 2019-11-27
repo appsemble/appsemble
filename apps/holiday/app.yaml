@@ -9,7 +9,7 @@ pages:
           onLoad:
             url: https://cors-anywhere.herokuapp.com/https://date.nager.at/Api/v2/NextPublicHolidays/NL
             type: request
-        version: 0.9.3
+        version: 0.9.4
         parameters:
           fields:
             - name: date
@@ -25,7 +25,7 @@ pages:
           onLoad:
             url: https://cors-anywhere.herokuapp.com/https://date.nager.at/Api/v2/NextPublicHolidays/US
             type: request
-        version: 0.9.3
+        version: 0.9.4
         parameters:
           fields:
             - name: date
@@ -39,7 +39,7 @@ pages:
           onLoad:
             url: https://cors-anywhere.herokuapp.com/https://date.nager.at/Api/v2/NextPublicHolidays/DE
             type: request
-        version: 0.9.3
+        version: 0.9.4
         parameters:
           fields:
             - name: date
@@ -55,7 +55,7 @@ pages:
           onLoad:
             url: https://cors-anywhere.herokuapp.com/https://date.nager.at/Api/v2/NextPublicHolidays/ES
             type: request
-        version: 0.9.3
+        version: 0.9.4
         parameters:
           fields:
             - name: date
