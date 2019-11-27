@@ -42,9 +42,7 @@ export default class BlockList extends React.Component<BlockListProps, BlockList
   };
 
   ready = (blockId: string): void => {
-    this.setState(({ blockStatus }) => {
-      return { blockStatus: { ...blockStatus, [blockId]: true } };
-    });
+    this.setState(({ blockStatus }) => ({ blockStatus: { ...blockStatus, [blockId]: true } }));
   };
 
   render(): React.ReactNode {

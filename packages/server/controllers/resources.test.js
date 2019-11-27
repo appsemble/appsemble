@@ -16,34 +16,32 @@ describe('resource controller', () => {
   let organizationId;
   let clock;
 
-  const exampleApp = orgId => {
-    return {
-      definition: {
-        name: 'Test App',
-        defaultPage: 'Test Page',
-        resources: {
-          testResource: {
-            schema: {
-              type: 'object',
-              required: ['foo'],
-              properties: { foo: { type: 'string' } },
-            },
+  const exampleApp = orgId => ({
+    definition: {
+      name: 'Test App',
+      defaultPage: 'Test Page',
+      resources: {
+        testResource: {
+          schema: {
+            type: 'object',
+            required: ['foo'],
+            properties: { foo: { type: 'string' } },
           },
-          testResourceB: {
-            schema: {
-              type: 'object',
-              required: ['foo'],
-              properties: { bar: { type: 'string' } },
-            },
+        },
+        testResourceB: {
+          schema: {
+            type: 'object',
+            required: ['foo'],
+            properties: { bar: { type: 'string' } },
           },
         },
       },
-      path: 'test-app',
-      vapidPublicKey: 'a',
-      vapidPrivateKey: 'b',
-      OrganizationId: orgId,
-    };
-  };
+    },
+    path: 'test-app',
+    vapidPublicKey: 'a',
+    vapidPrivateKey: 'b',
+    OrganizationId: orgId,
+  });
 
   beforeAll(async () => {
     db = await testSchema('resources');

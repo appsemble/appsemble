@@ -79,9 +79,7 @@ describe('mount', () => {
 
 describe('withBlock', () => {
   it('should pass block props to the child element', () => {
-    const Test = withBlock(function Test() {
-      return null;
-    });
+    const Test = withBlock(() => null);
     let component: JSX.Element;
     (ReactDOM.render as jest.Mock).mockImplementation(c => {
       component = c;
