@@ -361,7 +361,7 @@ export async function patchApp(ctx) {
         throw Boom.badRequest('Provided YAML was not equal to definition when converted.');
       }
 
-      result.yaml = yaml.contents || yaml;
+      result.yaml = (yaml.contents && yaml.contents.toString('utf8')) || yaml;
     } else if (definition) {
       result.yaml = jsYaml.safeDump(definition);
     }
