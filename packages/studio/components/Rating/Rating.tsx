@@ -70,7 +70,7 @@ export default function Rating({
           {activeIcons}
         </span>
       </div>
-      {count !== undefined && <span>({count})</span>}
+      {count == null && <span>({count})</span>}
     </span>
   );
 }
