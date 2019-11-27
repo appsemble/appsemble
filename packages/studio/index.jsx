@@ -4,10 +4,10 @@ import { init } from '@sentry/browser';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
-import { applyMiddleware, combineReducers, compose, createStore } from 'redux';
+import { applyMiddleware, compose, createStore } from 'redux';
 import thunk from 'redux-thunk';
 
-import * as actions from './actions';
+import reducer from './actions';
 import App from './components/App';
 import getDB from './utils/getDB';
 import settings from './utils/settings';
@@ -22,7 +22,7 @@ async function getStore() {
     (process.env.NODE_ENV !== 'production' && window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__) ||
     compose;
   return createStore(
-    combineReducers(actions),
+    reducer,
     {
       db: idb,
     },

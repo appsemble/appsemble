@@ -1,5 +1,6 @@
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface User {}
+export interface User {
+  id: number;
+}
 
 declare global {
   interface Window {

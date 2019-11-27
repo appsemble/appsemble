@@ -1,7 +1,12 @@
 import axios from 'axios';
+import { IDBPDatabase } from 'idb';
 import jwtDecode from 'jwt-decode';
+import { Action } from 'redux';
+import { ThunkAction, ThunkDispatch } from 'redux-thunk';
 
+import { User } from '../types';
 import { AUTH, RW } from '../utils/getDB';
+import { State } from './index';
 
 // The buffer between the access token expiration and the refresh token request. A minute should be
 // plenty of time for the refresh token request to finish.
@@ -11,14 +16,67 @@ const INITIALIZED = 'user/INITIALIZED';
 const UPDATED = 'user/UPDATED';
 const LOGIN_SUCCESS = 'user/LOGIN_SUCCESS';
 const LOGOUT = 'user/LOGOUT';
-let timeoutId;
+let timeoutId: NodeJS.Timeout;
 
-const initialState = {
+interface UserState {
+  initialized: boolean;
+  user: User;
+}
+
+interface OAuth2Params {
+  // eslint-disable-next-line camelcase
+  grant_type: 'refresh_token' | 'authentication' | 'password' | 'authorization_code';
+  // eslint-disable-next-line camelcase
+  client_id?: string;
+  // eslint-disable-next-line camelcase
+  client_secret?: string;
+  // eslint-disable-next-line camelcase
+  refresh_token?: string;
+  code?: string;
+  username?: string;
+  password?: string;
+  scope?: string;
+}
+
+interface JwtPayload {
+  exp: number;
+  scopes: string;
+  sub: string;
+}
+
+interface DBUser {
+  accessToken: string;
+  refreshToken: string;
+  clientId: string;
+  clientSecret: string;
+}
+
+interface InitializeAction extends Action<typeof INITIALIZED> {
+  user: User;
+}
+
+interface LoginSuccessAction extends Action<typeof LOGIN_SUCCESS> {
+  user: User;
+}
+
+interface UpdateAction extends Action<typeof UPDATED> {
+  user: User;
+}
+
+export type UserAction =
+  | InitializeAction
+  | LoginSuccessAction
+  | UpdateAction
+  | Action<typeof LOGOUT>;
+type UserThunk = ThunkAction<void, State, null, UserAction>;
+type UserDispatch = ThunkDispatch<State, null, UserAction>;
+
+export const initialState: UserState = {
   initialized: false,
   user: null,
 };
 
-export default (state = initialState, action) => {
+export default (state = initialState, action: UserAction): UserState => {
   switch (action.type) {
     case INITIALIZED:
       return {
@@ -45,7 +103,11 @@ export default (state = initialState, action) => {
   }
 };
 
-async function doLogout(dispatch, getState, db = getState().db) {
+async function doLogout(
+  dispatch: UserDispatch,
+  getState: () => State,
+  db = getState().db,
+): Promise<void> {
   delete axios.defaults.headers.common.Authorization;
   clearTimeout(timeoutId);
   db.transaction(AUTH, RW)
@@ -56,19 +118,25 @@ async function doLogout(dispatch, getState, db = getState().db) {
   });
 }
 
-export async function requestUser() {
-  const { data } = await axios.get('/api/user');
+export async function requestUser(): Promise<User> {
+  const { data } = await axios.get<User>('/api/user');
   return data;
 }
 
-async function setupAuth(accessToken, refreshToken, url, db, dispatch) {
-  const payload = jwtDecode(accessToken);
+async function setupAuth(
+  accessToken: string,
+  refreshToken: string,
+  url: string,
+  db: IDBPDatabase,
+  dispatch: UserDispatch,
+): Promise<User & { scope: string }> {
+  const payload = jwtDecode<JwtPayload>(accessToken);
   const { exp, scopes, sub } = payload;
 
   const timeout = exp * 1e3 - REFRESH_BUFFER - new Date().getTime();
 
   if (refreshToken) {
-    // eslint-disable-next-line no-use-before-define
+    // eslint-disable-next-line @typescript-eslint/no-use-before-define
     timeoutId = setTimeout(refreshTokenLogin, timeout, url, db, dispatch);
   } else {
     timeoutId = setTimeout(doLogout, timeout, dispatch, null, db);
@@ -79,7 +147,7 @@ async function setupAuth(accessToken, refreshToken, url, db, dispatch) {
     const user = await requestUser();
     return {
       ...user,
-      id: sub,
+      id: Number(sub),
       scope: scopes,
     };
   } catch (exception) {
@@ -88,8 +156,14 @@ async function setupAuth(accessToken, refreshToken, url, db, dispatch) {
   }
 }
 
-async function requestToken(url, params, db, dispatch, refreshURL) {
-  const { data } = await axios.post(url, new URLSearchParams(params));
+async function requestToken(
+  url: string,
+  params: OAuth2Params,
+  db: IDBPDatabase,
+  dispatch: UserDispatch,
+  refreshURL?: string,
+): ReturnType<typeof setupAuth> {
+  const { data } = await axios.post(url, new URLSearchParams(params as Record<string, any>));
   const { access_token: accessToken, refresh_token: refreshToken } = data;
   const tx = db.transaction(AUTH, RW);
   await tx.objectStore(AUTH).put(
@@ -101,14 +175,19 @@ async function requestToken(url, params, db, dispatch, refreshURL) {
     },
     0,
   );
+
   return setupAuth(accessToken, refreshToken, refreshURL || url, db, dispatch);
 }
 
-async function refreshTokenLogin(url, db, dispatch) {
-  const { refreshToken, clientId, clientSecret } = await db
+async function refreshTokenLogin(
+  url: string,
+  db: IDBPDatabase,
+  dispatch: UserDispatch,
+): Promise<void> {
+  const { refreshToken, clientId, clientSecret } = (await db
     .transaction(AUTH)
     .objectStore(AUTH)
-    .get(0);
+    .get(0)) as DBUser;
 
   try {
     const user = await requestToken(
@@ -126,11 +205,8 @@ async function refreshTokenLogin(url, db, dispatch) {
       type: LOGIN_SUCCESS,
       user,
     });
-
-    return user;
   } catch (error) {
     doLogout(dispatch, null, db);
-    return null;
   }
 }
 
@@ -142,7 +218,7 @@ async function refreshTokenLogin(url, db, dispatch) {
  * - Axios is configured.
  * - The user is restored.
  */
-export function initAuth() {
+export function initAuth(): UserThunk {
   return async (dispatch, getState) => {
     const { db } = getState();
     const token = await db
@@ -172,7 +248,7 @@ export function initAuth() {
  * This resets the user in the redux store, removes the Authorization header from requests made,
  * and removes the access token and refresh token from the indexed db.
  */
-export function logout() {
+export function logout(): UserThunk {
   return doLogout;
 }
 
@@ -187,7 +263,13 @@ export function logout() {
  * @param {string} clientId Client ID of application to authenticate to.
  * @param {string} scope Requested permission scope(s), separated by spaces.
  */
-export function passwordLogin(url, { username, password }, refreshURL, clientId, scope) {
+export function passwordLogin(
+  url: string,
+  { username, password }: { username: string; password: string },
+  refreshURL: string,
+  clientId: string,
+  scope: string,
+): UserThunk {
   return async (dispatch, getState) => {
     const { db } = getState();
     const user = await requestToken(
@@ -202,7 +284,6 @@ export function passwordLogin(url, { username, password }, refreshURL, clientId,
       db,
       dispatch,
       refreshURL,
-      dispatch,
     );
     dispatch({
       type: LOGIN_SUCCESS,
@@ -211,7 +292,7 @@ export function passwordLogin(url, { username, password }, refreshURL, clientId,
   };
 }
 
-export function oauthLogin(token) {
+export function oauthLogin(token: string): UserThunk {
   return async (dispatch, getState) => {
     const { db } = getState();
     const user = await requestToken(
@@ -231,31 +312,31 @@ export function oauthLogin(token) {
   };
 }
 
-export function fetchUser() {
+export function fetchUser(): UserThunk {
   return async dispatch => {
     const user = await requestUser();
     dispatch({ type: UPDATED, user });
   };
 }
 
-export function updateUser(user) {
+export function updateUser(user: User): UserThunk {
   return async dispatch => {
     dispatch({ type: UPDATED, user });
   };
 }
 
-export function resetPassword(token, password) {
+export function resetPassword(token: string, password: string) {
   return async () => axios.post('/api/email/reset', { token, password });
 }
 
-export function requestResetPassword(email) {
+export function requestResetPassword(email: string) {
   return async () => axios.post('/api/email/reset/request', { email });
 }
 
-export function registerEmail(email, password, organization) {
+export function registerEmail(email: string, password: string, organization: string) {
   return async () => axios.post('/api/email', { email, password, organization });
 }
 
-export function verifyEmail(token) {
+export function verifyEmail(token: string) {
   return async () => axios.post('/api/email/verify', { token });
 }
