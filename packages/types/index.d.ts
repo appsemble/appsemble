@@ -605,3 +605,55 @@ export interface App {
 
   definition: AppDefinition;
 }
+
+/**
+ * A rating given to an app.
+ */
+export interface Rating {
+  /**
+   * A value ranging between 1 and 5 representing the rating
+   */
+  rating: number;
+
+  /**
+   * An optional description of why the rating was given
+   */
+  description?: string;
+
+  /**
+   * The name of the user who rated the app.
+   */
+  name: string;
+
+  /**
+   * The ID of the user who rated the app.
+   */
+  UserId: number;
+
+  /**
+   * The creation date of the rating.
+   */
+  $created: string;
+
+  /**
+   * The date of the last time the rating was updated
+   */
+  $updated: string;
+}
+
+/**
+ * The representation of an organization within Appsemble.
+ */
+export interface Organization {
+  /**
+   * The ID of the organization.
+   *
+   * This typically is prepended with an `@`
+   */
+  id: string;
+
+  /**
+   * The display name of the organization.
+   */
+  name: string;
+}

@@ -1,22 +1,23 @@
 import { Form, FormComponent, Icon, Modal } from '@appsemble/react-components';
-import { Message } from '@appsemble/types';
+import { App, Message, Rating } from '@appsemble/types';
 import axios from 'axios';
 import classNames from 'classnames';
 import React from 'react';
 import { FormattedMessage, WrappedComponentProps } from 'react-intl';
 
-import { Rating } from '../AppDetails/AppDetails';
 import StarRating from '../Rating';
 import messages from './messages';
 import styles from './RateApp.css';
 
 interface RateAppProps {
+  app: App;
   className: string;
   onRate: (rate: Rating) => void;
   push: (message: Message) => void;
 }
 
 export default function RateApp({
+  app,
   className,
   intl,
   onRate,
@@ -31,7 +32,7 @@ export default function RateApp({
     setDescription(event.target.value);
   const submit = async (event: React.FormEvent<HTMLFormElement>): Promise<void> => {
     event.preventDefault();
-    const { data } = await axios.post('/api/apps/1/ratings', { rating, description });
+    const { data } = await axios.post(`/api/apps/${app.id}/ratings`, { rating, description });
     onRate(data);
     setRating(0);
     setDescription('');
