@@ -1,0 +1,32 @@
+.container {
+  display: flex;
+  flex-flow: row wrap;
+}
+
+.input {
+  display: none;
+}
+
+.inputContainer:not(:last-child) {
+  margin-right: 5px;
+}
+
+.label {
+  border: 1px solid hsl(0, 0%, 86%);
+  border-radius: 4px;
+  cursor: pointer;
+  height: 100%;
+  padding: 10px;
+  text-align: center;
+  user-select: none;
+  width: 100%;
+
+  &:hover {
+    border-color: hsl(0, 0%, 71%);
+  }
+}
+
+.input:checked + .label {
+  background-color: var(--primary-color);
+  color: var(--primary-color-invert);
+}

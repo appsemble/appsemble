@@ -11,6 +11,9 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 - CLI: Add `app` subcommand for creating apps
 - Server: Add option to mark existing apps as templates
+- Studio: Add option to rate apps
+- Studio: Add app details page
+- Studio: Add rating indicators to index page. Apps are now sorted by rating.
 
 ### Removed
 

@@ -11,6 +11,7 @@ import truncate from '../utils/test/truncate';
 describe('app controller', () => {
   let App;
   let AppBlockStyle;
+  let AppRating;
   let BlockDefinition;
   let BlockVersion;
   let Organization;
@@ -20,13 +21,22 @@ describe('app controller', () => {
   let server;
   let authorization;
   let organizationId;
+  let userId;
   let clock;
 
   beforeAll(async () => {
     db = await testSchema('apps');
 
     server = await createServer({ db });
-    ({ App, AppBlockStyle, BlockDefinition, BlockVersion, Organization, User } = db.models);
+    ({
+      App,
+      AppBlockStyle,
+      AppRating,
+      BlockDefinition,
+      BlockVersion,
+      Organization,
+      User,
+    } = db.models);
     request = await createInstance(server);
   }, 10e3);
 
@@ -35,7 +45,9 @@ describe('app controller', () => {
 
     await truncate(db);
     authorization = await testToken(server, db, 'apps:read apps:write');
-    organizationId = jwt.decode(authorization.substring(7)).user.organizations[0].id;
+    const decodedToken = jwt.decode(authorization.substring(7));
+    organizationId = decodedToken.user.organizations[0].id;
+    userId = decodedToken.user.id;
 
     await BlockDefinition.create({
       id: '@appsemble/test',
@@ -108,9 +120,6 @@ describe('app controller', () => {
           iconUrl: `/api/apps/${appA.id}/icon`,
           definition: appA.definition,
           OrganizationId: appA.OrganizationId,
-          yaml: `name: Test App
-defaultPage: Test Page
-`,
         },
         {
           id: appB.id,
@@ -122,9 +131,6 @@ defaultPage: Test Page
           iconUrl: `/api/apps/${appB.id}/icon`,
           definition: appB.definition,
           OrganizationId: appB.OrganizationId,
-          yaml: `name: Another App
-defaultPage: Another Page
-`,
         },
       ],
     });
@@ -167,10 +173,63 @@ defaultPage: Another Page
           iconUrl: `/api/apps/${appA.id}/icon`,
           definition: appA.definition,
           OrganizationId: appA.OrganizationId,
-          yaml: `name: Test App
-defaultPage: Test Page
-`,
         },
+      ],
+    });
+  });
+
+  it('should sort apps by its rating', async () => {
+    const userB = await User.create();
+    const appA = await App.create({
+      path: 'test-app',
+      definition: { name: 'Test App', defaultPage: 'Test Page' },
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organizationId,
+    });
+    await AppRating.create({
+      AppId: appA.id,
+      UserId: userId,
+      rating: 5,
+      description: 'This is a test rating',
+    });
+    await AppRating.create({
+      AppId: appA.id,
+      UserId: userB.id,
+      rating: 4,
+      description: 'This is also a test rating',
+    });
+
+    const appB = await App.create({
+      path: 'another-app',
+      definition: { name: 'Test App', defaultPage: 'Test Page' },
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organizationId,
+    });
+
+    const appC = await await App.create({
+      path: 'yet-another-app',
+      definition: { name: 'Another App', defaultPage: 'Another Page' },
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organizationId,
+    });
+    await AppRating.create({
+      AppId: appC.id,
+      UserId: userId,
+      rating: 3,
+      description: 'This is a test rating',
+    });
+
+    const response = await request.get('/api/apps');
+
+    expect(response).toMatchObject({
+      status: 200,
+      data: [
+        expect.objectContaining({ id: appA.id, rating: { count: 2, average: 4.5 } }),
+        expect.objectContaining({ id: appC.id, rating: { count: 1, average: 3 } }),
+        expect.objectContaining({ id: appB.id, rating: { count: 0, average: null } }),
       ],
     });
   });
@@ -262,9 +321,6 @@ defaultPage: Test Page
           iconUrl: `/api/apps/${appA.id}/icon`,
           definition: appA.definition,
           OrganizationId: appA.OrganizationId,
-          yaml: `name: Test App
-defaultPage: Test Page
-`,
         },
       ],
     });
@@ -281,9 +337,6 @@ defaultPage: Test Page
           iconUrl: `/api/apps/${appA.id}/icon`,
           definition: appA.definition,
           OrganizationId: appA.OrganizationId,
-          yaml: `name: Test App
-defaultPage: Test Page
-`,
         },
         {
           id: appB.id,
@@ -295,9 +348,6 @@ defaultPage: Test Page
           iconUrl: `/api/apps/${appB.id}/icon`,
           definition: appB.definition,
           OrganizationId: appB.OrganizationId,
-          yaml: `name: Test App B
-defaultPage: Test Page
-`,
         },
       ],
     });
@@ -365,7 +415,13 @@ pages:
       },
     });
     const { data: retrieved } = await request.get(`/api/apps/${createdResponse.data.id}`);
-    expect(retrieved).toStrictEqual(createdResponse.data);
+    expect(retrieved).toStrictEqual({
+      ...createdResponse.data,
+      rating: {
+        average: null,
+        count: 0,
+      },
+    });
   });
 
   it('should not allow an upload without an app when creating an app', async () => {

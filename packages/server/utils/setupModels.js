@@ -41,6 +41,7 @@ function importModels(db) {
   db.import('../models/OrganizationBlockStyle');
   db.import('../models/Meta');
   db.import('../models/AppSubscription');
+  db.import('../models/AppRating');
 }
 
 export default async function setupModels({

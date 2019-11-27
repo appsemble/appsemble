@@ -69,7 +69,7 @@ export default class FilterBlock extends React.Component<FilterBlockProps, Filte
     // Convert date fields to unix timestamps without mutating filter itself
     const convertedFilter = Object.entries(filter).reduce<Filter>((acc, [key, value]) => {
       const field = fields.find(f => f.name === key);
-      if (field.type === 'date') {
+      if (field.type && field.type === 'date') {
         if (field.range) {
           acc[key] = {};
           if ((value as RangeFilter).to) {
@@ -108,10 +108,13 @@ export default class FilterBlock extends React.Component<FilterBlockProps, Filte
       return;
     }
 
-    const defaultFilter = fields.reduce<Filter>((acc, { name, defaultValue }) => {
+    const defaultFilter = fields.reduce<Filter>((acc, { name, defaultValue, type }) => {
       if (defaultValue) {
         acc[name] = defaultValue;
+      } else if (type === 'checkbox') {
+        acc[name] = [];
       }
+
       return acc;
     }, {});
 
@@ -179,6 +182,32 @@ export default class FilterBlock extends React.Component<FilterBlockProps, Filte
         return { filter: newFilter };
       },
     );
+  };
+
+  onCheckBoxChange = async ({
+    target: { name, checked, value },
+  }: React.ChangeEvent<HTMLInputElement>): Promise<void> => {
+    this.setState(({ filter }) => {
+      const entry = (filter[name] as string[]) || [];
+      if (checked) {
+        if (entry.includes(value)) {
+          return null;
+        }
+
+        return {
+          filter: {
+            ...filter,
+            [name]: [...entry, value],
+          },
+        };
+      }
+      return {
+        filter: {
+          ...filter,
+          [name]: entry.filter(e => e !== value),
+        },
+      };
+    });
   };
 
   onRangeChange = ({ target: { id, name, value } }: React.ChangeEvent<HTMLInputElement>): void => {
@@ -265,6 +294,7 @@ export default class FilterBlock extends React.Component<FilterBlockProps, Filte
                   filter={filter}
                   loading={loading}
                   onChange={this.onChange}
+                  onCheckBoxChange={this.onCheckBoxChange}
                   onRangeChange={this.onRangeChange}
                 />
               ))}
