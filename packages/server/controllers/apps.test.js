@@ -1062,7 +1062,30 @@ pages:
       headers: { ...form.getHeaders(), authorization },
     });
 
-    expect(response.status).toBe(200);
+    expect(response).toMatchObject({
+      status: 200,
+      data: {
+        id: appA.id,
+        $created: new Date(clock.now).toJSON(),
+        $updated: new Date(clock.now).toJSON(),
+        domain: null,
+        private: false,
+        path: 'test-app',
+        iconUrl: `/api/apps/${appA.id}/icon`,
+        OrganizationId: organizationId,
+        definition: {
+          name: 'Foobar',
+          defaultPage: appA.definition.defaultPage,
+          pages: [
+            {
+              name: 'Test Page',
+              blocks: [{ type: 'test', version: '0.0.0' }],
+            },
+          ],
+        },
+        yaml,
+      },
+    });
   });
 
   it('should update the app domain', async () => {
