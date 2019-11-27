@@ -62,9 +62,11 @@ export default function RateApp({
             <FormComponent label={<FormattedMessage {...messages.rating} />} required>
               <StarRating onClick={value => setRating(value)} value={rating} />
             </FormComponent>
-            <FormComponent label={<FormattedMessage {...messages.review} />}>
+            <FormComponent id="description" label={<FormattedMessage {...messages.review} />}>
               <textarea
                 className="textarea"
+                id="description"
+                maxLength={500}
                 name="description"
                 onChange={onDescriptionChange}
                 placeholder={intl.formatMessage(messages.descriptionPlaceholder)}

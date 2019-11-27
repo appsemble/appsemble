@@ -32,12 +32,12 @@ export default function AppDetails({ app, user, push, intl }: AppDetailsProps): 
   }, [app.OrganizationId]);
 
   useEffect(() => {
-    const fetchOrganization = async (): Promise<void> => {
+    const fetchRatings = async (): Promise<void> => {
       const { data } = await axios.get<Rating[]>(`/api/apps/${app.id}/ratings`);
       setRatings(data);
     };
 
-    fetchOrganization();
+    fetchRatings();
   }, [app.OrganizationId, app.id]);
 
   const onRate = (rating: Rating): void => {
