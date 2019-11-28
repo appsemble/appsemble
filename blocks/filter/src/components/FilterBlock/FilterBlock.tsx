@@ -211,17 +211,15 @@ export default class FilterBlock extends React.Component<FilterBlockProps, Filte
   };
 
   onRangeChange = ({ target: { id, name, value } }: React.ChangeEvent<HTMLInputElement>): void => {
-    this.setState(({ filter }) => {
-      return {
-        filter: {
-          ...filter,
-          [name]: {
-            ...(filter[name] as {}),
-            [id.startsWith('to') ? 'to' : 'from']: value,
-          },
+    this.setState(({ filter }) => ({
+      filter: {
+        ...filter,
+        [name]: {
+          ...(filter[name] as {}),
+          [id.startsWith('to') ? 'to' : 'from']: value,
         },
-      };
-    });
+      },
+    }));
   };
 
   onFilter = async (): Promise<void> => {

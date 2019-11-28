@@ -301,31 +301,29 @@ export default class ResourceTable extends React.Component {
             </tr>
           </thead>
           <tbody>
-            {resources.map(resource => {
-              return (
-                <tr key={resource.id}>
-                  <td className={styles.actionsCell}>
-                    <Link className="button" to={`${match.url}/edit/${resource.id}`}>
-                      <Icon className="has-text-info" icon="pen" size="small" />
-                    </Link>
-                    <button
-                      className="button"
-                      onClick={() => this.promptDeleteResource(resource)}
-                      type="button"
-                    >
-                      <Icon className="has-text-danger" icon="trash" size="small" />
-                    </button>
+            {resources.map(resource => (
+              <tr key={resource.id}>
+                <td className={styles.actionsCell}>
+                  <Link className="button" to={`${match.url}/edit/${resource.id}`}>
+                    <Icon className="has-text-info" icon="pen" size="small" />
+                  </Link>
+                  <button
+                    className="button"
+                    onClick={() => this.promptDeleteResource(resource)}
+                    type="button"
+                  >
+                    <Icon className="has-text-danger" icon="trash" size="small" />
+                  </button>
+                </td>
+                {keys.map(key => (
+                  <td key={key} className={styles.contentCell}>
+                    {typeof resource[key] === 'string'
+                      ? resource[key]
+                      : JSON.stringify(resource[key])}
                   </td>
-                  {keys.map(key => (
-                    <td key={key} className={styles.contentCell}>
-                      {typeof resource[key] === 'string'
-                        ? resource[key]
-                        : JSON.stringify(resource[key])}
-                    </td>
-                  ))}
-                </tr>
-              );
-            })}
+                ))}
+              </tr>
+            ))}
           </tbody>
         </table>
         <Modal

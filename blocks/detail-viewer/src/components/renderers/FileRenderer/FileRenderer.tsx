@@ -34,21 +34,19 @@ export default class FileRenderer extends Component<RendererProps<FileField>> {
         {field.label && <h6 className="title is-6">{field.label}</h6>}
         {field.repeated ? (
           <div className={classNames('container', styles.repeated)}>
-            {((value || []) as string[]).map((v, index) => {
-              return (
-                <figure
-                  // eslint-disable-next-line react/no-array-index-key
-                  key={`${field.label || field.name}.${index}`}
-                  className={classNames('image', styles.root)}
-                >
-                  <img
-                    alt={field.label || field.name}
-                    className={styles.img}
-                    src={this.getSrc(field.repeatedName ? remapData(field.repeatedName, v) : v)}
-                  />
-                </figure>
-              );
-            })}
+            {((value || []) as string[]).map((v, index) => (
+              <figure
+                // eslint-disable-next-line react/no-array-index-key
+                key={`${field.label || field.name}.${index}`}
+                className={classNames('image', styles.root)}
+              >
+                <img
+                  alt={field.label || field.name}
+                  className={styles.img}
+                  src={this.getSrc(field.repeatedName ? remapData(field.repeatedName, v) : v)}
+                />
+              </figure>
+            ))}
           </div>
         ) : (
           <figure className={classNames('image', styles.root)}>

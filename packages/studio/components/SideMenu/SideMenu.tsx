@@ -21,10 +21,10 @@ export default function SideMenu({
     <div className={classNames({ [styles.collapsed]: isCollapsed }, styles.sideMenuContainer)}>
       <aside className={classNames('menu', styles.sideMenu)}>
         <ul className="menu-list">
-          {React.Children.map(children, (item, index) => {
+          {React.Children.map(children, (item, index) => (
             // eslint-disable-next-line react/no-array-index-key
-            return <li key={index}>{item}</li>;
-          })}
+            <li key={index}>{item}</li>
+          ))}
         </ul>
         <button
           className={`button ${styles.collapseButton}`}

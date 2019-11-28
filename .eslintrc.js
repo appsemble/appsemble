@@ -34,6 +34,8 @@ module.exports = {
         ignoreTemplateLiterals: true,
       },
     ],
+    'arrow-body-style': ['error', 'as-needed'],
+    'prefer-arrow-callback': 'error',
     'no-inline-comments': 'error',
     'filenames/match-regex': ['error', /^\.?[a-z\d]+(\.config|\.test)?$/i, true],
     'filenames/match-exported': 'error',
