@@ -5,7 +5,9 @@ import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
 
-export interface FormComponentProps {
+interface FormComponentProps {
+  children: React.ReactNode;
+
   /**
    * An optional id for the HTML element. If not set, this will fall back to `name`.
    */
@@ -16,10 +18,12 @@ export interface FormComponentProps {
    */
   iconLeft?: IconName;
 
+  iconRight?: boolean;
+
   /**
    * The label element to render.
    */
-  label: JSX.Element;
+  label?: React.ReactNode;
 
   /**
    * Whether or not the input is required.
@@ -30,12 +34,17 @@ export interface FormComponentProps {
 /**
  * A wrapper for creating consistent form components.
  */
-export default class FormComponent extends React.Component<FormComponentProps> {
-  render(): JSX.Element {
-    const { children, iconLeft, id, label, required } = this.props;
-
-    return (
-      <div className="field">
+export default function FormComponent({
+  children,
+  iconLeft,
+  iconRight,
+  id,
+  label,
+  required,
+}: FormComponentProps): React.ReactElement {
+  return (
+    <div className="field">
+      {label ? (
         <label className="label" htmlFor={id}>
           {label}
           {required || (
@@ -44,8 +53,15 @@ export default class FormComponent extends React.Component<FormComponentProps> {
             </span>
           )}
         </label>
-        <div className={classNames('control', { 'has-icons-left': iconLeft })}>{children}</div>
+      ) : null}
+      <div
+        className={classNames('control', {
+          'has-icons-left': iconLeft,
+          'has-icons-right': iconRight,
+        })}
+      >
+        {children}
       </div>
-    );
-  }
+    </div>
+  );
 }

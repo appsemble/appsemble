@@ -149,7 +149,7 @@ export interface Block<P = any, A = {}> {
   /**
    * The theme of the block.
    */
-  theme: Theme;
+  theme?: Theme;
 
   /**
    * A free form mapping of named paramters.
@@ -332,6 +332,11 @@ interface DialogActionDefinition extends BaseActionDefinition<'dialog'> {
    * Blocks to render on the dialog.
    */
   blocks: Block[];
+
+  /**
+   * The title to show in the dialog.
+   */
+  title?: string;
 }
 
 interface LinkActionDefinition extends BaseActionDefinition<'link'> {
@@ -493,12 +498,12 @@ export interface Page {
    *
    * This will be displayed in the navigation menu.
    */
-  icon: IconName;
+  icon?: IconName;
 
   /**
    * Page parameters can be used for linking to a page that should display a single resource.
    */
-  parameters: string[];
+  parameters?: string[];
 
   /**
    * A mapping of actions that can be fired by the page to action handlers.
@@ -510,9 +515,9 @@ export interface Page {
   /**
    * The global theme for the page.
    */
-  theme: Theme;
+  theme?: Theme;
 
-  subPages: Pick<Page, 'blocks' | 'name'>[];
+  subPages?: Pick<Page, 'blocks' | 'name'>[];
 
   /**
    * The navigation type to use.
@@ -527,20 +532,20 @@ export interface Page {
   hideFromMenu?: boolean;
 }
 
-export interface App {
-  authentication: Authentication[];
-
+export interface AppDefinition {
   /**
-   * The unique identifier for the app.
+   * The name of the app.
    *
-   * This value will be generated automatically by the API.
+   * This determines the default path of the app.
    */
-  id?: number;
+  name?: string;
 
   /**
-   * The id of the organization to which this app belongs.
+   * The description of the app.
    */
-  organizationId?: string;
+  description?: string;
+
+  authentication: Authentication[];
 
   /**
    * The default page of the app.
@@ -555,6 +560,13 @@ export interface App {
   navigation?: Navigation;
 
   /**
+   * The strategy to use for apps to subscribe to push notifications.
+   *
+   * If this is omitted, push notifications can not be sent.
+   */
+  notifications?: 'opt-in' | 'startup';
+
+  /**
    * The pages of the app.
    */
   pages: Page[];
@@ -567,5 +579,81 @@ export interface App {
   /**
    * The global theme for the app.
    */
-  theme: Theme;
+  theme?: Theme;
+}
+
+export interface App {
+  /**
+   * The unique identifier for the app.
+   *
+   * This value will be generated automatically by the API.
+   */
+  id?: number;
+
+  /*
+   * A domain name on which this app should be served.
+   */
+  domain?: string;
+
+  /**
+   * The id of the organization to which this app belongs.
+   */
+  OrganizationId?: string;
+
+  path: string;
+  private: boolean;
+
+  definition: AppDefinition;
+}
+
+/**
+ * A rating given to an app.
+ */
+export interface Rating {
+  /**
+   * A value ranging between 1 and 5 representing the rating
+   */
+  rating: number;
+
+  /**
+   * An optional description of why the rating was given
+   */
+  description?: string;
+
+  /**
+   * The name of the user who rated the app.
+   */
+  name: string;
+
+  /**
+   * The ID of the user who rated the app.
+   */
+  UserId: number;
+
+  /**
+   * The creation date of the rating.
+   */
+  $created: string;
+
+  /**
+   * The date of the last time the rating was updated
+   */
+  $updated: string;
+}
+
+/**
+ * The representation of an organization within Appsemble.
+ */
+export interface Organization {
+  /**
+   * The ID of the organization.
+   *
+   * This typically is prepended with an `@`
+   */
+  id: string;
+
+  /**
+   * The display name of the organization.
+   */
+  name: string;
 }

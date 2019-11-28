@@ -1,0 +1,71 @@
+.root {
+  display: flex;
+  height: 100%;
+}
+
+.leftPanel {
+  flex: 1 1 0;
+}
+
+.rightPanel {
+  background-color: hsl(0, 0%, 7%);
+  border-radius: 22px;
+  box-sizing: border-box;
+  display: flex;
+  flex: 1 1 0;
+  margin-left: 4px;
+  padding: 22px;
+}
+
+.editorForm {
+  display: flex;
+  flex-flow: column;
+  height: 100%;
+  margin-bottom: 0;
+}
+
+.appFrame {
+  background-color: hsl(0, 0%, 100%);
+  border: none;
+  flex: 1;
+}
+
+.editorToolbar {
+  background-color: hsl(0, 0%, 24%);
+  min-height: 2.7em;
+  padding: 10px;
+  width: 100%;
+}
+
+.editorTabs {
+  margin-bottom: 0 !important;
+}
+
+.monacoEditor {
+  flex: 1;
+  width: 100%;
+}
+
+.navbarTitle,
+.navbarTitle:visited,
+.navbarTitle:hover {
+  color: inherit;
+  text-decoration: none;
+}
+
+.iconPreview {
+  margin-left: 10px;
+}
+
+.cardFooterButton {
+  border: none;
+  border-radius: 0;
+  cursor: pointer;
+  font: inherit;
+  height: auto;
+  padding: 0 !important;
+}
+
+.dialogContent {
+  margin: 20px;
+}

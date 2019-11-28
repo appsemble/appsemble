@@ -21,10 +21,9 @@ interface FilterBlockState {
   typingTimer?: NodeJS.Timeout;
 }
 
-export default class FilterBlock extends React.Component<
-  BlockProps<Parameters, Actions>,
-  FilterBlockState
-> {
+export type FilterBlockProps = BlockProps<Parameters, Actions>;
+
+export default class FilterBlock extends React.Component<FilterBlockProps, FilterBlockState> {
   refreshTimer: NodeJS.Timeout = null;
 
   state: FilterBlockState = {
@@ -70,7 +69,7 @@ export default class FilterBlock extends React.Component<
     // Convert date fields to unix timestamps without mutating filter itself
     const convertedFilter = Object.entries(filter).reduce<Filter>((acc, [key, value]) => {
       const field = fields.find(f => f.name === key);
-      if (field.type === 'date') {
+      if (field.type && field.type === 'date') {
         if (field.range) {
           acc[key] = {};
           if ((value as RangeFilter).to) {
@@ -109,10 +108,13 @@ export default class FilterBlock extends React.Component<
       return;
     }
 
-    const defaultFilter = fields.reduce<Filter>((acc, { name, defaultValue }) => {
+    const defaultFilter = fields.reduce<Filter>((acc, { name, defaultValue, type }) => {
       if (defaultValue) {
         acc[name] = defaultValue;
+      } else if (type === 'checkbox') {
+        acc[name] = [];
       }
+
       return acc;
     }, {});
 
@@ -152,39 +154,72 @@ export default class FilterBlock extends React.Component<
   };
 
   onChange = ({ target }: React.ChangeEvent<HTMLInputElement>): void => {
-    this.setState(({ filter, typingTimer }, { block: { parameters: { fields, highlight } } }) => {
-      const newFilter = {
-        ...filter,
-        [target.name]: target.value,
-      };
-      if (highlight && target.name === highlight) {
-        if (!fields.find(field => field.name === highlight).enum) {
-          // wait 300ms, then submit
-          clearTimeout(typingTimer);
+    this.setState(
+      (
+        { filter, typingTimer },
+        {
+          block: {
+            parameters: { fields, highlight },
+          },
+        },
+      ) => {
+        const newFilter = {
+          ...filter,
+          [target.name]: target.value,
+        };
+        if (highlight && target.name === highlight) {
+          if (!fields.find(field => field.name === highlight).enum) {
+            // wait 300ms, then submit
+            clearTimeout(typingTimer);
 
-          return {
-            filter: newFilter,
-            typingTimer: setTimeout(this.onFilter, 300),
-          };
+            return {
+              filter: newFilter,
+              typingTimer: setTimeout(this.onFilter, 300),
+            };
+          }
+          setTimeout(this.onFilter, 0);
         }
-        setTimeout(this.onFilter, 0);
+        return { filter: newFilter };
+      },
+    );
+  };
+
+  onCheckBoxChange = async ({
+    target: { name, checked, value },
+  }: React.ChangeEvent<HTMLInputElement>): Promise<void> => {
+    this.setState(({ filter }) => {
+      const entry = (filter[name] as string[]) || [];
+      if (checked) {
+        if (entry.includes(value)) {
+          return null;
+        }
+
+        return {
+          filter: {
+            ...filter,
+            [name]: [...entry, value],
+          },
+        };
       }
-      return { filter: newFilter };
+      return {
+        filter: {
+          ...filter,
+          [name]: entry.filter(e => e !== value),
+        },
+      };
     });
   };
 
   onRangeChange = ({ target: { id, name, value } }: React.ChangeEvent<HTMLInputElement>): void => {
-    this.setState(({ filter }) => {
-      return {
-        filter: {
-          ...filter,
-          [name]: {
-            ...(filter[name] as {}),
-            [id.startsWith('to') ? 'to' : 'from']: value,
-          },
+    this.setState(({ filter }) => ({
+      filter: {
+        ...filter,
+        [name]: {
+          ...(filter[name] as {}),
+          [id.startsWith('to') ? 'to' : 'from']: value,
         },
-      };
-    });
+      },
+    }));
   };
 
   onFilter = async (): Promise<void> => {
@@ -235,54 +270,51 @@ export default class FilterBlock extends React.Component<
       if (value == null) {
         return false;
       }
+
       const field = fields.find(f => f.name === key);
-      return field && field.defaultValue === value;
+      return field && field.defaultValue !== undefined ? field.defaultValue === value : true;
     });
 
     return (
       <>
         <div className={styles.container}>
-          <Modal isActive={isOpen} onClose={this.onClose}>
-            <div className="card">
-              <header className="card-header">
-                <p className="card-header-title">
-                  <FormattedMessage {...messages.filter} />
-                </p>
-              </header>
-              <div className="card-content">
-                {fields
-                  .filter(field => field.name !== highlight)
-                  .map(field => (
-                    <Field
-                      {...field}
-                      key={field.name}
-                      filter={filter}
-                      loading={loading}
-                      onChange={this.onChange}
-                      onRangeChange={this.onRangeChange}
-                    />
-                  ))}
-              </div>
-              <footer className="card-footer">
-                {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
-                <a
-                  className="card-footer-item is-link"
-                  onClick={this.onClose}
-                  onKeyDown={this.onFilterKeyDown}
-                  role="button"
-                  tabIndex={-1}
-                >
-                  <FormattedMessage {...messages.cancel} />
-                </a>
-                <button
-                  className={`card-footer-item button is-primary ${styles.cardFooterButton}`}
-                  onClick={this.onFilter}
-                  type="button"
-                >
-                  <FormattedMessage {...messages.filter} />
-                </button>
-              </footer>
-            </div>
+          <Modal
+            isActive={isOpen}
+            onClose={this.onClose}
+            title={<FormattedMessage {...messages.filter} />}
+          >
+            {fields
+              .filter(field => field.name !== highlight)
+              .map(field => (
+                <Field
+                  {...field}
+                  key={field.name}
+                  filter={filter}
+                  loading={loading}
+                  onChange={this.onChange}
+                  onCheckBoxChange={this.onCheckBoxChange}
+                  onRangeChange={this.onRangeChange}
+                />
+              ))}
+            <footer className="card-footer">
+              {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
+              <a
+                className="card-footer-item is-link"
+                onClick={this.onClose}
+                onKeyDown={this.onFilterKeyDown}
+                role="button"
+                tabIndex={-1}
+              >
+                <FormattedMessage {...messages.cancel} />
+              </a>
+              <button
+                className={`card-footer-item button is-primary ${styles.cardFooterButton}`}
+                onClick={this.onFilter}
+                type="button"
+              >
+                <FormattedMessage {...messages.filter} />
+              </button>
+            </footer>
           </Modal>
           {highlightedField && (
             <div className={styles.highlighted}>
@@ -301,7 +333,7 @@ export default class FilterBlock extends React.Component<
               <button
                 className={classNames('button', styles.filterDialogButton)}
                 disabled={!activeFilters}
-                onClick={this.resetFilter}
+                onClick={activeFilters && this.resetFilter}
                 type="button"
               >
                 <span className="icon">

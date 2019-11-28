@@ -16,11 +16,12 @@ export default sequelize => {
         allowNull: false,
         references: { model: 'BlockDefinition' },
       },
-      style: { type: DataTypes.TEXT('long') },
+      style: { type: DataTypes.TEXT },
     },
     {
       freezeTableName: true,
-      paranoid: true,
+      // XXX: Setting this to true causes issues with the test truncate() function.
+      paranoid: false,
       createdAt: 'created',
       updatedAt: 'updated',
       deletedAt: 'deleted',

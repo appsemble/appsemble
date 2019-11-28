@@ -1,0 +1,25 @@
+.tags {
+  display: inline !important;
+  margin-left: 0.5rem;
+}
+
+.memberButton {
+  display: inline-flex;
+}
+
+.field {
+  max-width: 480px;
+}
+
+.cardFooterButton {
+  border: none;
+  border-radius: 0;
+  cursor: pointer;
+  font: inherit;
+  height: auto;
+  padding: 0 !important;
+}
+
+.dialogContent {
+  padding: 20px;
+}

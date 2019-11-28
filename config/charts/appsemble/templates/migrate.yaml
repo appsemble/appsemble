@@ -12,6 +12,7 @@ metadata:
   annotations:
     helm.sh/hook: post-install,post-upgrade
     helm.sh/hook-delete-policy: hook-succeeded
+    helm.sh/hook-weight: '0'
 spec:
   template:
     spec:
@@ -31,13 +32,19 @@ spec:
             {{ end }}
           env:
             - name: DATABASE_HOST
-              value: {{ include "call-nested" (list . "mysql" "mysql.fullname") }}
+              value: {{ .Values.postgresql.fullnameOverride }}
+            {{ if .Values.postgresSSL }}
+            - name: DATABASE_SSL
+              value: 'true'
+            {{ end }}
+            - name: DATABASE_PORT
+              value: {{ .Values.global.postgresql.servicePort | quote }}
             - name: DATABASE_NAME
-              value: {{ .Values.mysql.mysqlDatabase }}
+              value: {{ .Values.global.postgresql.postgresqlDatabase }}
             - name: DATABASE_USER
-              value: {{ .Values.mysql.mysqlUser }}
+              value: {{ .Values.global.postgresql.postgresqlUsername }}
             - name: DATABASE_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{ include "call-nested" (list . "mysql" "mysql.secretName") }}
-                  key: mysql-password
+                  name: {{ .Values.global.postgresql.existingSecret }}
+                  key: postgresql-password

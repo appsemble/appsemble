@@ -1,6 +1,7 @@
+import { logger } from '@appsemble/node-utils';
 import Boom from '@hapi/boom';
 import { isEmpty } from 'lodash';
-import { UniqueConstraintError } from 'sequelize';
+import { DatabaseError, UniqueConstraintError } from 'sequelize';
 
 export async function createBlockDefinition(ctx) {
   const { BlockDefinition } = ctx.db.models;
@@ -72,33 +73,35 @@ export async function createBlockVersion(ctx) {
         resources = null,
         version,
       } = await BlockVersion.create({ ...data, name }, { transaction });
-      const fileKeys = await Promise.all(
-        Object.entries(files).map(async ([key, file]) => {
-          await BlockAsset.create(
-            {
-              name,
-              version: data.version,
-              filename: key,
-              mime: file.mime,
-              content: file.contents,
-            },
-            { transaction },
-          );
-          return key;
-        }),
+
+      Object.keys(files).forEach(filename => {
+        logger.verbose(`Creating block assets for ${name}@${data.version}: ${filename}`);
+      });
+      await BlockAsset.bulkCreate(
+        Object.entries(files).map(([filename, file]) => ({
+          name,
+          version: data.version,
+          filename,
+          mime: file.mime,
+          content: file.contents,
+        })),
+        { logging: false, transaction },
       );
+
+      const fileKeys = Object.entries(files).map(([key]) => key);
+
       ctx.body = {
         actions,
-        files: fileKeys,
-        name,
         layout,
         parameters,
         resources,
         version,
+        files: fileKeys,
+        name,
       };
     });
   } catch (err) {
-    if (err instanceof UniqueConstraintError) {
+    if (err instanceof UniqueConstraintError || err instanceof DatabaseError) {
       throw Boom.conflict(`Block version “${name}@${data.version}” already exists`);
     }
     throw err;
@@ -111,7 +114,7 @@ export async function getBlockVersion(ctx) {
   const { BlockAsset, BlockVersion } = ctx.db.models;
 
   const version = await BlockVersion.findOne({
-    attributes: ['actions', 'layout', 'resources'],
+    attributes: ['actions', 'layout', 'resources', 'parameters'],
     raw: true,
     where: { name, version: blockVersion },
   });

@@ -12,10 +12,7 @@ function mapStateToProps(state: State): Partial<SideMenuProps> {
 }
 
 export default withRouter(
-  connect(
-    mapStateToProps,
-    {
-      closeMenu,
-    },
-  )(SideMenu),
+  connect(mapStateToProps, {
+    closeMenu,
+  })(SideMenu),
 );

@@ -27,8 +27,8 @@ function makeJSONSafe(object) {
   return object;
 }
 
-export default ({ port = 9999, host = `http://localhost:${port}` } = {}) => {
-  return makeJSONSafe({
+export default ({ port = 9999, host = `http://localhost:${port}` } = {}) =>
+  makeJSONSafe({
     openapi: '3.0.2',
     components,
     externalDocs: {
@@ -40,7 +40,7 @@ export default ({ port = 9999, host = `http://localhost:${port}` } = {}) => {
       description: `
         Welcome to the Appsemble API.
 
-        The app editor can be found on
+        The app studio can be found on
         > ${host}
 
         The OpenAPI explorer can be found on
@@ -58,4 +58,3 @@ export default ({ port = 9999, host = `http://localhost:${port}` } = {}) => {
     paths,
     tags,
   });
-};

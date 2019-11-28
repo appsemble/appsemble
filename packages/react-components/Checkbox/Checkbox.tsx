@@ -1,10 +1,10 @@
 import classNames from 'classnames';
 import * as React from 'react';
 
-import FormComponent, { FormComponentProps } from '../FormComponent';
+import FormComponent from '../FormComponent';
 
-type CheckboxProps = FormComponentProps &
-  Omit<React.HTMLProps<HTMLInputElement>, 'value'> & {
+type CheckboxProps = Omit<React.ComponentPropsWithoutRef<typeof FormComponent>, 'children'> &
+  Omit<React.ComponentPropsWithoutRef<'input'>, 'value' | 'label' | 'onChange'> & {
     /**
      * The name of the HTML element.
      */
@@ -23,7 +23,7 @@ type CheckboxProps = FormComponentProps &
     /**
      * Whether or not the checkbox is checked.
      */
-    value: boolean;
+    value?: boolean;
   };
 
 /**
@@ -50,7 +50,7 @@ export default class Checkbox extends React.Component<CheckboxProps> {
           onChange={this.onChange}
           type="checkbox"
         />
-        <label htmlFor={id}>{help}</label>
+        {help && <label htmlFor={id}>{help}</label>}
       </FormComponent>
     );
   }

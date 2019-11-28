@@ -22,10 +22,13 @@ import raw from 'raw-body';
 
 import api from '../api';
 import * as operations from '../controllers';
+import appMapper from '../middleware/appMapper';
 import boom from '../middleware/boom';
 import frontend from '../middleware/frontend';
 import oauth2 from '../middleware/oauth2';
-import routes from '../routes';
+import tinyRouter from '../middleware/tinyRouter';
+import { appRouter, fallbackRouter, studioRouter } from '../routes';
+import bulmaHandler from '../routes/bulmaHandler';
 import Mailer from './email/Mailer';
 import oauth2Model from './oauth2Model';
 
@@ -55,15 +58,20 @@ export default async function createServer({
     app.use(compress());
   }
 
-  if (process.env.NODE_ENV !== 'test') {
-    app.use(await frontend(webpackConfigs));
-  }
-
   app.use(
     mount(
       `/fa/${faPkg.version}`,
       serve(path.dirname(require.resolve('@fortawesome/fontawesome-free/package.json'))),
     ),
+  );
+
+  app.use(
+    tinyRouter([
+      {
+        route: /^\/bulma/,
+        get: bulmaHandler,
+      },
+    ]),
   );
 
   app.use(
@@ -83,7 +91,12 @@ export default async function createServer({
       koasOperations({ operations }),
     ]),
   );
-  app.use(routes);
+
+  if (process.env.NODE_ENV !== 'test') {
+    app.use(await frontend(webpackConfigs));
+  }
+
+  app.use(appMapper(studioRouter, appRouter, fallbackRouter));
 
   return app.callback();
 }

@@ -1,0 +1,15 @@
+.cardFooterButton {
+  border: none;
+  border-radius: 0;
+  cursor: pointer;
+  font: inherit;
+  height: auto;
+}
+
+.modal {
+  padding: 0;
+}
+
+.controls {
+  padding: 20px;
+}

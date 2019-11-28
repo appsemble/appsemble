@@ -1,7 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <base href="/@{{ app.OrganizationId }}/{{ app.path }}" />
+    {{#base}}
+    <base href="{{ base }}" />
+    {{/base}}
     <meta charset="utf-8" />
     <meta
       name="viewport"
@@ -11,21 +13,21 @@
       name="theme-color"
       content="{{ (app.definition.theme && app.definition.theme.themeColor) || '#ffffff' }}"
     />
-    <link rel="icon" sizes="16x16" href="/{{ app.id }}/icon-16.png" />
-    <link rel="icon" sizes="32x32" href="/{{ app.id }}/icon-32.png" />
-    <link rel="icon" sizes="96x96" href="/{{ app.id }}/icon-96.png" />
-    <link rel="icon" sizes="128x128" href="/{{ app.id }}/icon-128.png" />
-    <link rel="icon" sizes="192x192" href="/{{ app.id }}/icon-192.png" />
-    <link rel="apple-touch-icon" sizes="76x76" href="/{{ app.id }}/icon-76.png?opaque" />
-    <link rel="apple-touch-icon" sizes="120x120" href="/{{ app.id }}/icon-120.png?opaque" />
-    <link rel="apple-touch-icon" sizes="152x152" href="/{{ app.id }}/icon-152.png?opaque" />
-    <link rel="apple-touch-icon" sizes="144x144" href="/{{ app.id }}/icon-144.png?opaque" />
-    <link rel="apple-touch-icon" sizes="152x152" href="/{{ app.id }}/icon-152.png?opaque" />
-    <link rel="apple-touch-icon" sizes="167x167" href="/{{ app.id }}/icon-167.png?opaque" />
-    <link rel="apple-touch-icon" sizes="180x180" href="/{{ app.id }}/icon-180.png?opaque" />
+    <link rel="icon" sizes="16x16" href="{{ base }}/icon-16.png" />
+    <link rel="icon" sizes="32x32" href="{{ base }}/icon-32.png" />
+    <link rel="icon" sizes="96x96" href="{{ base }}/icon-96.png" />
+    <link rel="icon" sizes="128x128" href="{{ base }}/icon-128.png" />
+    <link rel="icon" sizes="192x192" href="{{ base }}/icon-192.png" />
+    <link rel="apple-touch-icon" sizes="76x76" href="{{ base }}/icon-76.png?opaque" />
+    <link rel="apple-touch-icon" sizes="120x120" href="{{ base }}/icon-120.png?opaque" />
+    <link rel="apple-touch-icon" sizes="152x152" href="{{ base }}/icon-152.png?opaque" />
+    <link rel="apple-touch-icon" sizes="144x144" href="{{ base }}/icon-144.png?opaque" />
+    <link rel="apple-touch-icon" sizes="152x152" href="{{ base }}/icon-152.png?opaque" />
+    <link rel="apple-touch-icon" sizes="167x167" href="{{ base }}/icon-167.png?opaque" />
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ base }}/icon-180.png?opaque" />
     <!-- This *must* be the bottom one. -->
-    <link rel="apple-touch-icon" href="/{{ app.id }}/icon-57.png?opaque" />
-    <link rel="manifest" href="/{{ app.id }}/manifest.json" />
+    <link rel="apple-touch-icon" href="{{ base }}/icon-57.png?opaque" />
+    <link rel="manifest" href="{{ base }}/manifest.json" />
     <title>{{ app.definition.name }}</title>
     <link rel="stylesheet" href="{{{ bulmaURL }}}" id="bulma-style-app" />
     <link rel="stylesheet" href="{{{ faURL }}}" />
@@ -43,7 +45,7 @@
     <link rel="stylesheet" href="/api/apps/{{ app.id }}/style/core" id="appsemble-style-core" />
     {{/app.style}} {{#app.sharedStyle}}
     <link rel="stylesheet" href="/api/apps/{{ app.id }}/style/shared" id="appsemble-style-shared" />
-    {{/app.sharedStyle}} {{{settings }}}
+    {{/app.sharedStyle}} {{{ settings }}}
   </head>
   <body>
     <div class="is-fixed-top is-primary navbar">

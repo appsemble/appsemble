@@ -1,63 +1,102 @@
 import { normalize } from '@appsemble/utils';
 import Boom from '@hapi/boom';
-import { UniqueConstraintError } from 'sequelize';
+import crypto from 'crypto';
+import { col, fn, UniqueConstraintError } from 'sequelize';
+import { generateVAPIDKeys } from 'web-push';
 
-import templates from '../templates/apps';
 import getAppFromRecord from '../utils/getAppFromRecord';
 
 export async function getAppTemplates(ctx) {
-  ctx.body = templates.map(({ name, description, resources }) => ({
-    name,
-    description,
-    resources: !!resources,
-  }));
+  const { App, Resource } = ctx.db.models;
+
+  const templates = await App.findAll({
+    where: { template: true },
+    attributes: {
+      include: ['id', 'definition', [fn('COUNT', col('Resources.id')), 'ResourceCount']],
+    },
+    include: [{ model: Resource, attributes: [] }],
+    group: ['App.id'],
+  });
+
+  ctx.body = templates.map(
+    ({
+      dataValues: {
+        id,
+        definition: { description, name },
+        ResourceCount,
+      },
+    }) => ({
+      id,
+      name,
+      description,
+      resources: Number(ResourceCount) > 0,
+    }),
+  );
 }
 
 export async function createTemplateApp(ctx) {
   const {
-    template: reqTemplate,
+    templateId,
     name,
     description,
     organizationId,
     resources,
-    private: isPrivate = true,
+    private: isPrivate,
   } = ctx.request.body;
   const { App, Resource } = ctx.db.models;
   const { user } = ctx.state;
 
-  const template = templates.find(t => t.name === reqTemplate);
+  const template = await App.findOne({
+    where: { id: templateId, template: true },
+    include: [Resource],
+  });
 
   if (!user.organizations.some(organization => organization.id === organizationId)) {
     throw Boom.forbidden('User does not belong in this organization.');
   }
 
   if (!template) {
-    throw Boom.notFound(`Template ${template} does not exist.`);
+    throw Boom.notFound(`Template with ID ${templateId} does not exist.`);
   }
 
   try {
-    const app = await App.create(
-      {
-        definition: {
-          ...template.definition,
-          description,
-          name: name || template,
-          private: isPrivate,
-        },
-        OrganizationId: organizationId,
-        path: name ? normalize(name) : normalize(template),
-        ...(resources && {
-          Resources: [].concat(
-            ...Object.keys(template.resources).map(key =>
-              template.resources[key].map(r => ({ type: key, data: r })),
-            ),
-          ),
-        }),
+    const path = name ? normalize(name) : normalize(template);
+    const keys = generateVAPIDKeys();
+    const result = {
+      definition: {
+        ...template.definition,
+        description,
+        name: name || template,
       },
-      { include: [Resource], raw: true },
-    );
+      private: Boolean(isPrivate),
+      vapidPublicKey: keys.publicKey,
+      vapidPrivateKey: keys.privateKey,
+      OrganizationId: organizationId,
+      ...(resources && {
+        Resources: [].concat(
+          template.Resources.map(({ dataValues: { type, data } }) => ({ type, data })),
+        ),
+      }),
+    };
 
-    ctx.body = getAppFromRecord(app);
+    for (let i = 1; i < 11; i += 1) {
+      const p = i === 1 ? path : `${path}-${i}`;
+      // eslint-disable-next-line no-await-in-loop
+      const count = await App.count({ where: { path: p } });
+      if (count === 0) {
+        result.path = p;
+        break;
+      }
+    }
+
+    if (!result.path) {
+      // Fallback if a suitable ID could not be found after trying for a while
+      result.path = `${path}-${crypto.randomBytes(5).toString('hex')}`;
+    }
+
+    const record = await App.create(result, { include: [Resource] });
+
+    ctx.body = getAppFromRecord(record);
     ctx.status = 201;
   } catch (error) {
     if (error instanceof UniqueConstraintError) {

@@ -5,9 +5,10 @@
  * @returns {Object<String,Object>} A mapping of paths in the app recipe to blocks. The returnes
  *   blocks are the same instance as that in the app recipe.
  */
-export default function getAppBlocks(app) {
+export default function getAppBlocks(definition) {
   const blocks = {};
-  app.pages.forEach((page, pageIndex) => {
+
+  definition.pages.forEach((page, pageIndex) => {
     const parseBlocks = (block, blockIndex) => {
       const blockPath = `pages.${pageIndex}.blocks.${blockIndex}`;
       blocks[blockPath] = block;

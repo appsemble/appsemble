@@ -43,21 +43,37 @@ spec:
             {{- toYaml .Values.resources | nindent 12 }}
           env:
             - name: DATABASE_HOST
-              value: {{ include "call-nested" (list . "mysql" "mysql.fullname") }}
+              value: {{ .Values.postgresql.fullnameOverride }}
+            {{ if .Values.postgresSSL }}
+            - name: DATABASE_SSL
+              value: 'true'
+            {{ end }}
+            - name: DATABASE_PORT
+              value: {{ .Values.global.postgresql.servicePort | quote }}
             - name: DATABASE_NAME
-              value: {{ .Values.mysql.mysqlDatabase }}
+              value: {{ .Values.global.postgresql.postgresqlDatabase }}
             - name: DATABASE_USER
-              value: {{ .Values.mysql.mysqlUser }}
+              value: {{ .Values.global.postgresql.postgresqlUsername }}
             - name: DATABASE_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{ include "call-nested" (list . "mysql" "mysql.secretName") }}
-                  key: mysql-password
-            {{ if .Values.ingress.enabled -}}
+                  name: {{ .Values.global.postgresql.existingSecret }}
+                  key: postgresql-password
             - name: HOST
-              {{- range .Values.ingress.hosts }}
-              value: {{ . | quote }}
+              {{ if .Values.ingress.enabled -}}
+              value: {{ include "appsemble.protocol" $ }}{{ .Values.ingress.host }}
+              {{- else }}
+              value: http://{{ include "appsemble.fullname" . }}
               {{- end }}
+            {{ if .Values.ingress.enabled -}}
+            - name: APP_DOMAIN_STRATEGY
+              value: kubernetes-ingress
+            - name: INGRESS_NAME
+              value: {{ include "appsemble.fullname" . }}
+            - name: INGRESS_SERVICE_NAME
+              value: {{ include "appsemble.fullname" . }}
+            - name: INGRESS_SERVICE_PORT
+              value: {{ .Values.service.port | quote }}
             {{- end }}
             {{- with .Values.smtpSecret }}
             - name: SMTP_HOST

@@ -40,6 +40,16 @@ Set a navigation type for the app. This defaults to `left-menu` for a left side 
 `bottom` to use a navigation pane at the bottom of the screen instead of the default side menu. Set
 to `hidden` to display no navigational menus at all.
 
+## `notifications`
+
+Set the notification strategy for the app. If specified, push notifications can be sent to
+subscribed users via the `Notifications` tab. The available strategies are `opt-in` and `startup`.
+Setting this to `opt-in` allows for users to opt into receiving push notifications by pressing the
+subscribe button in the App settings page. Setting this to `startup` will cause Appsemble to
+immediately request for the permission upon opening the app.
+
+> Note that setting `notifications` to `startup` is not recommended, due to its invasive nature.
+
 ## `pages`\*
 
 The list of pages. Each app must have at least one page. More information about the properties of a

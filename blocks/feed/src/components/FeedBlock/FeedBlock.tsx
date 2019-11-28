@@ -26,7 +26,7 @@ export default class FeedBlock extends Component<
 > {
   state: FeedBlockState = {
     data: [],
-    loading: false,
+    loading: true,
   };
 
   remappers: Remappers;

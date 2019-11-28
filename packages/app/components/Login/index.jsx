@@ -4,7 +4,7 @@ import Login from './Login';
 
 function mapStateToProps(state) {
   return {
-    app: state.app.app,
+    definition: state.app.definition,
   };
 }
 

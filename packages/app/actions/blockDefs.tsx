@@ -15,7 +15,7 @@ interface BlockDefState {
   pending: Block[];
 }
 
-const initialState: BlockDefState = {
+export const initialState: BlockDefState = {
   blockDefs: {},
   errored: new Set(),
   pending: [],
@@ -33,7 +33,7 @@ interface ErrorAction extends Action<typeof GET_ERROR> {
   blockDefId: string;
 }
 
-type BlockDefAction = StartAction | SuccessAction | ErrorAction;
+export type BlockDefAction = StartAction | SuccessAction | ErrorAction;
 type BlockDefThunk = ThunkAction<void, BlockDefState, null, BlockDefAction>;
 
 export default (state = initialState, action: BlockDefAction): BlockDefState => {
