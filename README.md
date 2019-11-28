@@ -15,7 +15,7 @@ https://staging.appsemble.app.
 
 In order to run the Appsemble project in development mode, the following must be installed.
 
-- [NodeJS 10][]
+- [NodeJS 12][nodejs]
 - [Yarn][]
 
 ### Getting started

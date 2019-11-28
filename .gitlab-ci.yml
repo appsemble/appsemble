@@ -1,4 +1,4 @@
-image: node:10-slim
+image: node:12-slim
 
 stages:
   - test
@@ -46,7 +46,6 @@ stages:
 
 # A preconfigured environment for using Yarn.
 .yarn:
-  image: node:10-slim
   dependencies: []
   before_script:
     - yarn --frozen-lockfile
