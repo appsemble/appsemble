@@ -64,7 +64,7 @@ export default class Location extends React.Component<LocationProps & BlockProps
       .on('locationfound', ({ latlng }: LocationEvent) => {
         locationMarker.setLatLng(latlng).addTo(map);
       })
-      .locate({ watch: true, timeout: 1e3, maximumAge: 60e3 });
+      .locate({ watch: true, timeout: 10e3, maximumAge: 60e3 });
   }
 
   render(): JSX.Element {

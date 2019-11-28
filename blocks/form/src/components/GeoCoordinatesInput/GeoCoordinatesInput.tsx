@@ -54,7 +54,7 @@ export default class GeoCoordinatesInput extends Component<GeoCoordinatesInputPr
           longitude: lng,
         });
       })
-      .locate({ watch: true, timeout: 1e3, maximumAge: 60e3 });
+      .locate({ watch: true, timeout: 10e3, maximumAge: 60e3 });
     this.map = map;
   }
 
