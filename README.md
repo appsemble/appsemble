@@ -103,6 +103,23 @@ yarn appsemble block register blocks/navigation
 yarn appsemble block register blocks/splash
 ```
 
+### App templates
+
+In order for users to create apps from within the Appsemble Studio, existing apps that can be used
+as a starting point must be marked as templates. This can be done using the Appsemble CLI. Note that
+in order to publish blocks, you need to be authenticated in the CLI. After having registered an
+Appsemble account, you can authenticate yourself using `yarn appsemble login`.
+
+```sh
+yarn appsemble app create --template --organization @appsemble apps/empty
+yarn appsemble app create --template --organization @appsemble apps/holiday
+yarn appsemble app create --template --organization @appsemble apps/person
+yarn appsemble app create --template --organization @appsemble apps/unlittered-template
+```
+
+Note that `@appsemble` in the above scripts refer to the ID an organization that the authenticated
+account is a member of.
+
 ### Tests
 
 Tests can be run using the following command.
