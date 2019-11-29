@@ -101,10 +101,7 @@ in order to publish blocks, you need to be authenticated in the CLI. After havin
 Appsemble account, you can authenticate yourself using `yarn appsemble login`.
 
 ```sh
-yarn appsemble app create --template --organization @appsemble apps/empty
-yarn appsemble app create --template --organization @appsemble apps/holiday
-yarn appsemble app create --template --organization @appsemble apps/person
-yarn appsemble app create --template --organization @appsemble apps/unlittered-template
+yarn appsemble app create --organization @appsemble --all --template apps
 ```
 
 Note that `@appsemble` in the above scripts refer to the ID an organization that the authenticated
