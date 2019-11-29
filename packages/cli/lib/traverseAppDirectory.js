@@ -12,7 +12,7 @@ import processCss from './processCss';
  * @param {FormData} formData The FormData object to append the results into.
  */
 export default async function traverseAppDirectory(path, formData) {
-  logger.info('Traversing directory for App files 🕵');
+  logger.info(`Traversing directory for App files in ${path} 🕵`);
   const dir = await fs.readdir(path);
 
   if (!dir.includes('app.yaml')) {

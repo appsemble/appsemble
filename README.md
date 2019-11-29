@@ -90,17 +90,7 @@ to be authenticated in the CLI. After having registered an Appsemble account, yo
 yourself using `yarn appsemble login`.
 
 ```sh
-yarn appsemble block register blocks/action
-yarn appsemble block register blocks/action-button
-yarn appsemble block register blocks/detail-viewer
-yarn appsemble block register blocks/list
-yarn appsemble block register blocks/feed
-yarn appsemble block register blocks/filter
-yarn appsemble block register blocks/form
-yarn appsemble block register blocks/map
-yarn appsemble block register blocks/markdown
-yarn appsemble block register blocks/navigation
-yarn appsemble block register blocks/splash
+yarn appsemble block register --all blocks
 ```
 
 ### Tests
