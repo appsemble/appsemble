@@ -25,11 +25,17 @@ attach<BlockParameters, BlockActions>(
       .on('moveend', () => {
         loadMarkers(map, actions, block.parameters, fetched, get, data);
       })
-      .once('locationerror', () => {
-        utils.showMessage({
-          // XXX Implement i18n.
-          body: 'Locatie kon niet worden gevonden. Is de locatievoorziening ingeschakeld?',
-        });
+      .once('locationerror', error => {
+        // See: https://developer.mozilla.org/en-US/docs/Web/API/PositionError
+        if (error.code && error.code === 1) {
+          utils.showMessage({
+            // XXX Implement i18n.
+            body: 'Locatie kon niet worden gevonden. Is de locatievoorziening ingeschakeld?',
+          });
+          map.setView([0, 0], 18);
+        }
+
+        // XXX: Handle TIMEOUT. These are thrown in the .locate() call when `watch` is set to true.
       })
       .on('locationfound', ({ latlng }: LocationEvent) => {
         if (Number.isNaN(lat) || Number.isNaN(lng)) {
