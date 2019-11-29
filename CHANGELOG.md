@@ -7,6 +7,11 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- CLI: Add support of `--all` flags for `appsemble block register`, `appsemble block publish`, and
+  `appsemble app create`.
+
 ## [0.9.4] - 2019-11-27
 
 ### Added

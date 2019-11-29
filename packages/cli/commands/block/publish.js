@@ -1,4 +1,6 @@
 import { logger } from '@appsemble/node-utils';
+import fs from 'fs-extra';
+import { join } from 'path';
 
 import { getToken } from '../../lib/config';
 import getBlockConfig from '../../lib/getBlockConfig';
@@ -16,11 +18,36 @@ export function builder(yargs) {
     .option('ignore-conflict', {
       describe: 'If specified, conflicts with an existing block version are ignored.',
       type: 'boolean',
+    })
+    .option('all', {
+      alias: 'a',
+      describe: 'Perform this command on every directory that is a subdirectory of the given path.',
+      type: 'boolean',
     });
 }
 
-export async function handler({ ignoreConflict, path, remote }) {
+export async function handler({ ignoreConflict, path, remote, all }) {
   await getToken(remote);
+
+  if (all) {
+    const directories = (await fs.readdir(path)).filter(subDir =>
+      fs.lstatSync(join(path, subDir)).isDirectory(),
+    );
+
+    logger.info(`Publishing ${directories.length} Blocks`);
+    directories.reduce(async (acc, subDir) => {
+      await acc;
+
+      const subPath = join(path, subDir);
+
+      const config = await getBlockConfig(subPath);
+      logger.info(`Publishing ${config.id}@${config.version}…`);
+      await publish({ config, ignoreConflict, path: subPath });
+    }, {});
+
+    return;
+  }
+
   const config = await getBlockConfig(path);
   logger.info(`Publishing ${config.id}@${config.version}`);
   await publish({ config, ignoreConflict, path });
