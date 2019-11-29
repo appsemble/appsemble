@@ -39,9 +39,7 @@ export default class ProfileDropdown extends Component {
   };
 
   onClick = () => {
-    this.setState(({ open }) => {
-      return { open: !open };
-    });
+    this.setState(({ open }) => ({ open: !open }));
   };
 
   onKeyDown = event => {

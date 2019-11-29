@@ -114,8 +114,8 @@ exports[`withBlock should pass block props to the child element 1`] = `
     }
   }
 >
-  <withBlock(Test)>
-    <Test
+  <withBlock()>
+    <Component
       actions={Object {}}
       block={
         Object {
@@ -168,6 +168,6 @@ exports[`withBlock should pass block props to the child element 1`] = `
         }
       }
     />
-  </withBlock(Test)>
+  </withBlock()>
 </Component>
 `;

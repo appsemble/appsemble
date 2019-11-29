@@ -27,8 +27,8 @@ function makeJSONSafe(object) {
   return object;
 }
 
-export default ({ port = 9999, host = `http://localhost:${port}` } = {}) => {
-  return makeJSONSafe({
+export default ({ port = 9999, host = `http://localhost:${port}` } = {}) =>
+  makeJSONSafe({
     openapi: '3.0.2',
     components,
     externalDocs: {
@@ -58,4 +58,3 @@ export default ({ port = 9999, host = `http://localhost:${port}` } = {}) => {
     paths,
     tags,
   });
-};
