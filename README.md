@@ -15,6 +15,8 @@ https://staging.appsemble.app.
 
 In order to run the Appsemble project in development mode, the following must be installed.
 
+- [Docker][]
+- [Docker Compose][]
 - [NodeJS 12][nodejs]
 - [Yarn][]
 
@@ -28,8 +30,8 @@ cd appsemble
 yarn
 ```
 
-The project requires a PostgreSQL database. This project contains a [docker-compose][] configuration
-to spin up a preconfigured database with ease.
+The project requires a PostgreSQL database. This project contains a Docker Compose configuration to
+spin up a preconfigured database with ease.
 
 ```sh
 docker-compose up -d
@@ -147,9 +149,8 @@ docker build --tag appsemble .
 
 Please read our [contributing guidelines](./CONTRIBUTING.md).
 
-[docker-compose]: https://docs.docker.com/compose
-[docker credentials store]:
-  https://docs.docker.com/engine/reference/commandline/login/#credentials-store
+[docker]: https://docker.com
+[docker compose]: https://docs.docker.com/compose
 [jest cli options]: https://jestjs.io/docs/en/cli
 [nodejs 10]: https://nodejs.org
 [yarn]: https://yarnpkg.com
