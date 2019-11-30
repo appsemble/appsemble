@@ -34,8 +34,10 @@ module.exports = {
         ignoreTemplateLiterals: true,
       },
     ],
+    'arrow-body-style': ['error', 'as-needed'],
+    'prefer-arrow-callback': 'error',
     'no-inline-comments': 'error',
-    'filenames/match-regex': ['error', /^\.?[a-z]+(\.config|\.test)?$/i, true],
+    'filenames/match-regex': ['error', /^\.?[a-z\d]+(\.config|\.test)?$/i, true],
     'filenames/match-exported': 'error',
     'react/prefer-stateless-function': 'off',
     'no-invalid-this': 'off',
@@ -49,11 +51,15 @@ module.exports = {
     'import/order': [
       'error',
       {
-        groups: [['builtin', 'external', 'internal'], ['index', 'sibling', 'parent']],
+        groups: [
+          ['builtin', 'external', 'internal'],
+          ['index', 'sibling', 'parent'],
+        ],
         'newlines-between': 'always',
       },
     ],
     'import/no-cycle': ['error', { maxDepth: 1 }],
+    'react/jsx-no-useless-fragment': 'error',
     'react/jsx-props-no-spreading': 'off',
     'react/jsx-sort-props': 'error',
     'simple-import-sort/sort': 'error',

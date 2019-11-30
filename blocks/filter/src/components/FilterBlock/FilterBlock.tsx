@@ -69,7 +69,7 @@ export default class FilterBlock extends React.Component<FilterBlockProps, Filte
     // Convert date fields to unix timestamps without mutating filter itself
     const convertedFilter = Object.entries(filter).reduce<Filter>((acc, [key, value]) => {
       const field = fields.find(f => f.name === key);
-      if (field.type === 'date') {
+      if (field.type && field.type === 'date') {
         if (field.range) {
           acc[key] = {};
           if ((value as RangeFilter).to) {
@@ -108,10 +108,13 @@ export default class FilterBlock extends React.Component<FilterBlockProps, Filte
       return;
     }
 
-    const defaultFilter = fields.reduce<Filter>((acc, { name, defaultValue }) => {
+    const defaultFilter = fields.reduce<Filter>((acc, { name, defaultValue, type }) => {
       if (defaultValue) {
         acc[name] = defaultValue;
+      } else if (type === 'checkbox') {
+        acc[name] = [];
       }
+
       return acc;
     }, {});
 
@@ -151,39 +154,72 @@ export default class FilterBlock extends React.Component<FilterBlockProps, Filte
   };
 
   onChange = ({ target }: React.ChangeEvent<HTMLInputElement>): void => {
-    this.setState(({ filter, typingTimer }, { block: { parameters: { fields, highlight } } }) => {
-      const newFilter = {
-        ...filter,
-        [target.name]: target.value,
-      };
-      if (highlight && target.name === highlight) {
-        if (!fields.find(field => field.name === highlight).enum) {
-          // wait 300ms, then submit
-          clearTimeout(typingTimer);
+    this.setState(
+      (
+        { filter, typingTimer },
+        {
+          block: {
+            parameters: { fields, highlight },
+          },
+        },
+      ) => {
+        const newFilter = {
+          ...filter,
+          [target.name]: target.value,
+        };
+        if (highlight && target.name === highlight) {
+          if (!fields.find(field => field.name === highlight).enum) {
+            // wait 300ms, then submit
+            clearTimeout(typingTimer);
 
-          return {
-            filter: newFilter,
-            typingTimer: setTimeout(this.onFilter, 300),
-          };
+            return {
+              filter: newFilter,
+              typingTimer: setTimeout(this.onFilter, 300),
+            };
+          }
+          setTimeout(this.onFilter, 0);
         }
-        setTimeout(this.onFilter, 0);
+        return { filter: newFilter };
+      },
+    );
+  };
+
+  onCheckBoxChange = async ({
+    target: { name, checked, value },
+  }: React.ChangeEvent<HTMLInputElement>): Promise<void> => {
+    this.setState(({ filter }) => {
+      const entry = (filter[name] as string[]) || [];
+      if (checked) {
+        if (entry.includes(value)) {
+          return null;
+        }
+
+        return {
+          filter: {
+            ...filter,
+            [name]: [...entry, value],
+          },
+        };
       }
-      return { filter: newFilter };
+      return {
+        filter: {
+          ...filter,
+          [name]: entry.filter(e => e !== value),
+        },
+      };
     });
   };
 
   onRangeChange = ({ target: { id, name, value } }: React.ChangeEvent<HTMLInputElement>): void => {
-    this.setState(({ filter }) => {
-      return {
-        filter: {
-          ...filter,
-          [name]: {
-            ...(filter[name] as {}),
-            [id.startsWith('to') ? 'to' : 'from']: value,
-          },
+    this.setState(({ filter }) => ({
+      filter: {
+        ...filter,
+        [name]: {
+          ...(filter[name] as {}),
+          [id.startsWith('to') ? 'to' : 'from']: value,
         },
-      };
-    });
+      },
+    }));
   };
 
   onFilter = async (): Promise<void> => {
@@ -234,8 +270,9 @@ export default class FilterBlock extends React.Component<FilterBlockProps, Filte
       if (value == null) {
         return false;
       }
+
       const field = fields.find(f => f.name === key);
-      return field && field.defaultValue === value;
+      return field && field.defaultValue !== undefined ? field.defaultValue === value : true;
     });
 
     return (
@@ -255,6 +292,7 @@ export default class FilterBlock extends React.Component<FilterBlockProps, Filte
                   filter={filter}
                   loading={loading}
                   onChange={this.onChange}
+                  onCheckBoxChange={this.onCheckBoxChange}
                   onRangeChange={this.onRangeChange}
                 />
               ))}
@@ -295,7 +333,7 @@ export default class FilterBlock extends React.Component<FilterBlockProps, Filte
               <button
                 className={classNames('button', styles.filterDialogButton)}
                 disabled={!activeFilters}
-                onClick={this.resetFilter}
+                onClick={activeFilters && this.resetFilter}
                 type="button"
               >
                 <span className="icon">

@@ -1,7 +1,6 @@
 import { Icon } from '@appsemble/react-components';
 import { AppDefinition } from '@appsemble/types';
 import { normalize } from '@appsemble/utils';
-import classNames from 'classnames';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 import { NavLink, useLocation } from 'react-router-dom';
@@ -37,16 +36,19 @@ export default function SideNavigation({
   const currentPage = definition.pages.find(
     p => normalize(p.name) === location.pathname.split('/')[1],
   );
+
   const navigation =
     (currentPage && currentPage.navigation) || definition.navigation || 'left-menu';
   if (navigation !== 'left-menu') {
     return null;
   }
 
+  const hideSettings = definition.notifications === undefined;
+
   return (
     <SideMenu>
       <nav>
-        <ul className={classNames('menu-list', styles.menuList)}>
+        <ul className={`menu-list ${styles.menuList}`}>
           {definition.pages
             .filter(page => !page.parameters && !page.hideFromMenu)
             .map(page => (
@@ -59,15 +61,25 @@ export default function SideNavigation({
             ))}
         </ul>
 
-        {user && (
-          <ul className="menu-list">
+        <ul className={`menu-list ${styles.menuList}`}>
+          {!hideSettings && (
+            <li>
+              <NavLink activeClassName={styles.active} to="/Settings">
+                <Icon className={styles.icon} icon="cog" />
+                <span>
+                  <FormattedMessage {...messages.settings} />
+                </span>
+              </NavLink>
+            </li>
+          )}
+          {user && (
             <li>
               <button className={styles.logoutButton} onClick={onLogout} type="button">
                 <FormattedMessage {...messages.logout} />
               </button>
             </li>
-          </ul>
-        )}
+          )}
+        </ul>
       </nav>
     </SideMenu>
   );

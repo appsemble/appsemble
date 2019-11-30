@@ -1,3 +1,5 @@
+import { partialNormalized } from '@appsemble/utils';
+
 export default {
   type: 'object',
   description: 'A definition for a block.',
@@ -8,7 +10,7 @@ export default {
 
         This uses the same form as scoped npm packages. For example, \`@appsemble/form\`.
       `,
-      pattern: /^@[a-z]([a-z\d-]{0,30}[a-z\d])?\/[a-z]([a-z\d-]{0,30}[a-z\d])$/,
+      pattern: `^@${partialNormalized.source}/${partialNormalized.source}$`,
     },
     description: {
       type: 'string',

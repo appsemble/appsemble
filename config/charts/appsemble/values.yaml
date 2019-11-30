@@ -46,9 +46,12 @@ global:
   postgresql:
     postgresqlDatabase: appsemble
     postgresqlUsername: appsemble
+    servicePort: 5432
     existingSecret: appsemble-postgresql-secret
 
 postgresql:
   fullnameOverride: appsemble-postgresql
   persistence:
     enabled: false
+
+postgresSSL: null

@@ -15,9 +15,12 @@ export default sequelize => {
       icon: { type: DataTypes.BLOB },
       path: { type: DataTypes.STRING, unique: 'UniquePathIndex', allowNull: true },
       private: { type: DataTypes.BOOLEAN, defaultValue: false, allowNull: false },
+      template: { type: DataTypes.BOOLEAN, defaultValue: false, allowNull: false },
       style: { type: DataTypes.TEXT },
       sharedStyle: { type: DataTypes.TEXT },
       yaml: { type: DataTypes.TEXT },
+      vapidPublicKey: { type: DataTypes.STRING, allowNull: false },
+      vapidPrivateKey: { type: DataTypes.STRING, allowNull: false },
       OrganizationId: {
         type: DataTypes.STRING,
         unique: 'UniquePathIndex',

@@ -1,9 +1,9 @@
 {
   "name": "@appsemble/node-utils",
-  "version": "0.9.0",
+  "version": "0.9.4",
   "dependencies": {
-    "chalk": "^2.4.2",
-    "cli-highlight": "^2.1.1",
+    "chalk": "^3.0.0",
+    "cli-highlight": "^2.1.4",
     "winston": "^3.2.1"
   }
 }

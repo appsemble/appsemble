@@ -8,11 +8,35 @@ export default {
         content: {
           'multipart/form-data': {
             schema: {
-              required: ['app'],
+              required: ['OrganizationId', 'definition'],
               properties: {
-                app: {
-                  required: ['OrganizationId', 'private'],
-                  $ref: '#/components/schemas/App',
+                definition: {
+                  $ref: '#/components/schemas/App/properties/definition',
+                },
+                domain: {
+                  $ref: '#/components/schemas/App/properties/domain',
+                },
+                path: {
+                  $ref: '#/components/schemas/App/properties/path',
+                },
+                private: {
+                  $ref: '#/components/schemas/App/properties/private',
+                },
+                template: {
+                  $ref: '#/components/schemas/App/properties/template',
+                },
+                yaml: {
+                  type: 'string',
+                  format: 'binary',
+                  description: 'The original YAML definition used to define the app.',
+                },
+                OrganizationId: {
+                  $ref: '#/components/schemas/App/properties/OrganizationId',
+                },
+                icon: {
+                  type: 'string',
+                  format: 'binary',
+                  description: 'The app icon.',
                 },
                 style: {
                   type: 'string',
@@ -24,6 +48,13 @@ export default {
                   format: 'binary',
                   description: 'The custom style to apply to all parts of app.',
                 },
+              },
+            },
+            encoding: {
+              style: { contentType: 'text/css' },
+              sharedStyle: { contentType: 'text/css' },
+              icon: {
+                contentType: 'image/png,image/jpg,image/svg+xml,image/tiff,image/webp',
               },
             },
           },
@@ -94,60 +125,6 @@ export default {
         },
       },
     },
-    put: {
-      tags: ['app'],
-      description: 'Update an existing app',
-      operationId: 'updateApp',
-      requestBody: {
-        content: {
-          'multipart/form-data': {
-            schema: {
-              required: ['app', 'style', 'sharedStyle', 'yaml', 'icon'],
-              properties: {
-                app: {
-                  $ref: '#/components/schemas/App',
-                  required: ['definition', 'private', 'path'],
-                },
-                style: {
-                  type: 'string',
-                  format: 'binary',
-                  description: 'The custom style to apply to the core app.',
-                },
-                sharedStyle: {
-                  type: 'string',
-                  format: 'binary',
-                  description: 'The custom style to apply to all parts of app.',
-                },
-                yaml: {
-                  type: 'string',
-                  format: 'binary',
-                  description: 'The original YAML definition used to define the app.',
-                },
-                icon: {
-                  type: 'string',
-                  format: 'binary',
-                  description: 'The app icon.',
-                },
-              },
-            },
-            encoding: {
-              style: { contentType: 'text/css' },
-              sharedStyle: { contentType: 'text/css' },
-              icon: {
-                contentType: 'image/png,image/jpg,image/svg+xml,image/tiff,image/webp',
-              },
-            },
-          },
-        },
-      },
-      responses: {
-        200: {
-          description: 'The updated app.',
-          $ref: '#/components/responses/app',
-        },
-      },
-      security: [{ apiUser: ['apps:write'] }],
-    },
     patch: {
       tags: ['app'],
       description: 'Update parts of an existing app',
@@ -157,16 +134,20 @@ export default {
           'multipart/form-data': {
             schema: {
               properties: {
-                app: { $ref: '#/components/schemas/App' },
-                style: {
-                  type: 'string',
-                  format: 'binary',
-                  description: 'The custom style to apply to the core app.',
+                definition: {
+                  $ref: '#/components/schemas/App/properties/definition',
                 },
-                sharedStyle: {
-                  type: 'string',
-                  format: 'binary',
-                  description: 'The custom style to apply to all parts of app.',
+                domain: {
+                  $ref: '#/components/schemas/App/properties/domain',
+                },
+                path: {
+                  $ref: '#/components/schemas/App/properties/path',
+                },
+                private: {
+                  $ref: '#/components/schemas/App/properties/private',
+                },
+                template: {
+                  $ref: '#/components/schemas/App/properties/template',
                 },
                 yaml: {
                   type: 'string',
@@ -177,6 +158,16 @@ export default {
                   type: 'string',
                   format: 'binary',
                   description: 'The app icon.',
+                },
+                style: {
+                  type: 'string',
+                  format: 'binary',
+                  description: 'The custom style to apply to the core app.',
+                },
+                sharedStyle: {
+                  type: 'string',
+                  format: 'binary',
+                  description: 'The custom style to apply to all parts of app.',
                 },
               },
             },
@@ -239,6 +230,139 @@ export default {
       responses: {
         204: {
           description: 'The icon has been deleted succesfully.',
+        },
+      },
+      security: [{ apiUser: ['apps:write'] }],
+    },
+  },
+  '/api/apps/{appId}/subscriptions': {
+    parameters: [{ $ref: '#/components/parameters/appId' }],
+    post: {
+      tags: ['app'],
+      description: 'Subscribe to an app’s push notifications',
+      operationId: 'addSubscription',
+      requestBody: {
+        content: {
+          'application/json': {
+            schema: {
+              type: 'object',
+              description: 'A serialized PushSubscription object',
+              required: ['endpoint', 'keys'],
+              properties: {
+                endpoint: {
+                  type: 'string',
+                },
+                expirationTime: {
+                  oneOf: [{ enum: [null] }, { type: 'number' }],
+                },
+                keys: {
+                  type: 'object',
+                  required: ['p256dh', 'auth'],
+                  properties: {
+                    p256dh: { type: 'string' },
+                    auth: { type: 'string' },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+      responses: {
+        204: {
+          description: 'The subscription has successfully been registered.',
+        },
+      },
+    },
+  },
+  '/api/apps/{appId}/ratings': {
+    parameters: [{ $ref: '#/components/parameters/appId' }],
+    get: {
+      tags: ['app'],
+      description: 'Fetch all ratings of an app.',
+      operationId: 'getAppRatings',
+      responses: {
+        200: {
+          description: 'The list of apps ratings.',
+          content: {
+            'application/json': {
+              schema: {
+                type: 'array',
+                items: {
+                  $ref: '#/components/schemas/Rating',
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    post: {
+      tags: ['app'],
+      description: 'Submit an app rating.',
+      operationId: 'submitAppRating',
+      requestBody: {
+        content: {
+          'application/json': {
+            schema: {
+              type: 'object',
+              required: ['rating'],
+              properties: {
+                rating: {
+                  $ref: '#/components/schemas/Rating/properties/rating',
+                },
+                description: {
+                  $ref: '#/components/schemas/Rating/properties/description',
+                },
+              },
+            },
+          },
+        },
+      },
+      responses: {
+        200: {
+          description: 'The submitted app rating.',
+          content: {
+            'application/json': {
+              schema: { $ref: '#/components/schemas/Asset/properties/id' },
+            },
+          },
+        },
+      },
+      security: [{ apiUser: ['apps:write'] }],
+    },
+  },
+  '/api/apps/{appId}/broadcast': {
+    parameters: [{ $ref: '#/components/parameters/appId' }],
+    post: {
+      tags: ['app'],
+      description: 'Broadcast a push notification to every subscriber of the app.',
+      operationId: 'broadcast',
+      requestBody: {
+        content: {
+          'application/json': {
+            schema: {
+              type: 'object',
+              description: 'The data to include in the notification',
+              required: ['body'],
+              properties: {
+                title: {
+                  description:
+                    'The title of the notification. This defaults to the name of the app if not otherwise specified.',
+                  type: 'string',
+                },
+                body: {
+                  description: 'The content of the notification',
+                  type: 'string',
+                },
+              },
+            },
+          },
+        },
+      },
+      responses: {
+        204: {
+          description: 'The notification has been successfully broadcasted.',
         },
       },
       security: [{ apiUser: ['apps:write'] }],

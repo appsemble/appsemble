@@ -18,6 +18,7 @@ export default function EnumInput({ field, onInput, value = '' }: EnumInputProps
       label={field.label || field.name}
       name={field.name}
       onInput={onInput}
+      required={field.required}
       value={value}
     >
       {!value && (

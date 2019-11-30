@@ -7,11 +7,45 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.9.4] - 2019-11-27
+
+### Added
+
+- Block(`@appsemble/filter`): Add support for check boxes.
+- CLI: Add `app` subcommand for creating apps.
+- Server: Add option to mark existing apps as templates.
+- Studio: Add option to rate apps.
+- Studio: Add app details page.
+- Studio: Add rating indicators to index page. Apps are now sorted by rating.
+
+### Removed
+
+- Server: Remove file-based app templates.
+
+## [0.9.3] - 2019-11-18
+
 ### Added
 
 - App: Add support for basic XML parsing.
 - App: Add `base` property for `request` actions.
 - App: Add support for absolute URLs in `link` actions.
+- App: Add support for push notifications. Users can subscribe to notifications in the app’s
+  settings page. More strategies for receiving push notifications will be added in the future.
+- App: Add settings page
+- Server: Add support for broadcasting push notifications.
+
+## [0.9.2] - 2019-11-14
+
+### Fixed
+
+- Server: Add support connection to PostgreSQL databases over SSL.
+
+## [0.9.1] - 2019-11-14
+
+### Fixed
+
+- Server: Reduce log size when creating blocks.
+- Server: Remove old migrations that depended on MySQL.
 
 ## [0.9.0] - 2019-11-12
 

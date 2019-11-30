@@ -101,7 +101,7 @@ pages:
   - name: Person List
     blocks:
       - type: list
-        version: 0.9.0
+        version: 0.9.4
         parameters:
           fields:
             - name: firstName
@@ -123,7 +123,7 @@ Let's follow up by adding a page in which resources can be registered.
 - name: Person Registration Form
   blocks:
     - type: form
-      version: 0.9.0
+      version: 0.9.4
       actions:
         onSubmit:
           type: resource.create
@@ -161,7 +161,7 @@ Clicking it results in being redirected to the other page.
 
 ```yaml
 - type: action-button
-  version: 0.9.0
+  version: 0.9.4
   parameters:
     icon: plus
   actions:
@@ -180,7 +180,7 @@ that is able to display a resource.
     - id
   blocks:
     - type: detail-viewer
-      version: 0.9.0
+      version: 0.9.4
       actions:
         onLoad:
           type: resource.get
@@ -242,7 +242,7 @@ pages:
   - name: Person List
     blocks:
       - type: list
-        version: 0.9.0
+        version: 0.9.4
         parameters:
           fields:
             - name: firstName
@@ -257,7 +257,7 @@ pages:
             type: resource.query
             resource: person
       - type: action-button
-        version: 0.9.0
+        version: 0.9.4
         parameters:
           icon: plus
         actions:
@@ -268,7 +268,7 @@ pages:
   - name: Person Registration Form
     blocks:
       - type: form
-        version: 0.9.0
+        version: 0.9.4
         actions:
           onSubmit:
             type: resource.create
@@ -297,7 +297,7 @@ pages:
       - id
     blocks:
       - type: detail-viewer
-        version: 0.9.0
+        version: 0.9.4
         actions:
           onLoad:
             type: resource.get

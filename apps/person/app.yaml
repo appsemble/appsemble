@@ -1,0 +1,93 @@
+name: Person App
+description: A simple form and data viewing app using the resource API
+defaultPage: Person Registration Form
+resources:
+  person:
+    schema:
+      type: object
+      required:
+        - firstName
+        - lastName
+        - email
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+          format: email
+        description:
+          type: string
+pages:
+  - name: Person List
+    blocks:
+      - type: list
+        version: 0.9.4
+        parameters:
+          fields:
+            - name: firstName
+              label: First Name
+            - name: lastName
+              label: Surname
+        actions:
+          onClick:
+            to: Person Details
+            type: link
+          onLoad:
+            type: resource.query
+            resource: person
+      - type: action-button
+        version: 0.9.4
+        parameters:
+          icon: plus
+        actions:
+          onClick:
+            to: Person Registration Form
+            type: link
+  - name: Person Registration Form
+    blocks:
+      - type: form
+        version: 0.9.4
+        actions:
+          onSubmit:
+            type: resource.create
+            resource: person
+          onSubmitSuccess:
+            to: Person List
+            type: link
+        parameters:
+          fields:
+            - label: First Name
+              name: firstName
+              type: string
+            - label: Surname
+              name: lastName
+              type: string
+            - label: Email
+              name: email
+              type: string
+            - label: Description
+              multiline: true
+              name: description
+              type: string
+  - name: Person Details
+    parameters:
+      - id
+    blocks:
+      - type: detail-viewer
+        version: 0.9.4
+        actions:
+          onLoad:
+            type: resource.get
+            resource: person
+        parameters:
+          fields:
+            - name: firstName
+              label: First Name
+            - name: lastName
+              label: Surname
+            - name: email
+              label: Email Address
+            - name: description
+              label: Description

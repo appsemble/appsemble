@@ -1,9 +1,9 @@
 {
   "name": "@amsterdam/splash",
-  "version": "0.9.0",
+  "version": "0.9.4",
   "private": true,
   "dependencies": {
-    "@appsemble/sdk": "0.9.0",
-    "mini-jsx": "^1.0.2"
+    "@appsemble/sdk": "0.9.4",
+    "mini-jsx": "^2.0.0"
   }
 }

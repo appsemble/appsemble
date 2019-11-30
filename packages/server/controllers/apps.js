@@ -1,11 +1,13 @@
+import { logger } from '@appsemble/node-utils';
 import { normalize, StyleValidationError, validateStyle } from '@appsemble/utils';
 import Boom from '@hapi/boom';
 import Ajv from 'ajv';
 import crypto from 'crypto';
 import jsYaml from 'js-yaml';
 import { isEqual, uniqWith } from 'lodash';
-import { Op, UniqueConstraintError } from 'sequelize';
+import { col, fn, literal, Op, UniqueConstraintError } from 'sequelize';
 import sharp from 'sharp';
+import * as webpush from 'web-push';
 
 import getAppBlocks from '../utils/getAppBlocks';
 import getAppFromRecord from '../utils/getAppFromRecord';
@@ -14,8 +16,8 @@ import getDefaultIcon from '../utils/getDefaultIcon';
 const ajv = new Ajv();
 ajv.addFormat('fontawesome', () => true);
 
-async function checkBlocks(app, db) {
-  const blocks = getAppBlocks(app);
+async function checkBlocks(definition, db) {
+  const blocks = getAppBlocks(definition);
   const blockVersions = await db.models.BlockVersion.findAll({
     raw: true,
     where: {
@@ -91,28 +93,52 @@ export async function createApp(ctx) {
   const { db } = ctx;
   const { App } = db.models;
   const { user } = ctx.state;
-  const { app, style, sharedStyle } = ctx.request.body;
+  const {
+    definition,
+    OrganizationId,
+    domain,
+    private: isPrivate = true,
+    template = false,
+    yaml,
+    icon,
+    style,
+    sharedStyle,
+  } = ctx.request.body;
 
   let result;
 
   try {
-    const path = normalize(app.definition.name);
+    const path = normalize(definition.name);
+    const keys = webpush.generateVAPIDKeys();
 
     result = {
-      definition: app.definition,
-      OrganizationId: app.OrganizationId,
+      definition,
+      OrganizationId,
       style: validateStyle(style),
       sharedStyle: validateStyle(sharedStyle),
-      domain: app.domain || null,
-      private: Boolean(app.private),
-      yaml: jsYaml.safeDump(app.definition),
+      domain: domain || null,
+      private: Boolean(isPrivate),
+      template: Boolean(template),
+      yaml: yaml || jsYaml.safeDump(definition),
+      icon,
+      vapidPublicKey: keys.publicKey,
+      vapidPrivateKey: keys.privateKey,
     };
 
-    if (!user.organizations.some(organization => organization.id === app.OrganizationId)) {
+    if (yaml) {
+      try {
+        // The YAML should be valid YAML.
+        jsYaml.safeLoad(yaml);
+      } catch (exception) {
+        throw Boom.badRequest('Provided YAML was invalid.');
+      }
+    }
+
+    if (!user.organizations.some(organization => organization.id === OrganizationId)) {
       throw Boom.forbidden('User does not belong in this organization.');
     }
 
-    await checkBlocks(app, db);
+    await checkBlocks(definition, db);
 
     for (let i = 1; i < 11; i += 1) {
       const p = i === 1 ? path : `${path}-${i}`;
@@ -140,9 +166,20 @@ export async function createApp(ctx) {
 
 export async function getAppById(ctx) {
   const { appId } = ctx.params;
-  const { App } = ctx.db.models;
+  const { App, AppRating } = ctx.db.models;
 
-  const app = await App.findByPk(appId, { raw: true });
+  const app = await App.findByPk(appId, {
+    raw: true,
+    attributes: {
+      include: [
+        [fn('AVG', col('AppRatings.rating')), 'RatingAverage'],
+        [fn('COUNT', col('AppRatings.AppId')), 'RatingCount'],
+      ],
+      exclude: ['icon', 'style', 'sharedStyle'],
+    },
+    include: [{ model: AppRating, attributes: [] }],
+    group: ['App.id'],
+  });
 
   if (!app) {
     throw Boom.notFound('App not found');
@@ -152,26 +189,47 @@ export async function getAppById(ctx) {
 }
 
 export async function queryApps(ctx) {
-  const { App } = ctx.db.models;
+  const { App, AppRating } = ctx.db.models;
 
   const apps = await App.findAll({
+    attributes: {
+      include: [
+        [fn('AVG', col('AppRatings.rating')), 'RatingAverage'],
+        [fn('COUNT', col('AppRatings.AppId')), 'RatingCount'],
+      ],
+      exclude: ['yaml', 'icon', 'style', 'sharedStyle'],
+    },
     where: { private: false },
+    include: [{ model: AppRating, attributes: [] }],
+    group: ['App.id'],
+    order: [literal('"RatingAverage" DESC NULLS LAST'), ['id', 'ASC']],
     raw: true,
   });
-  ctx.body = apps.map(getAppFromRecord);
+  const ignoredFields = ['yaml'];
+  ctx.body = apps.map(app => getAppFromRecord(app, ignoredFields));
 }
 
 export async function queryMyApps(ctx) {
-  const { App } = ctx.db.models;
+  const { App, AppRating } = ctx.db.models;
   const {
     user: { organizations },
   } = ctx.state;
 
   const apps = await App.findAll({
+    attributes: {
+      include: [
+        [fn('AVG', col('AppRatings.rating')), 'RatingAverage'],
+        [fn('COUNT', col('AppRatings.AppId')), 'RatingCount'],
+      ],
+      exclude: ['yaml', 'icon', 'style', 'sharedStyle'],
+    },
+    include: [{ model: AppRating, attributes: [] }],
+    group: ['App.id'],
+    order: [literal('"RatingAverage" DESC NULLS LAST'), ['id', 'ASC']],
     where: { OrganizationId: { [Op.in]: organizations.map(o => o.id) } },
   });
-
-  ctx.body = apps.map(getAppFromRecord);
+  const ignoredFields = ['yaml'];
+  ctx.body = apps.map(app => getAppFromRecord(app, ignoredFields));
 }
 
 export async function updateApp(ctx) {
@@ -181,17 +239,17 @@ export async function updateApp(ctx) {
     user: { organizations },
   } = ctx.state;
   const { App } = db.models;
-  const { app, style, sharedStyle, yaml } = ctx.request.body;
+  const { definition, domain, path, style, sharedStyle, yaml, OrganizationId } = ctx.request.body;
 
   let result;
 
   try {
     result = {
-      definition: app.definition,
+      definition,
       style: validateStyle(style && style.contents),
       sharedStyle: validateStyle(sharedStyle && sharedStyle.contents),
-      domain: app.domain,
-      path: app.path || normalize(app.definition.name),
+      domain,
+      path: path || normalize(definition.name),
       yaml: yaml && yaml.toString('utf8'),
     };
 
@@ -205,14 +263,14 @@ export async function updateApp(ctx) {
       }
 
       // The YAML should be the same when converted to JSON.
-      if (!isEqual(appFromYaml, app.definition)) {
+      if (!isEqual(appFromYaml, definition)) {
         throw Boom.badRequest('Provided YAML was not equal to definition when converted.');
       }
     } else {
-      result.yaml = jsYaml.safeDump(app.definition);
+      result.yaml = jsYaml.safeDump(definition);
     }
 
-    await checkBlocks(app, db);
+    await checkBlocks(definition, db);
 
     const dbApp = await App.findOne({ where: { id: appId } });
 
@@ -220,13 +278,13 @@ export async function updateApp(ctx) {
       throw Boom.notFound('App not found');
     }
 
-    if (!organizations.some(organization => organization.id === app.OrganizationId)) {
+    if (!organizations.some(organization => organization.id === OrganizationId)) {
       throw Boom.forbidden("User does not belong in this App's organization.");
     }
 
     await dbApp.update(result, { where: { id: appId } });
 
-    ctx.body = getAppFromRecord({ ...app.dataValues, ...result });
+    ctx.body = getAppFromRecord({ ...dbApp.dataValues, ...result });
   } catch (error) {
     handleAppValidationError(error, result);
   }
@@ -239,30 +297,42 @@ export async function patchApp(ctx) {
     user: { organizations },
   } = ctx.state;
   const { App } = db.models;
-  const { app, style, sharedStyle, yaml, icon } = ctx.request.body;
+  const {
+    definition,
+    path,
+    domain,
+    private: isPrivate,
+    template,
+    style,
+    sharedStyle,
+    yaml,
+    icon,
+  } = ctx.request.body;
 
   let result;
 
   try {
     result = {};
 
-    if (app) {
-      if (app.definition) {
-        result.definition = app.definition;
-        await checkBlocks(app, db);
-      }
+    if (definition) {
+      result.definition = definition;
+      await checkBlocks(definition, db);
+    }
 
-      if (app.path) {
-        result.path = app.path;
-      }
+    if (path) {
+      result.path = path;
+    }
 
-      if (app.private !== undefined) {
-        result.private = app.private;
-      }
+    if (isPrivate !== undefined) {
+      result.private = isPrivate;
+    }
 
-      if (app.domain !== undefined) {
-        result.domain = app.domain;
-      }
+    if (template !== undefined) {
+      result.template = template;
+    }
+
+    if (domain !== undefined) {
+      result.domain = domain;
     }
 
     if (style) {
@@ -287,13 +357,13 @@ export async function patchApp(ctx) {
       }
 
       // The YAML should be the same when converted to JSON.
-      if (!isEqual(appFromYaml, app.definition)) {
+      if (!isEqual(appFromYaml, definition)) {
         throw Boom.badRequest('Provided YAML was not equal to definition when converted.');
       }
 
-      result.yaml = yaml.contents;
-    } else if (app && app.definition) {
-      result.yaml = jsYaml.safeDump(app.definition);
+      result.yaml = (yaml.contents && yaml.contents.toString('utf8')) || yaml;
+    } else if (definition) {
+      result.yaml = jsYaml.safeDump(definition);
     }
 
     const dbApp = await App.findOne({ where: { id: appId } });
@@ -333,6 +403,51 @@ export async function deleteApp(ctx) {
 
   await app.update({ path: null });
   await app.destroy();
+}
+
+export async function getAppRatings(ctx) {
+  const { appId } = ctx.params;
+  const { AppRating, User } = ctx.db.models;
+
+  const ratings = await AppRating.findAll({ where: { AppId: appId }, include: [User], raw: true });
+  ctx.body = ratings.map(({ rating, description, UserId, created, updated, ...r }) => ({
+    rating,
+    description,
+    UserId,
+    name: r['User.name'],
+    $created: created,
+    $updated: updated,
+  }));
+}
+
+export async function submitAppRating(ctx) {
+  const { appId: AppId } = ctx.params;
+  const { App, AppRating, User } = ctx.db.models;
+  const {
+    user: { id: userId },
+  } = ctx.state;
+  const { rating, description } = ctx.request.body;
+
+  const app = await App.findByPk(AppId);
+  const user = await User.findByPk(userId);
+
+  if (!app) {
+    throw Boom.notFound('App not found');
+  }
+
+  const [result] = await AppRating.upsert(
+    { rating, description, UserId: user.id, AppId },
+    { returning: true },
+  );
+
+  ctx.body = {
+    rating,
+    description,
+    UserId: user.id,
+    name: user.name,
+    $created: result.created,
+    $updated: result.updated,
+  };
 }
 
 export async function getAppIcon(ctx) {
@@ -394,6 +509,87 @@ export async function deleteAppIcon(ctx) {
   await app.update({ icon: null });
 
   ctx.status = 204;
+}
+
+export async function addSubscription(ctx) {
+  const { appId } = ctx.params;
+  const { App, AppSubscription } = ctx.db.models;
+  const { user } = ctx.state;
+  const { endpoint, keys } = ctx.request.body;
+
+  const app = await App.findByPk(appId, { include: [AppSubscription] });
+
+  if (!app) {
+    throw Boom.notFound('App not found');
+  }
+
+  await app.createAppSubscription({
+    endpoint,
+    p256dh: keys.p256dh,
+    auth: keys.auth,
+    UserId: user ? user.id : null,
+  });
+}
+
+export async function broadcast(ctx) {
+  const { appId } = ctx.params;
+  const { App, AppSubscription } = ctx.db.models;
+  const { user } = ctx.state;
+  const { title, body } = ctx.request.body;
+
+  const app = await App.findByPk(appId, {
+    include: [AppSubscription],
+  });
+
+  if (!app) {
+    throw Boom.notFound('App not found');
+  }
+
+  if (!user.organizations.some(organization => organization.id === app.OrganizationId)) {
+    throw Boom.forbidden('User does not belong in this app’s organization.');
+  }
+
+  const { vapidPublicKey: publicKey, vapidPrivateKey: privateKey } = app;
+
+  // XXX: Replace with paginated requests
+  logger.verbose(`Sending ${app.AppSubscriptions.length} notifications for app ${app.id}`);
+  app.AppSubscriptions.forEach(async subscription => {
+    try {
+      logger.verbose(
+        `Sending push notification based on subscription ${subscription.id} for app ${app.id}`,
+      );
+      await webpush.sendNotification(
+        {
+          endpoint: subscription.endpoint,
+          keys: { auth: subscription.auth, p256dh: subscription.p256dh },
+        },
+        JSON.stringify({
+          title,
+          body,
+          icon: `${ctx.argv.host}/${app.id}/icon-96.png`,
+          badge: `${ctx.argv.host}/${app.id}/icon-96.png`,
+          timestamp: Date.now(),
+        }),
+        {
+          vapidDetails: {
+            // XXX: Make this configurable
+            subject: 'mailto: support@appsemble.com',
+            publicKey,
+            privateKey,
+          },
+        },
+      );
+    } catch (error) {
+      if (!(error instanceof webpush.WebPushError && error.statusCode === 410)) {
+        throw error;
+      }
+
+      logger.verbose(
+        `Removing push notification subscription ${subscription.id} for app ${app.id}`,
+      );
+      await subscription.destroy();
+    }
+  });
 }
 
 export async function getAppCoreStyle(ctx) {

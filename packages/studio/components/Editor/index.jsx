@@ -13,9 +13,4 @@ function mapStateToProps(state, ownProps) {
   };
 }
 
-export default injectIntl(
-  connect(
-    mapStateToProps,
-    { getOpenApiSpec, push, updateApp },
-  )(Editor),
-);
+export default injectIntl(connect(mapStateToProps, { getOpenApiSpec, push, updateApp })(Editor));

@@ -256,7 +256,6 @@ export default class Card extends Component<
                   required
                   value={message}
                 />
-                {/* eslint-disable-next-line no-inline-comments */}
                 {/* onSubmit is not used because of buggy interactions with ShadowDOM, React.
                 See: https://github.com/spring-media/react-shadow-dom-retarget-events/issues/13 */}
                 <button

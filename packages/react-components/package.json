@@ -1,15 +1,15 @@
 {
   "name": "@appsemble/react-components",
-  "version": "0.9.0",
+  "version": "0.9.4",
   "private": true,
   "dependencies": {
-    "@appsemble/react": "0.9.0",
-    "@appsemble/types": "0.9.0",
+    "@appsemble/react": "0.9.4",
+    "@appsemble/types": "0.9.4",
     "@fortawesome/fontawesome-common-types": "^0.2.25",
-    "@sentry/browser": "^5.7.1",
+    "@sentry/browser": "^5.9.1",
     "classnames": "^2.2.6",
-    "leaflet": "^1.5.1",
-    "react-intl": "^3.4.0",
+    "leaflet": "^1.6.0",
+    "react-intl": "^3.7.0",
     "react-transition-group": "^4.3.0"
   },
   "devDependencies": {

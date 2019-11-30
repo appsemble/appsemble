@@ -171,13 +171,13 @@ export function createApp(recipe: App, organization: { id: string }): AppThunk {
 
 export function createTemplateApp(
   {
-    template,
+    templateId,
     name,
     description,
     isPrivate,
     resources,
   }: {
-    template: string;
+    templateId: number;
     name: string;
     description: string;
     isPrivate: boolean;
@@ -187,7 +187,7 @@ export function createTemplateApp(
 ): AppThunk {
   return async dispatch => {
     const { data: app } = await axios.post('/api/templates', {
-      template,
+      templateId,
       name,
       description,
       organizationId: organization.id,

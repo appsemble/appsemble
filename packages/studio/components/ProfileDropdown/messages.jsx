@@ -4,4 +4,5 @@ export default defineMessages({
   documentation: 'Documentation',
   logoutButton: 'Logout',
   settings: 'Settings',
+  pfp: 'Profile Picture',
 });

@@ -7,6 +7,7 @@ export default function appMapper(platformMiddleware, appMiddleware, fallbackMid
   return async (ctx, next) => {
     const { argv, db, hostname, path } = ctx;
     const { App } = db.models;
+
     let app;
 
     if (new URL(argv.host).hostname === hostname) {
@@ -14,10 +15,16 @@ export default function appMapper(platformMiddleware, appMiddleware, fallbackMid
       if (!match) {
         return platformMiddleware(ctx, next);
       }
-      app = await App.findOne({ raw: true, where: { OrganizationId: match[1], path: match[2] } });
+      app = await App.findOne({
+        raw: true,
+        where: { OrganizationId: match[1], path: match[2] },
+      });
       [ctx.state.base] = match;
     } else {
-      app = await App.findOne({ raw: true, where: { domain: hostname } });
+      app = await App.findOne({
+        raw: true,
+        where: { domain: hostname },
+      });
       if (!app && isIp(hostname)) {
         return platformMiddleware(ctx, next);
       }

@@ -1,8 +1,7 @@
-image: node:10-slim
+image: node:12-slim
 
 stages:
   - test
-  - build
   - publish
   - deploy
   - migrate
@@ -26,7 +25,7 @@ stages:
   image:
     # This is the most official Helm image at the moment.
     # https://github.com/helm/helm/issues/5682#issuecomment-490084864
-    name: lachlanevenson/k8s-helm:v3.0.0-rc.2
+    name: lachlanevenson/k8s-helm:v3.0.0
     entrypoint: [/bin/sh, -c]
   dependencies: []
 
@@ -47,7 +46,6 @@ stages:
 
 # A preconfigured environment for using Yarn.
 .yarn:
-  image: node:10-slim
   dependencies: []
   before_script:
     - yarn --frozen-lockfile
@@ -81,10 +79,43 @@ stages:
     - yarn appsemble block register blocks/markdown
     - yarn appsemble block register blocks/navigation
     - yarn appsemble block register blocks/splash
+    - yarn appsemble app create --template --organization @appsemble apps/empty
+    - yarn appsemble app create --template --organization @appsemble apps/holiday
+    - yarn appsemble app create --template --organization @appsemble apps/person
+    - yarn appsemble app create --template --organization @appsemble apps/unlittered-template
 
 ###################################################################################################
 #  Test Stage                                                                                     #
 ###################################################################################################
+
+# Build the Docker image.
+build docker image:
+  extends: .docker
+  only:
+    - branches
+    - merge_requests
+    - tags
+  except:
+    - schedules
+  script:
+    - docker build -t "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME" .
+    - docker push "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME"
+
+# Build the Docker image.
+build docs image:
+  extends: .docker
+  only:
+    - branches
+    - merge_requests
+    - tags
+  except:
+    - schedules
+  script:
+    - docker build .
+      --build-arg "CI_COMMIT_REF_NAME=$CI_COMMIT_REF_NAME"
+      --file config/docs/Dockerfile
+      --tag "$CI_REGISTRY_IMAGE/docs:$CI_COMMIT_REF_NAME"
+    - docker push "$CI_REGISTRY_IMAGE/docs:$CI_COMMIT_REF_NAME"
 
 # Scan for dependency vulnerabilities.
 dependency scanning:
@@ -128,6 +159,21 @@ helm lint:
       - config/charts/**/*.*
   script:
     - helm lint config/charts/*
+
+# Build the npm packages that should be published.
+pack:
+  except:
+    - schedules
+  script:
+    - yarn workspace @appsemble/cli pack
+    - yarn workspace @appsemble/node-utils pack
+    - yarn workspace @appsemble/react pack
+    - yarn workspace @appsemble/sdk pack
+    - yarn workspace @appsemble/server pack
+    - yarn workspace create-appsemble pack
+  artifacts:
+    paths:
+      - packages/**/*.tgz
 
 # Check formatting using prettier.
 prettier:
@@ -200,58 +246,6 @@ tsc:
   script:
     - yarn tsc
     - yarn workspaces run tsc
-
-###################################################################################################
-#  Build Stage                                                                                    #
-###################################################################################################
-
-# Build the Docker image.
-build docker image:
-  extends: .docker
-  stage: build
-  only:
-    - branches
-    - merge_requests
-    - tags
-  except:
-    - schedules
-  script:
-    - docker build -t "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME" .
-    - docker push "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME"
-
-# Build the Docker image.
-build docs image:
-  extends: .docker
-  stage: build
-  only:
-    - branches
-    - merge_requests
-    - tags
-  except:
-    - schedules
-  script:
-    - docker build .
-      --build-arg "CI_COMMIT_REF_NAME=$CI_COMMIT_REF_NAME"
-      --file config/docs/Dockerfile
-      --tag "$CI_REGISTRY_IMAGE/docs:$CI_COMMIT_REF_NAME"
-    - docker push "$CI_REGISTRY_IMAGE/docs:$CI_COMMIT_REF_NAME"
-
-# Build the npm packages that should be published.
-pack:
-  stage: build
-  except:
-    - schedules
-  dependencies: []
-  script:
-    - yarn workspace @appsemble/cli pack
-    - yarn workspace @appsemble/node-utils pack
-    - yarn workspace @appsemble/react pack
-    - yarn workspace @appsemble/sdk pack
-    - yarn workspace @appsemble/server pack
-    - yarn workspace create-appsemble pack
-  artifacts:
-    paths:
-      - packages/**/*.tgz
 
 ###################################################################################################
 #  Publish Stage                                                                                  #
@@ -440,7 +434,7 @@ reset staging:
       --set "postgresql.fullnameOverride=staging-postgresql"
       --set "sentrySecret=sentry"
 
-.production:
+production:
   extends: .helm
   stage: deploy
   only:
@@ -452,15 +446,19 @@ reset staging:
   script:
     - helm upgrade appsemble config/charts/appsemble
       --set "app=$CI_ENVIRONMENT_SLUG"
+      --set "global.postgresql.existingSecret=$POSTGRESQL_SECRET"
+      --set "global.postgresql.postgresqlDatabase=$POSTGRESQL_DATABASE"
+      --set "global.postgresql.postgresqlUsername=$POSTGRESQL_USERNAME"
+      --set "global.postgresql.servicePort=$POSTGRESQL_PORT"
       --set "ingress.annotations.cert-manager\.io/cluster-issuer=letsencrypt-prod"
       --set "ingress.annotations.kubernetes\.io/ingress\.class=nginx"
       --set "ingress.annotations.nginx\.ingress\.kubernetes\.io/proxy-body-size=50m"
       --set "ingress.enabled=true"
       --set "ingress.host=appsemble.app"
-      --set "ingress.tls.secretName=tls-secret"
-      --set "global.postgresql.existingSecret=postgresql-secret"
+      --set "ingress.tls.secretName=$INGRESS_TLS_SECRET_NAME"
+      --set "postgresql.fullnameOverride=$POSTGRESQL_HOST"
       --set "postgresql.enabled=false"
-      --set "postgresql.fullnameOverride=XXX"
+      --set 'postgresSSL=true'
       --wait
 
 # Deploy the docs for production.

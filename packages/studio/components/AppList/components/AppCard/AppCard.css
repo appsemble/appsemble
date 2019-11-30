@@ -20,3 +20,9 @@
   position: absolute;
   width: 100%;
 }
+
+.rating {
+  bottom: 3.5em;
+  position: absolute;
+  right: 1em;
+}

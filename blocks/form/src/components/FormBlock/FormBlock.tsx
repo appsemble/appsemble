@@ -40,9 +40,8 @@ const inputs = {
   boolean: BooleanInput,
 };
 
-const validateInput: Validator = (_field, event) => {
-  return (event.target as HTMLInputElement).validity.valid;
-};
+const validateInput: Validator = (_field, event) =>
+  (event.target as HTMLInputElement).validity.valid;
 
 const validators: { [name: string]: Validator } = {
   file: (field: FileField, _event, value) => {
@@ -62,9 +61,8 @@ const validators: { [name: string]: Validator } = {
 
     return true;
   },
-  geocoordinates: (_, _event, value: { longitude: number; latitude: number }) => {
-    return !!(value.latitude && value.longitude);
-  },
+  geocoordinates: (_, _event, value: { longitude: number; latitude: number }) =>
+    !!(value.latitude && value.longitude),
   hidden: (): boolean => true,
   string: validateInput,
   number: validateInput,
