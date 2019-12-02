@@ -85,25 +85,20 @@ export function requestLikeAction<T extends RequestLikeActionTypes>({
 
       try {
         const response = await axios(req);
+        let responseBody = response.data;
         if (/^(application|text)\/(.+\+)?xml;/.test(response.headers['content-type'])) {
-          const parser = new DOMParser();
-          const xml = xmlToJson((parser.parseFromString(
-            response.data,
-            'text/xml',
-          ) as unknown) as Element);
-
-          response.data = xml;
+          responseBody = xmlToJson(responseBody, schema);
         }
 
         if (base) {
-          response.data = remapData(base, response.data);
+          responseBody = remapData(base, responseBody);
         }
 
         if (onSuccess) {
-          return onSuccess.dispatch(response.data);
+          return onSuccess.dispatch(responseBody);
         }
 
-        return response.data;
+        return responseBody;
       } catch (exception) {
         if (onError) {
           return onError.dispatch(exception);

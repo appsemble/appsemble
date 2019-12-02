@@ -1,200 +1,514 @@
 import xmlToJson from './xmlToJson';
 
-const exampleXmlA = `
-<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"
-xmlns:content="http://purl.org/rss/1.0/modules/content/"
-xmlns:wfw="http://wellformedweb.org/CommentAPI/"
-xmlns:dc="http://purl.org/dc/elements/1.1/"
-xmlns:atom="http://www.w3.org/2005/Atom"
-xmlns:sy="http://purl.org/rss/1.0/modules/syndication/"
-xmlns:slash="http://purl.org/rss/1.0/modules/slash/"
->
+/*
+ * All test cases are taken from the examples of https://swagger.io/specification/#xmlObject
+ */
 
-<channel>
-<title>Appsemble</title>
-<atom:link href="https://appsemble.com/feed/" rel="self" type="application/rss+xml" />
-<link>https://appsemble.com</link>
-<description>Open source low-code platform</description>
-<lastBuildDate>Tue, 12 Nov 2019 15:44:38 +0000</lastBuildDate>
-<language>nl</language>
-<sy:updatePeriod>hourly</sy:updatePeriod>
-<sy:updateFrequency>1</sy:updateFrequency>
-<generator>https://wordpress.org/?v=5.2.4</generator>
-<image>
-<url>https://appsemble.com/wp-content/uploads/2019/03/cropped-Appsemble-logo-512-1-32x32.png</url>
-<title>Appsemble</title>
-<link>https://appsemble.com</link>
-<width>32</width>
-<height>32</height>
-</image>
-  <item>
-    <title>low-code</title>
-    <link>https://appsemble.com/low-code/?utm_source=rss&#038;utm_medium=rss&#038;utm_campaign=low-code</link>
-    <comments>https://appsemble.com/low-code/#respond</comments>
-    <pubDate>Fri, 05 Jul 2019 10:15:23 +0000</pubDate>
-    <dc:creator><![CDATA[Appsemble]]></dc:creator>
-    <category><![CDATA[Informatie]]></category>
-    <guid isPermaLink="false">https://appsemble.com/?p=1190</guid>
-    <description><![CDATA[<p>Wat is low-code?</p>]]></description>
-    <content:encoded><![CDATA[<h2><strong>Wat is low-code?</strong></h2>]]></content:encoded>
-  </item>
-  <item>
-    <title>Laatste nieuws &#8211; Juni</title>
-    <link>https://appsemble.com/laatste-nieuws-juni/?utm_source=rss&#038;utm_medium=rss&#038;utm_campaign=laatste-nieuws-juni</link>
-    <pubDate>Thu, 20 Jun 2019 12:55:56 +0000</pubDate>
-    <dc:creator><![CDATA[Appsemble]]></dc:creator>
-    <category><![CDATA[Update]]></category>
-    <guid isPermaLink="false">https://appsemble.com/?p=1147</guid>
-    <description><![CDATA[<p>Videoverslag bijeenkomst Utrecht</p>]]></description>
-    <content:encoded><![CDATA[<h4><strong>Videoverslag bijeenkomst Utrecht</strong></h4>]]></content:encoded>
-  </item>
-</channel>
-</rss>
-`;
-
-describe('xmlToJson', () => {
-  it('should parse XML children as properties', () => {
-    const input = `
-    <note>
-      <to>Tove</to>
-      <from>Jani</from>
-      <heading>Reminder</heading>
-      <body>Don't forget me this weekend!</body>
-    </note>`;
-
-    const parser = new DOMParser();
-    expect(
-      xmlToJson((parser.parseFromString(input, 'text/xml') as unknown) as Element),
-    ).toStrictEqual({
-      note: {
-        to: 'Tove',
-        from: 'Jani',
-        heading: 'Reminder',
-        body: "Don't forget me this weekend!",
-      },
-    });
+it('should handle top level strings', () => {
+  const xml = `
+    <food>Frikandel</food>
+  `;
+  const result = xmlToJson(xml, {
+    type: 'string',
+    xml: { name: 'food' },
   });
+  expect(result).toBe('Frikandel');
+});
 
-  it('should parse XML attributes', async () => {
-    const input = `
-      <menu>
-        <item price="€5" name="Waffles" />
-        <item price="€3" name="Pancakes" />
-        <item price="€8" name="Pizza" pineapple="false" />
-      </menu>
-    `;
-    const parser = new DOMParser();
-    const xml = xmlToJson((parser.parseFromString(input, 'text/xml') as unknown) as Element);
-
-    expect(xml).toStrictEqual({
-      menu: {
-        item: [
-          { price: '€5', name: 'Waffles' },
-          { price: '€3', name: 'Pancakes' },
-          { price: '€8', name: 'Pizza', pineapple: 'false' },
-        ],
-      },
-    });
+it('should handle top level true', () => {
+  const xml = `
+    <is-it-working>true</is-it-working>
+  `;
+  const result = xmlToJson(xml, {
+    type: 'boolean',
+    xml: { name: 'is-it-working' },
   });
+  expect(result).toBe(true);
+});
 
-  it('should combine children and attributes', () => {
-    const input = `
-      <menu>
-        <item price="€5" name="Waffles">
-          <ingredient>Waf</ingredient>
-          <ingredient>Fle</ingredient>
-          <somethingElse>something</somethingElse>
-        </item>
-        <item price="€3" name="Pancakes" />
-        <item price="€8" name="Pizza" pineapple="false" />
-      </menu>
-    `;
-    const parser = new DOMParser();
-    const xml = xmlToJson((parser.parseFromString(input, 'text/xml') as unknown) as Element);
-
-    expect(xml).toStrictEqual({
-      menu: {
-        item: [
-          { price: '€5', name: 'Waffles', ingredient: ['Waf', 'Fle'], somethingElse: 'something' },
-          { price: '€3', name: 'Pancakes' },
-          {
-            price: '€8',
-            name: 'Pizza',
-            pineapple: 'false',
-          },
-        ],
-      },
-    });
+it('should handle top level false', () => {
+  const xml = `
+    <is-it-broken>false</is-it-broken>
+  `;
+  const result = xmlToJson(xml, {
+    type: 'boolean',
+    xml: { name: 'is-it-broken' },
   });
+  expect(result).toBe(false);
+});
 
-  it('should convert an RSS feed to JSON', () => {
-    const parser = new DOMParser();
-    const xml = xmlToJson((parser.parseFromString(exampleXmlA, 'text/xml') as unknown) as Element);
+it('should convert invalid boolean values to null', () => {
+  const xml = `
+    <is-null>invalid</is-null>
+  `;
+  const result = xmlToJson(xml, {
+    type: 'boolean',
+    xml: { name: 'is-null' },
+  });
+  expect(result).toBeNull();
+});
 
-    expect(xml).toStrictEqual({
-      rss: {
-        'xmlns:slash': 'http://purl.org/rss/1.0/modules/slash/',
-        'xmlns:sy': 'http://purl.org/rss/1.0/modules/syndication/',
-        'xmlns:atom': 'http://www.w3.org/2005/Atom',
-        'xmlns:dc': 'http://purl.org/dc/elements/1.1/',
-        'xmlns:wfw': 'http://wellformedweb.org/CommentAPI/',
-        'xmlns:content': 'http://purl.org/rss/1.0/modules/content/',
-        version: '2.0',
-        channel: {
-          title: 'Appsemble',
-          'atom:link': {
-            href: 'https://appsemble.com/feed/',
-            rel: 'self',
-            type: 'application/rss+xml',
-          },
-          link: 'https://appsemble.com',
-          description: 'Open source low-code platform',
-          lastBuildDate: 'Tue, 12 Nov 2019 15:44:38 +0000',
-          language: 'nl',
-          'sy:updatePeriod': 'hourly',
-          'sy:updateFrequency': '1',
-          generator: 'https://wordpress.org/?v=5.2.4',
-          image: {
-            url:
-              'https://appsemble.com/wp-content/uploads/2019/03/cropped-Appsemble-logo-512-1-32x32.png',
-            title: 'Appsemble',
-            link: 'https://appsemble.com',
-            width: '32',
-            height: '32',
-          },
-          item: [
-            {
-              title: 'low-code',
-              link:
-                'https://appsemble.com/low-code/?utm_source=rss&utm_medium=rss&utm_campaign=low-code',
-              comments: 'https://appsemble.com/low-code/#respond',
-              pubDate: 'Fri, 05 Jul 2019 10:15:23 +0000',
-              'dc:creator': 'Appsemble',
-              category: 'Informatie',
-              guid: {
-                _: 'https://appsemble.com/?p=1190',
-                isPermaLink: 'false',
-              },
-              description: '<p>Wat is low-code?</p>',
-              'content:encoded': '<h2><strong>Wat is low-code?</strong></h2>',
-            },
-            {
-              title: 'Laatste nieuws – Juni',
-              link:
-                'https://appsemble.com/laatste-nieuws-juni/?utm_source=rss&utm_medium=rss&utm_campaign=laatste-nieuws-juni',
-              pubDate: 'Thu, 20 Jun 2019 12:55:56 +0000',
-              'dc:creator': 'Appsemble',
-              category: 'Update',
-              guid: {
-                _: 'https://appsemble.com/?p=1147',
-                isPermaLink: 'false',
-              },
-              description: '<p>Videoverslag bijeenkomst Utrecht</p>',
-              'content:encoded': '<h4><strong>Videoverslag bijeenkomst Utrecht</strong></h4>',
-            },
-          ],
+it('should handle top level integers', () => {
+  const xml = `
+    <count>42.3</count>
+  `;
+  const result = xmlToJson(xml, {
+    type: 'integer',
+    xml: { name: 'count' },
+  });
+  expect(result).toBe(42);
+});
+
+it('should handle top level numbers', () => {
+  const xml = `
+    <percentage>13.37</percentage>
+  `;
+  const result = xmlToJson(xml, {
+    type: 'number',
+    xml: { name: 'percentage' },
+  });
+  expect(result).toBe(13.37);
+});
+
+it('should handle top level objects', () => {
+  const xml = `
+    <food>
+      <name>Pizza</name>
+    </food>
+  `;
+  const result = xmlToJson(xml, {
+    type: 'object',
+    xml: { name: 'food' },
+    properties: {
+      name: { type: 'string' },
+    },
+  });
+  expect(result).toStrictEqual({
+    name: 'Pizza',
+  });
+});
+
+it('should handle top level wrapped arrays', () => {
+  const xml = `
+    <food>
+      <name>Pizza</name>
+    </food>
+  `;
+  const result = xmlToJson(xml, {
+    type: 'array',
+    xml: { name: 'food', wrapped: true },
+    items: {
+      type: 'string',
+      xml: { name: 'name' },
+    },
+  });
+  expect(result).toStrictEqual(['Pizza']);
+});
+
+it('should use the first matching object property element', () => {
+  const xml = `
+    <food>
+      <name>Spaghetti</name>
+      <name>Pizza</name>
+    </food>
+  `;
+  const result = xmlToJson(xml, {
+    type: 'object',
+    xml: { name: 'food' },
+    properties: {
+      name: { type: 'string' },
+    },
+  });
+  expect(result).toStrictEqual({
+    name: 'Spaghetti',
+  });
+});
+
+it('should handle nested objects', () => {
+  const xml = `
+    <pizza>
+      <name>Salami</name>
+      <toppings>
+        <tomatoes>true</tomatoes>
+        <cheese>true</cheese>
+        <salami>true</salami>
+      </toppings>
+    </pizza>
+  `;
+  const result = xmlToJson(xml, {
+    type: 'object',
+    xml: { name: 'pizza' },
+    properties: {
+      name: { type: 'string' },
+      toppings: {
+        type: 'object',
+        properties: {
+          tomatoes: { type: 'boolean' },
+          cheese: { type: 'boolean' },
+          salami: { type: 'boolean' },
         },
       },
-    });
+    },
   });
+  expect(result).toStrictEqual({
+    name: 'Salami',
+    toppings: {
+      tomatoes: true,
+      cheese: true,
+      salami: true,
+    },
+  });
+});
+
+it('should handle wrapped arrays', () => {
+  const xml = `
+    <ingredients>
+      <name>flour</name>
+      <name>water</name>
+      <name>milk</name>
+      <name>eggs</name>
+    </ingredients>
+  `;
+  const result = xmlToJson(xml, {
+    type: 'array',
+    xml: { name: 'ingredients', wrapped: true },
+    items: {
+      type: 'string',
+      xml: { name: 'name' },
+    },
+  });
+  expect(result).toStrictEqual(['flour', 'water', 'milk', 'eggs']);
+});
+
+it('should handle unwrapped arrays', () => {
+  const xml = `
+    <ingredients>
+      <name>flour</name>
+      <name>water</name>
+      <name>milk</name>
+      <name>eggs</name>
+    </ingredients>
+  `;
+  const result = xmlToJson(xml, {
+    type: 'object',
+    xml: { name: 'ingredients' },
+    properties: {
+      name: {
+        type: 'array',
+        items: {
+          type: 'string',
+        },
+      },
+    },
+  });
+  expect(result).toStrictEqual({ name: ['flour', 'water', 'milk', 'eggs'] });
+});
+
+it('should handle namespaces', () => {
+  const xml = `
+    <food xmlns:pizza="https://example.com/pizza">
+      <pizza:name>Margherita</pizza:name>
+    </food>
+  `;
+  const result = xmlToJson(xml, {
+    type: 'object',
+    xml: { name: 'food' },
+    properties: {
+      name: {
+        type: 'string',
+        xml: { prefix: 'pizza' },
+      },
+    },
+  });
+  expect(result).toStrictEqual({ name: 'Margherita' });
+});
+
+it('should handle attributes', () => {
+  const xml = `
+    <food name="bread" />
+  `;
+  const result = xmlToJson(xml, {
+    type: 'object',
+    xml: { name: 'food' },
+    properties: {
+      name: {
+        type: 'string',
+        xml: { attribute: true },
+      },
+    },
+  });
+  expect(result).toStrictEqual({ name: 'bread' });
+});
+
+it('should handle namespaced attributes', () => {
+  const xml = `
+    <food candy:name="Napoleon" xmlns:candy="https://example.com/candy" />
+  `;
+  const result = xmlToJson(xml, {
+    type: 'object',
+    xml: { name: 'food' },
+    properties: {
+      name: {
+        type: 'string',
+        xml: { attribute: true, prefix: 'candy' },
+      },
+    },
+  });
+  expect(result).toStrictEqual({ name: 'Napoleon' });
+});
+
+it('should convert undefined attributes to null', () => {
+  const xml = `
+    <food />
+  `;
+  const result = xmlToJson(xml, {
+    type: 'object',
+    xml: { name: 'food' },
+    properties: {
+      category: {
+        type: 'string',
+      },
+    },
+  });
+  expect(result).toStrictEqual({ category: null });
+});
+
+it('should throw if a parser error is found', () => {
+  const xml = 'invalid';
+  expect(() => xmlToJson(xml, { type: 'string' })).toThrow(`Non-whitespace before first tag.
+Line: 0
+Column: 1
+Char: i`);
+});
+
+it('should be able to parse an RSS feed', () => {
+  const xml = `
+    <?xml version="1.0" encoding="UTF-8"?>
+    <rss version="2.0"
+      xmlns:content="http://purl.org/rss/1.0/modules/content/"
+      xmlns:wfw="http://wellformedweb.org/CommentAPI/"
+      xmlns:dc="http://purl.org/dc/elements/1.1/"
+      xmlns:atom="http://www.w3.org/2005/Atom"
+      xmlns:sy="http://purl.org/rss/1.0/modules/syndication/"
+      xmlns:slash="http://purl.org/rss/1.0/modules/slash/"
+    >
+      <channel>
+        <title>Appsemble</title>
+        <atom:link href="https://appsemble.com/feed/" rel="self" type="application/rss+xml" />
+        <link>https://appsemble.com</link>
+        <description>Open source low-code platform</description>
+        <lastBuildDate>Tue, 12 Nov 2019 15:44:38 +0000</lastBuildDate>
+        <language>nl</language>
+        <sy:updatePeriod>hourly</sy:updatePeriod>
+        <sy:updateFrequency>1</sy:updateFrequency>
+        <generator>https://wordpress.org/?v=5.2.4</generator>
+
+        <image>
+          <url>https://appsemble.com/wp-content/uploads/2019/03/cropped-Appsemble-logo-512-1-32x32.png</url>
+          <title>Appsemble</title>
+          <link>https://appsemble.com</link>
+          <width>32</width>
+          <height>32</height>
+        </image>
+
+        <item>
+          <title>Item 2</title>
+          <link>https://appsemble.com</link>
+          <comments>https://appsemble.com/low-code/#respond</comments>
+          <pubDate>Fri, 05 Jul 2019 10:15:23 +0000</pubDate>
+          <dc:creator><![CDATA[Appsemble]]></dc:creator>
+          <category><![CDATA[Informatie]]></category>
+
+          <guid isPermaLink="false">https://appsemble.com/?p=1190</guid>
+          <description>Foo</description>
+        </item>
+
+        <item>
+          <title>Item 1</title>
+          <link>https://appsemble.com</link>
+          <comments>https://appsemble.com/low-code/#respond</comments>
+          <pubDate>Fri, 05 Jul 2019 10:15:23 +0000</pubDate>
+          <dc:creator><![CDATA[Appsemble]]></dc:creator>
+          <category><![CDATA[Informatie]]></category>
+
+          <guid isPermaLink="false">https://appsemble.com/?p=1190</guid>
+          <description>Foo</description>
+        </item>
+      </channel>
+    </rss>
+  `;
+  const result = xmlToJson(xml, {
+    type: 'object',
+    xml: { name: 'rss' },
+    properties: {
+      channel: {
+        type: 'array',
+        xml: { wrapped: true },
+        items: {
+          type: 'object',
+          xml: { name: 'item' },
+          properties: {
+            title: { type: 'string' },
+            link: { type: 'string' },
+            comments: { type: 'string' },
+            pubDate: { type: 'string' },
+            creator: {
+              type: 'string',
+              xml: { prefix: 'dc' },
+            },
+            category: { type: 'string' },
+            guid: { type: 'string' },
+            guidIsPermaLink: {
+              type: 'object',
+              xml: { name: 'guid' },
+              properties: {
+                isPermaLink: {
+                  type: 'boolean',
+                  xml: { attribute: true },
+                },
+              },
+            },
+            description: { type: 'string' },
+          },
+        },
+      },
+    },
+  });
+  expect(result).toStrictEqual({
+    channel: [
+      {
+        category: 'Informatie',
+        comments: 'https://appsemble.com/low-code/#respond',
+        creator: 'Appsemble',
+        description: 'Foo',
+        guid: 'https://appsemble.com/?p=1190',
+        guidIsPermaLink: {
+          isPermaLink: false,
+        },
+        link: 'https://appsemble.com',
+        pubDate: 'Fri, 05 Jul 2019 10:15:23 +0000',
+        title: 'Item 2',
+      },
+      {
+        category: 'Informatie',
+        comments: 'https://appsemble.com/low-code/#respond',
+        creator: 'Appsemble',
+        description: 'Foo',
+        guid: 'https://appsemble.com/?p=1190',
+        guidIsPermaLink: {
+          isPermaLink: false,
+        },
+        link: 'https://appsemble.com',
+        pubDate: 'Fri, 05 Jul 2019 10:15:23 +0000',
+        title: 'Item 1',
+      },
+    ],
+  });
+});
+
+it('should be able to parse an Atom RSS feed', () => {
+  const xml = `
+    <?xml version="1.0" encoding="UTF-8"?>
+    <feed
+      xmlns="http://www.w3.org/2005/Atom"
+      xmlns:thr="http://purl.org/syndication/thread/1.0"
+      xml:lang="nl"
+      xml:base="https://appsemble.com/wp-atom.php"
+    >
+      <title type="text">Appsemble</title>
+      <subtitle type="text">Open source low-code platform</subtitle>
+      <updated>2019-11-12T15:44:38Z</updated>
+      <link rel="alternate" type="text/html" href="https://appsemble.com" />
+      <id>https://appsemble.com/feed/atom/</id>
+      <link rel="self" type="application/atom+xml" href="https://appsemble.com/feed/atom/" />
+      <generator uri="https://wordpress.org/" version="5.2.4">WordPress</generator>
+      <icon>https://appsemble.com/wp-content/uploads/2019/03/cropped-Appsemble-logo-512-1-32x32.png</icon>
+      <entry>
+        <author>
+          <name>Appsemble</name>
+        </author>
+        <title type="html"><![CDATA[low-code]]></title>
+        <link rel="alternate" type="text/html" href="https://appsemble.com/low-code/?utm_source=rss&#038;utm_medium=rss&#038;utm_campaign=low-code" />
+        <id>https://appsemble.com/?p=1190</id>
+        <updated>2019-07-05T10:52:30Z</updated>
+        <published>2019-07-05T10:15:23Z</published>
+        <category scheme="https://appsemble.com" term="Informatie" />
+        <summary type="html"></summary>
+        <content type="html"></content>
+      </entry>
+      <entry>
+        <author>
+          <name>Appsemble</name>
+        </author>
+        <title type="html"><![CDATA[low-code]]></title>
+        <link rel="alternate" type="text/html" href="https://appsemble.com/low-code/?utm_source=rss&#038;utm_medium=rss&#038;utm_campaign=low-code" />
+        <id>https://appsemble.com/?p=1190</id>
+        <updated>2019-07-05T10:52:30Z</updated>
+        <published>2019-07-05T10:15:23Z</published>
+        <category scheme="https://appsemble.com" term="Informatie" />
+        <summary type="html"></summary>
+        <content type="html"></content>
+      </entry>
+    </feed>
+  `;
+  const result = xmlToJson(xml, {
+    type: 'array',
+    xml: { name: 'feed', wrapped: true },
+    items: {
+      type: 'object',
+      xml: { name: 'entry' },
+      properties: {
+        title: { type: 'string' },
+        subtitle: { type: 'string' },
+        link: {
+          type: 'object',
+          properties: {
+            href: {
+              type: 'string',
+              xml: { attribute: true },
+            },
+          },
+        },
+        id: { type: 'string' },
+        updated: { type: 'string' },
+        published: { type: 'string' },
+        category: {
+          type: 'object',
+          properties: {
+            term: { type: 'string', xml: { attribute: true } },
+          },
+        },
+        summary: { type: 'string' },
+        content: { type: 'string' },
+      },
+    },
+  });
+  expect(result).toStrictEqual([
+    {
+      category: { term: 'Informatie' },
+      content: '',
+      id: 'https://appsemble.com/?p=1190',
+      link: {
+        href: 'https://appsemble.com/low-code/?utm_source=rss&utm_medium=rss&utm_campaign=low-code',
+      },
+      published: '2019-07-05T10:15:23Z',
+      subtitle: null,
+      summary: '',
+      title: 'low-code',
+      updated: '2019-07-05T10:52:30Z',
+    },
+    {
+      category: { term: 'Informatie' },
+      content: '',
+      id: 'https://appsemble.com/?p=1190',
+      link: {
+        href: 'https://appsemble.com/low-code/?utm_source=rss&utm_medium=rss&utm_campaign=low-code',
+      },
+      published: '2019-07-05T10:15:23Z',
+      subtitle: null,
+      summary: '',
+      title: 'low-code',
+      updated: '2019-07-05T10:52:30Z',
+    },
+  ]);
 });
