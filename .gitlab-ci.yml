@@ -273,9 +273,8 @@ review:
     url: https://$CI_ENVIRONMENT_SLUG.appsemble.app
     on_stop: stop review
   script:
-    - helm upgrade "$CI_ENVIRONMENT_SLUG" config/charts/appsemble
+    - helm install "$CI_ENVIRONMENT_SLUG" config/charts/appsemble
       --atomic
-      --install
       --set "app=$CI_ENVIRONMENT_SLUG"
       --set "fullnameOverride=$CI_ENVIRONMENT_SLUG"
       --set "image.pullPolicy=Always"
