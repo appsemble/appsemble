@@ -116,10 +116,11 @@ temporarily.
 Dialogs can be closed by calling the [`dialog.ok`] and [`dialog.error`]. Users can still manually
 close dialogs, which should be supported by the app.
 
-| Parameter  | Required | Description                                                                              |
-| ---------- | -------- | ---------------------------------------------------------------------------------------- |
-| blocks     | true     | The list of blocks to render.                                                            |
-| fullscreen |          | Whether the dialog should be displayed fullscreen as if it's a new page, or as a pop-up. |
+| Parameter  | Required | Description                                                                                                      |
+| ---------- | -------- | ---------------------------------------------------------------------------------------------------------------- |
+| blocks     | true     | The list of blocks to render.                                                                                    |
+| closable   |          | Whether users are allowed to close the dialog by clicking outside of it or on the close button. Defaults to true |
+| fullscreen |          | Whether the dialog should be displayed fullscreen as if it's a new page, or as a pop-up.                         |
 
 ## `dialog.ok`
 

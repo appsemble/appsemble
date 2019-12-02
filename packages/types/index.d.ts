@@ -329,6 +329,11 @@ interface BaseActionDefinition<T extends Action['type']> {
 
 interface DialogActionDefinition extends BaseActionDefinition<'dialog'> {
   /**
+   * If false, the dialog cannot be closed by clicking outside of the dialog or on the close button.
+   */
+  closable?: boolean;
+
+  /**
    * If true, the dialog will be displayed full screen.
    */
   fullscreen?: boolean;
