@@ -3,4 +3,4 @@
 dist/
 /public/
 node_modules/
-_book/
+/.docz/

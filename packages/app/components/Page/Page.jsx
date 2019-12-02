@@ -125,11 +125,11 @@ export default class Page extends React.Component {
 
     const actionBlocks = blocks
       .filter(block => block.actions)
-      .map(block => {
-        return Object.entries(block.actions)
+      .map(block =>
+        Object.entries(block.actions)
           .filter(([, action]) => action.type === 'dialog')
-          .map(([, action]) => action.blocks);
-      })
+          .map(([, action]) => action.blocks),
+      )
       .flat(2);
 
     getBlockDefs([...new Set([...blocks, ...actionBlocks])]);

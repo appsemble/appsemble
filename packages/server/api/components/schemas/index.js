@@ -8,6 +8,7 @@ import Error from './Error';
 import Health from './Health';
 import Organization from './Organization';
 import Page from './Page';
+import Rating from './Rating';
 import Resource from './Resource';
 import ResourceDefinition from './ResourceDefinition';
 import SubPage from './SubPage';
@@ -26,6 +27,7 @@ export default {
   Health,
   Organization,
   Page,
+  Rating,
   Resource,
   ResourceDefinition,
   Theme,

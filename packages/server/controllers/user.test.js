@@ -21,7 +21,7 @@ describe('user', () => {
 
   beforeEach(async () => {
     await truncate(db);
-    token = await testToken(request, server, db, 'apps:read');
+    token = await testToken(server, db, 'apps:read');
   });
 
   afterAll(async () => {

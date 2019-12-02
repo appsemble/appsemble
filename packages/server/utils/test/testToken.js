@@ -1,12 +1,8 @@
 import bcrypt from 'bcrypt';
+// eslint-disable-next-line import/no-extraneous-dependencies
+import request from 'supertest';
 
-export default async function testToken(
-  request,
-  server,
-  db,
-  scope,
-  organizationId = 'testorganization',
-) {
+export default async function testToken(server, db, scope, organizationId = 'testorganization') {
   const { User, EmailAuthorization, OAuthClient } = db.models;
   const user = await User.create({ password: bcrypt.hashSync('test', 10), name: 'Test User' });
   await user.createOrganization(

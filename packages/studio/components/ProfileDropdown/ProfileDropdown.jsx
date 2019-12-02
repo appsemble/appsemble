@@ -39,9 +39,7 @@ export default class ProfileDropdown extends Component {
   };
 
   onClick = () => {
-    this.setState(({ open }) => {
-      return { open: !open };
-    });
+    this.setState(({ open }) => ({ open: !open }));
   };
 
   onKeyDown = event => {
@@ -51,7 +49,7 @@ export default class ProfileDropdown extends Component {
   };
 
   render() {
-    const { logout, user } = this.props;
+    const { logout, user, intl } = this.props;
     const { open } = this.state;
 
     return (
@@ -61,7 +59,7 @@ export default class ProfileDropdown extends Component {
             <button aria-haspopup className="button" onClick={this.onClick} type="button">
               <figure className="image is-32x32">
                 <img
-                  alt="profile"
+                  alt={intl.formatMessage(messages.pfp)}
                   className={`is-rounded ${styles.gravatar}`}
                   src={generateGravatarHash(user.primaryEmail || user.id)}
                 />

@@ -1,11 +1,11 @@
 {
   "name": "@appsemble/list",
-  "version": "0.9.3",
+  "version": "0.9.4",
   "private": true,
   "dependencies": {
-    "@appsemble/preact": "0.9.3",
-    "@appsemble/preact-components": "0.9.3",
-    "@appsemble/utils": "0.9.3",
+    "@appsemble/preact": "0.9.4",
+    "@appsemble/preact-components": "0.9.4",
+    "@appsemble/utils": "0.9.4",
     "preact": "^10.0.5"
   }
 }

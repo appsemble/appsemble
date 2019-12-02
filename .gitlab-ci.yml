@@ -1,4 +1,4 @@
-image: node:10-slim
+image: node:12-slim
 
 stages:
   - test
@@ -46,7 +46,6 @@ stages:
 
 # A preconfigured environment for using Yarn.
 .yarn:
-  image: node:10-slim
   dependencies: []
   before_script:
     - yarn --frozen-lockfile
@@ -69,21 +68,8 @@ stages:
     - yarn block splash
     - node -r esm ./config/bin/register.js
     - yarn appsemble login --email "$APPSEMBLE_EMAIL" --password "$APPSEMBLE_PASSWORD"
-    - yarn appsemble block register blocks/action
-    - yarn appsemble block register blocks/action-button
-    - yarn appsemble block register blocks/detail-viewer
-    - yarn appsemble block register blocks/list
-    - yarn appsemble block register blocks/feed
-    - yarn appsemble block register blocks/filter
-    - yarn appsemble block register blocks/form
-    - yarn appsemble block register blocks/map
-    - yarn appsemble block register blocks/markdown
-    - yarn appsemble block register blocks/navigation
-    - yarn appsemble block register blocks/splash
-    - yarn appsemble app create --template --organization @appsemble apps/empty
-    - yarn appsemble app create --template --organization @appsemble apps/holiday
-    - yarn appsemble app create --template --organization @appsemble apps/person
-    - yarn appsemble app create --template --organization @appsemble apps/unlittered-template
+    - yarn appsemble block register --all blocks
+    - yarn appsemble app create --template --organization @appsemble --all apps
 
 ###################################################################################################
 #  Test Stage                                                                                     #

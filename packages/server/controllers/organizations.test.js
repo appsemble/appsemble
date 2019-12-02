@@ -36,7 +36,6 @@ describe('organization controller', () => {
     await truncate(db);
     organizationId = 'testorganization';
     token = await testToken(
-      request,
       server,
       db,
       'organizations:read organizations:style organizations:write',
