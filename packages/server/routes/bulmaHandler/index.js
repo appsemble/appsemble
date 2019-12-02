@@ -7,6 +7,7 @@ const bulmaPath = require.resolve('bulma/bulma.sass');
 const functionPath = require.resolve('bulma/sass/utilities/functions.sass');
 const checkRadioPath = require.resolve('bulma-checkradio/src/sass/index.sass');
 const calendarPath = require.resolve('bulma-calendar/src/sass/index.sass');
+const postCss = postcss([autoprefixer]);
 
 /**
  * Process SASS styles based on given parameters.
@@ -69,7 +70,7 @@ export default async function bulmaHandler(ctx) {
 
   const { css } = sass.renderSync(options);
 
-  ctx.body = await postcss([autoprefixer]).process(css).css;
+  ctx.body = await postCss.process(css).css;
   ctx.type = 'text/css';
   ctx.set('Cache-Control', 'max-age=31536000,immutable');
 }
