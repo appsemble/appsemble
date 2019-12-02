@@ -270,7 +270,7 @@ review:
   allow_failure: false
   environment:
     name: review/$CI_COMMIT_REF_SLUG
-    url: https://$CI_ENVIRONMENT_SLUG.appsemble.app
+    url: https://$CI_ENVIRONMENT_SLUG.appsemble.review
     on_stop: stop review
   script:
     - helm install "$CI_ENVIRONMENT_SLUG" config/charts/appsemble
@@ -317,7 +317,7 @@ review docs:
   allow_failure: false
   environment:
     name: review/docs/$CI_COMMIT_REF_SLUG
-    url: https://$CI_ENVIRONMENT_SLUG.appsemble.dev
+    url: https://$CI_ENVIRONMENT_SLUG.appsemble.review
     on_stop: stop review docs
   script:
     - helm upgrade "$CI_ENVIRONMENT_SLUG" config/charts/appsemble-docs
