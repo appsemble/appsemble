@@ -428,7 +428,7 @@ production:
     - tags
   dependencies: []
   environment:
-    name: production
+    name: production/appsemble
     url: https://appsemble.app
   script:
     - helm upgrade appsemble config/charts/appsemble
@@ -456,7 +456,7 @@ production docs:
     - tags
   allow_failure: false
   environment:
-    name: production docs
+    name: production/docs
     url: https://appsemble.dev
   script:
     - helm upgrade docs config/charts/appsemble-docs
