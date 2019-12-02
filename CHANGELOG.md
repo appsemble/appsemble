@@ -7,6 +7,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.9.5] - 2019-12-02
+
 ### Added
 
 - App: Add `base` property for `request` actions.
