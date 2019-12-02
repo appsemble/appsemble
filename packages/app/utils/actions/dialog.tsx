@@ -29,6 +29,7 @@ export default function dialog({
             }),
           },
           blocks: definition.blocks,
+          closable: definition.closable,
           data,
           close() {
             reject();

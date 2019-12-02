@@ -9,8 +9,13 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
+- App: Add `closable` property to dialog actions.
 - CLI: Add support of `--all` flags for `appsemble block register`, `appsemble block publish`, and
   `appsemble app create`.
+
+### Fixed
+
+- App: Fix issue where full screen class was not applied correctly.
 
 ## [0.9.4] - 2019-11-27
 

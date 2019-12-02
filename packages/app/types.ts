@@ -20,6 +20,7 @@ declare global {
 export interface ShowDialogParams {
   actionCreators: Record<string, () => Action>;
   blocks: Block[];
+  closable?: boolean;
   data: any;
   close: () => void;
   fullscreen: boolean;

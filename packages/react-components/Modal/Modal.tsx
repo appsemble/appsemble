@@ -11,10 +11,17 @@ export interface ModalProps extends WrappedComponentProps {
    * The child elements to render on the modal.
    */
   children?: React.ReactNode;
+
+  /**
+   * Whether the user is allowed to click on the close button or outside of the modal to close it.
+   */
+  closable?: boolean;
+
   /**
    * Wether or not the modal is currently active.
    */
   isActive: boolean;
+
   /**
    * A function that will be called when the user closes the modal.
    */
@@ -24,6 +31,11 @@ export interface ModalProps extends WrappedComponentProps {
    * The title that is displayed at the top of the modal.
    */
   title?: React.ReactNode;
+
+  /**
+   * The CSS class applied to the card
+   */
+  cardClassName?: string;
 
   /**
    * The CSS class applied to the body
@@ -49,7 +61,16 @@ export default class Modal extends React.Component<ModalProps> {
   };
 
   render(): JSX.Element {
-    const { children, className, intl, isActive, onClose, title } = this.props;
+    const {
+      cardClassName,
+      children,
+      className,
+      closable = true,
+      intl,
+      isActive,
+      onClose,
+      title,
+    } = this.props;
 
     return (
       <CSSTransition
@@ -67,19 +88,21 @@ export default class Modal extends React.Component<ModalProps> {
         <div className={`is-active modal ${styles.modal}`}>
           <div
             className="modal-background"
-            onClick={onClose}
-            onKeyDown={this.onKeyDown}
+            onClick={closable ? onClose : null}
+            onKeyDown={closable ? this.onKeyDown : null}
             role="presentation"
           />
-          <div className="modal-card">
+          <div className={classNames('modal-card', cardClassName)}>
             <div className="modal-card-head">
               <p className="modal-card-title">{title}</p>
-              <button
-                aria-label={intl.formatMessage(messages.closeDialog)}
-                className="delete is-large"
-                onClick={onClose}
-                type="button"
-              />
+              {closable && (
+                <button
+                  aria-label={intl.formatMessage(messages.closeDialog)}
+                  className="delete is-large"
+                  onClick={onClose}
+                  type="button"
+                />
+              )}
             </div>
             <div className={classNames('modal-card-body', className)}>{children}</div>
           </div>
