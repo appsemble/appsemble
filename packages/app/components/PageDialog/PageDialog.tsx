@@ -27,16 +27,20 @@ export default function PageDialog({
   });
 
   return (
-    <Modal isActive={!!dialog} onClose={dialog && dialog.close} title={dialog && dialog.title}>
+    <Modal
+      cardClassName={classNames({ [styles.fullscreen]: dialog && dialog.fullscreen })}
+      closable={dialog && dialog.closable}
+      isActive={!!dialog}
+      onClose={dialog && dialog.close}
+      title={dialog && dialog.title}
+    >
       {dialog && (
-        <div className={classNames({ [styles.fullscreen]: dialog.fullscreen })}>
-          <BlockList
-            actionCreators={dialog.actionCreators}
-            blocks={dialog.blocks}
-            data={dialog.data}
-            {...props}
-          />
-        </div>
+        <BlockList
+          actionCreators={dialog.actionCreators}
+          blocks={dialog.blocks}
+          data={dialog.data}
+          {...props}
+        />
       )}
     </Modal>
   );

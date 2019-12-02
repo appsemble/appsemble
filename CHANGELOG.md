@@ -9,6 +9,9 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
+- App: Add `base` property for `request` actions.
+- App: Add `closable` property to dialog actions.
+- App: Add support for basic XML parsing.
 - CLI: Add support of `--all` flags for `appsemble block register`, `appsemble block publish`, and
   `appsemble app create`.
 
@@ -19,6 +22,10 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ### Removed
 
 - Blocks(`@appsemble/filter`): Remove clear filter button.
+
+### Fixed
+
+- App: Fix issue where full screen class was not applied correctly.
 
 ## [0.9.4] - 2019-11-27
 

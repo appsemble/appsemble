@@ -5,14 +5,15 @@ import {
   RequestLikeActionDefinition,
   RequestLikeActionTypes,
 } from '@appsemble/types';
-import { compileFilters, MapperFunction, validate } from '@appsemble/utils';
+import { compileFilters, MapperFunction, remapData, validate } from '@appsemble/utils';
 import axios, { AxiosRequestConfig } from 'axios';
 
 import { MakeActionParameters } from '../../types';
 import uploadBlobs from '../uploadBlobs';
+import xmlToJson from '../xmlToJson';
 
 export function requestLikeAction<T extends RequestLikeActionTypes>({
-  definition: { blobs = {}, method = 'GET', schema, query, url, serialize },
+  definition: { base, blobs = {}, method = 'GET', schema, query, url, serialize },
   onSuccess,
   onError,
 }: MakeActionParameters<RequestLikeActionDefinition<T>>): RequestLikeAction<'request'> {
@@ -84,12 +85,20 @@ export function requestLikeAction<T extends RequestLikeActionTypes>({
 
       try {
         const response = await axios(req);
-
-        if (onSuccess) {
-          return onSuccess.dispatch(response.data);
+        let responseBody = response.data;
+        if (/^(application|text)\/(.+\+)?xml;/.test(response.headers['content-type'])) {
+          responseBody = xmlToJson(responseBody, schema);
         }
 
-        return response.data;
+        if (base) {
+          responseBody = remapData(base, responseBody);
+        }
+
+        if (onSuccess) {
+          return onSuccess.dispatch(responseBody);
+        }
+
+        return responseBody;
       } catch (exception) {
         if (onError) {
           return onError.dispatch(exception);

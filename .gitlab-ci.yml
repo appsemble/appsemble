@@ -270,12 +270,11 @@ review:
   allow_failure: false
   environment:
     name: review/$CI_COMMIT_REF_SLUG
-    url: https://$CI_ENVIRONMENT_SLUG.appsemble.app
+    url: https://$CI_ENVIRONMENT_SLUG.appsemble.review
     on_stop: stop review
   script:
-    - helm upgrade "$CI_ENVIRONMENT_SLUG" config/charts/appsemble
+    - helm install "$CI_ENVIRONMENT_SLUG" config/charts/appsemble
       --atomic
-      --install
       --set "app=$CI_ENVIRONMENT_SLUG"
       --set "fullnameOverride=$CI_ENVIRONMENT_SLUG"
       --set "image.pullPolicy=Always"
@@ -318,7 +317,7 @@ review docs:
   allow_failure: false
   environment:
     name: review/docs/$CI_COMMIT_REF_SLUG
-    url: https://$CI_ENVIRONMENT_SLUG.appsemble.dev
+    url: https://$CI_ENVIRONMENT_SLUG.appsemble.review
     on_stop: stop review docs
   script:
     - helm upgrade "$CI_ENVIRONMENT_SLUG" config/charts/appsemble-docs
@@ -428,7 +427,7 @@ production:
     - tags
   dependencies: []
   environment:
-    name: production
+    name: production/appsemble
     url: https://appsemble.app
   script:
     - helm upgrade appsemble config/charts/appsemble
@@ -456,7 +455,7 @@ production docs:
     - tags
   allow_failure: false
   environment:
-    name: production docs
+    name: production/docs
     url: https://appsemble.dev
   script:
     - helm upgrade docs config/charts/appsemble-docs

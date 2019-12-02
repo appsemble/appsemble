@@ -311,6 +311,11 @@ export interface BlobUploadType {
 
 interface BaseActionDefinition<T extends Action['type']> {
   /**
+   * The element to use as the base when returning the response data.
+   */
+  base: string;
+
+  /**
    * The type of the action.
    */
   type: T;
@@ -323,6 +328,11 @@ interface BaseActionDefinition<T extends Action['type']> {
 }
 
 interface DialogActionDefinition extends BaseActionDefinition<'dialog'> {
+  /**
+   * If false, the dialog cannot be closed by clicking outside of the dialog or on the close button.
+   */
+  closable?: boolean;
+
   /**
    * If true, the dialog will be displayed full screen.
    */
@@ -364,6 +374,11 @@ interface LogActionDefinition extends BaseActionDefinition<'log'> {
 
 interface RequestLikeActionDefinition<T extends RequestLikeActionTypes = RequestLikeActionTypes>
   extends BaseActionDefinition<T> {
+  /**
+   * The element to use as the base when returning the response data.
+   */
+  base: string;
+
   /**
    * Specify how to handle blobs in the object to upload.
    */

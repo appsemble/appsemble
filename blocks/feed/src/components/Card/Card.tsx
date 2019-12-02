@@ -134,6 +134,10 @@ export default class Card extends Component<
     const latitude: number = remappers.latitude(content);
     const longitude: number = remappers.longitude(content);
 
+    if (block.parameters.pictureBase && block.parameters.pictureBase.endsWith('/')) {
+      block.parameters.pictureBase = block.parameters.pictureBase.slice(0, -1);
+    }
+
     let color;
     let icon;
 
@@ -180,7 +184,9 @@ export default class Card extends Component<
               <img
                 alt={title || subtitle || heading || description}
                 className={styles.image}
-                src={`${block.parameters.pictureBase}/${picture}`}
+                src={`${
+                  block.parameters.pictureBase ? `${block.parameters.pictureBase}/` : ''
+                }${picture}`}
               />
             </figure>
           )}
@@ -190,7 +196,9 @@ export default class Card extends Component<
                 <figure key={p} className={`image is-64x64 ${styles.figure}`}>
                   <img
                     alt={title || subtitle || heading || description}
-                    src={`${block.parameters.pictureBase}/${p}`}
+                    src={`${
+                      block.parameters.pictureBase ? `${block.parameters.pictureBase}/` : ''
+                    }${p}`}
                   />
                 </figure>
               ))}
