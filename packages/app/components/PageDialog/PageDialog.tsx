@@ -27,16 +27,19 @@ export default function PageDialog({
   });
 
   return (
-    <Modal isActive={!!dialog} onClose={dialog && dialog.close} title={dialog && dialog.title}>
+    <Modal
+      className={classNames({ [styles.fullscreen]: dialog && dialog.fullscreen })}
+      isActive={!!dialog}
+      onClose={dialog && dialog.close}
+      title={dialog && dialog.title}
+    >
       {dialog && (
-        <div className={classNames({ [styles.fullscreen]: dialog.fullscreen })}>
-          <BlockList
-            actionCreators={dialog.actionCreators}
-            blocks={dialog.blocks}
-            data={dialog.data}
-            {...props}
-          />
-        </div>
+        <BlockList
+          actionCreators={dialog.actionCreators}
+          blocks={dialog.blocks}
+          data={dialog.data}
+          {...props}
+        />
       )}
     </Modal>
   );
