@@ -1,5 +1,13 @@
 import { baseTheme } from '@appsemble/utils';
+import autoprefixer from 'autoprefixer';
 import sass from 'node-sass';
+import postcss from 'postcss';
+
+const bulmaPath = require.resolve('bulma/bulma.sass');
+const functionPath = require.resolve('bulma/sass/utilities/functions.sass');
+const checkRadioPath = require.resolve('bulma-checkradio/src/sass/index.sass');
+const calendarPath = require.resolve('bulma-calendar/src/sass/index.sass');
+const postCss = postcss([autoprefixer]);
 
 /**
  * Process SASS styles based on given parameters.
@@ -8,10 +16,6 @@ import sass from 'node-sass';
  * @returns {string} SASS string containing the base Appsemble style augmented by user parameters.
  */
 function processStyle(params) {
-  const bulmaPath = require.resolve('bulma/bulma.sass');
-  const functionPath = require.resolve('bulma/sass/utilities/functions.sass');
-  const checkRadioPath = require.resolve('bulma-checkradio/src/sass/index.sass');
-
   return `
     @charset "utf-8";
     @import url(https://fonts.googleapis.com/css?family=Libre+Franklin|Open+Sans);
@@ -31,6 +35,7 @@ function processStyle(params) {
 
     @import "${bulmaPath}";
     @import "${checkRadioPath}";
+    @import "${calendarPath}";
     // Syntax: https://sass-lang.com/documentation/breaking-changes/css-vars
     :root {
       --primary-color: #{$primary};
@@ -57,7 +62,7 @@ function processStyle(params) {
  *
  * @param {Koa.Context} ctx The Koa context.
  */
-export default function bulmaHandler(ctx) {
+export default async function bulmaHandler(ctx) {
   const options = {
     data: processStyle(ctx.query),
     outputStyle: 'compressed',
@@ -65,7 +70,7 @@ export default function bulmaHandler(ctx) {
 
   const { css } = sass.renderSync(options);
 
-  ctx.body = css;
+  ctx.body = await postCss.process(css).css;
   ctx.type = 'text/css';
   ctx.set('Cache-Control', 'max-age=31536000,immutable');
 }

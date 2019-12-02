@@ -1,3 +1,4 @@
+export { default as Calendar } from './Calendar';
 export { default as Checkbox } from './Checkbox';
 export { default as EmailLogin } from './EmailLogin';
 export { default as ErrorHandler } from './ErrorHandler';
