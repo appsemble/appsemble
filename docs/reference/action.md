@@ -94,12 +94,16 @@ fetch data or send data. When sending `POST`, `PUT`, `DELETE` and `PATCH` calls 
 currently available in the block gets passed through. An example of its usage is to send a `POST`
 request using the [form block](../blocks/form).
 
+If the content type of the request is `text/xml` or `application/xml`, the data will be converted to
+JSON.
+
 | Parameter  | Required | Description                                                                                                                                                                                             |
 | ---------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | url        | true     | The URL to send the request to. Can be a relative URL (Eg. `/api/health`) for usage with the Appsemble API or an absolute URL (Eg. `https://example.com`) for usage with external sites.                |
 | method     |          | The type of request to make. Defaults to `GET` if omitted.                                                                                                                                              |
 | query      |          | An object representing the values that get added to the querystring                                                                                                                                     |
 | schema     |          | The name of the schema to validate against before submitting data.                                                                                                                                      |
+| base       |          | The base element to return when used in `GET` queries. This can be used to flatten the data being returned from the API. Dot notation can be used.                                                      |
 | serialize  |          | The method used to serialize the request data. Setting this to `formdata` will send the request as a `multipart/form-data` request. By default the data is serialized as an `application/json` request. |
 | blobs      |          | An object containing a range of parameters used to upload files to the server.                                                                                                                          |
 | blobs.type |          | The method used to upload files to the server. Supports `upload` to override the default behavior.                                                                                                      |
