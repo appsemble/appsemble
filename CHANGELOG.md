@@ -15,6 +15,14 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - CLI: Add support of `--all` flags for `appsemble block register`, `appsemble block publish`, and
   `appsemble app create`.
 
+### Changed
+
+- Blocks(`@appsemble/filter`): Replace cancel button with clear button in dialog.
+
+### Removed
+
+- Blocks(`@appsemble/filter`): Remove clear filter button.
+
 ### Fixed
 
 - App: Fix issue where full screen class was not applied correctly.
