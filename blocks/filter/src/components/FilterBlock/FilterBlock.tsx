@@ -96,11 +96,11 @@ export default class FilterBlock extends React.Component<FilterBlockProps, Filte
     });
   };
 
-  resetFilter = (e?: React.MouseEvent<HTMLButtonElement>): void => {
+  resetFilter = (e?: React.MouseEvent<HTMLButtonElement>, skipHighlighted = false): void => {
     const {
       events,
       block: {
-        parameters: { event, fields },
+        parameters: { event, fields, highlight },
       },
     } = this.props;
 
@@ -108,15 +108,17 @@ export default class FilterBlock extends React.Component<FilterBlockProps, Filte
       return;
     }
 
-    const defaultFilter = fields.reduce<Filter>((acc, { name, defaultValue, type }) => {
-      if (defaultValue) {
-        acc[name] = defaultValue;
-      } else if (type === 'checkbox') {
-        acc[name] = [];
-      }
+    const defaultFilter = fields
+      .filter(field => (skipHighlighted ? field.name !== highlight : true))
+      .reduce<Filter>((acc, { name, defaultValue, type }) => {
+        if (defaultValue) {
+          acc[name] = defaultValue;
+        } else if (type === 'checkbox') {
+          acc[name] = [];
+        }
 
-      return acc;
-    }, {});
+        return acc;
+      }, {});
 
     this.setState({ currentFilter: defaultFilter, filter: defaultFilter }, async () => {
       const data = await this.fetchData();
@@ -124,6 +126,8 @@ export default class FilterBlock extends React.Component<FilterBlockProps, Filte
       this.setState({ data, newData: [] });
     });
   };
+
+  resetAllFilter = (e?: React.MouseEvent<HTMLButtonElement>): void => this.resetFilter(e, true);
 
   onRefresh = async (): Promise<void> => {
     const { lastRefreshedDate = new Date(), newData } = this.state;
@@ -297,16 +301,14 @@ export default class FilterBlock extends React.Component<FilterBlockProps, Filte
                 />
               ))}
             <footer className="card-footer">
-              {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
-              <a
-                className="card-footer-item is-link"
-                onClick={this.onClose}
+              <button
+                className={`card-footer-item button ${styles.cardFooterButton}`}
+                onClick={this.resetAllFilter}
                 onKeyDown={this.onFilterKeyDown}
-                role="button"
-                tabIndex={-1}
+                type="button"
               >
-                <FormattedMessage {...messages.cancel} />
-              </a>
+                <FormattedMessage {...messages.clear} />
+              </button>
               <button
                 className={`card-footer-item button is-primary ${styles.cardFooterButton}`}
                 onClick={this.onFilter}

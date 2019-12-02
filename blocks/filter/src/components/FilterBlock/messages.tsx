@@ -1,7 +1,7 @@
 import { defineMessages } from 'react-intl';
 
 export default defineMessages({
-  cancel: 'Cancel',
+  clear: 'Clear',
   filter: 'Filter',
   refreshData: `Show {amount} new {amount, plural,
     one {item}
