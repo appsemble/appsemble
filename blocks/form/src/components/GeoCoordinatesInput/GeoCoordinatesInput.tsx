@@ -35,11 +35,17 @@ export default class GeoCoordinatesInput extends Component<GeoCoordinatesInputPr
       attributionControl: false,
       layers: [new TileLayer(tileLayer)],
     })
-      .once('locationerror', () => {
-        utils.showMessage({
-          // XXX Implement i18n.
-          body: 'Locatie kon niet worden gevonden. Is de locatievoorziening ingeschakeld?',
-        });
+      .once('locationerror', error => {
+        // See: https://developer.mozilla.org/en-US/docs/Web/API/PositionError
+        if (error.code && error.code === 1) {
+          utils.showMessage({
+            // XXX Implement i18n.
+            body: 'Locatie kon niet worden gevonden. Is de locatievoorziening ingeschakeld?',
+          });
+          map.setView([0, 0], 18);
+        }
+
+        // XXX: Handle TIMEOUT. These are thrown in the .locate() call when `watch` is set to true.
       })
       .on('locationfound', ({ latlng }: LocationEvent) => {
         if (!this.locationMarker.getLatLng()) {
@@ -54,7 +60,7 @@ export default class GeoCoordinatesInput extends Component<GeoCoordinatesInputPr
           longitude: lng,
         });
       })
-      .locate({ watch: true, timeout: 1e3, maximumAge: 60e3 });
+      .locate({ watch: true, timeout: 10e3, maximumAge: 60e3 });
     this.map = map;
   }
 

@@ -15,6 +15,8 @@ https://staging.appsemble.app.
 
 In order to run the Appsemble project in development mode, the following must be installed.
 
+- [Docker][]
+- [Docker Compose][]
 - [NodeJS 12][nodejs]
 - [Yarn][]
 
@@ -28,8 +30,8 @@ cd appsemble
 yarn
 ```
 
-The project requires a PostgreSQL database. This project contains a [docker-compose][] configuration
-to spin up a preconfigured database with ease.
+The project requires a PostgreSQL database. This project contains a Docker Compose configuration to
+spin up a preconfigured database with ease.
 
 ```sh
 docker-compose up -d
@@ -88,18 +90,22 @@ to be authenticated in the CLI. After having registered an Appsemble account, yo
 yourself using `yarn appsemble login`.
 
 ```sh
-yarn appsemble block register blocks/action
-yarn appsemble block register blocks/action-button
-yarn appsemble block register blocks/detail-viewer
-yarn appsemble block register blocks/list
-yarn appsemble block register blocks/feed
-yarn appsemble block register blocks/filter
-yarn appsemble block register blocks/form
-yarn appsemble block register blocks/map
-yarn appsemble block register blocks/markdown
-yarn appsemble block register blocks/navigation
-yarn appsemble block register blocks/splash
+yarn appsemble block register --all blocks
 ```
+
+### App templates
+
+In order for users to create apps from within the Appsemble Studio, existing apps that can be used
+as a starting point must be marked as templates. This can be done using the Appsemble CLI. Note that
+in order to publish blocks, you need to be authenticated in the CLI. After having registered an
+Appsemble account, you can authenticate yourself using `yarn appsemble login`.
+
+```sh
+yarn appsemble app create --organization @appsemble --all --template apps
+```
+
+Note that `@appsemble` in the above scripts refer to the ID an organization that the authenticated
+account is a member of.
 
 ### Tests
 
@@ -147,9 +153,8 @@ docker build --tag appsemble .
 
 Please read our [contributing guidelines](./CONTRIBUTING.md).
 
-[docker-compose]: https://docs.docker.com/compose
-[docker credentials store]:
-  https://docs.docker.com/engine/reference/commandline/login/#credentials-store
+[docker]: https://docker.com
+[docker compose]: https://docs.docker.com/compose
 [jest cli options]: https://jestjs.io/docs/en/cli
 [nodejs 10]: https://nodejs.org
 [yarn]: https://yarnpkg.com

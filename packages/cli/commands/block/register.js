@@ -1,9 +1,11 @@
 import { logger } from '@appsemble/node-utils';
+import fs from 'fs-extra';
+import { join } from 'path';
 
 import { getToken } from '../../lib/config';
 import getBlockConfig from '../../lib/getBlockConfig';
 import publish from '../../lib/publish';
-import { post } from '../../lib/request';
+import registerBlock from '../../lib/registerBlock';
 
 export const command = 'register <path>';
 export const description = 'Register a new Appsemble block.';
@@ -17,23 +19,39 @@ export function builder(yargs) {
     .option('ignore-conflict', {
       describe: 'If specified, conflicts with an existing block or block version are ignored.',
       type: 'boolean',
+    })
+    .option('all', {
+      alias: 'a',
+      describe: 'Perform this command on every directory that is a subdirectory of the given path.',
+      type: 'boolean',
     });
 }
 
-export async function handler({ ignoreConflict, path, remote }) {
+export async function handler({ ignoreConflict, path, remote, all }) {
   await getToken(remote);
-  const config = await getBlockConfig(path);
-  logger.info(`Registering block ${config.id}`);
-  const { description: desc, id } = config;
-  try {
-    await post('/api/blocks', { description: desc, id });
-    logger.info(`Registration of ${config.id} successful! 🎉`);
-  } catch (err) {
-    if (!ignoreConflict || !err.request || err.response.status !== 409) {
-      throw err;
-    }
-    logger.warn(`${config.id} was already registered.`);
+
+  if (all) {
+    const directories = (await fs.readdir(path)).filter(subDir =>
+      fs.lstatSync(join(path, subDir)).isDirectory(),
+    );
+
+    logger.info(`Registering ${directories.length} Blocks`);
+    directories.reduce(async (acc, subDir) => {
+      await acc;
+
+      const subPath = join(path, subDir);
+
+      const config = await getBlockConfig(subPath);
+      await registerBlock({ path: subPath, ignoreConflict });
+      logger.info(`Publishing ${config.id}@${config.version}…`);
+      await publish({ config, ignoreConflict, path: subPath });
+    }, {});
+
+    return;
   }
+
+  const config = await getBlockConfig(path);
+  await registerBlock({ path, ignoreConflict });
   logger.info(`Publishing ${config.id}@${config.version}…`);
   await publish({ config, ignoreConflict, path });
 }
