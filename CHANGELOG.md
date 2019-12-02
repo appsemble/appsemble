@@ -14,7 +14,11 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Changed
 
-- Blocks(`@appsemble/filter`): Replace cancel button with clear button.
+- Blocks(`@appsemble/filter`): Replace cancel button with clear button in dialog.
+
+### Removed
+
+- Blocks(`@appsemble/filter`): Remove clear filter button.
 
 ## [0.9.4] - 2019-11-27
 

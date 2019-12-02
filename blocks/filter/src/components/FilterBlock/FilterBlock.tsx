@@ -96,7 +96,7 @@ export default class FilterBlock extends React.Component<FilterBlockProps, Filte
     });
   };
 
-  resetFilter = (e?: React.MouseEvent<HTMLButtonElement>, skipHighlighted = false): void => {
+  resetFilter = (e?: React.MouseEvent<HTMLButtonElement>, skipHighlighted = true): void => {
     const {
       events,
       block: {
@@ -127,7 +127,7 @@ export default class FilterBlock extends React.Component<FilterBlockProps, Filte
     });
   };
 
-  resetAllFilter = (e?: React.MouseEvent<HTMLButtonElement>): void => this.resetFilter(e, true);
+  resetAllFilter = (e?: React.MouseEvent<HTMLButtonElement>): void => this.resetFilter(e, false);
 
   onRefresh = async (): Promise<void> => {
     const { lastRefreshedDate = new Date(), newData } = this.state;
@@ -276,7 +276,11 @@ export default class FilterBlock extends React.Component<FilterBlockProps, Filte
       }
 
       const field = fields.find(f => f.name === key);
-      return field && field.defaultValue !== undefined ? field.defaultValue === value : true;
+      if (field.type === 'checkbox') {
+        return !!(value as string[]).length;
+      }
+
+      return field && field.defaultValue !== undefined ? field.defaultValue === value : !!value;
     });
 
     return (
@@ -331,29 +335,17 @@ export default class FilterBlock extends React.Component<FilterBlockProps, Filte
             </div>
           )}
           {showModal && (
-            <>
-              <button
-                className={classNames('button', styles.filterDialogButton)}
-                disabled={!activeFilters}
-                onClick={activeFilters && this.resetFilter}
-                type="button"
-              >
-                <span className="icon">
-                  <i className="fas fa-ban has-text-danger" />
-                </span>
-              </button>
-              <button
-                className={classNames('button', styles.filterDialogButton, {
-                  'is-primary': activeFilters,
-                })}
-                onClick={this.onOpen}
-                type="button"
-              >
-                <span className="icon">
-                  <i className="fas fa-filter" />
-                </span>
-              </button>
-            </>
+            <button
+              className={classNames('button', styles.filterDialogButton, {
+                'is-primary': activeFilters,
+              })}
+              onClick={this.onOpen}
+              type="button"
+            >
+              <span className="icon">
+                <i className="fas fa-filter" />
+              </span>
+            </button>
           )}
         </div>
         {newData.length > 0 && (
