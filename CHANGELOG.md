@@ -9,6 +9,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
+- App: Add `base` property for `request` actions.
+- App: Add support for basic XML parsing.
 - CLI: Add support of `--all` flags for `appsemble block register`, `appsemble block publish`, and
   `appsemble app create`.
 
@@ -31,8 +33,6 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
-- App: Add support for basic XML parsing.
-- App: Add `base` property for `request` actions.
 - App: Add support for absolute URLs in `link` actions.
 - App: Add support for push notifications. Users can subscribe to notifications in the app’s
   settings page. More strategies for receiving push notifications will be added in the future.
