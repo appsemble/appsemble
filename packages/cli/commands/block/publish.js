@@ -19,7 +19,7 @@ export function builder(yargs) {
     .option('webpack-config-path', {
       desc: 'The webpack configuration file to use for blocks.',
       alias: 'c',
-      default: 'webpack.config',
+      default: 'config/webpack/block.js',
       normalize: true,
     })
     .option('build', {
@@ -50,7 +50,7 @@ export async function handler({ build, webpackConfigPath, ignoreConflict, path, 
     directories.reduce(async (acc, subDir) => {
       await acc;
 
-      const subPath = join(__dirname, path, subDir);
+      const subPath = join(path, subDir);
       const config = await getBlockConfig(subPath);
 
       if (build) {
