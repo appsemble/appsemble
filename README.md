@@ -67,21 +67,15 @@ NODE_ENV=production yarn start
 
 #### Building Blocks
 
-The current blocks can be built using the following commands.
+The current blocks can be built using the following command, where `blockName` is the name of your
+block.
 
 ```sh
-yarn block action
-yarn block action-button
-yarn block detail-viewer
-yarn block list
-yarn block feed
-yarn block filter
-yarn block form
-yarn block map
-yarn block markdown
-yarn block navigation
-yarn block splash
+yarn block blockName
 ```
+
+Alternatively, the `--build` flag can be provided when registering or publishing a block using the
+CLI.
 
 #### Publishing Blocks
 
@@ -90,7 +84,13 @@ to be authenticated in the CLI. After having registered an Appsemble account, yo
 yourself using `yarn appsemble login`.
 
 ```sh
-yarn appsemble block register --all blocks
+yarn appsemble block register --all --build blocks
+```
+
+To update a block without registering it as a new block, the following command can be used.
+
+```sh
+yarn appsemble block publish --all --build blocks
 ```
 
 ### App templates

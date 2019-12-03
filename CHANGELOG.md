@@ -14,6 +14,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - App: Add support for basic XML parsing.
 - CLI: Add support of `--all` flags for `appsemble block register`, `appsemble block publish`, and
   `appsemble app create`.
+- CLI: Add support for `--build` flags for `appsemble block register`, and
+  `appsemble block publish`.
 
 ### Fixed
 
