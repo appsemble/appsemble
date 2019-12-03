@@ -1,13 +1,13 @@
 {
   "name": "@appsemble/feed",
-  "version": "0.9.4",
+  "version": "0.9.5",
   "private": true,
   "dependencies": {
-    "@appsemble/dom-types": "0.9.4",
-    "@appsemble/preact": "0.9.4",
-    "@appsemble/preact-components": "0.9.4",
-    "@appsemble/sdk": "0.9.4",
-    "@appsemble/utils": "0.9.4",
+    "@appsemble/dom-types": "0.9.5",
+    "@appsemble/preact": "0.9.5",
+    "@appsemble/preact-components": "0.9.5",
+    "@appsemble/sdk": "0.9.5",
+    "@appsemble/utils": "0.9.5",
     "preact": "^10.0.5"
   }
 }

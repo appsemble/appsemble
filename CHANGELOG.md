@@ -9,13 +9,26 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
+- CLI: Add support for `--build` flags for `appsemble block register`, and
+  `appsemble block publish`.
+
+## [0.9.5] - 2019-12-02
+
+### Added
+
 - App: Add `base` property for `request` actions.
 - App: Add `closable` property to dialog actions.
 - App: Add support for basic XML parsing.
-- CLI: Add support of `--all` flags for `appsemble block register`, `appsemble block publish`, and
+- CLI: Add support for `--all` flags for `appsemble block register`, `appsemble block publish`, and
   `appsemble app create`.
-- CLI: Add support for `--build` flags for `appsemble block register`, and
-  `appsemble block publish`.
+
+### Changed
+
+- Blocks(`@appsemble/filter`): Replace cancel button with clear button in dialog.
+
+### Removed
+
+- Blocks(`@appsemble/filter`): Remove clear filter button.
 
 ### Fixed
 

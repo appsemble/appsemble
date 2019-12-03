@@ -9,7 +9,6 @@ import publish from '../../lib/publish';
 import registerBlock from '../../lib/registerBlock';
 
 export const command = 'register <path>';
-
 export const description = 'Register a new Appsemble block.';
 
 export function builder(yargs) {

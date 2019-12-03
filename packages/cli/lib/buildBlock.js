@@ -4,6 +4,14 @@ import merge from 'webpack-merge';
 
 import loadWebpackConfig from './loadWebpackConfig';
 
+/**
+ * Builds a block using Webpack.
+ *
+ * @param {object} params
+ * @param {string} params.path The path of the block to build.
+ * @param {string} params.webpackConfigPath The path of the webpack config to use.
+ * @param {string} params.config The config of the block to build.
+ */
 export default async function buildBlock({ path, webpackConfigPath, config }) {
   const webpackConfig = merge.smart(
     await loadWebpackConfig(webpackConfigPath, config.id, {

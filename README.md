@@ -74,8 +74,8 @@ block.
 yarn block blockName
 ```
 
-Alternatively, the `--build` flag can be provided when registering or publishing a block using the
-CLI.
+Alternatively the `--build` flag can be provided when registering or publishing a block using the
+CLI, as mentioned below.
 
 #### Publishing Blocks
 
