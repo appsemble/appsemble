@@ -65,18 +65,6 @@ NODE_ENV=production yarn start
 
 ### Blocks
 
-#### Building Blocks
-
-The current blocks can be built using the following command, where `blockName` is the name of your
-block.
-
-```sh
-yarn block blockName
-```
-
-Alternatively the `--build` flag can be provided when registering or publishing a block using the
-CLI, as mentioned below.
-
 #### Publishing Blocks
 
 The blocks can be published using the Appsemble CLI. Note that in order to publish blocks, you need
