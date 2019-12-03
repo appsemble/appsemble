@@ -16,7 +16,7 @@ export function builder(yargs) {
       describe: 'The path to the block to register',
       normalize: true,
     })
-    .option('webpack-config-path', {
+    .option('webpack-config', {
       desc: 'The webpack configuration file to use for blocks.',
       alias: 'c',
       default: 'config/webpack/block.js',
@@ -38,7 +38,7 @@ export function builder(yargs) {
     });
 }
 
-export async function handler({ build, webpackConfigPath, ignoreConflict, path, remote, all }) {
+export async function handler({ build, webpackConfig, ignoreConflict, path, remote, all }) {
   await getToken(remote);
 
   if (all) {
@@ -54,7 +54,7 @@ export async function handler({ build, webpackConfigPath, ignoreConflict, path, 
       const config = await getBlockConfig(subPath);
 
       if (build) {
-        await buildBlock({ path: resolve(join(subPath, 'dist')), webpackConfigPath, config });
+        await buildBlock({ path: resolve(join(subPath, 'dist')), webpackConfig, config });
       }
 
       logger.info(`Publishing ${config.id}@${config.version}…`);
@@ -66,7 +66,7 @@ export async function handler({ build, webpackConfigPath, ignoreConflict, path, 
 
   const config = await getBlockConfig(path);
   if (build) {
-    await buildBlock({ path: resolve(join(path, 'dist')), webpackConfigPath, config });
+    await buildBlock({ path: resolve(join(path, 'dist')), webpackConfig, config });
   }
 
   logger.info(`Publishing ${config.id}@${config.version}`);

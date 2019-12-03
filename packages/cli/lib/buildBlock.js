@@ -9,12 +9,12 @@ import loadWebpackConfig from './loadWebpackConfig';
  *
  * @param {object} params
  * @param {string} params.path The path of the block to build.
- * @param {string} params.webpackConfigPath The path of the webpack config to use.
+ * @param {string} params.webpackConfig The path of the webpack config to use.
  * @param {string} params.config The config of the block to build.
  */
-export default async function buildBlock({ path, webpackConfigPath, config }) {
-  const webpackConfig = merge.smart(
-    await loadWebpackConfig(webpackConfigPath, config.id, {
+export default async function buildBlock({ path, webpackConfig, config }) {
+  const conf = merge.smart(
+    await loadWebpackConfig(webpackConfig, config.id, {
       mode: 'production',
       publicPath: `/api/blocks/${config.id}/versions/${config.version}`,
     }),
@@ -27,7 +27,7 @@ export default async function buildBlock({ path, webpackConfigPath, config }) {
 
   logger.info(`Building ${config.id}@${config.version} 🔨`);
 
-  const compiler = webpack(webpackConfig);
+  const compiler = webpack(conf);
   return new Promise((resolve, reject) =>
     compiler.run((err, stats) => {
       if (err) {
