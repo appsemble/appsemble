@@ -5,6 +5,9 @@ import { col, fn, UniqueConstraintError } from 'sequelize';
 import { generateVAPIDKeys } from 'web-push';
 
 import getAppFromRecord from '../utils/getAppFromRecord';
+import * as permissions from '../utils/permissions';
+
+const { checkRole } = permissions;
 
 export async function getAppTemplates(ctx) {
   const { App, Resource } = ctx.db.models;
@@ -54,6 +57,8 @@ export async function createTemplateApp(ctx) {
   if (!user.organizations.some(organization => organization.id === organizationId)) {
     throw Boom.forbidden('User does not belong in this organization.');
   }
+
+  await checkRole(ctx, template.OrganizationId, permissions.EditApps);
 
   if (!template) {
     throw Boom.notFound(`Template with ID ${templateId} does not exist.`);

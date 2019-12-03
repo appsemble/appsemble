@@ -3,6 +3,10 @@ import Boom from '@hapi/boom';
 import crypto from 'crypto';
 import { UniqueConstraintError } from 'sequelize';
 
+import * as permissions from '../utils/permissions';
+
+const { checkRole } = permissions;
+
 export async function getOrganization(ctx) {
   const { organizationId } = ctx.params;
   const { Organization, OrganizationInvite, User } = ctx.db.models;
@@ -126,6 +130,8 @@ export async function inviteMember(ctx) {
     throw Boom.forbidden('Not allowed to invite users to organizations you are not a member of.');
   }
 
+  await checkRole(ctx, organization.id, permissions.ManageMembers);
+
   if (invitedUser && (await organization.hasUser(invitedUser))) {
     throw Boom.conflict('User is already in this organization or has already been invited.');
   }
@@ -167,6 +173,8 @@ export async function resendInvitation(ctx) {
     throw Boom.notFound('Organization not found.');
   }
 
+  await checkRole(ctx, organization.id, permissions.ManageMembers);
+
   const invite = await organization.OrganizationInvites.find(i => i.email === email);
   if (!invite) {
     throw Boom.notFound('This person was not invited previously.');
@@ -191,6 +199,8 @@ export async function removeMember(ctx) {
   if (!organization.Users.some(u => u.id === memberId)) {
     throw Boom.notFound('User is not part of this organization');
   }
+
+  await checkRole(ctx, organization.id, permissions.ManageMembers);
 
   if (Number(memberId) === Number(user.id) && organization.Users.length <= 1) {
     throw Boom.notAcceptable(
@@ -217,6 +227,8 @@ export async function removeInvite(ctx) {
       "Not allowed to revoke an invitation if you're not part of the organization.",
     );
   }
+
+  await checkRole(ctx, organization.id, permissions.ManageMembers);
 
   await invite.destroy();
 }
@@ -249,6 +261,8 @@ export async function setOrganizationCoreStyle(ctx) {
     if (!organization) {
       throw Boom.notFound('Organization not found.');
     }
+
+    await checkRole(ctx, organization.id, permissions.EditThemes);
 
     organization.coreStyle = css.length ? css.toString() : null;
     await organization.save();
@@ -289,6 +303,8 @@ export async function setOrganizationSharedStyle(ctx) {
     if (!organization) {
       throw Boom.notFound('Organization not found.');
     }
+
+    await checkRole(ctx, organization.id, permissions.EditThemes);
 
     organization.sharedStyle = css.length ? css.toString() : null;
     await organization.save();
@@ -331,6 +347,8 @@ export async function setOrganizationBlockStyle(ctx) {
     if (!organization) {
       throw Boom.notFound('Organization not found.');
     }
+
+    await checkRole(ctx, organization.id, permissions.EditThemes);
 
     const block = await BlockDefinition.findByPk(`@${blockOrganizationId}/${blockId}`);
     if (!block) {

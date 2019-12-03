@@ -3,6 +3,10 @@ import Boom from '@hapi/boom';
 import parseOData from '@wesselkuipers/odata-sequelize';
 import crypto from 'crypto';
 
+import * as permissions from '../utils/permissions';
+
+const { checkRole } = permissions;
+
 function verifyResourceDefinition(app, resourceType) {
   if (!app) {
     throw Boom.notFound('App not found');
@@ -268,6 +272,8 @@ export async function deleteResource(ctx) {
   if (!user.organizations.some(organization => organization.id === app.OrganizationId)) {
     throw Boom.forbidden('User does not belong in this organization.');
   }
+
+  await checkRole(ctx, app.OrganizationId, permissions.ManageResources);
 
   verifyResourceDefinition(app, resourceType);
   const resource = await Resource.findOne({
