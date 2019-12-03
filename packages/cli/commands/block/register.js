@@ -55,7 +55,7 @@ export async function handler({ build, webpackConfig, ignoreConflict, path, remo
       const config = await getBlockConfig(subPath);
 
       if (build) {
-        await buildBlock({ path: resolve(join(subPath, 'dist')), webpackConfig, config });
+        await buildBlock({ path: resolve(subPath, 'dist'), webpackConfig, config });
       }
 
       await registerBlock({ path: subPath, ignoreConflict });
