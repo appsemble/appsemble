@@ -447,7 +447,7 @@ export default class OrganizationsSettings extends Component {
                         </div>
                       </td>
                       <td className="has-text-right">
-                        <FormattedMessage {...messages.member} />
+                        <FormattedMessage {...messages[member.role]} />
                         <div className={`field is-grouped ${styles.tags}`}>
                           {member.id === user.id && organization.members.length > 1 && (
                             <p className={`control ${styles.memberButton}`}>
