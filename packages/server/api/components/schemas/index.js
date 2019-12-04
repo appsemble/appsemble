@@ -6,6 +6,7 @@ import BlockVersion from './BlockVersion';
 import Color from './Color';
 import Error from './Error';
 import Health from './Health';
+import Member from './Member';
 import Organization from './Organization';
 import Page from './Page';
 import Rating from './Rating';
@@ -25,6 +26,7 @@ export default {
   Error,
   SubPage,
   Health,
+  Member,
   Organization,
   Page,
   Rating,

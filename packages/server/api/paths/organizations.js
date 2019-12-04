@@ -36,6 +36,29 @@ export default {
       },
     },
   },
+  '/api/organizations/{organizationId}/members': {
+    parameters: [{ $ref: '#/components/parameters/organizationId' }],
+    get: {
+      tags: ['organization'],
+      description: 'Get a list of organization members.',
+      operationId: 'getMembers',
+      responses: {
+        200: {
+          description: 'The list of all members.',
+          content: {
+            'application/json': {
+              schema: {
+                type: 'array',
+                items: {
+                  $ref: '#/components/schemas/Member',
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
   '/api/organizations/{organizationId}/invites/resend': {
     parameters: [{ $ref: '#/components/parameters/organizationId' }],
     post: {

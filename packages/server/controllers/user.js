@@ -31,6 +31,27 @@ export async function getUser(ctx) {
   };
 }
 
+export async function getUserOrganizations(ctx) {
+  const { User, Organization } = ctx.db.models;
+  const { user } = ctx.state;
+
+  const dbUser = await User.findOne({
+    where: { id: user.id },
+    include: [
+      {
+        model: Organization,
+        attributes: ['id', 'name'],
+      },
+    ],
+  });
+
+  ctx.body = dbUser.Organizations.map(org => ({
+    id: org.id,
+    name: org.name,
+    role: org.Member.role,
+  }));
+}
+
 export async function updateUser(ctx) {
   const { User, EmailAuthorization, Organization } = ctx.db.models;
   const { user } = ctx.state;

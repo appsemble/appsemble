@@ -23,6 +23,7 @@ export async function getOrganization(ctx) {
       id: user.id,
       name: user.name,
       primaryEmail: user.primaryEmail,
+      role: user.Member.role,
     })),
     invites: organization.OrganizationInvites.map(invite => ({
       email: invite.email,
@@ -60,6 +61,25 @@ export async function createOrganization(ctx) {
 
     throw error;
   }
+}
+
+export async function getMembers(ctx) {
+  const { organizationId } = ctx.params;
+  const { Organization, User } = ctx.db.models;
+
+  const organization = await Organization.findByPk(organizationId, {
+    include: [User],
+  });
+  if (!organization) {
+    throw Boom.notFound('Organization not found.');
+  }
+
+  ctx.body = organization.Users.map(user => ({
+    id: user.id,
+    name: user.name,
+    primaryEmail: user.primaryEmail,
+    role: user.Member.role,
+  }));
 }
 
 export async function getInvitation(ctx) {
