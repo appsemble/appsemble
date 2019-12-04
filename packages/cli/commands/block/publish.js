@@ -47,7 +47,7 @@ export async function handler({ build, webpackConfig, ignoreConflict, path, remo
     );
 
     logger.info(`Publishing ${directories.length} Blocks`);
-    directories.reduce(async (acc, subDir) => {
+    await directories.reduce(async (acc, subDir) => {
       await acc;
 
       const subPath = join(path, subDir);
