@@ -12,9 +12,7 @@ import * as webpush from 'web-push';
 import getAppBlocks from '../utils/getAppBlocks';
 import getAppFromRecord from '../utils/getAppFromRecord';
 import getDefaultIcon from '../utils/getDefaultIcon';
-import * as permissions from '../utils/permissions';
-
-const { checkRole } = permissions;
+import { checkRole, permissions } from '../utils/permissions';
 
 const ajv = new Ajv();
 ajv.addFormat('fontawesome', () => true);

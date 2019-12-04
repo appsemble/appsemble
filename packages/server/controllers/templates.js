@@ -5,9 +5,7 @@ import { col, fn, UniqueConstraintError } from 'sequelize';
 import { generateVAPIDKeys } from 'web-push';
 
 import getAppFromRecord from '../utils/getAppFromRecord';
-import * as permissions from '../utils/permissions';
-
-const { checkRole } = permissions;
+import { checkRole, permissions } from '../utils/permissions';
 
 export async function getAppTemplates(ctx) {
   const { App, Resource } = ctx.db.models;

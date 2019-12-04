@@ -3,9 +3,7 @@ import Boom from '@hapi/boom';
 import crypto from 'crypto';
 import { UniqueConstraintError } from 'sequelize';
 
-import * as permissions from '../utils/permissions';
-
-const { checkRole } = permissions;
+import { checkRole, permissions } from '../utils/permissions';
 
 export async function getOrganization(ctx) {
   const { organizationId } = ctx.params;

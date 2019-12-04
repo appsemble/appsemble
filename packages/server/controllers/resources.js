@@ -3,9 +3,7 @@ import Boom from '@hapi/boom';
 import parseOData from '@wesselkuipers/odata-sequelize';
 import crypto from 'crypto';
 
-import * as permissions from '../utils/permissions';
-
-const { checkRole } = permissions;
+import { checkRole, permissions } from '../utils/permissions';
 
 function verifyResourceDefinition(app, resourceType) {
   if (!app) {

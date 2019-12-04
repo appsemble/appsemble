@@ -3,9 +3,7 @@ import Boom from '@hapi/boom';
 import { isEmpty } from 'lodash';
 import { DatabaseError, UniqueConstraintError } from 'sequelize';
 
-import * as permissions from '../utils/permissions';
-
-const { checkRole } = permissions;
+import { checkRole, permissions } from '../utils/permissions';
 
 export async function createBlockDefinition(ctx) {
   const { BlockDefinition } = ctx.db.models;
