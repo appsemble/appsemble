@@ -27,7 +27,7 @@ export function builder(yargs) {
     });
 }
 
-export async function handler({ clientCredentials, ignoreConflict, path, remote }) {
+export async function handler({ all, clientCredentials, ignoreConflict, path, remote }) {
   await authenticate(remote, 'blocks:write', clientCredentials);
 
   if (all) {

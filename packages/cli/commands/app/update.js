@@ -1,6 +1,6 @@
 import { logger } from '@appsemble/node-utils';
 
-import { getToken } from '../../lib/config';
+import { authenticate } from '../../lib/authentication';
 import updateApp from '../../lib/updateApp';
 
 export const command = 'update <path>';
@@ -28,8 +28,15 @@ export function builder(yargs) {
     });
 }
 
-export async function handler({ appId, path, private: isPrivate, remote, template }) {
-  await getToken(remote);
+export async function handler({
+  appId,
+  clientCredentials,
+  path,
+  private: isPrivate,
+  remote,
+  template,
+}) {
+  await authenticate(remote, 'apps:write', clientCredentials);
   logger.info(`Updating App ${appId}`);
   await updateApp({ appId, path, private: isPrivate, remote, template });
 }

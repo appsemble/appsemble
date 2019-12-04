@@ -2,7 +2,7 @@ import { logger } from '@appsemble/node-utils';
 import fs from 'fs-extra';
 import { join } from 'path';
 
-import { getToken } from '../../lib/config';
+import { authenticate } from '../../lib/authentication';
 import createApp from '../../lib/createApp';
 
 export const command = 'create <path>';
@@ -36,8 +36,16 @@ export function builder(yargs) {
     });
 }
 
-export async function handler({ organization, path, private: isPrivate, remote, template, all }) {
-  await getToken(remote);
+export async function handler({
+  clientCredentials,
+  organization,
+  path,
+  private: isPrivate,
+  remote,
+  template,
+  all,
+}) {
+  await authenticate(remote, 'apps:write', clientCredentials);
   const organizationId = organization.startsWith('@') ? organization.slice(1) : organization;
 
   if (all) {

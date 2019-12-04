@@ -15,7 +15,6 @@ export default async function oauth2CallbackHandler(ctx, next) {
     await next();
     // grant assigns the token response to the Koa response body.
     const params = qs.parse(ctx.body);
-    console.dir(params);
     let sub;
     if (params.id_token) {
       ({ sub } = params.id_token.payload);
@@ -37,8 +36,6 @@ export default async function oauth2CallbackHandler(ctx, next) {
       },
       { raw: true },
     );
-    // return ctx.redirect(`/connect?${qs.stringify({ state })}`);
-    // console.dir(profile.data);
   }
   return indexHandler(ctx);
 }
