@@ -5,7 +5,7 @@ import React from 'react';
 import { FormattedMessage } from 'react-intl';
 import { RouteComponentProps } from 'react-router-dom';
 
-import { User } from '../../types';
+import { UserInfo } from '../../types';
 import NavLink from '../NavLink';
 import SideMenu from '../SideMenu';
 import styles from './AppSideMenu.css';
@@ -13,7 +13,7 @@ import messages from './messages';
 
 export interface AppSideMenuProps {
   app: App;
-  user: User;
+  user: UserInfo;
 }
 
 export interface AppSideMenuState {

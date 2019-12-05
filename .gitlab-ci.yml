@@ -55,20 +55,9 @@ stages:
   extends: .yarn
   stage: provision
   script:
-    - yarn block action
-    - yarn block action-button
-    - yarn block detail-viewer
-    - yarn block list
-    - yarn block feed
-    - yarn block filter
-    - yarn block form
-    - yarn block map
-    - yarn block markdown
-    - yarn block navigation
-    - yarn block splash
     - node -r esm ./config/bin/register.js
     - yarn appsemble login --email "$APPSEMBLE_EMAIL" --password "$APPSEMBLE_PASSWORD"
-    - yarn appsemble block register --all blocks
+    - yarn appsemble block register --all --build blocks
     - yarn appsemble app create --template --organization @appsemble --all apps
 
 ###################################################################################################

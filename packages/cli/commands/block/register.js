@@ -1,8 +1,9 @@
 import { logger } from '@appsemble/node-utils';
 import fs from 'fs-extra';
-import { join } from 'path';
+import { join, resolve } from 'path';
 
 import { authenticate } from '../../lib/authentication';
+import buildBlock from '../../lib/buildBlock';
 import getBlockConfig from '../../lib/getBlockConfig';
 import publish from '../../lib/publish';
 import registerBlock from '../../lib/registerBlock';
@@ -16,6 +17,17 @@ export function builder(yargs) {
       describe: 'The path to the block to register',
       normalize: true,
     })
+    .option('webpack-config', {
+      desc: 'The webpack configuration file to use for blocks.',
+      alias: 'c',
+      default: 'config/webpack/block.js',
+      normalize: true,
+    })
+    .option('build', {
+      alias: 'b',
+      describe: 'If specified, builds the block with webpack before publishing it.',
+      type: 'boolean',
+    })
     .option('ignore-conflict', {
       describe: 'If specified, conflicts with an existing block or block version are ignored.',
       type: 'boolean',
@@ -27,7 +39,15 @@ export function builder(yargs) {
     });
 }
 
-export async function handler({ all, clientCredentials, ignoreConflict, path, remote }) {
+export async function handler({
+  all,
+  build,
+  clientCredentials,
+  ignoreConflict,
+  path,
+  remote,
+  webpackConfig,
+}) {
   await authenticate(remote, 'blocks:write', clientCredentials);
 
   if (all) {
@@ -36,12 +56,16 @@ export async function handler({ all, clientCredentials, ignoreConflict, path, re
     );
 
     logger.info(`Registering ${directories.length} Blocks`);
-    directories.reduce(async (acc, subDir) => {
+    await directories.reduce(async (acc, subDir) => {
       await acc;
 
       const subPath = join(path, subDir);
-
       const config = await getBlockConfig(subPath);
+
+      if (build) {
+        await buildBlock({ path: resolve(subPath, 'dist'), webpackConfig, config });
+      }
+
       await registerBlock({ path: subPath, ignoreConflict });
       logger.info(`Publishing ${config.id}@${config.version}…`);
       await publish({ config, ignoreConflict, path: subPath });
@@ -51,6 +75,11 @@ export async function handler({ all, clientCredentials, ignoreConflict, path, re
   }
 
   const config = await getBlockConfig(path);
+
+  if (build) {
+    await buildBlock({ path: resolve(join(path, 'dist')), webpackConfig, config });
+  }
+
   await registerBlock({ path, ignoreConflict });
   logger.info(`Publishing ${config.id}@${config.version}…`);
   await publish({ config, ignoreConflict, path });

@@ -2,10 +2,10 @@ import * as React from 'react';
 import { Redirect, Route, RouteComponentProps, useLocation } from 'react-router-dom';
 
 import useQuery from '../../hooks/useQuery';
-import { User } from '../../types';
+import { UserInfo } from '../../types';
 
 export interface ProtectedRouteProps extends RouteComponentProps {
-  user: User;
+  user: UserInfo;
 }
 
 export default function ProtectedRoute({
