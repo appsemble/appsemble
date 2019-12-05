@@ -19,15 +19,19 @@ export default async function traverseAppDirectory(path, formData) {
     throw new AppsembleError(`No file named “app.yaml” found at ${path}`);
   }
 
-  const data = await fs.readFile(join(path, 'app.yaml'), 'utf8');
+  const yamlPath = join(path, 'app.yaml');
+  logger.info(`Using app definition from ${yamlPath}`);
+
+  const data = await fs.readFile(yamlPath, 'utf8');
   const app = yaml.safeLoad(data);
   formData.append('yaml', data);
   formData.append('definition', JSON.stringify(app));
 
   const icon = dir.find(entry => entry.match(/^icon\.(png|svg)$/));
   if (icon) {
-    logger.info('Including icon');
-    formData.append('icon', fs.createReadStream(join(path, icon)));
+    const iconPath = join(path, icon);
+    logger.info(`Including icon ${iconPath}`);
+    formData.append('icon', fs.createReadStream(iconPath));
   }
 
   const theme = dir.find(entry => entry.toLowerCase() === 'theme');
