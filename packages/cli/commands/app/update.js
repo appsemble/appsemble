@@ -12,7 +12,7 @@ export function builder(yargs) {
       describe: 'The path to the app to register',
       normalize: true,
     })
-    .option('appId', {
+    .option('app-id', {
       describe: 'The ID of the app to update.',
       demand: true,
     })
