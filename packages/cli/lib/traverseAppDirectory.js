@@ -24,7 +24,7 @@ export default async function traverseAppDirectory(path, formData) {
   formData.append('yaml', data);
   formData.append('definition', JSON.stringify(app));
 
-  const icon = dir.find(entry => entry.match(/icon\.(png|svg)/));
+  const icon = dir.find(entry => entry.match(/^icon\.(png|svg)$/));
   if (icon) {
     logger.info('Including icon');
     formData.append('icon', fs.createReadStream(join(path, icon)));
