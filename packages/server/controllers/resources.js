@@ -1,9 +1,10 @@
 import { SchemaValidationError, validate } from '@appsemble/utils';
+import { permissions } from '@appsemble/utils/constants/roles';
 import Boom from '@hapi/boom';
 import parseOData from '@wesselkuipers/odata-sequelize';
 import crypto from 'crypto';
 
-import { checkRole, permissions } from '../utils/permissions';
+import checkRole from '../utils/checkRole';
 
 function verifyResourceDefinition(app, resourceType) {
   if (!app) {

@@ -1,5 +1,6 @@
 import { logger } from '@appsemble/node-utils';
 import { normalize, StyleValidationError, validateStyle } from '@appsemble/utils';
+import { permissions } from '@appsemble/utils/constants/roles';
 import Boom from '@hapi/boom';
 import Ajv from 'ajv';
 import crypto from 'crypto';
@@ -9,10 +10,10 @@ import { col, fn, literal, Op, UniqueConstraintError } from 'sequelize';
 import sharp from 'sharp';
 import * as webpush from 'web-push';
 
+import checkRole from '../utils/checkRole';
 import getAppBlocks from '../utils/getAppBlocks';
 import getAppFromRecord from '../utils/getAppFromRecord';
 import getDefaultIcon from '../utils/getDefaultIcon';
-import { checkRole, permissions } from '../utils/permissions';
 
 const ajv = new Ajv();
 ajv.addFormat('fontawesome', () => true);

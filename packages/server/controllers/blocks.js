@@ -1,9 +1,10 @@
 import { logger } from '@appsemble/node-utils';
+import { permissions } from '@appsemble/utils/constants/roles';
 import Boom from '@hapi/boom';
 import { isEmpty } from 'lodash';
 import { DatabaseError, UniqueConstraintError } from 'sequelize';
 
-import { checkRole, permissions } from '../utils/permissions';
+import checkRole from '../utils/checkRole';
 
 export async function createBlockDefinition(ctx) {
   const { BlockDefinition } = ctx.db.models;

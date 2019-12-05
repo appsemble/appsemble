@@ -1,9 +1,10 @@
 import { StyleValidationError, validateStyle } from '@appsemble/utils';
+import { permissions } from '@appsemble/utils/constants/roles';
 import Boom from '@hapi/boom';
 import crypto from 'crypto';
 import { UniqueConstraintError } from 'sequelize';
 
-import { checkRole, permissions } from '../utils/permissions';
+import checkRole from '../utils/checkRole';
 
 export async function getOrganization(ctx) {
   const { organizationId } = ctx.params;

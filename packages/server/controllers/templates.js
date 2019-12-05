@@ -1,11 +1,12 @@
 import { normalize } from '@appsemble/utils';
+import { permissions } from '@appsemble/utils/constants/roles';
 import Boom from '@hapi/boom';
 import crypto from 'crypto';
 import { col, fn, UniqueConstraintError } from 'sequelize';
 import { generateVAPIDKeys } from 'web-push';
 
+import checkRole from '../utils/checkRole';
 import getAppFromRecord from '../utils/getAppFromRecord';
-import { checkRole, permissions } from '../utils/permissions';
 
 export async function getAppTemplates(ctx) {
   const { App, Resource } = ctx.db.models;
