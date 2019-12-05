@@ -5,7 +5,7 @@ import React, { useEffect, useState } from 'react';
 import { FormattedMessage, WrappedComponentProps } from 'react-intl';
 import { RouteComponentProps } from 'react-router-dom';
 
-import { User } from '../../types';
+import { UserInfo } from '../../types';
 import RateApp from '../RateApp';
 import StarRating from '../Rating';
 import styles from './AppDetails.css';
@@ -13,7 +13,7 @@ import messages from './messages';
 
 export type AppDetailsProps = {
   app: App;
-  user: User;
+  user: UserInfo;
   push: (message: Message) => void;
 } & WrappedComponentProps &
   RouteComponentProps<{ id: string }>;
@@ -72,7 +72,7 @@ export default function AppDetails({ app, user, push, intl }: AppDetailsProps): 
           <div key={rating.$created} className={styles.rating}>
             <span className="is-block has-text-weight-bold">
               {rating.name || <FormattedMessage {...messages.anonymous} />}
-              {user && rating.UserId === Number(user.id) && (
+              {user && rating.UserId === user.sub && (
                 <span className={`tag is-success ${styles.tag}`}>
                   <FormattedMessage {...messages.you} />
                 </span>

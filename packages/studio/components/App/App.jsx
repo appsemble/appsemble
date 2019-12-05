@@ -1,5 +1,4 @@
-import { ErrorHandler, Loader } from '@appsemble/react-components';
-import PropTypes from 'prop-types';
+import { ErrorHandler } from '@appsemble/react-components';
 import React from 'react';
 import Helmet from 'react-helmet';
 import { IntlProvider } from 'react-intl';
@@ -20,29 +19,14 @@ import Register from '../Register';
 import ResetPassword from '../ResetPassword';
 import Settings from '../Settings';
 import Toolbar from '../Toolbar';
+import UserProvider from '../UserProvider';
 import VerifyEmail from '../VerifyEmail';
 
-export default class App extends React.Component {
-  static propTypes = {
-    initAuth: PropTypes.func.isRequired,
-    initialized: PropTypes.bool.isRequired,
-  };
-
-  async componentDidMount() {
-    const { initAuth } = this.props;
-    await initAuth();
-  }
-
-  render() {
-    const { initialized } = this.props;
-
-    if (!initialized) {
-      return <Loader />;
-    }
-
-    return (
-      <IntlProvider defaultLocale="en-US" locale="en-US">
-        <BrowserRouter>
+export default function App() {
+  return (
+    <IntlProvider defaultLocale="en-US" locale="en-US">
+      <BrowserRouter>
+        <UserProvider>
           <ErrorHandler fallback={ErrorFallback}>
             <Helmet defaultTitle="Appsemble" titleTemplate="Appsemble · %s" />
             <Toolbar />
@@ -66,8 +50,8 @@ export default class App extends React.Component {
             </Switch>
             <Message />
           </ErrorHandler>
-        </BrowserRouter>
-      </IntlProvider>
-    );
-  }
+        </UserProvider>
+      </BrowserRouter>
+    </IntlProvider>
+  );
 }

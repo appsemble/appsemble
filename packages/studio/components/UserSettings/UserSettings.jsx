@@ -41,7 +41,7 @@ export default class UserSettings extends Component {
     event.preventDefault();
 
     const { newEmail } = this.state;
-    const { push, intl, user, updateUser } = this.props;
+    const { push, intl, user } = this.props;
 
     this.setState({ submittingEmail: true });
 
@@ -53,13 +53,13 @@ export default class UserSettings extends Component {
         color: 'success',
       });
 
-      updateUser({
-        ...user,
-        emails: [
-          ...user.emails,
-          { email: newEmail, verified: false, primary: false },
-        ].sort((a, b) => a.email.localeCompare(b.email)),
-      });
+      // updateUser({
+      //   ...user,
+      //   emails: [
+      //     ...user.emails,
+      //     { email: newEmail, verified: false, primary: false },
+      //   ].sort((a, b) => a.email.localeCompare(b.email)),
+      // });
 
       this.setState({
         newEmail: '',

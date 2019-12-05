@@ -1,5 +1,6 @@
 export { default as Calendar } from './Calendar';
 export { default as Checkbox } from './Checkbox';
+export { default as Dropdown } from './Dropdown';
 export { default as EmailLogin } from './EmailLogin';
 export { default as ErrorHandler } from './ErrorHandler';
 export { default as Form } from './Form';

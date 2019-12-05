@@ -5,6 +5,7 @@ import {
   SimpleInput,
   SimpleSubmit,
 } from '@appsemble/react-components';
+import axios from 'axios';
 import classNames from 'classnames';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
@@ -15,20 +16,16 @@ import HelmetIntl from '../HelmetIntl';
 import styles from './EditPassword.css';
 import messages from './messages';
 
-interface EditPasswordProps {
-  resetPassword: (token: string, password: string) => Promise<void>;
-}
-
-export default function EditPassword({ resetPassword }: EditPasswordProps): React.ReactElement {
+export default function EditPassword(): React.ReactElement {
   const qs = useQuery();
   const [success, setSuccess] = React.useState(false);
   const token = qs.get('token');
   const submit = React.useCallback(
     async ({ password }) => {
-      await resetPassword(token, password);
+      await axios.post('/api/email/reset', { token, password });
       setSuccess(true);
     },
-    [resetPassword, token],
+    [token],
   );
 
   if (!token) {

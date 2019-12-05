@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import { requestUser } from '../../actions/user';
+import { UserContext } from '../../hooks/useUser';
 import HelmetIntl from '../HelmetIntl';
 import messages from './messages';
 import styles from './OrganizationsSettings.css';
@@ -32,8 +32,8 @@ export default class OrganizationsSettings extends Component {
 
   async componentDidMount() {
     const { updateUser } = this.props;
+    const { userInfo: user } = this.context;
 
-    const user = await requestUser();
     updateUser(user);
 
     let selectedOrganization = '';
@@ -310,6 +310,8 @@ export default class OrganizationsSettings extends Component {
   onCloseInviteDialog = () => {
     this.setState({ removingInvite: undefined });
   };
+
+  static contextType = UserContext;
 
   render() {
     const {

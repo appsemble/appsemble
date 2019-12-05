@@ -2,7 +2,6 @@ import { injectIntl } from 'react-intl';
 import { connect } from 'react-redux';
 
 import { push } from '../../actions/message';
-import { updateUser } from '../../actions/user';
 import OrganizationsSettings from './OrganizationsSettings';
 
 function mapStateToProps(state) {
@@ -11,4 +10,4 @@ function mapStateToProps(state) {
   };
 }
 
-export default injectIntl(connect(mapStateToProps, { push, updateUser })(OrganizationsSettings));
+export default injectIntl(connect(mapStateToProps, { push })(OrganizationsSettings));

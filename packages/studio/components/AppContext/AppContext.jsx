@@ -18,14 +18,12 @@ import styles from './AppContext.css';
 export default class AppContext extends React.Component {
   static propTypes = {
     getApp: PropTypes.func.isRequired,
-    initAuth: PropTypes.func.isRequired,
     match: PropTypes.shape().isRequired,
     ready: PropTypes.bool.isRequired,
   };
 
   async componentDidMount() {
-    const { match, getApp, initAuth } = this.props;
-    await initAuth();
+    const { match, getApp } = this.props;
     await getApp(match.params.id);
   }
 

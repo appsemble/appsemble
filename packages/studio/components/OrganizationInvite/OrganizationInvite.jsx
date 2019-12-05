@@ -45,11 +45,7 @@ export default class OrganizationInvite extends React.Component {
   }
 
   onAcceptClick = async () => {
-    const { updateUser, user } = this.props;
-    const { organization } = this.state;
-
     await this.sendResponse(true);
-    await updateUser({ ...user, organizations: [...user.organizations, organization] });
   };
 
   onDeclineClick = async () => {
