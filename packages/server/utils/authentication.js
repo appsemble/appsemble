@@ -37,10 +37,5 @@ export default function authentication(
       const { sub } = jwt.verify(accessToken, secret, { aud: host });
       return { id: sub };
     },
-
-    async passwordReset() {
-      // XXX
-      return null;
-    },
   };
 }

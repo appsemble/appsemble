@@ -9,25 +9,16 @@ import thunk from 'redux-thunk';
 
 import reducer from './actions';
 import App from './components/App';
-import getDB from './utils/getDB';
 import settings from './utils/settings';
 
 const { sentryDsn } = settings;
 init({ dsn: sentryDsn });
 
 async function getStore() {
-  const idb = await getDB();
-
   const composeEnhancers =
     (process.env.NODE_ENV !== 'production' && window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__) ||
     compose;
-  return createStore(
-    reducer,
-    {
-      db: idb,
-    },
-    composeEnhancers(applyMiddleware(thunk)),
-  );
+  return createStore(reducer, composeEnhancers(applyMiddleware(thunk)));
 }
 
 getStore().then(store => {

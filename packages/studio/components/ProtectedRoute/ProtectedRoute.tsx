@@ -2,20 +2,14 @@ import * as React from 'react';
 import { Redirect, Route, RouteComponentProps, useLocation } from 'react-router-dom';
 
 import useQuery from '../../hooks/useQuery';
-import { UserInfo } from '../../types';
+import useUser from '../../hooks/useUser';
 
-export interface ProtectedRouteProps extends RouteComponentProps {
-  user: UserInfo;
-}
-
-export default function ProtectedRoute({
-  user,
-  ...props
-}: ProtectedRouteProps): React.ReactElement {
+export default function ProtectedRoute(props: RouteComponentProps): React.ReactElement {
   const location = useLocation();
+  const { userInfo } = useUser();
   const qs = useQuery();
 
-  if (!user) {
+  if (!userInfo) {
     const search = new URLSearchParams(qs);
     search.set('redirect', `${location.pathname}${location.search}${location.hash}`);
     return <Redirect to={{ pathname: '/login', search: `?${search}` }} />;
