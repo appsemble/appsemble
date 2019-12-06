@@ -10,7 +10,7 @@ export default async function testToken(server, db, scope, organizationId = 'tes
       id: organizationId,
       name: 'Test Organization',
     },
-    { through: { verified: true } },
+    { through: { role: 'Owner' } },
   );
   await EmailAuthorization.create({
     email: 'test@example.com',

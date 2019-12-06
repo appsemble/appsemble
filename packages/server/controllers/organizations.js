@@ -42,7 +42,7 @@ export async function createOrganization(ctx) {
   try {
     const organization = await Organization.create({ id, name }, { include: [User] });
 
-    await organization.addUser(userId);
+    await organization.addUser(userId, { through: { role: 'Owner' } });
     await organization.reload();
 
     ctx.body = {
