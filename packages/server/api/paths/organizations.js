@@ -37,6 +37,29 @@ export default {
       security: [{ studio: [] }],
     },
   },
+  '/api/organizations/{organizationId}/members': {
+    parameters: [{ $ref: '#/components/parameters/organizationId' }],
+    get: {
+      tags: ['organization'],
+      description: 'Get a list of organization members.',
+      operationId: 'getMembers',
+      responses: {
+        200: {
+          description: 'The list of all members.',
+          content: {
+            'application/json': {
+              schema: {
+                type: 'array',
+                items: {
+                  $ref: '#/components/schemas/Member',
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
   '/api/organizations/{organizationId}/invites/resend': {
     parameters: [{ $ref: '#/components/parameters/organizationId' }],
     post: {
@@ -106,6 +129,32 @@ export default {
   },
   '/api/organizations/{organizationId}/invites': {
     parameters: [{ $ref: '#/components/parameters/organizationId' }],
+    get: {
+      tags: ['organization'],
+      description: 'Get a list of invited organization members.',
+      operationId: 'getInvites',
+      responses: {
+        200: {
+          description: 'The list of all invites.',
+          content: {
+            'application/json': {
+              schema: {
+                type: 'array',
+                items: {
+                  type: 'object',
+                  properties: {
+                    email: {
+                      type: 'string',
+                      format: 'email',
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
     post: {
       tags: ['organization'],
       description: 'Invite a new member to the organization that matches the given id.',

@@ -1,10 +1,13 @@
 import { Icon, Loader } from '@appsemble/react-components';
+import { permissions } from '@appsemble/utils/constants/roles';
+import axios from 'axios';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link } from 'react-router-dom';
 
 import useUser from '../../../../hooks/useUser';
+import checkRole from '../../../../utils/checkRole';
 import HelmetIntl from '../../../HelmetIntl';
 import AppCard from '../AppCard';
 import CreateAppCard from '../CreateAppCard';
@@ -23,6 +26,8 @@ export default function AppList({ apps, getApps, getPublicApps }) {
   React.useEffect(() => {
     if (userInfo) {
       getApps();
+      const { data: organizations } = await axios.get('/api/user/organizations');
+      this.setState({ organizations });
     } else {
       getPublicApps();
     }
@@ -34,6 +39,10 @@ export default function AppList({ apps, getApps, getPublicApps }) {
 
   const filteredApps = apps.filter(app =>
     app.definition.name.toLowerCase().includes(filter.toLowerCase()),
+  );
+
+  const createOrganizations = organizations.filter(org =>
+    checkRole(org.role, permissions.CreateApps),
   );
 
   return (
@@ -54,9 +63,9 @@ export default function AppList({ apps, getApps, getPublicApps }) {
         {filteredApps.map(app => (
           <AppCard key={app.id} app={app} />
         ))}
-        {userInfo && userInfo.organizations.length >= 1 && <CreateAppCard />}
+        {createOrganizations.length >= 1 && <CreateAppCard />}
       </div>
-      {userInfo && userInfo.organizations.length === 0 && apps.length === 0 && (
+      {createOrganizations.length === 0 && apps.length === 0 && (
         <div className={styles.noApps}>
           <span>
             <i className={`fas fa-folder-open ${styles.noAppsIcon}`} />

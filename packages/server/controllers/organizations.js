@@ -1,15 +1,16 @@
 import { StyleValidationError, validateStyle } from '@appsemble/utils';
+import { permissions } from '@appsemble/utils/constants/roles';
 import Boom from '@hapi/boom';
 import crypto from 'crypto';
 import { UniqueConstraintError } from 'sequelize';
 
+import checkRole from '../utils/checkRole';
+
 export async function getOrganization(ctx) {
   const { organizationId } = ctx.params;
-  const { Organization, OrganizationInvite, User } = ctx.db.models;
+  const { Organization } = ctx.db.models;
 
-  const organization = await Organization.findByPk(organizationId, {
-    include: [User, OrganizationInvite],
-  });
+  const organization = await Organization.findByPk(organizationId);
   if (!organization) {
     throw Boom.notFound('Organization not found.');
   }
@@ -17,14 +18,6 @@ export async function getOrganization(ctx) {
   ctx.body = {
     id: organization.id,
     name: organization.name,
-    members: organization.Users.map(user => ({
-      id: user.id,
-      name: user.name,
-      primaryEmail: user.primaryEmail,
-    })),
-    invites: organization.OrganizationInvites.map(invite => ({
-      email: invite.email,
-    })),
   };
 }
 
@@ -38,7 +31,7 @@ export async function createOrganization(ctx) {
   try {
     const organization = await Organization.create({ id, name }, { include: [User] });
 
-    await organization.addUser(userId);
+    await organization.addUser(userId, { through: { role: 'Owner' } });
     await organization.reload();
 
     ctx.body = {
@@ -48,6 +41,7 @@ export async function createOrganization(ctx) {
         id: u.id,
         name: u.name,
         primaryEmail: u.primaryEmail,
+        role: 'Owner',
       })),
       invites: [],
     };
@@ -58,6 +52,41 @@ export async function createOrganization(ctx) {
 
     throw error;
   }
+}
+
+export async function getMembers(ctx) {
+  const { organizationId } = ctx.params;
+  const { Organization, User } = ctx.db.models;
+
+  const organization = await Organization.findByPk(organizationId, {
+    include: [User],
+  });
+  if (!organization) {
+    throw Boom.notFound('Organization not found.');
+  }
+
+  ctx.body = organization.Users.map(user => ({
+    id: user.id,
+    name: user.name,
+    primaryEmail: user.primaryEmail,
+    role: user.Member.role,
+  }));
+}
+
+export async function getInvites(ctx) {
+  const { organizationId } = ctx.params;
+  const { Organization, OrganizationInvite } = ctx.db.models;
+
+  const organization = await Organization.findByPk(organizationId, {
+    include: [OrganizationInvite],
+  });
+  if (!organization) {
+    throw Boom.notFound('Organization not found.');
+  }
+
+  ctx.body = organization.OrganizationInvites.map(invite => ({
+    email: invite.email,
+  }));
 }
 
 export async function getInvitation(ctx) {
@@ -126,6 +155,8 @@ export async function inviteMember(ctx) {
     throw Boom.forbidden('Not allowed to invite users to organizations you are not a member of.');
   }
 
+  await checkRole(ctx, organization.id, permissions.ManageMembers);
+
   if (invitedUser && (await organization.hasUser(invitedUser))) {
     throw Boom.conflict('User is already in this organization or has already been invited.');
   }
@@ -167,6 +198,8 @@ export async function resendInvitation(ctx) {
     throw Boom.notFound('Organization not found.');
   }
 
+  await checkRole(ctx, organization.id, permissions.ManageMembers);
+
   const invite = await organization.OrganizationInvites.find(i => i.email === email);
   if (!invite) {
     throw Boom.notFound('This person was not invited previously.');
@@ -191,6 +224,8 @@ export async function removeMember(ctx) {
   if (!organization.Users.some(u => u.id === memberId)) {
     throw Boom.notFound('User is not part of this organization');
   }
+
+  await checkRole(ctx, organization.id, permissions.ManageMembers);
 
   if (Number(memberId) === Number(user.id) && organization.Users.length <= 1) {
     throw Boom.notAcceptable(
@@ -217,6 +252,8 @@ export async function removeInvite(ctx) {
       "Not allowed to revoke an invitation if you're not part of the organization.",
     );
   }
+
+  await checkRole(ctx, organization.id, permissions.ManageMembers);
 
   await invite.destroy();
 }
@@ -249,6 +286,8 @@ export async function setOrganizationCoreStyle(ctx) {
     if (!organization) {
       throw Boom.notFound('Organization not found.');
     }
+
+    await checkRole(ctx, organization.id, permissions.EditThemes);
 
     organization.coreStyle = css.length ? css.toString() : null;
     await organization.save();
@@ -289,6 +328,8 @@ export async function setOrganizationSharedStyle(ctx) {
     if (!organization) {
       throw Boom.notFound('Organization not found.');
     }
+
+    await checkRole(ctx, organization.id, permissions.EditThemes);
 
     organization.sharedStyle = css.length ? css.toString() : null;
     await organization.save();
@@ -331,6 +372,8 @@ export async function setOrganizationBlockStyle(ctx) {
     if (!organization) {
       throw Boom.notFound('Organization not found.');
     }
+
+    await checkRole(ctx, organization.id, permissions.EditThemes);
 
     const block = await BlockDefinition.findByPk(`@${blockOrganizationId}/${blockId}`);
     if (!block) {

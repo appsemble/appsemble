@@ -14,6 +14,7 @@ export default async function checkRole(ctx, organizationId) {
     throw Boom.unauthorized();
   }
 
+  // XXX check permissions for real
   const count = await Member.count({
     raw: true,
     where: { OrganizationId: organizationId, UserId: user.id },

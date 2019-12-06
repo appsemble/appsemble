@@ -1,4 +1,5 @@
 import { SchemaValidationError, validate } from '@appsemble/utils';
+import { permissions } from '@appsemble/utils/constants/roles';
 import Boom from '@hapi/boom';
 import parseOData from '@wesselkuipers/odata-sequelize';
 import crypto from 'crypto';
@@ -266,6 +267,8 @@ export async function deleteResource(ctx) {
 
   const app = await App.findByPk(appId);
   await checkRole(ctx, app.OrganizationId);
+
+  await checkRole(ctx, app.OrganizationId, permissions.ManageResources);
 
   verifyResourceDefinition(app, resourceType);
   const resource = await Resource.findOne({

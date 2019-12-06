@@ -6,6 +6,7 @@ import BlockVersion from './BlockVersion';
 import Color from './Color';
 import Error from './Error';
 import Health from './Health';
+import Member from './Member';
 import OAuth2ClientCredentials from './OAuth2ClientCredentials';
 import Organization from './Organization';
 import Page from './Page';
@@ -26,6 +27,7 @@ export default {
   Error,
   SubPage,
   Health,
+  Member,
   OAuth2ClientCredentials,
   Organization,
   Page,

@@ -1,5 +1,6 @@
 import { logger } from '@appsemble/node-utils';
 import { normalize, StyleValidationError, validateStyle } from '@appsemble/utils';
+import { permissions } from '@appsemble/utils/constants/roles';
 import Boom from '@hapi/boom';
 import Ajv from 'ajv';
 import crypto from 'crypto';
@@ -134,7 +135,7 @@ export async function createApp(ctx) {
       }
     }
 
-    await checkRole(ctx, OrganizationId);
+    await checkRole(ctx, OrganizationId, permissions.CreateApps);
     await checkBlocks(definition, db);
 
     for (let i = 1; i < 11; i += 1) {
@@ -277,6 +278,7 @@ export async function updateApp(ctx) {
 
     await checkRole(ctx, dbApp.OrganizationId);
 
+    await checkRole(ctx, OrganizationId, [permissions.EditApps, permissions.EditAppSettings]);
     await dbApp.update(result, { where: { id: appId } });
 
     ctx.body = getAppFromRecord({ ...dbApp.dataValues, ...result });
@@ -366,6 +368,23 @@ export async function patchApp(ctx) {
 
     await checkRole(ctx, dbApp.OrganizationId);
 
+    const checkPermissions = [];
+
+    if (
+      domain !== undefined ||
+      path !== undefined ||
+      isPrivate !== undefined ||
+      template !== undefined
+    ) {
+      checkPermissions.push(permissions.EditAppSettings);
+    }
+
+    if (yaml || definition) {
+      checkPermissions.push(permissions.EditApps);
+    }
+
+    await checkRole(ctx, dbApp.OrganizationId, checkPermissions);
+
     await dbApp.update(result, { where: { id: appId } });
 
     ctx.body = getAppFromRecord({ ...dbApp.dataValues, ...result });
@@ -385,6 +404,8 @@ export async function deleteApp(ctx) {
   }
 
   await checkRole(ctx, app.OrganizationId);
+
+  await checkRole(ctx, app.OrganizationId, permissions.DeleteApps);
 
   await app.update({ path: null });
   await app.destroy();
@@ -470,6 +491,8 @@ export async function setAppIcon(ctx) {
     throw Boom.forbidden("User does not belong in this App's organization.");
   }
 
+  await checkRole(ctx, app.OrganizationId, permissions.EditAppSettings);
+
   await app.update({ icon });
   ctx.status = 204;
 }
@@ -490,6 +513,8 @@ export async function deleteAppIcon(ctx) {
   if (!organizations.some(organization => organization.id === app.OrganizationId)) {
     throw Boom.forbidden("User does not belong in this App's organization.");
   }
+
+  await checkRole(ctx, app.OrganizationId, permissions.EditAppSettings);
 
   await app.update({ icon: null });
 
@@ -533,6 +558,8 @@ export async function broadcast(ctx) {
   if (!user.organizations.some(organization => organization.id === app.OrganizationId)) {
     throw Boom.forbidden('User does not belong in this app’s organization.');
   }
+
+  await checkRole(ctx, app.OrganizationId, permissions.PushNotifications);
 
   const { vapidPublicKey: publicKey, vapidPrivateKey: privateKey } = app;
 
@@ -642,6 +669,8 @@ export async function setAppBlockStyle(ctx) {
     if (!block) {
       throw Boom.notFound('Block not found.');
     }
+
+    await checkRole(ctx, app.OrganizationId, permissions.EditApps);
 
     if (css.length) {
       await AppBlockStyle.upsert({
