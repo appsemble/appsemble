@@ -1,11 +1,13 @@
 import { Form, Icon, Input, Loader, Modal } from '@appsemble/react-components';
 import { normalize } from '@appsemble/utils';
+import { permissions } from '@appsemble/utils/constants/roles';
 import axios from 'axios';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import { requestUser } from '../../actions/user';
+import checkRole from '../../utils/checkRole';
 import HelmetIntl from '../HelmetIntl';
 import messages from './messages';
 import styles from './OrganizationsSettings.css';
@@ -327,6 +329,8 @@ export default class OrganizationsSettings extends Component {
     }
 
     const organization = organizations.find(o => o.id === selectedOrganization);
+    const { role } = organization.members.find(u => u.id === user.id);
+    const canManageMembers = checkRole(role, permissions.ManageMembers);
 
     return (
       <>
@@ -393,24 +397,26 @@ export default class OrganizationsSettings extends Component {
                 </div>
               </div>
 
-              <Form onSubmit={this.onInviteMember}>
-                <Input
-                  disabled={submittingMember}
-                  iconLeft="envelope"
-                  label={<FormattedMessage {...messages.addMemberEmail} />}
-                  name="memberEmail"
-                  onChange={this.onMemberEmailChange}
-                  placeholder={intl.formatMessage(messages.email)}
-                  required
-                  type="email"
-                  value={memberEmail}
-                />
-                <div className="control">
-                  <button className="button is-primary" disabled={submittingMember} type="submit">
-                    <FormattedMessage {...messages.inviteMember} />
-                  </button>
-                </div>
-              </Form>
+              {canManageMembers && (
+                <Form onSubmit={this.onInviteMember}>
+                  <Input
+                    disabled={submittingMember}
+                    iconLeft="envelope"
+                    label={<FormattedMessage {...messages.addMemberEmail} />}
+                    name="memberEmail"
+                    onChange={this.onMemberEmailChange}
+                    placeholder={intl.formatMessage(messages.email)}
+                    required
+                    type="email"
+                    value={memberEmail}
+                  />
+                  <div className="control">
+                    <button className="button is-primary" disabled={submittingMember} type="submit">
+                      <FormattedMessage {...messages.inviteMember} />
+                    </button>
+                  </div>
+                </Form>
+              )}
 
               <h3>
                 <FormattedMessage
@@ -444,30 +450,33 @@ export default class OrganizationsSettings extends Component {
                       </td>
                       <td className="has-text-right">
                         <FormattedMessage {...messages[member.role]} />
-                        <div className={`field is-grouped ${styles.tags}`}>
-                          {member.id === user.id && organization.members.length > 1 && (
-                            <p className={`control ${styles.memberButton}`}>
-                              <button
-                                className="button is-danger"
-                                onClick={() => this.onRemoveMemberClick(member.id)}
-                                type="button"
-                              >
-                                <Icon icon="sign-out-alt" size="small" />
-                              </button>
-                            </p>
-                          )}
-                          {member.id !== user.id && (
-                            <p className={`control ${styles.memberButton}`}>
-                              <button
-                                className="button is-danger"
-                                onClick={() => this.onRemoveMemberClick(member.id)}
-                                type="button"
-                              >
-                                <Icon icon="trash-alt" size="small" />
-                              </button>
-                            </p>
-                          )}
-                        </div>
+                        {(member.id === user.id && organization.members.length > 1) ||
+                          (member.id !== user.id && canManageMembers && (
+                            <div className={`field is-grouped ${styles.tags}`}>
+                              {member.id === user.id && organization.members.length > 1 && (
+                                <p className={`control ${styles.memberButton}`}>
+                                  <button
+                                    className="button is-danger"
+                                    onClick={() => this.onRemoveMemberClick(member.id)}
+                                    type="button"
+                                  >
+                                    <Icon icon="sign-out-alt" size="small" />
+                                  </button>
+                                </p>
+                              )}
+                              {member.id !== user.id && canManageMembers && (
+                                <p className={`control ${styles.memberButton}`}>
+                                  <button
+                                    className="button is-danger"
+                                    onClick={() => this.onRemoveMemberClick(member.id)}
+                                    type="button"
+                                  >
+                                    <Icon icon="trash-alt" size="small" />
+                                  </button>
+                                </p>
+                              )}
+                            </div>
+                          ))}
                       </td>
                     </tr>
                   ))}
@@ -475,26 +484,30 @@ export default class OrganizationsSettings extends Component {
                     <tr key={invite.email}>
                       <td>{invite.email}</td>
                       <td className="has-text-right">
-                        <div className={`field is-grouped ${styles.tags}`}>
-                          <p className={`control ${styles.memberButton}`}>
-                            <button
-                              className="control button is-outlined"
-                              onClick={() => this.resendInvitation(invite)}
-                              type="button"
-                            >
-                              <FormattedMessage {...messages.resendInvitation} />
-                            </button>
-                          </p>
-                          <p className={`control ${styles.memberButton}`}>
-                            <button
-                              className="button is-danger"
-                              onClick={() => this.onRemoveInviteClick(invite)}
-                              type="button"
-                            >
-                              <Icon icon="trash-alt" size="small" />
-                            </button>
-                          </p>
-                        </div>
+                        {canManageMembers ? (
+                          <div className={`field is-grouped ${styles.tags}`}>
+                            <p className={`control ${styles.memberButton}`}>
+                              <button
+                                className="control button is-outlined"
+                                onClick={() => this.resendInvitation(invite)}
+                                type="button"
+                              >
+                                <FormattedMessage {...messages.resendInvitation} />
+                              </button>
+                            </p>
+                            <p className={`control ${styles.memberButton}`}>
+                              <button
+                                className="button is-danger"
+                                onClick={() => this.onRemoveInviteClick(invite)}
+                                type="button"
+                              >
+                                <Icon icon="trash-alt" size="small" />
+                              </button>
+                            </p>
+                          </div>
+                        ) : (
+                          <FormattedMessage {...messages.invited} />
+                        )}
                       </td>
                     </tr>
                   ))}
