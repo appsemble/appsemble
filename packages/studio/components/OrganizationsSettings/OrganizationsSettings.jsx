@@ -42,9 +42,16 @@ export default class OrganizationsSettings extends Component {
     let { data: organizations } = await axios.get('/api/user/organizations');
     if (organizations.length) {
       [{ id: selectedOrganization }] = organizations;
-      const members = await axios.get(`/api/organizations/${selectedOrganization}/members`);
+      const { data: members } = await axios.get(
+        `/api/organizations/${selectedOrganization}/members`,
+      );
+      const { data: invites } = await axios.get(
+        `/api/organizations/${selectedOrganization}/invites`,
+      );
       organizations = organizations.map(org =>
-        org.id === selectedOrganization ? { ...org, members } : org,
+        org.id === selectedOrganization
+          ? { ...org, members, invites }
+          : { ...org, members: [], invites: [] },
       );
     }
 
@@ -92,12 +99,13 @@ export default class OrganizationsSettings extends Component {
     const { organizations } = this.state;
     const organizationId = event.target.value;
     const { data: members } = await axios.get(`/api/organizations/${organizationId}/members`);
+    const { data: invites } = await axios.get(`/api/organizations/${organizationId}/invites`);
 
     this.setState({
       loading: false,
       selectedOrganization: organizationId,
       organizations: organizations.map(org =>
-        org.id === organizationId ? { ...org, members } : org,
+        org.id === organizationId ? { ...org, members, invites } : org,
       ),
     });
   };

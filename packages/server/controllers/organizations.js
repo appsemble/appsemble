@@ -8,11 +8,9 @@ import checkRole from '../utils/checkRole';
 
 export async function getOrganization(ctx) {
   const { organizationId } = ctx.params;
-  const { Organization, OrganizationInvite, User } = ctx.db.models;
+  const { Organization } = ctx.db.models;
 
-  const organization = await Organization.findByPk(organizationId, {
-    include: [User, OrganizationInvite],
-  });
+  const organization = await Organization.findByPk(organizationId);
   if (!organization) {
     throw Boom.notFound('Organization not found.');
   }
@@ -20,15 +18,6 @@ export async function getOrganization(ctx) {
   ctx.body = {
     id: organization.id,
     name: organization.name,
-    members: organization.Users.map(user => ({
-      id: user.id,
-      name: user.name,
-      primaryEmail: user.primaryEmail,
-      role: user.Member.role,
-    })),
-    invites: organization.OrganizationInvites.map(invite => ({
-      email: invite.email,
-    })),
   };
 }
 
@@ -52,6 +41,7 @@ export async function createOrganization(ctx) {
         id: u.id,
         name: u.name,
         primaryEmail: u.primaryEmail,
+        role: 'Owner',
       })),
       invites: [],
     };
@@ -80,6 +70,22 @@ export async function getMembers(ctx) {
     name: user.name,
     primaryEmail: user.primaryEmail,
     role: user.Member.role,
+  }));
+}
+
+export async function getInvites(ctx) {
+  const { organizationId } = ctx.params;
+  const { Organization, OrganizationInvite } = ctx.db.models;
+
+  const organization = await Organization.findByPk(organizationId, {
+    include: [OrganizationInvite],
+  });
+  if (!organization) {
+    throw Boom.notFound('Organization not found.');
+  }
+
+  ctx.body = organization.OrganizationInvites.map(invite => ({
+    email: invite.email,
   }));
 }
 

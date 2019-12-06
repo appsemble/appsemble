@@ -19,16 +19,14 @@ export default class AppList extends React.Component {
     getApps: PropTypes.func.isRequired,
     getPublicApps: PropTypes.func.isRequired,
     intl: PropTypes.shape().isRequired,
-    organizations: PropTypes.arrayOf(PropTypes.shape()),
     user: PropTypes.shape(),
   };
 
   static defaultProps = {
     user: undefined,
-    organizations: [],
   };
 
-  state = { filter: '' };
+  state = { filter: '', organizations: undefined };
 
   async componentDidMount() {
     const { getApps, getPublicApps, user } = this.props;
@@ -50,7 +48,7 @@ export default class AppList extends React.Component {
     const { apps, intl, user } = this.props;
     const { filter, organizations } = this.state;
 
-    if (!apps) {
+    if (!apps || organizations === undefined) {
       return <Loader />;
     }
 
@@ -58,8 +56,9 @@ export default class AppList extends React.Component {
       app.definition.name.toLowerCase().includes(filter.toLowerCase()),
     );
 
-    const canCreateApps =
-      user && organizations.some(org => checkRole(org.role, permissions.CreateApps));
+    const createOrganizations = organizations.filter(org =>
+      checkRole(org.role, permissions.CreateApps),
+    );
 
     return (
       <>
@@ -79,7 +78,9 @@ export default class AppList extends React.Component {
           {filteredApps.map(app => (
             <AppCard key={app.id} app={app} />
           ))}
-          {canCreateApps && <CreateAppCard organizations={organizations} />}
+          {user && createOrganizations.length && (
+            <CreateAppCard organizations={createOrganizations} />
+          )}
         </div>
         {user && organizations.length === 0 && apps.length === 0 && (
           <div className={styles.noApps}>
