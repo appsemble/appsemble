@@ -1,5 +1,6 @@
 import Boom from '@hapi/boom';
 import crypto from 'crypto';
+import { verify } from 'jsonwebtoken';
 
 import createJWTResponse from '../utils/createJWTResponse';
 
@@ -173,4 +174,12 @@ export async function emailLogin(ctx) {
   const { argv, state } = ctx;
 
   ctx.body = createJWTResponse(state.user.id, argv);
+}
+
+export async function refreshToken(ctx) {
+  const { argv } = ctx;
+  const token = ctx.request.body.refresh_token;
+  const { sub } = verify(token, argv.secret, { aud: argv.host });
+
+  ctx.body = createJWTResponse(sub, argv);
 }

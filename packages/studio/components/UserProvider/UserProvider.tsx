@@ -72,15 +72,18 @@ export default function UserProvider({ children }: UserProviderProps): React.Rea
     axios.defaults.headers.authorization = `Bearer ${tokenResponse.access_token}`;
 
     const { exp } = jwtDecode<JwtPayload>(tokenResponse.access_token);
+    const timeout = exp * 1e3 - REFRESH_BUFFER - new Date().getTime();
     const timeoutId = setTimeout(async () => {
-      const { data } = await axios.post<TokenResponse>(
-        '/api/token',
-        new URLSearchParams({
+      try {
+        const { data } = await axios.post<TokenResponse>('/api/refresh', {
           refresh_token: tokenResponse.refresh_token,
-        }),
-      );
-      setTokenResponse(data);
-    }, exp * 1e3 - REFRESH_BUFFER - new Date().getTime());
+        });
+        setTokenResponse(data);
+        refreshUserInfo();
+      } catch (err) {
+        logout();
+      }
+    }, timeout);
     refreshUserInfo();
 
     return () => {

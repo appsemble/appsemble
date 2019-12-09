@@ -54,7 +54,7 @@ export default {
               style: { contentType: 'text/css' },
               sharedStyle: { contentType: 'text/css' },
               icon: {
-                contentType: 'image/png,image/jpg,image/svg+xml,image/tiff,image/webp',
+                contentType: 'image/png,image/jpg,image/tiff,image/webp',
               },
             },
           },
@@ -177,7 +177,7 @@ export default {
               style: { contentType: 'text/css' },
               sharedStyle: { contentType: 'text/css' },
               icon: {
-                contentType: 'image/png,image/jpg,image/svg+xml,image/tiff,image/webp',
+                contentType: 'image/png,image/jpg,image/tiff,image/webp',
               },
             },
           },
@@ -215,7 +215,6 @@ export default {
           content: {
             'image/png': {},
             'image/jpg': {},
-            'image/svg+xml': {},
             'image/tiff': {},
             'image/webp': {},
           },
@@ -331,7 +330,7 @@ export default {
           },
         },
       },
-      security: [{ apiUser: ['apps:write'] }],
+      security: [{ studio: [] }],
     },
   },
   '/api/apps/{appId}/broadcast': {
@@ -367,7 +366,7 @@ export default {
           description: 'The notification has been successfully broadcasted.',
         },
       },
-      security: [{ apiUser: ['apps:write'] }],
+      security: [{ studio: [] }],
     },
   },
   '/api/apps/{appId}/style/core': {

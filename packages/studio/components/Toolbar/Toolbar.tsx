@@ -8,9 +8,9 @@ import ProfileDropdown from '../ProfileDropdown';
 import messages from './messages';
 import styles from './Toolbar.css';
 
-export default function Toolbar() {
+export default function Toolbar(): React.ReactElement {
   const intl = useIntl();
-  const { profile } = useUser();
+  const { userInfo } = useUser();
 
   return (
     <nav className={`navbar is-fixed-top is-dark ${styles.root}`}>
@@ -36,7 +36,7 @@ export default function Toolbar() {
       </div>
       <div className="navbar-brand">
         <div className="navbar-item">
-          {profile ? (
+          {userInfo ? (
             <ProfileDropdown />
           ) : (
             <Link className="button" to="/login">

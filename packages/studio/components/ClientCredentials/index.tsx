@@ -9,7 +9,7 @@ import styles from './ClientCredentials.css';
 import messages from './messages';
 import scopeDescriptions from './scopeDescriptions';
 
-export default function ClientCredentials(): React.ReactNode {
+export default function ClientCredentials(): React.ReactElement {
   const intl = useIntl();
   const [clients, setClients] = React.useState<OAuth2ClientCredentials[]>([]);
   const [newClientCredentials, setNewClientCredentials] = React.useState<string>(null);

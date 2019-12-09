@@ -127,6 +127,10 @@ export async function handler(argv, { webpackConfigs, syncDB } = {}) {
     Sentry.init({ dsn: argv.sentryDsn });
   }
   app.on('error', (err, ctx) => {
+    if (err instanceof Koa.HttpError) {
+      // It is thrown by `ctx.throw()`.
+      return;
+    }
     logger.error(err);
     Sentry.withScope(scope => {
       scope.setTag('ip', ctx.ip);
