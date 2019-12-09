@@ -64,7 +64,7 @@
     "remark-stringify": "^7.0.4",
     "semver": "^6.3.0",
     "sequelize": "^5.21.2",
-    "sharp": "^0.23.3",
+    "sharp": "^0.22.1",
     "to-ico": "^1.1.5",
     "unified": "^8.4.2",
     "unist-util-visit": "^2.0.1",

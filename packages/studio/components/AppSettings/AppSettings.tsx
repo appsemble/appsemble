@@ -120,7 +120,7 @@ export default class AppSettings extends React.Component<
           <div className="file has-name">
             <label className="file-label" htmlFor="icon-upload">
               <input
-                accept="image/jpeg, image/png, image/tiff, image/webp, image/xml+svg"
+                accept="image/jpeg, image/png, image/tiff, image/webp"
                 className="file-input"
                 id="icon-upload"
                 name="icon"
