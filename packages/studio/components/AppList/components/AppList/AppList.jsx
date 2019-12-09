@@ -48,7 +48,7 @@ export default class AppList extends React.Component {
     const { apps, intl, user } = this.props;
     const { filter, organizations } = this.state;
 
-    if (!apps || organizations === undefined) {
+    if (!apps || (user && organizations === undefined)) {
       return <Loader />;
     }
 
@@ -56,9 +56,8 @@ export default class AppList extends React.Component {
       app.definition.name.toLowerCase().includes(filter.toLowerCase()),
     );
 
-    const createOrganizations = organizations.filter(org =>
-      checkRole(org.role, permissions.CreateApps),
-    );
+    const createOrganizations =
+      organizations?.filter(org => checkRole(org.role, permissions.CreateApps)) || [];
 
     return (
       <>
@@ -78,7 +77,7 @@ export default class AppList extends React.Component {
           {filteredApps.map(app => (
             <AppCard key={app.id} app={app} />
           ))}
-          {user && createOrganizations.length && (
+          {user && createOrganizations.length > 0 && (
             <CreateAppCard organizations={createOrganizations} />
           )}
         </div>
