@@ -53,7 +53,6 @@ export default class App extends React.Component {
               <AnonymousRoute component={EditPassword} exact path="/edit-password" />
               <ProtectedRoute component={OrganizationInvite} exact path="/organization-invite" />
               <Route component={VerifyEmail} exact path="/verify" />
-              <Route component={AppList} exact path="/apps" />
               <Route component={ConnectOAuth} exact path="/connect" />
               <AnonymousRoute component={Login} exact path="/login" />
               {settings.enableRegistration && (
