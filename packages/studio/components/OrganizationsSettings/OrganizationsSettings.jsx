@@ -1,6 +1,6 @@
 import { Form, Icon, Input, Loader, Modal } from '@appsemble/react-components';
 import { normalize } from '@appsemble/utils';
-import { permissions } from '@appsemble/utils/constants/roles';
+import { permissions, roles } from '@appsemble/utils/constants/roles';
 import axios from 'axios';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
@@ -329,14 +329,14 @@ export default class OrganizationsSettings extends Component {
     }
 
     const organization = organizations.find(o => o.id === selectedOrganization);
-    const { role } = organization.members.find(u => u.id === user.id);
-    const canManageMembers = checkRole(role, permissions.ManageMembers);
+    const { role } = organization?.members.find(u => u.id === user.id) || {};
+    const canManageMembers = role && checkRole(role, permissions.ManageMembers);
+    const canManageRoles = role && checkRole(role, permissions.ManageRoles);
 
     return (
       <>
         <div className="content">
           <HelmetIntl title={messages.title} />
-
           <h2>
             <FormattedMessage {...messages.createOrganization} />
           </h2>
@@ -449,34 +449,49 @@ export default class OrganizationsSettings extends Component {
                         </div>
                       </td>
                       <td className="has-text-right">
-                        <FormattedMessage {...messages[member.role]} />
-                        {(member.id === user.id && organization.members.length > 1) ||
-                          (member.id !== user.id && canManageMembers && (
-                            <div className={`field is-grouped ${styles.tags}`}>
-                              {member.id === user.id && organization.members.length > 1 && (
-                                <p className={`control ${styles.memberButton}`}>
-                                  <button
-                                    className="button is-danger"
-                                    onClick={() => this.onRemoveMemberClick(member.id)}
-                                    type="button"
-                                  >
-                                    <Icon icon="sign-out-alt" size="small" />
-                                  </button>
-                                </p>
-                              )}
-                              {member.id !== user.id && canManageMembers && (
-                                <p className={`control ${styles.memberButton}`}>
-                                  <button
-                                    className="button is-danger"
-                                    onClick={() => this.onRemoveMemberClick(member.id)}
-                                    type="button"
-                                  >
-                                    <Icon icon="trash-alt" size="small" />
-                                  </button>
-                                </p>
-                              )}
+                        {canManageRoles ? (
+                          <div className="control is-inline">
+                            <div className="select">
+                              <select disabled={member.id === user.id}>
+                                {Object.keys(roles).map(r => (
+                                  <option key={r} selected={r === member.role} value={r}>
+                                    {intl.formatMessage(messages[r])}
+                                  </option>
+                                ))}
+                              </select>
                             </div>
-                          ))}
+                          </div>
+                        ) : (
+                          <FormattedMessage {...messages[member.role]} />
+                        )}
+                        <div className={`field is-grouped ${styles.tags}`}>
+                          {member.id === user.id &&
+                            organization.members.length > 1 &&
+                            organization.members.some(m =>
+                              m.role.includes(permissions.ManageRoles),
+                            ) && (
+                              <p className={`control ${styles.memberButton}`}>
+                                <button
+                                  className="button is-danger"
+                                  onClick={() => this.onRemoveMemberClick(member.id)}
+                                  type="button"
+                                >
+                                  <Icon icon="sign-out-alt" size="small" />
+                                </button>
+                              </p>
+                            )}
+                          {member.id !== user.id && canManageMembers && (
+                            <p className={`control ${styles.memberButton}`}>
+                              <button
+                                className="button is-danger"
+                                onClick={() => this.onRemoveMemberClick(member.id)}
+                                type="button"
+                              >
+                                <Icon icon="trash-alt" size="small" />
+                              </button>
+                            </p>
+                          )}
+                        </div>
                       </td>
                     </tr>
                   ))}
