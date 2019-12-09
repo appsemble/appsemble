@@ -23,7 +23,7 @@ export async function getUserInfo(ctx) {
 
   if (!user) {
     // The authenticated user may have been deleted.
-    throw Boom.notFound();
+    throw Boom.forbidden();
   }
 
   const picture = user.primaryEmail

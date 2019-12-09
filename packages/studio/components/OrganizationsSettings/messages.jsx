@@ -21,6 +21,7 @@ export default defineMessages({
   you: 'It’s you!',
   email: 'Email',
   cancel: 'Cancel',
+  invited: 'Invited',
   inviteMember: 'Invite member',
   inviteMemberError: 'Something went wrong when trying to invite this member.',
   inviteMemberNotFound: 'No member with this email address could be found.',

@@ -57,15 +57,42 @@ describe('organization controller', () => {
     expect(response.body).toStrictEqual({
       id: 'testorganization',
       name: 'Test Organization',
-      members: [
-        {
-          id: expect.any(Number),
-          name: 'Test User',
-          primaryEmail: 'test@example.com',
-        },
-      ],
-      invites: [],
     });
+  });
+
+  it('should fetch organization members', async () => {
+    const response = await request(server)
+      .get('/api/organizations/testorganization/members')
+      .set('Authorization', token);
+
+    expect(response.body).toStrictEqual([
+      {
+        id: expect.any(Number),
+        name: 'Test User',
+        primaryEmail: 'test@example.com',
+        role: 'Owner',
+      },
+    ]);
+  });
+
+  it('should fetch organization invites', async () => {
+    const userB = await EmailAuthorization.create({ email: 'test2@example.com', verified: true });
+    await userB.createUser({ primaryEmail: 'test2@example.com', name: 'John' });
+    await OrganizationInvite.create({
+      email: 'test2@example.com',
+      key: 'abcde',
+      OrganizationId: 'testorganization',
+    });
+
+    const response = await request(server)
+      .get('/api/organizations/testorganization/invites')
+      .set('Authorization', token);
+
+    expect(response.body).toStrictEqual([
+      {
+        email: 'test2@example.com',
+      },
+    ]);
   });
 
   it('should not fetch a non-existent organization', async () => {
@@ -90,6 +117,7 @@ describe('organization controller', () => {
           id: expect.any(Number),
           name: 'Test User',
           primaryEmail: 'test@example.com',
+          role: 'Owner',
         },
       ],
       invites: [],

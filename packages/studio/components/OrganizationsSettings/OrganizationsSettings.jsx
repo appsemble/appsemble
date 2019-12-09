@@ -1,11 +1,13 @@
 import { Form, Icon, Input, Loader, Modal } from '@appsemble/react-components';
 import { normalize } from '@appsemble/utils';
+import { permissions, roles } from '@appsemble/utils/constants/roles';
 import axios from 'axios';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import { UserContext } from '../../hooks/useUser';
+import checkRole from '../../utils/checkRole';
 import HelmetIntl from '../HelmetIntl';
 import messages from './messages';
 import styles from './OrganizationsSettings.css';
@@ -14,8 +16,6 @@ export default class OrganizationsSettings extends Component {
   static propTypes = {
     push: PropTypes.func.isRequired,
     intl: PropTypes.shape().isRequired,
-    user: PropTypes.shape().isRequired,
-    updateUser: PropTypes.func.isRequired,
   };
 
   state = {
@@ -32,11 +32,6 @@ export default class OrganizationsSettings extends Component {
   };
 
   async componentDidMount() {
-    const { updateUser } = this.props;
-    const { userInfo: user } = this.context;
-
-    updateUser(user);
-
     let selectedOrganization = '';
 
     let { data: organizations } = await axios.get('/api/user/organizations');
@@ -230,9 +225,10 @@ export default class OrganizationsSettings extends Component {
 
   onLeaveOrganization = async () => {
     const { selectedOrganization, organizations } = this.state;
-    const { intl, push, user } = this.props;
+    const { intl, push } = this.props;
+    const { userInfo } = this.context;
 
-    await axios.delete(`/api/organizations/${selectedOrganization}/members/${user.id}`);
+    await axios.delete(`/api/organizations/${selectedOrganization}/members/${userInfo.sub}`);
 
     const organization = organizations.find(o => o.id === selectedOrganization);
     const newOrganizations = organizations.filter(o => o.id !== selectedOrganization);
@@ -252,7 +248,8 @@ export default class OrganizationsSettings extends Component {
 
   onRemoveMember = async () => {
     const { removingMember, selectedOrganization, organizations } = this.state;
-    const { intl, push, user } = this.props;
+    const { intl, push } = this.props;
+    const { userInfo } = this.context;
 
     await axios.delete(`/api/organizations/${selectedOrganization}/members/${removingMember}`);
 
@@ -268,7 +265,7 @@ export default class OrganizationsSettings extends Component {
 
     push({
       body:
-        removingMember === user.id
+        removingMember === userInfo.sub
           ? intl.formatMessage(messages.leaveOrganizationSuccess, { organization: organization.id })
           : intl.formatMessage(messages.removeMemberSuccess),
       color: 'info',
@@ -322,19 +319,22 @@ export default class OrganizationsSettings extends Component {
       submittingOrganization,
       organizations,
     } = this.state;
-    const { intl, user } = this.props;
+    const { intl } = this.props;
+    const { userInfo } = this.context;
 
     if (loading) {
       return <Loader />;
     }
 
     const organization = organizations.find(o => o.id === selectedOrganization);
+    const { role } = organization?.members.find(u => u.id === userInfo.sub) || {};
+    const canManageMembers = role && checkRole(role, permissions.ManageMembers);
+    const canManageRoles = role && checkRole(role, permissions.ManageRoles);
 
     return (
       <>
         <div className="content">
           <HelmetIntl title={messages.title} />
-
           <h2>
             <FormattedMessage {...messages.createOrganization} />
           </h2>
@@ -395,24 +395,26 @@ export default class OrganizationsSettings extends Component {
                 </div>
               </div>
 
-              <Form onSubmit={this.onInviteMember}>
-                <Input
-                  disabled={submittingMember}
-                  iconLeft="envelope"
-                  label={<FormattedMessage {...messages.addMemberEmail} />}
-                  name="memberEmail"
-                  onChange={this.onMemberEmailChange}
-                  placeholder={intl.formatMessage(messages.email)}
-                  required
-                  type="email"
-                  value={memberEmail}
-                />
-                <div className="control">
-                  <button className="button is-primary" disabled={submittingMember} type="submit">
-                    <FormattedMessage {...messages.inviteMember} />
-                  </button>
-                </div>
-              </Form>
+              {canManageMembers && (
+                <Form onSubmit={this.onInviteMember}>
+                  <Input
+                    disabled={submittingMember}
+                    iconLeft="envelope"
+                    label={<FormattedMessage {...messages.addMemberEmail} />}
+                    name="memberEmail"
+                    onChange={this.onMemberEmailChange}
+                    placeholder={intl.formatMessage(messages.email)}
+                    required
+                    type="email"
+                    value={memberEmail}
+                  />
+                  <div className="control">
+                    <button className="button is-primary" disabled={submittingMember} type="submit">
+                      <FormattedMessage {...messages.inviteMember} />
+                    </button>
+                  </div>
+                </Form>
+              )}
 
               <h3>
                 <FormattedMessage
@@ -435,9 +437,9 @@ export default class OrganizationsSettings extends Component {
                   {organization.members.map(member => (
                     <tr key={member.id}>
                       <td>
-                        <span>{member.name || member.primaryEmail || member.id}</span>{' '}
+                        <span>{member.name || member.primaryEmail || member.id}</span>
                         <div className={`tags ${styles.tags}`}>
-                          {member.id === user.id && (
+                          {member.id === userInfo.sub && (
                             <span className="tag is-success">
                               <FormattedMessage {...messages.you} />
                             </span>
@@ -445,20 +447,38 @@ export default class OrganizationsSettings extends Component {
                         </div>
                       </td>
                       <td className="has-text-right">
-                        <FormattedMessage {...messages[member.role]} />
+                        {canManageRoles ? (
+                          <div className="control is-inline">
+                            <div className="select">
+                              <select disabled={member.id === userInfo.sub}>
+                                {Object.keys(roles).map(r => (
+                                  <option key={r} selected={r === member.role} value={r}>
+                                    {intl.formatMessage(messages[r])}
+                                  </option>
+                                ))}
+                              </select>
+                            </div>
+                          </div>
+                        ) : (
+                          <FormattedMessage {...messages[member.role]} />
+                        )}
                         <div className={`field is-grouped ${styles.tags}`}>
-                          {member.id === user.id && organization.members.length > 1 && (
-                            <p className={`control ${styles.memberButton}`}>
-                              <button
-                                className="button is-danger"
-                                onClick={() => this.onRemoveMemberClick(member.id)}
-                                type="button"
-                              >
-                                <Icon icon="sign-out-alt" size="small" />
-                              </button>
-                            </p>
-                          )}
-                          {member.id !== user.id && (
+                          {member.id === userInfo.sub &&
+                            organization.members.length > 1 &&
+                            organization.members.some(m =>
+                              m.role.includes(permissions.ManageRoles),
+                            ) && (
+                              <p className={`control ${styles.memberButton}`}>
+                                <button
+                                  className="button is-danger"
+                                  onClick={() => this.onRemoveMemberClick(member.id)}
+                                  type="button"
+                                >
+                                  <Icon icon="sign-out-alt" size="small" />
+                                </button>
+                              </p>
+                            )}
+                          {member.id !== userInfo.sub && canManageMembers && (
                             <p className={`control ${styles.memberButton}`}>
                               <button
                                 className="button is-danger"
@@ -477,26 +497,30 @@ export default class OrganizationsSettings extends Component {
                     <tr key={invite.email}>
                       <td>{invite.email}</td>
                       <td className="has-text-right">
-                        <div className={`field is-grouped ${styles.tags}`}>
-                          <p className={`control ${styles.memberButton}`}>
-                            <button
-                              className="control button is-outlined"
-                              onClick={() => this.resendInvitation(invite)}
-                              type="button"
-                            >
-                              <FormattedMessage {...messages.resendInvitation} />
-                            </button>
-                          </p>
-                          <p className={`control ${styles.memberButton}`}>
-                            <button
-                              className="button is-danger"
-                              onClick={() => this.onRemoveInviteClick(invite)}
-                              type="button"
-                            >
-                              <Icon icon="trash-alt" size="small" />
-                            </button>
-                          </p>
-                        </div>
+                        {canManageMembers ? (
+                          <div className={`field is-grouped ${styles.tags}`}>
+                            <p className={`control ${styles.memberButton}`}>
+                              <button
+                                className="control button is-outlined"
+                                onClick={() => this.resendInvitation(invite)}
+                                type="button"
+                              >
+                                <FormattedMessage {...messages.resendInvitation} />
+                              </button>
+                            </p>
+                            <p className={`control ${styles.memberButton}`}>
+                              <button
+                                className="button is-danger"
+                                onClick={() => this.onRemoveInviteClick(invite)}
+                                type="button"
+                              >
+                                <Icon icon="trash-alt" size="small" />
+                              </button>
+                            </p>
+                          </div>
+                        ) : (
+                          <FormattedMessage {...messages.invited} />
+                        )}
                       </td>
                     </tr>
                   ))}
@@ -541,7 +565,7 @@ export default class OrganizationsSettings extends Component {
           isActive={!!removingMember}
           onClose={this.onCloseDeleteDialog}
           title={
-            removingMember === user.id ? (
+            removingMember === userInfo.sub ? (
               <FormattedMessage {...messages.leaveOrganizationWarningTitle} />
             ) : (
               <FormattedMessage {...messages.removeMemberWarningTitle} />
@@ -549,7 +573,7 @@ export default class OrganizationsSettings extends Component {
           }
         >
           <div className={styles.dialogContent}>
-            {removingMember === user.id ? (
+            {removingMember === userInfo.sub ? (
               <FormattedMessage {...messages.leaveOrganizationWarning} />
             ) : (
               <FormattedMessage {...messages.removeMemberWarning} />
@@ -568,10 +592,12 @@ export default class OrganizationsSettings extends Component {
             </a>
             <button
               className={`card-footer-item button is-danger ${styles.cardFooterButton}`}
-              onClick={removingMember === user.id ? this.onLeaveOrganization : this.onRemoveMember}
+              onClick={
+                removingMember === userInfo.sub ? this.onLeaveOrganization : this.onRemoveMember
+              }
               type="button"
             >
-              {removingMember === user.id ? (
+              {removingMember === userInfo.sub ? (
                 <FormattedMessage {...messages.leaveOrganization} />
               ) : (
                 <FormattedMessage {...messages.removeMember} />
