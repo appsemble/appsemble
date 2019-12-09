@@ -17,6 +17,7 @@ import messages from './messages';
 export default function AppList({ apps, getApps, getPublicApps }) {
   const intl = useIntl();
   const [filter, setFilter] = React.useState('');
+  const [organizations, setOrganizations] = React.useState([]);
   const { userInfo } = useUser();
 
   const onFilterChange = React.useCallback(event => {
@@ -26,12 +27,21 @@ export default function AppList({ apps, getApps, getPublicApps }) {
   React.useEffect(() => {
     if (userInfo) {
       getApps();
-      const { data: organizations } = await axios.get('/api/user/organizations');
-      this.setState({ organizations });
     } else {
       getPublicApps();
     }
   }, [getApps, getPublicApps, userInfo]);
+
+  React.useEffect(() => {
+    const fetchOrganizations = async () => {
+      const { data } = await axios.get('/api/user/organizations');
+      setOrganizations(data);
+    };
+
+    if (userInfo) {
+      fetchOrganizations();
+    }
+  }, [userInfo]);
 
   if (!apps) {
     return <Loader />;

@@ -2,6 +2,7 @@ export * from './apps';
 export * from './assets';
 export * from './auth';
 export * from './oauth2';
+export * from './openId';
 export * from './blocks';
 export * from './health';
 export * from './organizations';
