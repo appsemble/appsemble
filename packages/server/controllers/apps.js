@@ -1,6 +1,5 @@
 import { logger } from '@appsemble/node-utils';
-import { normalize, StyleValidationError, validateStyle } from '@appsemble/utils';
-import { permissions } from '@appsemble/utils/constants/roles';
+import { normalize, permissions, StyleValidationError, validateStyle } from '@appsemble/utils';
 import Boom from '@hapi/boom';
 import Ajv from 'ajv';
 import crypto from 'crypto';

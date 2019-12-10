@@ -1,5 +1,4 @@
-import { normalize } from '@appsemble/utils';
-import { permissions } from '@appsemble/utils/constants/roles';
+import { normalize, permissions } from '@appsemble/utils';
 import Boom from '@hapi/boom';
 import crypto from 'crypto';
 import { col, fn, UniqueConstraintError } from 'sequelize';

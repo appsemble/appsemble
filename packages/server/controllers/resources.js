@@ -1,5 +1,4 @@
-import { SchemaValidationError, validate } from '@appsemble/utils';
-import { permissions } from '@appsemble/utils/constants/roles';
+import { permissions, SchemaValidationError, validate } from '@appsemble/utils';
 import Boom from '@hapi/boom';
 import parseOData from '@wesselkuipers/odata-sequelize';
 import crypto from 'crypto';

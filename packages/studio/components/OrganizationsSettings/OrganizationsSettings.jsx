@@ -1,6 +1,5 @@
 import { Form, Icon, Input, Loader, Modal } from '@appsemble/react-components';
-import { normalize } from '@appsemble/utils';
-import { permissions, roles } from '@appsemble/utils/constants/roles';
+import { normalize, permissions, roles } from '@appsemble/utils';
 import axios from 'axios';
 import classNames from 'classnames';
 import PropTypes from 'prop-types';

@@ -1,5 +1,5 @@
 import { logger } from '@appsemble/node-utils';
-import { permissions } from '@appsemble/utils/constants/roles';
+import { permissions } from '@appsemble/utils';
 import Boom from '@hapi/boom';
 import { isEmpty } from 'lodash';
 import { DatabaseError, UniqueConstraintError } from 'sequelize';
