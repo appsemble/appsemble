@@ -1,4 +1,5 @@
 import {
+  Button,
   CardFooterButton,
   Checkbox,
   Loader,
@@ -108,9 +109,9 @@ export default function AppDetails({ app, updateApp }: AppDetailsProps): JSX.Ele
           </div>
           <div>
             {createOrganizations.length ? (
-              <button className={`button ${styles.cloneButton}`} onClick={showDialog} type="button">
+              <Button className={`${styles.cloneButton}`} onClick={showDialog}>
                 <FormattedMessage {...messages.clone} />
-              </button>
+              </Button>
             ) : null}
             <a
               className="button is-primary"

@@ -1,4 +1,5 @@
 import {
+  Button,
   CardFooterButton,
   Form,
   Icon,
@@ -272,25 +273,19 @@ export default function Editor({ app, getOpenApiSpec, updateApp, openApiSpec }) 
           <nav className="navbar">
             <div className="navbar-brand">
               <span className="navbar-item">
-                <button className="button" disabled={!dirty} type="submit">
-                  <Icon icon="vial" />
-                  <span>
-                    <FormattedMessage {...messages.preview} />
-                  </span>
-                </button>
+                <Button disabled={!dirty} icon="vial" type="submit">
+                  <FormattedMessage {...messages.preview} />
+                </Button>
               </span>
               <span className="navbar-item">
-                <button
+                <Button
                   className="button"
                   disabled={!valid || dirty}
+                  icon="save"
                   onClick={onUpload}
-                  type="button"
                 >
-                  <Icon icon="save" />
-                  <span>
-                    <FormattedMessage {...messages.publish} />
-                  </span>
-                </button>
+                  <FormattedMessage {...messages.publish} />
+                </Button>
               </span>
               <span className="navbar-item">
                 <a className="button" href={appUrl} rel="noopener noreferrer" target="_blank">
@@ -301,12 +296,9 @@ export default function Editor({ app, getOpenApiSpec, updateApp, openApiSpec }) 
                 </a>
               </span>
               <span className="navbar-item">
-                <button className="button is-danger" onClick={onDeleteClick} type="button">
-                  <Icon icon="trash-alt" />
-                  <span>
-                    <FormattedMessage {...messages.delete} />
-                  </span>
-                </button>
+                <Button color="danger" icon="trash-alt" onClick={onDeleteClick}>
+                  <FormattedMessage {...messages.delete} />
+                </Button>
               </span>
             </div>
           </nav>

@@ -1,4 +1,4 @@
-import { Dropdown, Icon } from '@appsemble/react-components';
+import { Button, Dropdown, Icon } from '@appsemble/react-components';
 import * as React from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link } from 'react-router-dom';
@@ -50,16 +50,13 @@ export default function ProfileDropdown(): React.ReactElement {
         </span>
       </a>
       <hr className="dropdown-divider" />
-      <button
-        className={`button dropdown-item ${styles.logoutButton}`}
+      <Button
+        className={`dropdown-item ${styles.logoutButton}`}
+        icon="sign-out-alt"
         onClick={logout}
-        type="button"
       >
-        <Icon className={styles.logoutButtonIcon} icon="sign-out-alt" size="small" />
-        <span>
-          <FormattedMessage {...messages.logoutButton} />
-        </span>
-      </button>
+        <FormattedMessage {...messages.logoutButton} />
+      </Button>
     </Dropdown>
   );
 }

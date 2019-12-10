@@ -1,7 +1,6 @@
-import { CardFooterButton, Form, FormComponent, Icon, Modal } from '@appsemble/react-components';
+import { Button, CardFooterButton, Form, FormComponent, Modal } from '@appsemble/react-components';
 import { App, Rating } from '@appsemble/types';
 import axios from 'axios';
-import classNames from 'classnames';
 import React from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
@@ -36,16 +35,9 @@ export default function RateApp({ app, className, onRate }: RateAppProps): JSX.E
 
   return (
     <>
-      <button
-        className={classNames('button', 'is-primary', className)}
-        onClick={openDialog}
-        type="button"
-      >
-        <span>
-          <FormattedMessage {...messages.rateApp} />
-        </span>
-        <Icon icon="pencil-alt" />
-      </button>
+      <Button className={className} color="primary" icon="pencil-alt" onClick={openDialog}>
+        <FormattedMessage {...messages.rateApp} />
+      </Button>
       <Modal
         className={styles.modal}
         isActive={isOpen}

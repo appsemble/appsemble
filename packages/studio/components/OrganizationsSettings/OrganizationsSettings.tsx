@@ -1,4 +1,5 @@
 import {
+  Button,
   CardFooterButton,
   Icon,
   Loader,
@@ -429,24 +430,21 @@ export default function OrganizationsSettings(): React.ReactElement {
                             checkRole(m.role, permissions.ManageRoles),
                           ) && (
                             <p className={`control ${styles.memberButton}`}>
-                              <button
-                                className="button is-danger"
+                              <Button
+                                color="danger"
+                                icon="sign-out-alt"
                                 onClick={() => onRemoveMemberClick(member.id)}
-                                type="button"
-                              >
-                                <Icon icon="sign-out-alt" size="small" />
-                              </button>
+                              />
                             </p>
                           )}
                         {member.id !== userInfo.sub && canManageMembers && (
                           <p className={`control ${styles.memberButton}`}>
-                            <button
-                              className="button is-danger"
+                            <Button
+                              color="danger"
+                              icon="trash-alt"
                               onClick={() => onRemoveMemberClick(member.id)}
                               type="button"
-                            >
-                              <Icon icon="trash-alt" size="small" />
-                            </button>
+                            />
                           </p>
                         )}
                       </div>
@@ -460,22 +458,17 @@ export default function OrganizationsSettings(): React.ReactElement {
                       {canManageMembers ? (
                         <div className={`field is-grouped ${styles.tags}`}>
                           <p className={`control ${styles.memberButton}`}>
-                            <button
-                              className="control button is-outlined"
+                            <Button
+                              className="control is-outlined"
                               onClick={() => resendInvitation(invite)}
-                              type="button"
                             >
                               <FormattedMessage {...messages.resendInvitation} />
-                            </button>
+                            </Button>
                           </p>
                           <p className={`control ${styles.memberButton}`}>
-                            <button
-                              className="button is-danger"
-                              onClick={() => onRemoveInviteClick(invite)}
-                              type="button"
-                            >
+                            <Button color="danger" onClick={() => onRemoveInviteClick(invite)}>
                               <Icon icon="trash-alt" size="small" />
-                            </button>
+                            </Button>
                           </p>
                         </div>
                       ) : (
