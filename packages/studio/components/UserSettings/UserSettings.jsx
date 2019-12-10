@@ -1,4 +1,4 @@
-import { Form, Icon, Input, Loader, Modal } from '@appsemble/react-components';
+import { CardFooterButton, Form, Icon, Input, Loader, Modal } from '@appsemble/react-components';
 import axios from 'axios';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
@@ -41,7 +41,7 @@ export default class UserSettings extends Component {
     event.preventDefault();
 
     const { newEmail } = this.state;
-    const { push, intl, user } = this.props;
+    const { push, intl } = this.props;
 
     this.setState({ submittingEmail: true });
 
@@ -273,23 +273,12 @@ export default class UserSettings extends Component {
             <FormattedMessage {...messages.emailWarning} />
           </div>
           <footer className="card-footer">
-            {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
-            <a
-              className="card-footer-item is-link"
-              onClick={this.onCloseDeleteDialog}
-              onKeyDown={this.onCloseDeleteDialog}
-              role="button"
-              tabIndex="-1"
-            >
+            <CardFooterButton onClick={this.onCloseDeleteDialog}>
               <FormattedMessage {...messages.cancel} />
-            </a>
-            <button
-              className={`card-footer-item button is-danger ${styles.cardFooterButton}`}
-              onClick={this.deleteEmail}
-              type="button"
-            >
+            </CardFooterButton>
+            <CardFooterButton color="danger" onClick={this.deleteEmail}>
               <FormattedMessage {...messages.deleteEmail} />
-            </button>
+            </CardFooterButton>
           </footer>
         </Modal>
       </>

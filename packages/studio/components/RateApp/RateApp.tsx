@@ -1,4 +1,4 @@
-import { Form, FormComponent, Icon, Modal } from '@appsemble/react-components';
+import { CardFooterButton, Form, FormComponent, Icon, Modal } from '@appsemble/react-components';
 import { App, Message, Rating } from '@appsemble/types';
 import axios from 'axios';
 import classNames from 'classnames';
@@ -76,20 +76,12 @@ export default function RateApp({
           </div>
 
           <footer className="card-footer">
-            <button
-              className={`card-footer-item button is-white ${styles.cardFooterButton}`}
-              onClick={closeDialog}
-              type="button"
-            >
+            <CardFooterButton onClick={closeDialog}>
               <FormattedMessage {...messages.cancel} />
-            </button>
-            <button
-              className={`card-footer-item button is-primary ${styles.cardFooterButton}`}
-              disabled={rating === 0}
-              type="submit"
-            >
+            </CardFooterButton>
+            <CardFooterButton color="primary" disabled={rating === 0} type="submit">
               <FormattedMessage {...messages.submit} />
-            </button>
+            </CardFooterButton>
           </footer>
         </Form>
       </Modal>

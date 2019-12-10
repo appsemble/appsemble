@@ -1,6 +1,5 @@
-import { Form, Icon, Input, Loader, Modal } from '@appsemble/react-components';
+import { CardFooterButton, Form, Icon, Input, Loader, Modal } from '@appsemble/react-components';
 import axios from 'axios';
-import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
@@ -371,31 +370,16 @@ export default class ResourceTable extends React.Component {
               })}
             </div>
             <footer className="card-footer">
-              {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
-              <a
-                className="card-footer-item is-link"
-                onClick={this.onClose}
-                onKeyDown={this.onKeyDown}
-                role="button"
-                tabIndex="0"
-              >
+              <CardFooterButton onClick={this.onClose}>
                 <FormattedMessage {...messages.cancelButton} />
-              </a>
-              <button
-                className={classNames(
-                  'card-footer-item',
-                  'button',
-                  'is-primary',
-                  styles.cardFooterButton,
-                )}
-                type="submit"
-              >
+              </CardFooterButton>
+              <CardFooterButton color="primary" type="submit">
                 {mode === 'edit' ? (
                   <FormattedMessage {...messages.editButton} />
                 ) : (
                   <FormattedMessage {...messages.createButton} />
                 )}
-              </button>
+              </CardFooterButton>
             </footer>
           </Form>
         </Modal>
@@ -409,28 +393,12 @@ export default class ResourceTable extends React.Component {
             <FormattedMessage {...messages.resourceWarning} />
           </div>
           <footer className="card-footer">
-            {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
-            <a
-              className="card-footer-item is-link"
-              onClick={this.onClose}
-              onKeyDown={this.onKeyDown}
-              role="button"
-              tabIndex="-1"
-            >
+            <CardFooterButton onClick={this.onClose}>
               <FormattedMessage {...messages.cancelButton} />
-            </a>
-            <button
-              className={classNames(
-                'card-footer-item',
-                'button',
-                'is-danger',
-                styles.cardFooterButton,
-              )}
-              onClick={this.deleteResource}
-              type="button"
-            >
+            </CardFooterButton>
+            <CardFooterButton color="danger" onClick={this.deleteResource}>
               <FormattedMessage {...messages.deleteButton} />
-            </button>
+            </CardFooterButton>
           </footer>
         </Modal>
       </>

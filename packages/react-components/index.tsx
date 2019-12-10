@@ -1,4 +1,5 @@
 export { default as Calendar } from './Calendar';
+export { default as CardFooterButton } from './CardFooterButton';
 export { default as Checkbox } from './Checkbox';
 export { default as Dropdown } from './Dropdown';
 export { default as EmailLogin } from './EmailLogin';
