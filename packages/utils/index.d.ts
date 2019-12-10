@@ -10,19 +10,18 @@ interface Context {
   };
 }
 
-interface Permission {
-  ViewApps: 'ViewApps';
-  ManageRoles: 'ManageRoles';
-  ManageMembers: 'ManageMembers';
-  PublishBlocks: 'PublishBlocks';
-  CreateApps: 'CreateApps';
-  EditApps: 'EditApps';
-  EditAppSettings: 'EditAppSettings';
-  EditThemes: 'EditThemes';
-  DeleteApps: 'DeleteApps';
-  PushNotifications: 'PushNotifications';
-  ManageResources: 'ManageResources';
-}
+type Permission =
+  | 'ViewApps'
+  | 'ManageRoles'
+  | 'ManageMembers'
+  | 'PublishBlocks'
+  | 'CreateApps'
+  | 'EditApps'
+  | 'EditAppSettings'
+  | 'EditThemes'
+  | 'DeleteApps'
+  | 'PushNotifications'
+  | 'ManageResources';
 
 interface Role {
   Member: Permission[];
@@ -47,4 +46,16 @@ export class StyleValidationError extends Error {}
 
 export const baseTheme: Theme;
 export const roles: Role;
-export const permissions: Permission;
+export const permissions: {
+  ViewApps: 'ViewApps';
+  ManageRoles: 'ManageRoles';
+  ManageMembers: 'ManageMembers';
+  PublishBlocks: 'PublishBlocks';
+  CreateApps: 'CreateApps';
+  EditApps: 'EditApps';
+  EditAppSettings: 'EditAppSettings';
+  EditThemes: 'EditThemes';
+  DeleteApps: 'DeleteApps';
+  PushNotifications: 'PushNotifications';
+  ManageResources: 'ManageResources';
+};

@@ -1,7 +1,7 @@
 import axios from 'axios';
 import * as React from 'react';
 
-import { OrganizationContext } from '../../hooks/useOrganization';
+import { OrganizationContext } from '../../hooks/useOrganizations';
 import { Organization, User } from '../../types';
 
 export interface OrganizationProviderProps {

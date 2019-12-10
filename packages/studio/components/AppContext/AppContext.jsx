@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { Redirect, Route, Switch } from 'react-router-dom';
 
-import useOrganization from '../../hooks/useOrganization';
+import useOrganizations from '../../hooks/useOrganizations';
 import AppDetails from '../AppDetails';
 import AppSettings from '../AppSettings';
 import AppSideMenu from '../AppSideMenu';
@@ -27,7 +27,7 @@ function AppContext({ app = undefined, match, getApp, initAuth, ready }) {
     initApp();
   }, [getApp, initAuth, match.params.id]);
 
-  const organizations = useOrganization();
+  const organizations = useOrganizations();
 
   if (!ready) {
     return <Loader />;

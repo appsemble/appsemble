@@ -4,6 +4,6 @@ import { Organization } from '../types';
 
 export const OrganizationContext = createContext<Organization[]>(null);
 
-export default function useOrganization(): Organization[] {
+export default function useOrganizations(): Organization[] {
   return useContext(OrganizationContext);
 }
