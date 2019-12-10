@@ -236,6 +236,27 @@ export async function removeMember(ctx) {
   await organization.removeUser(memberId);
 }
 
+export async function setRole(ctx) {
+  const { organizationId, memberId } = ctx.params;
+  const { Organization, User } = ctx.db.models;
+  const { role } = ctx.request.body;
+  const { user } = ctx.state;
+
+  const organization = await Organization.findByPk(organizationId, { include: [User] });
+  if (!organization.Users.some(u => u.id === Number(user.id))) {
+    throw Boom.notFound('User is not part of this organization');
+  }
+
+  await checkRole(ctx, organization.id, permissions.ManageRoles);
+
+  const member = organization.Users.find(m => m.id === Number(memberId));
+  if (!member) {
+    throw Boom.notFound('This member is not part of this organization');
+  }
+
+  await member.Member.update({ role });
+}
+
 export async function removeInvite(ctx) {
   const { email } = ctx.request.body;
   const { OrganizationInvite } = ctx.db.models;

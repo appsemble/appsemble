@@ -242,6 +242,46 @@ export default {
       security: [{ apiUser: [] }],
     },
   },
+  '/api/organizations/{organizationId}/members/{memberId}/role': {
+    parameters: [
+      { $ref: '#/components/parameters/organizationId' },
+      {
+        name: 'memberId',
+        in: 'path',
+        description: 'The ID of the member',
+        required: true,
+        schema: { $ref: '#/components/schemas/User/properties/id' },
+      },
+    ],
+    put: {
+      tags: ['organization'],
+      description: 'Set the role of the member within the organization.',
+      operationId: 'setRole',
+      requestBody: {
+        description: 'The role to set.',
+        required: true,
+        content: {
+          'application/json': {
+            schema: {
+              type: 'object',
+              required: ['role'],
+              properties: {
+                role: {
+                  type: 'string',
+                },
+              },
+            },
+          },
+        },
+      },
+      responses: {
+        204: {
+          description: 'The member’s role has been successfully updated.',
+        },
+      },
+      security: [{ apiUser: [] }],
+    },
+  },
   '/api/organizations/{organizationId}/style/shared': {
     parameters: [{ $ref: '#/components/parameters/organizationId' }],
     get: {
