@@ -46,7 +46,15 @@ export type HTTPMethods = HTTPMethodsUpper | HTTPMethodsLower;
 /**
  * A color know to Bulma.
  */
-export type BulmaColor = 'dark' | 'primary' | 'link' | 'info' | 'success' | 'warning' | 'danger';
+export type BulmaColor =
+  | 'dark'
+  | 'primary'
+  | 'link'
+  | 'info'
+  | 'success'
+  | 'warning'
+  | 'danger'
+  | 'white';
 
 export interface Theme {
   /**
