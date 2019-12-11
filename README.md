@@ -144,5 +144,5 @@ Please read our [contributing guidelines](./CONTRIBUTING.md).
 [docker]: https://docker.com
 [docker compose]: https://docs.docker.com/compose
 [jest cli options]: https://jestjs.io/docs/en/cli
-[nodejs 10]: https://nodejs.org
+[nodejs]: https://nodejs.org
 [yarn]: https://yarnpkg.com
