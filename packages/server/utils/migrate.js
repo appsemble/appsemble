@@ -1,9 +1,10 @@
 import { AppsembleError, logger } from '@appsemble/node-utils';
 import semver from 'semver';
 
-export default async function migrate(db, to, migrations) {
+export default async function migrate(db, toVersion, migrations) {
   const { Meta } = db.models;
   await Meta.sync();
+  const to = toVersion === 'next' ? migrations[migrations.length - 1].key : toVersion;
   const metas = await Meta.findAll();
   if (metas.length > 1) {
     throw new AppsembleError('Multiple Meta entries found. The database requires a manual fix.');

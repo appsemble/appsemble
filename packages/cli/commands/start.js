@@ -48,6 +48,9 @@ export function builder(yargs) {
         'A connection string for the database to connect to. This is an alternative to the separate database related variables.',
       conflicts: ['database-host', 'database-name', 'database-user', 'database-password'],
     })
+    .option('migrate-to', {
+      desc: "To which version to migrate the database. This should be either a semver or 'next'",
+    })
     .option('smtp-host', {
       desc: 'The host of the SMTP server to connect to.',
     })
@@ -128,5 +131,5 @@ export async function handler(argv) {
       }),
     ),
   );
-  return start(argv, { webpackConfigs, syncDB: true });
+  return start(argv, { webpackConfigs });
 }
