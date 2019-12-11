@@ -1,5 +1,5 @@
 export default {
-  '/api/user': {
+  '/user': {
     get: {
       tags: ['template'],
       description: "Fetch the logged in user's profile.",
@@ -41,7 +41,7 @@ export default {
       security: [{ apiUser: [] }],
     },
   },
-  '/api/user/email': {
+  '/user/email': {
     post: {
       tags: ['template'],
       description: "Register a new email to logged in user's account.",

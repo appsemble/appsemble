@@ -1,5 +1,5 @@
 export default {
-  '/api/health': {
+  '/health': {
     get: {
       tags: ['health'],
       description: 'Check whether or not the API is healthy',

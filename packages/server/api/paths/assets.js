@@ -1,5 +1,5 @@
 export default {
-  '/api/assets': {
+  '/assets': {
     post: {
       tags: ['asset'],
       description: 'Upload a new asset.',
@@ -22,7 +22,7 @@ export default {
       },
     },
   },
-  '/api/assets/{assetId}': {
+  '/assets/{assetId}': {
     parameters: [{ $ref: '#/components/parameters/assetId' }],
     get: {
       tags: ['asset'],
