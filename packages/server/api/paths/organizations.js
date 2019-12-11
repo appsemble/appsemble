@@ -1,5 +1,5 @@
 export default {
-  '/api/organizations': {
+  '/organizations': {
     post: {
       tags: ['organization'],
       description: 'Create a new organization.',
@@ -23,7 +23,7 @@ export default {
       security: [{ apiUser: [] }],
     },
   },
-  '/api/organizations/{organizationId}': {
+  '/organizations/{organizationId}': {
     parameters: [{ $ref: '#/components/parameters/organizationId' }],
     get: {
       tags: ['organization'],
@@ -36,7 +36,7 @@ export default {
       },
     },
   },
-  '/api/organizations/{organizationId}/members': {
+  '/organizations/{organizationId}/members': {
     parameters: [{ $ref: '#/components/parameters/organizationId' }],
     get: {
       tags: ['organization'],
@@ -59,7 +59,7 @@ export default {
       },
     },
   },
-  '/api/organizations/{organizationId}/invites/resend': {
+  '/organizations/{organizationId}/invites/resend': {
     parameters: [{ $ref: '#/components/parameters/organizationId' }],
     post: {
       tags: ['organization'],
@@ -90,7 +90,7 @@ export default {
       security: [{ apiUser: [] }],
     },
   },
-  '/api/organizations/{organizationId}/join': {
+  '/organizations/{organizationId}/join': {
     parameters: [{ $ref: '#/components/parameters/organizationId' }],
     post: {
       tags: ['organization'],
@@ -126,7 +126,7 @@ export default {
       security: [{ apiUser: [] }],
     },
   },
-  '/api/organizations/{organizationId}/invites': {
+  '/organizations/{organizationId}/invites': {
     parameters: [{ $ref: '#/components/parameters/organizationId' }],
     get: {
       tags: ['organization'],
@@ -220,7 +220,7 @@ export default {
       security: [{ apiUser: [] }],
     },
   },
-  '/api/organizations/{organizationId}/members/{memberId}': {
+  '/organizations/{organizationId}/members/{memberId}': {
     parameters: [
       { $ref: '#/components/parameters/organizationId' },
       {
@@ -243,7 +243,7 @@ export default {
       security: [{ apiUser: [] }],
     },
   },
-  '/api/organizations/{organizationId}/members/{memberId}/role': {
+  '/organizations/{organizationId}/members/{memberId}/role': {
     parameters: [
       { $ref: '#/components/parameters/organizationId' },
       {
@@ -290,7 +290,7 @@ export default {
       security: [{ apiUser: [] }],
     },
   },
-  '/api/organizations/{organizationId}/style/shared': {
+  '/organizations/{organizationId}/style/shared': {
     parameters: [{ $ref: '#/components/parameters/organizationId' }],
     get: {
       tags: ['organization'],
@@ -336,7 +336,7 @@ export default {
       security: [{ apiUser: ['organizations:style'] }],
     },
   },
-  '/api/organizations/{organizationId}/style/core': {
+  '/organizations/{organizationId}/style/core': {
     parameters: [{ $ref: '#/components/parameters/organizationId' }],
     get: {
       tags: ['organization'],
@@ -379,7 +379,7 @@ export default {
       security: [{ apiUser: ['organizations:style'] }],
     },
   },
-  '/api/organizations/{organizationId}/style/block/@{blockOrganizationId}/{blockId}': {
+  '/organizations/{organizationId}/style/block/@{blockOrganizationId}/{blockId}': {
     parameters: [
       { $ref: '#/components/parameters/organizationId' },
       {

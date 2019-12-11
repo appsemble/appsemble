@@ -1,5 +1,5 @@
 export default {
-  '/api/templates': {
+  '/templates': {
     get: {
       tags: ['template'],
       description: 'Fetch a list of all available templates.',

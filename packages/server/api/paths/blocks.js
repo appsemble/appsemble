@@ -1,5 +1,5 @@
 export default {
-  '/api/blocks': {
+  '/blocks': {
     post: {
       tags: ['block'],
       description: 'Register a new block.',
@@ -36,7 +36,7 @@ export default {
       },
     },
   },
-  '/api/blocks/@{organizationId}/{blockId}': {
+  '/blocks/@{organizationId}/{blockId}': {
     parameters: [
       { $ref: '#/components/parameters/organizationId' },
       { $ref: '#/components/parameters/blockId' },
@@ -53,7 +53,7 @@ export default {
       },
     },
   },
-  '/api/blocks/@{organizationId}/{blockId}/versions': {
+  '/blocks/@{organizationId}/{blockId}/versions': {
     parameters: [
       { $ref: '#/components/parameters/organizationId' },
       { $ref: '#/components/parameters/blockId' },
@@ -109,7 +109,7 @@ export default {
       security: [{ apiUser: ['blocks:write'] }],
     },
   },
-  '/api/blocks/@{organizationId}/{blockId}/versions/{blockVersion}': {
+  '/blocks/@{organizationId}/{blockId}/versions/{blockVersion}': {
     parameters: [
       { $ref: '#/components/parameters/organizationId' },
       { $ref: '#/components/parameters/blockId' },
@@ -126,7 +126,7 @@ export default {
       },
     },
   },
-  '/api/blocks/@{organizationId}/{blockId}/versions/{blockVersion}/{path}': {
+  '/blocks/@{organizationId}/{blockId}/versions/{blockVersion}/{path}': {
     parameters: [
       { $ref: '#/components/parameters/organizationId' },
       { $ref: '#/components/parameters/blockId' },

@@ -1,7 +1,10 @@
 #!/usr/bin/env node
 import { loggerMiddleware } from '@appsemble/node-utils';
 import faPkg from '@fortawesome/fontawesome-free/package.json';
+import Boom from '@hapi/boom';
+import cors from '@koa/cors';
 import Koa from 'koa';
+import compose from 'koa-compose';
 import compress from 'koa-compress';
 import mount from 'koa-mount';
 import koaQuerystring from 'koa-qs';
@@ -75,21 +78,30 @@ export default async function createServer({
   );
 
   app.use(
-    await koas(api(), [
-      koasSpecHandler(),
-      koasSwaggerUI({ url: '/api-explorer' }),
-      koasOAuth2Server(oauth2Model({ db, secret })),
-      koasParameters(),
-      koasBodyParser({
-        '*/*': (body, mediaTypeObject, ctx) =>
-          raw(body, {
-            length: ctx.request.length,
+    mount(
+      '/api',
+      compose([
+        cors(),
+        await koas(api(), [
+          koasSpecHandler(),
+          koasSwaggerUI({ url: '/explorer' }),
+          koasOAuth2Server(oauth2Model({ db, secret })),
+          koasParameters(),
+          koasBodyParser({
+            '*/*': (body, mediaTypeObject, ctx) =>
+              raw(body, {
+                length: ctx.request.length,
+              }),
           }),
-      }),
-      koasSerializer(),
-      koasStatusCode(),
-      koasOperations({ operations }),
-    ]),
+          koasSerializer(),
+          koasStatusCode(),
+          koasOperations({ operations }),
+        ]),
+        () => {
+          throw Boom.notFound('URL not found');
+        },
+      ]),
+    ),
   );
 
   if (process.env.NODE_ENV !== 'test') {

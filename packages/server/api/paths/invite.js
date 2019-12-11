@@ -1,5 +1,5 @@
 export default {
-  '/api/invites/{token}': {
+  '/invites/{token}': {
     parameters: [
       {
         name: 'token',

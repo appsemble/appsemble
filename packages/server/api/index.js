@@ -44,7 +44,7 @@ export default ({ port = 9999, host = `http://localhost:${port}` } = {}) =>
         > ${host}
 
         The OpenAPI explorer can be found on
-        > ${host}/api-explorer
+        > ${host}/api/explorer
 
         Rendered apps can be found on
         > ${host}/:id
@@ -56,5 +56,6 @@ export default ({ port = 9999, host = `http://localhost:${port}` } = {}) =>
       version: pkg.version,
     },
     paths,
+    servers: [{ url: '/api' }],
     tags,
   });
