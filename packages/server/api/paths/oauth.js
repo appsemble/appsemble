@@ -1,5 +1,5 @@
 export default {
-  '/api/oauth/register': {
+  '/oauth/register': {
     post: {
       description: 'Register a new account using OAuth2 credentials',
       operationId: 'registerOAuth',
@@ -39,7 +39,7 @@ export default {
       },
     },
   },
-  '/api/oauth/connect': {
+  '/oauth/connect': {
     post: {
       description: 'Connect an existing account with new OAuth2 credentials',
       operationId: 'connectOAuth',

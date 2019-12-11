@@ -55,7 +55,7 @@ export default function onFetch(event: FetchEvent): void {
   }
 
   // Requests made to the API explorer should not be cached.
-  if (pathname.startsWith('/api-explorer')) {
+  if (pathname.startsWith('/api/explorer')) {
     return;
   }
 

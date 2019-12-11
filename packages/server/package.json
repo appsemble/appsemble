@@ -10,6 +10,7 @@
     "@appsemble/utils": "^0.9.5",
     "@fortawesome/fontawesome-free": "^5.11.2",
     "@hapi/boom": "^8.0.1",
+    "@koa/cors": "^3.0.0",
     "@sentry/node": "^5.9.0",
     "@wesselkuipers/odata-sequelize": "^1.0.14",
     "ajv": "^6.10.2",
