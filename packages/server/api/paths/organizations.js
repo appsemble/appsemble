@@ -87,6 +87,7 @@ export default {
           description: 'The invite has been sent.',
         },
       },
+      security: [{ apiUser: [] }],
     },
   },
   '/api/organizations/{organizationId}/join': {
