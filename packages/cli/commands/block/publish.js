@@ -1,7 +1,8 @@
 import { logger } from '@appsemble/node-utils';
 import fs from 'fs-extra';
-import { join } from 'path';
+import { join, resolve } from 'path';
 
+import buildBlock from '../../lib/buildBlock';
 import { getToken } from '../../lib/config';
 import getBlockConfig from '../../lib/getBlockConfig';
 import publish from '../../lib/publish';
@@ -15,6 +16,17 @@ export function builder(yargs) {
       describe: 'The path to the block to register',
       normalize: true,
     })
+    .option('webpack-config', {
+      desc: 'The webpack configuration file to use for blocks.',
+      alias: 'c',
+      default: 'config/webpack/block.js',
+      normalize: true,
+    })
+    .option('build', {
+      alias: 'b',
+      describe: 'If specified, builds the block with webpack before publishing it.',
+      type: 'boolean',
+    })
     .option('ignore-conflict', {
       describe: 'If specified, conflicts with an existing block version are ignored.',
       type: 'boolean',
@@ -26,7 +38,7 @@ export function builder(yargs) {
     });
 }
 
-export async function handler({ ignoreConflict, path, remote, all }) {
+export async function handler({ build, webpackConfig, ignoreConflict, path, remote, all }) {
   await getToken(remote);
 
   if (all) {
@@ -35,12 +47,16 @@ export async function handler({ ignoreConflict, path, remote, all }) {
     );
 
     logger.info(`Publishing ${directories.length} Blocks`);
-    directories.reduce(async (acc, subDir) => {
+    await directories.reduce(async (acc, subDir) => {
       await acc;
 
       const subPath = join(path, subDir);
-
       const config = await getBlockConfig(subPath);
+
+      if (build) {
+        await buildBlock({ path: resolve(subPath, 'dist'), webpackConfig, config });
+      }
+
       logger.info(`Publishing ${config.id}@${config.version}…`);
       await publish({ config, ignoreConflict, path: subPath });
     }, {});
@@ -49,6 +65,10 @@ export async function handler({ ignoreConflict, path, remote, all }) {
   }
 
   const config = await getBlockConfig(path);
+  if (build) {
+    await buildBlock({ path: resolve(join(path, 'dist')), webpackConfig, config });
+  }
+
   logger.info(`Publishing ${config.id}@${config.version}`);
   await publish({ config, ignoreConflict, path });
 }

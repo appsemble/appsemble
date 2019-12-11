@@ -7,6 +7,14 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- CLI: Add `--migrate-to` flag for the `start` command.
+- CLI: Add support for `--build` flags for `appsemble block register`, and
+  `appsemble block publish`.
+- Server: Allow `next` as a migration version. This will migrate to the latest version, even if it’s
+  unreleased.
+
 ## [0.9.5] - 2019-12-02
 
 ### Added
@@ -14,7 +22,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - App: Add `base` property for `request` actions.
 - App: Add `closable` property to dialog actions.
 - App: Add support for basic XML parsing.
-- CLI: Add support of `--all` flags for `appsemble block register`, `appsemble block publish`, and
+- CLI: Add support for `--all` flags for `appsemble block register`, `appsemble block publish`, and
   `appsemble app create`.
 
 ### Changed

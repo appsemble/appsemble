@@ -1,4 +1,4 @@
-import { Form, Icon, Loader, Modal } from '@appsemble/react-components';
+import { CardFooterButton, Form, Icon, Loader, Modal } from '@appsemble/react-components';
 import { SchemaValidationError, validate, validateStyle } from '@appsemble/utils';
 import axios from 'axios';
 import classNames from 'classnames';
@@ -388,30 +388,12 @@ export default class Editor extends React.Component {
                 <FormattedMessage {...messages.resourceWarning} />
               </div>
               <footer className="card-footer">
-                {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
-                <a
-                  className="card-footer-item is-link"
-                  onClick={this.onClose}
-                  onKeyDown={this.onKeyDown}
-                  role="button"
-                  tabIndex="-1"
-                >
+                <CardFooterButton onClick={this.onClose}>
                   <FormattedMessage {...messages.cancel} />
-                </a>
-                <button
-                  className={classNames(
-                    'card-footer-item',
-                    'button',
-                    'is-warning',
-                    styles.cardFooterButton,
-                  )}
-                  onClick={this.uploadApp}
-                  type="button"
-                >
-                  <div className={styles.dialogContent}>
-                    <FormattedMessage {...messages.publish} />
-                  </div>
-                </button>
+                </CardFooterButton>
+                <CardFooterButton color="warning" onClick={this.uploadApp}>
+                  <FormattedMessage {...messages.publish} />
+                </CardFooterButton>
               </footer>
             </Modal>
             <Modal
@@ -424,28 +406,12 @@ export default class Editor extends React.Component {
                 <FormattedMessage {...messages.deleteWarning} />
               </div>
               <footer className="card-footer">
-                {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
-                <a
-                  className="card-footer-item is-link"
-                  onClick={this.onClose}
-                  onKeyDown={this.onKeyDown}
-                  role="button"
-                  tabIndex="-1"
-                >
+                <CardFooterButton onClick={this.onClose}>
                   <FormattedMessage {...messages.cancel} />
-                </a>
-                <button
-                  className={classNames(
-                    'card-footer-item',
-                    'button',
-                    'is-danger',
-                    styles.cardFooterButton,
-                  )}
-                  onClick={this.onDelete}
-                  type="button"
-                >
+                </CardFooterButton>
+                <CardFooterButton color="danger" onClick={this.onDelete}>
                   <FormattedMessage {...messages.delete} />
-                </button>
+                </CardFooterButton>
               </footer>
             </Modal>
           </Form>

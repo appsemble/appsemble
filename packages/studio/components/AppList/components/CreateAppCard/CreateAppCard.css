@@ -12,19 +12,6 @@
   height: 100%;
 }
 
-.cardFooterButton {
-  background: none !important;
-  border: none;
-  color: var(--link-color);
-  cursor: pointer;
-  font: inherit;
-  padding: 0 !important;
-}
-
-.cardFooterButton:hover {
-  color: hsl(0, 0%, 21%);
-}
-
 .modal {
   padding: 0;
 }

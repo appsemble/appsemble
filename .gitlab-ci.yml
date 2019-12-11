@@ -55,20 +55,9 @@ stages:
   extends: .yarn
   stage: provision
   script:
-    - yarn block action
-    - yarn block action-button
-    - yarn block detail-viewer
-    - yarn block list
-    - yarn block feed
-    - yarn block filter
-    - yarn block form
-    - yarn block map
-    - yarn block markdown
-    - yarn block navigation
-    - yarn block splash
     - node -r esm ./config/bin/register.js
     - yarn appsemble login --email "$APPSEMBLE_EMAIL" --password "$APPSEMBLE_PASSWORD"
-    - yarn appsemble block register --all blocks
+    - yarn appsemble block register --all --build blocks
     - yarn appsemble app create --template --organization @appsemble --all apps
 
 ###################################################################################################
@@ -350,7 +339,7 @@ staging:
     - schedules
   environment:
     name: staging
-    url: https://staging.appsemble.app
+    url: https://staging.appsemble.review
   script:
     - helm upgrade staging config/charts/appsemble
       --atomic
@@ -363,7 +352,7 @@ staging:
       --set "ingress.annotations.kubernetes\.io/ingress\.class=nginx"
       --set "ingress.annotations.nginx\.ingress\.kubernetes\.io/proxy-body-size=50m"
       --set "ingress.enabled=true"
-      --set "ingress.host=staging.appsemble.app"
+      --set "ingress.host=staging.appsemble.review"
       --set "ingress.tls.secretName=staging-tls"
       --set "migrateTo=999.999.999"
       --set "global.postgresql.existingSecret=postgresql-secret"
@@ -400,7 +389,7 @@ reset staging:
     - schedules
   environment:
     name: staging
-    url: https://staging.appsemble.app
+    url: https://staging.appsemble.review
   script:
     # We can’s use `--replace` because of https://github.com/helm/helm/issues/3134
     - helm delete staging
@@ -414,7 +403,7 @@ reset staging:
       --set "ingress.annotations.kubernetes\.io/ingress\.class=nginx"
       --set "ingress.annotations.nginx\.ingress\.kubernetes\.io/proxy-body-size=50m"
       --set "ingress.enabled=true"
-      --set "ingress.host=staging.appsemble.app"
+      --set "ingress.host=staging.appsemble.review"
       --set "ingress.tls.secretName=staging-tls"
       --set "global.postgresql.existingSecret=postgresql-secret"
       --set "postgresql.fullnameOverride=staging-postgresql"
@@ -479,7 +468,7 @@ migrate staging:
     - schedules
   environment:
     name: staging
-    url: https://staging.appsemble.app
+    url: https://staging.appsemble.review
   script:
     # Downgrade to latest
     - helm upgrade staging config/charts/appsemble
@@ -489,7 +478,7 @@ migrate staging:
       --set "ingress.annotations.kubernetes\.io/ingress\.class=nginx"
       --set "ingress.annotations.nginx\.ingress\.kubernetes\.io/proxy-body-size=50m"
       --set "ingress.enabled=true"
-      --set "ingress.host=staging.appsemble.app"
+      --set "ingress.host=staging.appsemble.review"
       --set "ingress.tls.secretName=staging-tls"
       --set "global.postgresql.existingSecret=postgresql-secret"
       --set "postgresql.fullnameOverride=staging-postgresql"
@@ -505,7 +494,7 @@ migrate staging:
       --set "ingress.annotations.kubernetes\.io/ingress\.class=nginx"
       --set "ingress.annotations.nginx\.ingress\.kubernetes\.io/proxy-body-size=50m"
       --set "ingress.enabled=true"
-      --set "ingress.host=staging.appsemble.app"
+      --set "ingress.host=staging.appsemble.review"
       --set "ingress.tls.secretName=staging-tls"
       --set "migrateTo=999.999.999"
       --set "global.postgresql.existingSecret=postgresql-secret"
@@ -538,5 +527,5 @@ provision staging:
     name: staging/provision
   before_script:
     - yarn --frozen-lockfile
-    - yarn appsemble config set remote https://staging.appsemble.app
+    - yarn appsemble config set remote https://staging.appsemble.review
     - yarn appsemble config set ignore-conflict true
