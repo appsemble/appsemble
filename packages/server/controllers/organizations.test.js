@@ -1,5 +1,6 @@
+import { createInstance } from 'axios-test-instance';
+import FormData from 'form-data';
 import jwt from 'jsonwebtoken';
-import request from 'supertest';
 
 import createServer from '../utils/createServer';
 import testSchema from '../utils/test/testSchema';
@@ -14,8 +15,9 @@ describe('organization controller', () => {
   let User;
   let EmailAuthorization;
   let db;
+  let request;
   let server;
-  let token;
+  let authorization;
   let organizationId;
 
   beforeAll(async () => {
@@ -30,47 +32,54 @@ describe('organization controller', () => {
       OrganizationInvite,
       User,
     } = db.models);
+    request = await createInstance(server);
   }, 10e3);
 
   beforeEach(async () => {
     await truncate(db);
     organizationId = 'testorganization';
-    token = await testToken(
+    authorization = await testToken(
       server,
       db,
       'organizations:read organizations:style organizations:write',
-      organizationId,
     );
   });
 
   afterAll(async () => {
+    await request.close();
     await db.close();
   });
 
   it('should fetch an organization', async () => {
-    const response = await request(server)
-      .get('/api/organizations/testorganization')
-      .set('Authorization', token);
+    const response = await request.get('/api/organizations/testorganization', {
+      headers: { authorization },
+    });
 
-    expect(response.body).toStrictEqual({
-      id: 'testorganization',
-      name: 'Test Organization',
+    expect(response).toMatchObject({
+      status: 200,
+      data: {
+        id: 'testorganization',
+        name: 'Test Organization',
+      },
     });
   });
 
   it('should fetch organization members', async () => {
-    const response = await request(server)
-      .get('/api/organizations/testorganization/members')
-      .set('Authorization', token);
+    const response = await request.get('/api/organizations/testorganization/members', {
+      headers: { authorization },
+    });
 
-    expect(response.body).toStrictEqual([
-      {
-        id: expect.any(Number),
-        name: 'Test User',
-        primaryEmail: 'test@example.com',
-        role: 'Owner',
-      },
-    ]);
+    expect(response).toMatchObject({
+      status: 200,
+      data: [
+        {
+          id: expect.any(Number),
+          name: 'Test User',
+          primaryEmail: 'test@example.com',
+          role: 'Owner',
+        },
+      ],
+    });
   });
 
   it('should fetch organization invites', async () => {
@@ -82,96 +91,111 @@ describe('organization controller', () => {
       OrganizationId: 'testorganization',
     });
 
-    const response = await request(server)
-      .get('/api/organizations/testorganization/invites')
-      .set('Authorization', token);
+    const response = await request.get('/api/organizations/testorganization/invites', {
+      headers: { authorization },
+    });
 
-    expect(response.body).toStrictEqual([
-      {
-        email: 'test2@example.com',
-      },
-    ]);
+    expect(response).toMatchObject({
+      status: 200,
+      data: [
+        {
+          email: 'test2@example.com',
+        },
+      ],
+    });
   });
 
   it('should not fetch a non-existent organization', async () => {
-    const response = await request(server)
-      .get('/api/organizations/foo')
-      .set('Authorization', token);
+    const response = await request.get('/api/organizations/foo', { headers: { authorization } });
 
-    expect(response.status).toStrictEqual(404);
+    expect(response).toMatchObject({ status: 404, data: { message: 'Organization not found.' } });
   });
 
   it('should create a new organization', async () => {
-    const { body: organization } = await request(server)
-      .post('/api/organizations')
-      .set('Authorization', token)
-      .send({ id: 'foo', name: 'Foooo' });
+    const response = await request.post(
+      '/api/organizations',
+      { id: 'foo', name: 'Foooo' },
+      { headers: { authorization } },
+    );
 
-    expect(organization).toStrictEqual({
-      id: 'foo',
-      name: 'Foooo',
-      members: [
-        {
-          id: expect.any(Number),
-          name: 'Test User',
-          primaryEmail: 'test@example.com',
-          role: 'Owner',
-        },
-      ],
-      invites: [],
+    expect(response).toMatchObject({
+      status: 201,
+      data: {
+        id: 'foo',
+        name: 'Foooo',
+        members: [
+          {
+            id: expect.any(Number),
+            name: 'Test User',
+            primaryEmail: 'test@example.com',
+            role: 'Owner',
+          },
+        ],
+        invites: [],
+      },
     });
   });
 
   it('should not create an organization with the same identifier', async () => {
-    await request(server)
-      .post('/api/organizations')
-      .set('Authorization', token)
-      .send({ id: 'foo', name: 'Foooo' });
+    await request.post(
+      '/api/organizations',
+      { id: 'foo', name: 'Foooo' },
+      { headers: { authorization } },
+    );
 
-    const response = await request(server)
-      .post('/api/organizations')
-      .set('Authorization', token)
-      .send({ id: 'foo', name: 'Foooo' });
+    const response = await request.post(
+      '/api/organizations',
+      { id: 'foo', name: 'Foooo' },
+      { headers: { authorization } },
+    );
 
-    expect(response.status).toStrictEqual(409);
+    expect(response).toMatchObject({
+      status: 409,
+      data: { message: 'Another organization with the name “Foooo” already exists' },
+    });
   });
 
   it('should send an invite to an organization', async () => {
     const userB = await EmailAuthorization.create({ email: 'test2@example.com', verified: true });
     await userB.createUser({ primaryEmail: 'test2@example.com', name: 'John' });
-    const response = await request(server)
-      .post('/api/organizations/testorganization/invites')
-      .set('Authorization', token)
-      .send({ email: 'test2@example.com' });
+    const response = await request.post(
+      '/api/organizations/testorganization/invites',
+      { email: 'test2@example.com' },
+      { headers: { authorization } },
+    );
 
-    expect(response.body).toStrictEqual({
-      id: expect.any(Number),
-      name: 'John',
-      primaryEmail: 'test2@example.com',
+    expect(response).toMatchObject({
+      status: 201,
+      data: {
+        id: expect.any(Number),
+        name: 'John',
+        primaryEmail: 'test2@example.com',
+      },
     });
   });
 
   it('should revoke an invite', async () => {
-    await request(server)
-      .post('/api/organizations/testorganization/invites')
-      .set('Authorization', token)
-      .send({ email: 'test2@example.com' });
+    await request.post(
+      '/api/organizations/testorganization/invites',
+      { email: 'test2@example.com' },
+      { headers: { authorization } },
+    );
 
-    const response = await request(server)
-      .delete('/api/organizations/testorganization/invites')
-      .set('Authorization', token)
-      .send({ email: 'test2@example.com' });
+    const response = await request.delete('/api/organizations/testorganization/invites', {
+      headers: { authorization },
+      data: { email: 'test2@example.com' },
+    });
 
-    expect(response.status).toStrictEqual(204);
+    expect(response).toMatchObject({ status: 204 });
   });
 
   it('should not revoke a non-existent invite', async () => {
-    const response = await request(server)
-      .delete('/api/organizations/testorganization/invites')
-      .set('Authorization', token)
-      .send({ email: 'test2@example.com' });
+    const response = await request.delete('/api/organizations/testorganization/invites', {
+      headers: { authorization },
+      data: { email: 'test2@example.com' },
+    });
 
-    expect(response.status).toStrictEqual(404);
+    expect(response).toMatchObject({ status: 404 });
   });
 
   it('should not revoke an invite for an organization you are not a member of', async () => {
@@ -183,33 +207,43 @@ describe('organization controller', () => {
       key: 'abcde',
       OrganizationId: 'org',
     });
-    const response = await request(server)
-      .post('/api/organizations/org/invites')
-      .set('Authorization', token)
-      .send({ email: 'test2@example.com' });
+    const response = await request.delete('/api/organizations/org/invites', {
+      headers: { authorization },
+      data: { email: 'test2@example.com' },
+    });
 
-    expect(response.status).toStrictEqual(403);
+    expect(response).toMatchObject({
+      status: 403,
+      data: {
+        message: 'Not allowed to revoke an invitation if you’re not part of the organization.',
+      },
+    });
   });
 
   it('should not send an invite for non-existent organizations', async () => {
-    const response = await request(server)
-      .post('/api/organizations/doesnotexist/invites')
-      .set('Authorization', token)
-      .send({ email: 'test@example.com' });
+    const response = await request.post(
+      '/api/organizations/doesnotexist/invites',
+      { email: 'test@example.com' },
+      { headers: { authorization } },
+    );
 
-    expect(response.status).toStrictEqual(404);
+    expect(response).toMatchObject({ status: 404, data: { message: 'Organization not found.' } });
   });
 
   it('should not send an invite to an organization you are not a member of', async () => {
     await Organization.create({ id: 'org' });
     const userB = await EmailAuthorization.create({ email: 'test2@example.com', verified: true });
     await userB.createUser({ primaryEmail: 'test2@example.com', name: 'John' });
-    const response = await request(server)
-      .post('/api/organizations/org/invites')
-      .set('Authorization', token)
-      .send({ email: 'test2@example.com' });
+    const response = await request.post(
+      '/api/organizations/org/invites',
+      { email: 'test2@example.com' },
+      { headers: { authorization } },
+    );
 
-    expect(response.status).toStrictEqual(403);
+    expect(response).toMatchObject({
+      status: 403,
+      data: { message: 'Not allowed to invite users to organizations you are not a member of.' },
+    });
   });
 
   it('should not send an invite to members of an organization', async () => {
@@ -218,68 +252,104 @@ describe('organization controller', () => {
     const organization = await Organization.findByPk('testorganization');
     await organization.addUser(id);
 
-    const response = await request(server)
-      .post('/api/organizations/testorganization/invites')
-      .set('Authorization', token)
-      .send({ email: 'test2@example.com' });
+    const response = await request.post(
+      '/api/organizations/testorganization/invites',
+      { email: 'test2@example.com' },
+      { headers: { authorization } },
+    );
 
-    expect(response.status).toStrictEqual(409);
+    expect(response).toMatchObject({
+      status: 409,
+      data: { message: 'User is already in this organization or has already been invited.' },
+    });
   });
 
   it('should resend an invitation', async () => {
     const userB = await EmailAuthorization.create({ email: 'test2@example.com', verified: true });
     await userB.createUser({ primaryEmail: 'test2@example.com', name: 'John' });
 
-    await request(server)
-      .post('/api/organizations/testorganization/invites')
-      .set('Authorization', token)
-      .send({ email: 'test2@example.com' });
+    await request.post(
+      '/api/organizations/testorganization/invites',
+      { email: 'test2@example.com' },
+      { headers: { authorization } },
+    );
 
-    const response = await request(server)
-      .post('/api/organizations/testorganization/invites/resend')
-      .set('Authorization', token)
-      .send({ email: 'test2@example.com' });
+    const response = await request.post(
+      '/api/organizations/testorganization/invites/resend',
+      { email: 'test2@example.com' },
+      { headers: { authorization } },
+    );
 
-    expect(response.status).toStrictEqual(204);
+    expect(response).toMatchObject({ status: 204 });
   });
 
   it('should not resend an invitation to a member who has not been invited', async () => {
     const userB = await EmailAuthorization.create({ email: 'test2@example.com', verified: true });
     await userB.createUser({ primaryEmail: 'test2@example.com', name: 'John' });
 
-    const response = await request(server)
-      .post('/api/organizations/testorganization/invites/resend')
-      .set('Authorization', token)
-      .send({ email: 'test2@example.com' });
+    const response = await request.post(
+      '/api/organizations/testorganization/invites/resend',
+      { email: 'test2@example.com' },
+      { headers: { authorization } },
+    );
 
-    expect(response.body).toStrictEqual({
-      error: 'Not Found',
-      message: 'This person was not invited previously.',
-      statusCode: 404,
+    expect(response).toMatchObject({
+      status: 404,
+      data: {
+        error: 'Not Found',
+        message: 'This person was not invited previously.',
+        statusCode: 404,
+      },
     });
   });
 
   it('should not resend an invitation for a non-existent organization', async () => {
-    const response = await request(server)
-      .post('/api/organizations/foo/invites/resend')
-      .set('Authorization', token)
-      .send({ email: 'test@example.com' });
+    const response = await request.post(
+      '/api/organizations/foo/invites/resend',
+      { email: 'test2@example.com' },
+      { headers: { authorization } },
+    );
 
-    expect(response.body).toStrictEqual({
-      error: 'Not Found',
-      message: 'Organization not found.',
-      statusCode: 404,
+    expect(response).toMatchObject({
+      status: 404,
+      data: {
+        error: 'Not Found',
+        message: 'Organization not found.',
+        statusCode: 404,
+      },
+    });
+  });
+
+  it('should change the role of other members', async () => {
+    const organization = await Organization.findByPk('testorganization');
+    const userB = await organization.createUser({ name: 'Foo', primaryEmail: 'test2@example.com' });
+
+    const response = await request.put(
+      `/api/organizations/testorganization/members/${userB.id}/role`,
+      { role: 'AppEditor' },
+      { headers: { authorization } },
+    );
+
+    expect(response).toMatchObject({
+      status: 200,
+      data: {
+        id: userB.id,
+        name: 'Foo',
+        primaryEmail: 'test2@example.com',
+        role: 'AppEditor',
+      },
     });
   });
 
   it('should leave the organization if there are other members', async () => {
     const organization = await Organization.findByPk('testorganization');
     await organization.createUser();
-    const userId = jwt.decode(token.substring(7)).user.id;
+    const userId = jwt.decode(authorization.substring(7)).user.id;
 
-    const { status } = await request(server)
-      .delete(`/api/organizations/testorganization/members/${userId}`)
-      .set('Authorization', token);
+    const { status } = await request.delete(
+      `/api/organizations/testorganization/members/${userId}`,
+      { headers: { authorization } },
+    );
 
     expect(status).toBe(204);
   });
@@ -288,73 +358,91 @@ describe('organization controller', () => {
     const organization = await Organization.findByPk('testorganization');
     const userB = await organization.createUser();
 
-    const { status } = await request(server)
-      .delete(`/api/organizations/testorganization/members/${userB.id}`)
-      .set('Authorization', token);
+    const { status } = await request.delete(
+      `/api/organizations/testorganization/members/${userB.id}`,
+      {
+        headers: { authorization },
+      },
+    );
 
     expect(status).toBe(204);
   });
 
   it('should not remove the only remaining member in an organization', async () => {
-    const userId = jwt.decode(token.substring(7)).user.id;
+    const userId = jwt.decode(authorization.substring(7)).user.id;
 
-    const response = await request(server)
-      .delete(`/api/organizations/testorganization/members/${userId}`)
-      .set('Authorization', token);
+    const response = await request.delete(`/api/organizations/testorganization/members/${userId}`, {
+      headers: { authorization },
+    });
 
-    expect(response.status).toStrictEqual(406);
+    expect(response).toMatchObject({
+      status: 406,
+      data: {
+        message:
+          'Not allowed to remove yourself from an organization if you’re the only member left.',
+      },
+    });
   });
 
   it('should not remove non-members or non-existing users from an organization', async () => {
     const userB = await User.create();
+    const responseA = await request.delete(
+      `/api/organizations/testorganization/members/${userB.id}`,
+      { headers: { authorization } },
+    );
+    const responseB = await request.delete('/api/organizations/testorganization/members/0', {
+      headers: { authorization },
+    });
 
-    const { status: nonMember } = await request(server)
-      .delete(`/api/organizations/testorganization/members/${userB.id}`)
-      .set('Authorization', token);
+    expect(responseA).toMatchObject({
+      status: 404,
+      data: { message: 'This member is not part of this organization.' },
+    });
 
-    const { status: nonExisting } = await request(server)
-      .delete('/api/organizations/testorganization/members/0')
-      .set('Authorization', token);
-
-    expect(nonMember).toBe(404);
-    expect(nonExisting).toBe(404);
+    expect(responseB).toMatchObject({
+      status: 404,
+      data: { message: 'This member is not part of this organization.' },
+    });
   });
 
   it('should validate and update shared stylesheets when uploading shared stylesheets for an organization', async () => {
-    const responseA = await request(server)
-      .post(`/api/organizations/${organizationId}/style/shared`)
-      .set('Authorization', token)
-      .attach('style', Buffer.from('body { color: red; }'), {
-        contentType: 'text/css',
-        filename: 'style.css',
-      });
-
-    expect(responseA.status).toBe(204);
-
-    const responseB = await request(server).get(
+    const form = new FormData();
+    form.append('style', Buffer.from('body { color: red; }'), {
+      contentType: 'text/css',
+      filename: 'style.css',
+    });
+    const responseA = await request.post(
       `/api/organizations/${organizationId}/style/shared`,
+      form,
+      { headers: { ...form.getHeaders(), authorization } },
     );
 
-    expect(responseB.status).toBe(200);
-    expect(responseB.text).toStrictEqual('body { color: red; }');
+    const responseB = await request.get(`/api/organizations/${organizationId}/style/shared`);
+
+    expect(responseA.status).toBe(204);
+    expect(responseB).toMatchObject({ status: 200, data: 'body { color: red; }' });
   });
 
   it('should set shared stylesheets to null when uploading empty stylesheets for an organization', async () => {
-    const responseA = await request(server)
-      .post(`/api/organizations/${organizationId}/style/core`)
-      .set('Authorization', token)
-      .attach('style', Buffer.from('body { color: blue; }'), {
-        contentType: 'text/css',
-        filename: 'style.css',
-      });
+    const form = new FormData();
+    form.append('style', Buffer.from('body { color: blue; }'), {
+      contentType: 'text/css',
+      filename: 'style.css',
+    });
+    const responseA = await request.post(`/api/organizations/${organizationId}/style/core`, form, {
+      headers: { ...form.getHeaders(), authorization },
+    });
 
-    const responseB = await request(server)
-      .post(`/api/organizations/${organizationId}/style/shared`)
-      .set('Authorization', token)
-      .attach('style', Buffer.from(' '), {
-        contentType: 'text/css',
-        filename: 'style.css',
-      });
+    const formB = new FormData();
+    formB.append('style', Buffer.from(' '), {
+      contentType: 'text/css',
+      filename: 'style.css',
+    });
+    const responseB = await request.post(
+      `/api/organizations/${organizationId}/style/shared`,
+      formB,
+      { headers: { ...formB.getHeaders(), authorization } },
+    );
 
     const organization = await Organization.findByPk(organizationId);
 
@@ -364,73 +452,89 @@ describe('organization controller', () => {
   });
 
   it('should not allow invalid stylesheets when uploading shared stylesheets to an organization', async () => {
-    const response = await request(server)
-      .post(`/api/organizations/${organizationId}/style/shared`)
-      .set('Authorization', token)
-      .attach('style', Buffer.from('invalidCss'));
-    expect(response.body).toStrictEqual({
-      statusCode: 400,
-      error: 'Bad Request',
-      message: 'Provided CSS was invalid.',
+    const form = new FormData();
+    form.append('style', Buffer.from('invalid css'), {
+      contentType: 'text/css',
+      filename: 'style.css',
+    });
+    const response = await request.post(`/api/organizations/${organizationId}/style/shared`, form, {
+      headers: { ...form.getHeaders(), authorization },
+    });
+
+    expect(response).toMatchObject({
+      status: 400,
+      data: {
+        statusCode: 400,
+        error: 'Bad Request',
+        message: 'Provided CSS was invalid.',
+      },
     });
   });
 
   it('should return an empty response on non-existant shared stylesheets', async () => {
-    const response = await request(server).get(`/api/organizations/${organizationId}/style/shared`);
+    const response = await request.get(`/api/organizations/${organizationId}/style/shared`);
 
-    expect(response.text).toBe('');
-    expect(response.type).toBe('text/css');
-    expect(response.status).toBe(200);
+    expect(response).toMatchObject({
+      headers: { 'content-type': 'text/css; charset=utf-8' },
+      status: 200,
+      data: '',
+    });
   });
 
   it('should not allow uploading shared stylesheets to non-existant organizations', async () => {
-    const response = await request(server)
-      .post('/api/organizations/test/style/shared')
-      .set('Authorization', token)
-      .attach('style', Buffer.from('body { color: red; }'), {
-        contentType: 'text/css',
-        filename: 'style.css',
-      });
+    const form = new FormData();
+    form.append('style', Buffer.from('body { color: red; }'), {
+      contentType: 'text/css',
+      filename: 'style.css',
+    });
+    const response = await request.post('/api/organizations/test/style/shared', form, {
+      headers: { ...form.getHeaders(), authorization },
+    });
 
-    expect(response.body).toStrictEqual({
-      statusCode: 404,
-      error: 'Not Found',
-      message: 'Organization not found.',
+    expect(response).toMatchObject({
+      status: 404,
+      data: {
+        statusCode: 404,
+        error: 'Not Found',
+        message: 'Organization not found.',
+      },
     });
   });
 
   it('should validate and update core stylesheets when uploading core stylesheets for an organization', async () => {
-    const responseA = await request(server)
-      .post(`/api/organizations/${organizationId}/style/core`)
-      .set('Authorization', token)
-      .attach('style', Buffer.from('body { color: blue; }'), {
-        contentType: 'text/css',
-        filename: 'style.css',
-      });
+    const form = new FormData();
+    form.append('style', Buffer.from('body { color: blue; }'), {
+      contentType: 'text/css',
+      filename: 'style.css',
+    });
+    const responseA = await request.post(`/api/organizations/${organizationId}/style/core`, form, {
+      headers: { ...form.getHeaders(), authorization },
+    });
 
-    const responseB = await request(server).get(`/api/organizations/${organizationId}/style/core`);
+    const responseB = await request.get(`/api/organizations/${organizationId}/style/core`);
 
     expect(responseA.status).toBe(204);
-    expect(responseB.status).toBe(200);
-    expect(responseB.text).toStrictEqual('body { color: blue; }');
+    expect(responseB).toMatchObject({ status: 200, data: 'body { color: blue; }' });
   });
 
   it('should set core stylesheets to null when uploading empty stylesheets for an organization', async () => {
-    const responseA = await request(server)
-      .post(`/api/organizations/${organizationId}/style/core`)
-      .set('Authorization', token)
-      .attach('style', Buffer.from('body { color: blue; }'), {
-        contentType: 'text/css',
-        filename: 'style.css',
-      });
+    const form = new FormData();
+    form.append('style', Buffer.from('body { color: blue; }'), {
+      contentType: 'text/css',
+      filename: 'style.css',
+    });
+    const responseA = await request.post(`/api/organizations/${organizationId}/style/core`, form, {
+      headers: { ...form.getHeaders(), authorization },
+    });
 
-    const responseB = await request(server)
-      .post(`/api/organizations/${organizationId}/style/core`)
-      .set('Authorization', token)
-      .attach('style', Buffer.from(' '), {
-        contentType: 'text/css',
-        filename: 'style.css',
-      });
+    const formB = new FormData();
+    formB.append('style', Buffer.from(' '), {
+      contentType: 'text/css',
+      filename: 'style.css',
+    });
+    const responseB = await request.post(`/api/organizations/${organizationId}/style/core`, formB, {
+      headers: { ...formB.getHeaders(), authorization },
+    });
 
     const organization = await Organization.findByPk(organizationId);
 
@@ -440,39 +544,54 @@ describe('organization controller', () => {
   });
 
   it('should not allow invalid stylesheets when uploading core stylesheets to an organization', async () => {
-    const response = await request(server)
-      .post(`/api/organizations/${organizationId}/style/core`)
-      .set('Authorization', token)
-      .attach('style', Buffer.from('invalidCss'));
-    expect(response.body).toStrictEqual({
-      statusCode: 400,
-      error: 'Bad Request',
-      message: 'Provided CSS was invalid.',
+    const form = new FormData();
+    form.append('style', Buffer.from('invalid css'), {
+      contentType: 'text/css',
+      filename: 'style.css',
+    });
+
+    const response = await request.post(`/api/organizations/${organizationId}/style/core`, form, {
+      headers: { ...form.getHeaders(), authorization },
+    });
+    expect(response).toMatchObject({
+      status: 400,
+      data: {
+        statusCode: 400,
+        error: 'Bad Request',
+        message: 'Provided CSS was invalid.',
+      },
     });
   });
 
   it('should not allow uploading core stylesheets to non-existant organizations', async () => {
-    const response = await request(server)
-      .post('/api/organizations/fake/style/core')
-      .set('Authorization', token)
-      .attach('style', Buffer.from('body { color: red; }'), {
-        contentType: 'text/css',
-        filename: 'style.css',
-      });
+    const form = new FormData();
+    form.append('style', Buffer.from('body { color: red; }'), {
+      contentType: 'text/css',
+      filename: 'style.css',
+    });
 
-    expect(response.body).toStrictEqual({
-      statusCode: 404,
-      error: 'Not Found',
-      message: 'Organization not found.',
+    const response = await request.post('/api/organizations/fake/style/core', form, {
+      headers: { ...form.getHeaders(), authorization },
+    });
+
+    expect(response).toMatchObject({
+      status: 404,
+      data: {
+        statusCode: 404,
+        error: 'Not Found',
+        message: 'Organization not found.',
+      },
     });
   });
 
   it('should return an empty response on non-existant core stylesheets', async () => {
-    const response = await request(server).get(`/api/organizations/${organizationId}/style/core`);
+    const response = await request.get(`/api/organizations/${organizationId}/style/core`);
 
-    expect(response.text).toBe('');
-    expect(response.type).toBe('text/css');
-    expect(response.status).toBe(200);
+    expect(response).toMatchObject({
+      status: 200,
+      headers: { 'content-type': 'text/css; charset=utf-8' },
+      data: '',
+    });
   });
 
   it('should validate and update block stylesheets when uploading block stylesheets for an organization', async () => {
@@ -481,21 +600,24 @@ describe('organization controller', () => {
       description: 'This is a test block for testing purposes.',
     });
 
-    const responseA = await request(server)
-      .post(`/api/organizations/${organizationId}/style/block/@appsemble/testblock`)
-      .set('Authorization', token)
-      .attach('style', Buffer.from('body { color: blue; }'), {
-        contentType: 'text/css',
-        filename: 'style.css',
-      });
+    const form = new FormData();
+    form.append('style', Buffer.from('body { color: blue; }'), {
+      contentType: 'text/css',
+      filename: 'style.css',
+    });
 
-    const responseB = await request(server).get(
+    const responseA = await request.post(
+      `/api/organizations/${organizationId}/style/block/@appsemble/testblock`,
+      form,
+      { headers: { ...form.getHeaders(), authorization } },
+    );
+
+    const responseB = await request.get(
       `/api/organizations/${organizationId}/style/block/@appsemble/testblock`,
     );
 
     expect(responseA.status).toBe(204);
-    expect(responseB.status).toBe(200);
-    expect(responseB.text).toStrictEqual('body { color: blue; }');
+    expect(responseB).toMatchObject({ status: 200, data: 'body { color: blue; }' });
   });
 
   it('should set block stylesheets to null when uploading empty stylesheets for an organization', async () => {
@@ -504,21 +626,28 @@ describe('organization controller', () => {
       description: 'This is a test block for testing purposes.',
     });
 
-    const responseA = await request(server)
-      .post(`/api/organizations/${organizationId}/style/block/@appsemble/testblock`)
-      .set('Authorization', token)
-      .attach('style', Buffer.from('body { color: blue; }'), {
-        contentType: 'text/css',
-        filename: 'style.css',
-      });
+    const form = new FormData();
+    form.append('style', Buffer.from('body { color: blue; }'), {
+      contentType: 'text/css',
+      filename: 'style.css',
+    });
 
-    const responseB = await request(server)
-      .post(`/api/organizations/${organizationId}/style/block/@appsemble/testblock`)
-      .set('Authorization', token)
-      .attach('style', Buffer.from(' '), {
-        contentType: 'text/css',
-        filename: 'style.css',
-      });
+    const responseA = await request.post(
+      `/api/organizations/${organizationId}/style/block/@appsemble/testblock`,
+      form,
+      { headers: { ...form.getHeaders(), authorization } },
+    );
+
+    const formB = new FormData();
+    formB.append('style', Buffer.from(' '), {
+      contentType: 'text/css',
+      filename: 'style.css',
+    });
+    const responseB = await request.post(
+      `/api/organizations/${organizationId}/style/block/@appsemble/testblock`,
+      formB,
+      { headers: { ...formB.getHeaders(), authorization } },
+    );
 
     const style = await OrganizationBlockStyle.findOne({
       where: { OrganizationId: organizationId, BlockDefinitionId: '@appsemble/testblock' },
@@ -535,14 +664,24 @@ describe('organization controller', () => {
       description: 'This is a test block for testing purposes.',
     });
 
-    const response = await request(server)
-      .post(`/api/organizations/${organizationId}/style/block/@appsemble/testblock`)
-      .set('Authorization', token)
-      .attach('style', Buffer.from('invalidCss'));
-    expect(response.body).toStrictEqual({
-      statusCode: 400,
-      error: 'Bad Request',
-      message: 'Provided CSS was invalid.',
+    const form = new FormData();
+    form.append('style', Buffer.from('invalid css'), {
+      contentType: 'text/css',
+      filename: 'style.css',
+    });
+
+    const response = await request.post(
+      `/api/organizations/${organizationId}/style/block/@appsemble/testblock`,
+      form,
+      { headers: { ...form.getHeaders(), authorization } },
+    );
+    expect(response).toMatchObject({
+      status: 400,
+      data: {
+        statusCode: 400,
+        error: 'Bad Request',
+        message: 'Provided CSS was invalid.',
+      },
     });
   });
 
@@ -552,44 +691,62 @@ describe('organization controller', () => {
       description: 'This is a test block for testing purposes.',
     });
 
-    const response = await request(server)
-      .post('/api/organizations/fake/style/block/@appsemble/testblock')
-      .set('Authorization', token)
-      .attach('style', Buffer.from('body { color: red; }'), {
-        contentType: 'text/css',
-        filename: 'style.css',
-      });
+    const form = new FormData();
+    form.append('style', Buffer.from('body { color: red; }'), {
+      contentType: 'text/css',
+      filename: 'style.css',
+    });
 
-    expect(response.body).toStrictEqual({
-      statusCode: 404,
-      error: 'Not Found',
-      message: 'Organization not found.',
+    const response = await request.post(
+      '/api/organizations/fake/style/block/@appsemble/testblock',
+      form,
+      { headers: { ...form.getHeaders(), authorization } },
+    );
+
+    expect(response).toMatchObject({
+      status: 404,
+      data: {
+        statusCode: 404,
+        error: 'Not Found',
+        message: 'Organization not found.',
+      },
     });
   });
 
   it('should not allow uploading block stylesheets for non-existant blocks', async () => {
-    const response = await request(server)
-      .post(`/api/organizations/${organizationId}/style/block/@appsemble/doesntexist`)
-      .set('Authorization', token)
-      .attach('style', Buffer.from('body { color: red; }'), {
-        contentType: 'text/css',
-        filename: 'style.css',
-      });
+    const form = new FormData();
+    form.append('style', Buffer.from('body { color: red; }'), {
+      contentType: 'text/css',
+      filename: 'style.css',
+    });
 
-    expect(response.body).toStrictEqual({
-      statusCode: 404,
-      error: 'Not Found',
-      message: 'Block not found.',
+    const response = await request.post(
+      `/api/organizations/${organizationId}/style/block/@appsemble/doesntexist`,
+      form,
+      { headers: { ...form.getHeaders(), authorization } },
+    );
+
+    expect(response).toMatchObject({
+      status: 404,
+      data: {
+        statusCode: 404,
+        error: 'Not Found',
+        message: 'Block not found.',
+      },
     });
   });
 
   it('should return an empty response on non-existant block stylesheets', async () => {
-    const response = await request(server).get(
+    const response = await request.get(
       `/api/organizations/${organizationId}/style/block/@appsemble/doesntexist`,
     );
 
-    expect(response.text).toBe('');
-    expect(response.type).toBe('text/css');
-    expect(response.status).toBe(200);
+    expect(response).toMatchObject({
+      status: 200,
+      headers: {
+        'content-type': 'text/css; charset=utf-8',
+      },
+      data: '',
+    });
   });
 });

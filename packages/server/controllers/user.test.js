@@ -11,12 +11,13 @@ describe('user', () => {
   let server;
   let token;
   let EmailAuthorization;
+  let Organization;
 
   beforeAll(async () => {
     db = await testSchema('user');
 
     server = await createServer({ db });
-    ({ EmailAuthorization } = db.models);
+    ({ EmailAuthorization, Organization } = db.models);
   }, 10e3);
 
   beforeEach(async () => {
@@ -176,5 +177,19 @@ describe('user', () => {
       error: 'Not Acceptable',
       message: 'Deleting this email results in the inability to access this account.',
     });
+  });
+
+  it('should fetch all user organizations', async () => {
+    const organizationB = await Organization.create({ id: 'testorganizationb' });
+    const userId = jwt.decode(token.substring(7)).user.id;
+    await organizationB.addUser(userId);
+
+    const response = await request(server)
+      .get('/api/user/organizations')
+      .set('Authorization', token);
+    expect(response.body).toStrictEqual([
+      { id: 'testorganization', name: 'Test Organization', role: 'Owner' },
+      { id: 'testorganizationb', name: null, role: 'Member' },
+    ]);
   });
 });

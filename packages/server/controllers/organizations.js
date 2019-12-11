@@ -220,15 +220,19 @@ export async function removeMember(ctx) {
   const { user } = ctx.state;
 
   const organization = await Organization.findByPk(organizationId, { include: [User] });
+  if (!organization.Users.some(u => u.id === Number(user.id))) {
+    throw Boom.notFound('User is not part of this organization.');
+  }
+
   if (!organization.Users.some(u => u.id === memberId)) {
-    throw Boom.notFound('User is not part of this organization');
+    throw Boom.notFound('This member is not part of this organization.');
   }
 
   await checkRole(ctx, organization.id, permissions.ManageMembers);
 
   if (Number(memberId) === Number(user.id) && organization.Users.length <= 1) {
     throw Boom.notAcceptable(
-      "Not allowed to remove yourself from an organization if you're the only member left.",
+      'Not allowed to remove yourself from an organization if you’re the only member left.',
     );
   }
 
@@ -243,17 +247,27 @@ export async function setRole(ctx) {
 
   const organization = await Organization.findByPk(organizationId, { include: [User] });
   if (!organization.Users.some(u => u.id === Number(user.id))) {
-    throw Boom.notFound('User is not part of this organization');
+    throw Boom.notFound('User is not part of this organization.');
+  }
+
+  if (user.id === memberId) {
+    throw Boom.badRequest('Not allowed to change your own rule.');
   }
 
   await checkRole(ctx, organization.id, permissions.ManageRoles);
 
   const member = organization.Users.find(m => m.id === Number(memberId));
   if (!member) {
-    throw Boom.notFound('This member is not part of this organization');
+    throw Boom.notFound('This member is not part of this organization.');
   }
 
   await member.Member.update({ role });
+  ctx.body = {
+    id: member.id,
+    role,
+    name: member.name,
+    primaryEmail: member.primaryEmail,
+  };
 }
 
 export async function removeInvite(ctx) {
@@ -267,9 +281,9 @@ export async function removeInvite(ctx) {
   }
 
   const organization = await invite.getOrganization();
-  if (!organization.hasUser(user.id)) {
+  if (!(await organization.hasUser(Number(user.id)))) {
     throw Boom.forbidden(
-      "Not allowed to revoke an invitation if you're not part of the organization.",
+      'Not allowed to revoke an invitation if you’re not part of the organization.',
     );
   }
 

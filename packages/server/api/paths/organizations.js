@@ -275,8 +275,15 @@ export default {
         },
       },
       responses: {
-        204: {
+        200: {
           description: 'The member’s role has been successfully updated.',
+          content: {
+            'application/json': {
+              schema: {
+                $ref: '#/components/schemas/Member',
+              },
+            },
+          },
         },
       },
       security: [{ apiUser: [] }],
@@ -313,6 +320,9 @@ export default {
                   format: 'binary',
                 },
               },
+            },
+            encoding: {
+              style: { contentType: 'text/css' },
             },
           },
         },
