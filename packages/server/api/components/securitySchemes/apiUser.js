@@ -1,4 +1,4 @@
-const tokenUrl = '/api/oauth/token';
+const tokenUrl = '/oauth/token';
 const scopes = {
   'apps:read': 'Read apps, including private apps of the authenticated user.',
   'apps:write': 'Create, read, update, and delete apps to which the user has write access.',
