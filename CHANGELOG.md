@@ -9,8 +9,11 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
+- CLI: Add `--migrate-to` flag for the `start` command.
 - CLI: Add support for `--build` flags for `appsemble block register`, and
   `appsemble block publish`.
+- Server: Allow `next` as a migration version. This will migrate to the latest version, even if it’s
+  unreleased.
 
 ## [0.9.5] - 2019-12-02
 

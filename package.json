@@ -168,6 +168,7 @@
     "database-user": "admin",
     "database-password": "password",
     "host": "http://localhost:9999",
+    "migrate-to": "next",
     "oauth-gitlab-key": "9739ffe4a5007fb7ac0bac53e2d70f7286add09190b73f40eeac33259cb81f15",
     "oauth-gitlab-secret": "8f83b39e5731f0c771fe39bff54ae326877f9434d431feeea6d79f00f292cdb0",
     "webpack-config": "config/webpack/block"
