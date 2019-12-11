@@ -33,6 +33,8 @@ type CalendarProps = Omit<React.ComponentPropsWithoutRef<typeof FormComponent>, 
      */
     onChange: (event: { target: HTMLInputElement }, value: Date) => void;
 
+    showHeader?: boolean;
+
     /**
      * The HTML input type.
      *
@@ -56,6 +58,7 @@ export default React.forwardRef<HTMLInputElement, CalendarProps>(
       name,
       onChange,
       required,
+      showHeader = false,
       type = 'datetime',
       value,
       id = name,
@@ -68,14 +71,22 @@ export default React.forwardRef<HTMLInputElement, CalendarProps>(
 
     React.useImperativeHandle(ref, () => inputRef.current);
     React.useEffect(() => {
-      const calendar = new BulmaCalendar(inputRef.current, {
+      calendarRef.current = new BulmaCalendar(inputRef.current, {
+        showHeader,
         type,
+        displayMode: 'inline',
       });
-      calendar.on('select', () => {
-        onChange({ target: inputRef.current }, calendar.startDate);
+    }, [showHeader, type]);
+
+    React.useEffect(() => {
+      calendarRef.current.on('select', () => {
+        onChange({ target: inputRef.current }, calendarRef.current.startDate);
       });
-      calendarRef.current = calendar;
-    }, [inputRef, onChange, type]);
+
+      return () => {
+        calendarRef.current.removeListeners('select');
+      };
+    }, [onChange]);
 
     return (
       <FormComponent
@@ -88,11 +99,9 @@ export default React.forwardRef<HTMLInputElement, CalendarProps>(
         <input
           {...props}
           ref={inputRef}
-          // className={classNames('input', { 'is-danger': error })}
           id={id}
           maxLength={maxLength}
           name={name}
-          // onChange={handleChange}
           required={required}
           value={value}
         />

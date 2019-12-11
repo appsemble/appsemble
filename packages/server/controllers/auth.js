@@ -32,7 +32,7 @@ export async function registerEmail(ctx) {
   await mayRegister(ctx);
   const { argv, mailer } = ctx;
   const { email, password } = ctx.request.body;
-  const { EmailAuthorization } = ctx.db.models;
+  const { User } = ctx.db.models;
 
   const hashedPassword = await bcrypt.hash(password, 10);
   const key = crypto.randomBytes(40).toString('hex');
@@ -40,11 +40,8 @@ export async function registerEmail(ctx) {
 
   try {
     await ctx.db.transaction(async transaction => {
-      const emailAuth = await EmailAuthorization.create(
-        { email, key, password: hashedPassword },
-        { transaction },
-      );
-      user = await emailAuth.createUser({ password, primaryEmail: email }, { transaction });
+      user = await User.create({ password: hashedPassword, primaryEmail: email }, { transaction });
+      await user.createEmailAuthorization({ email, key }, { transaction });
     });
   } catch (e) {
     if (e instanceof UniqueConstraintError) {

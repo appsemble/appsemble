@@ -27,7 +27,7 @@ export default async function indexHandler(ctx) {
     // This is needed for Webpack.
     'connect-src': [process.env.NODE_ENV !== 'production' && '*'],
     'default-src': ["'self'"],
-    'img-src': ['*'],
+    'img-src': ['data:', '*'],
     'script-src': [
       "'self'",
       settingsHash,

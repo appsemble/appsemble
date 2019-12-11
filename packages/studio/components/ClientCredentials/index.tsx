@@ -1,4 +1,12 @@
-import { Checkbox, Input, Modal, SimpleForm, SimpleInput } from '@appsemble/react-components';
+import {
+  Calendar,
+  CardFooterButton,
+  Checkbox,
+  Input,
+  Modal,
+  SimpleForm,
+  SimpleInput,
+} from '@appsemble/react-components';
 import { scopes as knownScopes } from '@appsemble/utils';
 import axios from 'axios';
 import * as React from 'react';
@@ -57,9 +65,23 @@ export default function ClientCredentials(): React.ReactElement {
       <button className="button is-primary" onClick={openModal} type="button">
         <FormattedMessage {...messages.register} />
       </button>
+      <Calendar name="asd" onChange={() => {}} type="date" />
       <Modal
+        component={SimpleForm}
+        defaultValues={{ description: '', 'blocks:write': false }}
+        footer={
+          <>
+            <CardFooterButton onClick={closeModal}>
+              <FormattedMessage {...messages.cancel} />
+            </CardFooterButton>
+            <CardFooterButton color="primary" type="submit">
+              <FormattedMessage {...messages.submit} />
+            </CardFooterButton>
+          </>
+        }
         isActive={isModalActive}
         onClose={closeModal}
+        onSubmit={registerClient}
         title={<FormattedMessage {...messages.register} />}
       >
         {newClientCredentials ? (
@@ -73,22 +95,20 @@ export default function ClientCredentials(): React.ReactElement {
             value={newClientCredentials}
           />
         ) : (
-          <SimpleForm
-            defaultValues={{ description: '', 'blocks:write': false }}
-            onSubmit={registerClient}
-          >
+          <>
             <SimpleInput
-              help={<FormattedMessage {...messages.nameHelp} />}
+              help={<FormattedMessage {...messages.descriptionHelp} />}
               label={<FormattedMessage {...messages.description} />}
               maxLength={50}
               name="description"
               required
             />
-            <SimpleInput
+            <SimpleInput<typeof Calendar>
+              component={Calendar}
               help={<FormattedMessage {...messages.expiresHelp} />}
               label={<FormattedMessage {...messages.expires} />}
               name="expires"
-              type="datetime-local"
+              type="date"
             />
             <SimpleInput<typeof Checkbox>
               component={Checkbox}
@@ -96,7 +116,19 @@ export default function ClientCredentials(): React.ReactElement {
               label="blocks:write"
               name="blocks:write"
             />
-          </SimpleForm>
+            <SimpleInput<typeof Checkbox>
+              component={Checkbox}
+              help={<FormattedMessage {...scopeDescriptions['organizations:styles:write']} />}
+              label="organizations:styles:write"
+              name="organizations:styles:write"
+            />
+            <SimpleInput<typeof Checkbox>
+              component={Checkbox}
+              help={<FormattedMessage {...scopeDescriptions['apps:write']} />}
+              label="apps:write"
+              name="apps:write"
+            />
+          </>
         )}
       </Modal>
       {clients.length ? (
