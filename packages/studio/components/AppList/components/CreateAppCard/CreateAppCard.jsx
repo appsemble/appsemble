@@ -1,4 +1,11 @@
-import { Checkbox, Form, Input, Modal, Select } from '@appsemble/react-components';
+import {
+  CardFooterButton,
+  Checkbox,
+  Form,
+  Input,
+  Modal,
+  Select,
+} from '@appsemble/react-components';
 import axios from 'axios';
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
@@ -215,22 +222,12 @@ export default class CreateAppCard extends React.Component {
               )}
             </div>
             <footer className="card-footer">
-              {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
-              <a
-                className="card-footer-item is-link"
-                onClick={this.onClose}
-                onKeyDown={this.onKeyDown}
-                role="button"
-                tabIndex="0"
-              >
+              <CardFooterButton onClick={this.onClose}>
                 <FormattedMessage {...messages.cancel} />
-              </a>
-              <button
-                className={classNames('card-footer-item', styles.cardFooterButton)}
-                type="submit"
-              >
+              </CardFooterButton>
+              <CardFooterButton type="submit">
                 <FormattedMessage {...messages.create} />
-              </button>
+              </CardFooterButton>
             </footer>
           </Form>
         </Modal>

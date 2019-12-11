@@ -1,4 +1,4 @@
-import { Form, Icon, Input, Loader, Modal } from '@appsemble/react-components';
+import { CardFooterButton, Form, Icon, Input, Loader, Modal } from '@appsemble/react-components';
 import { normalize } from '@appsemble/utils';
 import axios from 'axios';
 import PropTypes from 'prop-types';
@@ -518,23 +518,12 @@ export default class OrganizationsSettings extends Component {
             <FormattedMessage {...messages.removeInviteWarning} />
           </div>
           <footer className="card-footer">
-            {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
-            <a
-              className="card-footer-item is-link"
-              onClick={this.onCloseInviteDialog}
-              onKeyDown={this.onCloseInviteDialog}
-              role="button"
-              tabIndex="-1"
-            >
+            <CardFooterButton onClick={this.onCloseInviteDialog}>
               <FormattedMessage {...messages.cancel} />
-            </a>
-            <button
-              className={`card-footer-item button is-danger ${styles.cardFooterButton}`}
-              onClick={this.onRemoveInvite}
-              type="button"
-            >
+            </CardFooterButton>
+            <CardFooterButton color="danger" onClick={this.onRemoveInvite}>
               <FormattedMessage {...messages.removeInvite} />
-            </button>
+            </CardFooterButton>
           </footer>
         </Modal>
 
@@ -558,27 +547,19 @@ export default class OrganizationsSettings extends Component {
             )}
           </div>
           <footer className="card-footer">
-            {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
-            <a
-              className="card-footer-item is-link"
-              onClick={this.onCloseDeleteDialog}
-              onKeyDown={this.onCloseDeleteDialog}
-              role="button"
-              tabIndex="-1"
-            >
+            <CardFooterButton onClick={this.onCloseDeleteDialog}>
               <FormattedMessage {...messages.cancel} />
-            </a>
-            <button
-              className={`card-footer-item button is-danger ${styles.cardFooterButton}`}
+            </CardFooterButton>
+            <CardFooterButton
+              color="danger"
               onClick={removingMember === user.id ? this.onLeaveOrganization : this.onRemoveMember}
-              type="button"
             >
               {removingMember === user.id ? (
                 <FormattedMessage {...messages.leaveOrganization} />
               ) : (
                 <FormattedMessage {...messages.removeMember} />
               )}
-            </button>
+            </CardFooterButton>
           </footer>
         </Modal>
       </>

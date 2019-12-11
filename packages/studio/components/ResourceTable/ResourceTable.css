@@ -23,20 +23,6 @@
   vertical-align: middle;
 }
 
-.cardFooterButton {
-  border: none;
-  border-radius: 0;
-  color: var(--link-color);
-  cursor: pointer;
-  font: inherit;
-  height: auto;
-  padding: 0 !important;
-
-  &:hover {
-    color: hsl(0, 0%, 21%);
-  }
-}
-
 .dialogContent {
   padding: 20px;
 }
