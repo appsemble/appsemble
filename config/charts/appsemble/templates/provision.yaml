@@ -22,10 +22,11 @@ spec:
         - name: {{ include "appsemble.fullname" . }}-provision
           image: "bitnami/postgresql:11"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          command:
+          args:
             - psql
             - "--command"
             - |
+              BEGIN;
               INSERT INTO "User" (name, password, "primaryEmail", created, updated) VALUES (
                 {{ .Values.provision.account.name | squote }},
                 {{ .Values.provision.account.password | squote }},
@@ -38,10 +39,15 @@ spec:
                 true,
                 NOW(),
                 NOW(),
-                (SELECT id FROM "User" WHERE "primaryEmail" = {{ .Values.provision.account.email | quote }} LIMIT 1)
+                (
+                  SELECT id
+                  FROM "User"
+                  WHERE "primaryEmail" = {{ .Values.provision.account.email | squote }}
+                  LIMIT 1
+                )
               );
               {{ range .Values.provision.account.organizations }}
-                INSERT INTO "Organization" (name, created, updated) VALUES (
+                INSERT INTO "Organization" (id, created, updated) VALUES (
                   {{ . | squote }},
                   NOW(),
                   NOW()
@@ -49,18 +55,20 @@ spec:
                 INSERT INTO "Member" (created, updated, "UserId", "OrganizationId", role) VALUES (
                   NOW(),
                   NOW(),
-                  (SELECT id FROM "User" WHERE "primaryEmail" = {{ $.Values.provision.account.email | squote }} LIMIT 1)
+                  (
+                    SELECT id
+                    FROM "User"
+                    WHERE "primaryEmail" = {{ $.Values.provision.account.email | squote }}
+                    LIMIT 1
+                  ),
                   {{ . | squote }},
                   'Owner'
                 );
               {{ end }}
+              COMMIT;
           env:
             - name: PGHOST
               value: {{ .Values.postgresql.fullnameOverride }}
-            {{ if .Values.postgresSSL }}
-            - name: DATABASE_SSL
-              value: 'true'
-            {{ end }}
             - name: PGPORT
               value: {{ .Values.global.postgresql.servicePort | quote }}
             - name: PGDATABASE
