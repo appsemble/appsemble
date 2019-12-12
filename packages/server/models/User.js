@@ -18,6 +18,8 @@ export default sequelize => {
   );
 
   User.associate = ({
+    App,
+    AppMember,
     Organization,
     OAuthToken,
     OAuthAuthorization,
@@ -26,6 +28,7 @@ export default sequelize => {
     Member,
   }) => {
     User.belongsToMany(Organization, { through: Member });
+    User.belongsToMany(App, { through: AppMember });
     User.hasMany(OAuthToken);
     User.hasMany(OAuthAuthorization);
     User.hasMany(EmailAuthorization);
