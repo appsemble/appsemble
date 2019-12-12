@@ -189,7 +189,7 @@ changes.
 
 Appsemble relies on multiple domain names mapping to an instance. Typically, this is not supported
 on local development machines by default. It is recommended to use [Dnsmasq] to map all URLs ending
-on `.localhost` to `127.0.0.1` as per [RFC 2606].
+on `.localhost` to `127.0.0.1` as suggested by [RFC 2606].
 
 ### Network Manager
 
