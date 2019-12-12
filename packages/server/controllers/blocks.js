@@ -1,13 +1,19 @@
 import { logger } from '@appsemble/node-utils';
+import { permissions } from '@appsemble/utils';
 import Boom from '@hapi/boom';
 import { isEmpty } from 'lodash';
 import { DatabaseError, UniqueConstraintError } from 'sequelize';
+
+import checkRole from '../utils/checkRole';
 
 export async function createBlockDefinition(ctx) {
   const { BlockDefinition } = ctx.db.models;
   const { body } = ctx.request;
   const { id, description } = body;
   const blockDefinition = { description, id };
+  const [organizationId] = id.split('/');
+
+  await checkRole(ctx, organizationId.slice(1), permissions.PublishBlocks);
 
   try {
     await BlockDefinition.create(blockDefinition, { raw: true });
@@ -53,6 +59,8 @@ export async function createBlockVersion(ctx) {
   const { BlockAsset, BlockDefinition, BlockVersion } = db.models;
   const name = `@${organizationId}/${blockId}`;
   const { data, ...files } = ctx.request.body;
+
+  await checkRole(ctx, organizationId, permissions.PublishBlocks);
 
   if (isEmpty(files)) {
     throw Boom.badRequest('At least one file should be uploaded');

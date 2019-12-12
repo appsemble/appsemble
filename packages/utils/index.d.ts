@@ -10,6 +10,26 @@ interface Context {
   };
 }
 
+type Permission =
+  | 'ViewApps'
+  | 'ManageRoles'
+  | 'ManageMembers'
+  | 'PublishBlocks'
+  | 'CreateApps'
+  | 'EditApps'
+  | 'EditAppSettings'
+  | 'EditThemes'
+  | 'DeleteApps'
+  | 'PushNotifications'
+  | 'ManageResources';
+
+interface Role {
+  Member: Permission[];
+  AppEditor: Permission[];
+  Maintainer: Permission[];
+  Owner: Permission[];
+}
+
 export function compileFilters(mapperString: string, context?: Context): MapperFunction;
 
 export function remapData(mapperData: any, inputData: any, context?: Context): any;
@@ -25,3 +45,17 @@ export function validateStyle(css: string): string;
 export class StyleValidationError extends Error {}
 
 export const baseTheme: Theme;
+export const roles: Role;
+export const permissions: {
+  ViewApps: 'ViewApps';
+  ManageRoles: 'ManageRoles';
+  ManageMembers: 'ManageMembers';
+  PublishBlocks: 'PublishBlocks';
+  CreateApps: 'CreateApps';
+  EditApps: 'EditApps';
+  EditAppSettings: 'EditAppSettings';
+  EditThemes: 'EditThemes';
+  DeleteApps: 'DeleteApps';
+  PushNotifications: 'PushNotifications';
+  ManageResources: 'ManageResources';
+};

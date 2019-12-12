@@ -41,6 +41,34 @@ export default {
       security: [{ apiUser: [] }],
     },
   },
+  '/user/organizations': {
+    get: {
+      tags: ['template'],
+      description: "Fetch the logged in user's organizations.",
+      operationId: 'getUserOrganizations',
+      responses: {
+        200: {
+          description: 'The organizations the logged in user is a member of.',
+          content: {
+            'application/json': {
+              schema: {
+                type: 'array',
+                items: {
+                  type: 'object',
+                  properties: {
+                    id: { $ref: '#/components/schemas/Organization/properties/id' },
+                    name: { $ref: '#/components/schemas/Organization/properties/name' },
+                    role: { $ref: '#/components/schemas/Member/properties/role' },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+      security: [{ apiUser: [] }],
+    },
+  },
   '/user/email': {
     post: {
       tags: ['template'],

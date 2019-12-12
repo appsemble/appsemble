@@ -15,6 +15,7 @@ import ErrorFallback from '../ErrorFallback';
 import Login from '../Login';
 import Message from '../Message';
 import OrganizationInvite from '../OrganizationInvite';
+import OrganizationProvider from '../OrganizationProvider';
 import ProtectedRoute from '../ProtectedRoute';
 import Register from '../Register';
 import ResetPassword from '../ResetPassword';
@@ -43,29 +44,30 @@ export default class App extends React.Component {
     return (
       <IntlProvider defaultLocale="en-US" locale="en-US">
         <BrowserRouter>
-          <ErrorHandler fallback={ErrorFallback}>
-            <Helmet defaultTitle="Appsemble" titleTemplate="Appsemble · %s" />
-            <Toolbar />
-            <Switch>
-              <Route component={AppList} exact path="/apps" />
-              <ProtectedRoute component={Settings} path="/settings" />
-              <Route component={AppContext} path="/apps/:id(\d+)" />
-              <AnonymousRoute component={EditPassword} exact path="/edit-password" />
-              <ProtectedRoute component={OrganizationInvite} exact path="/organization-invite" />
-              <Route component={VerifyEmail} exact path="/verify" />
-              <Route component={AppList} exact path="/apps" />
-              <Route component={ConnectOAuth} exact path="/connect" />
-              <AnonymousRoute component={Login} exact path="/login" />
-              {settings.enableRegistration && (
-                <AnonymousRoute component={Register} exact path="/register" />
-              )}
-              <Route component={ResetPassword} exact path="/reset-password" />
-              <Route component={EditPassword} exact path="/edit-password" />
-              <Route component={VerifyEmail} exact path="/verify" />
-              <Redirect to="/apps" />
-            </Switch>
-            <Message />
-          </ErrorHandler>
+          <OrganizationProvider>
+            <ErrorHandler fallback={ErrorFallback}>
+              <Helmet defaultTitle="Appsemble" titleTemplate="Appsemble · %s" />
+              <Toolbar />
+              <Switch>
+                <Route component={AppList} exact path="/apps" />
+                <ProtectedRoute component={Settings} path="/settings" />
+                <Route component={AppContext} path="/apps/:id(\d+)" />
+                <AnonymousRoute component={EditPassword} exact path="/edit-password" />
+                <ProtectedRoute component={OrganizationInvite} exact path="/organization-invite" />
+                <Route component={VerifyEmail} exact path="/verify" />
+                <Route component={ConnectOAuth} exact path="/connect" />
+                <AnonymousRoute component={Login} exact path="/login" />
+                {settings.enableRegistration && (
+                  <AnonymousRoute component={Register} exact path="/register" />
+                )}
+                <Route component={ResetPassword} exact path="/reset-password" />
+                <Route component={EditPassword} exact path="/edit-password" />
+                <Route component={VerifyEmail} exact path="/verify" />
+                <Redirect to="/apps" />
+              </Switch>
+              <Message />
+            </ErrorHandler>
+          </OrganizationProvider>
         </BrowserRouter>
       </IntlProvider>
     );

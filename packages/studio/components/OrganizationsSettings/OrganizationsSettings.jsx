@@ -1,11 +1,13 @@
 import { CardFooterButton, Form, Icon, Input, Loader, Modal } from '@appsemble/react-components';
-import { normalize } from '@appsemble/utils';
+import { normalize, permissions, roles } from '@appsemble/utils';
 import axios from 'axios';
+import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import { requestUser } from '../../actions/user';
+import checkRole from '../../utils/checkRole';
 import HelmetIntl from '../HelmetIntl';
 import messages from './messages';
 import styles from './OrganizationsSettings.css';
@@ -20,8 +22,10 @@ export default class OrganizationsSettings extends Component {
 
   state = {
     loading: true,
+    organizations: [],
     selectedOrganization: undefined,
     submittingMember: false,
+    submittingRole: 0,
     removingMember: undefined,
     removingInvite: undefined,
     memberEmail: '',
@@ -38,19 +42,26 @@ export default class OrganizationsSettings extends Component {
 
     let selectedOrganization = '';
 
-    if (user.organizations.length) {
-      [{ id: selectedOrganization }] = user.organizations;
-      const { data: organization } = await axios.get(`/api/organizations/${selectedOrganization}`);
-      const organizations = user.organizations.map(org =>
-        org.id === organization.id ? organization : org,
+    let { data: organizations } = await axios.get('/api/user/organizations');
+    if (organizations.length) {
+      [{ id: selectedOrganization }] = organizations;
+      const { data: members } = await axios.get(
+        `/api/organizations/${selectedOrganization}/members`,
       );
-
-      updateUser({ ...user, organizations });
+      const { data: invites } = await axios.get(
+        `/api/organizations/${selectedOrganization}/invites`,
+      );
+      organizations = organizations.map(org =>
+        org.id === selectedOrganization
+          ? { ...org, members, invites }
+          : { ...org, members: [], invites: [] },
+      );
     }
 
     this.setState({
       loading: false,
       selectedOrganization,
+      organizations,
     });
   }
 
@@ -87,24 +98,26 @@ export default class OrganizationsSettings extends Component {
   };
 
   onOrganizationChange = async event => {
-    const { user, updateUser } = this.props;
-    const { organizations } = user;
+    this.setState({ loading: true });
+    const { organizations } = this.state;
     const organizationId = event.target.value;
-    const { data: organization } = await axios.get(`/api/organizations/${organizationId}`);
+    const { data: members } = await axios.get(`/api/organizations/${organizationId}/members`);
+    const { data: invites } = await axios.get(`/api/organizations/${organizationId}/invites`);
 
-    updateUser({
-      ...user,
-      organizations: organizations.map(org => (org.id === organizationId ? organization : org)),
+    this.setState({
+      loading: false,
+      selectedOrganization: organizationId,
+      organizations: organizations.map(org =>
+        org.id === organizationId ? { ...org, members, invites } : org,
+      ),
     });
-
-    this.setState({ selectedOrganization: organizationId });
   };
 
   onSubmitNewOrganization = async event => {
     event.preventDefault();
 
-    const { intl, push, user, updateUser } = this.props;
-    const { newOrganizationId, newOrganizationName } = this.state;
+    const { intl, push } = this.props;
+    const { organizations, newOrganizationId, newOrganizationName } = this.state;
 
     this.setState({ submittingOrganization: true });
 
@@ -114,13 +127,12 @@ export default class OrganizationsSettings extends Component {
         name: newOrganizationName,
       });
 
-      updateUser({ ...user, organizations: [...user.organizations, organization] });
-
       this.setState({
         newOrganizationId: '',
         newOrganizationName: '',
         submittingOrganization: false,
         selectedOrganization: organization.id,
+        organizations: [...organizations, organization],
       });
 
       push({
@@ -143,12 +155,11 @@ export default class OrganizationsSettings extends Component {
   onInviteMember = async event => {
     event.preventDefault();
 
-    const { intl, push, user, updateUser } = this.props;
-    const { selectedOrganization, memberEmail } = this.state;
+    const { intl, push } = this.props;
+    const { selectedOrganization, memberEmail, organizations } = this.state;
 
     this.setState({ submittingMember: true });
 
-    const { organizations } = user;
     const organization = organizations.find(o => o.id === selectedOrganization);
 
     if (organization.members.some(m => m.primaryEmail === memberEmail)) {
@@ -165,18 +176,14 @@ export default class OrganizationsSettings extends Component {
         email: memberEmail,
       });
 
-      updateUser({
-        ...user,
+      this.setState({
+        submittingMember: false,
+        memberEmail: '',
         organizations: organizations.map(o =>
           o.id === selectedOrganization
             ? { ...organization, invites: [...organization.invites, { email: memberEmail }] }
             : o,
         ),
-      });
-
-      this.setState({
-        submittingMember: false,
-        memberEmail: '',
       });
 
       push({
@@ -214,6 +221,48 @@ export default class OrganizationsSettings extends Component {
     push({ body: intl.formatMessage(messages.resendInvitationSent), color: 'info' });
   };
 
+  onChangeRole = async (event, userId) => {
+    event.preventDefault();
+    const { value: role } = event.target;
+    const { selectedOrganization, organizations } = this.state;
+    const { push, intl } = this.props;
+    this.setState({ submittingRole: userId });
+
+    try {
+      await axios.put(`/api/organizations/${selectedOrganization}/members/${userId}/role`, {
+        role,
+      });
+      this.setState({
+        submittingRole: 0,
+        organizations: organizations.map(organization =>
+          organization.id === selectedOrganization
+            ? {
+                ...organization,
+                members: organization.members.map(member =>
+                  member.id === userId ? { ...member, role } : member,
+                ),
+              }
+            : organization,
+        ),
+      });
+      const member = organizations
+        .find(org => org.id === selectedOrganization)
+        .members.find(m => m.id === userId);
+      push({
+        color: 'success',
+        body: intl.formatMessage(messages.changeRoleSuccess, {
+          name: member.name || member.primaryEmail || member.id,
+          role,
+        }),
+      });
+    } catch (error) {
+      push({ body: intl.formatMessage(messages.changeRoleError) });
+      this.setState({
+        submittingRole: 0,
+      });
+    }
+  };
+
   onRemoveMemberClick = async memberId => {
     this.setState({
       removingMember: memberId,
@@ -225,19 +274,18 @@ export default class OrganizationsSettings extends Component {
   };
 
   onLeaveOrganization = async () => {
-    const { selectedOrganization } = this.state;
-    const { intl, push, user, updateUser } = this.props;
+    const { selectedOrganization, organizations } = this.state;
+    const { intl, push, user } = this.props;
 
     await axios.delete(`/api/organizations/${selectedOrganization}/members/${user.id}`);
 
-    const { organizations } = user;
     const organization = organizations.find(o => o.id === selectedOrganization);
     const newOrganizations = organizations.filter(o => o.id !== selectedOrganization);
 
-    updateUser({ ...user, organizations: newOrganizations });
     this.setState({
       removingMember: undefined,
       selectedOrganization: newOrganizations[0]?.id,
+      organizations: newOrganizations,
     });
     push({
       body: intl.formatMessage(messages.leaveOrganizationSuccess, {
@@ -248,24 +296,19 @@ export default class OrganizationsSettings extends Component {
   };
 
   onRemoveMember = async () => {
-    const { removingMember, selectedOrganization } = this.state;
-    const { intl, push, user, updateUser } = this.props;
+    const { removingMember, selectedOrganization, organizations } = this.state;
+    const { intl, push, user } = this.props;
 
     await axios.delete(`/api/organizations/${selectedOrganization}/members/${removingMember}`);
 
-    const { organizations } = user;
     const organization = organizations.find(o => o.id === selectedOrganization);
     const filteredMembers = organization.members.filter(m => m.id !== removingMember);
 
-    updateUser({
-      ...user,
+    this.setState({
+      removingMember: undefined,
       organizations: organizations.map(o =>
         o.id === organization.id ? { ...organization, members: filteredMembers } : o,
       ),
-    });
-
-    this.setState({
-      removingMember: undefined,
     });
 
     push({
@@ -278,24 +321,22 @@ export default class OrganizationsSettings extends Component {
   };
 
   onRemoveInvite = async () => {
-    const { selectedOrganization, removingInvite } = this.state;
-    const { intl, push, user, updateUser } = this.props;
+    const { selectedOrganization, removingInvite, organizations } = this.state;
+    const { intl, push } = this.props;
 
-    const { organizations } = user;
     const organization = organizations.find(o => o.id === selectedOrganization);
     const filteredInvites = organization.invites.filter(m => m.email !== removingInvite.email);
-
-    updateUser({
-      ...user,
-      organizations: organizations.map(o =>
-        o.id === organization.id ? { ...organization, invites: filteredInvites } : o,
-      ),
-    });
 
     await axios.delete(`/api/organizations/${selectedOrganization}/invites`, {
       data: removingInvite,
     });
-    this.setState({ removingInvite: undefined });
+
+    this.setState({
+      removingInvite: undefined,
+      organizations: organizations.map(o =>
+        o.id === organization.id ? { ...organization, invites: filteredInvites } : o,
+      ),
+    });
 
     push({
       body: intl.formatMessage(messages.removeInviteSuccess),
@@ -317,11 +358,13 @@ export default class OrganizationsSettings extends Component {
       selectedOrganization,
       memberEmail,
       submittingMember,
+      submittingRole,
       removingMember,
       removingInvite,
       newOrganizationId,
       newOrganizationName,
       submittingOrganization,
+      organizations,
     } = this.state;
     const { intl, user } = this.props;
 
@@ -329,14 +372,15 @@ export default class OrganizationsSettings extends Component {
       return <Loader />;
     }
 
-    const { organizations } = user;
     const organization = organizations.find(o => o.id === selectedOrganization);
+    const { role } = organization?.members.find(u => u.id === user.id) || {};
+    const canManageMembers = role && checkRole(role, permissions.ManageMembers);
+    const canManageRoles = role && checkRole(role, permissions.ManageRoles);
 
     return (
       <>
         <div className="content">
           <HelmetIntl title={messages.title} />
-
           <h2>
             <FormattedMessage {...messages.createOrganization} />
           </h2>
@@ -397,24 +441,26 @@ export default class OrganizationsSettings extends Component {
                 </div>
               </div>
 
-              <Form onSubmit={this.onInviteMember}>
-                <Input
-                  disabled={submittingMember}
-                  iconLeft="envelope"
-                  label={<FormattedMessage {...messages.addMemberEmail} />}
-                  name="memberEmail"
-                  onChange={this.onMemberEmailChange}
-                  placeholder={intl.formatMessage(messages.email)}
-                  required
-                  type="email"
-                  value={memberEmail}
-                />
-                <div className="control">
-                  <button className="button is-primary" disabled={submittingMember} type="submit">
-                    <FormattedMessage {...messages.inviteMember} />
-                  </button>
-                </div>
-              </Form>
+              {canManageMembers && (
+                <Form onSubmit={this.onInviteMember}>
+                  <Input
+                    disabled={submittingMember}
+                    iconLeft="envelope"
+                    label={<FormattedMessage {...messages.addMemberEmail} />}
+                    name="memberEmail"
+                    onChange={this.onMemberEmailChange}
+                    placeholder={intl.formatMessage(messages.email)}
+                    required
+                    type="email"
+                    value={memberEmail}
+                  />
+                  <div className="control">
+                    <button className="button is-primary" disabled={submittingMember} type="submit">
+                      <FormattedMessage {...messages.inviteMember} />
+                    </button>
+                  </div>
+                </Form>
+              )}
 
               <h3>
                 <FormattedMessage
@@ -447,20 +493,46 @@ export default class OrganizationsSettings extends Component {
                         </div>
                       </td>
                       <td className="has-text-right">
-                        <FormattedMessage {...messages.member} />
-                        <div className={`field is-grouped ${styles.tags}`}>
-                          {member.id === user.id && organization.members.length > 1 && (
-                            <p className={`control ${styles.memberButton}`}>
-                              <button
-                                className="button is-danger"
-                                onClick={() => this.onRemoveMemberClick(member.id)}
-                                type="button"
+                        {canManageRoles ? (
+                          <div className="control is-inline">
+                            <div
+                              className={classNames('select', {
+                                'is-loading': submittingRole === member.id,
+                              })}
+                            >
+                              <select
+                                defaultValue={member.role}
+                                disabled={member.id === user.id || submittingRole === member.id}
+                                onChange={event => this.onChangeRole(event, member.id)}
                               >
-                                <Icon icon="sign-out-alt" size="small" />
-                              </button>
-                            </p>
-                          )}
-                          {member.id !== user.id && (
+                                {Object.keys(roles).map(r => (
+                                  <option key={r} value={r}>
+                                    {intl.formatMessage(messages[r])}
+                                  </option>
+                                ))}
+                              </select>
+                            </div>
+                          </div>
+                        ) : (
+                          <FormattedMessage {...messages[member.role]} />
+                        )}
+                        <div className={`field is-grouped ${styles.tags}`}>
+                          {member.id === user.id &&
+                            organization.members.length > 1 &&
+                            organization.members.some(m =>
+                              checkRole(m.role, permissions.ManageRoles),
+                            ) && (
+                              <p className={`control ${styles.memberButton}`}>
+                                <button
+                                  className="button is-danger"
+                                  onClick={() => this.onRemoveMemberClick(member.id)}
+                                  type="button"
+                                >
+                                  <Icon icon="sign-out-alt" size="small" />
+                                </button>
+                              </p>
+                            )}
+                          {member.id !== user.id && canManageMembers && (
                             <p className={`control ${styles.memberButton}`}>
                               <button
                                 className="button is-danger"
@@ -479,26 +551,30 @@ export default class OrganizationsSettings extends Component {
                     <tr key={invite.email}>
                       <td>{invite.email}</td>
                       <td className="has-text-right">
-                        <div className={`field is-grouped ${styles.tags}`}>
-                          <p className={`control ${styles.memberButton}`}>
-                            <button
-                              className="control button is-outlined"
-                              onClick={() => this.resendInvitation(invite)}
-                              type="button"
-                            >
-                              <FormattedMessage {...messages.resendInvitation} />
-                            </button>
-                          </p>
-                          <p className={`control ${styles.memberButton}`}>
-                            <button
-                              className="button is-danger"
-                              onClick={() => this.onRemoveInviteClick(invite)}
-                              type="button"
-                            >
-                              <Icon icon="trash-alt" size="small" />
-                            </button>
-                          </p>
-                        </div>
+                        {canManageMembers ? (
+                          <div className={`field is-grouped ${styles.tags}`}>
+                            <p className={`control ${styles.memberButton}`}>
+                              <button
+                                className="control button is-outlined"
+                                onClick={() => this.resendInvitation(invite)}
+                                type="button"
+                              >
+                                <FormattedMessage {...messages.resendInvitation} />
+                              </button>
+                            </p>
+                            <p className={`control ${styles.memberButton}`}>
+                              <button
+                                className="button is-danger"
+                                onClick={() => this.onRemoveInviteClick(invite)}
+                                type="button"
+                              >
+                                <Icon icon="trash-alt" size="small" />
+                              </button>
+                            </p>
+                          </div>
+                        ) : (
+                          <FormattedMessage {...messages.invited} />
+                        )}
                       </td>
                     </tr>
                   ))}
