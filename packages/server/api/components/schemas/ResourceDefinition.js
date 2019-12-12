@@ -1,3 +1,11 @@
+const roles = {
+  type: 'array',
+  description: 'The list of roles that are allowed to use this call.',
+  items: {
+    type: 'string',
+  },
+};
+
 export default {
   type: 'object',
   additionalProperties: true,
@@ -20,6 +28,7 @@ export default {
     query: {
       type: 'object',
       description: "Overrides for 'query' requests.",
+      roles,
       properties: {
         method: {
           type: 'string',
@@ -36,6 +45,7 @@ export default {
     get: {
       type: 'object',
       description: "Overrides for 'get' requests.",
+      roles,
       properties: {
         method: {
           type: 'string',
@@ -52,6 +62,7 @@ export default {
     create: {
       type: 'object',
       description: "Overrides for 'create' requests.",
+      roles,
       properties: {
         method: {
           type: 'string',
@@ -68,6 +79,7 @@ export default {
     update: {
       type: 'object',
       description: "Overrides for 'update' requests.",
+      roles,
       properties: {
         method: {
           type: 'string',
@@ -84,6 +96,7 @@ export default {
     delete: {
       type: 'object',
       description: "Overrides for 'delete' requests.",
+      roles,
       properties: {
         method: {
           type: 'string',

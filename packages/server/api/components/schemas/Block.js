@@ -26,6 +26,15 @@ export default {
       $ref: '#/components/schemas/BlockVersion/properties/version',
       description: 'The block version to use.',
     },
+    roles: {
+      type: 'array',
+      description: `The list of roles that are allowed to view this block.
+
+      If a user does not have the right role, the block is not rendered.`,
+      items: {
+        type: 'string',
+      },
+    },
     parameters: {
       type: 'object',
       description: `A free form mapping of named paramters.
