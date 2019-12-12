@@ -63,7 +63,7 @@ export function getOpenApiSpec(): OpenAPIThunk {
       type: GET_START,
     });
     try {
-      const { data } = await axios.get('/api.json');
+      const { data } = await axios.get('/api/api.json');
       const spec = await RefParser.dereference(data);
       dispatch({
         type: GET_SUCCESS,
