@@ -22,8 +22,9 @@ spec:
         - name: {{ include "appsemble.fullname" . }}-provision
           image: "bitnami/postgresql:11"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          args:
+          command:
             - psql
+          args:
             - "--command"
             - |
               BEGIN;
