@@ -56,7 +56,7 @@ export async function createTemplateApp(ctx) {
     throw Boom.forbidden('User does not belong in this organization.');
   }
 
-  await checkRole(ctx, template.OrganizationId, permissions.EditApps);
+  await checkRole(ctx, organizationId, permissions.CreateApps);
 
   if (!template) {
     throw Boom.notFound(`Template with ID ${templateId} does not exist.`);
