@@ -36,6 +36,29 @@ export default {
       },
     },
   },
+  '/organizations/{organizationId}/members': {
+    parameters: [{ $ref: '#/components/parameters/organizationId' }],
+    get: {
+      tags: ['organization'],
+      description: 'Get a list of organization members.',
+      operationId: 'getMembers',
+      responses: {
+        200: {
+          description: 'The list of all members.',
+          content: {
+            'application/json': {
+              schema: {
+                type: 'array',
+                items: {
+                  $ref: '#/components/schemas/Member',
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
   '/organizations/{organizationId}/invites/resend': {
     parameters: [{ $ref: '#/components/parameters/organizationId' }],
     post: {
@@ -64,6 +87,7 @@ export default {
           description: 'The invite has been sent.',
         },
       },
+      security: [{ apiUser: [] }],
     },
   },
   '/organizations/{organizationId}/join': {
@@ -104,6 +128,32 @@ export default {
   },
   '/organizations/{organizationId}/invites': {
     parameters: [{ $ref: '#/components/parameters/organizationId' }],
+    get: {
+      tags: ['organization'],
+      description: 'Get a list of invited organization members.',
+      operationId: 'getInvites',
+      responses: {
+        200: {
+          description: 'The list of all invites.',
+          content: {
+            'application/json': {
+              schema: {
+                type: 'array',
+                items: {
+                  type: 'object',
+                  properties: {
+                    email: {
+                      type: 'string',
+                      format: 'email',
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
     post: {
       tags: ['organization'],
       description: 'Invite a new member to the organization that matches the given id.',
@@ -193,6 +243,53 @@ export default {
       security: [{ apiUser: [] }],
     },
   },
+  '/organizations/{organizationId}/members/{memberId}/role': {
+    parameters: [
+      { $ref: '#/components/parameters/organizationId' },
+      {
+        name: 'memberId',
+        in: 'path',
+        description: 'The ID of the member',
+        required: true,
+        schema: { $ref: '#/components/schemas/User/properties/id' },
+      },
+    ],
+    put: {
+      tags: ['organization'],
+      description: 'Set the role of the member within the organization.',
+      operationId: 'setRole',
+      requestBody: {
+        description: 'The role to set.',
+        required: true,
+        content: {
+          'application/json': {
+            schema: {
+              type: 'object',
+              required: ['role'],
+              properties: {
+                role: {
+                  type: 'string',
+                },
+              },
+            },
+          },
+        },
+      },
+      responses: {
+        200: {
+          description: 'The member’s role has been successfully updated.',
+          content: {
+            'application/json': {
+              schema: {
+                $ref: '#/components/schemas/Member',
+              },
+            },
+          },
+        },
+      },
+      security: [{ apiUser: [] }],
+    },
+  },
   '/organizations/{organizationId}/style/shared': {
     parameters: [{ $ref: '#/components/parameters/organizationId' }],
     get: {
@@ -224,6 +321,9 @@ export default {
                   format: 'binary',
                 },
               },
+            },
+            encoding: {
+              style: { contentType: 'text/css' },
             },
           },
         },

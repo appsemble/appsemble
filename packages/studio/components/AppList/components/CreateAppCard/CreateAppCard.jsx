@@ -22,7 +22,7 @@ export default class CreateAppCard extends React.Component {
     intl: PropTypes.shape().isRequired,
     match: PropTypes.shape().isRequired,
     push: PropTypes.func.isRequired,
-    user: PropTypes.shape().isRequired,
+    organizations: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   };
 
   state = {
@@ -67,7 +67,7 @@ export default class CreateAppCard extends React.Component {
       push,
       match,
       intl: { formatMessage },
-      user,
+      organizations,
     } = this.props;
     const {
       appName,
@@ -89,7 +89,7 @@ export default class CreateAppCard extends React.Component {
           description: appDescription,
           resources: resources && includeResources,
         },
-        user.organizations[selectedOrganization],
+        organizations[selectedOrganization],
       );
 
       history.push(`${match.url}/${app.id}/edit`);
@@ -115,7 +115,7 @@ export default class CreateAppCard extends React.Component {
   render() {
     const {
       intl: { formatMessage },
-      user,
+      organizations,
     } = this.props;
     const {
       modalOpen,
@@ -165,14 +165,14 @@ export default class CreateAppCard extends React.Component {
                 value={appName}
               />
               <Select
-                disabled={user.organizations.length === 1}
+                disabled={organizations.length === 1}
                 label={<FormattedMessage {...messages.organization} />}
                 name="selectedOrganization"
                 onChange={this.onChange}
                 required
                 value={selectedOrganization}
               >
-                {user.organizations.map((organization, index) => (
+                {organizations.map((organization, index) => (
                   <option key={organization.id} value={index}>
                     {organization.id}
                   </option>

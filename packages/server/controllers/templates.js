@@ -1,9 +1,10 @@
-import { normalize } from '@appsemble/utils';
+import { normalize, permissions } from '@appsemble/utils';
 import Boom from '@hapi/boom';
 import crypto from 'crypto';
 import { col, fn, UniqueConstraintError } from 'sequelize';
 import { generateVAPIDKeys } from 'web-push';
 
+import checkRole from '../utils/checkRole';
 import getAppFromRecord from '../utils/getAppFromRecord';
 
 export async function getAppTemplates(ctx) {
@@ -54,6 +55,8 @@ export async function createTemplateApp(ctx) {
   if (!user.organizations.some(organization => organization.id === organizationId)) {
     throw Boom.forbidden('User does not belong in this organization.');
   }
+
+  await checkRole(ctx, organizationId, permissions.CreateApps);
 
   if (!template) {
     throw Boom.notFound(`Template with ID ${templateId} does not exist.`);
