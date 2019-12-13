@@ -9,6 +9,6 @@ module.exports = {
   },
   restoreMocks: true,
   snapshotSerializers: ['enzyme-to-json/serializer'],
-  setupFilesAfterEnv: ['<rootDir>/config/jest/setupFilesAfterEnv.ts'],
+  setupFilesAfterEnv: ['<rootDir>/packages/jest-config/setupFilesAfterEnv.ts'],
   testURL: 'http://localhost',
 };
