@@ -12,6 +12,7 @@ import Page from './Page';
 import Rating from './Rating';
 import Resource from './Resource';
 import ResourceDefinition from './ResourceDefinition';
+import Security from './Security';
 import SubPage from './SubPage';
 import Theme from './Theme';
 import User from './User';
@@ -24,6 +25,7 @@ export default {
   BlockVersion,
   Color,
   Error,
+  Security,
   SubPage,
   Health,
   Member,
