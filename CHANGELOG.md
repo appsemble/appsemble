@@ -9,8 +9,17 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
+- CLI: Add `--migrate-to` flag for the `start` command.
 - CLI: Add support for `--build` flags for `appsemble block register`, and
   `appsemble block publish`.
+- Server: Allow `next` as a migration version. This will migrate to the latest version, even if it’s
+  unreleased.
+- Server: Add role support to organizations. All current organization members default to the “Owner”
+  role.
+- Studio: Add support for organization members with the “Owner” role to assign the roles of new
+  members.
+- Studio: Add role detection for several pages in order to ensure users can’t access pages their
+  role does not allow the usage of.
 
 ## [0.9.5] - 2019-12-02
 

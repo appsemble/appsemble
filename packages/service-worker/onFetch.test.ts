@@ -121,7 +121,7 @@ it('should pass through other API requests', async () => {
 });
 
 it('should pass through API explorer requests', async () => {
-  const request = new Request('/api-explorer');
+  const request = new Request('/api/explorer');
   await trigger('fetch', request);
   expect(utils.cacheFirst).not.toHaveBeenCalled();
   expect(utils.requestFirst).not.toHaveBeenCalled();

@@ -1,4 +1,4 @@
-import { roles } from '@appsemble/utils/constants/roles';
+import { roles } from '@appsemble/utils';
 import { DataTypes } from 'sequelize';
 
 export default sequelize => {

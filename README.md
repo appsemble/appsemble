@@ -9,7 +9,7 @@ be found in the [server readme](server/README.md).
 
 A live deployment is made for each branch. Each deployment has their own subdomain of
 _appsemble.app_. The live preview for the master branch can be found on
-https://staging.appsemble.app.
+https://staging.appsemble.review.
 
 ### Requirements
 
@@ -144,5 +144,5 @@ Please read our [contributing guidelines](./CONTRIBUTING.md).
 [docker]: https://docker.com
 [docker compose]: https://docs.docker.com/compose
 [jest cli options]: https://jestjs.io/docs/en/cli
-[nodejs 10]: https://nodejs.org
+[nodejs]: https://nodejs.org
 [yarn]: https://yarnpkg.com

@@ -1,6 +1,5 @@
 {
   "extends": "../../tsconfig",
-  "exclude": [],
   "compilerOptions": {
     "lib": ["esnext"],
     "types": ["jest"]

@@ -1,5 +1,5 @@
 import { Icon, Loader } from '@appsemble/react-components';
-import { permissions } from '@appsemble/utils/constants/roles';
+import { permissions } from '@appsemble/utils';
 import axios from 'axios';
 import PropTypes from 'prop-types';
 import React from 'react';

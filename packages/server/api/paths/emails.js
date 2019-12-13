@@ -1,5 +1,5 @@
 export default {
-  '/api/email': {
+  '/email': {
     post: {
       tags: ['user'],
       description: 'Register a new account using an email address and a password.',
@@ -32,7 +32,7 @@ export default {
       },
     },
   },
-  '/api/email/verify': {
+  '/email/verify': {
     post: {
       tags: ['user'],
       description: 'Verify the email address of a registered user.',
@@ -61,7 +61,7 @@ export default {
       },
     },
   },
-  '/api/email/resend': {
+  '/email/resend': {
     post: {
       tags: ['user'],
       description: 'Resend the verification code for a registered email.',
@@ -91,7 +91,7 @@ export default {
       security: [{ studio: [] }],
     },
   },
-  '/api/email/reset/request': {
+  '/email/reset/request': {
     post: {
       tags: ['user'],
       description: 'Request a reset token for resetting passwords.',
@@ -120,7 +120,7 @@ export default {
       },
     },
   },
-  '/api/email/reset': {
+  '/email/reset': {
     post: {
       tags: ['user'],
       description: 'Reset a password using a password reset token.',

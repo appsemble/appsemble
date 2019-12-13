@@ -1,6 +1,7 @@
 import { createInstance } from 'axios-test-instance';
 import FormData from 'form-data';
 import fs from 'fs-extra';
+import jwt from 'jsonwebtoken';
 import path from 'path';
 
 import createServer from '../utils/createServer';
@@ -13,9 +14,12 @@ describe('blocks', () => {
   let server;
   let instance;
   let headers;
+  let userId;
+  let Organization;
 
   beforeAll(async () => {
     db = await testSchema('blocks');
+    ({ Organization } = db.models);
 
     server = await createServer({ db, argv: { host: window.location, secret: 'test' } });
   }, 10e3);
@@ -36,6 +40,9 @@ describe('blocks', () => {
   });
 
   it('should be possible to register a block definition', async () => {
+    const organization = await Organization.create({ id: 'appsemble' });
+    await organization.addUser(userId, { through: { role: 'Maintainer' } });
+
     const { data } = await instance.post(
       '/api/blocks',
       {
@@ -52,6 +59,9 @@ describe('blocks', () => {
   });
 
   it('should not be possible to register the same block definition twice', async () => {
+    const organization = await Organization.create({ id: 'appsemble' });
+    await organization.addUser(userId, { through: { role: 'Maintainer' } });
+
     await instance.post(
       '/api/blocks',
       {
@@ -78,6 +88,9 @@ describe('blocks', () => {
   });
 
   it('should be possible to retrieve a block definition', async () => {
+    const organization = await Organization.create({ id: 'appsemble' });
+    await organization.addUser(userId, { through: { role: 'Maintainer' } });
+
     const { data: original } = await instance.post(
       '/api/blocks',
       {
@@ -101,6 +114,9 @@ describe('blocks', () => {
   });
 
   it('should be possible to query block definitions', async () => {
+    const organization = await Organization.create({ id: 'appsemble' });
+    await organization.addUser(userId, { through: { role: 'Maintainer' } });
+
     const { data: apple } = await instance.post(
       '/api/blocks',
       {
@@ -124,6 +140,9 @@ describe('blocks', () => {
   });
 
   it('should be possible to upload block versions where data is sent as the first parameter', async () => {
+    const organization = await Organization.create({ id: 'xkcd' });
+    await organization.addUser(userId, { through: { role: 'Maintainer' } });
+
     await instance.post('/api/blocks', { id: '@xkcd/standing' }, headers);
 
     const formData = new FormData();
@@ -155,6 +174,9 @@ describe('blocks', () => {
   });
 
   it('should be possible to fetch uploaded block versions', async () => {
+    const organization = await Organization.create({ id: 'xkcd' });
+    await organization.addUser(userId, { through: { role: 'Maintainer' } });
+
     await instance.post('/api/blocks', { id: '@xkcd/standing' }, headers);
 
     const formData = new FormData();
@@ -187,6 +209,9 @@ describe('blocks', () => {
   });
 
   it('should be possible to upload block versions where data is sent as the last parameter', async () => {
+    const organization = await Organization.create({ id: 'xkcd' });
+    await organization.addUser(userId, { through: { role: 'Maintainer' } });
+
     await instance.post('/api/blocks', { id: '@xkcd/standing' }, headers);
 
     const formData = new FormData();
@@ -217,6 +242,9 @@ describe('blocks', () => {
   });
 
   it('should not be possible to register the same block version twice', async () => {
+    const organization = await Organization.create({ id: 'xkcd' });
+    await organization.addUser(userId, { through: { role: 'Maintainer' } });
+
     await instance.post(
       '/api/blocks',
       {
@@ -264,6 +292,9 @@ describe('blocks', () => {
   });
 
   it('should require at least one file', async () => {
+    const organization = await Organization.create({ id: 'xkcd' });
+    await organization.addUser(userId, { through: { role: 'Maintainer' } });
+
     await instance.post('/api/blocks', { id: '@xkcd/standing' }, headers);
     const formData = new FormData();
     formData.append('data', JSON.stringify({ version: '1.32.9' }));
@@ -281,6 +312,9 @@ describe('blocks', () => {
   });
 
   it('should be possible to retrieve block versions', async () => {
+    const organization = await Organization.create({ id: 'xkcd' });
+    await organization.addUser(userId, { through: { role: 'Maintainer' } });
+
     await instance.post('/api/blocks', { id: '@xkcd/standing' }, headers);
 
     const formData = new FormData();
@@ -317,6 +351,9 @@ describe('blocks', () => {
   });
 
   it('should be possible to download block assets', async () => {
+    const organization = await Organization.create({ id: 'xkcd' });
+    await organization.addUser(userId, { through: { role: 'Maintainer' } });
+
     await instance.post('/api/blocks', { id: '@xkcd/standing' }, headers);
 
     const formData = new FormData();

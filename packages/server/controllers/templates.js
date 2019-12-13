@@ -1,5 +1,4 @@
-import { normalize } from '@appsemble/utils';
-import { permissions } from '@appsemble/utils/constants/roles';
+import { normalize, permissions } from '@appsemble/utils';
 import Boom from '@hapi/boom';
 import crypto from 'crypto';
 import { col, fn, UniqueConstraintError } from 'sequelize';
@@ -57,7 +56,7 @@ export async function createTemplateApp(ctx) {
     throw Boom.forbidden('User does not belong in this organization.');
   }
 
-  await checkRole(ctx, template.OrganizationId, permissions.EditApps);
+  await checkRole(ctx, organizationId, permissions.CreateApps);
 
   if (!template) {
     throw Boom.notFound(`Template with ID ${templateId} does not exist.`);

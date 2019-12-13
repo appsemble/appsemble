@@ -1,5 +1,5 @@
 export default {
-  '/api/organizations': {
+  '/organizations': {
     post: {
       tags: ['organization'],
       description: 'Create a new organization.',
@@ -23,7 +23,7 @@ export default {
       security: [{ studio: [] }],
     },
   },
-  '/api/organizations/{organizationId}': {
+  '/organizations/{organizationId}': {
     parameters: [{ $ref: '#/components/parameters/organizationId' }],
     get: {
       tags: ['organization'],
@@ -37,7 +37,7 @@ export default {
       security: [{ studio: [] }],
     },
   },
-  '/api/organizations/{organizationId}/members': {
+  '/organizations/{organizationId}/members': {
     parameters: [{ $ref: '#/components/parameters/organizationId' }],
     get: {
       tags: ['organization'],
@@ -60,7 +60,7 @@ export default {
       },
     },
   },
-  '/api/organizations/{organizationId}/invites/resend': {
+  '/organizations/{organizationId}/invites/resend': {
     parameters: [{ $ref: '#/components/parameters/organizationId' }],
     post: {
       tags: ['organization'],
@@ -91,7 +91,7 @@ export default {
       security: [{ studio: [] }],
     },
   },
-  '/api/organizations/{organizationId}/join': {
+  '/organizations/{organizationId}/join': {
     parameters: [{ $ref: '#/components/parameters/organizationId' }],
     post: {
       tags: ['organization'],
@@ -127,7 +127,7 @@ export default {
       security: [{ studio: [] }],
     },
   },
-  '/api/organizations/{organizationId}/invites': {
+  '/organizations/{organizationId}/invites': {
     parameters: [{ $ref: '#/components/parameters/organizationId' }],
     get: {
       tags: ['organization'],
@@ -221,7 +221,7 @@ export default {
       security: [{ studio: [] }],
     },
   },
-  '/api/organizations/{organizationId}/members/{memberId}': {
+  '/organizations/{organizationId}/members/{memberId}': {
     parameters: [
       { $ref: '#/components/parameters/organizationId' },
       {
@@ -244,7 +244,54 @@ export default {
       security: [{ studio: [] }],
     },
   },
-  '/api/organizations/{organizationId}/style/shared': {
+  '/organizations/{organizationId}/members/{memberId}/role': {
+    parameters: [
+      { $ref: '#/components/parameters/organizationId' },
+      {
+        name: 'memberId',
+        in: 'path',
+        description: 'The ID of the member',
+        required: true,
+        schema: { $ref: '#/components/schemas/User/properties/id' },
+      },
+    ],
+    put: {
+      tags: ['organization'],
+      description: 'Set the role of the member within the organization.',
+      operationId: 'setRole',
+      requestBody: {
+        description: 'The role to set.',
+        required: true,
+        content: {
+          'application/json': {
+            schema: {
+              type: 'object',
+              required: ['role'],
+              properties: {
+                role: {
+                  type: 'string',
+                },
+              },
+            },
+          },
+        },
+      },
+      responses: {
+        200: {
+          description: 'The member’s role has been successfully updated.',
+          content: {
+            'application/json': {
+              schema: {
+                $ref: '#/components/schemas/Member',
+              },
+            },
+          },
+        },
+      },
+      security: [{ apiUser: [] }],
+    },
+  },
+  '/organizations/{organizationId}/style/shared': {
     parameters: [{ $ref: '#/components/parameters/organizationId' }],
     get: {
       tags: ['organization'],
@@ -276,6 +323,9 @@ export default {
                 },
               },
             },
+            encoding: {
+              style: { contentType: 'text/css' },
+            },
           },
         },
       },
@@ -287,7 +337,7 @@ export default {
       security: [{ cli: ['organizations:styles:write'] }],
     },
   },
-  '/api/organizations/{organizationId}/style/core': {
+  '/organizations/{organizationId}/style/core': {
     parameters: [{ $ref: '#/components/parameters/organizationId' }],
     get: {
       tags: ['organization'],
@@ -330,7 +380,7 @@ export default {
       security: [{ cli: ['organizations:styles:write'] }],
     },
   },
-  '/api/organizations/{organizationId}/style/block/@{blockOrganizationId}/{blockId}': {
+  '/organizations/{organizationId}/style/block/@{blockOrganizationId}/{blockId}': {
     parameters: [
       { $ref: '#/components/parameters/organizationId' },
       {

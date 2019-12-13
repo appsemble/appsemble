@@ -7,7 +7,6 @@ import Koa from 'koa';
 
 import api from '../api';
 import migrations from '../migrations';
-import pkg from '../package.json';
 import addDBHooks from '../utils/addDBHooks';
 import createServer from '../utils/createServer';
 import migrate from '../utils/migrate';
@@ -99,7 +98,7 @@ export function builder(yargs) {
     });
 }
 
-export async function handler(argv, { webpackConfigs, syncDB } = {}) {
+export async function handler(argv, { webpackConfigs } = {}) {
   let db;
 
   try {
@@ -116,8 +115,8 @@ export async function handler(argv, { webpackConfigs, syncDB } = {}) {
     handleDbException(dbException);
   }
 
-  if (syncDB) {
-    await migrate(db, pkg.version, migrations);
+  if (argv.migrateTo) {
+    await migrate(db, argv.migrateTo, migrations);
   }
 
   await addDBHooks(db, argv);

@@ -1,5 +1,5 @@
 export default {
-  '/api/oauth2/client-credentials': {
+  '/oauth2/client-credentials': {
     post: {
       description: 'Register new OAuth2 client credentials for the authenticated user.',
       tags: ['oauth2'],
@@ -51,7 +51,7 @@ export default {
       security: [{ studio: [] }],
     },
   },
-  '/api/oauth2/client-credentials/{clientId}': {
+  '/oauth2/client-credentials/{clientId}': {
     parameters: [
       {
         name: 'clientId',
@@ -74,7 +74,7 @@ export default {
       security: [{ studio: [] }],
     },
   },
-  '/api/oauth2/connect/pending': {
+  '/oauth2/connect/pending': {
     get: {
       parameters: [{ name: 'state' }],
       description: 'Get an OAuth2 profile which is pending connection to an Appsemble account',
@@ -127,7 +127,7 @@ export default {
       security: [{ studio: [] }, {}],
     },
   },
-  '/api/oauth/register': {
+  '/oauth/register': {
     post: {
       description: 'Register a new account using OAuth2 credentials',
       operationId: 'registerOAuth',
@@ -167,7 +167,7 @@ export default {
       },
     },
   },
-  '/api/oauth/connect': {
+  '/oauth/connect': {
     post: {
       description: 'Connect an existing account with new OAuth2 credentials',
       operationId: 'connectOAuth',

@@ -1,28 +1,16 @@
-const ViewApps = 'ViewApps';
-const ManageRoles = 'ManageRoles';
-const ManageMembers = 'ManageMembers';
-const PublishBlocks = 'PublishBlocks';
-const CreateApps = 'CreateApps';
-const EditApps = 'EditApps';
-const EditAppSettings = 'EditAppSettings';
-const EditThemes = 'EditThemes';
-const DeleteApps = 'DeleteApps';
-const PushNotifications = 'PushNotifications';
-const ManageResources = 'ManageResources';
-
-export const permissions = {
-  ViewApps,
-  ManageRoles,
-  ManageMembers,
-  PublishBlocks,
+import {
   CreateApps,
+  DeleteApps,
   EditApps,
   EditAppSettings,
   EditThemes,
-  DeleteApps,
-  PushNotifications,
+  ManageMembers,
   ManageResources,
-};
+  ManageRoles,
+  PublishBlocks,
+  PushNotifications,
+  ViewApps,
+} from './permissions';
 
 const Member = [ViewApps];
 const AppEditor = [...Member, EditApps, PushNotifications];
@@ -38,7 +26,7 @@ const Maintainer = [
 ];
 const Owner = [...Maintainer, ManageMembers, ManageRoles];
 
-export const roles = {
+export default {
   Member,
   AppEditor,
   Maintainer,

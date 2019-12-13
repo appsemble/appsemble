@@ -4,9 +4,12 @@ import { withRouter } from 'react-router-dom';
 import { getApp } from '../../actions/apps';
 import AppContext from './AppContext';
 
-function mapStateToProps(state) {
+function mapStateToProps(state, ownProps) {
   return {
-    ready: !!state.apps.apps.length,
+    app:
+      state.apps.apps.length &&
+      state.apps.apps.find(app => app.id === Number(ownProps.match.params.id)),
+    ready: !!(state.apps.apps.length && state.user.initialized),
   };
 }
 

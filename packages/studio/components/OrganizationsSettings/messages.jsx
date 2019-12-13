@@ -2,6 +2,8 @@ import { defineMessages } from 'react-intl';
 
 export default defineMessages({
   title: 'Settings · Organizations',
+  changeRoleSuccess: 'Successfully changed role of {name} to {role}.',
+  changeRoleError: 'Something went wrong when trying to change this member’s role.',
   create: 'Create',
   createOrganization: 'Create new Organization',
   createOrganizationConflict: 'An organization with this name already exists.',

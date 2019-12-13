@@ -1,5 +1,5 @@
 export default {
-  '/api/apps': {
+  '/apps': {
     post: {
       tags: ['app'],
       description: 'Create a new app',
@@ -90,7 +90,7 @@ export default {
       security: [{ studio: [] }, {}],
     },
   },
-  '/api/apps/me': {
+  '/apps/me': {
     get: {
       tags: ['app'],
       description: 'Get all apps that are editable by the user.',
@@ -113,7 +113,7 @@ export default {
       security: [{ studio: [] }],
     },
   },
-  '/api/apps/{appId}': {
+  '/apps/{appId}': {
     parameters: [{ $ref: '#/components/parameters/appId' }],
     get: {
       tags: ['app'],
@@ -203,7 +203,7 @@ export default {
       security: [{ studio: [] }],
     },
   },
-  '/api/apps/{appId}/icon': {
+  '/apps/{appId}/icon': {
     parameters: [{ $ref: '#/components/parameters/appId' }],
     get: {
       tags: ['app'],
@@ -236,7 +236,7 @@ export default {
       security: [{ studio: [] }],
     },
   },
-  '/api/apps/{appId}/subscriptions': {
+  '/apps/{appId}/subscriptions': {
     parameters: [{ $ref: '#/components/parameters/appId' }],
     post: {
       tags: ['app'],
@@ -276,7 +276,7 @@ export default {
       },
     },
   },
-  '/api/apps/{appId}/ratings': {
+  '/apps/{appId}/ratings': {
     parameters: [{ $ref: '#/components/parameters/appId' }],
     get: {
       tags: ['app'],
@@ -333,7 +333,7 @@ export default {
       security: [{ studio: [] }],
     },
   },
-  '/api/apps/{appId}/broadcast': {
+  '/apps/{appId}/broadcast': {
     parameters: [{ $ref: '#/components/parameters/appId' }],
     post: {
       tags: ['app'],
@@ -369,7 +369,7 @@ export default {
       security: [{ studio: [] }],
     },
   },
-  '/api/apps/{appId}/style/core': {
+  '/apps/{appId}/style/core': {
     parameters: [{ $ref: '#/components/parameters/appId' }],
     get: {
       tags: ['app'],
@@ -386,7 +386,7 @@ export default {
     },
   },
 
-  '/api/apps/{appId}/style/shared': {
+  '/apps/{appId}/style/shared': {
     parameters: [{ $ref: '#/components/parameters/appId' }],
     get: {
       tags: ['app'],
@@ -402,7 +402,7 @@ export default {
       },
     },
   },
-  '/api/apps/{appId}/style/block/@{organizationId}/{blockId}': {
+  '/apps/{appId}/style/block/@{organizationId}/{blockId}': {
     parameters: [
       { $ref: '#/components/parameters/appId' },
       { $ref: '#/components/parameters/organizationId' },

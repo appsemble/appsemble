@@ -1,5 +1,5 @@
 export default {
-  '/api/login': {
+  '/login': {
     post: {
       tags: ['user'],
       description: 'Login using the Appsemble studio.',
@@ -8,7 +8,7 @@ export default {
       security: [{ basic: [] }],
     },
   },
-  '/api/refresh': {
+  '/refresh': {
     post: {
       tags: ['user'],
       description: 'Refresh an access token using the Appsemble studio',
@@ -31,8 +31,7 @@ export default {
       },
       responses: { 200: { description: 'The token has been refreshed succesfully.' } },
     },
-  },
-  '/api/user': {
+  '/user': {
     get: {
       tags: ['user'],
       description: "Fetch the logged in user's profile.",
@@ -74,7 +73,7 @@ export default {
       security: [{ studio: [] }],
     },
   },
-  '/api/user/organizations': {
+  '/user/organizations': {
     get: {
       tags: ['template'],
       description: "Fetch the logged in user's organizations.",
@@ -102,7 +101,7 @@ export default {
       security: [{ studio: [] }],
     },
   },
-  '/api/user/email': {
+  '/user/email': {
     post: {
       tags: ['user'],
       description: "Register a new email to logged in user's account.",

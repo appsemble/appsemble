@@ -1,7 +1,7 @@
 import { CardFooterButton, Form, Icon, Input, Loader, Modal } from '@appsemble/react-components';
-import { normalize } from '@appsemble/utils';
-import { permissions, roles } from '@appsemble/utils/constants/roles';
+import { normalize, permissions, roles } from '@appsemble/utils';
 import axios from 'axios';
+import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { FormattedMessage } from 'react-intl';
@@ -23,6 +23,7 @@ export default class OrganizationsSettings extends Component {
     organizations: [],
     selectedOrganization: undefined,
     submittingMember: false,
+    submittingRole: 0,
     removingMember: undefined,
     removingInvite: undefined,
     memberEmail: '',
@@ -213,6 +214,48 @@ export default class OrganizationsSettings extends Component {
     push({ body: intl.formatMessage(messages.resendInvitationSent), color: 'info' });
   };
 
+  onChangeRole = async (event, userId) => {
+    event.preventDefault();
+    const { value: role } = event.target;
+    const { selectedOrganization, organizations } = this.state;
+    const { push, intl } = this.props;
+    this.setState({ submittingRole: userId });
+
+    try {
+      await axios.put(`/api/organizations/${selectedOrganization}/members/${userId}/role`, {
+        role,
+      });
+      this.setState({
+        submittingRole: 0,
+        organizations: organizations.map(organization =>
+          organization.id === selectedOrganization
+            ? {
+                ...organization,
+                members: organization.members.map(member =>
+                  member.id === userId ? { ...member, role } : member,
+                ),
+              }
+            : organization,
+        ),
+      });
+      const member = organizations
+        .find(org => org.id === selectedOrganization)
+        .members.find(m => m.id === userId);
+      push({
+        color: 'success',
+        body: intl.formatMessage(messages.changeRoleSuccess, {
+          name: member.name || member.primaryEmail || member.id,
+          role,
+        }),
+      });
+    } catch (error) {
+      push({ body: intl.formatMessage(messages.changeRoleError) });
+      this.setState({
+        submittingRole: 0,
+      });
+    }
+  };
+
   onRemoveMemberClick = async memberId => {
     this.setState({
       removingMember: memberId,
@@ -312,6 +355,7 @@ export default class OrganizationsSettings extends Component {
       selectedOrganization,
       memberEmail,
       submittingMember,
+      submittingRole,
       removingMember,
       removingInvite,
       newOrganizationId,
@@ -449,10 +493,18 @@ export default class OrganizationsSettings extends Component {
                       <td className="has-text-right">
                         {canManageRoles ? (
                           <div className="control is-inline">
-                            <div className="select">
-                              <select disabled={member.id === userInfo.sub}>
+                            <div
+                              className={classNames('select', {
+                                'is-loading': submittingRole === member.id,
+                              })}
+                            >
+                              <select
+                                defaultValue={member.role}
+                                disabled={member.id === userInfo.sub || submittingRole === member.id}
+                                onChange={event => this.onChangeRole(event, member.id)}
+                              >
                                 {Object.keys(roles).map(r => (
-                                  <option key={r} selected={r === member.role} value={r}>
+                                  <option key={r} value={r}>
                                     {intl.formatMessage(messages[r])}
                                   </option>
                                 ))}
@@ -466,7 +518,7 @@ export default class OrganizationsSettings extends Component {
                           {member.id === userInfo.sub &&
                             organization.members.length > 1 &&
                             organization.members.some(m =>
-                              m.role.includes(permissions.ManageRoles),
+                              checkRole(m.role, permissions.ManageRoles),
                             ) && (
                               <p className={`control ${styles.memberButton}`}>
                                 <button

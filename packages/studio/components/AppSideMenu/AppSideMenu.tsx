@@ -1,11 +1,14 @@
 import { Icon } from '@appsemble/react-components';
 import { App } from '@appsemble/types';
+import { permissions } from '@appsemble/utils';
 import classNames from 'classnames';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 import { RouteComponentProps } from 'react-router-dom';
 
+import useOrganizations from '../../hooks/useOrganizations';
 import { UserInfo } from '../../types';
+import checkRole from '../../utils/checkRole';
 import NavLink from '../NavLink';
 import SideMenu from '../SideMenu';
 import styles from './AppSideMenu.css';
@@ -26,6 +29,8 @@ export default function AppSideMenu({
   user,
 }: AppSideMenuProps & RouteComponentProps): React.ReactElement {
   const [isCollapsed, setCollapsed] = React.useState(false);
+  const organizations = useOrganizations();
+  const organization = organizations.find(org => org.id === app.OrganizationId);
 
   return (
     <SideMenu isCollapsed={isCollapsed} toggleCollapse={() => setCollapsed(!isCollapsed)}>
@@ -37,47 +42,65 @@ export default function AppSideMenu({
       </NavLink>
       {user && (
         <>
-          <NavLink className={styles.menuItem} exact to={`${match.url}/edit`}>
-            <Icon icon="edit" size="medium" />
-            <span className={classNames({ 'is-hidden': isCollapsed })}>
-              <FormattedMessage {...messages.editor} />
-            </span>
-          </NavLink>
-          <NavLink className={styles.menuItem} exact={!isCollapsed} to={`${match.url}/resources`}>
-            <Icon icon="cubes" size="medium" />
-            <span className={classNames({ 'is-hidden': isCollapsed })}>
-              <FormattedMessage {...messages.resources} />
-            </span>
-          </NavLink>
-          {app.definition.resources && !isCollapsed && (
-            <ul>
-              {Object.keys(app.definition.resources)
-                .sort()
-                .map(resource => (
-                  <li key={resource}>
-                    <NavLink className={styles.menuItem} to={`${match.url}/resources/${resource}`}>
-                      {resource}
-                    </NavLink>
-                  </li>
-                ))}
-            </ul>
+          {organization && checkRole(organization.role, permissions.EditApps) && (
+            <NavLink className={styles.menuItem} exact to={`${match.url}/edit`}>
+              <Icon icon="edit" size="medium" />
+              <span className={classNames({ 'is-hidden': isCollapsed })}>
+                <FormattedMessage {...messages.editor} />
+              </span>
+            </NavLink>
           )}
-          <NavLink
-            className={styles.menuItem}
-            exact={!isCollapsed}
-            to={`${match.url}/notifications`}
-          >
-            <Icon icon="paper-plane" size="medium" />
-            <span className={classNames({ 'is-hidden': isCollapsed })}>
-              <FormattedMessage {...messages.notifications} />
-            </span>
-          </NavLink>
-          <NavLink className={styles.menuItem} exact={!isCollapsed} to={`${match.url}/settings`}>
-            <Icon icon="cogs" size="medium" />
-            <span className={classNames({ 'is-hidden': isCollapsed })}>
-              <FormattedMessage {...messages.settings} />
-            </span>
-          </NavLink>
+          {organization && checkRole(organization.role, permissions.EditApps) && (
+            <>
+              <NavLink
+                className={styles.menuItem}
+                exact={!isCollapsed}
+                to={`${match.url}/resources`}
+              >
+                <Icon icon="cubes" size="medium" />
+                <span className={classNames({ 'is-hidden': isCollapsed })}>
+                  <FormattedMessage {...messages.resources} />
+                </span>
+              </NavLink>
+
+              {app.definition.resources && !isCollapsed && (
+                <ul>
+                  {Object.keys(app.definition.resources)
+                    .sort()
+                    .map(resource => (
+                      <li key={resource}>
+                        <NavLink
+                          className={styles.menuItem}
+                          to={`${match.url}/resources/${resource}`}
+                        >
+                          {resource}
+                        </NavLink>
+                      </li>
+                    ))}
+                </ul>
+              )}
+            </>
+          )}
+          {organization && checkRole(organization.role, permissions.PushNotifications) && (
+            <NavLink
+              className={styles.menuItem}
+              exact={!isCollapsed}
+              to={`${match.url}/notifications`}
+            >
+              <Icon icon="paper-plane" size="medium" />
+              <span className={classNames({ 'is-hidden': isCollapsed })}>
+                <FormattedMessage {...messages.notifications} />
+              </span>
+            </NavLink>
+          )}
+          {organization && checkRole(organization.role, permissions.EditAppSettings) && (
+            <NavLink className={styles.menuItem} exact={!isCollapsed} to={`${match.url}/settings`}>
+              <Icon icon="cogs" size="medium" />
+              <span className={classNames({ 'is-hidden': isCollapsed })}>
+                <FormattedMessage {...messages.settings} />
+              </span>
+            </NavLink>
+          )}
         </>
       )}
     </SideMenu>

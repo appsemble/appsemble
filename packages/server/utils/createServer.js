@@ -1,6 +1,8 @@
 #!/usr/bin/env node
 import { loggerMiddleware } from '@appsemble/node-utils';
 import faPkg from '@fortawesome/fontawesome-free/package.json';
+import Boom from '@hapi/boom';
+import cors from '@koa/cors';
 import Koa from 'koa';
 import compose from 'koa-compose';
 import compress from 'koa-compress';
@@ -70,27 +72,36 @@ export default async function createServer({ app = new Koa(), argv = {}, db, web
   );
 
   app.use(
-    await koas(api(), [
-      koasSpecHandler(),
-      koasSwaggerUI({ url: '/api-explorer' }),
-      koasSecurity(authentication(argv, db.models)),
-      () => (ctx, next) => {
-        if (ctx.users) {
-          [ctx.state.user] = Object.values(ctx.users);
-        }
-        return next();
-      },
-      koasParameters(),
-      koasBodyParser({
-        '*/*': (body, mediaTypeObject, ctx) =>
-          raw(body, {
-            length: ctx.request.length,
+    mount(
+      '/api',
+      compose([
+        cors(),
+        await koas(api(), [
+          koasSpecHandler(),
+          koasSwaggerUI({ url: '/explorer' }),
+          koasSecurity(authentication(argv, db.models)),
+          () => (ctx, next) => {
+            if (ctx.users) {
+              [ctx.state.user] = Object.values(ctx.users);
+            }
+            return next();
+          },
+          koasParameters(),
+          koasBodyParser({
+            '*/*': (body, mediaTypeObject, ctx) =>
+              raw(body, {
+                length: ctx.request.length,
+              }),
           }),
-      }),
-      koasSerializer(),
-      koasStatusCode(),
-      koasOperations({ operations }),
-    ]),
+          koasSerializer(),
+          koasStatusCode(),
+          koasOperations({ operations }),
+        ]),
+        () => {
+          throw Boom.notFound('URL not found');
+        },
+      ]),
+    ),
   );
 
   if (process.env.NODE_ENV !== 'test') {
