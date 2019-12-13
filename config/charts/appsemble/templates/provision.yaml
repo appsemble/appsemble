@@ -47,7 +47,8 @@ spec:
                 )
               );
               {{ range .Values.provision.account.organizations }}
-                INSERT INTO "Organization" (id, created, updated) VALUES (
+                INSERT INTO "Organization" (id, name, created, updated) VALUES (
+                  {{ . | squote }},
                   {{ . | squote }},
                   NOW(),
                   NOW()
