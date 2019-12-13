@@ -31,6 +31,7 @@ export default {
       },
       responses: { 200: { description: 'The token has been refreshed succesfully.' } },
     },
+  },
   '/user': {
     get: {
       tags: ['user'],

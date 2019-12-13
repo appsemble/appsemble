@@ -500,7 +500,9 @@ export default class OrganizationsSettings extends Component {
                             >
                               <select
                                 defaultValue={member.role}
-                                disabled={member.id === userInfo.sub || submittingRole === member.id}
+                                disabled={
+                                  member.id === userInfo.sub || submittingRole === member.id
+                                }
                                 onChange={event => this.onChangeRole(event, member.id)}
                               >
                                 {Object.keys(roles).map(r => (

@@ -185,8 +185,7 @@ describe('user', () => {
 
   it('should fetch all user organizations', async () => {
     const organizationB = await Organization.create({ id: 'testorganizationb' });
-    const userId = jwt.decode(token.substring(7)).user.id;
-    await organizationB.addUser(userId);
+    await organizationB.addUser(user.id);
 
     const response = await request(server)
       .get('/api/user/organizations')

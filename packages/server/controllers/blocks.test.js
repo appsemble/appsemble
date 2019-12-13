@@ -1,7 +1,6 @@
 import { createInstance } from 'axios-test-instance';
 import FormData from 'form-data';
 import fs from 'fs-extra';
-import jwt from 'jsonwebtoken';
 import path from 'path';
 
 import createServer from '../utils/createServer';

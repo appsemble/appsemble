@@ -275,9 +275,7 @@ export async function updateApp(ctx) {
       throw Boom.notFound('App not found');
     }
 
-    await checkRole(ctx, dbApp.OrganizationId);
-
-    await checkRole(ctx, OrganizationId, [permissions.EditApps, permissions.EditAppSettings]);
+    await checkRole(ctx, dbApp.OrganizationId, [permissions.EditApps, permissions.EditAppSettings]);
     await dbApp.update(result, { where: { id: appId } });
 
     ctx.body = getAppFromRecord({ ...dbApp.dataValues, ...result });

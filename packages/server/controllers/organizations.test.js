@@ -14,8 +14,6 @@ describe('organization controller', () => {
   let OrganizationInvite;
   let User;
   let EmailAuthorization;
-  let token;
-  let clientToken;
   let db;
   let request;
   let server;
@@ -40,10 +38,7 @@ describe('organization controller', () => {
 
   beforeEach(async () => {
     await truncate(db);
-    ({ clientToken, authorization: token, user } = await testToken(
-      db,
-      'organizations:styles:write',
-    ));
+    ({ authorization, user } = await testToken(db, 'organizations:styles:write'));
     ({ id: organizationId } = await user.createOrganization({
       id: 'testorganization',
       name: 'Test Organization',
