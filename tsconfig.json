@@ -11,8 +11,7 @@
     "strictFunctionTypes": false,
     "strictNullChecks": false,
     "lib": ["esnext"],
-    "types": ["jest", "node", "@appsemble/node-utils"],
+    "types": ["jest", "node"],
     "target": "es2018"
-  },
-  "exclude": ["blocks/*", "packages/*"]
+  }
 }
