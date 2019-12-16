@@ -1,4 +1,4 @@
-import BulmaCalendar from 'bulma-calendar';
+import BulmaCalendar, { BulmaCalendarOptions } from 'bulma-calendar';
 import classNames from 'classnames';
 import * as React from 'react';
 
@@ -9,6 +9,8 @@ import styles from './Calendar.css';
 type CalendarProps = Omit<React.ComponentPropsWithoutRef<typeof FormComponent>, 'children'> &
   Omit<React.ComponentPropsWithoutRef<'input'>, 'label' | 'onChange'> & {
     control?: React.ReactElement;
+
+    displayMode?: BulmaCalendarOptions['displayMode'];
 
     /**
      * An error message to render.
@@ -50,6 +52,7 @@ export default React.forwardRef<HTMLInputElement, CalendarProps>(
   (
     {
       control,
+      displayMode,
       error,
       iconLeft,
       help,
@@ -74,9 +77,9 @@ export default React.forwardRef<HTMLInputElement, CalendarProps>(
       calendarRef.current = new BulmaCalendar(inputRef.current, {
         showHeader,
         type,
-        displayMode: 'inline',
+        displayMode,
       });
-    }, [showHeader, type]);
+    }, [displayMode, showHeader, type]);
 
     React.useEffect(() => {
       calendarRef.current.on('select', () => {

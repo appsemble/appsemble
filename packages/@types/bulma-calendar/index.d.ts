@@ -8,7 +8,7 @@ interface Icons {
   date: string;
 }
 
-interface Options {
+export interface BulmaCalendarOptions {
   type?: 'date' | 'time' | 'datetime';
   color?: BulmaColor;
   isRange?: boolean;
@@ -83,9 +83,9 @@ interface DateRange {
 
 // eslint-disable-next-line @typescript-eslint/class-name-casing
 export default class bulmaCalendar extends EventEmitter {
-  constructor(selector: string | HTMLElement, options?: Options);
+  constructor(selector: string | HTMLElement, options?: BulmaCalendarOptions);
 
-  static attach(selector?: string | HTMLElement, options?: Options): bulmaCalendar[];
+  static attach(selector?: string | HTMLElement, options?: BulmaCalendarOptions): bulmaCalendar[];
 
   get id(): string;
 

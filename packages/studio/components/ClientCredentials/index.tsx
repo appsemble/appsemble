@@ -65,7 +65,6 @@ export default function ClientCredentials(): React.ReactElement {
       <button className="button is-primary" onClick={openModal} type="button">
         <FormattedMessage {...messages.register} />
       </button>
-      <Calendar name="asd" onChange={() => {}} type="date" />
       <Modal
         component={SimpleForm}
         defaultValues={{ description: '', 'blocks:write': false }}
@@ -105,6 +104,7 @@ export default function ClientCredentials(): React.ReactElement {
             />
             <SimpleInput<typeof Calendar>
               component={Calendar}
+              displayMode="inline"
               help={<FormattedMessage {...messages.expiresHelp} />}
               label={<FormattedMessage {...messages.expires} />}
               name="expires"
