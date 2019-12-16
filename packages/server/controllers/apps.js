@@ -363,8 +363,6 @@ export async function patchApp(ctx) {
       throw Boom.notFound('App not found');
     }
 
-    await checkRole(ctx, dbApp.OrganizationId);
-
     const checkPermissions = [];
 
     if (

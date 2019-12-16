@@ -45,10 +45,6 @@ export default async function createServer({ app = new Koa(), argv = {}, db, web
   app.use(range);
   Object.assign(app.context, { argv, db, mailer: new Mailer(argv) });
 
-  // if (argv.oauthGitlabKey || argv.oauthGoogleKey) {
-  //   app.use(oauth2(argv));
-  // }
-
   koaQuerystring(app);
 
   if (process.env.NODE_ENV === 'production') {

@@ -2,7 +2,6 @@ import { createInstance } from 'axios-test-instance';
 import { verify } from 'jsonwebtoken';
 import lolex from 'lolex';
 
-// import request from 'supertest';
 import createServer from '../../utils/createServer';
 import testSchema from '../../utils/test/testSchema';
 import testToken from '../../utils/test/testToken';

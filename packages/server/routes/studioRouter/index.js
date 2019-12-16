@@ -29,10 +29,6 @@ export default tinyRouter([
     route: /^\/connect\/(?<provider>[a-z]+)\/callback$/,
     get: oauth2CallbackHandler,
   },
-  // {
-  //   route: /^\/connect$/,
-  //   get: oauth2CallbackHandler,
-  // },
   {
     route: new RegExp(`^(/${partialNormalized.source})*`),
     get: indexHandler,

@@ -5,6 +5,7 @@ export default function oauth2(argv) {
 
   return Grant.koa()({
     server: {
+      // URL.protocol leaves a ´:´ in.
       protocol: protocol.replace(':', ''),
       host,
     },

@@ -9,6 +9,7 @@ export { default as FormComponent } from './FormComponent';
 export { default as Icon } from './Icon';
 export { default as IconButton } from './IconButton';
 export { default as Input } from './Input';
+export { default as Join } from './Join';
 export { default as Loader } from './Loader';
 export { default as Location } from './Location';
 export { default as Message, UniqueMessage } from './Message';

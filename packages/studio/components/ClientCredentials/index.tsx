@@ -3,6 +3,7 @@ import {
   CardFooterButton,
   Checkbox,
   Input,
+  Join,
   Modal,
   SimpleForm,
   SimpleInput,
@@ -165,9 +166,8 @@ export default function ClientCredentials(): React.ReactElement {
                     </time>
                   </td>
                   <td>
-                    {client.scopes.map((scope, index) => (
-                      <>
-                        {index ? ', ' : null}
+                    <Join separator=", ">
+                      {client.scopes.map(scope => (
                         <data
                           className={styles.scope}
                           title={intl.formatMessage(
@@ -179,8 +179,8 @@ export default function ClientCredentials(): React.ReactElement {
                         >
                           {scope}
                         </data>
-                      </>
-                    ))}
+                      ))}
+                    </Join>
                   </td>
                   <td>
                     <button
