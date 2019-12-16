@@ -427,6 +427,23 @@ export async function deleteApp(ctx) {
   await app.destroy();
 }
 
+export async function getAppMembers(ctx) {
+  const { appId } = ctx.params;
+  const { App, User } = ctx.db.models;
+
+  const app = await App.findByPk(appId, { include: [User] });
+  if (!app) {
+    throw Boom.notFound('App not found');
+  }
+
+  ctx.body = app.Users.map(user => ({
+    id: user.id,
+    name: user.name,
+    primaryEmail: user.primaryEmail,
+    role: user.AppMember.role,
+  }));
+}
+
 export async function getAppRatings(ctx) {
   const { appId } = ctx.params;
   const { AppRating, User } = ctx.db.models;

@@ -12,6 +12,7 @@ import CMS from '../CMS';
 import Editor from '../Editor';
 import Notifications from '../Notifications';
 import ProtectedRoute from '../ProtectedRoute';
+import Roles from '../Roles';
 import styles from './AppContext.css';
 
 /**
@@ -52,6 +53,13 @@ function AppContext({ app = undefined, match, getApp, initAuth, ready }) {
             component={CMS}
             organization={organization}
             path={`${match.path}/resources`}
+            permission={permissions.EditApps}
+          />
+          <ProtectedRoute
+            component={Roles}
+            exact
+            organization={organization}
+            path={`${match.path}/roles`}
             permission={permissions.EditApps}
           />
           <ProtectedRoute

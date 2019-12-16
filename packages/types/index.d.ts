@@ -1,6 +1,19 @@
 import { IconName } from '@fortawesome/fontawesome-common-types';
 import { OpenAPIV3 } from 'openapi-types';
 
+export interface Security {
+  default: {
+    role: string;
+    policy?: 'anyone' | 'organization' | 'invite';
+  };
+  roles: {
+    [role: string]: {
+      description?: string;
+      inherits?: string[];
+    };
+  };
+}
+
 /**
  * An object containing information about an authentication method.
  */
@@ -568,6 +581,7 @@ export interface AppDefinition {
    */
   description?: string;
 
+  security: Security;
   authentication: Authentication[];
 
   /**
