@@ -6,7 +6,7 @@ import { CSSTransition } from 'react-transition-group';
 import messages from './messages';
 import styles from './Modal.css';
 
-export interface ModalProps<T extends React.ElementType> {
+interface ModalProps<T extends React.ElementType> {
   /**
    * The child elements to render on the modal.
    */

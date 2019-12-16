@@ -11853,6 +11853,11 @@ mini-css-extract-plugin@^0.8.0:
     schema-utils "^1.0.0"
     webpack-sources "^1.1.0"
 
+mini-jsx@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/mini-jsx/-/mini-jsx-2.0.0.tgz#231af1da41d6a4e78f3d48068a7f1e14f734ee3f"
+  integrity sha512-K2lADm51wdjQrbsPXciR4WH/lGfQLrA+OYYMpCx9+ox+Tltw2gY4IaArYdQfD4zi2dWL0FS3z0xqa3P2i7BgQw==
+
 minimalistic-assert@^1.0.0, minimalistic-assert@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/minimalistic-assert/-/minimalistic-assert-1.0.1.tgz#2e194de044626d4a10e7f7fbc00ce73e83e4d5c7"
@@ -14407,6 +14412,11 @@ postgres-interval@^1.1.0:
   dependencies:
     xtend "^4.0.0"
 
+preact@^10.0.5:
+  version "10.1.0"
+  resolved "https://registry.yarnpkg.com/preact/-/preact-10.1.0.tgz#e90771c3fec23926bbd32ff4e9e62e4d79845f8b"
+  integrity sha512-TKPqDMstuxDkZydQ05vrLHSxpo+tG2jtyQXxp5HEGhr17Qgo3KQnD5Dq4xzX0+YFQJCETy4pnyPqLA/sgtpp/w==
+
 prebuild-install@5.3.3, prebuild-install@^5.3.0, prebuild-install@^5.3.3:
   version "5.3.3"
   resolved "https://registry.yarnpkg.com/prebuild-install/-/prebuild-install-5.3.3.tgz#ef4052baac60d465f5ba6bf003c9c1de79b9da8e"
@@ -15084,6 +15094,11 @@ react@^16.12.0:
     loose-envify "^1.1.0"
     object-assign "^4.1.1"
     prop-types "^15.6.2"
+
+read-blob@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/read-blob/-/read-blob-1.1.0.tgz#66792f7bdd0cca00850faccdf11ec6bf2061a791"
+  integrity sha1-Znkve90MygCFD6zN8R7GvyBhp5E=
 
 read-cache@^1.0.0:
   version "1.0.0"

@@ -5,7 +5,7 @@ import React, { useEffect, useState } from 'react';
 import { FormattedMessage, WrappedComponentProps } from 'react-intl';
 import { RouteComponentProps } from 'react-router-dom';
 
-import { UserInfo } from '../../types';
+import useUser from '../../hooks/useUser';
 import RateApp from '../RateApp';
 import StarRating from '../Rating';
 import styles from './AppDetails.css';
@@ -13,12 +13,12 @@ import messages from './messages';
 
 export type AppDetailsProps = {
   app: App;
-  user: UserInfo;
   push: (message: Message) => void;
 } & WrappedComponentProps &
   RouteComponentProps<{ id: string }>;
 
-export default function AppDetails({ app, user, push, intl }: AppDetailsProps): JSX.Element {
+export default function AppDetails({ app, push, intl }: AppDetailsProps): JSX.Element {
+  const { userInfo } = useUser();
   const [organization, setOrganization] = useState<Organization>(undefined);
   const [ratings, setRatings] = useState<Rating[]>([]);
 
@@ -66,13 +66,13 @@ export default function AppDetails({ app, user, push, intl }: AppDetailsProps): 
           <FormattedMessage {...messages.ratings} />
         </h3>
       </div>
-      {user && <RateApp app={app} className={styles.ratingButton} onRate={onRate} />}
+      {userInfo && <RateApp app={app} className={styles.ratingButton} onRate={onRate} />}
       <div className="content">
         {ratings.map(rating => (
           <div key={rating.$created} className={styles.rating}>
             <span className="is-block has-text-weight-bold">
               {rating.name || <FormattedMessage {...messages.anonymous} />}
-              {user && rating.UserId === user.sub && (
+              {userInfo && rating.UserId === userInfo.sub && (
                 <span className={`tag is-success ${styles.tag}`}>
                   <FormattedMessage {...messages.you} />
                 </span>

@@ -46,7 +46,7 @@ export default function OAuth2Connect({ match }: RouteComponentProps<Params>): R
   const submit = React.useCallback(async () => {
     setSubmitting(true);
     try {
-      const { data } = await axios.post('/api/oauth2/connect/pending', { state: qs.get('state') });
+      await axios.post('/api/oauth2/connect/pending', { state: qs.get('state') });
     } finally {
       setSubmitting(false);
     }
