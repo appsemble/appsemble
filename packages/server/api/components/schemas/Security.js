@@ -11,7 +11,7 @@ export default {
         policy: {
           type: 'string',
           enum: ['anyone', 'organization', 'invite'],
-          defaultValue: 'anyone',
+          default: 'anyone',
           description: `How the \`default\` role gets applied to users.
 
           If set to ‘anyone’: Every authenticated user gets the default role.
