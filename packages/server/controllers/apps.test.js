@@ -14,6 +14,7 @@ describe('app controller', () => {
   let BlockDefinition;
   let BlockVersion;
   let Organization;
+  let User;
   let db;
   let request;
   let server;
@@ -22,7 +23,6 @@ describe('app controller', () => {
   let userId;
   let clock;
   let user;
-  let User;
 
   beforeAll(async () => {
     db = await testSchema('apps');

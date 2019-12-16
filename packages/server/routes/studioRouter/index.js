@@ -5,7 +5,6 @@ import faviconHandler from './faviconHandler';
 import iconHandler from './iconHandler';
 import indexHandler from './indexHandler';
 import oauth2CallbackHandler from './oauth2CallbackHandler';
-import oauth2ConnectHandler from './oauth2ConnectHandler';
 import tokenHandler from './tokenHandler';
 
 export default tinyRouter([
@@ -23,7 +22,8 @@ export default tinyRouter([
   },
   {
     route: /^\/connect\/(?<provider>[a-z]+)$/,
-    get: oauth2ConnectHandler,
+    // By calling next, this handler delegates the request to grant instead of the index handler.
+    get: (ctx, next) => next(),
   },
   {
     route: /^\/connect\/(?<provider>[a-z]+)\/callback$/,
