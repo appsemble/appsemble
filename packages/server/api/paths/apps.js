@@ -308,6 +308,24 @@ export default {
         schema: { $ref: '#/components/schemas/Member/properties/id' },
       },
     ],
+    get: {
+      tags: ['app'],
+      description: 'Get an app member.',
+      operationId: 'getAppMember',
+      responses: {
+        200: {
+          description: 'The resulting app member.',
+          content: {
+            'application/json': {
+              schema: {
+                $ref: '#/components/schemas/Member',
+              },
+            },
+          },
+        },
+      },
+      security: [{ apiUser: ['apps:read'] }],
+    },
     post: {
       tags: ['app'],
       description: 'Assign an app role to a member.',

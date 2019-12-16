@@ -444,6 +444,35 @@ export async function getAppMembers(ctx) {
   }));
 }
 
+export async function getAppMember(ctx) {
+  const { appId, memberId } = ctx.params;
+  const { App, User } = ctx.db.models;
+
+  const app = await App.findByPk(appId, { include: [User] });
+  if (!app) {
+    throw Boom.notFound('App not found');
+  }
+
+  const user = await User.findByPk(memberId);
+
+  if (!user) {
+    throw Boom.notFound('User does not exist.');
+  }
+
+  const member = app.Users.find(u => u.id === memberId);
+  const role =
+    (app.definition.security && !member
+      ? app.definition.security.default.role
+      : member.AppMember.role) || null;
+
+  ctx.body = {
+    id: user.id,
+    name: user.name,
+    primaryEmail: user.primaryEmail,
+    role,
+  };
+}
+
 export async function setAppMember(ctx) {
   const { appId, memberId } = ctx.params;
   const { role } = ctx.request.body;

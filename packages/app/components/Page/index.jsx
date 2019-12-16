@@ -1,13 +1,17 @@
+import { injectIntl } from 'react-intl';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 
 import { getBlockDefs } from '../../actions/blockDefs';
+import { push } from '../../actions/message';
+import { logout } from '../../actions/user';
 import Page from './Page';
 
 function mapStateToProps(state, ownProps) {
   return {
     definition: state.app.definition,
     user: state.user.user,
+    role: state.user.role,
     pending: !!state.blockDefs.pending.length,
     hasErrors:
       ownProps.page.type && (ownProps.page.type === 'flow' || ownProps.page.type === 'tabs')
@@ -19,7 +23,11 @@ function mapStateToProps(state, ownProps) {
 }
 
 export default withRouter(
-  connect(mapStateToProps, {
-    getBlockDefs,
-  })(Page),
+  injectIntl(
+    connect(mapStateToProps, {
+      getBlockDefs,
+      logout,
+      push,
+    })(Page),
+  ),
 );
