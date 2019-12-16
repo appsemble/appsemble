@@ -7,6 +7,7 @@ import { ThunkAction, ThunkDispatch } from 'redux-thunk';
 
 import { User } from '../types';
 import { AUTH, RW } from '../utils/getDB';
+import settings from '../utils/settings';
 import { State } from './index';
 
 // The buffer between the access token expiration and the refresh token request. A minute should be

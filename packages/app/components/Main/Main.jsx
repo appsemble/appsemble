@@ -53,7 +53,4 @@ export default function Main({ definition = null }) {
 Main.propTypes = {
   // eslint-disable-next-line react/require-default-props
   definition: PropTypes.shape(),
-  permission: PropTypes.string.isRequired,
-  requestPermission: PropTypes.func.isRequired,
-  subscribe: PropTypes.func.isRequired,
 };
