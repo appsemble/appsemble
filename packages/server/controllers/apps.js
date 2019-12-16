@@ -444,6 +444,46 @@ export async function getAppMembers(ctx) {
   }));
 }
 
+export async function setAppMember(ctx) {
+  const { appId, memberId } = ctx.params;
+  const { role } = ctx.request.body;
+  const { App, User } = ctx.db.models;
+
+  const app = await App.findByPk(appId, { include: [User] });
+  if (!app) {
+    throw Boom.notFound('App not found');
+  }
+
+  await checkRole(ctx, app.OrganizationId, permissions.EditApps);
+
+  const member = await User.findByPk(memberId);
+  if (!member) {
+    throw Boom.notFound('User with this ID doesn’t exist.');
+  }
+
+  if (!Object.keys(app.definition.security.roles).includes(role)) {
+    throw Boom.badRequest(`Role ‘${role}’ is not defined.`);
+  }
+
+  if (await app.hasUser(member)) {
+    if (role === app.definition.security.default.role) {
+      await app.removeUser(member);
+    } else {
+      const [appUser] = await app.getUsers({ where: { id: memberId } });
+      await appUser.AppMember.update({ role });
+    }
+  } else {
+    await app.addUser(member, { through: { role } });
+  }
+
+  ctx.body = {
+    id: member.id,
+    name: member.name,
+    primaryEmail: member.primaryEmail,
+    role,
+  };
+}
+
 export async function getAppRatings(ctx) {
   const { appId } = ctx.params;
   const { AppRating, User } = ctx.db.models;

@@ -123,7 +123,7 @@ export default function Roles({ app, push, intl, user }: RolesProps): React.Reac
                   >
                     <select
                       defaultValue={member.role}
-                      disabled={member.id === user.id || submittingMemberRoleId === member.id}
+                      disabled={submittingMemberRoleId === member.id}
                       onChange={event => onChangeRole(event, member.id)}
                     >
                       {Object.keys(app.definition.security.roles).map(role => (

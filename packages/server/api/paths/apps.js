@@ -297,6 +297,52 @@ export default {
       },
     },
   },
+  '/apps/{appId}/members/{memberId}': {
+    parameters: [
+      { $ref: '#/components/parameters/appId' },
+      {
+        name: 'memberId',
+        in: 'path',
+        description: 'The ID of the member on which to perform an operation',
+        required: true,
+        schema: { $ref: '#/components/schemas/Member/properties/id' },
+      },
+    ],
+    post: {
+      tags: ['app'],
+      description: 'Assign an app role to a member.',
+      operationId: 'setAppMember',
+      requestBody: {
+        content: {
+          'application/json': {
+            schema: {
+              type: 'object',
+              required: ['role'],
+              properties: {
+                role: {
+                  type: 'string',
+                  description: 'The role to assign.',
+                },
+              },
+            },
+          },
+        },
+      },
+      responses: {
+        200: {
+          description: 'The resulting app member.',
+          content: {
+            'application/json': {
+              schema: {
+                $ref: '#/components/schemas/Member',
+              },
+            },
+          },
+        },
+      },
+      security: [{ apiUser: ['apps:write'] }],
+    },
+  },
   '/apps/{appId}/ratings': {
     parameters: [{ $ref: '#/components/parameters/appId' }],
     get: {
