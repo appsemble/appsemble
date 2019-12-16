@@ -11,6 +11,7 @@ export async function getUserInfo(ctx) {
     attributes: ['primaryEmail', 'name'],
     include: [
       {
+        required: false,
         model: EmailAuthorization,
         attributes: ['verified'],
         where: {
@@ -35,7 +36,7 @@ export async function getUserInfo(ctx) {
 
   ctx.body = {
     email: user.primaryEmail,
-    email_verified: user.EmailAuthorizations[0].verified,
+    email_verified: user.primaryEmail && user.EmailAuthorizations[0].verified,
     name: user.name,
     picture,
     sub: id,

@@ -76,7 +76,10 @@ export default {
   },
   '/oauth2/connect/pending': {
     get: {
-      parameters: [{ name: 'state' }],
+      parameters: [
+        { name: 'provider', required: true },
+        { name: 'code', required: true },
+      ],
       description: 'Get an OAuth2 profile which is pending connection to an Appsemble account',
       tags: ['oauth2'],
       operationId: 'getPendingOAuth2Profile',
@@ -104,9 +107,12 @@ export default {
           'application/json': {
             schema: {
               type: 'object',
-              required: ['state'],
+              required: ['code', 'provider'],
               properties: {
-                state: {
+                code: {
+                  type: 'string',
+                },
+                provider: {
                   type: 'string',
                 },
               },

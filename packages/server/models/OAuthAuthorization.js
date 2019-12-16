@@ -5,13 +5,11 @@ export default sequelize => {
     'OAuthAuthorization',
     {
       id: { type: DataTypes.STRING, primaryKey: true },
-      state: { type: DataTypes.STRING },
       provider: { type: DataTypes.STRING, primaryKey: true },
-      // scope: { type: DataTypes.STRING, primaryKey: true },
-      accessToken: { type: DataTypes.TEXT, allowNull: false },
+      token: { type: DataTypes.TEXT, allowNull: false },
       expiresAt: { type: DataTypes.DATE, allowNull: true },
       refreshToken: { type: DataTypes.TEXT, allowNull: true },
-      verified: { type: DataTypes.BOOLEAN, default: false },
+      code: { type: DataTypes.TEXT, allowNull: true },
     },
     {
       freezeTableName: true,

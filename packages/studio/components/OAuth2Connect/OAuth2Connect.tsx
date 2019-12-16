@@ -3,9 +3,11 @@ import axios from 'axios';
 import classNames from 'classnames';
 import * as React from 'react';
 import { FormattedMessage } from 'react-intl';
-import { Link, Redirect, RouteComponentProps, useLocation } from 'react-router-dom';
+import { Link, Redirect, RouteComponentProps, useHistory, useLocation } from 'react-router-dom';
 
 import useQuery from '../../hooks/useQuery';
+import useUser from '../../hooks/useUser';
+import { TokenResponse, UserInfo } from '../../types';
 import messages from './messages';
 import styles from './OAuth2Connect.css';
 
@@ -21,9 +23,11 @@ interface Params {
 
 export default function OAuth2Connect({ match }: RouteComponentProps<Params>): React.ReactElement {
   const { provider } = match.params;
+  const history = useHistory();
   const location = useLocation();
   const qs = useQuery();
-  const [profile, setProfile] = React.useState(null);
+  const { login } = useUser();
+  const [profile, setProfile] = React.useState<UserInfo>(null);
   const [isLoading, setLoading] = React.useState(true);
   const [hasError, setError] = React.useState(false);
   const [isSubmitting, setSubmitting] = React.useState(false);
@@ -33,7 +37,17 @@ export default function OAuth2Connect({ match }: RouteComponentProps<Params>): R
   React.useEffect(() => {
     (async () => {
       try {
-        const { data } = await axios.get(`/api/oauth2/connect/pending?state=${qs.get('state')}`);
+        const { data } = await axios.get<TokenResponse | UserInfo>(
+          `/api/oauth2/connect/pending?${new URLSearchParams({
+            code: qs.get('code'),
+            provider,
+          })}`,
+        );
+        if ('access_token' in data) {
+          login(data);
+          history.replace('/');
+          return;
+        }
         setProfile(data);
         setLoading(false);
       } catch (err) {
@@ -41,18 +55,23 @@ export default function OAuth2Connect({ match }: RouteComponentProps<Params>): R
         setLoading(false);
       }
     })();
-  }, [qs]);
+  }, [history, login, provider, qs]);
 
   const submit = React.useCallback(async () => {
     setSubmitting(true);
     try {
-      await axios.post('/api/oauth2/connect/pending', { state: qs.get('state') });
+      const { data } = await axios.post<TokenResponse>('/api/oauth2/connect/pending', {
+        code: qs.get('code'),
+        provider,
+      });
+      login(data);
+      history.replace('/');
     } finally {
       setSubmitting(false);
     }
-  }, [qs]);
+  }, [history, login, provider, qs]);
 
-  if (!Object.prototype.hasOwnProperty.call(providers, provider) || !qs.has('state')) {
+  if (!Object.prototype.hasOwnProperty.call(providers, provider) || !qs.has('code')) {
     return <Redirect to="/" />;
   }
 

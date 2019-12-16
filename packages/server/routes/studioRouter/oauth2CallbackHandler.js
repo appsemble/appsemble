@@ -1,15 +1,14 @@
-import axios from 'axios';
 import qs from 'qs';
 
+import getUserInfo from '../../utils/getUserInfo';
 import indexHandler from './indexHandler';
 
 export default async function oauth2CallbackHandler(ctx, next) {
-  const { state } = ctx.query;
   const { OAuthAuthorization } = ctx.db.models;
+  const { code } = ctx.query;
+  const { provider } = ctx.session.grant;
   const authorization = await OAuthAuthorization.findOne({
-    attributes: [],
-    where: { state },
-    raw: true,
+    where: { provider, code },
   });
   if (!authorization) {
     await next();
@@ -20,19 +19,15 @@ export default async function oauth2CallbackHandler(ctx, next) {
       ({ sub } = params.id_token.payload);
     }
     if (sub == null) {
-      ({
-        data: { sub },
-      } = await axios.get('https://gitlab.com/oauth/userinfo', {
-        headers: { authorization: `Bearer ${params.access_token}` },
-      }));
+      ({ sub } = await getUserInfo(provider, params.access_token));
     }
-    await OAuthAuthorization.create(
+    await OAuthAuthorization.upsert(
       {
         id: sub,
-        provider: ctx.session.grant.provider,
-        accessToken: params.access_token,
+        provider,
+        token: params.access_token,
         refreshToken: params.refresh_token,
-        state,
+        code,
       },
       { raw: true },
     );

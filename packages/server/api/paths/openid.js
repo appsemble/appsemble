@@ -1,5 +1,5 @@
 export default {
-  '/api/connect/userinfo': {
+  '/connect/userinfo': {
     get: {
       tags: ['openid', 'user'],
       description: `
