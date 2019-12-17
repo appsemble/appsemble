@@ -48,7 +48,7 @@ stages:
 .yarn:
   dependencies: []
   before_script:
-    - yarn --frozen-lockfile
+    - yarn --frozen-lockfile --ignore-optional
 
 # A job preset for povisioning an environment.
 .provision:

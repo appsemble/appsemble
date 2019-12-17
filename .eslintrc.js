@@ -48,6 +48,8 @@ module.exports = {
     'eslint-comments/no-unused-disable': 'error',
     'eslint-comments/no-use': ['error', { allow: ['eslint-disable-next-line'] }],
     'import/no-extraneous-dependencies': ['error', { devDependencies: configs }],
+    // Ignore optional dependencies.
+    'import/no-unresolved': ['error', { commonjs: true, ignore: ['keytar'] }],
     'import/order': [
       'error',
       {
