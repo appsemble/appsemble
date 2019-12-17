@@ -21,13 +21,17 @@ interface Params {
   provider: keyof typeof providers;
 }
 
+interface Profile extends UserInfo {
+  profile: string;
+}
+
 export default function OAuth2Connect({ match }: RouteComponentProps<Params>): React.ReactElement {
   const { provider } = match.params;
   const history = useHistory();
   const location = useLocation();
   const qs = useQuery();
   const { login } = useUser();
-  const [profile, setProfile] = React.useState<UserInfo>(null);
+  const [profile, setProfile] = React.useState<Profile>(null);
   const [isLoading, setLoading] = React.useState(true);
   const [hasError, setError] = React.useState(false);
   const [isSubmitting, setSubmitting] = React.useState(false);
@@ -37,7 +41,7 @@ export default function OAuth2Connect({ match }: RouteComponentProps<Params>): R
   React.useEffect(() => {
     (async () => {
       try {
-        const { data } = await axios.get<TokenResponse | UserInfo>(
+        const { data } = await axios.get<TokenResponse | Profile>(
           `/api/oauth2/connect/pending?${new URLSearchParams({
             code: qs.get('code'),
             provider,
