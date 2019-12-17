@@ -10,7 +10,7 @@ describe('app controller', () => {
 
   beforeAll(async () => {
     db = await testSchema('health');
-    server = await createServer({ db });
+    server = await createServer({ db, argv: { host: window.location, secret: 'test' } });
   }, 10e3);
 
   beforeEach(async () => {

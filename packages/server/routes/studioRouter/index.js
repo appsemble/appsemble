@@ -9,7 +9,7 @@ import tokenHandler from './tokenHandler';
 
 export default tinyRouter([
   {
-    route: '/api/oauth2/token',
+    route: '/oauth2/token',
     post: tokenHandler,
   },
   {

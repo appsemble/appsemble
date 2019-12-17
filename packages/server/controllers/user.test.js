@@ -23,10 +23,13 @@ describe('user', () => {
   beforeEach(async () => {
     await truncate(db);
     ({ authorization: token, user } = await testToken(db));
-    await user.createOrganization({
-      id: 'testorganization',
-      name: 'Test Organization',
-    });
+    await user.createOrganization(
+      {
+        id: 'testorganization',
+        name: 'Test Organization',
+      },
+      { through: { role: 'Owner' } },
+    );
   });
 
   afterAll(async () => {

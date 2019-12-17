@@ -37,7 +37,7 @@ afterAll(async () => {
 });
 
 it('should not accept invalid content types', async () => {
-  const response = await request.post('/api/oauth2/token', {});
+  const response = await request.post('/oauth2/token', {});
   expect(response).toMatchObject({
     status: 400,
     data: {
@@ -47,7 +47,7 @@ it('should not accept invalid content types', async () => {
 });
 
 it('should not accept missing grant types', async () => {
-  const response = await request.post('/api/oauth2/token', '');
+  const response = await request.post('/oauth2/token', '');
   expect(response).toMatchObject({
     status: 400,
     data: {
@@ -57,7 +57,7 @@ it('should not accept missing grant types', async () => {
 });
 
 it('should not accept unsupported grant types', async () => {
-  const response = await request.post('/api/oauth2/token', 'grant_type=unsupported');
+  const response = await request.post('/oauth2/token', 'grant_type=unsupported');
   expect(response).toMatchObject({
     status: 400,
     data: {
@@ -79,7 +79,7 @@ describe('client_credentials', () => {
   });
 
   it('should handle a missing authorization header', async () => {
-    const response = await request.post('/api/oauth2/token', 'grant_type=client_credentials');
+    const response = await request.post('/oauth2/token', 'grant_type=client_credentials');
     expect(response).toMatchObject({
       status: 400,
       data: {
@@ -89,7 +89,7 @@ describe('client_credentials', () => {
   });
 
   it('should handle invalid authentication types', async () => {
-    const response = await request.post('/api/oauth2/token', 'grant_type=client_credentials', {
+    const response = await request.post('/oauth2/token', 'grant_type=client_credentials', {
       headers: {
         authorization: 'Bearer foo',
       },
@@ -103,7 +103,7 @@ describe('client_credentials', () => {
   });
 
   it('should handle invalidly encoded basic authentication', async () => {
-    const response = await request.post('/api/oauth2/token', 'grant_type=client_credentials', {
+    const response = await request.post('/oauth2/token', 'grant_type=client_credentials', {
       headers: {
         authorization: 'Basic invalid',
       },
@@ -117,7 +117,7 @@ describe('client_credentials', () => {
   });
 
   it('should handle invalid client credentials', async () => {
-    const response = await request.post('/api/oauth2/token', 'grant_type=client_credentials', {
+    const response = await request.post('/oauth2/token', 'grant_type=client_credentials', {
       headers: {
         authorization: `Basic ${Buffer.from('invalidId:invalidSecret').toString('base64')}`,
       },
@@ -132,7 +132,7 @@ describe('client_credentials', () => {
 
   it('should handle expired clients', async () => {
     clock.setSystemTime(new Date('2000-03-01T00:00:00Z'));
-    const response = await request.post('/api/oauth2/token', 'grant_type=client_credentials', {
+    const response = await request.post('/oauth2/token', 'grant_type=client_credentials', {
       headers: {
         authorization: `Basic ${Buffer.from('testClientId:testClientSecret').toString('base64')}`,
       },
@@ -147,7 +147,7 @@ describe('client_credentials', () => {
 
   it('should handle unauthorized client scopes', async () => {
     const response = await request.post(
-      '/api/oauth2/token',
+      '/oauth2/token',
       'grant_type=client_credentials&scope=blocks:write organizations:styles:write',
       {
         headers: {
@@ -165,7 +165,7 @@ describe('client_credentials', () => {
 
   it('should return an access token response if the request is made correctly', async () => {
     const response = await request.post(
-      '/api/oauth2/token',
+      '/oauth2/token',
       'grant_type=client_credentials&scope=blocks:write',
       {
         headers: {

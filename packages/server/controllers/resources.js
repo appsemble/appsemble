@@ -265,7 +265,6 @@ export async function deleteResource(ctx) {
   const { App, Resource } = ctx.db.models;
 
   const app = await App.findByPk(appId);
-  await checkRole(ctx, app.OrganizationId);
 
   await checkRole(ctx, app.OrganizationId, permissions.ManageResources);
 

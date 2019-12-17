@@ -26,10 +26,13 @@ describe('Template API', () => {
   beforeEach(async () => {
     await truncate(db);
     ({ authorization: token, user } = await testToken(db));
-    await user.createOrganization({
-      id: 'testorganization',
-      name: 'Test Organization',
-    });
+    await user.createOrganization(
+      {
+        id: 'testorganization',
+        name: 'Test Organization',
+      },
+      { through: { role: 'Maintainer' } },
+    );
     clock = lolex.install();
 
     const template = {
@@ -57,7 +60,7 @@ describe('Template API', () => {
       },
       { raw: true },
     );
-    await Resource.create({ type: 'test', data: { name: 'foo' }, AppId: t2.id });
+    await t2.createResource({ type: 'test', data: { name: 'foo' } });
 
     templates = [t1, t2];
   });
@@ -103,7 +106,22 @@ describe('Template API', () => {
         organizationId: 'testorganization',
       });
 
-    expect(result).toMatchSnapshot();
+    expect(result).toStrictEqual({
+      $created: '1970-01-01T00:00:00.000Z',
+      $updated: '1970-01-01T00:00:00.000Z',
+      OrganizationId: 'testorganization',
+      definition: {
+        description: 'This is a test app',
+        name: 'Test app',
+        pages: [],
+      },
+      domain: null,
+      iconUrl: '/api/apps/5/icon',
+      id: 5,
+      path: 'test-app',
+      private: false,
+      yaml: 'name: Test app\ndescription: This is a test app\npages: []\n',
+    });
   });
 
   it('should create a new app with example resources', async () => {

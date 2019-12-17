@@ -288,7 +288,7 @@ export default {
           },
         },
       },
-      security: [{ apiUser: [] }],
+      security: [{ studio: [] }],
     },
   },
   '/organizations/{organizationId}/style/shared': {

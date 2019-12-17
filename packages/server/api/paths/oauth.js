@@ -77,8 +77,18 @@ export default {
   '/oauth2/connect/pending': {
     get: {
       parameters: [
-        { name: 'provider', required: true },
-        { name: 'code', required: true },
+        {
+          name: 'provider',
+          required: true,
+          in: 'query',
+          schema: { type: 'string' },
+        },
+        {
+          name: 'code',
+          required: true,
+          in: 'query',
+          schema: { type: 'string' },
+        },
       ],
       description: 'Get an OAuth2 profile which is pending connection to an Appsemble account',
       tags: ['oauth2'],
@@ -122,10 +132,12 @@ export default {
       },
       responses: {
         200: {
-          description: 'XXX',
+          description: 'An access token response.',
           content: {
             'application/json': {
-              schema: { type: 'object' },
+              schema: {
+                type: 'object',
+              },
             },
           },
         },

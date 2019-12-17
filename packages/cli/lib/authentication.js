@@ -108,7 +108,7 @@ export async function authenticate(remote = axios.defaults.baseURL, scope, input
   const credentials = await getClientCredentials(remote, inputCredentials);
   logger.verbose(`Logging in to ${remote}`);
   const { data } = await axios.post(
-    '/api/oauth2/token',
+    '/oauth2/token',
     querystring.stringify({ grant_type: 'client_credentials', scope }),
     {
       headers: {

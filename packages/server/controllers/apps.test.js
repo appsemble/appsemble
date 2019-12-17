@@ -20,7 +20,6 @@ describe('app controller', () => {
   let server;
   let authorization;
   let organizationId;
-  let userId;
   let clock;
   let user;
 
@@ -44,10 +43,13 @@ describe('app controller', () => {
 
     await truncate(db);
     ({ user, authorization } = await testToken(db));
-    ({ id: organizationId } = await user.createOrganization({
-      id: 'testorganization',
-      name: 'Test Organization',
-    }));
+    ({ id: organizationId } = await user.createOrganization(
+      {
+        id: 'testorganization',
+        name: 'Test Organization',
+      },
+      { through: { role: 'Owner' } },
+    ));
 
     await BlockDefinition.create({
       id: '@appsemble/test',
@@ -189,7 +191,7 @@ describe('app controller', () => {
     });
     await AppRating.create({
       AppId: appA.id,
-      UserId: userId,
+      UserId: user.id,
       rating: 5,
       description: 'This is a test rating',
     });
@@ -217,7 +219,7 @@ describe('app controller', () => {
     });
     await AppRating.create({
       AppId: appC.id,
-      UserId: userId,
+      UserId: user.id,
       rating: 3,
       description: 'This is a test rating',
     });
@@ -434,11 +436,9 @@ pages:
     });
 
     expect(response).toMatchObject({
-      status: 403,
+      status: 400,
       data: {
-        error: 'Forbidden',
-        message: 'Forbidden',
-        statusCode: 403,
+        message: 'JSON schema validation failed',
       },
     });
   });
@@ -512,7 +512,7 @@ pages:
       status: 403,
       data: {
         error: 'Forbidden',
-        message: 'User does not belong in this organization.',
+        message: 'User is not part of this organization.',
         statusCode: 403,
       },
     });
@@ -1225,7 +1225,7 @@ pages:
       data: {
         statusCode: 403,
         error: 'Forbidden',
-        message: "User does not belong in this App's organization.",
+        message: 'User is not part of this organization.',
       },
     });
   });
@@ -1298,7 +1298,10 @@ pages:
       headers: { authorization },
     });
 
-    expect(response).toMatchObject({ status: 204 });
+    expect(response).toMatchObject({
+      status: 204,
+      data: '',
+    });
   });
 
   it('should not delete non-existent apps', async () => {
@@ -1529,6 +1532,10 @@ pages:
       formA,
       { headers: { ...formA.getHeaders(), authorization } },
     );
+    expect(responseA).toMatchObject({
+      status: 204,
+      data: '',
+    });
 
     const formB = new FormData();
     formB.append('style', Buffer.from(' '), {
@@ -1540,13 +1547,14 @@ pages:
       formB,
       { headers: { ...formB.getHeaders(), authorization } },
     );
+    expect(responseB).toMatchObject({
+      status: 204,
+      data: '',
+    });
 
     const style = await AppBlockStyle.findOne({
       where: { AppId: id, BlockDefinitionId: '@appsemble/testblock' },
     });
-
-    expect(responseA.status).toBe(204);
-    expect(responseB.status).toBe(204);
     expect(style).toBeNull();
   });
 

@@ -52,10 +52,13 @@ describe('resource controller', () => {
   beforeEach(async () => {
     await truncate(db);
     ({ authorization: token, user } = await testToken(db));
-    ({ id: organizationId } = await user.createOrganization({
-      id: 'testorganization',
-      name: 'Test Organization',
-    }));
+    ({ id: organizationId } = await user.createOrganization(
+      {
+        id: 'testorganization',
+        name: 'Test Organization',
+      },
+      { through: { role: 'Maintainer' } },
+    ));
     clock = lolex.install();
   });
 

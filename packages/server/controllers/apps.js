@@ -398,8 +398,6 @@ export async function deleteApp(ctx) {
     throw Boom.notFound('App not found');
   }
 
-  await checkRole(ctx, app.OrganizationId);
-
   await checkRole(ctx, app.OrganizationId, permissions.DeleteApps);
 
   await app.update({ path: null });
