@@ -5,6 +5,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 
+import checkAppRole from '../../utils/checkAppRole';
 import makeActions from '../../utils/makeActions';
 import BlockList from '../BlockList';
 import FlowPage from '../FlowPage';
@@ -188,26 +189,10 @@ export default class Page extends React.Component {
     this.ee = ee;
   }
 
-  checkRole = (role, userRole) => {
-    const { definition } = this.props;
-
-    if (role === userRole) {
-      return true;
-    }
-
-    if (definition.security.roles[userRole].inherits) {
-      return definition.security.roles[userRole].inherits.some(inheritedRole =>
-        this.checkRole(role, inheritedRole),
-      );
-    }
-
-    return false;
-  };
-
   checkPagePermissions = p => {
     const { definition, role } = this.props;
     const roles = p.roles || definition.roles || [];
-    return roles.length === 0 || roles.some(r => this.checkRole(r, role));
+    return roles.length === 0 || roles.some(r => checkAppRole(definition.security, r, role));
   };
 
   handlePagePermissions = () => {

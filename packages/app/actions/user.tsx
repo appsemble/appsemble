@@ -91,6 +91,7 @@ export default (state = initialState, action: UserAction): UserState => {
       return {
         ...state,
         user: null,
+        role: null,
       };
     default:
       return state;

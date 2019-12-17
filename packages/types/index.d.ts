@@ -185,6 +185,11 @@ export interface Block<P = any, A = {}> {
    * The exact meaning of the parameters depends on the block type.
    */
   actions?: A;
+
+  /**
+   * A list of roles that are allowed to view this block.
+   */
+  roles?: string[];
 }
 
 export interface ResourceCall {
