@@ -93,14 +93,16 @@ export default function AppSideMenu({
               </span>
             </NavLink>
           )}
-          {organization && checkRole(organization.role, permissions.EditApps) && (
-            <NavLink className={styles.menuItem} exact={!isCollapsed} to={`${match.url}/roles`}>
-              <Icon icon="users" size="medium" />
-              <span className={classNames({ 'is-hidden': isCollapsed })}>
-                <FormattedMessage {...messages.roles} />
-              </span>
-            </NavLink>
-          )}
+          {organization &&
+            app.definition.security !== undefined &&
+            checkRole(organization.role, permissions.EditApps) && (
+              <NavLink className={styles.menuItem} exact={!isCollapsed} to={`${match.url}/roles`}>
+                <Icon icon="users" size="medium" />
+                <span className={classNames({ 'is-hidden': isCollapsed })}>
+                  <FormattedMessage {...messages.roles} />
+                </span>
+              </NavLink>
+            )}
           {organization && checkRole(organization.role, permissions.EditAppSettings) && (
             <NavLink className={styles.menuItem} exact={!isCollapsed} to={`${match.url}/settings`}>
               <Icon icon="cogs" size="medium" />

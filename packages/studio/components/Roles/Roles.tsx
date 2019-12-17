@@ -33,10 +33,15 @@ export default function Roles({ app, push, intl, user }: RolesProps): React.Reac
 
   React.useEffect(() => {
     const getMembers = async (): Promise<void> => {
+      const { data: appMembers } = await axios.get<Member[]>(`/api/apps/${app.id}/members`);
+      if (app.definition.security.default.policy === 'invite') {
+        setMembers(appMembers);
+        return;
+      }
+
       const { data: organizationMembers } = await axios.get<Member[]>(
         `/api/organizations/${app.OrganizationId}/members`,
       );
-      const { data: appMembers } = await axios.get<Member[]>(`/api/apps/${app.id}/members`);
 
       setMembers([
         ...organizationMembers.map(orgMem => {
@@ -49,7 +54,12 @@ export default function Roles({ app, push, intl, user }: RolesProps): React.Reac
       ]);
     };
     getMembers();
-  }, [app.OrganizationId, app.definition.security.default.role, app.id]);
+  }, [
+    app.OrganizationId,
+    app.definition.security.default.policy,
+    app.definition.security.default.role,
+    app.id,
+  ]);
 
   const onChangeRole = async (
     event: React.ChangeEvent<HTMLSelectElement>,

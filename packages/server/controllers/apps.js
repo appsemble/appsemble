@@ -446,12 +446,20 @@ export async function getAppMembers(ctx) {
 
 export async function getAppMember(ctx) {
   const { appId, memberId } = ctx.params;
-  const { App, User } = ctx.db.models;
+  const { App, User, Organization } = ctx.db.models;
 
   const app = await App.findByPk(appId, { include: [User] });
   if (!app) {
     throw Boom.notFound('App not found');
   }
+
+  if (app.definition.security === undefined) {
+    throw Boom.notFound('App does not have a security definition.');
+  }
+
+  const {
+    default: { policy, role: defaultRole },
+  } = app.definition.security;
 
   const user = await User.findByPk(memberId);
 
@@ -460,10 +468,14 @@ export async function getAppMember(ctx) {
   }
 
   const member = app.Users.find(u => u.id === memberId);
-  const role =
-    (app.definition.security && !member
-      ? app.definition.security.default.role
-      : member.AppMember.role) || null;
+  let role = null;
+  if (!member && policy === 'organization') {
+    role = defaultRole;
+  }
+
+  if (!member && policy === 'organization' && (await Organization.hasUser(memberId))) {
+    role = defaultRole;
+  }
 
   ctx.body = {
     id: user.id,
