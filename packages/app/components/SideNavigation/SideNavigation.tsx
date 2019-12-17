@@ -51,8 +51,6 @@ export default function SideNavigation({
     return roles.length === 0 || roles.some(r => checkAppRole(definition.security, r, role));
   };
 
-  const hideSettings = definition.notifications === undefined;
-
   return (
     <SideMenu>
       <nav>
@@ -73,26 +71,6 @@ export default function SideNavigation({
                 </NavLink>
               </li>
             ))}
-        </ul>
-
-        <ul className={`menu-list ${styles.menuList}`}>
-          {!hideSettings && (
-            <li>
-              <NavLink activeClassName={styles.active} to="/Settings">
-                <Icon className={styles.icon} icon="cog" />
-                <span>
-                  <FormattedMessage {...messages.settings} />
-                </span>
-              </NavLink>
-            </li>
-          )}
-          {user && (
-            <li>
-              <button className={styles.logoutButton} onClick={onLogout} type="button">
-                <FormattedMessage {...messages.logout} />
-              </button>
-            </li>
-          )}
         </ul>
       </nav>
     </SideMenu>

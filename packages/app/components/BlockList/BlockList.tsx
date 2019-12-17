@@ -26,7 +26,6 @@ export interface BlockListProps {
 
 interface BlockListState {
   blockStatus: Record<string, boolean>;
-  visibleBlocks: BlockType[];
 }
 
 export default class BlockList extends React.Component<BlockListProps, BlockListState> {

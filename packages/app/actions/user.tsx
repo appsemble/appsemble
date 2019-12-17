@@ -41,6 +41,7 @@ interface OAuth2Params {
 }
 
 interface JwtPayload {
+  user: { email: string };
   exp: number;
   scopes: string;
   sub: string;
@@ -120,7 +121,7 @@ function setupAuth(
   url: string,
   db: IDBPDatabase,
   dispatch: UserDispatch,
-): { id: string; scope: string } {
+): User {
   const payload = jwtDecode<JwtPayload>(accessToken);
   const { exp, scopes, sub } = payload;
   if (exp) {
@@ -136,6 +137,7 @@ function setupAuth(
   return {
     id: sub,
     scope: scopes,
+    primaryEmail: payload.user.email,
   };
 }
 

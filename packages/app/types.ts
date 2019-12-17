@@ -2,8 +2,11 @@ import { Action } from '@appsemble/sdk';
 import { ActionDefinition, AppDefinition, Block } from '@appsemble/types';
 import { RouteComponentProps } from 'react-router-dom';
 
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface User {}
+export interface User {
+  id: string;
+  scope: string;
+  primaryEmail: string;
+}
 
 declare global {
   interface Window {

@@ -1,5 +1,6 @@
 export interface User {
   id: number;
+  primaryEmail: string;
 }
 
 export type Role = 'Owner' | 'Maintainer' | 'AppEditor' | 'Member';
