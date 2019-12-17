@@ -535,6 +535,10 @@ export interface Page {
   name: string;
 
   /**
+   * A list of roles that may view the page.
+   */
+  roles?: string[];
+  /**
    * An optional icon from the fontawesome icon set
    *
    * This will be displayed in the navigation menu.
@@ -588,6 +592,11 @@ export interface AppDefinition {
 
   security: Security;
   authentication: Authentication[];
+
+  /**
+   * A list of roles that are required to view pages. Specific page roles override this property.
+   */
+  roles: string[];
 
   /**
    * The default page of the app.

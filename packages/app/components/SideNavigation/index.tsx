@@ -10,6 +10,7 @@ function mapStateToProps(state: State): Partial<ComponentProps<typeof SideNaviga
   return {
     definition: state.app.definition,
     user: state.user.user,
+    role: state.user.role,
   };
 }
 
