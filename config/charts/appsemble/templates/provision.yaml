@@ -1,5 +1,5 @@
 {{ if .Values.provision }}
-{{ $clientCredentials := split ":" .Values.provision.accpint.clientCredentials }}
+{{ $clientCredentials := split ":" .Values.provision.account.clientCredentials }}
 apiVersion: batch/v1
 kind: Job
 metadata:
@@ -27,7 +27,7 @@ spec:
           args:
             - "--command"
             - |
-              DO $$
+              DO $$$$
               DECLARE
                 UserId integer;
               BEGIN
@@ -47,7 +47,7 @@ spec:
                 INSERT INTO "OAuth2ClientCredentials" (id, secret, description, scopes, created, "UserId") VALUES (
                   {{ $clientCredentials._0 | squote }},
                   {{ $clientCredentials._1 | squote }},
-                  'Used for provisioning the requiw environment',
+                  'Used for provisioning the review environment',
                   'apps:write blocks:write',
                   NOW(),
                   UserId
@@ -67,7 +67,7 @@ spec:
                     'Owner'
                   );
                 {{ end }}
-              END $$
+              END $$$$
           env:
             - name: PGHOST
               value: {{ .Values.postgresql.fullnameOverride }}
