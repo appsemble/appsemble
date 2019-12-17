@@ -3,6 +3,8 @@ import axios from 'axios';
 import inquirer from 'inquirer';
 import querystring from 'querystring';
 
+export const CREDENTIALS_ENV_VAR = 'APPSEMBLE_CLIENT_CREDENTIALS';
+
 function validate(credentials) {
   return /.+:.+/.test(credentials);
 }
@@ -24,6 +26,12 @@ async function getKeytar() {
 async function getClientCredentials(remote, inputCredentials) {
   if (inputCredentials) {
     return inputCredentials;
+  }
+
+  const envCredentials = process.env[CREDENTIALS_ENV_VAR];
+  if (envCredentials) {
+    logger.info(`Detected client credentials from ${CREDENTIALS_ENV_VAR} environment variable`);
+    return envCredentials;
   }
 
   const { findCredentials } = await getKeytar();
