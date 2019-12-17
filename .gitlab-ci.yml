@@ -55,7 +55,6 @@ stages:
   extends: .yarn
   stage: provision
   script:
-    - yarn appsemble login --email "$APPSEMBLE_EMAIL" --password "$APPSEMBLE_PASSWORD"
     - yarn appsemble block register --all --build blocks
     - yarn appsemble app create --template --organization @appsemble --all apps
 
@@ -276,7 +275,7 @@ review:
       --set "migrateTo=999.999.999"
       --set "global.postgresql.existingSecret=postgresql-secret"
       --set "provision.account.name=$BOT_ACCOUNT_NAME"
-      --set "provision.account.password=$BOT_ACCOUNT_PASSWORD"
+      --set "provision.account.clientCredentials=$APPSEMBLE_CLIENT_CREDENTIALS"
       --set "provision.account.email=$BOT_ACCOUNT_EMAIL"
       --set "provision.account.organizations={appsemble,amsterdam}"
       --set "postgresql.fullnameOverride=$CI_ENVIRONMENT_SLUG-postgresql"
@@ -485,7 +484,7 @@ migrate staging:
       --set "ingress.tls.secretName=staging-tls"
       --set "global.postgresql.existingSecret=postgresql-secret"
       --set "provision.account.name=$BOT_ACCOUNT_NAME"
-      --set "provision.account.password=$BOT_ACCOUNT_PASSWORD"
+      --set "provision.account.clientCredentials=$APPSEMBLE_CLIENT_CREDENTIALS"
       --set "provision.account.email=$BOT_ACCOUNT_EMAIL"
       --set "provision.account.organizations={appsemble,amsterdam}"
       --set "postgresql.fullnameOverride=staging-postgresql"

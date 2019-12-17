@@ -1,4 +1,5 @@
 {{ if .Values.provision }}
+{{ $clientCredentials := split ":" .Values.provision.accpint.clientCredentials }}
 apiVersion: batch/v1
 kind: Job
 metadata:
@@ -26,47 +27,47 @@ spec:
           args:
             - "--command"
             - |
-              BEGIN;
-              INSERT INTO "User" (name, password, "primaryEmail", created, updated) VALUES (
-                {{ .Values.provision.account.name | squote }},
-                {{ .Values.provision.account.password | squote }},
-                {{ .Values.provision.account.email | squote }},
-                NOW(),
-                NOW()
-              );
-              INSERT INTO "EmailAuthorization" (email, verified, created, updated, "UserId") VALUES (
-                {{ .Values.provision.account.email | squote }},
-                true,
-                NOW(),
-                NOW(),
-                (
-                  SELECT id
-                  FROM "User"
-                  WHERE "primaryEmail" = {{ .Values.provision.account.email | squote }}
-                  LIMIT 1
-                )
-              );
-              {{ range .Values.provision.account.organizations }}
-                INSERT INTO "Organization" (id, name, created, updated) VALUES (
-                  {{ . | squote }},
-                  {{ . | squote }},
+              DO $$
+              DECLARE
+                UserId integer;
+              BEGIN
+                INSERT INTO "User" (name, "primaryEmail", created, updated) VALUES (
+                  {{ .Values.provision.account.name | squote }},
+                  {{ .Values.provision.account.email | squote }},
                   NOW(),
                   NOW()
-                );
-                INSERT INTO "Member" (created, updated, "UserId", "OrganizationId", role) VALUES (
+                ) RETURNING id INTO UserId;
+                INSERT INTO "EmailAuthorization" (email, verified, created, updated, "UserId") VALUES (
+                  {{ .Values.provision.account.email | squote }},
+                  true,
                   NOW(),
                   NOW(),
-                  (
-                    SELECT id
-                    FROM "User"
-                    WHERE "primaryEmail" = {{ $.Values.provision.account.email | squote }}
-                    LIMIT 1
-                  ),
-                  {{ . | squote }},
-                  'Owner'
+                  UserId
                 );
-              {{ end }}
-              COMMIT;
+                INSERT INTO "OAuth2ClientCredentials" (id, secret, description, scopes, created, "UserId") VALUES (
+                  {{ $clientCredentials._0 | squote }},
+                  {{ $clientCredentials._1 | squote }},
+                  'Used for provisioning the requiw environment',
+                  'apps:write blocks:write',
+                  NOW(),
+                  UserId
+                );
+                {{ range .Values.provision.account.organizations }}
+                  INSERT INTO "Organization" (id, name, created, updated) VALUES (
+                    {{ . | squote }},
+                    {{ . | squote }},
+                    NOW(),
+                    NOW()
+                  );
+                  INSERT INTO "Member" (created, updated, "UserId", "OrganizationId", role) VALUES (
+                    NOW(),
+                    NOW(),
+                    UserId,
+                    {{ . | squote }},
+                    'Owner'
+                  );
+                {{ end }}
+              END $$
           env:
             - name: PGHOST
               value: {{ .Values.postgresql.fullnameOverride }}
