@@ -2,8 +2,8 @@ import { AppDefinition } from '@appsemble/types';
 import { normalize } from '@appsemble/utils';
 import classNames from 'classnames';
 import React from 'react';
-import { WrappedComponentProps } from 'react-intl';
-import { RouteComponentProps, useLocation } from 'react-router-dom';
+import { useIntl } from 'react-intl';
+import { useLocation } from 'react-router-dom';
 
 import messages from './messages';
 import styles from './SideMenuButton.css';
@@ -19,11 +19,11 @@ export interface SideMenuButtonProps {
  */
 export default function SideMenuButton({
   definition,
-  intl,
   isOpen,
   openMenu,
-}: SideMenuButtonProps & WrappedComponentProps & RouteComponentProps): React.ReactElement {
+}: SideMenuButtonProps): React.ReactElement {
   const location = useLocation();
+  const intl = useIntl();
 
   if (!definition) {
     return null;
