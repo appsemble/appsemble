@@ -1,7 +1,6 @@
 import { AppsembleError, logger } from '@appsemble/node-utils';
 import axios from 'axios';
 import inquirer from 'inquirer';
-import querystring from 'querystring';
 
 export const CREDENTIALS_ENV_VAR = 'APPSEMBLE_CLIENT_CREDENTIALS';
 
@@ -117,13 +116,8 @@ export async function authenticate(remote = axios.defaults.baseURL, scope, input
   logger.verbose(`Logging in to ${remote}`);
   const { data } = await axios.post(
     '/oauth2/token',
-    querystring.stringify({ grant_type: 'client_credentials', scope }),
-    {
-      headers: {
-        authorization: `Basic ${Buffer.from(credentials).toString('base64')}`,
-        'content-type': 'x-www-form-urlencoded',
-      },
-    },
+    new URLSearchParams({ grant_type: 'client_credentials', scope }),
+    { headers: { authorization: `Basic ${Buffer.from(credentials).toString('base64')}` } },
   );
   axios.defaults.headers.common.authorization = `Bearer ${data.access_token}`;
   logger.info('Logged in succesfully');
