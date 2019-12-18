@@ -7,7 +7,7 @@ import {
   SimpleFormError,
   SimpleInput,
 } from '@appsemble/react-components';
-import { App, Message, Organization, Resource } from '@appsemble/types';
+import { App, Message, Organization } from '@appsemble/types';
 import axios from 'axios';
 import classNames from 'classnames';
 import React from 'react';
@@ -31,7 +31,7 @@ interface CreateAppCardProps {
       name: string;
       description: string;
       isPrivate: boolean;
-      resources: Resource[];
+      resources: boolean;
     },
     organization: { id: string },
   ) => Promise<App>;

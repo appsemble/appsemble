@@ -48,7 +48,7 @@ export async function createTemplateApp(ctx) {
   const { user } = ctx.state;
 
   const template = await App.findOne({
-    where: { id: templateId, template: true },
+    where: { id: templateId },
     include: [Resource],
   });
 
@@ -60,6 +60,14 @@ export async function createTemplateApp(ctx) {
 
   if (!template) {
     throw Boom.notFound(`Template with ID ${templateId} does not exist.`);
+  }
+
+  if (
+    !template.template &&
+    template.private &&
+    !user.organizations.some(org => org.id === template.OrganizationId)
+  ) {
+    throw Boom.badRequest('Not allowed to clone this private app.');
   }
 
   try {
