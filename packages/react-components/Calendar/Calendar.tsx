@@ -1,4 +1,4 @@
-import BulmaCalendar from 'bulma-calendar';
+import BulmaCalendar, { BulmaCalendarOptions } from 'bulma-calendar';
 import classNames from 'classnames';
 import * as React from 'react';
 
@@ -9,6 +9,8 @@ import styles from './Calendar.css';
 type CalendarProps = Omit<React.ComponentPropsWithoutRef<typeof FormComponent>, 'children'> &
   Omit<React.ComponentPropsWithoutRef<'input'>, 'label' | 'onChange'> & {
     control?: React.ReactElement;
+
+    displayMode?: BulmaCalendarOptions['displayMode'];
 
     /**
      * An error message to render.
@@ -33,6 +35,8 @@ type CalendarProps = Omit<React.ComponentPropsWithoutRef<typeof FormComponent>, 
      */
     onChange: (event: { target: HTMLInputElement }, value: Date) => void;
 
+    showHeader?: boolean;
+
     /**
      * The HTML input type.
      *
@@ -48,6 +52,7 @@ export default React.forwardRef<HTMLInputElement, CalendarProps>(
   (
     {
       control,
+      displayMode,
       error,
       iconLeft,
       help,
@@ -56,6 +61,7 @@ export default React.forwardRef<HTMLInputElement, CalendarProps>(
       name,
       onChange,
       required,
+      showHeader = false,
       type = 'datetime',
       value,
       id = name,
@@ -68,14 +74,22 @@ export default React.forwardRef<HTMLInputElement, CalendarProps>(
 
     React.useImperativeHandle(ref, () => inputRef.current);
     React.useEffect(() => {
-      const calendar = new BulmaCalendar(inputRef.current, {
+      calendarRef.current = new BulmaCalendar(inputRef.current, {
+        showHeader,
         type,
+        displayMode,
       });
-      calendar.on('select', () => {
-        onChange({ target: inputRef.current }, calendar.startDate);
+    }, [displayMode, showHeader, type]);
+
+    React.useEffect(() => {
+      calendarRef.current.on('select', () => {
+        onChange({ target: inputRef.current }, calendarRef.current.startDate);
       });
-      calendarRef.current = calendar;
-    }, [inputRef, onChange, type]);
+
+      return () => {
+        calendarRef.current.removeListeners('select');
+      };
+    }, [onChange]);
 
     return (
       <FormComponent
@@ -88,11 +102,9 @@ export default React.forwardRef<HTMLInputElement, CalendarProps>(
         <input
           {...props}
           ref={inputRef}
-          // className={classNames('input', { 'is-danger': error })}
           id={id}
           maxLength={maxLength}
           name={name}
-          // onChange={handleChange}
           required={required}
           value={value}
         />

@@ -6,7 +6,7 @@ import { CSSTransition } from 'react-transition-group';
 import messages from './messages';
 import styles from './Modal.css';
 
-export interface ModalProps extends WrappedComponentProps {
+interface ModalProps<T extends React.ElementType> {
   /**
    * The child elements to render on the modal.
    */
@@ -16,6 +16,8 @@ export interface ModalProps extends WrappedComponentProps {
    * Whether the user is allowed to click on the close button or outside of the modal to close it.
    */
   closable?: boolean;
+
+  component?: T;
 
   /**
    * Wether or not the modal is currently active.
@@ -41,14 +43,20 @@ export interface ModalProps extends WrappedComponentProps {
    * The CSS class applied to the body
    */
   className?: string;
+
+  footer?: React.ReactNode;
 }
 
 /**
  * Render an aria compliant modal overlay.
  */
-export default class Modal extends React.Component<ModalProps> {
-  static defaultProps: Partial<ModalProps> = {
+export default class Modal<T extends React.ElementType = 'div'> extends React.Component<
+  ModalProps<T> & WrappedComponentProps & React.ComponentPropsWithoutRef<T>
+> {
+  static defaultProps: Partial<ModalProps<'div'>> = {
+    component: 'div',
     children: null,
+    footer: null,
     onClose() {},
   };
 
@@ -66,10 +74,13 @@ export default class Modal extends React.Component<ModalProps> {
       children,
       className,
       closable = true,
+      component: Component,
+      footer,
       intl,
       isActive,
       onClose,
       title,
+      ...props
     } = this.props;
 
     return (
@@ -92,7 +103,7 @@ export default class Modal extends React.Component<ModalProps> {
             onKeyDown={closable ? this.onKeyDown : null}
             role="presentation"
           />
-          <div className={classNames('modal-card', cardClassName)}>
+          <Component className={classNames('modal-card', cardClassName)} {...props}>
             <div className="modal-card-head">
               <p className="modal-card-title">{title}</p>
               {closable && (
@@ -105,7 +116,8 @@ export default class Modal extends React.Component<ModalProps> {
               )}
             </div>
             <div className={classNames('modal-card-body', className)}>{children}</div>
-          </div>
+            {footer && <footer className="card-footer">{footer}</footer>}
+          </Component>
         </div>
       </CSSTransition>
     );

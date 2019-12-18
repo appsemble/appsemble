@@ -23,6 +23,7 @@ interface SimpleInputProps<C extends React.ComponentType> {
   component?: C;
   disabled?: boolean;
   name: string;
+  onChange: (event: React.ChangeEvent<MinimalHTMLElement>, value: any) => void;
   validityMessages?: ValidityMessages;
 }
 
@@ -37,14 +38,16 @@ export default function SimpleInput<C extends React.ComponentType = typeof Input
   component: Component = Input,
   disabled,
   name,
+  onChange,
   validityMessages = {},
   ...props
 }: FooProps<C>): React.ReactElement {
   const { formErrors, pristine, setFormError, setValue, submitting, values } = useSimpleForm();
   const ref = React.useRef<MinimalHTMLElement>(null);
-  const onChange = React.useCallback(
-    ({ target }: React.ChangeEvent<MinimalHTMLElement>, value = target.value) => {
-      const { validity } = target;
+  const internalOnChange = React.useCallback(
+    (event: React.ChangeEvent<MinimalHTMLElement>, value = event.target.value) => {
+      onChange(event, value);
+      const { validity } = event.target;
       let message: React.ReactNode;
       if (validity && !validity.valid) {
         const reason = Object.entries(validityMessages).find(
@@ -54,7 +57,7 @@ export default function SimpleInput<C extends React.ComponentType = typeof Input
       }
       setValue(name, value, message);
     },
-    [name, setValue, validityMessages],
+    [name, onChange, setValue, validityMessages],
   );
 
   React.useEffect(() => {
@@ -71,7 +74,7 @@ export default function SimpleInput<C extends React.ComponentType = typeof Input
       disabled={disabled || submitting}
       error={!pristine && formErrors[name]}
       name={name}
-      onChange={onChange}
+      onChange={internalOnChange}
       value={values[name]}
       {...props}
     />
