@@ -1,5 +1,8 @@
 import { injectIntl, WrappedComponentProps } from 'react-intl';
 
-import Modal, { ModalProps } from './Modal';
+import Modal from './Modal';
 
-export default injectIntl<'intl', WrappedComponentProps & ModalProps>(Modal);
+export default injectIntl<
+  'intl',
+  WrappedComponentProps & React.ComponentPropsWithoutRef<typeof Modal>
+>(Modal);
