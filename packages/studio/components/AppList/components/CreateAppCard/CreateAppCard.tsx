@@ -7,6 +7,7 @@ import {
   SimpleFormError,
   SimpleInput,
 } from '@appsemble/react-components';
+import { App, Message, Organization, Resource } from '@appsemble/types';
 import axios from 'axios';
 import classNames from 'classnames';
 import React from 'react';
@@ -16,11 +17,36 @@ import { useHistory, useRouteMatch } from 'react-router-dom';
 import styles from './CreateAppCard.css';
 import messages from './messages';
 
-export default function CreateAppCard({ createTemplateApp, organizations }) {
+interface Template {
+  id: number;
+  name: string;
+  description: string;
+  resources: boolean;
+}
+
+interface CreateAppCardProps {
+  createTemplateApp: (
+    template: {
+      templateId: number;
+      name: string;
+      description: string;
+      isPrivate: boolean;
+      resources: Resource[];
+    },
+    organization: { id: string },
+  ) => Promise<App>;
+  organizations: Organization[];
+  push: (message: Message) => void;
+}
+
+export default function CreateAppCard({
+  createTemplateApp,
+  organizations,
+}: CreateAppCardProps): JSX.Element {
   const history = useHistory();
   const match = useRouteMatch();
   const [modalOpen, setModalOpen] = React.useState(false);
-  const [templates, setTemplates] = React.useState(null);
+  const [templates, setTemplates] = React.useState<Template[]>(null);
   const [selectedTemplate, setSelectedTemplate] = React.useState(0);
 
   const closeModal = React.useCallback(() => {
@@ -56,6 +82,12 @@ export default function CreateAppCard({ createTemplateApp, organizations }) {
     });
   }, []);
 
+  const onKeyDown = (event: React.KeyboardEvent): void => {
+    if (event.key === 'Escape') {
+      setModalOpen(false);
+    }
+  };
+
   if (!templates?.length) {
     return null;
   }
@@ -65,7 +97,7 @@ export default function CreateAppCard({ createTemplateApp, organizations }) {
       <div
         className={classNames('card', styles.createAppCard)}
         onClick={openModal}
-        // onKeyDown={this.onKeyDown}
+        onKeyDown={onKeyDown}
         role="button"
         tabIndex={0}
       >
@@ -99,8 +131,9 @@ export default function CreateAppCard({ createTemplateApp, organizations }) {
       >
         <SimpleFormError>
           {({ error }) =>
+            // @ts-ignore: Property 'response' does not exist on type 'Error'.
             error?.response?.status === 409 ? (
-              <FormattedMessage {...messages.nameConflict} values={{ name: 'asd' }} />
+              <FormattedMessage {...messages.nameConflict} />
             ) : (
               <FormattedMessage {...messages.error} />
             )
@@ -130,13 +163,12 @@ export default function CreateAppCard({ createTemplateApp, organizations }) {
           label={<FormattedMessage {...messages.description} />}
           maxLength={80}
           name="appDescription"
-          type="textarea"
         />
         <SimpleInput
           component={Select}
           label={<FormattedMessage {...messages.template} />}
           name="selectedTemplate"
-          onChange={({ target }) => setSelectedTemplate(templates[target.value])}
+          onChange={({ target }) => setSelectedTemplate(target.value)}
           required
         >
           {templates.map((template, index) => (

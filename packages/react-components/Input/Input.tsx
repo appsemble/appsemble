@@ -98,7 +98,7 @@ export default React.forwardRef<HTMLInputElement, InputProps>(
           </p>
           {maxLength ? (
             <span className={`help ${styles.counter}`}>{`${
-              `${value}`.length
+              `${value === undefined ? '' : value}`.length
             } / ${maxLength}`}</span>
           ) : null}
         </div>

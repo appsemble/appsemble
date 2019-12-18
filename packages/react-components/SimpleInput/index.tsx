@@ -23,7 +23,7 @@ interface SimpleInputProps<C extends React.ComponentType> {
   component?: C;
   disabled?: boolean;
   name: string;
-  onChange: (event: React.ChangeEvent<MinimalHTMLElement>, value: any) => void;
+  onChange?: (event: React.ChangeEvent<MinimalHTMLElement>, value: any) => void;
   validityMessages?: ValidityMessages;
 }
 
@@ -46,7 +46,9 @@ export default function SimpleInput<C extends React.ComponentType = typeof Input
   const ref = React.useRef<MinimalHTMLElement>(null);
   const internalOnChange = React.useCallback(
     (event: React.ChangeEvent<MinimalHTMLElement>, value = event.target.value) => {
-      onChange(event, value);
+      if (onChange) {
+        onChange(event, value);
+      }
       const { validity } = event.target;
       let message: React.ReactNode;
       if (validity && !validity.valid) {
