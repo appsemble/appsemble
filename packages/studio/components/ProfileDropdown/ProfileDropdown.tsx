@@ -44,6 +44,14 @@ export default function ProfileDropdown({ intl, logout, user }: ProfileDropDownP
     }
   };
 
+  if (!user) {
+    return (
+      <Link className="button" to="/login">
+        <FormattedMessage {...messages.login} />
+      </Link>
+    );
+  }
+
   return (
     <div ref={node}>
       <div className={classNames('dropdown', 'is-right', { 'is-active': open })}>

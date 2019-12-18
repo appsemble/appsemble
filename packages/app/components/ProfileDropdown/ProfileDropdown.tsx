@@ -51,7 +51,20 @@ export default function ProfileDropdown({
     }
   };
 
-  const hideSettings = definition.notifications === undefined;
+  const showSettings = definition.notifications !== undefined;
+  const showLogin = definition.security;
+
+  if (!showSettings && !showLogin) {
+    return null;
+  }
+
+  if (!user) {
+    return (
+      <Link className="button" to="/Login">
+        <FormattedMessage {...messages.login} />
+      </Link>
+    );
+  }
 
   return (
     <div ref={node}>
@@ -76,27 +89,27 @@ export default function ProfileDropdown({
           tabIndex={0}
         >
           <div className="dropdown-content">
-            {hideSettings && (
-              <>
-                <Link className="dropdown-item" to="/Settings">
-                  <Icon icon="wrench" />
-                  <span>
-                    <FormattedMessage {...messages.settings} />
-                  </span>
-                </Link>
-                <hr className="dropdown-divider" />
-              </>
+            {showSettings && (
+              <Link className="dropdown-item" to="/Settings">
+                <Icon icon="wrench" />
+                <span>
+                  <FormattedMessage {...messages.settings} />
+                </span>
+              </Link>
             )}
-            <button
-              className={`button dropdown-item ${styles.logoutButton}`}
-              onClick={logout}
-              type="button"
-            >
-              <Icon className={styles.logoutButtonIcon} icon="sign-out-alt" size="small" />
-              <span>
-                <FormattedMessage {...messages.logoutButton} />
-              </span>
-            </button>
+            {showSettings && showLogin && <hr className="dropdown-divider" />}
+            {showLogin && (
+              <button
+                className={`button dropdown-item ${styles.logoutButton}`}
+                onClick={logout}
+                type="button"
+              >
+                <Icon className={styles.logoutButtonIcon} icon="sign-out-alt" size="small" />
+                <span>
+                  <FormattedMessage {...messages.logoutButton} />
+                </span>
+              </button>
+            )}
           </div>
         </div>
       </div>
