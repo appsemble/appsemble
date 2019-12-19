@@ -15,9 +15,10 @@ import styles from './AppList.css';
 import messages from './messages';
 
 export default function AppList({ apps, getApps, getPublicApps }) {
-  const intl = useIntl();
   const [filter, setFilter] = React.useState('');
   const [organizations, setOrganizations] = React.useState([]);
+
+  const intl = useIntl();
   const { userInfo } = useUser();
 
   const onFilterChange = React.useCallback(event => {
