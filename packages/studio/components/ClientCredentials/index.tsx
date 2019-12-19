@@ -30,7 +30,7 @@ export default function ClientCredentials(): React.ReactElement {
         .map(([key]) => key);
       const { data } = await axios.post('/api/oauth2/client-credentials', {
         description,
-        expires: new Date(expires),
+        expires: expires ? new Date(expires) : undefined,
         scopes,
       });
       setNewClientCredentials(`${data.id}:${data.secret}`);
@@ -68,7 +68,13 @@ export default function ClientCredentials(): React.ReactElement {
       </button>
       <Modal
         component={SimpleForm}
-        defaultValues={{ description: '', 'blocks:write': false }}
+        defaultValues={{
+          description: '',
+          expires: '',
+          'blocks:write': false,
+          'organizations:styles:write': false,
+          'apps:write': false,
+        }}
         footer={
           <>
             <CardFooterButton onClick={closeModal}>
@@ -169,6 +175,7 @@ export default function ClientCredentials(): React.ReactElement {
                     <Join separator=", ">
                       {client.scopes.map(scope => (
                         <data
+                          key={scope}
                           className={styles.scope}
                           title={intl.formatMessage(
                             Object.hasOwnProperty.call(scopeDescriptions, scope)

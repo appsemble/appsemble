@@ -4,7 +4,6 @@ import * as React from 'react';
 
 import FormComponent from '../FormComponent';
 import Icon from '../Icon';
-import styles from './Calendar.css';
 
 type CalendarProps = Omit<React.ComponentPropsWithoutRef<typeof FormComponent>, 'children'> &
   Omit<React.ComponentPropsWithoutRef<'input'>, 'label' | 'onChange'> & {
@@ -102,24 +101,17 @@ export default React.forwardRef<HTMLInputElement, CalendarProps>(
         <input
           {...props}
           ref={inputRef}
+          defaultValue={value}
           id={id}
           maxLength={maxLength}
           name={name}
           required={required}
-          value={value}
         />
         {iconLeft && <Icon className="is-left" icon={iconLeft} />}
         {control && React.cloneElement(control, { className: 'is-right' })}
-        <div className={styles.help}>
-          <p className={classNames('help', { 'is-danger': error })}>
-            {React.isValidElement(error) ? error : help}
-          </p>
-          {maxLength ? (
-            <span className={`help ${styles.counter}`}>{`${
-              `${value}`.length
-            } / ${maxLength}`}</span>
-          ) : null}
-        </div>
+        <p className={classNames('help', { 'is-danger': error })}>
+          {React.isValidElement(error) ? error : help}
+        </p>
       </FormComponent>
     );
   },
