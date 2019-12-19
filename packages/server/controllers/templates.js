@@ -47,7 +47,7 @@ export async function createTemplateApp(ctx) {
   const { App, Resource } = ctx.db.models;
 
   const template = await App.findOne({
-    where: { id: templateId, template: true },
+    where: { id: templateId },
     include: [Resource],
   });
 
@@ -55,6 +55,10 @@ export async function createTemplateApp(ctx) {
 
   if (!template) {
     throw Boom.notFound(`Template with ID ${templateId} does not exist.`);
+  }
+
+  if (!template.template && template.private) {
+    await checkRole(ctx, template.OrganizationId, permissions.ViewApps);
   }
 
   try {

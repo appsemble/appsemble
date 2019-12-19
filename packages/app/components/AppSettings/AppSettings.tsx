@@ -2,7 +2,7 @@ import { Checkbox, FormComponent } from '@appsemble/react-components';
 import { Message } from '@appsemble/sdk';
 import { AppDefinition } from '@appsemble/types';
 import React from 'react';
-import { FormattedMessage, WrappedComponentProps } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 
 import { Permission } from '../../actions/serviceWorker';
 import TitleBar from '../TitleBar';
@@ -29,9 +29,10 @@ export default function AppSettings({
   subscribe,
   unsubscribe,
   subscribed,
-  intl,
   push,
-}: AppSettingsProps & WrappedComponentProps): React.ReactElement {
+}: AppSettingsProps): React.ReactElement {
+  const intl = useIntl();
+
   const onSubscribeClick = async (event: React.ChangeEvent<HTMLInputElement>): Promise<void> => {
     event.preventDefault();
 

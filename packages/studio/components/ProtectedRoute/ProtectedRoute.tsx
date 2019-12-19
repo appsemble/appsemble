@@ -29,7 +29,7 @@ export default function ProtectedRoute({
   }
 
   if (permission) {
-    if (!checkRole(organization.role, permission)) {
+    if (!organization || !checkRole(organization.role, permission)) {
       return <Redirect to={match.url} />;
     }
   }

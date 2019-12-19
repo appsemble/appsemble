@@ -1,5 +1,4 @@
 import { ComponentProps } from 'react';
-import { injectIntl } from 'react-intl';
 import { connect } from 'react-redux';
 
 import { State } from '../../actions';
@@ -13,4 +12,4 @@ function mapStateToProps(state: State): Partial<ComponentProps<typeof SideMenuBu
   };
 }
 
-export default injectIntl(connect(mapStateToProps, { openMenu })(SideMenuButton));
+export default connect(mapStateToProps, { openMenu })(SideMenuButton);

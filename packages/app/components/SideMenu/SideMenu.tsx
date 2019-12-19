@@ -1,6 +1,6 @@
 import classNames from 'classnames';
 import React, { useCallback, useEffect } from 'react';
-import { RouteComponentProps } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 
 import styles from './SideMenu.css';
 
@@ -17,9 +17,10 @@ export interface SideMenuProps {
 export default function SideMenu({
   children,
   closeMenu,
-  history,
   isOpen,
-}: SideMenuProps & RouteComponentProps): React.ReactElement {
+}: SideMenuProps): React.ReactElement {
+  const history = useHistory();
+
   const onKeyDown = useCallback(
     (event: KeyboardEvent | React.KeyboardEvent): void => {
       // Close menu if the Escape key is pressed.

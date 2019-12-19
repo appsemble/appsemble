@@ -1,7 +1,8 @@
-import { injectIntl } from 'react-intl';
 import { connect } from 'react-redux';
+import { withRouter } from 'react-router-dom';
 
 import { State } from '../../actions';
+import { updateApp } from '../../actions/apps';
 import { push } from '../../actions/message';
 import AppDetails, { AppDetailsProps } from './AppDetails';
 
@@ -11,4 +12,4 @@ function mapStateToProps(state: State, ownProps: AppDetailsProps): Partial<AppDe
   };
 }
 
-export default injectIntl(connect(mapStateToProps, { push })(AppDetails));
+export default withRouter(connect(mapStateToProps, { updateApp, push })(AppDetails));

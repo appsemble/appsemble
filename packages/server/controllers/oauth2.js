@@ -12,9 +12,12 @@ export async function registerOAuth2ClientCredentials(ctx) {
   const { body } = ctx.request;
   const { user } = ctx.state;
 
-  const expires = parseISO(body.expires);
-  if (isPast(expires)) {
-    throw Boom.badRequest('These credentials have already expired');
+  let expires;
+  if (body.expires) {
+    expires = parseISO(body.expires);
+    if (isPast(expires)) {
+      throw Boom.badRequest('These credentials have already expired');
+    }
   }
   const scopes = body.scopes.sort().join(' ');
   const id = randomBytes(16).toString('hex');

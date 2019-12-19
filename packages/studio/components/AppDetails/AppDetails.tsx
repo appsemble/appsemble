@@ -1,26 +1,41 @@
-import { Loader } from '@appsemble/react-components';
+import {
+  CardFooterButton,
+  Checkbox,
+  Loader,
+  Modal,
+  Select,
+  SimpleForm,
+  SimpleInput,
+} from '@appsemble/react-components';
 import { App, Message, Organization, Rating } from '@appsemble/types';
+import { permissions } from '@appsemble/utils';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
-import { FormattedMessage, WrappedComponentProps } from 'react-intl';
-import { RouteComponentProps } from 'react-router-dom';
+import { FormattedMessage, useIntl } from 'react-intl';
+import { RouteComponentProps, useHistory } from 'react-router-dom';
 
+import useOrganizations from '../../hooks/useOrganizations';
 import useUser from '../../hooks/useUser';
+import checkRole from '../../utils/checkRole';
 import RateApp from '../RateApp';
 import StarRating from '../Rating';
 import styles from './AppDetails.css';
 import messages from './messages';
 
-export type AppDetailsProps = {
+export interface AppDetailsProps extends RouteComponentProps<{ id: string }> {
   app: App;
+  updateApp: (app: App) => void;
   push: (message: Message) => void;
-} & WrappedComponentProps &
-  RouteComponentProps<{ id: string }>;
+}
 
-export default function AppDetails({ app, push, intl }: AppDetailsProps): JSX.Element {
-  const { userInfo } = useUser();
+export default function AppDetails({ app, push, updateApp }: AppDetailsProps): JSX.Element {
   const [organization, setOrganization] = useState<Organization>(undefined);
   const [ratings, setRatings] = useState<Rating[]>([]);
+  const [showCloneDialog, setShowCloneDialog] = useState(false);
+  const history = useHistory();
+  const intl = useIntl();
+  const organizations = useOrganizations();
+  const { userInfo } = useUser();
 
   useEffect(() => {
     const fetchOrganization = async (): Promise<void> => {
@@ -45,20 +60,63 @@ export default function AppDetails({ app, push, intl }: AppDetailsProps): JSX.El
     push({ color: 'success', body: intl.formatMessage(messages.ratingSuccessful) });
   };
 
+  const closeDialog = (): void => setShowCloneDialog(false);
+  const showDialog = (): void => setShowCloneDialog(true);
+  const cloneApp = React.useCallback(
+    async ({ name, description, selectedOrganization, private: isPrivate }) => {
+      const { data: clone } = await axios.post('/api/templates', {
+        templateId: app.id,
+        name,
+        description,
+        organizationId: organizations[selectedOrganization].id,
+        resources: false,
+        private: isPrivate,
+      });
+
+      updateApp(clone);
+      history.push(`/apps/${clone.id}/edit`);
+    },
+    [app, history, organizations, updateApp],
+  );
+
   if (!organization) {
     return <Loader />;
   }
+
+  const createOrganizations =
+    organizations?.filter(org => checkRole(org.role, permissions.CreateApps)) || [];
 
   return (
     <>
       <div className="content">
         <div className={styles.titleContainer}>
-          <figure className="image is-64x64 is-marginless	">
-            <img alt={intl.formatMessage(messages.appLogo)} src={`/api/apps/${app.id}/icon`} />
-          </figure>
-          <div className="is-block">
-            <h1 className="is-marginless">{app.definition.name}</h1>
-            <h3 className="is-marginless">{organization.name}</h3>
+          <div className={styles.title}>
+            <figure className="image is-64x64 is-marginless">
+              <img alt={intl.formatMessage(messages.appLogo)} src={`/api/apps/${app.id}/icon`} />
+            </figure>
+            <div className="is-block">
+              <h1 className="is-marginless">{app.definition.name}</h1>
+              <h3 className="is-marginless">{organization.name}</h3>
+            </div>
+          </div>
+          <div>
+            {createOrganizations.length ? (
+              <button className={`button ${styles.cloneButton}`} onClick={showDialog} type="button">
+                <FormattedMessage {...messages.clone} />
+              </button>
+            ) : null}
+            <a
+              className="button is-primary"
+              href={
+                app.domain
+                  ? `//${app.domain}${window.location.port && `:${window.location.port}`}`
+                  : `/@${app.OrganizationId}/${app.path}`
+              }
+              rel="noopener noreferrer"
+              target="_blank"
+            >
+              <FormattedMessage {...messages.view} />
+            </a>
           </div>
         </div>
         <blockquote className={styles.description}>{app.definition.description}</blockquote>
@@ -88,6 +146,64 @@ export default function AppDetails({ app, push, intl }: AppDetailsProps): JSX.El
           </div>
         ))}
       </div>
+      {createOrganizations.length ? (
+        <Modal
+          component={SimpleForm}
+          defaultValues={{
+            name: app.definition.name,
+            description: app.definition.description,
+            private: true,
+            selectedOrganization: 0,
+          }}
+          footer={
+            <>
+              <CardFooterButton onClick={closeDialog}>
+                <FormattedMessage {...messages.cancel} />
+              </CardFooterButton>
+              <CardFooterButton color="primary" type="submit">
+                <FormattedMessage {...messages.submit} />
+              </CardFooterButton>
+            </>
+          }
+          isActive={showCloneDialog}
+          onClose={closeDialog}
+          onSubmit={cloneApp}
+          title={<FormattedMessage {...messages.clone} />}
+        >
+          <SimpleInput
+            help={<FormattedMessage {...messages.nameDescription} />}
+            label={<FormattedMessage {...messages.name} />}
+            maxLength={30}
+            name="name"
+            required
+          />
+          <SimpleInput<typeof Select>
+            component={Select}
+            disabled={organizations.length === 1}
+            label={<FormattedMessage {...messages.organization} />}
+            name="selectedOrganization"
+            required
+          >
+            {organizations.map((org, index) => (
+              <option key={org.id} value={index}>
+                {org.name || org.id}
+              </option>
+            ))}
+          </SimpleInput>
+          <SimpleInput
+            help={<FormattedMessage {...messages.descriptionDescription} />}
+            label={<FormattedMessage {...messages.description} />}
+            maxLength={80}
+            name="description"
+          />
+          <SimpleInput<typeof Checkbox>
+            component={Checkbox}
+            help={<FormattedMessage {...messages.privateDescription} />}
+            label={<FormattedMessage {...messages.private} />}
+            name="private"
+          />
+        </Modal>
+      ) : null}
     </>
   );
 }
