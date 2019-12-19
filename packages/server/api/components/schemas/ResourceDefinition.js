@@ -28,8 +28,8 @@ export default {
     query: {
       type: 'object',
       description: "Overrides for 'query' requests.",
-      roles,
       properties: {
+        roles,
         method: {
           type: 'string',
           default: 'GET',
@@ -45,8 +45,8 @@ export default {
     get: {
       type: 'object',
       description: "Overrides for 'get' requests.",
-      roles,
       properties: {
+        roles,
         method: {
           type: 'string',
           default: 'GET',
@@ -62,8 +62,8 @@ export default {
     create: {
       type: 'object',
       description: "Overrides for 'create' requests.",
-      roles,
       properties: {
+        roles,
         method: {
           type: 'string',
           default: 'POST',
@@ -79,8 +79,8 @@ export default {
     update: {
       type: 'object',
       description: "Overrides for 'update' requests.",
-      roles,
       properties: {
+        roles,
         method: {
           type: 'string',
           default: 'PUT',
@@ -96,8 +96,8 @@ export default {
     delete: {
       type: 'object',
       description: "Overrides for 'delete' requests.",
-      roles,
       properties: {
+        roles,
         method: {
           type: 'string',
           default: 'DELETE',

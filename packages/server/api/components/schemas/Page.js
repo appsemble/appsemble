@@ -124,6 +124,15 @@ export default {
             enum: ['*'],
           },
         },
+        roles: {
+          type: 'array',
+          description: `The list of roles that are allowed to view this page.
+
+          If a user does not have the right role, they are redirected to \`defaultPage\`.`,
+          items: {
+            type: 'string',
+          },
+        },
         theme: {
           $ref: '#/components/schemas/Theme',
         },
