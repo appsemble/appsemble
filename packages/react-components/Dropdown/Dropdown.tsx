@@ -1,6 +1,7 @@
 import classNames from 'classnames';
 import * as React from 'react';
 
+import useClickOutside from '../hooks/useClickOutside';
 import Icon from '../Icon';
 
 interface DropdownProps {
@@ -27,19 +28,9 @@ export default function Dropdown({
     }
   }, []);
 
-  React.useEffect(() => {
-    const onOutsideClick = (event: Event): void => {
-      if (!ref.current.contains(event.target as Node)) {
-        setActive(false);
-      }
-    };
-
-    document.addEventListener('click', onOutsideClick);
-
-    return () => {
-      document.removeEventListener('click', onOutsideClick);
-    };
-  }, []);
+  useClickOutside(ref, () => {
+    setActive(false);
+  });
 
   return (
     <div ref={ref} className={classNames('dropdown', className, { 'is-active': isActive })}>
