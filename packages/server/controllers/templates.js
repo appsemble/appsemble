@@ -63,11 +63,7 @@ export async function createTemplateApp(ctx) {
   }
 
   if (!template.template && template.private) {
-    try {
-      await checkRole(ctx, template.OrganizationsId, permissions.VIEW_APP);
-    } catch (error) {
-      throw Boom.badRequest('Not allowed to clone this private app.');
-    }
+    await checkRole(ctx, template.OrganizationId, permissions.ViewApps);
   }
 
   try {

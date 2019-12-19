@@ -186,7 +186,7 @@ export default function AppDetails({
             component={Select}
             disabled={organizations.length === 1}
             label={<FormattedMessage {...messages.organization} />}
-            name="organization"
+            name="selectedOrganization"
             required
           >
             {organizations.map((org, index) => (
