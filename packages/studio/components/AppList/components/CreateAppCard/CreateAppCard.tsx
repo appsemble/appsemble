@@ -142,7 +142,7 @@ export default function CreateAppCard({
           label={<FormattedMessage {...messages.name} />}
           maxLength={30}
           minLength={1}
-          name="appName"
+          name="name"
           required
         />
         <SimpleInput
@@ -161,7 +161,7 @@ export default function CreateAppCard({
         <SimpleInput
           label={<FormattedMessage {...messages.description} />}
           maxLength={80}
-          name="appDescription"
+          name="description"
         />
         <SimpleInput
           component={Select}
