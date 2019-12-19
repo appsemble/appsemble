@@ -75,7 +75,7 @@ export default function AppList({ apps, getApps, getPublicApps }) {
         ))}
         {createOrganizations.length >= 1 && <CreateAppCard />}
       </div>
-      {createOrganizations.length === 0 && apps.length === 0 && (
+      {userInfo && createOrganizations.length === 0 && apps.length === 0 && (
         <div className={styles.noApps}>
           <span>
             <i className={`fas fa-folder-open ${styles.noAppsIcon}`} />
