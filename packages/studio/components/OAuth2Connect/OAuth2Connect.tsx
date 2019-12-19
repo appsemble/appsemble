@@ -30,7 +30,7 @@ export default function OAuth2Connect({ match }: RouteComponentProps<Params>): R
   const history = useHistory();
   const location = useLocation();
   const qs = useQuery();
-  const { login } = useUser();
+  const { login, userInfo } = useUser();
   const [profile, setProfile] = React.useState<Profile>(null);
   const [isLoading, setLoading] = React.useState(true);
   const [hasError, setError] = React.useState(false);
@@ -102,41 +102,59 @@ export default function OAuth2Connect({ match }: RouteComponentProps<Params>): R
           {profile.email ? <h5 className="subtitle">{profile.email}</h5> : null}
         </header>
       </div>
-      <div className={styles.section}>
-        <p className={classNames({ 'has-text-grey-light': isSubmitting })}>
-          <FormattedMessage {...messages.confirmText} values={{ provider: title }} />
-        </p>
-        <button
-          className={classNames('button is-primary', { 'is-loading': isSubmitting })}
-          disabled={isSubmitting}
-          onClick={submit}
-          type="button"
-        >
-          <FormattedMessage {...messages.confirm} />
-        </button>
-      </div>
-      <p className={classNames(styles.section, { 'has-text-grey-light': isSubmitting })}>
-        <FormattedMessage
-          {...messages.loginInstead}
-          values={{
-            a: (text: string) =>
-              isSubmitting ? (
-                text
-              ) : (
-                <Link
-                  to={{
-                    pathname: '/login',
-                    search: `?${new URLSearchParams({
-                      redirect: `${location.pathname}${location.search}${location.hash}`,
-                    })}`,
-                  }}
-                >
-                  {text}
-                </Link>
-              ),
-          }}
-        />
-      </p>
+      {userInfo ? (
+        <div className={styles.section}>
+          <p className={classNames({ 'has-text-grey-light': isSubmitting }, styles.confirmText)}>
+            <FormattedMessage {...messages.confirmLinkText} values={{ provider: title }} />
+          </p>
+          <button
+            className={classNames('button is-primary', { 'is-loading': isSubmitting })}
+            disabled={isSubmitting}
+            onClick={submit}
+            type="button"
+          >
+            <FormattedMessage {...messages.confirmLink} />
+          </button>
+        </div>
+      ) : (
+        <>
+          <div className={styles.section}>
+            <p className={classNames({ 'has-text-grey-light': isSubmitting }, styles.confirmText)}>
+              <FormattedMessage {...messages.confirmCreateText} values={{ provider: title }} />
+            </p>
+            <button
+              className={classNames('button is-primary', { 'is-loading': isSubmitting })}
+              disabled={isSubmitting}
+              onClick={submit}
+              type="button"
+            >
+              <FormattedMessage {...messages.confirmCreate} />
+            </button>
+          </div>
+          <p className={classNames(styles.section, { 'has-text-grey-light': isSubmitting })}>
+            <FormattedMessage
+              {...messages.loginInstead}
+              values={{
+                a: (text: string) =>
+                  isSubmitting ? (
+                    text
+                  ) : (
+                    <Link
+                      to={{
+                        pathname: '/login',
+                        search: `?${new URLSearchParams({
+                          redirect: `${location.pathname}${location.search}${location.hash}`,
+                        })}`,
+                      }}
+                    >
+                      {text}
+                    </Link>
+                  ),
+              }}
+            />
+          </p>
+        </>
+      )}
     </div>
   );
 }

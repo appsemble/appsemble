@@ -14,3 +14,7 @@
   display: flex;
   flex-flow: column;
 }
+
+.confirmText {
+  margin-bottom: 10px;
+}
