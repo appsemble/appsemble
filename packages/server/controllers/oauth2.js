@@ -113,7 +113,7 @@ export async function connectPendingOAuth2Profile(ctx) {
   });
 
   if (!authorization) {
-    throw Boom.notFound('No pending OAuth authorization found for given state');
+    throw Boom.notFound('No pending OAuth2 authorization found for given state');
   }
 
   // The user is already logged in to Appsemble.
