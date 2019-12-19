@@ -96,7 +96,7 @@ export default function AppDetails({
       <div className="content">
         <div className={styles.titleContainer}>
           <div className={styles.title}>
-            <figure className="image is-64x64 is-marginless	">
+            <figure className="image is-64x64 is-marginless">
               <img alt={intl.formatMessage(messages.appLogo)} src={`/api/apps/${app.id}/icon`} />
             </figure>
             <div className="is-block">
@@ -106,71 +106,9 @@ export default function AppDetails({
           </div>
           <div>
             {user && createOrganizations.length && (
-              <>
-                <button
-                  className={`button ${styles.cloneButton}`}
-                  onClick={showDialog}
-                  type="button"
-                >
-                  <FormattedMessage {...messages.clone} />
-                </button>
-                <Modal
-                  component={SimpleForm}
-                  defaultValues={{
-                    name: app.definition.name,
-                    description: app.definition.description,
-                    private: true,
-                    selectedOrganization: 0,
-                  }}
-                  footer={
-                    <>
-                      <CardFooterButton onClick={closeDialog}>
-                        <FormattedMessage {...messages.cancel} />
-                      </CardFooterButton>
-                      <CardFooterButton color="primary" type="submit">
-                        <FormattedMessage {...messages.submit} />
-                      </CardFooterButton>
-                    </>
-                  }
-                  isActive={showCloneDialog}
-                  onClose={closeDialog}
-                  onSubmit={cloneApp}
-                  title={<FormattedMessage {...messages.clone} />}
-                >
-                  <SimpleInput
-                    help={<FormattedMessage {...messages.nameDescription} />}
-                    label={<FormattedMessage {...messages.name} />}
-                    maxLength={30}
-                    name="name"
-                    required
-                  />
-                  <SimpleInput<typeof Select>
-                    component={Select}
-                    disabled={organizations.length === 1}
-                    label={<FormattedMessage {...messages.organization} />}
-                    name="organization"
-                    required
-                  >
-                    {organizations.map((org, index) => (
-                      <option key={org.id} value={index}>
-                        {org.name || org.id}
-                      </option>
-                    ))}
-                  </SimpleInput>
-                  <SimpleInput
-                    help={<FormattedMessage {...messages.descriptionDescription} />}
-                    label={<FormattedMessage {...messages.description} />}
-                    maxLength={80}
-                    name="description"
-                  />
-                  <SimpleInput<typeof Checkbox>
-                    component={Checkbox}
-                    help={<FormattedMessage {...messages.privateDescription} />}
-                    label={<FormattedMessage {...messages.private} />}
-                    name="private"
-                  />
-                </Modal>
-              </>
+              <button className={`button ${styles.cloneButton}`} onClick={showDialog} type="button">
+                <FormattedMessage {...messages.clone} />
+              </button>
             )}
             <a
               className="button is-primary"
@@ -213,6 +151,64 @@ export default function AppDetails({
           </div>
         ))}
       </div>
+      {user && createOrganizations.length && (
+        <Modal
+          component={SimpleForm}
+          defaultValues={{
+            name: app.definition.name,
+            description: app.definition.description,
+            private: true,
+            selectedOrganization: 0,
+          }}
+          footer={
+            <>
+              <CardFooterButton onClick={closeDialog}>
+                <FormattedMessage {...messages.cancel} />
+              </CardFooterButton>
+              <CardFooterButton color="primary" type="submit">
+                <FormattedMessage {...messages.submit} />
+              </CardFooterButton>
+            </>
+          }
+          isActive={showCloneDialog}
+          onClose={closeDialog}
+          onSubmit={cloneApp}
+          title={<FormattedMessage {...messages.clone} />}
+        >
+          <SimpleInput
+            help={<FormattedMessage {...messages.nameDescription} />}
+            label={<FormattedMessage {...messages.name} />}
+            maxLength={30}
+            name="name"
+            required
+          />
+          <SimpleInput<typeof Select>
+            component={Select}
+            disabled={organizations.length === 1}
+            label={<FormattedMessage {...messages.organization} />}
+            name="organization"
+            required
+          >
+            {organizations.map((org, index) => (
+              <option key={org.id} value={index}>
+                {org.name || org.id}
+              </option>
+            ))}
+          </SimpleInput>
+          <SimpleInput
+            help={<FormattedMessage {...messages.descriptionDescription} />}
+            label={<FormattedMessage {...messages.description} />}
+            maxLength={80}
+            name="description"
+          />
+          <SimpleInput<typeof Checkbox>
+            component={Checkbox}
+            help={<FormattedMessage {...messages.privateDescription} />}
+            label={<FormattedMessage {...messages.private} />}
+            name="private"
+          />
+        </Modal>
+      )}
     </>
   );
 }

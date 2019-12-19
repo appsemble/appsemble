@@ -62,12 +62,12 @@ export async function createTemplateApp(ctx) {
     throw Boom.notFound(`Template with ID ${templateId} does not exist.`);
   }
 
-  if (
-    !template.template &&
-    template.private &&
-    !user.organizations.some(org => org.id === template.OrganizationId)
-  ) {
-    throw Boom.badRequest('Not allowed to clone this private app.');
+  if (!template.template && template.private) {
+    try {
+      await checkRole(ctx, template.OrganizationsId, permissions.VIEW_APP);
+    } catch (error) {
+      throw Boom.badRequest('Not allowed to clone this private app.');
+    }
   }
 
   try {

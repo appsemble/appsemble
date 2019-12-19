@@ -8,7 +8,7 @@ import {
   SimpleInput,
 } from '@appsemble/react-components';
 import { App, Message, Organization } from '@appsemble/types';
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 import classNames from 'classnames';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
@@ -131,8 +131,7 @@ export default function CreateAppCard({
       >
         <SimpleFormError>
           {({ error }) =>
-            // @ts-ignore: Property 'response' does not exist on type 'Error'.
-            error?.response?.status === 409 ? (
+            (error as AxiosError)?.response?.status === 409 ? (
               <FormattedMessage {...messages.nameConflict} />
             ) : (
               <FormattedMessage {...messages.error} />
