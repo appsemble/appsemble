@@ -31,4 +31,6 @@ export default async function checkRole(ctx, organizationId, permissions) {
   if (![].concat(permissions).every(p => role.includes(p))) {
     throw Boom.forbidden('User does not have sufficient permissions.');
   }
+
+  return true;
 }

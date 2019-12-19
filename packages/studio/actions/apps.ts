@@ -1,4 +1,4 @@
-import { App, Resource } from '@appsemble/types';
+import { App } from '@appsemble/types';
 import axios from 'axios';
 import { Action } from 'redux';
 import { ThunkAction } from 'redux-thunk';
@@ -83,11 +83,15 @@ export default (state: AppState = initialState, action: AppAction): AppState => 
         apps: [...state.apps, action.app],
       };
 
-    case UPDATE:
+    case UPDATE: {
+      const matchedApp = state.apps.find(a => a.id === action.app.id);
       return {
         ...state,
-        apps: state.apps.map(a => (a.id === action.app.id ? action.app : a)),
+        apps: matchedApp
+          ? state.apps.map(a => (a.id === action.app.id ? action.app : a))
+          : [...state.apps, action.app],
       };
+    }
     default:
       return state;
   }
@@ -181,7 +185,7 @@ export function createTemplateApp(
     name: string;
     description: string;
     isPrivate: boolean;
-    resources: Resource[];
+    resources: boolean;
   },
   organization: { id: string },
 ): AppThunk {

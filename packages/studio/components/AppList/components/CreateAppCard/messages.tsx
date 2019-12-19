@@ -8,7 +8,7 @@ export default defineMessages({
   error: 'Something went wrong when creating this app.',
   name: 'Name',
   description: 'Description',
-  nameConflict: 'An app with the name “{name}” already exists in this organization.',
+  nameConflict: 'An app with this name already exists in this organization.',
   missingBlocks: `Unknown {blockCount, plural,
     one {block}
     other {blocks}
