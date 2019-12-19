@@ -113,6 +113,7 @@ export default function CreateAppCard({
           resources: false,
           isPrivate: true,
           includeResources: templates[selectedTemplate].resources,
+          selectedOrganization: 0,
         }}
         footer={
           <>
