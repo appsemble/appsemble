@@ -4,10 +4,4 @@ import { connect } from 'react-redux';
 import { push } from '../../actions/message';
 import OrganizationInvite from './OrganizationInvite';
 
-function mapStateToProps(state) {
-  return {
-    user: state.user.user,
-  };
-}
-
-export default injectIntl(connect(mapStateToProps, { push })(OrganizationInvite));
+export default injectIntl(connect(null, { push })(OrganizationInvite));

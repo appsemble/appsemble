@@ -9,7 +9,7 @@ function mapStateToProps(state, ownProps) {
     app:
       state.apps.apps.length &&
       state.apps.apps.find(app => app.id === Number(ownProps.match.params.id)),
-    ready: !!(state.apps.apps.length && state.user.initialized),
+    ready: !!state.apps.apps.length,
   };
 }
 

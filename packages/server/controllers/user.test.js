@@ -59,7 +59,7 @@ describe('user', () => {
     const { body } = await request(server)
       .put('/api/user')
       .set('Authorization', token)
-      .send({ name: 'John', primaryEmail: 'test@example.com' });
+      .send({ name: 'John' });
     expect(body.name).toStrictEqual('John');
   });
 
@@ -72,12 +72,11 @@ describe('user', () => {
     expect(response.status).toStrictEqual(201);
 
     const { body } = await request(server)
-      .get('/api/user')
+      .get('/api/user/email')
       .set('Authorization', token);
-    expect(body.emails).toContainEqual({
+    expect(body).toContainEqual({
       email: 'test2@example.com',
       verified: false,
-      primary: false,
     });
   });
 
@@ -100,15 +99,15 @@ describe('user', () => {
     const { body } = await request(server)
       .put('/api/user')
       .set('Authorization', token)
-      .send({ name: 'Test User', primaryEmail: 'test2@example.com' });
-    expect(body.primaryEmail).toStrictEqual('test2@example.com');
+      .send({ name: 'Test User', email: 'test2@example.com' });
+    expect(body.email).toStrictEqual('test2@example.com');
   });
 
   it('should not set a non-existent email as primary email', async () => {
     const response = await request(server)
       .put('/api/user')
       .set('Authorization', token)
-      .send({ name: 'Test User', primaryEmail: 'test2@example.com' });
+      .send({ name: 'Test User', email: 'test2@example.com' });
 
     expect(response.body).toStrictEqual({
       statusCode: 404,
@@ -126,7 +125,7 @@ describe('user', () => {
     const response = await request(server)
       .put('/api/user')
       .set('Authorization', token)
-      .send({ name: 'Test User', primaryEmail: 'test2@example.com' });
+      .send({ name: 'Test User', email: 'test2@example.com' });
 
     expect(response.body).toStrictEqual({
       statusCode: 406,

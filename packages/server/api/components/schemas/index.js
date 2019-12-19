@@ -16,6 +16,7 @@ import ResourceDefinition from './ResourceDefinition';
 import SubPage from './SubPage';
 import Theme from './Theme';
 import User from './User';
+import UserEmail from './UserEmail';
 
 export default {
   App,
@@ -36,4 +37,5 @@ export default {
   ResourceDefinition,
   Theme,
   User,
+  UserEmail,
 };

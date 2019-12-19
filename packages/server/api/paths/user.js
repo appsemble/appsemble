@@ -103,6 +103,27 @@ export default {
     },
   },
   '/user/email': {
+    get: {
+      tags: ['user'],
+      description: "List email addresses registered to logged in user's account.",
+      operationId: 'listEmails',
+      responses: {
+        200: {
+          description: 'The email address has been added succesfully.',
+          content: {
+            'application/json': {
+              schema: {
+                type: 'array',
+                items: {
+                  $ref: '#/components/schemas/UserEmail',
+                },
+              },
+            },
+          },
+        },
+      },
+      security: [{ studio: [] }],
+    },
     post: {
       tags: ['user'],
       description: "Register a new email to logged in user's account.",
@@ -112,14 +133,7 @@ export default {
         content: {
           'application/json': {
             schema: {
-              type: 'object',
-              required: ['email'],
-              properties: {
-                email: {
-                  type: 'string',
-                  format: 'email',
-                },
-              },
+              $ref: '#/components/schemas/UserEmail',
             },
           },
         },
@@ -127,6 +141,13 @@ export default {
       responses: {
         201: {
           description: 'The email address has been added succesfully.',
+          content: {
+            'application/json': {
+              schema: {
+                $ref: '#/components/schemas/UserEmail',
+              },
+            },
+          },
         },
       },
       security: [{ studio: [] }],
@@ -140,14 +161,7 @@ export default {
         content: {
           'application/json': {
             schema: {
-              type: 'object',
-              required: ['email'],
-              properties: {
-                email: {
-                  type: 'string',
-                  format: 'email',
-                },
-              },
+              $ref: '#/components/schemas/UserEmail',
             },
           },
         },

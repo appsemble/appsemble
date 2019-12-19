@@ -34,6 +34,21 @@ export interface UserInfo {
 }
 
 /**
+ * A user email registration.
+ */
+export interface UserEmail {
+  /**
+   * The registered email address
+   */
+  email: string;
+
+  /**
+   * Wether or not the email address has been verified.
+   */
+  verified: boolean;
+}
+
+/**
  * A response for a login token request
  */
 export interface TokenResponse {

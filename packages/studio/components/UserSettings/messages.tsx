@@ -2,6 +2,7 @@ import { defineMessages } from 'react-intl';
 
 export default defineMessages({
   title: 'Settings · Profile',
+  loadEmailError: 'There was a problem loading your registered email addresses.',
   actions: 'Actions',
   addEmail: 'Add an email address',
   addEmailSuccess: 'Successfully added email address',

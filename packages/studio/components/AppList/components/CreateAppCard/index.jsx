@@ -8,7 +8,7 @@ import CreateAppCard from './CreateAppCard';
 
 export default withRouter(
   injectIntl(
-    connect(state => ({ apps: state.apps.apps, error: state.apps.error, user: state.user.user }), {
+    connect(state => ({ apps: state.apps.apps, error: state.apps.error }), {
       createTemplateApp,
       push,
     })(CreateAppCard),

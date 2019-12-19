@@ -13,7 +13,6 @@ export default class OrganizationInvite extends React.Component {
   static propTypes = {
     location: PropTypes.shape().isRequired,
     intl: PropTypes.shape().isRequired,
-    user: PropTypes.shape().isRequired,
     push: PropTypes.func.isRequired,
     updateUser: PropTypes.func.isRequired,
   };

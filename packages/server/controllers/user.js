@@ -56,50 +56,53 @@ export async function getUserOrganizations(ctx) {
 }
 
 export async function updateUser(ctx) {
-  const { User, EmailAuthorization, Organization } = ctx.db.models;
+  const { User, EmailAuthorization } = ctx.db.models;
   const { user } = ctx.state;
-  const { name, primaryEmail } = ctx.request.body;
+  const { name, email } = ctx.request.body;
 
   const dbUser = await User.findOne({
     where: { id: user.id },
     include: [
-      {
-        model: Organization,
-        attributes: ['id'],
-      },
       {
         model: EmailAuthorization,
       },
     ],
   });
 
-  if (primaryEmail !== dbUser.primaryEmail && primaryEmail !== null) {
-    const email = await EmailAuthorization.findOne({
-      where: { email: primaryEmail },
+  if (email && email !== dbUser.primaryEmail) {
+    const emailAuth = await EmailAuthorization.findOne({
+      where: { email },
     });
 
-    if (!email) {
+    if (!emailAuth) {
       throw Boom.notFound('No matching email could be found.');
     }
 
-    if (!email.verified) {
+    if (!emailAuth.verified) {
       throw Boom.notAcceptable('This email address has not been verified.');
     }
   }
 
-  await dbUser.update({ name, primaryEmail });
+  await dbUser.update({ name, primaryEmail: email });
 
   ctx.body = {
     id: dbUser.id,
     name,
-    primaryEmail,
-    organizations: dbUser.Organizations.map(({ id }) => ({ id })),
-    emails: dbUser.EmailAuthorizations.map(({ email, verified }) => ({
-      email,
-      verified,
-      primary: dbUser.primaryEmail === email,
-    })),
+    email,
+    email_verified: true,
   };
+}
+
+export async function listEmails(ctx) {
+  const { EmailAuthorization } = ctx.db.models;
+  const { user } = ctx.state;
+
+  ctx.body = await EmailAuthorization.findAll({
+    attributes: ['email', 'verified'],
+    order: ['email'],
+    raw: true,
+    where: { UserId: user.id },
+  });
 }
 
 export async function addEmail(ctx) {
@@ -133,6 +136,10 @@ export async function addEmail(ctx) {
   });
 
   ctx.status = 201;
+  ctx.body = {
+    email,
+    verified: false,
+  };
 }
 
 export async function removeEmail(ctx) {
