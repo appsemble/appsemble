@@ -17,15 +17,10 @@ import styles from './AppContext.css';
 /**
  * A wrapper which fetches the app definition and makes sure it is available to its children.
  */
-function AppContext({ app = undefined, match, getApp, initAuth, ready }) {
+function AppContext({ app = undefined, match, getApp, ready }) {
   React.useEffect(() => {
-    const initApp = async () => {
-      await initAuth();
-      await getApp(match.params.id);
-    };
-
-    initApp();
-  }, [getApp, initAuth, match.params.id]);
+    getApp(match.params.id);
+  }, [getApp, match.params.id]);
 
   const organizations = useOrganizations();
 
@@ -79,7 +74,6 @@ AppContext.propTypes = {
   // eslint-disable-next-line react/require-default-props
   app: PropTypes.shape(),
   getApp: PropTypes.func.isRequired,
-  initAuth: PropTypes.func.isRequired,
   match: PropTypes.shape().isRequired,
   ready: PropTypes.bool.isRequired,
 };
