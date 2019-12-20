@@ -1,6 +1,6 @@
 import { Permission } from '@appsemble/utils';
 import * as React from 'react';
-import { Redirect, Route, RouteComponentProps, useLocation } from 'react-router-dom';
+import { Redirect, Route, RouteComponentProps, useLocation, useRouteMatch } from 'react-router-dom';
 
 import useQuery from '../../hooks/useQuery';
 import useUser from '../../hooks/useUser';
@@ -15,12 +15,12 @@ export interface ProtectedRouteProps extends RouteComponentProps {
 export default function ProtectedRoute({
   permission,
   organization,
-  match,
   ...props
 }: ProtectedRouteProps): React.ReactElement {
   const location = useLocation();
   const { userInfo } = useUser();
   const qs = useQuery();
+  const match = useRouteMatch();
 
   if (!userInfo) {
     const search = new URLSearchParams(qs);
