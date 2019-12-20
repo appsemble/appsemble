@@ -39,7 +39,7 @@ export default {
           $ref: '#/components/responses/resource',
         },
       },
-      security: [{ studio: [] }, {}],
+      security: [{ studio: [] }, { app: ['resources:manage'] }, {}],
     },
   },
   '/apps/{appId}/resources/{resourceType}/{resourceId}': {
@@ -58,7 +58,7 @@ export default {
           $ref: '#/components/responses/resource',
         },
       },
-      security: [{ studio: [] }, {}],
+      security: [{ studio: [] }, { app: ['resources:manage'] }, {}],
     },
     put: {
       tags: ['resource'],
@@ -74,7 +74,7 @@ export default {
           $ref: '#/components/responses/resource',
         },
       },
-      security: [{ studio: [] }, {}],
+      security: [{ studio: [] }, { app: ['resources:manage'] }, {}],
     },
     delete: {
       tags: ['resource'],
@@ -86,7 +86,7 @@ export default {
           $ref: '#/components/responses/resource',
         },
       },
-      security: [{ studio: [] }],
+      security: [{ studio: [] }, { app: ['resources:manage'] }],
     },
   },
 };

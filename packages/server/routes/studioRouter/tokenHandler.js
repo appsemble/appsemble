@@ -1,7 +1,9 @@
+import bcrypt from 'bcrypt';
 import { isPast } from 'date-fns';
 import querystring from 'querystring';
 import raw from 'raw-body';
 
+import { partialNormalized } from '../../../utils/constants/patterns';
 import createJWTResponse from '../../utils/createJWTResponse';
 
 class GrantError extends Error {
@@ -30,7 +32,7 @@ function checkTokenRequestParameters(query, allowed) {
  */
 export default async function tokenHandler(ctx) {
   const { argv, header } = ctx;
-  const { OAuth2ClientCredentials } = ctx.db.models;
+  const { App, EmailAuthorization, OAuth2ClientCredentials, User } = ctx.db.models;
   let aud;
   let refreshToken;
   let scope;
@@ -80,6 +82,48 @@ export default async function tokenHandler(ctx) {
         aud = client.id;
         sub = client.UserId;
         refreshToken = false;
+        break;
+      }
+      // XXX The password grant type is supported for now for legacy apps.
+      case 'password': {
+        const { password, scope: requestedScope, username } = checkTokenRequestParameters(query, [
+          'password',
+          'scope',
+          'username',
+        ]);
+
+        // Validate the app as a client.
+        // XXX use origin check when default app domains are implemented.
+        const { pathname } = new URL(header.referer);
+        const match = pathname.match(`/@${partialNormalized.source}/${partialNormalized.source}`);
+        if (!match) {
+          throw new GrantError('invalid_client');
+        }
+        const app = await App.findOne({
+          attributes: ['id'],
+          where: { OrganizationId: match[1], path: match[2] },
+        });
+        if (!app) {
+          throw new GrantError('invalid_client');
+        }
+
+        // Validate user credentials
+        const emailAuth = await EmailAuthorization.findOne({
+          include: [User],
+          where: { email: username },
+        });
+        if (!emailAuth) {
+          throw new GrantError('invalid_grant');
+        }
+        const isValidPassword = await bcrypt.compare(password, emailAuth.User.password);
+        if (!isValidPassword) {
+          throw new GrantError('invalid_grant');
+        }
+
+        scope = [requestedScope];
+        aud = `app:${app.id}`;
+        sub = emailAuth.User.id;
+        refreshToken = true;
         break;
       }
       default:
