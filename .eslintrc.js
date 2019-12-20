@@ -39,7 +39,6 @@ module.exports = {
     'no-inline-comments': 'error',
     'filenames/match-regex': ['error', /^\.?[a-z\d]+(\.config|\.test)?$/i, true],
     'filenames/match-exported': 'error',
-    'react/prefer-stateless-function': 'off',
     'no-invalid-this': 'off',
     'no-unused-expressions': 'off',
     'babel/no-invalid-this': 'error',

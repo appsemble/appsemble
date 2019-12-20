@@ -10,28 +10,15 @@ npm install @appsemble/react
 
 ## Hello world example
 
-```js
+```tsx
 import { bootstrap } from '@appsemble/react';
-import PropTypes from 'prop-types';
 import React from 'react';
 
-class MyBlock extends React.Component {
-  static propTypes = {
-    actions: PropTypes.shape().isRequired,
-  };
-
-  render() {
-    const { actions } = this.props;
-
-    return (
-      <button onClick={actions.click.dispatch} type="button">
-        Hello world!
-      </button>
-    );
-  }
-}
-
-bootstrap(MyBlock);
+bootstrap(({ actions }) => (
+  <button onClick={actions.click.dispatch} type="button">
+    Hello world!
+  </button>
+));
 ```
 
 **Note**: The script will be loaded only once. The component is then bootstrapped for every instance

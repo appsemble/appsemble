@@ -1,5 +1,6 @@
 import { injectIntl } from 'react-intl';
 
-import HelmetIntl, { HelmIntlProps } from './HelmetIntl';
+import HelmetIntl from './HelmetIntl';
 
-export default injectIntl<'intl', HelmIntlProps>(HelmetIntl);
+// XXX https://github.com/akameco/babel-plugin-react-intl-auto/issues/98
+export default injectIntl(HelmetIntl);
