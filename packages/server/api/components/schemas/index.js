@@ -7,6 +7,7 @@ import Color from './Color';
 import Error from './Error';
 import Health from './Health';
 import Member from './Member';
+import OAuth2ClientCredentials from './OAuth2ClientCredentials';
 import Organization from './Organization';
 import Page from './Page';
 import Rating from './Rating';
@@ -15,6 +16,7 @@ import ResourceDefinition from './ResourceDefinition';
 import SubPage from './SubPage';
 import Theme from './Theme';
 import User from './User';
+import UserEmail from './UserEmail';
 
 export default {
   App,
@@ -27,6 +29,7 @@ export default {
   SubPage,
   Health,
   Member,
+  OAuth2ClientCredentials,
   Organization,
   Page,
   Rating,
@@ -34,4 +37,5 @@ export default {
   ResourceDefinition,
   Theme,
   User,
+  UserEmail,
 };

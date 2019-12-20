@@ -7,13 +7,14 @@ import {
   SimpleFormError,
   SimpleInput,
 } from '@appsemble/react-components';
-import { App, Message, Organization } from '@appsemble/types';
+import { App, Message } from '@appsemble/types';
 import axios, { AxiosError } from 'axios';
 import classNames from 'classnames';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 
+import useOrganizations from '../../../../hooks/useOrganizations';
 import styles from './CreateAppCard.css';
 import messages from './messages';
 
@@ -35,19 +36,17 @@ interface CreateAppCardProps {
     },
     organization: { id: string },
   ) => Promise<App>;
-  organizations: Organization[];
   push: (message: Message) => void;
 }
 
-export default function CreateAppCard({
-  createTemplateApp,
-  organizations,
-}: CreateAppCardProps): JSX.Element {
-  const history = useHistory();
-  const match = useRouteMatch();
+export default function CreateAppCard({ createTemplateApp }: CreateAppCardProps): JSX.Element {
   const [modalOpen, setModalOpen] = React.useState(false);
   const [templates, setTemplates] = React.useState<Template[]>(null);
   const [selectedTemplate, setSelectedTemplate] = React.useState(0);
+
+  const history = useHistory();
+  const match = useRouteMatch();
+  const organizations = useOrganizations();
 
   const closeModal = React.useCallback(() => {
     setModalOpen(false);

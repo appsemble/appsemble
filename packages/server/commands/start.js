@@ -63,9 +63,9 @@ export function builder(yargs) {
       desc: 'The secret key to be used for GitLab OAuth2.',
       implies: ['oauth-gitlab-key'],
     })
-    .option('oauth-secret', {
+    .option('secret', {
       desc: 'Secret key used to sign JWTs and cookies',
-      default: 'appsemble',
+      required: true,
     })
     .option('disable-registration', {
       desc: 'If specified, user registration will be disabled on the server',
@@ -141,7 +141,7 @@ export async function handler(argv, { webpackConfigs } = {}) {
     });
   });
 
-  const callback = await createServer({ app, argv, db, secret: argv.oauthSecret, webpackConfigs });
+  const callback = await createServer({ app, argv, db, webpackConfigs });
   const httpServer = argv.ssl
     ? https.createServer(
         {

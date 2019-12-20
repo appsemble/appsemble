@@ -66,7 +66,7 @@ export default {
           $ref: '#/components/responses/app',
         },
       },
-      security: [{ apiUser: ['apps:write'] }],
+      security: [{ studio: [] }],
     },
     get: {
       tags: ['app'],
@@ -87,6 +87,7 @@ export default {
           },
         },
       },
+      security: [{ studio: [] }, {}],
     },
   },
   '/apps/me': {
@@ -109,7 +110,7 @@ export default {
           },
         },
       },
-      security: [{ apiUser: ['apps:read'] }],
+      security: [{ studio: [] }],
     },
   },
   '/apps/{appId}': {
@@ -124,6 +125,7 @@ export default {
           $ref: '#/components/responses/app',
         },
       },
+      security: [{ studio: [] }, {}],
     },
     patch: {
       tags: ['app'],
@@ -187,7 +189,7 @@ export default {
           $ref: '#/components/responses/app',
         },
       },
-      security: [{ apiUser: ['apps:write'] }],
+      security: [{ studio: [] }],
     },
     delete: {
       tags: ['app'],
@@ -198,7 +200,7 @@ export default {
           description: 'The app was successfully deleted.',
         },
       },
-      security: [{ apiUser: ['apps:write'] }],
+      security: [{ studio: [] }],
     },
   },
   '/apps/{appId}/icon': {
@@ -231,7 +233,7 @@ export default {
           description: 'The icon has been deleted succesfully.',
         },
       },
-      security: [{ apiUser: ['apps:write'] }],
+      security: [{ studio: [] }],
     },
   },
   '/apps/{appId}/subscriptions': {
@@ -328,7 +330,7 @@ export default {
           },
         },
       },
-      security: [{ apiUser: ['apps:write'] }],
+      security: [{ studio: [] }],
     },
   },
   '/apps/{appId}/broadcast': {
@@ -364,7 +366,7 @@ export default {
           description: 'The notification has been successfully broadcasted.',
         },
       },
-      security: [{ apiUser: ['apps:write'] }],
+      security: [{ studio: [] }],
     },
   },
   '/apps/{appId}/style/core': {
@@ -444,7 +446,7 @@ export default {
           description: 'The block style has been updated succesfully.',
         },
       },
-      security: [{ apiUser: ['apps:write'] }],
+      security: [{ studio: [] }],
     },
   },
 };

@@ -4,6 +4,13 @@
 
 ### New installation
 
+Appsemble needs an app secret for various internal settings.
+
+```sh
+kubectl create secret generic appsemble \
+  --from-literal "secret=$(openssl rand -base64 30)"
+```
+
 It is recommended to create a PostgreSQL secret beforehand.
 
 ```sh
@@ -75,6 +82,7 @@ helm upgrade my-release config/charts/appsemble --set 'global.postgresql.existin
 | `affinity`                             | `{}`                          |                                                                                                                                                             |
 | `smtpSecret`                           | `smtp`                        | The secret to use for configuring SMTP. The secret should contain the following values: `host`, `port`, `secure`, `user`, `pass`, `from`.                   |
 | `sentrySecret`                         | `nil`                         | The secret from which to read the [Sentry] DSN.                                                                                                             |
+| `secretSecret`                         | `appsemble`                   | The Kubernetes secret which holds the `SECRET` environment variable.                                                                                        |
 | `migrateTo`                            | `nil`                         | If specified, the database will be migrated to this specific version. To upgrade to the latest version, just specify a very high number. E.g. `999.999.999` |
 | `global`                               |                               | Any `global` variables are shared between the Appsemble chart and its `postgresql` dependency chart.                                                        |
 | `global.postgresql.existingSecret`     | `appsemble-postgresql-secret` | The secret from which to read the PostgreSQL password.                                                                                                      |

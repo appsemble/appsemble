@@ -69,7 +69,7 @@ NODE_ENV=production yarn start
 
 The blocks can be published using the Appsemble CLI. Note that in order to publish blocks, you need
 to be authenticated in the CLI. After having registered an Appsemble account, you can authenticate
-yourself using `yarn appsemble login`.
+yourself using `yarn appsemble auth login`.
 
 ```sh
 yarn appsemble block register --all --build blocks
@@ -86,7 +86,7 @@ yarn appsemble block publish --all --build blocks
 In order for users to create apps from within the Appsemble Studio, existing apps that can be used
 as a starting point must be marked as templates. This can be done using the Appsemble CLI. Note that
 in order to publish blocks, you need to be authenticated in the CLI. After having registered an
-Appsemble account, you can authenticate yourself using `yarn appsemble login`.
+Appsemble account, you can authenticate yourself using `yarn appsemble auth login`.
 
 ```sh
 yarn appsemble app create --organization @appsemble --all --template apps

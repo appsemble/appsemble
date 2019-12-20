@@ -12,7 +12,7 @@ describe('asset controller', () => {
   beforeAll(async () => {
     db = await testSchema('assets');
 
-    server = await createServer({ db });
+    server = await createServer({ db, argv: { host: window.location, secret: 'test' } });
     ({ Asset } = db.models);
   }, 10e3);
 

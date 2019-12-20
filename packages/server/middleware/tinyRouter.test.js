@@ -14,26 +14,6 @@ beforeEach(() => {
   });
 });
 
-it('should call the first handler matching the route', async () => {
-  const handler1 = jest.fn();
-  const handler2 = jest.fn();
-  app.use(
-    tinyRouter([
-      {
-        route: '/',
-        get: handler1,
-      },
-      {
-        route: '/',
-        get: handler2,
-      },
-    ]),
-  );
-  await request(app.callback()).get('/');
-  expect(handler1).toHaveBeenCalledWith(context);
-  expect(handler2).not.toHaveBeenCalled();
-});
-
 it('should assign the match group to params', async () => {
   app.use(
     tinyRouter([

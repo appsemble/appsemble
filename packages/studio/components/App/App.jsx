@@ -1,5 +1,4 @@
-import { ErrorHandler, Loader } from '@appsemble/react-components';
-import PropTypes from 'prop-types';
+import { ErrorHandler } from '@appsemble/react-components';
 import React from 'react';
 import Helmet from 'react-helmet';
 import { IntlProvider } from 'react-intl';
@@ -9,11 +8,11 @@ import settings from '../../utils/settings';
 import AnonymousRoute from '../AnonymousRoute';
 import AppContext from '../AppContext';
 import AppList from '../AppList';
-import ConnectOAuth from '../ConnectOAuth';
 import EditPassword from '../EditPassword';
 import ErrorFallback from '../ErrorFallback';
 import Login from '../Login';
 import Message from '../Message';
+import OAuth2Connect from '../OAuth2Connect';
 import OrganizationInvite from '../OrganizationInvite';
 import OrganizationProvider from '../OrganizationProvider';
 import ProtectedRoute from '../ProtectedRoute';
@@ -21,29 +20,14 @@ import Register from '../Register';
 import ResetPassword from '../ResetPassword';
 import Settings from '../Settings';
 import Toolbar from '../Toolbar';
+import UserProvider from '../UserProvider';
 import VerifyEmail from '../VerifyEmail';
 
-export default class App extends React.Component {
-  static propTypes = {
-    initAuth: PropTypes.func.isRequired,
-    initialized: PropTypes.bool.isRequired,
-  };
-
-  async componentDidMount() {
-    const { initAuth } = this.props;
-    await initAuth();
-  }
-
-  render() {
-    const { initialized } = this.props;
-
-    if (!initialized) {
-      return <Loader />;
-    }
-
-    return (
-      <IntlProvider defaultLocale="en-US" locale="en-US">
-        <BrowserRouter>
+export default function App() {
+  return (
+    <IntlProvider defaultLocale="en-US" locale="en-US">
+      <BrowserRouter>
+        <UserProvider>
           <OrganizationProvider>
             <ErrorHandler fallback={ErrorFallback}>
               <Helmet defaultTitle="Appsemble" titleTemplate="Appsemble · %s" />
@@ -55,7 +39,7 @@ export default class App extends React.Component {
                 <AnonymousRoute component={EditPassword} exact path="/edit-password" />
                 <ProtectedRoute component={OrganizationInvite} exact path="/organization-invite" />
                 <Route component={VerifyEmail} exact path="/verify" />
-                <Route component={ConnectOAuth} exact path="/connect" />
+                <Route component={OAuth2Connect} exact path="/connect/:provider/callback" />
                 <AnonymousRoute component={Login} exact path="/login" />
                 {settings.enableRegistration && (
                   <AnonymousRoute component={Register} exact path="/register" />
@@ -68,8 +52,8 @@ export default class App extends React.Component {
               <Message />
             </ErrorHandler>
           </OrganizationProvider>
-        </BrowserRouter>
-      </IntlProvider>
-    );
-  }
+        </UserProvider>
+      </BrowserRouter>
+    </IntlProvider>
+  );
 }

@@ -1,6 +1,5 @@
 import { createInstance } from 'axios-test-instance';
 import FormData from 'form-data';
-import jwt from 'jsonwebtoken';
 import lolex from 'lolex';
 
 import createServer from '../utils/createServer';
@@ -21,13 +20,12 @@ describe('app controller', () => {
   let server;
   let authorization;
   let organizationId;
-  let userId;
   let clock;
+  let user;
 
   beforeAll(async () => {
     db = await testSchema('apps');
-
-    server = await createServer({ db });
+    server = await createServer({ db, argv: { host: window.location, secret: 'test' } });
     ({
       App,
       AppBlockStyle,
@@ -44,10 +42,14 @@ describe('app controller', () => {
     clock = lolex.install();
 
     await truncate(db);
-    authorization = await testToken(server, db, 'apps:read apps:write');
-    const decodedToken = jwt.decode(authorization.substring(7));
-    organizationId = decodedToken.user.organizations[0].id;
-    userId = decodedToken.user.id;
+    ({ user, authorization } = await testToken(db));
+    ({ id: organizationId } = await user.createOrganization(
+      {
+        id: 'testorganization',
+        name: 'Test Organization',
+      },
+      { through: { role: 'Owner' } },
+    ));
 
     await BlockDefinition.create({
       id: '@appsemble/test',
@@ -189,7 +191,7 @@ describe('app controller', () => {
     });
     await AppRating.create({
       AppId: appA.id,
-      UserId: userId,
+      UserId: user.id,
       rating: 5,
       description: 'This is a test rating',
     });
@@ -217,7 +219,7 @@ describe('app controller', () => {
     });
     await AppRating.create({
       AppId: appC.id,
-      UserId: userId,
+      UserId: user.id,
       rating: 3,
       description: 'This is a test rating',
     });
@@ -303,8 +305,7 @@ defaultPage: Test Page
 
     const responseA = await request.get('/api/apps/me', { headers: { authorization } });
 
-    const users = await User.findAll();
-    await users[0].addOrganization(organizationB);
+    await user.addOrganization(organizationB);
 
     const responseB = await request.get('/api/apps/me', { headers: { authorization } });
 
@@ -436,7 +437,9 @@ pages:
 
     expect(response).toMatchObject({
       status: 400,
-      data: {},
+      data: {
+        message: 'JSON schema validation failed',
+      },
     });
   });
 
@@ -509,7 +512,7 @@ pages:
       status: 403,
       data: {
         error: 'Forbidden',
-        message: 'User does not belong in this organization.',
+        message: 'User is not part of this organization.',
         statusCode: 403,
       },
     });
@@ -1222,7 +1225,7 @@ pages:
       data: {
         statusCode: 403,
         error: 'Forbidden',
-        message: "User does not belong in this App's organization.",
+        message: 'User is not part of this organization.',
       },
     });
   });
@@ -1295,7 +1298,10 @@ pages:
       headers: { authorization },
     });
 
-    expect(response).toMatchObject({ status: 204 });
+    expect(response).toMatchObject({
+      status: 204,
+      data: '',
+    });
   });
 
   it('should not delete non-existent apps', async () => {
@@ -1526,6 +1532,10 @@ pages:
       formA,
       { headers: { ...formA.getHeaders(), authorization } },
     );
+    expect(responseA).toMatchObject({
+      status: 204,
+      data: '',
+    });
 
     const formB = new FormData();
     formB.append('style', Buffer.from(' '), {
@@ -1537,13 +1547,14 @@ pages:
       formB,
       { headers: { ...formB.getHeaders(), authorization } },
     );
+    expect(responseB).toMatchObject({
+      status: 204,
+      data: '',
+    });
 
     const style = await AppBlockStyle.findOne({
       where: { AppId: id, BlockDefinitionId: '@appsemble/testblock' },
     });
-
-    expect(responseA.status).toBe(204);
-    expect(responseB.status).toBe(204);
     expect(style).toBeNull();
   });
 

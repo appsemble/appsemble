@@ -12,10 +12,10 @@ import { permissions } from '@appsemble/utils';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { RouteComponentProps } from 'react-router-dom';
+import { RouteComponentProps, useHistory } from 'react-router-dom';
 
 import useOrganizations from '../../hooks/useOrganizations';
-import { User } from '../../types';
+import useUser from '../../hooks/useUser';
 import checkRole from '../../utils/checkRole';
 import RateApp from '../RateApp';
 import StarRating from '../Rating';
@@ -24,23 +24,18 @@ import messages from './messages';
 
 export interface AppDetailsProps extends RouteComponentProps<{ id: string }> {
   app: App;
-  user: User;
   updateApp: (app: App) => void;
   push: (message: Message) => void;
 }
 
-export default function AppDetails({
-  app,
-  user,
-  push,
-  history,
-  updateApp,
-}: AppDetailsProps): JSX.Element {
+export default function AppDetails({ app, push, updateApp }: AppDetailsProps): JSX.Element {
   const [organization, setOrganization] = useState<Organization>(undefined);
   const [ratings, setRatings] = useState<Rating[]>([]);
   const [showCloneDialog, setShowCloneDialog] = useState(false);
-  const organizations = useOrganizations();
+  const history = useHistory();
   const intl = useIntl();
+  const organizations = useOrganizations();
+  const { userInfo } = useUser();
 
   useEffect(() => {
     const fetchOrganization = async (): Promise<void> => {
@@ -105,11 +100,11 @@ export default function AppDetails({
             </div>
           </div>
           <div>
-            {user && createOrganizations.length && (
+            {createOrganizations.length ? (
               <button className={`button ${styles.cloneButton}`} onClick={showDialog} type="button">
                 <FormattedMessage {...messages.clone} />
               </button>
-            )}
+            ) : null}
             <a
               className="button is-primary"
               href={
@@ -129,13 +124,13 @@ export default function AppDetails({
           <FormattedMessage {...messages.ratings} />
         </h3>
       </div>
-      {user && <RateApp app={app} className={styles.ratingButton} onRate={onRate} />}
+      {userInfo && <RateApp app={app} className={styles.ratingButton} onRate={onRate} />}
       <div className="content">
         {ratings.map(rating => (
           <div key={rating.$created} className={styles.rating}>
             <span className="is-block has-text-weight-bold">
               {rating.name || <FormattedMessage {...messages.anonymous} />}
-              {user && rating.UserId === Number(user.id) && (
+              {userInfo && rating.UserId === userInfo.sub && (
                 <span className={`tag is-success ${styles.tag}`}>
                   <FormattedMessage {...messages.you} />
                 </span>
@@ -151,7 +146,7 @@ export default function AppDetails({
           </div>
         ))}
       </div>
-      {user && createOrganizations.length && (
+      {createOrganizations.length ? (
         <Modal
           component={SimpleForm}
           defaultValues={{
@@ -208,7 +203,7 @@ export default function AppDetails({
             name="private"
           />
         </Modal>
-      )}
+      ) : null}
     </>
   );
 }

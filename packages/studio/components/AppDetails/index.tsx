@@ -8,7 +8,6 @@ import AppDetails, { AppDetailsProps } from './AppDetails';
 
 function mapStateToProps(state: State, ownProps: AppDetailsProps): Partial<AppDetailsProps> {
   return {
-    user: state.user.user,
     app: state.apps.apps.find(app => app.id === Number(ownProps.match.params.id)),
   };
 }

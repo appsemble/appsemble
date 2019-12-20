@@ -6,7 +6,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import { requestUser } from '../../actions/user';
+import { UserContext } from '../../hooks/useUser';
 import checkRole from '../../utils/checkRole';
 import HelmetIntl from '../HelmetIntl';
 import messages from './messages';
@@ -16,8 +16,6 @@ export default class OrganizationsSettings extends Component {
   static propTypes = {
     push: PropTypes.func.isRequired,
     intl: PropTypes.shape().isRequired,
-    user: PropTypes.shape().isRequired,
-    updateUser: PropTypes.func.isRequired,
   };
 
   state = {
@@ -35,11 +33,6 @@ export default class OrganizationsSettings extends Component {
   };
 
   async componentDidMount() {
-    const { updateUser } = this.props;
-
-    const user = await requestUser();
-    updateUser(user);
-
     let selectedOrganization = '';
 
     let { data: organizations } = await axios.get('/api/user/organizations');
@@ -275,9 +268,10 @@ export default class OrganizationsSettings extends Component {
 
   onLeaveOrganization = async () => {
     const { selectedOrganization, organizations } = this.state;
-    const { intl, push, user } = this.props;
+    const { intl, push } = this.props;
+    const { userInfo } = this.context;
 
-    await axios.delete(`/api/organizations/${selectedOrganization}/members/${user.id}`);
+    await axios.delete(`/api/organizations/${selectedOrganization}/members/${userInfo.sub}`);
 
     const organization = organizations.find(o => o.id === selectedOrganization);
     const newOrganizations = organizations.filter(o => o.id !== selectedOrganization);
@@ -297,7 +291,8 @@ export default class OrganizationsSettings extends Component {
 
   onRemoveMember = async () => {
     const { removingMember, selectedOrganization, organizations } = this.state;
-    const { intl, push, user } = this.props;
+    const { intl, push } = this.props;
+    const { userInfo } = this.context;
 
     await axios.delete(`/api/organizations/${selectedOrganization}/members/${removingMember}`);
 
@@ -313,7 +308,7 @@ export default class OrganizationsSettings extends Component {
 
     push({
       body:
-        removingMember === user.id
+        removingMember === userInfo.sub
           ? intl.formatMessage(messages.leaveOrganizationSuccess, { organization: organization.id })
           : intl.formatMessage(messages.removeMemberSuccess),
       color: 'info',
@@ -352,6 +347,8 @@ export default class OrganizationsSettings extends Component {
     this.setState({ removingInvite: undefined });
   };
 
+  static contextType = UserContext;
+
   render() {
     const {
       loading,
@@ -366,14 +363,15 @@ export default class OrganizationsSettings extends Component {
       submittingOrganization,
       organizations,
     } = this.state;
-    const { intl, user } = this.props;
+    const { intl } = this.props;
+    const { userInfo } = this.context;
 
     if (loading) {
       return <Loader />;
     }
 
     const organization = organizations.find(o => o.id === selectedOrganization);
-    const { role } = organization?.members.find(u => u.id === user.id) || {};
+    const { role } = organization?.members.find(u => u.id === userInfo.sub) || {};
     const canManageMembers = role && checkRole(role, permissions.ManageMembers);
     const canManageRoles = role && checkRole(role, permissions.ManageRoles);
 
@@ -483,9 +481,9 @@ export default class OrganizationsSettings extends Component {
                   {organization.members.map(member => (
                     <tr key={member.id}>
                       <td>
-                        <span>{member.name || member.primaryEmail || member.id}</span>{' '}
+                        <span>{member.name || member.primaryEmail || member.id}</span>
                         <div className={`tags ${styles.tags}`}>
-                          {member.id === user.id && (
+                          {member.id === userInfo.sub && (
                             <span className="tag is-success">
                               <FormattedMessage {...messages.you} />
                             </span>
@@ -502,7 +500,9 @@ export default class OrganizationsSettings extends Component {
                             >
                               <select
                                 defaultValue={member.role}
-                                disabled={member.id === user.id || submittingRole === member.id}
+                                disabled={
+                                  member.id === userInfo.sub || submittingRole === member.id
+                                }
                                 onChange={event => this.onChangeRole(event, member.id)}
                               >
                                 {Object.keys(roles).map(r => (
@@ -517,7 +517,7 @@ export default class OrganizationsSettings extends Component {
                           <FormattedMessage {...messages[member.role]} />
                         )}
                         <div className={`field is-grouped ${styles.tags}`}>
-                          {member.id === user.id &&
+                          {member.id === userInfo.sub &&
                             organization.members.length > 1 &&
                             organization.members.some(m =>
                               checkRole(m.role, permissions.ManageRoles),
@@ -532,7 +532,7 @@ export default class OrganizationsSettings extends Component {
                                 </button>
                               </p>
                             )}
-                          {member.id !== user.id && canManageMembers && (
+                          {member.id !== userInfo.sub && canManageMembers && (
                             <p className={`control ${styles.memberButton}`}>
                               <button
                                 className="button is-danger"
@@ -608,7 +608,7 @@ export default class OrganizationsSettings extends Component {
           isActive={!!removingMember}
           onClose={this.onCloseDeleteDialog}
           title={
-            removingMember === user.id ? (
+            removingMember === userInfo.sub ? (
               <FormattedMessage {...messages.leaveOrganizationWarningTitle} />
             ) : (
               <FormattedMessage {...messages.removeMemberWarningTitle} />
@@ -616,7 +616,7 @@ export default class OrganizationsSettings extends Component {
           }
         >
           <div className={styles.dialogContent}>
-            {removingMember === user.id ? (
+            {removingMember === userInfo.sub ? (
               <FormattedMessage {...messages.leaveOrganizationWarning} />
             ) : (
               <FormattedMessage {...messages.removeMemberWarning} />
@@ -628,9 +628,11 @@ export default class OrganizationsSettings extends Component {
             </CardFooterButton>
             <CardFooterButton
               color="danger"
-              onClick={removingMember === user.id ? this.onLeaveOrganization : this.onRemoveMember}
+              onClick={
+                removingMember === userInfo.sub ? this.onLeaveOrganization : this.onRemoveMember
+              }
             >
-              {removingMember === user.id ? (
+              {removingMember === userInfo.sub ? (
                 <FormattedMessage {...messages.leaveOrganization} />
               ) : (
                 <FormattedMessage {...messages.removeMember} />

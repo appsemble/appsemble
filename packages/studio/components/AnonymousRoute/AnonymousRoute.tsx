@@ -2,10 +2,11 @@ import * as React from 'react';
 import { Redirect, Route, RouteComponentProps } from 'react-router-dom';
 
 import useQuery from '../../hooks/useQuery';
-import { User } from '../../types';
+import useUser from '../../hooks/useUser';
+import { UserInfo } from '../../types';
 
 export interface AnonymousRouteProps extends RouteComponentProps {
-  user: User;
+  user: UserInfo;
 }
 
 /**
@@ -18,7 +19,8 @@ export default function AnonymousRoute({
   user,
   ...props
 }: AnonymousRouteProps): React.ReactElement {
+  const { userInfo } = useUser();
   const qs = useQuery();
 
-  return user ? <Redirect to={qs.get('redirect') || '/apps'} /> : <Route {...props} />;
+  return userInfo ? <Redirect to={qs.get('redirect') || '/apps'} /> : <Route {...props} />;
 }

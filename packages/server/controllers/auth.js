@@ -1,8 +1,11 @@
+import { logger } from '@appsemble/node-utils';
 import { normalize } from '@appsemble/utils';
 import Boom from '@hapi/boom';
 import bcrypt from 'bcrypt';
 import crypto from 'crypto';
 import { DatabaseError, UniqueConstraintError } from 'sequelize';
+
+import createJWTResponse from '../utils/createJWTResponse';
 
 async function mayRegister({ argv }) {
   if (argv.disableRegistration) {
@@ -27,33 +30,22 @@ async function registerUser(associatedModel, organizationName, transaction, emai
 
 export async function registerEmail(ctx) {
   await mayRegister(ctx);
-  const { mailer } = ctx;
-  const { body } = ctx.request;
-  const { EmailAuthorization } = ctx.db.models;
+  const { argv, mailer } = ctx;
+  const { email, password } = ctx.request.body;
+  const { User } = ctx.db.models;
+
+  const hashedPassword = await bcrypt.hash(password, 10);
+  const key = crypto.randomBytes(40).toString('hex');
+  let user;
 
   try {
-    const password = await bcrypt.hash(body.password, 10);
-    const key = crypto.randomBytes(40).toString('hex');
-
     await ctx.db.transaction(async transaction => {
-      const record = await EmailAuthorization.create({ ...body, key }, { transaction });
-      await registerUser(record, body.organization, transaction, record.email, password);
-
-      await mailer.sendEmail({ email: record.email }, 'welcome', {
-        url: `${ctx.origin}/verify?token=${key}`,
-      });
-
-      ctx.status = 201;
+      user = await User.create({ password: hashedPassword, primaryEmail: email }, { transaction });
+      await user.createEmailAuthorization({ email, key }, { transaction });
     });
   } catch (e) {
     if (e instanceof UniqueConstraintError) {
-      const [{ instance }] = e.errors;
-
-      if (instance instanceof EmailAuthorization) {
-        throw Boom.conflict('User with this email address already exists.');
-      } else {
-        throw Boom.conflict('This organization already exists.');
-      }
+      throw Boom.conflict('User with this email address already exists.');
     }
 
     if (e instanceof DatabaseError) {
@@ -64,6 +56,19 @@ export async function registerEmail(ctx) {
 
     throw e;
   }
+
+  // This is purposely not awaited, so failure won’t make the request fail. If this fails, the user
+  // will still be logged in, but will have to request a new verification email in order to verify
+  // their account.
+  mailer
+    .sendEmail({ email }, 'welcome', {
+      url: `${ctx.origin}/verify?token=${key}`,
+    })
+    .catch(error => {
+      logger.error(error);
+    });
+
+  ctx.body = createJWTResponse(user.id, argv);
 }
 
 export async function registerOAuth(ctx) {

@@ -1,38 +1,32 @@
 import bcrypt from 'bcrypt';
-// eslint-disable-next-line import/no-extraneous-dependencies
-import request from 'supertest';
+import { randomBytes } from 'crypto';
 
-export default async function testToken(server, db, scope, organizationId = 'testorganization') {
-  const { User, EmailAuthorization, OAuthClient } = db.models;
-  const user = await User.create({ password: bcrypt.hashSync('test', 10), name: 'Test User' });
-  await user.createOrganization(
-    {
-      id: organizationId,
-      name: 'Test Organization',
-    },
-    { through: { role: 'Owner' } },
-  );
-  await EmailAuthorization.create({
-    email: 'test@example.com',
-    verified: true,
-    UserId: user.id,
-  });
-  await user.update({ primaryEmail: 'test@example.com' });
-  await OAuthClient.create({ clientId: 'test', clientSecret: 'test', redirectUri: '/' });
+import createJWTResponse from '../createJWTResponse';
 
-  const {
-    body: { access_token: token },
-  } = await request(server)
-    .post('/api/oauth/token')
-    .type('form')
-    .send({
-      grant_type: 'password',
-      username: 'test@example.com',
-      password: 'test',
-      client_id: 'test',
-      client_secret: 'test',
-      scope,
+const password = bcrypt.hashSync('testpassword', 10);
+
+export default async function testToken(
+  { models: { OAuth2ClientCredentials, User } },
+  scope,
+  email = 'test@example.com',
+) {
+  const argv = { host: window.location, secret: 'test' };
+  const user = await User.create({ password, name: 'Test User', primaryEmail: email });
+  await user.createEmailAuthorization({ email, verified: true });
+  const response = createJWTResponse(user.id, argv);
+  const result = {
+    user,
+    authorization: `Bearer ${response.access_token}`,
+  };
+  if (scope) {
+    const { id } = await OAuth2ClientCredentials.create({
+      description: 'Test client',
+      id: randomBytes(16).toString('hex'),
+      scopes: scope,
+      secret: randomBytes(32).toString('hex'),
+      UserId: user.id,
     });
-
-  return `Bearer ${token}`;
+    result.clientToken = createJWTResponse(user.id, argv, { aud: id, scope }).access_token;
+  }
+  return result;
 }
