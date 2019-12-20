@@ -7,19 +7,32 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.10.0] - 2019-12-20
+
 ### Added
 
 - CLI: Add `--migrate-to` flag for the `start` command.
 - CLI: Add support for `--build` flags for `appsemble block register`, and
   `appsemble block publish`.
+- CLI: Add support for OAuth2 client credentials.
+- CLI: Add support for the system key chain.
 - Server: Allow `next` as a migration version. This will migrate to the latest version, even if it’s
   unreleased.
 - Server: Add role support to organizations. All current organization members default to the “Owner”
   role.
+- Server: Correct authentication for Studio API calls, fixing how OAuth2 was used incorrectly.
+- Server: Add correct support for OAuth2 client credentials.
+- Server: Add OpenID compatible user info endpoint.
 - Studio: Add support for organization members with the “Owner” role to assign the roles of new
   members.
 - Studio: Add role detection for several pages in order to ensure users can’t access pages their
   role does not allow the usage of.
+- Studio: Add support for cloning apps.
+- Studio: Use the new authentication mechanism for API calls.
+
+### Removed
+
+- CLI: email / password login.
 
 ## [0.9.5] - 2019-12-02
 
