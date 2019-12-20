@@ -1,9 +1,9 @@
 {
   "name": "@appsemble/markdown",
-  "version": "0.9.5",
+  "version": "0.10.0",
   "private": true,
   "dependencies": {
-    "@appsemble/sdk": "0.9.5",
+    "@appsemble/sdk": "0.10.0",
     "marked": "^0.7.0"
   }
 }
