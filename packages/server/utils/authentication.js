@@ -4,7 +4,7 @@ import { Op } from 'sequelize';
 
 export default function authentication(
   { host, secret },
-  { EmailAuthorization, OAuth2ClientCredentials, User },
+  { App, EmailAuthorization, OAuth2ClientCredentials, User },
 ) {
   return {
     async basic(email, password) {
@@ -14,6 +14,17 @@ export default function authentication(
       });
       const isValidPassword = await bcrypt.compare(password, user.password);
       return isValidPassword ? user : null;
+    },
+
+    async app(accessToken) {
+      const { aud, scope, sub } = jwt.verify(accessToken, secret);
+      // XXX use origin check when default app domains are implemented.
+      const [prefix, id] = aud.split(':');
+      if (prefix !== 'app') {
+        return null;
+      }
+      const app = new App({ id });
+      return [{ id: sub }, { scope, app }];
     },
 
     async cli(accessToken) {
