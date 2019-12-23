@@ -547,7 +547,7 @@ pages:
           'pages.0.blocks.0': 'Unknown block type “@non/existent”',
         },
         error: 'Bad Request',
-        message: 'Block validation failed',
+        message: 'Appsemble definition is invalid.',
         statusCode: 400,
       },
     });
@@ -585,7 +585,7 @@ pages:
           'pages.0.blocks.0': 'Unknown block type “@appsemble/test”',
         },
         error: 'Bad Request',
-        message: 'Block validation failed',
+        message: 'Appsemble definition is invalid.',
         statusCode: 400,
       },
     });
@@ -634,7 +634,7 @@ pages:
           },
         },
         error: 'Bad Request',
-        message: 'Block validation failed',
+        message: 'Appsemble definition is invalid.',
         statusCode: 400,
       },
     });
@@ -1726,7 +1726,7 @@ pages:
           'pages.0.blocks.0': 'Unknown block type “@appsemble/test”',
         },
         error: 'Bad Request',
-        message: 'Block validation failed',
+        message: 'Appsemble definition is invalid.',
         statusCode: 400,
       },
     });

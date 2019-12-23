@@ -1,7 +1,9 @@
 import { logger } from '@appsemble/node-utils';
 import { normalize, permissions, StyleValidationError, validateStyle } from '@appsemble/utils';
+import validateAppDefinition, {
+  AppsembleValidationError,
+} from '@appsemble/utils/validateAppDefinition';
 import Boom from '@hapi/boom';
-import Ajv from 'ajv';
 import crypto from 'crypto';
 import jsYaml from 'js-yaml';
 import { isEqual, uniqWith } from 'lodash';
@@ -10,62 +12,26 @@ import sharp from 'sharp';
 import * as webpush from 'web-push';
 
 import checkRole from '../utils/checkRole';
-import getAppBlocks from '../utils/getAppBlocks';
 import getAppFromRecord from '../utils/getAppFromRecord';
 import getDefaultIcon from '../utils/getDefaultIcon';
 
-const ajv = new Ajv();
-ajv.addFormat('fontawesome', () => true);
+function getBlockVersions(db) {
+  return async blocks => {
+    const blockVersions = await db.models.BlockVersion.findAll({
+      raw: true,
+      where: {
+        [Op.or]: uniqWith(
+          Object.values(blocks).map(({ type, version }) => ({
+            name: type.startsWith('@') ? type : `@appsemble/${type}`,
+            version,
+          })),
+          isEqual,
+        ),
+      },
+    });
 
-async function checkBlocks(definition, db) {
-  const blocks = getAppBlocks(definition);
-  const blockVersions = await db.models.BlockVersion.findAll({
-    raw: true,
-    where: {
-      [Op.or]: uniqWith(
-        Object.values(blocks).map(({ type, version }) => ({
-          name: type.startsWith('@') ? type : `@appsemble/${type}`,
-          version,
-        })),
-        isEqual,
-      ),
-    },
-  });
-  const blockVersionMap = new Map();
-  blockVersions.forEach(version => {
-    if (!blockVersionMap.has(version.name)) {
-      blockVersionMap.set(version.name, new Map());
-    }
-    blockVersionMap.get(version.name).set(version.version, version);
-  });
-  const errors = Object.entries(blocks).reduce((acc, [loc, block]) => {
-    const type = block.type.startsWith('@') ? block.type : `@appsemble/${block.type}`;
-    const versions = blockVersionMap.get(type);
-    if (!versions) {
-      return { ...acc, [loc]: `Unknown block type “${type}”` };
-    }
-    if (!versions.has(block.version)) {
-      return { ...acc, [loc]: `Unknown block version “${type}@${block.version}”` };
-    }
-    const version = versions.get(block.version);
-    if (Object.prototype.hasOwnProperty.call(version, 'parameters')) {
-      const validate = ajv.compile(version.parameters);
-      const valid = validate(block.parameters);
-      if (!valid) {
-        return validate.errors.reduce(
-          (accumulator, error) => ({
-            ...accumulator,
-            [`${loc}.parameters${error.dataPath}`]: error,
-          }),
-          acc,
-        );
-      }
-    }
-    return acc;
-  }, null);
-  if (errors) {
-    throw Boom.badRequest('Block validation failed', errors);
-  }
+    return blockVersions;
+  };
 }
 
 function handleAppValidationError(error, app) {
@@ -73,6 +39,10 @@ function handleAppValidationError(error, app) {
     throw Boom.conflict(
       `Another app with path “@${app.OrganizationId}/${app.path}” already exists`,
     );
+  }
+
+  if (error instanceof AppsembleValidationError) {
+    throw Boom.badRequest('Appsemble definition is invalid.', error.data || error.message);
   }
 
   if (error instanceof StyleValidationError) {
@@ -140,7 +110,7 @@ export async function createApp(ctx) {
     }
 
     await checkRole(ctx, OrganizationId, permissions.CreateApps);
-    await checkBlocks(definition, db);
+    await validateAppDefinition(definition, getBlockVersions(ctx.db));
 
     for (let i = 1; i < 11; i += 1) {
       const p = i === 1 ? path : `${path}-${i}`;
@@ -272,7 +242,7 @@ export async function updateApp(ctx) {
       result.yaml = jsYaml.safeDump(definition);
     }
 
-    await checkBlocks(definition, db);
+    await validateAppDefinition(definition, getBlockVersions(ctx.db));
 
     const dbApp = await App.findOne({ where: { id: appId } });
 
@@ -319,7 +289,7 @@ export async function patchApp(ctx) {
 
     if (definition) {
       result.definition = definition;
-      await checkBlocks(definition, db);
+      await validateAppDefinition(definition, getBlockVersions(ctx.db));
     }
 
     if (path) {

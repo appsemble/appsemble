@@ -5,6 +5,7 @@ export default {
   properties: {
     default: {
       type: 'object',
+      required: ['role'],
       description:
         'The default role to apply to members. The implication of this depends on the `who` property.',
       properties: {
