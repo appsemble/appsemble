@@ -10,7 +10,7 @@ import SideMenu from '../SideMenu';
 import messages from './messages';
 import styles from './SideNavigation.css';
 
-export interface SideNavigationProps {
+interface SideNavigationProps {
   definition: AppDefinition;
   closeMenu: () => void;
   logout: () => void;

@@ -1,7 +1,7 @@
 import { captureException, withScope } from '@sentry/browser';
 import * as React from 'react';
 
-export interface ErrorHandlerProps {
+interface ErrorHandlerProps {
   children: React.ReactNode;
   fallback: React.ElementType;
 }

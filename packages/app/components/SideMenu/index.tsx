@@ -2,9 +2,9 @@ import { connect } from 'react-redux';
 
 import { State } from '../../actions';
 import { closeMenu } from '../../actions/menu';
-import SideMenu, { SideMenuProps } from './SideMenu';
+import SideMenu from './SideMenu';
 
-function mapStateToProps(state: State): Partial<SideMenuProps> {
+function mapStateToProps(state: State): Partial<React.ComponentPropsWithoutRef<typeof SideMenu>> {
   return {
     isOpen: state.menu.isOpen,
   };

@@ -6,7 +6,7 @@ import { CSSTransition } from 'react-transition-group';
 import messages from './messages';
 import styles from './Modal.css';
 
-interface ModalProps<T extends React.ElementType> {
+interface ModalProps<T extends React.ElementType> extends WrappedComponentProps {
   /**
    * The child elements to render on the modal.
    */
@@ -51,7 +51,7 @@ interface ModalProps<T extends React.ElementType> {
  * Render an aria compliant modal overlay.
  */
 export default class Modal<T extends React.ElementType = 'div'> extends React.Component<
-  ModalProps<T> & WrappedComponentProps & React.ComponentPropsWithoutRef<T>
+  ModalProps<T> & React.ComponentPropsWithoutRef<T>
 > {
   static defaultProps: Partial<ModalProps<'div'>> = {
     component: 'div',

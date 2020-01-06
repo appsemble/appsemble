@@ -1,1 +1,1 @@
-export { default, BlockListProps } from './BlockList';
+export { default } from './BlockList';

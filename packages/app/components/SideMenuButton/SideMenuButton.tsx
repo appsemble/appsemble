@@ -8,7 +8,7 @@ import { useLocation } from 'react-router-dom';
 import messages from './messages';
 import styles from './SideMenuButton.css';
 
-export interface SideMenuButtonProps {
+interface SideMenuButtonProps {
   definition: AppDefinition;
   isOpen: boolean;
   openMenu: () => void;

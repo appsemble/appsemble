@@ -8,8 +8,8 @@ import Block from './Block';
 
 function mapStateToProps(
   state: State,
-  ownProps: Block['props'],
-): Pick<Block['props'], 'definition' | 'blockDef'> {
+  ownProps: React.ComponentPropsWithoutRef<typeof Block>,
+): Partial<React.ComponentPropsWithoutRef<typeof Block>> {
   return {
     definition: state.app.definition,
     blockDef: state.blockDefs.blockDefs[blockToString(ownProps.block)],

@@ -17,7 +17,7 @@ const FA_URL = Array.from(document.styleSheets, sheet => sheet.href).find(
   href => href && href.startsWith(`${window.location.origin}/fa/`),
 );
 
-export interface BlockProps {
+interface BlockProps extends RouteComponentProps {
   definition: AppDefinition;
   data?: any;
   className?: string;
@@ -61,7 +61,7 @@ export interface BlockProps {
  * A shadow DOM is created for the block. All CSS files for each block definition are added to the
  * shadow DOM. Then the bootstrap function of the block definition is called.
  */
-export default class Block extends React.Component<BlockProps & RouteComponentProps> {
+export default class Block extends React.Component<BlockProps> {
   attached: boolean;
 
   cleanups: Function[] = [];

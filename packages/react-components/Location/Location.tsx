@@ -14,7 +14,7 @@ import {
 } from 'leaflet';
 import * as React from 'react';
 
-export interface LocationProps {
+interface LocationProps {
   className?: string;
   iconHeight: number;
   iconUrl: string;

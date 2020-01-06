@@ -5,7 +5,7 @@ import Portal from '../Portal';
 import SideMenuButton from '../SideMenuButton';
 import styles from './TitleBar.css';
 
-export interface TitleBarProps {
+interface TitleBarProps {
   children: React.ReactChild;
 }
 

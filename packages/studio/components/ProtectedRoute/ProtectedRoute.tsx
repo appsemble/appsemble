@@ -7,7 +7,7 @@ import useUser from '../../hooks/useUser';
 import { Organization } from '../../types';
 import checkRole from '../../utils/checkRole';
 
-export interface ProtectedRouteProps extends RouteComponentProps {
+interface ProtectedRouteProps extends RouteComponentProps {
   permission?: Permission;
   organization?: Organization;
 }

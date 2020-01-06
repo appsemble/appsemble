@@ -5,7 +5,7 @@ import useQuery from '../../hooks/useQuery';
 import useUser from '../../hooks/useUser';
 import { UserInfo } from '../../types';
 
-export interface AnonymousRouteProps extends RouteComponentProps {
+interface AnonymousRouteProps extends RouteComponentProps {
   user: UserInfo;
 }
 

@@ -6,7 +6,7 @@ import { NavLink, useLocation } from 'react-router-dom';
 
 import styles from './BottomNavigation.css';
 
-export interface BottomNavigationProps {
+interface BottomNavigationProps {
   definition: AppDefinition;
   children: React.ReactChild;
 }
