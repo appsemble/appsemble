@@ -21,6 +21,7 @@ const REFRESH_BUFFER = 60e3;
 
 export default function UserProvider({ children }: UserProviderProps): React.ReactElement {
   const [userInfo, setProfile] = React.useState<UserInfo>();
+  const [initialized, setInitialized] = React.useState(false);
   const [tokenResponse, setTokenResponse] = React.useState<TokenResponse>({
     access_token: localStorage.access_token,
     refresh_token: localStorage.refresh_token,
@@ -59,8 +60,9 @@ export default function UserProvider({ children }: UserProviderProps): React.Rea
       logout,
       userInfo,
       refreshUserInfo,
+      initialized,
     }),
-    [login, logout, userInfo, refreshUserInfo],
+    [login, logout, userInfo, refreshUserInfo, initialized],
   );
 
   React.useEffect(() => {
@@ -84,7 +86,9 @@ export default function UserProvider({ children }: UserProviderProps): React.Rea
         logout();
       }
     }, timeout);
-    refreshUserInfo();
+    refreshUserInfo().then(() => {
+      setInitialized(true);
+    });
 
     return () => {
       clearTimeout(timeoutId);

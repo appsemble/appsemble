@@ -7,6 +7,7 @@ interface UserContext {
   logout(): void;
   userInfo: UserInfo;
   refreshUserInfo(): Promise<void>;
+  initialized: boolean;
 }
 
 export const UserContext = createContext<UserContext>(null);
