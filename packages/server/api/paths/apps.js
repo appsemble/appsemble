@@ -326,7 +326,7 @@ export default {
           },
         },
       },
-      security: [{ apiUser: ['apps:read'] }],
+      security: [{ studio: [] }],
     },
     post: {
       tags: ['app'],
@@ -360,7 +360,7 @@ export default {
           },
         },
       },
-      security: [{ apiUser: ['apps:write'] }],
+      security: [{ studio: [] }],
     },
   },
   '/apps/{appId}/ratings': {
