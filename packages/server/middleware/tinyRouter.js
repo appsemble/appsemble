@@ -24,6 +24,6 @@ export default function tinyRouter(routes) {
       throw Boom.methodNotAllowed();
     }
     ctx.params = { ...match.groups };
-    return result[method](ctx);
+    return result[method](ctx, next);
   };
 }

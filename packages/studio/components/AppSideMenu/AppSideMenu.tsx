@@ -7,7 +7,7 @@ import { FormattedMessage } from 'react-intl';
 import { RouteComponentProps } from 'react-router-dom';
 
 import useOrganizations from '../../hooks/useOrganizations';
-import { User } from '../../types';
+import useUser from '../../hooks/useUser';
 import checkRole from '../../utils/checkRole';
 import NavLink from '../NavLink';
 import SideMenu from '../SideMenu';
@@ -16,7 +16,6 @@ import messages from './messages';
 
 export interface AppSideMenuProps {
   app: App;
-  user: User;
 }
 
 export interface AppSideMenuState {
@@ -26,8 +25,8 @@ export interface AppSideMenuState {
 export default function AppSideMenu({
   app,
   match,
-  user,
 }: AppSideMenuProps & RouteComponentProps): React.ReactElement {
+  const { userInfo } = useUser();
   const [isCollapsed, setCollapsed] = React.useState(false);
   const organizations = useOrganizations();
   const organization = organizations.find(org => org.id === app.OrganizationId);
@@ -40,7 +39,7 @@ export default function AppSideMenu({
           <FormattedMessage {...messages.details} />
         </span>
       </NavLink>
-      {user && (
+      {userInfo && (
         <>
           {organization && checkRole(organization.role, permissions.EditApps) && (
             <NavLink className={styles.menuItem} exact to={`${match.url}/edit`}>

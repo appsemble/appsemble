@@ -1,4 +1,5 @@
 {{ if .Values.provision }}
+{{ $clientCredentials := split ":" .Values.provision.account.clientCredentials }}
 apiVersion: batch/v1
 kind: Job
 metadata:
@@ -12,7 +13,6 @@ metadata:
     helm.sh/chart: {{ include "appsemble.chart" . }}
   annotations:
     helm.sh/hook: post-install,post-upgrade
-    helm.sh/hook-delete-policy: hook-succeeded
     helm.sh/hook-weight: '1'
 spec:
   template:
@@ -24,43 +24,53 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           command:
             - psql
+          args:
             - "--command"
             - |
-              INSERT INTO "User" (name, password, "primaryEmail", created, updated) VALUES (
-                {{ .Values.provision.account.name | squote }},
-                {{ .Values.provision.account.password | squote }},
-                {{ .Values.provision.account.email | squote }},
-                NOW(),
-                NOW()
-              );
-              INSERT INTO "EmailAuthorization" (email, verified, created, updated, "UserId") VALUES (
-                {{ .Values.provision.account.email | squote }},
-                true,
-                NOW(),
-                NOW(),
-                (SELECT id FROM "User" WHERE "primaryEmail" = {{ .Values.provision.account.email | quote }} LIMIT 1)
-              );
-              {{ range .Values.provision.account.organizations }}
-                INSERT INTO "Organization" (name, created, updated) VALUES (
-                  {{ . | squote }},
+              DO $$$$
+              DECLARE
+                UserId integer;
+              BEGIN
+                INSERT INTO "User" (name, "primaryEmail", created, updated) VALUES (
+                  {{ .Values.provision.account.name | squote }},
+                  {{ .Values.provision.account.email | squote }},
                   NOW(),
                   NOW()
-                );
-                INSERT INTO "Member" (created, updated, "UserId", "OrganizationId", role) VALUES (
+                ) RETURNING id INTO UserId;
+                INSERT INTO "EmailAuthorization" (email, verified, created, updated, "UserId") VALUES (
+                  {{ .Values.provision.account.email | squote }},
+                  true,
                   NOW(),
                   NOW(),
-                  (SELECT id FROM "User" WHERE "primaryEmail" = {{ $.Values.provision.account.email | squote }} LIMIT 1)
-                  {{ . | squote }},
-                  'Owner'
+                  UserId
                 );
-              {{ end }}
+                INSERT INTO "OAuth2ClientCredentials" (id, secret, description, scopes, created, "UserId") VALUES (
+                  {{ $clientCredentials._0 | squote }},
+                  {{ $clientCredentials._1 | squote }},
+                  'Used for provisioning the review environment',
+                  'apps:write blocks:write',
+                  NOW(),
+                  UserId
+                );
+                {{ range .Values.provision.account.organizations }}
+                  INSERT INTO "Organization" (id, name, created, updated) VALUES (
+                    {{ . | squote }},
+                    {{ . | squote }},
+                    NOW(),
+                    NOW()
+                  );
+                  INSERT INTO "Member" (created, updated, "UserId", "OrganizationId", role) VALUES (
+                    NOW(),
+                    NOW(),
+                    UserId,
+                    {{ . | squote }},
+                    'Owner'
+                  );
+                {{ end }}
+              END $$$$
           env:
             - name: PGHOST
               value: {{ .Values.postgresql.fullnameOverride }}
-            {{ if .Values.postgresSSL }}
-            - name: DATABASE_SSL
-              value: 'true'
-            {{ end }}
             - name: PGPORT
               value: {{ .Values.global.postgresql.servicePort | quote }}
             - name: PGDATABASE

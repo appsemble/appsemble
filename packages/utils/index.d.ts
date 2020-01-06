@@ -45,6 +45,7 @@ export function validateStyle(css: string): string;
 export class StyleValidationError extends Error {}
 
 export const baseTheme: Theme;
+export const scopes: string[];
 export const roles: Role;
 export const permissions: {
   ViewApps: 'ViewApps';

@@ -5,10 +5,12 @@ import {
   SimpleInput,
   SimpleSubmit,
 } from '@appsemble/react-components';
+import axios from 'axios';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Link, useLocation } from 'react-router-dom';
 
+import useUser from '../../hooks/useUser';
 import settings from '../../utils/settings';
 import HelmetIntl from '../HelmetIntl';
 import SocialLoginButton from '../SocialLoginButton';
@@ -20,33 +22,20 @@ interface LoginFormValues {
   password: string;
 }
 
-interface LoginProps {
-  passwordLogin: (
-    url: string,
-    { username, password }: { username: string; password: string },
-    refreshURL: string,
-    clientId: string,
-    scope: string,
-  ) => Promise<void>;
-}
-
 const loginMethods = new Set(settings.logins);
 
-export default function Login({ passwordLogin }: LoginProps): React.ReactElement {
+export default function Login(): React.ReactElement {
   const location = useLocation();
+  const { login } = useUser();
   const onPasswordLogin = React.useCallback(
-    ({ email, password }: LoginFormValues) =>
-      passwordLogin(
-        '/api/oauth/token',
-        { username: email, password },
-        '/api/oauth/token',
-        'appsemble-studio',
-        'apps:read apps:write',
-      ),
-    [passwordLogin],
+    async ({ email, password }: LoginFormValues) => {
+      const { data } = await axios.post('/api/login', undefined, {
+        headers: { authorization: `Basic ${btoa(`${email}:${password}`)}` },
+      });
+      login(data);
+    },
+    [login],
   );
-
-  const returnUri = new URLSearchParams({ returnUri: '/connect' });
 
   return (
     <div className={styles.root}>
@@ -96,18 +85,12 @@ export default function Login({ passwordLogin }: LoginProps): React.ReactElement
       </SimpleForm>
       <div className={styles.socialLogins}>
         {loginMethods.has('google') && (
-          <SocialLoginButton
-            iconClass="google"
-            providerUri={`/api/oauth/connect/google?${returnUri}`}
-          >
+          <SocialLoginButton iconClass="google" providerUri="/connect/google">
             <FormattedMessage {...messages.login} values={{ provider: 'Google' }} />
           </SocialLoginButton>
         )}
         {loginMethods.has('gitlab') && (
-          <SocialLoginButton
-            iconClass="gitlab"
-            providerUri={`/api/oauth/connect/gitlab?${returnUri}`}
-          >
+          <SocialLoginButton iconClass="gitlab" providerUri="/connect/gitlab">
             <FormattedMessage {...messages.login} values={{ provider: 'GitLab' }} />
           </SocialLoginButton>
         )}

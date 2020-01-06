@@ -75,6 +75,11 @@ spec:
             - name: INGRESS_SERVICE_PORT
               value: {{ .Values.service.port | quote }}
             {{- end }}
+            - name: SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secretSecret | quote }}
+                  key: secret
             {{- with .Values.smtpSecret }}
             - name: SMTP_HOST
               valueFrom:

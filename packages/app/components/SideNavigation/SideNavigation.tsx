@@ -2,13 +2,11 @@ import { Icon } from '@appsemble/react-components';
 import { AppDefinition, Page } from '@appsemble/types';
 import { normalize } from '@appsemble/utils';
 import React from 'react';
-import { FormattedMessage } from 'react-intl';
 import { NavLink, useLocation } from 'react-router-dom';
 
 import { User } from '../../types';
 import checkAppRole from '../../utils/checkAppRole';
 import SideMenu from '../SideMenu';
-import messages from './messages';
 import styles from './SideNavigation.css';
 
 export interface SideNavigationProps {
@@ -24,17 +22,9 @@ export interface SideNavigationProps {
  */
 export default function SideNavigation({
   definition,
-  user,
-  logout,
-  closeMenu,
   role,
 }: SideNavigationProps): React.ReactElement {
   const location = useLocation();
-
-  const onLogout = (): void => {
-    logout();
-    closeMenu();
-  };
 
   const currentPage = definition.pages.find(
     p => normalize(p.name) === location.pathname.split('/')[1],

@@ -2,24 +2,24 @@ import axios from 'axios';
 import * as React from 'react';
 
 import { OrganizationContext } from '../../hooks/useOrganizations';
-import { Organization, User } from '../../types';
+import useUser from '../../hooks/useUser';
+import { Organization } from '../../types';
 
-export interface OrganizationProviderProps {
+interface OrganizationProviderProps {
   children: React.ReactNode;
-  user: User;
 }
 
 export default function OrganizationProvider({
   children,
-  user,
 }: OrganizationProviderProps): React.ReactElement {
+  const { userInfo } = useUser();
   const [organizations, setOrganizations] = React.useState<Organization[]>([]);
 
   const value = React.useMemo(() => organizations, [organizations]);
 
   React.useEffect(() => {
     const getOrganizations = async (): Promise<void> => {
-      if (user != null) {
+      if (userInfo) {
         const { data } = await axios.get('/api/user/organizations');
         setOrganizations(data);
       } else {
@@ -27,7 +27,7 @@ export default function OrganizationProvider({
       }
     };
     getOrganizations();
-  }, [user]);
+  }, [userInfo]);
 
   return <OrganizationContext.Provider value={value}>{children}</OrganizationContext.Provider>;
 }

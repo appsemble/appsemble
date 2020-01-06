@@ -32,7 +32,6 @@
     ]
   },
   "devDependencies": {
-    "@appsemble/node-utils": "^0.9.5",
     "@babel/core": "^7.7.4",
     "@babel/plugin-proposal-class-properties": "^7.7.4",
     "@babel/plugin-proposal-function-bind": "^7.7.4",
@@ -66,7 +65,6 @@
     "@types/service-worker-mock": "^2.0.1",
     "@typescript-eslint/eslint-plugin": "^2.9.0",
     "@typescript-eslint/parser": "^2.9.0",
-    "axios": "^0.19.0",
     "axios-mock-adapter": "^1.17.0",
     "axios-test-instance": "^1.0.1",
     "babel-eslint": "^10.0.3",
@@ -82,7 +80,6 @@
     "dictionary-en-us": "^2.1.1",
     "docz": "2.1.1",
     "enzyme": "^3.10.0",
-    "enzyme-adapter-react-16": "^1.15.1",
     "enzyme-to-json": "^3.4.3",
     "eslint": "^6.7.1",
     "eslint-config-airbnb": "^18.0.1",
@@ -108,7 +105,6 @@
     "husky": "^3.1.0",
     "identity-obj-proxy": "^3.0.0",
     "jest": "^24.9.0",
-    "jest-image-snapshot": "^2.11.1",
     "jest-junit": "^9.0.0",
     "lint-staged": "^9.5.0",
     "lodash": "^4.17.15",
@@ -171,6 +167,7 @@
     "migrate-to": "next",
     "oauth-gitlab-key": "9739ffe4a5007fb7ac0bac53e2d70f7286add09190b73f40eeac33259cb81f15",
     "oauth-gitlab-secret": "8f83b39e5731f0c771fe39bff54ae326877f9434d431feeea6d79f00f292cdb0",
+    "secret": "Local Appsemble development secret",
     "webpack-config": "config/webpack/block"
   }
 }

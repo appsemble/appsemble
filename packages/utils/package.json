@@ -1,9 +1,9 @@
 {
   "name": "@appsemble/utils",
-  "version": "0.9.5",
+  "version": "0.10.0",
   "private": true,
   "dependencies": {
-    "@appsemble/types": "0.9.5",
+    "@appsemble/types": "0.10.0",
     "ajv": "^6.10.2",
     "date-fns": "^2.8.1",
     "md5": "^2.2.1",

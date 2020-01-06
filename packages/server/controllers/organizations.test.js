@@ -1,6 +1,5 @@
 import { createInstance } from 'axios-test-instance';
 import FormData from 'form-data';
-import jwt from 'jsonwebtoken';
 
 import createServer from '../utils/createServer';
 import testSchema from '../utils/test/testSchema';
@@ -18,12 +17,14 @@ describe('organization controller', () => {
   let request;
   let server;
   let authorization;
-  let organizationId;
+  let clientToken;
+  let organization;
+  let user;
 
   beforeAll(async () => {
     db = await testSchema('organizations');
 
-    server = await createServer({ db });
+    server = await createServer({ db, argv: { host: window.location, secret: 'test' } });
     ({
       BlockDefinition,
       EmailAuthorization,
@@ -37,11 +38,13 @@ describe('organization controller', () => {
 
   beforeEach(async () => {
     await truncate(db);
-    organizationId = 'testorganization';
-    authorization = await testToken(
-      server,
-      db,
-      'organizations:read organizations:style organizations:write',
+    ({ authorization, clientToken, user } = await testToken(db, 'organizations:styles:write'));
+    organization = await user.createOrganization(
+      {
+        id: 'testorganization',
+        name: 'Test Organization',
+      },
+      { through: { role: 'Owner' } },
     );
   });
 
@@ -249,7 +252,6 @@ describe('organization controller', () => {
   it('should not send an invite to members of an organization', async () => {
     const userB = await EmailAuthorization.create({ email: 'test2@example.com', verified: true });
     const { id } = await userB.createUser({ primaryEmail: 'test2@example.com', name: 'John' });
-    const organization = await Organization.findByPk('testorganization');
     await organization.addUser(id);
 
     const response = await request.post(
@@ -321,7 +323,6 @@ describe('organization controller', () => {
   });
 
   it('should change the role of other members', async () => {
-    const organization = await Organization.findByPk('testorganization');
     const userB = await organization.createUser({ name: 'Foo', primaryEmail: 'test2@example.com' });
 
     const response = await request.put(
@@ -342,20 +343,19 @@ describe('organization controller', () => {
   });
 
   it('should leave the organization if there are other members', async () => {
-    const organization = await Organization.findByPk('testorganization');
     await organization.createUser();
-    const userId = jwt.decode(authorization.substring(7)).user.id;
 
     const { status } = await request.delete(
-      `/api/organizations/testorganization/members/${userId}`,
-      { headers: { authorization } },
+      `/api/organizations/testorganization/members/${user.id}`,
+      {
+        headers: { authorization },
+      },
     );
 
     expect(status).toBe(204);
   });
 
   it('should remove other members from an organization', async () => {
-    const organization = await Organization.findByPk('testorganization');
     const userB = await organization.createUser();
 
     const { status } = await request.delete(
@@ -369,11 +369,10 @@ describe('organization controller', () => {
   });
 
   it('should not remove the only remaining member in an organization', async () => {
-    const userId = jwt.decode(authorization.substring(7)).user.id;
-
-    const response = await request.delete(`/api/organizations/testorganization/members/${userId}`, {
-      headers: { authorization },
-    });
+    const response = await request.delete(
+      `/api/organizations/testorganization/members/${user.id}`,
+      { headers: { authorization } },
+    );
 
     expect(response).toMatchObject({
       status: 406,
@@ -412,12 +411,12 @@ describe('organization controller', () => {
       filename: 'style.css',
     });
     const responseA = await request.post(
-      `/api/organizations/${organizationId}/style/shared`,
+      `/api/organizations/${organization.id}/style/shared`,
       form,
-      { headers: { ...form.getHeaders(), authorization } },
+      { headers: { ...form.getHeaders(), authorization: `Bearer ${clientToken}` } },
     );
 
-    const responseB = await request.get(`/api/organizations/${organizationId}/style/shared`);
+    const responseB = await request.get(`/api/organizations/${organization.id}/style/shared`);
 
     expect(responseA.status).toBe(204);
     expect(responseB).toMatchObject({ status: 200, data: 'body { color: red; }' });
@@ -429,8 +428,8 @@ describe('organization controller', () => {
       contentType: 'text/css',
       filename: 'style.css',
     });
-    const responseA = await request.post(`/api/organizations/${organizationId}/style/core`, form, {
-      headers: { ...form.getHeaders(), authorization },
+    const responseA = await request.post(`/api/organizations/${organization.id}/style/core`, form, {
+      headers: { ...form.getHeaders(), authorization: `Bearer ${clientToken}` },
     });
 
     const formB = new FormData();
@@ -439,12 +438,10 @@ describe('organization controller', () => {
       filename: 'style.css',
     });
     const responseB = await request.post(
-      `/api/organizations/${organizationId}/style/shared`,
+      `/api/organizations/${organization.id}/style/shared`,
       formB,
-      { headers: { ...formB.getHeaders(), authorization } },
+      { headers: { ...formB.getHeaders(), authorization: `Bearer ${clientToken}` } },
     );
-
-    const organization = await Organization.findByPk(organizationId);
 
     expect(responseA.status).toBe(204);
     expect(responseB.status).toBe(204);
@@ -457,9 +454,13 @@ describe('organization controller', () => {
       contentType: 'text/css',
       filename: 'style.css',
     });
-    const response = await request.post(`/api/organizations/${organizationId}/style/shared`, form, {
-      headers: { ...form.getHeaders(), authorization },
-    });
+    const response = await request.post(
+      `/api/organizations/${organization.id}/style/shared`,
+      form,
+      {
+        headers: { ...form.getHeaders(), authorization: `Bearer ${clientToken}` },
+      },
+    );
 
     expect(response).toMatchObject({
       status: 400,
@@ -472,7 +473,7 @@ describe('organization controller', () => {
   });
 
   it('should return an empty response on non-existant shared stylesheets', async () => {
-    const response = await request.get(`/api/organizations/${organizationId}/style/shared`);
+    const response = await request.get(`/api/organizations/${organization.id}/style/shared`);
 
     expect(response).toMatchObject({
       headers: { 'content-type': 'text/css; charset=utf-8' },
@@ -488,7 +489,7 @@ describe('organization controller', () => {
       filename: 'style.css',
     });
     const response = await request.post('/api/organizations/test/style/shared', form, {
-      headers: { ...form.getHeaders(), authorization },
+      headers: { ...form.getHeaders(), authorization: `Bearer ${clientToken}` },
     });
 
     expect(response).toMatchObject({
@@ -507,11 +508,11 @@ describe('organization controller', () => {
       contentType: 'text/css',
       filename: 'style.css',
     });
-    const responseA = await request.post(`/api/organizations/${organizationId}/style/core`, form, {
-      headers: { ...form.getHeaders(), authorization },
+    const responseA = await request.post(`/api/organizations/${organization.id}/style/core`, form, {
+      headers: { ...form.getHeaders(), authorization: `Bearer ${clientToken}` },
     });
 
-    const responseB = await request.get(`/api/organizations/${organizationId}/style/core`);
+    const responseB = await request.get(`/api/organizations/${organization.id}/style/core`);
 
     expect(responseA.status).toBe(204);
     expect(responseB).toMatchObject({ status: 200, data: 'body { color: blue; }' });
@@ -523,8 +524,8 @@ describe('organization controller', () => {
       contentType: 'text/css',
       filename: 'style.css',
     });
-    const responseA = await request.post(`/api/organizations/${organizationId}/style/core`, form, {
-      headers: { ...form.getHeaders(), authorization },
+    const responseA = await request.post(`/api/organizations/${organization.id}/style/core`, form, {
+      headers: { ...form.getHeaders(), authorization: `Bearer ${clientToken}` },
     });
 
     const formB = new FormData();
@@ -532,11 +533,13 @@ describe('organization controller', () => {
       contentType: 'text/css',
       filename: 'style.css',
     });
-    const responseB = await request.post(`/api/organizations/${organizationId}/style/core`, formB, {
-      headers: { ...formB.getHeaders(), authorization },
-    });
-
-    const organization = await Organization.findByPk(organizationId);
+    const responseB = await request.post(
+      `/api/organizations/${organization.id}/style/core`,
+      formB,
+      {
+        headers: { ...formB.getHeaders(), authorization: `Bearer ${clientToken}` },
+      },
+    );
 
     expect(responseA.status).toBe(204);
     expect(responseB.status).toBe(204);
@@ -550,8 +553,8 @@ describe('organization controller', () => {
       filename: 'style.css',
     });
 
-    const response = await request.post(`/api/organizations/${organizationId}/style/core`, form, {
-      headers: { ...form.getHeaders(), authorization },
+    const response = await request.post(`/api/organizations/${organization.id}/style/core`, form, {
+      headers: { ...form.getHeaders(), authorization: `Bearer ${clientToken}` },
     });
     expect(response).toMatchObject({
       status: 400,
@@ -571,7 +574,7 @@ describe('organization controller', () => {
     });
 
     const response = await request.post('/api/organizations/fake/style/core', form, {
-      headers: { ...form.getHeaders(), authorization },
+      headers: { ...form.getHeaders(), authorization: `Bearer ${clientToken}` },
     });
 
     expect(response).toMatchObject({
@@ -585,7 +588,7 @@ describe('organization controller', () => {
   });
 
   it('should return an empty response on non-existant core stylesheets', async () => {
-    const response = await request.get(`/api/organizations/${organizationId}/style/core`);
+    const response = await request.get(`/api/organizations/${organization.id}/style/core`);
 
     expect(response).toMatchObject({
       status: 200,
@@ -607,13 +610,13 @@ describe('organization controller', () => {
     });
 
     const responseA = await request.post(
-      `/api/organizations/${organizationId}/style/block/@appsemble/testblock`,
+      `/api/organizations/${organization.id}/style/block/@appsemble/testblock`,
       form,
-      { headers: { ...form.getHeaders(), authorization } },
+      { headers: { ...form.getHeaders(), authorization: `Bearer ${clientToken}` } },
     );
 
     const responseB = await request.get(
-      `/api/organizations/${organizationId}/style/block/@appsemble/testblock`,
+      `/api/organizations/${organization.id}/style/block/@appsemble/testblock`,
     );
 
     expect(responseA.status).toBe(204);
@@ -633,9 +636,9 @@ describe('organization controller', () => {
     });
 
     const responseA = await request.post(
-      `/api/organizations/${organizationId}/style/block/@appsemble/testblock`,
+      `/api/organizations/${organization.id}/style/block/@appsemble/testblock`,
       form,
-      { headers: { ...form.getHeaders(), authorization } },
+      { headers: { ...form.getHeaders(), authorization: `Bearer ${clientToken}` } },
     );
 
     const formB = new FormData();
@@ -644,13 +647,13 @@ describe('organization controller', () => {
       filename: 'style.css',
     });
     const responseB = await request.post(
-      `/api/organizations/${organizationId}/style/block/@appsemble/testblock`,
+      `/api/organizations/${organization.id}/style/block/@appsemble/testblock`,
       formB,
-      { headers: { ...formB.getHeaders(), authorization } },
+      { headers: { ...formB.getHeaders(), authorization: `Bearer ${clientToken}` } },
     );
 
     const style = await OrganizationBlockStyle.findOne({
-      where: { OrganizationId: organizationId, BlockDefinitionId: '@appsemble/testblock' },
+      where: { OrganizationId: organization.id, BlockDefinitionId: '@appsemble/testblock' },
     });
 
     expect(responseA.status).toBe(204);
@@ -671,9 +674,9 @@ describe('organization controller', () => {
     });
 
     const response = await request.post(
-      `/api/organizations/${organizationId}/style/block/@appsemble/testblock`,
+      `/api/organizations/${organization.id}/style/block/@appsemble/testblock`,
       form,
-      { headers: { ...form.getHeaders(), authorization } },
+      { headers: { ...form.getHeaders(), authorization: `Bearer ${clientToken}` } },
     );
     expect(response).toMatchObject({
       status: 400,
@@ -700,7 +703,7 @@ describe('organization controller', () => {
     const response = await request.post(
       '/api/organizations/fake/style/block/@appsemble/testblock',
       form,
-      { headers: { ...form.getHeaders(), authorization } },
+      { headers: { ...form.getHeaders(), authorization: `Bearer ${clientToken}` } },
     );
 
     expect(response).toMatchObject({
@@ -721,9 +724,9 @@ describe('organization controller', () => {
     });
 
     const response = await request.post(
-      `/api/organizations/${organizationId}/style/block/@appsemble/doesntexist`,
+      `/api/organizations/${organization.id}/style/block/@appsemble/doesntexist`,
       form,
-      { headers: { ...form.getHeaders(), authorization } },
+      { headers: { ...form.getHeaders(), authorization: `Bearer ${clientToken}` } },
     );
 
     expect(response).toMatchObject({
@@ -738,7 +741,7 @@ describe('organization controller', () => {
 
   it('should return an empty response on non-existant block stylesheets', async () => {
     const response = await request.get(
-      `/api/organizations/${organizationId}/style/block/@appsemble/doesntexist`,
+      `/api/organizations/${organization.id}/style/block/@appsemble/doesntexist`,
     );
 
     expect(response).toMatchObject({

@@ -1,28 +1,28 @@
 import { Permission } from '@appsemble/utils';
 import * as React from 'react';
-import { Redirect, Route, RouteComponentProps, useLocation } from 'react-router-dom';
+import { Redirect, Route, RouteComponentProps, useLocation, useRouteMatch } from 'react-router-dom';
 
 import useQuery from '../../hooks/useQuery';
-import { Organization, User } from '../../types';
+import useUser from '../../hooks/useUser';
+import { Organization } from '../../types';
 import checkRole from '../../utils/checkRole';
 
 export interface ProtectedRouteProps extends RouteComponentProps {
-  user: User;
   permission?: Permission;
   organization?: Organization;
 }
 
 export default function ProtectedRoute({
-  user,
   permission,
   organization,
-  match,
   ...props
 }: ProtectedRouteProps): React.ReactElement {
   const location = useLocation();
+  const { userInfo } = useUser();
   const qs = useQuery();
+  const match = useRouteMatch();
 
-  if (!user) {
+  if (!userInfo) {
     const search = new URLSearchParams(qs);
     search.set('redirect', `${location.pathname}${location.search}${location.hash}`);
     return <Redirect to={{ pathname: '/login', search: `?${search}` }} />;

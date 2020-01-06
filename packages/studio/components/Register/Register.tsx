@@ -5,10 +5,11 @@ import {
   SimpleInput,
   SimpleSubmit,
 } from '@appsemble/react-components';
-import { AxiosError } from 'axios';
+import axios, { AxiosError } from 'axios';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 
+import useUser from '../../hooks/useUser';
 import HelmetIntl from '../HelmetIntl';
 import messages from './messages';
 import styles from './Register.css';
@@ -18,33 +19,14 @@ interface RegistrationFormValues {
   password: string;
 }
 
-interface RegisterProps {
-  registerEmail: (email: string, password: string) => Promise<void>;
-  passwordLogin: (
-    url: string,
-    { username, password }: { username: string; password: string },
-    refreshURL: string,
-    clientId: string,
-    scope: string,
-  ) => Promise<void>;
-}
-
-export default function Register({
-  passwordLogin,
-  registerEmail,
-}: RegisterProps): React.ReactElement {
+export default function Register(): React.ReactElement {
+  const { login } = useUser();
   const register = React.useCallback(
     async ({ email, password }: RegistrationFormValues) => {
-      await registerEmail(email, password);
-      await passwordLogin(
-        '/api/oauth/token',
-        { username: email, password },
-        '/api/oauth/token',
-        'appsemble-studio',
-        'apps:read apps:write',
-      );
+      const { data } = await axios.post('/api/email', { email, password });
+      login(data);
     },
-    [passwordLogin, registerEmail],
+    [login],
   );
 
   return (

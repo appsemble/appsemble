@@ -1,6 +1,7 @@
 import React from 'react';
 
-import BlockList, { BlockListProps } from '../BlockList';
+import BlockList from '../BlockList';
+import { BlockListProps } from '../BlockList/BlockList';
 import DotProgressBar from '../DotProgressBar';
 
 interface FlowPageProps {

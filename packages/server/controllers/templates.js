@@ -45,21 +45,20 @@ export async function createTemplateApp(ctx) {
     private: isPrivate,
   } = ctx.request.body;
   const { App, Resource } = ctx.db.models;
-  const { user } = ctx.state;
 
   const template = await App.findOne({
-    where: { id: templateId, template: true },
+    where: { id: templateId },
     include: [Resource],
   });
 
-  if (!user.organizations.some(organization => organization.id === organizationId)) {
-    throw Boom.forbidden('User does not belong in this organization.');
-  }
-
-  await checkRole(ctx, template.OrganizationId, permissions.EditApps);
+  await checkRole(ctx, organizationId, permissions.CreateApps);
 
   if (!template) {
     throw Boom.notFound(`Template with ID ${templateId} does not exist.`);
+  }
+
+  if (!template.template && template.private) {
+    await checkRole(ctx, template.OrganizationId, permissions.ViewApps);
   }
 
   try {

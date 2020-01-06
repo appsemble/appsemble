@@ -4,6 +4,7 @@ import {
   SimpleInput,
   SimpleSubmit,
 } from '@appsemble/react-components';
+import axios from 'axios';
 import classNames from 'classnames';
 import * as React from 'react';
 import { FormattedMessage } from 'react-intl';
@@ -12,27 +13,17 @@ import HelmetIntl from '../HelmetIntl';
 import messages from './messages';
 import styles from './ResetPassword.css';
 
-export interface ResetPasswordProps {
-  // XXX ReturnType<actions.user.requestResetPassword>
-  requestResetPassword: (email: string) => Promise<void>;
-}
-
 interface FormValues {
   email: string;
 }
 
-export default function ResetPassword({
-  requestResetPassword,
-}: ResetPasswordProps): React.ReactElement {
+export default function ResetPassword(): React.ReactElement {
   const [success, setSuccess] = React.useState(false);
 
-  const submit = React.useCallback(
-    async ({ email }: FormValues): Promise<void> => {
-      await requestResetPassword(email);
-      setSuccess(true);
-    },
-    [requestResetPassword],
-  );
+  const submit = React.useCallback(async ({ email }: FormValues): Promise<void> => {
+    await axios.post('/api/email/reset/request', { email });
+    setSuccess(true);
+  }, []);
 
   return (
     <>

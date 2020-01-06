@@ -263,13 +263,8 @@ export async function updateResource(ctx) {
 export async function deleteResource(ctx) {
   const { appId, resourceType, resourceId } = ctx.params;
   const { App, Resource } = ctx.db.models;
-  const { user } = ctx.state;
 
   const app = await App.findByPk(appId);
-
-  if (!user.organizations.some(organization => organization.id === app.OrganizationId)) {
-    throw Boom.forbidden('User does not belong in this organization.');
-  }
 
   await checkRole(ctx, app.OrganizationId, permissions.ManageResources);
 

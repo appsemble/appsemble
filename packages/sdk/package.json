@@ -1,8 +1,8 @@
 {
   "name": "@appsemble/sdk",
-  "version": "0.9.5",
+  "version": "0.10.0",
   "dependencies": {
-    "@appsemble/types": "0.9.5",
+    "@appsemble/types": "0.10.0",
     "type-fest": "^0.8.1"
   }
 }

@@ -97,9 +97,9 @@ export default React.forwardRef<HTMLInputElement, InputProps>(
             {React.isValidElement(error) ? error : help}
           </p>
           {maxLength ? (
-            <span className={`help ${styles.counter}`}>{`${
-              `${value}`.length
-            } / ${maxLength}`}</span>
+            <span className={`help ${styles.counter}`}>
+              {value == null ? 0 : `${value}`.length} / {maxLength}
+            </span>
           ) : null}
         </div>
       </FormComponent>

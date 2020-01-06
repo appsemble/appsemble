@@ -3,9 +3,10 @@ import { permissions } from '@appsemble/utils';
 import axios from 'axios';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { Link } from 'react-router-dom';
 
+import useUser from '../../../../hooks/useUser';
 import checkRole from '../../../../utils/checkRole';
 import HelmetIntl from '../../../HelmetIntl';
 import AppCard from '../AppCard';
@@ -13,94 +14,93 @@ import CreateAppCard from '../CreateAppCard';
 import styles from './AppList.css';
 import messages from './messages';
 
-export default class AppList extends React.Component {
-  static propTypes = {
-    apps: PropTypes.arrayOf(PropTypes.shape()).isRequired,
-    getApps: PropTypes.func.isRequired,
-    getPublicApps: PropTypes.func.isRequired,
-    intl: PropTypes.shape().isRequired,
-    user: PropTypes.shape(),
-  };
+export default function AppList({ apps, getApps, getPublicApps }) {
+  const [filter, setFilter] = React.useState('');
+  const [organizations, setOrganizations] = React.useState([]);
 
-  static defaultProps = {
-    user: undefined,
-  };
+  const intl = useIntl();
+  const { userInfo } = useUser();
 
-  state = { filter: '', organizations: undefined };
+  const onFilterChange = React.useCallback(event => {
+    setFilter(event.target.value);
+  }, []);
 
-  async componentDidMount() {
-    const { getApps, getPublicApps, user } = this.props;
-
-    if (user) {
+  React.useEffect(() => {
+    if (userInfo) {
       getApps();
-      const { data: organizations } = await axios.get('/api/user/organizations');
-      this.setState({ organizations });
     } else {
       getPublicApps();
     }
-  }
+  }, [getApps, getPublicApps, userInfo]);
 
-  onFilterChange = event => {
-    this.setState({ filter: event.target.value });
-  };
+  React.useEffect(() => {
+    const fetchOrganizations = async () => {
+      const { data } = await axios.get('/api/user/organizations');
+      setOrganizations(data);
+    };
 
-  render() {
-    const { apps, intl, user } = this.props;
-    const { filter, organizations } = this.state;
-
-    if (!apps || (user && organizations === undefined)) {
-      return <Loader />;
+    if (userInfo) {
+      fetchOrganizations();
     }
+  }, [userInfo]);
 
-    const filteredApps = apps.filter(app =>
-      app.definition.name.toLowerCase().includes(filter.toLowerCase()),
-    );
-
-    const createOrganizations =
-      organizations?.filter(org => checkRole(org.role, permissions.CreateApps)) || [];
-
-    return (
-      <>
-        <HelmetIntl title={messages.title} />
-        <div className={`field ${styles.filter}`}>
-          <p className="control has-icons-left">
-            <input
-              className="input"
-              onChange={this.onFilterChange}
-              placeholder={intl.formatMessage(messages.search)}
-              value={filter}
-            />
-            <Icon className="is-left" icon="search" size="small" />
-          </p>
-        </div>
-        <div className={styles.appList}>
-          {filteredApps.map(app => (
-            <AppCard key={app.id} app={app} />
-          ))}
-          {user && createOrganizations.length > 0 && (
-            <CreateAppCard organizations={createOrganizations} />
-          )}
-        </div>
-        {user && organizations.length === 0 && apps.length === 0 && (
-          <div className={styles.noApps}>
-            <span>
-              <i className={`fas fa-folder-open ${styles.noAppsIcon}`} />
-            </span>
-            <span>
-              <FormattedMessage
-                {...messages.createOrganizationInstruction}
-                values={{
-                  link: (
-                    <Link to="/settings/organizations">
-                      <FormattedMessage {...messages.here} />
-                    </Link>
-                  ),
-                }}
-              />
-            </span>
-          </div>
-        )}
-      </>
-    );
+  if (!apps) {
+    return <Loader />;
   }
+
+  const filteredApps = apps.filter(app =>
+    app.definition.name.toLowerCase().includes(filter.toLowerCase()),
+  );
+
+  const createOrganizations = organizations.filter(org =>
+    checkRole(org.role, permissions.CreateApps),
+  );
+
+  return (
+    <>
+      <HelmetIntl title={messages.title} />
+      <div className={`field ${styles.filter}`}>
+        <p className="control has-icons-left">
+          <input
+            className="input"
+            onChange={onFilterChange}
+            placeholder={intl.formatMessage(messages.search)}
+            value={filter}
+          />
+          <Icon className="is-left" icon="search" size="small" />
+        </p>
+      </div>
+      <div className={styles.appList}>
+        {filteredApps.map(app => (
+          <AppCard key={app.id} app={app} />
+        ))}
+        {createOrganizations.length >= 1 && <CreateAppCard />}
+      </div>
+      {userInfo && createOrganizations.length === 0 && apps.length === 0 && (
+        <div className={styles.noApps}>
+          <span>
+            <i className={`fas fa-folder-open ${styles.noAppsIcon}`} />
+          </span>
+          <span>
+            <FormattedMessage
+              {...messages.createOrganizationInstruction}
+              values={{
+                link: (
+                  <Link to="/settings/organizations">
+                    <FormattedMessage {...messages.here} />
+                  </Link>
+                ),
+              }}
+            />
+          </span>
+        </div>
+      )}
+    </>
+  );
 }
+
+AppList.propTypes = {
+  apps: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+  getApps: PropTypes.func.isRequired,
+  getPublicApps: PropTypes.func.isRequired,
+};

@@ -1,0 +1,11 @@
+{
+  "name": "@appsemble/jest-config",
+  "version": "0.10.0",
+  "private": true,
+  "dependencies": {
+    "@appsemble/node-utils": "^0.10.0",
+    "enzyme": "^3.10.0",
+    "enzyme-adapter-react-16": "^1.15.1",
+    "jest-image-snapshot": "^2.11.1"
+  }
+}

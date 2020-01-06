@@ -32,6 +32,7 @@ Cloudflare
 CNAME
 CSS
 DNS
+Dnsmasq
 DOM
 DSN
 dropdown
@@ -43,12 +44,14 @@ JSX
 JWT
 Koa
 localhost
+MacOS
 NodeJS
 npmjs
 OAuth
 OAuth2
 OData
 OpenAPI
+OpenID
 Preact
 Redux
 SDK

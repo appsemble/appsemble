@@ -5,6 +5,8 @@ import FormComponent from '../FormComponent';
 
 type CheckboxProps = Omit<React.ComponentPropsWithoutRef<typeof FormComponent>, 'children'> &
   Omit<React.ComponentPropsWithoutRef<'input'>, 'value' | 'label' | 'onChange'> & {
+    error?: any;
+
     /**
      * The name of the HTML element.
      */
@@ -37,7 +39,7 @@ export default class Checkbox extends React.Component<CheckboxProps> {
   };
 
   render(): JSX.Element {
-    const { className, help, label, name, value, id = name, ...props } = this.props;
+    const { className, error, help, label, name, value, id = name, ...props } = this.props;
 
     return (
       <FormComponent id={id} label={label} required>
@@ -50,7 +52,11 @@ export default class Checkbox extends React.Component<CheckboxProps> {
           onChange={this.onChange}
           type="checkbox"
         />
-        {help && <label htmlFor={id}>{help}</label>}
+        {help && (
+          <label className={classNames({ 'is-danger': error })} htmlFor={id}>
+            {help}
+          </label>
+        )}
       </FormComponent>
     );
   }

@@ -60,7 +60,7 @@ exports[`should render tabs pages 1`] = `
   <TitleBar>
     Test Page
   </TitleBar>
-  <withRouter(TabsPage)
+  <TabsPage
     counter={1}
     data={Object {}}
     emitEvent={[Function]}

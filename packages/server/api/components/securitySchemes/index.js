@@ -1,3 +1,6 @@
-import apiUser from './apiUser';
+import app from './app';
+import basic from './basic';
+import cli from './cli';
+import studio from './studio';
 
-export default { apiUser };
+export default { app, basic, cli, studio };

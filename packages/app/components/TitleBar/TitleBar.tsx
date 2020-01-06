@@ -9,7 +9,6 @@ import styles from './TitleBar.css';
 
 export interface TitleBarProps {
   children: React.ReactChild;
-  definition: AppDefinition;
 }
 
 /**

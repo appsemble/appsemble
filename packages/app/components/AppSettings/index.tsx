@@ -1,4 +1,3 @@
-import { injectIntl } from 'react-intl';
 import { connect } from 'react-redux';
 
 import { State } from '../../actions';
@@ -13,6 +12,6 @@ function mapStateToProps(state: State): Partial<AppSettingsProps> {
   };
 }
 
-export default injectIntl(
-  connect(mapStateToProps, { requestPermission, subscribe, push, unsubscribe })(AppSettings),
+export default connect(mapStateToProps, { requestPermission, subscribe, push, unsubscribe })(
+  AppSettings,
 );

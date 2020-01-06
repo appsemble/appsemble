@@ -1,19 +1,21 @@
 import { normalize } from '@appsemble/utils';
 import classNames from 'classnames';
 import React from 'react';
-import { Link, Redirect, Route, RouteComponentProps, Switch } from 'react-router-dom';
+import { Link, Redirect, Route, Switch, useRouteMatch } from 'react-router-dom';
 
 import BlockList from '../BlockList';
+import { BlockListProps } from '../BlockList/BlockList';
 
-interface TabsPageProps {
+interface TabsPageProps extends BlockListProps {
   subPages: any[];
 }
 
 export default function TabsPage({
   subPages,
-  match,
   ...blockListProps
-}: TabsPageProps & RouteComponentProps<{ subPage: string }>): React.ReactElement {
+}: TabsPageProps): React.ReactElement {
+  const match = useRouteMatch<{ subPage: string }>();
+
   return (
     <>
       <div className="tabs is-centered is-medium">

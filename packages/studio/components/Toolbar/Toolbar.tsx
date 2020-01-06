@@ -7,7 +7,7 @@ import ProfileDropdown from '../ProfileDropdown';
 import messages from './messages';
 import styles from './Toolbar.css';
 
-export default function Toolbar(): JSX.Element {
+export default function Toolbar(): React.ReactElement {
   const intl = useIntl();
 
   return (

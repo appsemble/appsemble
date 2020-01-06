@@ -1,5 +1,4 @@
 import { connect } from 'react-redux';
-import { withRouter } from 'react-router-dom';
 
 import { State } from '../../actions';
 import { closeMenu } from '../../actions/menu';
@@ -11,8 +10,6 @@ function mapStateToProps(state: State): Partial<SideMenuProps> {
   };
 }
 
-export default withRouter(
-  connect(mapStateToProps, {
-    closeMenu,
-  })(SideMenu),
-);
+export default connect(mapStateToProps, {
+  closeMenu,
+})(SideMenu);
