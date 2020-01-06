@@ -3,7 +3,7 @@ import classNames from 'classnames';
 import React from 'react';
 import { Link, Redirect, Route, RouteComponentProps, Switch } from 'react-router-dom';
 
-import BlockList, { BlockListProps } from '../BlockList';
+import BlockList from '../BlockList';
 
 interface TabsPageProps {
   subPages: any[];
@@ -13,7 +13,7 @@ export default function TabsPage({
   subPages,
   match,
   ...blockListProps
-}: TabsPageProps & BlockListProps & RouteComponentProps<{ subPage: string }>): React.ReactElement {
+}: TabsPageProps & RouteComponentProps<{ subPage: string }>): React.ReactElement {
   return (
     <>
       <div className="tabs is-centered is-medium">
