@@ -4,9 +4,8 @@ export default sequelize => {
   const AppMember = sequelize.define(
     'AppMember',
     {
-      role: { type: DataTypes.STRING, required: true },
+      role: { type: DataTypes.STRING, allowNull: false },
     },
-
     {
       freezeTableName: true,
       createdAt: 'created',
