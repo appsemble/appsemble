@@ -4,7 +4,8 @@ import classNames from 'classnames';
 import React, { useEffect } from 'react';
 
 import { ShowDialogParams } from '../../types';
-import BlockList, { BlockListProps } from '../BlockList';
+import BlockList from '../BlockList';
+import { BlockListProps } from '../BlockList/BlockList';
 import styles from './PageDialog.css';
 
 export interface PageDialogProps {

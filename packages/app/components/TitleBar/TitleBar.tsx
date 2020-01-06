@@ -1,4 +1,3 @@
-import { AppDefinition } from '@appsemble/types';
 import classNames from 'classnames';
 import React from 'react';
 
