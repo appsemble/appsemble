@@ -3,10 +3,10 @@ import { App, Message } from '@appsemble/types';
 import axios from 'axios';
 import classNames from 'classnames';
 import React from 'react';
-import { FormattedMessage, WrappedComponentProps } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { RouteComponentProps } from 'react-router-dom';
 
-import { User } from '../../types';
+import useUser from '../../hooks/useUser';
 import HelmetIntl from '../HelmetIntl';
 import messages from './messages';
 import styles from './Roles.css';
@@ -20,14 +20,14 @@ export interface Member {
 
 export type RolesProps = {
   app: App;
-  user: User;
   push: (message: Message) => void;
 } & RouteComponentProps<{
   id: string;
-}> &
-  WrappedComponentProps;
+}>;
 
-export default function Roles({ app, push, intl, user }: RolesProps): React.ReactElement {
+export default function Roles({ app, push }: RolesProps): React.ReactElement {
+  const intl = useIntl();
+  const { userInfo } = useUser();
   const [members, setMembers] = React.useState<Member[]>(undefined);
   const [submittingMemberRoleId, setSubmittingMemberRoleId] = React.useState(0);
 
@@ -117,7 +117,7 @@ export default function Roles({ app, push, intl, user }: RolesProps): React.Reac
               <td>
                 <span>{member.name || member.primaryEmail || member.id}</span>{' '}
                 <div className={`tags ${styles.tags}`}>
-                  {member.id === user.id && (
+                  {member.id === userInfo.sub && (
                     <span className="tag is-success">
                       <FormattedMessage {...messages.you} />
                     </span>

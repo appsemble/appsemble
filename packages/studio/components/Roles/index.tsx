@@ -8,7 +8,6 @@ import Roles, { RolesProps } from './Roles';
 function mapStateToProps(state: State, ownProps: RolesProps): Partial<RolesProps> {
   return {
     app: state.apps.apps.find(app => app.id === Number(ownProps.match.params.id)),
-    user: state.user.user,
   };
 }
 
