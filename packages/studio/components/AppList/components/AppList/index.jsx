@@ -1,4 +1,3 @@
-import { injectIntl } from 'react-intl';
 import { connect } from 'react-redux';
 
 import { getApps, getPublicApps } from '../../../../actions/apps';
@@ -10,4 +9,4 @@ function mapStateToProps(state) {
   };
 }
 
-export default injectIntl(connect(mapStateToProps, { getApps, getPublicApps })(AppList));
+export default connect(mapStateToProps, { getApps, getPublicApps })(AppList);

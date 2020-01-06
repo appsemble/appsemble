@@ -8,15 +8,10 @@ export interface LoaderProps {
   component?: React.ElementType;
 }
 
-export default class Loader extends React.Component<LoaderProps> {
-  static defaultProps: LoaderProps = {
-    className: null,
-    component: 'div',
-  };
-
-  render(): React.ReactNode {
-    const { className, component: Component, ...props } = this.props;
-
-    return <Component className={classNames(styles.loader, className)} {...props} />;
-  }
+export default function Loader({
+  className,
+  component: Component = 'div',
+  ...props
+}: LoaderProps): React.ReactElement {
+  return <Component className={classNames(styles.loader, className)} {...props} />;
 }

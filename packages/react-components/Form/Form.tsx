@@ -1,11 +1,6 @@
 import * as React from 'react';
 
-interface FormProps {
-  /**
-   * The form child nodes.
-   */
-  children: React.ReactNode;
-
+interface FormProps extends Omit<React.ComponentPropsWithoutRef<'form'>, 'noValidate'> {
   /**
    * The submit event handler for the form.
    */
@@ -15,10 +10,6 @@ interface FormProps {
 /**
  * A simple form wrapper that ensures `noValidate` is passed and `onSubmit` is used.
  */
-export default class Form extends React.Component<
-  FormProps & React.DetailedHTMLProps<React.FormHTMLAttributes<HTMLFormElement>, HTMLFormElement>
-> {
-  render(): React.ReactNode {
-    return <form {...this.props} noValidate />;
-  }
+export default function Form(props: FormProps): React.ReactElement {
+  return <form {...props} noValidate />;
 }

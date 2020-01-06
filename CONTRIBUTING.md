@@ -155,9 +155,7 @@ extracted into their own project.
 ### JavaScript
 
 This project uses Prettier. The code is linted using [ESLint]. Apart from that it follows the
-[Airbnb JavaScript Style Guide] as closely as possible, with the following exceptions:
-
-- React components should always be defined using classes.
+[Airbnb JavaScript Style Guide] as closely as possible.
 
 ### CSS
 

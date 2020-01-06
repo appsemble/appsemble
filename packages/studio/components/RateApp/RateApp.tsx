@@ -1,9 +1,9 @@
 import { CardFooterButton, Form, FormComponent, Icon, Modal } from '@appsemble/react-components';
-import { App, Message, Rating } from '@appsemble/types';
+import { App, Rating } from '@appsemble/types';
 import axios from 'axios';
 import classNames from 'classnames';
 import React from 'react';
-import { FormattedMessage, WrappedComponentProps } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 
 import StarRating from '../Rating';
 import messages from './messages';
@@ -13,18 +13,13 @@ interface RateAppProps {
   app: App;
   className: string;
   onRate: (rate: Rating) => void;
-  push: (message: Message) => void;
 }
 
-export default function RateApp({
-  app,
-  className,
-  intl,
-  onRate,
-}: RateAppProps & WrappedComponentProps): JSX.Element {
+export default function RateApp({ app, className, onRate }: RateAppProps): JSX.Element {
   const [isOpen, setIsOpen] = React.useState(false);
   const [rating, setRating] = React.useState(0);
   const [description, setDescription] = React.useState('');
+  const intl = useIntl();
   const openDialog = (): void => setIsOpen(true);
   const closeDialog = (): void => setIsOpen(false);
 
