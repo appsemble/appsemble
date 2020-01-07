@@ -395,7 +395,7 @@ export async function getAppMember(ctx) {
   const { appId, memberId } = ctx.params;
   const { App, User, Organization } = ctx.db.models;
 
-  const app = await App.findByPk(appId, { include: [User] });
+  const app = await App.findByPk(appId, { include: [User, Organization] });
   if (!app) {
     throw Boom.notFound('App not found');
   }
@@ -416,12 +416,23 @@ export async function getAppMember(ctx) {
 
   const member = app.Users.find(u => u.id === memberId);
   let role = null;
-  if (!member && policy === 'organization') {
+
+  if (!member && policy === 'everyone') {
     role = defaultRole;
   }
 
-  if (!member && policy === 'organization' && (await Organization.hasUser(memberId))) {
+  if (!member && policy === 'organization') {
+    const isOrganizationMember = await app.Organization.hasUser(memberId);
+
+    if (!isOrganizationMember) {
+      throw Boom.notFound('User is not a member of the organization.');
+    }
+
     role = defaultRole;
+  }
+
+  if (!member && policy === 'invite') {
+    throw Boom.notFound('User is not a member of the app.');
   }
 
   ctx.body = {
@@ -454,7 +465,10 @@ export async function setAppMember(ctx) {
   }
 
   if (await app.hasUser(member)) {
-    if (role === app.definition.security.default.role) {
+    if (
+      role === app.definition.security.default.role &&
+      app.definition.security.default.policy !== 'invite'
+    ) {
       await app.removeUser(member);
     } else {
       const [appUser] = await app.getUsers({ where: { id: memberId } });
