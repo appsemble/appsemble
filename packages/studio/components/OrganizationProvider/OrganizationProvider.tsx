@@ -12,8 +12,8 @@ interface OrganizationProviderProps {
 export default function OrganizationProvider({
   children,
 }: OrganizationProviderProps): React.ReactElement {
-  const { userInfo } = useUser();
-  const [organizations, setOrganizations] = React.useState<Organization[]>([]);
+  const { userInfo, initialized } = useUser();
+  const [organizations, setOrganizations] = React.useState<Organization[]>();
 
   const value = React.useMemo(() => organizations, [organizations]);
 
@@ -26,8 +26,11 @@ export default function OrganizationProvider({
         setOrganizations([]);
       }
     };
-    getOrganizations();
-  }, [userInfo]);
+
+    if (initialized) {
+      getOrganizations();
+    }
+  }, [initialized, userInfo]);
 
   return <OrganizationContext.Provider value={value}>{children}</OrganizationContext.Provider>;
 }

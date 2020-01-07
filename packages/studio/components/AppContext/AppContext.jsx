@@ -24,7 +24,7 @@ function AppContext({ app = undefined, match, getApp, ready }) {
 
   const organizations = useOrganizations();
 
-  if (!ready) {
+  if (!ready || organizations === undefined) {
     return <Loader />;
   }
 
