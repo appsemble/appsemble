@@ -1,5 +1,6 @@
 ---
 menu: Development
+route: dns
 ---
 
 # DNS
