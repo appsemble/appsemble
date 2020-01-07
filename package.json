@@ -102,7 +102,7 @@
     "fs-extra": "^8.1.0",
     "gitlab-yarn-audit": "^1.0.0",
     "html-webpack-plugin": "^3.2.0",
-    "husky": "^3.1.0",
+    "husky": "^4.0.0",
     "identity-obj-proxy": "^3.0.0",
     "jest": "^24.9.0",
     "jest-junit": "^10.0.0",
