@@ -1,4 +1,3 @@
-import { injectIntl } from 'react-intl';
 import { connect } from 'react-redux';
 
 import CMSRoot from './CMSRoot';
@@ -9,4 +8,4 @@ function mapStateToProps(state, ownProps) {
   };
 }
 
-export default injectIntl(connect(mapStateToProps)(CMSRoot));
+export default connect(mapStateToProps)(CMSRoot);

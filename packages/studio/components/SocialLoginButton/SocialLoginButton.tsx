@@ -10,15 +10,17 @@ export interface SocialLoginButtonProps {
   iconClass: IconName;
 }
 
-export default class SocialLoginButton extends React.Component<SocialLoginButtonProps> {
-  render(): JSX.Element {
-    const { className, providerUri, iconClass, children, ...props } = this.props;
-
-    return (
-      <a className={classNames('button', className)} href={providerUri} {...props}>
-        <Icon icon={iconClass} prefix="fab" />
-        <span>{children}</span>
-      </a>
-    );
-  }
+export default function SocialLoginButton({
+  className,
+  providerUri,
+  iconClass,
+  children,
+  ...props
+}: SocialLoginButtonProps): React.ReactElement {
+  return (
+    <a className={classNames('button', className)} href={providerUri} {...props}>
+      <Icon icon={iconClass} prefix="fab" />
+      <span>{children}</span>
+    </a>
+  );
 }
