@@ -1,9 +1,9 @@
 import React from 'react';
 
-import BlockList, { BlockListProps } from '../BlockList';
+import BlockList from '../BlockList';
 import DotProgressBar from '../DotProgressBar';
 
-interface FlowPageProps {
+interface FlowPageProps extends React.ComponentPropsWithoutRef<typeof BlockList> {
   currentPage: number;
   subPages: any[];
 }
@@ -12,7 +12,7 @@ export default function FlowPage({
   currentPage,
   subPages,
   ...blockListProps
-}: FlowPageProps & BlockListProps): React.ReactElement {
+}: FlowPageProps): React.ReactElement {
   return (
     <>
       <DotProgressBar active={currentPage} amount={subPages.length} />

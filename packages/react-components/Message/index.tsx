@@ -1,6 +1,5 @@
 import { injectIntl } from 'react-intl';
 
-import Message, { MessageProps, UniqueMessage } from './Message';
+import Message from './Message';
 
-export { UniqueMessage };
-export default injectIntl<'intl', MessageProps>(Message);
+export default injectIntl(Message);

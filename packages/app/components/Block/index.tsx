@@ -1,5 +1,4 @@
 import { connect } from 'react-redux';
-import { withRouter } from 'react-router-dom';
 
 import { State } from '../../actions';
 import { push } from '../../actions/message';
@@ -8,12 +7,15 @@ import Block from './Block';
 
 function mapStateToProps(
   state: State,
-  ownProps: Block['props'],
-): Pick<Block['props'], 'definition' | 'blockDef'> {
+  ownProps: Omit<
+    React.ComponentPropsWithoutRef<typeof Block>,
+    'definition' | 'blockDef' | 'showMessage'
+  >,
+): Pick<React.ComponentPropsWithoutRef<typeof Block>, 'definition' | 'blockDef'> {
   return {
     definition: state.app.definition,
     blockDef: state.blockDefs.blockDefs[blockToString(ownProps.block)],
   };
 }
 
-export default withRouter(connect(mapStateToProps, { showMessage: push })(Block));
+export default connect(mapStateToProps, { showMessage: push })(Block);

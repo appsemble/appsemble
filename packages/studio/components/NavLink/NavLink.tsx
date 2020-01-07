@@ -1,6 +1,6 @@
 import classNames from 'classnames';
 import React from 'react';
-import { Link, RouteComponentProps } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 
 interface NavLinkProps {
   className: string;
@@ -9,13 +9,9 @@ interface NavLinkProps {
   to: string;
 }
 
-export default function NavLink({
-  location,
-  className,
-  exact,
-  to,
-  children,
-}: NavLinkProps & RouteComponentProps): JSX.Element {
+export default function NavLink({ className, exact, to, children }: NavLinkProps): JSX.Element {
+  const location = useLocation();
+
   return (
     <Link
       className={classNames(className, 'is-radiusless', {

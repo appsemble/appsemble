@@ -4,12 +4,12 @@ import { connect } from 'react-redux';
 
 import { updateApp } from '../../actions/apps';
 import { push } from '../../actions/message';
-import AppSettings, { AppSettingsProps } from './AppSettings';
+import AppSettings from './AppSettings';
 
 function mapStateToProps(
   state: { apps: { apps: App[] } },
-  ownProps: AppSettingsProps,
-): Partial<AppSettingsProps> {
+  ownProps: React.ComponentPropsWithoutRef<typeof AppSettings>,
+): Partial<React.ComponentPropsWithoutRef<typeof AppSettings>> {
   return {
     app: state.apps.apps.find(app => app.id === Number(ownProps.match.params.id)),
   };

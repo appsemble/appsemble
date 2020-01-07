@@ -3,7 +3,7 @@ import * as React from 'react';
 
 import { useSimpleForm } from '../SimpleForm';
 
-export interface SimpleSubmitProps extends Omit<React.HTMLProps<HTMLButtonElement>, 'onChange'> {
+interface SimpleSubmitProps extends Omit<React.ComponentPropsWithoutRef<'button'>, 'onChange'> {
   children?: React.ReactChild;
   className?: string;
 }

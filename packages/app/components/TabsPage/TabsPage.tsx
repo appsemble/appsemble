@@ -3,9 +3,9 @@ import classNames from 'classnames';
 import React from 'react';
 import { Link, Redirect, Route, Switch, useRouteMatch } from 'react-router-dom';
 
-import BlockList, { BlockListProps } from '../BlockList';
+import BlockList from '../BlockList';
 
-interface TabsPageProps extends BlockListProps {
+interface TabsPageProps extends React.ComponentPropsWithoutRef<typeof BlockList> {
   subPages: any[];
 }
 

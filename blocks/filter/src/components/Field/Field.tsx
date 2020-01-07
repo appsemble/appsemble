@@ -10,7 +10,7 @@ import StringField from '../StringField';
 import styles from './Field.css';
 import messages from './messages';
 
-export interface FieldProps extends WrappedComponentProps {
+interface FieldProps extends WrappedComponentProps {
   displayLabel?: boolean;
   filter: Filter;
   loading: boolean;

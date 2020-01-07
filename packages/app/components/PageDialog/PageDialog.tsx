@@ -4,10 +4,10 @@ import classNames from 'classnames';
 import React, { useEffect } from 'react';
 
 import { ShowDialogParams } from '../../types';
-import BlockList, { BlockListProps } from '../BlockList';
+import BlockList from '../BlockList';
 import styles from './PageDialog.css';
 
-export interface PageDialogProps {
+interface PageDialogProps extends React.ComponentPropsWithoutRef<typeof BlockList> {
   dialog: ShowDialogParams;
   getBlockDefs: (blocks: Block[]) => Promise<void>;
 }
@@ -19,7 +19,7 @@ export default function PageDialog({
   dialog = null,
   getBlockDefs,
   ...props
-}: PageDialogProps & BlockListProps): React.ReactElement {
+}: PageDialogProps): React.ReactElement {
   useEffect(() => {
     if (dialog) {
       getBlockDefs(dialog.blocks);

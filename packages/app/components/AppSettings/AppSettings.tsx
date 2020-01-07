@@ -9,7 +9,7 @@ import TitleBar from '../TitleBar';
 import styles from './AppSettings.css';
 import messages from './messages';
 
-export interface AppSettingsProps {
+interface AppSettingsProps {
   definition: AppDefinition;
   subscribed: boolean;
   requestPermission: () => Promise<Permission>;

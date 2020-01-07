@@ -7,7 +7,7 @@ import { ShowDialogAction } from '../../types';
 import Block from '../Block';
 import styles from './BlockList.css';
 
-export interface BlockListProps {
+interface BlockListProps {
   actionCreators: Record<string, () => Action>;
   counter: number;
   currentPage?: number;

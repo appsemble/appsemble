@@ -4,7 +4,7 @@ import { useHistory } from 'react-router-dom';
 
 import styles from './SideMenu.css';
 
-export interface SideMenuProps {
+interface SideMenuProps {
   isOpen: boolean;
   children: React.ReactChildren;
   closeMenu: () => void;

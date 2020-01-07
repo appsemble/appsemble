@@ -11,7 +11,7 @@ export interface UniqueMessage extends IncomingMessage {
   id: number;
 }
 
-export interface MessageProps extends WrappedComponentProps {
+interface MessageProps extends WrappedComponentProps {
   messages: UniqueMessage[];
   remove: (message: UniqueMessage) => void;
 }

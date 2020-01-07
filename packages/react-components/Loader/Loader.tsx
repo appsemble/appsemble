@@ -3,7 +3,7 @@ import * as React from 'react';
 
 import styles from './Loader.css';
 
-export interface LoaderProps {
+interface LoaderProps {
   className?: string;
   component?: React.ElementType;
 }
