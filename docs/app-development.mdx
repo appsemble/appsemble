@@ -153,7 +153,7 @@ defined. These fields match up with the resource definition defined before. The 
 two actions. The first action is _”submit”_ which describes where the resource will be submitted to.
 This can be sent to any API, but in this case it's being sent to Appsemble's resource API. Upon a
 successful submit, the page will link back to the _”Person List”_ page as described in
-\_”submitSuccess”.
+_”submitSuccess”_.
 
 At this point it might become noticeable how navigating through these pages can be cumbersome. One
 way to make this easier is to add an `action-button` block to both pages that refer to each other.
@@ -213,7 +213,7 @@ onClick:
   type: link
 ```
 
-The final result should look like this:
+The app should now look like this:
 
 ```yaml
 name: Person App
@@ -313,6 +313,58 @@ pages:
             - name: description
               label: Description
 ```
+
+### Securing the app
+
+It is possible to secure specific parts of an app by defining roles in a security definition. In
+this example, the “Person Registration Form” may only be accessed by administrators of the app.
+Since this page is only available to administrators, we also want to hide the action button for
+non-admins.
+
+```yaml
+security:
+  default:
+    role: Reader
+    policy: everyone
+  roles:
+    Reader:
+      description: Everyone viewing this app.
+    Admin:
+      description: Administrators who are allowed to register new people.
+      inherits:
+        - Reader
+```
+
+For a more detailed description of the above object, please refer to the
+[App reference](reference/app).
+
+With the security definition in place, let’s add the ‘Admin’ role to the appropriate pages and
+block.
+
+```diff
+  - name: Person Registration Form
++   roles:
++     - Admin
+    blocks:
+      - type: form
+```
+
+```diff
+      - type: action-button
+        version: 0.10.0
++       roles:
++         - Admin
+        parameters:
+          icon: plus
+        actions:
+          click:
+            to: Person Registration Form
+            type: link
+```
+
+After applying these changes, note how the login option in the top-right corner becomes visible. You
+can assign roles via the _“Roles”_ page, after which you can sign into the app and see the action
+button appear again.
 
 ## Advanced
 
