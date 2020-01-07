@@ -4,9 +4,8 @@ import React from 'react';
 import { Link, Redirect, Route, Switch, useRouteMatch } from 'react-router-dom';
 
 import BlockList from '../BlockList';
-import { BlockListProps } from '../BlockList/BlockList';
 
-interface TabsPageProps extends BlockListProps {
+interface TabsPageProps extends React.ComponentPropsWithoutRef<typeof BlockList> {
   subPages: any[];
 }
 

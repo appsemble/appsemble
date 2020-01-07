@@ -8,7 +8,7 @@ import checkAppRole from '../../utils/checkAppRole';
 import Block from '../Block';
 import styles from './BlockList.css';
 
-export interface BlockListProps {
+interface BlockListProps {
   actionCreators: Record<string, () => Action>;
   counter: number;
   currentPage?: number;
@@ -28,26 +28,25 @@ interface BlockListState {
   blockStatus: Record<string, boolean>;
 }
 
-export default class BlockList extends React.Component<BlockListProps, BlockListState> {
-  static filterBlocks = (security: Security, blocks: BlockType[], userRole: string): BlockType[] =>
-    blocks.filter(
-      block =>
-        block.roles === undefined ||
-        block.roles.length === 0 ||
-        block.roles.some(r => checkAppRole(security, r, userRole)),
-    );
+function filterBlocks(security: Security, blocks: BlockType[], userRole: string): BlockType[] {
+  return blocks.filter(
+    block =>
+      block.roles === undefined ||
+      block.roles.length === 0 ||
+      block.roles.some(r => checkAppRole(security, r, userRole)),
+  );
+}
 
+export default class BlockList extends React.Component<BlockListProps, BlockListState> {
   static defaultProps: Partial<BlockListProps> = {
     transitions: false,
     data: undefined,
   };
 
   state = {
-    blockStatus: BlockList.filterBlocks(
-      this.props.security,
-      this.props.blocks,
-      this.props.role,
-    ).reduce<Record<string, boolean>>((acc: Record<string, boolean>, block, index) => {
+    blockStatus: filterBlocks(this.props.security, this.props.blocks, this.props.role).reduce<
+      Record<string, boolean>
+    >((acc: Record<string, boolean>, block, index) => {
       acc[`${block.type}${index}`] = false;
       return acc;
     }, {}),
@@ -75,7 +74,7 @@ export default class BlockList extends React.Component<BlockListProps, BlockList
     } = this.props;
     const { blockStatus } = this.state;
     const isLoading = Object.values(blockStatus).some(s => !s);
-    const list = BlockList.filterBlocks(security, blocks, role).map((block, index) => {
+    const list = filterBlocks(security, blocks, role).map((block, index) => {
       const content = (
         <Block
           // As long as blocks are in a static list, using the index as a key should be fine.

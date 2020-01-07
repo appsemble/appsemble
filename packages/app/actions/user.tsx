@@ -54,6 +54,13 @@ interface DBUser {
   clientSecret: string;
 }
 
+interface Member {
+  id: number;
+  name: string;
+  primaryEmail: string;
+  role: string;
+}
+
 export const initialState: UserState = {
   initialized: false,
   user: null,
@@ -190,7 +197,7 @@ async function refreshTokenLogin(
     if (settings.definition.security !== undefined) {
       ({
         data: { role },
-      } = await axios.get<{ role: string }>(`/api/apps/${settings.id}/members/${user.id}`));
+      } = await axios.get<Member>(`/api/apps/${settings.id}/members/${user.id}`));
     }
 
     dispatch({
@@ -236,7 +243,7 @@ export function initAuth(authentication: Authentication): UserThunk {
       if (app.definition.security !== undefined) {
         ({
           data: { role },
-        } = await axios.get<{ role: string }>(`/api/apps/${settings.id}/members/${user.id}`));
+        } = await axios.get<Member>(`/api/apps/${settings.id}/members/${user.id}`));
       }
     }
 
@@ -296,7 +303,7 @@ export function passwordLogin(
     if (app.definition.security !== undefined) {
       ({
         data: { role },
-      } = await axios.get<{ role: string }>(`/api/apps/${settings.id}/members/${user.id}`));
+      } = await axios.get<Member>(`/api/apps/${settings.id}/members/${user.id}`));
     }
 
     dispatch({
@@ -336,7 +343,7 @@ export function oauthLogin(
     if (app.definition.security !== undefined) {
       ({
         data: { role },
-      } = await axios.get<{ role: string }>(`/api/apps/${settings.id}/members/${user.id}`));
+      } = await axios.get<Member>(`/api/apps/${settings.id}/members/${user.id}`));
     }
 
     dispatch({ type: LOGIN_SUCCESS, user, role });

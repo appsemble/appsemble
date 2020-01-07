@@ -395,7 +395,9 @@ export async function getAppMember(ctx) {
   const { appId, memberId } = ctx.params;
   const { App, User, Organization } = ctx.db.models;
 
-  const app = await App.findByPk(appId, { include: [User, Organization] });
+  const app = await App.findByPk(appId, {
+    include: [{ model: User, where: { id: memberId }, required: false }, Organization],
+  });
   if (!app) {
     throw Boom.notFound('App not found');
   }
@@ -404,9 +406,7 @@ export async function getAppMember(ctx) {
     throw Boom.notFound('App does not have a security definition.');
   }
 
-  const {
-    default: { policy, role: defaultRole },
-  } = app.definition.security;
+  const { policy, role: defaultRole } = app.definition.security.default;
 
   const user = await User.findByPk(memberId);
 
@@ -455,33 +455,34 @@ export async function setAppMember(ctx) {
 
   await checkRole(ctx, app.OrganizationId, permissions.EditApps);
 
-  const member = await User.findByPk(memberId);
-  if (!member) {
+  const user = await User.findByPk(memberId);
+  if (!user) {
     throw Boom.notFound('User with this ID doesn’t exist.');
   }
 
-  if (!Object.keys(app.definition.security.roles).includes(role)) {
+  if (!Object.prototype.hasOwnProperty.call(app.definition.security.roles, role)) {
     throw Boom.badRequest(`Role ‘${role}’ is not defined.`);
   }
 
-  if (await app.hasUser(member)) {
+  const [member] = await app.getUsers({ where: { id: memberId } });
+
+  if (member) {
     if (
       role === app.definition.security.default.role &&
       app.definition.security.default.policy !== 'invite'
     ) {
       await app.removeUser(member);
     } else {
-      const [appUser] = await app.getUsers({ where: { id: memberId } });
-      await appUser.AppMember.update({ role });
+      await member.AppMember.update({ role });
     }
   } else {
     await app.addUser(member, { through: { role } });
   }
 
   ctx.body = {
-    id: member.id,
-    name: member.name,
-    primaryEmail: member.primaryEmail,
+    id: user.id,
+    name: user.name,
+    primaryEmail: user.primaryEmail,
     role,
   };
 }
