@@ -101,10 +101,18 @@ levels** and can be injected at **three different points** within applications.
 
 ### Hierarchy
 
-<img
-  src={require('./images/theming-hierarchy.svg')}
-  style={{ float: 'right', maxHeight: '570px', maxWidth: '150px' }}
-/>
+```mermaid
+graph TD
+    A(App Block) --> B(App Core);
+    B --> C(App Shared)
+    C --> D(Organization Block)
+    D --> E(Organization Core)
+    E --> F(Organization Shared)
+    F --> G(Server Block)
+    G --> H(Server Core)
+    H --> I(Server Shared)
+    I --> J["Default Style (Bulma CSS)"]
+```
 
 Applications can be styled at a **server** level, **organization** level as well as the
 **app-specific** level. Within each level, styling can be further specified for **core** modules,

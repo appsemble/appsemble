@@ -8,11 +8,19 @@ route: architecture
 This page serves as brief description of the general architecture of Appsemble and how each
 component interacts with each other.
 
-<object
-  data={require('./images/architecture.svg')}
-  type="image/svg+xml"
-  style={{ width: '300px' }}
-/>
+```mermaid
+graph BT
+  subgraph Docker Container
+    A("Server (API)")
+    C(App) --> A
+    D(Studio) --> A
+  end
+  B(Database)
+  A --> B
+  E(CLI) --> A
+  F(SDK) --> C
+  G(Block) --> F
+```
 
 ## About the architecture of Appsemble
 

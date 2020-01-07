@@ -4,4 +4,9 @@ module.exports = {
   src: './docs',
   title: `Appsemble ${CI_COMMIT_REF_NAME}`,
   menu: ['Getting Started', 'Architecture', 'Blocks', 'Development', 'Deployment'],
+  gatsbyRemarkPlugins: [
+    {
+      resolve: 'gatsby-remark-mermaid',
+    },
+  ],
 };
