@@ -6,7 +6,7 @@ import ProfileDropdown from '../ProfileDropdown';
 import SideMenuButton from '../SideMenuButton';
 import styles from './TitleBar.css';
 
-export interface TitleBarProps {
+interface TitleBarProps {
   children: React.ReactChild;
 }
 

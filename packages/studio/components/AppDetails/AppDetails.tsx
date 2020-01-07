@@ -22,7 +22,7 @@ import StarRating from '../Rating';
 import styles from './AppDetails.css';
 import messages from './messages';
 
-export interface AppDetailsProps extends RouteComponentProps<{ id: string }> {
+interface AppDetailsProps extends RouteComponentProps<{ id: string }> {
   app: App;
   updateApp: (app: App) => void;
   push: (message: Message) => void;

@@ -8,7 +8,7 @@ import { Link, RouteComponentProps } from 'react-router-dom';
 import HelmetIntl from '../HelmetIntl';
 import messages from './messages';
 
-export interface NotificationsProps extends RouteComponentProps<{ id: string }> {
+interface NotificationsProps extends RouteComponentProps<{ id: string }> {
   app: App;
   push: (message: Message) => void;
 }

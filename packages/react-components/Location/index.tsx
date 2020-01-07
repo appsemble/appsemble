@@ -1,5 +1,5 @@
 import { withBlock } from '@appsemble/react';
 
-import Location, { LocationProps } from './Location';
+import Location from './Location';
 
-export default withBlock<LocationProps>(Location);
+export default withBlock(Location);

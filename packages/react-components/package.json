@@ -6,12 +6,12 @@
     "@appsemble/dom-types": "0.10.0",
     "@appsemble/react": "0.10.0",
     "@appsemble/types": "0.10.0",
-    "@fortawesome/fontawesome-common-types": "^0.2.25",
-    "@sentry/browser": "^5.9.1",
+    "@fortawesome/fontawesome-common-types": "^0.2.26",
+    "@sentry/browser": "^5.10.2",
     "bulma-calendar": "^6.0.7",
     "classnames": "^2.2.6",
     "leaflet": "^1.6.0",
-    "react-intl": "^3.7.0",
+    "react-intl": "^3.9.3",
     "react-transition-group": "^4.3.0"
   },
   "devDependencies": {

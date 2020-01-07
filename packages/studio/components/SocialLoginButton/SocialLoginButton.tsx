@@ -3,7 +3,7 @@ import { IconName } from '@fortawesome/fontawesome-common-types';
 import classNames from 'classnames';
 import React from 'react';
 
-export interface SocialLoginButtonProps {
+interface SocialLoginButtonProps {
   className?: string;
   children: React.ReactChild;
   providerUri: string;

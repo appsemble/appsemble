@@ -9,7 +9,7 @@ import { RouteComponentProps } from 'react-router-dom';
 import styles from './AppSettings.css';
 import messages from './messages';
 
-export interface AppSettingsProps extends RouteComponentProps<{ id: string }> {
+interface AppSettingsProps extends RouteComponentProps<{ id: string }> {
   app: App;
   push: (message: Message | string) => void;
   updateApp: (app: App) => void;

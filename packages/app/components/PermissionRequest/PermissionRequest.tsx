@@ -4,7 +4,7 @@ import React from 'react';
 import { Permission } from '../../actions/serviceWorker';
 import styles from './PermissionRequest.css';
 
-export interface PermissionRequestProps {
+interface PermissionRequestProps {
   definition: AppDefinition;
   permission: Permission;
   subscribe: () => Promise<void>;

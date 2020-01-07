@@ -1,5 +1,5 @@
 import { injectIntl } from 'react-intl';
 
-import Field, { FieldProps } from './Field';
+import Field from './Field';
 
-export default injectIntl<'intl', FieldProps>(Field);
+export default injectIntl(Field);

@@ -9,7 +9,7 @@ import checkAppRole from '../../utils/checkAppRole';
 import SideMenu from '../SideMenu';
 import styles from './SideNavigation.css';
 
-export interface SideNavigationProps {
+interface SideNavigationProps {
   definition: AppDefinition;
   closeMenu: () => void;
   logout: () => void;

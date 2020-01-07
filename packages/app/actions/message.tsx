@@ -1,4 +1,4 @@
-import { UniqueMessage } from '@appsemble/react-components';
+import { UniqueMessage } from '@appsemble/react-components/Message/Message';
 import { Message } from '@appsemble/types';
 import { Action } from 'redux';
 import { ThunkAction } from 'redux-thunk';

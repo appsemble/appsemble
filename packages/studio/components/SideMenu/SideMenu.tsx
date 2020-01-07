@@ -6,7 +6,7 @@ import { FormattedMessage } from 'react-intl';
 import messages from './messages';
 import styles from './SideMenu.css';
 
-export interface SideMenuProps {
+interface SideMenuProps {
   children: React.ReactChild[];
   isCollapsed: boolean;
   toggleCollapse: () => void;

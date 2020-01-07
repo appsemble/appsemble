@@ -4,7 +4,7 @@ import React from 'react';
 
 import styles from './Rating.css';
 
-export interface RatingProps {
+interface RatingProps {
   className?: string;
   count?: number;
   value: number;

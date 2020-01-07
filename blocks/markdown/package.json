@@ -4,6 +4,6 @@
   "private": true,
   "dependencies": {
     "@appsemble/sdk": "0.10.0",
-    "marked": "^0.7.0"
+    "marked": "^0.8.0"
   }
 }

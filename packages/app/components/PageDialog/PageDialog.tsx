@@ -7,7 +7,7 @@ import { ShowDialogParams } from '../../types';
 import BlockList from '../BlockList';
 import styles from './PageDialog.css';
 
-export interface PageDialogProps {
+interface PageDialogProps extends React.ComponentPropsWithoutRef<typeof BlockList> {
   dialog: ShowDialogParams;
   getBlockDefs: (blocks: Block[]) => Promise<void>;
 }
@@ -19,7 +19,7 @@ export default function PageDialog({
   dialog = null,
   getBlockDefs,
   ...props
-}: PageDialogProps & React.ComponentPropsWithoutRef<typeof BlockList>): React.ReactElement {
+}: PageDialogProps): React.ReactElement {
   useEffect(() => {
     if (dialog) {
       getBlockDefs(dialog.blocks);

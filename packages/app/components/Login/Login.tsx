@@ -3,7 +3,7 @@ import React from 'react';
 
 import EmailLogin from '../EmailLogin';
 
-export interface LoginProps {
+interface LoginProps {
   definition: AppDefinition;
 }
 

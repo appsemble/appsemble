@@ -13,7 +13,7 @@ interface EmailLoginValues {
   password: string;
 }
 
-export interface EmailLoginProps {
+interface EmailLoginProps {
   authentication: Authentication;
   passwordLogin: (
     url: string,

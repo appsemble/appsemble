@@ -14,7 +14,7 @@ import SideMenu from '../SideMenu';
 import styles from './AppSideMenu.css';
 import messages from './messages';
 
-export interface AppSideMenuProps {
+interface AppSideMenuProps extends RouteComponentProps<{ id: string }> {
   app: App;
 }
 
@@ -22,10 +22,7 @@ export interface AppSideMenuState {
   isCollapsed: boolean;
 }
 
-export default function AppSideMenu({
-  app,
-  match,
-}: AppSideMenuProps & RouteComponentProps): React.ReactElement {
+export default function AppSideMenu({ app, match }: AppSideMenuProps): React.ReactElement {
   const { userInfo } = useUser();
   const [isCollapsed, setCollapsed] = React.useState(false);
   const organizations = useOrganizations();
