@@ -22,6 +22,9 @@ module.exports = {
         extensions: ['.js', '.jsx', '.ts', '.tsx'],
       },
     },
+    'import/parsers': {
+      '@typescript-eslint/parser': ['.ts', '.tsx'],
+    },
   },
   rules: {
     'max-len': [
@@ -46,6 +49,11 @@ module.exports = {
     'babel/no-unused-expressions': 'error',
     'eslint-comments/no-unused-disable': 'error',
     'eslint-comments/no-use': ['error', { allow: ['eslint-disable-next-line'] }],
+    'import/extensions': [
+      'error',
+      'ignorePackages',
+      { js: 'never', jsx: 'never', ts: 'never', tsx: 'never' },
+    ],
     'import/no-extraneous-dependencies': ['error', { devDependencies: configs }],
     // Ignore optional dependencies.
     'import/no-unresolved': ['error', { commonjs: true, ignore: ['keytar'] }],
@@ -59,7 +67,7 @@ module.exports = {
         'newlines-between': 'always',
       },
     ],
-    'import/no-cycle': ['error', { maxDepth: 1 }],
+    'import/no-cycle': 'off',
     'react/jsx-no-useless-fragment': 'error',
     'react/jsx-props-no-spreading': 'off',
     'react/jsx-sort-props': 'error',

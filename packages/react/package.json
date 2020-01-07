@@ -2,7 +2,7 @@
   "name": "@appsemble/react",
   "version": "0.10.0",
   "dependencies": {
-    "react-shadow-dom-retarget-events": "^1.0.10"
+    "react-shadow-dom-retarget-events": "^1.0.11"
   },
   "peerDependencies": {
     "@appsemble/sdk": "^0.10.0",
