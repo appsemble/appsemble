@@ -47,10 +47,6 @@ RUN apt-get update \
       xdg-utils \
       wget \
  && yarn --frozen-lockfile \
- && for input in docs/images/*.mmd; do \
-      output=docs/images/$(basename $input .mmd).svg; \
-      yarn mmdc -p puppeteer-config.json -i $input -o $output; \
-    done \
  && yarn docz build
 
 FROM nginx:1.15-alpine
