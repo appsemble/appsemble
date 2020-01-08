@@ -1,4 +1,5 @@
 import { Loader } from '@appsemble/react-components';
+import { UserInfo } from '@appsemble/types';
 import axios from 'axios';
 import classNames from 'classnames';
 import * as React from 'react';
@@ -7,7 +8,7 @@ import { Link, Redirect, RouteComponentProps, useHistory, useLocation } from 're
 
 import useQuery from '../../hooks/useQuery';
 import useUser from '../../hooks/useUser';
-import { TokenResponse, UserInfo } from '../../types';
+import { TokenResponse } from '../../types';
 import messages from './messages';
 import styles from './OAuth2Connect.css';
 
