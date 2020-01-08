@@ -11,11 +11,11 @@ export default {
       properties: {
         policy: {
           type: 'string',
-          enum: ['anyone', 'organization', 'invite'],
-          default: 'anyone',
+          enum: ['everyone', 'organization', 'invite'],
+          default: 'everyone',
           description: `How the \`default\` role gets applied to users.
 
-          If set to ‘anyone’: Every authenticated user gets the default role.
+          If set to ‘everyone’: Every authenticated user gets the default role.
           If set to ‘organization’: Every authenticated user gets the default role if they are in the same organization as the app.
           If set to ‘invite’: The user has to manually get a role assigned.`,
         },

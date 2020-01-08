@@ -4,7 +4,7 @@ describe('validateSecurity', () => {
   it('does not throw errors on valid definitions', () => {
     const definition = {
       security: {
-        default: { role: 'Reader', policy: 'anyone' },
+        default: { role: 'Reader', policy: 'everyone' },
         roles: {
           Reader: {},
           Admin: { inherits: ['Reader'] },
@@ -28,7 +28,7 @@ describe('validateSecurity', () => {
   it('throws errors on cyclic dependencies', () => {
     const definition = {
       security: {
-        default: { role: 'Reader', policy: 'anyone' },
+        default: { role: 'Reader', policy: 'everyone' },
         roles: {
           Reader: { inherits: ['Admin'] },
           Admin: { inherits: ['Reader'] },
@@ -44,7 +44,7 @@ describe('validateSecurity', () => {
   it('checks non-existant default roles', () => {
     const definition = {
       security: {
-        default: { role: 'Readers', policy: 'anyone' },
+        default: { role: 'Readers', policy: 'everyone' },
         roles: {
           Reader: {},
           Admin: { inherits: ['Reader'] },
@@ -60,7 +60,7 @@ describe('validateSecurity', () => {
   it('checks non-existant app roles', () => {
     const definition = {
       security: {
-        default: { role: 'Reader', policy: 'anyone' },
+        default: { role: 'Reader', policy: 'everyone' },
         roles: {
           Reader: {},
           Admin: { inherits: ['Reader'] },
@@ -77,7 +77,7 @@ describe('validateSecurity', () => {
   it('checks non-existant page roles', () => {
     const definition = {
       security: {
-        default: { role: 'Reader', policy: 'anyone' },
+        default: { role: 'Reader', policy: 'everyone' },
         roles: {
           Reader: {},
           Admin: { inherits: ['Reader'] },
@@ -98,7 +98,7 @@ describe('validateSecurity', () => {
   it('checks non-existant block roles', () => {
     const definition = {
       security: {
-        default: { role: 'Reader', policy: 'anyone' },
+        default: { role: 'Reader', policy: 'everyone' },
         roles: {
           Reader: {},
           Admin: { inherits: ['Reader'] },

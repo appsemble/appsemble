@@ -44,7 +44,7 @@ export default function ProfileDropdown({
           <img
             alt={intl.formatMessage(messages.pfp)}
             className={`is-rounded ${styles.gravatar}`}
-            src={generateGravatarHash(user.primaryEmail || `${user.id}`)}
+            src={user.picture || generateGravatarHash(user.email || `${user.sub}`)}
           />
         </figure>
       }

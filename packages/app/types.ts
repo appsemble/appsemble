@@ -1,11 +1,9 @@
 import { Action } from '@appsemble/sdk';
-import { ActionDefinition, AppDefinition, Block } from '@appsemble/types';
+import { ActionDefinition, AppDefinition, Block, UserInfo } from '@appsemble/types';
 import { RouteComponentProps } from 'react-router-dom';
 
-export interface User {
-  id: string;
+export interface User extends UserInfo {
   scope: string;
-  primaryEmail: string;
 }
 
 declare global {

@@ -1,4 +1,4 @@
-import { Authentication } from '@appsemble/types';
+import { Authentication, UserInfo } from '@appsemble/types';
 import axios from 'axios';
 import { IDBPDatabase } from 'idb';
 import jwtDecode from 'jwt-decode';
@@ -41,10 +41,10 @@ interface OAuth2Params {
 }
 
 interface JwtPayload {
-  user: { email: string };
   exp: number;
   scopes: string;
   sub: string;
+  iss: string;
 }
 
 interface DBUser {
@@ -122,15 +122,15 @@ async function doLogout(
   });
 }
 
-function setupAuth(
+async function setupAuth(
   accessToken: string,
   refreshToken: string,
   url: string,
   db: IDBPDatabase,
   dispatch: UserDispatch,
-): User {
+): Promise<User> {
   const payload = jwtDecode<JwtPayload>(accessToken);
-  const { exp, scopes, sub } = payload;
+  const { exp, scopes, sub, iss } = payload;
   if (exp) {
     const timeout = exp * 1e3 - REFRESH_BUFFER - new Date().getTime();
     if (refreshToken) {
@@ -141,10 +141,20 @@ function setupAuth(
     }
   }
   axios.defaults.headers.common.Authorization = `Bearer ${accessToken}`;
+
+  let userInfo: UserInfo;
+
+  try {
+    const { data } = await axios.get<UserInfo>(`${iss}/api/connect/userinfo`);
+    userInfo = data;
+  } catch (exception) {
+    // do nothing, userinfo endpoint is not available
+  }
+
   return {
-    id: sub,
     scope: scopes,
-    primaryEmail: payload.user.email,
+    ...userInfo,
+    sub,
   };
 }
 
@@ -154,7 +164,7 @@ async function requestToken(
   db: IDBPDatabase,
   dispatch: UserDispatch,
   refreshURL: string,
-): Promise<ReturnType<typeof setupAuth>> {
+): Promise<User> {
   const { data } = await axios.post(url, new URLSearchParams(params as Record<string, any>));
   const { access_token: accessToken, refresh_token: refreshToken } = data;
   const tx = db.transaction(AUTH, RW);
@@ -197,7 +207,7 @@ async function refreshTokenLogin(
     if (settings.definition.security !== undefined) {
       ({
         data: { role },
-      } = await axios.get<Member>(`/api/apps/${settings.id}/members/${user.id}`));
+      } = await axios.get<Member>(`/api/apps/${settings.id}/members/${user.sub}`));
     }
 
     dispatch({
@@ -232,7 +242,7 @@ export function initAuth(authentication: Authentication): UserThunk {
       const auth = (authentication ||
         app.definition.authentication ||
         app.definition.authentication[0]) as Authentication;
-      user = setupAuth(
+      user = await setupAuth(
         token.accessToken,
         token.refreshToken,
         auth.refreshURL || auth.url,
@@ -243,7 +253,7 @@ export function initAuth(authentication: Authentication): UserThunk {
       if (app.definition.security !== undefined) {
         ({
           data: { role },
-        } = await axios.get<Member>(`/api/apps/${settings.id}/members/${user.id}`));
+        } = await axios.get<Member>(`/api/apps/${settings.id}/members/${user.sub}`));
       }
     }
 
@@ -303,7 +313,7 @@ export function passwordLogin(
     if (app.definition.security !== undefined) {
       ({
         data: { role },
-      } = await axios.get<Member>(`/api/apps/${settings.id}/members/${user.id}`));
+      } = await axios.get<Member>(`/api/apps/${settings.id}/members/${user.sub}`));
     }
 
     dispatch({
@@ -343,7 +353,7 @@ export function oauthLogin(
     if (app.definition.security !== undefined) {
       ({
         data: { role },
-      } = await axios.get<Member>(`/api/apps/${settings.id}/members/${user.id}`));
+      } = await axios.get<Member>(`/api/apps/${settings.id}/members/${user.sub}`));
     }
 
     dispatch({ type: LOGIN_SUCCESS, user, role });

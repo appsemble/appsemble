@@ -147,16 +147,17 @@ export default function CreateAppCard({ createTemplateApp }: CreateAppCardProps)
         />
         <SimpleInput
           component={Select}
-          disabled={organizations.length === 1}
+          disabled={organizations && organizations.length === 1}
           label={<FormattedMessage {...messages.organization} />}
           name="selectedOrganization"
           required
         >
-          {organizations.map((organization, index) => (
-            <option key={organization.id} value={index}>
-              {organization.id}
-            </option>
-          ))}
+          {organizations &&
+            organizations.map((organization, index) => (
+              <option key={organization.id} value={index}>
+                {organization.id}
+              </option>
+            ))}
         </SimpleInput>
         <SimpleInput
           label={<FormattedMessage {...messages.description} />}

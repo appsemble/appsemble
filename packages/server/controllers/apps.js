@@ -415,7 +415,7 @@ export async function getAppMember(ctx) {
   }
 
   const member = app.Users.find(u => u.id === memberId);
-  let role = null;
+  let role = member ? member.AppMember.role : null;
 
   if (!member && policy === 'everyone') {
     role = defaultRole;
