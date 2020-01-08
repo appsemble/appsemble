@@ -272,7 +272,7 @@ export default class Editor extends React.Component {
       intl,
       location: { hash: tab },
     } = this.props;
-    const appUrl = `/@${app.OrganizationId}/${path}`;
+    const appUrl = `//${path}.${app.OrganizationId}.${window.location.host}`;
 
     if (!recipe) {
       return <Loader />;

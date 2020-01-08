@@ -7,7 +7,7 @@ import sentryDsnToReportUri from '../../utils/sentryDsnToReportUri';
  */
 export default async function indexHandler(ctx) {
   const { render } = ctx.state;
-  const { argv } = ctx;
+  const { argv, host } = ctx;
   const { disableRegistration, sentryDsn } = argv;
   const logins = [];
   if (argv.oauthGitlabKey) {
@@ -41,6 +41,7 @@ export default async function indexHandler(ctx) {
       'https://fonts.googleapis.com',
     ],
     'font-src': ["'self'", 'https://fonts.gstatic.com'],
+    'frame-src': [`*.${host}`],
   });
   ctx.set('Content-Security-Policy', csp);
   ctx.body = await render('studio.html', { settings });

@@ -8,15 +8,15 @@ import { Op } from 'sequelize';
  * @param dnsConfig The DNS configuration instance to use.
  * @param chunkSize How many apps to register per DNS add request.
  */
-export default async function bulkDNSRestore(db, dnsConfig, chunkSize) {
+export default async function bulkDNSRestore(hostname, db, dnsConfig, chunkSize) {
   let apps;
   let appCount = 0;
   for (let i = 0; !apps || apps.length === chunkSize; i += 1) {
     // eslint-disable-next-line no-await-in-loop
     apps = await db.models.App.findAll({
-      attributes: ['domain'],
+      attributes: ['domain', 'path', 'OrganizationId'],
       where: { domain: { [Op.not]: null } },
-      order: ['domain'],
+      order: ['OrganizationId', 'path'],
       limit: chunkSize,
       offset: chunkSize * i,
     });
@@ -25,7 +25,11 @@ export default async function bulkDNSRestore(db, dnsConfig, chunkSize) {
     }
     appCount += apps.length;
     // eslint-disable-next-line no-await-in-loop
-    await dnsConfig.add(...apps.map(app => app.domain));
+    await dnsConfig.add(
+      ...apps
+        .flatMap(app => [app.domain, `${app.path}.${app.OrganizationId}.${hostname}`])
+        .filter(Boolean),
+    );
   }
   logger.info(`Configured DNS for ${appCount} apps`);
 }

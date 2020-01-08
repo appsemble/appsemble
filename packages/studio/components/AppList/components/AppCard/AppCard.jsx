@@ -1,4 +1,3 @@
-import { normalize } from '@appsemble/utils';
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -21,10 +20,7 @@ export default function AppCard({ app }) {
       <div className={classNames('card-content', styles.appCardContent)}>
         <div className="media">
           <figure className={classNames('image', 'is-64x64', styles.image)}>
-            <img
-              alt={intl.formatMessage(messages.icon)}
-              src={`/@${app.OrganizationId}/${app.path || normalize(app.name)}/icon-64.png`}
-            />
+            <img alt={intl.formatMessage(messages.icon)} src={`/api/apps/${app.id}/icon`} />
           </figure>
         </div>
         {app.definition.description && (
@@ -44,7 +40,7 @@ export default function AppCard({ app }) {
           href={
             app.domain
               ? `//${app.domain}${window.location.port && `:${window.location.port}`}`
-              : `/@${app.OrganizationId}/${app.path}`
+              : `//${app.path}.${app.OrganizationId}.${window.location.host}`
           }
           rel="noopener noreferrer"
           target="_blank"

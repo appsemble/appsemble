@@ -10,7 +10,9 @@ export default async function addDBHooks(db, argv) {
   }
   db.models.App.afterSave('attachDomain', async app => {
     const oldDomain = app.previous('domain');
+    const oldPath = app.previous('path');
     const newDomain = app.domain;
+    const newPath = app.path;
     if (oldDomain === newDomain) {
       return;
     }
@@ -22,6 +24,11 @@ export default async function addDBHooks(db, argv) {
       }
     } else if (oldDomain) {
       await dnsConfig.remove(oldDomain);
+    }
+    if (oldPath) {
+      await dnsConfig.update(oldPath, newPath);
+    } else {
+      await dnsConfig.add(newPath);
     }
   });
 }
