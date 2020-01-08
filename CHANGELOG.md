@@ -7,6 +7,10 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- Server: Add `$author` object to resources if an author is known.
+
 ## [0.10.0] - 2019-12-20
 
 ### Added
