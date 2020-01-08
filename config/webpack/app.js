@@ -4,7 +4,6 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const ServiceWorkerWebpackPlugin = require('serviceworker-webpack-plugin');
 const { UnusedFilesWebpackPlugin } = require('unused-files-webpack-plugin');
 const merge = require('webpack-merge');
-const { StatsWriterPlugin } = require('webpack-stats-plugin');
 
 const core = require('./core');
 const minify = require('./html-minifier.json');
@@ -61,12 +60,6 @@ module.exports = (env, argv) => {
       new MiniCssExtractPlugin({
         filename: production ? '_/[hash].css' : '_/app/[name].css',
       }),
-      production &&
-        new StatsWriterPlugin({
-          transform({ assetsByChunkName }) {
-            return JSON.stringify(assetsByChunkName.main.filter(name => !name.endsWith('.map')));
-          },
-        }),
-    ].filter(Boolean),
+    ],
   });
 };
