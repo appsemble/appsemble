@@ -1,7 +1,8 @@
 const { CI_COMMIT_REF_NAME = 'dev' } = process.env;
 
-module.exports = {
+export default {
   src: './docs',
+  files: '**/*.{md,mdx,css}',
   title: `Appsemble ${CI_COMMIT_REF_NAME}`,
   menu: ['Getting Started', 'Architecture', 'Blocks', 'Development', 'Deployment'],
   gatsbyRemarkPlugins: [
