@@ -125,7 +125,9 @@ export default function AppDetails({ app, push, updateApp }: AppDetailsProps): J
             </a>
           </div>
         </div>
-        <blockquote className={styles.description}>{app.definition.description}</blockquote>
+        {app.definition.description && (
+          <blockquote className={styles.description}>{app.definition.description}</blockquote>
+        )}
         <h3>
           <FormattedMessage {...messages.ratings} />
         </h3>
