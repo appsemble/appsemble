@@ -56,7 +56,13 @@ export default function AppDetails({ app, push, updateApp }: AppDetailsProps): J
   }, [app.OrganizationId, app.id]);
 
   const onRate = (rating: Rating): void => {
-    setRatings(ratings.map(r => (r.UserId === rating.UserId ? rating : r)));
+    const existingRating = ratings.find(r => r.UserId === rating.UserId);
+
+    if (existingRating) {
+      setRatings(ratings.map(r => (r.UserId === rating.UserId ? rating : r)));
+    } else {
+      setRatings([rating, ...ratings]);
+    }
     push({ color: 'success', body: intl.formatMessage(messages.ratingSuccessful) });
   };
 
