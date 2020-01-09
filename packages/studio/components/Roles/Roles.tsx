@@ -28,8 +28,8 @@ export type RolesProps = {
 export default function Roles({ app, push }: RolesProps): React.ReactElement {
   const intl = useIntl();
   const { userInfo } = useUser();
-  const [members, setMembers] = React.useState<Member[]>(undefined);
-  const [submittingMemberRoleId, setSubmittingMemberRoleId] = React.useState('');
+  const [members, setMembers] = React.useState<Member[]>();
+  const [submittingMemberRoleId, setSubmittingMemberRoleId] = React.useState<string>();
 
   React.useEffect(() => {
     const getMembers = async (): Promise<void> => {
@@ -75,8 +75,6 @@ export default function Roles({ app, push }: RolesProps): React.ReactElement {
         role,
       });
 
-      setSubmittingMemberRoleId('');
-
       push({
         color: 'success',
         body: intl.formatMessage(messages.changeRoleSuccess, {
@@ -86,8 +84,9 @@ export default function Roles({ app, push }: RolesProps): React.ReactElement {
       });
     } catch (error) {
       push({ body: intl.formatMessage(messages.changeRoleError) });
-      setSubmittingMemberRoleId('');
     }
+
+    setSubmittingMemberRoleId(undefined);
   };
 
   if (members === undefined) {
