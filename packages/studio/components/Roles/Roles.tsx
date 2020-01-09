@@ -12,7 +12,7 @@ import messages from './messages';
 import styles from './Roles.css';
 
 export interface Member {
-  id: number;
+  id: string;
   name?: string;
   primaryEmail?: string;
   role: string;
@@ -29,7 +29,7 @@ export default function Roles({ app, push }: RolesProps): React.ReactElement {
   const intl = useIntl();
   const { userInfo } = useUser();
   const [members, setMembers] = React.useState<Member[]>(undefined);
-  const [submittingMemberRoleId, setSubmittingMemberRoleId] = React.useState(0);
+  const [submittingMemberRoleId, setSubmittingMemberRoleId] = React.useState('');
 
   React.useEffect(() => {
     const getMembers = async (): Promise<void> => {
@@ -63,7 +63,7 @@ export default function Roles({ app, push }: RolesProps): React.ReactElement {
 
   const onChangeRole = async (
     event: React.ChangeEvent<HTMLSelectElement>,
-    userId: number,
+    userId: string,
   ): Promise<void> => {
     event.preventDefault();
     const { value: role } = event.target;
@@ -75,7 +75,7 @@ export default function Roles({ app, push }: RolesProps): React.ReactElement {
         role,
       });
 
-      setSubmittingMemberRoleId(0);
+      setSubmittingMemberRoleId('');
 
       push({
         color: 'success',
@@ -86,7 +86,7 @@ export default function Roles({ app, push }: RolesProps): React.ReactElement {
       });
     } catch (error) {
       push({ body: intl.formatMessage(messages.changeRoleError) });
-      setSubmittingMemberRoleId(0);
+      setSubmittingMemberRoleId('');
     }
   };
 
