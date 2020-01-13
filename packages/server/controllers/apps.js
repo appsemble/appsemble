@@ -152,7 +152,7 @@ export async function createApp(ctx) {
       result.path = `${path}-${crypto.randomBytes(5).toString('hex')}`;
     }
 
-    const record = await App.create(result, { raw: true });
+    const record = await App.create(result);
 
     ctx.body = getAppFromRecord(record);
     ctx.status = 201;
