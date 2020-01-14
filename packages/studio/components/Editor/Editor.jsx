@@ -230,7 +230,7 @@ export default function Editor({ app, getOpenApiSpec, updateApp, openApiSpec, pu
     setDeleteDialog(false);
   }, []);
 
-  const appUrl = `/@${app.OrganizationId}/${path}`;
+  const appUrl = `//${app.path}.${app.OrganizationId}.${window.location.host}`;
 
   if (recipe == null) {
     return <Loader />;

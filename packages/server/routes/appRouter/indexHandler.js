@@ -1,6 +1,7 @@
 import qs from 'querystring';
 
 import createSettings from '../../utils/createSettings';
+import getApp from '../../utils/getApp';
 import makeCSP from '../../utils/makeCSP';
 import sentryDsnToReportUri from '../../utils/sentryDsnToReportUri';
 import { bulmaURL, faURL } from '../../utils/styleURL';
@@ -10,8 +11,12 @@ import { bulmaURL, faURL } from '../../utils/styleURL';
  */
 export default async function indexHandler(ctx) {
   ctx.type = 'text/html';
-  const { app, base, render } = ctx.state;
-  const { sentryDsn } = ctx.argv;
+  const { render } = ctx.state;
+  const app = await getApp(ctx, {
+    attributes: ['definition', 'id', 'OrganizationId', 'sharedStyle', 'style', 'vapidPublicKey'],
+    raw: true,
+  });
+  const { host, sentryDsn } = ctx.argv;
   const reportUri = sentryDsnToReportUri(sentryDsn);
   const csp = {
     'report-uri': [reportUri],
@@ -19,13 +24,14 @@ export default async function indexHandler(ctx) {
     'default-src': ["'self'"],
     'script-src': [
       "'self'",
+      host,
       // This is needed for Webpack.
       process.env.NODE_ENV !== 'production' && "'unsafe-eval'",
     ],
-    'img-src': ['*', 'blob:', 'data:'],
-    'media-src': ['*', 'blob:', 'data:'],
-    'style-src': ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
-    'font-src': ["'self'", 'data:', 'https://fonts.gstatic.com'],
+    'img-src': ['*', 'blob:', 'data:', host],
+    'media-src': ['*', 'blob:', 'data:', host],
+    'style-src': ["'self'", "'unsafe-inline'", host, 'https://fonts.googleapis.com'],
+    'font-src': ["'self'", 'data:', 'https://fonts.gstatic.com', host],
     'frame-src': ["'self'", '*.vimeo.com', '*.youtube.com'],
   };
 
@@ -38,6 +44,7 @@ export default async function indexHandler(ctx) {
     ctx.status = 404;
   } else {
     const [settingsHash, settings] = createSettings({
+      apiUrl: host,
       id: app.id,
       vapidPublicKey: app.vapidPublicKey,
       organizationId: app.OrganizationId,
@@ -47,7 +54,6 @@ export default async function indexHandler(ctx) {
     csp['script-src'].push(settingsHash);
     ctx.body = await render('app.html', {
       app,
-      base,
       bulmaURL: `${bulmaURL}?${qs.stringify(app.definition.theme)}`,
       faURL,
       settings,

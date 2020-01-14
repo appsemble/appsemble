@@ -10,5 +10,6 @@ module.exports = {
   restoreMocks: true,
   snapshotSerializers: ['enzyme-to-json/serializer'],
   setupFilesAfterEnv: ['<rootDir>/packages/jest-config/setupFilesAfterEnv.ts'],
+  testPathIgnorePatterns: ['/node_modules/', '<rootDir>/.docz'],
   testURL: 'http://localhost',
 };

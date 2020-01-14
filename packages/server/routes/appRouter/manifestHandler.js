@@ -1,4 +1,6 @@
-import { baseTheme, normalize, prefix } from '@appsemble/utils';
+import { baseTheme, normalize } from '@appsemble/utils';
+
+import getApp from '../../utils/getApp';
 
 const iconSizes = [48, 144, 192, 512];
 
@@ -6,8 +8,10 @@ const iconSizes = [48, 144, 192, 512];
  * https://developers.google.com/web/fundamentals/web-app-manifest
  */
 export default async function manifestHandler(ctx) {
-  const { app, base } = ctx.state;
-
+  const app = await getApp(ctx, {
+    attributes: ['definition'],
+    raw: true,
+  });
   const { defaultPage, description, name, theme = { baseTheme } } = app.definition;
   const { themeColor = '#ffffff', splashColor = themeColor } = theme;
 
@@ -16,15 +20,15 @@ export default async function manifestHandler(ctx) {
     description,
     display: 'standalone',
     icons: iconSizes.map(size => ({
-      src: prefix(`/icon-${size}.png`, base),
+      src: `/icon-${size}.png`,
       type: 'image/png',
       sizes: `${size}x${size}`,
     })),
     name,
     orientation: 'any',
-    scope: base || '/',
+    scope: '/',
     short_name: name,
-    start_url: prefix(`/${normalize(defaultPage)}`, base),
+    start_url: `/${normalize(defaultPage)}`,
     theme_color: themeColor,
   };
   ctx.type = 'application/manifest+json';

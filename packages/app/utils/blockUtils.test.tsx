@@ -1,5 +1,12 @@
 import { blockToString, normalizeBlockName, prefixURL } from './blockUtils';
 
+jest.mock('./settings', () => ({
+  __esModule: true,
+  default: {
+    apiUrl: 'http://localhost:9999',
+  },
+}));
+
 describe('normalizeBlockName', () => {
   it('should prepend @appsemble if no organization is prepended', () => {
     const blockName = 'form';
@@ -31,6 +38,8 @@ describe('prefixURL', () => {
     const url = 'test.css';
 
     const result = prefixURL(block, url);
-    expect(result).toBe(`/api/blocks/${block.type}/versions/${block.version}/${url}`);
+    expect(result).toBe(
+      `http://localhost:9999/api/blocks/${block.type}/versions/${block.version}/${url}`,
+    );
   });
 });

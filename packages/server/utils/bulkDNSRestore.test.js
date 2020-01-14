@@ -21,6 +21,7 @@ it('should add DNS settings for all apps', async () => {
     Array.from(Array(7), async (_, index) => {
       await db.models.App.create({
         domain: `app${index}.example.com`,
+        path: `path${index}`,
         definition: {},
         vapidPublicKey: 'a',
         vapidPrivateKey: 'b',
@@ -28,12 +29,30 @@ it('should add DNS settings for all apps', async () => {
       });
     }),
   );
-  await bulkDNSRestore(db, dnsConfig, 2);
+  await bulkDNSRestore('localhost', db, dnsConfig, 2);
   expect(dnsConfig.add).toHaveBeenCalledTimes(4);
-  expect(dnsConfig.add).toHaveBeenNthCalledWith(1, 'app0.example.com', 'app1.example.com');
-  expect(dnsConfig.add).toHaveBeenNthCalledWith(2, 'app2.example.com', 'app3.example.com');
-  expect(dnsConfig.add).toHaveBeenNthCalledWith(3, 'app4.example.com', 'app5.example.com');
-  expect(dnsConfig.add).toHaveBeenNthCalledWith(4, 'app6.example.com');
+  expect(dnsConfig.add).toHaveBeenNthCalledWith(
+    1,
+    'app0.example.com',
+    'path0.test.localhost',
+    'app1.example.com',
+    'path1.test.localhost',
+  );
+  expect(dnsConfig.add).toHaveBeenNthCalledWith(
+    2,
+    'app2.example.com',
+    'path2.test.localhost',
+    'app3.example.com',
+    'path3.test.localhost',
+  );
+  expect(dnsConfig.add).toHaveBeenNthCalledWith(
+    3,
+    'app4.example.com',
+    'path4.test.localhost',
+    'app5.example.com',
+    'path5.test.localhost',
+  );
+  expect(dnsConfig.add).toHaveBeenNthCalledWith(4, 'app6.example.com', 'path6.test.localhost');
 });
 
 it('should skip the last bulk of apps if it is empty', async () => {
@@ -41,6 +60,7 @@ it('should skip the last bulk of apps if it is empty', async () => {
     Array.from(Array(4), async (_, index) => {
       await db.models.App.create({
         domain: `app${index}.example.com`,
+        path: `path${index}`,
         definition: {},
         vapidPublicKey: `a${index}`,
         vapidPrivateKey: `b${index}`,
@@ -48,8 +68,20 @@ it('should skip the last bulk of apps if it is empty', async () => {
       });
     }),
   );
-  await bulkDNSRestore(db, dnsConfig, 2);
+  await bulkDNSRestore('localhost', db, dnsConfig, 2);
   expect(dnsConfig.add).toHaveBeenCalledTimes(2);
-  expect(dnsConfig.add).toHaveBeenNthCalledWith(1, 'app0.example.com', 'app1.example.com');
-  expect(dnsConfig.add).toHaveBeenNthCalledWith(2, 'app2.example.com', 'app3.example.com');
+  expect(dnsConfig.add).toHaveBeenNthCalledWith(
+    1,
+    'app0.example.com',
+    'path0.test.localhost',
+    'app1.example.com',
+    'path1.test.localhost',
+  );
+  expect(dnsConfig.add).toHaveBeenNthCalledWith(
+    2,
+    'app2.example.com',
+    'path2.test.localhost',
+    'app3.example.com',
+    'path3.test.localhost',
+  );
 });

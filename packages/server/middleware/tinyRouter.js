@@ -5,15 +5,11 @@ import Boom from '@hapi/boom';
  */
 export default function tinyRouter(routes) {
   return async (ctx, next) => {
-    const {
-      path,
-      state: { base },
-    } = ctx;
+    const { path } = ctx;
 
-    const relativePath = base ? path.substr(base.length) : path;
     let match;
     const result = routes.find(({ route }) => {
-      match = typeof route === 'string' ? relativePath === route : relativePath.match(route);
+      match = typeof route === 'string' ? path === route : path.match(route);
       return match;
     });
     if (!result) {
