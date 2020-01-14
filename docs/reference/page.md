@@ -50,6 +50,16 @@ tab corresponds to a _subpage_ which can be linked to directly using the [link a
 The list of blocks that are displayed on the page. Each page requires at least one block. Blocks are
 displayed in the order that they are defined in the list.
 
+**blocks[].type**: The type of the block. This uses the format of `@organization/blockName`. For
+Appsemble blocks `@appsemble` can be omitted.
+
+**blocks[].version**: The version of the block to use. Since blocks may change over time, a version
+must be specified in order to ensure that the block will remain the same until it is manually
+updated.
+
+**blocks[].roles**: The list of roles that may view or use this block. If the user does not have the
+correct roles, the block will not be visible.
+
 > Note: This field is not required if `type` is set to `flow`.
 
 ## `subPages`\*
@@ -82,6 +92,18 @@ menus.
 Page parameters can be used for linking to a page that should display a single resource. This
 defined as a list of strings representing the properties to pass through. More often than not
 passing `id` through is sufficient, depending on the block.
+
+## `roles`
+
+The list of roles that are allowed to view the page. If the user doesn’t have any of the roles in
+the list the page will be unavailable to them. An empty list can be used to specify that users need
+to log in but do not need a specific role.
+
+Users trying to visit a page without having the correct roles will be redirected to the first page
+that they are allowed to view. If there aren’t any accessible pages, the user will be logged out and
+instructed to contact the app owner to get permissions.
+
+See also: [App](app#security)
 
 ## Actions
 

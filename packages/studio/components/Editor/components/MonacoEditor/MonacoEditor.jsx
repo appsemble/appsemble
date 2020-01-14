@@ -34,18 +34,14 @@ export default class MonacoEditor extends React.Component {
   };
 
   componentDidMount() {
-    const { value, language, onValueChange, onSave, options } = this.props;
+    const { value, language, onValueChange, options } = this.props;
     const model = editor.createModel(value, language);
 
     this.editor = editor.create(this.node.current, options);
     this.editor.setModel(model);
 
-    if (onSave) {
-      // eslint-disable-next-line no-bitwise
-      this.editor.addCommand(KeyMod.CtrlCmd | KeyCode.KEY_S, () => {
-        onSave();
-      });
-    }
+    // eslint-disable-next-line no-bitwise
+    this.editor.addCommand(KeyMod.CtrlCmd | KeyCode.KEY_S, this.onMonacoSave);
 
     this.subscription = model.onDidChangeContent(() => {
       onValueChange(model.getValue());
@@ -103,6 +99,8 @@ export default class MonacoEditor extends React.Component {
       this.observer.unobserve(this.node.current);
     }
   }
+
+  onMonacoSave = () => this.props.onSave();
 
   render() {
     return <div ref={this.node} className={styles.editor} />;

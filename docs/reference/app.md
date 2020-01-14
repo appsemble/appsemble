@@ -81,3 +81,26 @@ defined in an object containing the following properties:
 
 **scope**: The scopes to request when authenticating. Multiple scopes can be requested by separating
 the scopes with spaces.
+
+## `security`
+
+A security definition that defines the roles that are available within the app. This allows for more
+fine-grain control over which users have access to specific pages or blocks.
+
+**default**: An object containing the default behavior to use. **default.role**: The name of the
+default role to use. This must match with one of the roles defined within the security definition.
+**default.policy**: The policy to use for assigning the default role. Allowed values are: `everyone`
+to assign the default role to every user regardless of whether they were invited or not,
+`organization` to assign the default role to every user within the app’s organization, and `invite`
+for an invite-only policy.
+
+**roles**: An object containing keys representing the roles that can be used within the app.
+**roles[key].description**: The description of a role. **roles[key].inherits**: The name of the role
+to inherit from. Note that this role must exist and can not inherit itself via this field or the
+`inherits` field of the referenced role.
+
+## `roles`
+
+The list of roles that are allowed to view the app. This list is used as the default roles for the
+`roles` property on pages and blocks, which can be overridden by defining them for a specific page
+or block. Note that these roles must be defined in `security.roles`.

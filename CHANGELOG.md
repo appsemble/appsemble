@@ -7,6 +7,14 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- App: Add support for app roles.
+
+### Changed
+
+- App: Move login functionality from side menu to top-right corner.
+
 ## [0.10.0] - 2019-12-20
 
 ### Added

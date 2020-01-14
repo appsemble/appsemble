@@ -25,6 +25,7 @@ function importModels(db) {
   db.import('../models/App');
   db.import('../models/Member');
   db.import('../models/User');
+  db.import('../models/AppMember');
   db.import('../models/Organization');
   db.import('../models/OrganizationInvite');
   db.import('../models/EmailAuthorization');

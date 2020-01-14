@@ -59,6 +59,15 @@ export default {
             This will be displayed for example on the home screen or in the browser tab.
           `,
         },
+        roles: {
+          type: 'array',
+          description: `The list of roles that are allowed to view this app.
+
+            This determines the default roles required for resource actions as well as pages, unless otherwise specified.`,
+          items: {
+            type: 'string',
+          },
+        },
         description: {
           type: 'string',
           maxLength: 80,
@@ -89,6 +98,10 @@ export default {
         resources: {
           $ref: '#/components/schemas/ResourceDefinition',
           description: 'Resource definitions that may be used by the app.',
+        },
+        security: {
+          $ref: '#/components/schemas/Security',
+          description: 'Role definitions that may be used by the app.',
         },
         authentication: {
           type: 'array',

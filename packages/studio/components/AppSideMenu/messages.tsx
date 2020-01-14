@@ -6,4 +6,5 @@ export default defineMessages({
   resources: 'Resources',
   settings: 'Settings',
   notifications: 'Notifications',
+  roles: 'Roles',
 });

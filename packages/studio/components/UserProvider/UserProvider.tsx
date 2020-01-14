@@ -1,9 +1,10 @@
+import { UserInfo } from '@appsemble/types';
 import axios from 'axios';
 import jwtDecode from 'jwt-decode';
 import * as React from 'react';
 
 import { UserContext } from '../../hooks/useUser';
-import { TokenResponse, UserInfo } from '../../types';
+import { TokenResponse } from '../../types';
 
 interface JwtPayload {
   exp: number;

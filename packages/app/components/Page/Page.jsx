@@ -1,10 +1,11 @@
 import { Loader } from '@appsemble/react-components';
+import { normalize } from '@appsemble/utils';
 import EventEmitter from 'events';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import checkScope from '../../utils/checkScope';
+import checkAppRole from '../../utils/checkAppRole';
 import makeActions from '../../utils/makeActions';
 import BlockList from '../BlockList';
 import FlowPage from '../FlowPage';
@@ -61,6 +62,7 @@ export default class Page extends React.Component {
   static propTypes = {
     appId: PropTypes.number.isRequired,
     definition: PropTypes.shape().isRequired,
+    role: PropTypes.string,
     getBlockDefs: PropTypes.func.isRequired,
     hasErrors: PropTypes.bool.isRequired,
     history: PropTypes.shape().isRequired,
@@ -71,10 +73,14 @@ export default class Page extends React.Component {
     page: PropTypes.shape().isRequired,
     pending: PropTypes.bool.isRequired,
     user: PropTypes.shape(),
+    logout: PropTypes.func.isRequired,
+    push: PropTypes.func.isRequired,
+    intl: PropTypes.shape().isRequired,
   };
 
   static defaultProps = {
     user: null,
+    role: null,
   };
 
   state = {
@@ -183,6 +189,44 @@ export default class Page extends React.Component {
     this.ee = ee;
   }
 
+  checkPagePermissions = p => {
+    const { definition, role } = this.props;
+    const roles = p.roles || definition.roles || [];
+    return roles.length === 0 || roles.some(r => checkAppRole(definition.security, r, role));
+  };
+
+  handlePagePermissions = () => {
+    const { page, definition, history, push, logout, intl } = this.props;
+
+    const permission = this.checkPagePermissions(page);
+    if (!permission) {
+      const defaultPagePermission = this.checkPagePermissions(
+        definition.pages.find(p => p.name === definition.defaultPage),
+      );
+
+      if (defaultPagePermission) {
+        history.replace('/');
+      } else {
+        const redirectPage = definition.pages.find(
+          p => p.parameters === undefined && this.checkPagePermissions(p),
+        );
+
+        if (!redirectPage) {
+          push({
+            body: intl.formatMessage(messages.permissionLogout),
+            color: 'danger',
+            dismissable: true,
+            timeout: 0,
+          });
+          logout();
+          return;
+        }
+
+        history.replace(`/${normalize(redirectPage.name)}`);
+      }
+    }
+  };
+
   createBulmaQueryString = () => {
     const { definition, page } = this.props;
     const params = { ...definition.theme, ...page.theme };
@@ -217,17 +261,21 @@ export default class Page extends React.Component {
   }
 
   render() {
-    const { hasErrors, page, user, pending } = this.props;
+    const { hasErrors, page, user, pending, definition } = this.props;
     const { dialog, counter, currentPage, data } = this.state;
     const { type } = page;
 
-    if (!checkScope(page.scope, user)) {
-      return (
-        <>
-          <TitleBar>{page.name}</TitleBar>
-          <Login />
-        </>
-      );
+    if (definition.security && !(page.roles && page.roles.length === 0)) {
+      if (!user) {
+        return (
+          <>
+            <TitleBar>{page.name}</TitleBar>
+            <Login />
+          </>
+        );
+      }
+
+      this.handlePagePermissions();
     }
 
     if (hasErrors) {

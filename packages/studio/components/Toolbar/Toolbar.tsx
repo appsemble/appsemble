@@ -1,8 +1,7 @@
 import React from 'react';
-import { FormattedMessage, useIntl } from 'react-intl';
+import { useIntl } from 'react-intl';
 import { Link } from 'react-router-dom';
 
-import useUser from '../../hooks/useUser';
 import { version } from '../../package.json';
 import ProfileDropdown from '../ProfileDropdown';
 import messages from './messages';
@@ -10,7 +9,6 @@ import styles from './Toolbar.css';
 
 export default function Toolbar(): React.ReactElement {
   const intl = useIntl();
-  const { userInfo } = useUser();
 
   return (
     <nav className={`navbar is-fixed-top is-dark ${styles.root}`}>
@@ -36,13 +34,7 @@ export default function Toolbar(): React.ReactElement {
       </div>
       <div className="navbar-brand">
         <div className="navbar-item">
-          {userInfo ? (
-            <ProfileDropdown />
-          ) : (
-            <Link className="button" to="/login">
-              <FormattedMessage {...messages.login} />
-            </Link>
-          )}
+          <ProfileDropdown />
         </div>
       </div>
     </nav>

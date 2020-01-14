@@ -550,7 +550,7 @@ pages:
           'pages.0.blocks.0': 'Unknown block type “@non/existent”',
         },
         error: 'Bad Request',
-        message: 'Block validation failed',
+        message: 'Appsemble definition is invalid.',
         statusCode: 400,
       },
     });
@@ -588,7 +588,7 @@ pages:
           'pages.0.blocks.0': 'Unknown block type “@appsemble/test”',
         },
         error: 'Bad Request',
-        message: 'Block validation failed',
+        message: 'Appsemble definition is invalid.',
         statusCode: 400,
       },
     });
@@ -637,7 +637,7 @@ pages:
           },
         },
         error: 'Bad Request',
-        message: 'Block validation failed',
+        message: 'Appsemble definition is invalid.',
         statusCode: 400,
       },
     });
@@ -1737,9 +1737,321 @@ pages:
           'pages.0.blocks.0': 'Unknown block type “@appsemble/test”',
         },
         error: 'Bad Request',
-        message: 'Block validation failed',
+        message: 'Appsemble definition is invalid.',
         statusCode: 400,
       },
+    });
+  });
+
+  it('should fetch app members', async () => {
+    const app = await App.create({
+      definition: {
+        name: 'Test App',
+        defaultPage: 'Test Page',
+        security: {
+          default: {
+            role: 'Reader',
+            policy: 'everyone',
+          },
+          roles: {
+            Reader: {},
+          },
+        },
+      },
+      path: 'test-app',
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organizationId,
+    });
+
+    await app.addUser(user, { through: { role: 'Reader' } });
+
+    const response = await request.get(`/api/apps/${app.id}/members`, {
+      headers: { authorization },
+    });
+    expect(response).toMatchObject({
+      status: 200,
+      data: [
+        {
+          id: user.id,
+          name: 'Test User',
+          primaryEmail: 'test@example.com',
+          role: 'Reader',
+        },
+      ],
+    });
+  });
+
+  it('should return default app member role if policy is set to everyone', async () => {
+    const app = await App.create({
+      definition: {
+        name: 'Test App',
+        defaultPage: 'Test Page',
+        security: {
+          default: {
+            role: 'Reader',
+            policy: 'everyone',
+          },
+          roles: {
+            Reader: {},
+          },
+        },
+      },
+      path: 'test-app',
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organizationId,
+    });
+
+    const userB = await User.create({ name: 'Foo', primaryEmail: 'foo@example.com' });
+    const response = await request.get(`/api/apps/${app.id}/members/${user.id}`, {
+      headers: { authorization },
+    });
+    const responseB = await request.get(`/api/apps/${app.id}/members/${userB.id}`, {
+      headers: { authorization },
+    });
+    expect(response).toMatchObject({
+      status: 200,
+      data: {
+        id: user.id,
+        name: 'Test User',
+        primaryEmail: 'test@example.com',
+        role: 'Reader',
+      },
+    });
+    expect(responseB).toMatchObject({
+      status: 200,
+      data: { id: userB.id, name: 'Foo', primaryEmail: 'foo@example.com', role: 'Reader' },
+    });
+  });
+
+  it('should return a 404 on uninvited members if policy is set to organization', async () => {
+    const app = await App.create({
+      definition: {
+        name: 'Test App',
+        defaultPage: 'Test Page',
+        security: {
+          default: {
+            role: 'Reader',
+            policy: 'organization',
+          },
+          roles: {
+            Reader: {},
+          },
+        },
+      },
+      path: 'test-app',
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organizationId,
+    });
+
+    const userB = await User.create();
+
+    const response = await request.get(`/api/apps/${app.id}/members/${user.id}`, {
+      headers: { authorization },
+    });
+    const responseB = await request.get(`/api/apps/${app.id}/members/${userB.id}`, {
+      headers: { authorization },
+    });
+
+    expect(response).toMatchObject({
+      status: 200,
+      data: {
+        id: user.id,
+        name: user.name,
+        primaryEmail: user.primaryEmail,
+        role: 'Reader',
+      },
+    });
+
+    expect(responseB).toMatchObject({
+      status: 404,
+      data: {
+        error: 'Not Found',
+        statusCode: 404,
+        message: 'User is not a member of the organization.',
+      },
+    });
+  });
+
+  it('should return a 404 on uninvited organization members if policy is set to invite', async () => {
+    const app = await App.create({
+      definition: {
+        name: 'Test App',
+        defaultPage: 'Test Page',
+        security: {
+          default: {
+            role: 'Reader',
+            policy: 'invite',
+          },
+          roles: {
+            Reader: {},
+          },
+        },
+      },
+      path: 'test-app',
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organizationId,
+    });
+
+    const response = await request.get(`/api/apps/${app.id}/members/${user.id}`, {
+      headers: { authorization },
+    });
+
+    expect(response).toMatchObject({
+      status: 404,
+      data: {
+        error: 'Not Found',
+        statusCode: 404,
+        message: 'User is not a member of the app.',
+      },
+    });
+  });
+
+  it('should add app members', async () => {
+    const app = await App.create({
+      definition: {
+        name: 'Test App',
+        defaultPage: 'Test Page',
+        security: {
+          default: {
+            role: 'Reader',
+            policy: 'everyone',
+          },
+          roles: {
+            Reader: {},
+            Admin: {},
+          },
+        },
+      },
+      path: 'test-app',
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organizationId,
+    });
+
+    const userB = await User.create({ name: 'Foo', primaryEmail: 'foo@example.com' });
+
+    const response = await request.post(
+      `/api/apps/${app.id}/members/${userB.id}`,
+      { role: 'Admin' },
+      { headers: { authorization } },
+    );
+    expect(response).toMatchObject({
+      status: 200,
+      data: {
+        id: userB.id,
+        name: 'Foo',
+        primaryEmail: 'foo@example.com',
+        role: 'Admin',
+      },
+    });
+  });
+
+  it('should remove app members if role is default', async () => {
+    const app = await App.create({
+      definition: {
+        name: 'Test App',
+        defaultPage: 'Test Page',
+        security: {
+          default: {
+            role: 'Reader',
+            policy: 'everyone',
+          },
+          roles: {
+            Reader: {},
+            Admin: {},
+          },
+        },
+      },
+      path: 'test-app',
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organizationId,
+    });
+
+    const userB = await User.create({ name: 'Foo', primaryEmail: 'foo@example.com' });
+    await app.addUser(userB, { through: { role: 'Admin' } });
+
+    const response = await request.post(
+      `/api/apps/${app.id}/members/${userB.id}`,
+      { role: 'Reader' },
+      { headers: { authorization } },
+    );
+    expect(response).toMatchObject({
+      status: 200,
+      data: {
+        id: userB.id,
+        name: 'Foo',
+        primaryEmail: 'foo@example.com',
+        role: 'Reader',
+      },
+    });
+
+    const responseB = await request.get(`/api/apps/${app.id}/members`, {
+      headers: { authorization },
+    });
+    expect(responseB).toMatchObject({
+      status: 200,
+      data: [],
+    });
+  });
+
+  it('should remove app members if role is default with invite policy', async () => {
+    const app = await App.create({
+      definition: {
+        name: 'Test App',
+        defaultPage: 'Test Page',
+        security: {
+          default: {
+            role: 'Reader',
+            policy: 'invite',
+          },
+          roles: {
+            Reader: {},
+            Admin: {},
+          },
+        },
+      },
+      path: 'test-app',
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organizationId,
+    });
+
+    const userB = await User.create({ name: 'Foo', primaryEmail: 'foo@example.com' });
+    await app.addUser(userB, { through: { role: 'Admin' } });
+
+    const response = await request.post(
+      `/api/apps/${app.id}/members/${userB.id}`,
+      { role: 'Reader' },
+      { headers: { authorization } },
+    );
+    expect(response).toMatchObject({
+      status: 200,
+      data: {
+        id: userB.id,
+        name: 'Foo',
+        primaryEmail: 'foo@example.com',
+        role: 'Reader',
+      },
+    });
+
+    const responseB = await request.get(`/api/apps/${app.id}/members`, {
+      headers: { authorization },
+    });
+    expect(responseB).toMatchObject({
+      status: 200,
+      data: [
+        {
+          id: userB.id,
+          name: 'Foo',
+          primaryEmail: 'foo@example.com',
+          role: 'Reader',
+        },
+      ],
     });
   });
 });

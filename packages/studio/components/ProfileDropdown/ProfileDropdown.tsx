@@ -11,6 +11,14 @@ export default function ProfileDropdown(): React.ReactElement {
   const intl = useIntl();
   const { logout, userInfo } = useUser();
 
+  if (!userInfo) {
+    return (
+      <Link className="button" to="/Login">
+        <FormattedMessage {...messages.login} />
+      </Link>
+    );
+  }
+
   return (
     <Dropdown
       className="is-right"
