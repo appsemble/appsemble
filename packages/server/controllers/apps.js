@@ -484,7 +484,7 @@ export async function setAppMember(ctx) {
       await member.AppMember.update({ role });
     }
   } else {
-    await app.addUser(member, { through: { role } });
+    await app.addUser(user, { through: { role } });
   }
 
   ctx.body = {
