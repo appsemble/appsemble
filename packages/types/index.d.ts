@@ -714,7 +714,7 @@ export interface Rating {
   /**
    * The ID of the user who rated the app.
    */
-  UserId: number;
+  UserId: string;
 
   /**
    * The creation date of the rating.

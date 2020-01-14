@@ -49,29 +49,27 @@ export default function ProfileDropdown({
         </figure>
       }
     >
-      <div className="dropdown-content">
-        {showSettings && (
-          <Link className="dropdown-item" to="/Settings">
-            <Icon icon="wrench" />
-            <span>
-              <FormattedMessage {...messages.settings} />
-            </span>
-          </Link>
-        )}
-        {showSettings && showLogin && <hr className="dropdown-divider" />}
-        {showLogin && (
-          <button
-            className={`button dropdown-item ${styles.logoutButton}`}
-            onClick={logout}
-            type="button"
-          >
-            <Icon className={styles.logoutButtonIcon} icon="sign-out-alt" size="small" />
-            <span>
-              <FormattedMessage {...messages.logoutButton} />
-            </span>
-          </button>
-        )}
-      </div>
+      {showSettings && (
+        <Link className="dropdown-item" to="/Settings">
+          <Icon icon="wrench" />
+          <span>
+            <FormattedMessage {...messages.settings} />
+          </span>
+        </Link>
+      )}
+      {showSettings && showLogin && <hr className="dropdown-divider" />}
+      {showLogin && (
+        <button
+          className={`button dropdown-item ${styles.logoutButton}`}
+          onClick={logout}
+          type="button"
+        >
+          <Icon className={styles.logoutButtonIcon} icon="sign-out-alt" size="small" />
+          <span>
+            <FormattedMessage {...messages.logoutButton} />
+          </span>
+        </button>
+      )}
     </Dropdown>
   );
 }

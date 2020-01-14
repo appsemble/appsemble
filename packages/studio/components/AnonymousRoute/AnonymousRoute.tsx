@@ -1,9 +1,9 @@
+import { UserInfo } from '@appsemble/types';
 import * as React from 'react';
 import { Redirect, Route, RouteComponentProps } from 'react-router-dom';
 
 import useQuery from '../../hooks/useQuery';
 import useUser from '../../hooks/useUser';
-import { UserInfo } from '../../types';
 
 interface AnonymousRouteProps extends RouteComponentProps {
   user: UserInfo;

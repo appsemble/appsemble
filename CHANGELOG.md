@@ -9,7 +9,12 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
+- App: Add support for app roles.
 - Server: Add `$author` object to resources if an author is known.
+
+### Changed
+
+- App: Move login functionality from side menu to top-right corner.
 
 ## [0.10.0] - 2019-12-20
 

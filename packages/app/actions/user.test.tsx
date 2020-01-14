@@ -9,12 +9,26 @@ describe('reducer', () => {
   it('should handle LOGIN_SUCCESS actions', () => {
     const result = reducer(initialState, {
       type: 'user/LOGIN_SUCCESS',
-      user: { id: '1234', primaryEmail: null, scope: 'apps:read' },
+      user: {
+        sub: '1234',
+        email: null,
+        scope: 'apps:read',
+        name: null,
+        email_verified: false,
+        picture: null,
+      },
       role: null,
     });
     expect(result).toStrictEqual({
       initialized: false,
-      user: { id: '1234', primaryEmail: null, scope: 'apps:read' },
+      user: {
+        sub: '1234',
+        email: null,
+        scope: 'apps:read',
+        name: null,
+        email_verified: false,
+        picture: null,
+      },
       role: null,
     });
   });
@@ -23,7 +37,14 @@ describe('reducer', () => {
     const result = reducer(
       {
         initialized: true,
-        user: { id: '1234', primaryEmail: null, scope: 'apps:read' },
+        user: {
+          sub: '1234',
+          email: null,
+          scope: 'apps:read',
+          name: null,
+          email_verified: false,
+          picture: null,
+        },
         role: 'Test',
       },
       { type: 'user/LOGOUT' },
@@ -34,12 +55,26 @@ describe('reducer', () => {
   it('should handle INITIALIZED actions', () => {
     const result = reducer(initialState, {
       type: 'user/INITIALIZED',
-      user: { id: '1234', primaryEmail: null, scope: 'apps:read' },
+      user: {
+        sub: '1234',
+        email: null,
+        scope: 'apps:read',
+        name: null,
+        email_verified: false,
+        picture: null,
+      },
       role: null,
     });
     expect(result).toStrictEqual({
       initialized: true,
-      user: { id: '1234', primaryEmail: null, scope: 'apps:read' },
+      user: {
+        sub: '1234',
+        email: null,
+        scope: 'apps:read',
+        name: null,
+        email_verified: false,
+        picture: null,
+      },
       role: null,
     });
   });
