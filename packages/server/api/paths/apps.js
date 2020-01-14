@@ -276,6 +276,93 @@ export default {
       },
     },
   },
+  '/apps/{appId}/members': {
+    parameters: [{ $ref: '#/components/parameters/appId' }],
+    get: {
+      tags: ['app'],
+      description: 'Fetch all members of an app.',
+      operationId: 'getAppMembers',
+      responses: {
+        200: {
+          description: 'The list of app members.',
+          content: {
+            'application/json': {
+              schema: {
+                type: 'array',
+                items: {
+                  $ref: '#/components/schemas/Member',
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+  '/apps/{appId}/members/{memberId}': {
+    parameters: [
+      { $ref: '#/components/parameters/appId' },
+      {
+        name: 'memberId',
+        in: 'path',
+        description: 'The ID of the member on which to perform an operation',
+        required: true,
+        schema: { $ref: '#/components/schemas/Member/properties/id' },
+      },
+    ],
+    get: {
+      tags: ['app'],
+      description: 'Get an app member.',
+      operationId: 'getAppMember',
+      responses: {
+        200: {
+          description: 'The resulting app member.',
+          content: {
+            'application/json': {
+              schema: {
+                $ref: '#/components/schemas/Member',
+              },
+            },
+          },
+        },
+      },
+      security: [{ studio: [] }],
+    },
+    post: {
+      tags: ['app'],
+      description: 'Assign an app role to a member.',
+      operationId: 'setAppMember',
+      requestBody: {
+        content: {
+          'application/json': {
+            schema: {
+              type: 'object',
+              required: ['role'],
+              properties: {
+                role: {
+                  type: 'string',
+                  description: 'The role to assign.',
+                },
+              },
+            },
+          },
+        },
+      },
+      responses: {
+        200: {
+          description: 'The resulting app member.',
+          content: {
+            'application/json': {
+              schema: {
+                $ref: '#/components/schemas/Member',
+              },
+            },
+          },
+        },
+      },
+      security: [{ studio: [] }],
+    },
+  },
   '/apps/{appId}/ratings': {
     parameters: [{ $ref: '#/components/parameters/appId' }],
     get: {

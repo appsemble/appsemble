@@ -34,15 +34,13 @@ export default {
             maxLength: 30,
           },
         },
-        scope: {
+        roles: {
           type: 'array',
-          description: `Specify which authentication scopes are needed to view this page.
+          description: `The list of roles that are allowed to view this page.
 
-          If a user either isn’t logged in, or doesn’t have sufficient permissions to view the page,
-          they will be prompted with a login screen.
-        `,
+          If a user does not have the right role, they are redirected to \`defaultPage\`.`,
           items: {
-            enum: ['*'],
+            type: 'string',
           },
         },
         theme: {
@@ -124,6 +122,15 @@ export default {
         `,
           items: {
             enum: ['*'],
+          },
+        },
+        roles: {
+          type: 'array',
+          description: `The list of roles that are allowed to view this page.
+
+          If a user does not have the right role, they are redirected to \`defaultPage\`.`,
+          items: {
+            type: 'string',
           },
         },
         theme: {

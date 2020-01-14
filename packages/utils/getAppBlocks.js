@@ -2,7 +2,7 @@
  * Extract all blocks from an app recipe.
  *
  * @param {Object} app The app from which to extract the blocks.
- * @returns {Object<String,Object>} A mapping of paths in the app recipe to blocks. The returnes
+ * @returns {Object<String,Object>} A mapping of paths in the app recipe to blocks. The returned
  *   blocks are the same instance as that in the app recipe.
  */
 export default function getAppBlocks(definition) {

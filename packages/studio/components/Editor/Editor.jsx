@@ -2,161 +2,143 @@ import { CardFooterButton, Form, Icon, Loader, Modal } from '@appsemble/react-co
 import { SchemaValidationError, validate, validateStyle } from '@appsemble/utils';
 import axios from 'axios';
 import classNames from 'classnames';
-import yaml from 'js-yaml';
+import { safeDump, safeLoad } from 'js-yaml';
 import isEqual from 'lodash.isequal';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { FormattedMessage } from 'react-intl';
-import { Link } from 'react-router-dom';
+import { FormattedMessage, useIntl } from 'react-intl';
+import { Link, useHistory, useLocation, useRouteMatch } from 'react-router-dom';
 
 import HelmetIntl from '../HelmetIntl';
 import MonacoEditor from './components/MonacoEditor';
 import styles from './Editor.css';
 import messages from './messages';
 
-export default class Editor extends React.Component {
-  frame = React.createRef();
+export default function Editor({ app, getOpenApiSpec, updateApp, openApiSpec, push }) {
+  const [appName, setAppName] = React.useState('');
+  const [recipe, setRecipe] = React.useState(null);
+  const [style, setStyle] = React.useState('');
+  const [sharedStyle, setSharedStyle] = React.useState('');
+  const [initialRecipe, setInitialRecipe] = React.useState('');
+  const [path, setPath] = React.useState('');
+  const [valid, setValid] = React.useState(false);
+  const [dirty, setDirty] = React.useState(true);
+  const [warningDialog, setWarningDialog] = React.useState(false);
+  const [deleteDialog, setDeleteDialog] = React.useState(false);
 
-  static propTypes = {
-    app: PropTypes.shape().isRequired,
-    getOpenApiSpec: PropTypes.func.isRequired,
-    updateApp: PropTypes.func.isRequired,
-    history: PropTypes.shape().isRequired,
-    intl: PropTypes.shape().isRequired,
-    location: PropTypes.shape().isRequired,
-    match: PropTypes.shape().isRequired,
-    openApiSpec: PropTypes.shape(),
-    push: PropTypes.func.isRequired,
-  };
+  const frame = React.useRef();
+  const history = useHistory();
+  const intl = useIntl();
+  const location = useLocation();
+  const match = useRouteMatch();
 
-  static defaultProps = {
-    openApiSpec: null,
-  };
+  React.useEffect(() => {
+    getOpenApiSpec();
+  }, [getOpenApiSpec]);
 
-  state = {
-    appName: '',
-    recipe: '',
-    style: '',
-    sharedStyle: '',
-    initialRecipe: '',
-    valid: false,
-    dirty: true,
-    warningDialog: false,
-    deleteDialog: false,
-  };
-
-  async componentDidMount() {
-    const {
-      app,
-      getOpenApiSpec,
-      history,
-      match,
-      push,
-      location,
-      intl: { formatMessage },
-    } = this.props;
+  React.useEffect(() => {
     const { id } = match.params;
 
     if (!location.hash) {
       history.push('#editor');
     }
 
-    try {
-      await getOpenApiSpec();
-      // Destructuring path, and organizationId also hides these technical details for the user
-      const { path, definition } = app;
-      let { yaml: recipe } = app;
+    const getStyles = async () => {
+      try {
+        const { data: styleData } = await axios.get(`/api/apps/${id}/style/core`);
+        const { data: sharedStyleData } = await axios.get(`/api/apps/${id}/style/shared`);
 
-      if (!recipe) {
-        recipe = yaml.safeDump(definition);
-
-        push({ body: formatMessage(messages.yamlNotFound), color: 'info' });
+        setStyle(styleData);
+        setSharedStyle(sharedStyleData);
+      } catch (error) {
+        if (error.response && (error.response.status === 404 || error.response.status === 401)) {
+          push(intl.formatMessage(messages.appNotFound));
+        } else {
+          push(intl.formatMessage(messages.error));
+        }
       }
+    };
 
-      const { data: style } = await axios.get(`/api/apps/${id}/style/core`);
-      const { data: sharedStyle } = await axios.get(`/api/apps/${id}/style/shared`);
+    getStyles();
 
-      this.setState({
-        appName: definition.name,
-        recipe,
-        style,
-        sharedStyle,
-        initialRecipe: recipe,
-        path,
-      });
-    } catch (e) {
-      if (e.response && (e.response.status === 404 || e.response.status === 401)) {
-        push(formatMessage(messages.appNotFound));
-      } else {
-        push(formatMessage(messages.error));
-      }
-    }
-  }
+    // Destructuring path, and organizationId also hides these technical details for the user
+    const { path: p, definition } = app;
+    let { yaml: yamlRecipe } = app;
 
-  onSave = event => {
-    if (event) {
-      event.preventDefault();
+    if (!yamlRecipe) {
+      yamlRecipe = safeDump(definition);
+      push({ body: intl.formatMessage(messages.yamlNotFound), color: 'info' });
     }
 
-    this.setState(
-      ({ recipe, style, sharedStyle }, { intl: { formatMessage }, openApiSpec, push }) => {
-        const app = {};
-        // Attempt to parse the YAML into a JSON object
-        try {
-          app.definition = yaml.safeLoad(recipe);
-        } catch (error) {
-          push(formatMessage(messages.invalidYaml));
-          return { valid: false, dirty: false };
-        }
-        try {
-          validateStyle(style);
-          validateStyle(sharedStyle);
-        } catch (error) {
-          push(formatMessage(messages.invalidStyle));
-          return { valid: false, dirty: false };
-        }
-        validate(openApiSpec.components.schemas.App, app)
-          .then(() => {
-            this.setState({ valid: true, dirty: false });
+    setAppName(definition.name);
+    setRecipe(yamlRecipe);
+    setInitialRecipe(yamlRecipe);
+    setPath(p);
+  }, [app, getOpenApiSpec, history, intl, location.hash, match.params, push]);
 
-            // YAML and schema appear to be valid, send it to the app preview iframe
-            this.frame.current.contentWindow.postMessage(
-              { type: 'editor/EDIT_SUCCESS', app, style, sharedStyle },
-              window.location.origin,
-            );
-          })
-          .catch(error => {
-            this.setState(() => {
-              if (error instanceof SchemaValidationError) {
-                const errors = error.data;
-                push({
-                  body: formatMessage(messages.schemaValidationFailed, {
-                    properties: Object.keys(errors).join(', '),
-                  }),
-                });
-              } else {
-                push(formatMessage(messages.unexpected));
-              }
+  const onSave = React.useCallback(
+    async event => {
+      if (event) {
+        event.preventDefault();
+      }
 
-              return { valid: false, dirty: false };
-            });
+      const newApp = {};
+      // Attempt to parse the YAML into a JSON object
+      try {
+        newApp.definition = safeLoad(recipe);
+      } catch (error) {
+        push(intl.formatMessage(messages.invalidYaml));
+        setValid(false);
+        setDirty(false);
+        return;
+      }
+
+      try {
+        validateStyle(style);
+        validateStyle(sharedStyle);
+      } catch (error) {
+        push(intl.formatMessage(messages.invalidStyle));
+        setValid(false);
+        setDirty(false);
+        return;
+      }
+
+      try {
+        await validate(openApiSpec.components.schemas.App, newApp);
+        setValid(true);
+        setDirty(false);
+
+        // YAML and schema appear to be valid, send it to the app preview iframe
+        frame.current.contentWindow.postMessage(
+          { type: 'editor/EDIT_SUCCESS', app: newApp, style, sharedStyle },
+          window.location.origin,
+        );
+      } catch (error) {
+        if (error instanceof SchemaValidationError) {
+          const errors = error.data;
+          push({
+            body: intl.formatMessage(messages.schemaValidationFailed, {
+              properties: Object.keys(errors).join(', '),
+            }),
           });
-        return null;
-      },
-    );
-  };
+        } else {
+          push(intl.formatMessage(messages.unexpected));
+        }
 
-  uploadApp = async () => {
-    const { intl, match, push, updateApp } = this.props;
-    const { recipe, style, sharedStyle, valid } = this.state;
+        setValid(false);
+        setDirty(false);
+      }
+    },
+    [intl, openApiSpec, push, recipe, sharedStyle, style],
+  );
 
+  const uploadApp = React.useCallback(async () => {
     if (!valid) {
       return;
     }
 
     const { id } = match.params;
-    const definition = yaml.safeLoad(recipe);
-    let path;
+    const definition = safeLoad(recipe);
 
     try {
       const formData = new FormData();
@@ -168,7 +150,7 @@ export default class Editor extends React.Component {
       formData.append('sharedStyle', new Blob([sharedStyle], { type: 'text/css' }));
 
       const { data } = await axios.patch(`/api/apps/${id}`, formData);
-      path = data.path;
+      setPath(data.path);
       push({ body: intl.formatMessage(messages.updateSuccess), color: 'success' });
 
       // Update Redux state
@@ -183,18 +165,13 @@ export default class Editor extends React.Component {
       return;
     }
 
-    this.setState({
-      appName: definition.name,
-      dirty: true,
-      warningDialog: false,
-      initialRecipe: recipe,
-      path,
-    });
-  };
+    setAppName(definition.name);
+    setDirty(true);
+    setWarningDialog(false);
+    setInitialRecipe(recipe);
+  }, [intl, match.params, push, recipe, sharedStyle, style, updateApp, valid]);
 
-  onDelete = async () => {
-    const { app, intl, push, match, history } = this.props;
-    const { appName } = this.state;
+  const onDelete = React.useCallback(async () => {
     const { id } = match.params;
 
     try {
@@ -209,225 +186,223 @@ export default class Editor extends React.Component {
     } catch (e) {
       push(intl.formatMessage(messages.errorDelete));
     }
-  };
+  }, [app.OrganizationId, appName, history, intl, match.params, push]);
 
-  onDeleteClick = async () => {
-    this.setState({ deleteDialog: true });
-  };
+  const onDeleteClick = React.useCallback(() => setDeleteDialog(true), []);
 
-  onUpload = async () => {
-    const { recipe, initialRecipe, valid } = this.state;
-
+  const onUpload = React.useCallback(async () => {
     if (valid) {
-      const app = yaml.safeLoad(recipe);
-      const originalApp = yaml.safeLoad(initialRecipe);
+      const newApp = safeLoad(recipe);
+      const originalApp = safeLoad(initialRecipe);
 
-      if (!isEqual(app.resources, originalApp.resources)) {
-        this.setState({ warningDialog: true });
+      if (!isEqual(newApp.resources, originalApp.resources)) {
+        setWarningDialog(true);
         return;
       }
 
-      await this.uploadApp();
+      await uploadApp();
     }
-  };
+  }, [initialRecipe, recipe, uploadApp, valid]);
 
-  onMonacoChange = value => {
-    const {
-      location: { hash: tab },
-    } = this.props;
+  const onMonacoChange = React.useCallback(
+    value => {
+      switch (location.hash) {
+        case '#editor':
+          setRecipe(value);
+          break;
+        case '#style-core':
+          setStyle(value);
+          break;
+        case '#style-shared':
+          setSharedStyle(value);
+          break;
+        default:
+          break;
+      }
 
-    switch (tab) {
-      case '#editor':
-        this.setState({ recipe: value, dirty: true });
-        break;
-      case '#style-core':
-        this.setState({ style: value, dirty: true });
-        break;
-      case '#style-shared':
-        this.setState({ sharedStyle: value, dirty: true });
-        break;
-      default:
-        break;
-    }
-  };
+      setDirty(true);
+    },
+    [location.hash],
+  );
 
-  onClose = () => {
-    this.setState({ warningDialog: false, deleteDialog: false });
-  };
+  const onClose = React.useCallback(() => {
+    setWarningDialog(false);
+    setDeleteDialog(false);
+  }, []);
 
-  render() {
-    const {
-      appName,
-      recipe,
-      style,
-      sharedStyle,
-      path,
-      valid,
-      dirty,
-      warningDialog,
-      deleteDialog,
-    } = this.state;
-    const {
-      app,
-      intl,
-      location: { hash: tab },
-    } = this.props;
-    const appUrl = `/@${app.OrganizationId}/${path}`;
+  const appUrl = `/@${app.OrganizationId}/${path}`;
 
-    if (!recipe) {
-      return <Loader />;
-    }
-
-    const onValueChange = this.onMonacoChange;
-    let value;
-    let language;
-
-    switch (tab) {
-      case '#style-core':
-        value = style;
-        language = 'css';
-        break;
-      case '#style-shared':
-        value = sharedStyle;
-        language = 'css';
-        break;
-      case '#editor':
-      default:
-        value = recipe;
-        language = 'yaml';
-    }
-
-    return (
-      <div className={styles.root}>
-        <HelmetIntl title={messages.title} titleValues={{ name: appName }} />
-        <div className={styles.leftPanel}>
-          <Form className={styles.editorForm} onSubmit={this.onSave}>
-            <nav className="navbar">
-              <div className="navbar-brand">
-                <span className="navbar-item">
-                  <button className="button" disabled={!dirty} type="submit">
-                    <Icon icon="vial" />
-                    <span>
-                      <FormattedMessage {...messages.preview} />
-                    </span>
-                  </button>
-                </span>
-                <span className="navbar-item">
-                  <button
-                    className="button"
-                    disabled={!valid || dirty}
-                    onClick={this.onUpload}
-                    type="button"
-                  >
-                    <Icon icon="save" />
-                    <span>
-                      <FormattedMessage {...messages.publish} />
-                    </span>
-                  </button>
-                </span>
-                <span className="navbar-item">
-                  <a className="button" href={appUrl} rel="noopener noreferrer" target="_blank">
-                    <Icon icon="share-square" />
-                    <span>
-                      <FormattedMessage {...messages.viewLive} />
-                    </span>
-                  </a>
-                </span>
-                <span className="navbar-item">
-                  <button className="button is-danger" onClick={this.onDeleteClick} type="button">
-                    <Icon icon="trash-alt" />
-                    <span>
-                      <FormattedMessage {...messages.delete} />
-                    </span>
-                  </button>
-                </span>
-              </div>
-            </nav>
-            <div className={classNames('tabs', 'is-boxed', styles.editorTabs)}>
-              <ul>
-                <li className={classNames({ 'is-active': tab === '#editor' })} value="editor">
-                  <Link to="#editor">
-                    <Icon icon="file-code" />
-                    <FormattedMessage {...messages.recipe} />
-                  </Link>
-                </li>
-                <li
-                  className={classNames({ 'is-active': tab === '#style-core' })}
-                  value="style-core"
-                >
-                  <Link to="#style-core">
-                    <Icon icon="brush" />
-                    <FormattedMessage {...messages.coreStyle} />
-                  </Link>
-                </li>
-                <li
-                  className={classNames({ 'is-active': tab === '#style-shared' })}
-                  value="style-shared"
-                >
-                  <Link to="#style-shared">
-                    <Icon icon="brush" />
-                    <FormattedMessage {...messages.sharedStyle} />
-                  </Link>
-                </li>
-              </ul>
-            </div>
-            <MonacoEditor
-              className={styles.monacoEditor}
-              language={language}
-              onSave={this.onSave}
-              onValueChange={onValueChange}
-              value={value}
-            />
-            <Modal
-              className="is-paddingless"
-              isActive={warningDialog}
-              onClose={this.onClose}
-              title={<FormattedMessage {...messages.resourceWarningTitle} />}
-            >
-              <div className={styles.dialogContent}>
-                <FormattedMessage {...messages.resourceWarning} />
-              </div>
-              <footer className="card-footer">
-                <CardFooterButton onClick={this.onClose}>
-                  <FormattedMessage {...messages.cancel} />
-                </CardFooterButton>
-                <CardFooterButton color="warning" onClick={this.uploadApp}>
-                  <FormattedMessage {...messages.publish} />
-                </CardFooterButton>
-              </footer>
-            </Modal>
-            <Modal
-              className="is-paddingless"
-              isActive={deleteDialog}
-              onClose={this.onClose}
-              title={<FormattedMessage {...messages.deleteWarningTitle} />}
-            >
-              <div className={styles.dialogContent}>
-                <FormattedMessage {...messages.deleteWarning} />
-              </div>
-              <footer className="card-footer">
-                <CardFooterButton onClick={this.onClose}>
-                  <FormattedMessage {...messages.cancel} />
-                </CardFooterButton>
-                <CardFooterButton color="danger" onClick={this.onDelete}>
-                  <FormattedMessage {...messages.delete} />
-                </CardFooterButton>
-              </footer>
-            </Modal>
-          </Form>
-        </div>
-
-        <div className={styles.rightPanel}>
-          {path && (
-            <iframe
-              ref={this.frame}
-              className={styles.appFrame}
-              src={appUrl}
-              title={intl.formatMessage(messages.iframeTitle)}
-            />
-          )}
-        </div>
-      </div>
-    );
+  if (recipe == null) {
+    return <Loader />;
   }
+
+  const onValueChange = onMonacoChange;
+  let value;
+  let language;
+
+  switch (location.hash) {
+    case '#style-core':
+      value = style;
+      language = 'css';
+      break;
+    case '#style-shared':
+      value = sharedStyle;
+      language = 'css';
+      break;
+    case '#editor':
+    default:
+      value = recipe;
+      language = 'yaml';
+  }
+
+  return (
+    <div className={styles.root}>
+      <HelmetIntl title={messages.title} titleValues={{ name: appName }} />
+      <div className={styles.leftPanel}>
+        <Form className={styles.editorForm} onSubmit={onSave}>
+          <nav className="navbar">
+            <div className="navbar-brand">
+              <span className="navbar-item">
+                <button className="button" disabled={!dirty} type="submit">
+                  <Icon icon="vial" />
+                  <span>
+                    <FormattedMessage {...messages.preview} />
+                  </span>
+                </button>
+              </span>
+              <span className="navbar-item">
+                <button
+                  className="button"
+                  disabled={!valid || dirty}
+                  onClick={onUpload}
+                  type="button"
+                >
+                  <Icon icon="save" />
+                  <span>
+                    <FormattedMessage {...messages.publish} />
+                  </span>
+                </button>
+              </span>
+              <span className="navbar-item">
+                <a className="button" href={appUrl} rel="noopener noreferrer" target="_blank">
+                  <Icon icon="share-square" />
+                  <span>
+                    <FormattedMessage {...messages.viewLive} />
+                  </span>
+                </a>
+              </span>
+              <span className="navbar-item">
+                <button className="button is-danger" onClick={onDeleteClick} type="button">
+                  <Icon icon="trash-alt" />
+                  <span>
+                    <FormattedMessage {...messages.delete} />
+                  </span>
+                </button>
+              </span>
+            </div>
+          </nav>
+          <div className={classNames('tabs', 'is-boxed', styles.editorTabs)}>
+            <ul>
+              <li
+                className={classNames({ 'is-active': location.hash === '#editor' })}
+                value="editor"
+              >
+                <Link to="#editor">
+                  <Icon icon="file-code" />
+                  <FormattedMessage {...messages.recipe} />
+                </Link>
+              </li>
+              <li
+                className={classNames({ 'is-active': location.hash === '#style-core' })}
+                value="style-core"
+              >
+                <Link to="#style-core">
+                  <Icon icon="brush" />
+                  <FormattedMessage {...messages.coreStyle} />
+                </Link>
+              </li>
+              <li
+                className={classNames({ 'is-active': location.hash === '#style-shared' })}
+                value="style-shared"
+              >
+                <Link to="#style-shared">
+                  <Icon icon="brush" />
+                  <FormattedMessage {...messages.sharedStyle} />
+                </Link>
+              </li>
+            </ul>
+          </div>
+          <MonacoEditor
+            language={language}
+            onSave={onSave}
+            onValueChange={onValueChange}
+            value={value}
+          />
+          <Modal
+            className="is-paddingless"
+            isActive={warningDialog}
+            onClose={onClose}
+            title={<FormattedMessage {...messages.resourceWarningTitle} />}
+          >
+            <div className={styles.dialogContent}>
+              <FormattedMessage {...messages.resourceWarning} />
+            </div>
+            <footer className="card-footer">
+              <CardFooterButton onClick={onClose}>
+                <FormattedMessage {...messages.cancel} />
+              </CardFooterButton>
+              <CardFooterButton color="warning" onClick={uploadApp}>
+                <FormattedMessage {...messages.publish} />
+              </CardFooterButton>
+            </footer>
+          </Modal>
+          <Modal
+            className="is-paddingless"
+            isActive={deleteDialog}
+            onClose={onClose}
+            title={<FormattedMessage {...messages.deleteWarningTitle} />}
+          >
+            <div className={styles.dialogContent}>
+              <FormattedMessage {...messages.deleteWarning} />
+            </div>
+            <footer className="card-footer">
+              <CardFooterButton onClick={onClose}>
+                <FormattedMessage {...messages.cancel} />
+              </CardFooterButton>
+              <CardFooterButton color="danger" onClick={onDelete}>
+                <FormattedMessage {...messages.delete} />
+              </CardFooterButton>
+            </footer>
+          </Modal>
+        </Form>
+      </div>
+
+      <div className={styles.rightPanel}>
+        {path && (
+          <iframe
+            ref={frame}
+            className={styles.appFrame}
+            src={appUrl}
+            title={intl.formatMessage(messages.iframeTitle)}
+          />
+        )}
+      </div>
+    </div>
+  );
 }
+
+Editor.propTypes = {
+  app: PropTypes.shape().isRequired,
+  getOpenApiSpec: PropTypes.func.isRequired,
+  updateApp: PropTypes.func.isRequired,
+  history: PropTypes.shape().isRequired,
+  intl: PropTypes.shape().isRequired,
+  location: PropTypes.shape().isRequired,
+  match: PropTypes.shape().isRequired,
+  openApiSpec: PropTypes.shape(),
+  push: PropTypes.func.isRequired,
+};
+
+Editor.defaultProps = {
+  openApiSpec: null,
+};

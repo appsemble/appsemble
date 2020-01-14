@@ -1,9 +1,10 @@
 import { Loader } from '@appsemble/react-components';
-import { Action, Block as BlockType } from '@appsemble/types';
+import { Action, Block as BlockType, Security } from '@appsemble/types';
 import React from 'react';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 
 import { ShowDialogAction } from '../../types';
+import checkAppRole from '../../utils/checkAppRole';
 import Block from '../Block';
 import styles from './BlockList.css';
 
@@ -19,10 +20,21 @@ interface BlockListProps {
   onEvent(name: string, callback: Function): void;
   showDialog: ShowDialogAction;
   transitions?: boolean;
+  role: string;
+  security: Security;
 }
 
 interface BlockListState {
   blockStatus: Record<string, boolean>;
+}
+
+function filterBlocks(security: Security, blocks: BlockType[], userRole: string): BlockType[] {
+  return blocks.filter(
+    block =>
+      block.roles === undefined ||
+      block.roles.length === 0 ||
+      block.roles.some(r => checkAppRole(security, r, userRole)),
+  );
 }
 
 export default class BlockList extends React.Component<BlockListProps, BlockListState> {
@@ -32,13 +44,12 @@ export default class BlockList extends React.Component<BlockListProps, BlockList
   };
 
   state = {
-    blockStatus: this.props.blocks.reduce<Record<string, boolean>>(
-      (acc: Record<string, boolean>, block, index) => {
-        acc[`${block.type}${index}`] = false;
-        return acc;
-      },
-      {},
-    ),
+    blockStatus: filterBlocks(this.props.security, this.props.blocks, this.props.role).reduce<
+      Record<string, boolean>
+    >((acc: Record<string, boolean>, block, index) => {
+      acc[`${block.type}${index}`] = false;
+      return acc;
+    }, {}),
   };
 
   ready = (blockId: string): void => {
@@ -48,7 +59,6 @@ export default class BlockList extends React.Component<BlockListProps, BlockList
   render(): React.ReactNode {
     const {
       actionCreators,
-      blocks,
       counter,
       currentPage,
       data,
@@ -58,12 +68,13 @@ export default class BlockList extends React.Component<BlockListProps, BlockList
       onEvent,
       showDialog,
       transitions,
+      security,
+      blocks,
+      role,
     } = this.props;
-
     const { blockStatus } = this.state;
     const isLoading = Object.values(blockStatus).some(s => !s);
-
-    const list = blocks.map((block, index) => {
+    const list = filterBlocks(security, blocks, role).map((block, index) => {
       const content = (
         <Block
           // As long as blocks are in a static list, using the index as a key should be fine.

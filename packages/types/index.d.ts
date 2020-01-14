@@ -2,6 +2,54 @@ import { IconName } from '@fortawesome/fontawesome-common-types';
 import { OpenAPIV3 } from 'openapi-types';
 
 /**
+ * OpenID Connect specifies a set of standard claims about the end-user, which cover common profile
+ * information such as name, contact details, date of birth and locale.
+ *
+ * The Connect2id server can be set up to provide additional custom claims, such as roles and
+ * permissions.
+ */
+export interface UserInfo {
+  /**
+   * The subject (end-user) identifier. This member is always present in a claims set.
+   */
+  sub: string;
+
+  /**
+   * The full name of the end-user, with optional language tag.
+   */
+  name: string;
+
+  /**
+   * The end-user's preferred email address.
+   */
+  email: string;
+
+  /**
+   * True if the end-user's email address has been verified, else false.
+   */
+  // eslint-disable-next-line camelcase
+  email_verified: boolean;
+
+  /**
+   * The URL of the profile picture for the end-user.
+   */
+  picture: string;
+}
+
+export interface Security {
+  default: {
+    role: string;
+    policy?: 'everyone' | 'organization' | 'invite';
+  };
+  roles: {
+    [role: string]: {
+      description?: string;
+      inherits?: string[];
+    };
+  };
+}
+
+/**
  * An object containing information about an authentication method.
  */
 export interface Authentication {
@@ -172,6 +220,11 @@ export interface Block<P = any, A = {}> {
    * The exact meaning of the parameters depends on the block type.
    */
   actions?: A;
+
+  /**
+   * A list of roles that are allowed to view this block.
+   */
+  roles?: string[];
 }
 
 export interface ResourceCall {
@@ -517,6 +570,10 @@ export interface Page {
   name: string;
 
   /**
+   * A list of roles that may view the page.
+   */
+  roles?: string[];
+  /**
    * An optional icon from the fontawesome icon set
    *
    * This will be displayed in the navigation menu.
@@ -568,7 +625,13 @@ export interface AppDefinition {
    */
   description?: string;
 
+  security: Security;
   authentication: Authentication[];
+
+  /**
+   * A list of roles that are required to view pages. Specific page roles override this property.
+   */
+  roles: string[];
 
   /**
    * The default page of the app.
@@ -651,7 +714,7 @@ export interface Rating {
   /**
    * The ID of the user who rated the app.
    */
-  UserId: number;
+  UserId: string;
 
   /**
    * The creation date of the rating.

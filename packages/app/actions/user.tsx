@@ -1,4 +1,4 @@
-import { Authentication } from '@appsemble/types';
+import { Authentication, UserInfo } from '@appsemble/types';
 import axios from 'axios';
 import { IDBPDatabase } from 'idb';
 import jwtDecode from 'jwt-decode';
@@ -7,6 +7,7 @@ import { ThunkAction, ThunkDispatch } from 'redux-thunk';
 
 import { User } from '../types';
 import { AUTH, RW } from '../utils/getDB';
+import settings from '../utils/settings';
 import { State } from './index';
 
 // The buffer between the access token expiration and the refresh token request. A minute should be
@@ -21,6 +22,7 @@ let timeoutId: NodeJS.Timeout;
 interface UserState {
   initialized: boolean;
   user: User;
+  role: string;
 }
 
 interface OAuth2Params {
@@ -42,6 +44,7 @@ interface JwtPayload {
   exp: number;
   scopes: string;
   sub: string;
+  iss: string;
 }
 
 interface DBUser {
@@ -51,17 +54,27 @@ interface DBUser {
   clientSecret: string;
 }
 
+interface Member {
+  id: number;
+  name: string;
+  primaryEmail: string;
+  role: string;
+}
+
 export const initialState: UserState = {
   initialized: false,
   user: null,
+  role: undefined,
 };
 
 interface InitializeAction extends Action<typeof INITIALIZED> {
   user: User;
+  role: string;
 }
 
 interface LoginSuccessAction extends Action<typeof LOGIN_SUCCESS> {
   user: User;
+  role: string;
 }
 
 export type UserAction = InitializeAction | LoginSuccessAction | Action<typeof LOGOUT>;
@@ -74,16 +87,19 @@ export default (state = initialState, action: UserAction): UserState => {
       return {
         initialized: true,
         user: action.user,
+        role: action.role,
       };
     case LOGIN_SUCCESS:
       return {
         ...state,
         user: action.user,
+        role: action.role,
       };
     case LOGOUT:
       return {
         ...state,
         user: null,
+        role: null,
       };
     default:
       return state;
@@ -106,15 +122,15 @@ async function doLogout(
   });
 }
 
-function setupAuth(
+async function setupAuth(
   accessToken: string,
   refreshToken: string,
   url: string,
   db: IDBPDatabase,
   dispatch: UserDispatch,
-): { id: string; scope: string } {
+): Promise<User> {
   const payload = jwtDecode<JwtPayload>(accessToken);
-  const { exp, scopes, sub } = payload;
+  const { exp, scopes, sub, iss } = payload;
   if (exp) {
     const timeout = exp * 1e3 - REFRESH_BUFFER - new Date().getTime();
     if (refreshToken) {
@@ -125,9 +141,20 @@ function setupAuth(
     }
   }
   axios.defaults.headers.common.Authorization = `Bearer ${accessToken}`;
+
+  let userInfo: UserInfo;
+
+  try {
+    const { data } = await axios.get<UserInfo>(`${iss}/api/connect/userinfo`);
+    userInfo = data;
+  } catch (exception) {
+    // do nothing, userinfo endpoint is not available
+  }
+
   return {
-    id: sub,
     scope: scopes,
+    ...userInfo,
+    sub,
   };
 }
 
@@ -137,7 +164,7 @@ async function requestToken(
   db: IDBPDatabase,
   dispatch: UserDispatch,
   refreshURL: string,
-): Promise<ReturnType<typeof setupAuth>> {
+): Promise<User> {
   const { data } = await axios.post(url, new URLSearchParams(params as Record<string, any>));
   const { access_token: accessToken, refresh_token: refreshToken } = data;
   const tx = db.transaction(AUTH, RW);
@@ -163,6 +190,7 @@ async function refreshTokenLogin(
     .objectStore(AUTH)
     .get(0)) as unknown) as DBUser;
   try {
+    let role = null;
     const user = await requestToken(
       url,
       {
@@ -175,9 +203,17 @@ async function refreshTokenLogin(
       dispatch,
       url,
     );
+
+    if (settings.definition.security !== undefined) {
+      ({
+        data: { role },
+      } = await axios.get<Member>(`/api/apps/${settings.id}/members/${user.sub}`));
+    }
+
     dispatch({
       type: LOGIN_SUCCESS,
       user,
+      role,
     });
   } catch (error) {
     doLogout(dispatch, null, db);
@@ -194,27 +230,37 @@ async function refreshTokenLogin(
  */
 export function initAuth(authentication: Authentication): UserThunk {
   return async (dispatch, getState) => {
-    const { db, ...state } = getState();
+    const { db, app } = getState();
     const token = ((await db
       .transaction(AUTH)
       .objectStore(AUTH)
       .get(0)) as unknown) as DBUser;
     let user = null;
+    let role = null;
+
     if (token != null) {
       const auth = (authentication ||
-        state.app.definition.authentication ||
-        state.app.definition.authentication[0]) as Authentication;
-      user = setupAuth(
+        app.definition.authentication ||
+        app.definition.authentication[0]) as Authentication;
+      user = await setupAuth(
         token.accessToken,
         token.refreshToken,
         auth.refreshURL || auth.url,
         db,
         dispatch,
       );
+
+      if (app.definition.security !== undefined) {
+        ({
+          data: { role },
+        } = await axios.get<Member>(`/api/apps/${settings.id}/members/${user.sub}`));
+      }
     }
+
     dispatch({
       type: INITIALIZED,
       user,
+      role,
     });
   };
 }
@@ -248,7 +294,8 @@ export function passwordLogin(
   scope: string,
 ): UserThunk {
   return async (dispatch, getState) => {
-    const { db } = getState();
+    const { db, app } = getState();
+    let role = null;
     const user = await requestToken(
       url,
       {
@@ -262,9 +309,17 @@ export function passwordLogin(
       dispatch,
       refreshURL,
     );
+
+    if (app.definition.security !== undefined) {
+      ({
+        data: { role },
+      } = await axios.get<Member>(`/api/apps/${settings.id}/members/${user.sub}`));
+    }
+
     dispatch({
       type: LOGIN_SUCCESS,
       user,
+      role,
     });
   };
 }
@@ -279,7 +334,8 @@ export function oauthLogin(
   scope: string,
 ): UserThunk {
   return async (dispatch, getState) => {
-    const { db } = getState();
+    const { db, app } = getState();
+    let role = null;
     const user = await requestToken(
       url,
       {
@@ -294,6 +350,12 @@ export function oauthLogin(
       refreshURL,
     );
 
-    dispatch({ type: LOGIN_SUCCESS, user });
+    if (app.definition.security !== undefined) {
+      ({
+        data: { role },
+      } = await axios.get<Member>(`/api/apps/${settings.id}/members/${user.sub}`));
+    }
+
+    dispatch({ type: LOGIN_SUCCESS, user, role });
   };
 }

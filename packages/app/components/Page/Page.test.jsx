@@ -18,8 +18,12 @@ it('should render the blocks for a page', () => {
       getBlockDefs={() => {}}
       hasErrors={false}
       history={{}}
+      intl={{}}
+      logout={() => {}}
       match={{}}
       page={page}
+      pending={false}
+      push={() => {}}
     />,
   );
 
@@ -43,8 +47,12 @@ it('should render tabs pages', () => {
       getBlockDefs={() => {}}
       hasErrors={false}
       history={{}}
+      intl={{}}
+      logout={() => {}}
       match={{}}
       page={page}
+      pending={false}
+      push={() => {}}
     />,
   );
 
@@ -68,8 +76,12 @@ it('should render flow page', () => {
       getBlockDefs={() => {}}
       hasErrors={false}
       history={{}}
+      intl={{}}
+      logout={() => {}}
       match={{}}
       page={page}
+      pending={false}
+      push={() => {}}
     />,
   );
 
@@ -86,8 +98,12 @@ it('should call event listeners when an event is emitted', () => {
       getBlockDefs={() => {}}
       hasErrors={false}
       history={{}}
+      intl={{}}
+      logout={() => {}}
       match={{}}
       page={page}
+      pending={false}
+      push={() => {}}
     />,
   );
 
