@@ -221,20 +221,6 @@ export default {
         },
       },
     },
-    delete: {
-      tags: ['app'],
-      description: `Delete the app icon from the database.
-
-        When the app icon has been deleted, the Appsemble icon will be served.
-      `,
-      operationId: 'deleteAppIcon',
-      responses: {
-        204: {
-          description: 'The icon has been deleted succesfully.',
-        },
-      },
-      security: [{ studio: [] }],
-    },
   },
   '/apps/{appId}/subscriptions': {
     parameters: [{ $ref: '#/components/parameters/appId' }],

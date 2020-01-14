@@ -1,4 +1,6 @@
 export * from './apps';
+export * from './appMembers';
+export * from './appRatings';
 export * from './assets';
 export * from './auth';
 export * from './oauth2';
