@@ -120,7 +120,7 @@ export async function queryResources(ctx) {
 
   const query = generateQuery(ctx, { updatedHash, createdHash });
   const { appId, resourceType } = ctx.params;
-  const { App } = ctx.db.models;
+  const { App, User } = ctx.db.models;
 
   const app = await App.findByPk(appId);
   const { properties } = verifyResourceDefinition(app, resourceType);
@@ -133,6 +133,7 @@ export async function queryResources(ctx) {
     const resources = await app.getResources({
       ...renamedQuery,
       where: { ...renamedQuery.where, type: resourceType },
+      include: [{ model: User, attributes: ['id', 'name'], required: false }],
     });
 
     ctx.body = resources.map(resource => ({
@@ -140,6 +141,7 @@ export async function queryResources(ctx) {
       ...resource.data,
       $created: resource.created,
       $updated: resource.updated,
+      ...(resource.User && { $author: { id: resource.User.id, name: resource.User.name } }),
     }));
   } catch (e) {
     if (query) {
@@ -152,13 +154,14 @@ export async function queryResources(ctx) {
 
 export async function getResourceById(ctx) {
   const { appId, resourceType, resourceId } = ctx.params;
-  const { App } = ctx.db.models;
+  const { App, User } = ctx.db.models;
 
   const app = await App.findByPk(appId);
   verifyResourceDefinition(app, resourceType);
 
   const [resource] = await app.getResources({
     where: { id: resourceId, type: resourceType },
+    include: [{ model: User, attributes: ['name'], required: false }],
     raw: true,
   });
 
@@ -171,6 +174,9 @@ export async function getResourceById(ctx) {
     ...resource.data,
     $created: resource.created,
     $updated: resource.updated,
+    ...(resource.UserId != null && {
+      $author: { id: resource.UserId, name: resource['User.name'] },
+    }),
   };
 }
 
@@ -210,15 +216,8 @@ export async function createResource(ctx) {
 export async function updateResource(ctx) {
   const { appId, resourceType, resourceId } = ctx.params;
   const { App, Resource } = ctx.db.models;
-  // XXX: Uncomment this when Koas allows for parsing tokens despite the endpoint not requiring one.
-  // const { user } = ctx.state;
 
   const app = await App.findByPk(appId);
-
-  // XXX: Restore this once security is properly implemented.
-  // if (!user.organizations.some(organization => organization.id === app.OrganizationId)) {
-  //   throw Boom.forbidden('User does not belong in this organization.');
-  // }
 
   verifyResourceDefinition(app, resourceType);
   let resource = await Resource.findOne({

@@ -10,6 +10,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ### Added
 
 - App: Add support for app roles.
+- Server: Add `$author` object to resources if an author is known.
 
 ### Changed
 

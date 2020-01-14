@@ -291,6 +291,52 @@ describe('resource controller', () => {
     ]);
   });
 
+  it('should return the resource author if it has one', async () => {
+    const app = await App.create(exampleApp(organizationId));
+    const resource = await app.createResource({
+      type: 'testResource',
+      data: { foo: 'foo', bar: 1 },
+      UserId: user.id,
+    });
+
+    const response = await request(server).get(`/api/apps/${app.id}/resources/testResource`);
+
+    expect(response.status).toBe(200);
+    expect(response.body).toStrictEqual([
+      {
+        id: resource.id,
+        foo: 'foo',
+        bar: 1,
+        $created: new Date(0).toJSON(),
+        $updated: new Date(0).toJSON(),
+        $author: { id: user.id, name: user.name },
+      },
+    ]);
+  });
+
+  it('should return the resource author when fetching a single resource if it has one', async () => {
+    const app = await App.create(exampleApp(organizationId));
+    const resource = await app.createResource({
+      type: 'testResource',
+      data: { foo: 'foo', bar: 1 },
+      UserId: user.id,
+    });
+
+    const response = await request(server).get(
+      `/api/apps/${app.id}/resources/testResource/${resource.id}`,
+    );
+
+    expect(response.status).toBe(200);
+    expect(response.body).toStrictEqual({
+      id: resource.id,
+      foo: 'foo',
+      bar: 1,
+      $created: new Date(0).toJSON(),
+      $updated: new Date(0).toJSON(),
+      $author: { id: user.id, name: user.name },
+    });
+  });
+
   it('should be able to create a new resource', async () => {
     const app = await App.create(exampleApp(organizationId));
 
