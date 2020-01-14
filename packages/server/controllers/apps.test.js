@@ -7,75 +7,75 @@ import testSchema from '../utils/test/testSchema';
 import testToken from '../utils/test/testToken';
 import truncate from '../utils/test/truncate';
 
-describe('app controller', () => {
-  let App;
-  let AppBlockStyle;
-  let AppRating;
-  let BlockDefinition;
-  let BlockVersion;
-  let Organization;
-  let User;
-  let db;
-  let request;
-  let server;
-  let authorization;
-  let organizationId;
-  let clock;
-  let user;
+let App;
+let AppBlockStyle;
+let AppRating;
+let BlockDefinition;
+let BlockVersion;
+let Organization;
+let User;
+let db;
+let request;
+let server;
+let authorization;
+let organizationId;
+let clock;
+let user;
 
-  beforeAll(async () => {
-    db = await testSchema('apps');
-    server = await createServer({ db, argv: { host: window.location, secret: 'test' } });
-    ({
-      App,
-      AppBlockStyle,
-      AppRating,
-      BlockDefinition,
-      BlockVersion,
-      Organization,
-      User,
-    } = db.models);
-    request = await createInstance(server);
-  }, 10e3);
+beforeAll(async () => {
+  db = await testSchema('apps');
+  server = await createServer({ db, argv: { host: window.location, secret: 'test' } });
+  ({
+    App,
+    AppBlockStyle,
+    AppRating,
+    BlockDefinition,
+    BlockVersion,
+    Organization,
+    User,
+  } = db.models);
+  request = await createInstance(server);
+}, 10e3);
 
-  beforeEach(async () => {
-    clock = lolex.install();
+beforeEach(async () => {
+  clock = lolex.install();
 
-    await truncate(db);
-    ({ user, authorization } = await testToken(db));
-    ({ id: organizationId } = await user.createOrganization(
-      {
-        id: 'testorganization',
-        name: 'Test Organization',
-      },
-      { through: { role: 'Owner' } },
-    ));
+  await truncate(db);
+  ({ user, authorization } = await testToken(db));
+  ({ id: organizationId } = await user.createOrganization(
+    {
+      id: 'testorganization',
+      name: 'Test Organization',
+    },
+    { through: { role: 'Owner' } },
+  ));
 
-    await BlockDefinition.create({
-      id: '@appsemble/test',
-    });
-    await BlockVersion.create({
-      name: '@appsemble/test',
-      version: '0.0.0',
-      parameters: {
-        properties: {
-          foo: {
-            type: 'number',
-          },
+  await BlockDefinition.create({
+    id: '@appsemble/test',
+  });
+  await BlockVersion.create({
+    name: '@appsemble/test',
+    version: '0.0.0',
+    parameters: {
+      properties: {
+        foo: {
+          type: 'number',
         },
       },
-    });
+    },
   });
+});
 
-  afterEach(() => {
-    clock.uninstall();
-  });
+afterEach(() => {
+  clock.uninstall();
+});
 
-  afterAll(async () => {
-    await request.close();
-    await db.close();
-  });
+afterAll(async () => {
+  await request.close();
+  await db.close();
+});
 
+describe('queryApps', () => {
   it('should return an empty array of apps', async () => {
     const response = await request.get('/api/apps', { headers: { authorization } });
 
@@ -235,7 +235,9 @@ describe('app controller', () => {
       ],
     });
   });
+});
 
+describe('getAppById', () => {
   it('should return 404 when fetching a non-existent app', async () => {
     const response = await request.get('/api/apps/1');
 
@@ -278,7 +280,9 @@ defaultPage: Test Page
       },
     });
   });
+});
 
+describe('queryMyApps', () => {
   it('should be able to fetch filtered apps', async () => {
     const appA = await App.create(
       {
@@ -353,7 +357,9 @@ defaultPage: Test Page
       ],
     });
   });
+});
 
+describe('createApp', () => {
   it('should create an app', async () => {
     const form = new FormData();
     form.append('OrganizationId', organizationId);
@@ -830,7 +836,9 @@ pages:
       data: {},
     });
   });
+});
 
+describe('updateApp', () => {
   it('should not update a non-existent app', async () => {
     const form = new FormData();
     form.append(
@@ -1266,7 +1274,9 @@ pages:
       data: {},
     });
   });
+});
 
+describe('deleteApp', () => {
   it('should delete an app', async () => {
     const form = new FormData();
     form.append('OrganizationId', organizationId);
@@ -1333,7 +1343,9 @@ pages:
       data: {},
     });
   });
+});
 
+describe('patchApp', () => {
   it('should validate and update css when updating an app', async () => {
     const app = await App.create(
       {
@@ -1504,7 +1516,9 @@ pages:
     expect(responseA.status).toBe(400);
     expect(responseB.status).toBe(400);
   });
+});
 
+describe('setAppBlockStyle', () => {
   it('should delete block stylesheet when uploading empty stylesheets for an app', async () => {
     await BlockDefinition.create({
       id: '@appsemble/testblock',
@@ -1740,318 +1754,6 @@ pages:
         message: 'Appsemble definition is invalid.',
         statusCode: 400,
       },
-    });
-  });
-
-  it('should fetch app members', async () => {
-    const app = await App.create({
-      definition: {
-        name: 'Test App',
-        defaultPage: 'Test Page',
-        security: {
-          default: {
-            role: 'Reader',
-            policy: 'everyone',
-          },
-          roles: {
-            Reader: {},
-          },
-        },
-      },
-      path: 'test-app',
-      vapidPublicKey: 'a',
-      vapidPrivateKey: 'b',
-      OrganizationId: organizationId,
-    });
-
-    await app.addUser(user, { through: { role: 'Reader' } });
-
-    const response = await request.get(`/api/apps/${app.id}/members`, {
-      headers: { authorization },
-    });
-    expect(response).toMatchObject({
-      status: 200,
-      data: [
-        {
-          id: user.id,
-          name: 'Test User',
-          primaryEmail: 'test@example.com',
-          role: 'Reader',
-        },
-      ],
-    });
-  });
-
-  it('should return default app member role if policy is set to everyone', async () => {
-    const app = await App.create({
-      definition: {
-        name: 'Test App',
-        defaultPage: 'Test Page',
-        security: {
-          default: {
-            role: 'Reader',
-            policy: 'everyone',
-          },
-          roles: {
-            Reader: {},
-          },
-        },
-      },
-      path: 'test-app',
-      vapidPublicKey: 'a',
-      vapidPrivateKey: 'b',
-      OrganizationId: organizationId,
-    });
-
-    const userB = await User.create({ name: 'Foo', primaryEmail: 'foo@example.com' });
-    const response = await request.get(`/api/apps/${app.id}/members/${user.id}`, {
-      headers: { authorization },
-    });
-    const responseB = await request.get(`/api/apps/${app.id}/members/${userB.id}`, {
-      headers: { authorization },
-    });
-    expect(response).toMatchObject({
-      status: 200,
-      data: {
-        id: user.id,
-        name: 'Test User',
-        primaryEmail: 'test@example.com',
-        role: 'Reader',
-      },
-    });
-    expect(responseB).toMatchObject({
-      status: 200,
-      data: { id: userB.id, name: 'Foo', primaryEmail: 'foo@example.com', role: 'Reader' },
-    });
-  });
-
-  it('should return a 404 on uninvited members if policy is set to organization', async () => {
-    const app = await App.create({
-      definition: {
-        name: 'Test App',
-        defaultPage: 'Test Page',
-        security: {
-          default: {
-            role: 'Reader',
-            policy: 'organization',
-          },
-          roles: {
-            Reader: {},
-          },
-        },
-      },
-      path: 'test-app',
-      vapidPublicKey: 'a',
-      vapidPrivateKey: 'b',
-      OrganizationId: organizationId,
-    });
-
-    const userB = await User.create();
-
-    const response = await request.get(`/api/apps/${app.id}/members/${user.id}`, {
-      headers: { authorization },
-    });
-    const responseB = await request.get(`/api/apps/${app.id}/members/${userB.id}`, {
-      headers: { authorization },
-    });
-
-    expect(response).toMatchObject({
-      status: 200,
-      data: {
-        id: user.id,
-        name: user.name,
-        primaryEmail: user.primaryEmail,
-        role: 'Reader',
-      },
-    });
-
-    expect(responseB).toMatchObject({
-      status: 404,
-      data: {
-        error: 'Not Found',
-        statusCode: 404,
-        message: 'User is not a member of the organization.',
-      },
-    });
-  });
-
-  it('should return a 404 on uninvited organization members if policy is set to invite', async () => {
-    const app = await App.create({
-      definition: {
-        name: 'Test App',
-        defaultPage: 'Test Page',
-        security: {
-          default: {
-            role: 'Reader',
-            policy: 'invite',
-          },
-          roles: {
-            Reader: {},
-          },
-        },
-      },
-      path: 'test-app',
-      vapidPublicKey: 'a',
-      vapidPrivateKey: 'b',
-      OrganizationId: organizationId,
-    });
-
-    const response = await request.get(`/api/apps/${app.id}/members/${user.id}`, {
-      headers: { authorization },
-    });
-
-    expect(response).toMatchObject({
-      status: 404,
-      data: {
-        error: 'Not Found',
-        statusCode: 404,
-        message: 'User is not a member of the app.',
-      },
-    });
-  });
-
-  it('should add app members', async () => {
-    const app = await App.create({
-      definition: {
-        name: 'Test App',
-        defaultPage: 'Test Page',
-        security: {
-          default: {
-            role: 'Reader',
-            policy: 'everyone',
-          },
-          roles: {
-            Reader: {},
-            Admin: {},
-          },
-        },
-      },
-      path: 'test-app',
-      vapidPublicKey: 'a',
-      vapidPrivateKey: 'b',
-      OrganizationId: organizationId,
-    });
-
-    const userB = await User.create({ name: 'Foo', primaryEmail: 'foo@example.com' });
-
-    const response = await request.post(
-      `/api/apps/${app.id}/members/${userB.id}`,
-      { role: 'Admin' },
-      { headers: { authorization } },
-    );
-    expect(response).toMatchObject({
-      status: 200,
-      data: {
-        id: userB.id,
-        name: 'Foo',
-        primaryEmail: 'foo@example.com',
-        role: 'Admin',
-      },
-    });
-  });
-
-  it('should remove app members if role is default', async () => {
-    const app = await App.create({
-      definition: {
-        name: 'Test App',
-        defaultPage: 'Test Page',
-        security: {
-          default: {
-            role: 'Reader',
-            policy: 'everyone',
-          },
-          roles: {
-            Reader: {},
-            Admin: {},
-          },
-        },
-      },
-      path: 'test-app',
-      vapidPublicKey: 'a',
-      vapidPrivateKey: 'b',
-      OrganizationId: organizationId,
-    });
-
-    const userB = await User.create({ name: 'Foo', primaryEmail: 'foo@example.com' });
-    await app.addUser(userB, { through: { role: 'Admin' } });
-
-    const response = await request.post(
-      `/api/apps/${app.id}/members/${userB.id}`,
-      { role: 'Reader' },
-      { headers: { authorization } },
-    );
-    expect(response).toMatchObject({
-      status: 200,
-      data: {
-        id: userB.id,
-        name: 'Foo',
-        primaryEmail: 'foo@example.com',
-        role: 'Reader',
-      },
-    });
-
-    const responseB = await request.get(`/api/apps/${app.id}/members`, {
-      headers: { authorization },
-    });
-    expect(responseB).toMatchObject({
-      status: 200,
-      data: [],
-    });
-  });
-
-  it('should remove app members if role is default with invite policy', async () => {
-    const app = await App.create({
-      definition: {
-        name: 'Test App',
-        defaultPage: 'Test Page',
-        security: {
-          default: {
-            role: 'Reader',
-            policy: 'invite',
-          },
-          roles: {
-            Reader: {},
-            Admin: {},
-          },
-        },
-      },
-      path: 'test-app',
-      vapidPublicKey: 'a',
-      vapidPrivateKey: 'b',
-      OrganizationId: organizationId,
-    });
-
-    const userB = await User.create({ name: 'Foo', primaryEmail: 'foo@example.com' });
-    await app.addUser(userB, { through: { role: 'Admin' } });
-
-    const response = await request.post(
-      `/api/apps/${app.id}/members/${userB.id}`,
-      { role: 'Reader' },
-      { headers: { authorization } },
-    );
-    expect(response).toMatchObject({
-      status: 200,
-      data: {
-        id: userB.id,
-        name: 'Foo',
-        primaryEmail: 'foo@example.com',
-        role: 'Reader',
-      },
-    });
-
-    const responseB = await request.get(`/api/apps/${app.id}/members`, {
-      headers: { authorization },
-    });
-    expect(responseB).toMatchObject({
-      status: 200,
-      data: [
-        {
-          id: userB.id,
-          name: 'Foo',
-          primaryEmail: 'foo@example.com',
-          role: 'Reader',
-        },
-      ],
     });
   });
 });
