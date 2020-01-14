@@ -16,7 +16,6 @@ module.exports = api => {
     'babel-plugin-react-intl-auto',
     ['@babel/plugin-transform-runtime', { helpers: true }],
     production && ['babel-plugin-transform-react-remove-prop-types', { removeImport: true }],
-    'babel-plugin-transform-react-class-to-function',
     '@babel/plugin-proposal-function-bind',
     ['@babel/plugin-proposal-optional-chaining', { loose: true }],
     ['@babel/plugin-proposal-class-properties', { loose: true }],
