@@ -10,7 +10,7 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { Link, useHistory, useLocation, useRouteMatch } from 'react-router-dom';
 
 import HelmetIntl from '../HelmetIntl';
-import MonacoEditor from './components/MonacoEditor';
+import MonacoEditor from '../MonacoEditor';
 import styles from './Editor.css';
 import messages from './messages';
 
