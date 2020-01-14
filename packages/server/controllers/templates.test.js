@@ -1,5 +1,5 @@
+import { createInstance } from 'axios-test-instance';
 import lolex from 'lolex';
-import request from 'supertest';
 
 import createServer from '../utils/createServer';
 import testSchema from '../utils/test/testSchema';
@@ -12,6 +12,7 @@ describe('Template API', () => {
   let token;
   let App;
   let Resource;
+  let request;
   let templates;
   let user;
   let clock;
@@ -20,6 +21,7 @@ describe('Template API', () => {
     db = await testSchema('templates');
 
     server = await createServer({ db, argv: { host: window.location, secret: 'test' } });
+    request = await createInstance(server);
     ({ App, Resource } = db.models);
   }, 10e3);
 
@@ -70,105 +72,116 @@ describe('Template API', () => {
   });
 
   afterAll(async () => {
+    await request.close();
     await db.close();
   });
 
   it('should return a list of available templates', async () => {
-    const { body: result } = await request(server)
-      .get('/api/templates')
-      .set('authorization', token);
+    const response = await request.get('/api/templates', {
+      headers: { authorization: token },
+    });
 
-    expect(result).toHaveLength(2);
-    expect(result).toStrictEqual([
-      {
-        id: templates[0].id,
-        name: templates[0].definition.name,
-        description: templates[0].definition.description,
-        resources: false,
-      },
-      {
-        id: templates[1].id,
-        name: templates[1].definition.name,
-        description: templates[1].definition.description,
-        resources: true,
-      },
-    ]);
+    expect(response).toMatchObject({
+      status: 200,
+      data: [
+        {
+          id: templates[0].id,
+          name: templates[0].definition.name,
+          description: templates[0].definition.description,
+          resources: false,
+        },
+        {
+          id: templates[1].id,
+          name: templates[1].definition.name,
+          description: templates[1].definition.description,
+          resources: true,
+        },
+      ],
+    });
   });
 
   it('should create a new app using a template', async () => {
-    const { body: result } = await request(server)
-      .post('/api/templates')
-      .set('Authorization', token)
-      .send({
+    const response = await request.post(
+      '/api/templates',
+      {
         templateId: templates[0].id,
         name: 'Test app',
         description: 'This is a test app',
         organizationId: 'testorganization',
-      });
-
-    expect(result).toStrictEqual({
-      $created: '1970-01-01T00:00:00.000Z',
-      $updated: '1970-01-01T00:00:00.000Z',
-      OrganizationId: 'testorganization',
-      definition: {
-        description: 'This is a test app',
-        name: 'Test app',
-        pages: [],
       },
-      domain: null,
-      iconUrl: '/api/apps/5/icon',
-      id: 5,
-      path: 'test-app',
-      private: false,
-      yaml: 'name: Test app\ndescription: This is a test app\npages: []\n',
+      { headers: { authorization: token } },
+    );
+
+    expect(response).toMatchObject({
+      status: 201,
+      data: {
+        $created: '1970-01-01T00:00:00.000Z',
+        $updated: '1970-01-01T00:00:00.000Z',
+        OrganizationId: 'testorganization',
+        definition: {
+          description: 'This is a test app',
+          name: 'Test app',
+          pages: [],
+        },
+        domain: null,
+        iconUrl: '/api/apps/5/icon',
+        id: 5,
+        path: 'test-app',
+        private: false,
+        yaml: 'name: Test app\ndescription: This is a test app\npages: []\n',
+      },
     });
   });
 
   it('should create a new app with example resources', async () => {
     const template = templates[1];
-    const { body: result } = await request(server)
-      .post('/api/templates')
-      .set('Authorization', token)
-      .send({
+    const response = await request.post(
+      '/api/templates',
+      {
         templateId: template.id,
         name: 'Test app',
         description: 'This is a test app',
         organizationId: 'testorganization',
         resources: true,
-      });
+      },
+      { headers: { authorization: token } },
+    );
 
-    const { id } = result;
+    const { id } = response.data;
     const resources = await Resource.findAll({ where: { AppId: id, type: 'test' } }, { raw: true });
 
     expect(resources.map(r => r.data)).toStrictEqual([{ name: 'foo' }]);
   });
 
   it('should append a number when creating a new app using a template with a duplicate name', async () => {
-    await request(server)
-      .post('/api/templates')
-      .set('Authorization', token)
-      .send({
+    await request.post(
+      '/api/templates',
+      {
         templateId: templates[0].id,
         name: 'Test app',
         description: 'This is a test app',
         organizationId: 'testorganization',
-      });
+      },
+      { headers: { authorization: token } },
+    );
 
-    const {
-      status,
-      body: { path },
-    } = await request(server)
-      .post('/api/templates')
-      .set('Authorization', token)
-      .send({
+    const response = await request.post(
+      '/api/templates',
+      {
         templateId: templates[0].id,
         name: 'Test app',
         description: 'This is also a test app',
         organizationId: 'testorganization',
-      });
+      },
+      { headers: { authorization: token } },
+    );
 
-    expect(status).toStrictEqual(201);
-    expect(path).toStrictEqual('test-app-2');
+    expect(response).toMatchObject({
+      status: 201,
+      data: {
+        path: 'test-app-2',
+      },
+    });
   });
 
   it('should fall back to append random bytes to the end of the app path after 10 attempts', async () => {
@@ -187,20 +200,22 @@ describe('Template API', () => {
       ),
     );
 
-    const {
-      status,
-      body: { path },
-    } = await request(server)
-      .post('/api/templates')
-      .set('Authorization', token)
-      .send({
+    const response = await request.post(
+      '/api/templates',
+      {
         templateId: templates[0].id,
         name: 'Test app',
         description: 'This is a test app',
         organizationId: 'testorganization',
-      });
+      },
+      { headers: { authorization: token } },
+    );
 
-    expect(status).toStrictEqual(201);
-    expect(path).toMatch(/test-app-(\w){10}/);
+    expect(response).toMatchObject({
+      status: 201,
+      data: {
+        path: expect.stringMatching(/test-app-(\w){10}/),
+      },
+    });
   });
 });

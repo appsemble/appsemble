@@ -1,23 +1,26 @@
+import { createInstance } from 'axios-test-instance';
 import Koa from 'koa';
-import request from 'supertest';
 
 import studioRouter from '.';
 
-let app;
+let request;
 
 beforeEach(async () => {
-  app = new Koa();
-  app.use(studioRouter);
+  request = await createInstance(new Koa().use(studioRouter), { responseType: 'arraybuffer' });
+});
+
+afterEach(async () => {
+  await request.close();
 });
 
 it('should serve the Appsemble icon', async () => {
-  const response = await request(app.callback()).get('/icon-532.png');
-  expect(response.type).toBe('image/png');
-  expect(response.body).toMatchImageSnapshot();
+  const response = await request.get('/icon-532.png');
+  expect(response.headers).toMatchObject({ 'content-type': 'image/png' });
+  expect(response.data).toMatchImageSnapshot();
 });
 
 it('should serve a white background if an opaque icon is requested', async () => {
-  const response = await request(app.callback()).get('/icon-23.png');
-  expect(response.type).toBe('image/png');
-  expect(response.body).toMatchImageSnapshot();
+  const response = await request.get('/icon-23.png');
+  expect(response.headers).toMatchObject({ 'content-type': 'image/png' });
+  expect(response.data).toMatchImageSnapshot();
 });

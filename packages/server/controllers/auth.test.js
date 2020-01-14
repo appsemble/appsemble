@@ -1,5 +1,5 @@
+import { createInstance } from 'axios-test-instance';
 import bcrypt from 'bcrypt';
-import request from 'supertest';
 
 import createServer from '../utils/createServer';
 import testSchema from '../utils/test/testSchema';
@@ -10,12 +10,14 @@ describe('auth controller', () => {
   let EmailAuthorization;
   let ResetPasswordToken;
   let db;
+  let request;
   let server;
 
   beforeAll(async () => {
     db = await testSchema('auth');
 
     server = await createServer({ db, argv: { host: window.location, secret: 'test' } });
+    request = await createInstance(server);
     ({ User, ResetPasswordToken, EmailAuthorization } = db.models);
   }, 10e3);
 
@@ -24,55 +26,51 @@ describe('auth controller', () => {
   });
 
   afterAll(async () => {
+    await request.close();
     await db.close();
   });
 
   it('should register valid email addresses', async () => {
     const data = { email: 'test@example.com', password: 'password' };
-    const response = await request(server)
-      .post('/api/email')
-      .send(data);
+    const response = await request.post('/api/email', data);
 
-    expect(response.status).toBe(201);
+    expect(response).toMatchObject({
+      status: 201,
+      data: {},
+    });
 
     const email = await EmailAuthorization.findByPk('test@example.com');
     const user = await User.findByPk(email.UserId);
 
-    expect(user).toBeDefined();
     expect(user.password).not.toBe('password');
     expect(bcrypt.compareSync(data.password, user.password)).toBe(true);
   });
 
   it('should not register invalid email addresses', async () => {
-    const response = await request(server)
-      .post('/api/email')
-      .send({ email: 'foo', password: 'bar' });
+    const response = await request.post('/api/email', { email: 'foo', password: 'bar' });
 
-    expect(response.status).toBe(400);
+    expect(response).toMatchObject({ status: 400 });
   });
 
   it('should not register duplicate email addresses', async () => {
     await EmailAuthorization.create({ email: 'test@example.com', password: 'unhashed' });
-    const response = await request(server)
-      .post('/api/email')
-      .send({ email: 'test@example.com', password: 'password' });
+    const response = await request.post('/api/email', {
+      email: 'test@example.com',
+      password: 'password',
+    });
 
-    expect(response.status).toBe(409);
+    expect(response).toMatchObject({ status: 409 });
   });
 
   it('should verify existing email addresses', async () => {
-    await request(server)
-      .post('/api/email')
-      .send({ email: 'test@example.com', password: 'password' });
+    await request.post('/api/email', { email: 'test@example.com', password: 'password' });
     const email = await EmailAuthorization.findByPk('test@example.com');
 
     expect(email.verified).toBe(false);
     expect(email.key).not.toBeNull();
 
-    const response = await request(server)
-      .post('/api/email/verify')
-      .send({ token: email.key });
-    expect(response.status).toBe(200);
+    const response = await request.post('/api/email/verify', { token: email.key });
+    expect(response).toMatchObject({ status: 200 });
 
     await email.reload();
     expect(email.verified).toBe(true);
@@ -80,28 +78,20 @@ describe('auth controller', () => {
   });
 
   it('should not verify empty or invalid keys', async () => {
-    const responseA = await request(server).post('/api/email/verify');
-    const responseB = await request(server)
-      .post('/api/email/verify')
-      .send({ token: null });
-    const responseC = await request(server)
-      .post('/api/email/verify')
-      .send({ token: 'invalidkey' });
+    const responseA = await request.post('/api/email/verify');
+    const responseB = await request.post('/api/email/verify', { token: null });
+    const responseC = await request.post('/api/email/verify', { token: 'invalidkey' });
 
-    expect(responseA.status).toBe(415);
-    expect(responseB.status).toBe(400);
-    expect(responseC.status).toBe(404);
+    expect(responseA).toMatchObject({ status: 415 });
+    expect(responseB).toMatchObject({ status: 400 });
+    expect(responseC).toMatchObject({ status: 404 });
   });
 
   it('should create a password reset token', async () => {
     const data = { email: 'test@example.com', password: 'password' };
-    await request(server)
-      .post('/api/email')
-      .send(data);
+    await request.post('/api/email', data);
 
-    const responseA = await request(server)
-      .post('/api/email/reset/request')
-      .send({ email: data.email });
+    const responseA = await request.post('/api/email/reset/request', { email: data.email });
 
     const email = await EmailAuthorization.findOne({ where: { email: data.email } });
 
@@ -109,15 +99,16 @@ describe('auth controller', () => {
       where: { UserId: email.UserId },
     });
 
-    const responseB = await request(server)
-      .post('/api/email/reset')
-      .send({ token: token.token, password: 'newPassword' });
+    const responseB = await request.post('/api/email/reset', {
+      token: token.token,
+      password: 'newPassword',
+    });
 
     const user = await token.getUser();
     await user.reload();
 
-    expect(responseA.status).toBe(204);
-    expect(responseB.status).toBe(204);
+    expect(responseA).toMatchObject({ status: 204 });
+    expect(responseB).toMatchObject({ status: 204 });
     expect(bcrypt.compareSync('newPassword', user.password)).toBe(true);
 
     // Sequelize throws errors when trying to load in null objects.
@@ -127,18 +118,19 @@ describe('auth controller', () => {
   });
 
   it('should not reveal existing emails', async () => {
-    const response = await request(server)
-      .post('/api/email/reset/request')
-      .send({ email: 'idonotexist@example.com' });
+    const response = await request.post('/api/email/reset/request', {
+      email: 'idonotexist@example.com',
+    });
 
-    expect(response.status).toBe(204);
+    expect(response).toMatchObject({ status: 204 });
   });
 
   it('should return not found when resetting using a non-existant token', async () => {
-    const response = await request(server)
-      .post('/api/email/reset')
-      .send({ token: 'idontexist', password: 'whatever' });
+    const response = await request.post('/api/email/reset', {
+      token: 'idontexist',
+      password: 'whatever',
+    });
 
-    expect(response.status).toBe(404);
+    expect(response).toMatchObject({ status: 404 });
   });
 });

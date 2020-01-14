@@ -1,15 +1,21 @@
 import Boom from '@hapi/boom';
+import { createInstance } from 'axios-test-instance';
 import Koa from 'koa';
-import request from 'supertest';
 
 import boom from './boom';
 
 describe('boomMiddleware', () => {
   let app;
+  let request;
 
-  beforeEach(() => {
+  beforeEach(async () => {
     app = new Koa();
     app.use(boom());
+    request = await createInstance(app);
+  });
+
+  afterEach(async () => {
+    await request.close();
   });
 
   it('should catch boom errors', async () => {
@@ -17,18 +23,21 @@ describe('boomMiddleware', () => {
       throw Boom.notFound('Error not found', "It's nowhere to be seen!");
     });
 
-    const response = await request(app.callback()).get('/');
+    const response = await request.get('/');
 
-    expect(response.status).toBe(404);
-    expect(response.body).toStrictEqual({
-      statusCode: 404,
-      error: 'Not Found',
-      message: 'Error not found',
-      data: "It's nowhere to be seen!",
+    expect(response).toMatchObject({
+      status: 404,
+      data: {
+        statusCode: 404,
+        error: 'Not Found',
+        message: 'Error not found',
+        data: "It's nowhere to be seen!",
+      },
     });
   });
 
   it('should rethrow non-boom errors', async () => {
+    app.silent = true;
     const error = new Error('This is a test error');
     let result;
 
@@ -39,7 +48,7 @@ describe('boomMiddleware', () => {
       result = err;
     });
 
-    await request(app.callback()).get('/');
+    await request.get('/');
 
     expect(result).toBe(error);
   });
@@ -51,15 +60,18 @@ describe('boomMiddleware', () => {
       ]);
     });
 
-    const response = await request(app.callback()).get('/');
+    const response = await request.get('/');
 
-    expect(response.headers['www-authenticate']).toBe(
-      'Basic realm="Access to test data", charset="UTF-8"',
-    );
-    expect(response.body).toStrictEqual({
-      statusCode: 401,
-      error: 'Unauthorized',
-      message: 'Not authorized!',
+    expect(response).toMatchObject({
+      status: 401,
+      headers: expect.objectContaining({
+        'www-authenticate': 'Basic realm="Access to test data", charset="UTF-8"',
+      }),
+      data: {
+        statusCode: 401,
+        error: 'Unauthorized',
+        message: 'Not authorized!',
+      },
     });
   });
 });

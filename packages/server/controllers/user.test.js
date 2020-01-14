@@ -1,4 +1,4 @@
-import request from 'supertest';
+import { createInstance } from 'axios-test-instance';
 
 import createServer from '../utils/createServer';
 import testSchema from '../utils/test/testSchema';
@@ -8,6 +8,7 @@ import truncate from '../utils/test/truncate';
 describe('user', () => {
   let db;
   let user;
+  let request;
   let server;
   let token;
   let EmailAuthorization;
@@ -17,6 +18,7 @@ describe('user', () => {
     db = await testSchema('user');
 
     server = await createServer({ db, argv: { host: window.location, secret: 'test' } });
+    request = await createInstance(server);
     ({ EmailAuthorization, Organization } = db.models);
   }, 10e3);
 
@@ -33,60 +35,76 @@ describe('user', () => {
   });
 
   afterAll(async () => {
+    await request.close();
     await db.close();
   });
 
   it('should return a user profile', async () => {
-    const { body } = await request(server)
-      .get('/api/user')
-      .set('Authorization', token);
+    const response = await request.get('/api/user', { headers: { authorization: token } });
 
-    expect(body).toStrictEqual({
-      id: expect.any(Number),
-      name: 'Test User',
-      primaryEmail: 'test@example.com',
-      emails: [{ email: 'test@example.com', primary: true, verified: true }],
-      organizations: [{ id: 'testorganization', name: 'Test Organization' }],
+    expect(response).toMatchObject({
+      status: 200,
+      data: {
+        id: expect.any(Number),
+        name: 'Test User',
+        primaryEmail: 'test@example.com',
+        emails: [{ email: 'test@example.com', primary: true, verified: true }],
+        organizations: [{ id: 'testorganization', name: 'Test Organization' }],
+      },
     });
   });
 
   it('should not return a user profile if not logged in', async () => {
-    const response = await request(server).get('/api/user');
-    expect(response.status).toStrictEqual(401);
+    const response = await request.get('/api/user');
+    expect(response).toMatchObject({ status: 401 });
   });
 
   it('should update the user display name', async () => {
-    const { body } = await request(server)
-      .put('/api/user')
-      .set('Authorization', token)
-      .send({ name: 'John' });
-    expect(body.name).toStrictEqual('John');
+    const response = await request.put(
+      '/api/user',
+      { name: 'John' },
+      { headers: { authorization: token } },
+    );
+
+    expect(response).toMatchObject({
+      status: 200,
+      data: { name: 'John' },
+    });
   });
 
   it('should be possible to add new email addresses', async () => {
-    const response = await request(server)
-      .post('/api/user/email')
-      .set('Authorization', token)
-      .send({ email: 'test2@example.com' });
+    const response = await request.post(
+      '/api/user/email',
+      { email: 'test2@example.com' },
+      { headers: { authorization: token } },
+    );
 
-    expect(response.status).toStrictEqual(201);
+    expect(response).toMatchObject({ status: 201 });
 
-    const { body } = await request(server)
-      .get('/api/user/email')
-      .set('Authorization', token);
-    expect(body).toContainEqual({
-      email: 'test2@example.com',
-      verified: false,
+    const responseB = await request.get('/api/user/email', { headers: { authorization: token } });
+    expect(responseB).toMatchObject({
+      status: 200,
+      data: [
+        {
+          email: 'test2@example.com',
+          verified: false,
+        },
+        {
+          email: 'test@example.com',
+          verified: true,
+        },
+      ],
     });
   });
 
   it('should not be possible to register the same email twice', async () => {
-    const response = await request(server)
-      .post('/api/user/email')
-      .set('Authorization', token)
-      .send({ email: 'test@example.com' });
+    const response = await request.post(
+      '/api/user/email',
+      { email: 'test@example.com' },
+      { headers: { authorization: token } },
+    );
 
-    expect(response.status).toStrictEqual(409);
+    expect(response).toMatchObject({ status: 409 });
   });
 
   it('should set a verified email as primary email', async () => {
@@ -96,41 +114,56 @@ describe('user', () => {
       UserId: user.id,
     });
 
-    const { body } = await request(server)
-      .put('/api/user')
-      .set('Authorization', token)
-      .send({ name: 'Test User', email: 'test2@example.com' });
-    expect(body.email).toStrictEqual('test2@example.com');
+    const response = await request.put(
+      '/api/user',
+      { name: 'Test User', email: 'test2@example.com' },
+      { headers: { authorization: token } },
+    );
+    expect(response).toMatchObject({
+      status: 200,
+      data: {
+        email: 'test2@example.com',
+      },
+    });
   });
 
   it('should not set a non-existent email as primary email', async () => {
-    const response = await request(server)
-      .put('/api/user')
-      .set('Authorization', token)
-      .send({ name: 'Test User', email: 'test2@example.com' });
+    const response = await request.put(
+      '/api/user',
+      { name: 'Test User', email: 'test2@example.com' },
+      { headers: { authorization: token } },
+    );
 
-    expect(response.body).toStrictEqual({
-      statusCode: 404,
-      error: 'Not Found',
-      message: 'No matching email could be found.',
+    expect(response).toMatchObject({
+      status: 404,
+      data: {
+        statusCode: 404,
+        error: 'Not Found',
+        message: 'No matching email could be found.',
+      },
     });
   });
 
   it('should not set an unverified email as primary email', async () => {
-    await request(server)
-      .post('/api/user/email')
-      .set('Authorization', token)
-      .send({ email: 'test2@example.com' });
+    await request.post(
+      '/api/user/email',
+      { email: 'test2@example.com' },
+      { headers: { authorization: token } },
+    );
 
-    const response = await request(server)
-      .put('/api/user')
-      .set('Authorization', token)
-      .send({ name: 'Test User', email: 'test2@example.com' });
+    const response = await request.put(
+      '/api/user',
+      { name: 'Test User', email: 'test2@example.com' },
+      { headers: { authorization: token } },
+    );
 
-    expect(response.body).toStrictEqual({
-      statusCode: 406,
-      error: 'Not Acceptable',
-      message: 'This email address has not been verified.',
+    expect(response).toMatchObject({
+      status: 406,
+      data: {
+        statusCode: 406,
+        error: 'Not Acceptable',
+        message: 'This email address has not been verified.',
+      },
     });
   });
 
@@ -141,18 +174,16 @@ describe('user', () => {
       UserId: user.id,
     });
 
-    const response = await request(server)
-      .delete('/api/user/email')
-      .set('Authorization', token)
-      .send({ email: 'test2@example.com' });
+    const response = await request.delete('/api/user/email', {
+      headers: { authorization: token },
+      data: { email: 'test2@example.com' },
+    });
 
-    expect(response.status).toStrictEqual(204);
+    expect(response).toMatchObject({ status: 204 });
 
-    const { body } = await request(server)
-      .get('/api/user')
-      .set('Authorization', token);
+    const { data } = await request.get('/api/user', { headers: { authorization: token } });
 
-    expect(body.emails).not.toContainEqual({
+    expect(data.emails).not.toContainEqual({
       email: 'test2@example.com',
       verified: true,
       primary: false,
@@ -160,28 +191,34 @@ describe('user', () => {
   });
 
   it('should not delete non-associated emails', async () => {
-    const response = await request(server)
-      .delete('/api/user/email')
-      .set('Authorization', token)
-      .send({ email: 'test2@example.com' });
+    const response = await request.delete('/api/user/email', {
+      headers: { authorization: token },
+      data: { email: 'test2@example.com' },
+    });
 
-    expect(response.body).toStrictEqual({
-      statusCode: 404,
-      error: 'Not Found',
-      message: 'This email address is not associated with your account.',
+    expect(response).toMatchObject({
+      status: 404,
+      data: {
+        statusCode: 404,
+        error: 'Not Found',
+        message: 'This email address is not associated with your account.',
+      },
     });
   });
 
   it('should not delete the last login method', async () => {
-    const response = await request(server)
-      .delete('/api/user/email')
-      .set('Authorization', token)
-      .send({ email: 'test@example.com' });
+    const response = await request.delete('/api/user/email', {
+      headers: { authorization: token },
+      data: { email: 'test@example.com' },
+    });
 
-    expect(response.body).toStrictEqual({
-      statusCode: 406,
-      error: 'Not Acceptable',
-      message: 'Deleting this email results in the inability to access this account.',
+    expect(response).toMatchObject({
+      status: 406,
+      data: {
+        statusCode: 406,
+        error: 'Not Acceptable',
+        message: 'Deleting this email results in the inability to access this account.',
+      },
     });
   });
 
@@ -189,12 +226,15 @@ describe('user', () => {
     const organizationB = await Organization.create({ id: 'testorganizationb' });
     await organizationB.addUser(user.id);
 
-    const response = await request(server)
-      .get('/api/user/organizations')
-      .set('Authorization', token);
-    expect(response.body).toStrictEqual([
-      { id: 'testorganization', name: 'Test Organization', role: 'Owner' },
-      { id: 'testorganizationb', name: null, role: 'Member' },
-    ]);
+    const response = await request.get('/api/user/organizations', {
+      headers: { authorization: token },
+    });
+    expect(response).toMatchObject({
+      status: 200,
+      data: [
+        { id: 'testorganization', name: 'Test Organization', role: 'Owner' },
+        { id: 'testorganizationb', name: null, role: 'Member' },
+      ],
+    });
   });
 });

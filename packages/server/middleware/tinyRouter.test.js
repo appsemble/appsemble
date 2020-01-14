@@ -1,17 +1,24 @@
+import { createInstance } from 'axios-test-instance';
 import Koa from 'koa';
-import request from 'supertest';
 
 import tinyRouter from './tinyRouter';
 
 let app;
 let context;
+let request;
 
-beforeEach(() => {
+beforeEach(async () => {
   app = new Koa();
+  app.silent = true;
   app.use((ctx, next) => {
     context = ctx;
     return next();
   });
+  request = await createInstance(app);
+});
+
+afterEach(async () => {
+  await request.close();
 });
 
 it('should assign the match group to params', async () => {
@@ -23,7 +30,7 @@ it('should assign the match group to params', async () => {
       },
     ]),
   );
-  await request(app.callback()).get('/1/2');
+  await request.get('/1/2');
   expect(context.params).toStrictEqual({ foo: '1', bar: '2' });
 });
 
@@ -40,7 +47,7 @@ it('should throw method not allowed if a URL is matched, but not for the given m
       },
     ]),
   );
-  await request(app.callback()).post('/');
+  await request.post('/');
   expect(error.isBoom).toBe(true);
   expect(error.output.statusCode).toBe(405);
 });
@@ -56,7 +63,7 @@ it('should not call next if there are matching routes', async () => {
     ]),
   );
   app.use(middleware);
-  await request(app.callback()).get('/');
+  await request.get('/');
   expect(middleware).not.toHaveBeenCalled();
 });
 
@@ -64,6 +71,6 @@ it('should call next if there are no matching routes', async () => {
   const middleware = jest.fn();
   app.use(tinyRouter([]));
   app.use(middleware);
-  await request(app.callback()).get('/');
+  await request.get('/');
   expect(middleware).toHaveBeenCalled();
 });
