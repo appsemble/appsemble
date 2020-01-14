@@ -4,6 +4,7 @@ import parseOData from '@wesselkuipers/odata-sequelize';
 import crypto from 'crypto';
 
 import checkRole from '../utils/checkRole';
+import sendNotification from '../utils/sendNotification';
 
 function verifyResourceDefinition(app, resourceType) {
   if (!app) {
@@ -182,7 +183,7 @@ export async function getResourceById(ctx) {
 
 export async function createResource(ctx) {
   const { appId, resourceType } = ctx.params;
-  const { App } = ctx.db.models;
+  const { App, AppSubscription, User } = ctx.db.models;
   const { user } = ctx.state;
 
   const app = await App.findByPk(appId);
@@ -208,6 +209,30 @@ export async function createResource(ctx) {
     data: resource,
     UserId: user && user.id,
   });
+
+  const resourceDefinition = app.definition.resources[resourceType];
+
+  if (
+    resourceDefinition.create &&
+    resourceDefinition.create.hooks &&
+    resourceDefinition.create.hooks.notification
+  ) {
+    const { notification } = resourceDefinition.create.hooks;
+    const roles = notification.to.filter(n => n !== '$author');
+    const subscriptions = await AppSubscription.findAll({
+      where: { AppId: appId },
+      include: [
+        {
+          model: User,
+          include: [{ model: App, where: { id: appId }, through: { where: { role: roles } } }],
+        },
+      ],
+    });
+
+    subscriptions.forEach(subscription => {
+      sendNotification(app, ctx, subscription, { title: resourceType, body: 'Created new' });
+    });
+  }
 
   ctx.body = { id, ...resource, $created: created, $updated: updated };
   ctx.status = 201;

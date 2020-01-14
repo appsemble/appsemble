@@ -14,6 +14,7 @@ import * as webpush from 'web-push';
 import checkRole from '../utils/checkRole';
 import getAppFromRecord from '../utils/getAppFromRecord';
 import getDefaultIcon from '../utils/getDefaultIcon';
+import sendNotification from '../utils/sendNotification';
 
 function getBlockVersions(db) {
   return async blocks => {
@@ -637,46 +638,10 @@ export async function broadcast(ctx) {
 
   await checkRole(ctx, app.OrganizationId, permissions.PushNotifications);
 
-  const { vapidPublicKey: publicKey, vapidPrivateKey: privateKey } = app;
-
   // XXX: Replace with paginated requests
   logger.verbose(`Sending ${app.AppSubscriptions.length} notifications for app ${app.id}`);
-  app.AppSubscriptions.forEach(async subscription => {
-    try {
-      logger.verbose(
-        `Sending push notification based on subscription ${subscription.id} for app ${app.id}`,
-      );
-      await webpush.sendNotification(
-        {
-          endpoint: subscription.endpoint,
-          keys: { auth: subscription.auth, p256dh: subscription.p256dh },
-        },
-        JSON.stringify({
-          title,
-          body,
-          icon: `${ctx.argv.host}/${app.id}/icon-96.png`,
-          badge: `${ctx.argv.host}/${app.id}/icon-96.png`,
-          timestamp: Date.now(),
-        }),
-        {
-          vapidDetails: {
-            // XXX: Make this configurable
-            subject: 'mailto: support@appsemble.com',
-            publicKey,
-            privateKey,
-          },
-        },
-      );
-    } catch (error) {
-      if (!(error instanceof webpush.WebPushError && error.statusCode === 410)) {
-        throw error;
-      }
-
-      logger.verbose(
-        `Removing push notification subscription ${subscription.id} for app ${app.id}`,
-      );
-      await subscription.destroy();
-    }
+  app.AppSubscriptions.forEach(subscription => {
+    sendNotification(app, ctx, subscription, { title, body });
   });
 }
 

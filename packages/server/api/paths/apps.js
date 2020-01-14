@@ -274,6 +274,7 @@ export default {
           description: 'The subscription has successfully been registered.',
         },
       },
+      security: [{ studio: [] }, {}],
     },
   },
   '/apps/{appId}/members': {
