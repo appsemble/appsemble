@@ -2,6 +2,7 @@ import { permissions, SchemaValidationError, validate } from '@appsemble/utils';
 import Boom from '@hapi/boom';
 import parseOData from '@wesselkuipers/odata-sequelize';
 import crypto from 'crypto';
+import { Op } from 'sequelize';
 
 import checkRole from '../utils/checkRole';
 import sendNotification from '../utils/sendNotification';
@@ -115,6 +116,44 @@ const deepRename = (object, keys, { updatedHash, createdHash }) => {
   return obj;
 };
 
+async function sendSubscriptionNotifications(ctx, app, notification, resourceUserId, options) {
+  const { App, AppSubscription, User } = ctx.db.models;
+  const { appId } = ctx.params;
+  const roles = notification.to.filter(n => n !== '$author');
+  const author = resourceUserId && notification.to.includes('$author');
+
+  if (!roles.length && !author) {
+    return;
+  }
+
+  const subscriptions = await AppSubscription.findAll({
+    where: { AppId: appId },
+    include: [
+      {
+        model: User,
+        include: [
+          {
+            model: App,
+            where: { id: appId },
+            through: {
+              where: {
+                [Op.or]: [
+                  ...(author ? [{ UserId: resourceUserId }] : []),
+                  ...(roles.length ? [{ role: roles }] : []),
+                ],
+              },
+            },
+          },
+        ],
+      },
+    ],
+  });
+
+  subscriptions.forEach(subscription => {
+    sendNotification(ctx, app, subscription, options);
+  });
+}
+
 export async function queryResources(ctx) {
   const updatedHash = `updated${crypto.randomBytes(5).toString('hex')}`;
   const createdHash = `created${crypto.randomBytes(5).toString('hex')}`;
@@ -183,7 +222,7 @@ export async function getResourceById(ctx) {
 
 export async function createResource(ctx) {
   const { appId, resourceType } = ctx.params;
-  const { App, AppSubscription, User } = ctx.db.models;
+  const { App } = ctx.db.models;
   const { user } = ctx.state;
 
   const app = await App.findByPk(appId);
@@ -217,20 +256,9 @@ export async function createResource(ctx) {
     resourceDefinition.create.hooks &&
     resourceDefinition.create.hooks.notification
   ) {
-    const { notification } = resourceDefinition.create.hooks;
-    const roles = notification.to.filter(n => n !== '$author');
-    const subscriptions = await AppSubscription.findAll({
-      where: { AppId: appId },
-      include: [
-        {
-          model: User,
-          include: [{ model: App, where: { id: appId }, through: { where: { role: roles } } }],
-        },
-      ],
-    });
-
-    subscriptions.forEach(subscription => {
-      sendNotification(app, ctx, subscription, { title: resourceType, body: 'Created new' });
+    sendSubscriptionNotifications(ctx, app, resourceDefinition.create.hooks.notification, null, {
+      title: resourceType,
+      body: 'Created new',
     });
   }
 
@@ -282,6 +310,18 @@ export async function updateResource(ctx) {
     $created: resource.created,
     $updated: resource.updated,
   };
+
+  const resourceDefinition = app.definition.resources[resourceType];
+  if (
+    resourceDefinition.update &&
+    resourceDefinition.update.hooks &&
+    resourceDefinition.update.hooks.notification
+  ) {
+    sendSubscriptionNotifications(ctx, app, resourceDefinition.update.hooks.notification, null, {
+      title: resourceType,
+      body: `Updated ${resource.id}`,
+    });
+  }
 }
 
 export async function deleteResource(ctx) {
@@ -303,4 +343,22 @@ export async function deleteResource(ctx) {
 
   await resource.destroy();
   ctx.status = 204;
+
+  const resourceDefinition = app.definition.resources[resourceType];
+  if (
+    resourceDefinition.delete &&
+    resourceDefinition.delete.hooks &&
+    resourceDefinition.delete.hooks.notification
+  ) {
+    sendSubscriptionNotifications(
+      ctx,
+      app,
+      resourceDefinition.delete.hooks.notification,
+      resource.UserId,
+      {
+        title: resourceType,
+        body: `Deleted ${resource.id}`,
+      },
+    );
+  }
 }

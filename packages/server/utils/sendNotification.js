@@ -1,7 +1,7 @@
 import { logger } from '@appsemble/node-utils';
 import webpush from 'web-push';
 
-export default async function sendNotification(app, ctx, subscription, options) {
+export default async function sendNotification(ctx, app, subscription, options) {
   try {
     logger.verbose(
       `Sending push notification based on subscription ${subscription.id} for app ${app.id}`,
