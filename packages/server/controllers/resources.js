@@ -128,14 +128,19 @@ async function sendSubscriptionNotifications(ctx, app, notification, resourceUse
 
   const subscriptions = await AppSubscription.findAll({
     where: { AppId: appId },
+    attributes: ['id', 'auth', 'p256dh', 'endpoint'],
     include: [
       {
         model: User,
+        attributes: [],
+        required: true,
         include: [
           {
             model: App,
+            attributes: [],
             where: { id: appId },
             through: {
+              attributes: [],
               where: {
                 [Op.or]: [
                   ...(author ? [{ UserId: resourceUserId }] : []),
