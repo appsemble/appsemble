@@ -8,6 +8,8 @@ export default async function sendNotification(ctx, app, subscription, options) 
     );
 
     const { auth, p256dh, endpoint } = subscription;
+    const { protocol, host } = new URL(ctx.argv.host);
+    const icon = `${protocol}//${app.path}.${app.OrganizationId}.${host}/icon-96.png`;
 
     await webpush.sendNotification(
       {
@@ -15,8 +17,8 @@ export default async function sendNotification(ctx, app, subscription, options) 
         keys: { auth, p256dh },
       },
       JSON.stringify({
-        icon: `${ctx.argv.host}/${app.id}/icon-96.png`,
-        badge: `${ctx.argv.host}/${app.id}/icon-96.png`,
+        icon,
+        badge: icon,
         timestamp: Date.now(),
         ...options,
       }),
