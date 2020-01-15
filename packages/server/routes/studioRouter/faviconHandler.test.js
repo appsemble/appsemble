@@ -1,16 +1,19 @@
+import { createInstance } from 'axios-test-instance';
 import Koa from 'koa';
-import request from 'supertest';
 
 import studioRouter from '.';
 
-let app;
+let request;
 
-beforeEach(async () => {
-  app = new Koa();
-  app.use(studioRouter);
+beforeAll(async () => {
+  request = await createInstance(new Koa().use(studioRouter));
+});
+
+afterAll(async () => {
+  await request.close();
 });
 
 it('should serve the Appsemble icon', async () => {
-  const response = await request(app.callback()).get('/favicon.ico');
-  expect(response.type).toBe('image/x-icon');
+  const response = await request.get('/favicon.ico');
+  expect(response.headers).toMatchObject({ 'content-type': 'image/x-icon' });
 });
