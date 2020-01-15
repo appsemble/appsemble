@@ -133,12 +133,43 @@ export function validateSecurity({ roles, pages, security }) {
   });
 }
 
+/**
+ * Validates the hooks in resource definition to ensure its properties are valid.
+ *
+ * @param {} definition The definition of the app
+ */
+export function validateHooks(definition) {
+  Object.entries(definition.resources).forEach(([resourceKey, resource]) => {
+    Object.entries(resource)
+      .filter(([key]) => key !== 'schema')
+      .forEach(([actionKey, action]) => {
+        const { hooks } = action;
+        if (hooks && hooks.notification && hooks.notification.to) {
+          hooks.notification.to.forEach(to => {
+            if (
+              to !== '$author' &&
+              !Object.prototype.hasOwnProperty.call(definition.security.roles, to)
+            ) {
+              throw new AppsembleValidationError(
+                `Role ‘${to}’ in resources.${resourceKey}.${actionKey}.hooks.notification.to does not exist.`,
+              );
+            }
+          });
+        }
+      });
+  });
+}
+
 export default async function validateAppDefinition(definition, getBlockVersions) {
   const blocks = getAppBlocks(definition);
   const blockVersions = await getBlockVersions(blocks);
 
   if (definition.security) {
     validateSecurity(definition);
+  }
+
+  if (definition.resources) {
+    validateHooks(definition);
   }
 
   await checkBlocks(blocks, blockVersions);
