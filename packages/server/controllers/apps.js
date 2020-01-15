@@ -621,7 +621,6 @@ export async function addSubscription(ctx) {
 export async function broadcast(ctx) {
   const { appId } = ctx.params;
   const { App, AppSubscription } = ctx.db.models;
-  const { user } = ctx.state;
   const { title, body } = ctx.request.body;
 
   const app = await App.findByPk(appId, {
@@ -632,16 +631,12 @@ export async function broadcast(ctx) {
     throw Boom.notFound('App not found');
   }
 
-  if (!user.organizations.some(organization => organization.id === app.OrganizationId)) {
-    throw Boom.forbidden('User does not belong in this app’s organization.');
-  }
-
   await checkRole(ctx, app.OrganizationId, permissions.PushNotifications);
 
   // XXX: Replace with paginated requests
   logger.verbose(`Sending ${app.AppSubscriptions.length} notifications for app ${app.id}`);
   app.AppSubscriptions.forEach(subscription => {
-    sendNotification(app, ctx, subscription, { title, body });
+    sendNotification(ctx, app, subscription, { title, body });
   });
 }
 
