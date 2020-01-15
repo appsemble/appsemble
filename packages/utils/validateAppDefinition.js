@@ -141,7 +141,7 @@ export function validateSecurity({ roles, pages, security }) {
 export function validateHooks(definition) {
   Object.entries(definition.resources).forEach(([resourceKey, resource]) => {
     Object.entries(resource)
-      .filter(([key]) => key !== 'schema')
+      .filter(([key]) => key !== 'schema' && key !== 'blobs')
       .forEach(([actionKey, action]) => {
         const { hooks } = action;
         if (hooks && hooks.notification && hooks.notification.to) {

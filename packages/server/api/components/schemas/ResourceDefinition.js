@@ -74,6 +74,9 @@ export default {
           default: '/api/{resource}/{id}',
           description: 'URL to use for this type of request.',
         },
+        hooks: {
+          $ref: '#/components/schemas/Hooks',
+        },
       },
     },
     update: {
@@ -91,6 +94,9 @@ export default {
           default: '/api/{resource}/{id}',
           description: 'URL to use for this type of request.',
         },
+        hooks: {
+          $ref: '#/components/schemas/Hooks',
+        },
       },
     },
     delete: {
@@ -107,6 +113,9 @@ export default {
           type: 'string',
           default: '/api/{resource}/{id}',
           description: 'URL to use for this type of request.',
+        },
+        hooks: {
+          $ref: '#/components/schemas/Hooks',
         },
       },
     },
