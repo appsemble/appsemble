@@ -407,6 +407,10 @@ reset staging:
       --set "ingress.host=staging.appsemble.review"
       --set "ingress.tls.secretName=staging-tls"
       --set "global.postgresql.existingSecret=postgresql-secret"
+      --set "provision.account.name=$BOT_ACCOUNT_NAME"
+      --set "provision.account.clientCredentials=$APPSEMBLE_CLIENT_CREDENTIALS"
+      --set "provision.account.email=$BOT_ACCOUNT_EMAIL"
+      --set "provision.account.organizations={appsemble,amsterdam}"
       --set "postgresql.fullnameOverride=staging-postgresql"
       --set "sentrySecret=sentry"
 
