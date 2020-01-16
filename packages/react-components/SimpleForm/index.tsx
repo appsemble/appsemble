@@ -7,6 +7,7 @@ interface SimpleFormProps<T> extends Omit<React.ComponentProps<typeof Form>, 'on
   children: React.ReactNode;
   defaultValues: T;
   onSubmit: (values: T) => Promisable<void>;
+  preprocess?: (name: string, newValues: T, oldValues: T) => T;
   resetOnSuccess?: boolean;
 }
 
@@ -27,6 +28,7 @@ export default function SimpleForm<T extends {}>({
   children,
   defaultValues,
   onSubmit,
+  preprocess,
   resetOnSuccess,
   ...props
 }: SimpleFormProps<T>): React.ReactElement {
@@ -75,13 +77,17 @@ export default function SimpleForm<T extends {}>({
   const setValue = React.useCallback(
     (name: string, value: any, errorMessage?: React.ReactNode) => {
       setPristine(false);
-      setValues({
+      let newValues = {
         ...values,
         [name]: value,
-      });
+      };
+      if (preprocess) {
+        newValues = preprocess(name, newValues, values);
+      }
+      setValues(newValues);
       setFormError(name, errorMessage);
     },
-    [setFormError, values],
+    [preprocess, setFormError, values],
   );
 
   return (

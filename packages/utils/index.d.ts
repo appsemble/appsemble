@@ -34,7 +34,7 @@ export function compileFilters(mapperString: string, context?: Context): MapperF
 
 export function remapData(mapperData: any, inputData: any, context?: Context): any;
 
-export function normalize(input: string): string;
+export function normalize(input: string, keepTrailingDash?: false): string;
 export const normalized: RegExp;
 export const partialNormalized: RegExp;
 

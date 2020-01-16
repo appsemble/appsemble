@@ -43,7 +43,7 @@ interface OAuth2Params {
 interface JwtPayload {
   exp: number;
   scopes: string;
-  sub: string;
+  sub: number;
   iss: string;
 }
 
