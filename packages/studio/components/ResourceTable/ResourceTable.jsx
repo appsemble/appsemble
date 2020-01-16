@@ -1,4 +1,5 @@
 import { CardFooterButton, Form, Icon, Input, Loader, Modal } from '@appsemble/react-components';
+import { MessagesContext } from '@appsemble/react-components/hooks/useMessages';
 import axios from 'axios';
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -14,7 +15,6 @@ export default class ResourceTable extends React.Component {
     app: PropTypes.shape().isRequired,
     match: PropTypes.shape().isRequired,
     history: PropTypes.shape().isRequired,
-    push: PropTypes.func.isRequired,
     intl: PropTypes.shape().isRequired,
   };
 
@@ -114,11 +114,11 @@ export default class ResourceTable extends React.Component {
 
     const {
       app,
-      push,
       intl: { formatMessage },
       match,
       history,
     } = this.props;
+    const push = this.context;
     const { editingResource, resources } = this.state;
 
     try {
@@ -145,11 +145,11 @@ export default class ResourceTable extends React.Component {
 
     const {
       app,
-      push,
       intl: { formatMessage },
       match,
       history,
     } = this.props;
+    const push = this.context;
     const { editingResource, resources } = this.state;
 
     try {
@@ -181,9 +181,9 @@ export default class ResourceTable extends React.Component {
     const {
       app,
       match,
-      push,
       intl: { formatMessage },
     } = this.props;
+    const push = this.context;
     const { deletingResource, resources } = this.state;
 
     try {
@@ -203,6 +203,8 @@ export default class ResourceTable extends React.Component {
       push(formatMessage(messages.deleteError));
     }
   };
+
+  static contextType = MessagesContext;
 
   async loadResource() {
     const { app, match } = this.props;

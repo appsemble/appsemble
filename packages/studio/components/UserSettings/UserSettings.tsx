@@ -6,6 +6,7 @@ import {
   SimpleFormError,
   SimpleInput,
   SimpleSubmit,
+  useMessages,
 } from '@appsemble/react-components';
 import axios, { AxiosError } from 'axios';
 import React from 'react';
@@ -17,12 +18,9 @@ import HelmetIntl from '../HelmetIntl';
 import messages from './messages';
 import styles from './UserSettings.css';
 
-interface UserSettingsProps {
-  push: any;
-}
-
-export default function UserSettings({ push }: UserSettingsProps): React.ReactElement {
+export default function UserSettings(): React.ReactElement {
   const intl = useIntl();
+  const push = useMessages();
   const { refreshUserInfo, userInfo } = useUser();
   const [emails, setEmails] = React.useState<UserEmail[]>([]);
   const [deleting, setDeleting] = React.useState<string>(null);

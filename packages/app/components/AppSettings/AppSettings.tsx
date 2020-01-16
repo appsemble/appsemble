@@ -1,5 +1,4 @@
-import { Checkbox, FormComponent } from '@appsemble/react-components';
-import { Message } from '@appsemble/sdk';
+import { Checkbox, FormComponent, useMessages } from '@appsemble/react-components';
 import { AppDefinition } from '@appsemble/types';
 import React from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -15,7 +14,6 @@ interface AppSettingsProps {
   requestPermission: () => Promise<Permission>;
   subscribe: () => Promise<void>;
   unsubscribe: () => Promise<void>;
-  push: (message: Message) => void;
 }
 
 /**
@@ -29,9 +27,9 @@ export default function AppSettings({
   subscribe,
   unsubscribe,
   subscribed,
-  push,
 }: AppSettingsProps): React.ReactElement {
   const intl = useIntl();
+  const push = useMessages();
 
   const onSubscribeClick = async (event: React.ChangeEvent<HTMLInputElement>): Promise<void> => {
     event.preventDefault();

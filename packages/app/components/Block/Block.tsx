@@ -1,5 +1,6 @@
+import { useMessages } from '@appsemble/react-components';
 import { Events } from '@appsemble/sdk';
-import { AppDefinition, Block as BlockType, BlockDefinition, Message } from '@appsemble/types';
+import { AppDefinition, Block as BlockType, BlockDefinition } from '@appsemble/types';
 import { baseTheme, normalize } from '@appsemble/utils';
 import classNames from 'classnames';
 import React from 'react';
@@ -52,7 +53,6 @@ interface BlockProps {
   flowActions: any;
 
   showDialog: ShowDialogAction;
-  showMessage(message: Message): void;
   ready(): void;
 }
 
@@ -73,13 +73,13 @@ export default function Block({
   offEvent,
   onEvent,
   showDialog,
-  showMessage,
   flowActions,
   ready,
 }: BlockProps): React.ReactElement {
   const history = useHistory();
   const match = useRouteMatch();
   const location = useLocation();
+  const push = useMessages();
 
   const ref = React.useRef<HTMLDivElement>();
   const cleanups = React.useRef<Function[]>([]);
@@ -135,7 +135,7 @@ export default function Block({
       definition.theme || pageTheme || block.theme ? `${bulmaBase}?${urlParams}` : bulmaBase;
 
     const utils = {
-      showMessage,
+      showMessage: push,
       addCleanup(fn: Function) {
         cleanups.current.push(fn);
       },
@@ -182,9 +182,9 @@ export default function Block({
     match.path,
     offEvent,
     onEvent,
+    push,
     ready,
     showDialog,
-    showMessage,
   ]);
 
   if (blockDef == null) {

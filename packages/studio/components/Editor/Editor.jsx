@@ -1,4 +1,11 @@
-import { CardFooterButton, Form, Icon, Loader, Modal } from '@appsemble/react-components';
+import {
+  CardFooterButton,
+  Form,
+  Icon,
+  Loader,
+  Modal,
+  useMessages,
+} from '@appsemble/react-components';
 import { SchemaValidationError, validate, validateStyle } from '@appsemble/utils';
 import axios from 'axios';
 import classNames from 'classnames';
@@ -14,7 +21,7 @@ import MonacoEditor from '../MonacoEditor';
 import styles from './Editor.css';
 import messages from './messages';
 
-export default function Editor({ app, getOpenApiSpec, updateApp, openApiSpec, push }) {
+export default function Editor({ app, getOpenApiSpec, updateApp, openApiSpec }) {
   const [appName, setAppName] = React.useState('');
   const [recipe, setRecipe] = React.useState(null);
   const [style, setStyle] = React.useState('');
@@ -31,6 +38,8 @@ export default function Editor({ app, getOpenApiSpec, updateApp, openApiSpec, pu
   const intl = useIntl();
   const location = useLocation();
   const match = useRouteMatch();
+
+  const push = useMessages();
 
   React.useEffect(() => {
     getOpenApiSpec();
@@ -400,7 +409,6 @@ Editor.propTypes = {
   location: PropTypes.shape().isRequired,
   match: PropTypes.shape().isRequired,
   openApiSpec: PropTypes.shape(),
-  push: PropTypes.func.isRequired,
 };
 
 Editor.defaultProps = {

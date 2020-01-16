@@ -6,8 +6,9 @@ import {
   Select,
   SimpleForm,
   SimpleInput,
+  useMessages,
 } from '@appsemble/react-components';
-import { App, Message, Organization, Rating } from '@appsemble/types';
+import { App, Organization, Rating } from '@appsemble/types';
 import { permissions } from '@appsemble/utils';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
@@ -25,16 +26,16 @@ import messages from './messages';
 interface AppDetailsProps extends RouteComponentProps<{ id: string }> {
   app: App;
   updateApp: (app: App) => void;
-  push: (message: Message) => void;
 }
 
-export default function AppDetails({ app, push, updateApp }: AppDetailsProps): JSX.Element {
+export default function AppDetails({ app, updateApp }: AppDetailsProps): JSX.Element {
   const [organization, setOrganization] = useState<Organization>(undefined);
   const [ratings, setRatings] = useState<Rating[]>([]);
   const [showCloneDialog, setShowCloneDialog] = useState(false);
   const history = useHistory();
   const intl = useIntl();
   const organizations = useOrganizations();
+  const push = useMessages();
   const { userInfo } = useUser();
 
   useEffect(() => {

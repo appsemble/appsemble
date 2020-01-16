@@ -1,4 +1,4 @@
-import { Loader } from '@appsemble/react-components';
+import { Loader, useMessages } from '@appsemble/react-components';
 import { App, Message } from '@appsemble/types';
 import axios from 'axios';
 import classNames from 'classnames';
@@ -25,8 +25,9 @@ export type RolesProps = {
   id: string;
 }>;
 
-export default function Roles({ app, push }: RolesProps): React.ReactElement {
+export default function Roles({ app }: RolesProps): React.ReactElement {
   const intl = useIntl();
+  const push = useMessages();
   const { userInfo } = useUser();
   const [members, setMembers] = React.useState<Member[]>();
   const [submittingMemberRoleId, setSubmittingMemberRoleId] = React.useState<number>();

@@ -1,4 +1,4 @@
-import { ErrorHandler } from '@appsemble/react-components';
+import { ErrorHandler, MessagesProvider } from '@appsemble/react-components';
 import React from 'react';
 import { IntlProvider } from 'react-intl';
 import { BrowserRouter } from 'react-router-dom';
@@ -7,7 +7,6 @@ import AppContext from '../AppContext';
 import BottomNavigation from '../BottomNavigation';
 import ErrorFallback from '../ErrorFallback';
 import Main from '../Main';
-import Message from '../Message';
 import PermissionRequest from '../PermissionRequest';
 import SideNavigation from '../SideNavigation';
 
@@ -20,15 +19,16 @@ export default function App() {
   return (
     <IntlProvider defaultLocale="en-US" locale="en-US">
       <ErrorHandler fallback={ErrorFallback}>
-        <BrowserRouter>
-          <AppContext>
-            <PermissionRequest />
-            <Main />
-            <SideNavigation />
-            <BottomNavigation />
-            <Message />
-          </AppContext>
-        </BrowserRouter>
+        <MessagesProvider>
+          <BrowserRouter>
+            <AppContext>
+              <PermissionRequest />
+              <Main />
+              <SideNavigation />
+              <BottomNavigation />
+            </AppContext>
+          </BrowserRouter>
+        </MessagesProvider>
       </ErrorHandler>
     </IntlProvider>
   );

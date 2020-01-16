@@ -1,4 +1,4 @@
-import { ErrorHandler } from '@appsemble/react-components';
+import { ErrorHandler, MessagesProvider } from '@appsemble/react-components';
 import React from 'react';
 import Helmet from 'react-helmet';
 import { IntlProvider } from 'react-intl';
@@ -11,7 +11,6 @@ import AppList from '../AppList';
 import EditPassword from '../EditPassword';
 import ErrorFallback from '../ErrorFallback';
 import Login from '../Login';
-import Message from '../Message';
 import OAuth2Connect from '../OAuth2Connect';
 import OrganizationInvite from '../OrganizationInvite';
 import OrganizationProvider from '../OrganizationProvider';
@@ -30,26 +29,31 @@ export default function App() {
         <UserProvider>
           <OrganizationProvider>
             <ErrorHandler fallback={ErrorFallback}>
-              <Helmet defaultTitle="Appsemble" titleTemplate="Appsemble · %s" />
-              <Toolbar />
-              <Switch>
-                <Route component={AppList} exact path="/apps" />
-                <ProtectedRoute component={Settings} path="/settings" />
-                <Route component={AppContext} path="/apps/:id(\d+)" />
-                <AnonymousRoute component={EditPassword} exact path="/edit-password" />
-                <ProtectedRoute component={OrganizationInvite} exact path="/organization-invite" />
-                <Route component={VerifyEmail} exact path="/verify" />
-                <Route component={OAuth2Connect} exact path="/connect/:provider/callback" />
-                <AnonymousRoute component={Login} exact path="/login" />
-                {settings.enableRegistration && (
-                  <AnonymousRoute component={Register} exact path="/register" />
-                )}
-                <Route component={ResetPassword} exact path="/reset-password" />
-                <Route component={EditPassword} exact path="/edit-password" />
-                <Route component={VerifyEmail} exact path="/verify" />
-                <Redirect to="/apps" />
-              </Switch>
-              <Message />
+              <MessagesProvider>
+                <Helmet defaultTitle="Appsemble" titleTemplate="Appsemble · %s" />
+                <Toolbar />
+                <Switch>
+                  <Route component={AppList} exact path="/apps" />
+                  <ProtectedRoute component={Settings} path="/settings" />
+                  <Route component={AppContext} path="/apps/:id(\d+)" />
+                  <AnonymousRoute component={EditPassword} exact path="/edit-password" />
+                  <ProtectedRoute
+                    component={OrganizationInvite}
+                    exact
+                    path="/organization-invite"
+                  />
+                  <Route component={VerifyEmail} exact path="/verify" />
+                  <Route component={OAuth2Connect} exact path="/connect/:provider/callback" />
+                  <AnonymousRoute component={Login} exact path="/login" />
+                  {settings.enableRegistration && (
+                    <AnonymousRoute component={Register} exact path="/register" />
+                  )}
+                  <Route component={ResetPassword} exact path="/reset-password" />
+                  <Route component={EditPassword} exact path="/edit-password" />
+                  <Route component={VerifyEmail} exact path="/verify" />
+                  <Redirect to="/apps" />
+                </Switch>
+              </MessagesProvider>
             </ErrorHandler>
           </OrganizationProvider>
         </UserProvider>
