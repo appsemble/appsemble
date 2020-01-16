@@ -26,24 +26,24 @@ export default {
           - \`both\`: Allows users to be notified about all resources or a single resource of this type.`,
           enum: ['all', 'single', 'both'],
         },
-      },
-      data: {
-        type: 'object',
-        description: 'The data used to display the content of the notification.',
-        properties: {
-          title: {
-            type: 'string',
-            description: 'The title of the notification.',
-          },
-          body: {
-            type: 'string',
-            description: 'The body of the notification.',
-          },
-          link: {
-            type: 'string',
-            description: `The URL of the page the user gets redirected to after being clicked.
+        data: {
+          type: 'object',
+          description: 'The data used to display the content of the notification.',
+          properties: {
+            title: {
+              type: 'string',
+              description: 'The title of the notification.',
+            },
+            body: {
+              type: 'string',
+              description: 'The body of the notification.',
+            },
+            link: {
+              type: 'string',
+              description: `The URL of the page the user gets redirected to after being clicked.
 
-            If the URL is relative, it will be relative to the app.`,
+              If the URL is relative, it will be relative to the app.`,
+            },
           },
         },
       },
