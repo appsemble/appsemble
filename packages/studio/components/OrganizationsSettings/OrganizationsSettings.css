@@ -14,3 +14,11 @@
 .dialogContent {
   padding: 20px;
 }
+
+.roleSelect {
+  display: inline;
+
+  & :global(.control) {
+    display: inline;
+  }
+}

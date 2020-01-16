@@ -10,7 +10,7 @@ describe('reducer', () => {
     const result = reducer(initialState, {
       type: 'user/LOGIN_SUCCESS',
       user: {
-        sub: '1234',
+        sub: 1234,
         email: null,
         scope: 'apps:read',
         name: null,
@@ -22,7 +22,7 @@ describe('reducer', () => {
     expect(result).toStrictEqual({
       initialized: false,
       user: {
-        sub: '1234',
+        sub: 1234,
         email: null,
         scope: 'apps:read',
         name: null,
@@ -38,7 +38,7 @@ describe('reducer', () => {
       {
         initialized: true,
         user: {
-          sub: '1234',
+          sub: 1234,
           email: null,
           scope: 'apps:read',
           name: null,
@@ -56,7 +56,7 @@ describe('reducer', () => {
     const result = reducer(initialState, {
       type: 'user/INITIALIZED',
       user: {
-        sub: '1234',
+        sub: 1234,
         email: null,
         scope: 'apps:read',
         name: null,
@@ -68,7 +68,7 @@ describe('reducer', () => {
     expect(result).toStrictEqual({
       initialized: true,
       user: {
-        sub: '1234',
+        sub: 1234,
         email: null,
         scope: 'apps:read',
         name: null,

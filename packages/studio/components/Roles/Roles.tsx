@@ -12,7 +12,7 @@ import messages from './messages';
 import styles from './Roles.css';
 
 export interface Member {
-  id: string;
+  id: number;
   name?: string;
   primaryEmail?: string;
   role: string;
@@ -29,7 +29,7 @@ export default function Roles({ app, push }: RolesProps): React.ReactElement {
   const intl = useIntl();
   const { userInfo } = useUser();
   const [members, setMembers] = React.useState<Member[]>();
-  const [submittingMemberRoleId, setSubmittingMemberRoleId] = React.useState<string>();
+  const [submittingMemberRoleId, setSubmittingMemberRoleId] = React.useState<number>();
 
   React.useEffect(() => {
     const getMembers = async (): Promise<void> => {
@@ -63,7 +63,7 @@ export default function Roles({ app, push }: RolesProps): React.ReactElement {
 
   const onChangeRole = async (
     event: React.ChangeEvent<HTMLSelectElement>,
-    userId: string,
+    userId: number,
   ): Promise<void> => {
     event.preventDefault();
     const { value: role } = event.target;

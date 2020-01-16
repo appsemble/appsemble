@@ -9,6 +9,11 @@ interface FormComponentProps {
   children: React.ReactNode;
 
   /**
+   * A class name to pass to the field element.
+   */
+  className?: string;
+
+  /**
    * An optional id for the HTML element. If not set, this will fall back to `name`.
    */
   id?: string;
@@ -36,6 +41,7 @@ interface FormComponentProps {
  */
 export default function FormComponent({
   children,
+  className,
   iconLeft,
   iconRight,
   id,
@@ -43,7 +49,7 @@ export default function FormComponent({
   required,
 }: FormComponentProps): React.ReactElement {
   return (
-    <div className="field">
+    <div className={classNames('field', className)}>
       {label ? (
         <label className="label" htmlFor={id}>
           {label}
