@@ -26,6 +26,18 @@ type CheckboxProps = Omit<React.ComponentPropsWithoutRef<typeof FormComponent>, 
      * Whether or not the checkbox is checked.
      */
     value?: boolean;
+
+    /**
+     * Whether the component should render as a switch or as a square checkbox.
+     */
+    switch?: boolean;
+
+    /**
+     * Whether the label should be displayed to the right of the checkbox or to the left.
+     *
+     * By default (false), the label will be rendered after the checkbox.
+     */
+    isRtl?: boolean;
   };
 
 /**
@@ -39,14 +51,29 @@ export default class Checkbox extends React.Component<CheckboxProps> {
   };
 
   render(): JSX.Element {
-    const { className, error, help, label, name, value, id = name, ...props } = this.props;
+    const {
+      className,
+      error,
+      help,
+      label,
+      name,
+      value,
+      id = name,
+      switch: isSwitch,
+      isRtl,
+      ...props
+    } = this.props;
 
     return (
       <FormComponent id={id} label={label} required>
         <input
           {...props}
           checked={value}
-          className={classNames('is-checkradio', className)}
+          className={classNames(
+            isSwitch ? 'switch' : 'is-checkradio',
+            { 'is-rtl': isRtl },
+            className,
+          )}
           id={id}
           name={name}
           onChange={this.onChange}
