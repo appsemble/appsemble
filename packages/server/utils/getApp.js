@@ -1,9 +1,10 @@
-import { Boom } from '@hapi/boom';
+import Boom from '@hapi/boom';
 
-export default async function getApp({ argv, db, hostname }, queryOptions) {
+export default async function getApp({ argv, db, origin }, queryOptions, url = origin) {
   const { App } = db.models;
 
   const platformHost = new URL(argv.host).hostname;
+  const { hostname } = new URL(url);
 
   if (hostname.endsWith(`.${platformHost}`)) {
     const subdomain = hostname.substring(0, hostname.length - platformHost.length - 1).split('.');
@@ -22,7 +23,7 @@ export default async function getApp({ argv, db, hostname }, queryOptions) {
   return App.findOne({
     ...queryOptions,
     where: {
-      domain: hostname,
+      domain: url,
     },
   });
 }
