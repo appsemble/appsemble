@@ -1,7 +1,6 @@
 import { connect } from 'react-redux';
 
 import { State } from '../../actions';
-import { push } from '../../actions/message';
 import { blockToString } from '../../utils/blockUtils';
 import Block from './Block';
 
@@ -18,4 +17,4 @@ function mapStateToProps(
   };
 }
 
-export default connect(mapStateToProps, { showMessage: push })(Block);
+export default connect(mapStateToProps)(Block);

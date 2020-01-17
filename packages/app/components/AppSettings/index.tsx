@@ -1,7 +1,6 @@
 import { connect } from 'react-redux';
 
 import { State } from '../../actions';
-import { push } from '../../actions/message';
 import { requestPermission, subscribe, unsubscribe } from '../../actions/serviceWorker';
 import AppSettings from './AppSettings';
 
@@ -14,6 +13,4 @@ function mapStateToProps(
   };
 }
 
-export default connect(mapStateToProps, { requestPermission, subscribe, push, unsubscribe })(
-  AppSettings,
-);
+export default connect(mapStateToProps, { requestPermission, subscribe, unsubscribe })(AppSettings);

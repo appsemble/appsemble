@@ -3,7 +3,6 @@ import { withRouter } from 'react-router-dom';
 
 import { State } from '../../actions';
 import { updateApp } from '../../actions/apps';
-import { push } from '../../actions/message';
 import AppDetails from './AppDetails';
 
 function mapStateToProps(
@@ -15,4 +14,4 @@ function mapStateToProps(
   };
 }
 
-export default withRouter(connect(mapStateToProps, { updateApp, push })(AppDetails));
+export default withRouter(connect(mapStateToProps, { updateApp })(AppDetails));

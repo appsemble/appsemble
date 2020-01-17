@@ -3,7 +3,6 @@ import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 
 import { getBlockDefs } from '../../actions/blockDefs';
-import { push } from '../../actions/message';
 import { logout } from '../../actions/user';
 import Page from './Page';
 
@@ -27,7 +26,6 @@ export default withRouter(
     connect(mapStateToProps, {
       getBlockDefs,
       logout,
-      push,
     })(Page),
   ),
 );

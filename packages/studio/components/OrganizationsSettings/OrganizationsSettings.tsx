@@ -7,6 +7,7 @@ import {
   SimpleForm,
   SimpleInput,
   SimpleSubmit,
+  useMessages,
 } from '@appsemble/react-components';
 import { Organization } from '@appsemble/types';
 import { normalize, permissions, roles } from '@appsemble/utils';
@@ -30,10 +31,6 @@ interface LocalOrganization extends Organization {
   invites: Invite[];
 }
 
-interface OrganizationsSettingsProps {
-  push: any;
-}
-
 function calculateOrganizationId(
   name: string,
   newValues: Organization,
@@ -51,10 +48,9 @@ function calculateOrganizationId(
   return newValues;
 }
 
-export default function OrganizationsSettings({
-  push,
-}: OrganizationsSettingsProps): React.ReactElement {
+export default function OrganizationsSettings(): React.ReactElement {
   const intl = useIntl();
+  const push = useMessages();
   const { userInfo } = useUser();
 
   const [loading, setLoading] = React.useState(true);

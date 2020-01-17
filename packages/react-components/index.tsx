@@ -12,7 +12,7 @@ export { default as Input } from './Input';
 export { default as Join } from './Join';
 export { default as Loader } from './Loader';
 export { default as Location } from './Location';
-export { default as Message } from './Message';
+export { default as MessagesProvider } from './MessagesProvider';
 export { default as Modal } from './Modal';
 export { default as PasswordInput } from './PasswordInput';
 export { default as Select } from './Select';
@@ -22,3 +22,5 @@ export { default as SimpleInput } from './SimpleInput';
 export { default as SimpleSubmit } from './SimpleSubmit';
 
 export { default as useClickOutside } from './hooks/useClickOutside';
+export { default as useCounter } from './hooks/useCounter';
+export { default as useMessages } from './hooks/useMessages';

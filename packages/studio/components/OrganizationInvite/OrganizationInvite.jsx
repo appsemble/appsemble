@@ -1,4 +1,5 @@
 import { Loader } from '@appsemble/react-components';
+import { MessagesContext } from '@appsemble/react-components/hooks/useMessages';
 import axios from 'axios';
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
@@ -13,7 +14,6 @@ export default class OrganizationInvite extends React.Component {
   static propTypes = {
     location: PropTypes.shape().isRequired,
     intl: PropTypes.shape().isRequired,
-    push: PropTypes.func.isRequired,
     updateUser: PropTypes.func.isRequired,
   };
 
@@ -27,7 +27,8 @@ export default class OrganizationInvite extends React.Component {
   };
 
   async componentDidMount() {
-    const { location, intl, push } = this.props;
+    const { location, intl } = this.props;
+    const push = this.context;
 
     const params = new URLSearchParams(location.search);
     const token = params.get('token');
@@ -53,7 +54,8 @@ export default class OrganizationInvite extends React.Component {
 
   sendResponse = async response => {
     const { token, organization } = this.state;
-    const { intl, push } = this.props;
+    const { intl } = this.props;
+    const push = this.context;
 
     this.setState({ submitting: true });
 
@@ -81,6 +83,8 @@ export default class OrganizationInvite extends React.Component {
       this.setState({ success: false, submitting: false });
     }
   };
+
+  static contextType = MessagesContext;
 
   render() {
     const { success, organization, submitting, loading, joined } = this.state;

@@ -1,5 +1,6 @@
 import { Checkbox, Form, FormComponent, Icon, Input } from '@appsemble/react-components';
-import { App, Message } from '@appsemble/types';
+import { MessagesContext } from '@appsemble/react-components/hooks/useMessages';
+import { App } from '@appsemble/types';
 import { normalize } from '@appsemble/utils';
 import axios from 'axios';
 import React, { FormEvent, ReactText } from 'react';
@@ -11,7 +12,6 @@ import messages from './messages';
 
 interface AppSettingsProps extends RouteComponentProps<{ id: string }> {
   app: App;
-  push: (message: Message | string) => void;
   updateApp: (app: App) => void;
 }
 
@@ -53,8 +53,9 @@ export default class AppSettings extends React.Component<
   onSubmit = async (event: FormEvent): Promise<void> => {
     event.preventDefault();
 
-    const { app, push, updateApp, intl } = this.props;
+    const { app, updateApp, intl } = this.props;
     const { domain, path, private: isPrivate, icon, originalValues } = this.state;
+    const push = this.context;
 
     const data = new FormData();
 
@@ -106,6 +107,8 @@ export default class AppSettings extends React.Component<
       iconUrl: file ? URL.createObjectURL(file) : `/api/apps/${id}/icon`,
     });
   };
+
+  static contextType = MessagesContext;
 
   render(): JSX.Element {
     const { domain, iconUrl, icon, private: isPrivate, path, dirty } = this.state;

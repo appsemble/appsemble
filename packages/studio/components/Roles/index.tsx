@@ -2,7 +2,6 @@ import { injectIntl } from 'react-intl';
 import { connect } from 'react-redux';
 
 import { State } from '../../actions';
-import { push } from '../../actions/message';
 import Roles, { RolesProps } from './Roles';
 
 function mapStateToProps(state: State, ownProps: RolesProps): Partial<RolesProps> {
@@ -11,4 +10,4 @@ function mapStateToProps(state: State, ownProps: RolesProps): Partial<RolesProps
   };
 }
 
-export default injectIntl(connect(mapStateToProps, { push })(Roles));
+export default injectIntl(connect(mapStateToProps)(Roles));
