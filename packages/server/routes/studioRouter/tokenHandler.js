@@ -3,8 +3,8 @@ import { isPast } from 'date-fns';
 import querystring from 'querystring';
 import raw from 'raw-body';
 
-import { partialNormalized } from '../../../utils/constants/patterns';
 import createJWTResponse from '../../utils/createJWTResponse';
+import getApp from '../../utils/getApp';
 
 class GrantError extends Error {
   constructor(error, status = 400) {
@@ -32,7 +32,7 @@ function checkTokenRequestParameters(query, allowed) {
  */
 export default async function tokenHandler(ctx) {
   const { argv, header } = ctx;
-  const { App, EmailAuthorization, OAuth2ClientCredentials, User } = ctx.db.models;
+  const { EmailAuthorization, OAuth2ClientCredentials, User } = ctx.db.models;
   let aud;
   let refreshToken;
   let scope;
@@ -93,16 +93,7 @@ export default async function tokenHandler(ctx) {
         ]);
 
         // Validate the app as a client.
-        // XXX use origin check when default app domains are implemented.
-        const { pathname } = new URL(header.referer);
-        const match = pathname.match(`/@${partialNormalized.source}/${partialNormalized.source}`);
-        if (!match) {
-          throw new GrantError('invalid_client');
-        }
-        const app = await App.findOne({
-          attributes: ['id'],
-          where: { OrganizationId: match[1], path: match[2] },
-        });
+        const app = await getApp(ctx, { attributes: ['id'] }, header.referer);
         if (!app) {
           throw new GrantError('invalid_client');
         }

@@ -27,6 +27,7 @@ import api from '../api';
 import * as operations from '../controllers';
 import appMapper from '../middleware/appMapper';
 import boom from '../middleware/boom';
+import conditional from '../middleware/conditional';
 import frontend from '../middleware/frontend';
 import oauth2 from '../middleware/oauth2';
 import tinyRouter from '../middleware/tinyRouter';
@@ -70,7 +71,6 @@ export default async function createServer({ app = new Koa(), argv = {}, db, web
   const apiMiddleware = mount(
     '/api',
     compose([
-      cors(),
       await koas(api(), [
         koasSpecHandler(),
         koasSwaggerUI({ url: '/explorer' }),
@@ -104,7 +104,12 @@ export default async function createServer({ app = new Koa(), argv = {}, db, web
 
   app.use(
     appMapper(
-      compose([apiMiddleware, studioRouter, oauth2(argv)]),
+      compose([
+        conditional(ctx => ctx.path.startsWith('/api') || ctx.path === '/oauth2/token', cors()),
+        apiMiddleware,
+        studioRouter,
+        oauth2(argv),
+      ]),
       compose([apiMiddleware, appRouter]),
     ),
   );
