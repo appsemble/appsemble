@@ -11,6 +11,7 @@ function mapStateToProps(
   return {
     definition: state.app.definition,
     subscribed: state.serviceWorker.subscribed,
+    registration: state.serviceWorker.registration,
   };
 }
 

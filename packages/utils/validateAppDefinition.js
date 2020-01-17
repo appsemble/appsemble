@@ -139,9 +139,10 @@ export function validateSecurity({ roles, pages, security }) {
  * @param {} definition The definition of the app
  */
 export function validateHooks(definition) {
+  const filter = ['create', 'update', 'delete'];
   Object.entries(definition.resources).forEach(([resourceKey, resource]) => {
     Object.entries(resource)
-      .filter(([key]) => key !== 'schema' && key !== 'blobs')
+      .filter(([key]) => filter.includes(key))
       .forEach(([actionKey, action]) => {
         const { hooks } = action;
         if (hooks && hooks.notification && hooks.notification.to) {
