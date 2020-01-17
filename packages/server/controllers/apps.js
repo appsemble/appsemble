@@ -598,6 +598,35 @@ export async function deleteAppIcon(ctx) {
   ctx.status = 204;
 }
 
+export async function getSubscription(ctx) {
+  const { appId } = ctx.params;
+  const { endpoint } = ctx.query;
+  const { App, AppSubscription } = ctx.db.models;
+
+  const app = await App.findByPk(appId, {
+    attributes: [],
+    include: [{ attributes: ['id'], model: AppSubscription, required: false, where: { endpoint } }],
+  });
+
+  if (!app) {
+    throw Boom.notFound('App not found');
+  }
+
+  const [appSubscription] = app.AppSubscriptions;
+
+  if (!appSubscription) {
+    throw Boom.notFound('Subscription not found');
+  }
+
+  ctx.body = {
+    person: {
+      create: true,
+      update: false,
+      delete: true,
+    },
+  };
+}
+
 export async function addSubscription(ctx) {
   const { appId } = ctx.params;
   const { App, AppSubscription } = ctx.db.models;

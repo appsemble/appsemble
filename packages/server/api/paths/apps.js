@@ -238,6 +238,40 @@ export default {
   },
   '/apps/{appId}/subscriptions': {
     parameters: [{ $ref: '#/components/parameters/appId' }],
+    get: {
+      tags: ['app'],
+      parameters: [
+        {
+          name: 'endpoint',
+          in: 'query',
+          description: 'The URL of the endpoint associated with the subscription.',
+          required: true,
+          schema: { type: 'string', format: 'uri' },
+        },
+      ],
+      description: 'Fetch all subscription settings of an app.',
+      operationId: 'getSubscription',
+      responses: {
+        200: {
+          description: 'The subscription settings.',
+          content: {
+            'application/json': {
+              schema: {
+                type: 'object',
+                additionalProperties: {
+                  type: 'object',
+                  properties: {
+                    create: { type: 'boolean' },
+                    update: { type: 'boolean' },
+                    delete: { type: 'boolean' },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
     post: {
       tags: ['app'],
       description: 'Subscribe to an app’s push notifications',
