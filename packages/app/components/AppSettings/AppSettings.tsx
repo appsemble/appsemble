@@ -70,7 +70,12 @@ export default function AppSettings({
     );
 
     if (registration) {
-      registration.pushManager.getSubscription().then(async ({ endpoint }) => {
+      registration.pushManager.getSubscription().then(async sub => {
+        if (!sub || !sub.endpoint) {
+          setSubscriptions(subs);
+          return;
+        }
+        const { endpoint } = sub;
         try {
           const { data } = await axios.get<{
             [type: string]: { create: boolean; update: boolean; delete: boolean };

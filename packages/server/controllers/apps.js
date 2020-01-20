@@ -485,7 +485,7 @@ export async function updateSubscription(ctx) {
     throw Boom.notFound('Subscription not found');
   }
 
-  if (!appSubscription.UserId) {
+  if (user && user.id && !appSubscription.UserId) {
     await appSubscription.setUser(user.id);
   }
 
