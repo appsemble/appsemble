@@ -117,7 +117,7 @@ export default function AppDetails({ app, updateApp }: AppDetailsProps): JSX.Ele
               href={
                 app.domain
                   ? `//${app.domain}${window.location.port && `:${window.location.port}`}`
-                  : `/@${app.OrganizationId}/${app.path}`
+                  : `//${app.path}.${app.OrganizationId}.${window.location.host}`
               }
               rel="noopener noreferrer"
               target="_blank"
