@@ -1,7 +1,6 @@
 import {
   Button,
   CardFooterButton,
-  Icon,
   Modal,
   SimpleForm,
   SimpleFormError,
