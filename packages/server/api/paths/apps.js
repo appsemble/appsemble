@@ -310,6 +310,46 @@ export default {
       },
       security: [{ studio: [] }, {}],
     },
+    patch: {
+      tags: ['app'],
+      description: 'Subscribe to an app’s push notifications',
+      operationId: 'updateSubscription',
+      requestBody: {
+        content: {
+          'application/json': {
+            schema: {
+              type: 'object',
+              required: ['endpoint', 'resource', 'action', 'value'],
+              properties: {
+                endpoint: {
+                  type: 'string',
+                  format: 'uri',
+                },
+                resource: {
+                  type: 'string',
+                },
+                action: {
+                  type: 'string',
+                  enum: ['create', 'update', 'delete'],
+                },
+                value: {
+                  type: 'boolean',
+                },
+                resourceId: {
+                  type: 'number',
+                },
+              },
+            },
+          },
+        },
+      },
+      responses: {
+        204: {
+          description: 'The subscription has successfully been updated.',
+        },
+      },
+      security: [{ studio: [] }, {}],
+    },
   },
   '/apps/{appId}/members': {
     parameters: [{ $ref: '#/components/parameters/appId' }],

@@ -601,11 +601,19 @@ export async function deleteAppIcon(ctx) {
 export async function getSubscription(ctx) {
   const { appId } = ctx.params;
   const { endpoint } = ctx.query;
-  const { App, AppSubscription } = ctx.db.models;
+  const { App, AppSubscription, ResourceSubscription } = ctx.db.models;
 
   const app = await App.findByPk(appId, {
     attributes: [],
-    include: [{ attributes: ['id'], model: AppSubscription, required: false, where: { endpoint } }],
+    include: [
+      {
+        attributes: ['id'],
+        model: AppSubscription,
+        include: [ResourceSubscription],
+        required: false,
+        where: { endpoint },
+      },
+    ],
   });
 
   if (!app) {
@@ -618,13 +626,18 @@ export async function getSubscription(ctx) {
     throw Boom.notFound('Subscription not found');
   }
 
-  ctx.body = {
-    person: {
-      create: true,
-      update: false,
-      delete: true,
-    },
-  };
+  ctx.body = appSubscription.ResourceSubscriptions.reduce((acc, { type, action }) => {
+    if (!acc[type]) {
+      acc[type] = {
+        create: false,
+        update: false,
+        delete: false,
+      };
+    }
+
+    acc[type][action] = true;
+    return acc;
+  }, {});
 }
 
 export async function addSubscription(ctx) {
@@ -645,6 +658,53 @@ export async function addSubscription(ctx) {
     auth: keys.auth,
     UserId: user ? user.id : null,
   });
+}
+
+export async function updateSubscription(ctx) {
+  const { appId } = ctx.params;
+  const { App, AppSubscription, ResourceSubscription } = ctx.db.models;
+  const { user } = ctx.state;
+  const { endpoint, resource, action, value } = ctx.request.body;
+
+  const app = await App.findByPk(appId, {
+    attributes: [],
+    include: [
+      {
+        attributes: ['id', 'UserId'],
+        model: AppSubscription,
+        include: [
+          { model: ResourceSubscription, where: { type: resource, action }, required: false },
+        ],
+        required: false,
+        where: { endpoint },
+      },
+    ],
+  });
+
+  if (!app) {
+    throw Boom.notFound('App not found');
+  }
+
+  const [appSubscription] = app.AppSubscriptions;
+
+  if (!appSubscription) {
+    throw Boom.notFound('Subscription not found');
+  }
+
+  if (!appSubscription.UserId) {
+    await appSubscription.setUser(user.id);
+  }
+
+  if (!value) {
+    const [resourceSubscription] = appSubscription.ResourceSubscriptions;
+    if (!resourceSubscription) {
+      return;
+    }
+
+    await resourceSubscription.destroy();
+  } else {
+    await appSubscription.createResourceSubscription({ type: resource, action });
+  }
 }
 
 export async function broadcast(ctx) {

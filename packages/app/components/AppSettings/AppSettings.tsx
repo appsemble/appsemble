@@ -131,19 +131,25 @@ export default function AppSettings({
     action: keyof SubscriptionState,
     value: boolean,
   ): Promise<void> => {
-    await axios.patch(`/api/apps/${settings.id}/subscriptions`, {
-      resource,
-      action,
-      value,
-    });
+    try {
+      const { endpoint } = await registration.pushManager.getSubscription();
+      await axios.patch(`/api/apps/${settings.id}/subscriptions`, {
+        endpoint,
+        resource,
+        action,
+        value,
+      });
 
-    setSubscriptions({
-      ...subscriptions,
-      [resource]: {
-        ...subscriptions[resource],
-        [action]: { ...subscriptions[resource][action], subscribed: value },
-      },
-    });
+      setSubscriptions({
+        ...subscriptions,
+        [resource]: {
+          ...subscriptions[resource],
+          [action]: { ...subscriptions[resource][action], subscribed: value },
+        },
+      });
+    } catch (error) {
+      push({ body: intl.formatMessage(messages.subscribeError), color: 'danger' });
+    }
   };
 
   if (subscriptions == null) {
