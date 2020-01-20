@@ -1,5 +1,4 @@
-import { Checkbox, FormComponent, Loader } from '@appsemble/react-components';
-import { Message } from '@appsemble/sdk';
+import { Checkbox, FormComponent, Loader, useMessages } from '@appsemble/react-components';
 import { AppDefinition, ResourceHooks } from '@appsemble/types';
 import axios from 'axios';
 import React from 'react';
@@ -18,7 +17,6 @@ interface AppSettingsProps {
   requestPermission: () => Promise<Permission>;
   subscribe: () => Promise<void>;
   unsubscribe: () => Promise<void>;
-  push: (message: Message | string) => void;
 }
 
 interface ResourceState {
@@ -43,9 +41,9 @@ export default function AppSettings({
   registration,
   unsubscribe,
   subscribed,
-  push,
 }: AppSettingsProps): React.ReactElement {
   const intl = useIntl();
+  const push = useMessages();
   const [subscriptions, setSubscriptions] = React.useState<ResourceState>();
 
   React.useEffect(() => {

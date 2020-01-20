@@ -1,10 +1,12 @@
+import getApp from '../../utils/getApp';
 import serveIcon from '../serveIcon';
 
 export default async function iconHandler(ctx) {
-  const {
-    params,
-    state: { app },
-  } = ctx;
+  const { params } = ctx;
+  const app = await getApp(ctx, {
+    attributes: ['definition', 'icon'],
+    raw: true,
+  });
   const width = Number(params.width);
   const height = Number(params.height || params.width);
   const { format } = params;

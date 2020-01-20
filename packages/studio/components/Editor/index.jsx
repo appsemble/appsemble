@@ -1,7 +1,6 @@
 import { connect } from 'react-redux';
 
 import { updateApp } from '../../actions/apps';
-import { push } from '../../actions/message';
 import { getOpenApiSpec } from '../../actions/openApi';
 import Editor from './Editor';
 
@@ -12,4 +11,4 @@ function mapStateToProps(state, ownProps) {
   };
 }
 
-export default connect(mapStateToProps, { getOpenApiSpec, push, updateApp })(Editor);
+export default connect(mapStateToProps, { getOpenApiSpec, updateApp })(Editor);

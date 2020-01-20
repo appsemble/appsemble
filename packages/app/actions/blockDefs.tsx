@@ -4,6 +4,7 @@ import { Action } from 'redux';
 import { ThunkAction } from 'redux-thunk';
 
 import { blockToString, normalizeBlockName } from '../utils/blockUtils';
+import settings from '../utils/settings';
 
 const GET_START = 'blockDefs/GET_START';
 const GET_SUCCESS = 'blockDefs/GET_SUCCESS';
@@ -84,7 +85,9 @@ export function getBlockDefs(blocks: Block[]): BlockDefThunk {
     filtered.forEach(async block => {
       try {
         const { data: blockDef } = await axios.get(
-          `/api/blocks/${normalizeBlockName(block.type)}/versions/${block.version}`,
+          `${settings.apiUrl}/api/blocks/${normalizeBlockName(block.type)}/versions/${
+            block.version
+          }`,
         );
         dispatch({
           type: GET_SUCCESS,

@@ -1,4 +1,5 @@
 import { Loader } from '@appsemble/react-components';
+import { MessagesContext } from '@appsemble/react-components/hooks/useMessages';
 import { normalize } from '@appsemble/utils';
 import EventEmitter from 'events';
 import PropTypes from 'prop-types';
@@ -74,7 +75,6 @@ export default class Page extends React.Component {
     pending: PropTypes.bool.isRequired,
     user: PropTypes.shape(),
     logout: PropTypes.func.isRequired,
-    push: PropTypes.func.isRequired,
     intl: PropTypes.shape().isRequired,
   };
 
@@ -196,7 +196,8 @@ export default class Page extends React.Component {
   };
 
   handlePagePermissions = () => {
-    const { page, definition, history, push, logout, intl } = this.props;
+    const { page, definition, history, logout, intl } = this.props;
+    const push = this.context;
 
     const permission = this.checkPagePermissions(page);
     if (!permission) {
@@ -216,7 +217,6 @@ export default class Page extends React.Component {
             body: intl.formatMessage(messages.permissionLogout),
             color: 'danger',
             dismissable: true,
-            timeout: 0,
           });
           logout();
           return;
@@ -249,6 +249,8 @@ export default class Page extends React.Component {
       this.setState({ dialog: null });
     };
   };
+
+  static contextType = MessagesContext;
 
   teardownEvents() {
     if (this.ee) {

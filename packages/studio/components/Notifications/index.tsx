@@ -1,7 +1,6 @@
 import { App } from '@appsemble/types';
 import { connect } from 'react-redux';
 
-import { push } from '../../actions/message';
 import Notifications from './Notifications';
 
 function mapStateToProps(
@@ -13,4 +12,4 @@ function mapStateToProps(
   };
 }
 
-export default connect(mapStateToProps, { push })(Notifications);
+export default connect(mapStateToProps)(Notifications);

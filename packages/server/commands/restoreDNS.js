@@ -52,5 +52,5 @@ export async function handler(argv) {
   }
 
   const dnsConfig = await dns(argv);
-  await bulkDNSRestore(db, dnsConfig, 50);
+  await bulkDNSRestore(new URL(argv.host).hostname, db, dnsConfig, 50);
 }

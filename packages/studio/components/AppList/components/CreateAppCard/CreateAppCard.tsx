@@ -7,7 +7,7 @@ import {
   SimpleFormError,
   SimpleInput,
 } from '@appsemble/react-components';
-import { App, Message } from '@appsemble/types';
+import { App } from '@appsemble/types';
 import axios, { AxiosError } from 'axios';
 import classNames from 'classnames';
 import React from 'react';
@@ -36,7 +36,6 @@ interface CreateAppCardProps {
     },
     organization: { id: string },
   ) => Promise<App>;
-  push: (message: Message) => void;
 }
 
 export default function CreateAppCard({ createTemplateApp }: CreateAppCardProps): JSX.Element {
@@ -147,17 +146,16 @@ export default function CreateAppCard({ createTemplateApp }: CreateAppCardProps)
         />
         <SimpleInput
           component={Select}
-          disabled={organizations && organizations.length === 1}
+          disabled={organizations?.length === 1}
           label={<FormattedMessage {...messages.organization} />}
           name="selectedOrganization"
           required
         >
-          {organizations &&
-            organizations.map((organization, index) => (
-              <option key={organization.id} value={index}>
-                {organization.id}
-              </option>
-            ))}
+          {organizations?.map((organization, index) => (
+            <option key={organization.id} value={index}>
+              {organization.id}
+            </option>
+          ))}
         </SimpleInput>
         <SimpleInput
           label={<FormattedMessage {...messages.description} />}

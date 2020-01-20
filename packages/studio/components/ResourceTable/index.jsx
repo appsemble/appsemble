@@ -1,7 +1,6 @@
 import { injectIntl } from 'react-intl';
 import { connect } from 'react-redux';
 
-import { push } from '../../actions/message';
 import ResourceTable from './ResourceTable';
 
 function mapStateToProps(state, ownProps) {
@@ -10,4 +9,4 @@ function mapStateToProps(state, ownProps) {
   };
 }
 
-export default injectIntl(connect(mapStateToProps, { push })(ResourceTable));
+export default injectIntl(connect(mapStateToProps)(ResourceTable));

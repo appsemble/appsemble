@@ -1,5 +1,5 @@
+import { createInstance } from 'axios-test-instance';
 import lolex from 'lolex';
-import request from 'supertest';
 
 import createServer from '../utils/createServer';
 import testSchema from '../utils/test/testSchema';
@@ -10,6 +10,7 @@ describe('resource controller', () => {
   let App;
   let Resource;
   let db;
+  let request;
   let server;
   let token;
   let organizationId;
@@ -46,6 +47,7 @@ describe('resource controller', () => {
   beforeAll(async () => {
     db = await testSchema('resources');
     server = await createServer({ db, argv: { host: window.location, secret: 'test' } });
+    request = await createInstance(server);
     ({ App, Resource } = db.models);
   }, 10e3);
 
@@ -67,6 +69,7 @@ describe('resource controller', () => {
   });
 
   afterAll(async () => {
+    await request.close();
     await db.close();
   });
 
@@ -74,16 +77,16 @@ describe('resource controller', () => {
     const app = await App.create(exampleApp(organizationId));
 
     const resource = await app.createResource({ type: 'testResource', data: { foo: 'bar' } });
-    const response = await request(server).get(
-      `/api/apps/${app.id}/resources/testResource/${resource.id}`,
-    );
+    const response = await request.get(`/api/apps/${app.id}/resources/testResource/${resource.id}`);
 
-    expect(response.status).toBe(200);
-    expect(response.body).toStrictEqual({
-      id: resource.id,
-      foo: 'bar',
-      $created: new Date(0).toJSON(),
-      $updated: new Date(0).toJSON(),
+    expect(response).toMatchObject({
+      status: 200,
+      data: {
+        id: resource.id,
+        foo: 'bar',
+        $created: new Date(0).toJSON(),
+        $updated: new Date(0).toJSON(),
+      },
     });
   });
 
@@ -92,15 +95,15 @@ describe('resource controller', () => {
     const appB = await App.create({ ...exampleApp(organizationId), path: 'app-b' });
 
     const resource = await appA.createResource({ type: 'testResource', data: { foo: 'bar' } });
-    const responseA = await request(server).get(
+    const responseA = await request.get(
       `/api/apps/${appB.id}/resources/testResource/${resource.id}`,
     );
-    const responseB = await request(server).get(
+    const responseB = await request.get(
       `/api/apps/${appB.id}/resources/testResourceB/${resource.id}`,
     );
 
-    expect(responseA.status).toBe(404);
-    expect(responseB.status).toBe(404);
+    expect(responseA).toMatchObject({ status: 404 });
+    expect(responseB).toMatchObject({ status: 404 });
   });
 
   it('should be able to fetch all resources of a type', async () => {
@@ -110,23 +113,25 @@ describe('resource controller', () => {
     const resourceB = await app.createResource({ type: 'testResource', data: { foo: 'baz' } });
     await app.createResource({ type: 'testResourceB', data: { bar: 'baz' } });
 
-    const response = await request(server).get(`/api/apps/${app.id}/resources/testResource`);
+    const response = await request.get(`/api/apps/${app.id}/resources/testResource`);
 
-    expect(response.status).toBe(200);
-    expect(response.body).toStrictEqual([
-      {
-        id: resourceA.id,
-        foo: 'bar',
-        $created: new Date(0).toJSON(),
-        $updated: new Date(0).toJSON(),
-      },
-      {
-        id: resourceB.id,
-        foo: 'baz',
-        $created: new Date(0).toJSON(),
-        $updated: new Date(0).toJSON(),
-      },
-    ]);
+    expect(response).toMatchObject({
+      status: 200,
+      data: [
+        {
+          id: resourceA.id,
+          foo: 'bar',
+          $created: new Date(0).toJSON(),
+          $updated: new Date(0).toJSON(),
+        },
+        {
+          id: resourceB.id,
+          foo: 'baz',
+          $created: new Date(0).toJSON(),
+          $updated: new Date(0).toJSON(),
+        },
+      ],
+    });
   });
 
   it('should be able to limit the amount of resources', async () => {
@@ -135,17 +140,19 @@ describe('resource controller', () => {
     const resourceA = await app.createResource({ type: 'testResource', data: { foo: 'bar' } });
     await app.createResource({ type: 'testResource', data: { foo: 'baz' } });
 
-    const response = await request(server).get(`/api/apps/${app.id}/resources/testResource?$top=1`);
+    const response = await request.get(`/api/apps/${app.id}/resources/testResource?$top=1`);
 
-    expect(response.status).toBe(200);
-    expect(response.body).toStrictEqual([
-      {
-        id: resourceA.id,
-        foo: 'bar',
-        $created: new Date(0).toJSON(),
-        $updated: new Date(0).toJSON(),
-      },
-    ]);
+    expect(response).toMatchObject({
+      status: 200,
+      data: [
+        {
+          id: resourceA.id,
+          foo: 'bar',
+          $created: new Date(0).toJSON(),
+          $updated: new Date(0).toJSON(),
+        },
+      ],
+    });
   });
 
   it('should be able to sort fetched resources', async () => {
@@ -155,66 +162,67 @@ describe('resource controller', () => {
     clock.tick(20e3);
     const resourceB = await app.createResource({ type: 'testResource', data: { foo: 'baz' } });
 
-    const responseA = await request(server).get(
+    const responseA = await request.get(
       `/api/apps/${app.id}/resources/testResource?$orderby=foo asc`,
     );
-    const responseB = await request(server).get(
+    const responseB = await request.get(
       `/api/apps/${app.id}/resources/testResource?$orderby=foo desc`,
     );
-    const responseC = await request(server).get(
+    const responseC = await request.get(
       `/api/apps/${app.id}/resources/testResource?$orderby=$created asc`,
     );
-    const responseD = await request(server).get(
+    const responseD = await request.get(
       `/api/apps/${app.id}/resources/testResource?$orderby=$created desc`,
     );
 
-    expect(responseA.status).toBe(200);
-    expect(responseB.status).toBe(200);
-    expect(responseC.status).toBe(200);
-    expect(responseD.status).toBe(200);
-
-    expect(responseA.body).toStrictEqual([
-      {
-        id: resourceA.id,
-        foo: 'bar',
-        $created: new Date(0).toJSON(),
-        $updated: new Date(0).toJSON(),
-      },
-      {
-        id: resourceB.id,
-        foo: 'baz',
-        $created: new Date(clock.now).toJSON(),
-        $updated: new Date(clock.now).toJSON(),
-      },
-    ]);
-    expect(responseB.body).toStrictEqual([
-      {
-        id: resourceB.id,
-        foo: 'baz',
-        $created: new Date(clock.now).toJSON(),
-        $updated: new Date(clock.now).toJSON(),
-      },
-      {
-        id: resourceA.id,
-        foo: 'bar',
-        $created: new Date(0).toJSON(),
-        $updated: new Date(0).toJSON(),
-      },
-    ]);
-    expect(responseC.body).toStrictEqual(responseA.body);
-    expect(responseD.body).toStrictEqual(responseB.body);
+    expect(responseA).toMatchObject({
+      status: 200,
+      data: [
+        {
+          id: resourceA.id,
+          foo: 'bar',
+          $created: new Date(0).toJSON(),
+          $updated: new Date(0).toJSON(),
+        },
+        {
+          id: resourceB.id,
+          foo: 'baz',
+          $created: new Date(clock.now).toJSON(),
+          $updated: new Date(clock.now).toJSON(),
+        },
+      ],
+    });
+    expect(responseB).toMatchObject({
+      status: 200,
+      data: [
+        {
+          id: resourceB.id,
+          foo: 'baz',
+          $created: new Date(clock.now).toJSON(),
+          $updated: new Date(clock.now).toJSON(),
+        },
+        {
+          id: resourceA.id,
+          foo: 'bar',
+          $created: new Date(0).toJSON(),
+          $updated: new Date(0).toJSON(),
+        },
+      ],
+    });
+    expect(responseC).toMatchObject({ status: 200, data: responseA.data });
+    expect(responseD).toMatchObject({ status: 200, data: responseB.data });
   });
 
   it('should be able to select fields when fetching resources', async () => {
     const app = await App.create(exampleApp(organizationId));
 
     const resource = await app.createResource({ type: 'testResource', data: { foo: 'bar' } });
-    const response = await request(server).get(
-      `/api/apps/${app.id}/resources/testResource?$select=id`,
-    );
+    const response = await request.get(`/api/apps/${app.id}/resources/testResource?$select=id`);
 
-    expect(response.status).toBe(200);
-    expect(response.body).toStrictEqual([{ id: resource.id }]);
+    expect(response).toMatchObject({
+      status: 200,
+      data: [{ id: resource.id }],
+    });
   });
 
   it('should be able to filter fields when fetching resources', async () => {
@@ -222,19 +230,21 @@ describe('resource controller', () => {
     const resource = await app.createResource({ type: 'testResource', data: { foo: 'foo' } });
     await app.createResource({ type: 'testResource', data: { foo: 'bar' } });
 
-    const response = await request(server).get(
+    const response = await request.get(
       `/api/apps/${app.id}/resources/testResource?$filter=foo eq 'foo'`,
     );
 
-    expect(response.status).toBe(200);
-    expect(response.body).toStrictEqual([
-      {
-        id: resource.id,
-        ...resource.data,
-        $created: new Date(0).toJSON(),
-        $updated: new Date(0).toJSON(),
-      },
-    ]);
+    expect(response).toMatchObject({
+      status: 200,
+      data: [
+        {
+          id: resource.id,
+          ...resource.data,
+          $created: new Date(0).toJSON(),
+          $updated: new Date(0).toJSON(),
+        },
+      ],
+    });
   });
 
   it('should be able to filter multiple fields when fetching resources', async () => {
@@ -245,19 +255,21 @@ describe('resource controller', () => {
     });
     await app.createResource({ type: 'testResource', data: { foo: 'bar', bar: 2 } });
 
-    const response = await request(server).get(
+    const response = await request.get(
       `/api/apps/${app.id}/resources/testResource?$filter=substringof('oo', foo) and id le ${resource.id}`,
     );
 
-    expect(response.status).toBe(200);
-    expect(response.body).toStrictEqual([
-      {
-        id: resource.id,
-        ...resource.data,
-        $created: new Date(0).toJSON(),
-        $updated: new Date(0).toJSON(),
-      },
-    ]);
+    expect(response).toMatchObject({
+      status: 200,
+      data: [
+        {
+          id: resource.id,
+          ...resource.data,
+          $created: new Date(0).toJSON(),
+          $updated: new Date(0).toJSON(),
+        },
+      ],
+    });
   });
 
   it('should be able to combine multiple functions when fetching resources', async () => {
@@ -272,23 +284,25 @@ describe('resource controller', () => {
       data: { foo: 'bar', bar: 2 },
     });
 
-    const response = await request(server).get(
+    const response = await request.get(
       `/api/apps/${app.id}/resources/testResource?$filter=substringof('oo', foo) or foo eq 'bar'&$orderby=$updated desc&$select=id,$created,$updated`,
     );
 
-    expect(response.status).toBe(200);
-    expect(response.body).toStrictEqual([
-      {
-        id: resourceB.id,
-        $created: new Date(clock.now).toJSON(),
-        $updated: new Date(clock.now).toJSON(),
-      },
-      {
-        id: resource.id,
-        $created: new Date(0).toJSON(),
-        $updated: new Date(0).toJSON(),
-      },
-    ]);
+    expect(response).toMatchObject({
+      status: 200,
+      data: [
+        {
+          id: resourceB.id,
+          $created: new Date(clock.now).toJSON(),
+          $updated: new Date(clock.now).toJSON(),
+        },
+        {
+          id: resource.id,
+          $created: new Date(0).toJSON(),
+          $updated: new Date(0).toJSON(),
+        },
+      ],
+    });
   });
 
   it('should return the resource author if it has one', async () => {
@@ -299,19 +313,21 @@ describe('resource controller', () => {
       UserId: user.id,
     });
 
-    const response = await request(server).get(`/api/apps/${app.id}/resources/testResource`);
+    const response = await request.get(`/api/apps/${app.id}/resources/testResource`);
 
-    expect(response.status).toBe(200);
-    expect(response.body).toStrictEqual([
-      {
-        id: resource.id,
-        foo: 'foo',
-        bar: 1,
-        $created: new Date(0).toJSON(),
-        $updated: new Date(0).toJSON(),
-        $author: { id: user.id, name: user.name },
-      },
-    ]);
+    expect(response).toMatchObject({
+      status: 200,
+      data: [
+        {
+          id: resource.id,
+          foo: 'foo',
+          bar: 1,
+          $created: new Date(0).toJSON(),
+          $updated: new Date(0).toJSON(),
+          $author: { id: user.id, name: user.name },
+        },
+      ],
+    });
   });
 
   it('should return the resource author when fetching a single resource if it has one', async () => {
@@ -322,18 +338,18 @@ describe('resource controller', () => {
       UserId: user.id,
     });
 
-    const response = await request(server).get(
-      `/api/apps/${app.id}/resources/testResource/${resource.id}`,
-    );
+    const response = await request.get(`/api/apps/${app.id}/resources/testResource/${resource.id}`);
 
-    expect(response.status).toBe(200);
-    expect(response.body).toStrictEqual({
-      id: resource.id,
-      foo: 'foo',
-      bar: 1,
-      $created: new Date(0).toJSON(),
-      $updated: new Date(0).toJSON(),
-      $author: { id: user.id, name: user.name },
+    expect(response).toMatchObject({
+      status: 200,
+      data: {
+        id: resource.id,
+        foo: 'foo',
+        bar: 1,
+        $created: new Date(0).toJSON(),
+        $updated: new Date(0).toJSON(),
+        $author: { id: user.id, name: user.name },
+      },
     });
   });
 
@@ -341,33 +357,43 @@ describe('resource controller', () => {
     const app = await App.create(exampleApp(organizationId));
 
     const resource = { foo: 'bar' };
-    const response = await request(server)
-      .post(`/api/apps/${app.id}/resources/testResource`)
-      .send(resource);
+    const response = await request.post(`/api/apps/${app.id}/resources/testResource`, resource);
 
-    expect(response.status).toBe(201);
-    expect(response.body.foo).toStrictEqual(resource.foo);
-    expect(response.body.id).toBeDefined();
+    expect(response).toMatchObject({
+      status: 201,
+      data: {
+        foo: 'bar',
+        id: expect.any(Number),
+      },
+    });
   });
 
   it('should validate resources when creating resources', async () => {
     const app = await App.create(exampleApp(organizationId));
 
     const resource = {};
-    const response = await request(server)
-      .post(`/api/apps/${app.id}/resources/testResource`)
-      .send(resource);
+    const response = await request.post(`/api/apps/${app.id}/resources/testResource`, resource);
 
-    expect(response.status).toBe(400);
-    expect(response.body.data.foo.required).toBe(true);
+    expect(response).toMatchObject({
+      status: 400,
+      data: {
+        data: {
+          foo: {
+            required: true,
+          },
+        },
+      },
+    });
   });
 
   it('should check if an app has a specific resource definition when creating resources', async () => {
     const app = await App.create(exampleApp(organizationId));
 
-    const response = await request(server).get(`/api/apps/${app.id}/resources/thisDoesNotExist`);
-    expect(response.status).toBe(404);
-    expect(response.body.message).toBe('App does not have resources called thisDoesNotExist');
+    const response = await request.get(`/api/apps/${app.id}/resources/thisDoesNotExist`);
+    expect(response).toMatchObject({
+      status: 404,
+      data: { message: 'App does not have resources called thisDoesNotExist' },
+    });
   });
 
   it('should check if an app has any resource definitions when creating resources', async () => {
@@ -378,10 +404,12 @@ describe('resource controller', () => {
       vapidPrivateKey: 'b',
       OrganizationId: organizationId,
     });
-    const response = await request(server).get(`/api/apps/${app.id}/resources/thisDoesNotExist`);
+    const response = await request.get(`/api/apps/${app.id}/resources/thisDoesNotExist`);
 
-    expect(response.status).toBe(404);
-    expect(response.body.message).toBe('App does not have any resources defined');
+    expect(response).toMatchObject({
+      status: 404,
+      data: { message: 'App does not have any resources defined' },
+    });
   });
 
   it('should be able to update an existing resource', async () => {
@@ -394,27 +422,33 @@ describe('resource controller', () => {
 
     clock.tick(20e3);
 
-    const response = await request(server)
-      .put(`/api/apps/${app.id}/resources/testResource/${resource.id}`)
-      .set('Authorization', token)
-      .send({ foo: 'I am not Foo.' });
+    const response = await request.put(
+      `/api/apps/${app.id}/resources/testResource/${resource.id}`,
+      { foo: 'I am not Foo.' },
+      { headers: { authorization: token } },
+    );
 
-    expect(response.status).toBe(200);
-    expect(response.body.foo).toStrictEqual('I am not Foo.');
-    expect(response.body.id).toBe(resource.id);
-    expect(response.body.$updated).not.toStrictEqual(response.body.$created);
-    expect(new Date(response.body.$created).getTime()).toStrictEqual(0);
-    expect(new Date(response.body.$updated).getTime()).toStrictEqual(20e3);
+    expect(response).toMatchObject({
+      status: 200,
+      data: {
+        foo: 'I am not Foo.',
+        id: resource.id,
+        $created: '1970-01-01T00:00:00.000Z',
+        $updated: '1970-01-01T00:00:20.000Z',
+      },
+    });
 
-    const responseB = await request(server).get(
+    const responseB = await request.get(
       `/api/apps/${app.id}/resources/testResource/${resource.id}`,
     );
 
-    expect(responseB.status).toBe(200);
-    expect(responseB.body.foo).toStrictEqual('I am not Foo.');
-    expect(responseB.body.id).toBe(resource.id);
-    expect(new Date(responseB.body.$created).getTime()).toStrictEqual(0);
-    expect(new Date(responseB.body.$updated).getTime()).toStrictEqual(20e3);
+    expect(responseB).toMatchObject({
+      status: 200,
+      data: {
+        foo: 'I am not Foo.',
+        id: resource.id,
+      },
+    });
   });
 
   it('should not be possible to update an existing resource through another resource', async () => {
@@ -425,12 +459,13 @@ describe('resource controller', () => {
       data: { foo: 'I am Foo.' },
     });
 
-    const response = await request(server)
-      .put(`/api/apps/${app.id}/resources/testResourceB/${resource.id}`)
-      .set('Authorization', token)
-      .send({ foo: 'I am not Foo.' });
+    const response = await request.put(
+      `/api/apps/${app.id}/resources/testResourceB/${resource.id}`,
+      { foo: 'I am not Foo.' },
+      { headers: { authorization: token } },
+    );
 
-    expect(response.status).toBe(404);
+    expect(response).toMatchObject({ status: 404 });
   });
 
   it('should not be possible to update an existing resource through another app', async () => {
@@ -443,25 +478,30 @@ describe('resource controller', () => {
 
     const appB = await App.create({ ...exampleApp(organizationId), path: 'app-b' });
 
-    const response = await request(server)
-      .put(`/api/apps/${appB.id}/resources/testResource/${resource.id}`)
-      .set('Authorization', token)
-      .send({ foo: 'I am not Foo.' });
+    const response = await request.put(
+      `/api/apps/${appB.id}/resources/testResource/${resource.id}`,
+      { foo: 'I am not Foo.' },
+      { headers: { authorization: token } },
+    );
 
-    expect(response.status).toBe(404);
+    expect(response).toMatchObject({ status: 404 });
   });
 
   it('should not be possible to update a non-existent resource', async () => {
     const app = await App.create(exampleApp(organizationId));
-    const { body } = await request(server)
-      .put(`/api/apps/${app.id}/resources/testResource/0`)
-      .send({ foo: 'I am not Foo.' })
-      .set('Authorization', token);
+    const response = await request.put(
+      `/api/apps/${app.id}/resources/testResource/0`,
+      { foo: 'I am not Foo.' },
+      { headers: { authorization: token } },
+    );
 
-    expect(body).toStrictEqual({
-      error: 'Not Found',
-      message: 'Resource not found',
-      statusCode: 404,
+    expect(response).toMatchObject({
+      status: 404,
+      data: {
+        error: 'Not Found',
+        message: 'Resource not found',
+        statusCode: 404,
+      },
     });
   });
 
@@ -473,13 +513,16 @@ describe('resource controller', () => {
       data: { foo: 'I am Foo.' },
     });
 
-    const response = await request(server)
-      .put(`/api/apps/${app.id}/resources/testResource/${resource.id}`)
-      .send({ bar: 123 })
-      .set('Authorization', token);
+    const response = await request.put(
+      `/api/apps/${app.id}/resources/testResource/${resource.id}`,
+      { bar: 123 },
+      { headers: { authorization: token } },
+    );
 
-    expect(response.status).toBe(400);
-    expect(response.body.data.foo.required).toBe(true);
+    expect(response).toMatchObject({
+      status: 400,
+      data: {},
+    });
   });
 
   it('should be able to delete an existing resource', async () => {
@@ -490,42 +533,52 @@ describe('resource controller', () => {
       data: { foo: 'I am Foo.' },
     });
 
-    const responseGetA = await request(server).get(
+    const responseGetA = await request.get(
       `/api/apps/${app.id}/resources/testResource/${resource.id}`,
     );
 
-    expect(responseGetA.status).toBe(200);
-    expect(responseGetA.body.foo).toStrictEqual('I am Foo.');
-    expect(responseGetA.body.id).toBe(resource.id);
+    expect(responseGetA).toMatchObject({
+      status: 200,
+      data: {
+        foo: 'I am Foo.',
+        id: resource.id,
+      },
+    });
 
-    const response = await request(server)
-      .delete(`/api/apps/${app.id}/resources/testResource/${resource.id}`)
-      .set('Authorization', token);
+    const response = await request.delete(
+      `/api/apps/${app.id}/resources/testResource/${resource.id}`,
+      { headers: { authorization: token } },
+    );
 
-    expect(response.status).toBe(204);
+    expect(response).toMatchObject({ status: 204 });
 
-    const responseGetB = await request(server).get(
+    const responseGetB = await request.get(
       `/api/apps/${app.id}/resources/testResource/${resource.id}`,
     );
 
-    expect(responseGetB.status).toBe(404);
-    expect(responseGetB.body).toStrictEqual({
-      error: 'Not Found',
-      message: 'Resource not found',
-      statusCode: 404,
+    expect(responseGetB).toMatchObject({
+      status: 404,
+      data: {
+        error: 'Not Found',
+        message: 'Resource not found',
+        statusCode: 404,
+      },
     });
   });
 
   it('should not be able to delete a non-existent resource', async () => {
     const app = await App.create(exampleApp(organizationId));
-    const { body } = await request(server)
-      .delete(`/api/apps/${app.id}/resources/testResource/0`)
-      .set('Authorization', token);
+    const response = await request.delete(`/api/apps/${app.id}/resources/testResource/0`, {
+      headers: { authorization: token },
+    });
 
-    expect(body).toStrictEqual({
-      error: 'Not Found',
-      message: 'Resource not found',
-      statusCode: 404,
+    expect(response).toMatchObject({
+      status: 404,
+      data: {
+        error: 'Not Found',
+        message: 'Resource not found',
+        statusCode: 404,
+      },
     });
   });
 
@@ -537,19 +590,24 @@ describe('resource controller', () => {
       data: { foo: 'I am Foo.' },
     });
 
-    const response = await request(server)
-      .delete(`/api/apps/${app.id}/resources/testResourceB/${resource.id}`)
-      .set('Authorization', token);
+    const response = await request.delete(
+      `/api/apps/${app.id}/resources/testResourceB/${resource.id}`,
+      { headers: { authorization: token } },
+    );
 
-    expect(response.status).toBe(404);
+    expect(response).toMatchObject({ status: 404 });
 
-    const responseGet = await request(server).get(
+    const responseGet = await request.get(
       `/api/apps/${app.id}/resources/testResource/${resource.id}`,
     );
 
-    expect(responseGet.status).toBe(200);
-    expect(responseGet.body.foo).toStrictEqual('I am Foo.');
-    expect(responseGet.body.id).toBe(resource.id);
+    expect(responseGet).toMatchObject({
+      status: 200,
+      data: {
+        foo: 'I am Foo.',
+        id: resource.id,
+      },
+    });
   });
 
   it('should not be possible to delete an existing resource through another app', async () => {
@@ -561,18 +619,23 @@ describe('resource controller', () => {
     });
 
     const appB = await App.create({ ...exampleApp(organizationId), path: 'app-b' });
-    const response = await request(server)
-      .delete(`/api/apps/${appB.id}/resources/testResource/${resource.id}`)
-      .set('Authorization', token);
+    const response = await request.delete(
+      `/api/apps/${appB.id}/resources/testResource/${resource.id}`,
+      { headers: { authorization: token } },
+    );
 
-    expect(response.status).toBe(404);
+    expect(response).toMatchObject({ status: 404 });
 
-    const responseGet = await request(server).get(
+    const responseGet = await request.get(
       `/api/apps/${app.id}/resources/testResource/${resource.id}`,
     );
 
-    expect(responseGet.status).toBe(200);
-    expect(responseGet.body.foo).toStrictEqual('I am Foo.');
-    expect(responseGet.body.id).toBe(resource.id);
+    expect(responseGet).toMatchObject({
+      status: 200,
+      data: {
+        foo: 'I am Foo.',
+        id: resource.id,
+      },
+    });
   });
 });

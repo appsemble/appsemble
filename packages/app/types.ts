@@ -9,6 +9,7 @@ export interface User extends UserInfo {
 declare global {
   interface Window {
     settings: {
+      apiUrl: string;
       vapidPublicKey: string;
       id: number;
       organizationId: string;

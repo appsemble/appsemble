@@ -24,6 +24,7 @@ interface SimpleInputProps<C extends React.ComponentType> {
   disabled?: boolean;
   name: string;
   onChange?: (event: React.ChangeEvent<MinimalHTMLElement>, value: any) => void;
+  preprocess?: (newValue: any, oldValues: Record<string, any>) => any;
   validityMessages?: ValidityMessages;
 }
 
@@ -39,6 +40,7 @@ export default function SimpleInput<C extends React.ComponentType = typeof Input
   disabled,
   name,
   onChange,
+  preprocess,
   validityMessages = {},
   ...props
 }: FooProps<C>): React.ReactElement {
@@ -46,8 +48,9 @@ export default function SimpleInput<C extends React.ComponentType = typeof Input
   const ref = React.useRef<MinimalHTMLElement>(null);
   const internalOnChange = React.useCallback(
     (event: React.ChangeEvent<MinimalHTMLElement>, value = event.target.value) => {
+      const val = preprocess ? preprocess(value, values) : value;
       if (onChange) {
-        onChange(event, value);
+        onChange(event, val);
       }
       const { validity } = event.target;
       let message: React.ReactNode;
@@ -57,9 +60,9 @@ export default function SimpleInput<C extends React.ComponentType = typeof Input
         );
         message = reason ? reason[1] : true;
       }
-      setValue(name, value, message);
+      setValue(name, val, message);
     },
-    [name, onChange, setValue, validityMessages],
+    [name, onChange, preprocess, setValue, validityMessages, values],
   );
 
   React.useEffect(() => {

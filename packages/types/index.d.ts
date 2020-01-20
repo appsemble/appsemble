@@ -12,7 +12,7 @@ export interface UserInfo {
   /**
    * The subject (end-user) identifier. This member is always present in a claims set.
    */
-  sub: string;
+  sub: number;
 
   /**
    * The full name of the end-user, with optional language tag.
@@ -734,7 +734,7 @@ export interface Rating {
   /**
    * The ID of the user who rated the app.
    */
-  UserId: string;
+  UserId: number;
 
   /**
    * The creation date of the rating.

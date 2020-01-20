@@ -27,10 +27,11 @@ import api from '../api';
 import * as operations from '../controllers';
 import appMapper from '../middleware/appMapper';
 import boom from '../middleware/boom';
+import conditional from '../middleware/conditional';
 import frontend from '../middleware/frontend';
 import oauth2 from '../middleware/oauth2';
 import tinyRouter from '../middleware/tinyRouter';
-import { appRouter, fallbackRouter, studioRouter } from '../routes';
+import { appRouter, studioRouter } from '../routes';
 import bulmaHandler from '../routes/bulmaHandler';
 import authentication from './authentication';
 import Mailer from './email/Mailer';
@@ -67,44 +68,51 @@ export default async function createServer({ app = new Koa(), argv = {}, db, web
     ]),
   );
 
-  app.use(
-    mount(
-      '/api',
-      compose([
-        cors(),
-        await koas(api(), [
-          koasSpecHandler(),
-          koasSwaggerUI({ url: '/explorer' }),
-          koasSecurity(authentication(argv, db.models)),
-          () => (ctx, next) => {
-            if (ctx.users) {
-              [ctx.state.user] = Object.values(ctx.users);
-            }
-            return next();
-          },
-          koasParameters(),
-          koasBodyParser({
-            '*/*': (body, mediaTypeObject, ctx) =>
-              raw(body, {
-                length: ctx.request.length,
-              }),
-          }),
-          koasSerializer(),
-          koasStatusCode(),
-          koasOperations({ operations }),
-        ]),
-        () => {
-          throw Boom.notFound('URL not found');
+  const apiMiddleware = mount(
+    '/api',
+    compose([
+      await koas(api(), [
+        koasSpecHandler(),
+        koasSwaggerUI({ url: '/explorer' }),
+        koasSecurity(authentication(argv, db.models)),
+        () => (ctx, next) => {
+          if (ctx.users) {
+            [ctx.state.user] = Object.values(ctx.users);
+          }
+          return next();
         },
+        koasParameters(),
+        koasBodyParser({
+          '*/*': (body, mediaTypeObject, ctx) =>
+            raw(body, {
+              length: ctx.request.length,
+            }),
+        }),
+        koasSerializer(),
+        koasStatusCode(),
+        koasOperations({ operations }),
       ]),
-    ),
+      () => {
+        throw Boom.notFound('URL not found');
+      },
+    ]),
   );
 
   if (process.env.NODE_ENV !== 'test') {
     app.use(await frontend(webpackConfigs));
   }
 
-  app.use(appMapper(compose([studioRouter, oauth2(argv)]), appRouter, fallbackRouter));
+  app.use(
+    appMapper(
+      compose([
+        conditional(ctx => ctx.path.startsWith('/api') || ctx.path === '/oauth2/token', cors()),
+        apiMiddleware,
+        studioRouter,
+        oauth2(argv),
+      ]),
+      compose([apiMiddleware, appRouter]),
+    ),
+  );
 
   return app.callback();
 }
