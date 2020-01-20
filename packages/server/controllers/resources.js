@@ -116,43 +116,81 @@ const deepRename = (object, keys, { updatedHash, createdHash }) => {
   return obj;
 };
 
-async function sendSubscriptionNotifications(ctx, app, notification, resourceUserId, options) {
-  const { App, AppSubscription, User } = ctx.db.models;
+async function sendSubscriptionNotifications(
+  ctx,
+  app,
+  notification,
+  resourceUserId,
+  resourceType,
+  action,
+  resourceId,
+  options,
+) {
+  const { App, AppSubscription, ResourceSubscription, User } = ctx.db.models;
   const { appId } = ctx.params;
   const roles = notification.to.filter(n => n !== '$author');
   const author = resourceUserId && notification.to.includes('$author');
+  const subscribers = notification.subscribe;
 
-  if (!roles.length && !author) {
+  if (!roles.length && !author && !subscribers) {
     return;
   }
 
-  const subscriptions = await AppSubscription.findAll({
-    where: { AppId: appId },
-    attributes: ['id', 'auth', 'p256dh', 'endpoint'],
-    include: [
-      {
-        model: User,
-        attributes: [],
-        required: true,
-        include: [
-          {
-            model: App,
-            attributes: [],
-            where: { id: appId },
-            through: {
+  const subscriptions = [];
+
+  if (roles || author) {
+    const roleSubscribers = await AppSubscription.findAll({
+      where: { AppId: appId },
+      attributes: ['id', 'auth', 'p256dh', 'endpoint'],
+      include: [
+        {
+          model: User,
+          attributes: [],
+          required: true,
+          include: [
+            {
+              model: App,
               attributes: [],
-              where: {
-                [Op.or]: [
-                  ...(author ? [{ UserId: resourceUserId }] : []),
-                  ...(roles.length ? [{ role: roles }] : []),
-                ],
+              where: { id: appId },
+              through: {
+                attributes: [],
+                where: {
+                  [Op.or]: [
+                    ...(author ? [{ UserId: resourceUserId }] : []),
+                    ...(roles.length ? [{ role: roles }] : []),
+                  ],
+                },
               },
             },
-          },
-        ],
-      },
-    ],
-  });
+          ],
+        },
+      ],
+    });
+
+    subscriptions.push(...roleSubscribers);
+  }
+
+  if (subscribers) {
+    const resourceSubscribers = await AppSubscription.findAll({
+      attributes: ['id', 'auth', 'p256dh', 'endpoint'],
+      where: { AppId: appId },
+      include: [
+        {
+          model: ResourceSubscription,
+          attributes: [],
+          where: { type: resourceType, action },
+        },
+      ],
+    });
+
+    subscriptions.push(
+      ...resourceSubscribers.filter(
+        resourceSub =>
+          (resourceSub.ResourceId && resourceId === resourceSub.ResourceId) ||
+          resourceSub.ResourceId == null,
+      ),
+    );
+  }
 
   subscriptions.forEach(subscription => {
     sendNotification(ctx, app, subscription, options);
@@ -261,10 +299,19 @@ export async function createResource(ctx) {
     resourceDefinition.create.hooks &&
     resourceDefinition.create.hooks.notification
   ) {
-    sendSubscriptionNotifications(ctx, app, resourceDefinition.create.hooks.notification, null, {
-      title: resourceType,
-      body: 'Created new',
-    });
+    sendSubscriptionNotifications(
+      ctx,
+      app,
+      resourceDefinition.create.hooks.notification,
+      null,
+      resourceType,
+      'create',
+      id,
+      {
+        title: resourceType,
+        body: 'Created new',
+      },
+    );
   }
 
   ctx.body = { id, ...resource, $created: created, $updated: updated };
@@ -322,10 +369,19 @@ export async function updateResource(ctx) {
     resourceDefinition.update.hooks &&
     resourceDefinition.update.hooks.notification
   ) {
-    sendSubscriptionNotifications(ctx, app, resourceDefinition.update.hooks.notification, null, {
-      title: resourceType,
-      body: `Updated ${resource.id}`,
-    });
+    sendSubscriptionNotifications(
+      ctx,
+      app,
+      resourceDefinition.update.hooks.notification,
+      null,
+      resourceType,
+      'update',
+      resourceId,
+      {
+        title: resourceType,
+        body: `Updated ${resource.id}`,
+      },
+    );
   }
 }
 
@@ -360,6 +416,9 @@ export async function deleteResource(ctx) {
       app,
       resourceDefinition.delete.hooks.notification,
       resource.UserId,
+      resourceType,
+      'delete',
+      resourceId,
       {
         title: resourceType,
         body: `Deleted ${resource.id}`,
