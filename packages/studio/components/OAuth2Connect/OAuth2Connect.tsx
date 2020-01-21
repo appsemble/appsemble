@@ -1,4 +1,4 @@
-import { Loader } from '@appsemble/react-components';
+import { Loader, useQuery } from '@appsemble/react-components';
 import { UserInfo } from '@appsemble/types';
 import axios from 'axios';
 import classNames from 'classnames';
@@ -6,7 +6,6 @@ import * as React from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Link, Redirect, RouteComponentProps, useHistory, useLocation } from 'react-router-dom';
 
-import useQuery from '../../hooks/useQuery';
 import useUser from '../../hooks/useUser';
 import { TokenResponse } from '../../types';
 import messages from './messages';
