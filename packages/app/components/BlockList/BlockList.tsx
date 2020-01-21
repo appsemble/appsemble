@@ -1,10 +1,10 @@
 import { Loader } from '@appsemble/react-components';
 import { Action, Block as BlockType, Security } from '@appsemble/types';
+import checkAppRole from '@appsemble/utils/checkAppRole';
 import React from 'react';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 
 import { ShowDialogAction } from '../../types';
-import checkAppRole from '../../utils/checkAppRole';
 import Block from '../Block';
 import styles from './BlockList.css';
 

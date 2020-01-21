@@ -1,12 +1,12 @@
 import { Loader } from '@appsemble/react-components';
 import { MessagesContext } from '@appsemble/react-components/hooks/useMessages';
 import { normalize } from '@appsemble/utils';
+import checkAppRole from '@appsemble/utils/checkAppRole';
 import EventEmitter from 'events';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import checkAppRole from '../../utils/checkAppRole';
 import makeActions from '../../utils/makeActions';
 import BlockList from '../BlockList';
 import FlowPage from '../FlowPage';

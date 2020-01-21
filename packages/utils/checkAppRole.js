@@ -1,5 +1,3 @@
-import { Security } from '@appsemble/types';
-
 /**
  * Check if the given user has access to any of the given scopes.
  *
@@ -8,11 +6,7 @@ import { Security } from '@appsemble/types';
  * @param userRole The role the user has.
  * @returns Whether or not the user has the role.
  */
-export default function checkAppRole(
-  securityDefinition: Security,
-  role: string,
-  userRole: string,
-): boolean {
+export default function checkAppRole(securityDefinition, role, userRole) {
   if (role === userRole) {
     return true;
   }
