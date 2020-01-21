@@ -292,30 +292,22 @@ export async function createResource(ctx) {
     UserId: user && user.id,
   });
 
-  const resourceDefinition = app.definition.resources[resourceType];
+  ctx.body = { id, ...resource, $created: created, $updated: updated };
+  ctx.status = 201;
 
+  const resourceDefinition = app.definition.resources[resourceType];
   if (
     resourceDefinition.create &&
     resourceDefinition.create.hooks &&
     resourceDefinition.create.hooks.notification
   ) {
-    sendSubscriptionNotifications(
-      ctx,
-      app,
-      resourceDefinition.create.hooks.notification,
-      null,
-      resourceType,
-      'create',
-      id,
-      {
-        title: resourceType,
-        body: 'Created new',
-      },
-    );
+    const { notification } = resourceDefinition.create.hooks;
+    const { data } = notification;
+    sendSubscriptionNotifications(ctx, app, notification, null, resourceType, 'create', id, {
+      title: data && data.title ? data.title : resourceType,
+      body: data && data.body ? data.body : 'Created new',
+    });
   }
-
-  ctx.body = { id, ...resource, $created: created, $updated: updated };
-  ctx.status = 201;
 }
 
 export async function updateResource(ctx) {
@@ -369,17 +361,19 @@ export async function updateResource(ctx) {
     resourceDefinition.update.hooks &&
     resourceDefinition.update.hooks.notification
   ) {
+    const { notification } = resourceDefinition.create.hooks;
+    const { data } = notification;
     sendSubscriptionNotifications(
       ctx,
       app,
-      resourceDefinition.update.hooks.notification,
+      notification,
       null,
       resourceType,
       'update',
       resourceId,
       {
-        title: resourceType,
-        body: `Updated ${resource.id}`,
+        title: data && data.title ? data.title : resourceType,
+        body: data && data.body ? data.body : `Updated ${resource.id}`,
       },
     );
   }
@@ -411,17 +405,19 @@ export async function deleteResource(ctx) {
     resourceDefinition.delete.hooks &&
     resourceDefinition.delete.hooks.notification
   ) {
+    const { notification } = resourceDefinition.create.hooks;
+    const { data } = notification;
     sendSubscriptionNotifications(
       ctx,
       app,
-      resourceDefinition.delete.hooks.notification,
+      notification,
       resource.UserId,
       resourceType,
       'delete',
       resourceId,
       {
-        title: resourceType,
-        body: `Deleted ${resource.id}`,
+        title: data && data.title ? data.title : resourceType,
+        body: data && data.body ? data.body : `Deleted ${resource.id}`,
       },
     );
   }
