@@ -1,8 +1,8 @@
+import { useQuery } from '@appsemble/react-components';
 import { Permission } from '@appsemble/utils';
 import * as React from 'react';
 import { Redirect, Route, RouteComponentProps, useLocation, useRouteMatch } from 'react-router-dom';
 
-import useQuery from '../../hooks/useQuery';
 import useUser from '../../hooks/useUser';
 import { Organization } from '../../types';
 import checkRole from '../../utils/checkRole';

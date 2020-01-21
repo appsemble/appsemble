@@ -1,10 +1,9 @@
-import { Loader, Message } from '@appsemble/react-components';
+import { Loader, Message, useQuery } from '@appsemble/react-components';
 import axios from 'axios';
 import classNames from 'classnames';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import useQuery from '../../hooks/useQuery';
 import messages from './messages';
 import styles from './VerifyEmail.css';
 
