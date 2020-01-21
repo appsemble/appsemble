@@ -1,6 +1,7 @@
 import {
   CardFooterButton,
   Checkbox,
+  Message,
   Modal,
   Select,
   SimpleForm,
@@ -175,9 +176,7 @@ export default function CreateAppCard({ createTemplateApp }: CreateAppCardProps)
             </option>
           ))}
         </SimpleInput>
-        <article className="message">
-          <div className="message-body">{templates[selectedTemplate].description}</div>
-        </article>
+        <Message>{templates[selectedTemplate].description}</Message>
         <SimpleInput
           className="is-warning"
           component={Checkbox}

@@ -1,4 +1,4 @@
-import { Button, Loader } from '@appsemble/react-components';
+import { Button, Loader, Message } from '@appsemble/react-components';
 import { MessagesContext } from '@appsemble/react-components/hooks/useMessages';
 import axios from 'axios';
 import PropTypes from 'prop-types';
@@ -135,39 +135,37 @@ export default class OrganizationInvite extends React.Component {
 
     if (success) {
       return (
-        <article className={`message is-${joined ? 'success' : 'info'} ${styles.root}`}>
-          <div className="message-body">
-            {joined ? (
-              <FormattedMessage
-                {...messages.successJoined}
-                values={{
-                  organization: <strong>{organization.name || organization.id}</strong>,
-                  makeApps: (
-                    <Link to="/apps">
-                      <FormattedMessage {...messages.appSettings} />
-                    </Link>
-                  ),
-                  viewOrganization: (
-                    <Link to="/settings/organizations">
-                      <FormattedMessage {...messages.organizationSettings} />
-                    </Link>
-                  ),
-                }}
-              />
-            ) : (
-              <FormattedMessage
-                {...messages.successDeclined}
-                values={{
-                  makeApps: (
-                    <Link to="/apps">
-                      <FormattedMessage {...messages.here} />
-                    </Link>
-                  ),
-                }}
-              />
-            )}
-          </div>
-        </article>
+        <Message className={styles.root} color={joined ? 'success' : 'info'}>
+          {joined ? (
+            <FormattedMessage
+              {...messages.successJoined}
+              values={{
+                organization: <strong>{organization.name || organization.id}</strong>,
+                makeApps: (
+                  <Link to="/apps">
+                    <FormattedMessage {...messages.appSettings} />
+                  </Link>
+                ),
+                viewOrganization: (
+                  <Link to="/settings/organizations">
+                    <FormattedMessage {...messages.organizationSettings} />
+                  </Link>
+                ),
+              }}
+            />
+          ) : (
+            <FormattedMessage
+              {...messages.successDeclined}
+              values={{
+                makeApps: (
+                  <Link to="/apps">
+                    <FormattedMessage {...messages.here} />
+                  </Link>
+                ),
+              }}
+            />
+          )}
+        </Message>
       );
     }
 

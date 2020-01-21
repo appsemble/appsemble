@@ -1,4 +1,4 @@
-import { Loader } from '@appsemble/react-components';
+import { Loader, Message } from '@appsemble/react-components';
 import axios from 'axios';
 import classNames from 'classnames';
 import React from 'react';
@@ -34,22 +34,18 @@ export default function VerifyEmail(): React.ReactElement {
   if (success) {
     return (
       <div className={classNames('container', styles.root)}>
-        <article className="message is-success">
-          <div className="message-body">
-            <FormattedMessage {...messages.requestSuccess} />
-          </div>
-        </article>
+        <Message color="success">
+          <FormattedMessage {...messages.requestSuccess} />
+        </Message>
       </div>
     );
   }
 
   return (
     <div className={classNames('container', styles.root)}>
-      <article className="message is-danger">
-        <div className="message-body">
-          <FormattedMessage {...messages.requestFailed} />
-        </div>
-      </article>
+      <Message color="danger">
+        <FormattedMessage {...messages.requestFailed} />
+      </Message>
     </div>
   );
 }

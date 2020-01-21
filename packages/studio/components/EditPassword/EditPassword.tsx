@@ -1,4 +1,5 @@
 import {
+  Message,
   PasswordInput,
   SimpleForm,
   SimpleFormError,
@@ -37,11 +38,9 @@ export default function EditPassword(): React.ReactElement {
       <HelmetIntl title={messages.title} />
       {success ? (
         <div className={classNames('container', styles.root)}>
-          <article className="message is-success">
-            <div className="message-body">
-              <FormattedMessage {...messages.requestSuccess} />
-            </div>
-          </article>
+          <Message color="success">
+            <FormattedMessage {...messages.requestSuccess} />
+          </Message>
         </div>
       ) : (
         <SimpleForm className={styles.root} defaultValues={{ password: '' }} onSubmit={submit}>
