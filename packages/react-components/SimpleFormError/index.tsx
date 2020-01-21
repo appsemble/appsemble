@@ -1,6 +1,7 @@
 import classNames from 'classnames';
 import React from 'react';
 
+import Message from '../Message';
 import { useSimpleForm } from '../SimpleForm';
 import styles from './SimpleFormError.css';
 
@@ -14,10 +15,8 @@ export default function SimpleFormError({
   const { submitError } = useSimpleForm();
 
   return (
-    <div
-      className={classNames('message is-danger', styles.root, { [styles.hidden]: !submitError })}
-    >
-      <div className="message-body">{submitError && <Children error={submitError} />}</div>
-    </div>
+    <Message className={classNames(styles.root, { [styles.hidden]: !submitError })} color="danger">
+      {submitError && <Children error={submitError} />}
+    </Message>
   );
 }

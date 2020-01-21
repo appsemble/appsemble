@@ -1,10 +1,10 @@
-import classNames from 'classnames';
 import * as React from 'react';
 import { useIntl } from 'react-intl';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 
 import useCounter from '../hooks/useCounter';
-import { Message, MessagesContext } from '../hooks/useMessages';
+import { Message as Msg, MessagesContext } from '../hooks/useMessages';
+import Message from '../Message/Message';
 import msgs from './messages';
 import styles from './Messages.css';
 
@@ -12,7 +12,7 @@ interface MessagesProviderProps {
   children: React.ReactNode;
 }
 
-interface UniqueMessage extends Message {
+interface UniqueMessage extends Msg {
   id: number;
 }
 
@@ -31,7 +31,7 @@ export default function MessagesProvider({ children }: MessagesProviderProps): R
   }, []);
 
   const push = React.useCallback(
-    (message: Message | string) => {
+    (message: Msg | string) => {
       const uniqueMessage: UniqueMessage =
         typeof message === 'string'
           ? { id: counter(), body: message }
@@ -64,24 +64,17 @@ export default function MessagesProvider({ children }: MessagesProviderProps): R
               }}
               timeout={300}
             >
-              <article
-                className={classNames(
-                  'message',
-                  message.color ? `is-${message.color}` : 'is-danger',
+              <Message className={styles.content} color={message.color || 'danger'}>
+                <span>{message && message.body}</span>
+                {message.dismissable && (
+                  <button
+                    aria-label={intl.formatMessage(msgs.dismiss)}
+                    className={`delete ${styles.deleteButton}`}
+                    onClick={() => dismiss(message)}
+                    type="button"
+                  />
                 )}
-              >
-                <div className={classNames('message-body', styles.content)}>
-                  <span>{message && message.body}</span>
-                  {message.dismissable && (
-                    <button
-                      aria-label={intl.formatMessage(msgs.dismiss)}
-                      className={`delete ${styles.deleteButton}`}
-                      onClick={() => dismiss(message)}
-                      type="button"
-                    />
-                  )}
-                </div>
-              </article>
+              </Message>
             </CSSTransition>
           ))}
         </TransitionGroup>
