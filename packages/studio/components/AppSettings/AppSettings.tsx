@@ -1,4 +1,4 @@
-import { Checkbox, Form, FormComponent, Icon, Input } from '@appsemble/react-components';
+import { Button, Checkbox, Form, FormComponent, Icon, Input } from '@appsemble/react-components';
 import { MessagesContext } from '@appsemble/react-components/hooks/useMessages';
 import { App } from '@appsemble/types';
 import { normalize } from '@appsemble/utils';
@@ -190,9 +190,9 @@ export default class AppSettings extends React.Component<
           onChange={this.onChange}
           value={domain}
         />
-        <button className="button" disabled={!dirty} type="submit">
+        <Button disabled={!dirty} type="submit">
           <FormattedMessage {...messages.saveChanges} />
-        </button>
+        </Button>
       </Form>
     );
   }

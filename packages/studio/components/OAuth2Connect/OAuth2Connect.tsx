@@ -1,4 +1,4 @@
-import { Loader, useQuery } from '@appsemble/react-components';
+import { Button, Loader, useQuery } from '@appsemble/react-components';
 import { UserInfo } from '@appsemble/types';
 import axios from 'axios';
 import classNames from 'classnames';
@@ -107,14 +107,9 @@ export default function OAuth2Connect({ match }: RouteComponentProps<Params>): R
           <p className={classNames({ 'has-text-grey-light': isSubmitting }, styles.confirmText)}>
             <FormattedMessage {...messages.confirmLinkText} values={{ provider: title }} />
           </p>
-          <button
-            className={classNames('button is-primary', { 'is-loading': isSubmitting })}
-            disabled={isSubmitting}
-            onClick={submit}
-            type="button"
-          >
+          <Button color="primary" disabled={isSubmitting} loading={isSubmitting} onClick={submit}>
             <FormattedMessage {...messages.confirmLink} />
-          </button>
+          </Button>
         </div>
       ) : (
         <>
@@ -122,14 +117,9 @@ export default function OAuth2Connect({ match }: RouteComponentProps<Params>): R
             <p className={classNames({ 'has-text-grey-light': isSubmitting }, styles.confirmText)}>
               <FormattedMessage {...messages.confirmCreateText} values={{ provider: title }} />
             </p>
-            <button
-              className={classNames('button is-primary', { 'is-loading': isSubmitting })}
-              disabled={isSubmitting}
-              onClick={submit}
-              type="button"
-            >
+            <Button color="primary" disabled={isSubmitting} loading={isSubmitting} onClick={submit}>
               <FormattedMessage {...messages.confirmCreate} />
-            </button>
+            </Button>
           </div>
           <p className={classNames(styles.section, { 'has-text-grey-light': isSubmitting })}>
             <FormattedMessage

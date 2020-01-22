@@ -1,4 +1,12 @@
-import { CardFooterButton, Form, Icon, Input, Loader, Modal } from '@appsemble/react-components';
+import {
+  Button,
+  CardFooterButton,
+  Form,
+  Icon,
+  Input,
+  Loader,
+  Modal,
+} from '@appsemble/react-components';
 import { MessagesContext } from '@appsemble/react-components/hooks/useMessages';
 import axios from 'axios';
 import PropTypes from 'prop-types';
@@ -308,13 +316,7 @@ export default class ResourceTable extends React.Component {
                   <Link className="button" to={`${match.url}/edit/${resource.id}`}>
                     <Icon className="has-text-info" icon="pen" size="small" />
                   </Link>
-                  <button
-                    className="button"
-                    onClick={() => this.promptDeleteResource(resource)}
-                    type="button"
-                  >
-                    <Icon className="has-text-danger" icon="trash" size="small" />
-                  </button>
+                  <Button icon="trash" onClick={() => this.promptDeleteResource(resource)} />
                 </td>
                 {keys.map(key => (
                   <td key={key} className={styles.contentCell}>

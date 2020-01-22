@@ -1,4 +1,5 @@
 import {
+  Button,
   Calendar,
   CardFooterButton,
   Checkbox,
@@ -63,9 +64,9 @@ export default function ClientCredentials(): React.ReactElement {
       <p className="content">
         <FormattedMessage {...messages.explanation} />
       </p>
-      <button className="button is-primary" onClick={openModal} type="button">
+      <Button color="primary" onClick={openModal}>
         <FormattedMessage {...messages.register} />
-      </button>
+      </Button>
       <Modal
         component={SimpleForm}
         defaultValues={{
@@ -190,13 +191,9 @@ export default function ClientCredentials(): React.ReactElement {
                     </Join>
                   </td>
                   <td>
-                    <button
-                      className="button is-danger is-pulled-right"
-                      onClick={onDelete(client)}
-                      type="button"
-                    >
+                    <Button className="is-pulled-right" color="danger" onClick={onDelete(client)}>
                       <FormattedMessage {...messages.revoke} />
-                    </button>
+                    </Button>
                   </td>
                 </tr>
               ))}
