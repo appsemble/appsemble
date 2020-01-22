@@ -4,19 +4,14 @@ import axios from 'axios';
 import React from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
-import { Permission } from '../../actions/serviceWorker';
 import settings from '../../utils/settings';
+import { useServiceWorkerRegistration } from '../ServiceWorkerRegistrationProvider';
 import TitleBar from '../TitleBar';
 import styles from './AppSettings.css';
 import messages from './messages';
 
 interface AppSettingsProps {
   definition: AppDefinition;
-  subscribed: boolean;
-  registration: ServiceWorkerRegistration;
-  requestPermission: () => Promise<Permission>;
-  subscribe: () => Promise<void>;
-  unsubscribe: () => Promise<void>;
 }
 
 interface ResourceState {
@@ -29,22 +24,31 @@ interface SubscriptionState {
   delete?: ResourceHooks & { subscribed: boolean };
 }
 
+interface SubscriptionResponse {
+  [type: string]: SubscriptionResponseResource;
+}
+
+interface SubscriptionResponseResource {
+  create: boolean;
+  update: boolean;
+  delete: boolean;
+}
+
 /**
  * The main entry point of the React app.
  *
  * This configures all providers and sets up the global app structure.
  */
-export default function AppSettings({
-  definition,
-  requestPermission,
-  subscribe,
-  registration,
-  unsubscribe,
-  subscribed,
-}: AppSettingsProps): React.ReactElement {
+export default function AppSettings({ definition }: AppSettingsProps): React.ReactElement {
   const intl = useIntl();
   const push = useMessages();
   const [subscriptions, setSubscriptions] = React.useState<ResourceState>();
+  const {
+    subscribe,
+    requestPermission,
+    subscription,
+    unsubscribe,
+  } = useServiceWorkerRegistration();
 
   React.useEffect(() => {
     const subs = Object.entries(definition.resources).reduce<ResourceState>(
@@ -69,23 +73,19 @@ export default function AppSettings({
       {},
     );
 
-    if (registration) {
-      registration.pushManager.getSubscription().then(async sub => {
-        if (!sub || !sub.endpoint) {
-          setSubscriptions(subs);
-          return;
-        }
-        const { endpoint } = sub;
-        try {
-          const { data } = await axios.get<{
-            [type: string]: { create: boolean; update: boolean; delete: boolean };
-          }>(`/api/apps/${settings.id}/subscriptions`, { params: { endpoint } });
-          Object.entries(data).forEach(([key, whatever]) => {
+    if (subscription) {
+      const { endpoint } = subscription;
+      axios
+        .get<SubscriptionResponse>(`/api/apps/${settings.id}/subscriptions`, {
+          params: { endpoint },
+        })
+        .then(({ data }) => {
+          Object.entries(data).forEach(([key, resource]) => {
             if (!Object.prototype.hasOwnProperty.call(subs, key)) {
               return;
             }
 
-            Object.entries(whatever).forEach(([action, value]) => {
+            Object.entries(resource as SubscriptionResponseResource).forEach(([action, value]) => {
               if (!Object.prototype.hasOwnProperty.call(subs[key], action)) {
                 return;
               }
@@ -93,18 +93,20 @@ export default function AppSettings({
               subs[key][action as keyof SubscriptionState].subscribed = value;
             });
           });
-        } catch (error) {
+
+          setSubscriptions(subs);
+        })
+        .catch(() => {
           push('Something went wrong when trying to fetch your subscription settings');
-        }
-        setSubscriptions(subs);
-      });
+          setSubscriptions(subs);
+        });
     }
-  }, [registration, definition, push]);
+  }, [definition, push, subscription]);
 
   const onSubscribeClick = async (event: React.ChangeEvent<HTMLInputElement>): Promise<void> => {
     event.preventDefault();
 
-    if (subscribed) {
+    if (subscription) {
       await unsubscribe();
       push({ body: intl.formatMessage(messages.unsubscribeSuccess), color: 'info' });
       return;
@@ -116,6 +118,7 @@ export default function AppSettings({
     }
 
     const result = await requestPermission();
+
     if (result !== 'granted') {
       push({ body: intl.formatMessage(messages.permissionDenied), color: 'danger' });
       return;
@@ -135,7 +138,7 @@ export default function AppSettings({
     value: boolean,
   ): Promise<void> => {
     try {
-      const { endpoint } = await registration.pushManager.getSubscription();
+      const { endpoint } = subscription;
       await axios.patch(`/api/apps/${settings.id}/subscriptions`, {
         endpoint,
         resource,
@@ -178,7 +181,7 @@ export default function AppSettings({
                   name="subscribe"
                   onChange={onSubscribeClick}
                   switch
-                  value={subscribed}
+                  value={!!subscription}
                 />
               </div>
             </FormComponent>
@@ -205,7 +208,7 @@ export default function AppSettings({
                       <Checkbox
                         key={`${resourceType}.${key}`}
                         className={styles.subscribeCheckbox}
-                        disabled={!subscribed || !resource.create}
+                        disabled={!subscription || !resource.create}
                         help={
                           <FormattedMessage
                             {...messages.subscriptionLabel}

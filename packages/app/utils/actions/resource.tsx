@@ -12,8 +12,10 @@ import {
   ResourceDeleteActionDefinition,
   ResourceGetActionDefinition,
   ResourceQueryActionDefinition,
+  ResourceSubscribeAction,
   ResourceUpdateActionDefinition,
 } from '@appsemble/types';
+import axios from 'axios';
 
 import { MakeActionParameters } from '../../types';
 import { requestLikeAction } from './request';

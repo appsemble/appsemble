@@ -47,4 +47,5 @@ export interface MakeActionParameters<D extends ActionDefinition> {
   onSuccess?: Action;
   onError?: Action;
   showDialog: ShowDialogAction;
+  serviceWorkerRegistration: ServiceWorkerRegistration;
 }
