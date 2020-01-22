@@ -142,6 +142,10 @@ async function verifyAppRole(ctx, app, resource, resourceType, action) {
     return;
   }
 
+  if (!user && (filteredRoles.length || author)) {
+    throw Boom.unauthorized('User is not logged in');
+  }
+
   if (author && user && resource && user.id === resource.UserId) {
     return;
   }
