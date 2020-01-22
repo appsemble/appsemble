@@ -1,14 +1,11 @@
 import { AppDefinition } from '@appsemble/types';
 import React from 'react';
 
-import { Permission } from '../../actions/serviceWorker';
+import { useServiceWorkerRegistration } from '../ServiceWorkerRegistrationProvider';
 import styles from './PermissionRequest.css';
 
 interface PermissionRequestProps {
   definition: AppDefinition;
-  permission: Permission;
-  subscribe: () => Promise<void>;
-  requestPermission: () => Promise<Permission>;
 }
 
 /**
@@ -16,10 +13,9 @@ interface PermissionRequestProps {
  */
 export default function PermissionRequest({
   definition,
-  permission,
-  subscribe,
-  requestPermission,
 }: PermissionRequestProps): React.ReactElement {
+  const { permission, requestPermission, subscribe } = useServiceWorkerRegistration();
+
   if (definition.notifications && definition.notifications === 'startup') {
     if (window.Notification.permission === 'denied') {
       return null;
