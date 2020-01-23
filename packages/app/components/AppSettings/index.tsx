@@ -1,7 +1,6 @@
 import { connect } from 'react-redux';
 
 import { State } from '../../actions';
-import { requestPermission, subscribe, unsubscribe } from '../../actions/serviceWorker';
 import AppSettings from './AppSettings';
 
 function mapStateToProps(
@@ -9,8 +8,7 @@ function mapStateToProps(
 ): Partial<React.ComponentPropsWithoutRef<typeof AppSettings>> {
   return {
     definition: state.app.definition,
-    subscribed: state.serviceWorker.subscribed,
   };
 }
 
-export default connect(mapStateToProps, { requestPermission, subscribe, unsubscribe })(AppSettings);
+export default connect(mapStateToProps)(AppSettings);

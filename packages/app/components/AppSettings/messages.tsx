@@ -15,4 +15,10 @@ export default defineMessages({
   unsubscribeSuccess: 'Successfully unsubscribed from notifications.',
   permissionDenied:
     'Unable to subscribe. Either no permission has been granted or your device does not support notifications.',
+  subscriptions: 'Subscriptions',
+  resourceSubscriptions: '{resource} subscriptions',
+  subscriptionLabel: 'Get notified when “{resource}” {actionVerb}',
+  create: 'is created',
+  update: 'is updated',
+  delete: 'is deleted',
 });

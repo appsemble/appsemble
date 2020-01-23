@@ -227,6 +227,21 @@ export interface Block<P = any, A = {}> {
   roles?: string[];
 }
 
+/**
+ * A collection of hooks that are triggered upon calling a resource actions.
+ */
+export interface ResourceHooks {
+  notification: {
+    to: string[];
+    subscribe: 'all' | 'single' | 'both';
+    data: {
+      title: string;
+      content: string;
+      link: string;
+    };
+  };
+}
+
 export interface ResourceCall {
   /**
    * The HTTP method to use for making the HTTP request.
@@ -237,6 +252,11 @@ export interface ResourceCall {
    * The URL to which to make the resource request.
    */
   url: string;
+
+  /**
+   * The associated hooks with the resource action.
+   */
+  hooks: ResourceHooks;
 }
 
 export interface Resource {

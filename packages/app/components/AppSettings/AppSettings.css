@@ -13,6 +13,10 @@
   }
 }
 
+.subscribeCell > * {
+  padding: 0;
+}
+
 .subscribeButton {
   margin-right: 0.75rem;
 }

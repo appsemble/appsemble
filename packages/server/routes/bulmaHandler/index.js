@@ -6,6 +6,7 @@ import postcss from 'postcss';
 const bulmaPath = require.resolve('bulma/bulma.sass');
 const functionPath = require.resolve('bulma/sass/utilities/functions.sass');
 const checkRadioPath = require.resolve('bulma-checkradio/src/sass/index.sass');
+const bulmaSwitchPath = require.resolve('bulma-switch/src/sass/index.sass');
 const calendarPath = require.resolve('bulma-calendar/src/sass/index.sass');
 const postCss = postcss([autoprefixer]);
 
@@ -35,6 +36,7 @@ function processStyle(params) {
 
     @import "${bulmaPath}";
     @import "${checkRadioPath}";
+    @import "${bulmaSwitchPath}";
     @import "${calendarPath}";
     // Syntax: https://sass-lang.com/documentation/breaking-changes/css-vars
     :root {
