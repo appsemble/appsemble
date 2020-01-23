@@ -16,7 +16,7 @@ let user;
 beforeAll(async () => {
   db = await testSchema('oauth');
 
-  server = await createServer({ db, argv: { host: window.location, secret: 'test' } });
+  server = await createServer({ db, argv: { host: 'http://localhost', secret: 'test' } });
   request = await createInstance(server);
 }, 10e3);
 
@@ -176,7 +176,7 @@ describe('client_credentials', () => {
     expect(response).toMatchObject({
       status: 200,
       data: {
-        access_token: expect.stringMatching(/^\w+\.\w+\.\w+$/),
+        access_token: expect.stringMatching(/^[\w-]+\.[\w-]+\.[\w-]+$/),
         expires_in: 3600,
         token_type: 'bearer',
       },

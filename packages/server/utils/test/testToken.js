@@ -10,7 +10,7 @@ export default async function testToken(
   scope,
   email = 'test@example.com',
 ) {
-  const argv = { host: window.location, secret: 'test' };
+  const argv = { host: 'http://localhost', secret: 'test' };
   const user = await User.create({ password, name: 'Test User', primaryEmail: email });
   await user.createEmailAuthorization({ email, verified: true });
   const response = createJWTResponse(user.id, argv);

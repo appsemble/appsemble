@@ -20,7 +20,7 @@ let user;
 
 beforeAll(async () => {
   db = await testSchema('apps');
-  server = await createServer({ db, argv: { host: window.location, secret: 'test' } });
+  server = await createServer({ db, argv: { host: 'http://localhost', secret: 'test' } });
   ({ App, BlockDefinition, BlockVersion, User } = db.models);
   request = await createInstance(server);
 }, 10e3);
