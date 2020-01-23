@@ -10,19 +10,32 @@ import {
 import { remapData } from '@appsemble/utils';
 import { RouteComponentProps } from 'react-router-dom';
 
-import { FlowActions, ShowDialogAction } from '../types';
+import { FlowActions, ServiceWorkerRegistrationContextType, ShowDialogAction } from '../types';
 import actionCreators, { ActionCreator, ActionCreators } from './actions';
 
-export default function makeActions(
-  appId: number,
-  blockDef: BlockDefinition,
-  definition: AppDefinition,
-  context: Block<any, Record<string, ActionDefinition>> | Page,
-  history: RouteComponentProps['history'],
-  showDialog: ShowDialogAction,
-  extraCreators: ActionCreators,
-  flowActions: FlowActions,
-): Actions<any> {
+interface MakeActionsParams {
+  appId: number;
+  blockDef: BlockDefinition;
+  definition: AppDefinition;
+  context: Block<any, Record<string, ActionDefinition>> | Page;
+  history: RouteComponentProps['history'];
+  showDialog: ShowDialogAction;
+  extraCreators: ActionCreators;
+  flowActions: FlowActions;
+  pushNotifications: ServiceWorkerRegistrationContextType;
+}
+
+export default function makeActions({
+  appId,
+  blockDef,
+  definition,
+  context,
+  history,
+  showDialog,
+  extraCreators,
+  flowActions,
+  pushNotifications,
+}: MakeActionsParams): Actions<any> {
   return Object.entries(blockDef.actions || {}).reduce<Record<string, Action>>(
     (acc, [on, { required }]) => {
       let actionDefinition: ActionDefinition;
@@ -56,6 +69,7 @@ export default function makeActions(
             history,
             showDialog,
             flowActions,
+            pushNotifications,
           }),
         onError:
           (type === 'request' || type.startsWith('resource.')) &&
@@ -68,7 +82,9 @@ export default function makeActions(
             history,
             showDialog,
             flowActions,
+            pushNotifications,
           }),
+        pushNotifications,
       });
       const { dispatch } = action;
       if (actionDefinition && Object.hasOwnProperty.call(actionDefinition, 'remap')) {

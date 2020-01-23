@@ -76,6 +76,7 @@ export default class Page extends React.Component {
     user: PropTypes.shape(),
     logout: PropTypes.func.isRequired,
     intl: PropTypes.shape().isRequired,
+    pushNotifications: PropTypes.shape().isRequired,
   };
 
   static defaultProps = {
@@ -97,27 +98,27 @@ export default class Page extends React.Component {
   }
 
   componentDidMount() {
-    const { appId, definition, getBlockDefs, page, history } = this.props;
+    const { appId, definition, getBlockDefs, page, history, pushNotifications } = this.props;
 
     this.applyBulmaThemes(definition, page);
     this.setupEvents();
 
     if (page.type === 'flow') {
-      const actions = makeActions(
+      const actions = makeActions({
         appId,
-        { actions: { onFlowFinish: {}, onFlowCancel: {} } },
+        blockDef: { actions: { onFlowFinish: {}, onFlowCancel: {} } },
         definition,
-        page,
+        context: page,
         history,
-        this.showDialog,
-        {
+        showDialog: this.showDialog,
+        extraCreators: {
           emit: this.emitEvent,
           off: this.offEvent,
           on: this.onEvent,
         },
-        {},
-        this.flowActions,
-      );
+        flowActions: this.flowActions,
+        pushNotifications,
+      });
 
       this.actions = actions;
     }

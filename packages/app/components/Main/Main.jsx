@@ -7,6 +7,7 @@ import settings from '../../utils/settings';
 import AppSettings from '../AppSettings';
 import Login from '../Login';
 import Page from '../Page';
+import { useServiceWorkerRegistration } from '../ServiceWorkerRegistrationProvider';
 import styles from './Main.css';
 
 /**
@@ -15,6 +16,8 @@ import styles from './Main.css';
  * This maps the page to a route and displays a page depending on URL.
  */
 export default function Main({ definition = null, user }) {
+  const pushNotifications = useServiceWorkerRegistration();
+
   if (definition == null) {
     return null;
   }
@@ -35,7 +38,9 @@ export default function Main({ definition = null, user }) {
         key={path}
         exact
         path={path}
-        render={props => <Page appId={settings.id} page={page} {...props} />}
+        render={props => (
+          <Page appId={settings.id} page={page} pushNotifications={pushNotifications} {...props} />
+        )}
       />
     );
   });

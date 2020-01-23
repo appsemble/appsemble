@@ -1,6 +1,7 @@
 import axios from 'axios';
 import * as React from 'react';
 
+import { Permission, ServiceWorkerRegistrationContextType } from '../../types';
 import settings from '../../utils/settings';
 import urlB64ToUint8Array from '../../utils/urlB64ToUint8Array';
 
@@ -8,16 +9,6 @@ interface ServiceWorkerRegistrationProviderProps {
   children: React.ReactNode;
   serviceWorkerRegistrationPromise: Promise<ServiceWorkerRegistration>;
 }
-
-interface ServiceWorkerRegistrationContextType {
-  subscribe(): Promise<boolean>;
-  unsubscribe(): Promise<boolean>;
-  permission: Permission;
-  subscription: PushSubscription;
-  requestPermission(): Promise<NotificationPermission>;
-}
-
-export type Permission = NotificationPermission | 'pending';
 
 const ServiceWorkerRegistrationContext = React.createContext<ServiceWorkerRegistrationContextType>(
   null,
