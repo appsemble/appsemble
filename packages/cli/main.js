@@ -1,4 +1,5 @@
 import { configureLogger, handleError } from '@appsemble/node-utils';
+import { cosmiconfig } from 'cosmiconfig';
 import path from 'path';
 import yargs from 'yargs';
 
@@ -6,7 +7,10 @@ import { CREDENTIALS_ENV_VAR } from './lib/authentication';
 import initAxios from './lib/initAxios';
 
 export default async function main(argv) {
-  yargs
+  const explorer = cosmiconfig('appsembleServer');
+  const found = await explorer.search(process.cwd());
+
+  let parser = yargs
     .option('verbose', {
       alias: 'v',
       describe: 'Increase verbosity',
@@ -24,12 +28,14 @@ export default async function main(argv) {
     .option('client-credentials', {
       description: `OAuth2 client credentials formatted as "client_id:client_secret". This may also be defined in the ${CREDENTIALS_ENV_VAR} environment variable.`,
     })
-    .pkgConf('appsembleServer')
     .middleware([configureLogger, initAxios])
     .commandDir(path.join(__dirname, 'commands'))
     .demandCommand(1)
     .fail(handleError)
     .help()
-    .completion()
-    .parse(argv);
+    .completion();
+  if (found) {
+    parser = parser.config(found.config);
+  }
+  parser.parse(argv);
 }

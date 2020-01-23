@@ -19,7 +19,7 @@ export function builder(yargs) {
     .option('webpack-config', {
       desc: 'The webpack configuration file to use for blocks.',
       alias: 'c',
-      default: 'config/webpack/block.js',
+      default: 'webpack.config',
       normalize: true,
     })
     .option('build', {
