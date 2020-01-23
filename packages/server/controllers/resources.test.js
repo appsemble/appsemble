@@ -6,73 +6,73 @@ import testSchema from '../utils/test/testSchema';
 import testToken from '../utils/test/testToken';
 import truncate from '../utils/test/truncate';
 
-describe('resource controller', () => {
-  let App;
-  let Resource;
-  let db;
-  let request;
-  let server;
-  let token;
-  let organizationId;
-  let clock;
-  let user;
+let App;
+let Resource;
+let db;
+let request;
+let server;
+let token;
+let organizationId;
+let clock;
+let user;
 
-  const exampleApp = orgId => ({
-    definition: {
-      name: 'Test App',
-      defaultPage: 'Test Page',
-      resources: {
-        testResource: {
-          schema: {
-            type: 'object',
-            required: ['foo'],
-            properties: { foo: { type: 'string' } },
-          },
+const exampleApp = orgId => ({
+  definition: {
+    name: 'Test App',
+    defaultPage: 'Test Page',
+    resources: {
+      testResource: {
+        schema: {
+          type: 'object',
+          required: ['foo'],
+          properties: { foo: { type: 'string' } },
         },
-        testResourceB: {
-          schema: {
-            type: 'object',
-            required: ['foo'],
-            properties: { bar: { type: 'string' } },
-          },
+      },
+      testResourceB: {
+        schema: {
+          type: 'object',
+          required: ['foo'],
+          properties: { bar: { type: 'string' } },
         },
       },
     },
-    path: 'test-app',
-    vapidPublicKey: 'a',
-    vapidPrivateKey: 'b',
-    OrganizationId: orgId,
-  });
+  },
+  path: 'test-app',
+  vapidPublicKey: 'a',
+  vapidPrivateKey: 'b',
+  OrganizationId: orgId,
+});
 
-  beforeAll(async () => {
-    db = await testSchema('resources');
-    server = await createServer({ db, argv: { host: window.location, secret: 'test' } });
-    request = await createInstance(server);
-    ({ App, Resource } = db.models);
-  }, 10e3);
+beforeAll(async () => {
+  db = await testSchema('resources');
+  server = await createServer({ db, argv: { host: window.location, secret: 'test' } });
+  request = await createInstance(server);
+  ({ App, Resource } = db.models);
+}, 10e3);
 
-  beforeEach(async () => {
-    await truncate(db);
-    ({ authorization: token, user } = await testToken(db));
-    ({ id: organizationId } = await user.createOrganization(
-      {
-        id: 'testorganization',
-        name: 'Test Organization',
-      },
-      { through: { role: 'Maintainer' } },
-    ));
-    clock = lolex.install();
-  });
+beforeEach(async () => {
+  await truncate(db);
+  ({ authorization: token, user } = await testToken(db));
+  ({ id: organizationId } = await user.createOrganization(
+    {
+      id: 'testorganization',
+      name: 'Test Organization',
+    },
+    { through: { role: 'Maintainer' } },
+  ));
+  clock = lolex.install();
+});
 
-  afterEach(() => {
-    clock.uninstall();
-  });
+afterEach(() => {
+  clock.uninstall();
+});
 
-  afterAll(async () => {
-    await request.close();
-    await db.close();
-  });
+afterAll(async () => {
+  await request.close();
+  await db.close();
+});
 
+describe('getResourceById', () => {
   it('should be able to fetch a resource', async () => {
     const app = await App.create(exampleApp(organizationId));
 
@@ -106,6 +106,30 @@ describe('resource controller', () => {
     expect(responseB).toMatchObject({ status: 404 });
   });
 
+  it('should return the resource author when fetching a single resource if it has one', async () => {
+    const app = await App.create(exampleApp(organizationId));
+    const resource = await app.createResource({
+      type: 'testResource',
+      data: { foo: 'foo', bar: 1 },
+      UserId: user.id,
+    });
+
+    const response = await request.get(`/api/apps/${app.id}/resources/testResource/${resource.id}`);
+
+    expect(response).toMatchObject({
+      status: 200,
+      data: {
+        id: resource.id,
+        foo: 'foo',
+        bar: 1,
+        $created: new Date(0).toJSON(),
+        $updated: new Date(0).toJSON(),
+        $author: { id: user.id, name: user.name },
+      },
+    });
+  });
+});
+describe('queryResources', () => {
   it('should be able to fetch all resources of a type', async () => {
     const app = await App.create(exampleApp(organizationId));
 
@@ -329,30 +353,9 @@ describe('resource controller', () => {
       ],
     });
   });
+});
 
-  it('should return the resource author when fetching a single resource if it has one', async () => {
-    const app = await App.create(exampleApp(organizationId));
-    const resource = await app.createResource({
-      type: 'testResource',
-      data: { foo: 'foo', bar: 1 },
-      UserId: user.id,
-    });
-
-    const response = await request.get(`/api/apps/${app.id}/resources/testResource/${resource.id}`);
-
-    expect(response).toMatchObject({
-      status: 200,
-      data: {
-        id: resource.id,
-        foo: 'foo',
-        bar: 1,
-        $created: new Date(0).toJSON(),
-        $updated: new Date(0).toJSON(),
-        $author: { id: user.id, name: user.name },
-      },
-    });
-  });
-
+describe('createResource', () => {
   it('should be able to create a new resource', async () => {
     const app = await App.create(exampleApp(organizationId));
 
@@ -368,7 +371,7 @@ describe('resource controller', () => {
     });
   });
 
-  it('should validate resources when creating resources', async () => {
+  it('should validate resources', async () => {
     const app = await App.create(exampleApp(organizationId));
 
     const resource = {};
@@ -386,7 +389,7 @@ describe('resource controller', () => {
     });
   });
 
-  it('should check if an app has a specific resource definition when creating resources', async () => {
+  it('should check if an app has a specific resource definition', async () => {
     const app = await App.create(exampleApp(organizationId));
 
     const response = await request.get(`/api/apps/${app.id}/resources/thisDoesNotExist`);
@@ -396,7 +399,7 @@ describe('resource controller', () => {
     });
   });
 
-  it('should check if an app has any resource definitions when creating resources', async () => {
+  it('should check if an app has any resource definitions', async () => {
     const app = await App.create({
       definition: { name: 'Test App', defaultPage: 'Test Page' },
       path: 'test-app',
@@ -411,7 +414,9 @@ describe('resource controller', () => {
       data: { message: 'App does not have any resources defined' },
     });
   });
+});
 
+describe('updateResource', () => {
   it('should be able to update an existing resource', async () => {
     const app = await App.create(exampleApp(organizationId));
     const resource = await Resource.create({
@@ -505,7 +510,7 @@ describe('resource controller', () => {
     });
   });
 
-  it('should validate resources when updating resources', async () => {
+  it('should validate resources', async () => {
     const app = await App.create(exampleApp(organizationId));
     const resource = await Resource.create({
       type: 'testResource',
@@ -524,7 +529,9 @@ describe('resource controller', () => {
       data: {},
     });
   });
+});
 
+describe('deleteResource', () => {
   it('should be able to delete an existing resource', async () => {
     const app = await App.create(exampleApp(organizationId));
     const resource = await Resource.create({
