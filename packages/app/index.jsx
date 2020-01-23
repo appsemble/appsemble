@@ -23,7 +23,7 @@ const store = createStore(reducers, composeEnhancers(applyMiddleware(thunk)));
 let serviceWorkerRegistrationPromise = null;
 
 if ('serviceWorker' in navigator) {
-  serviceWorkerRegistrationPromise = runtime.register().then(async registration => registration);
+  serviceWorkerRegistrationPromise = runtime.register();
 }
 
 // Used by the live editor to communicate new app recipes
