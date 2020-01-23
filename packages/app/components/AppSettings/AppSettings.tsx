@@ -208,7 +208,7 @@ export default function AppSettings({ definition }: AppSettingsProps): React.Rea
                     )
                     .map(key => (
                       <Checkbox
-                        key={`${resourceType}.${key}`}
+                        key={key}
                         className={styles.subscribeCheckbox}
                         disabled={!subscription || !resource.create}
                         help={
