@@ -1,4 +1,4 @@
-import PropTypes from 'prop-types';
+import { App } from '@appsemble/types';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Link, useRouteMatch } from 'react-router-dom';
@@ -7,7 +7,11 @@ import HelmetIntl from '../HelmetIntl';
 import styles from './CMSRoot.css';
 import messages from './messages';
 
-export default function CMSRoot({ app }) {
+interface CMSRootProps {
+  app: App;
+}
+
+export default function CMSRoot({ app }: CMSRootProps): React.ReactElement {
   const match = useRouteMatch();
 
   return (
@@ -41,7 +45,3 @@ export default function CMSRoot({ app }) {
     </>
   );
 }
-
-CMSRoot.propTypes = {
-  app: PropTypes.shape().isRequired,
-};

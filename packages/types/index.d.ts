@@ -690,6 +690,11 @@ export interface App {
   private: boolean;
 
   definition: AppDefinition;
+
+  /**
+   * The app definition formatted as YAML.
+   */
+  yaml: string;
 }
 
 /**

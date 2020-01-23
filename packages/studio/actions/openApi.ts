@@ -1,5 +1,6 @@
 import axios from 'axios';
-import RefParser, { JSONSchema } from 'json-schema-ref-parser';
+import RefParser from 'json-schema-ref-parser';
+import { OpenAPIV3 } from 'openapi-types';
 import { Action } from 'redux';
 import { ThunkAction } from 'redux-thunk';
 
@@ -10,7 +11,7 @@ const GET_SUCCESS = 'openapi/GET_SUCCESS';
 const GET_ERROR = 'openapi/GET_ERROR';
 
 export interface OpenAPIState {
-  spec: JSONSchema;
+  spec: OpenAPIV3.Document;
   loading: boolean;
   error: Error;
 }
@@ -22,7 +23,7 @@ const initialState: OpenAPIState = {
 };
 
 interface SuccessAction extends Action<typeof GET_SUCCESS> {
-  spec: JSONSchema;
+  spec: OpenAPIV3.Document;
 }
 
 interface ErrorAction extends Action<typeof GET_ERROR> {
@@ -64,7 +65,7 @@ export function getOpenApiSpec(): OpenAPIThunk {
     });
     try {
       const { data } = await axios.get('/api/api.json');
-      const spec = await RefParser.dereference(data);
+      const spec = (await RefParser.dereference(data)) as OpenAPIV3.Document;
       dispatch({
         type: GET_SUCCESS,
         spec,
