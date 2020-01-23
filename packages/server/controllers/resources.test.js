@@ -36,6 +36,18 @@ const exampleApp = orgId => ({
         },
       },
     },
+    security: {
+      default: {
+        role: 'Reader',
+        policy: 'invite',
+      },
+      roles: {
+        Reader: {},
+        Admin: {
+          inherits: ['Reader'],
+        },
+      },
+    },
   },
   path: 'test-app',
   vapidPublicKey: 'a',
@@ -642,6 +654,144 @@ describe('deleteResource', () => {
       data: {
         foo: 'I am Foo.',
         id: resource.id,
+      },
+    });
+  });
+});
+
+describe('verifyAppRole', () => {
+  // The same logic gets applies to query, get, create, update, and delete.
+  it('should return normally on secured actions if user is authenticated and has sufficient roles', async () => {
+    const appTemplate = exampleApp(organizationId);
+    appTemplate.definition.resources.testResource.query = {
+      roles: ['Reader'],
+    };
+
+    const app = await App.create(appTemplate);
+    await app.addUser(user.id, { through: { role: 'Reader' } });
+    const resourceA = await app.createResource({ type: 'testResource', data: { foo: 'bar' } });
+    const resourceB = await app.createResource({ type: 'testResource', data: { foo: 'baz' } });
+    await app.createResource({ type: 'testResourceB', data: { bar: 'baz' } });
+
+    const response = await request.get(`/api/apps/${app.id}/resources/testResource`, {
+      headers: { authorization: token },
+    });
+
+    expect(response).toMatchObject({
+      status: 200,
+      data: [
+        {
+          id: resourceA.id,
+          foo: 'bar',
+          $created: new Date(0).toJSON(),
+          $updated: new Date(0).toJSON(),
+        },
+        {
+          id: resourceB.id,
+          foo: 'baz',
+          $created: new Date(0).toJSON(),
+          $updated: new Date(0).toJSON(),
+        },
+      ],
+    });
+  });
+
+  it('should return normally on secured actions if user is the resource author', async () => {
+    const appTemplate = exampleApp(organizationId);
+    appTemplate.definition.resources.testResource.get = {
+      roles: ['Admin', '$author'],
+    };
+
+    const app = await App.create(appTemplate);
+    await app.addUser(user.id, { through: { role: 'Reader' } });
+    const resource = await app.createResource({
+      type: 'testResource',
+      data: { foo: 'bar' },
+      UserId: user.id,
+    });
+
+    const response = await request.get(
+      `/api/apps/${app.id}/resources/testResource/${resource.id}`,
+      {
+        headers: { authorization: token },
+      },
+    );
+
+    expect(response).toMatchObject({
+      status: 200,
+      data: {
+        id: resource.id,
+        foo: 'bar',
+        $created: new Date(0).toJSON(),
+        $updated: new Date(0).toJSON(),
+        $author: {
+          id: user.id,
+          name: 'Test User',
+        },
+      },
+    });
+  });
+
+  it('should return a 401 on unauthorized requests if roles are present', async () => {
+    const appTemplate = exampleApp(organizationId);
+    appTemplate.definition.resources.testResource.query = {
+      roles: ['Reader'],
+    };
+
+    const app = await App.create(appTemplate);
+    const response = await request.get(`/api/apps/${app.id}/resources/testResource`);
+
+    expect(response).toMatchObject({
+      status: 401,
+      data: {
+        error: 'Unauthorized',
+        message: 'User is not logged in',
+        statusCode: 401,
+      },
+    });
+  });
+
+  it('should throw a 403 on secured actions if user is authenticated and is not a member', async () => {
+    const appTemplate = exampleApp(organizationId);
+    appTemplate.definition.resources.testResource.query = {
+      roles: ['Reader'],
+    };
+
+    const app = await App.create(appTemplate);
+
+    const response = await request.get(`/api/apps/${app.id}/resources/testResource`, {
+      headers: { authorization: token },
+    });
+
+    expect(response).toMatchObject({
+      status: 403,
+      data: {
+        error: 'Forbidden',
+        message: 'User is not a member of the app.',
+        statusCode: 403,
+      },
+    });
+  });
+
+  it('should throw a 403 on secured actions if user is authenticated and has insufficient roles', async () => {
+    const appTemplate = exampleApp(organizationId);
+    appTemplate.definition.resources.testResource.query = {
+      roles: ['Admin'],
+    };
+
+    const app = await App.create(appTemplate);
+    await app.addUser(user.id, { through: { role: 'Reader' } });
+
+    const response = await request.get(`/api/apps/${app.id}/resources/testResource`, {
+      headers: { authorization: token },
+    });
+
+    expect(response).toMatchObject({
+      status: 403,
+      data: {
+        error: 'Forbidden',
+        message: 'User does not have sufficient permissions.',
+        statusCode: 403,
       },
     });
   });

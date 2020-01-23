@@ -160,20 +160,18 @@ async function verifyAppRole(ctx, app, resource, resourceType, action) {
     switch (policy) {
       case 'everyone':
         role = defaultRole;
-
         break;
 
       case 'organization':
         if (!(await app.Organization.hasUser(user.id))) {
-          throw Boom.notFound('User is not a member of the organization.');
+          throw Boom.forbidden('User is not a member of the organization.');
         }
 
         role = defaultRole;
-
         break;
 
       case 'invite':
-        throw Boom.notFound('User is not a member of the app.');
+        throw Boom.forbidden('User is not a member of the app.');
 
       default:
         role = null;
@@ -200,7 +198,7 @@ export async function queryResources(ctx) {
         { model: Organization, attributes: [] },
         {
           model: User,
-          attributes: [],
+          attributes: ['id'],
           required: false,
           where: { id: user.id },
           through: { attributes: ['role'] },
@@ -209,7 +207,7 @@ export async function queryResources(ctx) {
     }),
   });
   const { properties } = verifyResourceDefinition(app, resourceType);
-  await verifyAppRole(ctx, app, null, resourceType, 'delete');
+  await verifyAppRole(ctx, app, null, resourceType, 'query');
 
   const keys = Object.keys(properties);
   // the data is stored in the ´data´ column as json
@@ -249,7 +247,7 @@ export async function getResourceById(ctx) {
         { model: Organization, attributes: [] },
         {
           model: User,
-          attributes: [],
+          attributes: ['id'],
           required: false,
           where: { id: user.id },
           through: { attributes: ['role'] },
@@ -293,7 +291,7 @@ export async function createResource(ctx) {
         { model: Organization, attributes: [] },
         {
           model: User,
-          attributes: [],
+          attributes: ['id'],
           required: false,
           where: { id: user.id },
           through: { attributes: ['role'] },
@@ -341,7 +339,7 @@ export async function updateResource(ctx) {
         { model: Organization, attributes: [] },
         {
           model: User,
-          attributes: [],
+          attributes: ['id'],
           required: false,
           where: { id: user.id },
           through: { attributes: ['role'] },
@@ -403,7 +401,7 @@ export async function deleteResource(ctx) {
         { model: Organization, attributes: [] },
         {
           model: User,
-          attributes: [],
+          attributes: ['id'],
           required: false,
           where: { id: user.id },
           through: { attributes: ['role'] },
