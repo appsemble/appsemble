@@ -516,7 +516,8 @@ type ResourceGetActionDefinition = ResourceActionDefinition<'resource.get'>;
 type ResourceQueryActionDefinition = ResourceActionDefinition<'resource.query'>;
 type ResourceUpdateActionDefinition = ResourceActionDefinition<'resource.update'>;
 
-export interface ResourceSubscribeActionDefinition extends BaseAction<'resource.subscribe'> {
+export interface ResourceSubscribeActionDefinition
+  extends BaseActionDefinition<'resource.subscribe'> {
   /**
    * The name of the resource.
    */
