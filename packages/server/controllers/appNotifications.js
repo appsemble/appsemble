@@ -74,7 +74,7 @@ export async function updateSubscription(ctx) {
   const { appId } = ctx.params;
   const { App, AppSubscription, ResourceSubscription } = ctx.db.models;
   const { user } = ctx.state;
-  const { endpoint, resource, action, value } = ctx.request.body;
+  const { endpoint, resource, action, value, resourceId } = ctx.request.body;
 
   const app = await App.findByPk(appId, {
     attributes: [],
@@ -83,7 +83,11 @@ export async function updateSubscription(ctx) {
         attributes: ['id', 'UserId'],
         model: AppSubscription,
         include: [
-          { model: ResourceSubscription, where: { type: resource, action }, required: false },
+          {
+            model: ResourceSubscription,
+            where: { type: resource, action, ...(resourceId && { ResourceId: resourceId }) },
+            required: false,
+          },
         ],
         required: false,
         where: { endpoint },
@@ -113,7 +117,11 @@ export async function updateSubscription(ctx) {
 
     await resourceSubscription.destroy();
   } else {
-    await appSubscription.createResourceSubscription({ type: resource, action });
+    await appSubscription.createResourceSubscription({
+      type: resource,
+      action,
+      ...(resourceId && { ResourceId: resourceId }),
+    });
   }
 }
 

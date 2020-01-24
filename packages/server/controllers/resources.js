@@ -177,19 +177,19 @@ async function sendSubscriptionNotifications(
       include: [
         {
           model: ResourceSubscription,
-          attributes: [],
-          where: { type: resourceType, action },
+          attributes: ['ResourceId'],
+          where: {
+            type: resourceType,
+            action,
+            ...(resourceId
+              ? { ResourceId: { [Op.or]: [null, resourceId] } }
+              : { ResourceId: null }),
+          },
         },
       ],
     });
 
-    subscriptions.push(
-      ...resourceSubscribers.filter(
-        resourceSub =>
-          (resourceSub.ResourceId && resourceId === resourceSub.ResourceId) ||
-          resourceSub.ResourceId == null,
-      ),
-    );
+    subscriptions.push(...resourceSubscribers);
   }
 
   subscriptions.forEach(subscription => {

@@ -6,18 +6,20 @@ import {
   ResourceUpdateAction,
 } from '@appsemble/sdk';
 import {
+  BaseAction,
   BlobUploadType,
   Resource,
   ResourceCreateActionDefinition,
   ResourceDeleteActionDefinition,
   ResourceGetActionDefinition,
   ResourceQueryActionDefinition,
-  ResourceSubscribeAction,
+  ResourceSubscribeActionDefinition,
   ResourceUpdateActionDefinition,
 } from '@appsemble/types';
 import axios from 'axios';
 
 import { MakeActionParameters } from '../../types';
+import settings from '../settings';
 import { requestLikeAction } from './request';
 
 function getBlobs(resource: Resource): BlobUploadType {
@@ -153,4 +155,44 @@ function remove(args: MakeActionParameters<ResourceDeleteActionDefinition>): Res
   };
 }
 
-export default { get, query, create, update, remove };
+function subscribe({
+  app,
+  appId,
+  definition,
+  pushNotifications,
+}: MakeActionParameters<ResourceSubscribeActionDefinition>): BaseAction<'resource.subscribe'> {
+  const resource = app.resources[definition.resource];
+  const id = resource.id || 'id';
+
+  return {
+    dispatch: async (data): Promise<any> => {
+      const { permission, requestPermission, subscribe: sub } = pushNotifications;
+      let { subscription } = pushNotifications;
+
+      if (!subscription && permission === 'default') {
+        const newPermission = await requestPermission();
+        if (newPermission !== 'granted') {
+          throw Error('Unable to subscribe. Permission was denied.');
+        }
+
+        subscription = await sub();
+      } else if (permission === 'granted' && !subscription) {
+        subscription = await sub();
+      } else if (permission === 'denied') {
+        throw Error('Unable to subscribe. Permission was denied.');
+      }
+
+      const { endpoint } = subscription;
+      await axios.patch(`${settings.apiUrl}/api/apps/${appId}/subscriptions`, {
+        endpoint,
+        resource: definition.resource,
+        action: definition.action || 'update',
+        value: true,
+        resourceId: data[id],
+      });
+    },
+    type: 'resource.subscribe',
+  };
+}
+
+export default { get, query, create, update, remove, subscribe };
