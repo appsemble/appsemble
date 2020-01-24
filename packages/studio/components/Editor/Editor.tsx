@@ -12,6 +12,7 @@ import { SchemaValidationError, validate, validateStyle } from '@appsemble/utils
 import axios from 'axios';
 import classNames from 'classnames';
 import { safeDump, safeLoad } from 'js-yaml';
+import RefParser from 'json-schema-ref-parser';
 import { isEqual } from 'lodash';
 import { OpenAPIV3 } from 'openapi-types';
 import React from 'react';
@@ -25,17 +26,10 @@ import messages from './messages';
 
 interface EditorProps {
   app: App;
-  getOpenApiSpec: () => Promise<any>;
   updateApp: (app: App) => Promise<void>;
-  openApiSpec: OpenAPIV3.Document;
 }
 
-export default function Editor({
-  app,
-  getOpenApiSpec,
-  updateApp,
-  openApiSpec,
-}: EditorProps): React.ReactElement {
+export default function Editor({ app, updateApp }: EditorProps): React.ReactElement {
   const [appName, setAppName] = React.useState('');
   const [recipe, setRecipe] = React.useState<string>(null);
   const [style, setStyle] = React.useState('');
@@ -46,6 +40,7 @@ export default function Editor({
   const [dirty, setDirty] = React.useState(true);
   const [warningDialog, setWarningDialog] = React.useState(false);
   const [deleteDialog, setDeleteDialog] = React.useState(false);
+  const [openApiDocument, setOpenApiDocument] = React.useState<OpenAPIV3.Document>();
 
   const frame = React.useRef<HTMLIFrameElement>();
   const history = useHistory();
@@ -56,8 +51,11 @@ export default function Editor({
   const push = useMessages();
 
   React.useEffect(() => {
-    getOpenApiSpec();
-  }, [getOpenApiSpec]);
+    axios
+      .get('/api/api.json')
+      .then(({ data }) => RefParser.dereference(data))
+      .then(setOpenApiDocument);
+  }, []);
 
   React.useEffect(() => {
     const { id } = params;
@@ -97,7 +95,7 @@ export default function Editor({
     setRecipe(yamlRecipe);
     setInitialRecipe(yamlRecipe);
     setPath(p);
-  }, [app, getOpenApiSpec, history, intl, location.hash, params, push]);
+  }, [app, history, intl, location.hash, params, push]);
 
   const onSave = React.useCallback(
     async (event?: React.FormEvent) => {
@@ -127,7 +125,9 @@ export default function Editor({
       }
 
       try {
-        await validate(openApiSpec.components.schemas.App as OpenAPIV3.SchemaObject, newApp);
+        if (openApiDocument) {
+          await validate(openApiDocument.components.schemas.App as OpenAPIV3.SchemaObject, newApp);
+        }
         setValid(true);
         setDirty(false);
 
@@ -152,7 +152,7 @@ export default function Editor({
         setDirty(false);
       }
     },
-    [intl, openApiSpec, push, recipe, sharedStyle, style],
+    [intl, openApiDocument, push, recipe, sharedStyle, style],
   );
 
   const uploadApp = React.useCallback(async () => {
