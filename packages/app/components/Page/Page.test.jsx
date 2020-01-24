@@ -24,6 +24,7 @@ it('should render the blocks for a page', () => {
       page={page}
       pending={false}
       push={() => {}}
+      pushNotifications={{}}
     />,
   );
 
@@ -53,6 +54,7 @@ it('should render tabs pages', () => {
       page={page}
       pending={false}
       push={() => {}}
+      pushNotifications={{}}
     />,
   );
 
@@ -82,6 +84,7 @@ it('should render flow page', () => {
       page={page}
       pending={false}
       push={() => {}}
+      pushNotifications={{}}
     />,
   );
 
@@ -104,6 +107,7 @@ it('should call event listeners when an event is emitted', () => {
       page={page}
       pending={false}
       push={() => {}}
+      pushNotifications={{}}
     />,
   );
 

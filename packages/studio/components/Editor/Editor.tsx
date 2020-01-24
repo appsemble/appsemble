@@ -1,4 +1,5 @@
 import {
+  Button,
   CardFooterButton,
   Form,
   Icon,
@@ -6,24 +7,37 @@ import {
   Modal,
   useMessages,
 } from '@appsemble/react-components';
+import { App } from '@appsemble/types';
 import { SchemaValidationError, validate, validateStyle } from '@appsemble/utils';
 import axios from 'axios';
 import classNames from 'classnames';
 import { safeDump, safeLoad } from 'js-yaml';
-import isEqual from 'lodash.isequal';
-import PropTypes from 'prop-types';
+import { isEqual } from 'lodash';
+import { OpenAPIV3 } from 'openapi-types';
 import React from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { Link, useHistory, useLocation, useRouteMatch } from 'react-router-dom';
+import { Link, useHistory, useLocation, useParams } from 'react-router-dom';
 
 import HelmetIntl from '../HelmetIntl';
 import MonacoEditor from '../MonacoEditor';
 import styles from './Editor.css';
 import messages from './messages';
 
-export default function Editor({ app, getOpenApiSpec, updateApp, openApiSpec }) {
+interface EditorProps {
+  app: App;
+  getOpenApiSpec: () => Promise<any>;
+  updateApp: (app: App) => Promise<void>;
+  openApiSpec: OpenAPIV3.Document;
+}
+
+export default function Editor({
+  app,
+  getOpenApiSpec,
+  updateApp,
+  openApiSpec,
+}: EditorProps): React.ReactElement {
   const [appName, setAppName] = React.useState('');
-  const [recipe, setRecipe] = React.useState(null);
+  const [recipe, setRecipe] = React.useState<string>(null);
   const [style, setStyle] = React.useState('');
   const [sharedStyle, setSharedStyle] = React.useState('');
   const [initialRecipe, setInitialRecipe] = React.useState('');
@@ -33,11 +47,11 @@ export default function Editor({ app, getOpenApiSpec, updateApp, openApiSpec }) 
   const [warningDialog, setWarningDialog] = React.useState(false);
   const [deleteDialog, setDeleteDialog] = React.useState(false);
 
-  const frame = React.useRef();
+  const frame = React.useRef<HTMLIFrameElement>();
   const history = useHistory();
   const intl = useIntl();
   const location = useLocation();
-  const match = useRouteMatch();
+  const params = useParams<{ id: string }>();
 
   const push = useMessages();
 
@@ -46,13 +60,13 @@ export default function Editor({ app, getOpenApiSpec, updateApp, openApiSpec }) 
   }, [getOpenApiSpec]);
 
   React.useEffect(() => {
-    const { id } = match.params;
+    const { id } = params;
 
     if (!location.hash) {
       history.push('#editor');
     }
 
-    const getStyles = async () => {
+    const getStyles = async (): Promise<void> => {
       try {
         const { data: styleData } = await axios.get(`/api/apps/${id}/style/core`);
         const { data: sharedStyleData } = await axios.get(`/api/apps/${id}/style/shared`);
@@ -83,15 +97,15 @@ export default function Editor({ app, getOpenApiSpec, updateApp, openApiSpec }) 
     setRecipe(yamlRecipe);
     setInitialRecipe(yamlRecipe);
     setPath(p);
-  }, [app, getOpenApiSpec, history, intl, location.hash, match.params, push]);
+  }, [app, getOpenApiSpec, history, intl, location.hash, params, push]);
 
   const onSave = React.useCallback(
-    async event => {
+    async (event?: React.FormEvent) => {
       if (event) {
         event.preventDefault();
       }
 
-      const newApp = {};
+      const newApp: Partial<App> = {};
       // Attempt to parse the YAML into a JSON object
       try {
         newApp.definition = safeLoad(recipe);
@@ -113,7 +127,7 @@ export default function Editor({ app, getOpenApiSpec, updateApp, openApiSpec }) 
       }
 
       try {
-        await validate(openApiSpec.components.schemas.App, newApp);
+        await validate(openApiSpec.components.schemas.App as OpenAPIV3.SchemaObject, newApp);
         setValid(true);
         setDirty(false);
 
@@ -146,7 +160,7 @@ export default function Editor({ app, getOpenApiSpec, updateApp, openApiSpec }) 
       return;
     }
 
-    const { id } = match.params;
+    const { id } = params;
     const definition = safeLoad(recipe);
 
     try {
@@ -178,10 +192,10 @@ export default function Editor({ app, getOpenApiSpec, updateApp, openApiSpec }) 
     setDirty(true);
     setWarningDialog(false);
     setInitialRecipe(recipe);
-  }, [intl, match.params, push, recipe, sharedStyle, style, updateApp, valid]);
+  }, [intl, params, push, recipe, sharedStyle, style, updateApp, valid]);
 
   const onDelete = React.useCallback(async () => {
-    const { id } = match.params;
+    const { id } = params;
 
     try {
       await axios.delete(`/api/apps/${id}`);
@@ -195,7 +209,7 @@ export default function Editor({ app, getOpenApiSpec, updateApp, openApiSpec }) 
     } catch (e) {
       push(intl.formatMessage(messages.errorDelete));
     }
-  }, [app.OrganizationId, appName, history, intl, match.params, push]);
+  }, [app.OrganizationId, appName, history, intl, params, push]);
 
   const onDeleteClick = React.useCallback(() => setDeleteDialog(true), []);
 
@@ -272,25 +286,19 @@ export default function Editor({ app, getOpenApiSpec, updateApp, openApiSpec }) 
           <nav className="navbar">
             <div className="navbar-brand">
               <span className="navbar-item">
-                <button className="button" disabled={!dirty} type="submit">
-                  <Icon icon="vial" />
-                  <span>
-                    <FormattedMessage {...messages.preview} />
-                  </span>
-                </button>
+                <Button disabled={!dirty} icon="vial" type="submit">
+                  <FormattedMessage {...messages.preview} />
+                </Button>
               </span>
               <span className="navbar-item">
-                <button
+                <Button
                   className="button"
                   disabled={!valid || dirty}
+                  icon="save"
                   onClick={onUpload}
-                  type="button"
                 >
-                  <Icon icon="save" />
-                  <span>
-                    <FormattedMessage {...messages.publish} />
-                  </span>
-                </button>
+                  <FormattedMessage {...messages.publish} />
+                </Button>
               </span>
               <span className="navbar-item">
                 <a className="button" href={appUrl} rel="noopener noreferrer" target="_blank">
@@ -301,12 +309,9 @@ export default function Editor({ app, getOpenApiSpec, updateApp, openApiSpec }) 
                 </a>
               </span>
               <span className="navbar-item">
-                <button className="button is-danger" onClick={onDeleteClick} type="button">
-                  <Icon icon="trash-alt" />
-                  <span>
-                    <FormattedMessage {...messages.delete} />
-                  </span>
-                </button>
+                <Button color="danger" icon="trash-alt" onClick={onDeleteClick}>
+                  <FormattedMessage {...messages.delete} />
+                </Button>
               </span>
             </div>
           </nav>
@@ -399,18 +404,3 @@ export default function Editor({ app, getOpenApiSpec, updateApp, openApiSpec }) 
     </div>
   );
 }
-
-Editor.propTypes = {
-  app: PropTypes.shape().isRequired,
-  getOpenApiSpec: PropTypes.func.isRequired,
-  updateApp: PropTypes.func.isRequired,
-  history: PropTypes.shape().isRequired,
-  intl: PropTypes.shape().isRequired,
-  location: PropTypes.shape().isRequired,
-  match: PropTypes.shape().isRequired,
-  openApiSpec: PropTypes.shape(),
-};
-
-Editor.defaultProps = {
-  openApiSpec: null,
-};

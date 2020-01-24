@@ -37,7 +37,7 @@ type CheckboxProps = Omit<React.ComponentPropsWithoutRef<typeof FormComponent>, 
      *
      * By default (false), the label will be rendered after the checkbox.
      */
-    isRtl?: boolean;
+    rtl?: boolean;
   };
 
 /**
@@ -60,7 +60,7 @@ export default class Checkbox extends React.Component<CheckboxProps> {
       value,
       id = name,
       switch: isSwitch,
-      isRtl,
+      rtl,
       ...props
     } = this.props;
 
@@ -71,7 +71,7 @@ export default class Checkbox extends React.Component<CheckboxProps> {
           checked={value}
           className={classNames(
             isSwitch ? 'switch' : 'is-checkradio',
-            { 'is-rtl': isRtl },
+            { 'is-rtl': rtl },
             className,
           )}
           id={id}

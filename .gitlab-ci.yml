@@ -56,7 +56,9 @@ stages:
   stage: provision
   script:
     - yarn appsemble block register --all --build blocks
-    - yarn appsemble app create --template --organization @appsemble --all apps
+    # XXX Uncomment this line when SSL wildcard certificates are implemented
+    # https://gitlab.com/appsemble/infra/issues/1
+    # - yarn appsemble app create --template --organization @appsemble --all apps
 
 ###################################################################################################
 #  Test Stage                                                                                     #

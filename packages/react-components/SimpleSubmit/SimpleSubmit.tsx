@@ -1,15 +1,13 @@
-import classNames from 'classnames';
 import * as React from 'react';
 
+import Button from '../Button';
 import { useSimpleForm } from '../SimpleForm';
 
 interface SimpleSubmitProps extends Omit<React.ComponentPropsWithoutRef<'button'>, 'onChange'> {
   children?: React.ReactChild;
-  className?: string;
 }
 
 export default function SimpleSubmit({
-  className,
   disabled,
   name,
   ...props
@@ -17,10 +15,11 @@ export default function SimpleSubmit({
   const { formErrors, pristine, submitting } = useSimpleForm();
 
   return (
-    <button
+    <Button
       {...props}
-      className={classNames('button is-primary', className, { 'is-loading': submitting })}
+      color="primary"
       disabled={disabled || pristine || submitting || Object.values(formErrors).some(Boolean)}
+      loading={submitting}
       type="submit"
     />
   );

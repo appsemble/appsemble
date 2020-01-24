@@ -1,8 +1,8 @@
+import { useQuery } from '@appsemble/react-components';
 import { UserInfo } from '@appsemble/types';
 import * as React from 'react';
 import { Redirect, Route, RouteComponentProps } from 'react-router-dom';
 
-import useQuery from '../../hooks/useQuery';
 import useUser from '../../hooks/useUser';
 
 interface AnonymousRouteProps extends RouteComponentProps {

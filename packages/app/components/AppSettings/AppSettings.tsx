@@ -18,10 +18,12 @@ interface ResourceState {
   [resourceType: string]: SubscriptionState;
 }
 
+type ExtendedResourceHooks = ResourceHooks & { subscribed: boolean };
+
 interface SubscriptionState {
-  create?: ResourceHooks & { subscribed: boolean };
-  update?: ResourceHooks & { subscribed: boolean };
-  delete?: ResourceHooks & { subscribed: boolean };
+  create?: ExtendedResourceHooks;
+  update?: ExtendedResourceHooks;
+  delete?: ExtendedResourceHooks;
 }
 
 interface SubscriptionResponse {
@@ -61,7 +63,7 @@ export default function AppSettings({ definition }: AppSettingsProps): React.Rea
               resource[key].hooks.notification &&
               resource[key].hooks.notification.subscribe
             ) {
-              if (!acc[resourceType]) {
+              if (!Object.prototype.hasOwnProperty.call(acc, resourceType)) {
                 acc[resourceType] = {};
               }
               acc[resourceType][key] = { ...resource[key].hooks, subscribed: false };
@@ -85,7 +87,7 @@ export default function AppSettings({ definition }: AppSettingsProps): React.Rea
               return;
             }
 
-            Object.entries(resource as SubscriptionResponseResource).forEach(([action, value]) => {
+            Object.entries(resource).forEach(([action, value]) => {
               if (!Object.prototype.hasOwnProperty.call(subs[key], action)) {
                 return;
               }
@@ -198,15 +200,15 @@ export default function AppSettings({ definition }: AppSettingsProps): React.Rea
                   }
                   required
                 >
-                  {Object.keys(resource)
+                  {(Object.keys(resource) as (keyof SubscriptionState)[])
                     .filter(
-                      (key: 'create' | 'update' | 'delete') =>
+                      key =>
                         resource[key].notification.subscribe === 'all' ||
                         resource[key].notification.subscribe === 'both',
                     )
-                    .map((key: 'create' | 'update' | 'delete') => (
+                    .map(key => (
                       <Checkbox
-                        key={`${resourceType}.${key}`}
+                        key={key}
                         className={styles.subscribeCheckbox}
                         disabled={!subscription || !resource.create}
                         help={
