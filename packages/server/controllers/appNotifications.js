@@ -40,8 +40,25 @@ export async function getSubscription(ctx) {
     });
   }
 
-  ctx.body = appSubscription.ResourceSubscriptions.reduce((acc, { type, action }) => {
+  ctx.body = appSubscription.ResourceSubscriptions.reduce((acc, { type, action, ResourceId }) => {
     if (!acc[type]) {
+      return acc;
+    }
+
+    if (ResourceId) {
+      if (!acc[type].subscriptions) {
+        acc[type].subscriptions = {};
+      }
+
+      if (!acc[type].subscriptions[ResourceId]) {
+        acc[type].subscriptions[ResourceId] = { update: false, delete: false };
+      }
+
+      acc[type].subscriptions[ResourceId] = {
+        ...acc[type].subscriptions[ResourceId],
+        [action]: true,
+      };
+
       return acc;
     }
 

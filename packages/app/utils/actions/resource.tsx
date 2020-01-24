@@ -165,7 +165,7 @@ function subscribe({
   const id = resource.id || 'id';
 
   return {
-    dispatch: async (data): Promise<any> => {
+    dispatch: async data => {
       const { permission, requestPermission, subscribe: sub } = pushNotifications;
       let { subscription } = pushNotifications;
 
@@ -190,6 +190,8 @@ function subscribe({
         value: true,
         resourceId: data[id],
       });
+
+      return data;
     },
     type: 'resource.subscribe',
   };
