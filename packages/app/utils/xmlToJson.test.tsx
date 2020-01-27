@@ -5,7 +5,7 @@ import xmlToJson from './xmlToJson';
  */
 
 it('should handle top level strings', () => {
-  const xml = `
+  const xml = `<?xml version="1.0" encoding="UTF-8"?>
     <food>Frikandel</food>
   `;
   const result = xmlToJson(xml, {
@@ -16,7 +16,7 @@ it('should handle top level strings', () => {
 });
 
 it('should handle top level true', () => {
-  const xml = `
+  const xml = `<?xml version="1.0" encoding="UTF-8"?>
     <is-it-working>true</is-it-working>
   `;
   const result = xmlToJson(xml, {
@@ -27,7 +27,7 @@ it('should handle top level true', () => {
 });
 
 it('should handle top level false', () => {
-  const xml = `
+  const xml = `<?xml version="1.0" encoding="UTF-8"?>
     <is-it-broken>false</is-it-broken>
   `;
   const result = xmlToJson(xml, {
@@ -38,7 +38,7 @@ it('should handle top level false', () => {
 });
 
 it('should convert invalid boolean values to null', () => {
-  const xml = `
+  const xml = `<?xml version="1.0" encoding="UTF-8"?>
     <is-null>invalid</is-null>
   `;
   const result = xmlToJson(xml, {
@@ -49,7 +49,7 @@ it('should convert invalid boolean values to null', () => {
 });
 
 it('should handle top level integers', () => {
-  const xml = `
+  const xml = `<?xml version="1.0" encoding="UTF-8"?>
     <count>42.3</count>
   `;
   const result = xmlToJson(xml, {
@@ -60,7 +60,7 @@ it('should handle top level integers', () => {
 });
 
 it('should handle top level numbers', () => {
-  const xml = `
+  const xml = `<?xml version="1.0" encoding="UTF-8"?>
     <percentage>13.37</percentage>
   `;
   const result = xmlToJson(xml, {
@@ -71,7 +71,7 @@ it('should handle top level numbers', () => {
 });
 
 it('should handle top level objects', () => {
-  const xml = `
+  const xml = `<?xml version="1.0" encoding="UTF-8"?>
     <food>
       <name>Pizza</name>
     </food>
@@ -89,7 +89,7 @@ it('should handle top level objects', () => {
 });
 
 it('should handle top level wrapped arrays', () => {
-  const xml = `
+  const xml = `<?xml version="1.0" encoding="UTF-8"?>
     <food>
       <name>Pizza</name>
     </food>
@@ -106,7 +106,7 @@ it('should handle top level wrapped arrays', () => {
 });
 
 it('should use the first matching object property element', () => {
-  const xml = `
+  const xml = `<?xml version="1.0" encoding="UTF-8"?>
     <food>
       <name>Spaghetti</name>
       <name>Pizza</name>
@@ -125,7 +125,7 @@ it('should use the first matching object property element', () => {
 });
 
 it('should handle nested objects', () => {
-  const xml = `
+  const xml = `<?xml version="1.0" encoding="UTF-8"?>
     <pizza>
       <name>Salami</name>
       <toppings>
@@ -161,7 +161,7 @@ it('should handle nested objects', () => {
 });
 
 it('should handle wrapped arrays', () => {
-  const xml = `
+  const xml = `<?xml version="1.0" encoding="UTF-8"?>
     <ingredients>
       <name>flour</name>
       <name>water</name>
@@ -181,7 +181,7 @@ it('should handle wrapped arrays', () => {
 });
 
 it('should handle unwrapped arrays', () => {
-  const xml = `
+  const xml = `<?xml version="1.0" encoding="UTF-8"?>
     <ingredients>
       <name>flour</name>
       <name>water</name>
@@ -205,7 +205,7 @@ it('should handle unwrapped arrays', () => {
 });
 
 it('should handle namespaces', () => {
-  const xml = `
+  const xml = `<?xml version="1.0" encoding="UTF-8"?>
     <food xmlns:pizza="https://example.com/pizza">
       <pizza:name>Margherita</pizza:name>
     </food>
@@ -224,7 +224,7 @@ it('should handle namespaces', () => {
 });
 
 it('should handle attributes', () => {
-  const xml = `
+  const xml = `<?xml version="1.0" encoding="UTF-8"?>
     <food name="bread" />
   `;
   const result = xmlToJson(xml, {
@@ -241,7 +241,7 @@ it('should handle attributes', () => {
 });
 
 it('should handle namespaced attributes', () => {
-  const xml = `
+  const xml = `<?xml version="1.0" encoding="UTF-8"?>
     <food candy:name="Napoleon" xmlns:candy="https://example.com/candy" />
   `;
   const result = xmlToJson(xml, {
@@ -258,7 +258,7 @@ it('should handle namespaced attributes', () => {
 });
 
 it('should convert undefined attributes to null', () => {
-  const xml = `
+  const xml = `<?xml version="1.0" encoding="UTF-8"?>
     <food />
   `;
   const result = xmlToJson(xml, {
@@ -275,15 +275,13 @@ it('should convert undefined attributes to null', () => {
 
 it('should throw if a parser error is found', () => {
   const xml = 'invalid';
-  expect(() => xmlToJson(xml, { type: 'string' })).toThrow(`Non-whitespace before first tag.
-Line: 0
-Column: 1
-Char: i`);
+  expect(() => xmlToJson(xml, { type: 'string' })).toThrow(
+    'null:1:1: text data outside of root node.',
+  );
 });
 
 it('should be able to parse an RSS feed', () => {
-  const xml = `
-    <?xml version="1.0" encoding="UTF-8"?>
+  const xml = `<?xml version="1.0" encoding="UTF-8"?>
     <rss version="2.0"
       xmlns:content="http://purl.org/rss/1.0/modules/content/"
       xmlns:wfw="http://wellformedweb.org/CommentAPI/"
@@ -407,8 +405,7 @@ it('should be able to parse an RSS feed', () => {
 });
 
 it('should be able to parse an Atom RSS feed', () => {
-  const xml = `
-    <?xml version="1.0" encoding="UTF-8"?>
+  const xml = `<?xml version="1.0" encoding="UTF-8"?>
     <feed
       xmlns="http://www.w3.org/2005/Atom"
       xmlns:thr="http://purl.org/syndication/thread/1.0"

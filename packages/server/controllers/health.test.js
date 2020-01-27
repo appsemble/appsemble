@@ -11,7 +11,7 @@ describe('checkHealth', () => {
 
   beforeAll(async () => {
     db = await testSchema('health');
-    server = await createServer({ db, argv: { host: window.location, secret: 'test' } });
+    server = await createServer({ db, argv: { host: 'http://localhost', secret: 'test' } });
     request = await createInstance(server);
   }, 10e3);
 

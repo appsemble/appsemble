@@ -16,7 +16,7 @@ let user;
 beforeAll(async () => {
   db = await testSchema('oauth');
 
-  server = await createServer({ db, argv: { host: window.location, secret: 'test' } });
+  server = await createServer({ db, argv: { host: 'http://localhost', secret: 'test' } });
   request = await createInstance(server);
 }, 10e3);
 
