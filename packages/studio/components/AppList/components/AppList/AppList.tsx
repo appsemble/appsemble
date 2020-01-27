@@ -1,12 +1,13 @@
 import { Icon, Loader } from '@appsemble/react-components';
+import { App } from '@appsemble/types';
 import { permissions } from '@appsemble/utils';
 import axios from 'axios';
-import PropTypes from 'prop-types';
 import React from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link } from 'react-router-dom';
 
 import useUser from '../../../../hooks/useUser';
+import { Organization } from '../../../../types';
 import checkRole from '../../../../utils/checkRole';
 import HelmetIntl from '../../../HelmetIntl';
 import AppCard from '../AppCard';
@@ -14,9 +15,19 @@ import CreateAppCard from '../CreateAppCard';
 import styles from './AppList.css';
 import messages from './messages';
 
-export default function AppList({ apps, getApps, getPublicApps }) {
+interface AppListProps {
+  apps: App[];
+  getApps: () => Promise<void>;
+  getPublicApps: () => Promise<void>;
+}
+
+export default function AppList({
+  apps,
+  getApps,
+  getPublicApps,
+}: AppListProps): React.ReactElement {
   const [filter, setFilter] = React.useState('');
-  const [organizations, setOrganizations] = React.useState([]);
+  const [organizations, setOrganizations] = React.useState<Organization[]>([]);
 
   const intl = useIntl();
   const { userInfo } = useUser();
@@ -34,13 +45,10 @@ export default function AppList({ apps, getApps, getPublicApps }) {
   }, [getApps, getPublicApps, userInfo]);
 
   React.useEffect(() => {
-    const fetchOrganizations = async () => {
-      const { data } = await axios.get('/api/user/organizations');
-      setOrganizations(data);
-    };
-
     if (userInfo) {
-      fetchOrganizations();
+      axios
+        .get<Organization[]>('/api/user/organizations')
+        .then(({ data }) => setOrganizations(data));
     }
   }, [userInfo]);
 
@@ -98,9 +106,3 @@ export default function AppList({ apps, getApps, getPublicApps }) {
     </>
   );
 }
-
-AppList.propTypes = {
-  apps: PropTypes.arrayOf(PropTypes.shape()).isRequired,
-  getApps: PropTypes.func.isRequired,
-  getPublicApps: PropTypes.func.isRequired,
-};

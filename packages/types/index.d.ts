@@ -688,6 +688,21 @@ export interface AppDefinition {
   theme?: Theme;
 }
 
+/**
+ * The rating for an app.
+ */
+interface Rating {
+  /**
+   * The number of people who rated the app.
+   */
+  count: number;
+
+  /**
+   * THe average app rating.
+   */
+  average: number;
+}
+
 export interface App {
   /**
    * The unique identifier for the app.
@@ -715,6 +730,11 @@ export interface App {
    * The app definition formatted as YAML.
    */
   yaml: string;
+
+  /**
+   * An app rating.
+   */
+  rating?: Rating;
 }
 
 /**
