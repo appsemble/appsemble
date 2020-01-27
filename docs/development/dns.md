@@ -1,7 +1,7 @@
 ---
 name: DNS
 menu: Development
-route: dns
+route: /development/DNS
 ---
 
 # DNS
