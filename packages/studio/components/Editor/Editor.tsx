@@ -125,9 +125,7 @@ export default function Editor({ app, updateApp }: EditorProps): React.ReactElem
       }
 
       try {
-        if (openApiDocument) {
-          await validate(openApiDocument.components.schemas.App as OpenAPIV3.SchemaObject, newApp);
-        }
+        await validate(openApiDocument.components.schemas.App as OpenAPIV3.SchemaObject, newApp);
         setValid(true);
         setDirty(false);
 
