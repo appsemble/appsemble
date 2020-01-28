@@ -1,5 +1,5 @@
+import { App } from '@appsemble/types';
 import classNames from 'classnames';
-import PropTypes from 'prop-types';
 import React from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link, useRouteMatch } from 'react-router-dom';
@@ -8,7 +8,11 @@ import Rating from '../../../Rating';
 import styles from './AppCard.css';
 import messages from './messages';
 
-export default function AppCard({ app }) {
+interface AppCardProps {
+  app: App;
+}
+
+export default function AppCard({ app }: AppCardProps): React.ReactElement {
   const intl = useIntl();
   const match = useRouteMatch();
 
@@ -54,7 +58,3 @@ export default function AppCard({ app }) {
     </div>
   );
 }
-
-AppCard.propTypes = {
-  app: PropTypes.shape().isRequired,
-};

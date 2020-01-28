@@ -12,7 +12,7 @@ import UserSettings from '../UserSettings';
 import messages from './messages';
 import styles from './Settings.css';
 
-export default function Settings() {
+export default function Settings(): React.ReactElement {
   const [isCollapsed, setCollapsed] = React.useState(false);
   const match = useRouteMatch();
 
