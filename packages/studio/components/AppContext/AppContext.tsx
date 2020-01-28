@@ -1,8 +1,8 @@
 import { Loader } from '@appsemble/react-components';
+import { App } from '@appsemble/types';
 import { permissions } from '@appsemble/utils';
-import PropTypes from 'prop-types';
 import React from 'react';
-import { Redirect, Route, Switch } from 'react-router-dom';
+import { Redirect, Route, Switch, useRouteMatch } from 'react-router-dom';
 
 import useOrganizations from '../../hooks/useOrganizations';
 import AppDetails from '../AppDetails';
@@ -15,15 +15,26 @@ import ProtectedRoute from '../ProtectedRoute';
 import Roles from '../Roles';
 import styles from './AppContext.css';
 
+interface AppContextProps {
+  app?: App;
+  getApp: (appId: string) => void;
+  ready: boolean;
+}
+
 /**
  * A wrapper which fetches the app definition and makes sure it is available to its children.
  */
-function AppContext({ app = undefined, match, getApp, ready }) {
+export default function AppContext({
+  app = undefined,
+  getApp,
+  ready,
+}: AppContextProps): React.ReactElement {
+  const match = useRouteMatch<{ id: string }>();
+  const organizations = useOrganizations();
+
   React.useEffect(() => {
     getApp(match.params.id);
   }, [getApp, match.params.id]);
-
-  const organizations = useOrganizations();
 
   if (!ready || organizations === undefined) {
     return <Loader />;
@@ -77,13 +88,3 @@ function AppContext({ app = undefined, match, getApp, ready }) {
     </div>
   );
 }
-
-AppContext.propTypes = {
-  // eslint-disable-next-line react/require-default-props
-  app: PropTypes.shape(),
-  getApp: PropTypes.func.isRequired,
-  match: PropTypes.shape().isRequired,
-  ready: PropTypes.bool.isRequired,
-};
-
-export default AppContext;

@@ -1,3 +1,5 @@
+import { compose } from 'redux';
+
 /**
  * A user email registration.
  */
@@ -61,5 +63,7 @@ declare global {
       logins: string[];
       sentryDsn: string;
     };
+
+    __REDUX_DEVTOOLS_EXTENSION_COMPOSE__: typeof compose;
   }
 }
