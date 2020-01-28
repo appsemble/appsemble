@@ -46,6 +46,7 @@
     "@types/css-modules": "^1.0.0",
     "@types/enzyme": "^3.10.4",
     "@types/enzyme-adapter-react-16": "^1.0.5",
+    "@types/events": "^3.0.0",
     "@types/jest": "^24.9.1",
     "@types/jest-image-snapshot": "^2.11.1",
     "@types/js-yaml": "^3.12.2",

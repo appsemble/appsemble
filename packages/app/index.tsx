@@ -32,7 +32,7 @@ window.addEventListener('message', event => {
     const app = resolveJsonPointers(event.data.app);
     store.dispatch({ type: event.data.type, definition: app.definition });
 
-    const replaceStyle = (id, style) => {
+    const replaceStyle = (id: string, style: string): void => {
       const oldNode = document.getElementById(id);
       const newNode = document.createElement('style');
       newNode.appendChild(document.createTextNode(style));

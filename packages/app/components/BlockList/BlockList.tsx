@@ -1,23 +1,23 @@
 import { Loader } from '@appsemble/react-components';
-import { Action, Block as BlockType, Security } from '@appsemble/types';
+import { Block as BlockType, Security } from '@appsemble/types';
+import { EventEmitter } from 'events';
 import React from 'react';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 
 import { ShowDialogAction } from '../../types';
+import { ActionCreators } from '../../utils/actions';
 import checkAppRole from '../../utils/checkAppRole';
 import Block from '../Block';
 import styles from './BlockList.css';
 
 interface BlockListProps {
-  actionCreators: Record<string, () => Action>;
   counter: number;
   currentPage?: number;
   blocks: BlockType[];
   data?: any;
-  emitEvent(name: string, data: any): void;
-  flowActions: {};
-  offEvent(name: string, callback: Function): void;
-  onEvent(name: string, callback: Function): void;
+  ee: EventEmitter;
+  extraCreators: ActionCreators;
+  flowActions?: {};
   showDialog: ShowDialogAction;
   transitions?: boolean;
   role: string;
@@ -58,14 +58,12 @@ export default class BlockList extends React.Component<BlockListProps, BlockList
 
   render(): React.ReactNode {
     const {
-      actionCreators,
       counter,
       currentPage,
       data,
-      emitEvent,
+      ee,
+      extraCreators,
       flowActions,
-      offEvent,
-      onEvent,
       showDialog,
       transitions,
       security,
@@ -80,14 +78,12 @@ export default class BlockList extends React.Component<BlockListProps, BlockList
           // As long as blocks are in a static list, using the index as a key should be fine.
           // eslint-disable-next-line react/no-array-index-key
           key={`${index}.${counter}`}
-          actionCreators={actionCreators}
           block={block}
           className={isLoading ? 'is-hidden' : ''}
           data={data}
-          emitEvent={emitEvent}
+          ee={ee}
+          extraCreators={extraCreators}
           flowActions={flowActions}
-          offEvent={offEvent}
-          onEvent={onEvent}
           ready={() => this.ready(`${block.type}${index}`)}
           showDialog={showDialog}
         />

@@ -1,12 +1,14 @@
-import { injectIntl } from 'react-intl';
 import { connect } from 'react-redux';
-import { withRouter } from 'react-router-dom';
 
+import { State } from '../../actions';
 import { getBlockDefs } from '../../actions/blockDefs';
 import { logout } from '../../actions/user';
 import Page from './Page';
 
-function mapStateToProps(state, ownProps) {
+function mapStateToProps(
+  state: State,
+  ownProps: Pick<React.ComponentPropsWithoutRef<typeof Page>, 'page'>,
+): Partial<React.ComponentPropsWithoutRef<typeof Page>> {
   return {
     definition: state.app.definition,
     user: state.user.user,
@@ -21,11 +23,7 @@ function mapStateToProps(state, ownProps) {
   };
 }
 
-export default withRouter(
-  injectIntl(
-    connect(mapStateToProps, {
-      getBlockDefs,
-      logout,
-    })(Page),
-  ),
-);
+export default connect(mapStateToProps, {
+  getBlockDefs,
+  logout,
+})(Page);

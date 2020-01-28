@@ -617,6 +617,11 @@ export interface Page {
    */
   theme?: Theme;
 
+  /**
+   * The type of the page.
+   */
+  type?: 'flow' | 'page' | 'tabs';
+
   subPages?: Pick<Page, 'blocks' | 'name'>[];
 
   /**

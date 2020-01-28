@@ -1,13 +1,14 @@
 import { useMessages } from '@appsemble/react-components';
-import { Events } from '@appsemble/sdk';
 import { AppDefinition, Block as BlockType, BlockDefinition } from '@appsemble/types';
 import { baseTheme, normalize } from '@appsemble/utils';
 import classNames from 'classnames';
+import { EventEmitter } from 'events';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { useHistory, useLocation, useRouteMatch } from 'react-router-dom';
 
 import { ShowDialogAction } from '../../types';
+import { ActionCreators } from '../../utils/actions';
 import { prefixURL } from '../../utils/blockUtils';
 import { callBootstrap } from '../../utils/bootstrapper';
 import injectCSS from '../../utils/injectCSS';
@@ -24,29 +25,14 @@ interface BlockProps {
   definition: AppDefinition;
   data?: any;
   className?: string;
-
-  /**
-   * A function for emitting an event.
-   */
-  emitEvent: Events['emit'];
-
-  /**
-   * A function to deregister an event listener.
-   */
-  offEvent: Events['off'];
-
-  /**
-   * A function to register an event listener.
-   */
-  onEvent: Events['on'];
-
-  actionCreators: any;
+  ee: EventEmitter;
 
   /**
    * The block to render.
    */
   block: BlockType;
   blockDef: BlockDefinition;
+  extraCreators: ActionCreators;
 
   /**
    * XXX: Define this type
@@ -64,16 +50,14 @@ interface BlockProps {
  * shadow DOM. Then the bootstrap function of the block definition is called.
  */
 export default function Block({
-  actionCreators,
   definition,
   block,
   blockDef,
   className,
-  emitEvent,
   data,
-  offEvent,
-  onEvent,
+  ee,
   showDialog,
+  extraCreators,
   flowActions,
   ready,
 }: BlockProps): React.ReactElement {
@@ -102,20 +86,20 @@ export default function Block({
     setInitialized(true);
 
     const shadowRoot = div.attachShadow({ mode: 'closed' });
+
     const events = {
-      emit: emitEvent,
-      off: offEvent,
-      on: onEvent,
+      emit: (name: string, d: any) => ee.emit(name, d),
+      off: (name: string, callback: (data: any) => void) => ee.off(name, callback),
+      on: (name: string, callback: (data: any) => void) => ee.on(name, callback),
     };
 
     const actions = makeActions({
-      appId: settings.id,
-      blockDef,
+      actions: blockDef.actions,
       definition,
       context: block,
       history,
       showDialog,
-      extraCreators: actionCreators,
+      extraCreators,
       flowActions,
       pushNotifications,
     });
@@ -171,20 +155,18 @@ export default function Block({
       ready();
     })();
   }, [
-    actionCreators,
     block,
     blockDef,
     data,
     definition,
-    emitEvent,
+    ee,
+    extraCreators,
     flowActions,
     history,
     initialized,
     location.state,
     match.params,
     match.path,
-    offEvent,
-    onEvent,
     push,
     pushNotifications,
     ready,

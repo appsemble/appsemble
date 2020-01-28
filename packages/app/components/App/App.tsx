@@ -1,5 +1,4 @@
 import { ErrorHandler, MessagesProvider } from '@appsemble/react-components';
-import PropTypes from 'prop-types';
 import React from 'react';
 import { IntlProvider } from 'react-intl';
 import { BrowserRouter } from 'react-router-dom';
@@ -12,12 +11,16 @@ import PermissionRequest from '../PermissionRequest';
 import ServiceWorkerRegistrationProvider from '../ServiceWorkerRegistrationProvider';
 import SideNavigation from '../SideNavigation';
 
+interface AppProps {
+  serviceWorkerRegistrationPromise: Promise<ServiceWorkerRegistration>;
+}
+
 /**
  * The main entry point of the React app.
  *
  * This configures all providers and sets up the global app structure.
  */
-export default function App({ serviceWorkerRegistrationPromise }) {
+export default function App({ serviceWorkerRegistrationPromise }: AppProps): React.ReactElement {
   return (
     <IntlProvider defaultLocale="en-US" locale="en-US">
       <ErrorHandler fallback={ErrorFallback}>
@@ -39,7 +42,3 @@ export default function App({ serviceWorkerRegistrationPromise }) {
     </IntlProvider>
   );
 }
-
-App.propTypes = {
-  serviceWorkerRegistrationPromise: PropTypes.shape().isRequired,
-};

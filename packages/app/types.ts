@@ -1,6 +1,7 @@
 import { Action } from '@appsemble/sdk';
 import { ActionDefinition, AppDefinition, Block, UserInfo } from '@appsemble/types';
 import { RouteComponentProps } from 'react-router-dom';
+import { compose } from 'redux';
 
 export interface User extends UserInfo {
   scope: string;
@@ -16,6 +17,8 @@ declare global {
       definition: AppDefinition;
       sentryDsn: string;
     };
+
+    __REDUX_DEVTOOLS_EXTENSION_COMPOSE__: typeof compose;
   }
 }
 
@@ -39,7 +42,6 @@ export interface FlowActions {
 }
 
 export interface MakeActionParameters<D extends ActionDefinition> {
-  appId: number;
   app: AppDefinition;
   definition: D;
   flowActions: FlowActions;

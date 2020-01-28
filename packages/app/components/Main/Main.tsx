@@ -1,23 +1,25 @@
+import { AppDefinition } from '@appsemble/types';
 import { normalize } from '@appsemble/utils';
-import PropTypes from 'prop-types';
 import React from 'react';
 import { Redirect, Route, Switch } from 'react-router-dom';
 
-import settings from '../../utils/settings';
+import { User } from '../../types';
 import AppSettings from '../AppSettings';
 import Login from '../Login';
 import Page from '../Page';
-import { useServiceWorkerRegistration } from '../ServiceWorkerRegistrationProvider';
 import styles from './Main.css';
+
+interface MainProps {
+  definition: AppDefinition;
+  user: User;
+}
 
 /**
  * The main body of the loaded app.
  *
  * This maps the page to a route and displays a page depending on URL.
  */
-export default function Main({ definition = null, user }) {
-  const pushNotifications = useServiceWorkerRegistration();
-
+export default function Main({ definition = null, user }: MainProps): React.ReactElement {
   if (definition == null) {
     return null;
   }
@@ -33,16 +35,7 @@ export default function Main({ definition = null, user }) {
     if (page.name === definition.defaultPage) {
       defaultPath = path;
     }
-    return (
-      <Route
-        key={path}
-        exact
-        path={path}
-        render={props => (
-          <Page appId={settings.id} page={page} pushNotifications={pushNotifications} {...props} />
-        )}
-      />
-    );
+    return <Route key={path} exact path={path} render={props => <Page page={page} {...props} />} />;
   });
 
   return (
@@ -56,9 +49,3 @@ export default function Main({ definition = null, user }) {
     </main>
   );
 }
-
-Main.propTypes = {
-  // eslint-disable-next-line react/require-default-props
-  definition: PropTypes.shape(),
-  user: PropTypes.shape().isRequired,
-};

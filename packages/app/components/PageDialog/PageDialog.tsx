@@ -36,9 +36,9 @@ export default function PageDialog({
     >
       {dialog && (
         <BlockList
-          actionCreators={dialog.actionCreators}
           blocks={dialog.blocks}
           data={dialog.data}
+          extraCreators={dialog.actionCreators}
           {...props}
         />
       )}
