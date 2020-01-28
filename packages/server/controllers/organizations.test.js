@@ -24,7 +24,7 @@ describe('organization controller', () => {
   beforeAll(async () => {
     db = await testSchema('organizations');
 
-    server = await createServer({ db, argv: { host: window.location, secret: 'test' } });
+    server = await createServer({ db, argv: { host: 'http://localhost', secret: 'test' } });
     ({
       BlockDefinition,
       EmailAuthorization,

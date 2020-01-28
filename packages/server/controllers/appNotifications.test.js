@@ -61,7 +61,7 @@ const defaultApp = id => ({
 
 beforeAll(async () => {
   db = await testSchema('apps');
-  server = await createServer({ db, argv: { host: window.location, secret: 'test' } });
+  server = await createServer({ db, argv: { host: 'http://localhost', secret: 'test' } });
   ({ App, AppSubscription, BlockDefinition, BlockVersion } = db.models);
   request = await createInstance(server);
 }, 10e3);

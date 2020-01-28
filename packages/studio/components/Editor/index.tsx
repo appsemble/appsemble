@@ -3,7 +3,6 @@ import { RouteChildrenProps } from 'react-router-dom';
 
 import { State } from '../../actions';
 import { updateApp } from '../../actions/apps';
-import { getOpenApiSpec } from '../../actions/openApi';
 import Editor from './Editor';
 
 function mapStateToProps(
@@ -12,8 +11,7 @@ function mapStateToProps(
 ): Partial<React.ComponentPropsWithoutRef<typeof Editor>> {
   return {
     app: state.apps.apps.find(app => app.id === Number(ownProps.match.params.id)),
-    openApiSpec: state.openApi.spec,
   };
 }
 
-export default connect(mapStateToProps, { getOpenApiSpec, updateApp })(Editor);
+export default connect(mapStateToProps, { updateApp })(Editor);

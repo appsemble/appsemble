@@ -3,7 +3,6 @@
   "version": "0.10.0",
   "private": true,
   "dependencies": {
-    "@appsemble/dom-types": "0.10.0",
     "@appsemble/preact": "0.10.0",
     "@appsemble/preact-components": "0.10.0",
     "@appsemble/sdk": "0.10.0",

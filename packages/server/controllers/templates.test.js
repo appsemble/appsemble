@@ -20,7 +20,7 @@ describe('Template API', () => {
   beforeAll(async () => {
     db = await testSchema('templates');
 
-    server = await createServer({ db, argv: { host: window.location, secret: 'test' } });
+    server = await createServer({ db, argv: { host: 'http://localhost', secret: 'test' } });
     request = await createInstance(server);
     ({ App, Resource } = db.models);
   }, 10e3);

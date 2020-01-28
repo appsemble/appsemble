@@ -1,7 +1,7 @@
 const path = require('path');
 const restricted = require('eslint-restricted-globals');
 
-const configs = [path.join(__dirname, 'config/**'), '*.config.js', '.*rc.js', 'types/*.d.ts'];
+const configs = [path.join(__dirname, 'config/**'), '*.config.js', '.*rc.js', '**/jest.setup.ts'];
 const tests = ['**/*.test.{js,jsx,ts,tsx}'];
 
 module.exports = {
@@ -54,7 +54,7 @@ module.exports = {
       'ignorePackages',
       { js: 'never', jsx: 'never', ts: 'never', tsx: 'never' },
     ],
-    'import/no-extraneous-dependencies': ['error', { devDependencies: configs }],
+    'import/no-extraneous-dependencies': ['error', { devDependencies: [...configs, ...tests] }],
     // Ignore optional dependencies.
     'import/no-unresolved': ['error', { commonjs: true, ignore: ['keytar'] }],
     'import/order': [
@@ -94,7 +94,7 @@ module.exports = {
         'no-undef': 'off',
         'no-unused-vars': 'off',
         'no-use-before-define': 'off',
-        'filenames/match-regex': ['error', /^\.?[a-z]+(\.config|\.test|\.d)?$/i, true],
+        'filenames/match-regex': ['error', /^\.?[a-z]+(\.config|\.setup|\.test|\.d)?$/i, true],
         'import/no-unresolved': 'off',
         'react/jsx-filename-extension': 'off',
         'react/no-unknown-property': 'off',
@@ -156,8 +156,6 @@ module.exports = {
       rules: {
         // We don’t need browser compatibility checks on our tests.
         'compat/compat': 'off',
-        // https://github.com/benmosher/eslint-plugin-import/issues/458#issuecomment-496134695
-        'import/no-extraneous-dependencies': 'off',
         'jest/consistent-test-it': ['error', { fn: 'it' }],
         'jest/expect-expect': 'error',
         'jest/no-alias-methods': 'error',
