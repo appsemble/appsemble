@@ -111,10 +111,16 @@ export default {
       responses: {
         200: {
           description: 'The subscription status of the resource that matches the given id.',
-          type: 'object',
-          properties: {
-            update: { type: 'boolean' },
-            delete: { type: 'boolean' },
+          content: {
+            'application/json': {
+              schema: {
+                type: 'object',
+                properties: {
+                  update: { type: 'boolean' },
+                  delete: { type: 'boolean' },
+                },
+              },
+            },
           },
         },
       },
