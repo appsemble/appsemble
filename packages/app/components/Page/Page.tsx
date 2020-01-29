@@ -6,9 +6,7 @@ import {
   BasicPage,
   Block,
   DialogActionDefinition,
-  FlowPage as FlowPageType,
   Page as PageType,
-  TabsPage as TabsPageType,
 } from '@appsemble/types';
 import { normalize } from '@appsemble/utils';
 import EventEmitter from 'events';
@@ -151,8 +149,6 @@ export default function Page({
     };
   }, [applyBulmaThemes, blocks, definition, getBlockDefs, page]);
 
-  const { type } = page;
-
   if (definition.security && !(page.roles && page.roles.length === 0)) {
     if (!user) {
       return (
@@ -179,7 +175,7 @@ export default function Page({
   }
 
   let component;
-  switch (type) {
+  switch (page.type) {
     case 'flow':
       component = (
         <FlowPage
@@ -187,7 +183,7 @@ export default function Page({
           counter={counter}
           definition={definition}
           ee={ee.current}
-          page={page as FlowPageType}
+          page={page}
           showDialog={showDialog}
         />
       );
@@ -198,18 +194,13 @@ export default function Page({
           counter={counter}
           ee={ee.current}
           showDialog={showDialog}
-          subPages={(page as TabsPageType).subPages}
+          subPages={page.subPages}
         />
       );
       break;
     default:
       component = (
-        <BlockList
-          blocks={(page as BasicPage).blocks}
-          counter={counter}
-          ee={ee.current}
-          showDialog={showDialog}
-        />
+        <BlockList blocks={page.blocks} counter={counter} ee={ee.current} showDialog={showDialog} />
       );
   }
 

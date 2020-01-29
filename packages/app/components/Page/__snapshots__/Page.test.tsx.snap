@@ -1,0 +1,156 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`should render flow page 1`] = `
+<Fragment>
+  <TitleBar>
+    Test Page
+  </TitleBar>
+  <FlowPage
+    blocks={Array []}
+    counter={0}
+    definition={
+      Object {
+        "defaultPage": "Test Page",
+        "pages": Array [
+          Object {
+            "name": "Test Page",
+            "subPages": Array [
+              Object {
+                "blocks": Array [
+                  Object {
+                    "type": "test",
+                    "version": "0.0.0",
+                  },
+                  Object {
+                    "type": "test",
+                    "version": "0.0.0",
+                  },
+                ],
+                "name": "Sub A",
+              },
+              Object {
+                "blocks": Array [
+                  Object {
+                    "type": "test",
+                    "version": "0.0.0",
+                  },
+                  Object {
+                    "type": "test",
+                    "version": "0.0.0",
+                  },
+                ],
+                "name": "Sub B",
+              },
+            ],
+            "type": "flow",
+          },
+        ],
+      }
+    }
+    page={
+      Object {
+        "name": "Test Page",
+        "subPages": Array [
+          Object {
+            "blocks": Array [
+              Object {
+                "type": "test",
+                "version": "0.0.0",
+              },
+              Object {
+                "type": "test",
+                "version": "0.0.0",
+              },
+            ],
+            "name": "Sub A",
+          },
+          Object {
+            "blocks": Array [
+              Object {
+                "type": "test",
+                "version": "0.0.0",
+              },
+              Object {
+                "type": "test",
+                "version": "0.0.0",
+              },
+            ],
+            "name": "Sub B",
+          },
+        ],
+        "type": "flow",
+      }
+    }
+    showDialog={[Function]}
+  />
+  <Connect(PageDialog) />
+</Fragment>
+`;
+
+exports[`should render tabs pages 1`] = `
+<Fragment>
+  <TitleBar>
+    Test Page
+  </TitleBar>
+  <TabsPage
+    counter={0}
+    showDialog={[Function]}
+    subPages={
+      Array [
+        Object {
+          "blocks": Array [
+            Object {
+              "type": "test",
+              "version": "0.0.0",
+            },
+            Object {
+              "type": "test",
+              "version": "0.0.0",
+            },
+          ],
+          "name": "Sub A",
+        },
+        Object {
+          "blocks": Array [
+            Object {
+              "type": "test",
+              "version": "0.0.0",
+            },
+            Object {
+              "type": "test",
+              "version": "0.0.0",
+            },
+          ],
+          "name": "Sub B",
+        },
+      ]
+    }
+  />
+  <Connect(PageDialog) />
+</Fragment>
+`;
+
+exports[`should render the blocks for a page 1`] = `
+<Fragment>
+  <TitleBar>
+    Test Page
+  </TitleBar>
+  <Connect(BlockList)
+    blocks={
+      Array [
+        Object {
+          "type": "test",
+          "version": "0.0.0",
+        },
+        Object {
+          "type": "test",
+          "version": "0.0.0",
+        },
+      ]
+    }
+    counter={0}
+    showDialog={[Function]}
+  />
+  <Connect(PageDialog) />
+</Fragment>
+`;

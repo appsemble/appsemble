@@ -29,7 +29,7 @@ export default function Main({ definition = null, user }: MainProps): React.Reac
     const path = `/${[
       normalize(page.name),
       ...(page.parameters || []).map(parameter => `:${parameter}`),
-      ...((page.subPages && [':subPage?']) || []),
+      ...((Object.prototype.hasOwnProperty.call(page, 'subPages') && [':subPage?']) || []),
     ].join('/')}`;
 
     if (page.name === definition.defaultPage) {
