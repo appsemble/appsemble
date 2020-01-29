@@ -85,7 +85,7 @@ When fetching resources at `/api/apps/{appId}/resources/{resourceName}`, by defa
 are obtained. The data that is retrieved can be further specified using a subset of the
 [OData URL syntax](http://docs.oasis-open.org/odata/odata/v4.01/odata-v4.01-part2-url-conventions.html).
 
-The following OData syntaxes are supported:
+The following OData syntax is supported:
 
 ### Boolean Operators
 

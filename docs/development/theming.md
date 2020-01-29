@@ -20,15 +20,15 @@ app recipe.
 
 The supported variables are:
 
-- themeColor
-- splashColor
-- primaryColor
-- linkColor
-- successColor
-- infoColor
-- warningColor
-- dangerColor
-- tileLayer
+- `themeColor`
+- `splashColor`
+- `primaryColor`
+- `linkColor`
+- `successColor`
+- `infoColor`
+- `warningColor`
+- `dangerColor`
+- `tileLayer`
 
 The `themeColor` and `splashColor` variables are not visible at all times. These define the colors
 that appear when starting up the app after installing it on a mobile device.
@@ -39,9 +39,9 @@ They can be accessed in the CSS using custom variables using kebab-case, for exa
 `background-color: var(--primary-color)`. An appropriately readable shade for the text of each color
 can be found by appending `-invert` to the variable name.
 
-Aside from color-related theme properties, the ‘tile layer’ used on components that display a map
-(such as `map` and `form`) can be customized using the `tileLayer` property by specifying a ‘URL
-template’.
+Aside from color-related theme properties, the tile layer used on components that display a map
+(such as `map` and `form`) can be customized using the `tileLayer` property by specifying a URL
+template.
 
 ### Example
 
@@ -80,7 +80,7 @@ If a theme variable is not overwritten, it will simply use the theme of its pare
 On top of the base Bulma framework, extensions have been added that also benefit from all the
 variables Bulma uses. The list of extensions is as follows:
 
-- [Checkradio](https://wikiki.github.io/form/checkradio/)
+- [`Checkradio`](https://wikiki.github.io/form/checkradio/)
 
 ### Appsemble classes
 

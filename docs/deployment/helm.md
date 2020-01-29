@@ -1,9 +1,9 @@
 ---
 menu: Deployment
-route: /deployment/deployment-using-helm
+route: /deployment/helm
 ---
 
-# Deployment Using Helm
+# Helm
 
 ## Prerequisites
 

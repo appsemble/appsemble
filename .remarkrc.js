@@ -9,15 +9,19 @@ const syntaxURLs = require('retext-syntax-urls');
 const usage = require('retext-usage');
 const unified = require('unified');
 
-exports.plugins = {
-  'remark-retext': unified()
-    .use(english)
-    .use(syntaxURLs)
-    .use(spell, {
-      dictionary,
-      personal: fs.readFileSync(path.join(__dirname, 'config/retext/personal.dic')),
-    })
-    .use(repeatedWords)
-    .use(quotes)
-    .use(usage),
-};
+exports.plugins = [
+  'remark-frontmatter',
+  [
+    'remark-retext',
+    unified()
+      .use(english)
+      .use(syntaxURLs)
+      .use(spell, {
+        dictionary,
+        personal: fs.readFileSync(path.join(__dirname, 'config/retext/personal.dic')),
+      })
+      .use(repeatedWords)
+      .use(quotes)
+      .use(usage),
+  ],
+];
