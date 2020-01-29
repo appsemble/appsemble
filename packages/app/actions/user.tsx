@@ -1,12 +1,10 @@
 import { Authentication, UserInfo } from '@appsemble/types';
 import axios from 'axios';
-import { IDBPDatabase } from 'idb';
 import jwtDecode from 'jwt-decode';
 import { Action } from 'redux';
 import { ThunkAction, ThunkDispatch } from 'redux-thunk';
 
 import { User } from '../types';
-import { AUTH, RW } from '../utils/getDB';
 import settings from '../utils/settings';
 import { State } from './index';
 
@@ -18,6 +16,8 @@ const INITIALIZED = 'user/INITIALIZED';
 const LOGIN_SUCCESS = 'user/LOGIN_SUCCESS';
 const LOGOUT = 'user/LOGOUT';
 let timeoutId: NodeJS.Timeout;
+
+const LOCALSTORAGE_KEY = 'appsembleAuth';
 
 interface UserState {
   initialized: boolean;
@@ -45,13 +45,6 @@ interface JwtPayload {
   scopes: string;
   sub: number;
   iss: string;
-}
-
-interface DBUser {
-  accessToken: string;
-  refreshToken: string;
-  clientId: string;
-  clientSecret: string;
 }
 
 interface Member {
@@ -106,17 +99,10 @@ export default (state = initialState, action: UserAction): UserState => {
   }
 };
 
-async function doLogout(
-  dispatch: UserDispatch,
-  getState: () => State,
-  db = getState().db,
-): Promise<void> {
+async function doLogout(dispatch: UserDispatch): Promise<void> {
   delete axios.defaults.headers.common.Authorization;
   clearTimeout(timeoutId);
-  await db
-    .transaction(AUTH, RW)
-    .objectStore(AUTH)
-    .delete(0);
+  localStorage.removeItem(LOCALSTORAGE_KEY);
   dispatch({
     type: LOGOUT,
   });
@@ -126,7 +112,6 @@ async function setupAuth(
   accessToken: string,
   refreshToken: string,
   url: string,
-  db: IDBPDatabase,
   dispatch: UserDispatch,
 ): Promise<User> {
   const payload = jwtDecode<JwtPayload>(accessToken);
@@ -134,10 +119,14 @@ async function setupAuth(
   if (exp) {
     const timeout = exp * 1e3 - REFRESH_BUFFER - new Date().getTime();
     if (refreshToken) {
-      // eslint-disable-next-line @typescript-eslint/no-use-before-define
-      timeoutId = setTimeout(refreshTokenLogin, timeout, url, db, dispatch);
+      timeoutId = setTimeout(() => {
+        // eslint-disable-next-line @typescript-eslint/no-use-before-define
+        refreshTokenLogin(url, dispatch);
+      }, timeout);
     } else {
-      timeoutId = setTimeout(doLogout, timeout, dispatch, null, db);
+      timeoutId = setTimeout(() => {
+        doLogout(dispatch);
+      }, timeout);
     }
   }
   axios.defaults.headers.common.Authorization = `Bearer ${accessToken}`;
@@ -161,35 +150,28 @@ async function setupAuth(
 async function requestToken(
   url: string,
   params: OAuth2Params,
-  db: IDBPDatabase,
   dispatch: UserDispatch,
   refreshURL: string,
 ): Promise<User> {
   const { data } = await axios.post(url, new URLSearchParams(params as Record<string, any>));
   const { access_token: accessToken, refresh_token: refreshToken } = data;
-  const tx = db.transaction(AUTH, RW);
-  await tx.objectStore(AUTH).put(
-    {
+  localStorage.setItem(
+    LOCALSTORAGE_KEY,
+    JSON.stringify({
       accessToken,
       refreshToken,
       clientId: params.client_id,
       clientSecret: params.client_secret,
-    },
-    0,
+    }),
   );
-  return setupAuth(accessToken, refreshToken, refreshURL || url, db, dispatch);
+  return setupAuth(accessToken, refreshToken, refreshURL || url, dispatch);
 }
 
-async function refreshTokenLogin(
-  url: string,
-  db: IDBPDatabase,
-  dispatch: UserDispatch,
-): Promise<void> {
-  const { refreshToken, clientId, clientSecret } = ((await db
-    .transaction(AUTH)
-    .objectStore(AUTH)
-    .get(0)) as unknown) as DBUser;
+async function refreshTokenLogin(url: string, dispatch: UserDispatch): Promise<void> {
   try {
+    const { refreshToken, clientId, clientSecret } = JSON.parse(
+      localStorage.getItem(LOCALSTORAGE_KEY),
+    );
     let role = null;
     const user = await requestToken(
       url,
@@ -199,7 +181,6 @@ async function refreshTokenLogin(
         ...(clientId && { client_id: clientId }),
         ...(clientSecret && { client_secret: clientSecret }),
       },
-      db,
       dispatch,
       url,
     );
@@ -216,7 +197,7 @@ async function refreshTokenLogin(
       role,
     });
   } catch (error) {
-    doLogout(dispatch, null, db);
+    doLogout(dispatch);
   }
 }
 
@@ -230,11 +211,9 @@ async function refreshTokenLogin(
  */
 export function initAuth(authentication: Authentication): UserThunk {
   return async (dispatch, getState) => {
-    const { db, app } = getState();
-    const token = ((await db
-      .transaction(AUTH)
-      .objectStore(AUTH)
-      .get(0)) as unknown) as DBUser;
+    const { app } = getState();
+
+    const token = JSON.parse(localStorage.getItem(LOCALSTORAGE_KEY));
     let user = null;
     let role = null;
 
@@ -246,7 +225,6 @@ export function initAuth(authentication: Authentication): UserThunk {
         token.accessToken,
         token.refreshToken,
         auth.refreshURL || auth.url,
-        db,
         dispatch,
       );
 
@@ -294,7 +272,7 @@ export function passwordLogin(
   scope: string,
 ): UserThunk {
   return async (dispatch, getState) => {
-    const { db, app } = getState();
+    const { app } = getState();
     let role = null;
     const user = await requestToken(
       url,
@@ -305,7 +283,6 @@ export function passwordLogin(
         ...(clientId && { client_id: clientId }),
         ...(scope && { scope }),
       },
-      db,
       dispatch,
       refreshURL,
     );
@@ -334,7 +311,7 @@ export function oauthLogin(
   scope: string,
 ): UserThunk {
   return async (dispatch, getState) => {
-    const { db, app } = getState();
+    const { app } = getState();
     let role = null;
     const user = await requestToken(
       url,
@@ -345,7 +322,6 @@ export function oauthLogin(
         client_secret: clientSecret,
         scope,
       },
-      db,
       dispatch,
       refreshURL,
     );
