@@ -3,9 +3,12 @@ import useMessages from '@appsemble/react-components/hooks/useMessages';
 import {
   ActionDefinition,
   AppDefinition,
+  BasicPage,
   Block,
   DialogActionDefinition,
+  FlowPage as FlowPageType,
   Page as PageType,
+  TabsPage as TabsPageType,
 } from '@appsemble/types';
 import { normalize } from '@appsemble/utils';
 import EventEmitter from 'events';
@@ -121,7 +124,7 @@ export default function Page({
       ...(page.type === 'tabs' || page.type === 'flow'
         ? page.subPages.map(f => f.blocks).flat()
         : []),
-      ...(!page.type || page.type === 'page' ? page.blocks : []),
+      ...(!page.type || page.type === 'page' ? (page as BasicPage).blocks : []),
     ]);
   }, [page]);
 
@@ -184,7 +187,7 @@ export default function Page({
           counter={counter}
           definition={definition}
           ee={ee.current}
-          page={page}
+          page={page as FlowPageType}
           showDialog={showDialog}
         />
       );
@@ -195,13 +198,18 @@ export default function Page({
           counter={counter}
           ee={ee.current}
           showDialog={showDialog}
-          subPages={page.subPages}
+          subPages={(page as TabsPageType).subPages}
         />
       );
       break;
     default:
       component = (
-        <BlockList blocks={page.blocks} counter={counter} ee={ee.current} showDialog={showDialog} />
+        <BlockList
+          blocks={(page as BasicPage).blocks}
+          counter={counter}
+          ee={ee.current}
+          showDialog={showDialog}
+        />
       );
   }
 

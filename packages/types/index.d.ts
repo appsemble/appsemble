@@ -581,9 +581,9 @@ export interface BlockDefinition {
 /**
  * This describes what a page will look like in the app.
  */
-export interface Page {
+export interface BasePage {
   /**
-   * The name of an app.
+   * The name of the page.
    *
    * This will be displayed on the top of the page and in the side menu.
    */
@@ -593,6 +593,7 @@ export interface Page {
    * A list of roles that may view the page.
    */
   roles?: string[];
+
   /**
    * An optional icon from the fontawesome icon set
    *
@@ -610,19 +611,10 @@ export interface Page {
    */
   actions?: Record<string, ActionDefinition>;
 
-  blocks?: Block[];
-
   /**
    * The global theme for the page.
    */
   theme?: Theme;
-
-  /**
-   * The type of the page.
-   */
-  type?: 'flow' | 'page' | 'tabs';
-
-  subPages?: Pick<Page, 'blocks' | 'name'>[];
 
   /**
    * The navigation type to use.
@@ -636,6 +628,28 @@ export interface Page {
    */
   hideFromMenu?: boolean;
 }
+
+interface SubPage {
+  name: string;
+  blocks: Block[];
+}
+
+interface BasicPage extends BasePage {
+  type?: 'page';
+  blocks: Block[];
+}
+
+interface FlowPage extends BasePage {
+  type: 'flow';
+  subPages: SubPage[];
+}
+
+interface TabsPage extends BasePage {
+  type: 'tabs';
+  subPages: SubPage[];
+}
+
+export type Page = BasicPage | FlowPage | TabsPage;
 
 export interface AppDefinition {
   /**
