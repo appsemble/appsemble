@@ -22,7 +22,7 @@ import Toolbar from '../Toolbar';
 import UserProvider from '../UserProvider';
 import VerifyEmail from '../VerifyEmail';
 
-export default function App() {
+export default function App(): React.ReactElement {
   return (
     <IntlProvider defaultLocale="en-US" locale="en-US">
       <BrowserRouter>

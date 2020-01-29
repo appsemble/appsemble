@@ -8,6 +8,7 @@ import Icon from '../Icon';
 interface ButtonProps extends React.ComponentPropsWithoutRef<'button'> {
   color?: BulmaColor;
   icon?: IconName;
+  inverted?: boolean;
   loading?: boolean;
 }
 
@@ -16,6 +17,7 @@ export default function Button({
   className,
   color,
   icon,
+  inverted,
   loading,
   type = 'button',
   ...props
@@ -25,6 +27,7 @@ export default function Button({
     <button
       className={classNames('button', className, {
         [`is-${color}`]: color,
+        'is-inverted': inverted,
         'is-loading': loading,
       })}
       type={type}
