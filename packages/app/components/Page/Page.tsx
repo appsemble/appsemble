@@ -26,12 +26,12 @@ import styles from './Page.css';
 
 interface PageProps {
   definition: AppDefinition;
-  role: string;
+  role?: string;
   getBlockDefs: (blocks: Block[]) => void;
   hasErrors: boolean;
   pending: boolean;
   page: PageType;
-  user: User;
+  user?: User;
   logout: () => void;
 }
 
@@ -42,7 +42,7 @@ export default function Page({
   hasErrors,
   pending,
   page,
-  user,
+  user = null,
   logout,
 }: PageProps): React.ReactElement {
   const history = useHistory();

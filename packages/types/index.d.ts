@@ -610,7 +610,7 @@ export interface Page {
    */
   actions?: Record<string, ActionDefinition>;
 
-  blocks: Block[];
+  blocks?: Block[];
 
   /**
    * The global theme for the page.
@@ -650,13 +650,13 @@ export interface AppDefinition {
    */
   description?: string;
 
-  security: Security;
-  authentication: Authentication[];
+  security?: Security;
+  authentication?: Authentication[];
 
   /**
    * A list of roles that are required to view pages. Specific page roles override this property.
    */
-  roles: string[];
+  roles?: string[];
 
   /**
    * The default page of the app.
@@ -685,7 +685,7 @@ export interface AppDefinition {
   /**
    * Resource definitions that may be used by the app.
    */
-  resources: Record<string, Resource>;
+  resources?: Record<string, Resource>;
 
   /**
    * The global theme for the app.
