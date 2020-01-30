@@ -1,5 +1,4 @@
 /** @jsx h */
-import { HTMLEvent } from '@appsemble/dom-types';
 import { BlockProps, FormattedMessage } from '@appsemble/preact';
 import { Location } from '@appsemble/preact-components';
 import { Component, createRef, Fragment, h, VNode } from 'preact';
@@ -81,8 +80,9 @@ export default class Card extends Component<
     }
   };
 
-  onChange = (event: HTMLEvent<HTMLInputElement>): void => {
-    this.setState({ message: event.target.value, valid: event.target.validity.valid });
+  onChange = (event: Event): void => {
+    const { value, validity } = event.target as HTMLInputElement;
+    this.setState({ message: value, valid: validity.valid });
   };
 
   onSubmit = (event: Event): void => {

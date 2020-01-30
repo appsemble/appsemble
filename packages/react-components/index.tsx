@@ -1,3 +1,4 @@
+export { default as Button } from './Button';
 export { default as Calendar } from './Calendar';
 export { default as CardFooterButton } from './CardFooterButton';
 export { default as Checkbox } from './Checkbox';
@@ -24,3 +25,5 @@ export { default as SimpleSubmit } from './SimpleSubmit';
 export { default as useClickOutside } from './hooks/useClickOutside';
 export { default as useCounter } from './hooks/useCounter';
 export { default as useMessages } from './hooks/useMessages';
+export { default as useQuery } from './hooks/useQuery';
+export { default as useToggle } from './hooks/useToggle';

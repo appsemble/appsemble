@@ -1,0 +1,374 @@
+---
+menu: Development
+route: /development/app-development
+---
+
+# App Development
+
+Apps can be created and modified using the Appsemble studio. This can be found at the base URL of
+Appsemble.
+
+After logging in a list of apps you can manage will appear, providing direct links to the app itself
+as well as the corresponding editor pages.
+
+From this screen new apps can be created by clicking on the grayed out _“Create new app”_ card.
+
+By clicking on the create app card, a form is presented in which the following attributes can be
+filled in:
+
+**App Name**: This is the name of the app. It determines the URL at which the app will be made
+available as well as the name that shows up when installing it. Note that app names must be unique.
+
+**Organization**: Each app belongs to an organization. This is used to determine the which rights
+users have for certain apps such as the ability to modify them. By default every user belongs to
+their own organization. If the user is in multiple organizations, the organization can be selected
+using a dropdown menu.
+
+**App Template**: The template determines what the initial app looks like. This can range from a
+very simple app that does not do very much to a more complex app that is provided with
+authentication, uploading files, etc.
+
+After filling in these fields and clicking the _“Create App”_ button, Appsemble redirects to the
+editor page corresponding to the newly created app.
+
+## App studio
+
+The app studio is an environment where apps can be modified, previewed, and updated. On the
+left-hand side it displays the definitions that make up an app and the right-hand side displays a
+preview of what the app will look like based on these definitions.
+
+Apps are defined using a data serialization language called `YAML`. To learn more about how YAML
+works, please refer to [this page][yaml].
+
+The _“Recipe”_ tab contains the app definition in YAML. Changes can be made to the app definition by
+editing them in this tab and pressing the _“Save”_ button. Doing so will replace the app definition
+in the right-hand panel with the new one, serving as a preview of the changes that have been made.
+Note that some functionality such as the [resource API](appsemble-resources) when defining new
+resources might not be available unless the new app definition has been uploaded to the server.
+
+The other tabs that are available such as the _“Core”_ and _“Shared”_ tabs refer to the theming API.
+For more information about this, please refer to [this page](theming).
+
+Provided the app definition and styles successfully validated, the _“Upload”_ button will upload all
+this data to the server, effectively updating the app.
+
+## Example app
+
+An app definition at the very least contains a name and a list of `pages`.
+
+Each `page` is provided with a name as well as a list of `blocks`.
+
+A `block` is specified by a type as well as a version. The type follows the format of
+`@organization/name`. If the organization is `appsemble`, it may be omitted. A `block` may also have
+other properties such as named parameters and actions. The significance of these fields depends on
+which blocks are being used.
+
+With this knowledge in mind, let’s compose a simple app in which basic information about people can
+be registered.
+
+First, define a resource that represents the format of a `person` resource:
+
+```yaml
+resources:
+  person:
+    schema:
+      type: object
+      required:
+        - firstName
+        - lastName
+        - email
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+          format: email
+        description:
+          type: string
+```
+
+This creates a _“person”_ resource which contains a first name, a last name, an email address, an
+age, and a description. For more information about how resources work, please refer to
+[this page](appsemble-resources).
+
+Next, add a new page containing `list` block used to display all the resources that are available:
+
+```yaml
+defaultPage: Person List
+
+pages:
+  - name: Person List
+    blocks:
+      - type: list
+        version: 0.10.0
+        parameters:
+          fields:
+            - name: firstName
+              label: First Name
+            - name: lastName
+              label: Surname
+        actions:
+          onLoad:
+            type: resource.query
+            resource: person
+```
+
+Saving and uploading the app at this point will result in no resources being displayed due to the
+fact that there aren’t any available.
+
+Let’s follow up by adding a page in which resources can be registered.
+
+```yaml
+- name: Person Registration Form
+  blocks:
+    - type: form
+      version: 0.10.0
+      actions:
+        onSubmit:
+          type: resource.create
+          resource: person
+        onSubmitSuccess:
+          to: Person List
+          type: link
+      parameters:
+        fields:
+          - label: First Name
+            name: firstName
+            type: string
+          - label: Surname
+            name: lastName
+            type: string
+          - label: Email
+            name: email
+            type: string
+          - label: Description
+            multiline: true
+            name: description
+            type: string
+```
+
+To summarize this page: It contains a `form` block in which various fields of specific types are
+defined. These fields match up with the resource definition defined before. The form block contains
+two actions. The first action is _“submit”_ which describes where the resource will be submitted to.
+This can be sent to any API, but in this case it’s being sent to Appsemble’s resource API. Upon a
+successful submit, the page will link back to the _“Person List”_ page as described in
+_“submitSuccess”_.
+
+At this point it might become noticeable how navigating through these pages can be cumbersome. One
+way to make this easier is to add an `action-button` block to both pages that refer to each other.
+Clicking it results in being redirected to the other page.
+
+```yaml
+- type: action-button
+  version: 0.10.0
+  parameters:
+    icon: plus
+  actions:
+    onClick:
+      to: Person Registration Form # Or `Person List` in case of the Person Registration Form
+      type: link
+```
+
+Since the `list` block only displays one field at a time, it might be desirable to be able to click
+on a resource and view more details about this resource. To facilitate this, let’s add another page
+that is able to display a resource.
+
+```yaml
+- name: Person Details
+  parameters:
+    - id
+  blocks:
+    - type: detail-viewer
+      version: 0.10.0
+      actions:
+        onLoad:
+          type: resource.get
+          resource: person
+      parameters:
+        fields:
+          - name: firstName
+            label: First Name
+          - name: lastName
+            label: Surname
+          - name: email
+            label: Email Address
+          - name: description
+            label: Description
+```
+
+The structure of this page is the same as any other page with the exception of the `id` parameter.
+This is used to determine which resource to load.
+
+The `detail-viewer` block is able to display various types of fields based on the type specified in
+the resource definition. In this example it simply displays every available field, but other fields
+may also be hidden by removing it from the `fields` parameter.
+
+Finally, in order to link the `list` block to the _“Person Details”_ page, add a click action to its
+list of actions:
+
+```yaml
+onClick:
+  to: Person Details
+  type: link
+```
+
+The app should now look like this:
+
+```yaml
+name: Person App
+defaultPage: Person List
+
+resources:
+  person:
+    schema:
+      type: object
+      required:
+        - firstName
+        - lastName
+        - email
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+          format: email
+        description:
+          type: string
+
+pages:
+  - name: Person List
+    blocks:
+      - type: list
+        version: 0.10.0
+        parameters:
+          fields:
+            - name: firstName
+              label: First Name
+            - name: lastName
+              label: Surname
+        actions:
+          onClick:
+            to: Person Details
+            type: link
+          onLoad:
+            type: resource.query
+            resource: person
+      - type: action-button
+        version: 0.10.0
+        parameters:
+          icon: plus
+        actions:
+          click:
+            to: Person Registration Form
+            type: link
+
+  - name: Person Registration Form
+    blocks:
+      - type: form
+        version: 0.10.0
+        actions:
+          onSubmit:
+            type: resource.create
+            resource: person
+          onSubmitSuccess:
+            to: Person List
+            type: link
+        parameters:
+          fields:
+            - label: First Name
+              name: firstName
+              type: string
+            - label: Surname
+              name: lastName
+              type: string
+            - label: Email
+              name: email
+              type: string
+            - label: Description
+              multiline: true
+              name: description
+              type: string
+
+  - name: Person Details
+    parameters:
+      - id
+    blocks:
+      - type: detail-viewer
+        version: 0.10.0
+        actions:
+          onLoad:
+            type: resource.get
+            resource: person
+        parameters:
+          fields:
+            - name: firstName
+              label: First Name
+            - name: lastName
+              label: Surname
+            - name: email
+              label: Email Address
+            - name: description
+              label: Description
+```
+
+### Securing the app
+
+It is possible to secure specific parts of an app by defining roles in a security definition. In
+this example, the “Person Registration Form” may only be accessed by administrators of the app.
+Since this page is only available to administrators, we also want to hide the action button for
+non-admins.
+
+```yaml
+security:
+  default:
+    role: Reader
+    policy: everyone
+  roles:
+    Reader:
+      description: Everyone viewing this app.
+    Admin:
+      description: Administrators who are allowed to register new people.
+      inherits:
+        - Reader
+```
+
+For a more detailed description of the above object, please refer to the
+[App reference](reference/app).
+
+With the security definition in place, let’s add the `Admin` role to the appropriate pages and
+block.
+
+```diff
+  - name: Person Registration Form
++   roles:
++     - Admin
+    blocks:
+      - type: form
+```
+
+```diff
+      - type: action-button
+        version: 0.10.0
++       roles:
++         - Admin
+        parameters:
+          icon: plus
+        actions:
+          click:
+            to: Person Registration Form
+            type: link
+```
+
+After applying these changes, note how the login option in the top-right corner becomes visible. You
+can assign roles via the _“Roles”_ page, after which you can sign into the app and see the action
+button appear again.
+
+## Advanced
+
+- To link a custom domain name to the app, see [DNS](dns)
+
+[yaml]: https://learnxinyminutes.com/docs/yaml/

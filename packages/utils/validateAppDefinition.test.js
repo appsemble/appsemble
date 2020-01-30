@@ -1,4 +1,4 @@
-import { AppsembleValidationError, validateSecurity } from './validateAppDefinition';
+import { AppsembleValidationError, validateHooks, validateSecurity } from './validateAppDefinition';
 
 describe('validateSecurity', () => {
   it('does not throw errors on valid definitions', () => {
@@ -112,6 +112,69 @@ describe('validateSecurity', () => {
 
     expect(() => validateSecurity(definition)).toThrow(
       new AppsembleValidationError('Role ‘Admins’ in pages.1.blocks.0 roles does not exist.'),
+    );
+  });
+});
+
+describe('validateHooks', () => {
+  it('should validate the existance of roles in hooks', () => {
+    const definition = {
+      security: {
+        default: { role: 'Reader', policy: 'everyone' },
+        roles: {
+          Reader: {},
+          Admin: { inherits: ['Reader'] },
+        },
+      },
+      resources: {
+        TestResource: {
+          create: {
+            hooks: {
+              notification: {
+                to: ['$author'],
+              },
+            },
+          },
+          update: {
+            hooks: {
+              notification: {
+                to: ['$author', 'Reader'],
+              },
+            },
+          },
+        },
+      },
+    };
+
+    expect(() => validateHooks(definition)).not.toThrow();
+  });
+
+  it('should validate the existance of hook roles', () => {
+    const definition = {
+      security: {
+        default: { role: 'Reader', policy: 'everyone' },
+        roles: {
+          Reader: {},
+          Admin: { inherits: ['Reader'] },
+        },
+      },
+      resources: {
+        TestResource: {
+          create: {
+            hooks: {
+              notification: {
+                to: ['foo'],
+              },
+            },
+          },
+        },
+      },
+    };
+
+    expect(() => validateHooks(definition)).toThrow(
+      new AppsembleValidationError(
+        'Role ‘foo’ in resources.TestResource.create.hooks.notification.to does not exist.',
+      ),
     );
   });
 });

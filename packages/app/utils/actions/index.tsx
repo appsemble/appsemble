@@ -31,4 +31,5 @@ export default {
   'resource.create': resource.create,
   'resource.update': resource.update,
   'resource.delete': resource.remove,
+  'resource.subscribe': resource.subscribe,
 } as ActionCreators;

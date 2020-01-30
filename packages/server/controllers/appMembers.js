@@ -44,32 +44,24 @@ export async function getAppMember(ctx) {
   }
 
   const member = app.Users.find(u => u.id === memberId);
-  let role;
+  let role = member ? member.AppMember.role : null;
 
-  if (member) {
-    role = member.AppMember.role;
-  } else {
-    switch (policy) {
-      case 'everyone':
-        role = defaultRole;
+  if (!member && policy === 'everyone') {
+    role = defaultRole;
+  }
 
-        break;
+  if (!member && policy === 'organization') {
+    const isOrganizationMember = await app.Organization.hasUser(memberId);
 
-      case 'organization':
-        if (!(await app.Organization.hasUser(memberId))) {
-          throw Boom.notFound('User is not a member of the organization.');
-        }
-
-        role = defaultRole;
-
-        break;
-
-      case 'invite':
-        throw Boom.notFound('User is not a member of the app.');
-
-      default:
-        role = null;
+    if (!isOrganizationMember) {
+      throw Boom.notFound('User is not a member of the organization.');
     }
+
+    role = defaultRole;
+  }
+
+  if (!member && policy === 'invite') {
+    throw Boom.notFound('User is not a member of the app.');
   }
 
   ctx.body = {

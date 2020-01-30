@@ -1,4 +1,3 @@
-import { logger } from '@appsemble/node-utils';
 import { normalize, permissions, StyleValidationError, validateStyle } from '@appsemble/utils';
 import validateAppDefinition, {
   AppsembleValidationError,
@@ -389,89 +388,6 @@ export async function getAppIcon(ctx) {
   ctx.body = icon;
   // Type svg resolves to text/xml instead of image/svg+xml.
   ctx.type = metadata.format === 'svg' ? 'image/svg+xml' : metadata.format;
-}
-
-export async function addSubscription(ctx) {
-  const { appId } = ctx.params;
-  const { App, AppSubscription } = ctx.db.models;
-  const { user } = ctx.state;
-  const { endpoint, keys } = ctx.request.body;
-
-  const app = await App.findByPk(appId, { include: [AppSubscription] });
-
-  if (!app) {
-    throw Boom.notFound('App not found');
-  }
-
-  await app.createAppSubscription({
-    endpoint,
-    p256dh: keys.p256dh,
-    auth: keys.auth,
-    UserId: user ? user.id : null,
-  });
-}
-
-export async function broadcast(ctx) {
-  const { appId } = ctx.params;
-  const { App, AppSubscription } = ctx.db.models;
-  const { user } = ctx.state;
-  const { title, body } = ctx.request.body;
-
-  const app = await App.findByPk(appId, {
-    include: [AppSubscription],
-  });
-
-  if (!app) {
-    throw Boom.notFound('App not found');
-  }
-
-  if (!user.organizations.some(organization => organization.id === app.OrganizationId)) {
-    throw Boom.forbidden('User does not belong in this app’s organization.');
-  }
-
-  await checkRole(ctx, app.OrganizationId, permissions.PushNotifications);
-
-  const { vapidPublicKey: publicKey, vapidPrivateKey: privateKey } = app;
-
-  // XXX: Replace with paginated requests
-  logger.verbose(`Sending ${app.AppSubscriptions.length} notifications for app ${app.id}`);
-  app.AppSubscriptions.forEach(async subscription => {
-    try {
-      logger.verbose(
-        `Sending push notification based on subscription ${subscription.id} for app ${app.id}`,
-      );
-      await webpush.sendNotification(
-        {
-          endpoint: subscription.endpoint,
-          keys: { auth: subscription.auth, p256dh: subscription.p256dh },
-        },
-        JSON.stringify({
-          title,
-          body,
-          icon: `${ctx.argv.host}/${app.id}/icon-96.png`,
-          badge: `${ctx.argv.host}/${app.id}/icon-96.png`,
-          timestamp: Date.now(),
-        }),
-        {
-          vapidDetails: {
-            // XXX: Make this configurable
-            subject: 'mailto: support@appsemble.com',
-            publicKey,
-            privateKey,
-          },
-        },
-      );
-    } catch (error) {
-      if (!(error instanceof webpush.WebPushError && error.statusCode === 410)) {
-        throw error;
-      }
-
-      logger.verbose(
-        `Removing push notification subscription ${subscription.id} for app ${app.id}`,
-      );
-      await subscription.destroy();
-    }
-  });
 }
 
 export async function getAppCoreStyle(ctx) {

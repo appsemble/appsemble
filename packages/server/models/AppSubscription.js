@@ -17,10 +17,10 @@ export default sequelize => {
     },
   );
 
-  AppSubscription.associate = ({ App, User }) => {
-    App.hasMany(AppSubscription);
+  AppSubscription.associate = ({ App, ResourceSubscription, User }) => {
     AppSubscription.belongsTo(App, { foreignKey: { allowNull: false } });
     AppSubscription.belongsTo(User, { foreignKey: { allowNull: true } });
+    AppSubscription.hasMany(ResourceSubscription, { onDelete: 'CASCADE' });
   };
 
   return AppSubscription;

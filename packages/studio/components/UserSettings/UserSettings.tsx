@@ -1,6 +1,6 @@
 import {
+  Button,
   CardFooterButton,
-  Icon,
   Modal,
   SimpleForm,
   SimpleFormError,
@@ -185,31 +185,25 @@ export default function UserSettings(): React.ReactElement {
                 </td>
                 <td className={`has-text-right ${styles.buttonGroup}`}>
                   {verified && email !== userInfo.email && (
-                    <button
-                      className="control button is-info"
-                      onClick={() => setPrimaryEmail(email)}
-                      type="button"
-                    >
+                    <Button className="control" color="info" onClick={() => setPrimaryEmail(email)}>
                       <FormattedMessage {...messages.setPrimaryEmail} />
-                    </button>
+                    </Button>
                   )}
                   {!verified && (
-                    <button
-                      className="control button is-outlined"
+                    <Button
+                      className="control is-outlined"
                       onClick={() => resendVerification(email)}
-                      type="button"
                     >
                       <FormattedMessage {...messages.resendVerification} />
-                    </button>
+                    </Button>
                   )}
                   {email !== userInfo.email && (
-                    <button
-                      className="control button is-danger"
+                    <Button
+                      className="control"
+                      color="danger"
+                      icon="trash-alt"
                       onClick={() => onDeleteEmailClick(email)}
-                      type="button"
-                    >
-                      <Icon icon="trash-alt" size="small" />
-                    </button>
+                    />
                   )}
                 </td>
               </tr>

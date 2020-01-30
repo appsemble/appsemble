@@ -2,8 +2,10 @@ import { checkAppRole, permissions, SchemaValidationError, validate } from '@app
 import Boom from '@hapi/boom';
 import parseOData from '@wesselkuipers/odata-sequelize';
 import crypto from 'crypto';
+import { Op } from 'sequelize';
 
 import checkRole from '../utils/checkRole';
+import sendNotification from '../utils/sendNotification';
 
 function verifyResourceDefinition(app, resourceType) {
   if (!app) {
@@ -183,6 +185,87 @@ async function verifyAppRole(ctx, app, resource, resourceType, action) {
   }
 }
 
+async function sendSubscriptionNotifications(
+  ctx,
+  app,
+  notification,
+  resourceUserId,
+  resourceType,
+  action,
+  resourceId,
+  options,
+) {
+  const { App, AppSubscription, ResourceSubscription, User } = ctx.db.models;
+  const { appId } = ctx.params;
+  const roles = notification.to.filter(n => n !== '$author');
+  const author = resourceUserId && notification.to.includes('$author');
+  const subscribers = notification.subscribe;
+
+  if (!roles.length && !author && !subscribers) {
+    return;
+  }
+
+  const subscriptions = [];
+
+  if (roles || author) {
+    const roleSubscribers = await AppSubscription.findAll({
+      where: { AppId: appId },
+      attributes: ['id', 'auth', 'p256dh', 'endpoint'],
+      include: [
+        {
+          model: User,
+          attributes: [],
+          required: true,
+          include: [
+            {
+              model: App,
+              attributes: [],
+              where: { id: appId },
+              through: {
+                attributes: [],
+                where: {
+                  [Op.or]: [
+                    ...(author ? [{ UserId: resourceUserId }] : []),
+                    ...(roles.length ? [{ role: roles }] : []),
+                  ],
+                },
+              },
+            },
+          ],
+        },
+      ],
+    });
+
+    subscriptions.push(...roleSubscribers);
+  }
+
+  if (subscribers) {
+    const resourceSubscribers = await AppSubscription.findAll({
+      attributes: ['id', 'auth', 'p256dh', 'endpoint'],
+      where: { AppId: appId },
+      include: [
+        {
+          model: ResourceSubscription,
+          attributes: ['ResourceId'],
+          where: {
+            type: resourceType,
+            action,
+            ...(resourceId
+              ? { ResourceId: { [Op.or]: [null, resourceId] } }
+              : { ResourceId: null }),
+          },
+        },
+      ],
+    });
+
+    subscriptions.push(...resourceSubscribers);
+  }
+
+  subscriptions.forEach(subscription => {
+    sendNotification(ctx, app, subscription, options);
+  });
+}
+
 export async function queryResources(ctx) {
   const updatedHash = `updated${crypto.randomBytes(5).toString('hex')}`;
   const createdHash = `created${crypto.randomBytes(5).toString('hex')}`;
@@ -280,6 +363,55 @@ export async function getResourceById(ctx) {
   };
 }
 
+export async function getResourceSubscription(ctx) {
+  const { appId, resourceType, resourceId } = ctx.params;
+  const { App, AppSubscription, Resource, ResourceSubscription } = ctx.db.models;
+  const { endpoint } = ctx.query;
+
+  const app = await App.findByPk(appId, {
+    attributes: ['definition'],
+    include: [
+      {
+        model: Resource,
+        attributes: ['id'],
+        where: { id: resourceId },
+        required: false,
+      },
+      {
+        attributes: ['id', 'UserId'],
+        model: AppSubscription,
+        include: [
+          {
+            model: ResourceSubscription,
+            where: { type: resourceType, ResourceId: resourceId },
+            required: false,
+          },
+        ],
+        required: false,
+        where: { endpoint },
+      },
+    ],
+  });
+  verifyResourceDefinition(app, resourceType);
+
+  if (!app.Resources.length) {
+    throw Boom.notFound('Resource not found.');
+  }
+
+  if (!app.AppSubscriptions.length) {
+    throw Boom.notFound('User is not subscribed to this app.');
+  }
+
+  const subscriptions = app.AppSubscriptions[0].ResourceSubscriptions;
+  const result = { update: false, delete: false };
+
+  subscriptions.forEach(({ action }) => {
+    result[action] = true;
+  });
+
+  ctx.body = result;
+}
+
 export async function createResource(ctx) {
   const { appId, resourceType } = ctx.params;
   const { App, Organization, User } = ctx.db.models;
@@ -326,6 +458,20 @@ export async function createResource(ctx) {
 
   ctx.body = { id, ...resource, $created: created, $updated: updated };
   ctx.status = 201;
+
+  const resourceDefinition = app.definition.resources[resourceType];
+  if (
+    resourceDefinition.create &&
+    resourceDefinition.create.hooks &&
+    resourceDefinition.create.hooks.notification
+  ) {
+    const { notification } = resourceDefinition.create.hooks;
+    const { data } = notification;
+    sendSubscriptionNotifications(ctx, app, notification, null, resourceType, 'create', id, {
+      title: data && data.title ? data.title : resourceType,
+      body: data && data.body ? data.body : 'Created new',
+    });
+  }
 }
 
 export async function updateResource(ctx) {
@@ -388,6 +534,29 @@ export async function updateResource(ctx) {
     $created: resource.created,
     $updated: resource.updated,
   };
+
+  const resourceDefinition = app.definition.resources[resourceType];
+  if (
+    resourceDefinition.update &&
+    resourceDefinition.update.hooks &&
+    resourceDefinition.update.hooks.notification
+  ) {
+    const { notification } = resourceDefinition.create.hooks;
+    const { data } = notification;
+    sendSubscriptionNotifications(
+      ctx,
+      app,
+      notification,
+      null,
+      resourceType,
+      'update',
+      resourceId,
+      {
+        title: data && data.title ? data.title : resourceType,
+        body: data && data.body ? data.body : `Updated ${resource.id}`,
+      },
+    );
+  }
 }
 
 export async function deleteResource(ctx) {
@@ -425,4 +594,27 @@ export async function deleteResource(ctx) {
 
   await resource.destroy();
   ctx.status = 204;
+
+  const resourceDefinition = app.definition.resources[resourceType];
+  if (
+    resourceDefinition.delete &&
+    resourceDefinition.delete.hooks &&
+    resourceDefinition.delete.hooks.notification
+  ) {
+    const { notification } = resourceDefinition.create.hooks;
+    const { data } = notification;
+    sendSubscriptionNotifications(
+      ctx,
+      app,
+      notification,
+      resource.UserId,
+      resourceType,
+      'delete',
+      resourceId,
+      {
+        title: data && data.title ? data.title : resourceType,
+        body: data && data.body ? data.body : `Deleted ${resource.id}`,
+      },
+    );
+  }
 }

@@ -57,7 +57,23 @@ const exampleApp = orgId => ({
 
 beforeAll(async () => {
   db = await testSchema('resources');
-  server = await createServer({ db, argv: { host: window.location, secret: 'test' } });
+  server = await createServer({ db, argv: { host: 'http://localhost', secret: 'test' } });
+  request = await createInstance(server);
+  ({ App, Resource } = db.models);
+}, 10e3);
+
+beforeEach(async () => {
+  await truncate(db);
+  ({ authorization: token, user } = await testToken(db));
+  ({ id: organizationId } = await user.createOrganization({
+    id: 'testorganization',
+    name: 'Test Organization',
+  }));
+});
+
+beforeAll(async () => {
+  db = await testSchema('resources');
+  server = await createServer({ db, argv: { host: 'http://localhost', secret: 'test' } });
   request = await createInstance(server);
   ({ App, Resource } = db.models);
 }, 10e3);
@@ -655,6 +671,95 @@ describe('deleteResource', () => {
         foo: 'I am Foo.',
         id: resource.id,
       },
+    });
+  });
+
+  describe('getResourceSubscription', () => {
+    it('should fetch resource subscriptions', async () => {
+      const app = await App.create(exampleApp(organizationId));
+      await app.createAppSubscription({
+        endpoint: 'https://example.com',
+        p256dh: 'abc',
+        auth: 'def',
+      });
+      const resource = await Resource.create({
+        type: 'testResource',
+        AppId: app.id,
+        data: { foo: 'I am Foo.' },
+      });
+      await request.patch(
+        `/api/apps/${app.id}/subscriptions`,
+        {
+          endpoint: 'https://example.com',
+          resource: 'testResource',
+          resourceId: resource.id,
+          action: 'update',
+          value: true,
+        },
+        { headers: { authorization: token } },
+      );
+
+      const response = await request.get(
+        `/api/apps/${app.id}/resources/testResource/${resource.id}/subscriptions`,
+        { headers: { authorization: token }, params: { endpoint: 'https://example.com' } },
+      );
+
+      expect(response).toMatchObject({ status: 200, data: { update: true, delete: false } });
+    });
+
+    it('should return normally if user is not subscribed to the specific resource', async () => {
+      const app = await App.create(exampleApp(organizationId));
+      await app.createAppSubscription({
+        endpoint: 'https://example.com',
+        p256dh: 'abc',
+        auth: 'def',
+      });
+      const resource = await Resource.create({
+        type: 'testResource',
+        AppId: app.id,
+        data: { foo: 'I am Foo.' },
+      });
+
+      const response = await request.get(
+        `/api/apps/${app.id}/resources/testResource/${resource.id}/subscriptions`,
+        { headers: { authorization: token }, params: { endpoint: 'https://example.com' } },
+      );
+
+      expect(response).toMatchObject({ status: 200, data: { update: false, delete: false } });
+    });
+
+    it('should 404 if resource is not found', async () => {
+      const app = await App.create(exampleApp(organizationId));
+      await app.createAppSubscription({
+        endpoint: 'https://example.com',
+        p256dh: 'abc',
+        auth: 'def',
+      });
+
+      const response = await request.get(
+        `/api/apps/${app.id}/resources/testResource/0/subscriptions`,
+        { headers: { authorization: token }, params: { endpoint: 'https://example.com' } },
+      );
+
+      expect(response).toMatchObject({ status: 404, data: { message: 'Resource not found.' } });
+    });
+
+    it('should 404 if user is not subscribed', async () => {
+      const app = await App.create(exampleApp(organizationId));
+      const resource = await Resource.create({
+        type: 'testResource',
+        AppId: app.id,
+        data: { foo: 'I am Foo.' },
+      });
+      const response = await request.get(
+        `/api/apps/${app.id}/resources/testResource/${resource.id}/subscriptions`,
+        { headers: { authorization: token }, params: { endpoint: 'https://example.com' } },
+      );
+
+      expect(response).toMatchObject({
+        status: 404,
+        data: { message: 'User is not subscribed to this app.' },
+      });
     });
   });
 });

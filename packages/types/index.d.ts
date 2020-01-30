@@ -227,6 +227,21 @@ export interface Block<P = any, A = {}> {
   roles?: string[];
 }
 
+/**
+ * A collection of hooks that are triggered upon calling a resource actions.
+ */
+export interface ResourceHooks {
+  notification: {
+    to: string[];
+    subscribe: 'all' | 'single' | 'both';
+    data: {
+      title: string;
+      content: string;
+      link: string;
+    };
+  };
+}
+
 export interface ResourceCall {
   /**
    * The HTTP method to use for making the HTTP request.
@@ -237,6 +252,11 @@ export interface ResourceCall {
    * The URL to which to make the resource request.
    */
   url: string;
+
+  /**
+   * The associated hooks with the resource action.
+   */
+  hooks: ResourceHooks;
 }
 
 export interface Resource {
@@ -361,7 +381,8 @@ export type Action =
   | ResourceQueryAction
   | ResourceCreateAction
   | ResourceUpdateAction
-  | ResourceDeleteAction;
+  | ResourceDeleteAction
+  | BaseAction<'resource.subscribe'>;
 
 export interface BlobUploadType {
   type?: 'upload';
@@ -495,6 +516,19 @@ type ResourceGetActionDefinition = ResourceActionDefinition<'resource.get'>;
 type ResourceQueryActionDefinition = ResourceActionDefinition<'resource.query'>;
 type ResourceUpdateActionDefinition = ResourceActionDefinition<'resource.update'>;
 
+export interface ResourceSubscribeActionDefinition
+  extends BaseActionDefinition<'resource.subscribe'> {
+  /**
+   * The name of the resource.
+   */
+  resource: string;
+
+  /**
+   * The action to subscribe to. Defaults to `update` if not specified.
+   */
+  action?: 'create' | 'update' | 'delete';
+}
+
 export type ActionDefinition =
   | BaseActionDefinition<'flow.back'>
   | BaseActionDefinition<'flow.cancel'>
@@ -510,6 +544,7 @@ export type ActionDefinition =
   | ResourceGetActionDefinition
   | ResourceQueryActionDefinition
   | ResourceUpdateActionDefinition
+  | ResourceSubscribeActionDefinition
 
   // XXX This shouldn’t be here, but TypeScript won’t shut up without it.
   | RequestLikeActionDefinition;
@@ -668,6 +703,21 @@ export interface AppDefinition {
   theme?: Theme;
 }
 
+/**
+ * The rating for an app.
+ */
+interface Rating {
+  /**
+   * The number of people who rated the app.
+   */
+  count: number;
+
+  /**
+   * THe average app rating.
+   */
+  average: number;
+}
+
 export interface App {
   /**
    * The unique identifier for the app.
@@ -690,6 +740,16 @@ export interface App {
   private: boolean;
 
   definition: AppDefinition;
+
+  /**
+   * The app definition formatted as YAML.
+   */
+  yaml: string;
+
+  /**
+   * An app rating.
+   */
+  rating?: Rating;
 }
 
 /**

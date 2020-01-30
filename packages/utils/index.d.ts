@@ -39,7 +39,9 @@ export const normalized: RegExp;
 export const partialNormalized: RegExp;
 
 export function validate(schema: OpenAPIV3.SchemaObject, data: any): Promise<void>;
-export class SchemaValidationError extends Error {}
+export class SchemaValidationError extends Error {
+  data: string[];
+}
 
 export function validateStyle(css: string): string;
 export class StyleValidationError extends Error {}

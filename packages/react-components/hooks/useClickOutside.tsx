@@ -1,4 +1,3 @@
-import { HTMLEvent } from '@appsemble/dom-types';
 import { RefObject, useEffect } from 'react';
 
 /**
@@ -12,9 +11,9 @@ export default function useClickOutside(
   handler: (event: Event) => void,
 ): void {
   useEffect(() => {
-    const listener = (event: HTMLEvent<Element>): void => {
+    const listener = (event: Event): void => {
       // Do nothing if clicking ref's element or descendent elements
-      if (!ref.current || ref.current.contains(event.target)) {
+      if (!ref.current || ref.current.contains(event.target as Node)) {
         return;
       }
 

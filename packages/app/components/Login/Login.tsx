@@ -10,7 +10,7 @@ interface LoginProps {
 /**
  * Render all different authentication methods for an app.
  */
-export default function Login({ definition }: LoginProps): React.ReactElement[] {
+export default function Login({ definition }: LoginProps): React.ReactElement {
   return definition.authentication.map(authentication => {
     switch (authentication.method) {
       case 'email':
@@ -18,5 +18,5 @@ export default function Login({ definition }: LoginProps): React.ReactElement[] 
       default:
         return null;
     }
-  });
+  }) as any;
 }

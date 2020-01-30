@@ -3,19 +3,20 @@
   "version": "0.10.0",
   "private": true,
   "dependencies": {
-    "@appsemble/dom-types": "0.10.0",
     "@appsemble/react": "0.10.0",
     "@appsemble/types": "0.10.0",
     "@fortawesome/fontawesome-common-types": "^0.2.26",
-    "@sentry/browser": "^5.11.0",
+    "@sentry/browser": "^5.11.1",
     "bulma-calendar": "^6.0.7",
     "classnames": "^2.2.6",
     "leaflet": "^1.6.0",
     "react-intl": "^3.11.0",
+    "react-router-dom": "^5.1.2",
     "react-transition-group": "^4.3.0"
   },
   "devDependencies": {
-    "enzyme": "^3.10.0"
+    "enzyme": "^3.11.0",
+    "enzyme-adapter-react-16": "^1.15.2"
   },
   "peerDependencies": {
     "react": "^16.11.0"

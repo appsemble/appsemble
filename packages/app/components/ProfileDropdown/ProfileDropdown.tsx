@@ -1,4 +1,4 @@
-import { Dropdown, Icon } from '@appsemble/react-components';
+import { Button, Dropdown, Icon } from '@appsemble/react-components';
 import { AppDefinition } from '@appsemble/types';
 import generateGravatarHash from '@appsemble/utils/generateGravatarHash';
 import React from 'react';
@@ -59,16 +59,13 @@ export default function ProfileDropdown({
       )}
       {showSettings && showLogin && <hr className="dropdown-divider" />}
       {showLogin && (
-        <button
-          className={`button dropdown-item ${styles.logoutButton}`}
+        <Button
+          className={`dropdown-item ${styles.logoutButton}`}
+          icon="sign-out-alt"
           onClick={logout}
-          type="button"
         >
-          <Icon className={styles.logoutButtonIcon} icon="sign-out-alt" size="small" />
-          <span>
-            <FormattedMessage {...messages.logoutButton} />
-          </span>
-        </button>
+          <FormattedMessage {...messages.logoutButton} />
+        </Button>
       )}
     </Dropdown>
   );

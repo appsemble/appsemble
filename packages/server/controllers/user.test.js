@@ -17,7 +17,7 @@ describe('user', () => {
   beforeAll(async () => {
     db = await testSchema('user');
 
-    server = await createServer({ db, argv: { host: window.location, secret: 'test' } });
+    server = await createServer({ db, argv: { host: 'http://localhost', secret: 'test' } });
     request = await createInstance(server);
     ({ EmailAuthorization, Organization } = db.models);
   }, 10e3);

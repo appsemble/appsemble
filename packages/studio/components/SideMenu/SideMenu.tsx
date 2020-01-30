@@ -1,4 +1,4 @@
-import { Icon } from '@appsemble/react-components';
+import { Button } from '@appsemble/react-components';
 import classNames from 'classnames';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
@@ -26,16 +26,15 @@ export default function SideMenu({
             <li key={index}>{item}</li>
           ))}
         </ul>
-        <button
-          className={`button ${styles.collapseButton}`}
+        <Button
+          className={styles.collapseButton}
+          icon={isCollapsed ? 'angle-double-right' : 'angle-double-left'}
           onClick={toggleCollapse}
-          type="button"
         >
-          <Icon icon={isCollapsed ? 'angle-double-right' : 'angle-double-left'} size="medium" />
           <span className={classNames({ 'is-hidden': isCollapsed })}>
             <FormattedMessage {...messages.collapse} />
           </span>
-        </button>
+        </Button>
       </aside>
     </div>
   );

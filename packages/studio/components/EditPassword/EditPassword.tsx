@@ -5,6 +5,7 @@ import {
   SimpleFormError,
   SimpleInput,
   SimpleSubmit,
+  useQuery,
 } from '@appsemble/react-components';
 import axios from 'axios';
 import classNames from 'classnames';
@@ -12,7 +13,6 @@ import React from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Redirect } from 'react-router-dom';
 
-import useQuery from '../../hooks/useQuery';
 import HelmetIntl from '../HelmetIntl';
 import styles from './EditPassword.css';
 import messages from './messages';

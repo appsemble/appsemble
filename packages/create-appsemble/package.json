@@ -9,8 +9,8 @@
     "@appsemble/node-utils": "^0.10.0",
     "esm": "^3.2.25",
     "fs-extra": "^8.1.0",
-    "inquirer": "^7.0.3",
-    "sort-package-json": "^1.38.0",
+    "inquirer": "^7.0.4",
+    "sort-package-json": "^1.39.0",
     "yargs": "^15.1.0"
   }
 }

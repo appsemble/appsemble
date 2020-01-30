@@ -42,6 +42,7 @@ function importModels(db) {
   db.import('../models/Meta');
   db.import('../models/AppSubscription');
   db.import('../models/AppRating');
+  db.import('../models/ResourceSubscription');
 }
 
 export default async function setupModels({

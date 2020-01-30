@@ -47,4 +47,15 @@ export interface MakeActionParameters<D extends ActionDefinition> {
   onSuccess?: Action;
   onError?: Action;
   showDialog: ShowDialogAction;
+  pushNotifications: ServiceWorkerRegistrationContextType;
+}
+
+export type Permission = NotificationPermission | 'pending';
+
+export interface ServiceWorkerRegistrationContextType {
+  subscribe(): Promise<PushSubscription>;
+  unsubscribe(): Promise<boolean>;
+  permission: Permission;
+  subscription: PushSubscription;
+  requestPermission(): Promise<NotificationPermission>;
 }

@@ -1,0 +1,86 @@
+---
+menu: Deployment
+route: /deployment/docker-compose
+---
+
+# Docker Compose
+
+Appsemble is published as a Docker image. This makes it easy to deploy using Docker Compose. Copy
+the following contents in a file named _.docker-compose.yaml_.
+
+```yaml
+version: '3.5'
+
+networks:
+  appsemble:
+    name: appsemble
+
+services:
+  appsemble:
+    image: appsemble/appsemble:latest
+    depends_on:
+      - postgresql
+    networks:
+      - appsemble
+    restart: always
+    environment:
+      DATABASE_HOST: postgresql
+      DATABASE_NAME: appsemble_database_name
+      DATABASE_USER: appsemble_database_user
+      DATABASE_PASSWORD: appsemble_database_password
+      HOST: http://localhost:9999
+    ports:
+      # Expose Appsemble at port 8000.
+      - '8000:9999'
+
+  postgresql:
+    image: postgres:11
+    networks:
+      - appsemble
+    restart: always
+    environment:
+      POSTGRES_DB: appsemble_database_name
+      POSTGRES_USER: appsemble_database_user
+      POSTGRES_PASSWORD: appsemble_database_password
+    volumes:
+      - ./postgresql_data:/var/lib/postgresql/data
+    ports:
+      - '5432:5432'
+```
+
+It is highly recommended to specify the version of the `appsemble/appsemble` image to use. Replace
+`latest` with a specific version. All available versions can be found on [Appsemble tags page][] on
+Docker Hub.
+
+It is also recommended to modify the database name, user, and password.
+
+To start the service, run the following command.
+
+```
+$ docker-compose up -d
+```
+
+The Appsemble studio should now be available on [localhost:8000](http://localhost:8000).
+
+The database needs to be migrated to the current version first. This can be done by running:
+
+```sh
+$ docker run --network=appsemble \
+  -it appsemble/appsemble:latest migrate \
+  --database-host postgresql \
+  --database-name appsemble_database_name
+  --database-user appsemble_database_user
+  --database-password appsemble_database_password
+```
+
+To stop the service, run the following command.
+
+```
+$ docker-compose down
+```
+
+Once Appsemble is up and running, you probably to upload blocks. For this, clone the Appsemble git
+repository and continue to the
+[Blocks in the readme](https://gitlab.com/appsemble/appsemble/blob/master/README.md#blocks).
+
+[appsemble tags page]: https://hub.docker.com/r/appsemble/appsemble/tags

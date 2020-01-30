@@ -19,7 +19,7 @@ describe('blocks', () => {
   beforeAll(async () => {
     db = await testSchema('blocks');
 
-    server = await createServer({ db, argv: { host: window.location, secret: 'test' } });
+    server = await createServer({ db, argv: { host: 'http://localhost', secret: 'test' } });
   }, 10e3);
 
   beforeEach(async () => {

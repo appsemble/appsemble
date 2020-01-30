@@ -1,0 +1,220 @@
+---
+menu: Development
+route: /development/theming
+---
+
+# Theming Apps
+
+By default Appsemble provides a default style based on the [Bulma CSS framework](bulma). While this
+is completely functional for end users, developers may be interested in further spicing up their
+applications by applying their own style and branding.
+
+To support this, Appsemble supports customizing the styling in two different ways: Theme options for
+setting basic colors and custom styling for advanced or more specific styling.
+
+## Theme options
+
+The Bulma CSS framework uses a set of colors for different parts of its elements. Appsemble supports
+customizing a subset of these variables by including a `theme` object at different points within an
+app recipe.
+
+The supported variables are:
+
+- `themeColor`
+- `splashColor`
+- `primaryColor`
+- `linkColor`
+- `successColor`
+- `infoColor`
+- `warningColor`
+- `dangerColor`
+- `tileLayer`
+
+The `themeColor` and `splashColor` variables are not visible at all times. These define the colors
+that appear when starting up the app after installing it on a mobile device.
+
+Each variable can be assigned with a [hexadecimal value][hex] representing the desired color.
+
+They can be accessed in the CSS using custom variables using kebab-case, for example:
+`background-color: var(--primary-color)`. An appropriately readable shade for the text of each color
+can be found by appending `-invert` to the variable name.
+
+Aside from color-related theme properties, the tile layer used on components that display a map
+(such as `map` and `form`) can be customized using the `tileLayer` property by specifying a URL
+template.
+
+### Example
+
+```yaml
+theme:
+  primaryColor: '#229954'  # Green
+  linkColor: '#D68910'     # Orange
+  successColor: '#76448A'  # Purple
+pages:
+  - name: Red Page
+    theme:
+      primaryColor: '#FF0000' # Red
+    blocks:
+      - type: example
+        version: 0.0.0
+        theme:
+          primaryColor: '#0000FF' # Blue
+      - type: example
+        ...
+      ...
+  - name: Some Other Page
+    ...
+```
+
+The above example sets the app´s primary color to green, the color of its links to orange and the
+color of ´success´ elements to purple. The page `Red Page` overwrites the primary color to be red
+and one of its blocks overwrites the primary color to be blue instead.
+
+If a theme variable is not overwritten, it will simply use the theme of its parent.
+
+> Note: The above example does not represent a full app. It is merely a representation of how app
+> themes can be defined.
+
+### Bulma Extensions
+
+On top of the base Bulma framework, extensions have been added that also benefit from all the
+variables Bulma uses. The list of extensions is as follows:
+
+- [`Checkradio`](https://wikiki.github.io/form/checkradio/)
+
+### Appsemble classes
+
+In addition to Bulma classes, Appsemble has defined the following classes in the core part of
+Appsemble. These may also be used for styling.
+
+| CSS Class               | Context               | Description                |
+| ----------------------- | --------------------- | -------------------------- |
+| `.bottom-nav`           | Bottom app navigation | The container element.     |
+| `.bottom-nav-item`      | Bottom app navigation | A navigation list item.    |
+| `.bottom-nav-item-link` | Bottom app navigation | A link inside a list item. |
+
+## Custom Styling
+
+Custom styling is supported using a hierarchical model by allowing developers to upload CSS which
+gets injected during the runtime of an application. Stylesheets can be uploaded at **three different
+levels** and can be injected at **three different points** within applications.
+
+### Hierarchy
+
+<span class="float-right"></span>
+
+```mermaid
+graph TD
+    A(App Block) --> B(App Core);
+    B --> C(App Shared)
+    C --> D(Organization Block)
+    D --> E(Organization Core)
+    E --> F(Organization Shared)
+    F --> G(Server Block)
+    G --> H(Server Core)
+    H --> I(Server Shared)
+    I --> J["Default Style (Bulma CSS)"]
+```
+
+Applications can be styled at a **server** level, **organization** level as well as the
+**app-specific** level. Within each level, styling can be further specified for **core** modules,
+**block** modules and **shared** modules.
+
+#### Levels
+
+**Server**-level styling gets applied to every application hosted on the Appsemble server. This is
+useful for quickly applying style changes without having to re-deploy the server.
+
+**Organization**-level styling gets applied to every application that belongs to a specific
+organization. This is useful for applying unified styling across every application within an
+organization, such as for supplying basic color themes and icons.
+
+**App**-level styling gets applied to one specific application. This is primarily used for any
+styling that is directly related to one specific application without influencing any other
+applications. App-level styling overrides any styling applied at organization and server levels.
+
+#### Modules
+
+**Core**-module styling gets applied to any part of an Appsemble application not related to a block,
+such as the navigation bar, side menu, login view, message toasts, etc. The styling applied to the
+core modules _do not_ get applied to blocks.
+
+**Block**-module styling gets applied to a specific block.
+
+**Shared**-module styling gets applied to each individual block as well as the Appsemble core
+modules. This is useful for applying styles to elements that can appear in both the core modules as
+well as blocks, such as input fields. It can also be used to apply [CSS variables][css-variables]
+
+### Applying themes for an application
+
+Open the Appsemble studio located at the base URL of Appsemble. Login, and create your first app.
+Within the editor, tabs for `shared` and `core` are available. These tabs contain the current
+styling for these modules. Tabs containing styling for specific blocks are automatically added and
+removed depending on which blocks are used within the app recipe.
+
+To preview a style change, simply enter CSS in the corresponding tabs and press the `Save` button.
+If the styling is satisfactory, it can be uploaded to the application by pressing the `Upload`
+button.
+
+Example shared styling:
+
+```css
+.input,
+.button {
+  border-radius: 0;
+  box-shadow: 5px 5px #888888;
+  font-family: serif;
+}
+```
+
+Example core styling:
+
+```css
+.navbar {
+  background-color: var(--primary-color) !important;
+}
+
+.navbar-item {
+  color: var(--primary-color-invert) !important;
+  padding: 0 !important;
+}
+```
+
+Example block styling for `@appsemble/form`:
+
+```css
+form {
+  max-width: initial !important;
+  padding: 0 !important;
+}
+
+.field.is-horizontal {
+  box-sizing: border-box;
+  max-width: 100vw;
+  padding: 0.5em 1em;
+}
+```
+
+### Applying themes for an organization
+
+Organization themes can be uploaded using the [CLI](cli). The command for uploading themes is as
+follows:
+
+```sh
+yarn appsemble theme upload [path-to-theme-css] --organization [organization-id] [--shared|--core|--block @organization/blockname]
+```
+
+More detailed information about the meaning of each parameter can be found using the following
+command:
+
+```sh
+yarn appsemble theme upload --help
+```
+
+### Applying themes for server
+
+Not yet implemented. <!-- XXX -->
+
+[bulma]: https://bulma.io/
+[hex]: https://htmlcolorcodes.com/
+[css-variables]: https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_variables

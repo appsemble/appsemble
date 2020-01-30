@@ -13,6 +13,7 @@ import { callBootstrap } from '../../utils/bootstrapper';
 import injectCSS from '../../utils/injectCSS';
 import makeActions from '../../utils/makeActions';
 import settings from '../../utils/settings';
+import { useServiceWorkerRegistration } from '../ServiceWorkerRegistrationProvider';
 import styles from './Block.css';
 
 const FA_URL = Array.from(document.styleSheets, sheet => sheet.href).find(
@@ -80,10 +81,12 @@ export default function Block({
   const match = useRouteMatch();
   const location = useLocation();
   const push = useMessages();
+  const serviceWorkerRegistration = useServiceWorkerRegistration();
 
   const ref = React.useRef<HTMLDivElement>();
   const cleanups = React.useRef<Function[]>([]);
   const [initialized, setInitialized] = React.useState(false);
+  const pushNotifications = useServiceWorkerRegistration();
 
   React.useEffect(
     () => () => {
@@ -106,16 +109,17 @@ export default function Block({
       on: onEvent,
     };
 
-    const actions = makeActions(
-      settings.id,
+    const actions = makeActions({
+      appId: settings.id,
       blockDef,
       definition,
-      block,
+      context: block,
       history,
       showDialog,
-      actionCreators,
+      extraCreators: actionCreators,
       flowActions,
-    );
+      pushNotifications,
+    });
     const { theme: pageTheme } = definition.pages.find(
       page => normalize(page.name) === match.path.slice(1).split('/')[0],
     );
@@ -183,7 +187,9 @@ export default function Block({
     offEvent,
     onEvent,
     push,
+    pushNotifications,
     ready,
+    serviceWorkerRegistration,
     showDialog,
   ]);
 

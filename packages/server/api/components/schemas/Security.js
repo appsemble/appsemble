@@ -1,6 +1,6 @@
 export default {
   type: 'object',
-  description: 'This describes what a sub page will look like in the app.',
+  description: 'This describes how the app is secured.',
   required: ['default', 'roles'],
   properties: {
     default: {
@@ -15,9 +15,10 @@ export default {
           default: 'everyone',
           description: `How the \`default\` role gets applied to users.
 
-          If set to ‘everyone’: Every authenticated user gets the default role.
-          If set to ‘organization’: Every authenticated user gets the default role if they are in the same organization as the app.
-          If set to ‘invite’: The user has to manually get a role assigned.`,
+          The following values are allowed:
+          - \`everyone\`: Every authenticated user gets the default role.
+          - \`organization\`: Every authenticated user gets the default role if they are in the same organization as the app.
+          - \`invite\`: The user has to manually get a role assigned.`,
         },
 
         role: {
