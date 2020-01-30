@@ -18,3 +18,7 @@
   float: right;
   margin: 5px 10px;
 }
+
+.screenshot + * {
+  width: 300px;
+}
