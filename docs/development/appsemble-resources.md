@@ -58,6 +58,7 @@ The resource actions available are:
 - **resource.create**: Create a new resource.
 - **resource.update**: Update an existing resource.
 - **resource.delete**: Delete an existing resource.
+- **resource.subscribe**: Subscribe to an existing resource to receive push notifications.
 
 To customize which data to use, you can do this by simply adding this to the root of a resource
 object:
