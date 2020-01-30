@@ -1,9 +1,9 @@
 ---
 menu: Deployment
-route: /deployment/deployment-using-docker-compose
+route: /deployment/docker-compose
 ---
 
-# Deployment Using Docker Compose
+# Docker Compose
 
 Appsemble is published as a Docker image. This makes it easy to deploy using Docker Compose. Copy
 the following contents in a file named _.docker-compose.yaml_.
@@ -60,7 +60,7 @@ To start the service, run the following command.
 $ docker-compose up -d
 ```
 
-The Appsemble studio should now be available on http://localhost:8000.
+The Appsemble studio should now be available on [localhost:8000](http://localhost:8000).
 
 The database needs to be migrated to the current version first. This can be done by running:
 

@@ -18,7 +18,7 @@ subchart/kitten
 subcommand/kitten
 subdirectory/directory
 subpage/page
-theme/meme
+theme/name
 URI/URL
 uncategorize/categorize
 unconfigure/reconfigure
@@ -43,6 +43,7 @@ JSON
 JSX
 JWT
 Koa
+Kubernetes
 localhost
 MacOS
 NodeJS

@@ -4,7 +4,7 @@ import { init } from '@sentry/browser';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
-import { applyMiddleware, compose, createStore } from 'redux';
+import { applyMiddleware, compose, createStore, Store } from 'redux';
 import thunk from 'redux-thunk';
 
 import reducer from './actions';
@@ -14,7 +14,7 @@ import settings from './utils/settings';
 const { sentryDsn } = settings;
 init({ dsn: sentryDsn });
 
-async function getStore() {
+async function getStore(): Promise<Store> {
   const composeEnhancers =
     (process.env.NODE_ENV !== 'production' && window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__) ||
     compose;

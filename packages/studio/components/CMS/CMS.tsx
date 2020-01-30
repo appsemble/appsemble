@@ -4,7 +4,7 @@ import { Redirect, Route, Switch, useRouteMatch } from 'react-router-dom';
 import CMSRoot from '../CMSRoot';
 import ResourceTable from '../ResourceTable';
 
-export default function CMS() {
+export default function CMS(): React.ReactElement {
   const match = useRouteMatch();
 
   return (
