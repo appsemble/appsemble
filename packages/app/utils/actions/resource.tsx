@@ -39,7 +39,7 @@ function get(args: MakeActionParameters<ResourceGetActionDefinition>): ResourceG
     (resource && resource.get && resource.get.url) ||
     resource.url ||
     `/api/apps/${appId}/resources/${definition.resource}`;
-  const id = resource.id || 'id';
+  const { id = 'id' } = resource;
 
   return {
     ...requestLikeAction({
@@ -112,7 +112,7 @@ function update(args: MakeActionParameters<ResourceUpdateActionDefinition>): Res
     (resource && resource.update && resource.update.url) ||
     resource.url ||
     `/api/apps/${appId}/resources/${definition.resource}`;
-  const id = resource.id || 'id';
+  const { id = 'id' } = resource;
 
   return {
     ...requestLikeAction({
@@ -137,7 +137,7 @@ function remove(args: MakeActionParameters<ResourceDeleteActionDefinition>): Res
     (resource && resource.update && resource.update.url) ||
     resource.url ||
     `/api/apps/${appId}/resources/${definition.resource}`;
-  const id = resource.id || 'id';
+  const { id = 'id' } = resource;
 
   return {
     ...requestLikeAction({
@@ -162,7 +162,7 @@ function subscribe({
   pushNotifications,
 }: MakeActionParameters<ResourceSubscribeActionDefinition>): BaseAction<'resource.subscribe'> {
   const resource = app.resources[definition.resource];
-  const id = resource.id || 'id';
+  const { id = 'id' } = resource;
 
   return {
     dispatch: async data => {
