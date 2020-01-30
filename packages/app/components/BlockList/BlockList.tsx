@@ -1,6 +1,6 @@
 import { Loader } from '@appsemble/react-components';
 import { Action, Block as BlockType, Security } from '@appsemble/types';
-import checkAppRole from '@appsemble/utils/checkAppRole';
+import { checkAppRole } from '@appsemble/utils';
 import React from 'react';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 
