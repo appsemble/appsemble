@@ -52,7 +52,7 @@ The default page of the app. The value must be equal to the name of one of the p
 ## `resources`
 
 The resources that are associated with this app. More information about resources and how they can
-be used can be found [here](../development/appsemble-resources).
+be used can be found [here](../guide/resources).
 
 ## `authentication`
 

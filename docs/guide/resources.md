@@ -1,14 +1,14 @@
 ---
-menu: Development
-route: /development/appsemble-resources
+menu: Guide
+route: /guide/resources
 ---
 
-# Appsemble Resources
+# Resources
 
 Appsemble provides its own method of storing and retrieving data specific to apps. Data that is
 created via an app is called a ´resource´.
 
-## Defining Resources
+## Defining resources
 
 Resources can be defined within an [app recipe](reference/app) within the `resources` property. Each
 object within `resources` is considered to be a Resource, named after the name it is given within
@@ -42,10 +42,11 @@ person:
 ```
 
 The above resource will be recognized as an object which can be referred to from blocks using
-`$ref: /resources/person` or by using `resource actions`. It can be accessed in the API at
-`/api/apps/{appId}/resources/person/{id?}`, supporting basic `CRUD` actions.
+`$ref: /resources/person` or by using `resource` actions. It can be accessed in the API at
+`/api/apps/{appId}/resources/person/{id?}`, supporting basic `CRUD` (create, read, update, and
+delete) actions.
 
-## Resource Actions
+## Resource actions
 
 In order to make the usage of resources more convenient, Appsemble supports the usage of
 `resource actions`. Resource actions are actions that can fetch, modify, create or delete resources.
@@ -58,29 +59,53 @@ The resource actions available are:
 - **resource.create**: Create a new resource.
 - **resource.update**: Update an existing resource.
 - **resource.delete**: Delete an existing resource.
-- **resource.subscribe**: Subscribe to an existing resource to receive push notifications.
+- **resource.subscribe**: Subscribe to an existing resource to receive push notifications. (See
+  [notifications](notifications).)
 
-To customize which data to use, you can do this by simply adding this to the root of a resource
-object:
+## External resources
+
+An app may use external resources instead of ones stored in the Appsemble API. In this case a
+slightly more advanced configuration is necessary.
+
+A resource requires an identified. In the Appsemble API, and many external APIs, this property is
+called `id`. For some APIs this may be different. Which field should be used to identify resources
+can be defined in the `id` property of a resource definition.
+
+The URL on which a resource can be found, can be defined on the `url` property. By default,
+resources can be created and queried from a base URL, and a single resource can be retrieved,
+updated, or deleted from the URL post fixed with the ID. Each action is usually performed using a
+standardized HTTP method, but external APIs may differ.
+
+The following example demonstrates a more complex resource definition for an external API.
 
 ```yaml
 person:
   schema: ... # see schema above
-  id: id # the name of the field to use when calling get, update and delete
-  url: '/api/apps/{appId}/resources/person' # the default URL to use for resource actions
+  id: myId # the name of the field to use when calling get, update and delete
+  url: https://example.com/api/person # the default URL to use for resource actions
   query:
-    method: 'GET' # HTTP method to use
-    url: '/api/apps/{appId}/resources/person'
+    # HTTP method to use. GET is default
+    method: GET
+    # url: defaults to the base URL
+
+    # Query parameters are the ones after the question mark in the URL. These can optionally be
+    # defined in a readable manner.
+    query:
+      $limit: '50'
   get:
-    method: 'GET'
-    url: '/api/apps/{appId}/resources/person'
-  # create:
-  #   ...
-  # update:
-  #   ...
+    # HTTP method to use. GET is default
+    method: GET
+    # This would default to https://example.com/api/person/{myId}, but for the sake of this example,
+    # the nickname property is used.
+    url: https://example.com/api/person/{nickname}
+  create:
+    # HTTP method to use. POST is default
+    method: POST
+  update:
+    method: PUT # HTTP method to use. PUT is default
 ```
 
-## Filtering Resources
+## Filtering resources from the Appsemble API
 
 When fetching resources at `/api/apps/{appId}/resources/{resourceName}`, by default all resources
 are obtained. The data that is retrieved can be further specified using a subset of the
@@ -88,13 +113,13 @@ are obtained. The data that is retrieved can be further specified using a subset
 
 The following OData syntax is supported:
 
-### Boolean Operators
+### Boolean operators
 
 - [x] `AND`
 - [x] `OR`
 - [ ] `NOT`
 
-### Comparison Operators
+### Comparison operators
 
 - [x] Equal (`eq`)
 - [x] Not Equal (`ne`)

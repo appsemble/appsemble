@@ -81,7 +81,7 @@ On [flow pages](page#subpages), triggers the [`onFlowCancel`](page#onflowfinish)
 
 The resource actions simplify the usage of [request](#request) by providing it with defaults based
 on the resource definition. Resource actions are described in more detail
-[here](../appsemble-resources#resource-actions).
+[here](../guide/resources#resource-actions).
 
 | Parameter | Required | Description                      |
 | --------- | -------- | -------------------------------- |

@@ -1,24 +1,95 @@
-name: Empty App
-description: Empty App is a bare-bones app with two pages and buttons switching between them.
-defaultPage: Example Page A
+name: My App
+description: ''
+defaultPage: People
+
+resources:
+  person:
+    schema:
+      type: object
+      required:
+        - firstName
+        - lastName
+        - email
+      properties:
+        firstName:
+          type: string
+          maxLength: 80
+        lastName:
+          type: string
+          maxLength: 80
+        email:
+          type: string
+          format: email
+        description:
+          type: string
+          maxLength: 500
+
 pages:
-  - name: Example Page A
+  - name: Register
     blocks:
-      - type: action-button
+      - type: form
         version: 0.10.0
         parameters:
-          icon: arrow-right
-        actions:
-          onClick:
-            type: link
-            to: Example Page B
-  - name: Example Page B
+          fields:
+            - name: firstName
+              label: First Name
+            - name: lastName
+              label: Surname
+            - name: email
+              label: Email Address
+              format: email
+            - name: description
+              label: Description
+              multiline: true
+
+  - name: People
     blocks:
-      - type: action-button
+      - type: data-loader
         version: 0.10.0
-        parameters:
-          icon: arrow-left
+        events:
+          emit:
+            data: people
         actions:
-          onClick:
-            type: link
-            to: Example Page A
+          onLoad:
+            type: resource.query
+            resource: person
+      - type: list
+        version: 0.10.0
+        events:
+          on:
+            data: people
+        parameters:
+          fields:
+            - name: firstName
+              label: First Name
+            - name: lastName
+              label: Surname
+
+  - name: Person details
+    parameters:
+      - id
+    blocks:
+      - type: data-loader
+        version: 0.10.0
+        events:
+          emit:
+            data: person
+        actions:
+          onLoad:
+            type: resource.get
+            resource: person
+      - type: detail-viewer
+        version: 0.10.0
+        events:
+          on:
+            data: person
+        parameters:
+          fields:
+            - name: firstName
+              label: First Name
+            - name: lastName
+              label: Last Name
+            - name: email
+              label: Email Address
+            - name: description
+              label: Description
