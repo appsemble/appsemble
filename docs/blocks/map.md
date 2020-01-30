@@ -10,7 +10,7 @@ route: /blocks/map
 A block that displays a map powered by [OpenStreetMap](https://www.openstreetmap.org/about) that can
 be used to display and interact with markers.
 
-Markers can be loaded from external sources or from Appsemble's resource API.
+Markers can be loaded from external sources or from Appsemble’s resource API.
 
 ## Actions
 
@@ -28,4 +28,6 @@ Markers can be loaded from external sources or from Appsemble's resource API.
 
 ## Images
 
-<img src={require('../images/map.png').default} style={{ width: '300px' }} />
+<span class="screenshot"></span>
+
+![Map screenshot](../images/map.png)

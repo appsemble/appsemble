@@ -56,4 +56,6 @@ Displays files as images.
 
 ## Images
 
-<img src={require('../images/detail-viewer.png').default} style={{ width: '300px' }} />
+<span class="screenshot"></span>
+
+![Detail viewer screenshot](../images/detail-viewer.png)

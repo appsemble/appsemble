@@ -26,4 +26,6 @@ A block that can be used to display larger sets of data.
 
 ## Images
 
-<img src={require('../images/list.png').default} style={{ width: '300px' }} />
+<span class="screenshot"></span>
+
+![List screenshot](../images/list.png)
