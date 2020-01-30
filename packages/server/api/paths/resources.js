@@ -89,4 +89,41 @@ export default {
       security: [{ studio: [] }, { app: ['resources:manage'] }],
     },
   },
+  '/apps/{appId}/resources/{resourceType}/{resourceId}/subscriptions': {
+    parameters: [
+      { $ref: '#/components/parameters/appId' },
+      { $ref: '#/components/parameters/resourceType' },
+      { $ref: '#/components/parameters/resourceId' },
+    ],
+    get: {
+      tags: ['resource'],
+      parameters: [
+        {
+          name: 'endpoint',
+          in: 'query',
+          description: 'The URL of the endpoint associated with the subscription.',
+          required: true,
+          schema: { type: 'string', format: 'uri' },
+        },
+      ],
+      description: 'Get the subscription status of a resource.',
+      operationId: 'getResourceSubscription',
+      responses: {
+        200: {
+          description: 'The subscription status of the resource that matches the given id.',
+          content: {
+            'application/json': {
+              schema: {
+                type: 'object',
+                properties: {
+                  update: { type: 'boolean' },
+                  delete: { type: 'boolean' },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
 };

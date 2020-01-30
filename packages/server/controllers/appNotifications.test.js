@@ -114,6 +114,23 @@ describe('getNotification', () => {
       auth: 'def',
     });
 
+    const resource = await app.createResource({
+      type: 'person',
+      data: { foo: 'I am Foo.' },
+    });
+
+    await request.patch(
+      `/api/apps/${app.id}/subscriptions`,
+      {
+        endpoint: 'https://example.com',
+        resource: 'person',
+        resourceId: resource.id,
+        action: 'update',
+        value: true,
+      },
+      { headers: { authorization } },
+    );
+
     const response = await request.get(`/api/apps/${app.id}/subscriptions`, {
       params: { endpoint: 'https://example.com' },
     });
@@ -125,6 +142,7 @@ describe('getNotification', () => {
           create: false,
           update: false,
           delete: false,
+          subscriptions: { [resource.id]: { update: true, delete: false } },
         },
         pet: {
           create: false,

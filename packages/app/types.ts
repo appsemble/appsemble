@@ -55,7 +55,7 @@ export interface MakeActionParameters<D extends ActionDefinition> {
 export type Permission = NotificationPermission | 'pending';
 
 export interface ServiceWorkerRegistrationContextType {
-  subscribe(): Promise<boolean>;
+  subscribe(): Promise<PushSubscription>;
   unsubscribe(): Promise<boolean>;
   permission: Permission;
   subscription: PushSubscription;

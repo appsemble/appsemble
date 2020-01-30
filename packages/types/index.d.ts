@@ -381,7 +381,8 @@ export type Action =
   | ResourceQueryAction
   | ResourceCreateAction
   | ResourceUpdateAction
-  | ResourceDeleteAction;
+  | ResourceDeleteAction
+  | BaseAction<'resource.subscribe'>;
 
 export interface BlobUploadType {
   type?: 'upload';
@@ -515,6 +516,19 @@ type ResourceGetActionDefinition = ResourceActionDefinition<'resource.get'>;
 type ResourceQueryActionDefinition = ResourceActionDefinition<'resource.query'>;
 type ResourceUpdateActionDefinition = ResourceActionDefinition<'resource.update'>;
 
+export interface ResourceSubscribeActionDefinition
+  extends BaseActionDefinition<'resource.subscribe'> {
+  /**
+   * The name of the resource.
+   */
+  resource: string;
+
+  /**
+   * The action to subscribe to. Defaults to `update` if not specified.
+   */
+  action?: 'create' | 'update' | 'delete';
+}
+
 export type ActionDefinition =
   | BaseActionDefinition<'flow.back'>
   | BaseActionDefinition<'flow.cancel'>
@@ -530,6 +544,7 @@ export type ActionDefinition =
   | ResourceGetActionDefinition
   | ResourceQueryActionDefinition
   | ResourceUpdateActionDefinition
+  | ResourceSubscribeActionDefinition
 
   // XXX This shouldn’t be here, but TypeScript won’t shut up without it.
   | RequestLikeActionDefinition;

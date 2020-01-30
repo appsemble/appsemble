@@ -42,6 +42,8 @@ parameters:
 
 ## Images
 
-<img src={require('../images/markdown.png').default} style={{ width: '300px' }} />
+<span class="screenshot"></span>
+
+![Markdown screenshot](../images/markdown.png)
 
 [markdown]: https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet

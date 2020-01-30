@@ -91,4 +91,6 @@ A hidden field. This is useful for submitting default values the user may not ch
 
 ## Images
 
-<img src={require('../images/form.png').default} style={{ width: '300px' }} />
+<span class="screenshot"></span>
+
+![Form screenshot](../images/form.png)

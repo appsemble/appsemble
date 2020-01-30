@@ -26,4 +26,6 @@ lower-right corner, allowing for easy access on mobile devices.
 
 ## Images
 
-<img src={require('../images/action-button.png').default} style={{ width: '300px' }} />
+<span class="screenshot"></span>
+
+![Action button screenshot](../images/action-button.png)

@@ -65,6 +65,7 @@ export default function Block({
   const match = useRouteMatch();
   const location = useLocation();
   const push = useMessages();
+  const serviceWorkerRegistration = useServiceWorkerRegistration();
 
   const ref = React.useRef<HTMLDivElement>();
   const cleanups = React.useRef<Function[]>([]);
@@ -170,6 +171,7 @@ export default function Block({
     push,
     pushNotifications,
     ready,
+    serviceWorkerRegistration,
     showDialog,
   ]);
 

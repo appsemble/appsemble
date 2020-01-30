@@ -177,19 +177,19 @@ async function sendSubscriptionNotifications(
       include: [
         {
           model: ResourceSubscription,
-          attributes: [],
-          where: { type: resourceType, action },
+          attributes: ['ResourceId'],
+          where: {
+            type: resourceType,
+            action,
+            ...(resourceId
+              ? { ResourceId: { [Op.or]: [null, resourceId] } }
+              : { ResourceId: null }),
+          },
         },
       ],
     });
 
-    subscriptions.push(
-      ...resourceSubscribers.filter(
-        resourceSub =>
-          (resourceSub.ResourceId && resourceId === resourceSub.ResourceId) ||
-          resourceSub.ResourceId == null,
-      ),
-    );
+    subscriptions.push(...resourceSubscribers);
   }
 
   subscriptions.forEach(subscription => {
@@ -261,6 +261,55 @@ export async function getResourceById(ctx) {
       $author: { id: resource.UserId, name: resource['User.name'] },
     }),
   };
+}
+
+export async function getResourceSubscription(ctx) {
+  const { appId, resourceType, resourceId } = ctx.params;
+  const { App, AppSubscription, Resource, ResourceSubscription } = ctx.db.models;
+  const { endpoint } = ctx.query;
+
+  const app = await App.findByPk(appId, {
+    attributes: ['definition'],
+    include: [
+      {
+        model: Resource,
+        attributes: ['id'],
+        where: { id: resourceId },
+        required: false,
+      },
+      {
+        attributes: ['id', 'UserId'],
+        model: AppSubscription,
+        include: [
+          {
+            model: ResourceSubscription,
+            where: { type: resourceType, ResourceId: resourceId },
+            required: false,
+          },
+        ],
+        required: false,
+        where: { endpoint },
+      },
+    ],
+  });
+  verifyResourceDefinition(app, resourceType);
+
+  if (!app.Resources.length) {
+    throw Boom.notFound('Resource not found.');
+  }
+
+  if (!app.AppSubscriptions.length) {
+    throw Boom.notFound('User is not subscribed to this app.');
+  }
+
+  const subscriptions = app.AppSubscriptions[0].ResourceSubscriptions;
+  const result = { update: false, delete: false };
+
+  subscriptions.forEach(({ action }) => {
+    result[action] = true;
+  });
+
+  ctx.body = result;
 }
 
 export async function createResource(ctx) {

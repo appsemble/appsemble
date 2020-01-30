@@ -250,6 +250,13 @@ export default {
                     create: { type: 'boolean' },
                     update: { type: 'boolean' },
                     delete: { type: 'boolean' },
+                    subscriptions: {
+                      type: 'object',
+                      additionalProperties: {
+                        type: 'object',
+                        properties: { update: { type: 'boolean' }, delete: { type: 'boolean' } },
+                      },
+                    },
                   },
                 },
               },

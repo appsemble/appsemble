@@ -50,7 +50,7 @@ export default function ServiceWorkerRegistrationProvider({
     if (permission !== 'granted') {
       const newPermission = await requestPermission();
       if (newPermission !== 'granted') {
-        return false;
+        return null;
       }
     }
 
@@ -69,7 +69,7 @@ export default function ServiceWorkerRegistrationProvider({
 
     setSubscription(sub);
 
-    return true;
+    return sub;
   }, [permission, requestPermission, serviceWorkerRegistrationPromise]);
 
   const unsubscribe = React.useCallback(async () => {
