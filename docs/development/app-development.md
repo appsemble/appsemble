@@ -11,7 +11,7 @@ Appsemble.
 After logging in a list of apps you can manage will appear, providing direct links to the app itself
 as well as the corresponding editor pages.
 
-From this screen new apps can be created by clicking on the grayed out _”Create new app”_ card.
+From this screen new apps can be created by clicking on the grayed out _“Create new app”_ card.
 
 By clicking on the create app card, a form is presented in which the following attributes can be
 filled in:
@@ -28,7 +28,7 @@ using a dropdown menu.
 very simple app that does not do very much to a more complex app that is provided with
 authentication, uploading files, etc.
 
-After filling in these fields and clicking the _”Create App”_ button, Appsemble redirects to the
+After filling in these fields and clicking the _“Create App”_ button, Appsemble redirects to the
 editor page corresponding to the newly created app.
 
 ## App studio
@@ -40,16 +40,16 @@ preview of what the app will look like based on these definitions.
 Apps are defined using a data serialization language called `YAML`. To learn more about how YAML
 works, please refer to [this page][yaml].
 
-The _”Recipe”_ tab contains the app definition in YAML. Changes can be made to the app definition by
-editing them in this tab and pressing the _”Save”_ button. Doing so will replace the app definition
+The _“Recipe”_ tab contains the app definition in YAML. Changes can be made to the app definition by
+editing them in this tab and pressing the _“Save”_ button. Doing so will replace the app definition
 in the right-hand panel with the new one, serving as a preview of the changes that have been made.
 Note that some functionality such as the [resource API](appsemble-resources) when defining new
 resources might not be available unless the new app definition has been uploaded to the server.
 
-The other tabs that are available such as the _”Core”_ and _”Shared”_ tabs refer to the Theming API.
+The other tabs that are available such as the _“Core”_ and _“Shared”_ tabs refer to the theming API.
 For more information about this, please refer to [this page](theming).
 
-Provided the app definition and styles successfully validated, the _”Upload”_ button will upload all
+Provided the app definition and styles successfully validated, the _“Upload”_ button will upload all
 this data to the server, effectively updating the app.
 
 ## Example app
@@ -63,7 +63,7 @@ A `block` is specified by a type as well as a version. The type follows the form
 other properties such as named parameters and actions. The significance of these fields depends on
 which blocks are being used.
 
-With this knowledge in mind, let's compose a simple app in which basic information about people can
+With this knowledge in mind, let’s compose a simple app in which basic information about people can
 be registered.
 
 First, define a resource that represents the format of a `person` resource:
@@ -89,7 +89,7 @@ resources:
           type: string
 ```
 
-This creates a _”person”_ resource which contains a first name, a last name, an email address, an
+This creates a _“person”_ resource which contains a first name, a last name, an email address, an
 age, and a description. For more information about how resources work, please refer to
 [this page](appsemble-resources).
 
@@ -116,9 +116,9 @@ pages:
 ```
 
 Saving and uploading the app at this point will result in no resources being displayed due to the
-fact that there aren't any available.
+fact that there aren’t any available.
 
-Let's follow up by adding a page in which resources can be registered.
+Let’s follow up by adding a page in which resources can be registered.
 
 ```yaml
 - name: Person Registration Form
@@ -151,10 +151,10 @@ Let's follow up by adding a page in which resources can be registered.
 
 To summarize this page: It contains a `form` block in which various fields of specific types are
 defined. These fields match up with the resource definition defined before. The form block contains
-two actions. The first action is _”submit”_ which describes where the resource will be submitted to.
-This can be sent to any API, but in this case it's being sent to Appsemble's resource API. Upon a
-successful submit, the page will link back to the _”Person List”_ page as described in
-_”submitSuccess”_.
+two actions. The first action is _“submit”_ which describes where the resource will be submitted to.
+This can be sent to any API, but in this case it’s being sent to Appsemble’s resource API. Upon a
+successful submit, the page will link back to the _“Person List”_ page as described in
+_“submitSuccess”_.
 
 At this point it might become noticeable how navigating through these pages can be cumbersome. One
 way to make this easier is to add an `action-button` block to both pages that refer to each other.
@@ -172,7 +172,7 @@ Clicking it results in being redirected to the other page.
 ```
 
 Since the `list` block only displays one field at a time, it might be desirable to be able to click
-on a resource and view more details about this resource. To facilitate this, let's add another page
+on a resource and view more details about this resource. To facilitate this, let’s add another page
 that is able to display a resource.
 
 ```yaml
@@ -205,7 +205,7 @@ The `detail-viewer` block is able to display various types of fields based on th
 the resource definition. In this example it simply displays every available field, but other fields
 may also be hidden by removing it from the `fields` parameter.
 
-Finally, in order to link the `list` block to the _”Person Details”_ page, add a click action to its
+Finally, in order to link the `list` block to the _“Person Details”_ page, add a click action to its
 list of actions:
 
 ```yaml
@@ -339,7 +339,7 @@ security:
 For a more detailed description of the above object, please refer to the
 [App reference](reference/app).
 
-With the security definition in place, let’s add the ‘Admin’ role to the appropriate pages and
+With the security definition in place, let’s add the `Admin` role to the appropriate pages and
 block.
 
 ```diff

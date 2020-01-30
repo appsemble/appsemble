@@ -11,8 +11,9 @@ route: /development/developing-blocks
 XXX: To be replaced with `yarn create appsemble` when the tooling is ready to be published to npm.
 -->
 
-To start developing blocks, first the Appsemble repository needs to be cloned and installed as per
-the [Getting Started](https://gitlab.com/appsemble/appsemble/blob/master/README.md#getting-started)
+To start developing blocks, first the Appsemble repository needs to be cloned and installed as
+described in the
+[Getting Started](https://gitlab.com/appsemble/appsemble/blob/master/README.md#getting-started)
 instructions in the readme.
 
 <!--
@@ -224,7 +225,7 @@ so the click event will emit a `button-click` event instead. We’ll also add a 
 ```
 
 The event will be emitted to all blocks on the page. Go on and add a second `@org/test` block the
-the page to see the event is received by both blocks.
+page to see the event is received by both blocks.
 
 ## Unused Variables
 

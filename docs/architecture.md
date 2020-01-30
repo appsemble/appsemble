@@ -69,7 +69,7 @@ upload new versions of an existing blocks, or upload themes for entire organizat
 ### SDK
 
 The SDK provides the link between blocks and apps, it provides the code within blocks to receive
-information and context about the app it's being displayed in, with information such as available
+information and context about the app it’s being displayed in, with information such as available
 resources and parameters.
 
 ### Blocks
