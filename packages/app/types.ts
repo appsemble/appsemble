@@ -1,7 +1,6 @@
 import { Action } from '@appsemble/sdk';
-import { ActionDefinition, AppDefinition, Block, UserInfo } from '@appsemble/types';
+import { ActionDefinition, AppDefinition, Block, BlockManifest, UserInfo } from '@appsemble/types';
 import { RouteComponentProps } from 'react-router-dom';
-import { compose } from 'redux';
 
 export interface User extends UserInfo {
   scope: string;
@@ -11,14 +10,13 @@ declare global {
   interface Window {
     settings: {
       apiUrl: string;
+      blockManifests: BlockManifest[];
       vapidPublicKey: string;
       id: number;
       organizationId: string;
       definition: AppDefinition;
       sentryDsn: string;
     };
-
-    __REDUX_DEVTOOLS_EXTENSION_COMPOSE__: typeof compose;
   }
 }
 

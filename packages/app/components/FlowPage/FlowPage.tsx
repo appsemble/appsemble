@@ -108,7 +108,6 @@ export default function FlowPage({
       <BlockList
         {...blockListProps}
         blocks={page.subPages[currentPage].blocks}
-        currentPage={currentPage}
         data={data}
         showDialog={showDialog}
         transitions

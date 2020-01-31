@@ -1,5 +1,5 @@
 import { AppsembleBootstrapEvent, BootstrapFunction, BootstrapParams } from '@appsemble/sdk';
-import { BlockDefinition } from '@appsemble/types';
+import { BlockManifest } from '@appsemble/types';
 import { Promisable } from 'type-fest';
 
 import { prefixURL } from './blockUtils';
@@ -66,24 +66,24 @@ function getBootstrap(blockDefId: string): Promisable<BootstrapFunction> {
  * @param params any named parameters that will be passed to the block boostrap function.
  */
 export async function callBootstrap(
-  blockDef: BlockDefinition,
+  manifest: BlockManifest,
   params: BootstrapParams,
 ): Promise<void> {
-  if (!loadedBlocks.has(blockDef.name)) {
-    blockDef.files
+  if (!loadedBlocks.has(manifest.name)) {
+    manifest.files
       .filter(url => url.endsWith('.js'))
       .forEach(url => {
         const script = document.createElement('script');
-        script.src = prefixURL({ type: blockDef.name, version: blockDef.version }, url);
+        script.src = prefixURL({ type: manifest.name, version: manifest.version }, url);
         script.addEventListener('AppsembleBootstrap', (event: AppsembleBootstrapEvent) => {
           event.stopImmediatePropagation();
           event.preventDefault();
-          register(script, event, blockDef.name);
+          register(script, event, manifest.name);
         });
         document.head.appendChild(script);
       });
-    loadedBlocks.add(blockDef.name);
+    loadedBlocks.add(manifest.name);
   }
-  const bootstrap = await getBootstrap(blockDef.name);
+  const bootstrap = await getBootstrap(manifest.name);
   await bootstrap(params);
 }

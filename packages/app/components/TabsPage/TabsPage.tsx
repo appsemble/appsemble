@@ -6,7 +6,7 @@ import { Link, Redirect, Route, Switch, useRouteMatch } from 'react-router-dom';
 
 import BlockList from '../BlockList';
 
-type TabsPageProps = React.ComponentPropsWithoutRef<typeof BlockList> &
+type TabsPageProps = Omit<React.ComponentPropsWithoutRef<typeof BlockList>, 'blocks'> &
   Pick<TabsPageType, 'subPages'>;
 
 export default function TabsPage({

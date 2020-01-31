@@ -1,5 +1,5 @@
 import { useMessages } from '@appsemble/react-components';
-import { AppDefinition, Block as BlockType, BlockDefinition } from '@appsemble/types';
+import { Block as BlockType } from '@appsemble/types';
 import { baseTheme, normalize } from '@appsemble/utils';
 import classNames from 'classnames';
 import { EventEmitter } from 'events';
@@ -9,11 +9,12 @@ import { useHistory, useLocation, useRouteMatch } from 'react-router-dom';
 
 import { ShowDialogAction } from '../../types';
 import { ActionCreators } from '../../utils/actions';
-import { prefixURL } from '../../utils/blockUtils';
+import { blockToString, prefixURL } from '../../utils/blockUtils';
 import { callBootstrap } from '../../utils/bootstrapper';
 import injectCSS from '../../utils/injectCSS';
 import makeActions from '../../utils/makeActions';
 import settings from '../../utils/settings';
+import { useAppDefinition } from '../AppDefinitionProvider';
 import { useServiceWorkerRegistration } from '../ServiceWorkerRegistrationProvider';
 import styles from './Block.css';
 
@@ -22,7 +23,6 @@ const FA_URL = Array.from(document.styleSheets, sheet => sheet.href).find(
 );
 
 interface BlockProps {
-  definition: AppDefinition;
   data?: any;
   className?: string;
   ee: EventEmitter;
@@ -31,8 +31,7 @@ interface BlockProps {
    * The block to render.
    */
   block: BlockType;
-  blockDef: BlockDefinition;
-  extraCreators: ActionCreators;
+  extraCreators?: ActionCreators;
 
   /**
    * XXX: Define this type
@@ -50,9 +49,7 @@ interface BlockProps {
  * shadow DOM. Then the bootstrap function of the block definition is called.
  */
 export default function Block({
-  definition,
   block,
-  blockDef,
   className,
   data,
   ee,
@@ -65,12 +62,15 @@ export default function Block({
   const match = useRouteMatch();
   const location = useLocation();
   const push = useMessages();
+  const { blockManifests, definition } = useAppDefinition();
   const serviceWorkerRegistration = useServiceWorkerRegistration();
 
   const ref = React.useRef<HTMLDivElement>();
   const cleanups = React.useRef<Function[]>([]);
   const [initialized, setInitialized] = React.useState(false);
   const pushNotifications = useServiceWorkerRegistration();
+
+  const manifest = blockManifests.find(m => m.name === blockToString(block));
 
   React.useEffect(
     () => () => {
@@ -95,7 +95,7 @@ export default function Block({
     };
 
     const actions = makeActions({
-      actions: blockDef.actions,
+      actions: manifest.actions,
       definition,
       context: block,
       history,
@@ -134,15 +134,15 @@ export default function Block({
         [
           bulmaUrl,
           FA_URL,
-          ...blockDef.files.filter(url => url.endsWith('.css')).map(url => prefixURL(block, url)),
+          ...manifest.files.filter(url => url.endsWith('.css')).map(url => prefixURL(block, url)),
           `${window.location.origin}/api/organizations/${settings.organizationId}/style/shared`,
-          `${window.location.origin}/api/organizations/${settings.organizationId}/style/block/${blockDef.name}`,
-          `${window.location.origin}/api/apps/${settings.id}/style/block/${blockDef.name}`,
+          `${window.location.origin}/api/organizations/${settings.organizationId}/style/block/${manifest.name}`,
+          `${window.location.origin}/api/apps/${settings.id}/style/block/${manifest.name}`,
           (document.getElementById('appsemble-style-shared') as HTMLLinkElement)?.href,
         ].map(url => injectCSS(shadowRoot, url)),
       );
 
-      await callBootstrap(blockDef, {
+      await callBootstrap(manifest, {
         actions,
         block,
         data: data || location.state,
@@ -157,7 +157,6 @@ export default function Block({
     })();
   }, [
     block,
-    blockDef,
     data,
     definition,
     ee,
@@ -166,6 +165,7 @@ export default function Block({
     history,
     initialized,
     location.state,
+    manifest,
     match.params,
     match.path,
     push,
@@ -175,11 +175,7 @@ export default function Block({
     showDialog,
   ]);
 
-  if (blockDef == null) {
-    return null;
-  }
-
-  switch (blockDef.layout) {
+  switch (manifest.layout) {
     case 'float':
       return ReactDOM.createPortal(
         <div ref={ref} className={classNames(styles.float, className)} />,

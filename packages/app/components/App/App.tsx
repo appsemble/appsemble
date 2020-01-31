@@ -3,7 +3,6 @@ import React from 'react';
 import { IntlProvider } from 'react-intl';
 import { BrowserRouter } from 'react-router-dom';
 
-import AppContext from '../AppContext';
 import BottomNavigation from '../BottomNavigation';
 import ErrorFallback from '../ErrorFallback';
 import Main from '../Main';
@@ -31,12 +30,10 @@ export default function App({ serviceWorkerRegistrationPromise }: AppProps): Rea
           >
             <MenuProvider>
               <BrowserRouter>
-                <AppContext>
-                  <PermissionRequest />
-                  <Main />
-                  <SideNavigation />
-                  <BottomNavigation />
-                </AppContext>
+                <PermissionRequest />
+                <Main />
+                <SideNavigation />
+                <BottomNavigation />
               </BrowserRouter>
             </MenuProvider>
           </ServiceWorkerRegistrationProvider>

@@ -556,9 +556,9 @@ export interface ActionType {
   required?: boolean;
 }
 
-export interface BlockDefinition {
+export interface BlockManifest {
   /**
-   * A definition for a block.
+   * A block manifest as it is available to the app and in the SDK.
    * pattern: ^@[a-z]([a-z\d-]{0,30}[a-z\d])?\/[a-z]([a-z\d-]{0,30}[a-z\d])$
    * The name of a block.
    */
@@ -572,15 +572,10 @@ export interface BlockDefinition {
    */
   version: string;
 
-  /*
-   * A human readable description of the block.
-   */
-  description: string;
-
   /**
    * The type of layout to be used for the block.
    */
-  layout: 'float' | 'static' | 'grow';
+  layout: 'float' | 'static' | 'grow' | null;
 
   /**
    * Array of urls associated to the files of the block.
@@ -821,4 +816,14 @@ export interface Organization {
    * The display name of the organization.
    */
   name: string;
+}
+
+/**
+ * A member of an app.
+ */
+export interface AppMember {
+  id: number;
+  name: string;
+  primaryEmail: string;
+  role: string;
 }

@@ -1,58 +1,36 @@
 import { Loader } from '@appsemble/react-components';
 import useMessages from '@appsemble/react-components/hooks/useMessages';
-import {
-  ActionDefinition,
-  AppDefinition,
-  BasicPage,
-  Block,
-  DialogActionDefinition,
-  Page as PageType,
-} from '@appsemble/types';
-import { normalize } from '@appsemble/utils';
-import EventEmitter from 'events';
+import { AppDefinition, BasicPage, Block, Page as PageType } from '@appsemble/types';
+import { checkAppRole, normalize } from '@appsemble/utils';
+import { EventEmitter } from 'events';
 import React from 'react';
-import { FormattedMessage, useIntl } from 'react-intl';
+import { useIntl } from 'react-intl';
 import { useHistory } from 'react-router-dom';
 
-import { ShowDialogParams, User } from '../../types';
-import checkAppRole from '../../utils/checkAppRole';
+import { ShowDialogParams } from '../../types';
+import { useAppDefinition } from '../AppDefinitionProvider';
 import BlockList from '../BlockList';
 import FlowPage from '../FlowPage';
 import Login from '../Login';
 import PageDialog from '../PageDialog';
 import TabsPage from '../TabsPage';
 import TitleBar from '../TitleBar';
+import { useUser } from '../UserProvider';
 import messages from './messages';
-import styles from './Page.css';
 
 interface PageProps {
-  definition: AppDefinition;
-  role?: string;
-  getBlockDefs: (blocks: Block[]) => void;
-  hasErrors: boolean;
-  pending: boolean;
   page: PageType;
-  user?: User;
-  logout: () => void;
 }
 
-export default function Page({
-  definition,
-  role,
-  getBlockDefs,
-  hasErrors,
-  pending,
-  page,
-  user = null,
-  logout,
-}: PageProps): React.ReactElement {
+export default function Page({ page }: PageProps): React.ReactElement {
+  const { definition } = useAppDefinition();
   const history = useHistory();
   const intl = useIntl();
   const push = useMessages();
+  const { logout, role, userInfo } = useUser();
 
   const [dialog, setDialog] = React.useState<ShowDialogParams>();
   const [blocks, setBlocks] = React.useState<Block[]>([]);
-  const [counter, setCounter] = React.useState(0);
 
   const ee = React.useRef<EventEmitter>();
 
@@ -108,7 +86,16 @@ export default function Page({
         history.replace(`/${normalize(redirectPage.name)}`);
       }
     }
-  }, [checkPagePermissions, definition, history, intl, logout, page, push]);
+  }, [
+    checkPagePermissions,
+    definition.defaultPage,
+    definition.pages,
+    history,
+    intl,
+    logout,
+    page,
+    push,
+  ]);
 
   const showDialog = React.useCallback((d: ShowDialogParams) => {
     setDialog(d);
@@ -130,27 +117,16 @@ export default function Page({
     applyBulmaThemes(definition, page);
     ee.current = new EventEmitter();
 
-    const actionBlocks = blocks
-      .filter(block => block.actions)
-      .map(block =>
-        Object.values<ActionDefinition>(block.actions)
-          .filter(action => action.type === 'dialog')
-          .map((action: DialogActionDefinition) => action.blocks),
-      )
-      .flat(2);
-
-    getBlockDefs([...new Set([...blocks, ...actionBlocks])]);
-
     return () => {
       if (ee.current) {
         ee.current.removeAllListeners();
         ee.current = null;
       }
     };
-  }, [applyBulmaThemes, blocks, definition, getBlockDefs, page]);
+  }, [applyBulmaThemes, definition, page]);
 
   if (definition.security && !(page.roles && page.roles.length === 0)) {
-    if (!user) {
+    if (!userInfo) {
       return (
         <>
           <TitleBar>{page.name}</TitleBar>
@@ -160,14 +136,6 @@ export default function Page({
     }
 
     handlePagePermissions();
-  }
-
-  if (hasErrors) {
-    return (
-      <p className={styles.error}>
-        <FormattedMessage {...messages.error} />
-      </p>
-    );
   }
 
   if (pending) {
@@ -180,7 +148,6 @@ export default function Page({
       component = (
         <FlowPage
           blocks={blocks}
-          counter={counter}
           definition={definition}
           ee={ee.current}
           page={page}
@@ -189,26 +156,17 @@ export default function Page({
       );
       break;
     case 'tabs':
-      component = (
-        <TabsPage
-          counter={counter}
-          ee={ee.current}
-          showDialog={showDialog}
-          subPages={page.subPages}
-        />
-      );
+      component = <TabsPage ee={ee.current} showDialog={showDialog} subPages={page.subPages} />;
       break;
     default:
-      component = (
-        <BlockList blocks={page.blocks} counter={counter} ee={ee.current} showDialog={showDialog} />
-      );
+      component = <BlockList blocks={page.blocks} ee={ee.current} showDialog={showDialog} />;
   }
 
   return (
     <>
       <TitleBar>{page.name}</TitleBar>
       {component}
-      <PageDialog dialog={dialog} ee={ee.current} />
+      <PageDialog dialog={dialog} ee={ee.current} showDialog={showDialog} />
     </>
   );
 }

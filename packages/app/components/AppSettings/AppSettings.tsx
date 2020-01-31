@@ -1,18 +1,15 @@
 import { Checkbox, FormComponent, Loader, useMessages } from '@appsemble/react-components';
-import { AppDefinition, ResourceHooks } from '@appsemble/types';
+import { ResourceHooks } from '@appsemble/types';
 import axios from 'axios';
 import React from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import settings from '../../utils/settings';
+import { useAppDefinition } from '../AppDefinitionProvider';
 import { useServiceWorkerRegistration } from '../ServiceWorkerRegistrationProvider';
 import TitleBar from '../TitleBar';
 import styles from './AppSettings.css';
 import messages from './messages';
-
-interface AppSettingsProps {
-  definition: AppDefinition;
-}
 
 interface ResourceState {
   [resourceType: string]: SubscriptionState;
@@ -41,10 +38,11 @@ interface SubscriptionResponseResource {
  *
  * This configures all providers and sets up the global app structure.
  */
-export default function AppSettings({ definition }: AppSettingsProps): React.ReactElement {
+export default function AppSettings(): React.ReactElement {
   const intl = useIntl();
   const push = useMessages();
   const [subscriptions, setSubscriptions] = React.useState<ResourceState>();
+  const { definition } = useAppDefinition();
   const {
     subscribe,
     requestPermission,

@@ -34,10 +34,8 @@ it('should render the blocks for a page', () => {
       { type: 'test', version: '0.0.0' },
     ],
   };
-  const definition = { defaultPage: 'Test Page', pages: [page] };
   const wrapper = shallow(
     <Page
-      definition={definition}
       getBlockDefs={() => {}}
       hasErrors={false}
       logout={() => {}}
@@ -70,10 +68,8 @@ it('should render tabs pages', () => {
       },
     ],
   };
-  const definition = { defaultPage: 'Test Page', pages: [page] };
   const wrapper = shallow(
     <Page
-      definition={definition}
       getBlockDefs={() => {}}
       hasErrors={false}
       logout={() => {}}
@@ -106,10 +102,8 @@ it('should render flow page', () => {
       },
     ],
   };
-  const definition = { defaultPage: 'Test Page', pages: [page] };
   const wrapper = shallow(
     <Page
-      definition={definition}
       getBlockDefs={() => {}}
       hasErrors={false}
       logout={() => {}}

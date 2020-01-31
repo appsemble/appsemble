@@ -1,15 +1,13 @@
 import { Modal } from '@appsemble/react-components';
-import { Block } from '@appsemble/types';
 import classNames from 'classnames';
-import React, { useEffect } from 'react';
+import React from 'react';
 
 import { ShowDialogParams } from '../../types';
 import BlockList from '../BlockList';
 import styles from './PageDialog.css';
 
-interface PageDialogProps extends React.ComponentPropsWithoutRef<typeof BlockList> {
+interface PageDialogProps extends Omit<React.ComponentPropsWithoutRef<typeof BlockList>, 'blocks'> {
   dialog: ShowDialogParams;
-  getBlockDefs: (blocks: Block[]) => Promise<void>;
 }
 
 /**
@@ -17,15 +15,8 @@ interface PageDialogProps extends React.ComponentPropsWithoutRef<typeof BlockLis
  */
 export default function PageDialog({
   dialog = null,
-  getBlockDefs,
   ...props
 }: PageDialogProps): React.ReactElement {
-  useEffect(() => {
-    if (dialog) {
-      getBlockDefs(dialog.blocks);
-    }
-  });
-
   return (
     <Modal
       cardClassName={classNames({ [styles.fullscreen]: dialog && dialog.fullscreen })}

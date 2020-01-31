@@ -1,25 +1,23 @@
-import { AppDefinition } from '@appsemble/types';
 import { normalize } from '@appsemble/utils';
 import React from 'react';
 import { Redirect, Route, Switch } from 'react-router-dom';
 
-import { User } from '../../types';
+import { useAppDefinition } from '../AppDefinitionProvider';
 import AppSettings from '../AppSettings';
 import Login from '../Login';
 import Page from '../Page';
+import { useUser } from '../UserProvider';
 import styles from './Main.css';
-
-interface MainProps {
-  definition: AppDefinition;
-  user: User;
-}
 
 /**
  * The main body of the loaded app.
  *
  * This maps the page to a route and displays a page depending on URL.
  */
-export default function Main({ definition = null, user }: MainProps): React.ReactElement {
+export default function Main(): React.ReactElement {
+  const { definition } = useAppDefinition();
+  const { isLoggedIn } = useUser();
+
   if (definition == null) {
     return null;
   }
@@ -42,7 +40,7 @@ export default function Main({ definition = null, user }: MainProps): React.Reac
     <main className={styles.root}>
       <Switch>
         <Route component={AppSettings} exact path="/Settings" sensitive />
-        {!user && <Route component={Login} exact path="/Login" sensitive />}
+        {!isLoggedIn && <Route component={Login} exact path="/Login" sensitive />}
         {routes}
         <Redirect to={defaultPath} />
       </Switch>
