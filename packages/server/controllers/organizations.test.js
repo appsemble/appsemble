@@ -103,6 +103,25 @@ describe('createOrganization', () => {
       },
     });
   });
+
+  it('should not create a new organization if user is unverified', async () => {
+    await EmailAuthorization.update({ verified: false }, { where: { UserId: user.id } });
+
+    const response = await request.post(
+      '/api/organizations',
+      { id: 'foo', name: 'Foooo' },
+      { headers: { authorization } },
+    );
+
+    expect(response).toMatchObject({
+      status: 403,
+      data: {
+        error: 'Forbidden',
+        message: 'Email not verified.',
+        statusCode: 403,
+      },
+    });
+  });
   it('should not create an organization with the same identifier', async () => {
     await request.post(
       '/api/organizations',
