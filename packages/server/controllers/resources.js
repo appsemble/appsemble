@@ -131,10 +131,14 @@ async function verifyAppRole(ctx, app, resource, resourceType, action) {
   }
 
   const { user } = ctx.state;
-  const { roles } = app.definition.resources[resourceType][action];
+  let { roles } = app.definition.resources[resourceType][action];
 
   if (!roles || !roles.length) {
-    return;
+    if (app.definition.roles && app.definition.roles.length) {
+      roles = app.definition.roles;
+    } else {
+      return;
+    }
   }
 
   const author = roles.includes('$author');
