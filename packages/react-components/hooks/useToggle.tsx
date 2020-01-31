@@ -3,7 +3,7 @@ import { useCallback, useMemo, useState } from 'react';
 /**
  * An object for keeping track of a boolean state.
  */
-interface Toggle {
+export interface Toggle {
   /**
    * Set the enabled state to `false`.
    */

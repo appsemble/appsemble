@@ -2,24 +2,20 @@ import classNames from 'classnames';
 import React, { useCallback, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 
+import { useMenu } from '../MenuProvider';
 import styles from './SideMenu.css';
 
 interface SideMenuProps {
-  isOpen: boolean;
-  children: React.ReactChildren;
-  closeMenu: () => void;
+  children: React.ReactNode;
 }
 
 /**
  * A side menu whose open state is managed by the redux state.
  */
 
-export default function SideMenu({
-  children,
-  closeMenu,
-  isOpen,
-}: SideMenuProps): React.ReactElement {
+export default function SideMenu({ children }: SideMenuProps): React.ReactElement {
   const history = useHistory();
+  const { disable: closeMenu, enabled: isOpen } = useMenu();
 
   const onKeyDown = useCallback(
     (event: KeyboardEvent | React.KeyboardEvent): void => {

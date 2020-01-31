@@ -2,10 +2,9 @@ import { combineReducers } from 'redux';
 
 import app from './app';
 import blockDefs from './blockDefs';
-import menu from './menu';
 import user from './user';
 
-const actions = combineReducers({ app, blockDefs, menu, user });
+const actions = combineReducers({ app, blockDefs, user });
 
 export default actions;
 

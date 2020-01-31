@@ -8,6 +8,7 @@ import AppContext from '../AppContext';
 import BottomNavigation from '../BottomNavigation';
 import ErrorFallback from '../ErrorFallback';
 import Main from '../Main';
+import MenuProvider from '../MenuProvider';
 import PermissionRequest from '../PermissionRequest';
 import ServiceWorkerRegistrationProvider from '../ServiceWorkerRegistrationProvider';
 import SideNavigation from '../SideNavigation';
@@ -25,14 +26,16 @@ export default function App({ serviceWorkerRegistrationPromise }) {
           <ServiceWorkerRegistrationProvider
             serviceWorkerRegistrationPromise={serviceWorkerRegistrationPromise}
           >
-            <BrowserRouter>
-              <AppContext>
-                <PermissionRequest />
-                <Main />
-                <SideNavigation />
-                <BottomNavigation />
-              </AppContext>
-            </BrowserRouter>
+            <MenuProvider>
+              <BrowserRouter>
+                <AppContext>
+                  <PermissionRequest />
+                  <Main />
+                  <SideNavigation />
+                  <BottomNavigation />
+                </AppContext>
+              </BrowserRouter>
+            </MenuProvider>
           </ServiceWorkerRegistrationProvider>
         </MessagesProvider>
       </ErrorHandler>
