@@ -540,7 +540,6 @@ export default {
       },
     },
   },
-
   '/apps/{appId}/style/shared': {
     parameters: [{ $ref: '#/components/parameters/appId' }],
     get: {
