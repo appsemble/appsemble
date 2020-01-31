@@ -13,12 +13,10 @@ import {
 } from './permissions';
 
 const Member = [ViewApps];
-const AppEditor = [...Member, EditApps, PushNotifications];
+const AppEditor = [...Member, EditApps, PushNotifications, ManageResources];
 const Maintainer = [
-  ...Member,
   ...AppEditor,
   EditThemes,
-  ManageResources,
   PublishBlocks,
   CreateApps,
   EditAppSettings,

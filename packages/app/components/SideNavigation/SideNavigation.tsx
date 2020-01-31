@@ -1,11 +1,10 @@
 import { Icon } from '@appsemble/react-components';
 import { AppDefinition, Page } from '@appsemble/types';
-import { normalize } from '@appsemble/utils';
+import { checkAppRole, normalize } from '@appsemble/utils';
 import React from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 
 import { User } from '../../types';
-import checkAppRole from '../../utils/checkAppRole';
 import SideMenu from '../SideMenu';
 import styles from './SideNavigation.css';
 
