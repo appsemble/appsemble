@@ -11,7 +11,6 @@ import styles from './SideNavigation.css';
 
 interface SideNavigationProps {
   definition: AppDefinition;
-  closeMenu: () => void;
   logout: () => void;
   user: User;
   role: string;
