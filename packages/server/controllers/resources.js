@@ -1,4 +1,4 @@
-import { permissions, SchemaValidationError, validate } from '@appsemble/utils';
+import { checkAppRole, permissions, SchemaValidationError, validate } from '@appsemble/utils';
 import Boom from '@hapi/boom';
 import parseOData from '@wesselkuipers/odata-sequelize';
 import crypto from 'crypto';
@@ -116,6 +116,79 @@ const deepRename = (object, keys, { updatedHash, createdHash }) => {
   return obj;
 };
 
+/**
+ * Verifies whether or not the user has sufficient permissions to perform a resource call.
+ * Will throw an 403 error if the user does not satisfy the requirements.
+ *
+ * @param {*} ctx Koa context of the request
+ * @param {*} app App as fetched from the database.
+ * This must include the app member and organization relationships.
+ * @param {*} resource The resource as fetched from the database.
+ */
+async function verifyAppRole(ctx, app, resource, resourceType, action) {
+  if (!app.definition.resources[resourceType] || !app.definition.resources[resourceType][action]) {
+    return;
+  }
+
+  const { user } = ctx.state;
+  let { roles } = app.definition.resources[resourceType][action];
+
+  if (!roles || !roles.length) {
+    if (app.definition.roles && app.definition.roles.length) {
+      roles = app.definition.roles;
+    } else {
+      return;
+    }
+  }
+
+  const author = roles.includes('$author');
+  const filteredRoles = roles.filter(r => r !== '$author');
+
+  if (!author && !filteredRoles.length) {
+    return;
+  }
+
+  if (!user && (filteredRoles.length || author)) {
+    throw Boom.unauthorized('User is not logged in');
+  }
+
+  if (author && user && resource && user.id === resource.UserId) {
+    return;
+  }
+
+  const member = app.Users.find(u => u.id === user.id);
+  const { role: defaultRole, policy } = app.definition.security.default;
+  let role;
+
+  if (member) {
+    role = member.AppMember.role;
+  } else {
+    switch (policy) {
+      case 'everyone':
+        role = defaultRole;
+        break;
+
+      case 'organization':
+        if (!(await app.Organization.hasUser(user.id))) {
+          throw Boom.forbidden('User is not a member of the organization.');
+        }
+
+        role = defaultRole;
+        break;
+
+      case 'invite':
+        throw Boom.forbidden('User is not a member of the app.');
+
+      default:
+        role = null;
+    }
+  }
+
+  if (!filteredRoles.some(r => checkAppRole(app.definition.security, r, role))) {
+    throw Boom.forbidden('User does not have sufficient permissions.');
+  }
+}
+
 async function sendSubscriptionNotifications(
   ctx,
   app,
@@ -203,10 +276,25 @@ export async function queryResources(ctx) {
 
   const query = generateQuery(ctx, { updatedHash, createdHash });
   const { appId, resourceType } = ctx.params;
-  const { App, User } = ctx.db.models;
+  const { App, User, Organization } = ctx.db.models;
+  const { user } = ctx.state;
 
-  const app = await App.findByPk(appId);
+  const app = await App.findByPk(appId, {
+    ...(user && {
+      include: [
+        { model: Organization, attributes: [] },
+        {
+          model: User,
+          attributes: ['id'],
+          required: false,
+          where: { id: user.id },
+          through: { attributes: ['role'] },
+        },
+      ],
+    }),
+  });
   const { properties } = verifyResourceDefinition(app, resourceType);
+  await verifyAppRole(ctx, app, null, resourceType, 'query');
 
   const keys = Object.keys(properties);
   // the data is stored in the ´data´ column as json
@@ -237,9 +325,23 @@ export async function queryResources(ctx) {
 
 export async function getResourceById(ctx) {
   const { appId, resourceType, resourceId } = ctx.params;
-  const { App, User } = ctx.db.models;
+  const { App, User, Organization } = ctx.db.models;
+  const { user } = ctx.state;
 
-  const app = await App.findByPk(appId);
+  const app = await App.findByPk(appId, {
+    ...(user && {
+      include: [
+        { model: Organization, attributes: [] },
+        {
+          model: User,
+          attributes: ['id'],
+          required: false,
+          where: { id: user.id },
+          through: { attributes: ['role'] },
+        },
+      ],
+    }),
+  });
   verifyResourceDefinition(app, resourceType);
 
   const [resource] = await app.getResources({
@@ -251,6 +353,8 @@ export async function getResourceById(ctx) {
   if (!resource) {
     throw Boom.notFound('Resource not found');
   }
+
+  await verifyAppRole(ctx, app, resource, resourceType, 'get');
 
   ctx.body = {
     id: resource.id,
@@ -314,13 +418,28 @@ export async function getResourceSubscription(ctx) {
 
 export async function createResource(ctx) {
   const { appId, resourceType } = ctx.params;
-  const { App } = ctx.db.models;
+  const { App, Organization, User } = ctx.db.models;
   const { user } = ctx.state;
 
-  const app = await App.findByPk(appId);
+  const app = await App.findByPk(appId, {
+    ...(user && {
+      include: [
+        { model: Organization, attributes: [] },
+        {
+          model: User,
+          attributes: ['id'],
+          required: false,
+          where: { id: user.id },
+          through: { attributes: ['role'] },
+        },
+      ],
+    }),
+  });
+
   verifyResourceDefinition(app, resourceType);
 
   const resource = ctx.request.body;
+  await verifyAppRole(ctx, app, resource, resourceType, 'create');
   const { schema } = app.definition.resources[resourceType];
 
   try {
@@ -361,9 +480,23 @@ export async function createResource(ctx) {
 
 export async function updateResource(ctx) {
   const { appId, resourceType, resourceId } = ctx.params;
-  const { App, Resource } = ctx.db.models;
+  const { App, Resource, User, Organization } = ctx.db.models;
+  const { user } = ctx.state;
 
-  const app = await App.findByPk(appId);
+  const app = await App.findByPk(appId, {
+    ...(user && {
+      include: [
+        { model: Organization, attributes: [] },
+        {
+          model: User,
+          attributes: ['id'],
+          required: false,
+          where: { id: user.id },
+          through: { attributes: ['role'] },
+        },
+      ],
+    }),
+  });
 
   verifyResourceDefinition(app, resourceType);
   let resource = await Resource.findOne({
@@ -373,6 +506,8 @@ export async function updateResource(ctx) {
   if (!resource) {
     throw Boom.notFound('Resource not found');
   }
+
+  await verifyAppRole(ctx, app, resource, resourceType, 'update');
 
   const updatedResource = ctx.request.body;
   const { schema } = app.definition.resources[resourceType];
@@ -430,9 +565,23 @@ export async function updateResource(ctx) {
 
 export async function deleteResource(ctx) {
   const { appId, resourceType, resourceId } = ctx.params;
-  const { App, Resource } = ctx.db.models;
+  const { App, Resource, User, Organization } = ctx.db.models;
+  const { user } = ctx.state;
 
-  const app = await App.findByPk(appId);
+  const app = await App.findByPk(appId, {
+    ...(user && {
+      include: [
+        { model: Organization, attributes: [] },
+        {
+          model: User,
+          attributes: ['id'],
+          required: false,
+          where: { id: user.id },
+          through: { attributes: ['role'] },
+        },
+      ],
+    }),
+  });
 
   await checkRole(ctx, app.OrganizationId, permissions.ManageResources);
 
@@ -444,6 +593,8 @@ export async function deleteResource(ctx) {
   if (!resource) {
     throw Boom.notFound('Resource not found');
   }
+
+  await verifyAppRole(ctx, app, resource, resourceType, 'delete');
 
   await resource.destroy();
   ctx.status = 204;

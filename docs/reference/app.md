@@ -19,16 +19,6 @@ The name of the app. This name shows up in several places, including the app ind
 as well as the app title when users install the app. This name does not necessarily have to be
 unique.
 
-## `path`
-
-A unique identifier used to form the _URL_ of the app. This path must be unique. By default the path
-is based on the name, for example: `My First App` → `my-first-app`.
-
-## `private`
-
-If set to `true`, the app will not be displayed in the app index unless the user is in the same
-organization as the app.
-
 ## `description`
 
 The description of the app. This description has a maximum character limit of 80 and is displayed in

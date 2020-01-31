@@ -5,25 +5,21 @@ import React from 'react';
 import { useIntl } from 'react-intl';
 import { useLocation } from 'react-router-dom';
 
+import { useMenu } from '../MenuProvider';
 import messages from './messages';
 import styles from './SideMenuButton.css';
 
 interface SideMenuButtonProps {
   definition: AppDefinition;
-  isOpen: boolean;
-  openMenu: () => void;
 }
 
 /**
  * A toolbar button which can be used to open the side menu.
  */
-export default function SideMenuButton({
-  definition,
-  isOpen,
-  openMenu,
-}: SideMenuButtonProps): React.ReactElement {
+export default function SideMenuButton({ definition }: SideMenuButtonProps): React.ReactElement {
   const location = useLocation();
   const intl = useIntl();
+  const { enable: openMenu, enabled: isOpen } = useMenu();
 
   if (!definition) {
     return null;

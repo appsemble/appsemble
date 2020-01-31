@@ -1,4 +1,4 @@
-import { Theme } from '@appsemble/types';
+import { Security, Theme } from '@appsemble/types';
 import { OpenAPIV3 } from 'openapi-types';
 
 type MapperFunction = (data: any) => any;
@@ -62,3 +62,5 @@ export const permissions: {
   PushNotifications: 'PushNotifications';
   ManageResources: 'ManageResources';
 };
+
+export function checkAppRole(securityDefinition: Security, role: string, userRole: string): boolean;
