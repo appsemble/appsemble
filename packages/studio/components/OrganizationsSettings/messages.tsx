@@ -46,4 +46,6 @@ export default defineMessages({
   removeInviteWarning: 'Are you sure you want to revoke this invitation?',
   removeInviteSuccess: 'Successfully revoked invitation',
   removeInvite: 'Revoke invitation',
+  unverified: 'You must first {verifyAccount} in order to be able to create a new organization.',
+  verifyAccount: 'verify your account',
 });
