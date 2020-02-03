@@ -1,0 +1,16 @@
+layout: hidden
+
+# types:
+#   file: block.ts
+
+# events:
+#   listen:
+#     - refresh
+#   emit:
+#     - data
+
+actions:
+  onLoad:
+    required: true
+
+output: dist
