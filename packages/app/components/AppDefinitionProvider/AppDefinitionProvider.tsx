@@ -48,7 +48,7 @@ export default function AppDefinitionProvider({
         replaceStyle('appsemble-style-core', data.style);
         replaceStyle('appsemble-style-shared', data.sharedStyle);
         setBlockManifests(data.blockManifests);
-        setDefinition(resolveJsonPointers(data.app) as AppDefinition);
+        setDefinition(resolveJsonPointers(data.definition) as AppDefinition);
         setRevision(revision + 1);
       }
     };

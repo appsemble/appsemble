@@ -40,7 +40,7 @@ export default function Main(): React.ReactElement {
     <main className={styles.root}>
       <Switch>
         <Route component={AppSettings} exact path="/Settings" sensitive />
-        {!isLoggedIn && <Route component={Login} exact path="/Login" sensitive />}
+        {isLoggedIn || <Route component={Login} exact path="/Login" sensitive />}
         {routes}
         <Redirect to={defaultPath} />
       </Switch>

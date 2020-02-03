@@ -2,7 +2,7 @@ import { AppsembleBootstrapEvent, BootstrapFunction, BootstrapParams } from '@ap
 import { BlockManifest } from '@appsemble/types';
 import { Promisable } from 'type-fest';
 
-import { prefixURL } from './blockUtils';
+import prefixBlockURL from './prefixBlockURL';
 
 const bootstrappers = new Map<string, BootstrapFunction>();
 const resolvers = new Map<string, ((fn: BootstrapFunction) => void)[]>();
@@ -74,7 +74,7 @@ export async function callBootstrap(
       .filter(url => url.endsWith('.js'))
       .forEach(url => {
         const script = document.createElement('script');
-        script.src = prefixURL({ type: manifest.name, version: manifest.version }, url);
+        script.src = prefixBlockURL({ type: manifest.name, version: manifest.version }, url);
         script.addEventListener('AppsembleBootstrap', (event: AppsembleBootstrapEvent) => {
           event.stopImmediatePropagation();
           event.preventDefault();

@@ -85,16 +85,7 @@ export default function Page({ page }: PageProps): React.ReactElement {
         history.replace(`/${normalize(redirectPage.name)}`);
       }
     }
-  }, [
-    checkPagePermissions,
-    definition.defaultPage,
-    definition.pages,
-    history,
-    intl,
-    logout,
-    page,
-    push,
-  ]);
+  }, [checkPagePermissions, definition, history, intl, logout, page, push]);
 
   const showDialog = React.useCallback((d: ShowDialogParams) => {
     setDialog(d);

@@ -1,6 +1,6 @@
 import { useMessages } from '@appsemble/react-components';
 import { Block as BlockType } from '@appsemble/types';
-import { baseTheme, normalize } from '@appsemble/utils';
+import { baseTheme, normalize, normalizeBlockName } from '@appsemble/utils';
 import classNames from 'classnames';
 import { EventEmitter } from 'events';
 import React from 'react';
@@ -9,10 +9,10 @@ import { useHistory, useLocation, useRouteMatch } from 'react-router-dom';
 
 import { ShowDialogAction } from '../../types';
 import { ActionCreators } from '../../utils/actions';
-import { normalizeBlockName, prefixURL } from '../../utils/blockUtils';
 import { callBootstrap } from '../../utils/bootstrapper';
 import injectCSS from '../../utils/injectCSS';
 import makeActions from '../../utils/makeActions';
+import prefixBlockURL from '../../utils/prefixBlockURL';
 import settings from '../../utils/settings';
 import { useAppDefinition } from '../AppDefinitionProvider';
 import { useServiceWorkerRegistration } from '../ServiceWorkerRegistrationProvider';
@@ -69,8 +69,8 @@ export default function Block({
   const [initialized, setInitialized] = React.useState(false);
   const pushNotifications = useServiceWorkerRegistration();
 
-  const blockId = normalizeBlockName(block.type);
-  const manifest = blockManifests.find(m => m.name === blockId);
+  const blockName = normalizeBlockName(block.type);
+  const manifest = blockManifests.find(m => m.name === blockName && m.version === block.version);
 
   React.useEffect(
     () => () => {
@@ -134,7 +134,9 @@ export default function Block({
         [
           bulmaUrl,
           FA_URL,
-          ...manifest.files.filter(url => url.endsWith('.css')).map(url => prefixURL(block, url)),
+          ...manifest.files
+            .filter(url => url.endsWith('.css'))
+            .map(url => prefixBlockURL(block, url)),
           `${window.location.origin}/api/organizations/${settings.organizationId}/style/shared`,
           `${window.location.origin}/api/organizations/${settings.organizationId}/style/block/${manifest.name}`,
           `${window.location.origin}/api/apps/${settings.id}/style/block/${manifest.name}`,
