@@ -9,7 +9,7 @@ import { useHistory, useLocation, useRouteMatch } from 'react-router-dom';
 
 import { ShowDialogAction } from '../../types';
 import { ActionCreators } from '../../utils/actions';
-import { blockToString, prefixURL } from '../../utils/blockUtils';
+import { normalizeBlockName, prefixURL } from '../../utils/blockUtils';
 import { callBootstrap } from '../../utils/bootstrapper';
 import injectCSS from '../../utils/injectCSS';
 import makeActions from '../../utils/makeActions';
@@ -39,7 +39,7 @@ interface BlockProps {
   flowActions: any;
 
   showDialog: ShowDialogAction;
-  ready(): void;
+  ready(block: BlockType): void;
 }
 
 /**
@@ -63,14 +63,14 @@ export default function Block({
   const location = useLocation();
   const push = useMessages();
   const { blockManifests, definition } = useAppDefinition();
-  const serviceWorkerRegistration = useServiceWorkerRegistration();
 
   const ref = React.useRef<HTMLDivElement>();
   const cleanups = React.useRef<Function[]>([]);
   const [initialized, setInitialized] = React.useState(false);
   const pushNotifications = useServiceWorkerRegistration();
 
-  const manifest = blockManifests.find(m => m.name === blockToString(block));
+  const blockId = normalizeBlockName(block.type);
+  const manifest = blockManifests.find(m => m.name === blockId);
 
   React.useEffect(
     () => () => {
@@ -153,7 +153,7 @@ export default function Block({
         utils,
       });
 
-      ready();
+      ready(block);
     })();
   }, [
     block,
@@ -164,14 +164,12 @@ export default function Block({
     flowActions,
     history,
     initialized,
-    location.state,
+    location,
     manifest,
-    match.params,
-    match.path,
+    match,
     push,
     pushNotifications,
     ready,
-    serviceWorkerRegistration,
     showDialog,
   ]);
 

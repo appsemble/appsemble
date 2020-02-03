@@ -1,4 +1,3 @@
-import { Loader } from '@appsemble/react-components';
 import useMessages from '@appsemble/react-components/hooks/useMessages';
 import { AppDefinition, BasicPage, Block, Page as PageType } from '@appsemble/types';
 import { checkAppRole, normalize } from '@appsemble/utils';
@@ -136,10 +135,6 @@ export default function Page({ page }: PageProps): React.ReactElement {
     }
 
     handlePagePermissions();
-  }
-
-  if (pending) {
-    return <Loader />;
   }
 
   let component;

@@ -34,15 +34,7 @@ it('should render the blocks for a page', () => {
       { type: 'test', version: '0.0.0' },
     ],
   };
-  const wrapper = shallow(
-    <Page
-      getBlockDefs={() => {}}
-      hasErrors={false}
-      logout={() => {}}
-      page={page}
-      pending={false}
-    />,
-  );
+  const wrapper = shallow(<Page page={page} />);
 
   expect(wrapper).toMatchSnapshot();
 });
@@ -68,15 +60,7 @@ it('should render tabs pages', () => {
       },
     ],
   };
-  const wrapper = shallow(
-    <Page
-      getBlockDefs={() => {}}
-      hasErrors={false}
-      logout={() => {}}
-      page={page}
-      pending={false}
-    />,
-  );
+  const wrapper = shallow(<Page page={page} />);
 
   expect(wrapper).toMatchSnapshot();
 });
@@ -102,15 +86,7 @@ it('should render flow page', () => {
       },
     ],
   };
-  const wrapper = shallow(
-    <Page
-      getBlockDefs={() => {}}
-      hasErrors={false}
-      logout={() => {}}
-      page={page}
-      pending={false}
-    />,
-  );
+  const wrapper = shallow(<Page page={page} />);
 
   expect(wrapper).toMatchSnapshot();
 });

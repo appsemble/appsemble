@@ -43,17 +43,20 @@ export default function BlockList({
   const { definition, revision } = useAppDefinition();
   const { role } = useUser();
 
-  const [blockStatus, setBlockStatus] = React.useState<number[]>([]);
+  const blockStatus = React.useRef(blocks.map(() => false));
+  const [isLoading, setLoading] = React.useState(true);
 
   const ready = React.useCallback(
-    (index: number) => {
-      setBlockStatus([...blockStatus, index]);
+    (block: BlockType) => {
+      blockStatus.current[blocks.indexOf(block)] = true;
+      if (blockStatus.current.every(Boolean)) {
+        setLoading(false);
+      }
     },
-    [blockStatus],
+    [blocks],
   );
 
   const blockList = filterBlocks(definition.security, blocks, role);
-  const isLoading = blockStatus.length >= blockList.length;
   const list = blockList.map((block, index) => {
     const content = (
       <Block
@@ -66,7 +69,7 @@ export default function BlockList({
         ee={ee}
         extraCreators={extraCreators}
         flowActions={flowActions}
-        ready={() => ready(index)}
+        ready={ready}
         showDialog={showDialog}
       />
     );
