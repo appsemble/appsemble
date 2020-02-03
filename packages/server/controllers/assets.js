@@ -1,10 +1,18 @@
 import Boom from '@hapi/boom';
 
 export async function getAssetById(ctx) {
-  const { assetId } = ctx.params;
-  const { Asset } = ctx.db.models;
+  const { appId, assetId } = ctx.params;
+  const { App, Asset } = ctx.db.models;
 
-  const asset = await Asset.findByPk(assetId);
+  const app = await App.findByPk(appId, {
+    include: [{ model: Asset, where: { id: assetId }, required: false }],
+  });
+
+  if (!app) {
+    throw Boom.notFound('App not found');
+  }
+
+  const [asset] = app.Assets;
 
   if (!asset) {
     throw Boom.notFound('Asset not found');
@@ -16,9 +24,21 @@ export async function getAssetById(ctx) {
 
 export async function createAsset(ctx) {
   const { db, request } = ctx;
-  const { Asset } = db.models;
+  const { appId } = ctx.params;
+  const { App } = db.models;
   const { body, type } = request;
-  const asset = await Asset.create({ mime: type, data: body }, { raw: true });
+  const { user } = ctx.state;
+
+  const app = await App.findByPk(appId);
+
+  if (!app) {
+    throw Boom.notFound('App not found');
+  }
+
+  const asset = await app.createAsset(
+    { mime: type, data: body, ...(user && { UserId: user.id }) },
+    { raw: true },
+  );
 
   ctx.status = 201;
   ctx.body = { id: asset.id };
