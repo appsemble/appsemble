@@ -6,73 +6,85 @@ import testSchema from '../utils/test/testSchema';
 import testToken from '../utils/test/testToken';
 import truncate from '../utils/test/truncate';
 
-describe('resource controller', () => {
-  let App;
-  let Resource;
-  let db;
-  let request;
-  let server;
-  let token;
-  let organizationId;
-  let clock;
-  let user;
+let App;
+let Resource;
+let db;
+let request;
+let server;
+let token;
+let organizationId;
+let clock;
+let user;
 
-  const exampleApp = orgId => ({
-    definition: {
-      name: 'Test App',
-      defaultPage: 'Test Page',
-      resources: {
-        testResource: {
-          schema: {
-            type: 'object',
-            required: ['foo'],
-            properties: { foo: { type: 'string' } },
-          },
+const exampleApp = orgId => ({
+  definition: {
+    name: 'Test App',
+    defaultPage: 'Test Page',
+    resources: {
+      testResource: {
+        schema: {
+          type: 'object',
+          required: ['foo'],
+          properties: { foo: { type: 'string' } },
         },
-        testResourceB: {
-          schema: {
-            type: 'object',
-            required: ['foo'],
-            properties: { bar: { type: 'string' } },
-          },
+      },
+      testResourceB: {
+        schema: {
+          type: 'object',
+          required: ['foo'],
+          properties: { bar: { type: 'string' } },
         },
       },
     },
-    path: 'test-app',
-    vapidPublicKey: 'a',
-    vapidPrivateKey: 'b',
-    OrganizationId: orgId,
-  });
-
-  beforeAll(async () => {
-    db = await testSchema('resources');
-    server = await createServer({ db, argv: { host: 'http://localhost', secret: 'test' } });
-    request = await createInstance(server);
-    ({ App, Resource } = db.models);
-  }, 10e3);
-
-  beforeEach(async () => {
-    await truncate(db);
-    ({ authorization: token, user } = await testToken(db));
-    ({ id: organizationId } = await user.createOrganization(
-      {
-        id: 'testorganization',
-        name: 'Test Organization',
+    security: {
+      default: {
+        role: 'Reader',
+        policy: 'invite',
       },
-      { through: { role: 'Maintainer' } },
-    ));
-    clock = lolex.install();
-  });
+      roles: {
+        Reader: {},
+        Admin: {
+          inherits: ['Reader'],
+        },
+      },
+    },
+  },
+  path: 'test-app',
+  vapidPublicKey: 'a',
+  vapidPrivateKey: 'b',
+  OrganizationId: orgId,
+});
 
-  afterEach(() => {
-    clock.uninstall();
-  });
+beforeAll(async () => {
+  db = await testSchema('resources');
+  server = await createServer({ db, argv: { host: 'http://localhost', secret: 'test' } });
+  request = await createInstance(server);
+  ({ App, Resource } = db.models);
+}, 10e3);
 
-  afterAll(async () => {
-    await request.close();
-    await db.close();
-  });
+beforeEach(async () => {
+  await truncate(db);
+  ({ authorization: token, user } = await testToken(db));
+  ({ id: organizationId } = await user.createOrganization(
+    {
+      id: 'testorganization',
+      name: 'Test Organization',
+    },
+    { through: { role: 'Maintainer' } },
+  ));
+  clock = lolex.install();
+});
 
+afterEach(() => {
+  clock.uninstall();
+});
+
+afterAll(async () => {
+  await request.close();
+  await db.close();
+});
+
+describe('getResourceById', () => {
   it('should be able to fetch a resource', async () => {
     const app = await App.create(exampleApp(organizationId));
 
@@ -106,6 +118,30 @@ describe('resource controller', () => {
     expect(responseB).toMatchObject({ status: 404 });
   });
 
+  it('should return the resource author when fetching a single resource if it has one', async () => {
+    const app = await App.create(exampleApp(organizationId));
+    const resource = await app.createResource({
+      type: 'testResource',
+      data: { foo: 'foo', bar: 1 },
+      UserId: user.id,
+    });
+
+    const response = await request.get(`/api/apps/${app.id}/resources/testResource/${resource.id}`);
+
+    expect(response).toMatchObject({
+      status: 200,
+      data: {
+        id: resource.id,
+        foo: 'foo',
+        bar: 1,
+        $created: new Date(0).toJSON(),
+        $updated: new Date(0).toJSON(),
+        $author: { id: user.id, name: user.name },
+      },
+    });
+  });
+});
+describe('queryResources', () => {
   it('should be able to fetch all resources of a type', async () => {
     const app = await App.create(exampleApp(organizationId));
 
@@ -329,30 +365,9 @@ describe('resource controller', () => {
       ],
     });
   });
+});
 
-  it('should return the resource author when fetching a single resource if it has one', async () => {
-    const app = await App.create(exampleApp(organizationId));
-    const resource = await app.createResource({
-      type: 'testResource',
-      data: { foo: 'foo', bar: 1 },
-      UserId: user.id,
-    });
-
-    const response = await request.get(`/api/apps/${app.id}/resources/testResource/${resource.id}`);
-
-    expect(response).toMatchObject({
-      status: 200,
-      data: {
-        id: resource.id,
-        foo: 'foo',
-        bar: 1,
-        $created: new Date(0).toJSON(),
-        $updated: new Date(0).toJSON(),
-        $author: { id: user.id, name: user.name },
-      },
-    });
-  });
-
+describe('createResource', () => {
   it('should be able to create a new resource', async () => {
     const app = await App.create(exampleApp(organizationId));
 
@@ -368,7 +383,7 @@ describe('resource controller', () => {
     });
   });
 
-  it('should validate resources when creating resources', async () => {
+  it('should validate resources', async () => {
     const app = await App.create(exampleApp(organizationId));
 
     const resource = {};
@@ -386,7 +401,7 @@ describe('resource controller', () => {
     });
   });
 
-  it('should check if an app has a specific resource definition when creating resources', async () => {
+  it('should check if an app has a specific resource definition', async () => {
     const app = await App.create(exampleApp(organizationId));
 
     const response = await request.get(`/api/apps/${app.id}/resources/thisDoesNotExist`);
@@ -396,7 +411,7 @@ describe('resource controller', () => {
     });
   });
 
-  it('should check if an app has any resource definitions when creating resources', async () => {
+  it('should check if an app has any resource definitions', async () => {
     const app = await App.create({
       definition: { name: 'Test App', defaultPage: 'Test Page' },
       path: 'test-app',
@@ -411,7 +426,9 @@ describe('resource controller', () => {
       data: { message: 'App does not have any resources defined' },
     });
   });
+});
 
+describe('updateResource', () => {
   it('should be able to update an existing resource', async () => {
     const app = await App.create(exampleApp(organizationId));
     const resource = await Resource.create({
@@ -505,7 +522,7 @@ describe('resource controller', () => {
     });
   });
 
-  it('should validate resources when updating resources', async () => {
+  it('should validate resources', async () => {
     const app = await App.create(exampleApp(organizationId));
     const resource = await Resource.create({
       type: 'testResource',
@@ -524,7 +541,9 @@ describe('resource controller', () => {
       data: {},
     });
   });
+});
 
+describe('deleteResource', () => {
   it('should be able to delete an existing resource', async () => {
     const app = await App.create(exampleApp(organizationId));
     const resource = await Resource.create({
@@ -638,93 +657,231 @@ describe('resource controller', () => {
       },
     });
   });
+});
 
-  describe('getResourceSubscription', () => {
-    it('should fetch resource subscriptions', async () => {
-      const app = await App.create(exampleApp(organizationId));
-      await app.createAppSubscription({
-        endpoint: 'https://example.com',
-        p256dh: 'abc',
-        auth: 'def',
-      });
-      const resource = await Resource.create({
-        type: 'testResource',
-        AppId: app.id,
-        data: { foo: 'I am Foo.' },
-      });
-      await request.patch(
-        `/api/apps/${app.id}/subscriptions`,
+describe('verifyAppRole', () => {
+  // The same logic gets applies to query, get, create, update, and delete.
+  it('should return normally on secured actions if user is authenticated and has sufficient roles', async () => {
+    const appTemplate = exampleApp(organizationId);
+    appTemplate.definition.resources.testResource.query = {
+      roles: ['Reader'],
+    };
+
+    const app = await App.create(appTemplate);
+    await app.addUser(user.id, { through: { role: 'Reader' } });
+    const resourceA = await app.createResource({ type: 'testResource', data: { foo: 'bar' } });
+    const resourceB = await app.createResource({ type: 'testResource', data: { foo: 'baz' } });
+    await app.createResource({ type: 'testResourceB', data: { bar: 'baz' } });
+
+    const response = await request.get(`/api/apps/${app.id}/resources/testResource`, {
+      headers: { authorization: token },
+    });
+
+    expect(response).toMatchObject({
+      status: 200,
+      data: [
         {
-          endpoint: 'https://example.com',
-          resource: 'testResource',
-          resourceId: resource.id,
-          action: 'update',
-          value: true,
+          id: resourceA.id,
+          foo: 'bar',
+          $created: new Date(0).toJSON(),
+          $updated: new Date(0).toJSON(),
         },
-        { headers: { authorization: token } },
-      );
+        {
+          id: resourceB.id,
+          foo: 'baz',
+          $created: new Date(0).toJSON(),
+          $updated: new Date(0).toJSON(),
+        },
+      ],
+    });
+  });
 
-      const response = await request.get(
-        `/api/apps/${app.id}/resources/testResource/${resource.id}/subscriptions`,
-        { headers: { authorization: token }, params: { endpoint: 'https://example.com' } },
-      );
+  it('should return normally on secured actions if user is the resource author', async () => {
+    const appTemplate = exampleApp(organizationId);
+    appTemplate.definition.resources.testResource.get = {
+      roles: ['Admin', '$author'],
+    };
 
-      expect(response).toMatchObject({ status: 200, data: { update: true, delete: false } });
+    const app = await App.create(appTemplate);
+    await app.addUser(user.id, { through: { role: 'Reader' } });
+    const resource = await app.createResource({
+      type: 'testResource',
+      data: { foo: 'bar' },
+      UserId: user.id,
     });
 
-    it('should return normally if user is not subscribed to the specific resource', async () => {
-      const app = await App.create(exampleApp(organizationId));
-      await app.createAppSubscription({
+    const response = await request.get(
+      `/api/apps/${app.id}/resources/testResource/${resource.id}`,
+      {
+        headers: { authorization: token },
+      },
+    );
+
+    expect(response).toMatchObject({
+      status: 200,
+      data: {
+        id: resource.id,
+        foo: 'bar',
+        $created: new Date(0).toJSON(),
+        $updated: new Date(0).toJSON(),
+        $author: {
+          id: user.id,
+          name: 'Test User',
+        },
+      },
+    });
+  });
+
+  it('should return a 401 on unauthorized requests if roles are present', async () => {
+    const appTemplate = exampleApp(organizationId);
+    appTemplate.definition.resources.testResource.query = {
+      roles: ['Reader'],
+    };
+
+    const app = await App.create(appTemplate);
+    const response = await request.get(`/api/apps/${app.id}/resources/testResource`);
+
+    expect(response).toMatchObject({
+      status: 401,
+      data: {
+        error: 'Unauthorized',
+        message: 'User is not logged in',
+        statusCode: 401,
+      },
+    });
+  });
+
+  it('should throw a 403 on secured actions if user is authenticated and is not a member', async () => {
+    const appTemplate = exampleApp(organizationId);
+    appTemplate.definition.resources.testResource.query = {
+      roles: ['Reader'],
+    };
+
+    const app = await App.create(appTemplate);
+
+    const response = await request.get(`/api/apps/${app.id}/resources/testResource`, {
+      headers: { authorization: token },
+    });
+
+    expect(response).toMatchObject({
+      status: 403,
+      data: {
+        error: 'Forbidden',
+        message: 'User is not a member of the app.',
+        statusCode: 403,
+      },
+    });
+  });
+
+  it('should throw a 403 on secured actions if user is authenticated and has insufficient roles', async () => {
+    const appTemplate = exampleApp(organizationId);
+    appTemplate.definition.resources.testResource.query = {
+      roles: ['Admin'],
+    };
+
+    const app = await App.create(appTemplate);
+    await app.addUser(user.id, { through: { role: 'Reader' } });
+
+    const response = await request.get(`/api/apps/${app.id}/resources/testResource`, {
+      headers: { authorization: token },
+    });
+
+    expect(response).toMatchObject({
+      status: 403,
+      data: {
+        error: 'Forbidden',
+        message: 'User does not have sufficient permissions.',
+        statusCode: 403,
+      },
+    });
+  });
+});
+
+describe('getResourceSubscription', () => {
+  it('should fetch resource subscriptions', async () => {
+    const app = await App.create(exampleApp(organizationId));
+    await app.createAppSubscription({
+      endpoint: 'https://example.com',
+      p256dh: 'abc',
+      auth: 'def',
+    });
+    const resource = await Resource.create({
+      type: 'testResource',
+      AppId: app.id,
+      data: { foo: 'I am Foo.' },
+    });
+    await request.patch(
+      `/api/apps/${app.id}/subscriptions`,
+      {
         endpoint: 'https://example.com',
-        p256dh: 'abc',
-        auth: 'def',
-      });
-      const resource = await Resource.create({
-        type: 'testResource',
-        AppId: app.id,
-        data: { foo: 'I am Foo.' },
-      });
+        resource: 'testResource',
+        resourceId: resource.id,
+        action: 'update',
+        value: true,
+      },
+      { headers: { authorization: token } },
+    );
 
-      const response = await request.get(
-        `/api/apps/${app.id}/resources/testResource/${resource.id}/subscriptions`,
-        { headers: { authorization: token }, params: { endpoint: 'https://example.com' } },
-      );
+    const response = await request.get(
+      `/api/apps/${app.id}/resources/testResource/${resource.id}/subscriptions`,
+      { headers: { authorization: token }, params: { endpoint: 'https://example.com' } },
+    );
 
-      expect(response).toMatchObject({ status: 200, data: { update: false, delete: false } });
+    expect(response).toMatchObject({ status: 200, data: { update: true, delete: false } });
+  });
+
+  it('should return normally if user is not subscribed to the specific resource', async () => {
+    const app = await App.create(exampleApp(organizationId));
+    await app.createAppSubscription({
+      endpoint: 'https://example.com',
+      p256dh: 'abc',
+      auth: 'def',
+    });
+    const resource = await Resource.create({
+      type: 'testResource',
+      AppId: app.id,
+      data: { foo: 'I am Foo.' },
     });
 
-    it('should 404 if resource is not found', async () => {
-      const app = await App.create(exampleApp(organizationId));
-      await app.createAppSubscription({
-        endpoint: 'https://example.com',
-        p256dh: 'abc',
-        auth: 'def',
-      });
+    const response = await request.get(
+      `/api/apps/${app.id}/resources/testResource/${resource.id}/subscriptions`,
+      { headers: { authorization: token }, params: { endpoint: 'https://example.com' } },
+    );
 
-      const response = await request.get(
-        `/api/apps/${app.id}/resources/testResource/0/subscriptions`,
-        { headers: { authorization: token }, params: { endpoint: 'https://example.com' } },
-      );
+    expect(response).toMatchObject({ status: 200, data: { update: false, delete: false } });
+  });
 
-      expect(response).toMatchObject({ status: 404, data: { message: 'Resource not found.' } });
+  it('should 404 if resource is not found', async () => {
+    const app = await App.create(exampleApp(organizationId));
+    await app.createAppSubscription({
+      endpoint: 'https://example.com',
+      p256dh: 'abc',
+      auth: 'def',
     });
 
-    it('should 404 if user is not subscribed', async () => {
-      const app = await App.create(exampleApp(organizationId));
-      const resource = await Resource.create({
-        type: 'testResource',
-        AppId: app.id,
-        data: { foo: 'I am Foo.' },
-      });
-      const response = await request.get(
-        `/api/apps/${app.id}/resources/testResource/${resource.id}/subscriptions`,
-        { headers: { authorization: token }, params: { endpoint: 'https://example.com' } },
-      );
+    const response = await request.get(
+      `/api/apps/${app.id}/resources/testResource/0/subscriptions`,
+      { headers: { authorization: token }, params: { endpoint: 'https://example.com' } },
+    );
 
-      expect(response).toMatchObject({
-        status: 404,
-        data: { message: 'User is not subscribed to this app.' },
-      });
+    expect(response).toMatchObject({ status: 404, data: { message: 'Resource not found.' } });
+  });
+
+  it('should 404 if user is not subscribed', async () => {
+    const app = await App.create(exampleApp(organizationId));
+    const resource = await Resource.create({
+      type: 'testResource',
+      AppId: app.id,
+      data: { foo: 'I am Foo.' },
+    });
+    const response = await request.get(
+      `/api/apps/${app.id}/resources/testResource/${resource.id}/subscriptions`,
+      { headers: { authorization: token }, params: { endpoint: 'https://example.com' } },
+    );
+
+    expect(response).toMatchObject({
+      status: 404,
+      data: { message: 'User is not subscribed to this app.' },
     });
   });
 });
