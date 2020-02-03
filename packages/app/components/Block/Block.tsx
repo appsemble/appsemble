@@ -89,9 +89,24 @@ export default function Block({
     const shadowRoot = div.attachShadow({ mode: 'closed' });
 
     const events = {
-      emit: (name: string, d: any) => ee.emit(name, d),
-      off: (name: string, callback: (data: any) => void) => ee.off(name, callback),
-      on: (name: string, callback: (data: any) => void) => ee.on(name, callback),
+      emit: Object.fromEntries(
+        Object.entries(manifest.events.emit).map(([key, target]) => [
+          key,
+          (d: any) => ee.emit(target, d),
+        ]),
+      ),
+      on: Object.fromEntries(
+        Object.entries(manifest.events.listen).map(([key, target]) => [
+          key,
+          (callback: (data: any) => void) => ee.on(target, callback),
+        ]),
+      ),
+      off: Object.fromEntries(
+        Object.entries(manifest.events.listen).map(([key, target]) => [
+          key,
+          (callback: (data: any) => void) => ee.on(target, callback),
+        ]),
+      ),
     };
 
     const actions = makeActions({
@@ -181,6 +196,8 @@ export default function Block({
       );
     case 'static':
       return <div ref={ref} className={classNames(styles.static, className)} />;
+    case 'hidden':
+      return null;
     default:
       return <div ref={ref} className={classNames(styles.grow, className)} />;
   }

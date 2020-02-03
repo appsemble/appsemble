@@ -26,43 +26,86 @@ function readTSConfig(tsConfigPath) {
   };
 }
 
-export function getFromContext({ dir, actions, parameters, types = {} }, fullPath) {
-  const { file = 'types.ts', parameters: parametersInterface } = types;
-  if (parameters && parametersInterface) {
-    throw new AppsembleError(
-      'Exacly one of ‘parameters’ and ‘types.parameters’ should be specified. Got both.',
-    );
+export function getFromContext({ actions, dir, events, parameters, types = {} }, fullPath) {
+  const {
+    file = 'block.ts',
+    parameters: parametersInterface = 'Parameters',
+    events: { listen: listenType = 'EventListeners', emit: emitType = 'EventEmitters' },
+  } = types;
+
+  let generator;
+
+  function getGenerator() {
+    if (!generator) {
+      logger.info('Extracting data from TypeScript project');
+      const tsConfigPath = path.join(fullPath, 'tsconfig.json');
+      const compilerOptions = readTSConfig(tsConfigPath);
+      logger.verbose(`Resolved TypeScript compiler options ${JSON.stringify(compilerOptions)}`);
+      const program = getProgramFromFiles([path.join(dir, file)], compilerOptions, dir);
+      generator = buildGenerator(program, {
+        noExtraProps: true,
+        required: true,
+      });
+      // This name is used for fontawesome icon names. They are excluded from the schema, as they are
+      // provided by the Appsemble framework, not by the block itself.
+      generator.setSchemaOverride('IconName', {
+        type: 'string',
+        format: 'fontawesome',
+      });
+    }
+    return generator;
   }
-  if (actions && parameters) {
-    return { actions, parameters };
+
+  function getParameters() {
+    if (parametersInterface) {
+      if (parameters) {
+        throw new AppsembleError(
+          'Exacly one of ‘parameters’ and ‘types.parameters’ should be specified. Got both.',
+        );
+      }
+      return getGenerator().getSchemaForSymbol(parametersInterface);
+    }
+    return parameters;
   }
-  logger.info('Extracting data from TypeScript project');
-  const tsConfigPath = path.join(fullPath, 'tsconfig.json');
-  const compilerOptions = readTSConfig(tsConfigPath);
-  logger.verbose(`Resolved TypeScript compiler options ${JSON.stringify(compilerOptions)}`);
-  const program = getProgramFromFiles([path.join(dir, file)], compilerOptions, dir);
-  const generator = buildGenerator(program, {
-    noExtraProps: true,
-    required: true,
-  });
-  // This name is used for fontawesome icon names. They are excluded from the schema, as they are
-  // provided by the Appsemble framework, not by the block itself.
-  generator.setSchemaOverride('IconName', {
-    type: 'string',
-    format: 'fontawesome',
-  });
+
+  function getEvents() {
+    if (listenType || emitType) {
+      if (events) {
+        throw new AppsembleError(
+          'Exacly one of ‘parameters’ and ‘types.parameters’ should be specified. Got both.',
+        );
+      }
+
+      return {
+        listen: getGenerator().getSchemaForSymbol(listenType).enum,
+        emit: getGenerator().getSchemaForSymbol(emitType).enum,
+      };
+    }
+    return events;
+  }
+
   return {
     actions,
-    parameters: generator.getSchemaForSymbol(parametersInterface),
+    parameters: getParameters(),
+    events: getEvents(),
   };
 }
 
+/**
+ * Generate a full block manifest from the block metadata.
+ *
+ * Uses the .appsemblerc file and the type definitions of the block.
+ *
+ * @param {*} config The content of the .appsemblerc file
+ * @param {*} fullPath The path to the .appsemblerc file
+ */
 export default function generateBlockData(config, fullPath) {
   const { layout, resources, version } = config;
-  const { actions, parameters } = getFromContext(config, fullPath);
+  const { actions, events, parameters } = getFromContext(config, fullPath);
 
   return {
     actions,
+    events,
     layout,
     parameters,
     resources,
