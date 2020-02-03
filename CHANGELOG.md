@@ -16,6 +16,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ### Changed
 
 - App: Move login functionality from side menu to top-right corner.
+- Studio: Enforce verified email address before organizations can be created.
 
 ## [0.10.0] - 2019-12-20
 
