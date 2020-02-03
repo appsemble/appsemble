@@ -125,7 +125,7 @@ describe('auth controller', () => {
     expect(response).toMatchObject({ status: 204 });
   });
 
-  it('should return not found when resetting using a non-existant token', async () => {
+  it('should return not found when resetting using a non-existent token', async () => {
     const response = await request.post('/api/email/reset', {
       token: 'idontexist',
       password: 'whatever',

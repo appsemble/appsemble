@@ -1605,7 +1605,7 @@ describe('setAppBlockStyle', () => {
     });
   });
 
-  it('should not allow uploading block stylesheets to non-existant apps', async () => {
+  it('should not allow uploading block stylesheets to non-existent apps', async () => {
     await BlockDefinition.create({
       id: '@appsemble/block',
       description: 'This is a test block for testing purposes.',
@@ -1630,7 +1630,7 @@ describe('setAppBlockStyle', () => {
     });
   });
 
-  it('should not allow uploading block stylesheets for non-existant blocks', async () => {
+  it('should not allow uploading block stylesheets for non-existent blocks', async () => {
     const { id } = await App.create(
       {
         path: 'bar',
@@ -1665,7 +1665,7 @@ describe('setAppBlockStyle', () => {
     });
   });
 
-  it('should return an empty response on non-existant block stylesheets', async () => {
+  it('should return an empty response on non-existent block stylesheets', async () => {
     const { id } = await App.create(
       {
         path: 'bar',

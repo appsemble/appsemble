@@ -72,8 +72,7 @@ describe('getOrganization', () => {
 
     expect(response).toMatchObject({
       status: 404,
-      error: 'Not Found',
-      data: { message: 'Organization not found.' },
+      data: { error: 'Not Found', statusCode: 404, message: 'Organization not found.' },
     });
   });
 });
@@ -446,7 +445,7 @@ describe('setRole', () => {
 });
 
 describe('getOrganizationcoreStyle', () => {
-  it('should return an empty response on non-existant core stylesheets', async () => {
+  it('should return an empty response on non-existent core stylesheets', async () => {
     const response = await request.get(`/api/organizations/${organization.id}/style/core`);
 
     expect(response).toMatchObject({
@@ -522,7 +521,7 @@ describe('setOrganizationCoreStyle', () => {
     });
   });
 
-  it('should not allow uploading core stylesheets to non-existant organizations', async () => {
+  it('should not allow uploading core stylesheets to non-existent organizations', async () => {
     const form = new FormData();
     form.append('style', Buffer.from('body { color: red; }'), {
       contentType: 'text/css',
@@ -545,7 +544,7 @@ describe('setOrganizationCoreStyle', () => {
 });
 
 describe('getOrganizationSharedStyle', () => {
-  it('should return an empty response on non-existant shared stylesheets', async () => {
+  it('should return an empty response on non-existent shared stylesheets', async () => {
     const response = await request.get(`/api/organizations/${organization.id}/style/shared`);
 
     expect(response).toMatchObject({
@@ -629,7 +628,7 @@ describe('setOrganizationSharedStyle', () => {
     });
   });
 
-  it('should not allow uploading shared stylesheets to non-existant organizations', async () => {
+  it('should not allow uploading shared stylesheets to non-existent organizations', async () => {
     const form = new FormData();
     form.append('style', Buffer.from('body { color: red; }'), {
       contentType: 'text/css',
@@ -651,7 +650,7 @@ describe('setOrganizationSharedStyle', () => {
 });
 
 describe('getOrganizationBlockStyle', () => {
-  it('should return an empty response on non-existant block stylesheets', async () => {
+  it('should return an empty response on non-existent block stylesheets', async () => {
     const response = await request.get(
       `/api/organizations/${organization.id}/style/block/@appsemble/doesntexist`,
     );
@@ -758,7 +757,7 @@ describe('setOrganizationBlockStyle', () => {
     });
   });
 
-  it('should not allow uploading block stylesheets to non-existant organizations', async () => {
+  it('should not allow uploading block stylesheets to non-existent organizations', async () => {
     await BlockDefinition.create({
       id: '@appsemble/testblock',
       description: 'This is a test block for testing purposes.',
@@ -786,7 +785,7 @@ describe('setOrganizationBlockStyle', () => {
     });
   });
 
-  it('should not allow uploading block stylesheets for non-existant blocks', async () => {
+  it('should not allow uploading block stylesheets for non-existent blocks', async () => {
     const form = new FormData();
     form.append('style', Buffer.from('body { color: red; }'), {
       contentType: 'text/css',
