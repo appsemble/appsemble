@@ -3,6 +3,7 @@ import {
   CardFooterButton,
   Icon,
   Loader,
+  Message,
   Modal,
   Select,
   SimpleForm,
@@ -15,6 +16,7 @@ import { normalize, permissions, roles } from '@appsemble/utils';
 import axios from 'axios';
 import * as React from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
+import { Link } from 'react-router-dom';
 
 import useUser from '../../hooks/useUser';
 import { Member, Role } from '../../types';
@@ -310,6 +312,20 @@ export default function OrganizationsSettings(): React.ReactElement {
         <h2>
           <FormattedMessage {...messages.createOrganization} />
         </h2>
+        {!userInfo.email_verified && (
+          <Message color="warning">
+            <FormattedMessage
+              {...messages.unverified}
+              values={{
+                verifyAccount: (
+                  <Link to="user">
+                    <FormattedMessage {...messages.verifyAccount} />
+                  </Link>
+                ),
+              }}
+            />
+          </Message>
+        )}
         <SimpleForm
           defaultValues={{ id: '', name: '' }}
           onSubmit={onSubmitNewOrganization}
@@ -317,12 +333,14 @@ export default function OrganizationsSettings(): React.ReactElement {
           resetOnSuccess
         >
           <SimpleInput
+            disabled={!userInfo.email_verified}
             iconLeft="briefcase"
             label={<FormattedMessage {...messages.organizationName} />}
             name="name"
             placeholder={intl.formatMessage(messages.organizationName)}
           />
           <SimpleInput
+            disabled={!userInfo.email_verified}
             iconLeft="at"
             label={<FormattedMessage {...messages.organizationId} />}
             maxLength={30}
@@ -331,7 +349,7 @@ export default function OrganizationsSettings(): React.ReactElement {
             preprocess={value => normalize(value, false)}
             required
           />
-          <SimpleSubmit>
+          <SimpleSubmit disabled={!userInfo.email_verified}>
             <FormattedMessage {...messages.create} />
           </SimpleSubmit>
         </SimpleForm>

@@ -7,8 +7,14 @@ import {
   Modal,
   useMessages,
 } from '@appsemble/react-components';
-import { App } from '@appsemble/types';
-import { SchemaValidationError, validate, validateStyle } from '@appsemble/utils';
+import { App, AppDefinition, BlockManifest } from '@appsemble/types';
+import {
+  filterBlocks,
+  getAppBlocks,
+  SchemaValidationError,
+  validate,
+  validateStyle,
+} from '@appsemble/utils';
 import axios from 'axios';
 import classNames from 'classnames';
 import { safeDump, safeLoad } from 'js-yaml';
@@ -47,8 +53,9 @@ export default function Editor({ app, updateApp }: EditorProps): React.ReactElem
   const intl = useIntl();
   const location = useLocation();
   const params = useParams<{ id: string }>();
-
   const push = useMessages();
+
+  const appUrl = `${window.location.protocol}//${app.path}.${app.OrganizationId}.${window.location.host}`;
 
   React.useEffect(() => {
     axios
@@ -103,10 +110,10 @@ export default function Editor({ app, updateApp }: EditorProps): React.ReactElem
         event.preventDefault();
       }
 
-      const newApp: Partial<App> = {};
+      let definition: AppDefinition;
       // Attempt to parse the YAML into a JSON object
       try {
-        newApp.definition = safeLoad(recipe);
+        definition = safeLoad(recipe);
       } catch (error) {
         push(intl.formatMessage(messages.invalidYaml));
         setValid(false);
@@ -125,14 +132,31 @@ export default function Editor({ app, updateApp }: EditorProps): React.ReactElem
       }
 
       try {
-        await validate(openApiDocument.components.schemas.App as OpenAPIV3.SchemaObject, newApp);
+        await validate(
+          (openApiDocument.components.schemas.App as OpenAPIV3.SchemaObject).properties
+            .definition as OpenAPIV3.SchemaObject,
+          definition,
+        );
+        const blockManifests: BlockManifest[] = await Promise.all(
+          filterBlocks(Object.values(getAppBlocks(definition))).map(async block => {
+            const { data } = await axios.get<BlockManifest>(
+              `/api/blocks/${block.type}/versions/${block.version}`,
+            );
+            return {
+              name: data.name,
+              version: data.version,
+              layout: data.layout,
+              files: data.files,
+              actions: data.actions,
+            };
+          }),
+        );
         setValid(true);
-        setDirty(false);
 
         // YAML and schema appear to be valid, send it to the app preview iframe
         frame.current.contentWindow.postMessage(
-          { type: 'editor/EDIT_SUCCESS', app: newApp, style, sharedStyle },
-          window.location.origin,
+          { type: 'editor/EDIT_SUCCESS', definition, blockManifests, style, sharedStyle },
+          appUrl,
         );
       } catch (error) {
         if (error instanceof SchemaValidationError) {
@@ -147,10 +171,10 @@ export default function Editor({ app, updateApp }: EditorProps): React.ReactElem
         }
 
         setValid(false);
-        setDirty(false);
       }
+      setDirty(false);
     },
-    [intl, openApiDocument, push, recipe, sharedStyle, style],
+    [appUrl, intl, openApiDocument, push, recipe, sharedStyle, style],
   );
 
   const uploadApp = React.useCallback(async () => {
@@ -250,8 +274,6 @@ export default function Editor({ app, updateApp }: EditorProps): React.ReactElem
     setWarningDialog(false);
     setDeleteDialog(false);
   }, []);
-
-  const appUrl = `//${app.path}.${app.OrganizationId}.${window.location.host}`;
 
   if (recipe == null) {
     return <Loader />;

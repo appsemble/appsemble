@@ -43,12 +43,12 @@ export default function AppDefinitionProvider({
   ]);
 
   React.useEffect(() => {
-    const onMessage = ({ data }: MessageEvent): void => {
-      if (data?.type === 'editor/EDIT_SUCCESS') {
+    const onMessage = ({ data, origin }: MessageEvent): void => {
+      if (origin === settings.apiUrl && data?.type === 'editor/EDIT_SUCCESS') {
         replaceStyle('appsemble-style-core', data.style);
         replaceStyle('appsemble-style-shared', data.sharedStyle);
         setBlockManifests(data.blockManifests);
-        setDefinition(resolveJsonPointers(data.app) as AppDefinition);
+        setDefinition(resolveJsonPointers(data.definition) as AppDefinition);
         setRevision(revision + 1);
       }
     };

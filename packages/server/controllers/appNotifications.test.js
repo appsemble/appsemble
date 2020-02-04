@@ -153,7 +153,7 @@ describe('getNotification', () => {
     });
   });
 
-  it('should 404 on non-existant subscriptions', async () => {
+  it('should 404 on non-existent subscriptions', async () => {
     const app = await App.create(defaultApp(organizationId));
     const response = await request.get(`/api/apps/${app.id}/subscriptions`, {
       params: { endpoint: 'https://example.com' },
@@ -279,7 +279,7 @@ describe('updateSubscription', () => {
     });
   });
 
-  it('should 404 on non-existant subscriptions', async () => {
+  it('should 404 on non-existent subscriptions', async () => {
     const app = await App.create(defaultApp(organizationId));
     const response = await request.patch(
       `/api/apps/${app.id}/subscriptions`,

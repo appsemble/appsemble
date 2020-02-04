@@ -1,7 +1,7 @@
 import { permissions, StyleValidationError, validateStyle } from '@appsemble/utils';
 import Boom from '@hapi/boom';
 import crypto from 'crypto';
-import { UniqueConstraintError } from 'sequelize';
+import { Op, UniqueConstraintError } from 'sequelize';
 
 import checkRole from '../utils/checkRole';
 
@@ -22,10 +22,29 @@ export async function getOrganization(ctx) {
 
 export async function createOrganization(ctx) {
   const { id, name } = ctx.request.body;
-  const { Organization, User } = ctx.db.models;
+  const { Organization, User, EmailAuthorization } = ctx.db.models;
   const {
     user: { id: userId },
   } = ctx.state;
+
+  const user = await User.findOne({
+    attributes: ['primaryEmail', 'name'],
+    include: [
+      {
+        required: false,
+        model: EmailAuthorization,
+        attributes: ['verified'],
+        where: {
+          email: { [Op.col]: 'User.primaryEmail' },
+        },
+      },
+    ],
+    where: { id: userId },
+  });
+
+  if (!user.primaryEmail || !user.EmailAuthorizations[0].verified) {
+    throw Boom.forbidden('Email not verified.');
+  }
 
   try {
     const organization = await Organization.create({ id, name }, { include: [User] });
@@ -214,6 +233,20 @@ export async function resendInvitation(ctx) {
   ctx.body = 204;
 }
 
+export async function removeInvite(ctx) {
+  const { email } = ctx.request.body;
+  const { OrganizationInvite } = ctx.db.models;
+
+  const invite = await OrganizationInvite.findOne({ where: { email } });
+  if (!invite) {
+    throw Boom.notFound('This invite does not exist.');
+  }
+
+  await checkRole(ctx, invite.OrganizationId, permissions.ManageMembers);
+
+  await invite.destroy();
+}
+
 export async function removeMember(ctx) {
   const { organizationId, memberId } = ctx.params;
   const { Organization, User } = ctx.db.models;
@@ -268,28 +301,6 @@ export async function setRole(ctx) {
     name: member.name,
     primaryEmail: member.primaryEmail,
   };
-}
-
-export async function removeInvite(ctx) {
-  const { email } = ctx.request.body;
-  const { OrganizationInvite } = ctx.db.models;
-  const { user } = ctx.state;
-
-  const invite = await OrganizationInvite.findOne({ where: { email } });
-  if (!invite) {
-    throw Boom.notFound('This invite does not exist.');
-  }
-
-  const organization = await invite.getOrganization();
-  if (!(await organization.hasUser(Number(user.id)))) {
-    throw Boom.forbidden(
-      'Not allowed to revoke an invitation if you’re not part of the organization.',
-    );
-  }
-
-  await checkRole(ctx, organization.id, permissions.ManageMembers);
-
-  await invite.destroy();
 }
 
 export async function getOrganizationCoreStyle(ctx) {

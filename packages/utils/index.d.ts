@@ -1,4 +1,4 @@
-import { Security, Theme } from '@appsemble/types';
+import { AppDefinition, Block, Security, Theme } from '@appsemble/types';
 import { OpenAPIV3 } from 'openapi-types';
 
 type MapperFunction = (data: any) => any;
@@ -37,6 +37,14 @@ export function remapData(mapperData: any, inputData: any, context?: Context): a
 export function normalize(input: string, keepTrailingDash?: false): string;
 export const normalized: RegExp;
 export const partialNormalized: RegExp;
+
+export type IdentifiableBlock = Pick<Block, 'type' | 'version'>;
+
+export function normalizeBlockName(blockName: string): string;
+
+export function getAppBlocks(definition: AppDefinition): Block[];
+
+export function filterBlocks(blocks: IdentifiableBlock[]): IdentifiableBlock[];
 
 export function validate(schema: OpenAPIV3.SchemaObject, data: any): Promise<void>;
 export class SchemaValidationError extends Error {

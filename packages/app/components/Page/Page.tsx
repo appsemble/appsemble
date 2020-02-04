@@ -32,6 +32,9 @@ export default function Page({ page }: PageProps): React.ReactElement {
   const [blocks, setBlocks] = React.useState<Block[]>([]);
 
   const ee = React.useRef<EventEmitter>();
+  if (!ee.current) {
+    ee.current = new EventEmitter();
+  }
 
   const createBulmaQueryString = React.useCallback(() => {
     const params = { ...definition.theme, ...page.theme };
@@ -85,16 +88,7 @@ export default function Page({ page }: PageProps): React.ReactElement {
         history.replace(`/${normalize(redirectPage.name)}`);
       }
     }
-  }, [
-    checkPagePermissions,
-    definition.defaultPage,
-    definition.pages,
-    history,
-    intl,
-    logout,
-    page,
-    push,
-  ]);
+  }, [checkPagePermissions, definition, history, intl, logout, page, push]);
 
   const showDialog = React.useCallback((d: ShowDialogParams) => {
     setDialog(d);
@@ -114,7 +108,12 @@ export default function Page({ page }: PageProps): React.ReactElement {
 
   React.useEffect(() => {
     applyBulmaThemes(definition, page);
-    ee.current = new EventEmitter();
+
+    if (ee.current) {
+      ee.current.removeAllListeners();
+      ee.current = null;
+      ee.current = new EventEmitter();
+    }
 
     return () => {
       if (ee.current) {

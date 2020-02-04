@@ -1,7 +1,8 @@
-import { BasicPage, FlowPage, TabsPage } from '@appsemble/types';
+import { BasicPage, FlowPage, TabsPage, UserInfo } from '@appsemble/types';
 import { shallow } from 'enzyme';
 import React from 'react';
 
+import * as AppDefinitionProvider from '../AppDefinitionProvider';
 import Page from './Page';
 
 jest.mock('react-router-dom', () => ({
@@ -22,6 +23,14 @@ jest.mock('react-intl', () => {
   };
 });
 
+jest.mock('../UserProvider', () => ({
+  useUser: () => ({
+    logout: jest.fn(),
+    role: null as string,
+    userInfo: null as UserInfo,
+  }),
+}));
+
 beforeEach(() => {
   jest.spyOn(document, 'getElementById').mockReturnValue(document.createElement('link'));
 });
@@ -34,6 +43,14 @@ it('should render the blocks for a page', () => {
       { type: 'test', version: '0.0.0' },
     ],
   };
+  jest.spyOn(AppDefinitionProvider, 'useAppDefinition').mockReturnValue({
+    revision: 1,
+    blockManifests: [],
+    definition: {
+      defaultPage: 'Test Page',
+      pages: [page],
+    },
+  });
   const wrapper = shallow(<Page page={page} />);
 
   expect(wrapper).toMatchSnapshot();
@@ -60,6 +77,14 @@ it('should render tabs pages', () => {
       },
     ],
   };
+  jest.spyOn(AppDefinitionProvider, 'useAppDefinition').mockReturnValue({
+    revision: 1,
+    blockManifests: [],
+    definition: {
+      defaultPage: 'Test Page',
+      pages: [page],
+    },
+  });
   const wrapper = shallow(<Page page={page} />);
 
   expect(wrapper).toMatchSnapshot();
@@ -86,6 +111,14 @@ it('should render flow page', () => {
       },
     ],
   };
+  jest.spyOn(AppDefinitionProvider, 'useAppDefinition').mockReturnValue({
+    revision: 1,
+    blockManifests: [],
+    definition: {
+      defaultPage: 'Test Page',
+      pages: [page],
+    },
+  });
   const wrapper = shallow(<Page page={page} />);
 
   expect(wrapper).toMatchSnapshot();

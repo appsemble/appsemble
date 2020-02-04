@@ -41,7 +41,7 @@ describe('validateSecurity', () => {
     );
   });
 
-  it('checks non-existant default roles', () => {
+  it('checks non-existent default roles', () => {
     const definition = {
       security: {
         default: { role: 'Readers', policy: 'everyone' },
@@ -57,7 +57,7 @@ describe('validateSecurity', () => {
     );
   });
 
-  it('checks non-existant app roles', () => {
+  it('checks non-existent app roles', () => {
     const definition = {
       security: {
         default: { role: 'Reader', policy: 'everyone' },
@@ -74,7 +74,7 @@ describe('validateSecurity', () => {
     );
   });
 
-  it('checks non-existant page roles', () => {
+  it('checks non-existent page roles', () => {
     const definition = {
       security: {
         default: { role: 'Reader', policy: 'everyone' },
@@ -95,7 +95,7 @@ describe('validateSecurity', () => {
     );
   });
 
-  it('checks non-existant block roles', () => {
+  it('checks non-existent block roles', () => {
     const definition = {
       security: {
         default: { role: 'Reader', policy: 'everyone' },

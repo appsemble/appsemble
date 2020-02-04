@@ -1,4 +1,4 @@
-import { getAppBlocks, normalizeBlockName } from '@appsemble/utils';
+import { filterBlocks, getAppBlocks } from '@appsemble/utils';
 import qs from 'querystring';
 import { Op } from 'sequelize';
 
@@ -19,7 +19,7 @@ export default async function indexHandler(ctx) {
     attributes: ['definition', 'id', 'OrganizationId', 'sharedStyle', 'style', 'vapidPublicKey'],
     raw: true,
   });
-  const blocks = getAppBlocks(app.definition);
+  const blocks = filterBlocks(Object.values(getAppBlocks(app.definition)));
   const blockManifests = await BlockVersion.findAll({
     attributes: ['name', 'version', 'layout', 'actions'],
     include: [
@@ -33,10 +33,7 @@ export default async function indexHandler(ctx) {
       },
     ],
     where: {
-      [Op.or]: Object.values(blocks).map(block => ({
-        name: normalizeBlockName(block.type),
-        version: block.version,
-      })),
+      [Op.or]: blocks.map(({ type, version }) => ({ name: type, version })),
     },
   });
   const { host, sentryDsn } = ctx.argv;

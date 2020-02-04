@@ -7,7 +7,6 @@ exports[`should render flow page 1`] = `
   </TitleBar>
   <FlowPage
     blocks={Array []}
-    counter={0}
     definition={
       Object {
         "defaultPage": "Test Page",
@@ -47,6 +46,13 @@ exports[`should render flow page 1`] = `
         ],
       }
     }
+    ee={
+      EventEmitter {
+        "_events": Object {},
+        "_eventsCount": 0,
+        "_maxListeners": undefined,
+      }
+    }
     page={
       Object {
         "name": "Test Page",
@@ -83,7 +89,16 @@ exports[`should render flow page 1`] = `
     }
     showDialog={[Function]}
   />
-  <Connect(PageDialog) />
+  <PageDialog
+    ee={
+      EventEmitter {
+        "_events": Object {},
+        "_eventsCount": 0,
+        "_maxListeners": undefined,
+      }
+    }
+    showDialog={[Function]}
+  />
 </Fragment>
 `;
 
@@ -93,7 +108,13 @@ exports[`should render tabs pages 1`] = `
     Test Page
   </TitleBar>
   <TabsPage
-    counter={0}
+    ee={
+      EventEmitter {
+        "_events": Object {},
+        "_eventsCount": 0,
+        "_maxListeners": undefined,
+      }
+    }
     showDialog={[Function]}
     subPages={
       Array [
@@ -126,7 +147,16 @@ exports[`should render tabs pages 1`] = `
       ]
     }
   />
-  <Connect(PageDialog) />
+  <PageDialog
+    ee={
+      EventEmitter {
+        "_events": Object {},
+        "_eventsCount": 0,
+        "_maxListeners": undefined,
+      }
+    }
+    showDialog={[Function]}
+  />
 </Fragment>
 `;
 
@@ -135,7 +165,7 @@ exports[`should render the blocks for a page 1`] = `
   <TitleBar>
     Test Page
   </TitleBar>
-  <Connect(BlockList)
+  <BlockList
     blocks={
       Array [
         Object {
@@ -148,9 +178,24 @@ exports[`should render the blocks for a page 1`] = `
         },
       ]
     }
-    counter={0}
+    ee={
+      EventEmitter {
+        "_events": Object {},
+        "_eventsCount": 0,
+        "_maxListeners": undefined,
+      }
+    }
     showDialog={[Function]}
   />
-  <Connect(PageDialog) />
+  <PageDialog
+    ee={
+      EventEmitter {
+        "_events": Object {},
+        "_eventsCount": 0,
+        "_maxListeners": undefined,
+      }
+    }
+    showDialog={[Function]}
+  />
 </Fragment>
 `;
