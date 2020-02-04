@@ -350,7 +350,7 @@ describe('removeInvite', () => {
     expect(response).toMatchObject({
       status: 403,
       data: {
-        message: 'Not allowed to revoke an invitation if you’re not part of the organization.',
+        message: 'User is not part of this organization.',
       },
     });
   });

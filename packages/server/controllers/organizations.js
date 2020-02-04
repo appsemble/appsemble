@@ -236,7 +236,6 @@ export async function resendInvitation(ctx) {
 export async function removeInvite(ctx) {
   const { email } = ctx.request.body;
   const { OrganizationInvite } = ctx.db.models;
-  const { user } = ctx.state;
 
   const invite = await OrganizationInvite.findOne({ where: { email } });
   if (!invite) {
@@ -244,12 +243,6 @@ export async function removeInvite(ctx) {
   }
 
   const organization = await invite.getOrganization();
-  if (!(await organization.hasUser(Number(user.id)))) {
-    throw Boom.forbidden(
-      'Not allowed to revoke an invitation if you’re not part of the organization.',
-    );
-  }
-
   await checkRole(ctx, organization.id, permissions.ManageMembers);
 
   await invite.destroy();
