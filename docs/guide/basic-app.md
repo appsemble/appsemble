@@ -213,7 +213,7 @@ pages:
 
 ## Creating data
 
-The most obvious way to create data, is through a form. This is exactly what we’ll be creating next.
+The easiest way to create new data is through a form. This is exactly what we’ll be creating next.
 
 Add a new page:
 
