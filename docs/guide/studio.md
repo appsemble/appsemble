@@ -11,18 +11,17 @@ Appsemble.
 After logging in a list of apps you can manage will appear, providing direct links to the app itself
 as well as the corresponding app detail pages.
 
-From this screen new apps can be created by clicking on the grayed out _“Create new app”_ card.
+From this screen new apps can be created by clicking on _“Create new app”_ card.
 
 By clicking on the create app card, a form is presented in which the following attributes can be
 filled in:
 
 **App Name**: This is the name of the app. It determines the URL at which the app will be made
-available as well as the name that shows up when installing it. Note that app names must be unique.
+available as well as the name that shows up when installing it.
 
 **Organization**: Each app belongs to an organization. This is used to determine the which rights
-users have for certain apps such as the ability to modify them. By default every user belongs to
-their own organization. If the user is in multiple organizations, the organization can be selected
-using a dropdown menu.
+users have for certain apps such as the ability to modify them. If the user is in multiple
+organizations, the organization can be selected using a dropdown menu.
 
 **App Template**: The template determines what the initial app looks like. This can range from a
 very simple app that does not do very much to a more complex app that is provided with

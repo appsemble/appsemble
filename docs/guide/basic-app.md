@@ -68,9 +68,9 @@ description: This is the best smith in town.
 
 The schema is used as a safety net for invalid data, but also for representation in some places.
 
-When the app is published with the `resources` property, a new “Resources” menu item appears to the side menu. This
-way resources can be managed in a generic way from within Appsemble studio in an administrator-like
-fashion.
+When the app is published with the `resources` property, a new “Resources” menu item appears to the
+side menu. This way resources can be managed in a generic way from within Appsemble studio in an
+administrator-like fashion.
 
 ## Displaying data
 
@@ -243,9 +243,9 @@ Add a new page:
 +               multiline: true
 ```
 
-After saving, the page can be opened from the app’s side menu. When data is entered, and the for
-form is saved, a new person is registered. The user is then redirected to the _“People”_ page. This
-page now displays the newly created person.
+After saving, the page can be opened from the app’s side menu. When data is entered and the form is
+saved, a new person is registered. The user is then redirected to the _“People”_ page. This page now
+displays the newly created person.
 
 THe app should now look like this:
 
@@ -320,7 +320,7 @@ pages:
 
 ## Detail view
 
-The detail page only displays people’s first name and last name. Often such an overview is handy,
+The detail page only displays person’s first name and last name. Often such an overview is handy,
 but it is desired to add the ability to see more details. Another use case might be a form for
 editing the resource, but for now we’ll focus on viewing.
 
