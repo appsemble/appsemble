@@ -242,8 +242,7 @@ export async function removeInvite(ctx) {
     throw Boom.notFound('This invite does not exist.');
   }
 
-  const organization = await invite.getOrganization();
-  await checkRole(ctx, organization.id, permissions.ManageMembers);
+  await checkRole(ctx, invite.OrganizationId, permissions.ManageMembers);
 
   await invite.destroy();
 }
