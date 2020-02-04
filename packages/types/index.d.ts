@@ -556,9 +556,9 @@ export interface ActionType {
   required?: boolean;
 }
 
-export interface BlockDefinition {
+export interface BlockManifest {
   /**
-   * A definition for a block.
+   * A block manifest as it is available to the app and in the SDK.
    * pattern: ^@[a-z]([a-z\d-]{0,30}[a-z\d])?\/[a-z]([a-z\d-]{0,30}[a-z\d])$
    * The name of a block.
    */
@@ -572,15 +572,10 @@ export interface BlockDefinition {
    */
   version: string;
 
-  /*
-   * A human readable description of the block.
-   */
-  description: string;
-
   /**
    * The type of layout to be used for the block.
    */
-  layout: 'float' | 'static' | 'grow';
+  layout: 'float' | 'static' | 'grow' | null;
 
   /**
    * Array of urls associated to the files of the block.
@@ -596,9 +591,9 @@ export interface BlockDefinition {
 /**
  * This describes what a page will look like in the app.
  */
-export interface Page {
+export interface BasePage {
   /**
-   * The name of an app.
+   * The name of the page.
    *
    * This will be displayed on the top of the page and in the side menu.
    */
@@ -608,6 +603,7 @@ export interface Page {
    * A list of roles that may view the page.
    */
   roles?: string[];
+
   /**
    * An optional icon from the fontawesome icon set
    *
@@ -625,14 +621,10 @@ export interface Page {
    */
   actions?: Record<string, ActionDefinition>;
 
-  blocks: Block[];
-
   /**
    * The global theme for the page.
    */
   theme?: Theme;
-
-  subPages?: Pick<Page, 'blocks' | 'name'>[];
 
   /**
    * The navigation type to use.
@@ -647,6 +639,28 @@ export interface Page {
   hideFromMenu?: boolean;
 }
 
+interface SubPage {
+  name: string;
+  blocks: Block[];
+}
+
+interface BasicPage extends BasePage {
+  type?: 'page';
+  blocks: Block[];
+}
+
+interface FlowPage extends BasePage {
+  type: 'flow';
+  subPages: SubPage[];
+}
+
+interface TabsPage extends BasePage {
+  type: 'tabs';
+  subPages: SubPage[];
+}
+
+export type Page = BasicPage | FlowPage | TabsPage;
+
 export interface AppDefinition {
   /**
    * The name of the app.
@@ -660,13 +674,13 @@ export interface AppDefinition {
    */
   description?: string;
 
-  security: Security;
-  authentication: Authentication[];
+  security?: Security;
+  authentication?: Authentication[];
 
   /**
    * A list of roles that are required to view pages. Specific page roles override this property.
    */
-  roles: string[];
+  roles?: string[];
 
   /**
    * The default page of the app.
@@ -695,7 +709,7 @@ export interface AppDefinition {
   /**
    * Resource definitions that may be used by the app.
    */
-  resources: Record<string, Resource>;
+  resources?: Record<string, Resource>;
 
   /**
    * The global theme for the app.
@@ -802,4 +816,14 @@ export interface Organization {
    * The display name of the organization.
    */
   name: string;
+}
+
+/**
+ * A member of an app.
+ */
+export interface AppMember {
+  id: number;
+  name: string;
+  primaryEmail: string;
+  role: string;
 }

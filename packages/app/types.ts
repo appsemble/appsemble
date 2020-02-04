@@ -1,5 +1,5 @@
 import { Action } from '@appsemble/sdk';
-import { ActionDefinition, AppDefinition, Block, UserInfo } from '@appsemble/types';
+import { ActionDefinition, AppDefinition, Block, BlockManifest, UserInfo } from '@appsemble/types';
 import { RouteComponentProps } from 'react-router-dom';
 
 export interface User extends UserInfo {
@@ -10,6 +10,7 @@ declare global {
   interface Window {
     settings: {
       apiUrl: string;
+      blockManifests: BlockManifest[];
       vapidPublicKey: string;
       id: number;
       organizationId: string;
@@ -39,7 +40,6 @@ export interface FlowActions {
 }
 
 export interface MakeActionParameters<D extends ActionDefinition> {
-  appId: number;
   app: AppDefinition;
   definition: D;
   flowActions: FlowActions;

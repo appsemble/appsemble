@@ -1,27 +1,20 @@
 import { Icon } from '@appsemble/react-components';
-import { AppDefinition, Page } from '@appsemble/types';
+import { Page } from '@appsemble/types';
 import { checkAppRole, normalize } from '@appsemble/utils';
 import React from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 
-import { User } from '../../types';
+import { useAppDefinition } from '../AppDefinitionProvider';
 import SideMenu from '../SideMenu';
+import { useUser } from '../UserProvider';
 import styles from './SideNavigation.css';
-
-interface SideNavigationProps {
-  definition: AppDefinition;
-  logout: () => void;
-  user: User;
-  role: string;
-}
 
 /**
  * The app navigation that is displayed in the side menu.
  */
-export default function SideNavigation({
-  definition,
-  role,
-}: SideNavigationProps): React.ReactElement {
+export default function SideNavigation(): React.ReactElement {
+  const { definition } = useAppDefinition();
+  const { role } = useUser();
   const location = useLocation();
 
   const currentPage = definition.pages.find(

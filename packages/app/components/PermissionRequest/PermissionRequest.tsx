@@ -1,19 +1,14 @@
-import { AppDefinition } from '@appsemble/types';
 import React from 'react';
 
+import { useAppDefinition } from '../AppDefinitionProvider';
 import { useServiceWorkerRegistration } from '../ServiceWorkerRegistrationProvider';
 import styles from './PermissionRequest.css';
-
-interface PermissionRequestProps {
-  definition: AppDefinition;
-}
 
 /**
  * Render all different authentication methods for an app.
  */
-export default function PermissionRequest({
-  definition,
-}: PermissionRequestProps): React.ReactElement {
+export default function PermissionRequest(): React.ReactElement {
+  const { definition } = useAppDefinition();
   const { permission, requestPermission, subscribe } = useServiceWorkerRegistration();
 
   if (definition.notifications && definition.notifications === 'startup') {

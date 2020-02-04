@@ -1,4 +1,6 @@
+import { filterBlocks, getAppBlocks } from '@appsemble/utils';
 import qs from 'querystring';
+import { Op } from 'sequelize';
 
 import createSettings from '../../utils/createSettings';
 import getApp from '../../utils/getApp';
@@ -12,9 +14,27 @@ import { bulmaURL, faURL } from '../../utils/styleURL';
 export default async function indexHandler(ctx) {
   ctx.type = 'text/html';
   const { render } = ctx.state;
+  const { BlockAsset, BlockVersion } = ctx.db.models;
   const app = await getApp(ctx, {
     attributes: ['definition', 'id', 'OrganizationId', 'sharedStyle', 'style', 'vapidPublicKey'],
     raw: true,
+  });
+  const blocks = filterBlocks(Object.values(getAppBlocks(app.definition)));
+  const blockManifests = await BlockVersion.findAll({
+    attributes: ['name', 'version', 'layout', 'actions'],
+    include: [
+      {
+        attributes: ['filename'],
+        model: BlockAsset,
+        where: {
+          name: { [Op.col]: 'BlockVersion.name' },
+          version: { [Op.col]: 'BlockVersion.version' },
+        },
+      },
+    ],
+    where: {
+      [Op.or]: blocks.map(({ type, version }) => ({ name: type, version })),
+    },
   });
   const { host, sentryDsn } = ctx.argv;
   const reportUri = sentryDsnToReportUri(sentryDsn);
@@ -45,6 +65,13 @@ export default async function indexHandler(ctx) {
   } else {
     const [settingsHash, settings] = createSettings({
       apiUrl: host,
+      blockManifests: blockManifests.map(({ BlockAssets, name, version, layout, actions }) => ({
+        name,
+        version,
+        layout,
+        actions,
+        files: BlockAssets.map(({ filename }) => filename),
+      })),
       id: app.id,
       vapidPublicKey: app.vapidPublicKey,
       organizationId: app.OrganizationId,

@@ -32,13 +32,13 @@ function getBlobs(resource: Resource): BlobUploadType {
 }
 
 function get(args: MakeActionParameters<ResourceGetActionDefinition>): ResourceGetAction {
-  const { app, appId, definition } = args;
+  const { app, definition } = args;
   const resource = app.resources[definition.resource];
   const method = (resource && resource.get && resource.get.method) || 'GET';
   const url =
     (resource && resource.get && resource.get.url) ||
     resource.url ||
-    `/api/apps/${appId}/resources/${definition.resource}`;
+    `/api/apps/${settings.id}/resources/${definition.resource}`;
   const { id = 'id' } = resource;
 
   return {
@@ -57,13 +57,13 @@ function get(args: MakeActionParameters<ResourceGetActionDefinition>): ResourceG
 }
 
 function query(args: MakeActionParameters<ResourceQueryActionDefinition>): ResourceQueryAction {
-  const { app, appId, definition } = args;
+  const { app, definition } = args;
   const resource = app.resources[definition.resource];
   const method = (resource && resource.query && resource.query.method) || 'GET';
   const url =
     (resource && resource.query && resource.query.url) ||
     resource.url ||
-    `/api/apps/${appId}/resources/${definition.resource}`;
+    `/api/apps/${settings.id}/resources/${definition.resource}`;
 
   return {
     ...requestLikeAction({
@@ -81,13 +81,13 @@ function query(args: MakeActionParameters<ResourceQueryActionDefinition>): Resou
 }
 
 function create(args: MakeActionParameters<ResourceCreateActionDefinition>): ResourceCreateAction {
-  const { app, appId, definition } = args;
+  const { app, definition } = args;
   const resource = app.resources[definition.resource];
   const method = (resource && resource.create && resource.create.method) || 'POST';
   const url =
     (resource && resource.create && resource.create.url) ||
     resource.url ||
-    `/api/apps/${appId}/resources/${definition.resource}`;
+    `/api/apps/${settings.id}/resources/${definition.resource}`;
 
   return {
     ...requestLikeAction({
@@ -105,13 +105,13 @@ function create(args: MakeActionParameters<ResourceCreateActionDefinition>): Res
 }
 
 function update(args: MakeActionParameters<ResourceUpdateActionDefinition>): ResourceUpdateAction {
-  const { app, appId, definition } = args;
+  const { app, definition } = args;
   const resource = app.resources[definition.resource];
   const method = (resource && resource.update && resource.update.method) || 'PUT';
   const url =
     (resource && resource.update && resource.update.url) ||
     resource.url ||
-    `/api/apps/${appId}/resources/${definition.resource}`;
+    `/api/apps/${settings.id}/resources/${definition.resource}`;
   const { id = 'id' } = resource;
 
   return {
@@ -130,13 +130,13 @@ function update(args: MakeActionParameters<ResourceUpdateActionDefinition>): Res
 }
 
 function remove(args: MakeActionParameters<ResourceDeleteActionDefinition>): ResourceDeleteAction {
-  const { app, appId, definition } = args;
+  const { app, definition } = args;
   const resource = app.resources[definition.resource];
   const method = (resource && resource.update && resource.update.method) || 'POST';
   const url =
     (resource && resource.update && resource.update.url) ||
     resource.url ||
-    `/api/apps/${appId}/resources/${definition.resource}`;
+    `/api/apps/${settings.id}/resources/${definition.resource}`;
   const { id = 'id' } = resource;
 
   return {
@@ -157,7 +157,6 @@ function remove(args: MakeActionParameters<ResourceDeleteActionDefinition>): Res
 
 function subscribe({
   app,
-  appId,
   definition,
   pushNotifications,
 }: MakeActionParameters<ResourceSubscribeActionDefinition>): BaseAction<'resource.subscribe'> {
@@ -183,7 +182,7 @@ function subscribe({
       }
 
       const { endpoint } = subscription;
-      await axios.patch(`${settings.apiUrl}/api/apps/${appId}/subscriptions`, {
+      await axios.patch(`${settings.apiUrl}/api/apps/${settings.id}/subscriptions`, {
         endpoint,
         resource: definition.resource,
         action: definition.action || 'update',

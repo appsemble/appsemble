@@ -1,18 +1,20 @@
 import { useMessages } from '@appsemble/react-components';
-import { Events } from '@appsemble/sdk';
-import { AppDefinition, Block as BlockType, BlockDefinition } from '@appsemble/types';
-import { baseTheme, normalize } from '@appsemble/utils';
+import { Block as BlockType } from '@appsemble/types';
+import { baseTheme, normalize, normalizeBlockName } from '@appsemble/utils';
 import classNames from 'classnames';
+import { EventEmitter } from 'events';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { useHistory, useLocation, useRouteMatch } from 'react-router-dom';
 
 import { ShowDialogAction } from '../../types';
-import { prefixURL } from '../../utils/blockUtils';
+import { ActionCreators } from '../../utils/actions';
 import { callBootstrap } from '../../utils/bootstrapper';
 import injectCSS from '../../utils/injectCSS';
 import makeActions from '../../utils/makeActions';
+import prefixBlockURL from '../../utils/prefixBlockURL';
 import settings from '../../utils/settings';
+import { useAppDefinition } from '../AppDefinitionProvider';
 import { useServiceWorkerRegistration } from '../ServiceWorkerRegistrationProvider';
 import styles from './Block.css';
 
@@ -21,32 +23,15 @@ const FA_URL = Array.from(document.styleSheets, sheet => sheet.href).find(
 );
 
 interface BlockProps {
-  definition: AppDefinition;
   data?: any;
   className?: string;
-
-  /**
-   * A function for emitting an event.
-   */
-  emitEvent: Events['emit'];
-
-  /**
-   * A function to deregister an event listener.
-   */
-  offEvent: Events['off'];
-
-  /**
-   * A function to register an event listener.
-   */
-  onEvent: Events['on'];
-
-  actionCreators: any;
+  ee: EventEmitter;
 
   /**
    * The block to render.
    */
   block: BlockType;
-  blockDef: BlockDefinition;
+  extraCreators?: ActionCreators;
 
   /**
    * XXX: Define this type
@@ -54,7 +39,7 @@ interface BlockProps {
   flowActions: any;
 
   showDialog: ShowDialogAction;
-  ready(): void;
+  ready(block: BlockType): void;
 }
 
 /**
@@ -64,16 +49,12 @@ interface BlockProps {
  * shadow DOM. Then the bootstrap function of the block definition is called.
  */
 export default function Block({
-  actionCreators,
-  definition,
   block,
-  blockDef,
   className,
-  emitEvent,
   data,
-  offEvent,
-  onEvent,
+  ee,
   showDialog,
+  extraCreators,
   flowActions,
   ready,
 }: BlockProps): React.ReactElement {
@@ -81,12 +62,15 @@ export default function Block({
   const match = useRouteMatch();
   const location = useLocation();
   const push = useMessages();
-  const serviceWorkerRegistration = useServiceWorkerRegistration();
+  const { blockManifests, definition } = useAppDefinition();
 
   const ref = React.useRef<HTMLDivElement>();
   const cleanups = React.useRef<Function[]>([]);
   const [initialized, setInitialized] = React.useState(false);
   const pushNotifications = useServiceWorkerRegistration();
+
+  const blockName = normalizeBlockName(block.type);
+  const manifest = blockManifests.find(m => m.name === blockName && m.version === block.version);
 
   React.useEffect(
     () => () => {
@@ -103,20 +87,20 @@ export default function Block({
     setInitialized(true);
 
     const shadowRoot = div.attachShadow({ mode: 'closed' });
+
     const events = {
-      emit: emitEvent,
-      off: offEvent,
-      on: onEvent,
+      emit: (name: string, d: any) => ee.emit(name, d),
+      off: (name: string, callback: (data: any) => void) => ee.off(name, callback),
+      on: (name: string, callback: (data: any) => void) => ee.on(name, callback),
     };
 
     const actions = makeActions({
-      appId: settings.id,
-      blockDef,
+      actions: manifest.actions,
       definition,
       context: block,
       history,
       showDialog,
-      extraCreators: actionCreators,
+      extraCreators,
       flowActions,
       pushNotifications,
     });
@@ -150,15 +134,17 @@ export default function Block({
         [
           bulmaUrl,
           FA_URL,
-          ...blockDef.files.filter(url => url.endsWith('.css')).map(url => prefixURL(block, url)),
+          ...manifest.files
+            .filter(url => url.endsWith('.css'))
+            .map(url => prefixBlockURL(block, url)),
           `${window.location.origin}/api/organizations/${settings.organizationId}/style/shared`,
-          `${window.location.origin}/api/organizations/${settings.organizationId}/style/block/${blockDef.name}`,
-          `${window.location.origin}/api/apps/${settings.id}/style/block/${blockDef.name}`,
+          `${window.location.origin}/api/organizations/${settings.organizationId}/style/block/${manifest.name}`,
+          `${window.location.origin}/api/apps/${settings.id}/style/block/${manifest.name}`,
           (document.getElementById('appsemble-style-shared') as HTMLLinkElement)?.href,
         ].map(url => injectCSS(shadowRoot, url)),
       );
 
-      await callBootstrap(blockDef, {
+      await callBootstrap(manifest, {
         actions,
         block,
         data: data || location.state,
@@ -169,35 +155,27 @@ export default function Block({
         utils,
       });
 
-      ready();
+      ready(block);
     })();
   }, [
-    actionCreators,
     block,
-    blockDef,
     data,
     definition,
-    emitEvent,
+    ee,
+    extraCreators,
     flowActions,
     history,
     initialized,
-    location.state,
-    match.params,
-    match.path,
-    offEvent,
-    onEvent,
+    location,
+    manifest,
+    match,
     push,
     pushNotifications,
     ready,
-    serviceWorkerRegistration,
     showDialog,
   ]);
 
-  if (blockDef == null) {
-    return null;
-  }
-
-  switch (blockDef.layout) {
+  switch (manifest.layout) {
     case 'float':
       return ReactDOM.createPortal(
         <div ref={ref} className={classNames(styles.float, className)} />,

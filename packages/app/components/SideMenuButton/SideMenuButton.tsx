@@ -1,22 +1,19 @@
-import { AppDefinition } from '@appsemble/types';
 import { normalize } from '@appsemble/utils';
 import classNames from 'classnames';
 import React from 'react';
 import { useIntl } from 'react-intl';
 import { useLocation } from 'react-router-dom';
 
+import { useAppDefinition } from '../AppDefinitionProvider';
 import { useMenu } from '../MenuProvider';
 import messages from './messages';
 import styles from './SideMenuButton.css';
 
-interface SideMenuButtonProps {
-  definition: AppDefinition;
-}
-
 /**
  * A toolbar button which can be used to open the side menu.
  */
-export default function SideMenuButton({ definition }: SideMenuButtonProps): React.ReactElement {
+export default function SideMenuButton(): React.ReactElement {
+  const { definition } = useAppDefinition();
   const location = useLocation();
   const intl = useIntl();
   const { enable: openMenu, enabled: isOpen } = useMenu();

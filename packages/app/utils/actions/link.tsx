@@ -20,7 +20,8 @@ export default function link({
     const [toBase, toSub] = [].concat(to);
 
     const toPage = pages.find(({ name }) => name === toBase);
-    const subPage = toSub ? toPage.subPages.find(({ name }) => name === toSub) : null;
+    const subPage =
+      toPage.type !== 'page' && toSub ? toPage.subPages.find(({ name }) => name === toSub) : null;
 
     if (toPage == null || (toSub && subPage === null)) {
       throw new Error(`Invalid link reference ${[].concat(to).join('/')}`);

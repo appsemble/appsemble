@@ -1,26 +1,19 @@
 import { Button, Dropdown, Icon } from '@appsemble/react-components';
-import { AppDefinition } from '@appsemble/types';
 import generateGravatarHash from '@appsemble/utils/generateGravatarHash';
 import React from 'react';
-import { FormattedMessage, WrappedComponentProps } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { Link } from 'react-router-dom';
 
-import { User } from '../../types';
+import { useAppDefinition } from '../AppDefinitionProvider';
+import { useUser } from '../UserProvider';
 import messages from './messages';
 import styles from './ProfileDropdown.css';
 
-export type ProfileDropDownProps = {
-  definition: AppDefinition;
-  logout: () => void;
-  user: User;
-} & WrappedComponentProps;
+export default function ProfileDropdown(): JSX.Element {
+  const intl = useIntl();
+  const { definition } = useAppDefinition();
+  const { isLoggedIn, logout, userInfo } = useUser();
 
-export default function ProfileDropdown({
-  definition,
-  intl,
-  logout,
-  user,
-}: ProfileDropDownProps): JSX.Element {
   const showSettings = definition.notifications !== undefined;
   const showLogin = definition.security;
 
@@ -28,7 +21,7 @@ export default function ProfileDropdown({
     return null;
   }
 
-  if (!user) {
+  if (!isLoggedIn) {
     return (
       <Link className="button" to="/Login">
         <FormattedMessage {...messages.login} />
@@ -44,7 +37,7 @@ export default function ProfileDropdown({
           <img
             alt={intl.formatMessage(messages.pfp)}
             className={`is-rounded ${styles.gravatar}`}
-            src={user.picture || generateGravatarHash(user.email || `${user.sub}`)}
+            src={userInfo.picture || generateGravatarHash(userInfo.email || `${userInfo.sub}`)}
           />
         </figure>
       }
