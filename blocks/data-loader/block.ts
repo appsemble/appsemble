@@ -4,6 +4,7 @@ export interface Actions {
   onLoad: Action;
 }
 
-export type EventEmitters = 'data';
-
-export type EventListeners = 'refresh';
+export interface Events {
+  emit: 'data';
+  listen: 'refresh';
+}

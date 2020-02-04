@@ -1,8 +1,8 @@
 import { bootstrap } from '@appsemble/sdk';
 
-import { Actions, EventEmitters, EventListeners } from '../block';
+import { Actions, Events } from '../block';
 
-bootstrap<null, Actions, EventEmitters, EventListeners>(({ actions, data, events, utils }) => {
+bootstrap<null, Actions, Events>(({ actions, data, events, utils }) => {
   async function loadData(): Promise<void> {
     try {
       const result = await actions.onLoad.dispatch(data);

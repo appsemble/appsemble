@@ -29,8 +29,8 @@ function readTSConfig(tsConfigPath) {
 export function getFromContext({ actions, dir, events, parameters, types = {} }, fullPath) {
   const {
     file = 'block.ts',
-    parameters: parametersInterface = 'Parameters',
-    events: { listen: listenType = 'EventListeners', emit: emitType = 'EventEmitters' },
+    parameters: parametersInterface,
+    events: eventsInterface = {},
   } = types;
 
   let generator;
@@ -42,12 +42,16 @@ export function getFromContext({ actions, dir, events, parameters, types = {} },
       const compilerOptions = readTSConfig(tsConfigPath);
       logger.verbose(`Resolved TypeScript compiler options ${JSON.stringify(compilerOptions)}`);
       const program = getProgramFromFiles([path.join(dir, file)], compilerOptions, dir);
-      generator = buildGenerator(program, {
-        noExtraProps: true,
-        required: true,
-      });
-      // This name is used for fontawesome icon names. They are excluded from the schema, as they are
-      // provided by the Appsemble framework, not by the block itself.
+      generator = buildGenerator(
+        program,
+        {
+          noExtraProps: true,
+          required: true,
+        },
+        [path.join(dir, file)],
+      );
+      // This name is used for fontawesome icon names. They are excluded from the schema,
+      // as they are provided by the Appsemble framework, not by the block itself.
       generator.setSchemaOverride('IconName', {
         type: 'string',
         format: 'fontawesome',
@@ -63,22 +67,24 @@ export function getFromContext({ actions, dir, events, parameters, types = {} },
           'Exacly one of ‘parameters’ and ‘types.parameters’ should be specified. Got both.',
         );
       }
+
       return getGenerator().getSchemaForSymbol(parametersInterface);
     }
     return parameters;
   }
 
   function getEvents() {
-    if (listenType || emitType) {
+    if (eventsInterface) {
       if (events) {
         throw new AppsembleError(
           'Exacly one of ‘parameters’ and ‘types.parameters’ should be specified. Got both.',
         );
       }
 
+      const e = getGenerator().getSchemaForSymbol(eventsInterface);
       return {
-        listen: getGenerator().getSchemaForSymbol(listenType).enum,
-        emit: getGenerator().getSchemaForSymbol(emitType).enum,
+        listen: e.properties.listen ? e.properties.listen.enum : undefined,
+        emit: e.properties.emit ? e.properties.emit.enum : undefined,
       };
     }
     return events;

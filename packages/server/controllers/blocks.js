@@ -80,6 +80,7 @@ export async function createBlockVersion(ctx) {
         parameters,
         resources = null,
         version,
+        events,
       } = await BlockVersion.create({ ...data, name }, { transaction });
 
       Object.keys(files).forEach(filename => {
@@ -103,6 +104,7 @@ export async function createBlockVersion(ctx) {
         layout,
         parameters,
         resources,
+        events,
         version,
         files: fileKeys,
         name,
@@ -151,7 +153,7 @@ export async function getBlockVersions(ctx) {
   }
 
   const blockVersions = await BlockVersion.findAll({
-    attributes: ['version', 'actions', 'layout', 'resources'],
+    attributes: ['version', 'actions', 'layout', 'resources', 'events'],
     raw: true,
     where: { name },
   });

@@ -1,7 +1,8 @@
 layout: hidden
 
-# types:
-#   file: block.ts
+types:
+  file: block.ts
+  events: Events
 
 # events:
 #   listen:
