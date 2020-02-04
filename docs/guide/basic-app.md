@@ -75,7 +75,7 @@ fashion.
 ## Displaying data
 
 Resources exist for use it in the app. A simple way to display data is to add a `list` block. The
-list block can render data in a tabular format.
+list block can display data in a table.
 
 Let’s replace _“Example Page A”_ and _“Example Page B”_ with a single page, named _“People”_.
 
