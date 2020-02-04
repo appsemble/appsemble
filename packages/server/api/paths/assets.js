@@ -1,5 +1,6 @@
 export default {
-  '/assets': {
+  '/apps/{appId}/assets': {
+    parameters: [{ $ref: '#/components/parameters/appId' }],
     post: {
       tags: ['asset'],
       description: 'Upload a new asset.',
@@ -20,10 +21,14 @@ export default {
           },
         },
       },
+      security: [{ studio: [] }, {}],
     },
   },
-  '/assets/{assetId}': {
-    parameters: [{ $ref: '#/components/parameters/assetId' }],
+  '/apps/{appId}/assets/{assetId}': {
+    parameters: [
+      { $ref: '#/components/parameters/appId' },
+      { $ref: '#/components/parameters/assetId' },
+    ],
     get: {
       tags: ['asset'],
       description: 'Get a single asset',
