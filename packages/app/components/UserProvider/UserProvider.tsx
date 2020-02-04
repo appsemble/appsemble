@@ -48,7 +48,6 @@ export default function UserProvider({ children }: UserProviderProps): React.Rea
   const { definition } = useAppDefinition();
 
   const [isLoggedIn, setLoggedIn] = React.useState(false);
-  const [refreshToken, setRefreshToken] = React.useState<string>(null);
   const [userInfo, setUserInfo] = React.useState<UserInfo>(null);
   const [role, setRole] = React.useState<string>(null);
 
@@ -64,7 +63,7 @@ export default function UserProvider({ children }: UserProviderProps): React.Rea
         throw new Error(`Unsupported authentication method: ${auth.method}`);
       }
       const {
-        data: { access_token: at, refresh_token: rt },
+        data: { access_token: at },
       } = await axios.post<TokenResponse>(
         auth.url,
         new URLSearchParams(
@@ -79,7 +78,7 @@ export default function UserProvider({ children }: UserProviderProps): React.Rea
       );
 
       const authorization = `Bearer ${at}`;
-      const { exp, scopes, sub, iss } = jwtDecode<JwtPayload>(at);
+      const { sub, iss } = jwtDecode<JwtPayload>(at);
       const { data: user } = await axios.get<UserInfo>(`${iss}/api/connect/userinfo`, {
         headers: { authorization },
       });
@@ -92,7 +91,6 @@ export default function UserProvider({ children }: UserProviderProps): React.Rea
       axios.defaults.headers.common.authorization = authorization;
       setRole(member.role);
       setUserInfo(user);
-      setRefreshToken(rt);
       setLoggedIn(true);
     },
     [definition.authentication, definition.security],
@@ -101,7 +99,6 @@ export default function UserProvider({ children }: UserProviderProps): React.Rea
   const logout = React.useCallback(() => {
     delete axios.defaults.headers.common.authentication;
     setLoggedIn(false);
-    setRefreshToken(null);
     setUserInfo(null);
     setRole(null);
   }, []);
