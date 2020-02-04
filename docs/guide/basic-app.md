@@ -68,7 +68,7 @@ description: This is the best smith in town.
 
 The schema is used as a safety net for invalid data, but also for representation in some places.
 
-When the app is published with the `resources` property, a new button appears to the side menu. This
+When the app is published with the `resources` property, a new “Resources” menu item appears to the side menu. This
 way resources can be managed in a generic way from within Appsemble studio in an administrator-like
 fashion.
 
