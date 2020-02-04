@@ -8,6 +8,7 @@ import {
   RequestLikeActionDefinition,
 } from '@appsemble/types';
 import { remapData } from '@appsemble/utils';
+import { EventEmitter } from 'events';
 import { RouteComponentProps } from 'react-router-dom';
 
 import { FlowActions, ServiceWorkerRegistrationContextType, ShowDialogAction } from '../types';
@@ -22,6 +23,7 @@ interface MakeActionsParams {
   extraCreators: ActionCreators;
   flowActions: FlowActions;
   pushNotifications: ServiceWorkerRegistrationContextType;
+  emit: EventEmitter['emit'];
 }
 
 export default function makeActions({
@@ -33,6 +35,7 @@ export default function makeActions({
   extraCreators,
   flowActions,
   pushNotifications,
+  emit,
 }: MakeActionsParams): Actions<any> {
   return Object.entries(actions || {}).reduce<Record<string, Action>>((acc, [on, { required }]) => {
     let actionDefinition: ActionDefinition;
@@ -54,6 +57,7 @@ export default function makeActions({
       history,
       showDialog,
       flowActions,
+      emit,
       onSuccess:
         (type === 'request' || type.startsWith('resource.')) &&
         (actionDefinition as RequestLikeActionDefinition).onSuccess &&
@@ -65,6 +69,7 @@ export default function makeActions({
           showDialog,
           flowActions,
           pushNotifications,
+          emit,
         }),
       onError:
         (type === 'request' || type.startsWith('resource.')) &&
@@ -75,6 +80,7 @@ export default function makeActions({
           app: definition,
           history,
           showDialog,
+          emit,
           flowActions,
           pushNotifications,
         }),

@@ -381,6 +381,7 @@ export type Action =
   | BaseAction<'flow.finish'>
   | BaseAction<'flow.next'>
   | BaseAction<'noop'>
+  | BaseAction<'event'>
   | LinkAction
   | LogAction
   | RequestAction
@@ -536,6 +537,13 @@ export interface ResourceSubscribeActionDefinition
   action?: 'create' | 'update' | 'delete';
 }
 
+export interface EventActionDefinition extends BaseActionDefinition<'event'> {
+  /**
+   * The name of the event to emit to.
+   */
+  name: string;
+}
+
 export type ActionDefinition =
   | BaseActionDefinition<'flow.back'>
   | BaseActionDefinition<'flow.cancel'>
@@ -552,6 +560,7 @@ export type ActionDefinition =
   | ResourceQueryActionDefinition
   | ResourceUpdateActionDefinition
   | ResourceSubscribeActionDefinition
+  | EventActionDefinition
 
   // XXX This shouldn’t be here, but TypeScript won’t shut up without it.
   | RequestLikeActionDefinition;

@@ -90,19 +90,19 @@ export default function Block({
 
     const events = {
       emit: Object.fromEntries(
-        Object.entries(manifest.events.emit).map(([key, target]) => [
+        Object.entries(manifest?.events?.emit ?? {}).map(([key, target]) => [
           key,
           (d: any) => ee.emit(target, d),
         ]),
       ),
       on: Object.fromEntries(
-        Object.entries(manifest.events.listen).map(([key, target]) => [
+        Object.entries(manifest?.events?.listen ?? {}).map(([key, target]) => [
           key,
           (callback: (data: any) => void) => ee.on(target, callback),
         ]),
       ),
       off: Object.fromEntries(
-        Object.entries(manifest.events.listen).map(([key, target]) => [
+        Object.entries(manifest?.events?.listen ?? {}).map(([key, target]) => [
           key,
           (callback: (data: any) => void) => ee.on(target, callback),
         ]),
@@ -118,6 +118,7 @@ export default function Block({
       extraCreators,
       flowActions,
       pushNotifications,
+      emit: ee.emit,
     });
     const { theme: pageTheme } = definition.pages.find(
       page => normalize(page.name) === match.path.slice(1).split('/')[0],
