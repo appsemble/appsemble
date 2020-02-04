@@ -1,6 +1,6 @@
 ---
 menu: Guide
-route: /guide/studio
+route: /guide/basic-app
 ---
 
 # Basic app
