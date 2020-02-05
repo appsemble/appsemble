@@ -1,9 +1,11 @@
 import { bootstrap as sdkBootstrap, BootstrapParams } from '@appsemble/sdk';
+import { EventParams } from '@appsemble/types';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import retargetEvents from 'react-shadow-dom-retarget-events';
 
-export interface BlockProps<P = any, A = {}> extends BootstrapParams<P, A> {
+export interface BlockProps<P = any, A = {}, E extends EventParams = {}>
+  extends BootstrapParams<P, A, E> {
   /**
    * The DOM node on which the block is mounted.
    */
@@ -15,10 +17,10 @@ const { Consumer, Provider } = React.createContext<BlockProps>(null);
 /**
  * Mount a React component returned by a bootstrap function in the shadow DOM of a block.
  */
-export function mount<P, A = {}>(
-  Component: React.ComponentType<BlockProps<P, A>>,
+export function mount<P, A = {}, E extends EventParams = {}>(
+  Component: React.ComponentType<BlockProps<P, A, E>>,
   root?: HTMLElement,
-): (params: BootstrapParams<P, A>) => void {
+): (params: BootstrapParams<P, A, E>) => void {
   return params => {
     const reactRoot = params.shadowRoot.appendChild(
       root ? root.cloneNode() : document.createElement('div'),
@@ -53,11 +55,11 @@ export function mount<P, A = {}>(
   };
 }
 
-export function bootstrap<P, A = {}>(
-  Component: React.ComponentType<BlockProps<P, A>>,
+export function bootstrap<P, A = {}, E extends EventParams = {}>(
+  Component: React.ComponentType<BlockProps<P, A, E>>,
   reactRoot?: HTMLElement,
 ): void {
-  sdkBootstrap<P, A>(mount(Component, reactRoot));
+  sdkBootstrap<P, A, E>(mount(Component, reactRoot));
 }
 
 /**
