@@ -23,6 +23,7 @@ interface MakeActionsParams {
   extraCreators: ActionCreators;
   flowActions: FlowActions;
   pushNotifications: ServiceWorkerRegistrationContextType;
+  pageReady: Promise<void>;
   ee: EventEmitter;
 }
 
@@ -35,6 +36,7 @@ export default function makeActions({
   extraCreators,
   flowActions,
   pushNotifications,
+  pageReady,
   ee,
 }: MakeActionsParams): Actions<any> {
   return Object.entries(actions || {}).reduce<Record<string, Action>>((acc, [on, { required }]) => {
@@ -87,8 +89,15 @@ export default function makeActions({
       pushNotifications,
     });
     const { dispatch } = action;
-    if (actionDefinition && Object.hasOwnProperty.call(actionDefinition, 'remap')) {
-      action.dispatch = async (args: any) => dispatch(remapData(actionDefinition.remap, args));
+    if (actionDefinition) {
+      action.dispatch = async (args: any) => {
+        await pageReady;
+        return dispatch(
+          Object.hasOwnProperty.call(actionDefinition, 'remap')
+            ? remapData(actionDefinition.remap, args)
+            : args,
+        );
+      };
     }
     acc[on] = action;
     return acc;

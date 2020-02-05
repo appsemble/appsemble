@@ -40,6 +40,7 @@ interface BlockProps {
 
   showDialog: ShowDialogAction;
   ready(block: BlockType): void;
+  pageReady: Promise<void>;
 }
 
 /**
@@ -57,6 +58,7 @@ export default function Block({
   extraCreators,
   flowActions,
   ready,
+  pageReady,
 }: BlockProps): React.ReactElement {
   const history = useHistory();
   const match = useRouteMatch();
@@ -81,7 +83,7 @@ export default function Block({
 
   React.useEffect(() => {
     const div = ref.current;
-    if (initialized || !div) {
+    if (initialized || !div || !pageReady) {
       return;
     }
     setInitialized(true);
@@ -122,6 +124,7 @@ export default function Block({
       extraCreators,
       flowActions,
       pushNotifications,
+      pageReady,
       ee,
     });
     const { theme: pageTheme } = definition.pages.find(
@@ -189,6 +192,7 @@ export default function Block({
     location,
     manifest,
     match,
+    pageReady,
     push,
     pushNotifications,
     ready,
