@@ -204,7 +204,7 @@ export default function Block({
     case 'static':
       return <div ref={ref} className={classNames(styles.static, className)} />;
     case 'hidden':
-      return <div ref={ref} />;
+      return <div ref={ref} className="is-hidden" />;
     default:
       return <div ref={ref} className={classNames(styles.grow, className)} />;
   }

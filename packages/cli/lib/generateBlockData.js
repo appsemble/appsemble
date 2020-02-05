@@ -27,11 +27,7 @@ function readTSConfig(tsConfigPath) {
 }
 
 export function getFromContext({ actions, dir, events, parameters, types = {} }, fullPath) {
-  const {
-    file = 'block.ts',
-    parameters: parametersInterface,
-    events: eventsInterface = {},
-  } = types;
+  const { file = 'block.ts', parameters: parametersInterface, events: eventsInterface } = types;
 
   let generator;
 
