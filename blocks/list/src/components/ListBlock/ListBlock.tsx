@@ -2,89 +2,82 @@
 import { BlockProps, FormattedMessage } from '@appsemble/preact';
 import { Loader } from '@appsemble/preact-components';
 import { remapData } from '@appsemble/utils';
-import { Component, h, VNode } from 'preact';
+import { h, VNode } from 'preact';
+import { useCallback, useEffect, useState } from 'preact/hooks';
 
-import { Actions, Parameters } from '../../../types';
+import { Actions, Events, Parameters } from '../../../block';
 import styles from './ListBlock.css';
 
 interface Item {
   id?: number;
 }
 
-interface ListBlockState {
-  data: Item[];
-  error: boolean;
-  loading: boolean;
-}
+export default function ListBlock({
+  actions,
+  block: {
+    parameters: { fields },
+  },
+  events,
+  utils,
+}: BlockProps<Parameters, Actions, Events>): VNode {
+  const [data, setData] = useState<Item[]>([]);
+  const [loading, setLoading] = useState(true);
 
-export default class ListBlock extends Component<BlockProps<Parameters, Actions>, ListBlockState> {
-  state: ListBlockState = { data: undefined, error: false, loading: true };
+  const loadData = useCallback((d: Item[]): void => {
+    setData(d);
+    setLoading(false);
+  }, []);
 
-  async componentDidMount(): Promise<void> {
-    const { actions } = this.props;
+  const onClick = useCallback(
+    (d: Item): void => {
+      if (actions.onClick) {
+        actions.onClick.dispatch(d);
+      }
+    },
+    [actions],
+  );
 
-    try {
-      const data = await actions.onLoad.dispatch();
-      this.setState({ data, loading: false });
-    } catch (e) {
-      this.setState({ error: true, loading: false });
-    }
+  useEffect(() => {
+    events.on.data(loadData);
+    utils.addCleanup(() => events.off.data(loadData));
+  }, [events, loadData, utils]);
+
+  if (loading) {
+    return <Loader />;
   }
 
-  onClick(item: Item): void {
-    const { actions } = this.props;
-
-    if (actions.onClick) {
-      actions.onClick.dispatch(item);
-    }
+  if (!data.length) {
+    return <FormattedMessage id="noData" />;
   }
 
-  render(): VNode {
-    const { block, actions } = this.props;
-    const { data, error, loading } = this.state;
-    const { fields } = block.parameters;
-
-    if (loading) {
-      return <Loader />;
-    }
-
-    if (error) {
-      return <FormattedMessage id="error" />;
-    }
-
-    if (!data.length) {
-      return <FormattedMessage id="noData" />;
-    }
-
-    return (
-      <table className="table is-hoverable is-striped is-fullwidth">
-        <thead>
-          <tr>
-            {fields.map(field => (
-              <th key={`header.${field.name}`}>{field.label || field.name}</th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {data.map((item, dataIndex) => (
-            <tr
-              key={item.id || dataIndex}
-              className={actions.onClick.type !== 'noop' ? styles.clickable : undefined}
-              onClick={() => this.onClick(item)}
-            >
-              {fields.map(field => {
-                const value = remapData(field.name, item);
-
-                return (
-                  <td key={field.name}>
-                    {typeof value === 'string' ? value : JSON.stringify(value)}
-                  </td>
-                );
-              })}
-            </tr>
+  return (
+    <table className="table is-hoverable is-striped is-fullwidth">
+      <thead>
+        <tr>
+          {fields.map(field => (
+            <th key={`header.${field.name}`}>{field.label || field.name}</th>
           ))}
-        </tbody>
-      </table>
-    );
-  }
+        </tr>
+      </thead>
+      <tbody>
+        {data.map((item, dataIndex) => (
+          <tr
+            key={item.id || dataIndex}
+            className={actions.onClick.type !== 'noop' ? styles.clickable : undefined}
+            onClick={() => onClick(item)}
+          >
+            {fields.map(field => {
+              const value = remapData(field.name, item);
+
+              return (
+                <td key={field.name}>
+                  {typeof value === 'string' ? value : JSON.stringify(value)}
+                </td>
+              );
+            })}
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  );
 }
