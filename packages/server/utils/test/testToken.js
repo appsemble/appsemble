@@ -13,10 +13,11 @@ export default async function testToken(
   const argv = { host: 'http://localhost', secret: 'test' };
   const user = await User.create({ password, name: 'Test User', primaryEmail: email });
   await user.createEmailAuthorization({ email, verified: true });
-  const response = createJWTResponse(user.id, argv);
+  const response = createJWTResponse(user.id, argv, { refreshToken: true });
   const result = {
     user,
     authorization: `Bearer ${response.access_token}`,
+    refreshToken: response.refresh_token,
   };
   if (scope) {
     const { id } = await OAuth2ClientCredentials.create({

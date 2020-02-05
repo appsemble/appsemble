@@ -1,5 +1,6 @@
 import bcrypt from 'bcrypt';
 import { isPast } from 'date-fns';
+import { verify } from 'jsonwebtoken';
 import querystring from 'querystring';
 import raw from 'raw-body';
 
@@ -115,6 +116,18 @@ export default async function tokenHandler(ctx) {
         aud = `app:${app.id}`;
         sub = emailAuth.User.id;
         refreshToken = true;
+        break;
+      }
+      case 'refresh_token': {
+        const { refresh_token: token } = checkTokenRequestParameters(query, ['refresh_token']);
+        try {
+          const payload = verify(token, argv.secret);
+          // console.dir(payload);
+          ({ aud, scope, sub } = payload);
+          refreshToken = true;
+        } catch (error) {
+          throw new GrantError('invalid_grant');
+        }
         break;
       }
       default:

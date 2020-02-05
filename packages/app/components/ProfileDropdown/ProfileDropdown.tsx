@@ -1,5 +1,4 @@
 import { Button, Dropdown, Icon } from '@appsemble/react-components';
-import generateGravatarHash from '@appsemble/utils/generateGravatarHash';
 import React from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link } from 'react-router-dom';
@@ -37,7 +36,7 @@ export default function ProfileDropdown(): JSX.Element {
           <img
             alt={intl.formatMessage(messages.pfp)}
             className={`is-rounded ${styles.gravatar}`}
-            src={userInfo.picture || generateGravatarHash(userInfo.email || `${userInfo.sub}`)}
+            src={userInfo?.picture}
           />
         </figure>
       }

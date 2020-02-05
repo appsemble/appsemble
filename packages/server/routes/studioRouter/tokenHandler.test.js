@@ -12,6 +12,7 @@ let db;
 let request;
 let server;
 let user;
+let refreshToken;
 
 beforeAll(async () => {
   db = await testSchema('oauth');
@@ -24,7 +25,7 @@ beforeEach(async () => {
   clock = lolex.install();
   clock.setSystemTime(new Date('2000-01-01T00:00:00Z'));
   await truncate(db);
-  ({ user } = await testToken(db));
+  ({ refreshToken, user } = await testToken(db, 'resources:manage'));
 });
 
 afterEach(async () => {
@@ -181,6 +182,50 @@ describe('client_credentials', () => {
         token_type: 'bearer',
       },
     });
-    expect(() => verify(response.data.access_token, 'test', { aud: 'testClientId' })).not.toThrow();
+    expect(() =>
+      verify(response.data.access_token, 'test', { audience: 'testClientId' }),
+    ).not.toThrow();
+  });
+});
+
+describe('refresh_token', () => {
+  it('should verify the refresh token', async () => {
+    const response = await request.post(
+      '/oauth2/token',
+      new URLSearchParams({
+        grant_type: 'refresh_token',
+        refresh_token: 'invalid.refresh.token',
+        scope: 'resources:manage',
+      }),
+    );
+    expect(response).toMatchObject({
+      status: 400,
+      data: {
+        error: 'invalid_grant',
+      },
+    });
+  });
+
+  it('should create a refresh token', async () => {
+    const response = await request.post(
+      '/oauth2/token',
+      new URLSearchParams({
+        grant_type: 'refresh_token',
+        refresh_token: refreshToken,
+        scope: 'resources:manage',
+      }),
+    );
+    expect(response).toMatchObject({
+      status: 200,
+      data: {
+        access_token: expect.stringMatching(/^[\w-]+\.[\w-]+\.[\w-]+$/),
+        expires_in: 3600,
+        refresh_token: expect.stringMatching(/^[\w-]+\.[\w-]+\.[\w-]+$/),
+        token_type: 'bearer',
+      },
+    });
+    expect(() =>
+      verify(response.data.access_token, 'test', { audience: 'http://localhost' }),
+    ).not.toThrow();
   });
 });
