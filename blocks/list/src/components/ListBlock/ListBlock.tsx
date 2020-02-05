@@ -22,9 +22,15 @@ export default function ListBlock({
 }: BlockProps<Parameters, Actions, Events>): VNode {
   const [data, setData] = useState<Item[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
 
-  const loadData = useCallback((d: Item[]): void => {
-    setData(d);
+  const loadData = useCallback((d: Item[], err: string): void => {
+    if (err) {
+      setError(true);
+    } else {
+      setData(d);
+      setError(false);
+    }
     setLoading(false);
   }, []);
 
@@ -44,6 +50,10 @@ export default function ListBlock({
 
   if (loading) {
     return <Loader />;
+  }
+
+  if (error) {
+    return <FormattedMessage id="error" />;
   }
 
   if (!data.length) {
