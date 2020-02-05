@@ -83,7 +83,7 @@ export default function Block({
 
   React.useEffect(() => {
     const div = ref.current;
-    if (initialized || !div || !pageReady) {
+    if (initialized || (!div && manifest.layout !== 'hidden') || !pageReady) {
       return;
     }
     setInitialized(true);
@@ -208,7 +208,7 @@ export default function Block({
     case 'static':
       return <div ref={ref} className={classNames(styles.static, className)} />;
     case 'hidden':
-      return <div ref={ref} className="is-hidden" />;
+      return null;
     default:
       return <div ref={ref} className={classNames(styles.grow, className)} />;
   }
