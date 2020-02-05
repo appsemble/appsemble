@@ -3,7 +3,7 @@ import { BlockProps, FormattedMessage } from '@appsemble/preact';
 import { Loader } from '@appsemble/preact-components';
 import { compileFilters, MapperFunction } from '@appsemble/utils';
 import { h, VNode } from 'preact';
-import { useCallback, useEffect, useState } from 'preact/hooks/src';
+import { useCallback, useEffect, useState } from 'preact/hooks';
 
 import { BlockActions, BlockParameters, Events, Remappers } from '../../../block';
 import Card from '../Card';
