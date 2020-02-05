@@ -23,7 +23,6 @@ export interface BlockParameters {
   buttonLabel?: string;
   reply?: Reply;
   pictureBase?: string;
-  listen?: string;
   title?: string;
   subtitle?: string;
   heading?: string;
@@ -40,4 +39,8 @@ export interface BlockActions {
   onSubmitReply: any;
   onLoad: any;
   onLoadReply: any;
+}
+
+export interface Events {
+  listen: 'data';
 }

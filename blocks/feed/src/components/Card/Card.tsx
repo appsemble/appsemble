@@ -4,7 +4,7 @@ import { Location } from '@appsemble/preact-components';
 import { Component, createRef, Fragment, h, VNode } from 'preact';
 
 import iconUrl from '../../../../../themes/amsterdam/core/marker.svg';
-import { BlockActions, BlockParameters, Remappers } from '../../../types';
+import { BlockActions, BlockParameters, Remappers } from '../../../block';
 import AvatarWrapper from '../AvatarWrapper';
 import styles from './Card.css';
 
