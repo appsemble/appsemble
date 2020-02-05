@@ -49,7 +49,7 @@ export interface MakeActionParameters<D extends ActionDefinition> {
   onError?: Action;
   showDialog: ShowDialogAction;
   pushNotifications: ServiceWorkerRegistrationContextType;
-  emit: EventEmitter['emit'];
+  ee: EventEmitter;
 }
 
 export type Permission = NotificationPermission | 'pending';

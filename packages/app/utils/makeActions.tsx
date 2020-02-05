@@ -23,7 +23,7 @@ interface MakeActionsParams {
   extraCreators: ActionCreators;
   flowActions: FlowActions;
   pushNotifications: ServiceWorkerRegistrationContextType;
-  emit: EventEmitter['emit'];
+  ee: EventEmitter;
 }
 
 export default function makeActions({
@@ -35,7 +35,7 @@ export default function makeActions({
   extraCreators,
   flowActions,
   pushNotifications,
-  emit,
+  ee,
 }: MakeActionsParams): Actions<any> {
   return Object.entries(actions || {}).reduce<Record<string, Action>>((acc, [on, { required }]) => {
     let actionDefinition: ActionDefinition;
@@ -57,7 +57,7 @@ export default function makeActions({
       history,
       showDialog,
       flowActions,
-      emit,
+      ee,
       onSuccess:
         (type === 'request' || type.startsWith('resource.')) &&
         (actionDefinition as RequestLikeActionDefinition).onSuccess &&
@@ -69,7 +69,7 @@ export default function makeActions({
           showDialog,
           flowActions,
           pushNotifications,
-          emit,
+          ee,
         }),
       onError:
         (type === 'request' || type.startsWith('resource.')) &&
@@ -80,7 +80,7 @@ export default function makeActions({
           app: definition,
           history,
           showDialog,
-          emit,
+          ee,
           flowActions,
           pushNotifications,
         }),

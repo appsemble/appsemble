@@ -175,10 +175,15 @@ export interface Message {
 
 export type Navigation = 'bottom' | 'left-menu' | 'hidden';
 
+export interface EventParams {
+  emit?: string;
+  listen?: string;
+}
+
 /**
  * A block that is displayed on a page.
  */
-export interface Block<P = any, A = {}, E = { on?: string[]; emit?: string[] }> {
+export interface Block<P = any, A = {}, E extends EventParams = Required<EventParams>> {
   /**
    * The type of the block.
    *
@@ -226,7 +231,10 @@ export interface Block<P = any, A = {}, E = { on?: string[]; emit?: string[] }> 
    *
    * The exact meaning of the parameters depends on the block type.
    */
-  events?: E;
+  events?: {
+    listen: Record<E['listen'], string>;
+    emit: Record<E['emit'], string>;
+  };
 
   /**
    * A list of roles that are allowed to view this block.
@@ -607,8 +615,8 @@ export interface BlockManifest {
    * The events that are supported by a block.
    */
   events?: {
-    listen: Record<string, string>;
-    emit: Record<string, string>;
+    listen: string[];
+    emit: string[];
   };
 }
 

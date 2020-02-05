@@ -90,21 +90,25 @@ export default function Block({
 
     const events = {
       emit: Object.fromEntries(
-        Object.entries(manifest?.events?.emit ?? {}).map(([key, target]) => [
+        (manifest.events?.emit ?? []).map(key => [
           key,
-          (d: any) => ee.emit(target, d),
+          block.events?.emit?.[key] ? (d: any) => ee.emit(block.events.emit[key], d) : () => {},
         ]),
       ),
       on: Object.fromEntries(
-        Object.entries(manifest?.events?.listen ?? {}).map(([key, target]) => [
+        (manifest.events?.listen ?? []).map(key => [
           key,
-          (callback: (data: any) => void) => ee.on(target, callback),
+          block.events?.listen?.[key]
+            ? (callback: (data: any) => void) => ee.on(block.events.listen[key], callback)
+            : () => {},
         ]),
       ),
       off: Object.fromEntries(
-        Object.entries(manifest?.events?.listen ?? {}).map(([key, target]) => [
+        (manifest.events?.listen ?? []).map(key => [
           key,
-          (callback: (data: any) => void) => ee.on(target, callback),
+          block.events?.listen?.[key]
+            ? (callback: (data: any) => void) => ee.on(block.events.listen[key], callback)
+            : () => {},
         ]),
       ),
     };
@@ -118,7 +122,7 @@ export default function Block({
       extraCreators,
       flowActions,
       pushNotifications,
-      emit: ee.emit,
+      ee,
     });
     const { theme: pageTheme } = definition.pages.find(
       page => normalize(page.name) === match.path.slice(1).split('/')[0],
@@ -200,7 +204,7 @@ export default function Block({
     case 'static':
       return <div ref={ref} className={classNames(styles.static, className)} />;
     case 'hidden':
-      return null;
+      return <div ref={ref} />;
     default:
       return <div ref={ref} className={classNames(styles.grow, className)} />;
   }

@@ -2,6 +2,7 @@ import {
   Action,
   BaseAction,
   Block,
+  EventParams,
   LinkAction,
   LogAction,
   Message,
@@ -55,10 +56,6 @@ export type EventListeners<E extends EventParams> = Record<
   E['listen'],
   (callback: (data: any) => void) => void
 >;
-export interface EventParams {
-  emit?: string;
-  listen?: string;
-}
 
 export interface Events<E extends EventParams = {}> {
   /**
@@ -98,7 +95,7 @@ export interface BootstrapParams<P = any, A = {}, E extends EventParams = {}> {
   /**
    * The block as it is defined in the app definition.
    */
-  block: Block<P, A>;
+  block: Block<P, A, E>;
 
   /**
    * Any kind of data that has been passed in by some context.
