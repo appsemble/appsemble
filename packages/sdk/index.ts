@@ -51,10 +51,13 @@ export interface Utils {
   showMessage: (message: string | Message) => void;
 }
 
-export type EventEmitters<E extends EventParams> = Record<E['emit'], (data: any) => void>;
+export type EventEmitters<E extends EventParams> = Record<
+  E['emit'],
+  (data: any, error?: string) => void
+>;
 export type EventListeners<E extends EventParams> = Record<
   E['listen'],
-  (callback: (data: any) => void) => void
+  (callback: (data: any, error?: string) => void) => void
 >;
 
 export interface Events<E extends EventParams = {}> {

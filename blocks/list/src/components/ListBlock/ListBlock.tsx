@@ -45,7 +45,6 @@ export default function ListBlock({
 
   useEffect(() => {
     events.on.data(loadData);
-    utils.addCleanup(() => events.off.data(loadData));
   }, [events, loadData, utils]);
 
   if (loading) {

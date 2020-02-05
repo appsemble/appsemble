@@ -88,20 +88,24 @@ export default function Block({
     }
     setInitialized(true);
 
-    const shadowRoot = div.attachShadow({ mode: 'closed' });
+    const shadowRoot = div?.attachShadow({ mode: 'closed' }) ?? null;
 
     const events = {
       emit: Object.fromEntries(
         (manifest.events?.emit ?? []).map(key => [
           key,
-          block.events?.emit?.[key] ? (d: any) => ee.emit(block.events.emit[key], d) : () => {},
+          block.events?.emit?.[key]
+            ? (d: any, error?: string) =>
+                ee.emit(block.events.emit[key], d, error === '' ? 'Error' : error)
+            : () => {},
         ]),
       ),
       on: Object.fromEntries(
         (manifest.events?.listen ?? []).map(key => [
           key,
           block.events?.listen?.[key]
-            ? (callback: (data: any) => void) => ee.on(block.events.listen[key], callback)
+            ? (callback: (data: any, error?: string) => void) =>
+                ee.on(block.events.listen[key], callback)
             : () => {},
         ]),
       ),
@@ -109,7 +113,8 @@ export default function Block({
         (manifest.events?.listen ?? []).map(key => [
           key,
           block.events?.listen?.[key]
-            ? (callback: (data: any) => void) => ee.on(block.events.listen[key], callback)
+            ? (callback: (data: any, error?: string) => void) =>
+                ee.off(block.events.listen[key], callback)
             : () => {},
         ]),
       ),
@@ -153,19 +158,21 @@ export default function Block({
     };
 
     (async () => {
-      await Promise.all(
-        [
-          bulmaUrl,
-          FA_URL,
-          ...manifest.files
-            .filter(url => url.endsWith('.css'))
-            .map(url => prefixBlockURL(block, url)),
-          `${window.location.origin}/api/organizations/${settings.organizationId}/style/shared`,
-          `${window.location.origin}/api/organizations/${settings.organizationId}/style/block/${manifest.name}`,
-          `${window.location.origin}/api/apps/${settings.id}/style/block/${manifest.name}`,
-          (document.getElementById('appsemble-style-shared') as HTMLLinkElement)?.href,
-        ].map(url => injectCSS(shadowRoot, url)),
-      );
+      if (shadowRoot) {
+        await Promise.all(
+          [
+            bulmaUrl,
+            FA_URL,
+            ...manifest.files
+              .filter(url => url.endsWith('.css'))
+              .map(url => prefixBlockURL(block, url)),
+            `${window.location.origin}/api/organizations/${settings.organizationId}/style/shared`,
+            `${window.location.origin}/api/organizations/${settings.organizationId}/style/block/${manifest.name}`,
+            `${window.location.origin}/api/apps/${settings.id}/style/block/${manifest.name}`,
+            (document.getElementById('appsemble-style-shared') as HTMLLinkElement)?.href,
+          ].map(url => injectCSS(shadowRoot, url)),
+        );
+      }
 
       await callBootstrap(manifest, {
         actions,

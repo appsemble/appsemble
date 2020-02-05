@@ -8,6 +8,7 @@ bootstrap<null, Actions, Events>(({ actions, data, events, utils }) => {
       const result = await actions.onLoad.dispatch(data);
       events.emit.data(result);
     } catch (err) {
+      events.emit.data(null, 'Failed to load data');
       utils.showMessage('Failed to load data');
     }
   }
