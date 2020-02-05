@@ -27,7 +27,6 @@ export interface Filter {
 }
 
 export interface Parameters {
-  event?: string;
   fields: FilterField[];
   highlight: string;
   refreshTimeout: number;
@@ -35,4 +34,8 @@ export interface Parameters {
 
 export interface Actions {
   onLoad: {};
+}
+
+export interface Events {
+  emit: 'data';
 }
