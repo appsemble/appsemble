@@ -152,6 +152,7 @@ describe('blocks', () => {
 
     expect(data).toStrictEqual({
       actions: null,
+      events: null,
       files: ['build/standing.png', 'build/testblock.js'],
       name: '@xkcd/standing',
       layout: null,
@@ -215,6 +216,7 @@ describe('blocks', () => {
 
     expect(data).toStrictEqual({
       actions: null,
+      events: null,
       files: ['build/standing.png', 'build/testblock.js'],
       name: '@xkcd/standing',
       parameters: null,
