@@ -57,7 +57,7 @@ export default function CreateAppCard({ createTemplateApp }: CreateAppCardProps)
   }, []);
 
   const onCreate = React.useCallback(
-    async ({ name, description, selectedOrganization, includeResources, isPrivate }) => {
+    async ({ description, includeResources, isPrivate, name, selectedOrganization }) => {
       const { id, resources } = templates[selectedTemplate];
       const app = await createTemplateApp(
         {

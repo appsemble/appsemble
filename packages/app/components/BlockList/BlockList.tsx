@@ -32,13 +32,13 @@ function filterBlocks(security: Security, blocks: BlockType[], userRole: string)
 }
 
 export default function BlockList({
+  blocks,
   data,
   ee,
   extraCreators,
   flowActions,
   showDialog,
   transitions,
-  blocks,
 }: BlockListProps): React.ReactElement {
   const { definition, revision } = useAppDefinition();
   const { role } = useUser();

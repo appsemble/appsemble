@@ -13,9 +13,9 @@ interface StringFieldProps {
 }
 
 export default function StringField({
+  className,
   loading,
   value = '',
-  className,
   ...props
 }: StringFieldProps): React.ReactElement {
   return (

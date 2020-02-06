@@ -14,10 +14,10 @@ interface FlowPageProps extends React.ComponentPropsWithoutRef<typeof BlockList>
 }
 
 export default function FlowPage({
-  page,
   data: inputData,
-  showDialog,
   definition,
+  page,
+  showDialog,
   ...blockListProps
 }: FlowPageProps): React.ReactElement {
   const history = useHistory();

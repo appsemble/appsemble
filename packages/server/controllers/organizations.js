@@ -22,7 +22,7 @@ export async function getOrganization(ctx) {
 
 export async function createOrganization(ctx) {
   const { id, name } = ctx.request.body;
-  const { Organization, User, EmailAuthorization } = ctx.db.models;
+  const { EmailAuthorization, Organization, User } = ctx.db.models;
   const {
     user: { id: userId },
   } = ctx.state;
@@ -130,7 +130,7 @@ export async function getInvitation(ctx) {
 export async function respondInvitation(ctx) {
   const { organizationId } = ctx.params;
   const { response, token } = ctx.request.body;
-  const { OrganizationInvite, Organization } = ctx.db.models;
+  const { Organization, OrganizationInvite } = ctx.db.models;
   const {
     user: { id: userId },
   } = ctx.state;
@@ -158,7 +158,7 @@ export async function inviteMember(ctx) {
   const { mailer } = ctx;
   const { organizationId } = ctx.params;
   const { email } = ctx.request.body;
-  const { Organization, EmailAuthorization, OrganizationInvite, User } = ctx.db.models;
+  const { EmailAuthorization, Organization, OrganizationInvite, User } = ctx.db.models;
   const { user } = ctx.state;
 
   const organization = await Organization.findByPk(organizationId, { include: [User] });
@@ -248,7 +248,7 @@ export async function removeInvite(ctx) {
 }
 
 export async function removeMember(ctx) {
-  const { organizationId, memberId } = ctx.params;
+  const { memberId, organizationId } = ctx.params;
   const { Organization, User } = ctx.db.models;
   const { user } = ctx.state;
 
@@ -273,7 +273,7 @@ export async function removeMember(ctx) {
 }
 
 export async function setRole(ctx) {
-  const { organizationId, memberId } = ctx.params;
+  const { memberId, organizationId } = ctx.params;
   const { Organization, User } = ctx.db.models;
   const { role } = ctx.request.body;
   const { user } = ctx.state;
@@ -388,7 +388,7 @@ export async function setOrganizationSharedStyle(ctx) {
 }
 
 export async function getOrganizationBlockStyle(ctx) {
-  const { organizationId, blockOrganizationId, blockId } = ctx.params;
+  const { blockId, blockOrganizationId, organizationId } = ctx.params;
   const { OrganizationBlockStyle } = ctx.db.models;
 
   const blockStyle = await OrganizationBlockStyle.findOne({
@@ -404,9 +404,9 @@ export async function getOrganizationBlockStyle(ctx) {
 }
 
 export async function setOrganizationBlockStyle(ctx) {
-  const { organizationId, blockOrganizationId, blockId } = ctx.params;
+  const { blockId, blockOrganizationId, organizationId } = ctx.params;
   const { db } = ctx;
-  const { Organization, OrganizationBlockStyle, BlockDefinition } = db.models;
+  const { BlockDefinition, Organization, OrganizationBlockStyle } = db.models;
   const { style } = ctx.request.body;
   const css = style.toString().trim();
 

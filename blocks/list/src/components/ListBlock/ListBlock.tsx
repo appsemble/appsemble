@@ -40,7 +40,7 @@ export default class ListBlock extends Component<BlockProps<Parameters, Actions>
   }
 
   render(): VNode {
-    const { block, actions } = this.props;
+    const { actions, block } = this.props;
     const { data, error, loading } = this.state;
     const { fields } = block.parameters;
 

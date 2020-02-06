@@ -17,7 +17,7 @@ export default sequelize => {
     },
   );
 
-  Resource.associate = ({ User, App, ResourceSubscription }) => {
+  Resource.associate = ({ App, ResourceSubscription, User }) => {
     Resource.belongsTo(User);
     Resource.belongsTo(App);
     Resource.hasMany(ResourceSubscription, { onDelete: 'CASCADE' });

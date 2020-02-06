@@ -7,8 +7,8 @@ export default async function sendNotification(ctx, app, subscription, options) 
       `Sending push notification based on subscription ${subscription.id} for app ${app.id}`,
     );
 
-    const { auth, p256dh, endpoint } = subscription;
-    const { protocol, host } = new URL(ctx.argv.host);
+    const { auth, endpoint, p256dh } = subscription;
+    const { host, protocol } = new URL(ctx.argv.host);
     const icon = `${protocol}//${app.path}.${app.OrganizationId}.${host}/icon-96.png`;
 
     await webpush.sendNotification(

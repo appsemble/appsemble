@@ -22,9 +22,9 @@ export async function getAppTemplates(ctx) {
   ctx.body = templates.map(
     ({
       dataValues: {
-        id,
-        definition: { description, name },
         ResourceCount,
+        definition: { description, name },
+        id,
       },
     }) => ({
       id,
@@ -37,12 +37,12 @@ export async function getAppTemplates(ctx) {
 
 export async function createTemplateApp(ctx) {
   const {
-    templateId,
-    name,
     description,
+    name,
     organizationId,
-    resources,
     private: isPrivate,
+    resources,
+    templateId,
   } = ctx.request.body;
   const { App, Resource } = ctx.db.models;
 
@@ -76,7 +76,7 @@ export async function createTemplateApp(ctx) {
       OrganizationId: organizationId,
       ...(resources && {
         Resources: [].concat(
-          template.Resources.map(({ dataValues: { type, data } }) => ({ type, data })),
+          template.Resources.map(({ dataValues: { data, type } }) => ({ type, data })),
         ),
       }),
     };

@@ -24,7 +24,7 @@ beforeEach(async () => {
   clock = lolex.install();
   clock.setSystemTime(new Date('2000-01-01T00:00:00Z'));
   await truncate(db);
-  ({ user, authorization } = await testToken(db));
+  ({ authorization, user } = await testToken(db));
   request.defaults.headers.authorization = authorization;
 });
 
