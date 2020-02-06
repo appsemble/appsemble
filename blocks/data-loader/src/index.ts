@@ -3,9 +3,9 @@ import { bootstrap } from '@appsemble/sdk';
 import { Actions, Events } from '../block';
 
 bootstrap<null, Actions, Events>(({ actions, data, events, utils }) => {
-  async function loadData(): Promise<void> {
+  async function loadData(d?: any): Promise<void> {
     try {
-      const result = await actions.onLoad.dispatch(data);
+      const result = await actions.onLoad.dispatch({ ...data, ...d });
       events.emit.data(result);
     } catch (err) {
       events.emit.data(null, 'Failed to load data');
