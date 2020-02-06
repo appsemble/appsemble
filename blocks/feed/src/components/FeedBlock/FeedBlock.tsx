@@ -24,7 +24,7 @@ interface Item {
 export default function FeedBlock({
   block: { parameters },
   events,
-}: BlockProps<BlockParameters, BlockActions, Events>): VNode {
+}: BlockProps<BlockParameters, BlockActions, Events>): VNode | VNode[] {
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState<Item[]>([]);
   const [remappers, setRemappers] = useState<Remappers>(undefined);
