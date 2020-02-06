@@ -32,3 +32,11 @@ A block that can filter data and pass it to other blocks using the event API.
 | fields[].enum         |                                              | A list of predetermined options the user can pick from.                                                                           |
 | fields[].enum[].label | User-facing label describing the option      |
 | fields[].enum[].value | The value that gets submitted when filtering |
+
+## Events
+
+### Emit Events
+
+| Event | Description                                              |
+| ----- | -------------------------------------------------------- |
+| data  | The event that is emitted when data is finished loading. |
