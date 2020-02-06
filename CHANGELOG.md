@@ -11,12 +11,26 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 - App: Add support for app roles.
 - App: Add support for subscribing to resources.
+- Block(`@appsemble/data-loader`): Add new block for loading data using the event API.
+- Block(`@appsemble/feed`): Add `data` listen event.
+- Block(`@appsemble/filter`): Add `data` emit event.
+- Block(`@appsemble/list`): Add `data` listen event.
+- Block(`@appsemble/map`): Add `data` listen event.
+- Block(`@appsemble/map`): Add `refresh` emit event.
+- SDK: Add new event API.
+- SDK: Add `event` action.
 - Server: Add `$author` object to resources if an author is known.
 
 ### Changed
 
 - App: Move login functionality from side menu to top-right corner.
 - Studio: Enforce verified email address before organizations can be created.
+
+### Removed
+
+- Block(`@appsemble/feed`): Remove `onLoad` action.
+- Block(`@appsemble/list`): Remove `onLoad` action.
+- Block(`@appsemble/map`): Remove `onLoad` action.
 
 ## [0.10.0] - 2019-12-20
 
