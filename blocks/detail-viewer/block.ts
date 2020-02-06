@@ -23,13 +23,13 @@ export interface StringField extends AbstractField {
 
 export type Field = FileField | GeoCoordinatesField | StringField;
 
-export interface Actions {
-  onLoad: {};
-}
-
 export interface Parameters {
   fileBase?: string;
   fields: Field[];
+}
+
+export interface Events {
+  listen: 'data';
 }
 
 export interface RendererProps<F extends Field> extends Partial<BlockProps<Parameters, Actions>> {

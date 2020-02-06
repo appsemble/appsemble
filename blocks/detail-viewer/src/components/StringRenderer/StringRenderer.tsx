@@ -1,7 +1,7 @@
 /** @jsx h */
 import { Fragment, h, VNode } from 'preact';
 
-import { RendererProps, StringField } from '../../../../block';
+import { RendererProps, StringField } from '../../../block';
 
 /**
  * An element for a text type schema.
