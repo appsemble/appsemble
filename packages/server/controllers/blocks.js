@@ -124,7 +124,7 @@ export async function getBlockVersion(ctx) {
   const { BlockAsset, BlockVersion } = ctx.db.models;
 
   const version = await BlockVersion.findOne({
-    attributes: ['actions', 'layout', 'resources', 'parameters'],
+    attributes: ['actions', 'events', 'layout', 'resources', 'parameters'],
     raw: true,
     where: { name, version: blockVersion },
   });

@@ -183,7 +183,7 @@ describe('blocks', () => {
 
     const { data } = await instance.get('/api/blocks/@xkcd/standing/versions');
     expect(data).toStrictEqual([
-      { actions: null, layout: null, resources: null, version: '1.32.9' },
+      { actions: null, events: null, layout: null, resources: null, version: '1.32.9' },
     ]);
   });
 

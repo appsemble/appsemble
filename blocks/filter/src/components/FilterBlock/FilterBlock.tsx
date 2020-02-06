@@ -252,7 +252,7 @@ export default class FilterBlock extends React.Component<FilterBlockProps, Filte
     }
   };
 
-  render(): JSX.Element {
+  render(): React.ReactNode {
     const { block } = this.props;
     const { currentFilter, filter, isOpen, loading, newData } = this.state;
     const { fields, highlight } = block.parameters;

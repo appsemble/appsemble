@@ -1,6 +1,6 @@
 import classNames from 'classnames';
 import React, { useCallback } from 'react';
-import { useIntl, WrappedComponentProps } from 'react-intl';
+import { useIntl } from 'react-intl';
 
 import { Filter, FilterField, RangeFilter } from '../../../block';
 import CheckBoxField from '../CheckBoxField';
@@ -10,7 +10,7 @@ import StringField from '../StringField';
 import styles from './Field.css';
 import messages from './messages';
 
-interface FieldProps extends WrappedComponentProps {
+interface FieldProps {
   displayLabel?: boolean;
   filter: Filter;
   loading: boolean;
@@ -38,7 +38,7 @@ export default function Field({
   onChange,
   onRangeChange,
   ...props
-}: FieldProps & FilterField): React.ReactNode {
+}: FieldProps & FilterField): JSX.Element {
   const intl = useIntl();
   const { name } = props;
 
