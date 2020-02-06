@@ -53,10 +53,10 @@ export default function Block({
   className,
   data,
   ee,
-  showDialog,
   extraCreators,
   flowActions,
   ready,
+  showDialog,
 }: BlockProps): React.ReactElement {
   const history = useHistory();
   const match = useRouteMatch();

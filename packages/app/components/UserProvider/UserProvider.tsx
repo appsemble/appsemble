@@ -78,7 +78,7 @@ export default function UserProvider({ children }: UserProviderProps): React.Rea
       );
 
       const authorization = `Bearer ${at}`;
-      const { sub, iss } = jwtDecode<JwtPayload>(at);
+      const { iss, sub } = jwtDecode<JwtPayload>(at);
       const { data: user } = await axios.get<UserInfo>(`${iss}/api/connect/userinfo`, {
         headers: { authorization },
       });

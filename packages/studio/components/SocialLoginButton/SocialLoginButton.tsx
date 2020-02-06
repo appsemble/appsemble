@@ -11,10 +11,10 @@ interface SocialLoginButtonProps {
 }
 
 export default function SocialLoginButton({
-  className,
-  providerUri,
-  iconClass,
   children,
+  className,
+  iconClass,
+  providerUri,
   ...props
 }: SocialLoginButtonProps): React.ReactElement {
   return (

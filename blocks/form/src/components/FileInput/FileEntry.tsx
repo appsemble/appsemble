@@ -46,8 +46,8 @@ export default class FileEntry extends Component<FileEntryProps> {
 
   onSelect = async (event: Event): Promise<void> => {
     const {
+      field: { maxHeight, maxWidth, quality },
       onInput,
-      field: { maxWidth, maxHeight, quality },
     } = this.props;
     const target = event.target as HTMLInputElement;
     let value: Blob = target.files[0];
@@ -77,7 +77,7 @@ export default class FileEntry extends Component<FileEntryProps> {
       img.src = URL.createObjectURL(file);
     });
 
-    let { width, height } = img;
+    let { height, width } = img;
 
     // Resize while respecting ratios.
     if (maxWidth && width > maxWidth) {
@@ -99,7 +99,7 @@ export default class FileEntry extends Component<FileEntryProps> {
   };
 
   onRemove = (): void => {
-    const { onInput, name } = this.props;
+    const { name, onInput } = this.props;
 
     onInput(({ target: { name } } as any) as Event, null);
   };

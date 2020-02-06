@@ -20,7 +20,7 @@ interface PortalProps {
  *
  * This component doesn’t handle the lifecycle of receiving new props.
  */
-export default function Portal({ element, children }: PortalProps): React.ReactElement {
+export default function Portal({ children, element }: PortalProps): React.ReactElement {
   useEffect(() => {
     const fragment = document.createDocumentFragment();
     element.childNodes.forEach(child => fragment.appendChild(child));

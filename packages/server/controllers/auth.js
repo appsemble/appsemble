@@ -74,7 +74,7 @@ export async function registerEmail(ctx) {
 export async function registerOAuth(ctx) {
   await mayRegister(ctx);
   const {
-    body: { provider, id, accessToken, organization },
+    body: { accessToken, id, organization, provider },
   } = ctx.request;
   const { OAuthAuthorization } = ctx.db.models;
   const auth = await OAuthAuthorization.findOne({ where: { provider, id, token: accessToken } });
@@ -102,7 +102,7 @@ export async function registerOAuth(ctx) {
 
 export async function connectOAuth(ctx) {
   const {
-    body: { provider, id, accessToken, userId },
+    body: { accessToken, id, provider, userId },
   } = ctx.request;
 
   const { OAuthAuthorization, User } = ctx.db.models;

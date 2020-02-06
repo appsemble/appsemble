@@ -70,7 +70,7 @@ beforeEach(async () => {
   clock = lolex.install();
 
   await truncate(db);
-  ({ user, authorization } = await testToken(db));
+  ({ authorization, user } = await testToken(db));
   ({ id: organizationId } = await user.createOrganization(
     {
       id: 'testorganization',

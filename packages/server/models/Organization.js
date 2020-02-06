@@ -18,7 +18,7 @@ export default sequelize => {
     },
   );
 
-  Organization.associate = ({ App, User, OrganizationBlockStyle, OrganizationInvite, Member }) => {
+  Organization.associate = ({ App, Member, OrganizationBlockStyle, OrganizationInvite, User }) => {
     Organization.hasMany(OrganizationInvite);
     Organization.hasOne(Organization);
     Organization.hasMany(App);
