@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/detail-viewer",
-  "version": "0.10.0",
+  "version": "0.10.3",
   "private": true,
   "dependencies": {
     "@appsemble/preact": "0.10.0",

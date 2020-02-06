@@ -32,7 +32,7 @@ export interface Events {
   listen: 'data';
 }
 
-export interface RendererProps<F extends Field> extends Partial<BlockProps<Parameters, Actions>> {
+export interface RendererProps<F extends Field> extends Partial<BlockProps<Parameters>> {
   /**
    * Structure used to define the field.
    */

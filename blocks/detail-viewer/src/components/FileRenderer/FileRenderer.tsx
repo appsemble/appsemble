@@ -2,7 +2,7 @@
 import { remapData } from '@appsemble/utils';
 import classNames from 'classnames';
 import { Fragment, h, VNode } from 'preact';
-import { useCallback } from 'preact/hooks/src';
+import { useCallback } from 'preact/hooks';
 
 import { FileField, RendererProps } from '../../../block';
 import styles from './FileRenderer.css';
