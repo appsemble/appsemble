@@ -1,7 +1,7 @@
 import inquirer from 'inquirer';
 import path from 'path';
 
-import { createReact, createVanilla } from '../lib/create';
+import { createVanilla } from '../lib/create';
 
 export const command = 'block';
 export const description = 'Bootstrap a new Appsemble block.';
@@ -27,9 +27,6 @@ export async function handler() {
     },
   };
   switch (answers.type) {
-    case 'react':
-      await createReact(outputPath, pkg);
-      break;
     case 'vanilla':
     default:
       await createVanilla(outputPath, pkg);

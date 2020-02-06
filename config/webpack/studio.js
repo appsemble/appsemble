@@ -42,7 +42,7 @@ module.exports = (env, argv) => {
       new UnusedFilesWebpackPlugin({
         failOnUnused: production,
         patterns: ['studio/**/*.*'],
-        globOptions: { ignore: ['**/node_modules/**', '**/package.json', '**/*.test.{js,jsx}'] },
+        globOptions: { ignore: ['**/node_modules/**', '**/package.json', '**/*.test.{js,ts,tsx}'] },
       }),
       new MiniCssExtractPlugin({
         filename: production ? '_/[hash].css' : '_/studio/[name].css',

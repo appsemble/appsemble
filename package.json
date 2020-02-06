@@ -8,7 +8,7 @@
     "block": "webpack --config config/webpack/block.js --mode production --env",
     "build:app": "webpack --config config/webpack/app.js --mode production",
     "build:studio": "webpack --config config/webpack/studio.js --mode production",
-    "eslint": "eslint --max-warnings 0 --ext js,jsx,md,ts,tsx",
+    "eslint": "eslint --max-warnings 0 --ext js,md,ts,tsx",
     "prettier": "prettier --check '**/*.{html,json,md,scss,yaml,yml}'",
     "start": "appsemble start",
     "stylelint": "stylelint",
@@ -26,7 +26,7 @@
     "*.{html,json,md,scss,yaml,yml}": [
       "prettier --check"
     ],
-    "*.{js,jsx,ts,tsx}": [
+    "*.{js,ts,tsx}": [
       "eslint --max-warnings 0"
     ]
   },
@@ -67,7 +67,6 @@
     "@types/serviceworker-webpack-plugin": "^1.0.0",
     "@typescript-eslint/eslint-plugin": "^2.17.0",
     "@typescript-eslint/parser": "^2.17.0",
-    "babel-eslint": "^10.0.3",
     "babel-jest": "^25.1.0",
     "babel-loader": "^8.0.6",
     "babel-plugin-react-intl-auto": "^3.1.0",
@@ -84,7 +83,6 @@
     "eslint-config-airbnb": "^18.0.1",
     "eslint-config-prettier": "^6.9.0",
     "eslint-formatter-gitlab": "^1.1.0",
-    "eslint-plugin-babel": "^5.3.0",
     "eslint-plugin-compat": "^3.5.1",
     "eslint-plugin-eslint-comments": "^3.1.2",
     "eslint-plugin-filenames": "^1.3.2",

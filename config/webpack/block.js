@@ -55,7 +55,7 @@ module.exports = (env, argv) => {
         patterns: ['**/*.*'],
         globOptions: {
           cwd: srcPath,
-          ignore: ['**/package.json', '**/*.test.{js,jsx}'],
+          ignore: ['**/package.json', '**/*.test.{js,ts,tsx}'],
         },
       }),
       production && new CleanWebpackPlugin(),

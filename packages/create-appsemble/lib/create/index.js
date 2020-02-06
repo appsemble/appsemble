@@ -1,2 +1,2 @@
-export { default as createReact } from './react';
+// eslint-disable-next-line import/prefer-default-export
 export { default as createVanilla } from './vanilla';
