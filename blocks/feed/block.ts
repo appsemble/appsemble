@@ -37,7 +37,6 @@ export interface BlockActions {
   onAvatarClick: any;
   onButtonClick: any;
   onSubmitReply: any;
-  onLoad: any;
   onLoadReply: any;
 }
 
