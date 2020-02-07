@@ -1,0 +1,9 @@
+types:
+  file: block.ts
+  parameters: Parameters
+
+actions:
+  onLoad:
+    required: true
+
+output: dist
