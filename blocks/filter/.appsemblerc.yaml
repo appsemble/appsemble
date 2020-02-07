@@ -1,5 +1,6 @@
 types:
   parameters: Parameters
+  events: Events
 
 actions:
   onLoad:

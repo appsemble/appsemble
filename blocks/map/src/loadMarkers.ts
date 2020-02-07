@@ -2,14 +2,14 @@ import { Actions } from '@appsemble/sdk';
 import { Icon, LatLngBounds, Map, Marker, Point } from 'leaflet';
 
 import iconUrl from '../../../themes/amsterdam/core/marker.svg';
-import { BlockActions, BlockParameters, LatLngMapper } from './createGetters';
+import { BlockActions, LatLngMapper } from './createGetters';
 
 const MARKER_ICON_WIDTH = 39;
 const MARKER_ICON_HEIGHT = 39;
 const ACTIVE_MARKER_ICON_WIDTH = 64;
 const ACTIVE_MARKER_ICON_HEIGHT = 64;
 
-function makeFilter(fields: [string, string], bounds: LatLngBounds): string {
+export function makeFilter(fields: [string, string], bounds: LatLngBounds): string {
   const [lon, lat] = fields;
   const east = bounds.getEast();
   const north = bounds.getNorth();
@@ -23,21 +23,14 @@ interface BlockMarker {
   id: number;
 }
 
-export default async function loadMarkers(
-  map: Map,
-  actions: Actions<BlockActions>,
-  parameters: BlockParameters,
+export default function loadMarkers(
+  markers: BlockMarker[],
   fetched: Set<number>,
   get: LatLngMapper,
   data: any,
-): Promise<void> {
-  const markers: BlockMarker[] = await actions.onLoad.dispatch({
-    $filter: makeFilter(
-      [parameters.latitude || 'latitude', parameters.longitude || 'longitude'],
-      map.getBounds(),
-    ),
-  });
-
+  actions: Actions<BlockActions>,
+  map: Map,
+): void {
   markers.forEach(marker => {
     if (fetched.has(marker.id)) {
       return;

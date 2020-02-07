@@ -549,7 +549,7 @@ export interface EventActionDefinition extends BaseActionDefinition<'event'> {
   /**
    * The name of the event to emit to.
    */
-  name: string;
+  event: string;
 }
 
 export type ActionDefinition =

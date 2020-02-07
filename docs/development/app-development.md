@@ -101,6 +101,15 @@ defaultPage: Person List
 pages:
   - name: Person List
     blocks:
+      - type: data-loader
+        version: 0.10.0
+        actions:
+          onLoad:
+            type: resource.query
+            resource: person
+        events:
+          emit:
+            data: data
       - type: list
         version: 0.10.0
         parameters:
@@ -109,10 +118,9 @@ pages:
               label: First Name
             - name: lastName
               label: Surname
-        actions:
-          onLoad:
-            type: resource.query
-            resource: person
+        events:
+          listen:
+            data: data
 ```
 
 Saving and uploading the app at this point will result in no resources being displayed due to the
@@ -180,12 +188,14 @@ that is able to display a resource.
   parameters:
     - id
   blocks:
-    - type: detail-viewer
+    - type: data-loader
       version: 0.10.0
       actions:
         onLoad:
           type: resource.get
           resource: person
+    - type: detail-viewer
+      version: 0.10.0
       parameters:
         fields:
           - name: firstName
@@ -196,6 +206,9 @@ that is able to display a resource.
             label: Email Address
           - name: description
             label: Description
+      events:
+        listen:
+          data: data
 ```
 
 The structure of this page is the same as any other page with the exception of the `id` parameter.
@@ -242,6 +255,15 @@ resources:
 pages:
   - name: Person List
     blocks:
+      - type: data-loader
+        version: 0.10.0
+        actions:
+          onLoad:
+            type: resource.query
+            resource: person
+        events:
+          emit:
+            data: data
       - type: list
         version: 0.10.0
         parameters:
@@ -254,9 +276,9 @@ pages:
           onClick:
             to: Person Details
             type: link
-          onLoad:
-            type: resource.query
-            resource: person
+        events:
+          listen:
+            data: data
       - type: action-button
         version: 0.10.0
         parameters:
@@ -297,12 +319,17 @@ pages:
     parameters:
       - id
     blocks:
-      - type: detail-viewer
+      - type: data-loader
         version: 0.10.0
         actions:
           onLoad:
             type: resource.get
             resource: person
+        events:
+          emit:
+            data: data
+      - type: detail-viewer
+        version: 0.10.0
         parameters:
           fields:
             - name: firstName
@@ -313,6 +340,9 @@ pages:
               label: Email Address
             - name: description
               label: Description
+        events:
+          listen:
+            data: data
 ```
 
 ### Securing the app

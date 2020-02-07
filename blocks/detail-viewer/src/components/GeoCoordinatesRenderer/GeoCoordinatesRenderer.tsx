@@ -3,8 +3,8 @@ import { Location } from '@appsemble/preact-components';
 import { remapData } from '@appsemble/utils';
 import { h, VNode } from 'preact';
 
-import iconUrl from '../../../../../../themes/amsterdam/core/marker.svg';
-import { GeoCoordinatesField, RendererProps } from '../../../../block';
+import iconUrl from '../../../../../themes/amsterdam/core/marker.svg';
+import { GeoCoordinatesField, RendererProps } from '../../../block';
 import styles from './GeoCoordinatesRenderer.css';
 
 /**

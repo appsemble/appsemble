@@ -1,10 +1,10 @@
 types:
   parameters: BlockParameters
+  events: Events
 
 actions:
   onButtonClick: {}
   onAvatarClick: {}
-  onLoad: {}
   onSubmitReply: {}
   onLoadReply: {}
 

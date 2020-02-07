@@ -9,12 +9,6 @@ path: /blocks/detail-viewer
 
 A block that can be used to display various fields based on input data.
 
-## Actions
-
-| Action | Required | Description                                                           |
-| ------ | -------- | --------------------------------------------------------------------- |
-| onLoad | true     | Action that is called when loading in data, must return a set of data |
-
 ## Parameters
 
 | Parameter      | Default       | Description                                                                               |
@@ -24,6 +18,14 @@ A block that can be used to display various fields based on input data.
 | fields[].name  |               | The name of the property of the data to fetch from. Supports dot notation.                |
 | fields[].label | fields[].name | The label that is presented to the user                                                   |
 | fields[].type  | string        | The data type of the field. Supported values: `string`, `geocoordinates`, `array`, `file` |
+
+## Events
+
+### Listen Events
+
+| Event | Description                                                                                                                   |
+| ----- | ----------------------------------------------------------------------------------------------------------------------------- |
+| data  | The event that is triggered when data is received. Compatible data that is received will be displayed. Must be a set of data. |
 
 #### Field types
 

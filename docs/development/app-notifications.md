@@ -99,8 +99,17 @@ pages:
   - name: Person List
     roles: []
     blocks:
+      - type: data-loader
+        version: 0.10.0
+        actions:
+          onLoad:
+            type: resource.query
+            resource: person
+        events:
+          emit:
+            data: data
       - type: list
-        version: 0.10.1
+        version: 0.10.0
         parameters:
           fields:
             - name: firstName
@@ -112,7 +121,7 @@ pages:
             type: resource.subscribe
             resource: person
             action: update
-          onLoad:
-            type: resource.query
-            resource: person
+        events:
+          listen:
+            data: data
 ```
