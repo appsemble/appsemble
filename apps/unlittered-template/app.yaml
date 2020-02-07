@@ -80,6 +80,18 @@ pages:
             to: Litter Overview
   - name: Litter Overview
     blocks:
+      - name: data-loader
+        version: 0.10.0
+        actions:
+          onLoad:
+            type: resource.query
+            resource: litter
+            query:
+              '$orderby': '$created desc'
+              '$top': 50
+        events:
+          emit:
+            data: data
       - type: map
         version: 0.10.0
         parameters:
@@ -89,12 +101,9 @@ pages:
           onMarkerClick:
             to: Litter details
             type: link
-          onLoad:
-            type: resource.query
-            resource: litter
-            query:
-              '$orderby': '$created desc'
-              '$top': 50
+        events:
+          listen:
+            data: data
       - type: action-button
         version: 0.10.0
         parameters:
@@ -107,6 +116,15 @@ pages:
     parameters:
       - id
     blocks:
+      - name: data-loader
+        version: 0.10.0
+        actions:
+          onLoad:
+            type: resource.get
+            resource: litter
+        events:
+          emit:
+            data: data
       - type: detail-viewer
         version: 0.10.0
         parameters:
@@ -125,7 +143,6 @@ pages:
               type: file
               label: Photos
               repeated: true
-        actions:
-          onLoad:
-            type: resource.get
-            resource: litter
+        events:
+          listen:
+            data: data
