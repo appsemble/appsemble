@@ -129,3 +129,13 @@ Close the dialog that is described above, signaling the `dialog` action succeede
 ## `dialog.error`
 
 Close the dialog that is described above, signaling the `dialog` action has failed.
+
+## `event`
+
+This action allows for other blocks to emit data upon triggering the action. This can be used to
+make blocks interact with each other, such as triggering the `data-loader` block to refresh itself
+by sending an event action that matches the name of what the block is listening to.
+
+| Parameter | Required | Description                    |
+| --------- | -------- | ------------------------------ |
+| event     | true     | The name of the event to emit. |
