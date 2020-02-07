@@ -122,7 +122,6 @@ export default async function tokenHandler(ctx) {
         const { refresh_token: token } = checkTokenRequestParameters(query, ['refresh_token']);
         try {
           const payload = verify(token, argv.secret);
-          // console.dir(payload);
           ({ aud, scope, sub } = payload);
           refreshToken = true;
         } catch (error) {
