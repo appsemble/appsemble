@@ -90,7 +90,7 @@ export default function Editor({ app, updateApp }: EditorProps): React.ReactElem
     getStyles();
 
     // Destructuring path, and organizationId also hides these technical details for the user
-    const { path: p, definition } = app;
+    const { definition, path: p } = app;
     let { yaml: yamlRecipe } = app;
 
     if (!yamlRecipe) {

@@ -71,7 +71,7 @@ export const logger = winston.createLogger({
     }))(),
     winston.format.colorize(),
     winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
-    winston.format.printf(({ timestamp, level, lines }) =>
+    winston.format.printf(({ level, lines, timestamp }) =>
       lines.map(line => `${timestamp} [${level}]: ${line}`).join(EOL),
     ),
   ),

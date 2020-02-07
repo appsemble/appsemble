@@ -26,13 +26,13 @@ interface MakeActionsParams {
 
 export default function makeActions({
   actions,
-  definition,
   context,
-  history,
-  showDialog,
+  definition,
   extraCreators,
   flowActions,
+  history,
   pushNotifications,
+  showDialog,
 }: MakeActionsParams): Actions<any> {
   return Object.entries(actions || {}).reduce<Record<string, Action>>((acc, [on, { required }]) => {
     let actionDefinition: ActionDefinition;

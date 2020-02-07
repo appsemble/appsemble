@@ -2,7 +2,7 @@ import sharp from 'sharp';
 
 import getDefaultIcon from '../utils/getDefaultIcon';
 
-export default async function serveIcon(ctx, { icon, background, format, height, width }) {
+export default async function serveIcon(ctx, { background, format, height, icon, width }) {
   // Allow icon to be null.
   const finalIcon = icon || getDefaultIcon();
   let img = sharp(finalIcon);

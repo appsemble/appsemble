@@ -78,7 +78,7 @@ export default class FormBlock extends Component<FormBlockProps, FormBlockState>
     errors: {},
     validity: {
       ...this.props.block.parameters.fields.reduce<{ [name: string]: boolean }>(
-        (acc, { name, defaultValue, required, type }) => {
+        (acc, { defaultValue, name, required, type }) => {
           let valid = !required;
           if (required) {
             valid = defaultValue !== undefined;
@@ -95,7 +95,7 @@ export default class FormBlock extends Component<FormBlockProps, FormBlockState>
     submitting: false,
     values: {
       ...this.props.block.parameters.fields.reduce<Values>(
-        (acc, { name, defaultValue, repeated }: FileField) => {
+        (acc, { defaultValue, name, repeated }: FileField) => {
           acc[name] = defaultValue !== undefined ? defaultValue : repeated && [];
           return acc;
         },
@@ -169,7 +169,7 @@ export default class FormBlock extends Component<FormBlockProps, FormBlockState>
 
   render(): VNode {
     const { block } = this.props;
-    const { errors, validity, submitting, values } = this.state;
+    const { errors, submitting, validity, values } = this.state;
 
     return (
       <form className={styles.root} noValidate onSubmit={this.onSubmit}>

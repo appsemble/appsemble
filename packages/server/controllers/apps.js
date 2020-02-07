@@ -63,15 +63,15 @@ export async function createApp(ctx) {
   const { db } = ctx;
   const { App } = db.models;
   const {
-    definition,
     OrganizationId,
+    definition,
     domain,
+    icon,
     private: isPrivate = true,
+    sharedStyle,
+    style,
     template = false,
     yaml,
-    icon,
-    style,
-    sharedStyle,
   } = ctx.request.body;
 
   let result;
@@ -205,7 +205,7 @@ export async function updateApp(ctx) {
   const { db } = ctx;
   const { appId } = ctx.params;
   const { App } = db.models;
-  const { definition, domain, path, style, sharedStyle, yaml } = ctx.request.body;
+  const { definition, domain, path, sharedStyle, style, yaml } = ctx.request.body;
 
   let result;
 
@@ -259,14 +259,14 @@ export async function patchApp(ctx) {
   const { App } = db.models;
   const {
     definition,
-    path,
     domain,
-    private: isPrivate,
-    template,
-    style,
-    sharedStyle,
-    yaml,
     icon,
+    path,
+    private: isPrivate,
+    sharedStyle,
+    style,
+    template,
+    yaml,
   } = ctx.request.body;
 
   let result;
@@ -421,7 +421,7 @@ export async function getAppSharedStyle(ctx) {
 }
 
 export async function getAppBlockStyle(ctx) {
-  const { appId, organizationId, blockId } = ctx.params;
+  const { appId, blockId, organizationId } = ctx.params;
   const { AppBlockStyle } = ctx.db.models;
 
   const blockStyle = await AppBlockStyle.findOne({
@@ -437,7 +437,7 @@ export async function getAppBlockStyle(ctx) {
 }
 
 export async function setAppBlockStyle(ctx) {
-  const { appId, organizationId, blockId } = ctx.params;
+  const { appId, blockId, organizationId } = ctx.params;
   const { db } = ctx;
   const { App, AppBlockStyle, BlockDefinition } = db.models;
   const { style } = ctx.request.body;

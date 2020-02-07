@@ -40,7 +40,7 @@ export async function getSubscription(ctx) {
     });
   }
 
-  ctx.body = appSubscription.ResourceSubscriptions.reduce((acc, { type, action, ResourceId }) => {
+  ctx.body = appSubscription.ResourceSubscriptions.reduce((acc, { ResourceId, action, type }) => {
     if (!acc[type]) {
       return acc;
     }
@@ -91,7 +91,7 @@ export async function updateSubscription(ctx) {
   const { appId } = ctx.params;
   const { App, AppSubscription, ResourceSubscription } = ctx.db.models;
   const { user } = ctx.state;
-  const { endpoint, resource, action, value, resourceId } = ctx.request.body;
+  const { action, endpoint, resource, resourceId, value } = ctx.request.body;
 
   const app = await App.findByPk(appId, {
     attributes: [],
@@ -145,7 +145,7 @@ export async function updateSubscription(ctx) {
 export async function broadcast(ctx) {
   const { appId } = ctx.params;
   const { App, AppSubscription } = ctx.db.models;
-  const { title, body } = ctx.request.body;
+  const { body, title } = ctx.request.body;
 
   const app = await App.findByPk(appId, {
     include: [AppSubscription],

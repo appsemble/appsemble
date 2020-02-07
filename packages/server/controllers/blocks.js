@@ -9,7 +9,7 @@ import checkRole from '../utils/checkRole';
 export async function createBlockDefinition(ctx) {
   const { BlockDefinition } = ctx.db.models;
   const { body } = ctx.request;
-  const { id, description } = body;
+  const { description, id } = body;
   const blockDefinition = { description, id };
   const [organizationId] = id.split('/');
 
@@ -28,7 +28,7 @@ export async function createBlockDefinition(ctx) {
 }
 
 export async function getBlockDefinition(ctx) {
-  const { organizationId, blockId } = ctx.params;
+  const { blockId, organizationId } = ctx.params;
   const { BlockDefinition } = ctx.db.models;
 
   const blockDefinition = await BlockDefinition.findByPk(`@${organizationId}/${blockId}`, {
@@ -50,11 +50,11 @@ export async function queryBlockDefinitions(ctx) {
 
   const blockDefinitions = await BlockDefinition.findAll({ raw: true });
 
-  ctx.body = blockDefinitions.map(({ id, description }) => ({ id, description }));
+  ctx.body = blockDefinitions.map(({ description, id }) => ({ id, description }));
 }
 
 export async function createBlockVersion(ctx) {
-  const { organizationId, blockId } = ctx.params;
+  const { blockId, organizationId } = ctx.params;
   const { db } = ctx;
   const { BlockAsset, BlockDefinition, BlockVersion } = db.models;
   const name = `@${organizationId}/${blockId}`;
@@ -117,7 +117,7 @@ export async function createBlockVersion(ctx) {
 }
 
 export async function getBlockVersion(ctx) {
-  const { organizationId, blockId, blockVersion } = ctx.params;
+  const { blockId, blockVersion, organizationId } = ctx.params;
   const name = `@${organizationId}/${blockId}`;
   const { BlockAsset, BlockVersion } = ctx.db.models;
 
@@ -141,7 +141,7 @@ export async function getBlockVersion(ctx) {
 }
 
 export async function getBlockVersions(ctx) {
-  const { organizationId, blockId } = ctx.params;
+  const { blockId, organizationId } = ctx.params;
   const name = `@${organizationId}/${blockId}`;
   const { BlockDefinition, BlockVersion } = ctx.db.models;
 
@@ -160,7 +160,7 @@ export async function getBlockVersions(ctx) {
 }
 
 export async function getBlockAsset(ctx) {
-  const { organizationId, blockId, blockVersion, path } = ctx.params;
+  const { blockId, blockVersion, organizationId, path } = ctx.params;
   const name = `@${organizationId}/${blockId}`;
   const { BlockAsset } = ctx.db.models;
   const asset = await BlockAsset.findOne({

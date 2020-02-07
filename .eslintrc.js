@@ -17,7 +17,7 @@ module.exports = {
   parserOptions: {
     ecmaVersion: 2020,
   },
-  plugins: ['filenames', 'simple-import-sort'],
+  plugins: ['filenames', 'simple-import-sort', 'sort-destructure-keys'],
   settings: {
     'import/resolver': {
       node: {
@@ -67,6 +67,7 @@ module.exports = {
     'react/jsx-props-no-spreading': 'off',
     'react/jsx-sort-props': 'error',
     'simple-import-sort/sort': 'error',
+    'sort-destructure-keys/sort-destructure-keys': 'error',
     'jsx-a11y/label-has-associated-control': 'off',
 
     // These rules are related to AirBnB not supporting static class properties.

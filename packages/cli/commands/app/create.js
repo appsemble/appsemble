@@ -37,13 +37,13 @@ export function builder(yargs) {
 }
 
 export async function handler({
+  all,
   clientCredentials,
   organization,
   path,
   private: isPrivate,
   remote,
   template,
-  all,
 }) {
   await authenticate(remote, 'apps:write', clientCredentials);
   const organizationId = organization.startsWith('@') ? organization.slice(1) : organization;

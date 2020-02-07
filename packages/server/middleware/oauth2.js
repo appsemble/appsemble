@@ -1,7 +1,7 @@
 import Grant from 'grant';
 
 export default function oauth2(argv) {
-  const { protocol, host } = new URL(argv.host);
+  const { host, protocol } = new URL(argv.host);
 
   return Grant.koa()({
     server: {
