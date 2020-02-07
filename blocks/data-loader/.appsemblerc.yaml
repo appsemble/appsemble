@@ -4,12 +4,6 @@ types:
   file: block.ts
   events: Events
 
-# events:
-#   listen:
-#     - refresh
-#   emit:
-#     - data
-
 actions:
   onLoad:
     required: true
