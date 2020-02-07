@@ -394,7 +394,7 @@ export default {
           },
         },
       },
-      security: [{ studio: [] }],
+      security: [{ studio: [] }, { app: ['openid'] }],
     },
     post: {
       tags: ['app'],

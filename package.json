@@ -54,7 +54,6 @@
     "@types/jwt-decode": "^2.2.1",
     "@types/leaflet": "^1.5.8",
     "@types/marked": "^0.7.2",
-    "@types/md5": "^2.1.33",
     "@types/react": "^16.9.19",
     "@types/react-dom": "^16.9.5",
     "@types/react-helmet": "^5.0.15",

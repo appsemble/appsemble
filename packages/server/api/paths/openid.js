@@ -8,7 +8,7 @@ export default {
         See https://connect2id.com/products/server/docs/api/userinfo
       `,
       operationId: 'getUserInfo',
-      security: [{ studio: [] }],
+      security: [{ studio: [] }, { app: ['openid'] }],
       responses: {
         200: {
           description: 'OpenID compatible user information',
