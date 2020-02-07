@@ -4,7 +4,7 @@ defaultPage: Holidays in NL
 pages:
   - name: Holidays in NL
     blocks:
-      - name: data-loader
+      - type: data-loader
         version: 0.10.0
         actions:
           onLoad:
@@ -28,7 +28,7 @@ pages:
             data: holidays
   - name: Holidays in US
     blocks:
-      - name: data-loader
+      - type: data-loader
         version: 0.10.0
         actions:
           onLoad:
@@ -50,7 +50,7 @@ pages:
             data: holidays
   - name: Holidays in DE
     blocks:
-      - name: data-loader
+      - type: data-loader
         version: 0.10.0
         actions:
           onLoad:
@@ -74,7 +74,7 @@ pages:
             data: holidays
   - name: Holidays in ES
     blocks:
-      - name: data-loader
+      - type: data-loader
         version: 0.10.0
         actions:
           onLoad:

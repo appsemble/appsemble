@@ -22,7 +22,7 @@ resources:
 pages:
   - name: Person List
     blocks:
-      - name: data-loader
+      - type: data-loader
         version: 0.10.0
         actions:
           onLoad:
@@ -44,7 +44,7 @@ pages:
             to: Person Details
             type: link
         events:
-          emit:
+          listen:
             data: data
       - type: action-button
         version: 0.10.0
@@ -84,7 +84,7 @@ pages:
     parameters:
       - id
     blocks:
-      - name: data-loader
+      - type: data-loader
         version: 0.10.0
         actions:
           onLoad:

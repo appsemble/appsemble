@@ -80,7 +80,7 @@ pages:
             to: Litter Overview
   - name: Litter Overview
     blocks:
-      - name: data-loader
+      - type: data-loader
         version: 0.10.0
         actions:
           onLoad:
@@ -116,7 +116,7 @@ pages:
     parameters:
       - id
     blocks:
-      - name: data-loader
+      - type: data-loader
         version: 0.10.0
         actions:
           onLoad:
