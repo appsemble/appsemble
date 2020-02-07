@@ -6,12 +6,12 @@ export default function event({
   definition,
   ee,
 }: MakeActionParameters<EventActionDefinition>): BaseAction<'event'> {
-  const { event } = definition;
+  const { event: eventName } = definition;
 
   return {
     type: 'event',
     async dispatch(data) {
-      ee.emit(event, data);
+      ee.emit(eventName, data);
     },
   };
 }
