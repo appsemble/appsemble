@@ -26,7 +26,7 @@ function getBlobs(resource: Resource): BlobUploadType {
   const { blobs } = resource;
   const type = (blobs && blobs.type) || 'upload';
   const method = (blobs && blobs.method) || 'post';
-  const url = (blobs && blobs.url) || '/api/assets';
+  const url = (blobs && blobs.url) || `/api/apps/${settings.id}/assets`;
 
   return { type, method, url, serialize: blobs && blobs.serialize ? blobs.serialize : null };
 }
