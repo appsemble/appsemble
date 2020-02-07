@@ -10,7 +10,7 @@ import { post } from './request';
  * @param {Object} params.config The block configuration
  * @param {string} params.path The path in which the block project is located.
  */
-export default async function publish({ ignoreConflict, path, config }) {
+export default async function publish({ config, ignoreConflict, path }) {
   logger.info(`Publishing ${config.id}@${config.version}…`);
   const form = await makePayload({ config, path });
   try {

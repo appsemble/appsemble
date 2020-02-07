@@ -17,7 +17,7 @@ export default function Notifications({ app }: NotificationsProps): React.ReactE
   const push = useMessages();
 
   const submit = React.useCallback(
-    async ({ title, body }: { title: string; body: string }): Promise<void> => {
+    async ({ body, title }: { title: string; body: string }): Promise<void> => {
       try {
         await axios.post(`/api/apps/${app.id}/broadcast`, { title, body });
         push({ body: intl.formatMessage(messages.submitSuccess), color: 'success' });

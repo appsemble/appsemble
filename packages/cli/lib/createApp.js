@@ -19,8 +19,8 @@ import traverseBlockThemes from './traverseBlockThemes';
 export default async function createApp({
   organizationId,
   path,
-  remote,
   private: isPrivate,
+  remote,
   template,
 }) {
   const file = await fs.stat(path);

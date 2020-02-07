@@ -16,7 +16,7 @@ import traverseBlockThemes from './traverseBlockThemes';
  * @param {boolean} params.private Whether the app should be marked as private.
  * @param {boolean} params.template Whether the app should be marked as a template.
  */
-export default async function updateApp({ appId, path, remote, private: isPrivate, template }) {
+export default async function updateApp({ appId, path, private: isPrivate, remote, template }) {
   try {
     const file = await fs.stat(path);
     const formData = new FormData();

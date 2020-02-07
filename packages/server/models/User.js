@@ -20,11 +20,11 @@ export default sequelize => {
   User.associate = ({
     App,
     AppMember,
-    Organization,
-    OAuthAuthorization,
     EmailAuthorization,
-    ResetPasswordToken,
     Member,
+    OAuthAuthorization,
+    Organization,
+    ResetPasswordToken,
   }) => {
     User.belongsToMany(Organization, { through: Member });
     User.belongsToMany(App, { through: AppMember });

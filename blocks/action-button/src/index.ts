@@ -4,7 +4,7 @@ import { attach } from '@appsemble/sdk';
 
 import { Actions, Parameters } from '../block';
 
-attach<Parameters, Actions>(({ actions, data, block }) => {
+attach<Parameters, Actions>(({ actions, block, data }) => {
   let node;
   if (actions.onClick.type === 'link') {
     node = document.createElement('a');

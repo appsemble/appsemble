@@ -8,7 +8,7 @@ import sentryDsnToReportUri from '../../utils/sentryDsnToReportUri';
 export default async function indexHandler(ctx) {
   const { render } = ctx.state;
   const { argv } = ctx;
-  const { disableRegistration, sentryDsn, host } = argv;
+  const { disableRegistration, host, sentryDsn } = argv;
   const logins = [];
   if (argv.oauthGitlabKey) {
     logins.push('gitlab');

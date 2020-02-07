@@ -13,12 +13,12 @@ interface ProtectedRouteProps extends RouteProps {
 }
 
 export default function ProtectedRoute({
-  permission,
   organization,
+  permission,
   ...props
 }: ProtectedRouteProps): React.ReactElement {
   const location = useLocation();
-  const { userInfo, initialized } = useUser();
+  const { initialized, userInfo } = useUser();
   const qs = useQuery();
   const match = useRouteMatch();
 

@@ -81,7 +81,7 @@ export default class Card extends Component<
   };
 
   onChange = (event: Event): void => {
-    const { value, validity } = event.target as HTMLInputElement;
+    const { validity, value } = event.target as HTMLInputElement;
     this.setState({ message: value, valid: validity.valid });
   };
 
@@ -90,7 +90,7 @@ export default class Card extends Component<
   };
 
   onClick = async (): Promise<void> => {
-    const { actions, block, content, utils, messages } = this.props;
+    const { actions, block, content, messages, utils } = this.props;
     const { message, replies, valid } = this.state;
 
     if (!valid) {

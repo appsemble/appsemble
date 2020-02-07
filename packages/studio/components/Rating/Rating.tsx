@@ -14,8 +14,8 @@ interface RatingProps {
 export default function Rating({
   className,
   count,
-  value,
   onClick,
+  value,
 }: RatingProps): React.ReactElement {
   const [localRating, setLocalRating] = React.useState(value);
   const resetRating = (): void => setLocalRating(value);

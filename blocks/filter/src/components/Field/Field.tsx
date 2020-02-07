@@ -37,16 +37,16 @@ export default class Field extends React.Component<FieldProps & FilterField> {
 
   generateField = (): React.ReactNode => {
     const {
-      enum: enumerator,
-      type,
-      range,
-      onRangeChange,
-      onCheckBoxChange,
-      intl,
-      filter,
-      onChange,
       displayLabel,
       emptyLabel,
+      enum: enumerator,
+      filter,
+      intl,
+      onChange,
+      onCheckBoxChange,
+      onRangeChange,
+      range,
+      type,
       ...props
     } = this.props;
 

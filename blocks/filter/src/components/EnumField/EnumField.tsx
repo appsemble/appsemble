@@ -21,7 +21,7 @@ export default function EnumField({
     <div className="select is-fullwidth">
       <select value={value} {...props}>
         {!defaultValue && <option label={emptyLabel} />}
-        {enumerator.map(({ value: val, label }) => (
+        {enumerator.map(({ label, value: val }) => (
           <option key={val} value={val}>
             {label || val}
           </option>

@@ -5,7 +5,7 @@ export async function getAppRatings(ctx) {
   const { AppRating, User } = ctx.db.models;
 
   const ratings = await AppRating.findAll({ where: { AppId: appId }, include: [User], raw: true });
-  ctx.body = ratings.map(({ rating, description, UserId, created, updated, ...r }) => ({
+  ctx.body = ratings.map(({ UserId, created, description, rating, updated, ...r }) => ({
     rating,
     description,
     UserId,
@@ -21,7 +21,7 @@ export async function submitAppRating(ctx) {
   const {
     user: { id: userId },
   } = ctx.state;
-  const { rating, description } = ctx.request.body;
+  const { description, rating } = ctx.request.body;
 
   const app = await App.findByPk(AppId);
   const user = await User.findByPk(userId);
