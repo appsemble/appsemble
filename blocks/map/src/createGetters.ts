@@ -16,7 +16,7 @@ export interface BlockActions {
 
 export interface Events {
   listen: 'data';
-  emit: 'refresh';
+  emit: 'move';
 }
 
 export default function createGetters(params: BlockParameters): LatLngMapper {
