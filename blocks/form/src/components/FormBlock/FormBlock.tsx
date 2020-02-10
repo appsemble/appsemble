@@ -1,9 +1,10 @@
 /** @jsx h */
 import { BlockProps, FormattedMessage } from '@appsemble/preact';
 import classNames from 'classnames';
-import { Component, h, VNode } from 'preact';
+import { h, VNode } from 'preact';
+import { useCallback, useState } from 'preact/hooks';
 
-import { Actions, Field, FileField, Parameters } from '../../../block';
+import { Actions, Events, Field, FileField, Parameters } from '../../../block';
 import BooleanInput from '../BooleanInput';
 import EnumInput from '../EnumInput';
 import FileInput from '../FileInput';
@@ -12,22 +13,11 @@ import NumberInput from '../NumberInput';
 import StringInput from '../StringInput';
 import styles from './FormBlock.css';
 
-type FormBlockProps = BlockProps<Parameters, Actions>;
+type FormBlockProps = BlockProps<Parameters, Actions, Events>;
 
 type Values = Record<string, any>;
 
 type Validator = (field: Field, event: Event, value: any) => boolean;
-
-interface FormBlockState {
-  errors: {
-    [name: string]: string;
-  };
-  validity: {
-    [name: string]: boolean;
-  };
-  submitting: boolean;
-  values: Values;
-}
 
 const inputs = {
   enum: EnumInput,
@@ -70,133 +60,116 @@ const validators: { [name: string]: Validator } = {
   boolean: () => true,
 };
 
-/**
- * Render Material UI based a form based on a JSON schema
- */
-export default class FormBlock extends Component<FormBlockProps, FormBlockState> {
-  state: FormBlockState = {
-    errors: {},
-    validity: {
-      ...this.props.block.parameters.fields.reduce<{ [name: string]: boolean }>(
-        (acc, { defaultValue, name, required, type }) => {
-          let valid = !required;
-          if (required) {
-            valid = defaultValue !== undefined;
-          }
-          if ((type as any) === 'boolean') {
-            valid = true;
-          }
-          acc[name] = valid;
-          return acc;
-        },
-        {},
-      ),
-    },
-    submitting: false,
-    values: {
-      ...this.props.block.parameters.fields.reduce<Values>(
-        (acc, { defaultValue, name, repeated }: FileField) => {
-          acc[name] = defaultValue !== undefined ? defaultValue : repeated && [];
-          return acc;
-        },
-        {},
-      ),
-      ...this.props.data,
-    },
-  };
-
-  validateField = (event: Event, value: any): boolean => {
-    const {
-      block: {
-        parameters: { fields },
+export default function FormBlock({ actions, block, data }: FormBlockProps): VNode {
+  const [errors, setErrors] = useState<{ [name: string]: string }>({});
+  const [validity, setValidity] = useState({
+    ...block.parameters.fields.reduce<{ [name: string]: boolean }>(
+      (acc, { defaultValue, name, required, type }) => {
+        let valid = !required;
+        if (required) {
+          valid = defaultValue !== undefined;
+        }
+        if ((type as any) === 'boolean') {
+          valid = true;
+        }
+        acc[name] = valid;
+        return acc;
       },
-    } = this.props;
+      {},
+    ),
+  });
+  const [submitting, setSubmitting] = useState(false);
+  const [values, setValues] = useState({
+    ...block.parameters.fields.reduce<Values>(
+      (acc, { defaultValue, name, repeated }: FileField) => {
+        acc[name] = defaultValue !== undefined ? defaultValue : repeated && [];
+        return acc;
+      },
+      {},
+    ),
+    ...data,
+  });
 
-    const { name } = event.target as HTMLInputElement;
-    const field = fields.find(f => f.name === name);
+  const validateField = useCallback(
+    (event: Event, value: any): boolean => {
+      const { fields } = block.parameters;
+      const { name } = event.target as HTMLInputElement;
+      const field = fields.find(f => f.name === name);
 
-    if (Object.prototype.hasOwnProperty.call(validators, field.type)) {
-      return validators[field.type](field, event, value);
-    }
-    return true;
-  };
+      if (Object.prototype.hasOwnProperty.call(validators, field.type)) {
+        return validators[field.type](field, event, value);
+      }
+      return true;
+    },
+    [block],
+  );
 
-  onChange = (event: Event, value: any): void => {
-    const { name } = event.target as HTMLInputElement;
-    const valid = this.validateField(event, value);
+  const onChange = useCallback(
+    (event: Event, value: any): void => {
+      const { name } = event.target as HTMLInputElement;
+      const valid = validateField(event, value);
 
-    this.setState(({ errors, validity, values }) => ({
-      values: {
+      setErrors({ ...errors, [name]: valid ? null : 'Invalid' });
+      setValidity({ ...validity, [name]: valid });
+      setValues({
         ...values,
         [(event.target as HTMLInputElement).name]: value,
-      },
-      errors: { ...errors, [name]: valid ? null : 'Invalid' },
-      validity: { ...validity, [name]: valid },
-    }));
-  };
+      });
+    },
+    [errors, validateField, validity, values],
+  );
 
-  onSubmit = (event: Event): void => {
-    event.preventDefault();
+  const onSubmit = useCallback(
+    (event: Event): void => {
+      event.preventDefault();
 
-    this.setState(({ submitting, values }, { actions }) => {
       if (!submitting) {
         actions.onSubmit
           .dispatch(values)
           .then(() => {
-            this.setState({
-              submitting: false,
-            });
+            setSubmitting(true);
             return actions.onSubmitSuccess.dispatch(values);
           })
           .catch(error => {
             if (error.message !== 'Schema Validation Failed') {
-              this.setState({
-                submitting: false,
-              });
+              setSubmitting(false);
               throw error;
             }
-            this.setState({
-              errors: error.data,
-              submitting: false,
-            });
+            setErrors(error.data);
+            setSubmitting(false);
           });
       }
-      return {
-        submitting: true,
-      };
-    });
-  };
 
-  render(): VNode {
-    const { block } = this.props;
-    const { errors, submitting, validity, values } = this.state;
+      setSubmitting(true);
+    },
+    [actions, submitting, values],
+  );
 
-    return (
-      <form className={styles.root} noValidate onSubmit={this.onSubmit}>
-        {block.parameters.fields.map(field => {
-          const Comp = inputs[field.type];
-          return (
-            <Comp
-              key={field.name}
-              error={errors[field.name]}
-              // @ts-ignore
-              field={field}
-              onInput={this.onChange}
-              // @ts-ignore
-              value={values[field.name]}
-            />
-          );
-        })}
-        <div className={styles.buttonWrapper}>
-          <button
-            className={classNames('button', 'is-primary', styles.submit)}
-            disabled={!Object.values(validity).every(v => v) || submitting}
-            type="submit"
-          >
-            <FormattedMessage id="submit" />
-          </button>
-        </div>
-      </form>
-    );
-  }
+  return (
+    <form className={styles.root} noValidate onSubmit={onSubmit}>
+      {block.parameters.fields.map(field => {
+        const Comp = inputs[field.type];
+        return (
+          <Comp
+            key={field.name}
+            error={errors[field.name]}
+            // @ts-ignore
+            field={field}
+            onInput={onChange}
+            // @ts-ignore
+            value={values[field.name]}
+          />
+        );
+      })}
+      <div className={styles.buttonWrapper}>
+        <button
+          className={classNames('button', 'is-primary', styles.submit)}
+          disabled={!Object.values(validity).every(v => v) || submitting}
+          type="submit"
+        >
+          <FormattedMessage id="submit" />
+        </button>
+      </div>
+    </form>
+  );
 }

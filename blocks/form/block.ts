@@ -101,3 +101,7 @@ export interface Actions {
 export interface Parameters {
   fields: Field[];
 }
+
+export interface Events {
+  listen: 'data';
+}
