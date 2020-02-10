@@ -7,8 +7,8 @@ route: /reference/action
 # Action
 
 Actions are behaviors that define what happens when certain events within blocks or pages trigger.
-Examples of such triggers are the `onLoad` action in the [list block](../blocks/list) that gets
-called when the list loads its initial data, and the `onSubmit` action in the
+Examples of such triggers are the `onLoad` action in the [data-loader block](../blocks/list) that
+gets called when the data-loader loads its initial data, and the `onSubmit` action in the
 [form block](../blocks/form) that gets triggered whenever the user presses the submit button.
 
 The behavior of an action can be defined within the `actions` object in a block or page. An action
@@ -129,3 +129,13 @@ Close the dialog that is described above, signaling the `dialog` action succeede
 ## `dialog.error`
 
 Close the dialog that is described above, signaling the `dialog` action has failed.
+
+## `event`
+
+This action allows for other blocks to emit data upon triggering the action. This can be used to
+make blocks interact with each other, such as triggering the `data-loader` block to refresh itself
+by sending an event action that matches the name of what the block is listening to.
+
+| Parameter | Required | Description                    |
+| --------- | -------- | ------------------------------ |
+| event     | true     | The name of the event to emit. |

@@ -8,6 +8,7 @@ import {
   RequestLikeActionDefinition,
 } from '@appsemble/types';
 import { remapData } from '@appsemble/utils';
+import { EventEmitter } from 'events';
 import { RouteComponentProps } from 'react-router-dom';
 
 import { FlowActions, ServiceWorkerRegistrationContextType, ShowDialogAction } from '../types';
@@ -22,15 +23,19 @@ interface MakeActionsParams {
   extraCreators: ActionCreators;
   flowActions: FlowActions;
   pushNotifications: ServiceWorkerRegistrationContextType;
+  pageReady: Promise<void>;
+  ee: EventEmitter;
 }
 
 export default function makeActions({
   actions,
   context,
   definition,
+  ee,
   extraCreators,
   flowActions,
   history,
+  pageReady,
   pushNotifications,
   showDialog,
 }: MakeActionsParams): Actions<any> {
@@ -54,6 +59,7 @@ export default function makeActions({
       history,
       showDialog,
       flowActions,
+      ee,
       onSuccess:
         (type === 'request' || type.startsWith('resource.')) &&
         (actionDefinition as RequestLikeActionDefinition).onSuccess &&
@@ -65,6 +71,7 @@ export default function makeActions({
           showDialog,
           flowActions,
           pushNotifications,
+          ee,
         }),
       onError:
         (type === 'request' || type.startsWith('resource.')) &&
@@ -75,14 +82,22 @@ export default function makeActions({
           app: definition,
           history,
           showDialog,
+          ee,
           flowActions,
           pushNotifications,
         }),
       pushNotifications,
     });
     const { dispatch } = action;
-    if (actionDefinition && Object.hasOwnProperty.call(actionDefinition, 'remap')) {
-      action.dispatch = async (args: any) => dispatch(remapData(actionDefinition.remap, args));
+    if (actionDefinition) {
+      action.dispatch = async (args: any) => {
+        await pageReady;
+        return dispatch(
+          Object.hasOwnProperty.call(actionDefinition, 'remap')
+            ? remapData(actionDefinition.remap, args)
+            : args,
+        );
+      };
     }
     acc[on] = action;
     return acc;

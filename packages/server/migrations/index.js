@@ -5,6 +5,7 @@ import organizationRolesAndAuthentication from './0.10.0-organization-roles-and-
 import appRoles from './0.10.1-app-roles';
 import resourceSubscriptions from './0.10.2-resource-subscriptions';
 import assetAssociations from './0.10.3-asset-associations';
+import events from './0.10.4-events';
 
 export default [
   postgresql,
@@ -14,4 +15,5 @@ export default [
   appRoles,
   resourceSubscriptions,
   assetAssociations,
+  events,
 ];

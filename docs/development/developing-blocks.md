@@ -189,8 +189,30 @@ add a delay and a message when the user is navigating to the other page.
 ```
 
 Blocks may communicate with each other by emitting and listening on events. Let’s modify the event
-so the click event will emit a `button-click` event instead. We’ll also add a listener using
-`events.on()`. This will log the block’s own parameters and the data received from the event.
+so the click event will emit a `button-click` event instead.
+
+To do this we need to define which kinds of events can be emitted from the block. This is used to
+map the names of events correctly to the name of the event in the code based on what’s used in the
+app definition.
+
+in `.appsemblerc.yaml`:
+
+```diff
+  actions:
+    onClick: {}
+
++ events:
++   emit:
++     - click
++   listen:
++     - data
+
+  output: dist
+
+```
+
+We’ll also add a listener using `events.on.data()`. This will log the block’s own parameters and the
+data received from the event.
 
 ```diff
   import { attach } from '@appsemble/sdk';
@@ -204,7 +226,7 @@ so the click event will emit a `button-click` event instead. We’ll also add a 
     button.innerText = 'Click me!';
     button.innerText = block.parameters.text;
     button.classList.add('button');
-+   events.on('button-click', data => {
++   events.on.data(data => {
 +     console.log('My parameters:', block.parameters);
 +     console.log('Event data:', data);
 +   });
@@ -212,7 +234,7 @@ so the click event will emit a `button-click` event instead. We’ll also add a 
       'click',
       event => {
         event.preventDefault();
-+       events.emit('button-click', block.parameters);
++       events.emit.click(block.parameters);
 -       utils.showMessage('Handling click actions in 5 seconds…');
 -       setTimeout(() => actions.onClick.dispatch(block.parameters), 5000);
       },

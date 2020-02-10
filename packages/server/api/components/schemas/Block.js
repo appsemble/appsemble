@@ -49,5 +49,17 @@ export default {
         type: 'object',
       },
     },
+    events: {
+      type: 'object',
+      description: 'An object describing the names of the events the block can listen and emit to.',
+      properties: {
+        listen: {
+          additionalProperties: { type: 'string' },
+        },
+        emit: {
+          additionalProperties: { type: 'string' },
+        },
+      },
+    },
   },
 };

@@ -39,7 +39,7 @@ async function checkBlocks(blocks, blockVersions) {
       return { ...acc, [loc]: `Unknown block version “${type}@${block.version}”` };
     }
     const version = versions.get(block.version);
-    if (Object.prototype.hasOwnProperty.call(version, 'parameters')) {
+    if (version.parameters) {
       const validate = ajv.compile(version.parameters);
       const valid = validate(block.parameters);
       if (!valid) {

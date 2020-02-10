@@ -2,6 +2,7 @@ import {
   Action,
   BaseAction,
   Block,
+  EventParams,
   LinkAction,
   LogAction,
   Message,
@@ -50,14 +51,23 @@ export interface Utils {
   showMessage: (message: string | Message) => void;
 }
 
-export interface Events {
+export type EventEmitters<E extends EventParams> = Record<
+  E['emit'],
+  (data: any, error?: string) => void
+>;
+export type EventListeners<E extends EventParams> = Record<
+  E['listen'],
+  (callback: (data: any, error?: string) => void) => void
+>;
+
+export interface Events<E extends EventParams = {}> {
   /**
    * Emit an Appsemble event.
    *
    * @param type The type of event to emit.
    * @param data Data to emit with the event.
    */
-  emit: (type: string | symbol, data: any) => void;
+  emit: EventEmitters<E>;
 
   /**
    * Remove an event listener for an Appsemble event.
@@ -65,7 +75,7 @@ export interface Events {
    * @param type The type of event to listen remove the listener from.
    * @param callback The callback to remove.
    */
-  off: (type: string | symbol, callback: (event: Event) => any) => void;
+  off: EventListeners<E>;
 
   /**
    * Add an event listener for an Appsemble event.
@@ -73,13 +83,13 @@ export interface Events {
    * @param type The type of event to listen on.
    * @param callback A callback to register for the event.
    */
-  on: (type: string | symbol, callback: (event: Event) => any) => void;
+  on: EventListeners<E>;
 }
 
 /**
  * The parameters that get passed to the bootstrap function.
  */
-export interface BootstrapParams<P = any, A = {}> {
+export interface BootstrapParams<P = any, A = {}, E extends EventParams = {}> {
   /**
    * The actions that may be dispatched by the block.
    */
@@ -88,7 +98,7 @@ export interface BootstrapParams<P = any, A = {}> {
   /**
    * The block as it is defined in the app definition.
    */
-  block: Block<P, A>;
+  block: Block<P, A, E>;
 
   /**
    * Any kind of data that has been passed in by some context.
@@ -98,7 +108,7 @@ export interface BootstrapParams<P = any, A = {}> {
   /**
    * Event related functions and constants.
    */
-  events: Events;
+  events: Events<E>;
 
   /**
    * URL parameters of the current route.
@@ -129,8 +139,8 @@ export interface BootstrapParams<P = any, A = {}> {
 /**
  * @private
  */
-export type BootstrapFunction<P = any, A = {}> = (
-  params: BootstrapParams<P, A>,
+export type BootstrapFunction<P = any, A = {}, E extends EventParams = {}> = (
+  params: BootstrapParams<P, A, E>,
 ) => Promisable<void>;
 
 /**
@@ -148,7 +158,9 @@ export interface AppsembleBootstrapEvent extends CustomEvent {
  *
  * @param fn The bootstrap function to register
  */
-export function bootstrap<P = any, A = {}>(fn: BootstrapFunction<P, A>): void {
+export function bootstrap<P = any, A = {}, E extends EventParams = {}>(
+  fn: BootstrapFunction<P, A, E>,
+): void {
   const event = new CustomEvent('AppsembleBootstrap', {
     detail: {
       fn,
@@ -168,10 +180,10 @@ export function bootstrap<P = any, A = {}>(fn: BootstrapFunction<P, A>): void {
  *
  * @param fn The bootstrap function to register.
  */
-export function attach<P = any, A = {}>(
-  fn: (params: BootstrapParams<P, A>) => Promisable<HTMLElement | void>,
+export function attach<P = any, A = {}, E extends EventParams = {}>(
+  fn: (params: BootstrapParams<P, A, E>) => Promisable<HTMLElement | void>,
 ): void {
-  bootstrap<P, A>(
+  bootstrap<P, A, E>(
     async (params): Promise<void> => {
       const { shadowRoot } = params;
 

@@ -1,10 +1,11 @@
+layout: hidden
+
 types:
-  parameters: Parameters
+  file: block.ts
   events: Events
 
 actions:
   onLoad:
     required: true
-layout: static
 
 output: dist

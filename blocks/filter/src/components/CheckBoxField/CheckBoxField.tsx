@@ -1,7 +1,7 @@
 import { Icon } from '@appsemble/react-components';
 import React from 'react';
 
-import { Enum } from '../../../types';
+import { Enum } from '../../../block';
 import styles from './CheckBoxField.css';
 
 interface CheckBoxFieldProps {

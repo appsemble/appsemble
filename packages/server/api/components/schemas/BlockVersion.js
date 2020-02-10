@@ -24,9 +24,10 @@ export default {
           remaining space on the page.
         - **\`static\`**: The block will be positioned in the main page. It will take up a fixed
           amount of space.
+        - **\`hidden\`**: The block will not be rendered at all.
       `,
       default: 'grow',
-      enum: ['float', 'grow', 'static'],
+      enum: ['float', 'grow', 'static', 'hidden'],
     },
     actions: {
       type: 'object',
@@ -43,6 +44,18 @@ export default {
         If the parameters of a block definition don’t conform to this schema, the app definition
         will be considered invalid.
       `,
+    },
+    events: {
+      type: 'object',
+      description: 'An object describing the names of the events the block can listen and emit to.',
+      properties: {
+        listen: {
+          additionalProperties: { type: 'string' },
+        },
+        emit: {
+          additionalProperties: { type: 'string' },
+        },
+      },
     },
     resources: {
       type: 'object',

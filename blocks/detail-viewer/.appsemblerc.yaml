@@ -1,9 +1,6 @@
 types:
   file: block.ts
   parameters: Parameters
-
-actions:
-  onLoad:
-    required: true
+  events: Events
 
 output: dist

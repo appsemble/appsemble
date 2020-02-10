@@ -21,7 +21,7 @@ export default async function indexHandler(ctx) {
   });
   const blocks = filterBlocks(Object.values(getAppBlocks(app.definition)));
   const blockManifests = await BlockVersion.findAll({
-    attributes: ['name', 'version', 'layout', 'actions'],
+    attributes: ['name', 'version', 'layout', 'actions', 'events'],
     include: [
       {
         attributes: ['filename'],
@@ -65,13 +65,16 @@ export default async function indexHandler(ctx) {
   } else {
     const [settingsHash, settings] = createSettings({
       apiUrl: host,
-      blockManifests: blockManifests.map(({ BlockAssets, actions, layout, name, version }) => ({
-        name,
-        version,
-        layout,
-        actions,
-        files: BlockAssets.map(({ filename }) => filename),
-      })),
+      blockManifests: blockManifests.map(
+        ({ BlockAssets, actions, events, layout, name, version }) => ({
+          name,
+          version,
+          layout,
+          actions,
+          events,
+          files: BlockAssets.map(({ filename }) => filename),
+        }),
+      ),
       id: app.id,
       vapidPublicKey: app.vapidPublicKey,
       organizationId: app.OrganizationId,

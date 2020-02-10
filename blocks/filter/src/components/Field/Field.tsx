@@ -1,8 +1,8 @@
 import classNames from 'classnames';
-import React from 'react';
-import { WrappedComponentProps } from 'react-intl';
+import React, { useCallback } from 'react';
+import { useIntl } from 'react-intl';
 
-import { Filter, FilterField, RangeFilter } from '../../../types';
+import { Filter, FilterField, RangeFilter } from '../../../block';
 import CheckBoxField from '../CheckBoxField';
 import DateField from '../DateField';
 import EnumField from '../EnumField';
@@ -10,7 +10,7 @@ import StringField from '../StringField';
 import styles from './Field.css';
 import messages from './messages';
 
-interface FieldProps extends WrappedComponentProps {
+interface FieldProps {
   displayLabel?: boolean;
   filter: Filter;
   loading: boolean;
@@ -25,39 +25,31 @@ interface FieldProps extends WrappedComponentProps {
     | React.ChangeEventHandler<HTMLSelectElement>;
 }
 
-export default class Field extends React.Component<FieldProps & FilterField> {
-  static defaultProps: Partial<FieldProps & FilterField> = {
-    displayLabel: true,
-    emptyLabel: '',
-    label: undefined,
-    range: false,
-    type: null,
-    icon: undefined,
-  };
+export default function Field({
+  enum: enumerator,
+  displayLabel = true,
+  emptyLabel = '',
+  label = undefined,
+  range = false,
+  type = null,
+  icon = undefined,
+  onCheckBoxChange,
+  filter,
+  onChange,
+  onRangeChange,
+  ...props
+}: FieldProps & FilterField): JSX.Element {
+  const intl = useIntl();
+  const { name } = props;
 
-  generateField = (): React.ReactNode => {
-    const {
-      displayLabel,
-      emptyLabel,
-      enum: enumerator,
-      filter,
-      intl,
-      onChange,
-      onCheckBoxChange,
-      onRangeChange,
-      range,
-      type,
-      ...props
-    } = this.props;
-
-    const { name } = this.props;
-
+  const generateField = useCallback((): React.ReactNode => {
     if (enumerator) {
       switch (type) {
         case 'checkbox':
           return (
             <CheckBoxField
               enumerator={enumerator}
+              name={name}
               onChange={onCheckBoxChange}
               value={filter[name] as string[]}
               {...props}
@@ -119,27 +111,35 @@ export default class Field extends React.Component<FieldProps & FilterField> {
           );
       }
     }
-  };
+  }, [
+    emptyLabel,
+    enumerator,
+    filter,
+    intl,
+    name,
+    onChange,
+    onCheckBoxChange,
+    onRangeChange,
+    props,
+    range,
+    type,
+  ]);
 
-  render(): JSX.Element {
-    const { displayLabel, name, range, label = name, icon } = this.props;
+  const Control = generateField();
 
-    const Control = this.generateField();
-
-    return (
-      <div className="field ">
-        {displayLabel && (
-          <label className="label" htmlFor={`filter${name}`}>
-            {icon && (
-              <span className="icon">
-                <i className={`fas fa-${icon}`} />
-              </span>
-            )}
-            {label}
-          </label>
-        )}
-        <div className={classNames('field', { 'is-grouped': range })}>{Control}</div>
-      </div>
-    );
-  }
+  return (
+    <div className="field ">
+      {displayLabel && (
+        <label className="label" htmlFor={`filter${name}`}>
+          {icon && (
+            <span className="icon">
+              <i className={`fas fa-${icon}`} />
+            </span>
+          )}
+          {label}
+        </label>
+      )}
+      <div className={classNames('field', { 'is-grouped': range })}>{Control}</div>
+    </div>
+  );
 }
