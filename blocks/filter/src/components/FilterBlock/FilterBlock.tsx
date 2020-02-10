@@ -98,10 +98,10 @@ export default class FilterBlock extends React.Component<FilterBlockProps, Filte
 
   resetFilter = (e?: React.MouseEvent<HTMLButtonElement>, skipHighlighted = true): void => {
     const {
-      events,
       block: {
         parameters: { fields, highlight },
       },
+      events,
     } = this.props;
 
     if (e && (e.target as HTMLButtonElement).disabled) {
@@ -110,7 +110,7 @@ export default class FilterBlock extends React.Component<FilterBlockProps, Filte
 
     const defaultFilter = fields
       .filter(field => (skipHighlighted ? field.name !== highlight : true))
-      .reduce<Filter>((acc, { name, defaultValue, type }) => {
+      .reduce<Filter>((acc, { defaultValue, name, type }) => {
         if (defaultValue) {
           acc[name] = defaultValue;
         } else if (type === 'checkbox') {
@@ -184,7 +184,7 @@ export default class FilterBlock extends React.Component<FilterBlockProps, Filte
   };
 
   onCheckBoxChange = async ({
-    target: { name, checked, value },
+    target: { checked, name, value },
   }: React.ChangeEvent<HTMLInputElement>): Promise<void> => {
     this.setState(({ filter }) => {
       const entry = (filter[name] as string[]) || [];

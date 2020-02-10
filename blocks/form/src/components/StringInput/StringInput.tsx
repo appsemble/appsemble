@@ -12,7 +12,7 @@ type StringInputProps = InputProps<string, StringField>;
  */
 export default function StringInput({
   error,
-  field: { multiline, name, placeholder, label, maxLength, readOnly, required, format },
+  field: { format, label, maxLength, multiline, name, placeholder, readOnly, required },
   onInput,
   value = '',
 }: StringInputProps): VNode {

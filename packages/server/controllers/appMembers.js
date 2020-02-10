@@ -22,7 +22,7 @@ export async function getAppMembers(ctx) {
 
 export async function getAppMember(ctx) {
   const { appId, memberId } = ctx.params;
-  const { App, User, Organization } = ctx.db.models;
+  const { App, Organization, User } = ctx.db.models;
 
   const app = await App.findByPk(appId, {
     include: [{ model: User, where: { id: memberId }, required: false }, Organization],

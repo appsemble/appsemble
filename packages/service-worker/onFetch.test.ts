@@ -128,7 +128,7 @@ it('should pass through API explorer requests', async () => {
 });
 
 it('should pass asset requests', async () => {
-  const request = new Request('/api/assets/1');
+  const request = new Request('/api/apps/26/assets/1');
   await trigger('fetch', request);
   expect(utils.cacheFirst).not.toHaveBeenCalled();
   expect(utils.requestFirst).not.toHaveBeenCalled();

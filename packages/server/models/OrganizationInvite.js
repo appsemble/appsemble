@@ -20,7 +20,7 @@ export default sequelize => {
     },
   );
 
-  OrganizationInvite.associate = ({ User, Organization }) => {
+  OrganizationInvite.associate = ({ Organization, User }) => {
     OrganizationInvite.belongsTo(Organization);
     OrganizationInvite.belongsTo(User);
   };

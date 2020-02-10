@@ -57,7 +57,7 @@ export default function ServiceWorkerRegistrationProvider({
     let sub = await registration.pushManager.getSubscription();
 
     if (!sub) {
-      const { vapidPublicKey, id } = settings;
+      const { id, vapidPublicKey } = settings;
       const options = {
         applicationServerKey: urlB64ToUint8Array(vapidPublicKey),
         userVisibleOnly: true,

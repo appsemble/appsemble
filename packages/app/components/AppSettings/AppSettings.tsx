@@ -44,8 +44,8 @@ export default function AppSettings(): React.ReactElement {
   const [subscriptions, setSubscriptions] = React.useState<ResourceState>();
   const { definition } = useAppDefinition();
   const {
-    subscribe,
     requestPermission,
+    subscribe,
     subscription,
     unsubscribe,
   } = useServiceWorkerRegistration();

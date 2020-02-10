@@ -19,7 +19,7 @@ export default function CheckBoxField({
 }: CheckBoxFieldProps): React.ReactElement {
   return (
     <div className={styles.container}>
-      {enumerator.map(({ icon, value, label }) => (
+      {enumerator.map(({ icon, label, value }) => (
         <div key={`${name}${value}`} className={styles.inputContainer}>
           <input
             checked={parentValue.includes(value)}

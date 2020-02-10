@@ -69,7 +69,7 @@ describe('compileFilters', () => {
     },
   ];
 
-  it.each(fixtures)('should process %p', ({ data, mapper, expected }) => {
+  it.each(fixtures)('should process %p', ({ data, expected, mapper }) => {
     const fn = compileFilters(mapper);
     const result = fn(data);
     expect(result).toStrictEqual(expected);
@@ -85,7 +85,7 @@ describe('remapData', () => {
     },
   ];
 
-  it.each(fixtures)('should process %j', ({ data, mapper, expected }) => {
+  it.each(fixtures)('should process %j', ({ data, expected, mapper }) => {
     const result = remapData(mapper, data);
     expect(result).toStrictEqual(expected);
   });

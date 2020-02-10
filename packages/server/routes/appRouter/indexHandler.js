@@ -66,7 +66,7 @@ export default async function indexHandler(ctx) {
     const [settingsHash, settings] = createSettings({
       apiUrl: host,
       blockManifests: blockManifests.map(
-        ({ BlockAssets, name, version, layout, actions, events }) => ({
+        ({ BlockAssets, actions, events, layout, name, version }) => ({
           name,
           version,
           layout,

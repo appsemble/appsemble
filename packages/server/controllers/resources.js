@@ -48,7 +48,7 @@ function verifyResourceDefinition(app, resourceType) {
   };
 }
 
-function generateQuery(ctx, { updatedHash, createdHash }) {
+function generateQuery(ctx, { createdHash, updatedHash }) {
   if (ctx.querystring) {
     try {
       return parseOData(
@@ -73,7 +73,7 @@ function generateQuery(ctx, { updatedHash, createdHash }) {
  * @param {Object} object Object to iterate through
  * @param {string[]} keys Keys to match with
  */
-const deepRename = (object, keys, { updatedHash, createdHash }) => {
+const deepRename = (object, keys, { createdHash, updatedHash }) => {
   if (!object) {
     return {};
   }
@@ -157,7 +157,7 @@ async function verifyAppRole(ctx, app, resource, resourceType, action) {
   }
 
   const member = app.Users.find(u => u.id === user.id);
-  const { role: defaultRole, policy } = app.definition.security.default;
+  const { policy, role: defaultRole } = app.definition.security.default;
   let role;
 
   if (member) {
@@ -276,7 +276,7 @@ export async function queryResources(ctx) {
 
   const query = generateQuery(ctx, { updatedHash, createdHash });
   const { appId, resourceType } = ctx.params;
-  const { App, User, Organization } = ctx.db.models;
+  const { App, Organization, User } = ctx.db.models;
   const { user } = ctx.state;
 
   const app = await App.findByPk(appId, {
@@ -324,8 +324,8 @@ export async function queryResources(ctx) {
 }
 
 export async function getResourceById(ctx) {
-  const { appId, resourceType, resourceId } = ctx.params;
-  const { App, User, Organization } = ctx.db.models;
+  const { appId, resourceId, resourceType } = ctx.params;
+  const { App, Organization, User } = ctx.db.models;
   const { user } = ctx.state;
 
   const app = await App.findByPk(appId, {
@@ -368,7 +368,7 @@ export async function getResourceById(ctx) {
 }
 
 export async function getResourceSubscription(ctx) {
-  const { appId, resourceType, resourceId } = ctx.params;
+  const { appId, resourceId, resourceType } = ctx.params;
   const { App, AppSubscription, Resource, ResourceSubscription } = ctx.db.models;
   const { endpoint } = ctx.query;
 
@@ -454,7 +454,7 @@ export async function createResource(ctx) {
     throw boom;
   }
 
-  const { id, created, updated } = await app.createResource({
+  const { created, id, updated } = await app.createResource({
     type: resourceType,
     data: resource,
     UserId: user && user.id,
@@ -479,8 +479,8 @@ export async function createResource(ctx) {
 }
 
 export async function updateResource(ctx) {
-  const { appId, resourceType, resourceId } = ctx.params;
-  const { App, Resource, User, Organization } = ctx.db.models;
+  const { appId, resourceId, resourceType } = ctx.params;
+  const { App, Organization, Resource, User } = ctx.db.models;
   const { user } = ctx.state;
 
   const app = await App.findByPk(appId, {
@@ -564,8 +564,8 @@ export async function updateResource(ctx) {
 }
 
 export async function deleteResource(ctx) {
-  const { appId, resourceType, resourceId } = ctx.params;
-  const { App, Resource, User, Organization } = ctx.db.models;
+  const { appId, resourceId, resourceType } = ctx.params;
+  const { App, Organization, Resource, User } = ctx.db.models;
   const { user } = ctx.state;
 
   const app = await App.findByPk(appId, {

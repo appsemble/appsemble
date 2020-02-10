@@ -19,7 +19,7 @@ function readTSConfig(tsConfigPath) {
   if (!Object.prototype.hasOwnProperty.call(config, 'extends')) {
     return config.compilerOptions;
   }
-  const { dir, name, ext } = path.parse(config.extends);
+  const { dir, ext, name } = path.parse(config.extends);
   return {
     ...readTSConfig(path.resolve(path.dirname(tsConfigPath), dir, `${name}${ext || '.json'}`)),
     ...config.compilerOptions,

@@ -12,7 +12,7 @@ import loadWebpackConfig from './loadWebpackConfig';
  * @param {string} params.webpackConfig The path of the webpack config to use.
  * @param {string} params.config The config of the block to build.
  */
-export default async function buildBlock({ path, webpackConfig, config }) {
+export default async function buildBlock({ config, path, webpackConfig }) {
   const conf = merge.smart(
     await loadWebpackConfig(webpackConfig, config.id, {
       mode: 'production',

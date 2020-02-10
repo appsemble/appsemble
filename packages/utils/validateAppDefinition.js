@@ -91,7 +91,7 @@ export function validateSecurityRoles(securityDefinition, role, checkedRoles = [
  *
  * @param {} definition The definition of the app
  */
-export function validateSecurity({ roles, pages, security }) {
+export function validateSecurity({ pages, roles, security }) {
   if (!Object.keys(security.roles).includes(security.default.role)) {
     throw new AppsembleValidationError(
       `Default role ‘${security.default.role}’ does not exist in list of roles.`,

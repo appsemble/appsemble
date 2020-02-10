@@ -8,7 +8,7 @@ import createGetters, { BlockActions, BlockParameters, Events } from './createGe
 import loadMarkers, { makeFilter } from './loadMarkers';
 
 attach<BlockParameters, BlockActions, Events>(
-  ({ actions, block, data, events, shadowRoot, utils, theme: { primaryColor, tileLayer } }) => {
+  ({ actions, block, data, events, shadowRoot, theme: { primaryColor, tileLayer }, utils }) => {
     const node = shadowRoot.appendChild(document.createElement('div'));
     const fetched = new Set<number>();
 

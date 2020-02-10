@@ -29,7 +29,7 @@ export default class MonacoEditor extends React.Component<MonacoEditorProps> {
   };
 
   componentDidMount(): void {
-    const { value, language, options } = this.props;
+    const { language, options, value } = this.props;
     const model = editor.createModel(value, language);
 
     this.editor = editor.create(this.node.current, options);
@@ -48,7 +48,7 @@ export default class MonacoEditor extends React.Component<MonacoEditorProps> {
   }
 
   componentDidUpdate(prevProps: MonacoEditorProps): void {
-    const { value, language, theme, options } = this.props;
+    const { language, options, theme, value } = this.props;
 
     this.editor.updateOptions(options);
     const model = this.editor.getModel();

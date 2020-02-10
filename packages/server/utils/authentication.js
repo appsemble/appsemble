@@ -45,7 +45,7 @@ export default function authentication(
     },
 
     async studio(accessToken) {
-      const { sub } = jwt.verify(accessToken, secret, { aud: host });
+      const { sub } = jwt.verify(accessToken, secret, { audience: host });
       return { id: sub };
     },
   };

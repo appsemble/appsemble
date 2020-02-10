@@ -5,7 +5,7 @@ import { verify } from 'jsonwebtoken';
 import createJWTResponse from '../utils/createJWTResponse';
 
 export async function getUser(ctx) {
-  const { User, Organization, EmailAuthorization } = ctx.db.models;
+  const { EmailAuthorization, Organization, User } = ctx.db.models;
   const { user } = ctx.state;
 
   const dbUser = await User.findOne({
@@ -35,7 +35,7 @@ export async function getUser(ctx) {
 }
 
 export async function getUserOrganizations(ctx) {
-  const { User, Organization } = ctx.db.models;
+  const { Organization, User } = ctx.db.models;
   const { user } = ctx.state;
 
   const dbUser = await User.findOne({
@@ -56,9 +56,9 @@ export async function getUserOrganizations(ctx) {
 }
 
 export async function updateUser(ctx) {
-  const { User, EmailAuthorization } = ctx.db.models;
+  const { EmailAuthorization, User } = ctx.db.models;
   const { user } = ctx.state;
-  const { name, email } = ctx.request.body;
+  const { email, name } = ctx.request.body;
 
   const dbUser = await User.findOne({
     where: { id: user.id },
@@ -107,7 +107,7 @@ export async function listEmails(ctx) {
 
 export async function addEmail(ctx) {
   const { mailer } = ctx;
-  const { User, EmailAuthorization } = ctx.db.models;
+  const { EmailAuthorization, User } = ctx.db.models;
   const { user } = ctx.state;
   const { email } = ctx.request.body;
 
@@ -143,7 +143,7 @@ export async function addEmail(ctx) {
 }
 
 export async function removeEmail(ctx) {
-  const { User, EmailAuthorization, OAuthAuthorization } = ctx.db.models;
+  const { EmailAuthorization, OAuthAuthorization, User } = ctx.db.models;
   const { user } = ctx.state;
   const { email } = ctx.request.body;
 
