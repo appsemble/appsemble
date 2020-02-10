@@ -2,7 +2,7 @@
 import { BlockProps, FormattedMessage } from '@appsemble/preact';
 import classNames from 'classnames';
 import { h, VNode } from 'preact';
-import { useCallback, useState } from 'preact/hooks';
+import { useCallback, useEffect, useState } from 'preact/hooks';
 
 import { Actions, Events, Field, FileField, Parameters } from '../../../block';
 import BooleanInput from '../BooleanInput';
@@ -60,8 +60,9 @@ const validators: { [name: string]: Validator } = {
   boolean: () => true,
 };
 
-export default function FormBlock({ actions, block, data }: FormBlockProps): VNode {
+export default function FormBlock({ actions, block, data, events }: FormBlockProps): VNode {
   const [errors, setErrors] = useState<{ [name: string]: string }>({});
+  const [disabled, setDisabled] = useState(!!block.events?.listen?.data);
   const [validity, setValidity] = useState({
     ...block.parameters.fields.reduce<{ [name: string]: boolean }>(
       (acc, { defaultValue, name, required, type }) => {
@@ -145,13 +146,24 @@ export default function FormBlock({ actions, block, data }: FormBlockProps): VNo
     [actions, submitting, values],
   );
 
+  const receiveData = useCallback((d: any) => {
+    setDisabled(false);
+    setValues(d);
+  }, []);
+
+  useEffect(() => {
+    events.on.data(receiveData);
+  }, [block, events, receiveData]);
+
   return (
     <form className={styles.root} noValidate onSubmit={onSubmit}>
+      {disabled && <progress className="progress is-small is-primary" />}
       {block.parameters.fields.map(field => {
         const Comp = inputs[field.type];
         return (
           <Comp
             key={field.name}
+            disabled={disabled}
             error={errors[field.name]}
             // @ts-ignore
             field={field}
@@ -164,7 +176,7 @@ export default function FormBlock({ actions, block, data }: FormBlockProps): VNo
       <div className={styles.buttonWrapper}>
         <button
           className={classNames('button', 'is-primary', styles.submit)}
-          disabled={!Object.values(validity).every(v => v) || submitting}
+          disabled={!Object.values(validity).every(v => v) || submitting || disabled}
           type="submit"
         >
           <FormattedMessage id="submit" />

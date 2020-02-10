@@ -64,6 +64,15 @@ export default class GeoCoordinatesInput extends Component<GeoCoordinatesInputPr
     this.map = map;
   }
 
+  componentDidUpdate(): void {
+    const { disabled } = this.props;
+    if (disabled) {
+      this.map.dragging.disable();
+    } else {
+      this.map.dragging.enable();
+    }
+  }
+
   onReset = (): void => {
     this.map.setView(this.locationMarker.getLatLng(), 16);
   };

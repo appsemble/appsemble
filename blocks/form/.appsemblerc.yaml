@@ -1,6 +1,7 @@
 types:
   file: block.ts
   parameters: Parameters
+  events: Events
 
 actions:
   onSubmit:

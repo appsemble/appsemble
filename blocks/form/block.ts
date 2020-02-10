@@ -73,6 +73,11 @@ export type Field =
 
 export interface InputProps<T, F extends Field> {
   /**
+   * Whether or not the field should be disabled.
+   */
+  disabled?: boolean;
+
+  /**
    * A field error object.
    */
   error: string;
