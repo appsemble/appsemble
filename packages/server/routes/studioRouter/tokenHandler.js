@@ -33,7 +33,12 @@ function checkTokenRequestParameters(query, allowed) {
  */
 export default async function tokenHandler(ctx) {
   const { argv, header } = ctx;
-  const { EmailAuthorization, OAuth2ClientCredentials, User } = ctx.db.models;
+  const {
+    EmailAuthorization,
+    OAuth2AuthorizationCode,
+    OAuth2ClientCredentials,
+    User,
+  } = ctx.db.models;
   let aud;
   let refreshToken;
   let scope;
@@ -48,6 +53,43 @@ export default async function tokenHandler(ctx) {
     );
 
     switch (grantType) {
+      case 'authorization_code': {
+        const {
+          client_id: clientId,
+          code,
+          redirect_uri: redirectUri,
+          scope: requestedScope,
+        } = checkTokenRequestParameters(query, ['client_id', 'code', 'redirect_uri', 'scope']);
+        if (!header.referer) {
+          throw new GrantError('invalid_request');
+        }
+        const referer = new URL(header.referer);
+        if (redirectUri !== `${referer.origin}${referer.pathname}`) {
+          throw new GrantError('invalid_request');
+        }
+        const match = clientId.match(/^app:(\d+)/);
+        if (!match) {
+          throw new GrantError('invalid_client');
+        }
+        const authorizationCode = await OAuth2AuthorizationCode.findOne({
+          attributes: ['expires', 'UserId'],
+          where: { code, AppId: match[1], redirectUri },
+        });
+        if (!authorizationCode) {
+          throw new GrantError('invalid_client');
+        }
+        await OAuth2AuthorizationCode.destroy({
+          where: { code },
+        });
+        if (isPast(authorizationCode.expires)) {
+          throw new GrantError('invalid_grant');
+        }
+        aud = clientId;
+        refreshToken = true;
+        scope = requestedScope;
+        sub = authorizationCode.UserId;
+        break;
+      }
       case 'client_credentials': {
         const { scope: requestedScope } = checkTokenRequestParameters(query, ['scope']);
         const authorization = /^Basic (.*)$/.exec(header.authorization);

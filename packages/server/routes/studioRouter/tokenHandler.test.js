@@ -1,6 +1,7 @@
 import { createInstance } from 'axios-test-instance';
 import { verify } from 'jsonwebtoken';
 import lolex from 'lolex';
+import { SequelizeInstanceError } from 'sequelize';
 
 import createServer from '../../utils/createServer';
 import testSchema from '../../utils/test/testSchema';
@@ -64,6 +65,164 @@ it('should not accept unsupported grant types', async () => {
     data: {
       error: 'unsupported_grant_type',
     },
+  });
+});
+
+describe('authorization_code', () => {
+  it('should handle a missing referer header', async () => {
+    const response = await request.post(
+      '/oauth2/token',
+      new URLSearchParams({
+        client_id: 'app:123',
+        code: '123',
+        grant_type: 'authorization_code',
+        redirect_uri: 'http://foo.bar.localhost',
+        scope: 'openid',
+      }),
+    );
+    expect(response).toMatchObject({
+      status: 400,
+      data: {
+        error: 'invalid_request',
+      },
+    });
+  });
+
+  it('should fail if the referer doesn’t match the redirect URI', async () => {
+    const response = await request.post(
+      '/oauth2/token',
+      new URLSearchParams({
+        client_id: 'app:42',
+        code: '123',
+        grant_type: 'authorization_code',
+        redirect_uri: 'http://foo.bar.localhost:9999/',
+        scope: 'openid',
+      }),
+      { headers: { referer: 'http://fooz.baz.localhost:9999/' } },
+    );
+    expect(response).toMatchObject({
+      status: 400,
+      data: {
+        error: 'invalid_request',
+      },
+    });
+  });
+
+  it('should fail if the client id doesn’t match an app id', async () => {
+    const response = await request.post(
+      '/oauth2/token',
+      new URLSearchParams({
+        client_id: 'invalid',
+        code: '123',
+        grant_type: 'authorization_code',
+        redirect_uri: 'http://foo.bar.localhost:9999/',
+        scope: 'openid',
+      }),
+      { headers: { referer: 'http://foo.bar.localhost:9999/' } },
+    );
+    expect(response).toMatchObject({
+      status: 400,
+      data: {
+        error: 'invalid_client',
+      },
+    });
+  });
+
+  it('should fail if no authorization code has been registered', async () => {
+    const response = await request.post(
+      '/oauth2/token',
+      new URLSearchParams({
+        client_id: 'app:42',
+        code: '123',
+        grant_type: 'authorization_code',
+        redirect_uri: 'http://foo.bar.localhost:9999/',
+        scope: 'openid',
+      }),
+      { headers: { referer: 'http://foo.bar.localhost:9999/' } },
+    );
+    expect(response).toMatchObject({
+      status: 400,
+      data: {
+        error: 'invalid_client',
+      },
+    });
+  });
+
+  it('should not allow expired authorization codes', async () => {
+    const organization = await user.createOrganization({ id: 'org' });
+    const app = await organization.createApp({
+      definition: '',
+      vapidPrivateKey: '',
+      vapidPublicKey: '',
+    });
+    const expires = new Date('1999-12-31T23:00:00Z');
+    const authCode = await app.createOAuth2AuthorizationCode({
+      code: '123',
+      UserId: user.id,
+      expires,
+      redirectUri: 'http://foo.bar.localhost:9999/',
+    });
+    const response = await request.post(
+      '/oauth2/token',
+      new URLSearchParams({
+        client_id: `app:${app.id}`,
+        code: '123',
+        grant_type: 'authorization_code',
+        redirect_uri: 'http://foo.bar.localhost:9999/',
+        scope: 'openid',
+      }),
+      { headers: { referer: 'http://foo.bar.localhost:9999/' } },
+    );
+    expect(response).toMatchObject({
+      status: 400,
+      data: {
+        error: 'invalid_grant',
+      },
+    });
+    await expect(authCode.reload()).rejects.toThrow(
+      SequelizeInstanceError,
+      'Instance could not be reloaded because it does not exist anymore (find call returned null)',
+    );
+  });
+
+  it('should return an access token response if the authorization code is valid', async () => {
+    const organization = await user.createOrganization({ id: 'org' });
+    const app = await organization.createApp({
+      definition: '',
+      vapidPrivateKey: '',
+      vapidPublicKey: '',
+    });
+    const expires = new Date('2000-01-01T00:10:00Z');
+    const authCode = await app.createOAuth2AuthorizationCode({
+      code: '123',
+      UserId: user.id,
+      expires,
+      redirectUri: 'http://foo.bar.localhost:9999/',
+    });
+    const response = await request.post(
+      '/oauth2/token',
+      new URLSearchParams({
+        client_id: `app:${app.id}`,
+        code: '123',
+        grant_type: 'authorization_code',
+        redirect_uri: 'http://foo.bar.localhost:9999/',
+        scope: 'openid',
+      }),
+      { headers: { referer: 'http://foo.bar.localhost:9999/' } },
+    );
+    expect(response).toMatchObject({
+      status: 200,
+      data: {
+        access_token: expect.stringMatching(/[\w-]+\.[\w-]+\.[\w-]/),
+        expires_in: 3600,
+        refresh_token: expect.stringMatching(/[\w-]+\.[\w-]+\.[\w-]/),
+        token_type: 'bearer',
+      },
+    });
+    await expect(authCode.reload()).rejects.toThrow(
+      SequelizeInstanceError,
+      'Instance could not be reloaded because it does not exist anymore (find call returned null)',
+    );
   });
 });
 

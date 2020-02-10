@@ -21,12 +21,12 @@ export default tinyRouter([
     get: iconHandler,
   },
   {
-    route: /^\/connect\/(?<provider>[a-z]+)$/,
+    route: /^\/oauth2\/(?<provider>[a-z]+)$/,
     // By calling next, this handler delegates the request to grant instead of the index handler.
     get: (ctx, next) => next(),
   },
   {
-    route: /^\/connect\/(?<provider>[a-z]+)\/callback$/,
+    route: /^\/oauth2\/(?<provider>[a-z]+)\/callback$/,
     get: oauth2CallbackHandler,
   },
   {

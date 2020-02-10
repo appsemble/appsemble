@@ -14,13 +14,13 @@ import styles from './EmailLogin.css';
 import messages from './messages';
 
 export default function EmailLogin(): React.ReactElement {
-  const { login } = useUser();
+  const { passwordLogin } = useUser();
 
   return (
     <SimpleForm
       className={classNames('container', styles.root)}
       defaultValues={{ username: '', password: '' }}
-      onSubmit={login}
+      onSubmit={passwordLogin}
     >
       <SimpleFormError>{() => <FormattedMessage {...messages.loginFailed} />}</SimpleFormError>
       <SimpleInput

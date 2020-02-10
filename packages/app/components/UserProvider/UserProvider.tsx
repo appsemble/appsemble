@@ -1,23 +1,49 @@
+import { Loader } from '@appsemble/react-components';
 import { AppMember, UserInfo } from '@appsemble/types';
 import axios from 'axios';
 import jwtDecode from 'jwt-decode';
 import * as React from 'react';
 
 import settings from '../../utils/settings';
-
-interface UserContext {
-  isLoggedIn: boolean;
-  userInfo: UserInfo;
-  role: string;
-  login: (params: { username: string; password: string }) => any;
-  logout: () => any;
-}
+import { useAppDefinition } from '../AppDefinitionProvider';
 
 interface JwtPayload {
   exp: number;
   scopes: string;
   sub: number;
   iss: string;
+}
+
+const initialState: LoginState = {
+  isLoggedIn: false,
+  role: null,
+  userInfo: null,
+};
+
+interface PasswordLoginParams {
+  username: string;
+  password: string;
+}
+
+interface AuthorizationCodeLoginParams {
+  code: string;
+  // eslint-disable-next-line camelcase
+  redirect_uri: string;
+}
+
+interface UserContext extends LoginState {
+  isLoggedIn: boolean;
+  userInfo: UserInfo;
+  role: string;
+  passwordLogin: (params: PasswordLoginParams) => Promise<void>;
+  authorizationCodeLogin: (params: AuthorizationCodeLoginParams) => Promise<void>;
+  logout: () => any;
+}
+
+interface LoginState {
+  isLoggedIn: boolean;
+  role: string;
+  userInfo: UserInfo;
 }
 
 interface UserProviderProps {
@@ -41,50 +67,25 @@ interface TokenResponse {
   refresh_token: string;
 }
 
+const REFRESH_TOKEN = 'refresh_token';
+
 const Context = React.createContext<UserContext>(null);
 
 export default function UserProvider({ children }: UserProviderProps): React.ReactElement {
-  const [isLoggedIn, setLoggedIn] = React.useState(false);
-  const [accessToken, setAccessToken] = React.useState<string>(localStorage.access_token);
-  const [payload, setPayload] = React.useState<JwtPayload>(null);
-  const [refreshToken, setRefreshToken] = React.useState<string>(localStorage.refresh_token);
-  const [userInfo, setUserInfo] = React.useState<UserInfo>(null);
-  const [role, setRole] = React.useState<string>(null);
-
-  const exp = payload?.exp;
-  const sub = payload?.sub;
+  const { definition } = useAppDefinition();
+  // If there is no security definition, don’t even bother going into the loading state.
+  const [isLoading, setLoading] = React.useState(!!definition.security);
+  const [state, setState] = React.useState(initialState);
+  const [exp, setExp] = React.useState(null);
 
   /**
-   * Fetch the user info object, so it can be rendered in the profile menu.
-   */
-  const fetchUserInfo = React.useCallback(async () => {
-    const { data } = await axios.get<UserInfo>(`${settings.apiUrl}/api/connect/userinfo`);
-    setUserInfo(data);
-  }, []);
-
-  /**
-   * Fetch the role of the user within the app.
-   */
-  const fetchRole = React.useCallback(async () => {
-    const { data } = await axios.get<AppMember>(
-      `${settings.apiUrl}/api/apps/${settings.id}/members/${sub}`,
-    );
-    setRole(data.role);
-  }, [sub]);
-
-  /**
-   * When the user logs out, reset the entire state.
+   * Reset everything to its initial state for a logged out user.
    */
   const logout = React.useCallback(() => {
-    setLoggedIn(false);
-    setAccessToken(null);
-    setRefreshToken(null);
-    setPayload(null);
-    setUserInfo(null);
-    setRole(null);
-    delete axios.defaults.headers.common.authentication;
-    delete localStorage.access_token;
-    delete localStorage.refresh_token;
+    localStorage.removeItem(REFRESH_TOKEN);
+    setExp(null);
+    setState(initialState);
+    delete axios.defaults.headers.common.authorization;
   }, []);
 
   /**
@@ -93,64 +94,102 @@ export default function UserProvider({ children }: UserProviderProps): React.Rea
    * @param grantType The grant type to authenticate with
    * @param params Additional parameters, which depend on the grant type.
    */
-  const getToken = React.useCallback(
+  const fetchToken = React.useCallback(
     async (grantType: string, params: Record<string, string>) => {
-      try {
-        const { data } = await axios.post<TokenResponse>(
-          `${settings.apiUrl}/oauth2/token`,
-          new URLSearchParams({
-            client_id: `app:${settings.id}`,
-            grant_type: grantType,
-            scope: 'openid',
-            ...params,
-          }),
-        );
-        setAccessToken(data.access_token);
-        setRefreshToken(data.refresh_token);
-        setLoggedIn(true);
-      } catch (error) {
-        logout();
-      }
+      const {
+        data: { access_token: accessToken, refresh_token: rt },
+      } = await axios.post<TokenResponse>(
+        `${settings.apiUrl}/oauth2/token`,
+        new URLSearchParams({
+          client_id: `app:${settings.id}`,
+          grant_type: grantType,
+          scope: 'openid',
+          ...params,
+        }),
+      );
+      const payload = jwtDecode<JwtPayload>(accessToken);
+      localStorage.setItem(REFRESH_TOKEN, rt);
+      axios.defaults.headers.common.authorization = `Bearer ${accessToken}`;
+      setExp(payload.exp);
+      return payload;
     },
-    [logout],
+    [],
   );
 
   /**
-   * Login using the password grant type.
+   * Fetch an access token, the user info, and member role, or log out if any step fails.
    *
-   * @param params a username and password.
+   * @param grantType The grant type to authenticate with
+   * @param params Additional parameters, which depend on the grant type.
    */
-  const login = React.useCallback(params => getToken('password', params), [getToken]);
+  const login = React.useCallback(
+    async <P extends {}>(grantType: string, params: P) => {
+      try {
+        const { sub } = await fetchToken(grantType, params);
+        const [
+          { data: userInfo },
+          {
+            data: { role },
+          },
+        ] = await Promise.all([
+          axios.get<UserInfo>(`${settings.apiUrl}/api/connect/userinfo`),
+          axios.get<AppMember>(`${settings.apiUrl}/api/apps/${settings.id}/members/${sub}`),
+        ]);
+        setState({
+          isLoggedIn: true,
+          role,
+          userInfo,
+        });
+      } catch (error) {
+        logout();
+        throw error;
+      }
+    },
+    [fetchToken, logout],
+  );
 
   /**
-   * If an access token is set, configure axios, decode the payload, and store the token to local
-   * storage.
+   * Login using the discouraged password grant type.
    *
-   * If no access token is defined, reset everything.
+   * @param credentials The username and password.
    */
+  const passwordLogin = React.useCallback(
+    (credentials: PasswordLoginParams) => login('password', credentials),
+    [login],
+  );
+
+  /**
+   * Login using an OAuth2 authorization code.
+   *
+   * @param credentials The authorization code and redirect uri.
+   */
+  const authorizationCodeLogin = React.useCallback(
+    (credentials: AuthorizationCodeLoginParams) => login('authorization_code', credentials),
+    [login],
+  );
+
+  // Initialize the login session/
   React.useEffect(() => {
-    if (accessToken) {
-      axios.defaults.headers.common.authorization = `Bearer ${accessToken}`;
-      localStorage.access_token = accessToken;
-      setPayload(jwtDecode(accessToken));
-      setLoggedIn(true);
+    // If the app doesn’t have a security definition, don’t even bother initializing anything.
+    if (!definition.security) {
+      return;
+    }
+
+    const rt = localStorage.getItem(REFRESH_TOKEN);
+    if (rt) {
+      // If a refresh token is known, start a new session.
+      login('refresh_token', { refresh_token: rt }).finally(() => setLoading(false));
     } else {
+      // Otherwise make sure the state is fully reset.
       logout();
+      setLoading(false);
     }
-  }, [accessToken, logout]);
+  }, [definition, login, logout]);
 
-  /**
-   * If a refresh token is defined, store it into local storage. Otherwise, delete it.
-   */
+  // Handle refreshing access tokens
   React.useEffect(() => {
-    if (!refreshToken) {
-      delete localStorage.refresh_token;
-      return undefined;
-    }
-
-    // A refresh token is defined, but not the JWT payload of the access token. Something weird is
-    // going in. Log out to be sure.
-    if (!exp) {
+    // Don’t start the refresh token loop until an access token expiration is known.
+    if (exp == null) {
       return undefined;
     }
 
@@ -160,38 +199,42 @@ export default function UserProvider({ children }: UserProviderProps): React.Rea
     // Date.now() returns the date in milliseconds
     // timeout is how many milliseconds until the refresh token is almost expired. At this point,
     // start a token refresh.
-    const timeout = (exp - 300) * 1000 - Date.now();
+    // XXX
+    const timeout = (exp - 3595) * 1000 - Date.now();
 
-    localStorage.refresh_token = refreshToken;
-    const timeoutId = setTimeout(
-      () => getToken('refresh_token', { refresh_token: refreshToken }),
-      timeout,
-    );
+    const timeoutId = setTimeout(async () => {
+      const rt = localStorage.getItem(REFRESH_TOKEN);
+      // If the refresh token was somehow removed from local storage, log out.
+      if (!rt) {
+        logout();
+      }
+      try {
+        // Fetch a new access token, but do keep the original role and user info.
+        await fetchToken('refresh_token', { refresh_token: rt });
+      } catch (error) {
+        // If refreshing the session fails for any reason, log out the user.
+        logout();
+      }
+    }, timeout);
     return () => {
+      // If a new timeout is registered, clear the old one.
       clearTimeout(timeoutId);
     };
-  }, [exp, getToken, logout, refreshToken]);
+  }, [exp, fetchToken, logout]);
 
-  /**
-   * If the user is logged in, fetch the user info and app role. Otherwise, reset these.
-   */
-  React.useEffect(() => {
-    if (isLoggedIn) {
-      fetchUserInfo();
-      fetchRole();
-    } else {
-      setUserInfo(null);
-      setRole(null);
-    }
-  }, [fetchRole, fetchUserInfo, isLoggedIn]);
-
-  const value = React.useMemo(() => ({ isLoggedIn, login, logout, role, userInfo }), [
-    isLoggedIn,
-    login,
+  // The value is memoized to prevent unnecessary rerenders.
+  const value = React.useMemo(() => ({ authorizationCodeLogin, passwordLogin, logout, ...state }), [
+    authorizationCodeLogin,
+    passwordLogin,
     logout,
-    role,
-    userInfo,
+    state,
   ]);
+
+  // If security hasn’t been initialized yet, show a loader instead of the children. This prevents
+  // children from crashing when the context is still undefined.
+  if (isLoading) {
+    return <Loader />;
+  }
 
   return <Context.Provider value={value}>{children}</Context.Provider>;
 }
