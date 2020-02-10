@@ -143,7 +143,7 @@ export default class FilterBlock extends React.Component<FilterBlockProps, Filte
   };
 
   onMergeRefresh = (): void => {
-    const { newData, data } = this.state;
+    const { data, newData } = this.state;
     const { events } = this.props;
 
     const updatedData = [...newData, ...data];

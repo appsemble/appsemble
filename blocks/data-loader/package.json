@@ -3,7 +3,6 @@
   "version": "0.10.0",
   "private": true,
   "dependencies": {
-    "@appsemble/sdk": "0.10.0",
-    "@appsemble/utils": "0.10.0"
+    "@appsemble/sdk": "0.10.0"
   }
 }

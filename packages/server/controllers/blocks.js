@@ -76,11 +76,11 @@ export async function createBlockVersion(ctx) {
     await db.transaction(async transaction => {
       const {
         actions = null,
+        events,
         layout = null,
         parameters,
         resources = null,
         version,
-        events,
       } = await BlockVersion.create({ ...data, name }, { transaction });
 
       Object.keys(files).forEach(filename => {
