@@ -23,7 +23,7 @@ attach<BlockParameters, BlockActions, Events>(
       layers: [new TileLayer(tileLayer)],
     })
       .on('moveend', () => {
-        events.emit.refresh({
+        events.emit.move({
           $filter: makeFilter(
             [block.parameters.latitude || 'latitude', block.parameters.longitude || 'longitude'],
             map.getBounds(),
