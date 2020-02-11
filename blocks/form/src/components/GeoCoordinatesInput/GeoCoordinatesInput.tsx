@@ -78,6 +78,7 @@ export default class GeoCoordinatesInput extends Component<GeoCoordinatesInputPr
   };
 
   render(): VNode {
+    const { disabled } = this.props;
     return (
       <div className={styles.root}>
         <div ref={this.ref} className={styles.map} />
@@ -86,6 +87,7 @@ export default class GeoCoordinatesInput extends Component<GeoCoordinatesInputPr
         </div>
         <button
           className={classNames('button', styles.resetButton)}
+          disabled={disabled}
           onClick={this.onReset}
           type="button"
         >
