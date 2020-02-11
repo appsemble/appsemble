@@ -53,8 +53,8 @@ export default class AppSettings extends React.Component<
   onSubmit = async (event: FormEvent): Promise<void> => {
     event.preventDefault();
 
-    const { app, updateApp, intl } = this.props;
-    const { domain, path, private: isPrivate, icon, originalValues } = this.state;
+    const { app, intl, updateApp } = this.props;
+    const { domain, icon, originalValues, path, private: isPrivate } = this.state;
     const push = this.context;
 
     const data = new FormData();
@@ -111,7 +111,7 @@ export default class AppSettings extends React.Component<
   static contextType = MessagesContext;
 
   render(): JSX.Element {
-    const { domain, iconUrl, icon, private: isPrivate, path, dirty } = this.state;
+    const { dirty, domain, icon, iconUrl, path, private: isPrivate } = this.state;
     const { app, intl } = this.props;
 
     return (

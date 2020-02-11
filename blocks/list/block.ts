@@ -8,6 +8,9 @@ export interface Parameters {
 }
 
 export interface Actions {
-  onLoad: {};
   onClick: {};
+}
+
+export interface Events {
+  listen: 'data';
 }

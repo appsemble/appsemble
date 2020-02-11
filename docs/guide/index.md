@@ -9,5 +9,6 @@ continue on this basic app to add more advanced features.
 
 1. [Appsemble studio](studio)
 2. [Basic app](basic-app)
-3. [Theming](theming)
-4. [Custom domain name](dns)
+3. [Events](events)
+4. [Theming](theming)
+5. [Custom domain name](dns)

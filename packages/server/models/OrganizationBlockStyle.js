@@ -27,7 +27,7 @@ export default sequelize => {
     },
   );
 
-  OrganizationBlockStyle.associate = ({ Organization, BlockDefinition }) => {
+  OrganizationBlockStyle.associate = ({ BlockDefinition, Organization }) => {
     OrganizationBlockStyle.belongsTo(Organization, { foreignKey: 'OrganizationId' });
     OrganizationBlockStyle.belongsTo(BlockDefinition, { foreignKey: 'BlockDefinitionId' });
   };

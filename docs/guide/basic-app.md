@@ -107,7 +107,7 @@ Let’s replace _“Example Page A”_ and _“Example Page B”_ with a single 
 +       - type: list
 +         version: 0.10.0
 +         events:
-+           on:
++           listen:
 +             data: people
 +         parameters:
 +           fields:
@@ -200,7 +200,7 @@ pages:
       - type: list
         version: 0.10.0
         events:
-          on:
+          listen:
             data: people
         parameters:
           fields:
@@ -307,7 +307,7 @@ pages:
       - type: list
         version: 0.10.0
         events:
-          on:
+          listen:
             data: people
         parameters:
           fields:
@@ -342,7 +342,7 @@ Add a new page:
 +       - type: detail-viewer
 +         version: 0.10.0
 +         events:
-+           on:
++           listen:
 +             data: person
 +         parameters:
 +           fields:
@@ -431,7 +431,7 @@ pages:
       - type: list
         version: 0.10.0
         events:
-          on:
+          listen:
             data: people
         parameters:
           fields:
@@ -456,7 +456,7 @@ pages:
       - type: detail-viewer
         version: 0.10.0
         events:
-          on:
+          listen:
             data: person
         parameters:
           fields:

@@ -18,7 +18,7 @@ export default {
       },
       url: {
         type: 'string',
-        default: '/api/{resource}',
+        default: '/api/apps/{appId}/{resource}',
         description: 'URL to use if not otherwise specified.',
       },
       id: {
@@ -38,7 +38,7 @@ export default {
           },
           url: {
             type: 'string',
-            default: '/api/{resource}',
+            default: '/api/apps/{appId}/{resource}',
             description: 'URL to use for this type of request.',
           },
         },
@@ -55,7 +55,7 @@ export default {
           },
           url: {
             type: 'string',
-            default: '/api/{resource}/{id}',
+            default: '/api/apps/{appId}/{resource}/{id}',
             description: 'URL to use for this type of request.',
           },
         },
@@ -72,7 +72,7 @@ export default {
           },
           url: {
             type: 'string',
-            default: '/api/{resource}/{id}',
+            default: '/api/apps/{appId}/{resource}/{id}',
             description: 'URL to use for this type of request.',
           },
           hooks: {
@@ -92,7 +92,7 @@ export default {
           },
           url: {
             type: 'string',
-            default: '/api/{resource}/{id}',
+            default: '/api/apps/{appId}/{resource}/{id}',
             description: 'URL to use for this type of request.',
           },
           hooks: {
@@ -112,7 +112,7 @@ export default {
           },
           url: {
             type: 'string',
-            default: '/api/{resource}/{id}',
+            default: '/api/apps/{appId}/{resource}/{id}',
             description: 'URL to use for this type of request.',
           },
           hooks: {
@@ -134,7 +134,7 @@ export default {
           },
           url: {
             type: 'string',
-            default: '/api/assets',
+            default: '/api/apps/{appId}/assets',
           },
           serialize: {
             type: 'string',

@@ -18,7 +18,7 @@ export default sequelize => {
     },
   );
 
-  Asset.associate = ({ User, App }) => {
+  Asset.associate = ({ App, User }) => {
     Asset.belongsTo(User, { foreignKey: { allowNull: true } });
     Asset.belongsTo(App, { foreignKey: { allowNull: true } });
   };

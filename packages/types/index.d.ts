@@ -175,10 +175,15 @@ export interface Message {
 
 export type Navigation = 'bottom' | 'left-menu' | 'hidden';
 
+export interface EventParams {
+  emit?: string;
+  listen?: string;
+}
+
 /**
  * A block that is displayed on a page.
  */
-export interface Block<P = any, A = {}> {
+export interface Block<P = any, A = {}, E extends EventParams = Required<EventParams>> {
   /**
    * The type of the block.
    *
@@ -220,6 +225,16 @@ export interface Block<P = any, A = {}> {
    * The exact meaning of the parameters depends on the block type.
    */
   actions?: A;
+
+  /**
+   * Mapping of the events the block can listen to and emit.
+   *
+   * The exact meaning of the parameters depends on the block type.
+   */
+  events?: {
+    listen: Record<E['listen'], string>;
+    emit: Record<E['emit'], string>;
+  };
 
   /**
    * A list of roles that are allowed to view this block.
@@ -374,6 +389,7 @@ export type Action =
   | BaseAction<'flow.finish'>
   | BaseAction<'flow.next'>
   | BaseAction<'noop'>
+  | BaseAction<'event'>
   | LinkAction
   | LogAction
   | RequestAction
@@ -529,6 +545,13 @@ export interface ResourceSubscribeActionDefinition
   action?: 'create' | 'update' | 'delete';
 }
 
+export interface EventActionDefinition extends BaseActionDefinition<'event'> {
+  /**
+   * The name of the event to emit to.
+   */
+  event: string;
+}
+
 export type ActionDefinition =
   | BaseActionDefinition<'flow.back'>
   | BaseActionDefinition<'flow.cancel'>
@@ -545,6 +568,7 @@ export type ActionDefinition =
   | ResourceQueryActionDefinition
   | ResourceUpdateActionDefinition
   | ResourceSubscribeActionDefinition
+  | EventActionDefinition
 
   // XXX This shouldn’t be here, but TypeScript won’t shut up without it.
   | RequestLikeActionDefinition;
@@ -575,7 +599,7 @@ export interface BlockManifest {
   /**
    * The type of layout to be used for the block.
    */
-  layout: 'float' | 'static' | 'grow' | null;
+  layout: 'float' | 'static' | 'grow' | 'hidden' | null;
 
   /**
    * Array of urls associated to the files of the block.
@@ -586,6 +610,14 @@ export interface BlockManifest {
    * The actions that are supported by a block.
    */
   actions?: Record<string, ActionType>;
+
+  /**
+   * The events that are supported by a block.
+   */
+  events?: {
+    listen: string[];
+    emit: string[];
+  };
 }
 
 /**

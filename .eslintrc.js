@@ -2,7 +2,7 @@ const path = require('path');
 const restricted = require('eslint-restricted-globals');
 
 const configs = [path.join(__dirname, 'config/**'), '*.config.js', '.*rc.js', '**/jest.setup.ts'];
-const tests = ['**/*.test.{js,jsx,ts,tsx}'];
+const tests = ['**/*.test.{js,ts,tsx}'];
 
 module.exports = {
   root: true,
@@ -14,12 +14,14 @@ module.exports = {
     'plugin:prettier/recommended',
     'prettier/react',
   ],
-  parser: 'babel-eslint',
-  plugins: ['babel', 'filenames', 'simple-import-sort'],
+  parserOptions: {
+    ecmaVersion: 2020,
+  },
+  plugins: ['filenames', 'simple-import-sort', 'sort-destructure-keys'],
   settings: {
     'import/resolver': {
       node: {
-        extensions: ['.js', '.jsx', '.ts', '.tsx'],
+        extensions: ['.js', '.ts', '.tsx'],
       },
     },
     'import/parsers': {
@@ -42,18 +44,10 @@ module.exports = {
     'no-inline-comments': 'error',
     'filenames/match-regex': ['error', /^\.?[a-z\d]+(\.config|\.test)?$/i, true],
     'filenames/match-exported': 'error',
-    'no-invalid-this': 'off',
-    'no-unused-expressions': 'off',
-    'babel/no-invalid-this': 'error',
-    'babel/quotes': ['error', 'single', { avoidEscape: true, allowTemplateLiterals: false }],
-    'babel/no-unused-expressions': 'error',
+    quotes: ['error', 'single', { avoidEscape: true, allowTemplateLiterals: false }],
     'eslint-comments/no-unused-disable': 'error',
     'eslint-comments/no-use': ['error', { allow: ['eslint-disable-next-line'] }],
-    'import/extensions': [
-      'error',
-      'ignorePackages',
-      { js: 'never', jsx: 'never', ts: 'never', tsx: 'never' },
-    ],
+    'import/extensions': ['error', 'ignorePackages', { js: 'never', ts: 'never', tsx: 'never' }],
     'import/no-extraneous-dependencies': ['error', { devDependencies: [...configs, ...tests] }],
     // Ignore optional dependencies.
     'import/no-unresolved': ['error', { commonjs: true, ignore: ['keytar'] }],
@@ -68,10 +62,12 @@ module.exports = {
       },
     ],
     'import/no-cycle': 'off',
+    'react/jsx-filename-extension': 'off',
     'react/jsx-no-useless-fragment': 'error',
     'react/jsx-props-no-spreading': 'off',
     'react/jsx-sort-props': 'error',
     'simple-import-sort/sort': 'error',
+    'sort-destructure-keys/sort-destructure-keys': 'error',
     'jsx-a11y/label-has-associated-control': 'off',
 
     // These rules are related to AirBnB not supporting static class properties.
@@ -96,7 +92,6 @@ module.exports = {
         'no-use-before-define': 'off',
         'filenames/match-regex': ['error', /^\.?[a-z]+(\.config|\.setup|\.test|\.d)?$/i, true],
         'import/no-unresolved': 'off',
-        'react/jsx-filename-extension': 'off',
         'react/no-unknown-property': 'off',
         'react/prop-types': 'off',
         '@typescript-eslint/adjacent-overload-signatures': 'error',
@@ -191,7 +186,6 @@ module.exports = {
       rules: {
         'import/no-extraneous-dependencies': 'off',
         'prettier/prettier': 'off',
-        'react/jsx-filename-extension': 'off',
       },
     },
   ],

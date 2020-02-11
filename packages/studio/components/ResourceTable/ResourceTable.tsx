@@ -49,7 +49,7 @@ export default function ResourceTable({ app }: ResourceTableProps): React.ReactE
   const [error, setError] = React.useState(false);
   const warningDialog = useToggle();
 
-  const { id: appId, mode, resourceName, resourceId } = match.params;
+  const { id: appId, mode, resourceId, resourceName } = match.params;
 
   const promptDeleteResource = React.useCallback(
     (resource: Resource) => {

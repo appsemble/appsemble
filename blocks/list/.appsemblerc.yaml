@@ -1,9 +1,8 @@
 types:
   parameters: Parameters
+  events: Events
 
 actions:
-  onLoad:
-    required: true
   onClick:
     required: false
 

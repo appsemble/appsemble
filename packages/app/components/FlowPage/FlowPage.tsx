@@ -14,10 +14,11 @@ interface FlowPageProps extends React.ComponentPropsWithoutRef<typeof BlockList>
 }
 
 export default function FlowPage({
-  page,
   data: inputData,
-  showDialog,
   definition,
+  ee,
+  page,
+  showDialog,
   ...blockListProps
 }: FlowPageProps): React.ReactElement {
   const history = useHistory();
@@ -98,8 +99,10 @@ export default function FlowPage({
         extraCreators: {},
         flowActions,
         pushNotifications,
+        ee,
+        pageReady: null,
       }),
-    [definition, flowActions, history, page, pushNotifications, showDialog],
+    [definition, ee, flowActions, history, page, pushNotifications, showDialog],
   );
 
   return (
@@ -109,6 +112,7 @@ export default function FlowPage({
         {...blockListProps}
         blocks={page.subPages[currentPage].blocks}
         data={data}
+        ee={ee}
         showDialog={showDialog}
         transitions
       />

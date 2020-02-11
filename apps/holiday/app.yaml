@@ -4,11 +4,16 @@ defaultPage: Holidays in NL
 pages:
   - name: Holidays in NL
     blocks:
-      - type: list
+      - type: data-loader
+        version: 0.10.0
         actions:
           onLoad:
             url: https://cors-anywhere.herokuapp.com/https://date.nager.at/Api/v2/NextPublicHolidays/NL
             type: request
+        events:
+          emit:
+            data: holidays
+      - type: list
         version: 0.10.0
         parameters:
           fields:
@@ -18,13 +23,21 @@ pages:
               label: Name (EN)
             - name: localName
               label: Name (NL)
+        events:
+          listen:
+            data: holidays
   - name: Holidays in US
     blocks:
-      - type: list
+      - type: data-loader
+        version: 0.10.0
         actions:
           onLoad:
             url: https://cors-anywhere.herokuapp.com/https://date.nager.at/Api/v2/NextPublicHolidays/US
             type: request
+        events:
+          emit:
+            data: holidays
+      - type: list
         version: 0.10.0
         parameters:
           fields:
@@ -32,13 +45,21 @@ pages:
               label: Date
             - name: name
               label: Name (EN)
+        events:
+          listen:
+            data: holidays
   - name: Holidays in DE
     blocks:
-      - type: list
+      - type: data-loader
+        version: 0.10.0
         actions:
           onLoad:
             url: https://cors-anywhere.herokuapp.com/https://date.nager.at/Api/v2/NextPublicHolidays/DE
             type: request
+        events:
+          emit:
+            data: holidays
+      - type: list
         version: 0.10.0
         parameters:
           fields:
@@ -48,13 +69,21 @@ pages:
               label: Name (EN)
             - name: localName
               label: Name (DE)
+        events:
+          listen:
+            data: holidays
   - name: Holidays in ES
     blocks:
-      - type: list
+      - type: data-loader
+        version: 0.10.0
         actions:
           onLoad:
             url: https://cors-anywhere.herokuapp.com/https://date.nager.at/Api/v2/NextPublicHolidays/ES
             type: request
+        events:
+          emit:
+            data: holidays
+      - type: list
         version: 0.10.0
         parameters:
           fields:
@@ -64,3 +93,6 @@ pages:
               label: Name (EN)
             - name: localName
               label: Name (ES)
+        events:
+          listen:
+            data: holidays

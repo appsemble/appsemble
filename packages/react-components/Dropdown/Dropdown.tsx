@@ -11,9 +11,9 @@ interface DropdownProps {
 }
 
 export default function Dropdown({
-  label,
   children,
   className,
+  label,
 }: DropdownProps): React.ReactElement {
   const [isActive, setActive] = React.useState();
   const ref = React.useRef<HTMLDivElement>();

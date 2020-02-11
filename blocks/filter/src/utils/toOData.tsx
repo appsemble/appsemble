@@ -1,4 +1,4 @@
-import { Filter, FilterField, RangeFilter } from '../../types';
+import { Filter, FilterField, RangeFilter } from '../../block';
 
 export default function toOData(fields: FilterField[], filter: Filter): string {
   return Object.entries(filter)

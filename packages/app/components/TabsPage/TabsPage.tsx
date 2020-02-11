@@ -32,7 +32,7 @@ export default function TabsPage({
         </ul>
       </div>
       <Switch>
-        {subPages.map(({ name, blocks }) => (
+        {subPages.map(({ blocks, name }) => (
           <Route
             key={name}
             exact

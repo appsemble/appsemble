@@ -1,4 +1,3 @@
-#!/usr/bin/env node
 import { loggerMiddleware } from '@appsemble/node-utils';
 import faPkg from '@fortawesome/fontawesome-free/package.json';
 import Boom from '@hapi/boom';

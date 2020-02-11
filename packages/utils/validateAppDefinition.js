@@ -39,7 +39,7 @@ async function checkBlocks(blocks, blockVersions) {
       return { ...acc, [loc]: `Unknown block version “${type}@${block.version}”` };
     }
     const version = versions.get(block.version);
-    if (Object.prototype.hasOwnProperty.call(version, 'parameters')) {
+    if (version.parameters) {
       const validate = ajv.compile(version.parameters);
       const valid = validate(block.parameters);
       if (!valid) {
@@ -91,7 +91,7 @@ export function validateSecurityRoles(securityDefinition, role, checkedRoles = [
  *
  * @param {} definition The definition of the app
  */
-export function validateSecurity({ roles, pages, security }) {
+export function validateSecurity({ pages, roles, security }) {
   if (!Object.keys(security.roles).includes(security.default.role)) {
     throw new AppsembleValidationError(
       `Default role ‘${security.default.role}’ does not exist in list of roles.`,

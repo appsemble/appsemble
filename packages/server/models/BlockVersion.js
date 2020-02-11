@@ -10,6 +10,7 @@ export default sequelize => {
       actions: { type: DataTypes.JSON },
       parameters: { type: DataTypes.JSON },
       resources: { type: DataTypes.JSON },
+      events: { type: DataTypes.JSON },
     },
     {
       freezeTableName: true,

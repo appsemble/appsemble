@@ -1,2 +1,2 @@
-export { default as createReact } from './react';
+export { default as preact } from './preact';
 export { default as createVanilla } from './vanilla';

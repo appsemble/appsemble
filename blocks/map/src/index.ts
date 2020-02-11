@@ -4,11 +4,11 @@ import './index.css';
 import { attach } from '@appsemble/sdk';
 import { CircleMarker, LocationEvent, Map, TileLayer } from 'leaflet';
 
-import createGetters, { BlockActions, BlockParameters } from './createGetters';
-import loadMarkers from './loadMarkers';
+import createGetters, { BlockActions, BlockParameters, Events } from './createGetters';
+import loadMarkers, { makeFilter } from './loadMarkers';
 
-attach<BlockParameters, BlockActions>(
-  ({ actions, block, data, shadowRoot, utils, theme: { primaryColor, tileLayer } }) => {
+attach<BlockParameters, BlockActions, Events>(
+  ({ actions, block, data, events, shadowRoot, theme: { primaryColor, tileLayer }, utils }) => {
     const node = shadowRoot.appendChild(document.createElement('div'));
     const fetched = new Set<number>();
 
@@ -23,7 +23,12 @@ attach<BlockParameters, BlockActions>(
       layers: [new TileLayer(tileLayer)],
     })
       .on('moveend', () => {
-        loadMarkers(map, actions, block.parameters, fetched, get, data);
+        events.emit.move({
+          $filter: makeFilter(
+            [block.parameters.latitude || 'latitude', block.parameters.longitude || 'longitude'],
+            map.getBounds(),
+          ),
+        });
       })
       .once('locationerror', error => {
         // See: https://developer.mozilla.org/en-US/docs/Web/API/PositionError
@@ -47,5 +52,9 @@ attach<BlockParameters, BlockActions>(
     if (!Number.isNaN(lat) && !Number.isNaN(lng)) {
       map.setView([lat, lng], 18);
     }
+
+    events.on.data(d => {
+      loadMarkers(d, fetched, get, data, actions, map);
+    });
   },
 );

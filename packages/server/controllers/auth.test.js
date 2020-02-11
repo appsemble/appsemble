@@ -18,7 +18,7 @@ describe('auth controller', () => {
 
     server = await createServer({ db, argv: { host: 'http://localhost', secret: 'test' } });
     request = await createInstance(server);
-    ({ User, ResetPasswordToken, EmailAuthorization } = db.models);
+    ({ EmailAuthorization, ResetPasswordToken, User } = db.models);
   }, 10e3);
 
   beforeEach(async () => {

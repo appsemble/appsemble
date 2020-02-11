@@ -175,11 +175,11 @@ export function createApp(recipe: App, organization: { id: string }): AppThunk {
 
 export function createTemplateApp(
   {
-    templateId,
-    name,
     description,
     isPrivate,
+    name,
     resources,
+    templateId,
   }: {
     templateId: number;
     name: string;

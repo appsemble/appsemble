@@ -2,6 +2,7 @@ import { Action, ActionDefinition } from '@appsemble/types';
 
 import { MakeActionParameters } from '../../types';
 import dialog from './dialog';
+import event from './event';
 import flow from './flow';
 import link from './link';
 import log from './log';
@@ -22,6 +23,7 @@ export default {
   noop,
   request,
   dialog,
+  event,
   'flow.next': flow.next,
   'flow.finish': flow.finish,
   'flow.back': flow.back,

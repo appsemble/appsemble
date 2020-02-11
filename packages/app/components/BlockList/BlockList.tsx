@@ -32,29 +32,41 @@ function filterBlocks(security: Security, blocks: BlockType[], userRole: string)
 }
 
 export default function BlockList({
+  blocks,
   data,
   ee,
   extraCreators,
   flowActions,
   showDialog,
   transitions,
-  blocks,
 }: BlockListProps): React.ReactElement {
   const { definition, revision } = useAppDefinition();
   const { role } = useUser();
 
   const blockStatus = React.useRef(blocks.map(() => false));
+  const [pageReady, setPageReady] = React.useState<Promise<void>>();
+
   const [isLoading, setLoading] = React.useState(true);
+  const resolvePageReady = React.useRef<Function>();
 
   const ready = React.useCallback(
     (block: BlockType) => {
       blockStatus.current[blocks.indexOf(block)] = true;
       if (blockStatus.current.every(Boolean)) {
         setLoading(false);
+        resolvePageReady.current();
       }
     },
     [blocks],
   );
+
+  React.useEffect(() => {
+    setPageReady(
+      new Promise(resolve => {
+        resolvePageReady.current = resolve;
+      }),
+    );
+  }, [blocks]);
 
   const blockList = filterBlocks(definition.security, blocks, role);
   const list = blockList.map((block, index) => {
@@ -69,6 +81,7 @@ export default function BlockList({
         ee={ee}
         extraCreators={extraCreators}
         flowActions={flowActions}
+        pageReady={pageReady}
         ready={ready}
         showDialog={showDialog}
       />

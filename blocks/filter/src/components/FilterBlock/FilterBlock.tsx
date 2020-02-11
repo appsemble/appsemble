@@ -4,7 +4,7 @@ import classNames from 'classnames';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import { Actions, Filter, Parameters, RangeFilter } from '../../../types';
+import { Actions, Events, Filter, Parameters, RangeFilter } from '../../../block';
 import toOData from '../../utils/toOData';
 import Field from '../Field';
 import styles from './FilterBlock.css';
@@ -21,7 +21,7 @@ interface FilterBlockState {
   typingTimer?: NodeJS.Timeout;
 }
 
-export type FilterBlockProps = BlockProps<Parameters, Actions>;
+export type FilterBlockProps = BlockProps<Parameters, Actions, Events>;
 
 export default class FilterBlock extends React.Component<FilterBlockProps, FilterBlockState> {
   refreshTimer: NodeJS.Timeout = null;
@@ -98,10 +98,10 @@ export default class FilterBlock extends React.Component<FilterBlockProps, Filte
 
   resetFilter = (e?: React.MouseEvent<HTMLButtonElement>, skipHighlighted = true): void => {
     const {
-      events,
       block: {
-        parameters: { event, fields, highlight },
+        parameters: { fields, highlight },
       },
+      events,
     } = this.props;
 
     if (e && (e.target as HTMLButtonElement).disabled) {
@@ -110,7 +110,7 @@ export default class FilterBlock extends React.Component<FilterBlockProps, Filte
 
     const defaultFilter = fields
       .filter(field => (skipHighlighted ? field.name !== highlight : true))
-      .reduce<Filter>((acc, { name, defaultValue, type }) => {
+      .reduce<Filter>((acc, { defaultValue, name, type }) => {
         if (defaultValue) {
           acc[name] = defaultValue;
         } else if (type === 'checkbox') {
@@ -122,7 +122,7 @@ export default class FilterBlock extends React.Component<FilterBlockProps, Filte
 
     this.setState({ currentFilter: defaultFilter, filter: defaultFilter }, async () => {
       const data = await this.fetchData();
-      events.emit(event, data);
+      events.emit.data(data);
       this.setState({ data, newData: [] });
     });
   };
@@ -143,17 +143,12 @@ export default class FilterBlock extends React.Component<FilterBlockProps, Filte
   };
 
   onMergeRefresh = (): void => {
-    const { newData, data } = this.state;
-    const {
-      events,
-      block: {
-        parameters: { event },
-      },
-    } = this.props;
+    const { data, newData } = this.state;
+    const { events } = this.props;
 
     const updatedData = [...newData, ...data];
 
-    events.emit(event, updatedData);
+    events.emit.data(updatedData);
     this.setState({ newData: [], data: updatedData });
   };
 
@@ -189,7 +184,7 @@ export default class FilterBlock extends React.Component<FilterBlockProps, Filte
   };
 
   onCheckBoxChange = async ({
-    target: { name, checked, value },
+    target: { checked, name, value },
   }: React.ChangeEvent<HTMLInputElement>): Promise<void> => {
     this.setState(({ filter }) => {
       const entry = (filter[name] as string[]) || [];
@@ -227,17 +222,12 @@ export default class FilterBlock extends React.Component<FilterBlockProps, Filte
   };
 
   onFilter = async (): Promise<void> => {
-    const {
-      block: {
-        parameters: { event },
-      },
-      events,
-    } = this.props;
+    const { events } = this.props;
 
     this.setState({ loading: true });
 
     const data = await this.fetchData();
-    events.emit(event, data);
+    events.emit.data(data);
 
     this.setState(({ filter }) => ({
       loading: false,
@@ -262,7 +252,7 @@ export default class FilterBlock extends React.Component<FilterBlockProps, Filte
     }
   };
 
-  render(): JSX.Element {
+  render(): React.ReactNode {
     const { block } = this.props;
     const { currentFilter, filter, isOpen, loading, newData } = this.state;
     const { fields, highlight } = block.parameters;

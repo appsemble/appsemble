@@ -40,6 +40,7 @@ interface BlockProps {
 
   showDialog: ShowDialogAction;
   ready(block: BlockType): void;
+  pageReady: Promise<void>;
 }
 
 /**
@@ -53,10 +54,11 @@ export default function Block({
   className,
   data,
   ee,
-  showDialog,
   extraCreators,
   flowActions,
+  pageReady,
   ready,
+  showDialog,
 }: BlockProps): React.ReactElement {
   const history = useHistory();
   const match = useRouteMatch();
@@ -81,17 +83,41 @@ export default function Block({
 
   React.useEffect(() => {
     const div = ref.current;
-    if (initialized || !div) {
+    if (initialized || (!div && manifest.layout !== 'hidden') || !pageReady) {
       return;
     }
     setInitialized(true);
 
-    const shadowRoot = div.attachShadow({ mode: 'closed' });
+    const shadowRoot = div?.attachShadow({ mode: 'closed' }) ?? null;
 
     const events = {
-      emit: (name: string, d: any) => ee.emit(name, d),
-      off: (name: string, callback: (data: any) => void) => ee.off(name, callback),
-      on: (name: string, callback: (data: any) => void) => ee.on(name, callback),
+      emit: Object.fromEntries(
+        (manifest.events?.emit ?? []).map(key => [
+          key,
+          block.events?.emit?.[key]
+            ? (d: any, error?: string) =>
+                ee.emit(block.events.emit[key], d, error === '' ? 'Error' : error)
+            : () => {},
+        ]),
+      ),
+      on: Object.fromEntries(
+        (manifest.events?.listen ?? []).map(key => [
+          key,
+          block.events?.listen?.[key]
+            ? (callback: (data: any, error?: string) => void) =>
+                ee.on(block.events.listen[key], callback)
+            : () => {},
+        ]),
+      ),
+      off: Object.fromEntries(
+        (manifest.events?.listen ?? []).map(key => [
+          key,
+          block.events?.listen?.[key]
+            ? (callback: (data: any, error?: string) => void) =>
+                ee.off(block.events.listen[key], callback)
+            : () => {},
+        ]),
+      ),
     };
 
     const actions = makeActions({
@@ -103,6 +129,8 @@ export default function Block({
       extraCreators,
       flowActions,
       pushNotifications,
+      pageReady,
+      ee,
     });
     const { theme: pageTheme } = definition.pages.find(
       page => normalize(page.name) === match.path.slice(1).split('/')[0],
@@ -130,19 +158,21 @@ export default function Block({
     };
 
     (async () => {
-      await Promise.all(
-        [
-          bulmaUrl,
-          FA_URL,
-          ...manifest.files
-            .filter(url => url.endsWith('.css'))
-            .map(url => prefixBlockURL(block, url)),
-          `${window.location.origin}/api/organizations/${settings.organizationId}/style/shared`,
-          `${window.location.origin}/api/organizations/${settings.organizationId}/style/block/${manifest.name}`,
-          `${window.location.origin}/api/apps/${settings.id}/style/block/${manifest.name}`,
-          (document.getElementById('appsemble-style-shared') as HTMLLinkElement)?.href,
-        ].map(url => injectCSS(shadowRoot, url)),
-      );
+      if (shadowRoot) {
+        await Promise.all(
+          [
+            bulmaUrl,
+            FA_URL,
+            ...manifest.files
+              .filter(url => url.endsWith('.css'))
+              .map(url => prefixBlockURL(block, url)),
+            `${window.location.origin}/api/organizations/${settings.organizationId}/style/shared`,
+            `${window.location.origin}/api/organizations/${settings.organizationId}/style/block/${manifest.name}`,
+            `${window.location.origin}/api/apps/${settings.id}/style/block/${manifest.name}`,
+            (document.getElementById('appsemble-style-shared') as HTMLLinkElement)?.href,
+          ].map(url => injectCSS(shadowRoot, url)),
+        );
+      }
 
       await callBootstrap(manifest, {
         actions,
@@ -169,6 +199,7 @@ export default function Block({
     location,
     manifest,
     match,
+    pageReady,
     push,
     pushNotifications,
     ready,
@@ -183,6 +214,8 @@ export default function Block({
       );
     case 'static':
       return <div ref={ref} className={classNames(styles.static, className)} />;
+    case 'hidden':
+      return null;
     default:
       return <div ref={ref} className={classNames(styles.grow, className)} />;
   }

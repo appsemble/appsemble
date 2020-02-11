@@ -1,10 +1,12 @@
 /** @jsx h */
 import { bootstrap as sdkBootstrap, BootstrapParams } from '@appsemble/sdk';
+import { EventParams } from '@appsemble/types';
 import IntlMessageFormat from 'intl-messageformat';
 import { ComponentType, createContext, Fragment, h, render, VNode } from 'preact';
 import { useContext } from 'preact/hooks';
 
-export interface BlockProps<P = any, A = {}> extends BootstrapParams<P, A> {
+export interface BlockProps<P = any, A = {}, E extends EventParams = {}>
+  extends BootstrapParams<P, A, E> {
   /**
    * The DOM node on which the block is mounted.
    */
@@ -18,11 +20,11 @@ const Context = createContext<BlockProps>(null);
 /**
  * Mount a Preact component returned by a bootstrap function in the shadow DOM of a block.
  */
-export function mount<P, A = {}>(
-  Component: ComponentType<BlockProps<P, A>>,
+export function mount<P, A = {}, E extends EventParams = {}>(
+  Component: ComponentType<BlockProps<P, A, E>>,
   messages?: Record<string, string>,
   createRoot: () => Element = () => document.createElement('div'),
-): (params: BootstrapParams<P, A>) => void {
+): (params: BootstrapParams<P, A, E>) => void {
   return params => {
     const preactRoot = params.shadowRoot.appendChild(createRoot());
 
@@ -49,12 +51,12 @@ export function mount<P, A = {}>(
   };
 }
 
-export function bootstrap<P, A = {}>(
-  Component: ComponentType<BlockProps<P, A>>,
+export function bootstrap<P, A = {}, E extends EventParams = {}>(
+  Component: ComponentType<BlockProps<P, A, E>>,
   messages?: Record<string, string>,
   reactRoot?: () => Element,
 ): void {
-  sdkBootstrap<P, A>(mount(Component, messages, reactRoot));
+  sdkBootstrap<P, A, E>(mount(Component, messages, reactRoot));
 }
 
 /**

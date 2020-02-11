@@ -14,10 +14,9 @@ Markers can be loaded from external sources or from Appsemble’s resource API.
 
 ## Actions
 
-| Action        | Required | Description                                                                                                                                                                               |
-| ------------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| onMarkerClick | false    | Action that gets dispatched when a marker is clicked.                                                                                                                                     |
-| onLoad        | true     | Action that gets dispatched when loading markers initially as well as when moving the map around. Will apply [OData filters](https://www.odata.org/) to limit the range of items fetched. |
+| Action        | Required | Description                                           |
+| ------------- | -------- | ----------------------------------------------------- |
+| onMarkerClick | false    | Action that gets dispatched when a marker is clicked. |
 
 ## Parameters
 
@@ -25,6 +24,20 @@ Markers can be loaded from external sources or from Appsemble’s resource API.
 | --------- | --------- | ---------------------------------------------------- |
 | longitude | longitude | The name of the field used to retrieve the longitude |
 | latitude  | latitude  | The name of the field used to retrieve the latitude  |
+
+## Events
+
+### Emit Events
+
+| Event | Description                                                                                                                                 |
+| ----- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| move  | Event that gets emitted when moving the map around. Will apply [OData filters](https://www.odata.org/) to limit the range of items fetched. |
+
+### Listen Events
+
+| Event | Description                                                                                                                   |
+| ----- | ----------------------------------------------------------------------------------------------------------------------------- |
+| data  | The event that is triggered when data is received. Compatible data that is received will be displayed. Must be a set of data. |
 
 ## Images
 

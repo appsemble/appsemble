@@ -48,7 +48,7 @@ module.exports = (env, argv) => {
         failOnUnused: production,
         patterns: ['app/**/*.*'],
         globOptions: {
-          ignore: ['**/node_modules/**', '**/package.json', '**/*.test.{js,jsx}'],
+          ignore: ['**/node_modules/**', '**/package.json', '**/*.test.{js,ts,tsx}'],
         },
       }),
       new MiniCssExtractPlugin({

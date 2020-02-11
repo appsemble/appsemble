@@ -3,7 +3,7 @@ import { logger } from '@appsemble/node-utils';
 import getBlockConfig from './getBlockConfig';
 import { post } from './request';
 
-export default async function registerBlock({ path, ignoreConflict }) {
+export default async function registerBlock({ ignoreConflict, path }) {
   const config = await getBlockConfig(path);
   logger.info(`Registering block ${config.id}`);
   const { description: desc, id } = config;

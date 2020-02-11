@@ -2,50 +2,62 @@ import * as React from 'react';
 import { useIntl } from 'react-intl';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 
-import useCounter from '../hooks/useCounter';
+import useForceUpdate from '../hooks/useForceUpdate';
 import { Message as Msg, MessagesContext } from '../hooks/useMessages';
-import Message from '../Message/Message';
+import Message from '../Message';
 import msgs from './messages';
 import styles from './Messages.css';
 
 interface MessagesProviderProps {
+  /**
+   * Children to which {@link useMessages} will be available.
+   */
   children: React.ReactNode;
 }
 
 interface UniqueMessage extends Msg {
   id: number;
+
+  dismiss?: () => void;
 }
 
+/**
+ * Render messages that may be pushed using {@link useMessages}.
+ */
 export default function MessagesProvider({ children }: MessagesProviderProps): React.ReactElement {
   const intl = useIntl();
+  const forceUpdate = useForceUpdate();
 
-  const counter = useCounter();
-  const [messages, setMessages] = React.useState<UniqueMessage[]>([]);
-  // When messages are dismissed, the dismiss callback needs a reference to the latest messages
-  // state. This is stored in the messagesRef.
-  const messagesRef = React.useRef<UniqueMessage[]>();
-  messagesRef.current = messages;
-
-  const dismiss = React.useCallback((message: UniqueMessage) => {
-    setMessages(messagesRef.current.filter(m => m !== message));
-  }, []);
+  // The counter is used as a key of messages.
+  const counter = React.useRef(0);
+  // Updating messages should not redefine the push callback.
+  const messages = React.useRef<UniqueMessage[]>([]);
 
   const push = React.useCallback(
     (message: Msg | string) => {
+      const id = counter.current;
+      counter.current += 1;
       const uniqueMessage: UniqueMessage =
-        typeof message === 'string'
-          ? { id: counter(), body: message }
-          : { id: counter(), ...message };
-      setMessages([...messages, uniqueMessage]);
+        typeof message === 'string' ? { id, body: message } : { id, ...message };
+
+      const dismiss = (): void => {
+        const index = messages.current.indexOf(uniqueMessage);
+        if (index !== -1) {
+          messages.current.splice(index, 1);
+          forceUpdate();
+        }
+      };
+      uniqueMessage.dismiss = dismiss;
+      messages.current.push(uniqueMessage);
+      // Since messages are in a ref, pushing a message won’t trigger a rerender.
+      forceUpdate();
       const { dismissable, timeout = dismissable ? undefined : 5e3 } = uniqueMessage;
 
       if (timeout) {
-        setTimeout(() => {
-          dismiss(uniqueMessage);
-        }, timeout);
+        setTimeout(dismiss, timeout);
       }
     },
-    [counter, dismiss, messages],
+    [forceUpdate],
   );
 
   return (
@@ -53,7 +65,7 @@ export default function MessagesProvider({ children }: MessagesProviderProps): R
       {children}
       <div className={styles.root}>
         <TransitionGroup>
-          {messages.map(message => (
+          {messages.current.map(message => (
             <CSSTransition
               key={message.id}
               classNames={{
@@ -70,7 +82,7 @@ export default function MessagesProvider({ children }: MessagesProviderProps): R
                   <button
                     aria-label={intl.formatMessage(msgs.dismiss)}
                     className={`delete ${styles.deleteButton}`}
-                    onClick={() => dismiss(message)}
+                    onClick={message.dismiss}
                     type="button"
                   />
                 )}

@@ -1,5 +1,6 @@
 import { Action } from '@appsemble/sdk';
 import { ActionDefinition, AppDefinition, Block, BlockManifest, UserInfo } from '@appsemble/types';
+import { EventEmitter } from 'events';
 import { RouteComponentProps } from 'react-router-dom';
 
 export interface User extends UserInfo {
@@ -48,6 +49,7 @@ export interface MakeActionParameters<D extends ActionDefinition> {
   onError?: Action;
   showDialog: ShowDialogAction;
   pushNotifications: ServiceWorkerRegistrationContextType;
+  ee: EventEmitter;
 }
 
 export type Permission = NotificationPermission | 'pending';

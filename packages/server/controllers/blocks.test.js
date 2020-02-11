@@ -152,6 +152,7 @@ describe('blocks', () => {
 
     expect(data).toStrictEqual({
       actions: null,
+      events: null,
       files: ['build/standing.png', 'build/testblock.js'],
       name: '@xkcd/standing',
       layout: null,
@@ -182,7 +183,7 @@ describe('blocks', () => {
 
     const { data } = await instance.get('/api/blocks/@xkcd/standing/versions');
     expect(data).toStrictEqual([
-      { actions: null, layout: null, resources: null, version: '1.32.9' },
+      { actions: null, events: null, layout: null, resources: null, version: '1.32.9' },
     ]);
   });
 
@@ -215,6 +216,7 @@ describe('blocks', () => {
 
     expect(data).toStrictEqual({
       actions: null,
+      events: null,
       files: ['build/standing.png', 'build/testblock.js'],
       name: '@xkcd/standing',
       parameters: null,

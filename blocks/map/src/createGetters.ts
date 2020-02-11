@@ -11,8 +11,12 @@ export interface BlockParameters {
 }
 
 export interface BlockActions {
-  onLoad: {};
   onMarkerClick: {};
+}
+
+export interface Events {
+  listen: 'data';
+  emit: 'move';
 }
 
 export default function createGetters(params: BlockParameters): LatLngMapper {
