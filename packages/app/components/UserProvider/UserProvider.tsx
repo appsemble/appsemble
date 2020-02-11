@@ -123,14 +123,23 @@ export default function UserProvider({ children }: UserProviderProps): React.Rea
     async <P extends {}>(grantType: string, params: P) => {
       try {
         const { sub } = await fetchToken(grantType, params);
-        const [
-          { data: userInfo },
-          {
-            data: { role },
-          },
-        ] = await Promise.all([
+        const [{ data: userInfo }, role] = await Promise.all([
           axios.get<UserInfo>(`${settings.apiUrl}/api/connect/userinfo`),
-          axios.get<AppMember>(`${settings.apiUrl}/api/apps/${settings.id}/members/${sub}`),
+          axios.get<AppMember>(`${settings.apiUrl}/api/apps/${settings.id}/members/${sub}`).then(
+            ({ data }) => data.role,
+            error => {
+              const { policy, role: defaultRole } = definition.security.default;
+              if (
+                policy === 'everyone' ||
+                (policy === 'organization' &&
+                  // XXX Make it so we don’t rely on the error message.
+                  error.data.message === 'User is not a member of the organization.')
+              ) {
+                return defaultRole;
+              }
+              throw error;
+            },
+          ),
         ]);
         setState({
           isLoggedIn: true,
@@ -142,7 +151,7 @@ export default function UserProvider({ children }: UserProviderProps): React.Rea
         throw error;
       }
     },
-    [fetchToken, logout],
+    [definition, fetchToken, logout],
   );
 
   /**
