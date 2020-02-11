@@ -168,9 +168,13 @@ export default function ClientCredentials(): React.ReactElement {
                     </time>
                   </td>
                   <td>
-                    <time dateTime={client.expires}>
-                      <FormattedDate value={client.expires} />
-                    </time>
+                    {client.expires ? (
+                      <time dateTime={client.expires}>
+                        <FormattedDate value={client.expires} />
+                      </time>
+                    ) : (
+                      <FormattedMessage {...messages.never} />
+                    )}
                   </td>
                   <td>
                     <Join separator=", ">
