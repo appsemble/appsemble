@@ -14,7 +14,7 @@ This page serves to explain the concepts used to send out these notifications.
 ## Subscribing
 
 In order to enable notifications, you must set the [`notifications`](../reference/app#notifications)
-property to either `opt-in` or `startup`. `opt-in` is recommended. Doing so allows app creators to
+property to either `opt-in` (recommended) or `startup`. Doing so allows app creators to
 access the “Notifications” page, from which notifications can be manually pushed to all users who
 are currently subscribed.
 
