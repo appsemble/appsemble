@@ -54,40 +54,24 @@ The default page of the app. The value must be equal to the name of one of the p
 The resources that are associated with this app. More information about resources and how they can
 be used can be found [here](../guide/resources).
 
-## `authentication`
-
-A list of login methods for the app. Currently only the `OAuth` protocol is supported. This is
-defined in an object containing the following properties:
-
-**method**: The authentication method used. This value can be one of the following:
-
-- `email`
-
-**url**: The URL used to authenticate against.
-
-**refreshURL**: The URL used to refresh the access token. If this is not set, `url` is used instead.
-
-**clientId**: The client ID used when making the authentication request.
-
-**scope**: The scopes to request when authenticating. Multiple scopes can be requested by separating
-the scopes with spaces.
-
 ## `security`
 
 A security definition that defines the roles that are available within the app. This allows for more
 fine-grain control over which users have access to specific pages or blocks.
 
-**default**: An object containing the default behavior to use. **default.role**: The name of the
-default role to use. This must match with one of the roles defined within the security definition.
-**default.policy**: The policy to use for assigning the default role. Allowed values are: `everyone`
-to assign the default role to every user regardless of whether they were invited or not,
-`organization` to assign the default role to every user within the app’s organization, and `invite`
-for an invite-only policy.
-
-**roles**: An object containing keys representing the roles that can be used within the app.
-**roles[key].description**: The description of a role. **roles[key].inherits**: The name of the role
-to inherit from. Note that this role must exist and can not inherit itself via this field or the
-`inherits` field of the referenced role.
+- **default**: An object containing the default behavior to use.
+- **default.role**: The name of the default role to use. This must match with one of the roles
+  defined within the security definition.
+- **default.policy**: The policy to use for assigning the default role. Allowed values are:
+  `everyone` to assign the default role to every user regardless of whether they were invited or
+  not, `organization` to assign the default role to every user within the app’s organization, and
+  `invite` for an invite-only policy.
+- **roles**: An object containing keys representing the roles that can be used within the app.
+- **roles[key].description**: The description of a role.
+- **roles[key].inherits**: The name of the role to inherit from. Note that this role must exist and
+  can not inherit itself via this field or the `inherits` field of the referenced role.
+- **login** (_**deprecated**_): By default, users can login to apps using OAuth2. In order to
+  support legacy apps, this can be set to `password` to enable a less secure login mechanism.
 
 ## `roles`
 
