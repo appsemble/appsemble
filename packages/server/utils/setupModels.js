@@ -31,6 +31,7 @@ function importModels(db) {
   db.import('../models/EmailAuthorization');
   db.import('../models/ResetPasswordToken');
   db.import('../models/OAuthAuthorization');
+  db.import('../models/OAuth2AuthorizationCode');
   db.import('../models/OAuth2ClientCredentials');
   db.import('../models/Resource');
   db.import('../models/Asset');

@@ -23,7 +23,7 @@ export default {
           },
         },
       },
-      security: [{ studio: [] }, {}],
+      security: [{ studio: [] }, { app: ['resources:manage'] }, {}],
     },
     post: {
       tags: ['resource'],
@@ -86,7 +86,7 @@ export default {
           $ref: '#/components/responses/resource',
         },
       },
-      security: [{ studio: [] }, { app: ['resources:manage'] }],
+      security: [{ studio: [] }, { app: ['resources:manage'] }, {}],
     },
   },
   '/apps/{appId}/resources/{resourceType}/{resourceId}/subscriptions': {
