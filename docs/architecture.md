@@ -44,8 +44,8 @@ new data. Apps are uploaded to the database using the Appsemble editor after whi
 displayed by retrieving the app definition from the database.
 
 The app definition contains information about how an app should be built, such as resource
-definitions, authentication, pages and blocks. Depending on the configuration apps may communicate
-with either the Appsemble server or external servers to fetch and submit data, defaulting to the
+definitions, security, pages and blocks. Depending on the configuration apps may communicate with
+either the Appsemble server or external servers to fetch and submit data, defaulting to the
 Appsemble server.
 
 ### Editor

@@ -1,7 +1,7 @@
 ---
+menu: Guide
 name: DNS
-menu: Development
-route: /development/DNS
+route: /guide/dns
 ---
 
 # DNS
@@ -33,7 +33,7 @@ To link a subdomain, for example `my-app`, to an app, add the following configur
 | ----- | ------ | ------------- | ---- |
 | CNAME | my-app | appsemble.app | Auto |
 
-## Configure App
+## Configure app
 
 For Appsemble to know which app should be served on the given domain name, it should know which app
 to serve when it receives a request on this domain name.

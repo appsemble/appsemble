@@ -1,21 +1,22 @@
 ---
-menu: Development
-route: /development/app-notifications
+menu: Guide
+route: /guide/notifications
 ---
 
-# App notifications
+# Notifications
 
 Notifications can be used to keep in touch with the users of your app by sending them when certain
 events happen, such as creating a new blog post. Appsemble can automate this process by integrating
-sending out notifications related to changes being made to [resources](appsemble-resources).
+sending out notifications related to changes being made to [resources](resources).
 
 This page serves to explain the concepts used to send out these notifications.
 
 ## Subscribing
 
 In order to enable notifications, you must set the [`notifications`](../reference/app#notifications)
-property to either `opt-in` or `startup`. Doing so allows app creators to access the “Notifications”
-page, from which notifications can be manually pushed to all users who are currently subscribed.
+property to either `opt-in` (recommended) or `startup`. Doing so allows app creators to access the
+“Notifications” page, from which notifications can be manually pushed to all users who are currently
+subscribed.
 
 By setting the `notifications` property, users are able to set their notification preferences in the
 app settings page. After they give permission by flipping the “subscribe” switch, they are ready to
@@ -26,9 +27,8 @@ start receiving push notifications.
 As previously mentioned, it’s possible to automate sending out resources when certain events such as
 resources being created or updated happen.
 
-This can be done by using `resource hooks`. Resource hooks are special events that are triggered
-when certain changes happen, like creating a new resource. One such hook is the
-`notifications hook`.
+This can be done by using resource hooks. Resource hooks are special events that are triggered when
+certain changes happen, like creating a new resource. One such hook is the `notifications` hook.
 
 Within a notification hook it’s possible to define how notifications are sent. It’s possible to
 automatically send notifications for users with specific roles, the author of a resource, as well as
