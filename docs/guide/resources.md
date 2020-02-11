@@ -5,7 +5,7 @@ route: /guide/resources
 
 # Resources
 
-Appsemble provides its own method of storing and retrieving data specific to apps. Data that is
+Appsemble out of the box provides its own method of storing and retrieving data specific to apps. It can also retrieve en store an external data source outside Appsemble. Data that is
 created via an app is called a ´resource´.
 
 ## Defining resources
