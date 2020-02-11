@@ -6,6 +6,11 @@ import * as AppDefinitionProvider from '../AppDefinitionProvider';
 import Page from './Page';
 
 jest.mock('react-router-dom', () => ({
+  useLocation: () => ({
+    pathname: '/my-page',
+    search: '',
+    hash: '',
+  }),
   useHistory: () => ({
     push: jest.fn(),
   }),

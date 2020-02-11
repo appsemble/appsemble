@@ -103,33 +103,6 @@ export default {
           $ref: '#/components/schemas/Security',
           description: 'Role definitions that may be used by the app.',
         },
-        authentication: {
-          type: 'array',
-          description: 'A list of login methods for the app.',
-          items: {
-            type: 'object',
-            required: ['method', 'url'],
-            properties: {
-              method: {
-                enum: ['email'],
-              },
-              url: {
-                type: 'string',
-                format: 'uri',
-              },
-              refreshURL: {
-                type: 'string',
-                format: 'uri',
-              },
-              clientId: {
-                type: 'string',
-              },
-              scope: {
-                type: 'string',
-              },
-            },
-          },
-        },
         pages: {
           type: 'array',
           minItems: 1,

@@ -12,6 +12,7 @@ import EditPassword from '../EditPassword';
 import ErrorFallback from '../ErrorFallback';
 import Login from '../Login';
 import OAuth2Connect from '../OAuth2Connect';
+import OpenIDLogin from '../OpenIDLogin';
 import OrganizationInvite from '../OrganizationInvite';
 import OrganizationProvider from '../OrganizationProvider';
 import ProtectedRoute from '../ProtectedRoute';
@@ -35,6 +36,7 @@ export default function App(): React.ReactElement {
                 <Switch>
                   <Route component={AppList} exact path="/apps" />
                   <ProtectedRoute component={Settings} path="/settings" />
+                  <ProtectedRoute component={OpenIDLogin} exact path="/connect/authorize" />
                   <Route component={AppContext} path="/apps/:id(\d+)" />
                   <AnonymousRoute component={EditPassword} exact path="/edit-password" />
                   <ProtectedRoute
@@ -43,7 +45,7 @@ export default function App(): React.ReactElement {
                     path="/organization-invite"
                   />
                   <Route component={VerifyEmail} exact path="/verify" />
-                  <Route component={OAuth2Connect} exact path="/connect/:provider/callback" />
+                  <Route component={OAuth2Connect} exact path="/oauth2/:provider/callback" />
                   <AnonymousRoute component={Login} exact path="/login" />
                   {settings.enableRegistration && (
                     <AnonymousRoute component={Register} exact path="/register" />
