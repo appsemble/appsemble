@@ -11,6 +11,9 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 - App: Add support for app roles.
 - App: Add support for subscribing to resources.
+- App: Use Appsemble studio as an OAuth2 authentication provider.
+- App: Add simplified legacy fallback for a password login. Simply set `security.login` to
+  `password`.
 - Block(`@appsemble/data-loader`): Add new block for loading data using the event API.
 - Block(`@appsemble/feed`): Add `data` listen event.
 - Block(`@appsemble/filter`): Add `data` emit event.
@@ -20,6 +23,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - SDK: Add new event API.
 - SDK: Add `event` action.
 - Server: Add `$author` object to resources if an author is known.
+- Studio: Work as an authentication provider for apps.
 
 ### Changed
 
@@ -28,9 +32,14 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Removed
 
+- App: Remove custom authentication mechanisms.
 - Block(`@appsemble/feed`): Remove `onLoad` action.
 - Block(`@appsemble/list`): Remove `onLoad` action.
 - Block(`@appsemble/map`): Remove `onLoad` action.
+
+### Fixed
+
+- App: A lot of stability improvements.
 
 ## [0.10.0] - 2019-12-20
 
