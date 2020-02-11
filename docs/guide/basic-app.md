@@ -10,7 +10,8 @@ that was entered in the _“Create app”_ dialog.
 
 ## Empty app
 
-The empty app has two pages. On each page, an `action-button` block is rendered.
+The newly created app has two pages. On each page, an [`action-button`](../blocks/action-button)
+block is rendered.
 
 The icon on the button is specified in the block parameters. Because each block type has different
 functionalities, they also accept different types of parameters.
@@ -69,8 +70,8 @@ description: This is the best smith in town.
 The schema is used as a safety net for invalid data, but also for representation in some places.
 
 When the app is published with the `resources` property, a new “Resources” menu item appears to the
-side menu. This way resources can be managed in a generic way from within Appsemble studio in an
-administrator-like fashion.
+side menu. This way resources can be managed in a generic way from within [Appsemble studio](studio)
+in an administrator-like fashion.
 
 ## Displaying data
 
@@ -132,7 +133,12 @@ doesn’t even reference the `person` resource anywhere. It merely listens on an
 `people`.
 
 To actually use any data, it must be loaded. Typically this is loaded by a `data-loader` block. This
-block then emits the data to other blocks on the page.
+block then emits the data to other blocks on the page, such as the `list` block.
+
+```mermaid
+graph LR
+    resource[Resource API] --> data-loader --> list
+```
 
 Let’s add such a `data-loader` block.
 
