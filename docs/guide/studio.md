@@ -5,8 +5,7 @@ route: /guide/studio
 
 # Studio
 
-Apps can be created and modified using the Appsemble studio. This can be found at the base URL of
-Appsemble.
+Apps can be created and modified using the [Appsemble studio](https://appsemble.app).
 
 After logging in a list of apps you can manage will appear, providing direct links to the app itself
 as well as the corresponding app detail pages.
