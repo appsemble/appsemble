@@ -142,13 +142,13 @@ Let’s add such a `data-loader` block.
       blocks:
 +       - type: data-loader
 +         version: 0.10.0
-+         events:
-+           emit:
-+             data: people
 +         actions:
 +           onLoad:
 +             type: resource.query
 +             resource: person
++         events:
++           emit:
++             data: people
         - type: list
           version: 0.10.0
 ```
@@ -190,13 +190,13 @@ pages:
     blocks:
       - type: data-loader
         version: 0.10.0
-        events:
-          emit:
-            data: people
         actions:
           onLoad:
             type: resource.query
             resource: person
+        events:
+          emit:
+            data: people
       - type: list
         version: 0.10.0
         events:
@@ -297,13 +297,13 @@ pages:
     blocks:
       - type: data-loader
         version: 0.10.0
-        events:
-          emit:
-            data: people
         actions:
           onLoad:
             type: resource.query
             resource: person
+        events:
+          emit:
+            data: people
       - type: list
         version: 0.10.0
         events:
@@ -332,13 +332,13 @@ Add a new page:
 +     blocks:
 +       - type: data-loader
 +         version: 0.10.0
-+         events:
-+           emit:
-+             data: person
 +         actions:
 +           onLoad:
 +             type: resource.get
 +             resource: person
++         events:
++           emit:
++             data: person
 +       - type: detail-viewer
 +         version: 0.10.0
 +         events:
@@ -421,13 +421,13 @@ pages:
     blocks:
       - type: data-loader
         version: 0.10.0
-        events:
-          emit:
-            data: people
         actions:
           onLoad:
             type: resource.query
             resource: person
+        events:
+          emit:
+            data: people
       - type: list
         version: 0.10.0
         events:
@@ -446,13 +446,13 @@ pages:
     blocks:
       - type: data-loader
         version: 0.10.0
-        events:
-          emit:
-            data: person
         actions:
           onLoad:
             type: resource.get
             resource: person
+        events:
+          emit:
+            data: person
       - type: detail-viewer
         version: 0.10.0
         events:
