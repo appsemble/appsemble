@@ -37,6 +37,7 @@ export interface UserInfo {
 }
 
 export interface Security {
+  login?: 'password';
   default: {
     role: string;
     policy?: 'everyone' | 'organization' | 'invite';
@@ -47,18 +48,6 @@ export interface Security {
       inherits?: string[];
     };
   };
-}
-
-/**
- * An object containing information about an authentication method.
- */
-export interface Authentication {
-  url: string;
-  refreshURL: string;
-  clientId: string;
-  method: 'email';
-  scope: string[];
-  clientSecret: string;
 }
 
 /*
@@ -707,7 +696,6 @@ export interface AppDefinition {
   description?: string;
 
   security?: Security;
-  authentication?: Authentication[];
 
   /**
    * A list of roles that are required to view pages. Specific page roles override this property.

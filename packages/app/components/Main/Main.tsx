@@ -5,8 +5,8 @@ import { Redirect, Route, Switch } from 'react-router-dom';
 import { useAppDefinition } from '../AppDefinitionProvider';
 import AppSettings from '../AppSettings';
 import Login from '../Login';
+import OpenIDCallback from '../OpenIDCallback';
 import Page from '../Page';
-import { useUser } from '../UserProvider';
 import styles from './Main.css';
 
 /**
@@ -16,7 +16,6 @@ import styles from './Main.css';
  */
 export default function Main(): React.ReactElement {
   const { definition } = useAppDefinition();
-  const { isLoggedIn } = useUser();
 
   if (definition == null) {
     return null;
@@ -40,7 +39,8 @@ export default function Main(): React.ReactElement {
     <main className={styles.root}>
       <Switch>
         <Route component={AppSettings} exact path="/Settings" sensitive />
-        {isLoggedIn || <Route component={Login} exact path="/Login" sensitive />}
+        <Route component={Login} exact path="/Login" sensitive />
+        <Route component={OpenIDCallback} exact path="/Callback" sensitive />
         {routes}
         <Redirect to={defaultPath} />
       </Switch>

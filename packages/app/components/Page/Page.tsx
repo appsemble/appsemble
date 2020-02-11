@@ -4,13 +4,12 @@ import { checkAppRole, normalize } from '@appsemble/utils';
 import { EventEmitter } from 'events';
 import React from 'react';
 import { useIntl } from 'react-intl';
-import { useHistory } from 'react-router-dom';
+import { Redirect, useHistory, useLocation } from 'react-router-dom';
 
 import { ShowDialogParams } from '../../types';
 import { useAppDefinition } from '../AppDefinitionProvider';
 import BlockList from '../BlockList';
 import FlowPage from '../FlowPage';
-import Login from '../Login';
 import PageDialog from '../PageDialog';
 import TabsPage from '../TabsPage';
 import TitleBar from '../TitleBar';
@@ -26,7 +25,8 @@ export default function Page({ page }: PageProps): React.ReactElement {
   const history = useHistory();
   const intl = useIntl();
   const push = useMessages();
-  const { logout, role, userInfo } = useUser();
+  const location = useLocation();
+  const { isLoggedIn, logout, role } = useUser();
 
   const [dialog, setDialog] = React.useState<ShowDialogParams>();
   const [blocks, setBlocks] = React.useState<Block[]>([]);
@@ -58,10 +58,10 @@ export default function Page({ page }: PageProps): React.ReactElement {
       const roles = p.roles || definition.roles || [];
       return roles.length === 0 || roles.some(r => checkAppRole(definition.security, r, role));
     },
-    [definition.roles, definition.security, role],
+    [definition, role],
   );
 
-  const handlePagePermissions = React.useCallback((): void => {
+  const handlePagePermissions = React.useCallback(() => {
     const permission = checkPagePermissions(page);
     if (!permission) {
       const defaultPagePermission = checkPagePermissions(
@@ -124,13 +124,9 @@ export default function Page({ page }: PageProps): React.ReactElement {
   }, [applyBulmaThemes, definition, page]);
 
   if (definition.security && !(page.roles && page.roles.length === 0)) {
-    if (!userInfo) {
-      return (
-        <>
-          <TitleBar>{page.name}</TitleBar>
-          <Login />
-        </>
-      );
+    if (!isLoggedIn) {
+      const redirect = `${location.pathname}${location.search}${location.hash}`;
+      return <Redirect to={`/Login?${new URLSearchParams({ redirect })}`} />;
     }
 
     handlePagePermissions();
