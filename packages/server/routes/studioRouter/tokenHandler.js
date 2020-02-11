@@ -78,9 +78,7 @@ export default async function tokenHandler(ctx) {
         if (!authorizationCode) {
           throw new GrantError('invalid_client');
         }
-        await OAuth2AuthorizationCode.destroy({
-          where: { code },
-        });
+        await authorizationCode.destroy();
         if (isPast(authorizationCode.expires)) {
           throw new GrantError('invalid_grant');
         }

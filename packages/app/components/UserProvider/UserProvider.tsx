@@ -31,19 +31,16 @@ interface AuthorizationCodeLoginParams {
   redirect_uri: string;
 }
 
-interface UserContext extends LoginState {
-  isLoggedIn: boolean;
-  userInfo: UserInfo;
-  role: string;
-  passwordLogin: (params: PasswordLoginParams) => Promise<void>;
-  authorizationCodeLogin: (params: AuthorizationCodeLoginParams) => Promise<void>;
-  logout: () => any;
-}
-
 interface LoginState {
   isLoggedIn: boolean;
   role: string;
   userInfo: UserInfo;
+}
+
+interface UserContext extends LoginState {
+  passwordLogin: (params: PasswordLoginParams) => Promise<void>;
+  authorizationCodeLogin: (params: AuthorizationCodeLoginParams) => Promise<void>;
+  logout: () => any;
 }
 
 interface UserProviderProps {
@@ -199,8 +196,7 @@ export default function UserProvider({ children }: UserProviderProps): React.Rea
     // Date.now() returns the date in milliseconds
     // timeout is how many milliseconds until the refresh token is almost expired. At this point,
     // start a token refresh.
-    // XXX
-    const timeout = (exp - 3595) * 1000 - Date.now();
+    const timeout = (exp - 300) * 1000 - Date.now();
 
     const timeoutId = setTimeout(async () => {
       const rt = localStorage.getItem(REFRESH_TOKEN);

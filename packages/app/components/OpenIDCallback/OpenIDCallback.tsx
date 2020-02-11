@@ -1,9 +1,11 @@
 import { Button, Loader, Message, useQuery } from '@appsemble/react-components';
+import { normalize } from '@appsemble/utils';
 import * as React from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Redirect } from 'react-router-dom';
 
 import redirectOAuth2 from '../../utils/redirectOAuth2';
+import { useAppDefinition } from '../AppDefinitionProvider';
 import { useUser } from '../UserProvider';
 import messages from './messages';
 import styles from './OpenIDCallback.css';
@@ -13,6 +15,7 @@ export default function OpenIDCallback(): React.ReactElement {
   const query = useQuery();
   const code = query.get('code');
   const { authorizationCodeLogin, isLoggedIn } = useUser();
+  const { definition } = useAppDefinition();
 
   const [error, setError] = React.useState(false);
 
@@ -35,7 +38,7 @@ export default function OpenIDCallback(): React.ReactElement {
   }
 
   if (isLoggedIn) {
-    return <Redirect to={redirect} />;
+    return <Redirect to={redirect || normalize(definition.defaultPage)} />;
   }
 
   if (error) {
