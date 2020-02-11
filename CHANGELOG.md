@@ -14,6 +14,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Block(`@appsemble/data-loader`): Add new block for loading data using the event API.
 - Block(`@appsemble/feed`): Add `data` listen event.
 - Block(`@appsemble/filter`): Add `data` emit event.
+- Block(`@appsemble/form`): Add `data` listen event.
 - Block(`@appsemble/list`): Add `data` listen event.
 - Block(`@appsemble/map`): Add `data` listen event.
 - Block(`@appsemble/map`): Add `refresh` emit event.

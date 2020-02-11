@@ -30,6 +30,14 @@ A block used for inputting and submitting sets of data.
 | fields[].quality      |              | The quality modifier to use when uploading images, in percentages                         |
 | fields[].required     | false        | Whether the field is required or not. The form input will be validated based on its type. |
 
+## Events
+
+### Listen Events
+
+| Event | Description                                                                                                                                                          |
+| ----- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| data  | The event that is triggered when data is received. Compatible data that is received will be displayed and mapped to the fields as defined in the `fields` parameter. |
+
 #### Field types
 
 Based on the type of field, additional parameters are available.
