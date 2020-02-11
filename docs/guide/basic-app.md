@@ -161,7 +161,6 @@ At this point, the total app definition should look like this:
 
 ```yaml
 name: My App
-description: ''
 defaultPage: People
 
 resources:
