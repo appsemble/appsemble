@@ -3,11 +3,11 @@ import autoprefixer from 'autoprefixer';
 import sass from 'node-sass';
 import postcss from 'postcss';
 
-const bulmaPath = require.resolve('bulma/bulma.sass');
-const functionPath = require.resolve('bulma/sass/utilities/functions.sass');
-const checkRadioPath = require.resolve('bulma-checkradio/src/sass/index.sass');
-const bulmaSwitchPath = require.resolve('bulma-switch/src/sass/index.sass');
-const calendarPath = require.resolve('bulma-calendar/src/sass/index.sass');
+const bulmaPath = require.resolve('bulma/bulma.sass').replace(/\\/g, '/');
+const functionPath = require.resolve('bulma/sass/utilities/functions.sass').replace(/\\/g, '/');
+const checkRadioPath = require.resolve('bulma-checkradio/src/sass/index.sass').replace(/\\/g, '/');
+const bulmaSwitchPath = require.resolve('bulma-switch/src/sass/index.sass').replace(/\\/g, '/');
+const calendarPath = require.resolve('bulma-calendar/src/sass/index.sass').replace(/\\/g, '/');
 const postCss = postcss([autoprefixer]);
 
 /**
