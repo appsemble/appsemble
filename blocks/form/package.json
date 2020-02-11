@@ -1,10 +1,10 @@
 {
   "name": "@appsemble/form",
-  "version": "0.10.0",
+  "version": "0.11.0",
   "private": true,
   "dependencies": {
-    "@appsemble/preact": "0.10.0",
-    "@appsemble/preact-components": "0.10.0",
+    "@appsemble/preact": "0.11.0",
+    "@appsemble/preact-components": "0.11.0",
     "classnames": "^2.2.6",
     "leaflet": "^1.6.0",
     "preact": "^10.2.1",

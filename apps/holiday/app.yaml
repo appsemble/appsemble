@@ -5,7 +5,7 @@ pages:
   - name: Holidays in NL
     blocks:
       - type: data-loader
-        version: 0.10.0
+        version: 0.11.0
         actions:
           onLoad:
             url: https://cors-anywhere.herokuapp.com/https://date.nager.at/Api/v2/NextPublicHolidays/NL
@@ -14,7 +14,7 @@ pages:
           emit:
             data: holidays
       - type: list
-        version: 0.10.0
+        version: 0.11.0
         parameters:
           fields:
             - name: date
@@ -29,7 +29,7 @@ pages:
   - name: Holidays in US
     blocks:
       - type: data-loader
-        version: 0.10.0
+        version: 0.11.0
         actions:
           onLoad:
             url: https://cors-anywhere.herokuapp.com/https://date.nager.at/Api/v2/NextPublicHolidays/US
@@ -38,7 +38,7 @@ pages:
           emit:
             data: holidays
       - type: list
-        version: 0.10.0
+        version: 0.11.0
         parameters:
           fields:
             - name: date
@@ -51,7 +51,7 @@ pages:
   - name: Holidays in DE
     blocks:
       - type: data-loader
-        version: 0.10.0
+        version: 0.11.0
         actions:
           onLoad:
             url: https://cors-anywhere.herokuapp.com/https://date.nager.at/Api/v2/NextPublicHolidays/DE
@@ -60,7 +60,7 @@ pages:
           emit:
             data: holidays
       - type: list
-        version: 0.10.0
+        version: 0.11.0
         parameters:
           fields:
             - name: date
@@ -75,7 +75,7 @@ pages:
   - name: Holidays in ES
     blocks:
       - type: data-loader
-        version: 0.10.0
+        version: 0.11.0
         actions:
           onLoad:
             url: https://cors-anywhere.herokuapp.com/https://date.nager.at/Api/v2/NextPublicHolidays/ES
@@ -84,7 +84,7 @@ pages:
           emit:
             data: holidays
       - type: list
-        version: 0.10.0
+        version: 0.11.0
         parameters:
           fields:
             - name: date
