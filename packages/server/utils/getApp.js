@@ -23,7 +23,7 @@ export default async function getApp({ argv, db, origin }, queryOptions, url = o
   return App.findOne({
     ...queryOptions,
     where: {
-      domain: url,
+      domain: hostname,
     },
   });
 }
