@@ -1,12 +1,12 @@
 {
   "name": "create-appsemble",
-  "version": "0.11.0",
+  "version": "0.11.1",
   "bin": "./bin/create-appsemble",
   "scripts": {
     "tsc": "../../config/bin/tscstub.js"
   },
   "dependencies": {
-    "@appsemble/node-utils": "^0.11.0",
+    "@appsemble/node-utils": "^0.11.1",
     "esm": "^3.2.25",
     "fs-extra": "^8.1.0",
     "inquirer": "^7.0.4",
