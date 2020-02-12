@@ -308,8 +308,8 @@ export async function queryResources(ctx) {
     });
 
     ctx.body = resources.map(resource => ({
-      id: resource.id,
       ...resource.data,
+      id: resource.id,
       $created: resource.created,
       $updated: resource.updated,
       ...(resource.User && { $author: { id: resource.User.id, name: resource.User.name } }),
@@ -357,8 +357,8 @@ export async function getResourceById(ctx) {
   await verifyAppRole(ctx, app, resource, resourceType, 'get');
 
   ctx.body = {
-    id: resource.id,
     ...resource.data,
+    id: resource.id,
     $created: resource.created,
     $updated: resource.updated,
     ...(resource.UserId != null && {
