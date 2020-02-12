@@ -1,11 +1,11 @@
 {
   "name": "@appsemble/studio",
-  "version": "0.11.1",
+  "version": "0.11.2",
   "private": true,
   "dependencies": {
-    "@appsemble/react-components": "0.11.1",
-    "@appsemble/types": "0.11.1",
-    "@appsemble/utils": "0.11.1",
+    "@appsemble/react-components": "0.11.2",
+    "@appsemble/types": "0.11.2",
+    "@appsemble/utils": "0.11.2",
     "@sentry/browser": "^5.11.1",
     "axios": "^0.19.2",
     "classnames": "^2.2.6",
