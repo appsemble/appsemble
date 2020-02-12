@@ -7,6 +7,12 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.11.1] - 2020-02-12
+
+### Fixed
+
+- Server: Fix migration key for 0.10.0 migrations.
+
 ## [0.11.0] - 2020-02-12
 
 ### Added
