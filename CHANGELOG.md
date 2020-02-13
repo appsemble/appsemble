@@ -7,6 +7,11 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Fixed
+
+- Server: Fix various issues when extracting app blocks.
+- Studio: Fix various issues when extracting app blocks.
+
 ## [0.11.2] - 2020-02-12
 
 ### Fixed
