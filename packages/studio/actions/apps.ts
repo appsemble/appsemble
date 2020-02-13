@@ -96,46 +96,46 @@ export default (state: AppState = initialState, action: AppAction): AppState => 
       return state;
   }
 };
-
-export function getPublicApps(): AppThunk {
-  return async dispatch => {
-    dispatch({
-      type: GET_START,
-    });
-    try {
-      const { data: apps } = await axios.get('/api/apps');
-      dispatch({
-        type: GET_SUCCESS,
-        apps,
-      });
-    } catch (error) {
-      dispatch({
-        type: GET_ERROR,
-        error,
-      });
-    }
-  };
-}
-
-export function getApps(): AppThunk {
-  return async dispatch => {
-    dispatch({
-      type: GET_START,
-    });
-    try {
-      const { data: apps } = await axios.get('/api/apps/me');
-      dispatch({
-        type: GET_SUCCESS,
-        apps,
-      });
-    } catch (error) {
-      dispatch({
-        type: GET_ERROR,
-        error,
-      });
-    }
-  };
-}
+//
+// export function getPublicApps(): AppThunk {
+//   return async dispatch => {
+//     dispatch({
+//       type: GET_START,
+//     });
+//     try {
+//       const { data: apps } = await axios.get('/api/apps');
+//       dispatch({
+//         type: GET_SUCCESS,
+//         apps,
+//       });
+//     } catch (error) {
+//       dispatch({
+//         type: GET_ERROR,
+//         error,
+//       });
+//     }
+//   };
+// }
+//
+// export function getApps(): AppThunk {
+//   return async dispatch => {
+//     dispatch({
+//       type: GET_START,
+//     });
+//     try {
+//       const { data: apps } = await axios.get('/api/apps/me');
+//       dispatch({
+//         type: GET_SUCCESS,
+//         apps,
+//       });
+//     } catch (error) {
+//       dispatch({
+//         type: GET_ERROR,
+//         error,
+//       });
+//     }
+//   };
+// }
 
 export function getApp(id: number): AppThunk {
   return async dispatch => {
