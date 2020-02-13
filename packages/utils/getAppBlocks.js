@@ -9,19 +9,17 @@ export default function getAppBlocks(definition) {
   const blocks = {};
 
   definition.pages.forEach((page, pageIndex) => {
-    const parseBlocks = (block, blockIndex) => {
-      const blockPath = `pages.${pageIndex}.blocks.${blockIndex}`;
-      blocks[blockPath] = block;
+    const parseBlocks = (block, prefix) => {
+      blocks[prefix] = block;
       if (!block.actions) {
         return;
       }
       Object.entries(block.actions).forEach(([actionKey, action]) => {
-        if (!Object.hasOwnProperty.call(action, 'blocks')) {
+        if (!('blocks' in action)) {
           return;
         }
-        action.blocks.forEach((actionBlock, actionBlockIndex) => {
-          const fullBlockPath = `${blockPath}.actions.${actionKey}.blocks.${actionBlockIndex}`;
-          blocks[fullBlockPath] = actionBlock;
+        action.blocks.forEach((subBlock, index) => {
+          parseBlocks(subBlock, `${prefix}.actions.${actionKey}.blocks.${index}`);
         });
       });
     };
@@ -29,11 +27,16 @@ export default function getAppBlocks(definition) {
     switch (page.type) {
       case 'flow':
       case 'tabs':
-        page.subPages.forEach(sub => sub.blocks.forEach(parseBlocks));
+        page.subPages.forEach((subPage, index) => {
+          subPage.blocks.forEach((block, blockIndex) => {
+            parseBlocks(block, `pages.${pageIndex}.subPages.${index}.blocks.${blockIndex}`);
+          });
+        });
         break;
-      case 'page':
       default:
-        page.blocks.forEach(parseBlocks);
+        page.blocks.forEach((block, index) =>
+          parseBlocks(block, `pages.${pageIndex}.blocks.${index}`),
+        );
     }
   });
   return blocks;
