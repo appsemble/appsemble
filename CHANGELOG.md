@@ -12,6 +12,11 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Blocks(`@appsemble/map`): Make `move` emit event optional. When omitted, the map block won’t emit
   refresh events.
 
+### Fixed
+
+- Server: Fix various issues when extracting app blocks.
+- Studio: Fix various issues when extracting app blocks.
+
 ## [0.11.2] - 2020-02-12
 
 ### Fixed
