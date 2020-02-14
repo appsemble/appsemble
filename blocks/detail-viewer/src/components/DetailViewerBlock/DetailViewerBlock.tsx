@@ -23,13 +23,15 @@ const renderers = {
 export default function DetailViewerBlock({
   block,
   events,
+  ready,
   theme,
 }: BlockProps<Parameters, null, Events>): VNode {
   const [data, setData] = useState(undefined);
 
   useEffect(() => {
     events.on.data(setData);
-  }, [events]);
+    ready();
+  }, [events, ready]);
 
   if (data === undefined) {
     return <Loader />;

@@ -5,7 +5,7 @@ pages:
   - name: Example Page A
     blocks:
       - type: action-button
-        version: 0.11.1
+        version: 0.11.2
         parameters:
           icon: arrow-right
         actions:
@@ -15,7 +15,7 @@ pages:
   - name: Example Page B
     blocks:
       - type: action-button
-        version: 0.11.1
+        version: 0.11.2
         parameters:
           icon: arrow-left
         actions:

@@ -7,6 +7,19 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Fixed
+
+- Server: Fix various issues when extracting app blocks.
+- Studio: Fix various issues when extracting app blocks.
+
+## [0.11.2] - 2020-02-12
+
+### Fixed
+
+- Helm: Use the named service port for linking app domains.
+- Server: Add resource references to JSON schema.
+- Server: Fix serving an app based on a custom domain name.
+
 ## [0.11.1] - 2020-02-12
 
 ### Fixed
