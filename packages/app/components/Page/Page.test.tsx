@@ -5,6 +5,10 @@ import React from 'react';
 import * as AppDefinitionProvider from '../AppDefinitionProvider';
 import Page from './Page';
 
+jest.mock('events', () => ({
+  EventEmitter: class EventEmitter {},
+}));
+
 jest.mock('react-router-dom', () => ({
   useLocation: () => ({
     pathname: '/my-page',
