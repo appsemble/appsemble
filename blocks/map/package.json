@@ -5,6 +5,7 @@
   "dependencies": {
     "@appsemble/sdk": "0.11.2",
     "@appsemble/utils": "0.11.2",
-    "leaflet": "^1.6.0"
+    "leaflet": "^1.6.0",
+    "leaflet.markercluster": "^1.4.1"
   }
 }

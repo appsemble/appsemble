@@ -1,5 +1,5 @@
 import { Actions } from '@appsemble/sdk';
-import { Icon, LatLngBounds, Map, Marker, Point } from 'leaflet';
+import { Icon, LatLngBounds, Marker, MarkerClusterGroup, Point } from 'leaflet';
 
 import iconUrl from '../../../themes/amsterdam/core/marker.svg';
 import { BlockActions, LatLngMapper } from './createGetters';
@@ -29,7 +29,7 @@ export default function loadMarkers(
   get: LatLngMapper,
   data: any,
   actions: Actions<BlockActions>,
-  map: Map,
+  cluster: MarkerClusterGroup,
 ): void {
   markers.forEach(marker => {
     if (fetched.has(marker.id)) {
@@ -41,7 +41,7 @@ export default function loadMarkers(
     if (Number.isNaN(Number(lat)) || Number.isNaN(Number(lng))) {
       return;
     }
-    new Marker([lat, lng], {
+    const m = new Marker([lat, lng], {
       icon:
         data && data.id === marker.id
           ? new Icon({
@@ -54,8 +54,8 @@ export default function loadMarkers(
               iconSize: new Point(MARKER_ICON_WIDTH, MARKER_ICON_HEIGHT),
               iconAnchor: new Point(MARKER_ICON_WIDTH / 2, MARKER_ICON_HEIGHT),
             }),
-    })
-      .on('click', actions.onMarkerClick.dispatch.bind(null, marker))
-      .addTo(map);
+    });
+    m.on('click', actions.onMarkerClick.dispatch.bind(null, marker));
+    cluster.addLayer(m);
   });
 }

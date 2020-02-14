@@ -1,11 +1,18 @@
+// eslint-disable-next-line simple-import-sort/sort
 import 'leaflet/dist/leaflet.css';
+import 'leaflet.markercluster/dist/MarkerCluster.css';
+import 'leaflet.markercluster/dist/MarkerCluster.Default.css';
+
 import './index.css';
 
 import { attach } from '@appsemble/sdk';
-import { CircleMarker, LocationEvent, Map, TileLayer } from 'leaflet';
+import * as L from 'leaflet';
+import 'leaflet.markercluster';
 
 import createGetters, { BlockActions, BlockParameters, Events } from './createGetters';
 import loadMarkers, { makeFilter } from './loadMarkers';
+
+const { CircleMarker, Map, TileLayer, markerClusterGroup } = L;
 
 attach<BlockParameters, BlockActions, Events>(
   ({ actions, block, data, events, shadowRoot, theme: { primaryColor, tileLayer }, utils }) => {
@@ -18,6 +25,7 @@ attach<BlockParameters, BlockActions, Events>(
     const locationMarker = new CircleMarker(null, {
       color: primaryColor,
     });
+
     const map = new Map(node, {
       attributionControl: false,
       layers: [new TileLayer(tileLayer)],
@@ -42,7 +50,7 @@ attach<BlockParameters, BlockActions, Events>(
 
         // XXX: Handle TIMEOUT. These are thrown in the .locate() call when `watch` is set to true.
       })
-      .on('locationfound', ({ latlng }: LocationEvent) => {
+      .on('locationfound', ({ latlng }: L.LocationEvent) => {
         if (Number.isNaN(lat) || Number.isNaN(lng)) {
           map.setView(latlng, 18);
         }
@@ -53,8 +61,11 @@ attach<BlockParameters, BlockActions, Events>(
       map.setView([lat, lng], 18);
     }
 
+    const cluster = markerClusterGroup({ chunkedLoading: true });
+    map.addLayer(cluster);
+
     events.on.data(d => {
-      loadMarkers(d, fetched, get, data, actions, map);
+      loadMarkers(d, fetched, get, data, actions, cluster);
     });
   },
 );
