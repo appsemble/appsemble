@@ -12,6 +12,11 @@ export interface BlockProps<P = any, A = {}, E extends EventParams = {}>
    */
   preactRoot: Element;
 
+  /**
+   * A function that must be called to indicate the block is ready to be rendered.
+   */
+  ready: () => void;
+
   messages: Record<string, IntlMessageFormat>;
 }
 
@@ -24,31 +29,33 @@ export function mount<P, A = {}, E extends EventParams = {}>(
   Component: ComponentType<BlockProps<P, A, E>>,
   messages?: Record<string, string>,
   createRoot: () => Element = () => document.createElement('div'),
-): (params: BootstrapParams<P, A, E>) => void {
-  return params => {
-    const preactRoot = params.shadowRoot.appendChild(createRoot());
+): (params: BootstrapParams<P, A, E>) => Promise<void> {
+  return params =>
+    new Promise(ready => {
+      const preactRoot = params.shadowRoot.appendChild(createRoot());
 
-    const props = {
-      ...params,
-      preactRoot,
-      messages: messages
-        ? Object.entries(messages).reduce(
-            (acc: Record<string, IntlMessageFormat>, [key, message]) => {
-              acc[key] = new IntlMessageFormat(message);
-              return acc;
-            },
-            {},
-          )
-        : {},
-    };
-    const component = (
-      <Context.Provider value={props}>
-        <Component {...props} />
-      </Context.Provider>
-    );
-    render(component, preactRoot);
-    params.utils.addCleanup(() => render(null, preactRoot, preactRoot));
-  };
+      const props = {
+        ...params,
+        ready,
+        preactRoot,
+        messages: messages
+          ? Object.entries(messages).reduce(
+              (acc: Record<string, IntlMessageFormat>, [key, message]) => {
+                acc[key] = new IntlMessageFormat(message);
+                return acc;
+              },
+              {},
+            )
+          : {},
+      };
+      const component = (
+        <Context.Provider value={props}>
+          <Component {...props} />
+        </Context.Provider>
+      );
+      render(component, preactRoot);
+      params.utils.addCleanup(() => render(null, preactRoot, preactRoot));
+    });
 }
 
 export function bootstrap<P, A = {}, E extends EventParams = {}>(

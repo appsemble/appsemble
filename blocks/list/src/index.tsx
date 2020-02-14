@@ -23,6 +23,7 @@ bootstrap(
       parameters: { fields },
     },
     events,
+    ready,
     utils,
   }: BlockProps<Parameters, Actions, Events>): VNode => {
     const [data, setData] = useState<Item[]>([]);
@@ -50,7 +51,8 @@ bootstrap(
 
     useEffect(() => {
       events.on.data(loadData);
-    }, [events, loadData, utils]);
+      ready();
+    }, [events, loadData, ready, utils]);
 
     if (loading) {
       return <Loader />;
