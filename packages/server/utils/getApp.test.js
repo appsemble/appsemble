@@ -22,7 +22,7 @@ afterAll(async () => {
 });
 
 describe('getApp', () => {
-  it('should resolve an app without a custom domain', async () => {
+  it('should resolve an app by its default domain', async () => {
     dbApp = await db.models.App.create({
       definition: {
         name: 'Test App',
@@ -41,6 +41,49 @@ describe('getApp', () => {
         },
         db,
         origin: 'http://test-app.test-organization.localhost:9999',
+      },
+      {
+        attributes: [
+          'definition',
+          'id',
+          'OrganizationId',
+          'sharedStyle',
+          'style',
+          'vapidPublicKey',
+        ],
+        raw: true,
+      },
+    );
+
+    expect(app).toStrictEqual({
+      definition: dbApp.definition,
+      id: dbApp.id,
+      OrganizationId: dbApp.OrganizationId,
+      sharedStyle: dbApp.sharedStyle,
+      style: dbApp.style,
+      vapidPublicKey: dbApp.vapidPublicKey,
+    });
+  });
+
+  it('should allow passing an optional url parameter', async () => {
+    dbApp = await db.models.App.create({
+      definition: {
+        name: 'Test App',
+        defaultPage: 'Test Page',
+      },
+      path: 'test-app',
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: 'test-organization',
+    });
+
+    const app = await getApp(
+      {
+        argv: {
+          host: 'http://localhost:9999',
+        },
+        db,
+        origin: 'http://localhost:9999',
       },
       {
         attributes: [
