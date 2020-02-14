@@ -1,18 +1,29 @@
 import { bootstrap } from '@appsemble/sdk';
 
-import { Actions, Events } from '../block';
+import { Actions, Events, Parameters } from '../block';
 
-bootstrap<null, Actions, Events>(({ actions, data, events, pageParameters, utils }) => {
-  async function loadData(d?: any): Promise<void> {
-    try {
-      const result = await actions.onLoad.dispatch({ ...pageParameters, ...data, ...d });
-      events.emit.data(result);
-    } catch (err) {
-      events.emit.data(null, 'Failed to load data');
-      utils.showMessage('Failed to load data');
+bootstrap<Parameters, Actions, Events>(
+  ({ actions, block, data, events, pageParameters, utils }) => {
+    async function loadData(d?: any): Promise<void> {
+      try {
+        const result = await actions.onLoad.dispatch({ ...pageParameters, ...d });
+        events.emit.data(result);
+      } catch (err) {
+        events.emit.data(null, 'Failed to load data');
+        utils.showMessage('Failed to load data');
+      }
     }
-  }
 
-  events.on.refresh(loadData);
-  loadData();
-});
+    events.on.refresh(loadData);
+
+    if (!block.parameters.skipInitialLoad) {
+      return;
+    }
+
+    if (data) {
+      events.emit.data(data);
+    } else {
+      loadData();
+    }
+  },
+);
