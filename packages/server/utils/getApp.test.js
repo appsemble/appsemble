@@ -11,19 +11,10 @@ beforeAll(async () => {
 
 beforeEach(async () => {
   await truncate(db);
-  const user = await db.models.User.create({
-    password: 'password',
-    name: 'Test User',
-    primaryEmail: 'test@example.com',
+  await db.models.Organization.create({
+    id: 'test-organization',
+    name: 'Test Organization',
   });
-  await user.createEmailAuthorization({ email: 'test@example.com', verified: true });
-  await user.createOrganization(
-    {
-      id: 'test-organization',
-      name: 'Test Organization',
-    },
-    { through: { role: 'Owner' } },
-  );
 });
 
 afterAll(async () => {
@@ -36,15 +27,6 @@ describe('getApp', () => {
       definition: {
         name: 'Test App',
         defaultPage: 'Test Page',
-        security: {
-          default: {
-            role: 'Reader',
-            policy: 'everyone',
-          },
-          roles: {
-            Reader: {},
-          },
-        },
       },
       path: 'test-app',
       vapidPublicKey: 'a',
@@ -89,15 +71,6 @@ describe('getApp', () => {
       definition: {
         name: 'Test App',
         defaultPage: 'Test Page',
-        security: {
-          default: {
-            role: 'Reader',
-            policy: 'everyone',
-          },
-          roles: {
-            Reader: {},
-          },
-        },
       },
       path: 'test-app',
       vapidPublicKey: 'a',
