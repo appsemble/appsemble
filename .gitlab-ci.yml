@@ -547,4 +547,5 @@ provision production:
     name: production provision
   script:
     - yarn appsemble config set remote https://appsemble.app
+    - yarn appsemble config set ignore-conflict true
     - yarn appsemble block register --all --build blocks
