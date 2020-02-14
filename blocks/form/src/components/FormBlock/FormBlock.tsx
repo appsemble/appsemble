@@ -105,6 +105,11 @@ export default class FormBlock extends Component<FormBlockProps, FormBlockState>
     },
   };
 
+  componentDidMount(): void {
+    const { ready } = this.props;
+    ready();
+  }
+
   validateField = (event: Event, value: any): boolean => {
     const {
       block: {

@@ -24,6 +24,7 @@ interface Item {
 export default function FeedBlock({
   block: { parameters },
   events,
+  ready,
 }: BlockProps<BlockParameters, BlockActions, Events>): VNode | VNode[] {
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState<Item[]>([]);
@@ -60,7 +61,8 @@ export default function FeedBlock({
 
   useEffect(() => {
     events.on.data(loadData);
-  }, [events, loadData]);
+    ready();
+  }, [events, loadData, ready]);
 
   if (loading) {
     return <Loader />;
