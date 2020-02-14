@@ -1,5 +1,14 @@
 import Boom from '@hapi/boom';
 
+/**
+ * Get an app from the database based on the Koa context and URL.
+ *
+ * @param ctx The Koa context.
+ * @param queryOptions Additional Sequelize query options. `where` will be overwritten.
+ * @param url The URL to find the app for. This defaults to the context request origin.
+ *
+ * @returns The app matching the url.
+ */
 export default async function getApp({ argv, db, origin }, queryOptions, url = origin) {
   const { App } = db.models;
 
