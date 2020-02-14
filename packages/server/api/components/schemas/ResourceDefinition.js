@@ -16,6 +16,18 @@ export default {
         additionalProperties: true,
         description: 'JSON schema definitions that may be used by the app.',
       },
+      references: {
+        type: 'object',
+        description: `
+          References to other resources.
+
+          The key if the property that references the other resource. The value is the type of the
+          resource that’s referenced.
+        `,
+        additionalProperties: {
+          type: 'string',
+        },
+      },
       url: {
         type: 'string',
         default: '/api/apps/{appId}/{resource}',

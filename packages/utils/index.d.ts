@@ -1,16 +1,18 @@
 import { AppDefinition, Block, Security, Theme } from '@appsemble/types';
 import { OpenAPIV3 } from 'openapi-types';
 
-type MapperFunction = (data: any) => any;
+export { default as getAppBlocks } from './getAppBlocks';
 
-interface Context {
+export type MapperFunction = (data: any) => any;
+
+export interface Context {
   intl: {
     formatDate: (data: string) => string;
     formatTime: (data: string) => string;
   };
 }
 
-type Permission =
+export type Permission =
   | 'ViewApps'
   | 'ManageRoles'
   | 'ManageMembers'
@@ -23,7 +25,7 @@ type Permission =
   | 'PushNotifications'
   | 'ManageResources';
 
-interface Role {
+export interface Role {
   Member: Permission[];
   AppEditor: Permission[];
   Maintainer: Permission[];
@@ -41,8 +43,6 @@ export const partialNormalized: RegExp;
 export type IdentifiableBlock = Pick<Block, 'type' | 'version'>;
 
 export function normalizeBlockName(blockName: string): string;
-
-export function getAppBlocks(definition: AppDefinition): Block[];
 
 export function filterBlocks(blocks: IdentifiableBlock[]): IdentifiableBlock[];
 
