@@ -46,13 +46,7 @@ exports[`should render flow page 1`] = `
         ],
       }
     }
-    ee={
-      EventEmitter {
-        "_events": Object {},
-        "_eventsCount": 0,
-        "_maxListeners": undefined,
-      }
-    }
+    ee={EventEmitter {}}
     page={
       Object {
         "name": "Test Page",
@@ -90,13 +84,7 @@ exports[`should render flow page 1`] = `
     showDialog={[Function]}
   />
   <PageDialog
-    ee={
-      EventEmitter {
-        "_events": Object {},
-        "_eventsCount": 0,
-        "_maxListeners": undefined,
-      }
-    }
+    ee={EventEmitter {}}
     showDialog={[Function]}
   />
 </Fragment>
@@ -108,13 +96,7 @@ exports[`should render tabs pages 1`] = `
     Test Page
   </TitleBar>
   <TabsPage
-    ee={
-      EventEmitter {
-        "_events": Object {},
-        "_eventsCount": 0,
-        "_maxListeners": undefined,
-      }
-    }
+    ee={EventEmitter {}}
     showDialog={[Function]}
     subPages={
       Array [
@@ -148,13 +130,7 @@ exports[`should render tabs pages 1`] = `
     }
   />
   <PageDialog
-    ee={
-      EventEmitter {
-        "_events": Object {},
-        "_eventsCount": 0,
-        "_maxListeners": undefined,
-      }
-    }
+    ee={EventEmitter {}}
     showDialog={[Function]}
   />
 </Fragment>
@@ -178,23 +154,11 @@ exports[`should render the blocks for a page 1`] = `
         },
       ]
     }
-    ee={
-      EventEmitter {
-        "_events": Object {},
-        "_eventsCount": 0,
-        "_maxListeners": undefined,
-      }
-    }
+    ee={EventEmitter {}}
     showDialog={[Function]}
   />
   <PageDialog
-    ee={
-      EventEmitter {
-        "_events": Object {},
-        "_eventsCount": 0,
-        "_maxListeners": undefined,
-      }
-    }
+    ee={EventEmitter {}}
     showDialog={[Function]}
   />
 </Fragment>
