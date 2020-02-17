@@ -34,9 +34,9 @@ default.
 
 ### Emit Events
 
-| Event | Description                                                                                                                                 |
-| ----- | ------------------------------------------------------------------------------------------------------------------------------------------- |
-| move  | Event that gets emitted when moving the map around. Will apply [OData filters](https://www.odata.org/) to limit the range of items fetched. |
+| Event | Description                                                                                                                                                                                               |
+| ----- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| move  | Event that gets emitted when moving the map around. Will apply [OData filters](https://www.odata.org/) to limit the range of items fetched. This will be skipped if the `move` emit event is not defined. |
 
 ### Listen Events
 
