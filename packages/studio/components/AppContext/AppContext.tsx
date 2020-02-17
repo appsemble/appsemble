@@ -26,10 +26,9 @@ export default function AppContext(): React.ReactElement {
   const app = useApp();
   const [ready, setReady] = React.useState<boolean>([]);
 
-  if (organizations || app === undefined) {
+  if (organizations === undefined || app === undefined) {
     return <Loader />;
   }
-
   const organization = organizations.find(org => org.id === app.OrganizationId);
 
   return (

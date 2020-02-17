@@ -29,8 +29,8 @@ export default function App(): React.ReactElement {
     <IntlProvider defaultLocale="en-US" locale="en-US">
       <BrowserRouter>
         <UserProvider>
-          <AppProvider>
-            <OrganizationProvider>
+          <OrganizationProvider>
+            <AppProvider>
               <ErrorHandler fallback={ErrorFallback}>
                 <MessagesProvider>
                   <Helmet defaultTitle="Appsemble" titleTemplate="Appsemble · %s" />
@@ -59,8 +59,8 @@ export default function App(): React.ReactElement {
                   </Switch>
                 </MessagesProvider>
               </ErrorHandler>
-            </OrganizationProvider>
-          </AppProvider>
+            </AppProvider>
+          </OrganizationProvider>
         </UserProvider>
       </BrowserRouter>
     </IntlProvider>

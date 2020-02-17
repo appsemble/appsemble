@@ -25,17 +25,17 @@ import React from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link, useHistory, useLocation, useParams } from 'react-router-dom';
 
+import useApp from '../../hooks/useApp';
 import HelmetIntl from '../HelmetIntl';
 import MonacoEditor from '../MonacoEditor';
 import styles from './Editor.css';
 import messages from './messages';
 
 interface EditorProps {
-  app: App;
   updateApp: (app: App) => Promise<void>;
 }
 
-export default function Editor({ app, updateApp }: EditorProps): React.ReactElement {
+export default function Editor({ updateApp }: EditorProps): React.ReactElement {
   const [appName, setAppName] = React.useState('');
   const [recipe, setRecipe] = React.useState<string>(null);
   const [style, setStyle] = React.useState('');
@@ -48,6 +48,7 @@ export default function Editor({ app, updateApp }: EditorProps): React.ReactElem
   const [deleteDialog, setDeleteDialog] = React.useState(false);
   const [openApiDocument, setOpenApiDocument] = React.useState<OpenAPIV3.Document>();
 
+  const app = useApp();
   const frame = React.useRef<HTMLIFrameElement>();
   const history = useHistory();
   const intl = useIntl();

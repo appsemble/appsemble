@@ -16,6 +16,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { RouteComponentProps, useHistory } from 'react-router-dom';
 
+import useApp from '../../hooks/useApp';
 import useOrganizations from '../../hooks/useOrganizations';
 import useUser from '../../hooks/useUser';
 import checkRole from '../../utils/checkRole';
@@ -34,10 +35,10 @@ export default function AppDetails(): JSX.Element {
   const [showCloneDialog, setShowCloneDialog] = useState(false);
   const history = useHistory();
   const intl = useIntl();
+  const app = useApp();
   const organizations = useOrganizations();
   const push = useMessages();
   const { userInfo } = useUser();
-  const app = useApp();
 
   useEffect(() => {
     const fetchOrganization = async (): Promise<void> => {

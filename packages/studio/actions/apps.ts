@@ -97,26 +97,6 @@ export default (state: AppState = initialState, action: AppAction): AppState => 
   }
 };
 
-export function getApp(id: number): AppThunk {
-  return async dispatch => {
-    dispatch({
-      type: GET_START,
-    });
-    try {
-      const { data } = await axios.get(`/api/apps/${id}`);
-      dispatch({
-        type: APP_GET_SUCCESS,
-        app: data,
-      });
-    } catch (error) {
-      dispatch({
-        type: GET_ERROR,
-        error,
-      });
-    }
-  };
-}
-
 export function createApp(recipe: App, organization: { id: string }): AppThunk {
   return async dispatch => {
     const formData = new FormData();

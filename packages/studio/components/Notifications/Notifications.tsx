@@ -5,17 +5,14 @@ import React from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link, RouteComponentProps } from 'react-router-dom';
 
+import useApp from '../../hooks/useApp';
 import HelmetIntl from '../HelmetIntl';
 import messages from './messages';
 
-interface NotificationsProps extends RouteComponentProps<{ id: string }> {
-  app: App;
-}
-
-export default function Notifications({ app }: NotificationsProps): React.ReactElement {
+export default function Notifications(): React.ReactElement {
   const intl = useIntl();
   const push = useMessages();
-
+  const app = useApp();
   const submit = React.useCallback(
     async ({ body, title }: { title: string; body: string }): Promise<void> => {
       try {
