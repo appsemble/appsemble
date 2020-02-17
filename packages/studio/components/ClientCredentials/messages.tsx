@@ -9,6 +9,7 @@ export default defineMessages({
   description: 'Description',
   descriptionHelp: 'A short description to render in the overview',
   expires: 'Expires',
+  never: 'Never',
   expiresHelp: 'The date on which the client credentials expire',
   credentials: 'Client credentials',
   credentialsHelp: 'Never share these client credentials with anyone.',

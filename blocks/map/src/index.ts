@@ -23,12 +23,14 @@ attach<BlockParameters, BlockActions, Events>(
       layers: [new TileLayer(tileLayer)],
     })
       .on('moveend', () => {
-        events.emit.move({
-          $filter: makeFilter(
-            [block.parameters.latitude || 'latitude', block.parameters.longitude || 'longitude'],
-            map.getBounds(),
-          ),
-        });
+        if (block.events?.emit?.move) {
+          events.emit.move({
+            $filter: makeFilter(
+              [block.parameters.latitude || 'latitude', block.parameters.longitude || 'longitude'],
+              map.getBounds(),
+            ),
+          });
+        }
       })
       .once('locationerror', error => {
         // See: https://developer.mozilla.org/en-US/docs/Web/API/PositionError

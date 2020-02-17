@@ -1,9 +1,9 @@
 ---
-menu: Development
-route: /development/app-security
+menu: Guide
+route: /guide/security
 ---
 
-# App Security
+# Security
 
 While some apps may be intended for use by anyone, some apps may be intended for a select few
 people. In order to facilitate this, apps can be secured in various ways in order to protect the app
@@ -153,12 +153,12 @@ pages:
 
 ### Resource roles
 
-As described in the [Appsemble resources](appsemble-resources) page, it is possible to define and
-manage various resources that can be used from within an app. By default the corresponding API
-endpoints are _not_ secured. They are able to be modified by anyone who knows the format of the
-resource as well as the specific endpoint being used. One exception to this is when the root of the
-app definition has a `roles` property defined. In that case, every resource action requires one of
-the roles as specified in this property, unless it is otherwise specified.
+As described in the [Appsemble resources](resources) page, it is possible to define and manage
+various resources that can be used from within an app. By default the corresponding API endpoints
+are _not_ secured. They are able to be modified by anyone who knows the format of the resource as
+well as the specific endpoint being used. One exception to this is when the root of the app
+definition has a `roles` property defined. In that case, every resource action requires one of the
+roles as specified in this property, unless it is otherwise specified.
 
 By specifying the `roles` property for a specific action of a resource, it is possible to secure
 this action. For example, if your resource may be publicly viewed by anyone but not created anew by

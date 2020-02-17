@@ -308,8 +308,8 @@ export async function queryResources(ctx) {
     });
 
     ctx.body = resources.map(resource => ({
-      id: resource.id,
       ...resource.data,
+      id: resource.id,
       $created: resource.created,
       $updated: resource.updated,
       ...(resource.User && { $author: { id: resource.User.id, name: resource.User.name } }),
@@ -357,8 +357,8 @@ export async function getResourceById(ctx) {
   await verifyAppRole(ctx, app, resource, resourceType, 'get');
 
   ctx.body = {
-    id: resource.id,
     ...resource.data,
+    id: resource.id,
     $created: resource.created,
     $updated: resource.updated,
     ...(resource.UserId != null && {
@@ -438,7 +438,7 @@ export async function createResource(ctx) {
 
   verifyResourceDefinition(app, resourceType);
 
-  const resource = ctx.request.body;
+  const { id: _, ...resource } = ctx.request.body;
   await verifyAppRole(ctx, app, resource, resourceType, 'create');
   const { schema } = app.definition.resources[resourceType];
 
@@ -460,7 +460,7 @@ export async function createResource(ctx) {
     UserId: user && user.id,
   });
 
-  ctx.body = { id, ...resource, $created: created, $updated: updated };
+  ctx.body = { ...resource, id, $created: created, $updated: updated };
   ctx.status = 201;
 
   const resourceDefinition = app.definition.resources[resourceType];
@@ -509,7 +509,7 @@ export async function updateResource(ctx) {
 
   await verifyAppRole(ctx, app, resource, resourceType, 'update');
 
-  const updatedResource = ctx.request.body;
+  const { id: _, ...updatedResource } = ctx.request.body;
   const { schema } = app.definition.resources[resourceType];
 
   try {
@@ -533,8 +533,8 @@ export async function updateResource(ctx) {
   await resource.reload();
 
   ctx.body = {
-    id: resourceId,
     ...resource.get('data', { plain: true }),
+    id: resourceId,
     $created: resource.created,
     $updated: resource.updated,
   };
