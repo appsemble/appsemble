@@ -12,6 +12,9 @@ be used to display and interact with markers.
 
 Markers can be loaded from external sources or from Appsemble’s resource API.
 
+Markers that are too close to each other to be visually distinguishable will be clustered by
+default.
+
 ## Actions
 
 | Action        | Required | Description                                           |
@@ -20,10 +23,12 @@ Markers can be loaded from external sources or from Appsemble’s resource API.
 
 ## Parameters
 
-| Parameter | Default   | Description                                          |
-| --------- | --------- | ---------------------------------------------------- |
-| longitude | longitude | The name of the field used to retrieve the longitude |
-| latitude  | latitude  | The name of the field used to retrieve the latitude  |
+| Parameter         | Default   | Description                                                                                                                    |
+| ----------------- | --------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| longitude         | longitude | The name of the field used to retrieve the longitude                                                                           |
+| latitude          | latitude  | The name of the field used to retrieve the latitude                                                                            |
+| disableClustering | false     | Whether clustering should be disabled or not.                                                                                  |
+| maxClusterRadius  | 80        | The maximum radius that a cluster will cover from the central marker (in pixels). Decreasing will make more, smaller clusters. |
 
 ## Events
 

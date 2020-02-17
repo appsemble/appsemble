@@ -61,11 +61,18 @@ attach<BlockParameters, BlockActions, Events>(
       map.setView([lat, lng], 18);
     }
 
-    const cluster = markerClusterGroup({ chunkedLoading: true });
-    map.addLayer(cluster);
+    let cluster: L.MarkerClusterGroup;
+
+    if (!block.parameters.disableClustering) {
+      cluster = markerClusterGroup({
+        chunkedLoading: true,
+        maxClusterRadius: block.parameters.maxClusterRadius ?? 80,
+      });
+      map.addLayer(cluster);
+    }
 
     events.on.data(d => {
-      loadMarkers(d, fetched, get, data, actions, cluster);
+      loadMarkers(d, fetched, get, data, actions, cluster || map);
     });
   },
 );
