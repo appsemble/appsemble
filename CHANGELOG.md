@@ -13,6 +13,10 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Blocks(`@appsemble/map`): Make `move` emit event optional. When omitted, the map block won’t emit
   refresh events.
 
+### Changed
+
+- Server: Make the `AppId` column for `Asset` is required in the database.
+
 ### Fixed
 
 - Server: Fix various issues when extracting app blocks.
