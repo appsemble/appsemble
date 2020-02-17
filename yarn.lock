@@ -2380,6 +2380,11 @@
     text-table "^0.2.0"
     webpack-log "^1.1.2"
 
+"@wesselkuipers/leaflet.markercluster@^1.4.4":
+  version "1.4.4"
+  resolved "https://registry.yarnpkg.com/@wesselkuipers/leaflet.markercluster/-/leaflet.markercluster-1.4.4.tgz#ac123028a0cd316711630e8a7ef38a6f58f7b7b6"
+  integrity sha512-1xHxNK2mFZcSr3utc549oO9j1JO0EewV7boeISQviJJdcgJEoe7/9K+MQzx9bGX/iJBEMe9gtGGOyoZsBJYK3g==
+
 "@wesselkuipers/odata-sequelize@^1.0.14":
   version "1.0.14"
   resolved "https://registry.yarnpkg.com/@wesselkuipers/odata-sequelize/-/odata-sequelize-1.0.14.tgz#bc63d6b1738952d971fff931c848f78fc916ae4d"
@@ -11276,11 +11281,6 @@ ldjson-stream@^1.2.1:
   dependencies:
     split2 "^0.2.1"
     through2 "^0.6.1"
-
-leaflet.markercluster@^1.4.1:
-  version "1.4.1"
-  resolved "https://registry.yarnpkg.com/leaflet.markercluster/-/leaflet.markercluster-1.4.1.tgz#b53f2c4f2ca7306ddab1dbb6f1861d5e8aa6c5e5"
-  integrity sha512-ZSEpE/EFApR0bJ1w/dUGwTSUvWlpalKqIzkaYdYB7jaftQA/Y2Jav+eT4CMtEYFj+ZK4mswP13Q2acnPBnhGOw==
 
 leaflet@^1.6.0:
   version "1.6.0"

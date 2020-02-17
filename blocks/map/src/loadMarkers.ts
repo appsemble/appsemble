@@ -1,5 +1,6 @@
 import { Actions } from '@appsemble/sdk';
-import { Icon, LatLngBounds, Map, Marker, MarkerClusterGroup, Point } from 'leaflet';
+import { MarkerClusterGroup } from '@wesselkuipers/leaflet.markercluster';
+import { Icon, LatLngBounds, Map, Marker, Point } from 'leaflet';
 
 import iconUrl from '../../../themes/amsterdam/core/marker.svg';
 import { BlockActions, LatLngMapper } from './createGetters';

@@ -8,7 +8,7 @@ export interface LatLngMapper {
 export interface BlockParameters {
   latitude: string;
   longitude: string;
-  disableClustering: boolean;
+  disableClustering?: boolean;
 
   /**
    * The maximum radius that a cluster will cover from the central marker (in pixels). Default 80.
@@ -19,7 +19,7 @@ export interface BlockParameters {
    * @minimum 1
    * @TJS-type integer
    */
-  maxClusterRadius: number;
+  maxClusterRadius?: number;
 }
 
 export interface BlockActions {
