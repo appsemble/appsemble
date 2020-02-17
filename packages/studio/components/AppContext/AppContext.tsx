@@ -1,9 +1,11 @@
 import { Loader } from '@appsemble/react-components';
 import { App } from '@appsemble/types';
 import { permissions } from '@appsemble/utils';
-import React from 'react';
-import { Redirect, Route, Switch, useRouteMatch } from 'react-router-dom';
+import axios from 'axios';
+import React, { createContext } from 'react';
+import { Redirect, Route, Switch, useParams, useRouteMatch } from 'react-router-dom';
 
+import useApp from '../../hooks/useApp';
 import useOrganizations from '../../hooks/useOrganizations';
 import AppDetails from '../AppDetails';
 import AppSettings from '../AppSettings';
@@ -15,28 +17,16 @@ import ProtectedRoute from '../ProtectedRoute';
 import Roles from '../Roles';
 import styles from './AppContext.css';
 
-interface AppContextProps {
-  app?: App;
-  getApp: (appId: string) => void;
-  ready: boolean;
-}
-
 /**
  * A wrapper which fetches the app definition and makes sure it is available to its children.
  */
-export default function AppContext({
-  app = undefined,
-  getApp,
-  ready,
-}: AppContextProps): React.ReactElement {
+export default function AppContext(): React.ReactElement {
   const match = useRouteMatch<{ id: string }>();
   const organizations = useOrganizations();
+  const app = useApp();
+  const [ready, setReady] = React.useState<boolean>([]);
 
-  React.useEffect(() => {
-    getApp(match.params.id);
-  }, [getApp, match.params.id]);
-
-  if (!ready || organizations === undefined) {
+  if (organizations || app === undefined) {
     return <Loader />;
   }
 

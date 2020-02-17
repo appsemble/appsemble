@@ -12,7 +12,7 @@ import {
 import { App, Organization, Rating } from '@appsemble/types';
 import { permissions } from '@appsemble/utils';
 import axios from 'axios';
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { RouteComponentProps, useHistory } from 'react-router-dom';
 
@@ -24,12 +24,11 @@ import StarRating from '../Rating';
 import styles from './AppDetails.css';
 import messages from './messages';
 
-interface AppDetailsProps extends RouteComponentProps<{ id: string }> {
-  app: App;
-  updateApp: (app: App) => void;
-}
+// interface AppDetailsProps extends RouteComponentProps<{ id: string }> {
+//   updateApp: (app: App) => void;
+// }
 
-export default function AppDetails({ app, updateApp }: AppDetailsProps): JSX.Element {
+export default function AppDetails(): JSX.Element {
   const [organization, setOrganization] = useState<Organization>(undefined);
   const [ratings, setRatings] = useState<Rating[]>([]);
   const [showCloneDialog, setShowCloneDialog] = useState(false);
@@ -38,6 +37,7 @@ export default function AppDetails({ app, updateApp }: AppDetailsProps): JSX.Ele
   const organizations = useOrganizations();
   const push = useMessages();
   const { userInfo } = useUser();
+  const app = useApp();
 
   useEffect(() => {
     const fetchOrganization = async (): Promise<void> => {
@@ -84,7 +84,7 @@ export default function AppDetails({ app, updateApp }: AppDetailsProps): JSX.Ele
       updateApp(clone);
       history.push(`/apps/${clone.id}/edit`);
     },
-    [app, history, organizations, updateApp],
+    [app, history, organizations],
   );
 
   if (!organization) {
