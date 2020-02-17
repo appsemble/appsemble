@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/react",
-  "version": "0.11.2",
+  "version": "0.11.3",
   "dependencies": {
     "react-shadow-dom-retarget-events": "^1.0.11"
   },
@@ -9,8 +9,8 @@
     "enzyme-adapter-react-16": "^1.15.2"
   },
   "peerDependencies": {
-    "@appsemble/sdk": "^0.11.2",
-    "@appsemble/types": "^0.11.2",
+    "@appsemble/sdk": "^0.11.3",
+    "@appsemble/types": "^0.11.3",
     "react": "^16.11.0",
     "react-dom": "^16.11.0",
     "react-intl": "^3.4.0"

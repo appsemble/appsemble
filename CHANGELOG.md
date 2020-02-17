@@ -7,6 +7,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.11.3] - 2020-02-17
+
 ### Added
 
 - Blocks(`@appsemble/data-loader`): Add `skipInitialLoad` parameter.
