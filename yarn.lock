@@ -1899,14 +1899,7 @@
     "@types/koa-compose" "*"
     "@types/node" "*"
 
-"@types/leaflet.markercluster@^1.4.2":
-  version "1.4.2"
-  resolved "https://registry.yarnpkg.com/@types/leaflet.markercluster/-/leaflet.markercluster-1.4.2.tgz#86b8ab7ca2397b48d9ba637757aaf7a6d1cc6f0f"
-  integrity sha512-QQ//hevAxMH2dlRQdRre7V/1G+TbtuDtZnZF/75TNwVIgklrsQVCIcS/cvLsl7UUryfPJ6xmoYHfFzK5iGVgpg==
-  dependencies:
-    "@types/leaflet" "*"
-
-"@types/leaflet@*", "@types/leaflet@^1.5.8":
+"@types/leaflet@^1.5.8":
   version "1.5.8"
   resolved "https://registry.yarnpkg.com/@types/leaflet/-/leaflet-1.5.8.tgz#1c550803672fc5866b8b2c38512009f2b5d4205d"
   integrity sha512-qpi5n4LmwenUFZ+VZ7ytRgHK+ZAclIvloL2zoKCmmj244WD2hBcLbUZ6Szvajfe3sIkSYEJ8WZ1p9VYl8tRsMA==

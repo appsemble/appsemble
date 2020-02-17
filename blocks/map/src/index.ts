@@ -60,7 +60,6 @@ attach<BlockParameters, BlockActions, Events>(
     }
 
     let cluster: MarkerClusterGroup;
-    console.log(cluster);
 
     if (!block.parameters.disableClustering) {
       cluster = new MarkerClusterGroup({
