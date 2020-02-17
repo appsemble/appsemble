@@ -93,14 +93,13 @@ export default function AppSettings(): React.ReactElement {
               subs[key][action as keyof SubscriptionState].subscribed = value;
             });
           });
-
-          setSubscriptions(subs);
         })
         .catch(() => {
           push('Something went wrong when trying to fetch your subscription settings');
-          setSubscriptions(subs);
         });
     }
+
+    setSubscriptions(subs);
   }, [definition, push, subscription]);
 
   const onSubscribeClick = async (event: React.ChangeEvent<HTMLInputElement>): Promise<void> => {
