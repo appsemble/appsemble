@@ -58,7 +58,7 @@ export default function AppContext(): React.ReactElement {
             permission={permissions.EditApps}
           />
           <ProtectedRoute
-            component={AppSettings}
+            component={() => <AppSettings apps={app} match={match} />}
             exact
             organization={organization}
             path={`${match.path}/settings`}

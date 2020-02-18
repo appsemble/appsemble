@@ -40,7 +40,7 @@ export default class AppSettings extends React.Component<
   };
 
   async componentDidMount(): Promise<void> {
-    const { app } = this.props;
+    const { apps } = this.props;
 
     this.setState({
       domain: app.domain,
@@ -53,7 +53,7 @@ export default class AppSettings extends React.Component<
   onSubmit = async (event: FormEvent): Promise<void> => {
     event.preventDefault();
 
-    const { app, intl, updateApp } = this.props;
+    const { apps, intl, updateApp } = this.props;
     const { domain, icon, originalValues, path, private: isPrivate } = this.state;
     const push = this.context;
 
@@ -76,7 +76,7 @@ export default class AppSettings extends React.Component<
     }
 
     try {
-      const { data: response } = await axios.patch(`/api/apps/${app.id}`, data);
+      const { data: response } = await axios.patch(`/api/apps/${apps.id}`, data);
 
       this.setState({
         path: response.path,
@@ -112,7 +112,7 @@ export default class AppSettings extends React.Component<
 
   render(): JSX.Element {
     const { dirty, domain, icon, iconUrl, path, private: isPrivate } = this.state;
-    const { app, intl } = this.props;
+    const { apps, intl } = this.props;
 
     return (
       <Form onSubmit={this.onSubmit}>
@@ -168,7 +168,7 @@ export default class AppSettings extends React.Component<
           label={<FormattedMessage {...messages.path} />}
           name="path"
           onChange={this.onChange}
-          placeholder={normalize(app.definition.name)}
+          placeholder={normalize(apps.definition.name)}
           required
           value={path}
         />

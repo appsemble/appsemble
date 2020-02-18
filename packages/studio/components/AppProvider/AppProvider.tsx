@@ -19,11 +19,14 @@ export default function AppProvider({ children }: AppProviderProps): React.React
   React.useEffect(() => {
     const parts = match.pathname.split('/');
     const id = parts[parts.length - 1];
+    const isnum = /^\d+$/.test(id);
 
     const getApp = async (): Promise<void> => {
-      if (userInfo) {
+      if (isnum && userInfo) {
         const { data } = await axios.get<App[]>(`/api/apps/${id}`);
         setApp(data);
+      } else if (value !== undefined) {
+        setApp(value);
       } else {
         setApp([]);
       }
@@ -32,7 +35,7 @@ export default function AppProvider({ children }: AppProviderProps): React.React
     if (initialized) {
       getApp();
     }
-  }, [initialized, match.pathname, userInfo]);
+  }, [initialized, match.pathname, userInfo, value]);
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 }
