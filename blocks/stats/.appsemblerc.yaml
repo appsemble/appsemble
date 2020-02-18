@@ -1,0 +1,6 @@
+types:
+  file: block.ts
+  events: Events
+  parameters: Parameters
+
+output: dist

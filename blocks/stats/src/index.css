@@ -1,0 +1,20 @@
+.wrapper {
+  display: flex;
+  margin: 10px auto;
+  max-width: 640px;
+}
+
+.field {
+  align-items: center;
+  display: flex;
+  flex: 1;
+  flex-flow: column;
+}
+
+.icon {
+  font-size: 15vw;
+}
+
+.value {
+  margin: 8px 0 2px;
+}

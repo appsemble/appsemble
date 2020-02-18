@@ -7,6 +7,10 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- Blocks(`@appsemble/stats`): Add new stats block.
+
 ## [0.11.4] - 2020-02-18
 
 ### Added
