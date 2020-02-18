@@ -1,7 +1,10 @@
 import 'leaflet/dist/leaflet.css';
+import '@wesselkuipers/leaflet.markercluster/dist/MarkerCluster.css';
+import '@wesselkuipers/leaflet.markercluster/dist/MarkerCluster.Default.css';
 import './index.css';
 
 import { attach } from '@appsemble/sdk';
+import { MarkerClusterGroup } from '@wesselkuipers/leaflet.markercluster';
 import { CircleMarker, LocationEvent, Map, TileLayer } from 'leaflet';
 
 import createGetters, { BlockActions, BlockParameters, Events } from './createGetters';
@@ -18,6 +21,7 @@ attach<BlockParameters, BlockActions, Events>(
     const locationMarker = new CircleMarker(null, {
       color: primaryColor,
     });
+
     const map = new Map(node, {
       attributionControl: false,
       layers: [new TileLayer(tileLayer)],
@@ -55,8 +59,18 @@ attach<BlockParameters, BlockActions, Events>(
       map.setView([lat, lng], 18);
     }
 
+    let cluster: MarkerClusterGroup;
+
+    if (!block.parameters.disableClustering) {
+      cluster = new MarkerClusterGroup({
+        chunkedLoading: true,
+        maxClusterRadius: block.parameters.maxClusterRadius ?? 80,
+      });
+      map.addLayer(cluster);
+    }
+
     events.on.data(d => {
-      loadMarkers(d, fetched, get, data, actions, map);
+      loadMarkers(d, fetched, get, data, actions, cluster || map);
     });
   },
 );
