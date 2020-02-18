@@ -59,20 +59,21 @@ export default function CreateAppCard({ createTemplateApp }: CreateAppCardProps)
   const onCreate = React.useCallback(
     async ({ description, includeResources, isPrivate, name, selectedOrganization }) => {
       const { id, resources } = templates[selectedTemplate];
-      const app = await createTemplateApp(
-        {
+
+      await axios
+        .post('/api/templates', {
           templateId: id,
           name,
-          isPrivate,
           description,
-          resources: resources && includeResources,
-        },
-        organizations[selectedOrganization],
-      );
-
-      history.push(`${match.url}/${app.id}/edit`);
+          organizationId: organizations[selectedOrganization].id,
+          resources,
+          private: isPrivate,
+        })
+        .then(() => {
+          history.push(`${match.url}/${app.id}/edit`);
+        });
     },
-    [createTemplateApp, history, match.url, organizations, selectedTemplate, templates],
+    [history, match.url, organizations, selectedTemplate, templates],
   );
 
   React.useEffect(() => {

@@ -24,11 +24,11 @@ export default function AppContext(): React.ReactElement {
   const match = useRouteMatch<{ id: string }>();
   const organizations = useOrganizations();
   const app = useApp();
-  const [ready, setReady] = React.useState<boolean>([]);
 
   if (organizations === undefined || app === undefined) {
     return <Loader />;
   }
+
   const organization = organizations.find(org => org.id === app.OrganizationId);
 
   return (
@@ -58,12 +58,13 @@ export default function AppContext(): React.ReactElement {
             permission={permissions.EditApps}
           />
           <ProtectedRoute
-            component={() => <AppSettings apps={app} match={match} />}
             exact
             organization={organization}
             path={`${match.path}/settings`}
             permission={permissions.EditAppSettings}
-          />
+          >
+            <AppSettings apps={app} match={match} />
+          </ProtectedRoute>
           <ProtectedRoute
             component={Notifications}
             exact
