@@ -7,6 +7,13 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- Blocks(`@appsemble/map`): Add marker clustering.
+- Blocks(`@appsemble/map`): Add `disableClustering` parameter.
+- Blocks(`@appsemble/map`): Add `maxClusterRadius` parameter. This can be used to determine when the
+  map should cluster markers.
+
 ### Changed
 
 - Studio: Hide login button on the login page.
