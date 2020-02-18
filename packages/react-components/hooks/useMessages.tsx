@@ -1,4 +1,4 @@
-import { BulmaColor } from '@appsemble/types';
+import { BulmaColor } from '@appsemble/sdk';
 import { createContext, useContext } from 'react';
 
 export interface Message {

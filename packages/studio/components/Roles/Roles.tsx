@@ -1,5 +1,6 @@
 import { Loader, useMessages } from '@appsemble/react-components';
-import { App, Message } from '@appsemble/types';
+import { Message } from '@appsemble/sdk';
+import { App } from '@appsemble/types';
 import axios from 'axios';
 import classNames from 'classnames';
 import React from 'react';

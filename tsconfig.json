@@ -8,5 +8,5 @@
       "@appsemble/sdk": ["packages/sdk/src"]
     }
   },
-  "exclude": []
+  "exclude": ["**/dist"]
 }

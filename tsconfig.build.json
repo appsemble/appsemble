@@ -5,7 +5,7 @@
     "declaration": true,
     "esModuleInterop": true,
     "jsx": "react",
-    "lib": ["esnext"],
+    "lib": ["dom", "esnext"],
     "moduleResolution": "node",
     "noUnusedLocals": true,
     "noUnusedParameters": true,
@@ -16,5 +16,5 @@
     "target": "es2018",
     "types": ["jest"]
   },
-  "exclude": ["**/*.test.ts", "**/*.test.tsx", "**/lib"]
+  "exclude": ["**/*.test.ts", "**/*.test.tsx", "**/dist"]
 }

@@ -3,6 +3,7 @@
   "version": "0.11.3",
   "private": true,
   "dependencies": {
+    "@appsemble/sdk": "0.11.3",
     "@appsemble/types": "0.11.3",
     "ajv": "^6.11.0",
     "date-fns": "^2.9.0",
