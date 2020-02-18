@@ -1,0 +1,20 @@
+// This tsconfig should be extended by every workspace tsconfig.build.json, if the workspace is
+// built directly using tsc.
+{
+  "compilerOptions": {
+    "declaration": true,
+    "esModuleInterop": true,
+    "jsx": "react",
+    "lib": ["esnext"],
+    "moduleResolution": "node",
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "resolveJsonModule": true,
+    "strict": true,
+    "strictFunctionTypes": false,
+    "strictNullChecks": false,
+    "target": "es2018",
+    "types": ["jest"]
+  },
+  "exclude": ["**/*.test.ts", "**/*.test.tsx", "**/lib"]
+}

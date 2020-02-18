@@ -128,16 +128,16 @@ helm lint:
 
 # Build the npm packages that should be published.
 pack:
-  except:
-    - schedules
+  only:
+    refs:
+      - branches
+      - merge_requests
+      - tags
   script:
-    - yarn workspace @appsemble/cli pack
-    - yarn workspace @appsemble/node-utils pack
-    - yarn workspace @appsemble/react pack
     - yarn workspace @appsemble/sdk pack
-    - yarn workspace @appsemble/server pack
-    - yarn workspace create-appsemble pack
   artifacts:
+    name: '$CI_COMMIT_REF_NAME'
+    expose_as: packages
     paths:
       - packages/**/*.tgz
 

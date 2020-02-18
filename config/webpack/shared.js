@@ -19,6 +19,9 @@ module.exports = (env, { mode }) => {
         './images/layers.png$': 'leaflet/dist/images/layers.png',
         './images/layers-2x.png$': 'leaflet/dist/images/layers-2x.png',
         './images/marker-icon.png$': 'leaflet/dist/images/marker-icon.png',
+
+        // Files from this workspace should resolve to the src directory.
+        '@appsemble/sdk': '@appsemble/sdk/src',
       },
     },
     devtool: 'source-map',
