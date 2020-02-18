@@ -1,7 +1,6 @@
 {
   "extends": "../../tsconfig",
   "compilerOptions": {
-    "lib": ["dom", "esnext"],
-    "types": ["css-modules", "file-loader", "leaflet"]
+    "types": ["css-modules", "file-loader", "jest"]
   }
 }

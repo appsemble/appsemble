@@ -1,4 +1,5 @@
 import {
+  BaseAction,
   ResourceCreateAction,
   ResourceDeleteAction,
   ResourceGetAction,
@@ -6,7 +7,6 @@ import {
   ResourceUpdateAction,
 } from '@appsemble/sdk';
 import {
-  BaseAction,
   BlobUploadType,
   Resource,
   ResourceCreateActionDefinition,

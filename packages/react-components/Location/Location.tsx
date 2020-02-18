@@ -1,7 +1,7 @@
 import 'leaflet/dist/leaflet.css';
 
 import { BlockProps } from '@appsemble/react';
-import { Theme } from '@appsemble/types';
+import { Theme } from '@appsemble/sdk';
 import {
   CircleMarker,
   Icon,

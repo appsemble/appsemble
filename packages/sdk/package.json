@@ -1,8 +1,14 @@
 {
   "name": "@appsemble/sdk",
   "version": "0.11.3",
+  "files": [
+    "dist"
+  ],
+  "main": "src",
+  "scripts": {
+    "prepack": "tsc -p tsconfig.build.json"
+  },
   "dependencies": {
-    "@appsemble/types": "0.11.3",
     "type-fest": "^0.9.0"
   }
 }
