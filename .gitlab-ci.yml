@@ -137,7 +137,6 @@ pack:
     - yarn workspace @appsemble/sdk pack
   artifacts:
     name: '$CI_COMMIT_REF_NAME'
-    expose_as: packages
     paths:
       - packages/**/*.tgz
 
