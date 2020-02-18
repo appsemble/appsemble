@@ -48,7 +48,7 @@ export default function OrganizationInvite(): React.ReactElement {
       }
       setSubmitting(false);
     },
-    [intl, organization.id, push, qs],
+    [intl, organization, push, qs],
   );
 
   const onAcceptClick = React.useCallback(() => sendResponse(true), [sendResponse]);

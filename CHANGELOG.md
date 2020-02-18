@@ -9,13 +9,26 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
-- Blocks(`@appsemble/data-loader`): Add `skipInitialLoad` parameter.
 - Blocks(`@appsemble/map`): Add marker clustering.
 - Blocks(`@appsemble/map`): Add `disableClustering` parameter.
 - Blocks(`@appsemble/map`): Add `maxClusterRadius` parameter. This can be used to determine when the
   map should cluster markers.
+
+### Fixed
+
+- Studio: Fix crash on the organization invite page.
+
+## [0.11.3] - 2020-02-17
+
+### Added
+
+- Blocks(`@appsemble/data-loader`): Add `skipInitialLoad` parameter.
 - Blocks(`@appsemble/map`): Make `move` emit event optional. When omitted, the map block won’t emit
   refresh events.
+
+### Changed
+
+- Server: Make the `AppId` column for `Asset` is required in the database.
 
 ### Fixed
 

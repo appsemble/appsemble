@@ -16,7 +16,7 @@ bootstrap<Parameters, Actions, Events>(
 
     events.on.refresh(loadData);
 
-    if (!block.parameters.skipInitialLoad) {
+    if (block.parameters?.skipInitialLoad) {
       return;
     }
 

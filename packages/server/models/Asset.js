@@ -20,7 +20,7 @@ export default sequelize => {
 
   Asset.associate = ({ App, User }) => {
     Asset.belongsTo(User, { foreignKey: { allowNull: true } });
-    Asset.belongsTo(App, { foreignKey: { allowNull: true } });
+    Asset.belongsTo(App);
   };
 
   return Asset;
