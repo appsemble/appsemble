@@ -41,7 +41,7 @@ export default async function indexHandler(ctx) {
       'https://fonts.googleapis.com',
     ],
     'font-src': ["'self'", 'https://fonts.gstatic.com'],
-    'frame-src': [`*.${new URL(host).host}`],
+    'frame-src': [`*.${new URL(host).host}`, host],
   });
   ctx.set('Content-Security-Policy', csp);
   ctx.body = await render('studio.html', { settings });
