@@ -29,6 +29,7 @@ module.exports = {
     },
   },
   rules: {
+    curly: ['error', 'all'],
     'max-len': [
       'error',
       {
