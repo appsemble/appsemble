@@ -69,6 +69,7 @@ export default function UserProvider({ children }: UserProviderProps): React.Rea
   React.useEffect(() => {
     if (!tokenResponse.access_token || !tokenResponse.refresh_token) {
       logout();
+      setInitialized(true);
       return undefined;
     }
 
@@ -87,7 +88,7 @@ export default function UserProvider({ children }: UserProviderProps): React.Rea
         logout();
       }
     }, timeout);
-    refreshUserInfo().then(() => {
+    refreshUserInfo().finally(() => {
       setInitialized(true);
     });
 
