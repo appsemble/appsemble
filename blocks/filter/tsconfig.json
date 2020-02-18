@@ -1,6 +1,6 @@
 {
   "extends": "../../tsconfig",
   "compilerOptions": {
-    "types": ["babel-plugin-react-intl-auto", "css-modules", "jest"]
+    "types": ["babel-plugin-react-intl-auto", "css-modules", "jest", "node"]
   }
 }
