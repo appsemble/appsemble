@@ -1,6 +1,7 @@
 name: Person App
 description: A simple form and data viewing app using the resource API
 defaultPage: Person Registration Form
+
 resources:
   person:
     schema:
@@ -19,6 +20,7 @@ resources:
           format: email
         description:
           type: string
+
 pages:
   - name: Person List
     blocks:
@@ -54,6 +56,7 @@ pages:
           onClick:
             to: Person Registration Form
             type: link
+
   - name: Person Registration Form
     blocks:
       - type: form
@@ -80,6 +83,7 @@ pages:
               multiline: true
               name: description
               type: string
+
   - name: Person Details
     parameters:
       - id
