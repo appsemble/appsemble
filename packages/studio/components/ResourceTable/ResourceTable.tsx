@@ -38,7 +38,7 @@ export default function ResourceTable(): React.ReactElement {
   const intl = useIntl();
   const match = useRouteMatch<RouteParams>();
   const push = useMessages();
-  const app = useApp();
+  const { app } = useApp();
 
   const [resources, setResources] = React.useState<Resource[]>();
   const [deletingResource, setDeletingResource] = React.useState();

@@ -1,8 +1,13 @@
 import { App } from '@appsemble/types';
 import { createContext, useContext } from 'react';
 
-export const AppContext = createContext<App[]>(null);
+interface AppContext {
+  refreshAppInfo(): Promise<void>;
+  app: App;
+}
 
-export default function useApp(): App[] {
+export const AppContext = createContext<AppContext>(null);
+
+export default function useApp(): AppContext {
   return useContext(AppContext);
 }

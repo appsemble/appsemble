@@ -14,19 +14,32 @@ export default function AppProvider({ children }: AppProviderProps): React.React
   const { initialized, userInfo } = useUser();
   const [app, setApp] = React.useState<App[]>();
   const match = useLocation();
-  const value = React.useMemo(() => app, [app]);
+  const parts = match.pathname.split('/');
+  const id = parts[parts.length - 1];
+  const isnum = /^\d+$/.test(id);
+  const routeParams = useParams();
+
+  const refreshAppInfo = React.useCallback(async () => {
+    const { data } = await axios.get<App[]>(`/api/apps/${id}`);
+    setApp(data);
+  }, [id]);
+
+  const value = React.useMemo(
+    () => ({
+      app,
+      refreshAppInfo,
+    }),
+    [app, refreshAppInfo],
+  );
 
   React.useEffect(() => {
-    const parts = match.pathname.split('/');
-    const id = parts[parts.length - 1];
-    const isnum = /^\d+$/.test(id);
-
     const getApp = async (): Promise<void> => {
       if (isnum && userInfo) {
         const { data } = await axios.get<App[]>(`/api/apps/${id}`);
         setApp(data);
-      } else if (value !== undefined) {
-        setApp(value);
+      } else if (app !== undefined) {
+        // avoid unneccessary API calls
+        setApp(app);
       } else {
         setApp([]);
       }
@@ -35,7 +48,7 @@ export default function AppProvider({ children }: AppProviderProps): React.React
     if (initialized) {
       getApp();
     }
-  }, [initialized, match.pathname, userInfo, value]);
+  }, [app, id, initialized, isnum, match.pathname, refreshAppInfo, userInfo]);
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 }

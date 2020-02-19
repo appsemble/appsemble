@@ -23,7 +23,7 @@ import styles from './AppContext.css';
 export default function AppContext(): React.ReactElement {
   const match = useRouteMatch<{ id: string }>();
   const organizations = useOrganizations();
-  const app = useApp();
+  const { app, refreshAppInfo } = useApp();
 
   if (organizations === undefined || app === undefined) {
     return <Loader />;

@@ -31,11 +31,7 @@ import MonacoEditor from '../MonacoEditor';
 import styles from './Editor.css';
 import messages from './messages';
 
-interface EditorProps {
-  updateApp: (app: App) => Promise<void>;
-}
-
-export default function Editor({ updateApp }: EditorProps): React.ReactElement {
+export default function Editor(): React.ReactElement {
   const [appName, setAppName] = React.useState('');
   const [recipe, setRecipe] = React.useState<string>(null);
   const [style, setStyle] = React.useState('');
@@ -48,7 +44,7 @@ export default function Editor({ updateApp }: EditorProps): React.ReactElement {
   const [deleteDialog, setDeleteDialog] = React.useState(false);
   const [openApiDocument, setOpenApiDocument] = React.useState<OpenAPIV3.Document>();
 
-  const app = useApp();
+  const { app, refreshAppInfo } = useApp();
   const frame = React.useRef<HTMLIFrameElement>();
   const history = useHistory();
   const intl = useIntl();
@@ -199,8 +195,8 @@ export default function Editor({ updateApp }: EditorProps): React.ReactElement {
       setPath(data.path);
       push({ body: intl.formatMessage(messages.updateSuccess), color: 'success' });
 
-      // Update Redux state
-      updateApp(data);
+      // update App State
+      refreshAppInfo();
     } catch (e) {
       if (e.response && e.response.status === 403) {
         push(intl.formatMessage(messages.forbidden));
@@ -215,7 +211,7 @@ export default function Editor({ updateApp }: EditorProps): React.ReactElement {
     setDirty(true);
     setWarningDialog(false);
     setInitialRecipe(recipe);
-  }, [intl, params, push, recipe, sharedStyle, style, updateApp, valid]);
+  }, [intl, params, push, recipe, refreshAppInfo, sharedStyle, style, valid]);
 
   const onDelete = React.useCallback(async () => {
     const { id } = params;

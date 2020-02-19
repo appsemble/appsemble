@@ -22,7 +22,7 @@ export interface AppSideMenuState {
 export default function AppSideMenu(): React.ReactElement {
   const { userInfo } = useUser();
   const [isCollapsed, setCollapsed] = React.useState(false);
-  const app = useApp();
+  const { app } = useApp();
   const organizations = useOrganizations();
   const organization = organizations && organizations.find(org => org.id === app.OrganizationId);
   const match = useRouteMatch<{ id: string }>();

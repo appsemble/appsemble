@@ -25,17 +25,14 @@ import StarRating from '../Rating';
 import styles from './AppDetails.css';
 import messages from './messages';
 
-// interface AppDetailsProps extends RouteComponentProps<{ id: string }> {
-//   updateApp: (app: App) => void;
-// }
-
 export default function AppDetails(): JSX.Element {
   const [organization, setOrganization] = useState<Organization>(undefined);
   const [ratings, setRatings] = useState<Rating[]>([]);
   const [showCloneDialog, setShowCloneDialog] = useState(false);
   const history = useHistory();
   const intl = useIntl();
-  const app = useApp();
+  const { app } = useApp();
+
   const organizations = useOrganizations();
   const push = useMessages();
   const { userInfo } = useUser();
@@ -81,9 +78,8 @@ export default function AppDetails(): JSX.Element {
         resources: false,
         private: isPrivate,
       });
-
-      updateApp(clone);
-      history.push(`/apps/${clone.id}/edit`);
+      history.push(`/apps/${clone.id}`);
+      setShowCloneDialog(false);
     },
     [app, history, organizations],
   );

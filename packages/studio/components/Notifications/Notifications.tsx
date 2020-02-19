@@ -12,7 +12,7 @@ import messages from './messages';
 export default function Notifications(): React.ReactElement {
   const intl = useIntl();
   const push = useMessages();
-  const app = useApp();
+  const { app } = useApp();
   const submit = React.useCallback(
     async ({ body, title }: { title: string; body: string }): Promise<void> => {
       try {

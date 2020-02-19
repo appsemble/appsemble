@@ -10,7 +10,7 @@ import messages from './messages';
 
 export default function CMSRoot(): React.ReactElement {
   const match = useRouteMatch();
-  const app = useApp();
+  const { app } = useApp();
 
   return (
     <>
