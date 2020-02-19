@@ -8,7 +8,6 @@ import {
   SimpleFormError,
   SimpleInput,
 } from '@appsemble/react-components';
-import { App } from '@appsemble/types';
 import axios, { AxiosError } from 'axios';
 import classNames from 'classnames';
 import React from 'react';
@@ -26,20 +25,7 @@ interface Template {
   resources: boolean;
 }
 
-interface CreateAppCardProps {
-  createTemplateApp: (
-    template: {
-      templateId: number;
-      name: string;
-      description: string;
-      isPrivate: boolean;
-      resources: boolean;
-    },
-    organization: { id: string },
-  ) => Promise<App>;
-}
-
-export default function CreateAppCard({ createTemplateApp }: CreateAppCardProps): JSX.Element {
+export default function CreateAppCard(): JSX.Element {
   const [modalOpen, setModalOpen] = React.useState(false);
   const [templates, setTemplates] = React.useState<Template[]>(null);
   const [selectedTemplate, setSelectedTemplate] = React.useState(0);
@@ -57,7 +43,7 @@ export default function CreateAppCard({ createTemplateApp }: CreateAppCardProps)
   }, []);
 
   const onCreate = React.useCallback(
-    async ({ description, includeResources, isPrivate, name, selectedOrganization }) => {
+    async ({ description, isPrivate, name, selectedOrganization }) => {
       const { id, resources } = templates[selectedTemplate];
 
       await axios
@@ -69,8 +55,9 @@ export default function CreateAppCard({ createTemplateApp }: CreateAppCardProps)
           resources,
           private: isPrivate,
         })
-        .then(() => {
-          history.push(`${match.url}/${app.id}/edit`);
+        .then(data => {
+          const app = data;
+          history.push(`${match.url}/${app.data.id}/edit`);
         });
     },
     [history, match.url, organizations, selectedTemplate, templates],

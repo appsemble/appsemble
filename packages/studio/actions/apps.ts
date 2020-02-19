@@ -1,5 +1,4 @@
 import { App } from '@appsemble/types';
-import axios from 'axios';
 import { Action } from 'redux';
 import { ThunkAction } from 'redux-thunk';
 
@@ -96,57 +95,6 @@ export default (state: AppState = initialState, action: AppAction): AppState => 
       return state;
   }
 };
-
-export function createApp(recipe: App, organization: { id: string }): AppThunk {
-  return async dispatch => {
-    const formData = new FormData();
-    formData.append('app', JSON.stringify(recipe));
-    formData.append('organizationId', organization.id);
-
-    const { data: app } = await axios.post('/api/apps', formData);
-    dispatch({
-      type: CREATE_SUCCESS,
-      app,
-    });
-
-    return app;
-  };
-}
-
-export function createTemplateApp(
-  {
-    description,
-    isPrivate,
-    name,
-    resources,
-    templateId,
-  }: {
-    templateId: number;
-    name: string;
-    description: string;
-    isPrivate: boolean;
-    resources: boolean;
-  },
-  organization: { id: string },
-): AppThunk {
-  return async dispatch => {
-    const { data: app } = await axios.post('/api/templates', {
-      templateId,
-      name,
-      description,
-      organizationId: organization.id,
-      resources,
-      private: isPrivate,
-    });
-
-    dispatch({
-      type: CREATE_SUCCESS,
-      app,
-    });
-
-    return app;
-  };
-}
 
 export function updateApp(app: App): AppThunk {
   return async dispatch => {

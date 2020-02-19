@@ -46,7 +46,7 @@ export default function AppList(): React.ReactElement {
     }
   }, [userInfo]);
 
-  if (!apps) {
+  if (!apps || !publicApps) {
     return <Loader />;
   }
 
