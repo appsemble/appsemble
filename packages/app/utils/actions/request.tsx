@@ -2,9 +2,9 @@ import {
   HTTPMethodsUpper,
   RequestAction,
   RequestLikeAction,
-  RequestLikeActionDefinition,
   RequestLikeActionTypes,
-} from '@appsemble/types';
+} from '@appsemble/sdk';
+import { RequestLikeActionDefinition } from '@appsemble/types';
 import { compileFilters, MapperFunction, remapData, validate } from '@appsemble/utils';
 import axios, { AxiosRequestConfig } from 'axios';
 

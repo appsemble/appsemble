@@ -1,4 +1,5 @@
-import { BaseAction, EventActionDefinition } from '@appsemble/types';
+import { BaseAction } from '@appsemble/sdk';
+import { EventActionDefinition } from '@appsemble/types';
 
 import { MakeActionParameters } from '../../types';
 

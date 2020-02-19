@@ -1,6 +1,7 @@
 name: Holiday App
 description: A simple app that fetches holiday information for various countries.
 defaultPage: Holidays in NL
+
 pages:
   - name: Holidays in NL
     blocks:
@@ -26,6 +27,7 @@ pages:
         events:
           listen:
             data: holidays
+
   - name: Holidays in US
     blocks:
       - type: data-loader
@@ -48,6 +50,7 @@ pages:
         events:
           listen:
             data: holidays
+
   - name: Holidays in DE
     blocks:
       - type: data-loader
@@ -72,6 +75,7 @@ pages:
         events:
           listen:
             data: holidays
+
   - name: Holidays in ES
     blocks:
       - type: data-loader

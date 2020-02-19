@@ -1,4 +1,5 @@
-import { AppDefinition, Block, Security, Theme } from '@appsemble/types';
+import { Block, Theme } from '@appsemble/sdk';
+import { AppDefinition, Security } from '@appsemble/types';
 import { OpenAPIV3 } from 'openapi-types';
 
 export { default as getAppBlocks } from './getAppBlocks';

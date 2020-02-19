@@ -1,4 +1,5 @@
-import { Action, ActionDefinition } from '@appsemble/types';
+import { Action } from '@appsemble/sdk';
+import { ActionDefinition } from '@appsemble/types';
 
 import { MakeActionParameters } from '../../types';
 import dialog from './dialog';

@@ -1,13 +1,13 @@
 {
   "name": "@appsemble/node-utils",
-  "version": "0.11.2",
+  "version": "0.11.4",
   "dependencies": {
     "chalk": "^3.0.0",
     "cli-highlight": "^2.1.4",
     "winston": "^3.2.1"
   },
   "devDependencies": {
-    "@appsemble/node-utils": "0.11.2",
+    "@appsemble/node-utils": "0.11.4",
     "axios-test-instance": "^1.0.1",
     "koa": "^2.11.0",
     "lolex": "^5.1.2"
