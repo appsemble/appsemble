@@ -53,20 +53,22 @@ export function requestLikeAction<T extends RequestLikeActionTypes>({
       const req: AxiosRequestConfig = {
         method: methodUpper,
         url: url.replace(regex, (_, filter) => urlMappers[filter](data)),
-        params: Object.fromEntries(
-          Object.entries(query).map(([key, value]) => {
-            if (!queryMappers[key]) {
-              return [key, value];
-            }
+        params:
+          query &&
+          Object.fromEntries(
+            Object.entries(query).map(([key, value]) => {
+              if (!queryMappers[key]) {
+                return [key, value];
+              }
 
-            return [
-              key,
-              queryMappers[key]
-                ? value.replace(regex, (_, filter) => queryMappers[key][filter](data))
-                : value,
-            ];
-          }),
-        ),
+              return [
+                key,
+                queryMappers[key]
+                  ? value.replace(regex, (_, filter) => queryMappers[key][filter](data))
+                  : value,
+              ];
+            }),
+          ),
       };
 
       if (methodUpper === 'PUT' || methodUpper === 'POST' || methodUpper === 'PATCH') {
