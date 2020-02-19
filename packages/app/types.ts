@@ -1,5 +1,5 @@
-import { Action } from '@appsemble/sdk';
-import { ActionDefinition, AppDefinition, Block, BlockManifest, UserInfo } from '@appsemble/types';
+import { Action, Block } from '@appsemble/sdk';
+import { ActionDefinition, AppDefinition, BlockManifest, UserInfo } from '@appsemble/types';
 import { EventEmitter } from 'events';
 import { RouteComponentProps } from 'react-router-dom';
 

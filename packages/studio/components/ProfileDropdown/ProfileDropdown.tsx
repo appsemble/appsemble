@@ -1,7 +1,7 @@
-import { Button, Dropdown, Icon } from '@appsemble/react-components';
+import { Button, Dropdown, Icon, useQuery } from '@appsemble/react-components';
 import * as React from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 
 import useUser from '../../hooks/useUser';
 import messages from './messages';
@@ -10,10 +10,19 @@ import styles from './ProfileDropdown.css';
 export default function ProfileDropdown(): React.ReactElement {
   const intl = useIntl();
   const { logout, userInfo } = useUser();
+  const location = useLocation();
+  const qs = useQuery();
 
   if (!userInfo) {
+    if (location.pathname === '/login') {
+      return null;
+    }
+
+    const search = new URLSearchParams(qs);
+    search.set('redirect', `${location.pathname}${location.search}${location.hash}`);
+
     return (
-      <Link className="button" to="/Login">
+      <Link className="button" to={{ pathname: '/login', search: `?${search}` }}>
         <FormattedMessage {...messages.login} />
       </Link>
     );

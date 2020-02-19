@@ -1,6 +1,5 @@
 /** @jsx h */
-import { bootstrap as sdkBootstrap, BootstrapParams } from '@appsemble/sdk';
-import { EventParams } from '@appsemble/types';
+import { bootstrap as sdkBootstrap, BootstrapParams, EventParams } from '@appsemble/sdk';
 import IntlMessageFormat from 'intl-messageformat';
 import { ComponentType, createContext, Fragment, h, render, VNode } from 'preact';
 import { useContext } from 'preact/hooks';
