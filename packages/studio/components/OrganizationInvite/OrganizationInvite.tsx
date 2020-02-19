@@ -60,7 +60,7 @@ export default function OrganizationInvite(): React.ReactElement {
 
     axios
       .get(`/api/invites/${token}`)
-      .then(({ data }) => setOrganization(data))
+      .then(({ data }) => setOrganization(data.organization))
       .catch(() => {
         push({ body: intl.formatMessage(messages.invalidInvite), timeout: 0, dismissable: true });
       })
