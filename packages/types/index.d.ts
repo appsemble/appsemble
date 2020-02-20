@@ -100,6 +100,11 @@ export interface ResourceCall {
    * The associated hooks with the resource action.
    */
   hooks: ResourceHooks;
+
+  /**
+   * Query parameters to pass along with the request.
+   */
+  query: Record<string, string>;
 }
 
 export interface Resource {
