@@ -12,14 +12,14 @@ interface AppProviderProps {
 
 export default function AppProvider({ children }: AppProviderProps): React.ReactElement {
   const { initialized, userInfo } = useUser();
-  const [app, setApp] = React.useState<App[]>();
+  const [app, setApp] = React.useState<App>();
   const match = useLocation();
   const parts = match.pathname.split('/');
   const id = parts[parts.length - 1];
   const isnum = /^\d+$/.test(id);
 
   const refreshAppInfo = React.useCallback(async () => {
-    const { data } = await axios.get<App[]>(`/api/apps/${id}`);
+    const { data } = await axios.get<App>(`/api/apps/${id}`);
     setApp(data);
   }, [id]);
 
@@ -33,13 +33,13 @@ export default function AppProvider({ children }: AppProviderProps): React.React
 
   React.useEffect(() => {
     const getApp = async (): Promise<void> => {
-      if (isnum && userInfo) {
-        const { data } = await axios.get<App[]>(`/api/apps/${id}`);
+      if (userInfo) {
+        const { data } = await axios.get<App>(`/api/apps/${id}`);
         setApp(data);
       } else if (app !== undefined) {
         // avoid unneccessary API calls
       } else {
-        setApp([]);
+        setApp(undefined);
       }
     };
 

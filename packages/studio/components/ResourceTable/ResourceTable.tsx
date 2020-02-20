@@ -9,7 +9,6 @@ import {
   useToggle,
 } from '@appsemble/react-components';
 import useMessages from '@appsemble/react-components/hooks/useMessages';
-import { App } from '@appsemble/types';
 import axios from 'axios';
 import { OpenAPIV3 } from 'openapi-types';
 import React from 'react';

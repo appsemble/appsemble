@@ -9,12 +9,12 @@ import {
   SimpleInput,
   useMessages,
 } from '@appsemble/react-components';
-import { App, Organization, Rating } from '@appsemble/types';
+import { Organization, Rating } from '@appsemble/types';
 import { permissions } from '@appsemble/utils';
 import axios from 'axios';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { RouteComponentProps, useHistory } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 
 import useApp from '../../hooks/useApp';
 import useOrganizations from '../../hooks/useOrganizations';
@@ -42,7 +42,6 @@ export default function AppDetails(): JSX.Element {
       const { data } = await axios.get<Organization>(`/api/organizations/${app.OrganizationId}`);
       setOrganization(data);
     };
-
     fetchOrganization();
   }, [app.OrganizationId]);
 
@@ -51,9 +50,8 @@ export default function AppDetails(): JSX.Element {
       const { data } = await axios.get<Rating[]>(`/api/apps/${app.id}/ratings`);
       setRatings(data);
     };
-
     fetchRatings();
-  }, [app.OrganizationId, app.id]);
+  }, [app.id]);
 
   const onRate = (rating: Rating): void => {
     const existingRating = ratings.find(r => r.UserId === rating.UserId);
@@ -78,6 +76,7 @@ export default function AppDetails(): JSX.Element {
         resources: false,
         private: isPrivate,
       });
+
       history.push(`/apps/${clone.id}`);
       setShowCloneDialog(false);
     },
