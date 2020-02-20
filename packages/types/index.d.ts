@@ -784,6 +784,11 @@ export interface App {
    * An app rating.
    */
   rating?: Rating;
+
+  /**
+   * An app icon url
+   */
+  iconUrl?: string;
 }
 
 /**

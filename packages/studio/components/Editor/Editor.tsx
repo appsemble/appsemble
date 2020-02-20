@@ -7,7 +7,7 @@ import {
   Modal,
   useMessages,
 } from '@appsemble/react-components';
-import { App, AppDefinition, BlockManifest } from '@appsemble/types';
+import { AppDefinition, BlockManifest } from '@appsemble/types';
 import {
   filterBlocks,
   getAppBlocks,

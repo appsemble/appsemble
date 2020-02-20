@@ -1,7 +1,7 @@
 import { App } from '@appsemble/types';
 import axios from 'axios';
 import * as React from 'react';
-import { useLocation, useParams, useRouteMatch } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 
 import { AppContext } from '../../hooks/useApp';
 import useUser from '../../hooks/useUser';
@@ -17,7 +17,6 @@ export default function AppProvider({ children }: AppProviderProps): React.React
   const parts = match.pathname.split('/');
   const id = parts[parts.length - 1];
   const isnum = /^\d+$/.test(id);
-  const routeParams = useParams();
 
   const refreshAppInfo = React.useCallback(async () => {
     const { data } = await axios.get<App[]>(`/api/apps/${id}`);
@@ -39,7 +38,6 @@ export default function AppProvider({ children }: AppProviderProps): React.React
         setApp(data);
       } else if (app !== undefined) {
         // avoid unneccessary API calls
-        setApp(app);
       } else {
         setApp([]);
       }

@@ -1,9 +1,7 @@
 import { Loader } from '@appsemble/react-components';
-import { App } from '@appsemble/types';
 import { permissions } from '@appsemble/utils';
-import axios from 'axios';
-import React, { createContext } from 'react';
-import { Redirect, Route, Switch, useParams, useRouteMatch } from 'react-router-dom';
+import React from 'react';
+import { Redirect, Route, Switch, useRouteMatch } from 'react-router-dom';
 
 import useApp from '../../hooks/useApp';
 import useOrganizations from '../../hooks/useOrganizations';
@@ -23,7 +21,7 @@ import styles from './AppContext.css';
 export default function AppContext(): React.ReactElement {
   const match = useRouteMatch<{ id: string }>();
   const organizations = useOrganizations();
-  const { app, refreshAppInfo } = useApp();
+  const { app } = useApp();
 
   if (organizations === undefined || app === undefined) {
     return <Loader />;
@@ -63,7 +61,7 @@ export default function AppContext(): React.ReactElement {
             path={`${match.path}/settings`}
             permission={permissions.EditAppSettings}
           >
-            <AppSettings apps={app} match={match} />
+            <AppSettings />
           </ProtectedRoute>
           <ProtectedRoute
             component={Notifications}

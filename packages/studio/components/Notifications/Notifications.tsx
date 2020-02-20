@@ -1,9 +1,8 @@
 import { SimpleForm, SimpleInput, SimpleSubmit, useMessages } from '@appsemble/react-components';
-import { App } from '@appsemble/types';
 import axios from 'axios';
 import React from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { Link, RouteComponentProps } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 import useApp from '../../hooks/useApp';
 import HelmetIntl from '../HelmetIntl';

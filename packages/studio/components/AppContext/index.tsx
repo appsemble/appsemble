@@ -3,7 +3,7 @@
 //
 // import { State } from '../../actions';
 // import { getApp } from '../../actions/apps';
-import AppContext from './AppContext';
+// import AppContext from './AppContext';
 
 // function mapStateToProps(
 //   state: State,
