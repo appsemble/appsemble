@@ -11,11 +11,8 @@ import settings from './utils/settings';
 
 init({ dsn: settings.sentryDsn });
 
-let serviceWorkerRegistrationPromise = null;
-
-if ('serviceWorker' in navigator) {
-  serviceWorkerRegistrationPromise = runtime.register();
-}
+const serviceWorkerRegistrationPromise =
+  runtime.register() || Promise.reject(new Error('Service worker not available'));
 
 ReactDOM.render(
   <App serviceWorkerRegistrationPromise={serviceWorkerRegistrationPromise} />,
