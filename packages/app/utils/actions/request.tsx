@@ -32,7 +32,7 @@ export function requestLikeAction<T extends RequestLikeActionTypes>({
     query &&
     Object.entries(query).reduce<Record<string, Record<string, MapperFunction>>>(
       (acc, [queryKey, queryValue]) => {
-        const queryMatch = queryValue.match(regex);
+        const queryMatch = String(queryValue).match(regex);
         if (queryMatch) {
           acc[queryKey] = queryMatch
             .map(match => match.substring(1, match.length - 1))
