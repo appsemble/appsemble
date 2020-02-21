@@ -19,14 +19,32 @@ export function requestLikeAction<T extends RequestLikeActionTypes>({
 }: MakeActionParameters<RequestLikeActionDefinition<T>>): RequestLikeAction<'request'> {
   const regex = /{(.+?)}/g;
   const urlMatch = url.match(regex);
-  const mappers =
+  const urlMappers =
     urlMatch &&
     urlMatch
       .map(match => match.substring(1, match.length - 1))
-      .reduce<Record<string, MapperFunction>>((acc, filter) => {
-        acc[filter] = compileFilters(filter);
+      .reduce<Record<string, MapperFunction>>(
+        (acc, filter) => ({ ...acc, [filter]: compileFilters(filter) }),
+        {},
+      );
+
+  const queryMappers =
+    query &&
+    Object.entries(query).reduce<Record<string, Record<string, MapperFunction>>>(
+      (acc, [queryKey, queryValue]) => {
+        const queryMatch = queryValue.match(regex);
+        if (queryMatch) {
+          acc[queryKey] = queryMatch
+            .map(match => match.substring(1, match.length - 1))
+            .reduce<Record<string, MapperFunction>>(
+              (subAcc, filter) => ({ ...subAcc, [filter]: compileFilters(filter) }),
+              {},
+            );
+        }
         return acc;
-      }, {});
+      },
+      {},
+    );
 
   return {
     type: 'request',
@@ -34,8 +52,23 @@ export function requestLikeAction<T extends RequestLikeActionTypes>({
       const methodUpper = method.toUpperCase() as HTTPMethodsUpper;
       const req: AxiosRequestConfig = {
         method: methodUpper,
-        url: url.replace(regex, (_match, filter) => mappers[filter](data)),
-        params: methodUpper === 'GET' ? { ...query, ...data } : query,
+        url: url.replace(regex, (_, filter) => urlMappers[filter](data)),
+        params:
+          query &&
+          Object.fromEntries(
+            Object.entries(query).map(([key, value]) => {
+              if (!queryMappers[key]) {
+                return [key, value];
+              }
+
+              return [
+                key,
+                queryMappers[key]
+                  ? value.replace(regex, (_, filter) => queryMappers[key][filter](data))
+                  : value,
+              ];
+            }),
+          ),
       };
 
       if (methodUpper === 'PUT' || methodUpper === 'POST' || methodUpper === 'PATCH') {

@@ -1,6 +1,5 @@
 import { Actions } from '@appsemble/sdk';
-import { MarkerClusterGroup } from '@wesselkuipers/leaflet.markercluster';
-import { Icon, LatLngBounds, Map, Marker, Point } from 'leaflet';
+import { Icon, LatLngBounds, LayerGroup, Map, Marker } from 'leaflet';
 
 import iconUrl from '../../../themes/amsterdam/core/marker.svg';
 import { BlockActions, LatLngMapper } from './createGetters';
@@ -30,8 +29,11 @@ export default function loadMarkers(
   get: LatLngMapper,
   data: any,
   actions: Actions<BlockActions>,
-  target: MarkerClusterGroup | Map,
+  target: LayerGroup | Map,
 ): void {
+  if (!Array.isArray(markers)) {
+    return;
+  }
   markers.forEach(marker => {
     if (fetched.has(marker.id)) {
       return;
@@ -47,13 +49,13 @@ export default function loadMarkers(
         data && data.id === marker.id
           ? new Icon({
               iconUrl,
-              iconSize: new Point(ACTIVE_MARKER_ICON_WIDTH, ACTIVE_MARKER_ICON_HEIGHT),
-              iconAnchor: new Point(ACTIVE_MARKER_ICON_WIDTH / 2, ACTIVE_MARKER_ICON_HEIGHT),
+              iconSize: [ACTIVE_MARKER_ICON_WIDTH, ACTIVE_MARKER_ICON_HEIGHT],
+              iconAnchor: [ACTIVE_MARKER_ICON_WIDTH / 2, ACTIVE_MARKER_ICON_HEIGHT],
             })
           : new Icon({
               iconUrl,
-              iconSize: new Point(MARKER_ICON_WIDTH, MARKER_ICON_HEIGHT),
-              iconAnchor: new Point(MARKER_ICON_WIDTH / 2, MARKER_ICON_HEIGHT),
+              iconSize: [MARKER_ICON_WIDTH, MARKER_ICON_HEIGHT],
+              iconAnchor: [MARKER_ICON_WIDTH / 2, MARKER_ICON_HEIGHT],
             }),
     });
     m.on('click', actions.onMarkerClick.dispatch.bind(null, marker));
