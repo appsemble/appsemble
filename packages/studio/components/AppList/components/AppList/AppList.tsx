@@ -19,7 +19,6 @@ export default function AppList(): React.ReactElement {
   const [filter, setFilter] = React.useState('');
   const [organizations, setOrganizations] = React.useState<Organization[]>([]);
   const [apps, setApps] = React.useState<App[]>([]);
-  const [publicApps, setPublicApps] = React.useState<App[]>([]);
 
   const intl = useIntl();
   const { userInfo } = useUser();
@@ -30,14 +29,8 @@ export default function AppList(): React.ReactElement {
 
   React.useEffect(() => {
     if (userInfo) {
-      if (userInfo) {
-        axios.get<App[]>('/api/apps/me').then(({ data }) => {
-          setApps(data);
-        });
-      }
-    } else {
-      axios.get<App[]>('/api/apps').then(({ data }) => {
-        setPublicApps(data);
+      axios.get<App[]>('/api/apps/me').then(({ data }) => {
+        setApps(data);
       });
     }
   }, [userInfo]);
@@ -50,7 +43,7 @@ export default function AppList(): React.ReactElement {
     }
   }, [userInfo]);
 
-  if (!apps || !publicApps) {
+  if (!apps) {
     return <Loader />;
   }
 

@@ -71,7 +71,7 @@ export default function AppDetails(): JSX.Element {
   const showDialog = (): void => setShowCloneDialog(true);
   const cloneApp = React.useCallback(
     async ({ description, name, private: isPrivate, selectedOrganization }) => {
-      await axios.post('/api/templates', {
+      const { data: clone } = await axios.post('/api/templates', {
         templateId: app.id,
         name,
         description,
@@ -80,10 +80,9 @@ export default function AppDetails(): JSX.Element {
         private: isPrivate,
       });
 
-      history.push('/apps');
-      refreshAppInfo();
+      history.push(`/apps/${clone.id}/edit`);
     },
-    [app.id, history, organizations, refreshAppInfo],
+    [app.id, history, organizations],
   );
 
   if (!organization) {

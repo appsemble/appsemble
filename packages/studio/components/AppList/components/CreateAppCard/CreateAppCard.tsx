@@ -43,7 +43,7 @@ export default function CreateAppCard(): JSX.Element {
   }, []);
 
   const onCreate = React.useCallback(
-    async ({ description, isPrivate, name, selectedOrganization }) => {
+    async ({ description, includeResources, isPrivate, name, selectedOrganization }) => {
       const { id, resources } = templates[selectedTemplate];
 
       await axios
@@ -52,7 +52,7 @@ export default function CreateAppCard(): JSX.Element {
           name,
           description,
           organizationId: organizations[selectedOrganization].id,
-          resources,
+          resources: resources && includeResources,
           private: isPrivate,
         })
         .then(data => {
