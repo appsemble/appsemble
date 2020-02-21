@@ -9,6 +9,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
+- App: Add support for defining query parameters in resource definitions.
 - App: Add support for query templates in `request` actions.
 
 ## [0.11.4] - 2020-02-18

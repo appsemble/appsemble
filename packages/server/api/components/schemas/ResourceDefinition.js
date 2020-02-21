@@ -6,6 +6,12 @@ const roles = {
   },
 };
 
+const query = {
+  type: 'object',
+  description: 'The query parameters to use in the request.',
+  additionalProperties: { type: 'string' },
+};
+
 export default {
   type: 'object',
   additionalProperties: {
@@ -43,6 +49,7 @@ export default {
         description: "Overrides for 'query' requests.",
         properties: {
           roles,
+          query,
           method: {
             type: 'string',
             default: 'GET',
@@ -60,6 +67,7 @@ export default {
         description: "Overrides for 'get' requests.",
         properties: {
           roles,
+          query,
           method: {
             type: 'string',
             default: 'GET',
@@ -77,6 +85,7 @@ export default {
         description: "Overrides for 'create' requests.",
         properties: {
           roles,
+          query,
           method: {
             type: 'string',
             default: 'POST',
@@ -97,6 +106,7 @@ export default {
         description: "Overrides for 'update' requests.",
         properties: {
           roles,
+          query,
           method: {
             type: 'string',
             default: 'PUT',
@@ -117,6 +127,7 @@ export default {
         description: "Overrides for 'delete' requests.",
         properties: {
           roles,
+          query,
           method: {
             type: 'string',
             default: 'DELETE',
