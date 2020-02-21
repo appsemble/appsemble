@@ -31,7 +31,7 @@ export default function AppDetails(): JSX.Element {
   const [showCloneDialog, setShowCloneDialog] = useState(false);
   const history = useHistory();
   const intl = useIntl();
-  const { app } = useApp();
+  const { app, refreshAppInfo } = useApp();
 
   const organizations = useOrganizations();
   const push = useMessages();
@@ -41,17 +41,19 @@ export default function AppDetails(): JSX.Element {
     const fetchOrganization = async (): Promise<void> => {
       const { data } = await axios.get<Organization>(`/api/organizations/${app.OrganizationId}`);
       setOrganization(data);
+      refreshAppInfo();
     };
     fetchOrganization();
-  }, [app.OrganizationId]);
+  }, [app.OrganizationId, refreshAppInfo]);
 
   useEffect(() => {
     const fetchRatings = async (): Promise<void> => {
       const { data } = await axios.get<Rating[]>(`/api/apps/${app.id}/ratings`);
       setRatings(data);
+      refreshAppInfo();
     };
     fetchRatings();
-  }, [app.id]);
+  }, [app.id, refreshAppInfo]);
 
   const onRate = (rating: Rating): void => {
     const existingRating = ratings.find(r => r.UserId === rating.UserId);
@@ -62,13 +64,14 @@ export default function AppDetails(): JSX.Element {
       setRatings([rating, ...ratings]);
     }
     push({ color: 'success', body: intl.formatMessage(messages.ratingSuccessful) });
+    refreshAppInfo();
   };
 
   const closeDialog = (): void => setShowCloneDialog(false);
   const showDialog = (): void => setShowCloneDialog(true);
   const cloneApp = React.useCallback(
     async ({ description, name, private: isPrivate, selectedOrganization }) => {
-      const { data: clone } = await axios.post('/api/templates', {
+      await axios.post('/api/templates', {
         templateId: app.id,
         name,
         description,
@@ -77,10 +80,10 @@ export default function AppDetails(): JSX.Element {
         private: isPrivate,
       });
 
-      history.push(`/apps/${clone.id}`);
-      setShowCloneDialog(false);
+      history.push('/apps');
+      refreshAppInfo();
     },
-    [app, history, organizations],
+    [app.id, history, organizations, refreshAppInfo],
   );
 
   if (!organization) {
