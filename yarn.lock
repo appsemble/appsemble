@@ -1665,6 +1665,11 @@
     "@types/connect" "*"
     "@types/node" "*"
 
+"@types/bulma-calendar@^6.0.0":
+  version "6.0.0"
+  resolved "https://registry.yarnpkg.com/@types/bulma-calendar/-/bulma-calendar-6.0.0.tgz#582d62197fdd919c283b80189e2a7ab5f740b5bb"
+  integrity sha512-gr6o/jbs/T4OFwV74hKM5GozU6maR3p0kvaiuqIKRNSCZ3cbcKizwMKfWbbwgTnZ0foD6iLPSw5OIQqSX5lFrQ==
+
 "@types/busboy@^0.2.3":
   version "0.2.3"
   resolved "https://registry.yarnpkg.com/@types/busboy/-/busboy-0.2.3.tgz#6697ad29873246c530f09a3ff5a40861824230d5"
