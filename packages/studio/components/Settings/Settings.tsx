@@ -44,9 +44,15 @@ export default function Settings(): React.ReactElement {
       </SideMenu>
       <div className={styles.content}>
         <Switch>
-          <Route component={UserSettings} exact path={`${match.path}/user`} />
-          <Route component={OrganizationsSettings} exact path={`${match.path}/organizations`} />
-          <Route component={ClientCredentials} exact path={`${match.path}/client-credentials`} />
+          <Route exact path={`${match.path}/user`}>
+            <UserSettings />
+          </Route>
+          <Route exact path={`${match.path}/organizations`}>
+            <OrganizationsSettings />
+          </Route>
+          <Route exact path={`${match.path}/client-credentials`}>
+            <ClientCredentials />
+          </Route>
           <Redirect to={`${match.path}/user`} />
         </Switch>
       </div>

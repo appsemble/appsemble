@@ -34,20 +34,24 @@ export default function AppContext(): React.ReactElement {
       <AppSideMenu />
       <div className={styles.content}>
         <Switch>
-          <Route component={AppDetails} exact path={match.path} />
+          <Route exact path={match.path}>
+            <AppDetails />
+          </Route>
           <ProtectedRoute
-            component={Editor}
             exact
             organization={organization}
             path={`${match.path}/edit`}
             permission={permissions.EditApps}
-          />
+          >
+            <Editor />
+          </ProtectedRoute>
           <ProtectedRoute
-            component={CMS}
             organization={organization}
             path={`${match.path}/resources`}
             permission={permissions.EditApps}
-          />
+          >
+            <CMS />
+          </ProtectedRoute>
           <ProtectedRoute
             component={Roles}
             exact
@@ -64,12 +68,13 @@ export default function AppContext(): React.ReactElement {
             <AppSettings />
           </ProtectedRoute>
           <ProtectedRoute
-            component={Notifications}
             exact
             organization={organization}
             path={`${match.path}/notifications`}
             permission={permissions.PushNotifications}
-          />
+          >
+            <Notifications />
+          </ProtectedRoute>
           <Redirect to={match.path} />
         </Switch>
       </div>
