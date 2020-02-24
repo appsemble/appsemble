@@ -1,10 +1,9 @@
 import { Icon } from '@appsemble/react-components';
-import { App } from '@appsemble/types';
 import { permissions } from '@appsemble/utils';
 import classNames from 'classnames';
-import React, { useContext } from 'react';
+import React from 'react';
 import { FormattedMessage } from 'react-intl';
-import { RouteComponentProps, useRouteMatch } from 'react-router-dom';
+import { useRouteMatch } from 'react-router-dom';
 
 import useOrganizations from '../../hooks/useOrganizations';
 import useUser from '../../hooks/useUser';
