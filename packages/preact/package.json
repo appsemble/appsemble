@@ -1,6 +1,17 @@
 {
   "name": "@appsemble/preact",
   "version": "0.11.4",
+  "homepage": "https://appsemble.dev",
+  "bugs": {
+    "url": "https://gitlab.com/appsemble/appsemble/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://gitlab.com/appsemble/appsemble.git",
+    "directory": "packages/preact"
+  },
+  "license": "LGPL-3.0-or-later",
+  "author": "Appsemble <info@appsemble.com> (https://appsemble.com)",
   "dependencies": {
     "intl-messageformat": "^7.8.3"
   },
