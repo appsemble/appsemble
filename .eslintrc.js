@@ -11,6 +11,7 @@ module.exports = {
     'airbnb/hooks',
     'plugin:eslint-comments/recommended',
     'plugin:compat/recommended',
+    'plugin:import/typescript',
     'plugin:prettier/recommended',
     'prettier/react',
   ],
@@ -20,12 +21,9 @@ module.exports = {
   plugins: ['filenames', 'simple-import-sort', 'sort-destructure-keys'],
   settings: {
     'import/resolver': {
-      node: {
-        extensions: ['.js', '.ts', '.tsx'],
+      typescript: {
+        directory: ['./blocks/*/tsconfig.json', './packages/*/tsconfig.json', './tsconfig.json'],
       },
-    },
-    'import/parsers': {
-      '@typescript-eslint/parser': ['.ts', '.tsx'],
     },
   },
   rules: {
