@@ -35,7 +35,6 @@ spin up a preconfigured database with ease.
 
 ```sh
 docker-compose up -d
-yarn appsemble migrate
 ```
 
 The project can be served using the following command.
@@ -48,19 +47,6 @@ To see additional options, run the following command.
 
 ```sh
 yarn start --help
-```
-
-The front end project can be built using the following command.
-
-```sh
-yarn build
-```
-
-The result will be output in the _dist/_ directory. These will be served when the server is run in
-production mode.
-
-```sh
-NODE_ENV=production yarn start
 ```
 
 ### Blocks
