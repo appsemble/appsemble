@@ -25,7 +25,6 @@ export function builder(yargs) {
       desc:
         'The port of the service to which the ingress should point if app-domain-strategy is set to kubernetes-ingress',
       implies: ['ingress-name', 'ingress-service-name'],
-      type: 'number',
     })
     .option('host', {
       desc:

@@ -140,6 +140,29 @@ describe('getResourceById', () => {
       },
     });
   });
+
+  it('should ignore id in the data fields', async () => {
+    const app = await App.create(exampleApp(organizationId));
+    const resource = await app.createResource({
+      type: 'testResource',
+      data: { id: 23, foo: 'foo', bar: 1 },
+      UserId: user.id,
+    });
+
+    const response = await request.get(`/api/apps/${app.id}/resources/testResource/${resource.id}`);
+
+    expect(response).toMatchObject({
+      status: 200,
+      data: {
+        id: resource.id,
+        foo: 'foo',
+        bar: 1,
+        $created: new Date(0).toJSON(),
+        $updated: new Date(0).toJSON(),
+        $author: { id: user.id, name: user.name },
+      },
+    });
+  });
 });
 describe('queryResources', () => {
   it('should be able to fetch all resources of a type', async () => {

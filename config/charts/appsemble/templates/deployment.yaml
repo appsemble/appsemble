@@ -73,7 +73,7 @@ spec:
             - name: INGRESS_SERVICE_NAME
               value: {{ include "appsemble.fullname" . }}
             - name: INGRESS_SERVICE_PORT
-              value: {{ .Values.service.port | quote }}
+              value: http
             {{- end }}
             - name: SECRET
               valueFrom:

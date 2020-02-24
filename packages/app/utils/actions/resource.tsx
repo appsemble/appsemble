@@ -48,7 +48,7 @@ function get(args: MakeActionParameters<ResourceGetActionDefinition>): ResourceG
         ...definition,
         blobs: getBlobs(resource),
         method,
-        url: `${url}${url.endsWith('/') ? '' : '/'}{${id}}`,
+        url: url.includes(`{${id}}`) ? url : `${url}${url.endsWith('/') ? '' : '/'}{${id}}`,
         schema: resource.schema,
       },
     }),
