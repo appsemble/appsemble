@@ -34,7 +34,6 @@ export default {
           $ref: '#/components/responses/organization',
         },
       },
-      security: [{ studio: [] }],
     },
   },
   '/organizations/{organizationId}/members': {
