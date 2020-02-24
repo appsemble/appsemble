@@ -1,7 +1,7 @@
 ---
 name: Events
 menu: Development
-route: /development/events
+route: /guide/events
 ---
 
 # Events
