@@ -28,8 +28,8 @@ attach<Parameters, unknown, Events>(({ block, events }) => {
         ...fields.map(({ icon, label, name }) => (
           <div className={styles.field}>
             <i className={`fas fa-${icon} ${styles.icon}`} />
-            <span className={`has-text-weight-bold ${styles.value}`}>{remappers[name](data)}</span>
-            <span>{label || name}</span>
+            <div className={`has-text-weight-bold ${styles.value}`}>{remappers[name](data)}</div>
+            <div>{label || name}</div>
           </div>
         )),
       );
