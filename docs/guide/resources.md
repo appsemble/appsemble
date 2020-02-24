@@ -106,6 +106,36 @@ person:
     method: PUT # HTTP method to use. PUT is default
 ```
 
+## Query object
+
+Aside from including the query string parameters in the URL manually, it is also possible to define
+a `query` object in a resource definition. This allows for the URL to be easier to read, as well as
+working in tandem with the `query` object as defined in (`resource` actions)[].
+
+Below is an example of what the query object looks like when in use.
+
+```yaml
+person:
+  query:
+    query:
+      $filter: lastName eq 'foo' # Resolves to /resources/person?$filter=lastName eq 'foo'
+
+pages:
+  - name: Example Page
+    blocks:
+      - type: data-loader
+        version: 0.11.4
+        actions:
+          onLoad:
+            type: resource.query
+            resource: person
+            query:
+              id: 1 # Combined with the base filter, resolves to /resources/person?$filter=lastName eq 'foo'&id=1
+        events:
+          emit:
+            data: people
+```
+
 ## Filtering resources from the Appsemble API
 
 When fetching resources at `/api/apps/{appId}/resources/{resourceName}`, by default all resources
