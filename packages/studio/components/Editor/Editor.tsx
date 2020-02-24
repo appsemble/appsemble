@@ -25,13 +25,15 @@ import React from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link, useHistory, useLocation, useParams } from 'react-router-dom';
 
-import useApp from '../../hooks/useApp';
+import { AppValueContext } from '../AppContext/AppContext';
 import HelmetIntl from '../HelmetIntl';
 import MonacoEditor from '../MonacoEditor';
 import styles from './Editor.css';
 import messages from './messages';
 
 export default function Editor(): React.ReactElement {
+  const { app, updateValue } = React.useContext(AppValueContext);
+
   const [appName, setAppName] = React.useState('');
   const [recipe, setRecipe] = React.useState<string>(null);
   const [style, setStyle] = React.useState('');
@@ -44,7 +46,6 @@ export default function Editor(): React.ReactElement {
   const [deleteDialog, setDeleteDialog] = React.useState(false);
   const [openApiDocument, setOpenApiDocument] = React.useState<OpenAPIV3.Document>();
 
-  const { app, refreshAppInfo } = useApp();
   const frame = React.useRef<HTMLIFrameElement>();
   const history = useHistory();
   const intl = useIntl();
@@ -196,7 +197,7 @@ export default function Editor(): React.ReactElement {
       push({ body: intl.formatMessage(messages.updateSuccess), color: 'success' });
 
       // update App State
-      refreshAppInfo();
+      updateValue(data);
     } catch (e) {
       if (e.response && e.response.status === 403) {
         push(intl.formatMessage(messages.forbidden));
@@ -211,7 +212,7 @@ export default function Editor(): React.ReactElement {
     setDirty(true);
     setWarningDialog(false);
     setInitialRecipe(recipe);
-  }, [intl, params, push, recipe, refreshAppInfo, sharedStyle, style, valid]);
+  }, [intl, params, push, recipe, sharedStyle, style, updateValue, valid]);
 
   const onDelete = React.useCallback(async () => {
     const { id } = params;

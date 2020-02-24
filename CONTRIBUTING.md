@@ -91,19 +91,12 @@ functions may already exist in [`lodash`] or in other popular packages on [npmjs
 
 The _app/_ directory holds the code of the front end web app.
 
-#### `app/actions`
-
-The _actions_ folder contains the [Redux] code. Each file exposes a series of action creators using
-named exports. The reducer is exported using the default export.
-
-_index.jsx_ re-exports every reducer.
-
 #### `app/components`
 
 Each React component is defined in its own dedicated directory. The component itself is defined in a
 file named after the component itself. The component is exported through _index.jsx_. If any
-decorators need to be applied to the component, such as `redux` `connect` or React Router’s
-`withRouter`, this is typically done in _index.jsx_ as well.
+decorators need to be applied to the component, such as React Router’s `withRouter`, this is
+typically done in _index.jsx_ as well.
 
 CSS modules are used. This allows to define CSS in a `.css` file on a component level. The CSS for
 each component is defined in a CSS file named after the component. If the top level node of a

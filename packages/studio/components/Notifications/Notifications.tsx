@@ -4,14 +4,15 @@ import React from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link } from 'react-router-dom';
 
-import useApp from '../../hooks/useApp';
+import { AppValueContext } from '../AppContext/AppContext';
 import HelmetIntl from '../HelmetIntl';
 import messages from './messages';
 
 export default function Notifications(): React.ReactElement {
+  const { app } = React.useContext(AppValueContext);
+
   const intl = useIntl();
   const push = useMessages();
-  const { app } = useApp();
   const submit = React.useCallback(
     async ({ body, title }: { title: string; body: string }): Promise<void> => {
       try {

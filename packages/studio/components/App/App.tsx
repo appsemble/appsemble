@@ -8,7 +8,6 @@ import settings from '../../utils/settings';
 import AnonymousRoute from '../AnonymousRoute';
 import AppContext from '../AppContext';
 import AppList from '../AppList';
-import AppProvider from '../AppProvider';
 import EditPassword from '../EditPassword';
 import ErrorFallback from '../ErrorFallback';
 import Login from '../Login';
@@ -30,56 +29,54 @@ export default function App(): React.ReactElement {
       <BrowserRouter>
         <UserProvider>
           <OrganizationProvider>
-            <AppProvider>
-              <ErrorHandler fallback={ErrorFallback}>
-                <MessagesProvider>
-                  <Helmet defaultTitle="Appsemble" titleTemplate="Appsemble · %s" />
-                  <Toolbar />
-                  <Switch>
-                    <Route exact path="/apps">
-                      <AppList />
-                    </Route>
-                    <ProtectedRoute path="/settings">
-                      <Settings />
-                    </ProtectedRoute>
-                    <ProtectedRoute exact path="/connect/authorize">
-                      <OpenIDLogin />
-                    </ProtectedRoute>
-                    <Route path="/apps/:id(\d+)">
-                      <AppContext />
-                    </Route>
-                    <AnonymousRoute exact path="/edit-password">
-                      <EditPassword />
+            <ErrorHandler fallback={ErrorFallback}>
+              <MessagesProvider>
+                <Helmet defaultTitle="Appsemble" titleTemplate="Appsemble · %s" />
+                <Toolbar />
+                <Switch>
+                  <Route exact path="/apps">
+                    <AppList />
+                  </Route>
+                  <ProtectedRoute path="/settings">
+                    <Settings />
+                  </ProtectedRoute>
+                  <ProtectedRoute exact path="/connect/authorize">
+                    <OpenIDLogin />
+                  </ProtectedRoute>
+                  <Route path="/apps/:id(\d+)">
+                    <AppContext />
+                  </Route>
+                  <AnonymousRoute exact path="/edit-password">
+                    <EditPassword />
+                  </AnonymousRoute>
+                  <ProtectedRoute exact path="/organization-invite">
+                    <OrganizationInvite />
+                  </ProtectedRoute>
+                  <Route exact path="/verify">
+                    <VerifyEmail />
+                  </Route>
+                  <Route component={OAuth2Connect} exact path="/oauth2/:provider/callback" />
+                  <AnonymousRoute exact path="/login">
+                    <Login />
+                  </AnonymousRoute>
+                  {settings.enableRegistration && (
+                    <AnonymousRoute exact path="/register">
+                      <Register />
                     </AnonymousRoute>
-                    <ProtectedRoute exact path="/organization-invite">
-                      <OrganizationInvite />
-                    </ProtectedRoute>
-                    <Route exact path="/verify">
-                      <VerifyEmail />
-                    </Route>
-                    <Route component={OAuth2Connect} exact path="/oauth2/:provider/callback" />
-                    <AnonymousRoute exact path="/login">
-                      <Login />
-                    </AnonymousRoute>
-                    {settings.enableRegistration && (
-                      <AnonymousRoute exact path="/register">
-                        <Register />
-                      </AnonymousRoute>
-                    )}
-                    <Route exact path="/reset-password">
-                      <ResetPassword />
-                    </Route>
-                    <Route exact path="/edit-password">
-                      <EditPassword />
-                    </Route>
-                    <Route exact path="/verify">
-                      <VerifyEmail />
-                    </Route>
-                    <Redirect to="/apps" />
-                  </Switch>
-                </MessagesProvider>
-              </ErrorHandler>
-            </AppProvider>
+                  )}
+                  <Route exact path="/reset-password">
+                    <ResetPassword />
+                  </Route>
+                  <Route exact path="/edit-password">
+                    <EditPassword />
+                  </Route>
+                  <Route exact path="/verify">
+                    <VerifyEmail />
+                  </Route>
+                  <Redirect to="/apps" />
+                </Switch>
+              </MessagesProvider>
+            </ErrorHandler>
           </OrganizationProvider>
         </UserProvider>
       </BrowserRouter>

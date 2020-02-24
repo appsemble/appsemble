@@ -6,10 +6,10 @@ import React, { useContext } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { RouteComponentProps, useRouteMatch } from 'react-router-dom';
 
-import useApp from '../../hooks/useApp';
 import useOrganizations from '../../hooks/useOrganizations';
 import useUser from '../../hooks/useUser';
 import checkRole from '../../utils/checkRole';
+import { AppValueContext } from '../AppContext/AppContext';
 import NavLink from '../NavLink';
 import SideMenu from '../SideMenu';
 import styles from './AppSideMenu.css';
@@ -20,9 +20,10 @@ export interface AppSideMenuState {
 }
 
 export default function AppSideMenu(): React.ReactElement {
+  const { app } = React.useContext(AppValueContext);
+
   const { userInfo } = useUser();
   const [isCollapsed, setCollapsed] = React.useState(false);
-  const { app } = useApp();
   const organizations = useOrganizations();
   const organization = organizations && organizations.find(org => org.id === app.OrganizationId);
   const match = useRouteMatch<{ id: string }>();

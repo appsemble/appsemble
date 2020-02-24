@@ -5,12 +5,12 @@ import axios from 'axios';
 import React, { FormEvent, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
-import useApp from '../../hooks/useApp';
+import { AppValueContext } from '../AppContext/AppContext';
 import styles from './AppSettings.css';
 import messages from './messages';
 
 export default function AppSettings(): JSX.Element {
-  const { app, refreshAppInfo } = useApp();
+  const { app, updateValue } = React.useContext(AppValueContext);
   const intl = useIntl();
   const [icon, setIcon] = useState();
   const [iconUrl, setIconUrl] = useState(app.iconUrl);
@@ -41,7 +41,7 @@ export default function AppSettings(): JSX.Element {
     try {
       await axios.patch(`/api/apps/${app.id}`, data);
 
-      refreshAppInfo();
+      updateValue(data);
       push({ color: 'success', body: intl.formatMessage(messages.updateSuccess) });
     } catch (ex) {
       push({ color: 'danger', body: intl.formatMessage(messages.updateError) });
@@ -50,7 +50,7 @@ export default function AppSettings(): JSX.Element {
 
   const onChange = (event: React.ChangeEvent<HTMLInputElement>): any => {
     event.persist();
-    setInputs(val => ({ ...val, [event.target.name]: event.target.value }));
+    setInputs((val: any) => ({ ...val, [event.target.name]: event.target.value }));
   };
 
   const onChangePrivate = (event: React.ChangeEvent<HTMLInputElement>): any => {

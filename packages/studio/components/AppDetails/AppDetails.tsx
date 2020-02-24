@@ -16,22 +16,22 @@ import React, { useEffect, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useHistory } from 'react-router-dom';
 
-import useApp from '../../hooks/useApp';
 import useOrganizations from '../../hooks/useOrganizations';
 import useUser from '../../hooks/useUser';
 import checkRole from '../../utils/checkRole';
+import { AppValueContext } from '../AppContext/AppContext';
 import RateApp from '../RateApp';
 import StarRating from '../Rating';
 import styles from './AppDetails.css';
 import messages from './messages';
 
 export default function AppDetails(): JSX.Element {
+  const { app, updateValue } = React.useContext(AppValueContext);
   const [organization, setOrganization] = useState<Organization>(undefined);
   const [ratings, setRatings] = useState<Rating[]>([]);
   const [showCloneDialog, setShowCloneDialog] = useState(false);
   const history = useHistory();
   const intl = useIntl();
-  const { app, refreshAppInfo } = useApp();
 
   const organizations = useOrganizations();
   const push = useMessages();
@@ -41,19 +41,18 @@ export default function AppDetails(): JSX.Element {
     const fetchOrganization = async (): Promise<void> => {
       const { data } = await axios.get<Organization>(`/api/organizations/${app.OrganizationId}`);
       setOrganization(data);
-      refreshAppInfo();
     };
     fetchOrganization();
-  }, [app.OrganizationId, refreshAppInfo]);
+  }, [app.OrganizationId]);
 
   useEffect(() => {
     const fetchRatings = async (): Promise<void> => {
       const { data } = await axios.get<Rating[]>(`/api/apps/${app.id}/ratings`);
       setRatings(data);
-      refreshAppInfo();
     };
+
     fetchRatings();
-  }, [app.id, refreshAppInfo]);
+  }, [app.OrganizationId, app.id]);
 
   const onRate = (rating: Rating): void => {
     const existingRating = ratings.find(r => r.UserId === rating.UserId);
@@ -64,7 +63,6 @@ export default function AppDetails(): JSX.Element {
       setRatings([rating, ...ratings]);
     }
     push({ color: 'success', body: intl.formatMessage(messages.ratingSuccessful) });
-    refreshAppInfo();
   };
 
   const closeDialog = (): void => setShowCloneDialog(false);
@@ -80,9 +78,10 @@ export default function AppDetails(): JSX.Element {
         private: isPrivate,
       });
 
+      updateValue(clone);
       history.push(`/apps/${clone.id}/edit`);
     },
-    [app.id, history, organizations],
+    [app.id, history, organizations, updateValue],
   );
 
   if (!organization) {
