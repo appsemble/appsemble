@@ -34,7 +34,6 @@ export function getFromContext({ actions, events, parameters, types = {} }, full
           .readDirectory(fullPath, ['.ts', '.tsx'])
           .map(f => path.relative(fullPath, f));
       }
-      // sys.readDirectory(fullPath, ['.ts'])
       const { errors, fileNames, options } = parseJsonConfigFileContent(
         config,
         sys,
