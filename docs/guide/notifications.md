@@ -108,7 +108,7 @@ pages:
         events:
           emit:
             data: data
-      - type: list
+      - type: table
         version: 0.11.4
         parameters:
           fields:
