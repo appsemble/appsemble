@@ -26,7 +26,7 @@ import styles from './AppDetails.css';
 import messages from './messages';
 
 export default function AppDetails(): JSX.Element {
-  const { app, setApp } = useApp();
+  const { app } = useApp();
   const [organization, setOrganization] = useState<Organization>(undefined);
   const [ratings, setRatings] = useState<Rating[]>([]);
   const [showCloneDialog, setShowCloneDialog] = useState(false);
