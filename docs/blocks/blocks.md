@@ -16,4 +16,4 @@ comes with several official blocks that can be used in any app.
 - [Map](/blocks/map)
 - [Markdown](/blocks/markdown)
 - [Stats](/blocks/stats)
-- [Table](/blocks/Table)
+- [Table](/blocks/table)
