@@ -5,7 +5,6 @@ import axios from 'axios';
 import React from 'react';
 import { Redirect, Route, Switch, useRouteMatch } from 'react-router-dom';
 
-// import useApp from '../../hooks/useApp';
 import useOrganizations from '../../hooks/useOrganizations';
 import AppDetails from '../AppDetails';
 import AppSettings from '../AppSettings';
@@ -20,28 +19,34 @@ import styles from './AppContext.css';
 /**
  * A wrapper which fetches the app definition and makes sure it is available to its children.
  */
-export const AppValueContext = React.createContext(null);
+interface AppValueContext {
+  /**
+   * The app in the current URL context.
+   */
+  app: App;
+
+  /**
+   * Update the app in the current context.
+   */
+  setApp: (app: App) => void;
+}
+
+const Context = React.createContext<AppValueContext>(null);
 
 export default function AppContext(): React.ReactElement {
   const match = useRouteMatch<{ id: string }>();
   const organizations = useOrganizations();
   const [app, setApp] = React.useState<App>();
+  const value = React.useMemo(() => ({ app, setApp }), [app]);
 
   React.useEffect(() => {
     const getApp = async (): Promise<void> => {
-      if (app === undefined) {
-        const { data } = await axios.get<App>(`/api/apps/${match.params.id}`);
-        setApp(data);
-      } else if (app !== undefined) {
-        // avoid unneccessary API calls
-      }
+      setApp(undefined);
+      const { data } = await axios.get<App>(`/api/apps/${match.params.id}`);
+      setApp(data);
     };
     getApp();
-  }, [app, match.params.id]);
-
-  const updateValue = (newAppValue: App): void => {
-    setApp(newAppValue);
-  };
+  }, [match]);
 
   if (organizations === undefined || app === undefined) {
     return <Loader />;
@@ -50,7 +55,7 @@ export default function AppContext(): React.ReactElement {
   const organization = organizations.find(org => org.id === app.OrganizationId);
 
   return (
-    <AppValueContext.Provider value={{ app, updateValue }}>
+    <Context.Provider value={value}>
       <div className={styles.container}>
         <AppSideMenu />
         <div className={styles.content}>
@@ -100,6 +105,10 @@ export default function AppContext(): React.ReactElement {
           </Switch>
         </div>
       </div>
-    </AppValueContext.Provider>
+    </Context.Provider>
   );
+}
+
+export function useApp(): AppValueContext {
+  return React.useContext(Context);
 }

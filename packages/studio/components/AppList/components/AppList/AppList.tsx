@@ -18,7 +18,7 @@ import messages from './messages';
 export default function AppList(): React.ReactElement {
   const [filter, setFilter] = React.useState('');
   const [organizations, setOrganizations] = React.useState<Organization[]>([]);
-  const [apps, setApps] = React.useState<App[]>([]);
+  const [apps, setApps] = React.useState<App[]>(null);
 
   const intl = useIntl();
   const { userInfo } = useUser();
@@ -30,6 +30,10 @@ export default function AppList(): React.ReactElement {
   React.useEffect(() => {
     if (userInfo) {
       axios.get<App[]>('/api/apps/me').then(({ data }) => {
+        setApps(data);
+      });
+    } else {
+      axios.get<App[]>('/api/apps').then(({ data }) => {
         setApps(data);
       });
     }

@@ -2,20 +2,19 @@ import { Button, Checkbox, Form, FormComponent, Icon, Input } from '@appsemble/r
 import useMessages from '@appsemble/react-components/hooks/useMessages';
 import { normalize } from '@appsemble/utils';
 import axios from 'axios';
-import React, { FormEvent, useState } from 'react';
+import React, { FormEvent, ReactText, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
-import { AppValueContext } from '../AppContext/AppContext';
+import { useApp } from '../AppContext/AppContext';
 import styles from './AppSettings.css';
 import messages from './messages';
 
 export default function AppSettings(): JSX.Element {
-  const { app, updateValue } = React.useContext(AppValueContext);
+  const { app } = useApp();
   const intl = useIntl();
   const [icon, setIcon] = useState();
   const [iconUrl, setIconUrl] = useState(app.iconUrl);
   const [inputs, setInputs] = useState(app);
-  const [isPrivate, setIsPrivate] = useState(app.private);
   const push = useMessages();
 
   const onSubmit = async (event: FormEvent): Promise<void> => {
@@ -30,8 +29,8 @@ export default function AppSettings(): JSX.Element {
       data.set('path', inputs.path);
     }
 
-    if (app.private !== isPrivate) {
-      data.set('private', String(isPrivate));
+    if (app.private !== inputs.private) {
+      data.set('private', String(inputs.private));
     }
 
     if (icon) {
@@ -40,29 +39,28 @@ export default function AppSettings(): JSX.Element {
 
     try {
       await axios.patch(`/api/apps/${app.id}`, data);
-
-      updateValue(data);
       push({ color: 'success', body: intl.formatMessage(messages.updateSuccess) });
     } catch (ex) {
       push({ color: 'danger', body: intl.formatMessage(messages.updateError) });
     }
   };
 
-  const onChange = (event: React.ChangeEvent<HTMLInputElement>): any => {
-    event.persist();
-    setInputs((val: any) => ({ ...val, [event.target.name]: event.target.value }));
-  };
+  const onChange = React.useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>, value: ReactText | boolean) => {
+      event.persist();
+      setInputs(val => ({ ...val, [event.target.name]: value }));
+    },
+    [],
+  );
 
-  const onChangePrivate = (event: React.ChangeEvent<HTMLInputElement>): any => {
-    event.persist();
-    setIsPrivate(event.target.checked);
-  };
-
-  const onIconChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
-    const file = e.target.files[0];
-    setIcon(file);
-    setIconUrl(file ? URL.createObjectURL(file) : `/api/apps/${app.id}/icon`);
-  };
+  const onIconChange = React.useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>): void => {
+      const file = e.target.files[0];
+      setIcon(file);
+      setIconUrl(file ? URL.createObjectURL(file) : `/api/apps/${app.id}/icon`);
+    },
+    [app.id],
+  );
 
   return (
     <Form onSubmit={onSubmit}>
@@ -101,8 +99,8 @@ export default function AppSettings(): JSX.Element {
           help={<FormattedMessage {...messages.private} />}
           label={<FormattedMessage {...messages.privateLabel} />}
           name="private"
-          onChange={onChangePrivate}
-          value={!!isPrivate}
+          onChange={onChange}
+          value={inputs.private}
         />
         <p className="help">
           <FormattedMessage {...messages.privateDescription} />

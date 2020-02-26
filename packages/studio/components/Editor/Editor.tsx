@@ -25,14 +25,14 @@ import React from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link, useHistory, useLocation, useParams } from 'react-router-dom';
 
-import { AppValueContext } from '../AppContext/AppContext';
+import { useApp } from '../AppContext/AppContext';
 import HelmetIntl from '../HelmetIntl';
 import MonacoEditor from '../MonacoEditor';
 import styles from './Editor.css';
 import messages from './messages';
 
 export default function Editor(): React.ReactElement {
-  const { app, updateValue } = React.useContext(AppValueContext);
+  const { app, setApp } = useApp();
 
   const [appName, setAppName] = React.useState('');
   const [recipe, setRecipe] = React.useState<string>(null);
@@ -197,7 +197,7 @@ export default function Editor(): React.ReactElement {
       push({ body: intl.formatMessage(messages.updateSuccess), color: 'success' });
 
       // update App State
-      updateValue(data);
+      setApp(data);
     } catch (e) {
       if (e.response && e.response.status === 403) {
         push(intl.formatMessage(messages.forbidden));
@@ -212,7 +212,7 @@ export default function Editor(): React.ReactElement {
     setDirty(true);
     setWarningDialog(false);
     setInitialRecipe(recipe);
-  }, [intl, params, push, recipe, sharedStyle, style, updateValue, valid]);
+  }, [intl, params, push, recipe, sharedStyle, style, setApp, valid]);
 
   const onDelete = React.useCallback(async () => {
     const { id } = params;

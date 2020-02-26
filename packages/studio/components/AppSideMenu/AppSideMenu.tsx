@@ -8,7 +8,7 @@ import { useRouteMatch } from 'react-router-dom';
 import useOrganizations from '../../hooks/useOrganizations';
 import useUser from '../../hooks/useUser';
 import checkRole from '../../utils/checkRole';
-import { AppValueContext } from '../AppContext/AppContext';
+import { useApp } from '../AppContext/AppContext';
 import NavLink from '../NavLink';
 import SideMenu from '../SideMenu';
 import styles from './AppSideMenu.css';
@@ -19,7 +19,7 @@ export interface AppSideMenuState {
 }
 
 export default function AppSideMenu(): React.ReactElement {
-  const { app } = React.useContext(AppValueContext);
+  const { app } = useApp();
 
   const { userInfo } = useUser();
   const [isCollapsed, setCollapsed] = React.useState(false);

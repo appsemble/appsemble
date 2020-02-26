@@ -4,12 +4,12 @@ import React from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link } from 'react-router-dom';
 
-import { AppValueContext } from '../AppContext/AppContext';
+import { useApp } from '../AppContext/AppContext';
 import HelmetIntl from '../HelmetIntl';
 import messages from './messages';
 
 export default function Notifications(): React.ReactElement {
-  const { app } = React.useContext(AppValueContext);
+  const { app } = useApp();
 
   const intl = useIntl();
   const push = useMessages();

@@ -15,7 +15,7 @@ import React from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link, useHistory, useRouteMatch } from 'react-router-dom';
 
-import { AppValueContext } from '../AppContext/AppContext';
+import { useApp } from '../AppContext/AppContext';
 import HelmetIntl from '../HelmetIntl';
 import messages from './messages';
 import styles from './ResourceTable.css';
@@ -33,7 +33,7 @@ interface RouteParams {
 }
 
 export default function ResourceTable(): React.ReactElement {
-  const { app } = React.useContext(AppValueContext);
+  const { app } = useApp();
 
   const history = useHistory();
   const intl = useIntl();

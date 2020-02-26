@@ -19,14 +19,14 @@ import { useHistory } from 'react-router-dom';
 import useOrganizations from '../../hooks/useOrganizations';
 import useUser from '../../hooks/useUser';
 import checkRole from '../../utils/checkRole';
-import { AppValueContext } from '../AppContext/AppContext';
+import { useApp } from '../AppContext/AppContext';
 import RateApp from '../RateApp';
 import StarRating from '../Rating';
 import styles from './AppDetails.css';
 import messages from './messages';
 
 export default function AppDetails(): JSX.Element {
-  const { app, updateValue } = React.useContext(AppValueContext);
+  const { app, setApp } = useApp();
   const [organization, setOrganization] = useState<Organization>(undefined);
   const [ratings, setRatings] = useState<Rating[]>([]);
   const [showCloneDialog, setShowCloneDialog] = useState(false);
@@ -78,10 +78,9 @@ export default function AppDetails(): JSX.Element {
         private: isPrivate,
       });
 
-      updateValue(clone);
       history.push(`/apps/${clone.id}/edit`);
     },
-    [app.id, history, organizations, updateValue],
+    [app.id, history, organizations],
   );
 
   if (!organization) {

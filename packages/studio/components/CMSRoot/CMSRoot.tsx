@@ -2,14 +2,14 @@ import React from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Link, useRouteMatch } from 'react-router-dom';
 
-import { AppValueContext } from '../AppContext/AppContext';
+import { useApp } from '../AppContext/AppContext';
 import HelmetIntl from '../HelmetIntl';
 import styles from './CMSRoot.css';
 import messages from './messages';
 
 export default function CMSRoot(): React.ReactElement {
   const match = useRouteMatch();
-  const { app } = React.useContext(AppValueContext);
+  const { app } = useApp();
 
   return (
     <>

@@ -56,8 +56,7 @@ export default function CreateAppCard(): JSX.Element {
           private: isPrivate,
         })
         .then(data => {
-          const app = data;
-          history.push(`${match.url}/${app.data.id}/edit`);
+          history.push(`${match.url}/${data.data.id}/edit`);
         });
     },
     [history, match.url, organizations, selectedTemplate, templates],
