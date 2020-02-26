@@ -1,0 +1,9 @@
+types:
+  parameters: Parameters
+  events: Events
+
+actions:
+  onClick:
+    required: false
+
+output: dist

@@ -1,0 +1,39 @@
+.clickable {
+  cursor: pointer;
+}
+
+.container {
+  padding: 1rem 1.5rem;
+}
+
+.item {
+  background-color: hsl(0, 0%, 96%);
+  border-radius: 4px;
+  margin-bottom: 5px;
+  margin-top: 5px;
+  padding: 1.25rem 2.5rem 1.25rem 1.5rem;
+  position: relative;
+}
+
+.itemField {
+  margin-right: 5px;
+}
+
+strong {
+  font-weight: 700;
+}
+
+.button {
+  background-color: transparent;
+  border: none;
+  font-family: inherit;
+  font-size: 100%;
+  height: inherit;
+  line-height: 1.15;
+  margin: 0;
+  padding: 0;
+  position: absolute;
+  right: 1.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+}
