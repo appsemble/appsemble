@@ -12,7 +12,6 @@ metadata:
     helm.sh/chart: {{ include "appsemble.chart" . }}
   annotations:
     helm.sh/hook: post-install,post-upgrade
-    helm.sh/hook-delete-policy: hook-succeeded
     helm.sh/hook-weight: '1'
 spec:
   template:
