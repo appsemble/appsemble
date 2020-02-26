@@ -15,7 +15,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Changed
 
-- Blocks: Renamed `@appsemble/list` to `@appsemble/table`.
+- Blocks: Rename `@appsemble/list` to `@appsemble/table`.
 
 ## [0.11.4] - 2020-02-18
 
