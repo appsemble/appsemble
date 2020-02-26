@@ -7,9 +7,9 @@ import ReactDOM from 'react-dom';
 import runtime from 'serviceworker-webpack-plugin/lib/runtime';
 
 import App from './components/App';
+import settings from './utils/settings';
 
-const { sentryDsn } = document.documentElement.dataset;
-init({ dsn: sentryDsn });
+init({ dsn: settings.sentryDsn });
 
 let serviceWorkerRegistrationPromise = null;
 

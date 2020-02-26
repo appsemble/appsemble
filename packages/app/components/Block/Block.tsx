@@ -94,18 +94,23 @@ export default function Block({
       emit: Object.fromEntries(
         (manifest.events?.emit ?? []).map(key => [
           key,
-          block.events?.emit?.[key]
-            ? (d: any, error?: string) =>
-                ee.emit(block.events.emit[key], d, error === '' ? 'Error' : error)
-            : () => {},
+          (d: any, error?: string) =>
+            pageReady.then(
+              block.events?.emit?.[key]
+                ? () => {
+                    ee.emit(block.events.emit[key], d, error === '' ? 'Error' : error);
+                  }
+                : () => {},
+            ),
         ]),
       ),
       on: Object.fromEntries(
         (manifest.events?.listen ?? []).map(key => [
           key,
           block.events?.listen?.[key]
-            ? (callback: (data: any, error?: string) => void) =>
-                ee.on(block.events.listen[key], callback)
+            ? (callback: (data: any, error?: string) => void) => {
+                ee.on(block.events.listen[key], callback);
+              }
             : () => {},
         ]),
       ),

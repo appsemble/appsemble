@@ -17,6 +17,12 @@ This can be used to provide data to other blocks.
 | ------ | -------- | ---------------------------------------------------------------------------------------------------------- |
 | onLoad | true     | Action that gets dispatched when a new filter gets applied. This also gets called during the initial load. |
 
+## Parameters
+
+| Parameter       | Default | Description                                                                                            |
+| --------------- | ------- | ------------------------------------------------------------------------------------------------------ |
+| skipInitialLoad | false   | By default the `onLoad` action is triggered immediately. By setting this to `true`, this won’t happen. |
+
 ## Events
 
 ## Emit Events

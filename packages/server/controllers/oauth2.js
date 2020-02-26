@@ -50,7 +50,7 @@ export async function listOAuth2ClientCredentials(ctx) {
     attributes: ['created', 'description', 'id', 'expires', 'scopes'],
     raw: true,
     where: {
-      expires: { [Op.gt]: new Date() },
+      expires: { [Op.or]: [{ [Op.gt]: new Date() }, null] },
       UserId: user.id,
     },
   });

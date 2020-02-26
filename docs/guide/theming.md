@@ -1,9 +1,9 @@
 ---
-menu: Development
-route: /development/theming
+menu: Guide
+route: /guide/theming
 ---
 
-# Theming Apps
+# Theming
 
 By default Appsemble provides a default style based on the [Bulma CSS framework](bulma). While this
 is completely functional for end users, developers may be interested in further spicing up their
