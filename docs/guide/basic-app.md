@@ -75,8 +75,8 @@ in an administrator-like fashion.
 
 ## Displaying data
 
-Resources exist for use it in the app. A simple way to display data is to add a `list` block. The
-list block can display data in a table.
+Resources exist for use it in the app. A simple way to display data is to add a `table` block. The
+table block can display data in an orderly manner in a table.
 
 Let’s replace _“Example Page A”_ and _“Example Page B”_ with a single page, named _“People”_.
 
@@ -105,7 +105,7 @@ Let’s replace _“Example Page A”_ and _“Example Page B”_ with a single 
 -             to: Example Page A
 +   - name: People
 +     blocks:
-+       - type: list
++       - type: table
 +         version: 0.11.4
 +         events:
 +           listen:
@@ -128,16 +128,16 @@ removed.
 
 Now save this app and behold, the app is… loading?
 
-Most blocks rely on data loader block to display data. Notice the list block on the _“People”_ page
+Most blocks rely on data loader block to display data. Notice the table block on the _“People”_ page
 doesn’t even reference the `person` resource anywhere. It merely listens on an event called
 `people`.
 
 To actually use any data, it must be loaded. Typically this is loaded by a `data-loader` block. This
-block then emits the data to other blocks on the page, such as the `list` block.
+block then emits the data to other blocks on the page, such as the `table` block.
 
 ```mermaid
 graph LR
-    resource[Resource API] --> data-loader --> list
+    resource[Resource API] --> data-loader --> table
 ```
 
 Let’s add such a `data-loader` block.
@@ -155,7 +155,7 @@ Let’s add such a `data-loader` block.
 +         events:
 +           emit:
 +             data: people
-        - type: list
+        - type: table
           version: 0.11.4
 ```
 
@@ -203,7 +203,7 @@ pages:
         events:
           emit:
             data: people
-      - type: list
+      - type: table
         version: 0.11.4
         events:
           listen:
@@ -310,7 +310,7 @@ pages:
         events:
           emit:
             data: people
-      - type: list
+      - type: table
         version: 0.11.4
         events:
           listen:
@@ -363,7 +363,7 @@ Add a new page:
 ```
 
 This page loads data of a single person using the `resource.get` action. The person is then
-displayed in the `detail-viewer` block, which looks a very similar to the `list` and `form` blocks.
+displayed in the `detail-viewer` block, which looks a very similar to the `table` and `form` blocks.
 
 What is new, is the `parameters` property. Also, when viewing the side menu, the person isn’t there.
 The `id` parameter refers to a parameter in the URL of the page. The `id` is used to determine which
@@ -371,8 +371,8 @@ person data to load. Since the page can’t work without the context of the `id`
 good way to link it from the side menu.
 
 To use this page, it must be linked from a place where the context is known. This is where the
-_“Register”_ page comes in. The `list` has an optional `onClick` action. This action passes along
-context of a single entity.
+_“Register”_ page comes in. The `table` block has an optional `onClick` action. This action passes
+along context of a single entity.
 
 Now, when a list item is clicked, the user will be redirected to the person’s detail page.
 
@@ -434,7 +434,7 @@ pages:
         events:
           emit:
             data: people
-      - type: list
+      - type: table
         version: 0.11.4
         events:
           listen:

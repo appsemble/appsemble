@@ -13,7 +13,7 @@ comes with several official blocks that can be used in any app.
 - [Feed](/blocks/feed)
 - [Filter](/blocks/filter)
 - [Form](/blocks/form)
-- [List](/blocks/list)
 - [Map](/blocks/map)
 - [Markdown](/blocks/markdown)
 - [Stats](/blocks/stats)
+- [Table](/blocks/Table)
