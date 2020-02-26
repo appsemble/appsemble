@@ -1,32 +1,17 @@
 import { AppsembleError, logger } from '@appsemble/node-utils';
-import fs from 'fs-extra';
 import path from 'path';
-import { readConfigFile } from 'typescript';
-import { buildGenerator, getProgramFromFiles } from 'typescript-json-schema';
+import {
+  createProgram,
+  findConfigFile,
+  formatDiagnostic,
+  formatDiagnosticsWithColorAndContext,
+  parseJsonConfigFileContent,
+  readConfigFile,
+  sys,
+} from 'typescript';
+import { buildGenerator } from 'typescript-json-schema';
 
-/**
- * Recursively read an extended TypeScript configuration file.
- *
- * @param {string} tsConfigPath The path to the `tsconfig.json` file to read.
- * @returns {Object} The resolved compiler options.
- */
-function readTSConfig(tsConfigPath) {
-  logger.verbose(`Reading extended tsconfig file ${tsConfigPath}`);
-  const { config, error } = readConfigFile(tsConfigPath, p => fs.readFileSync(p, 'utf8'));
-  if (error) {
-    throw new AppsembleError(error.messageText);
-  }
-  if (!Object.prototype.hasOwnProperty.call(config, 'extends')) {
-    return config.compilerOptions;
-  }
-  const { dir, ext, name } = path.parse(config.extends);
-  return {
-    ...readTSConfig(path.resolve(path.dirname(tsConfigPath), dir, `${name}${ext || '.json'}`)),
-    ...config.compilerOptions,
-  };
-}
-
-export function getFromContext({ actions, dir, events, parameters, types = {} }, fullPath) {
+export function getFromContext({ actions, events, parameters, types = {} }, fullPath) {
   const { events: eventsInterface, file = 'block.ts', parameters: parametersInterface } = types;
 
   let generator;
@@ -34,17 +19,59 @@ export function getFromContext({ actions, dir, events, parameters, types = {} },
   function getGenerator() {
     if (!generator) {
       logger.info('Extracting data from TypeScript project');
-      const tsConfigPath = path.join(fullPath, 'tsconfig.json');
-      const compilerOptions = readTSConfig(tsConfigPath);
-      logger.verbose(`Resolved TypeScript compiler options ${JSON.stringify(compilerOptions)}`);
-      const program = getProgramFromFiles([path.join(dir, file)], compilerOptions, dir);
+      const diagnosticHost = {
+        getNewLine: sys.newLine,
+        getCurrentDirectory: sys.getCurrentDirectory,
+        getCanonicalFileName: x => x,
+      };
+      const tsConfigPath = findConfigFile(fullPath, sys.fileExists);
+      const { config, error } = readConfigFile(tsConfigPath, sys.readFile);
+      if (error) {
+        throw new AppsembleError(formatDiagnostic(error, diagnosticHost));
+      }
+      if (!config.files || !config.include) {
+        config.files = sys
+          .readDirectory(fullPath, ['.ts', '.tsx'])
+          .map(f => path.relative(fullPath, f));
+      }
+      const { errors, fileNames, options } = parseJsonConfigFileContent(
+        config,
+        sys,
+        fullPath,
+        undefined,
+        tsConfigPath,
+      );
+      const diagnostics = errors.filter(
+        ({ code }) =>
+          // "'rootDir' is expected to contain all source files."
+          code !== 6059 &&
+          // "The 'files' list in config file is empty."
+          code !== 18002 &&
+          // "No inputs were found in config file."
+          code !== 18003,
+      );
+      if (diagnostics.length) {
+        throw new AppsembleError(formatDiagnosticsWithColorAndContext(diagnostics, diagnosticHost));
+      }
+
+      options.noEmit = true;
+      delete options.out;
+      delete options.outDir;
+      delete options.outFile;
+      delete options.declaration;
+      delete options.declarationDir;
+      delete options.declarationMap;
+      const program = createProgram(
+        fileNames.map(f => path.relative(fullPath, f)),
+        options,
+      );
       generator = buildGenerator(
         program,
         {
           noExtraProps: true,
           required: true,
         },
-        [path.join(dir, file)],
+        [file],
       );
       // This name is used for fontawesome icon names. They are excluded from the schema,
       // as they are provided by the Appsemble framework, not by the block itself.

@@ -1,6 +1,18 @@
 {
   "name": "create-appsemble",
   "version": "0.11.4",
+  "private": true,
+  "homepage": "https://appsemble.dev",
+  "bugs": {
+    "url": "https://gitlab.com/appsemble/appsemble/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://gitlab.com/appsemble/appsemble.git",
+    "directory": "packages/app"
+  },
+  "license": "LGPL-3.0-or-later",
+  "author": "Appsemble <info@appsemble.com> (https://appsemble.com)",
   "bin": "./bin/create-appsemble",
   "scripts": {
     "tsc": "../../config/bin/tscstub.js"
