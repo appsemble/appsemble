@@ -7,7 +7,7 @@ import {
   Modal,
   useMessages,
 } from '@appsemble/react-components';
-import { App, AppDefinition, BlockManifest } from '@appsemble/types';
+import { AppDefinition, BlockManifest } from '@appsemble/types';
 import {
   filterBlocks,
   getAppBlocks,
@@ -25,17 +25,15 @@ import React from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link, useHistory, useLocation, useParams } from 'react-router-dom';
 
+import { useApp } from '../AppContext/AppContext';
 import HelmetIntl from '../HelmetIntl';
 import MonacoEditor from '../MonacoEditor';
 import styles from './Editor.css';
 import messages from './messages';
 
-interface EditorProps {
-  app: App;
-  updateApp: (app: App) => Promise<void>;
-}
+export default function Editor(): React.ReactElement {
+  const { app, setApp } = useApp();
 
-export default function Editor({ app, updateApp }: EditorProps): React.ReactElement {
   const [appName, setAppName] = React.useState('');
   const [recipe, setRecipe] = React.useState<string>(null);
   const [style, setStyle] = React.useState('');
@@ -198,8 +196,8 @@ export default function Editor({ app, updateApp }: EditorProps): React.ReactElem
       setPath(data.path);
       push({ body: intl.formatMessage(messages.updateSuccess), color: 'success' });
 
-      // Update Redux state
-      updateApp(data);
+      // update App State
+      setApp(data);
     } catch (e) {
       if (e.response && e.response.status === 403) {
         push(intl.formatMessage(messages.forbidden));
@@ -214,7 +212,7 @@ export default function Editor({ app, updateApp }: EditorProps): React.ReactElem
     setDirty(true);
     setWarningDialog(false);
     setInitialRecipe(recipe);
-  }, [intl, params, push, recipe, sharedStyle, style, updateApp, valid]);
+  }, [intl, params, push, recipe, sharedStyle, style, setApp, valid]);
 
   const onDelete = React.useCallback(async () => {
     const { id } = params;

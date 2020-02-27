@@ -1,21 +1,18 @@
 import { SimpleForm, SimpleInput, SimpleSubmit, useMessages } from '@appsemble/react-components';
-import { App } from '@appsemble/types';
 import axios from 'axios';
 import React from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { Link, RouteComponentProps } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
+import { useApp } from '../AppContext/AppContext';
 import HelmetIntl from '../HelmetIntl';
 import messages from './messages';
 
-interface NotificationsProps extends RouteComponentProps<{ id: string }> {
-  app: App;
-}
+export default function Notifications(): React.ReactElement {
+  const { app } = useApp();
 
-export default function Notifications({ app }: NotificationsProps): React.ReactElement {
   const intl = useIntl();
   const push = useMessages();
-
   const submit = React.useCallback(
     async ({ body, title }: { title: string; body: string }): Promise<void> => {
       try {

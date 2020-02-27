@@ -15,19 +15,10 @@ import CreateAppCard from '../CreateAppCard';
 import styles from './AppList.css';
 import messages from './messages';
 
-interface AppListProps {
-  apps: App[];
-  getApps: () => Promise<void>;
-  getPublicApps: () => Promise<void>;
-}
-
-export default function AppList({
-  apps,
-  getApps,
-  getPublicApps,
-}: AppListProps): React.ReactElement {
+export default function AppList(): React.ReactElement {
   const [filter, setFilter] = React.useState('');
   const [organizations, setOrganizations] = React.useState<Organization[]>([]);
+  const [apps, setApps] = React.useState<App[]>(null);
 
   const intl = useIntl();
   const { userInfo } = useUser();
@@ -37,12 +28,17 @@ export default function AppList({
   }, []);
 
   React.useEffect(() => {
+    setApps(null);
     if (userInfo) {
-      getApps();
+      axios.get<App[]>('/api/apps/me').then(({ data }) => {
+        setApps(data);
+      });
     } else {
-      getPublicApps();
+      axios.get<App[]>('/api/apps').then(({ data }) => {
+        setApps(data);
+      });
     }
-  }, [getApps, getPublicApps, userInfo]);
+  }, [userInfo]);
 
   React.useEffect(() => {
     if (userInfo) {

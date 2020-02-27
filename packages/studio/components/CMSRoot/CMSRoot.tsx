@@ -1,18 +1,15 @@
-import { App } from '@appsemble/types';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Link, useRouteMatch } from 'react-router-dom';
 
+import { useApp } from '../AppContext/AppContext';
 import HelmetIntl from '../HelmetIntl';
 import styles from './CMSRoot.css';
 import messages from './messages';
 
-interface CMSRootProps {
-  app: App;
-}
-
-export default function CMSRoot({ app }: CMSRootProps): React.ReactElement {
+export default function CMSRoot(): React.ReactElement {
   const match = useRouteMatch();
+  const { app } = useApp();
 
   return (
     <>
