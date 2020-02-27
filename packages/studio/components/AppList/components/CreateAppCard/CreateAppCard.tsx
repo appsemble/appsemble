@@ -46,18 +46,15 @@ export default function CreateAppCard(): JSX.Element {
     async ({ description, includeResources, isPrivate, name, selectedOrganization }) => {
       const { id, resources } = templates[selectedTemplate];
 
-      await axios
-        .post('/api/templates', {
-          templateId: id,
-          name,
-          description,
-          organizationId: organizations[selectedOrganization].id,
-          resources: resources && includeResources,
-          private: isPrivate,
-        })
-        .then(data => {
-          history.push(`${match.url}/${data.data.id}/edit`);
-        });
+      const { data } = await axios.post('/api/templates', {
+        templateId: id,
+        name,
+        description,
+        organizationId: organizations[selectedOrganization].id,
+        resources: resources && includeResources,
+        private: isPrivate,
+      });
+      history.push(`${match.url}/${data.id}/edit`);
     },
     [history, match.url, organizations, selectedTemplate, templates],
   );
