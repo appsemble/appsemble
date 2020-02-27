@@ -1,4 +1,5 @@
-import { BaseAction, BaseActionDefinition } from '@appsemble/types';
+import { BaseAction } from '@appsemble/sdk';
+import { BaseActionDefinition } from '@appsemble/types';
 
 import { MakeActionParameters } from '../../types';
 

@@ -109,10 +109,12 @@ export default function FlowPage({
     <>
       <DotProgressBar active={currentPage} amount={page.subPages.length} />
       <BlockList
+        key={currentPage}
         {...blockListProps}
         blocks={page.subPages[currentPage].blocks}
         data={data}
         ee={ee}
+        flowActions={flowActions}
         showDialog={showDialog}
         transitions
       />

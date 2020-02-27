@@ -1,4 +1,5 @@
 import {
+  BaseAction,
   ResourceCreateAction,
   ResourceDeleteAction,
   ResourceGetAction,
@@ -6,7 +7,6 @@ import {
   ResourceUpdateAction,
 } from '@appsemble/sdk';
 import {
-  BaseAction,
   BlobUploadType,
   Resource,
   ResourceCreateActionDefinition,
@@ -46,6 +46,7 @@ function get(args: MakeActionParameters<ResourceGetActionDefinition>): ResourceG
       ...args,
       definition: {
         ...definition,
+        query: { ...resource?.query?.query, ...definition.query },
         blobs: getBlobs(resource),
         method,
         url: url.includes(`{${id}}`) ? url : `${url}${url.endsWith('/') ? '' : '/'}{${id}}`,
@@ -70,6 +71,7 @@ function query(args: MakeActionParameters<ResourceQueryActionDefinition>): Resou
       ...args,
       definition: {
         ...definition,
+        query: { ...resource?.query?.query, ...definition.query },
         blobs: getBlobs(resource),
         method,
         url,
@@ -94,6 +96,7 @@ function create(args: MakeActionParameters<ResourceCreateActionDefinition>): Res
       ...args,
       definition: {
         ...definition,
+        query: { ...resource?.query?.query, ...definition.query },
         blobs: getBlobs(resource),
         method,
         url,
@@ -119,6 +122,7 @@ function update(args: MakeActionParameters<ResourceUpdateActionDefinition>): Res
       ...args,
       definition: {
         ...definition,
+        query: { ...resource?.query?.query, ...definition.query },
         blobs: getBlobs(resource),
         method,
         url: `${url}${url.endsWith('/') ? '' : '/'}{${id}}`,
@@ -144,6 +148,7 @@ function remove(args: MakeActionParameters<ResourceDeleteActionDefinition>): Res
       ...args,
       definition: {
         ...definition,
+        query: { ...resource?.query?.query, ...definition.query },
         type: 'resource.delete',
         blobs: getBlobs(resource),
         method,

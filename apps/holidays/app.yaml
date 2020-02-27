@@ -1,11 +1,12 @@
 name: Holiday App
 description: A simple app that fetches holiday information for various countries.
 defaultPage: Holidays in NL
+
 pages:
   - name: Holidays in NL
     blocks:
       - type: data-loader
-        version: 0.11.2
+        version: 0.11.4
         actions:
           onLoad:
             url: https://cors-anywhere.herokuapp.com/https://date.nager.at/Api/v2/NextPublicHolidays/NL
@@ -13,8 +14,8 @@ pages:
         events:
           emit:
             data: holidays
-      - type: list
-        version: 0.11.2
+      - type: table
+        version: 0.11.4
         parameters:
           fields:
             - name: date
@@ -26,10 +27,11 @@ pages:
         events:
           listen:
             data: holidays
+
   - name: Holidays in US
     blocks:
       - type: data-loader
-        version: 0.11.2
+        version: 0.11.4
         actions:
           onLoad:
             url: https://cors-anywhere.herokuapp.com/https://date.nager.at/Api/v2/NextPublicHolidays/US
@@ -37,8 +39,8 @@ pages:
         events:
           emit:
             data: holidays
-      - type: list
-        version: 0.11.2
+      - type: table
+        version: 0.11.4
         parameters:
           fields:
             - name: date
@@ -48,10 +50,11 @@ pages:
         events:
           listen:
             data: holidays
+
   - name: Holidays in DE
     blocks:
       - type: data-loader
-        version: 0.11.2
+        version: 0.11.4
         actions:
           onLoad:
             url: https://cors-anywhere.herokuapp.com/https://date.nager.at/Api/v2/NextPublicHolidays/DE
@@ -59,8 +62,8 @@ pages:
         events:
           emit:
             data: holidays
-      - type: list
-        version: 0.11.2
+      - type: table
+        version: 0.11.4
         parameters:
           fields:
             - name: date
@@ -72,10 +75,11 @@ pages:
         events:
           listen:
             data: holidays
+
   - name: Holidays in ES
     blocks:
       - type: data-loader
-        version: 0.11.2
+        version: 0.11.4
         actions:
           onLoad:
             url: https://cors-anywhere.herokuapp.com/https://date.nager.at/Api/v2/NextPublicHolidays/ES
@@ -83,8 +87,8 @@ pages:
         events:
           emit:
             data: holidays
-      - type: list
-        version: 0.11.2
+      - type: table
+        version: 0.11.4
         parameters:
           fields:
             - name: date

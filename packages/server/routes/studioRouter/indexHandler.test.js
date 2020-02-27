@@ -38,7 +38,7 @@ it('should serve the studio index page with correct headers', async () => {
         'connect-src *' +
         "; default-src 'self'" +
         "; font-src 'self' https://fonts.gstatic.com" +
-        '; frame-src *.localhost:9999' +
+        '; frame-src *.localhost:9999 http://localhost:9999' +
         '; img-src * data:' +
         "; script-src 'self' 'sha256-9sOokSPGKu0Vo4/TBZI1T7Bm5ThrXz9qTWATwd3augo=' 'unsafe-eval'" +
         "; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
@@ -67,7 +67,7 @@ it('should pass login options from argv to the studio', async () => {
         'connect-src *' +
         "; default-src 'self'" +
         "; font-src 'self' https://fonts.gstatic.com" +
-        '; frame-src *.localhost:9999' +
+        '; frame-src *.localhost:9999 http://localhost:9999' +
         '; img-src * data:' +
         '; report-uri https://sentry.io/api/path/security/?sentry_key=secret' +
         "; script-src 'self' 'sha256-u7Lwg39nDVoG/C+KUi2A+femGRBoDntSTyJiVRgbfqc=' 'unsafe-eval'" +

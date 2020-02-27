@@ -1,18 +1,12 @@
+// This tsconfig should be extended by every workspace tsconfig.json.
 {
+  "extends": "./tsconfig.build.json",
   "compilerOptions": {
-    "downlevelIteration": true,
-    "esModuleInterop": true,
-    "jsx": "react",
+    "baseUrl": ".",
     "noEmit": true,
-    "moduleResolution": "node",
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "resolveJsonModule": true,
-    "strict": true,
-    "strictFunctionTypes": false,
-    "strictNullChecks": false,
-    "lib": ["esnext"],
-    "types": ["jest", "node"],
-    "target": "es2018"
-  }
+    "paths": {
+      "@appsemble/sdk": ["packages/sdk/src"]
+    }
+  },
+  "exclude": ["**/dist"]
 }

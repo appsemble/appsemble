@@ -1,9 +1,9 @@
 ---
 menu: Blocks
-route: /blocks/list
+route: /blocks/table
 ---
 
-# List
+# Table
 
 ## Introduction
 

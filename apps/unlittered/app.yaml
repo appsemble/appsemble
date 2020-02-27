@@ -1,10 +1,12 @@
 name: Unlittered App
 description: An app in which litter can be reported and displayed on an interactive map.
 defaultPage: Report litter
+
 theme:
   themeColor: '#eb0000'
   splashColor: '#ffffff'
   primaryColor: '#eb0000'
+
 resources:
   litter:
     schema:
@@ -42,11 +44,12 @@ resources:
               type: number
             longitude:
               type: number
+
 pages:
   - name: Report litter
     blocks:
       - type: form
-        version: 0.11.2
+        version: 0.11.4
         parameters:
           fields:
             - name: location
@@ -78,10 +81,11 @@ pages:
           onSubmitSuccess:
             type: link
             to: Litter Overview
+
   - name: Litter Overview
     blocks:
       - type: data-loader
-        version: 0.11.2
+        version: 0.11.4
         actions:
           onLoad:
             type: resource.query
@@ -93,7 +97,7 @@ pages:
           emit:
             data: data
       - type: map
-        version: 0.11.2
+        version: 0.11.4
         parameters:
           latitude: location.latitude
           longitude: location.longitude
@@ -105,19 +109,20 @@ pages:
           listen:
             data: data
       - type: action-button
-        version: 0.11.2
+        version: 0.11.4
         parameters:
           icon: plus
         actions:
           onClick:
             to: Report litter
             type: link
+
   - name: Litter details
     parameters:
       - id
     blocks:
       - type: data-loader
-        version: 0.11.2
+        version: 0.11.4
         actions:
           onLoad:
             type: resource.get
@@ -126,9 +131,9 @@ pages:
           emit:
             data: data
       - type: detail-viewer
-        version: 0.11.2
+        version: 0.11.4
         parameters:
-          fileBase: '/api/assets'
+          fileBase: 'https://appsemble.app/api/apps/14/assets'
           fields:
             - name: location
               type: geocoordinates

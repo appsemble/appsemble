@@ -1,7 +1,6 @@
 {
   "extends": "../../tsconfig",
   "compilerOptions": {
-    "lib": ["dom", "esnext"],
-    "types": []
+    "types": ["css-modules", "jest"]
   }
 }

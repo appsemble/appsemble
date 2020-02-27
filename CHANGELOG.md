@@ -9,9 +9,44 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
+- App: Add support for defining query parameters in resource definitions.
+- App: Add support for query templates in `request` actions.
+- Blocks(`@appsemble/stats`): Add new stats block.
+
+### Changed
+
+- Blocks: Rename `@appsemble/list` to `@appsemble/table`.
+
+## [0.11.4] - 2020-02-18
+
+### Added
+
+- Blocks(`@appsemble/map`): Add marker clustering.
+- Blocks(`@appsemble/map`): Add `disableClustering` parameter.
+- Blocks(`@appsemble/map`): Add `maxClusterRadius` parameter. This can be used to determine when the
+  map should cluster markers.
+
+### Changed
+
+- Studio: Hide login button on the login page.
+- Studio: Redirect back to the previous page after logging in.
+
+### Fixed
+
+- Studio: Fix crash on the organization invite page.
+- Studio: Fix login form not always being visible on protected routes.
+
+## [0.11.3] - 2020-02-17
+
+### Added
+
 - Blocks(`@appsemble/data-loader`): Add `skipInitialLoad` parameter.
 - Blocks(`@appsemble/map`): Make `move` emit event optional. When omitted, the map block won’t emit
   refresh events.
+
+### Changed
+
+- Server: Make the `AppId` column for `Asset` is required in the database.
 
 ### Fixed
 
