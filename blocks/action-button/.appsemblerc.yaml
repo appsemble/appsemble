@@ -1,11 +1,2 @@
 layout: float
-
-types:
-  file: block.ts
-  parameters: Parameters
-
-actions:
-  onClick:
-    required: true
-
 output: dist

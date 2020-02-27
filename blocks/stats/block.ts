@@ -19,10 +19,12 @@ export interface Field {
   label?: string;
 }
 
-export interface Events {
-  listen: 'data';
-}
+declare module '@appsemble/sdk' {
+  interface EventListeners {
+    data: {};
+  }
 
-export interface Parameters {
-  fields: Field[];
+  interface Parameters {
+    fields: Field[];
+  }
 }

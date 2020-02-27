@@ -33,7 +33,6 @@
   "devDependencies": {
     "@babel/core": "^7.8.3",
     "@babel/plugin-proposal-class-properties": "^7.8.3",
-    "@babel/plugin-proposal-function-bind": "^7.8.3",
     "@babel/plugin-proposal-optional-chaining": "^7.8.3",
     "@babel/plugin-syntax-dynamic-import": "^7.8.3",
     "@babel/plugin-transform-react-inline-elements": "^7.8.3",
@@ -157,7 +156,6 @@
     "migrate-to": "next",
     "oauth-gitlab-key": "9739ffe4a5007fb7ac0bac53e2d70f7286add09190b73f40eeac33259cb81f15",
     "oauth-gitlab-secret": "8f83b39e5731f0c771fe39bff54ae326877f9434d431feeea6d79f00f292cdb0",
-    "secret": "Local Appsemble development secret",
-    "webpack-config": "config/webpack/block"
+    "secret": "Local Appsemble development secret"
   }
 }

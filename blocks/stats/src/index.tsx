@@ -3,10 +3,9 @@ import { attach } from '@appsemble/sdk';
 import { compileFilters, MapperFunction } from '@appsemble/utils';
 import { h } from 'mini-jsx';
 
-import { Events, Parameters } from '../block';
 import styles from './index.css';
 
-attach<Parameters, unknown, Events>(({ block, events }) => {
+attach(({ block, events }) => {
   const { fields } = block.parameters;
 
   const wrapper = (

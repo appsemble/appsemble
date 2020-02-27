@@ -1,8 +1,6 @@
 import { bootstrap } from '@appsemble/sdk';
 
-import { Actions, Events, Parameters } from '../block';
-
-bootstrap<Parameters, Actions, Events>(({ actions, block, events, pageParameters, utils }) => {
+bootstrap(({ actions, block, events, pageParameters, utils }) => {
   async function loadData(d?: any): Promise<void> {
     try {
       const result = await actions.onLoad.dispatch({ ...pageParameters, ...d });

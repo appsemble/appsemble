@@ -1,11 +1,2 @@
 layout: hidden
-
-types:
-  file: block.ts
-  events: Events
-
-actions:
-  onLoad:
-    required: true
-
 output: dist

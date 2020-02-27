@@ -26,16 +26,18 @@ export interface Filter {
   [filter: string]: string | number | RangeFilter | string[];
 }
 
-export interface Parameters {
-  fields: FilterField[];
-  highlight: string;
-  refreshTimeout: number;
-}
+declare module '@appsemble/sdk' {
+  interface Parameters {
+    fields: FilterField[];
+    highlight: string;
+    refreshTimeout: number;
+  }
 
-export interface Actions {
-  onLoad: {};
-}
+  interface Actions {
+    onLoad: {};
+  }
 
-export interface Events {
-  emit: 'data';
+  interface EventEmitters {
+    data: {};
+  }
 }

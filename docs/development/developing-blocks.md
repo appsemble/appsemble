@@ -195,20 +195,18 @@ To do this we need to define which kinds of events can be emitted from the block
 map the names of events correctly to the name of the event in the code based on what’s used in the
 app definition.
 
-in `.appsemblerc.yaml`:
+in `block.ts`:
 
 ```diff
-  actions:
-    onClick: {}
-
-+ events:
-+   emit:
-+     - click
-+   listen:
-+     - data
-
-  output: dist
-
+  declare module '@appsemble/sdk' {
++   interface EventEmitters {
++     click: {}
++   }
++
++   interface EventListeners {
++     data: {}
++   }
+  }
 ```
 
 We’ll also add a listener using `events.on.data()`. This will log the block’s own parameters and the

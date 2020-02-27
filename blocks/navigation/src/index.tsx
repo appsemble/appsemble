@@ -2,10 +2,9 @@
 import { attach } from '@appsemble/sdk';
 import { h } from 'mini-jsx';
 
-import { Parameters } from '../block';
 import styles from './style.css';
 
-attach<Parameters>(({ block }) => {
+attach(({ block }) => {
   const { backLabel = 'Back', forwardLabel } = block.parameters;
 
   return (

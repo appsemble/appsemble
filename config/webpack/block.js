@@ -1,34 +1,24 @@
-const path = require('path');
-const { CleanWebpackPlugin } = require('clean-webpack-plugin');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const { UnusedFilesWebpackPlugin } = require('unused-files-webpack-plugin');
-const merge = require('webpack-merge');
+import { CleanWebpackPlugin } from 'clean-webpack-plugin';
+import MiniCssExtractPlugin from 'mini-css-extract-plugin';
+import path from 'path';
+import { UnusedFilesWebpackPlugin } from 'unused-files-webpack-plugin';
+import merge from 'webpack-merge';
 
-const shared = require('./shared');
+import shared from './shared';
 
 /**
  * This webpack configuration is used by Appsemble blocks.
  */
-module.exports = (env, argv) => {
-  if (typeof env !== 'string') {
-    throw new Error('Specify a block to build.');
-  }
-  const name = env.startsWith('@') ? env.split('/')[1] : env;
-  const dir = path.resolve(__dirname, '../../blocks', name);
+export default ({ dir, id }, argv) => {
+  const [, name] = id.split('/');
   const srcPath = path.join(dir, 'src');
-  const outputPath = path.join(dir, 'dist');
-  // eslint-disable-next-line global-require, import/no-dynamic-require
-  const pkg = require(`${dir}/package.json`);
-  const { mode, publicPath = `/api/blocks/${pkg.name}/versions/${pkg.version}/` } = argv;
-  const production = mode === 'production';
+  const production = argv.mode === 'production';
 
-  return merge.smart(shared(name, { ...argv, publicPath }), {
-    name: pkg.name,
+  return merge.smart(shared(name, argv), {
+    name: id,
     entry: [srcPath],
     output: {
       filename: `${name}.js`,
-      publicPath,
-      path: outputPath,
     },
     module: {
       rules: [
@@ -37,7 +27,7 @@ module.exports = (env, argv) => {
           loader: 'file-loader',
           options: {
             name: '[name].[ext]',
-            publicPath,
+            publicPath: argv.publicPath,
           },
         },
         {

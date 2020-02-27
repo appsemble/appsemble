@@ -1,8 +1,8 @@
-import { Actions } from '@appsemble/sdk';
+import { BootstrapParams } from '@appsemble/sdk';
 import { Icon, LatLngBounds, LayerGroup, Map, Marker } from 'leaflet';
 
 import iconUrl from '../../../themes/amsterdam/core/marker.svg';
-import { BlockActions, LatLngMapper } from './createGetters';
+import { LatLngMapper } from './createGetters';
 
 const MARKER_ICON_WIDTH = 39;
 const MARKER_ICON_HEIGHT = 39;
@@ -28,7 +28,7 @@ export default function loadMarkers(
   fetched: Set<number>,
   get: LatLngMapper,
   data: any,
-  actions: Actions<BlockActions>,
+  actions: BootstrapParams['actions'],
   target: LayerGroup | Map,
 ): void {
   if (!Array.isArray(markers)) {

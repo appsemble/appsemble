@@ -7,10 +7,10 @@ import { BlockProps } from '.';
  * A HOC which provides `intl` in a block written in React.
  */
 // eslint-disable-next-line import/prefer-default-export
-export function provideIntl<P = any, A = {}>(
-  Component: React.ComponentType<BlockProps<P, A>>,
+export function provideIntl(
+  Component: React.ComponentType,
   intlProviderProps?: Partial<IntlConfig>,
-): React.ComponentType<BlockProps<P, A>> {
+): React.ComponentType<BlockProps> {
   return props => (
     <IntlProvider defaultLocale="en-US" locale="en-US" {...intlProviderProps}>
       <Component {...props} />

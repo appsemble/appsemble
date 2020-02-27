@@ -1,14 +1,19 @@
-import { Action } from '@appsemble/sdk';
+export {};
 
-export interface Actions {
-  onLoad: Action;
-}
+declare module '@appsemble/sdk' {
+  interface Actions {
+    onLoad: {};
+  }
 
-export interface Parameters {
-  skipInitialLoad: boolean;
-}
+  interface Parameters {
+    skipInitialLoad: boolean;
+  }
 
-export interface Events {
-  emit: 'data';
-  listen: 'refresh';
+  interface EventEmitters {
+    data: {};
+  }
+
+  interface EventListeners {
+    refresh: {};
+  }
 }

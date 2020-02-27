@@ -4,7 +4,7 @@ import { Location } from '@appsemble/preact-components';
 import { Component, createRef, Fragment, h, VNode } from 'preact';
 
 import iconUrl from '../../../../../themes/amsterdam/core/marker.svg';
-import { BlockActions, BlockParameters, Remappers } from '../../../block';
+import { Remappers } from '../../../block';
 import AvatarWrapper from '../AvatarWrapper';
 import styles from './Card.css';
 
@@ -35,10 +35,7 @@ interface CardState {
 /**
  * A single card in the feed.
  */
-export default class Card extends Component<
-  BlockProps<BlockParameters, BlockActions> & CardProps,
-  CardState
-> {
+export default class Card extends Component<BlockProps & CardProps, CardState> {
   replyContainer = createRef<HTMLDivElement>();
 
   state: CardState = {
