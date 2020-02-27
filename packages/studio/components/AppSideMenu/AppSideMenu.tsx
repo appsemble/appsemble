@@ -25,7 +25,7 @@ export default function AppSideMenu(): React.ReactElement {
   const [isCollapsed, setCollapsed] = React.useState(false);
   const organizations = useOrganizations();
   const organization = organizations && organizations.find(org => org.id === app.OrganizationId);
-  const match = useRouteMatch<{ id: string }>();
+  const match = useRouteMatch();
 
   return (
     <SideMenu isCollapsed={isCollapsed} toggleCollapse={() => setCollapsed(!isCollapsed)}>
