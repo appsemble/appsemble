@@ -28,6 +28,7 @@ export default function AppList(): React.ReactElement {
   }, []);
 
   React.useEffect(() => {
+    setApps(null);
     if (userInfo) {
       axios.get<App[]>('/api/apps/me').then(({ data }) => {
         setApps(data);
