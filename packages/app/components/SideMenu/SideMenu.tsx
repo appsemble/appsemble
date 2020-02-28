@@ -10,7 +10,7 @@ interface SideMenuProps {
 }
 
 /**
- * A side menu whose open state is managed by the redux state.
+ * A side menu whose open state is managed by the state hook.
  */
 
 export default function SideMenu({ children }: SideMenuProps): React.ReactElement {

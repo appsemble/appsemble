@@ -9,8 +9,12 @@ export default function CMS(): React.ReactElement {
 
   return (
     <Switch>
-      <Route component={CMSRoot} exact path={match.path} />
-      <Route component={ResourceTable} path={`${match.path}/:resourceName/:mode?/:resourceId?`} />
+      <Route exact path={match.path}>
+        <CMSRoot />
+      </Route>
+      <Route path={`${match.path}/:resourceName/:mode?/:resourceId?`}>
+        <ResourceTable />
+      </Route>
       <Redirect to={match.path} />
     </Switch>
   );

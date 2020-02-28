@@ -9,20 +9,16 @@ import {
   useToggle,
 } from '@appsemble/react-components';
 import useMessages from '@appsemble/react-components/hooks/useMessages';
-import { App } from '@appsemble/types';
 import axios from 'axios';
 import { OpenAPIV3 } from 'openapi-types';
 import React from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link, useHistory, useRouteMatch } from 'react-router-dom';
 
+import { useApp } from '../AppContext/AppContext';
 import HelmetIntl from '../HelmetIntl';
 import messages from './messages';
 import styles from './ResourceTable.css';
-
-interface ResourceTableProps {
-  app: App;
-}
 
 interface Resource {
   id: number;
@@ -36,7 +32,9 @@ interface RouteParams {
   resourceName: string;
 }
 
-export default function ResourceTable({ app }: ResourceTableProps): React.ReactElement {
+export default function ResourceTable(): React.ReactElement {
+  const { app } = useApp();
+
   const history = useHistory();
   const intl = useIntl();
   const match = useRouteMatch<RouteParams>();

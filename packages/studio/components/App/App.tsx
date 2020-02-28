@@ -34,25 +34,45 @@ export default function App(): React.ReactElement {
                 <Helmet defaultTitle="Appsemble" titleTemplate="Appsemble · %s" />
                 <Toolbar />
                 <Switch>
-                  <Route component={AppList} exact path="/apps" />
-                  <ProtectedRoute component={Settings} path="/settings" />
-                  <ProtectedRoute component={OpenIDLogin} exact path="/connect/authorize" />
-                  <Route component={AppContext} path="/apps/:id(\d+)" />
-                  <AnonymousRoute component={EditPassword} exact path="/edit-password" />
-                  <ProtectedRoute
-                    component={OrganizationInvite}
-                    exact
-                    path="/organization-invite"
-                  />
-                  <Route component={VerifyEmail} exact path="/verify" />
+                  <Route exact path="/apps">
+                    <AppList />
+                  </Route>
+                  <ProtectedRoute path="/settings">
+                    <Settings />
+                  </ProtectedRoute>
+                  <ProtectedRoute exact path="/connect/authorize">
+                    <OpenIDLogin />
+                  </ProtectedRoute>
+                  <Route path="/apps/:id(\d+)">
+                    <AppContext />
+                  </Route>
+                  <AnonymousRoute exact path="/edit-password">
+                    <EditPassword />
+                  </AnonymousRoute>
+                  <ProtectedRoute exact path="/organization-invite">
+                    <OrganizationInvite />
+                  </ProtectedRoute>
+                  <Route exact path="/verify">
+                    <VerifyEmail />
+                  </Route>
                   <Route component={OAuth2Connect} exact path="/oauth2/:provider/callback" />
-                  <AnonymousRoute component={Login} exact path="/login" />
+                  <AnonymousRoute exact path="/login">
+                    <Login />
+                  </AnonymousRoute>
                   {settings.enableRegistration && (
-                    <AnonymousRoute component={Register} exact path="/register" />
+                    <AnonymousRoute exact path="/register">
+                      <Register />
+                    </AnonymousRoute>
                   )}
-                  <Route component={ResetPassword} exact path="/reset-password" />
-                  <Route component={EditPassword} exact path="/edit-password" />
-                  <Route component={VerifyEmail} exact path="/verify" />
+                  <Route exact path="/reset-password">
+                    <ResetPassword />
+                  </Route>
+                  <Route exact path="/edit-password">
+                    <EditPassword />
+                  </Route>
+                  <Route exact path="/verify">
+                    <VerifyEmail />
+                  </Route>
                   <Redirect to="/apps" />
                 </Switch>
               </MessagesProvider>
