@@ -1,13 +1,18 @@
 import { IconName } from '@fortawesome/fontawesome-common-types';
 
 export interface Field {
-  name: string;
+  name?: string;
   label?: string;
   icon?: IconName;
 }
 
+export interface Item {
+  id?: number;
+  [property: string]: any;
+}
+
 export interface Parameters {
-  header: string;
+  header?: string;
   fields?: Field[];
 }
 

@@ -2,6 +2,8 @@ types:
   parameters: Parameters
   events: Events
 
+layout: static
+
 actions:
   onClick:
     required: false

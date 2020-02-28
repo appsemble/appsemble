@@ -1,0 +1,61 @@
+/** @jsx h */
+import { Icon } from '@appsemble/preact-components';
+import { Actions } from '@appsemble/sdk';
+import { remapData } from '@appsemble/utils';
+import { h, VNode } from 'preact';
+import { useCallback } from 'preact/hooks';
+
+import { Actions as BlockActions, Field, Item } from '../../../block';
+import ListItemWrapper from '../ListItemWrapper';
+import styles from './ListItem.css';
+
+interface ListItemProps {
+  actions: Actions<BlockActions>;
+  fields: Field[];
+  header: string;
+  item: Item;
+  onClick: (d: Item) => void;
+}
+
+export default function ListItem({ actions, fields, header, item, onClick }: ListItemProps): VNode {
+  const onItemClick = useCallback(
+    (event: Event) => {
+      event.preventDefault();
+      onClick(item);
+    },
+    [item, onClick],
+  );
+
+  return (
+    <ListItemWrapper actions={actions} className={styles.item} item={item} onClick={onItemClick}>
+      {header && <h4>{remapData(header, item)}</h4>}
+      {fields.map(field => {
+        let value;
+
+        if (field.name) {
+          value = remapData(field.name, item);
+        }
+
+        return (
+          <span key={field.name} className={styles.itemField}>
+            {field.icon && <Icon icon={field.icon} />}
+            {field.label && (
+              <span>
+                {field.label}
+                {field.name && ': '}
+              </span>
+            )}
+            {field.name && (
+              <strong>{typeof value === 'string' ? value : JSON.stringify(value)}</strong>
+            )}
+          </span>
+        );
+      })}
+      {actions.onClick.type !== 'noop' && (
+        <button className={`button ${styles.button}`} onClick={onItemClick} type="button">
+          <Icon icon="angle-right" size="large" />
+        </button>
+      )}
+    </ListItemWrapper>
+  );
+}
