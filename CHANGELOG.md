@@ -16,6 +16,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ### Changed
 
 - Blocks: Rename `@appsemble/list` to `@appsemble/table`.
+- CLI: Enable the `--build` flag by default. Builds can be skipped by using `--no-build`.
 
 ## [0.11.4] - 2020-02-18
 
