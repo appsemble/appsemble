@@ -38,9 +38,15 @@ export default function Main(): React.ReactElement {
   return (
     <main className={styles.root}>
       <Switch>
-        <Route component={AppSettings} exact path="/Settings" sensitive />
-        <Route component={Login} exact path="/Login" sensitive />
-        <Route component={OpenIDCallback} exact path="/Callback" sensitive />
+        <Route exact path="/Settings" sensitive>
+          <AppSettings />
+        </Route>
+        <Route exact path="/Login" sensitive>
+          <Login />
+        </Route>
+        <Route exact path="/Callback" sensitive>
+          <OpenIDCallback />
+        </Route>
         {routes}
         <Redirect to={defaultPath} />
       </Switch>
