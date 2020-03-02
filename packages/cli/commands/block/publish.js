@@ -26,6 +26,7 @@ export function builder(yargs) {
       alias: 'b',
       describe: 'If specified, builds the block with webpack before publishing it.',
       type: 'boolean',
+      default: true,
     })
     .option('ignore-conflict', {
       describe: 'If specified, conflicts with an existing block version are ignored.',
