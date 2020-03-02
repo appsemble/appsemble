@@ -130,7 +130,7 @@ function getFromContext(blockConfig, fullPath) {
       if (!isModuleDeclaration(mod)) {
         return;
       }
-      // This module is defining other types
+      // This module defines other types
       if (mod.name.text !== '@appsemble/sdk') {
         return;
       }
