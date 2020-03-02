@@ -20,6 +20,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Blocks: Rename `@appsemble/list` to `@appsemble/table`.
 - CLI: Each block now requires a Webpack configuration file.
 - CLI: Enable the `--build` flag by default. Builds can be skipped by using `--no-build`.
+- CLI: Replace the `--all` flag with glob support.
 - SDK: Parameters, events, and actions are now defined by augmenting the `Parameters`, `Actions`,
   `EventListeners`, and `EventEmitters` interfaces from the `@appsemble/sdk` module. Overriding them
   from `.appsemblerc` is still possible.

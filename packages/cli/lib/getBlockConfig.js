@@ -32,6 +32,7 @@ export default async function getBlockConfig(dir) {
     id: pkg.name,
     version: pkg.version,
     webpack: 'webpack.config',
+    dist: 'dist',
     ...config,
     dir,
   };

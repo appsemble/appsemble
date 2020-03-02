@@ -1,19 +1,19 @@
 import { logger } from '@appsemble/node-utils';
-import fs from 'fs-extra';
-import { join, resolve } from 'path';
+import fg from 'fast-glob';
+import { resolve } from 'path';
 
 import { authenticate } from '../../lib/authentication';
 import buildBlock from '../../lib/buildBlock';
 import getBlockConfig from '../../lib/getBlockConfig';
 import publish from '../../lib/publish';
 
-export const command = 'publish <path>';
+export const command = 'publish <paths...>';
 export const description = 'Publish a new version of an existing block.';
 
 export function builder(yargs) {
   return yargs
-    .positional('path', {
-      describe: 'The path to the block to register',
+    .positional('paths', {
+      describe: 'The paths to the blocks to publish.',
       normalize: true,
     })
     .option('build', {
@@ -25,46 +25,24 @@ export function builder(yargs) {
     .option('ignore-conflict', {
       describe: 'If specified, conflicts with an existing block version are ignored.',
       type: 'boolean',
-    })
-    .option('all', {
-      alias: 'a',
-      describe: 'Perform this command on every directory that is a subdirectory of the given path.',
-      type: 'boolean',
     });
 }
 
-export async function handler({ all, build, clientCredentials, ignoreConflict, path, remote }) {
+export async function handler({ build, clientCredentials, ignoreConflict, paths, remote }) {
   await authenticate(remote, 'blocks:write', clientCredentials);
-  const fullPath = resolve(process.cwd(), path);
 
-  if (all) {
-    const directories = (await fs.readdir(fullPath)).filter(subDir =>
-      fs.lstatSync(join(fullPath, subDir)).isDirectory(),
-    );
+  const directories = await fg(paths, { absolute: true, onlyDirectories: true });
+  logger.info(`Publishing ${directories.length} Blocks`);
+  await directories.reduce(async (acc, dir) => {
+    await acc;
 
-    logger.info(`Publishing ${directories.length} Blocks`);
-    await directories.reduce(async (acc, subDir) => {
-      await acc;
+    const config = await getBlockConfig(dir);
 
-      const subPath = join(fullPath, subDir);
-      const config = await getBlockConfig(subPath);
+    if (build) {
+      await buildBlock({ path: resolve(dir, config.dist), config });
+    }
 
-      if (build) {
-        await buildBlock({ path: resolve(subPath, 'dist'), config });
-      }
-
-      logger.info(`Publishing ${config.id}@${config.version}…`);
-      await publish({ config, ignoreConflict, path: subPath });
-    }, {});
-
-    return;
-  }
-
-  const config = await getBlockConfig(fullPath);
-  if (build) {
-    await buildBlock({ path: resolve(join(fullPath, 'dist')), config });
-  }
-
-  logger.info(`Publishing ${config.id}@${config.version}`);
-  await publish({ config, ignoreConflict, path: fullPath });
+    logger.info(`Publishing ${config.id}@${config.version}…`);
+    await publish({ config, ignoreConflict, path: dir });
+  }, {});
 }
