@@ -11,15 +11,16 @@
   line-height: 1.15;
   margin-bottom: 5px;
   margin-top: 5px;
-  padding: 1.25rem 2.5rem 1.25rem 1.5rem;
+  padding: 1.25rem 2.9rem 1.25rem 1.5rem;
   position: relative;
   text-align: left;
   width: 100%;
 }
 
 .itemField {
-  display: inline;
+  display: inline-block;
   margin-right: 5px;
+  word-break: break-word;
 }
 
 .button {

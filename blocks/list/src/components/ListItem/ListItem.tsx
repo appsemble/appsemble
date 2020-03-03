@@ -37,7 +37,7 @@ export default function ListItem({ actions, fields, header, item, onClick }: Lis
         }
 
         return (
-          <div key={field.name} className={styles.itemField}>
+          <span key={field.name} className={styles.itemField}>
             {field.icon && <Icon icon={field.icon} />}
             {field.label && (
               <span>
@@ -50,7 +50,7 @@ export default function ListItem({ actions, fields, header, item, onClick }: Lis
                 {typeof value === 'string' ? value : JSON.stringify(value)}
               </strong>
             )}
-          </div>
+          </span>
         );
       })}
       {actions.onClick.type !== 'noop' && (
