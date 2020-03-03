@@ -20,7 +20,7 @@ export function requestLikeAction<T extends RequestLikeActionTypes>({
   const regex = /{(.+?)}/g;
   const urlMatch = url.match(regex);
   const urlMappers =
-    urlMatch &&
+    urlMatch.length &&
     urlMatch
       .map(match => match.substring(1, match.length - 1))
       .reduce<{ [filter: string]: MapperFunction }>(

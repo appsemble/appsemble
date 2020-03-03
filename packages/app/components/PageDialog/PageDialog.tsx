@@ -19,11 +19,11 @@ export default function PageDialog({
 }: PageDialogProps): React.ReactElement {
   return (
     <Modal
-      cardClassName={classNames({ [styles.fullscreen]: dialog && dialog.fullscreen })}
-      closable={dialog && dialog.closable}
+      cardClassName={classNames({ [styles.fullscreen]: dialog?.fullscreen })}
+      closable={!!dialog?.closable}
       isActive={!!dialog}
-      onClose={dialog && dialog.close}
-      title={dialog && dialog.title}
+      onClose={dialog?.close}
+      title={dialog?.title}
     >
       {dialog && (
         <BlockList

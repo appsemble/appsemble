@@ -53,7 +53,7 @@ export default class FileEntry extends Component<FileEntryProps> {
     let value: Blob = target.files[0];
     target.value = null;
 
-    if (value && value.type.match('image/*') && (maxWidth || maxHeight || quality)) {
+    if (value?.type.match('image/*') && (maxWidth || maxHeight || quality)) {
       value = await this.resize(value, maxWidth, maxHeight, quality / 100);
     }
 
@@ -108,7 +108,7 @@ export default class FileEntry extends Component<FileEntryProps> {
     const { field, name } = this.props;
     const { url } = this.state;
 
-    const title = field.label || field.name;
+    const title = field.label ?? field.name;
 
     return (
       <div className={classNames('file', styles.root)}>
