@@ -58,13 +58,13 @@ to be authenticated in the CLI. After having registered an Appsemble account, yo
 yourself using `yarn appsemble auth login`.
 
 ```sh
-yarn appsemble block register --all --build blocks
+yarn appsemble block register --all blocks
 ```
 
 To update a block without registering it as a new block, the following command can be used.
 
 ```sh
-yarn appsemble block publish --all --build blocks
+yarn appsemble block publish --all blocks
 ```
 
 ### App templates

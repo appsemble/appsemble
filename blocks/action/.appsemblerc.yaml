@@ -1,11 +1,1 @@
-types:
-  file: block.ts
-  parameters: Parameters
-
-actions:
-  onSubmit:
-    required: true
-  onSuccess: {}
-  onError: {}
-
 output: dist

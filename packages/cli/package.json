@@ -16,9 +16,6 @@
   "directories": {
     "bin": "bin"
   },
-  "scripts": {
-    "tsc": "../../config/bin/tscstub.js"
-  },
   "dependencies": {
     "@appsemble/node-utils": "0.11.4",
     "axios": "^0.19.2",
@@ -39,7 +36,6 @@
     "read-pkg-up": "^7.0.1",
     "typescript": "^3.7.5",
     "typescript-json-schema": "^0.42.0",
-    "webpack-merge": "^4.2.2",
     "yargs": "^15.1.0"
   },
   "peerDependencies": {

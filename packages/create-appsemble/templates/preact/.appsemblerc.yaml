@@ -1,5 +1,4 @@
 types:
-  file: block.ts
   parameters: Parameters
 
 actions:

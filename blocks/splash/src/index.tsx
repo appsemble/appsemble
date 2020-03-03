@@ -2,7 +2,6 @@
 import { attach } from '@appsemble/sdk';
 import { h } from 'mini-jsx';
 
-import { Actions, Parameters } from '../block';
 import animationLoop from './animation-loop.gif';
 import animationStart from './animation-start.gif';
 import check from './check.svg';
@@ -12,7 +11,7 @@ import styles from './index.css';
 // Length of the opening animation of the spinning wheel in milliseconds.
 const ANIMATION_LENGTH = 2190;
 
-attach<Parameters, Actions>(({ actions, data }) => {
+attach(({ actions, data }) => {
   let loading: HTMLImageElement;
   const root = (
     <div className={styles.root}>

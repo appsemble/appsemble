@@ -18,15 +18,17 @@ export interface Field {
   value?: string;
 }
 
-export interface Actions {
-  onSubmit: {};
+declare module '@appsemble/sdk' {
+  interface Actions {
+    onSubmit: {};
 
-  onSuccess: {};
+    onSuccess: {};
 
-  onError: {};
-}
+    onError: {};
+  }
 
-export interface Parameters {
-  fields: Field[];
-  title: string;
+  interface Parameters {
+    fields: Field[];
+    title: string;
+  }
 }

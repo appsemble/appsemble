@@ -1,13 +1,1 @@
-types:
-  file: block.ts
-  parameters: Parameters
-
-actions:
-  onLoad:
-    required: true
-  onSuccess:
-    required: true
-  onError:
-    required: true
-
 output: dist

@@ -3,7 +3,7 @@ import { BlockProps, FormattedMessage } from '@appsemble/preact';
 import classNames from 'classnames';
 import { Component, h, VNode } from 'preact';
 
-import { Actions, Field, FileField, Parameters } from '../../../block';
+import { Field, FileField } from '../../../block';
 import BooleanInput from '../BooleanInput';
 import EnumInput from '../EnumInput';
 import FileInput from '../FileInput';
@@ -11,8 +11,6 @@ import GeoCoordinatesInput from '../GeoCoordinatesInput';
 import NumberInput from '../NumberInput';
 import StringInput from '../StringInput';
 import styles from './FormBlock.css';
-
-type FormBlockProps = BlockProps<Parameters, Actions>;
 
 type Values = Record<string, any>;
 
@@ -73,7 +71,7 @@ const validators: { [name: string]: Validator } = {
 /**
  * Render Material UI based a form based on a JSON schema
  */
-export default class FormBlock extends Component<FormBlockProps, FormBlockState> {
+export default class FormBlock extends Component<BlockProps, FormBlockState> {
   state: FormBlockState = {
     errors: {},
     validity: {
