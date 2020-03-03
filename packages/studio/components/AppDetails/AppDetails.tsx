@@ -25,7 +25,7 @@ import StarRating from '../Rating';
 import styles from './AppDetails.css';
 import messages from './messages';
 
-export default function AppDetails(): JSX.Element {
+export default function AppDetails(): React.ReactElement {
   const { app } = useApp();
   const [organization, setOrganization] = useState<Organization>(undefined);
   const [ratings, setRatings] = useState<Rating[]>([]);

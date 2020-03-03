@@ -41,7 +41,7 @@ declare global {
 }
 
 export interface ShowDialogParams {
-  actionCreators: Record<string, () => Action>;
+  actionCreators: { [key: string]: () => Action };
   blocks: Block[];
   closable?: boolean;
   data: any;

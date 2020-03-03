@@ -36,7 +36,7 @@ export default class Select extends React.Component<SelectProps> {
     onChange(event, event.target.value);
   };
 
-  render(): JSX.Element {
+  render(): React.ReactElement {
     const {
       fullwidth = true,
       className,

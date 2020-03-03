@@ -12,7 +12,7 @@ interface MinimalHTMLElement {
   validity?: ValidityState;
 }
 
-interface ComponentProps {
+interface InputComponentProps {
   disabled: boolean;
   error: React.ReactNode;
   name: string;
@@ -24,13 +24,13 @@ interface SimpleInputProps<C extends React.ComponentType> {
   disabled?: boolean;
   name: string;
   onChange?: (event: React.ChangeEvent<MinimalHTMLElement>, value: any) => void;
-  preprocess?: (newValue: any, oldValues: Record<string, any>) => any;
+  preprocess?: (newValue: any, oldValues: { [field: string]: any }) => any;
   validityMessages?: ValidityMessages;
 }
 
 type FooProps<C extends React.ComponentType> = Omit<
   React.ComponentPropsWithoutRef<C>,
-  keyof ComponentProps
+  keyof InputComponentProps
 > &
   SimpleInputProps<C>;
 
