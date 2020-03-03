@@ -27,10 +27,6 @@ export default function Roles(): React.ReactElement {
 
   React.useEffect(() => {
     const getMembers = async (): Promise<void> => {
-      if (!app) {
-        return;
-      }
-
       const { data: appMembers } = await axios.get<Member[]>(`/api/apps/${app.id}/members`);
       if (app.definition.security.default.policy === 'invite') {
         setMembers(appMembers);
