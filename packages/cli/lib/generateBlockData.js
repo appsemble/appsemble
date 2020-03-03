@@ -1,95 +1,194 @@
 import { AppsembleError, logger } from '@appsemble/node-utils';
-import fs from 'fs-extra';
 import path from 'path';
-import { readConfigFile } from 'typescript';
-import { buildGenerator, getProgramFromFiles } from 'typescript-json-schema';
+import {
+  createProgram,
+  findConfigFile,
+  forEachChild,
+  formatDiagnostic,
+  formatDiagnosticsWithColorAndContext,
+  isInterfaceDeclaration,
+  isModuleDeclaration,
+  parseJsonConfigFileContent,
+  readConfigFile,
+  sys,
+} from 'typescript';
+import { buildGenerator } from 'typescript-json-schema';
+import { inspect } from 'util';
 
-/**
- * Recursively read an extended TypeScript configuration file.
- *
- * @param {string} tsConfigPath The path to the `tsconfig.json` file to read.
- * @returns {Object} The resolved compiler options.
- */
-function readTSConfig(tsConfigPath) {
-  logger.verbose(`Reading extended tsconfig file ${tsConfigPath}`);
-  const { config, error } = readConfigFile(tsConfigPath, p => fs.readFileSync(p, 'utf8'));
-  if (error) {
-    throw new AppsembleError(error.messageText);
+function processActions(iface) {
+  if (!iface || !iface.members.length) {
+    return undefined;
   }
-  if (!Object.prototype.hasOwnProperty.call(config, 'extends')) {
-    return config.compilerOptions;
-  }
-  const { dir, ext, name } = path.parse(config.extends);
-  return {
-    ...readTSConfig(path.resolve(path.dirname(tsConfigPath), dir, `${name}${ext || '.json'}`)),
-    ...config.compilerOptions,
-  };
+  return Object.fromEntries(iface.members.map(member => [member.name.escapedText, {}]));
 }
 
-export function getFromContext({ actions, dir, events, parameters, types = {} }, fullPath) {
-  const { events: eventsInterface, file = 'block.ts', parameters: parametersInterface } = types;
+function mergeInterfacesKeys(iface) {
+  if (!iface || !iface.members.length) {
+    return undefined;
+  }
+  return iface.members.map(member => member.name.escapedText);
+}
 
-  let generator;
+function processEvents(eventListenerInterface, eventEmitterInterface) {
+  const listen = mergeInterfacesKeys(eventListenerInterface);
+  const emit = mergeInterfacesKeys(eventEmitterInterface);
+  if (!listen && !emit) {
+    return undefined;
+  }
+  return { emit, listen };
+}
 
-  function getGenerator() {
-    if (!generator) {
-      logger.info('Extracting data from TypeScript project');
-      const tsConfigPath = path.join(fullPath, 'tsconfig.json');
-      const compilerOptions = readTSConfig(tsConfigPath);
-      logger.verbose(`Resolved TypeScript compiler options ${JSON.stringify(compilerOptions)}`);
-      const program = getProgramFromFiles([path.join(dir, file)], compilerOptions, dir);
-      generator = buildGenerator(
-        program,
-        {
-          noExtraProps: true,
-          required: true,
-        },
-        [path.join(dir, file)],
-      );
-      // This name is used for fontawesome icon names. They are excluded from the schema,
-      // as they are provided by the Appsemble framework, not by the block itself.
-      generator.setSchemaOverride('IconName', {
-        type: 'string',
-        format: 'fontawesome',
+function processParameters(program, sourceFile) {
+  if (!sourceFile) {
+    return undefined;
+  }
+  const generator = buildGenerator(
+    program,
+    {
+      noExtraProps: true,
+      required: true,
+    },
+    [sourceFile.fileName],
+  );
+  generator.setSchemaOverride('IconName', {
+    type: 'string',
+    format: 'fontawesome',
+  });
+  const schema = generator.getSchemaForSymbol('Parameters');
+  // This is the tsdoc that has been added to the SDK to aid the block developer.
+  delete schema.description;
+  return schema;
+}
+
+/**
+ * Get the TypeScript program for a given path.
+ *
+ * @param {string} blockPath The path for which to get the TypeScript program.
+ * @returns The TypeScript program.
+ */
+function getProgram(blockPath) {
+  const diagnosticHost = {
+    getNewLine: () => sys.newLine,
+    getCurrentDirectory: sys.getCurrentDirectory,
+    getCanonicalFileName: x => x,
+  };
+  const tsConfigPath = findConfigFile(blockPath, sys.fileExists);
+  const { config, error } = readConfigFile(tsConfigPath, sys.readFile);
+  if (error) {
+    throw new AppsembleError(formatDiagnostic(error, diagnosticHost));
+  }
+  if (!config.files || !config.include) {
+    config.files = sys
+      .readDirectory(blockPath, ['.ts', '.tsx'])
+      .map(f => path.relative(blockPath, f));
+  }
+  const { errors, fileNames, options } = parseJsonConfigFileContent(
+    config,
+    sys,
+    blockPath,
+    undefined,
+    tsConfigPath,
+  );
+  // filter: 'rootDir' is expected to contain all source files.
+  const diagnostics = errors.filter(({ code }) => code !== 6059);
+  if (diagnostics.length) {
+    throw new AppsembleError(formatDiagnosticsWithColorAndContext(diagnostics, diagnosticHost));
+  }
+
+  options.noEmit = true;
+  delete options.out;
+  delete options.outDir;
+  delete options.outFile;
+  delete options.declaration;
+  delete options.declarationDir;
+  delete options.declarationMap;
+  return createProgram(fileNames, options);
+}
+
+function getFromContext(blockConfig, fullPath) {
+  if ('actions' in blockConfig && 'events' in blockConfig && 'parameters' in blockConfig) {
+    return blockConfig;
+  }
+  logger.info(`Extracting data from TypeScript project ${fullPath}`);
+  const program = getProgram(fullPath);
+
+  let actionInterface;
+  let eventEmitterInterface;
+  let eventListenerInterface;
+  let parametersSourceFile;
+
+  program.getSourceFiles().forEach(sourceFile => {
+    const fileName = path.relative(process.cwd(), sourceFile.fileName);
+    // Filter TypeScript default libs
+    if (program.isSourceFileDefaultLibrary(sourceFile)) {
+      logger.silly(`Skipping metadata extraction from: ${fileName}`);
+      return;
+    }
+    logger.verbose(`Searching metadata in: ${fileName}`);
+    forEachChild(sourceFile, mod => {
+      // This node doesn’t override SDK types
+      if (!isModuleDeclaration(mod)) {
+        return;
+      }
+      // This module defines other types
+      if (mod.name.text !== '@appsemble/sdk') {
+        return;
+      }
+      forEachChild(mod.body, iface => {
+        // Appsemble only uses module interface augmentation.
+        if (!isInterfaceDeclaration(iface)) {
+          return;
+        }
+        const { line } = sourceFile.getLineAndCharacterOfPosition(iface.getStart(sourceFile));
+        // Line numbers are 0 indexed, whereas they are usually represented as 1 indexed.
+        const loc = `${fileName}:${line + 1}`;
+
+        switch (iface.name.text) {
+          case 'Actions':
+            logger.info(`Found augmented interface 'Actions' in '${loc}'`);
+            if (actionInterface) {
+              throw new AppsembleError(`Found duplicate interface 'Actions' in '${loc}'`);
+            }
+            actionInterface = iface;
+            break;
+          case 'EventEmitters':
+            logger.info(`Found augmented interface 'EventEmitters' in '${loc}'`);
+            if (eventEmitterInterface) {
+              throw new AppsembleError(`Found duplicate interface 'EventEmitters' in '${loc}'`);
+            }
+            eventEmitterInterface = iface;
+            break;
+          case 'EventListeners':
+            logger.info(`Found augmented interface 'EventListeners' in '${loc}'`);
+            if (eventListenerInterface) {
+              throw new AppsembleError(`Found duplicate interface 'EventListeners' in '${loc}'`);
+            }
+            eventListenerInterface = iface;
+            break;
+          case 'Parameters':
+            logger.info(`Found augmented interface 'Parameters' in '${loc}'`);
+            if (parametersSourceFile) {
+              throw new AppsembleError(`Found duplicate interface 'Parameters' in '${loc}'`);
+            }
+            parametersSourceFile = sourceFile;
+            break;
+          default:
+            logger.warn(`Detected unused augmented type ${iface.name.text} in ${loc}`);
+        }
       });
-    }
-    return generator;
-  }
-
-  function getParameters() {
-    if (parametersInterface) {
-      if (parameters) {
-        throw new AppsembleError(
-          'Exacly one of ‘parameters’ and ‘types.parameters’ should be specified. Got both.',
-        );
-      }
-
-      return getGenerator().getSchemaForSymbol(parametersInterface);
-    }
-    return parameters;
-  }
-
-  function getEvents() {
-    if (eventsInterface) {
-      if (events) {
-        throw new AppsembleError(
-          'Exacly one of ‘parameters’ and ‘types.parameters’ should be specified. Got both.',
-        );
-      }
-
-      const e = getGenerator().getSchemaForSymbol(eventsInterface);
-      return {
-        listen: e.properties.listen ? e.properties.listen.enum : undefined,
-        emit: e.properties.emit ? e.properties.emit.enum : undefined,
-      };
-    }
-    return events;
-  }
+    });
+  });
 
   return {
-    actions,
-    parameters: getParameters(),
-    events: getEvents(),
+    actions: 'actions' in blockConfig ? blockConfig.actions : processActions(actionInterface),
+    events:
+      'events' in blockConfig
+        ? blockConfig.events
+        : processEvents(eventListenerInterface, eventEmitterInterface),
+    parameters:
+      'parameters' in blockConfig
+        ? blockConfig.parameters
+        : processParameters(program, parametersSourceFile),
   };
 }
 
@@ -104,6 +203,12 @@ export function getFromContext({ actions, dir, events, parameters, types = {} },
 export default function generateBlockData(config, fullPath) {
   const { layout, resources, version } = config;
   const { actions, events, parameters } = getFromContext(config, fullPath);
+
+  logger.verbose(`Using version: ${inspect(version, { colors: true, depth: 20 })}`);
+  logger.verbose(`Using layout: ${inspect(layout, { colors: true, depth: 20 })}`);
+  logger.verbose(`Using actions: ${inspect(actions, { colors: true, depth: 20 })}`);
+  logger.verbose(`Using events: ${inspect(events, { colors: true, depth: 20 })}`);
+  logger.verbose(`Using parameters: ${inspect(parameters, { colors: true, depth: 20 })}`);
 
   return {
     actions,

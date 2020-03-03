@@ -3,9 +3,7 @@ import { bootstrap } from '@appsemble/preact';
 import { h } from 'preact';
 import { useEffect, useState } from 'preact/hooks';
 
-import { Actions, Parameters } from '../block';
-
-bootstrap<Parameters, Actions>(
+bootstrap(
   ({
     actions,
     block: {

@@ -1,74 +1,36 @@
 import { Button, Checkbox, Form, FormComponent, Icon, Input } from '@appsemble/react-components';
-import { MessagesContext } from '@appsemble/react-components/hooks/useMessages';
-import { App } from '@appsemble/types';
+import useMessages from '@appsemble/react-components/hooks/useMessages';
 import { normalize } from '@appsemble/utils';
 import axios from 'axios';
-import React, { FormEvent, ReactText } from 'react';
-import { FormattedMessage, WrappedComponentProps } from 'react-intl';
-import { RouteComponentProps } from 'react-router-dom';
+import React, { FormEvent, ReactText, useState } from 'react';
+import { FormattedMessage, useIntl } from 'react-intl';
 
+import { useApp } from '../AppContext/AppContext';
 import styles from './AppSettings.css';
 import messages from './messages';
 
-interface AppSettingsProps extends RouteComponentProps<{ id: string }> {
-  app: App;
-  updateApp: (app: App) => void;
-}
+export default function AppSettings(): React.ReactElement {
+  const { app } = useApp();
+  const intl = useIntl();
+  const [icon, setIcon] = useState();
+  const [iconUrl, setIconUrl] = useState(app.iconUrl);
+  const [inputs, setInputs] = useState(app);
+  const push = useMessages();
 
-interface AppSettingsState {
-  domain?: string;
-  path: string;
-  icon: File;
-  iconUrl: string;
-  private: boolean;
-  originalValues: { domain?: string; path: string; private: boolean };
-  dirty: boolean;
-}
-
-export default class AppSettings extends React.Component<
-  AppSettingsProps & WrappedComponentProps,
-  AppSettingsState
-> {
-  state: AppSettingsState = {
-    domain: '',
-    private: null,
-    path: '',
-    icon: undefined,
-    iconUrl: `/api/apps/${this.props.match.params.id}/icon`,
-    originalValues: undefined,
-    dirty: false,
-  };
-
-  async componentDidMount(): Promise<void> {
-    const { app } = this.props;
-
-    this.setState({
-      domain: app.domain,
-      path: app.path,
-      private: app.private,
-      originalValues: app,
-    });
-  }
-
-  onSubmit = async (event: FormEvent): Promise<void> => {
+  const onSubmit = async (event: FormEvent): Promise<void> => {
     event.preventDefault();
-
-    const { app, intl, updateApp } = this.props;
-    const { domain, icon, originalValues, path, private: isPrivate } = this.state;
-    const push = this.context;
-
     const data = new FormData();
 
-    if (domain !== originalValues.domain) {
-      data.set('domain', domain);
+    if (app.domain !== inputs.domain) {
+      data.set('domain', inputs.domain);
     }
 
-    if (path !== originalValues.path) {
-      data.set('path', path);
+    if (app.path !== inputs.path) {
+      data.set('path', inputs.path);
     }
 
-    if (isPrivate !== originalValues.private) {
-      data.set('private', String(isPrivate));
+    if (app.private !== inputs.private) {
+      data.set('private', String(inputs.private));
     }
 
     if (icon) {
@@ -76,124 +38,109 @@ export default class AppSettings extends React.Component<
     }
 
     try {
-      const { data: response } = await axios.patch(`/api/apps/${app.id}`, data);
-
-      this.setState({
-        path: response.path,
-        private: response.private,
-        dirty: false,
-        originalValues: response,
-      });
-      updateApp(response);
+      await axios.patch(`/api/apps/${app.id}`, data);
       push({ color: 'success', body: intl.formatMessage(messages.updateSuccess) });
     } catch (ex) {
       push({ color: 'danger', body: intl.formatMessage(messages.updateError) });
     }
   };
 
-  onChange = (event: React.ChangeEvent<HTMLInputElement>, value: ReactText | boolean): void => {
-    // See: https://github.com/Microsoft/TypeScript/issues/13948
-    this.setState({ [event.target.name]: value, dirty: true } as any);
-  };
+  const onChange = React.useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>, value: ReactText | boolean) => {
+      event.persist();
+      setInputs(val => ({ ...val, [event.target.name]: value }));
+    },
+    [],
+  );
 
-  onIconChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
-    const { match } = this.props;
-    const { id } = match.params;
-    const file = e.target.files[0];
+  const onIconChange = React.useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>): void => {
+      const file = e.target.files[0];
+      setIcon(file);
+      setIconUrl(file ? URL.createObjectURL(file) : `/api/apps/${app.id}/icon`);
+    },
+    [app.id],
+  );
 
-    this.setState({
-      dirty: true,
-      icon: file,
-      iconUrl: file ? URL.createObjectURL(file) : `/api/apps/${id}/icon`,
-    });
-  };
-
-  static contextType = MessagesContext;
-
-  render(): JSX.Element {
-    const { dirty, domain, icon, iconUrl, path, private: isPrivate } = this.state;
-    const { app, intl } = this.props;
-
-    return (
-      <Form onSubmit={this.onSubmit}>
-        <FormComponent id="icon-upload" label={<FormattedMessage {...messages.icon} />}>
-          <figure className={`image is-128x128 ${styles.iconContainer}`}>
-            <img alt={intl.formatMessage(messages.icon)} className={styles.icon} src={iconUrl} />
-          </figure>
-          <div className="file has-name">
-            <label className="file-label" htmlFor="icon-upload">
-              <input
-                accept="image/jpeg, image/png, image/tiff, image/webp"
-                className="file-input"
-                id="icon-upload"
-                name="icon"
-                onChange={this.onIconChange}
-                type="file"
-              />
-              <span className="file-cta">
-                <Icon icon="upload" />
-                <span className="file-label">
-                  <FormattedMessage {...messages.icon} />
-                </span>
+  return (
+    <Form onSubmit={onSubmit}>
+      <FormComponent id="icon-upload" label={<FormattedMessage {...messages.icon} />}>
+        <figure className={`image is-128x128 ${styles.iconContainer}`}>
+          <img alt={intl.formatMessage(messages.icon)} className={styles.icon} src={iconUrl} />
+        </figure>
+        <div className="file has-name">
+          <label className="file-label" htmlFor="icon-upload">
+            <input
+              accept="image/jpeg, image/png, image/tiff, image/webp"
+              className="file-input"
+              id="icon-upload"
+              name="icon"
+              onChange={onIconChange}
+              type="file"
+            />
+            <span className="file-cta">
+              <Icon icon="upload" />
+              <span className="file-label">
+                <FormattedMessage {...messages.icon} />
               </span>
-              <span className="file-name">
-                {(icon && icon.name) || <FormattedMessage {...messages.noFile} />}
-              </span>
-            </label>
-          </div>
-          <p className="help">
-            <FormattedMessage {...messages.iconDescription} />
-          </p>
-        </FormComponent>
-        <div className={styles.private}>
-          <Checkbox
-            className="is-marginless"
-            help={<FormattedMessage {...messages.private} />}
-            label={<FormattedMessage {...messages.privateLabel} />}
-            name="private"
-            onChange={this.onChange}
-            value={!!isPrivate}
-          />
-          <p className="help">
-            <FormattedMessage {...messages.privateDescription} />
-          </p>
+            </span>
+            <span className="file-name">
+              {(icon && icon.name) || <FormattedMessage {...messages.noFile} />}
+            </span>
+          </label>
         </div>
-        <Input
-          help={
-            <FormattedMessage
-              {...messages.pathDescription}
-              values={{ basePath: `${window.location.origin}/@${app.OrganizationId}/` }}
-            />
-          }
-          label={<FormattedMessage {...messages.path} />}
-          name="path"
-          onChange={this.onChange}
-          placeholder={normalize(app.definition.name)}
-          required
-          value={path}
+        <p className="help">
+          <FormattedMessage {...messages.iconDescription} />
+        </p>
+      </FormComponent>
+      <div className={styles.private}>
+        <Checkbox
+          className="is-marginless"
+          help={<FormattedMessage {...messages.private} />}
+          label={<FormattedMessage {...messages.privateLabel} />}
+          name="private"
+          onChange={onChange}
+          value={inputs.private}
         />
-        <Input
-          help={
-            <FormattedMessage
-              {...messages.domainDescription}
-              values={{
-                documentation: (
-                  <a href="https://appsemble.dev/dns" rel="noopener noreferrer" target="_blank">
-                    <FormattedMessage {...messages.documentation} />
-                  </a>
-                ),
-              }}
-            />
-          }
-          label={<FormattedMessage {...messages.domain} />}
-          name="domain"
-          onChange={this.onChange}
-          value={domain}
-        />
-        <Button disabled={!dirty} type="submit">
-          <FormattedMessage {...messages.saveChanges} />
-        </Button>
-      </Form>
-    );
-  }
+        <p className="help">
+          <FormattedMessage {...messages.privateDescription} />
+        </p>
+      </div>
+      <Input
+        help={
+          <FormattedMessage
+            {...messages.pathDescription}
+            values={{ basePath: `${window.location.origin}/@${app.OrganizationId}/` }}
+          />
+        }
+        label={<FormattedMessage {...messages.path} />}
+        name="path"
+        onChange={onChange}
+        placeholder={normalize(app.definition.name)}
+        required
+        value={inputs.path}
+      />
+      <Input
+        help={
+          <FormattedMessage
+            {...messages.domainDescription}
+            values={{
+              documentation: (
+                <a href="https://appsemble.dev/dns" rel="noopener noreferrer" target="_blank">
+                  <FormattedMessage {...messages.documentation} />
+                </a>
+              ),
+            }}
+          />
+        }
+        label={<FormattedMessage {...messages.domain} />}
+        name="domain"
+        onChange={onChange}
+        value={inputs.domain}
+      />
+      <Button type="submit">
+        <FormattedMessage {...messages.saveChanges} />
+      </Button>
+    </Form>
+  );
 }

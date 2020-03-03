@@ -25,16 +25,7 @@ export interface StringField extends AbstractField {
 
 export type Field = FileField | GeoCoordinatesField | StringField;
 
-export interface Parameters {
-  fileBase?: string;
-  fields: Field[];
-}
-
-export interface Events {
-  listen: 'data';
-}
-
-export interface RendererProps<F extends Field> extends Partial<BlockProps<Parameters>> {
+export interface RendererProps<F extends Field> extends Partial<BlockProps> {
   /**
    * Structure used to define the field.
    */
@@ -46,4 +37,15 @@ export interface RendererProps<F extends Field> extends Partial<BlockProps<Param
   value: any;
 
   data: any;
+}
+
+declare module '@appsemble/sdk' {
+  interface Parameters {
+    fileBase?: string;
+    fields: Field[];
+  }
+
+  interface EventListeners {
+    data: {};
+  }
 }

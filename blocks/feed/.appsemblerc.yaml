@@ -1,11 +1,1 @@
-types:
-  parameters: BlockParameters
-  events: Events
-
-actions:
-  onButtonClick: {}
-  onAvatarClick: {}
-  onSubmitReply: {}
-  onLoadReply: {}
-
 output: dist

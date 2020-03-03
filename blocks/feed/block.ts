@@ -19,27 +19,29 @@ export interface Remappers {
   longitude: MapperFunction;
 }
 
-export interface BlockParameters {
-  buttonLabel?: string;
-  reply?: Reply;
-  pictureBase?: string;
-  title?: string;
-  subtitle?: string;
-  heading?: string;
-  picture?: string;
-  pictures?: string[];
-  description?: string;
-  latitude?: string;
-  longitude?: string;
-}
+declare module '@appsemble/sdk' {
+  interface Parameters {
+    buttonLabel?: string;
+    reply?: Reply;
+    pictureBase?: string;
+    title?: string;
+    subtitle?: string;
+    heading?: string;
+    picture?: string;
+    pictures?: string[];
+    description?: string;
+    latitude?: string;
+    longitude?: string;
+  }
 
-export interface BlockActions {
-  onAvatarClick: any;
-  onButtonClick: any;
-  onSubmitReply: any;
-  onLoadReply: any;
-}
+  interface Actions {
+    onAvatarClick: any;
+    onButtonClick: any;
+    onSubmitReply: any;
+    onLoadReply: any;
+  }
 
-export interface Events {
-  listen: 'data';
+  interface EventListeners {
+    data: {};
+  }
 }

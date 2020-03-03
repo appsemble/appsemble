@@ -98,15 +98,17 @@ export interface InputProps<T, F extends Field> {
   value: T;
 }
 
-export interface Actions {
-  onSubmitSuccess: {};
-  onSubmit: {};
-}
+declare module '@appsemble/sdk' {
+  interface Actions {
+    onSubmitSuccess: {};
+    onSubmit: {};
+  }
 
-export interface Parameters {
-  fields: Field[];
-}
+  interface EventListeners {
+    data: {};
+  }
 
-export interface Events {
-  listen: 'data';
+  interface Parameters {
+    fields: Field[];
+  }
 }

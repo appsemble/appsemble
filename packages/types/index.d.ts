@@ -100,6 +100,11 @@ export interface ResourceCall {
    * The associated hooks with the resource action.
    */
   hooks: ResourceHooks;
+
+  /**
+   * Query parameters to pass along with the request.
+   */
+  query: { [key: string]: string };
 }
 
 export interface Resource {
@@ -211,7 +216,7 @@ interface LinkActionDefinition extends BaseActionDefinition<'link'> {
   /**
    * Parameters to use for formatting the link.
    */
-  parameters?: Record<string, any>;
+  parameters?: { [key: string]: any };
 }
 
 interface LogActionDefinition extends BaseActionDefinition<'log'> {
@@ -248,7 +253,7 @@ interface RequestLikeActionDefinition<T extends RequestLikeActionTypes = Request
   /**
    * Query parameters to pass along with the request.
    */
-  query: Record<string, string>;
+  query: { [key: string]: string };
 
   /**
    * The URL to which to make the request.
@@ -362,7 +367,7 @@ export interface BlockManifest {
   /**
    * The actions that are supported by a block.
    */
-  actions?: Record<string, ActionType>;
+  actions?: { [key: string]: ActionType };
 
   /**
    * The events that are supported by a block.
@@ -404,7 +409,7 @@ export interface BasePage {
   /**
    * A mapping of actions that can be fired by the page to action handlers.
    */
-  actions?: Record<string, ActionDefinition>;
+  actions?: { [key: string]: ActionDefinition };
 
   /**
    * The global theme for the page.
@@ -493,7 +498,7 @@ export interface AppDefinition {
   /**
    * Resource definitions that may be used by the app.
    */
-  resources?: Record<string, Resource>;
+  resources?: { [key: string]: Resource };
 
   /**
    * The global theme for the app.
@@ -548,6 +553,11 @@ export interface App {
    * An app rating.
    */
   rating?: Rating;
+
+  /**
+   * An app icon url
+   */
+  iconUrl?: string;
 }
 
 /**

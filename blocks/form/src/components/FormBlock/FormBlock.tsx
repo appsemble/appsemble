@@ -4,7 +4,7 @@ import classNames from 'classnames';
 import { h, VNode } from 'preact';
 import { useCallback, useEffect, useState } from 'preact/hooks';
 
-import { Actions, Events, Field, FileField, Parameters } from '../../../block';
+import { Field, FileField } from '../../../block';
 import BooleanInput from '../BooleanInput';
 import EnumInput from '../EnumInput';
 import FileInput from '../FileInput';
@@ -13,9 +13,9 @@ import NumberInput from '../NumberInput';
 import StringInput from '../StringInput';
 import styles from './FormBlock.css';
 
-type FormBlockProps = BlockProps<Parameters, Actions, Events>;
-
-type Values = Record<string, any>;
+interface Values {
+  [key: string]: any;
+}
 
 type Validator = (field: Field, event: Event, value: any) => boolean;
 
@@ -60,7 +60,7 @@ const validators: { [name: string]: Validator } = {
   boolean: () => true,
 };
 
-export default function FormBlock({ actions, block, data, events }: FormBlockProps): VNode {
+export default function FormBlock({ actions, block, data, events }: BlockProps): VNode {
   const [errors, setErrors] = useState<{ [name: string]: string }>({});
   const [disabled, setDisabled] = useState(!!block.events?.listen?.data);
   const [validity, setValidity] = useState({

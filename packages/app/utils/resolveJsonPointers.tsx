@@ -1,6 +1,9 @@
 import jsonpointer from 'jsonpointer';
 
-function recurse(object: Record<string, any>, root: Record<string, any>): Record<string, any> {
+function recurse(
+  object: { [key: string]: any },
+  root: { [key: string]: any },
+): { [key: string]: any } {
   if (!(object instanceof Object)) {
     return object;
   }
@@ -8,7 +11,7 @@ function recurse(object: Record<string, any>, root: Record<string, any>): Record
     return object.map(value => recurse(value, root));
   }
   if (!Object.hasOwnProperty.call(object, '$ref')) {
-    return Object.entries(object).reduce((acc: Record<string, any>, [key, value]) => {
+    return Object.entries(object).reduce((acc: { [key: string]: any }, [key, value]) => {
       acc[key] = recurse(value, root);
       return acc;
     }, {});
@@ -24,6 +27,8 @@ function recurse(object: Record<string, any>, root: Record<string, any>): Record
   return result;
 }
 
-export default function resolveJsonPointers(object: Record<string, any>): Record<string, any> {
+export default function resolveJsonPointers(object: {
+  [key: string]: any;
+}): { [key: string]: any } {
   return recurse(object, object);
 }

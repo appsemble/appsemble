@@ -4,7 +4,7 @@ import { MessageDescriptor, WrappedComponentProps } from 'react-intl';
 
 interface HelmIntlProps extends WrappedComponentProps {
   title: MessageDescriptor;
-  titleValues?: Record<string, string>;
+  titleValues?: { [key: string]: string };
 }
 
 export default function HelmetIntl({

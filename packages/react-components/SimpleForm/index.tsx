@@ -11,15 +11,23 @@ interface SimpleFormProps<T> extends Omit<React.ComponentProps<typeof Form>, 'on
   resetOnSuccess?: boolean;
 }
 
+interface FormErrors {
+  [field: string]: React.ReactNode;
+}
+
+interface FormValues {
+  [field: string]: any;
+}
+
 interface SimpleFormContext {
-  formErrors: Record<string, React.ReactNode>;
+  formErrors: FormErrors;
   pristine: boolean;
   setFormError: (name: string, errorMessage: React.ReactNode) => void;
   setValue: (name: string, value: any, errorMessage?: React.ReactNode) => void;
-  setValues: (values: Record<string, any>) => void;
+  setValues: (values: FormValues) => void;
   submitError?: Error;
   submitting: boolean;
-  values: Record<string, any>;
+  values: FormValues;
 }
 
 const Context = React.createContext<SimpleFormContext>(null);
@@ -34,7 +42,7 @@ export default function SimpleForm<T extends {}>({
 }: SimpleFormProps<T>): React.ReactElement {
   const [values, setValues] = React.useState(defaultValues);
   const [submitError, setSubmitError] = React.useState<Error>(null);
-  const [formErrors, setFormErrors] = React.useState<Record<string, React.ReactNode>>({});
+  const [formErrors, setFormErrors] = React.useState<FormErrors>({});
   const [pristine, setPristine] = React.useState(true);
   const [submitting, setSubmitting] = React.useState(false);
 

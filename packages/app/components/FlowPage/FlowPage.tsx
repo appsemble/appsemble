@@ -1,4 +1,4 @@
-import { Actions } from '@appsemble/sdk';
+import { BootstrapParams } from '@appsemble/sdk';
 import { AppDefinition, FlowPage as FlowPageType } from '@appsemble/types';
 import React from 'react';
 import { useHistory } from 'react-router-dom';
@@ -26,7 +26,7 @@ export default function FlowPage({
   const [data, setData] = React.useState(inputData);
   const pushNotifications = useServiceWorkerRegistration();
 
-  let actions: Actions<any>;
+  let actions: BootstrapParams['actions'];
 
   const next = React.useCallback(
     async (d: any): Promise<any> => {
@@ -109,10 +109,12 @@ export default function FlowPage({
     <>
       <DotProgressBar active={currentPage} amount={page.subPages.length} />
       <BlockList
+        key={currentPage}
         {...blockListProps}
         blocks={page.subPages[currentPage].blocks}
         data={data}
         ee={ee}
+        flowActions={flowActions}
         showDialog={showDialog}
         transitions
       />

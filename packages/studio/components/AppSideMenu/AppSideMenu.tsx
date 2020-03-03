@@ -1,32 +1,31 @@
 import { Icon } from '@appsemble/react-components';
-import { App } from '@appsemble/types';
 import { permissions } from '@appsemble/utils';
 import classNames from 'classnames';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
-import { RouteComponentProps } from 'react-router-dom';
+import { useRouteMatch } from 'react-router-dom';
 
 import useOrganizations from '../../hooks/useOrganizations';
 import useUser from '../../hooks/useUser';
 import checkRole from '../../utils/checkRole';
+import { useApp } from '../AppContext/AppContext';
 import NavLink from '../NavLink';
 import SideMenu from '../SideMenu';
 import styles from './AppSideMenu.css';
 import messages from './messages';
 
-interface AppSideMenuProps extends RouteComponentProps<{ id: string }> {
-  app: App;
-}
-
 export interface AppSideMenuState {
   isCollapsed: boolean;
 }
 
-export default function AppSideMenu({ app, match }: AppSideMenuProps): React.ReactElement {
+export default function AppSideMenu(): React.ReactElement {
+  const { app } = useApp();
+
   const { userInfo } = useUser();
   const [isCollapsed, setCollapsed] = React.useState(false);
   const organizations = useOrganizations();
   const organization = organizations && organizations.find(org => org.id === app.OrganizationId);
+  const match = useRouteMatch();
 
   return (
     <SideMenu isCollapsed={isCollapsed} toggleCollapse={() => setCollapsed(!isCollapsed)}>

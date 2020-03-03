@@ -1,7 +1,11 @@
-export interface Actions {
-  onLoad: {};
-}
+export {};
 
-export interface Parameters {
-  fields: string[];
+declare module '@appsemble/sdk' {
+  interface Actions {
+    onLoad: {};
+  }
+
+  interface Parameters {
+    fields: string[];
+  }
 }

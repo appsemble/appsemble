@@ -8,7 +8,6 @@ import {
   SimpleFormError,
   SimpleInput,
 } from '@appsemble/react-components';
-import { App } from '@appsemble/types';
 import axios, { AxiosError } from 'axios';
 import classNames from 'classnames';
 import React from 'react';
@@ -26,20 +25,7 @@ interface Template {
   resources: boolean;
 }
 
-interface CreateAppCardProps {
-  createTemplateApp: (
-    template: {
-      templateId: number;
-      name: string;
-      description: string;
-      isPrivate: boolean;
-      resources: boolean;
-    },
-    organization: { id: string },
-  ) => Promise<App>;
-}
-
-export default function CreateAppCard({ createTemplateApp }: CreateAppCardProps): JSX.Element {
+export default function CreateAppCard(): React.ReactElement {
   const [modalOpen, setModalOpen] = React.useState(false);
   const [templates, setTemplates] = React.useState<Template[]>(null);
   const [selectedTemplate, setSelectedTemplate] = React.useState(0);
@@ -59,20 +45,18 @@ export default function CreateAppCard({ createTemplateApp }: CreateAppCardProps)
   const onCreate = React.useCallback(
     async ({ description, includeResources, isPrivate, name, selectedOrganization }) => {
       const { id, resources } = templates[selectedTemplate];
-      const app = await createTemplateApp(
-        {
-          templateId: id,
-          name,
-          isPrivate,
-          description,
-          resources: resources && includeResources,
-        },
-        organizations[selectedOrganization],
-      );
 
-      history.push(`${match.url}/${app.id}/edit`);
+      const { data } = await axios.post('/api/templates', {
+        templateId: id,
+        name,
+        description,
+        organizationId: organizations[selectedOrganization].id,
+        resources: resources && includeResources,
+        private: isPrivate,
+      });
+      history.push(`${match.url}/${data.id}/edit`);
     },
-    [createTemplateApp, history, match.url, organizations, selectedTemplate, templates],
+    [history, match.url, organizations, selectedTemplate, templates],
   );
 
   React.useEffect(() => {

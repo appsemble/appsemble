@@ -67,7 +67,7 @@ export default class Location extends React.Component<LocationProps & BlockProps
       .locate({ watch: true, timeout: 10e3, maximumAge: 60e3 });
   }
 
-  render(): JSX.Element {
+  render(): React.ReactElement {
     const { className } = this.props;
     return <div ref={this.ref} className={className} />;
   }

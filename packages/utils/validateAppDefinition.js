@@ -41,7 +41,7 @@ async function checkBlocks(blocks, blockVersions) {
     const version = versions.get(block.version);
     if (version.parameters) {
       const validate = ajv.compile(version.parameters);
-      const valid = validate(block.parameters);
+      const valid = validate(block.parameters || {});
       if (!valid) {
         return validate.errors.reduce(
           (accumulator, error) => ({

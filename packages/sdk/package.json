@@ -1,10 +1,22 @@
 {
   "name": "@appsemble/sdk",
   "version": "0.11.4",
+  "homepage": "https://appsemble.dev",
+  "bugs": {
+    "url": "https://gitlab.com/appsemble/appsemble/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://gitlab.com/appsemble/appsemble.git",
+    "directory": "packages/sdk"
+  },
+  "license": "LGPL-3.0-or-later",
+  "author": "Appsemble <info@appsemble.com> (https://appsemble.com)",
   "files": [
     "dist"
   ],
-  "main": "src",
+  "browser": "dist",
+  "types": "dist",
   "scripts": {
     "prepack": "tsc -p tsconfig.build.json"
   },

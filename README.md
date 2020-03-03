@@ -25,7 +25,7 @@ In order to run the Appsemble project in development mode, the following must be
 Clone and setup the project.
 
 ```sh
-git clone git@gitlab.com:appsemble/appsemble.git
+git clone https://gitlab.com/appsemble/appsemble.git
 cd appsemble
 yarn
 ```
@@ -35,7 +35,6 @@ spin up a preconfigured database with ease.
 
 ```sh
 docker-compose up -d
-yarn appsemble migrate
 ```
 
 The project can be served using the following command.
@@ -50,19 +49,6 @@ To see additional options, run the following command.
 yarn start --help
 ```
 
-The front end project can be built using the following command.
-
-```sh
-yarn build
-```
-
-The result will be output in the _dist/_ directory. These will be served when the server is run in
-production mode.
-
-```sh
-NODE_ENV=production yarn start
-```
-
 ### Blocks
 
 #### Publishing Blocks
@@ -72,13 +58,13 @@ to be authenticated in the CLI. After having registered an Appsemble account, yo
 yourself using `yarn appsemble auth login`.
 
 ```sh
-yarn appsemble block register --all --build blocks
+yarn appsemble block register blocks/*
 ```
 
 To update a block without registering it as a new block, the following command can be used.
 
 ```sh
-yarn appsemble block publish --all --build blocks
+yarn appsemble block publish blocks/*
 ```
 
 ### App templates
@@ -89,7 +75,7 @@ in order to publish blocks, you need to be authenticated in the CLI. After havin
 Appsemble account, you can authenticate yourself using `yarn appsemble auth login`.
 
 ```sh
-yarn appsemble app create --organization @appsemble --all --template apps
+yarn appsemble app create --organization @appsemble --template apps/*
 ```
 
 Note that `@appsemble` in the above scripts refer to the ID an organization that the authenticated

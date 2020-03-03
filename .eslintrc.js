@@ -11,6 +11,7 @@ module.exports = {
     'airbnb/hooks',
     'plugin:eslint-comments/recommended',
     'plugin:compat/recommended',
+    'plugin:import/typescript',
     'plugin:prettier/recommended',
     'prettier/react',
   ],
@@ -20,12 +21,9 @@ module.exports = {
   plugins: ['filenames', 'simple-import-sort', 'sort-destructure-keys'],
   settings: {
     'import/resolver': {
-      node: {
-        extensions: ['.js', '.ts', '.tsx'],
+      typescript: {
+        directory: ['./blocks/*/tsconfig.json', './packages/*/tsconfig.json', './tsconfig.json'],
       },
-    },
-    'import/parsers': {
-      '@typescript-eslint/parser': ['.ts', '.tsx'],
     },
   },
   rules: {
@@ -43,6 +41,7 @@ module.exports = {
     'arrow-body-style': ['error', 'as-needed'],
     'prefer-arrow-callback': 'error',
     'no-inline-comments': 'error',
+    'no-implicit-coercion': 'error',
     'filenames/match-regex': ['error', /^\.?[a-z\d]+(\.config|\.test)?$/i, true],
     'filenames/match-exported': 'error',
     quotes: ['error', 'single', { avoidEscape: true, allowTemplateLiterals: false }],
@@ -97,7 +96,20 @@ module.exports = {
         'react/prop-types': 'off',
         '@typescript-eslint/adjacent-overload-signatures': 'error',
         '@typescript-eslint/array-type': 'error',
-        '@typescript-eslint/ban-types': 'error',
+        '@typescript-eslint/ban-types': [
+          'error',
+          {
+            types: {
+              'JSX.Element':
+                'Use React.ReactElement for React contexts and VNode for Preact contexts',
+              Record: 'Use a mapped type instead',
+              ComponentProps: {
+                message: 'Use ComponentPropsWithoutRef instead',
+                fixWith: 'ComponentPropsWithoutRef',
+              },
+            },
+          },
+        ],
         '@typescript-eslint/class-name-casing': 'error',
         '@typescript-eslint/consistent-type-definitions': ['error', 'interface'],
         '@typescript-eslint/explicit-function-return-type': ['error', { allowExpressions: true }],

@@ -1,14 +1,20 @@
 {
   "name": "@appsemble/cli",
   "version": "0.11.4",
-  "license": "MIT",
-  "author": "Appsemble <support@appsemble.com> (https://appsemble.com)",
+  "homepage": "https://appsemble.dev",
+  "bugs": {
+    "url": "https://gitlab.com/appsemble/appsemble/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://gitlab.com/appsemble/appsemble.git",
+    "directory": "packages/cli"
+  },
+  "license": "LGPL-3.0-or-later",
+  "author": "Appsemble <info@appsemble.com> (https://appsemble.com)",
   "main": "main.js",
   "directories": {
     "bin": "bin"
-  },
-  "scripts": {
-    "tsc": "../../config/bin/tscstub.js"
   },
   "dependencies": {
     "@appsemble/node-utils": "0.11.4",
@@ -30,7 +36,6 @@
     "read-pkg-up": "^7.0.1",
     "typescript": "^3.7.5",
     "typescript-json-schema": "^0.42.0",
-    "webpack-merge": "^4.2.2",
     "yargs": "^15.1.0"
   },
   "peerDependencies": {

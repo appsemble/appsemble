@@ -9,32 +9,30 @@ import {
   SimpleInput,
   useMessages,
 } from '@appsemble/react-components';
-import { App, Organization, Rating } from '@appsemble/types';
+import { Organization, Rating } from '@appsemble/types';
 import { permissions } from '@appsemble/utils';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { RouteComponentProps, useHistory } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 
 import useOrganizations from '../../hooks/useOrganizations';
 import useUser from '../../hooks/useUser';
 import checkRole from '../../utils/checkRole';
+import { useApp } from '../AppContext/AppContext';
 import RateApp from '../RateApp';
 import StarRating from '../Rating';
 import styles from './AppDetails.css';
 import messages from './messages';
 
-interface AppDetailsProps extends RouteComponentProps<{ id: string }> {
-  app: App;
-  updateApp: (app: App) => void;
-}
-
-export default function AppDetails({ app, updateApp }: AppDetailsProps): JSX.Element {
+export default function AppDetails(): React.ReactElement {
+  const { app } = useApp();
   const [organization, setOrganization] = useState<Organization>(undefined);
   const [ratings, setRatings] = useState<Rating[]>([]);
   const [showCloneDialog, setShowCloneDialog] = useState(false);
   const history = useHistory();
   const intl = useIntl();
+
   const organizations = useOrganizations();
   const push = useMessages();
   const { userInfo } = useUser();
@@ -44,7 +42,6 @@ export default function AppDetails({ app, updateApp }: AppDetailsProps): JSX.Ele
       const { data } = await axios.get<Organization>(`/api/organizations/${app.OrganizationId}`);
       setOrganization(data);
     };
-
     fetchOrganization();
   }, [app.OrganizationId]);
 
@@ -81,10 +78,9 @@ export default function AppDetails({ app, updateApp }: AppDetailsProps): JSX.Ele
         private: isPrivate,
       });
 
-      updateApp(clone);
       history.push(`/apps/${clone.id}/edit`);
     },
-    [app, history, organizations, updateApp],
+    [app.id, history, organizations],
   );
 
   if (!organization) {
