@@ -50,7 +50,7 @@ export default class Checkbox extends React.Component<CheckboxProps> {
     onChange(event, event.target.checked);
   };
 
-  render(): JSX.Element {
+  render(): React.ReactElement {
     const {
       className,
       error,

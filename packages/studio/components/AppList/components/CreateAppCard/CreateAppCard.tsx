@@ -25,7 +25,7 @@ interface Template {
   resources: boolean;
 }
 
-export default function CreateAppCard(): JSX.Element {
+export default function CreateAppCard(): React.ReactElement {
   const [modalOpen, setModalOpen] = React.useState(false);
   const [templates, setTemplates] = React.useState<Template[]>(null);
   const [selectedTemplate, setSelectedTemplate] = React.useState(0);

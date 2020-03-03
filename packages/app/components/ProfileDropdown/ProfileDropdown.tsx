@@ -8,7 +8,7 @@ import { useUser } from '../UserProvider';
 import messages from './messages';
 import styles from './ProfileDropdown.css';
 
-export default function ProfileDropdown(): JSX.Element {
+export default function ProfileDropdown(): React.ReactElement {
   const intl = useIntl();
   const { definition } = useAppDefinition();
   const { isLoggedIn, logout, userInfo } = useUser();

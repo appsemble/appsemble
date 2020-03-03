@@ -68,7 +68,7 @@ export default class Modal<T extends React.ElementType = 'div'> extends React.Co
     }
   };
 
-  render(): JSX.Element {
+  render(): React.ReactElement {
     const {
       cardClassName,
       children,

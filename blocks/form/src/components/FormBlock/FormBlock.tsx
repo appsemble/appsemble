@@ -12,7 +12,9 @@ import NumberInput from '../NumberInput';
 import StringInput from '../StringInput';
 import styles from './FormBlock.css';
 
-type Values = Record<string, any>;
+interface Values {
+  [key: string]: any;
+}
 
 type Validator = (field: Field, event: Event, value: any) => boolean;
 
