@@ -32,7 +32,7 @@ export default function CheckBoxField({
           />
           <label className={styles.label} htmlFor={`${name}${value}`}>
             {icon && <Icon icon={icon} />}
-            <span>{label || value}</span>
+            <span>{label ?? value}</span>
           </label>
         </div>
       ))}

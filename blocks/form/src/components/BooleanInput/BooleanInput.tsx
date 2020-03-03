@@ -20,7 +20,7 @@ export default function BooleanInput({
     <div className="field is-horizontal">
       <div className="field-label is-normal">
         <label className="label" htmlFor={field.name}>
-          {field.label || field.name}
+          {field.label ?? field.name}
         </label>
       </div>
       <div className="field-body">
@@ -39,7 +39,7 @@ export default function BooleanInput({
                 required={field.required}
                 type="checkbox"
               />
-              {field.labelText || field.label || field.name}
+              {field.labelText ?? field.label ?? field.name}
             </label>
             {error && (
               <p className={classNames('help', { 'is-danger': error })}>

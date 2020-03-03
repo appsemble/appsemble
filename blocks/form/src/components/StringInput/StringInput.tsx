@@ -20,11 +20,11 @@ export default function StringInput({
     <Input
       error={error && <FormattedMessage id="invalid" />}
       id={name}
-      label={label || name}
+      label={label ?? name}
       maxLength={maxLength}
       name={name}
       onInput={event => onInput(event, (event.target as HTMLInputElement).value)}
-      placeholder={placeholder || label || name}
+      placeholder={placeholder ?? label ?? name}
       readOnly={readOnly}
       required={required}
       type={multiline ? 'textarea' : format || 'text'}

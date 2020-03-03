@@ -70,7 +70,7 @@ bootstrap(
         <thead>
           <tr>
             {fields.map(field => (
-              <th key={`header.${field.name}`}>{field.label || field.name}</th>
+              <th key={`header.${field.name}`}>{field.label ?? field.name}</th>
             ))}
           </tr>
         </thead>
