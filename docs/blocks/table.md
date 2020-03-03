@@ -35,4 +35,4 @@ A block that can be used to display larger sets of data.
 
 <span class="screenshot"></span>
 
-![List screenshot](../images/list.png)
+![Table screenshot](../images/table.png)
