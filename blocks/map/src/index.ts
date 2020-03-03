@@ -7,10 +7,10 @@ import { attach } from '@appsemble/sdk';
 import { MarkerClusterGroup } from '@wesselkuipers/leaflet.markercluster';
 import { CircleMarker, LocationEvent, Map, TileLayer } from 'leaflet';
 
-import createGetters, { BlockActions, BlockParameters, Events } from './createGetters';
+import createGetters from './createGetters';
 import loadMarkers, { makeFilter } from './loadMarkers';
 
-attach<BlockParameters, BlockActions, Events>(
+attach(
   ({ actions, block, data, events, shadowRoot, theme: { primaryColor, tileLayer }, utils }) => {
     const node = shadowRoot.appendChild(document.createElement('div'));
     const fetched = new Set<number>();

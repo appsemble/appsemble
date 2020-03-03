@@ -1,9 +1,1 @@
-types:
-  file: src/createGetters.ts
-  parameters: BlockParameters
-  events: Events
-
-actions:
-  onMarkerClick: {}
-
 output: dist

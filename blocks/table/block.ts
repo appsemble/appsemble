@@ -3,14 +3,16 @@ export interface Field {
   label?: string;
 }
 
-export interface Parameters {
-  fields: Field[];
-}
+declare module '@appsemble/sdk' {
+  interface Parameters {
+    fields: Field[];
+  }
 
-export interface Actions {
-  onClick: {};
-}
+  interface Actions {
+    onClick: {};
+  }
 
-export interface Events {
-  listen: 'data';
+  interface EventListeners {
+    data: {};
+  }
 }

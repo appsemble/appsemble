@@ -2,9 +2,7 @@ import './index.css';
 
 import { attach } from '@appsemble/sdk';
 
-import { Actions, Parameters } from '../block';
-
-attach<Parameters, Actions>(({ actions, block, data }) => {
+attach(({ actions, block, data }) => {
   let node;
   if (actions.onClick.type === 'link') {
     node = document.createElement('a');

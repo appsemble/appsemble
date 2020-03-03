@@ -12,11 +12,17 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - App: Add support for defining query parameters in resource definitions.
 - App: Add support for query templates in `request` actions.
 - Blocks(`@appsemble/stats`): Add new stats block.
+- CLI: Blocks can be published from parent and sibling directories.
+- CLI: Blocks can be served from parent and sibling directories in development.
 
 ### Changed
 
 - Blocks: Rename `@appsemble/list` to `@appsemble/table`.
+- CLI: Each block now requires a Webpack configuration file.
 - CLI: Enable the `--build` flag by default. Builds can be skipped by using `--no-build`.
+- SDK: Parameters, events, and actions are now defined by augmenting the `Parameters`, `Actions`,
+  `EventListeners`, and `EventEmitters` interfaces from the `@appsemble/sdk` module. Overriding them
+  from `.appsemblerc` is still possible.
 
 ## [0.11.4] - 2020-02-18
 

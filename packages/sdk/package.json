@@ -16,6 +16,7 @@
     "dist"
   ],
   "browser": "dist",
+  "types": "dist",
   "scripts": {
     "prepack": "tsc -p tsconfig.build.json"
   },

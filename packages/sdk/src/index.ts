@@ -1,5 +1,73 @@
 import { Promisable } from 'type-fest';
 
+/**
+ * Actions defined on a block.
+ *
+ * If a block uses actions, extend this interface using module augmentation. The keys are the names
+ * of the events the block supports.
+ *
+ * @example
+ * declare module '<at>appsemble/sdk' {
+ *   interface Actions {
+ *     onClick: {}
+ *   }
+ * }
+ */
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface Actions {}
+
+/**
+ * Event emitters defined on a block.
+ *
+ * If a block emits events, extend this interface using module augmentation. The keys are the names
+ * of the events the block can emit.
+ *
+ * @example
+ * declare module '<at>appsemble/sdk' {
+ *   interface EventEmitters {
+ *     data: {}
+ *   }
+ * }
+ */
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface EventEmitters {}
+
+/**
+ * Event listeners defined on a block.
+ *
+ * If a block listens on events, extend this interface using module augmentation. The keys are the
+ * names of the events the block can emit.
+ *
+ * @example
+ * declare module '<at>appsemble/sdk' {
+ *   interface EventListeners {
+ *     data: {}
+ *   }
+ * }
+ */
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface EventListeners {}
+
+/**
+ * Custom free form parameters defined on a block.
+ *
+ * If a block listens on events, extend this interface using module augmentation. The keys are the
+ * names of the events the block can emit.
+ *
+ * @example
+ * declare module '<at>appsemble/sdk' {
+ *   interface Parameters {
+ *     param1: string;
+ *     param2: number;
+ *     param3: {
+ *       nested: boolean;
+ *     }
+ *   }
+ * }
+ */
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface Parameters {}
+
 /*
  * HTTP methods that support a request body.
  */
@@ -113,7 +181,7 @@ export type Action =
 /**
  * A block that is displayed on a page.
  */
-export interface Block<P = any, A = {}, E extends EventParams = Required<EventParams>> {
+export interface Block {
   /**
    * The type of the block.
    *
@@ -147,14 +215,14 @@ export interface Block<P = any, A = {}, E extends EventParams = Required<EventPa
    *
    * The exact meaning of the parameters depends on the block type.
    */
-  parameters?: P;
+  parameters?: Parameters;
 
   /**
    * A mapping of actions that can be fired by the block to action handlers.
    *
    * The exact meaning of the parameters depends on the block type.
    */
-  actions?: A;
+  actions?: Actions;
 
   /**
    * Mapping of the events the block can listen to and emit.
@@ -162,8 +230,8 @@ export interface Block<P = any, A = {}, E extends EventParams = Required<EventPa
    * The exact meaning of the parameters depends on the block type.
    */
   events?: {
-    listen: Record<E['listen'], string>;
-    emit: Record<E['emit'], string>;
+    listen: { [K in keyof EventListeners]: string };
+    emit: { [K in keyof EventEmitters]: string };
   };
 
   /**
@@ -254,8 +322,6 @@ export interface Theme {
   tileLayer: string;
 }
 
-export type Actions<A> = { [K in keyof A]: Action };
-
 export interface PageParameters {
   [parameter: string]: string;
 }
@@ -274,23 +340,14 @@ export interface Utils {
   showMessage: (message: string | Message) => void;
 }
 
-export type EventEmitters<E extends EventParams> = Record<
-  E['emit'],
-  (data: any, error?: string) => void
->;
-export type EventListeners<E extends EventParams> = Record<
-  E['listen'],
-  (callback: (data: any, error?: string) => void) => void
->;
-
-export interface Events<E extends EventParams = {}> {
+export interface Events {
   /**
    * Emit an Appsemble event.
    *
    * @param type The type of event to emit.
    * @param data Data to emit with the event.
    */
-  emit: EventEmitters<E>;
+  emit: { [K in keyof EventEmitters]: (data: any, error?: string) => void };
 
   /**
    * Remove an event listener for an Appsemble event.
@@ -298,7 +355,7 @@ export interface Events<E extends EventParams = {}> {
    * @param type The type of event to listen remove the listener from.
    * @param callback The callback to remove.
    */
-  off: EventListeners<E>;
+  off: { [K in keyof EventListeners]: (callback: (data: any, error?: string) => void) => void };
 
   /**
    * Add an event listener for an Appsemble event.
@@ -306,22 +363,22 @@ export interface Events<E extends EventParams = {}> {
    * @param type The type of event to listen on.
    * @param callback A callback to register for the event.
    */
-  on: EventListeners<E>;
+  on: { [K in keyof EventListeners]: (callback: (data: any, error?: string) => void) => void };
 }
 
 /**
  * The parameters that get passed to the bootstrap function.
  */
-export interface BootstrapParams<P = any, A = {}, E extends EventParams = {}> {
+export interface BootstrapParams {
   /**
    * The actions that may be dispatched by the block.
    */
-  actions: Actions<A>;
+  actions: { [K in keyof Actions]: Action };
 
   /**
    * The block as it is defined in the app definition.
    */
-  block: Block<P, A, E>;
+  block: Block;
 
   /**
    * Any kind of data that has been passed in by some context.
@@ -331,7 +388,7 @@ export interface BootstrapParams<P = any, A = {}, E extends EventParams = {}> {
   /**
    * Event related functions and constants.
    */
-  events: Events<E>;
+  events: Events;
 
   /**
    * URL parameters of the current route.
@@ -362,9 +419,7 @@ export interface BootstrapParams<P = any, A = {}, E extends EventParams = {}> {
 /**
  * @private
  */
-export type BootstrapFunction<P = any, A = {}, E extends EventParams = {}> = (
-  params: BootstrapParams<P, A, E>,
-) => Promisable<void>;
+export type BootstrapFunction = (params: BootstrapParams) => Promisable<void>;
 
 /**
  * @private
@@ -381,9 +436,7 @@ export interface AppsembleBootstrapEvent extends CustomEvent {
  *
  * @param fn The bootstrap function to register
  */
-export function bootstrap<P = any, A = {}, E extends EventParams = {}>(
-  fn: BootstrapFunction<P, A, E>,
-): void {
+export function bootstrap(fn: BootstrapFunction): void {
   const event = new CustomEvent('AppsembleBootstrap', {
     detail: {
       fn,
@@ -403,10 +456,8 @@ export function bootstrap<P = any, A = {}, E extends EventParams = {}>(
  *
  * @param fn The bootstrap function to register.
  */
-export function attach<P = any, A = {}, E extends EventParams = {}>(
-  fn: (params: BootstrapParams<P, A, E>) => Promisable<HTMLElement | void>,
-): void {
-  bootstrap<P, A, E>(
+export function attach(fn: (params: BootstrapParams) => Promisable<HTMLElement | void>): void {
+  bootstrap(
     async (params): Promise<void> => {
       const { shadowRoot } = params;
 

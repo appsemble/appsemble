@@ -4,7 +4,7 @@ import classNames from 'classnames';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import { Actions, Events, Filter, Parameters, RangeFilter } from '../../../block';
+import { Filter, RangeFilter } from '../../../block';
 import toOData from '../../utils/toOData';
 import Field from '../Field';
 import styles from './FilterBlock.css';
@@ -21,9 +21,7 @@ interface FilterBlockState {
   typingTimer?: NodeJS.Timeout;
 }
 
-export type FilterBlockProps = BlockProps<Parameters, Actions, Events>;
-
-export default class FilterBlock extends React.Component<FilterBlockProps, FilterBlockState> {
+export default class FilterBlock extends React.Component<BlockProps, FilterBlockState> {
   refreshTimer: NodeJS.Timeout = null;
 
   state: FilterBlockState = {

@@ -1,4 +1,4 @@
-import { Action, Actions, Block } from '@appsemble/sdk';
+import { Action, Block } from '@appsemble/sdk';
 import {
   ActionDefinition,
   ActionType,
@@ -16,7 +16,7 @@ import actionCreators, { ActionCreator, ActionCreators } from './actions';
 interface MakeActionsParams {
   actions: Record<string, ActionType>;
   definition: AppDefinition;
-  context: Block<any, Record<string, ActionDefinition>> | Page;
+  context: Block | Page;
   history: RouteComponentProps['history'];
   showDialog: ShowDialogAction;
   extraCreators: ActionCreators;
@@ -37,7 +37,7 @@ export default function makeActions({
   pageReady,
   pushNotifications,
   showDialog,
-}: MakeActionsParams): Actions<any> {
+}: MakeActionsParams): Record<string, any> {
   return Object.entries(actions || {}).reduce<Record<string, Action>>((acc, [on, { required }]) => {
     let actionDefinition: ActionDefinition;
     let type: Action['type'];

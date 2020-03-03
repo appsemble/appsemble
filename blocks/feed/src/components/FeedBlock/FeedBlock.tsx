@@ -5,7 +5,7 @@ import { compileFilters, MapperFunction } from '@appsemble/utils';
 import { h, VNode } from 'preact';
 import { useCallback, useEffect, useState } from 'preact/hooks';
 
-import { BlockActions, BlockParameters, Events, Remappers } from '../../../block';
+import { Remappers } from '../../../block';
 import Card from '../Card';
 import styles from './FeedBlock.css';
 
@@ -25,7 +25,7 @@ export default function FeedBlock({
   block: { parameters },
   events,
   ready,
-}: BlockProps<BlockParameters, BlockActions, Events>): VNode | VNode[] {
+}: BlockProps): VNode | VNode[] {
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState<Item[]>([]);
   const [remappers, setRemappers] = useState<Remappers>(undefined);

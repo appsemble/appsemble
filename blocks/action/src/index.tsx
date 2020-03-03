@@ -2,10 +2,10 @@
 import { attach } from '@appsemble/sdk';
 import { h } from 'mini-jsx';
 
-import { Actions, Field, Parameters } from '../block';
+import { Field } from '../block';
 import styles from './index.css';
 
-attach<Parameters, Actions>(({ actions, block, data }) => {
+attach(({ actions, block, data }) => {
   const { fields, title } = block.parameters;
 
   async function onUpdate(event: Event, field: Field): Promise<void> {
