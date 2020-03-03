@@ -8,18 +8,19 @@ export interface Field {
 
 export interface Item {
   id?: number;
-  [property: string]: any;
 }
 
-export interface Parameters {
-  header?: string;
-  fields?: Field[];
-}
+declare module '@appsemble/sdk' {
+  interface Parameters {
+    header?: string;
+    fields?: Field[];
+  }
 
-export interface Actions {
-  onClick: {};
-}
+  interface Actions {
+    onClick: {};
+  }
 
-export interface Events {
-  listen: 'data';
+  interface EventListeners {
+    data: {};
+  }
 }
