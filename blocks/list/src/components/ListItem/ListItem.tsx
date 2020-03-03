@@ -14,16 +14,15 @@ interface ListItemProps {
   fields: Field[];
   header: string;
   item: Item;
-  onClick: (d: Item) => void;
 }
 
-export default function ListItem({ actions, fields, header, item, onClick }: ListItemProps): VNode {
+export default function ListItem({ actions, fields, header, item }: ListItemProps): VNode {
   const onItemClick = useCallback(
     (event: Event) => {
       event.preventDefault();
-      onClick(item);
+      actions.onClick.dispatch(item);
     },
-    [item, onClick],
+    [actions, item],
   );
 
   return (

@@ -31,15 +31,6 @@ export default function ListBlock({
     setLoading(false);
   }, []);
 
-  const onClick = useCallback(
-    (d: Item): void => {
-      if (actions.onClick) {
-        actions.onClick.dispatch(d);
-      }
-    },
-    [actions],
-  );
-
   useEffect(() => {
     events.on.data(loadData);
     ready();
@@ -61,13 +52,7 @@ export default function ListBlock({
     <ul className={styles.container}>
       {data.map((item, index) => (
         <li key={item.id ?? index}>
-          <ListItem
-            actions={actions}
-            fields={fields}
-            header={header}
-            item={item}
-            onClick={onClick}
-          />
+          <ListItem actions={actions} fields={fields} header={header} item={item} />
         </li>
       ))}
     </ul>
