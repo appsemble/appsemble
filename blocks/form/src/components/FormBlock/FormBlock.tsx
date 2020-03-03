@@ -60,7 +60,7 @@ const validators: { [name: string]: Validator } = {
   boolean: () => true,
 };
 
-export default function FormBlock({ actions, block, data, events }: BlockProps): VNode {
+export default function FormBlock({ actions, block, data, events, ready }: BlockProps): VNode {
   const [errors, setErrors] = useState<{ [name: string]: string }>({});
   const [disabled, setDisabled] = useState(!!block.events?.listen?.data);
   const [validity, setValidity] = useState({
@@ -153,7 +153,8 @@ export default function FormBlock({ actions, block, data, events }: BlockProps):
 
   useEffect(() => {
     events.on.data(receiveData);
-  }, [block, events, receiveData]);
+    ready();
+  }, [block, events, ready, receiveData]);
 
   return (
     <form className={styles.root} noValidate onSubmit={onSubmit}>
