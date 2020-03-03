@@ -3,6 +3,7 @@
 /coverage/
 /public/
 /gl-*
+/build/
 dist/
 node_modules/
 junit.xml
