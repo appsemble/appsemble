@@ -269,7 +269,7 @@ review:
       --set "provision.account.name=$BOT_ACCOUNT_NAME"
       --set "provision.account.clientCredentials=$APPSEMBLE_CLIENT_CREDENTIALS"
       --set "provision.account.email=$BOT_ACCOUNT_EMAIL"
-      --set "provision.account.organizations={appsemble,amsterdam}"
+      --set "provision.account.organizations={appsemble}"
       --set "postgresql.fullnameOverride=$CI_ENVIRONMENT_SLUG-postgresql"
       --set "sentrySecret=sentry"
     - echo -n "$CI_ENVIRONMENT_URL" > environment-url.txt
