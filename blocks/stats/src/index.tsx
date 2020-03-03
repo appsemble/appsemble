@@ -14,7 +14,7 @@ attach(({ block, events }) => {
     </div>
   );
 
-  const remappers: Record<string, MapperFunction> = {};
+  const remappers: { [key: string]: MapperFunction } = {};
   fields.forEach(({ name }) => {
     remappers[name] = compileFilters(name);
   });

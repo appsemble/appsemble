@@ -23,20 +23,20 @@ export function requestLikeAction<T extends RequestLikeActionTypes>({
     urlMatch &&
     urlMatch
       .map(match => match.substring(1, match.length - 1))
-      .reduce<Record<string, MapperFunction>>(
+      .reduce<{ [filter: string]: MapperFunction }>(
         (acc, filter) => ({ ...acc, [filter]: compileFilters(filter) }),
         {},
       );
 
   const queryMappers =
     query &&
-    Object.entries(query).reduce<Record<string, Record<string, MapperFunction>>>(
+    Object.entries(query).reduce<{ [k: string]: { [key: string]: MapperFunction } }>(
       (acc, [queryKey, queryValue]) => {
         const queryMatch = String(queryValue).match(regex);
         if (queryMatch) {
           acc[queryKey] = queryMatch
             .map(match => match.substring(1, match.length - 1))
-            .reduce<Record<string, MapperFunction>>(
+            .reduce<{ [filter: string]: MapperFunction }>(
               (subAcc, filter) => ({ ...subAcc, [filter]: compileFilters(filter) }),
               {},
             );

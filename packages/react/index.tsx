@@ -27,7 +27,7 @@ export function mount(
       ...params,
       reactRoot,
     };
-    const component: JSX.Element = (
+    const component: React.ReactElement = (
       <Provider value={props}>
         <Component {...props} />
       </Provider>
@@ -66,7 +66,7 @@ export function bootstrap(
 export function withBlock<P extends object>(
   Component: React.ComponentType<P & Omit<BlockProps, keyof P>>,
 ): React.ComponentType<P> {
-  function Wrapper(props: P): JSX.Element {
+  function Wrapper(props: P): React.ReactElement {
     return <Consumer>{values => <Component {...values} {...props} />}</Consumer>;
   }
   if (process.env.NODE_ENV !== 'production') {

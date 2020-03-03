@@ -2,4 +2,4 @@
 import { Block } from '@appsemble/sdk';
 import { AppDefinition } from '@appsemble/types';
 
-export default function getAppBlocks(definition: AppDefinition): Record<string, Block>;
+export default function getAppBlocks(definition: AppDefinition): { [path: string]: Block };

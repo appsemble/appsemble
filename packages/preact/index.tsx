@@ -15,7 +15,7 @@ export interface BlockProps extends BootstrapParams {
    */
   ready: () => void;
 
-  messages: Record<string, IntlMessageFormat>;
+  messages: { [id: string]: IntlMessageFormat };
 }
 
 const Context = createContext<BlockProps>(null);
@@ -25,7 +25,7 @@ const Context = createContext<BlockProps>(null);
  */
 export function mount(
   Component: ComponentType<BlockProps>,
-  messages?: Record<string, string>,
+  messages?: { [id: string]: string },
   createRoot: () => Element = () => document.createElement('div'),
 ): (params: BootstrapParams) => Promise<void> {
   return params =>
@@ -38,7 +38,7 @@ export function mount(
         preactRoot,
         messages: messages
           ? Object.entries(messages).reduce(
-              (acc: Record<string, IntlMessageFormat>, [key, message]) => {
+              (acc: { [id: string]: IntlMessageFormat }, [key, message]) => {
                 acc[key] = new IntlMessageFormat(message);
                 return acc;
               },
@@ -58,7 +58,7 @@ export function mount(
 
 export function bootstrap(
   Component: ComponentType<BlockProps>,
-  messages?: Record<string, string>,
+  messages?: { [id: string]: string },
   reactRoot?: () => Element,
 ): void {
   sdkBootstrap(mount(Component, messages, reactRoot));
@@ -82,7 +82,7 @@ export function useBlock(): BlockProps {
 
 export interface FormattedMessageProps {
   id: string;
-  values?: Record<string, number | string | ((str: string) => VNode)>;
+  values?: { [key: string]: number | string | ((str: string) => VNode) };
 }
 
 export function FormattedMessage({ id, values }: FormattedMessageProps): VNode {

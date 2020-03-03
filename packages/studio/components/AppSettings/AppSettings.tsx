@@ -9,7 +9,7 @@ import { useApp } from '../AppContext/AppContext';
 import styles from './AppSettings.css';
 import messages from './messages';
 
-export default function AppSettings(): JSX.Element {
+export default function AppSettings(): React.ReactElement {
   const { app } = useApp();
   const intl = useIntl();
   const [icon, setIcon] = useState();

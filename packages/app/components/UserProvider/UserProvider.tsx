@@ -92,7 +92,7 @@ export default function UserProvider({ children }: UserProviderProps): React.Rea
    * @param params Additional parameters, which depend on the grant type.
    */
   const fetchToken = React.useCallback(
-    async (grantType: string, params: Record<string, string>) => {
+    async (grantType: string, params: { [key: string]: string }) => {
       const {
         data: { access_token: accessToken, refresh_token: rt },
       } = await axios.post<TokenResponse>(

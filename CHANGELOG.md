@@ -18,20 +18,30 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Changed
 
-- Blocks: Rename `@appsemble/list` to `@appsemble/table`.
+- Block: Rename `@appsemble/list` to `@appsemble/table`.
 - CLI: Each block now requires a Webpack configuration file.
 - CLI: Enable the `--build` flag by default. Builds can be skipped by using `--no-build`.
+- CLI: Replace the `--all` flag with glob support.
 - SDK: Parameters, events, and actions are now defined by augmenting the `Parameters`, `Actions`,
   `EventListeners`, and `EventEmitters` interfaces from the `@appsemble/sdk` module. Overriding them
   from `.appsemblerc` is still possible.
+
+### Removed
+
+- Block(`@amsterdam/action`): Move this block into the
+  [Amsterdam Appsemble repository](https://gitlab.com/appsemble/amsterdam).
+- Block(`@amsterdam/navigation`): Move this block into the
+  [Amsterdam Appsemble repository](https://gitlab.com/appsemble/amsterdam).
+- Block(`@amsterdam/splash`): Move this block into the
+  [Amsterdam Appsemble repository](https://gitlab.com/appsemble/amsterdam).
 
 ## [0.11.4] - 2020-02-18
 
 ### Added
 
-- Blocks(`@appsemble/map`): Add marker clustering.
-- Blocks(`@appsemble/map`): Add `disableClustering` parameter.
-- Blocks(`@appsemble/map`): Add `maxClusterRadius` parameter. This can be used to determine when the
+- Block(`@appsemble/map`): Add marker clustering.
+- Block(`@appsemble/map`): Add `disableClustering` parameter.
+- Block(`@appsemble/map`): Add `maxClusterRadius` parameter. This can be used to determine when the
   map should cluster markers.
 
 ### Changed
