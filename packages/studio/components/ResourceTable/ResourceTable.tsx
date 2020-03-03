@@ -303,7 +303,7 @@ export default function ResourceTable(): React.ReactElement {
           let value = '';
           let type: React.ComponentPropsWithoutRef<typeof Input>['type'] = 'text';
 
-          if (editingResource && editingResource[key]) {
+          if (editingResource?.[key]) {
             value = editingResource[key];
             if (typeof value === 'object') {
               value = JSON.stringify(value);

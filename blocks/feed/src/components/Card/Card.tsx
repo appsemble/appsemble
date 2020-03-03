@@ -136,7 +136,7 @@ export default class Card extends Component<BlockProps & CardProps, CardState> {
     let icon;
 
     // XXX: Standardize this based on app definition
-    switch (content && content.status) {
+    switch (content?.status) {
       case 'open':
         color = 'has-background-danger';
         icon = 'exclamation';

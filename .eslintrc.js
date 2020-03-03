@@ -123,6 +123,7 @@ module.exports = {
         '@typescript-eslint/no-use-before-define': 'error',
         '@typescript-eslint/no-var-requires': 'error',
         '@typescript-eslint/prefer-namespace-keyword': 'error',
+        '@typescript-eslint/prefer-optional-chain': 'error',
       },
     },
     {

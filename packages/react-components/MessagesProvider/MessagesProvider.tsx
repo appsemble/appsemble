@@ -77,7 +77,7 @@ export default function MessagesProvider({ children }: MessagesProviderProps): R
               timeout={300}
             >
               <Message className={styles.content} color={message.color || 'danger'}>
-                <span>{message && message.body}</span>
+                <span>{message?.body}</span>
                 {message.dismissable && (
                   <button
                     aria-label={intl.formatMessage(msgs.dismiss)}

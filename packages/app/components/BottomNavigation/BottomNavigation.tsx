@@ -13,7 +13,7 @@ export default function BottomNavigation(): React.ReactElement {
     p => normalize(p.name) === location.pathname.split('/')[1],
   );
 
-  const navigation = (currentPage && currentPage.navigation) || definition.navigation;
+  const navigation = currentPage?.navigation || definition.navigation;
   if (navigation !== 'bottom') {
     return null;
   }
