@@ -1,16 +1,16 @@
 /** @jsx h */
 import { Icon } from '@appsemble/preact-components';
-import { Actions } from '@appsemble/sdk';
+import { BootstrapParams } from '@appsemble/sdk';
 import { remapData } from '@appsemble/utils';
 import { h, VNode } from 'preact';
 import { useCallback } from 'preact/hooks';
 
-import { Actions as BlockActions, Field, Item } from '../../../block';
+import { Field, Item } from '../../../block';
 import ListItemWrapper from '../ListItemWrapper';
 import styles from './ListItem.css';
 
 interface ListItemProps {
-  actions: Actions<BlockActions>;
+  actions: BootstrapParams['actions'];
   fields: Field[];
   header: string;
   item: Item;
@@ -37,7 +37,7 @@ export default function ListItem({ actions, fields, header, item, onClick }: Lis
         }
 
         return (
-          <span key={field.name} className={styles.itemField}>
+          <div key={field.name} className={styles.itemField}>
             {field.icon && <Icon icon={field.icon} />}
             {field.label && (
               <span>
@@ -46,15 +46,15 @@ export default function ListItem({ actions, fields, header, item, onClick }: Lis
               </span>
             )}
             {field.name && (
-              <strong>{typeof value === 'string' ? value : JSON.stringify(value)}</strong>
+              <strong className="has-text-bold">
+                {typeof value === 'string' ? value : JSON.stringify(value)}
+              </strong>
             )}
-          </span>
+          </div>
         );
       })}
       {actions.onClick.type !== 'noop' && (
-        <button className={`button ${styles.button}`} onClick={onItemClick} type="button">
-          <Icon icon="angle-right" size="large" />
-        </button>
+        <Icon className={styles.button} icon="angle-right" size="large" />
       )}
     </ListItemWrapper>
   );

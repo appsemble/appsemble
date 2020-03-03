@@ -4,7 +4,7 @@ import { Loader } from '@appsemble/preact-components';
 import { h, VNode } from 'preact';
 import { useCallback, useEffect, useState } from 'preact/hooks';
 
-import { Actions, Events, Item, Parameters } from '../../../block';
+import { Item } from '../../../block';
 import ListItem from '../ListItem/ListItem';
 import styles from './ListBlock.css';
 
@@ -16,7 +16,7 @@ export default function ListBlock({
   events,
   ready,
   utils,
-}: BlockProps<Parameters, Actions, Events>): VNode {
+}: BlockProps): VNode {
   const [data, setData] = useState<Item[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);

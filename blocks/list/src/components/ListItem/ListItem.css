@@ -18,24 +18,15 @@
 }
 
 .itemField {
+  display: inline;
   margin-right: 5px;
 }
 
-strong {
-  font-weight: 700;
-}
-
 .button {
-  background-color: transparent;
-  border: none;
-  font-family: inherit;
-  font-size: 100%;
-  height: inherit;
-  line-height: 1.15;
   margin: 0;
   padding: 0;
   position: absolute;
-  right: 1.5rem;
+  right: 0.5rem;
   top: 50%;
   transform: translateY(-50%);
 }

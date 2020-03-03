@@ -1,13 +1,13 @@
 /** @jsx h */
-import { Actions } from '@appsemble/sdk';
-import { Actions as BlockActions, Item } from 'blocks/list/block';
+import { BootstrapParams } from '@appsemble/sdk';
+import { Item } from 'blocks/list/block';
 import { h, VNode } from 'preact';
 
 type ListItemWrapperProps = (
   | h.JSX.HTMLAttributes<HTMLButtonElement>
   | h.JSX.HTMLAttributes<HTMLAnchorElement>
 ) & {
-  actions: Actions<BlockActions>;
+  actions: BootstrapParams['actions'];
   item: Item;
 };
 
