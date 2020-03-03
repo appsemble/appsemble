@@ -24,8 +24,8 @@ export default function FileRenderer({
         return url;
       }
 
-      if (block && block.parameters && block.parameters.fileBase) {
-        return `${new URL(`${block.parameters.fileBase}/${v}`, window.location.origin)}`;
+      if (block && block.parameters) {
+        return `${new URL(`${utils.asset(v)}`, window.location.origin)}`;
       }
 
       return v;

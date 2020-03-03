@@ -272,6 +272,11 @@ export interface Utils {
    * Show a bulma style message.
    */
   showMessage: (message: string | Message) => void;
+
+  /**
+   * Various blocks depend on app asset URLs.
+   */
+  asset: (assetId: string) => string;
 }
 
 export type EventEmitters<E extends EventParams> = Record<
