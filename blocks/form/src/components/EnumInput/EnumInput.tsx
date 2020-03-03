@@ -10,9 +10,10 @@ type EnumInputProps = InputProps<string, EnumField>;
 /**
  * Render a select box which offers choices a JSON schema enum.
  */
-export default function EnumInput({ field, onInput, value = '' }: EnumInputProps): VNode {
+export default function EnumInput({ disabled, field, onInput, value = '' }: EnumInputProps): VNode {
   return (
     <Select
+      disabled={disabled}
       iconLeft={field.icon}
       id={field.name}
       label={field.label || field.name}

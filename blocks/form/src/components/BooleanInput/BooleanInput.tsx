@@ -11,6 +11,7 @@ type BooleanInputProps = InputProps<boolean, BooleanField>;
  * An input element for a boolean value.
  */
 export default function BooleanInput({
+  disabled,
   error,
   field,
   onInput,
@@ -30,6 +31,7 @@ export default function BooleanInput({
               <input
                 checked={!!value}
                 className={classNames({ 'is-danger': error })}
+                disabled={disabled}
                 id={field.name}
                 name={field.name}
                 onInput={event => {

@@ -26,11 +26,12 @@ export default class FileInput extends Component<FileInputProps> {
   };
 
   render(): VNode {
-    const { field, onInput, value } = this.props;
+    const { disabled, field, onInput, value } = this.props;
 
     return field.repeated ? (
       <div className={styles.repeatedContainer}>
         <FileEntry
+          disabled={disabled}
           field={field}
           name={`${field.name}.${(value as string[]).length}`}
           onInput={this.onInput}
