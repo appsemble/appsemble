@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/node-utils",
-  "version": "0.11.4",
+  "version": "0.11.5",
   "private": true,
   "homepage": "https://appsemble.dev",
   "bugs": {
@@ -19,7 +19,7 @@
     "winston": "^3.2.1"
   },
   "devDependencies": {
-    "@appsemble/node-utils": "0.11.4",
+    "@appsemble/node-utils": "0.11.5",
     "axios-test-instance": "^1.0.1",
     "koa": "^2.11.0",
     "lolex": "^5.1.2"
