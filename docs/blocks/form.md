@@ -102,3 +102,7 @@ A hidden field. This is useful for submitting default values the user may not ch
 <span class="screenshot"></span>
 
 ![Form screenshot](../images/form.png)
+
+## Notes
+
+- Loading initial form data does not work with inputs of type `geocoordinates`.
