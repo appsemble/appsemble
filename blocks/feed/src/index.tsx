@@ -1,8 +1,6 @@
-import { BlockProps, bootstrap } from '@appsemble/preact';
-import { ComponentType } from 'preact';
+import { bootstrap } from '@appsemble/preact';
 
 import FeedBlock from './components/FeedBlock';
-import styles from './index.css';
 
 const messages = {
   anonymous: 'Anonymous',
@@ -11,6 +9,4 @@ const messages = {
   replyError: 'Something went wrong trying to send this message.',
 };
 
-bootstrap(FeedBlock as ComponentType<BlockProps>, messages, () =>
-  Object.assign(document.createElement('div'), { className: styles.reactRoot }),
-);
+bootstrap(FeedBlock, messages);
