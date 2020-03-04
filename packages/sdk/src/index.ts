@@ -206,6 +206,11 @@ export interface Block {
   version: string;
 
   /**
+   * An optional header to render above the block.
+   */
+  header?: string;
+
+  /**
    * The theme of the block.
    */
   theme?: Theme;

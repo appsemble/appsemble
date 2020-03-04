@@ -1,3 +1,7 @@
+.title {
+  margin: 1rem auto !important;
+}
+
 .float {
   position: fixed;
   z-index: 1100;
