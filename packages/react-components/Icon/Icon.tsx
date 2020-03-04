@@ -10,7 +10,7 @@ interface IconProps {
   size?: 'small' | 'medium' | 'large';
 }
 
-const iconSizeMap: Record<IconProps['size'], IconProps['iconSize']> = {
+const iconSizeMap: { [size in IconProps['size']]: IconProps['iconSize'] } = {
   small: null,
   medium: 'lg',
   large: '2x',

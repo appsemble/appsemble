@@ -1,6 +1,5 @@
 import { logger } from '@appsemble/node-utils';
 import webpack from 'webpack';
-import merge from 'webpack-merge';
 
 import loadWebpackConfig from './loadWebpackConfig';
 
@@ -12,18 +11,8 @@ import loadWebpackConfig from './loadWebpackConfig';
  * @param {string} params.webpackConfig The path of the webpack config to use.
  * @param {string} params.config The config of the block to build.
  */
-export default async function buildBlock({ config, path, webpackConfig }) {
-  const conf = merge.smart(
-    await loadWebpackConfig(webpackConfig, config.id, {
-      mode: 'production',
-      publicPath: `/api/blocks/${config.id}/versions/${config.version}`,
-    }),
-    {
-      output: {
-        path,
-      },
-    },
-  );
+export default async function buildBlock({ config, path }) {
+  const conf = await loadWebpackConfig(config, 'production', path);
 
   logger.info(`Building ${config.id}@${config.version} 🔨`);
 

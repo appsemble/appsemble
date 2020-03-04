@@ -96,7 +96,20 @@ module.exports = {
         'react/prop-types': 'off',
         '@typescript-eslint/adjacent-overload-signatures': 'error',
         '@typescript-eslint/array-type': 'error',
-        '@typescript-eslint/ban-types': 'error',
+        '@typescript-eslint/ban-types': [
+          'error',
+          {
+            types: {
+              'JSX.Element':
+                'Use React.ReactElement for React contexts and VNode for Preact contexts',
+              Record: 'Use a mapped type instead',
+              ComponentProps: {
+                message: 'Use ComponentPropsWithoutRef instead',
+                fixWith: 'ComponentPropsWithoutRef',
+              },
+            },
+          },
+        ],
         '@typescript-eslint/class-name-casing': 'error',
         '@typescript-eslint/consistent-type-definitions': ['error', 'interface'],
         '@typescript-eslint/explicit-function-return-type': ['error', { allowExpressions: true }],
@@ -110,6 +123,7 @@ module.exports = {
         '@typescript-eslint/no-use-before-define': 'error',
         '@typescript-eslint/no-var-requires': 'error',
         '@typescript-eslint/prefer-namespace-keyword': 'error',
+        '@typescript-eslint/prefer-optional-chain': 'error',
       },
     },
     {

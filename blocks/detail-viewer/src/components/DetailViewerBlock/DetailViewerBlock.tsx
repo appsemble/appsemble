@@ -5,7 +5,6 @@ import { remapData } from '@appsemble/utils';
 import { h, VNode } from 'preact';
 import { useEffect, useState } from 'preact/hooks';
 
-import { Events, Parameters } from '../../../block';
 import FileRenderer from '../FileRenderer';
 import GeoCoordinatesRenderer from '../GeoCoordinatesRenderer';
 import StringRenderer from '../StringRenderer';
@@ -20,12 +19,7 @@ const renderers = {
 /**
  * The main component for the Appsemble detail-viewer block.
  */
-export default function DetailViewerBlock({
-  block,
-  events,
-  ready,
-  theme,
-}: BlockProps<Parameters, null, Events>): VNode {
+export default function DetailViewerBlock({ block, events, ready, theme }: BlockProps): VNode {
   const [data, setData] = useState(undefined);
 
   useEffect(() => {

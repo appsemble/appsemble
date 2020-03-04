@@ -11,6 +11,7 @@ type StringInputProps = InputProps<string, StringField>;
  * An input element for a text type schema.
  */
 export default function StringInput({
+  disabled,
   error,
   field: { format, label, maxLength, multiline, name, placeholder, readOnly, required },
   onInput,
@@ -18,13 +19,14 @@ export default function StringInput({
 }: StringInputProps): VNode {
   return (
     <Input
+      disabled={disabled}
       error={error && <FormattedMessage id="invalid" />}
       id={name}
-      label={label || name}
+      label={label ?? name}
       maxLength={maxLength}
       name={name}
       onInput={event => onInput(event, (event.target as HTMLInputElement).value)}
-      placeholder={placeholder || label || name}
+      placeholder={placeholder ?? label ?? name}
       readOnly={readOnly}
       required={required}
       type={multiline ? 'textarea' : format || 'text'}

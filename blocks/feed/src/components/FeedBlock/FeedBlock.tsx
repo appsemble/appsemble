@@ -5,7 +5,7 @@ import { compileFilters, MapperFunction } from '@appsemble/utils';
 import { h, VNode } from 'preact';
 import { useCallback, useEffect, useState } from 'preact/hooks';
 
-import { BlockActions, BlockParameters, Events, Remappers } from '../../../block';
+import { Remappers } from '../../../block';
 import Card from '../Card';
 import styles from './FeedBlock.css';
 
@@ -21,11 +21,7 @@ interface Item {
 /**
  * The top level component for the feed block.
  */
-export default function FeedBlock({
-  block: { parameters },
-  events,
-  ready,
-}: BlockProps<BlockParameters, BlockActions, Events>): VNode | VNode[] {
+export default function FeedBlock({ block: { parameters }, events, ready }: BlockProps): VNode {
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState<Item[]>([]);
   const [remappers, setRemappers] = useState<Remappers>(undefined);
@@ -76,7 +72,11 @@ export default function FeedBlock({
     );
   }
 
-  return data.map(content => (
-    <Card key={content.id} content={content} onUpdate={onUpdate} remappers={remappers} />
-  ));
+  return (
+    <div className={styles.root}>
+      {data.map(content => (
+        <Card key={content.id} content={content} onUpdate={onUpdate} remappers={remappers} />
+      ))}
+    </div>
+  );
 }

@@ -16,7 +16,7 @@ export default function SideMenu({
   children = [],
   isCollapsed,
   toggleCollapse,
-}: SideMenuProps): JSX.Element {
+}: SideMenuProps): React.ReactElement {
   return (
     <div className={classNames({ [styles.collapsed]: isCollapsed }, styles.sideMenuContainer)}>
       <aside className={classNames('menu', styles.sideMenu)}>

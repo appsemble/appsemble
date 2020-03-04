@@ -64,11 +64,21 @@ export default class GeoCoordinatesInput extends Component<GeoCoordinatesInputPr
     this.map = map;
   }
 
+  componentDidUpdate(): void {
+    const { disabled } = this.props;
+    if (disabled) {
+      this.map.dragging.disable();
+    } else {
+      this.map.dragging.enable();
+    }
+  }
+
   onReset = (): void => {
     this.map.setView(this.locationMarker.getLatLng(), 16);
   };
 
   render(): VNode {
+    const { disabled } = this.props;
     return (
       <div className={styles.root}>
         <div ref={this.ref} className={styles.map} />
@@ -77,6 +87,7 @@ export default class GeoCoordinatesInput extends Component<GeoCoordinatesInputPr
         </div>
         <button
           className={classNames('button', styles.resetButton)}
+          disabled={disabled}
           onClick={this.onReset}
           type="button"
         >

@@ -1,8 +1,8 @@
 import { logger } from '@appsemble/node-utils';
+import axios from 'axios';
 import FormData from 'form-data';
 
 import processCss from './processCss';
-import { post } from './request';
 
 /**
  * Uploads an app block theme
@@ -19,7 +19,7 @@ export default async function uploadAppBlockTheme(filePath, organization, appId,
   const formData = new FormData();
   formData.append('style', Buffer.from(css), 'style.css');
 
-  await post(`/api/apps/${appId}/style/block/${organization}/${block}`, formData);
+  await axios.post(`/api/apps/${appId}/style/block/${organization}/${block}`, formData);
 
   logger.info(`Upload of ${organization}/${block} stylesheet successful! 🎉`);
 }

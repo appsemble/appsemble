@@ -1,17 +1,16 @@
 import { logger } from '@appsemble/node-utils';
-import fs from 'fs-extra';
-import { join } from 'path';
+import fg from 'fast-glob';
 
 import { authenticate } from '../../lib/authentication';
 import createApp from '../../lib/createApp';
 
-export const command = 'create <path>';
+export const command = 'create <paths...>';
 export const description = 'Create a new App based on a specified YAML file or directory.';
 
 export function builder(yargs) {
   return yargs
-    .positional('path', {
-      describe: 'The path to the app to register',
+    .positional('paths', {
+      describe: 'The paths to the apps to create.',
       normalize: true,
     })
     .option('organization', {
@@ -19,28 +18,21 @@ export function builder(yargs) {
       demand: true,
     })
     .option('private', {
-      describe: 'Whether the App should be marked as private.',
+      describe: 'Whether the app should be marked as private.',
       default: true,
       type: 'boolean',
     })
     .option('template', {
-      describe: 'Whether the App should be marked as a template.',
-      default: false,
-      type: 'boolean',
-    })
-    .option('all', {
-      alias: 'a',
-      describe: 'Perform this command on every directory that is a subdirectory of the given path.',
+      describe: 'Whether the app should be marked as a template.',
       default: false,
       type: 'boolean',
     });
 }
 
 export async function handler({
-  all,
   clientCredentials,
   organization,
-  path,
+  paths,
   private: isPrivate,
   remote,
   template,
@@ -48,26 +40,17 @@ export async function handler({
   await authenticate(remote, 'apps:write', clientCredentials);
   const organizationId = organization.startsWith('@') ? organization.slice(1) : organization;
 
-  if (all) {
-    const directories = (await fs.readdir(path)).filter(subDir =>
-      fs.lstatSync(join(path, subDir)).isDirectory(),
-    );
+  const directories = await fg(paths, { absolute: true, onlyDirectories: true });
 
-    logger.info(`Creating ${directories.length} Apps for @${organizationId}`);
-    directories.reduce(async (acc, subDir) => {
-      await acc;
-      await createApp({
-        organizationId,
-        path: join(path, subDir),
-        private: isPrivate,
-        remote,
-        template,
-      });
-    }, {});
-
-    return;
-  }
-
-  logger.info(`Creating App for @${organizationId}`);
-  await createApp({ organizationId, path, private: isPrivate, remote, template });
+  logger.info(`Creating ${directories.length} Apps for @${organizationId}`);
+  directories.reduce(async (acc, dir) => {
+    await acc;
+    await createApp({
+      organizationId,
+      path: dir,
+      private: isPrivate,
+      remote,
+      template,
+    });
+  }, {});
 }

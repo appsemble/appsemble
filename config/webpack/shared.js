@@ -40,7 +40,7 @@ module.exports = (env, { mode }) => {
           test: /\.css$/,
           oneOf: [
             {
-              test: /(node_modules|amsterdam\.css)/,
+              test: /node_modules/,
               use: [
                 MiniCssExtractPlugin.loader,
                 {

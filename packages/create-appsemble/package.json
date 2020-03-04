@@ -1,6 +1,6 @@
 {
   "name": "create-appsemble",
-  "version": "0.11.4",
+  "version": "0.11.5",
   "private": true,
   "homepage": "https://appsemble.dev",
   "bugs": {
@@ -18,11 +18,10 @@
     "tsc": "../../config/bin/tscstub.js"
   },
   "dependencies": {
-    "@appsemble/node-utils": "^0.11.4",
+    "@appsemble/node-utils": "^0.11.5",
     "esm": "^3.2.25",
     "fs-extra": "^8.1.0",
     "inquirer": "^7.0.4",
-    "sort-package-json": "^1.39.0",
     "yargs": "^15.1.0"
   }
 }

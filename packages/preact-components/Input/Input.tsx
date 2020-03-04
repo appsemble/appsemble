@@ -16,6 +16,11 @@ interface GenericInputProps<T, H extends string> extends Omit<FormComponentProps
   type: H;
 
   /**
+   * Whether or not the input should be disabled.
+   */
+  disabled?: boolean;
+
+  /**
    * An error message to render.
    */
   error?: ComponentChild;
@@ -111,6 +116,7 @@ export default class Input extends Component<InputProps> {
 
   render(): VNode {
     const {
+      disabled,
       error,
       iconLeft,
       help,
@@ -131,6 +137,7 @@ export default class Input extends Component<InputProps> {
         <Comp
           checked={type === 'checkbox' ? (value as boolean) : undefined}
           className={classNames(type === 'textarea' ? 'textarea' : 'input', { 'is-danger': error })}
+          disabled={disabled}
           id={id}
           name={name}
           onInput={this.onInput}

@@ -4,7 +4,7 @@ import { Location } from '@appsemble/preact-components';
 import { Component, createRef, Fragment, h, VNode } from 'preact';
 
 import iconUrl from '../../../../../themes/amsterdam/core/marker.svg';
-import { BlockActions, BlockParameters, Remappers } from '../../../block';
+import { Remappers } from '../../../block';
 import AvatarWrapper from '../AvatarWrapper';
 import styles from './Card.css';
 
@@ -35,10 +35,7 @@ interface CardState {
 /**
  * A single card in the feed.
  */
-export default class Card extends Component<
-  BlockProps<BlockParameters, BlockActions> & CardProps,
-  CardState
-> {
+export default class Card extends Component<BlockProps & CardProps, CardState> {
   replyContainer = createRef<HTMLDivElement>();
 
   state: CardState = {
@@ -98,11 +95,8 @@ export default class Card extends Component<
     }
 
     try {
-      const contentField =
-        (block.parameters && block.parameters.reply && block.parameters.reply.content) || 'content';
-      const parentId =
-        (block.parameters && block.parameters.reply && block.parameters.reply.parentId) ||
-        'parentId';
+      const contentField = block?.parameters?.reply?.content ?? 'content';
+      const parentId = block?.parameters?.reply?.parentId ?? 'parentId';
 
       const result = await actions.onSubmitReply.dispatch({
         [parentId]: content.id,
@@ -142,7 +136,7 @@ export default class Card extends Component<
     let icon;
 
     // XXX: Standardize this based on app definition
-    switch (content && content.status) {
+    switch (content?.status) {
       case 'open':
         color = 'has-background-danger';
         icon = 'exclamation';
@@ -228,7 +222,7 @@ export default class Card extends Component<
               onClick={this.onButtonClick}
               type="button"
             >
-              {block.parameters.buttonLabel || 'Click'}
+              {block.parameters.buttonLabel ?? 'Click'}
             </button>
           )}
 

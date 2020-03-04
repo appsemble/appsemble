@@ -23,7 +23,7 @@ export default function EnumField({
         {!defaultValue && <option label={emptyLabel} />}
         {enumerator.map(({ label, value: val }) => (
           <option key={val} value={val}>
-            {label || val}
+            {label ?? val}
           </option>
         ))}
       </select>

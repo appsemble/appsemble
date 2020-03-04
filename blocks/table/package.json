@@ -1,11 +1,11 @@
 {
   "name": "@appsemble/table",
-  "version": "0.11.4",
+  "version": "0.11.5",
   "private": true,
   "dependencies": {
-    "@appsemble/preact": "0.11.4",
-    "@appsemble/preact-components": "0.11.4",
-    "@appsemble/utils": "0.11.4",
+    "@appsemble/preact": "0.11.5",
+    "@appsemble/preact-components": "0.11.5",
+    "@appsemble/utils": "0.11.5",
     "preact": "^10.2.1"
   }
 }

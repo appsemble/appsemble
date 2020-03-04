@@ -14,7 +14,7 @@ interface RateAppProps {
   onRate: (rate: Rating) => void;
 }
 
-export default function RateApp({ app, className, onRate }: RateAppProps): JSX.Element {
+export default function RateApp({ app, className, onRate }: RateAppProps): React.ReactElement {
   const [isOpen, setIsOpen] = React.useState(false);
   const [rating, setRating] = React.useState(0);
   const [description, setDescription] = React.useState('');

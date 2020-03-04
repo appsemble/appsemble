@@ -1,7 +1,7 @@
 import { logger } from '@appsemble/node-utils';
+import axios from 'axios';
 
 import makePayload from './makePayload';
-import { post } from './request';
 
 /**
  * Publish a new block version.
@@ -14,7 +14,7 @@ export default async function publish({ config, ignoreConflict, path }) {
   logger.info(`Publishing ${config.id}@${config.version}…`);
   const form = await makePayload({ config, path });
   try {
-    await post(`/api/blocks/${config.id}/versions`, form);
+    await axios.post(`/api/blocks/${config.id}/versions`, form);
     logger.info(`Successfully published ${config.id}@${config.version} 🎉`);
   } catch (err) {
     if (!ignoreConflict || !err.request || err.response.status !== 409) {

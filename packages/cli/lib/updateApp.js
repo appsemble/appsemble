@@ -1,9 +1,9 @@
 import { logger } from '@appsemble/node-utils';
+import axios from 'axios';
 import FormData from 'form-data';
 import fs from 'fs-extra';
 import yaml from 'js-yaml';
 
-import { patch } from './request';
 import traverseAppDirectory from './traverseAppDirectory';
 import traverseBlockThemes from './traverseBlockThemes';
 
@@ -37,7 +37,7 @@ export default async function updateApp({ appId, path, private: isPrivate, remot
       }
     }
 
-    const response = await patch(`/api/apps/${appId}`, formData);
+    const response = await axios.patch(`/api/apps/${appId}`, formData);
 
     if (file.isDirectory()) {
       // After uploading the app, upload block styles if they are available

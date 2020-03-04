@@ -1,6 +1,8 @@
 import { logger } from '@appsemble/node-utils';
 import axios from 'axios';
 
+import { formData, requestLogger, responseLogger } from './interceptors';
+
 /**
  * Configure the default axios URL.
  *
@@ -10,4 +12,7 @@ import axios from 'axios';
 export default function initAxios({ remote }) {
   axios.defaults.baseURL = remote;
   logger.verbose(`Request remote set to ${remote}`);
+  axios.interceptors.request.use(formData);
+  axios.interceptors.request.use(requestLogger);
+  axios.interceptors.response.use(responseLogger);
 }

@@ -73,6 +73,11 @@ export type Field =
 
 export interface InputProps<T, F extends Field> {
   /**
+   * Whether or not the field should be disabled.
+   */
+  disabled?: boolean;
+
+  /**
    * A field error object.
    */
   error: string;
@@ -93,11 +98,17 @@ export interface InputProps<T, F extends Field> {
   value: T;
 }
 
-export interface Actions {
-  onSubmitSuccess: {};
-  onSubmit: {};
-}
+declare module '@appsemble/sdk' {
+  interface Actions {
+    onSubmitSuccess: {};
+    onSubmit: {};
+  }
 
-export interface Parameters {
-  fields: Field[];
+  interface EventListeners {
+    data: {};
+  }
+
+  interface Parameters {
+    fields: Field[];
+  }
 }

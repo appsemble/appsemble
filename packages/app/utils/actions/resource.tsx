@@ -24,21 +24,21 @@ import { requestLikeAction } from './request';
 
 function getBlobs(resource: Resource): BlobUploadType {
   const { blobs } = resource;
-  const type = (blobs && blobs.type) || 'upload';
-  const method = (blobs && blobs.method) || 'post';
-  const url = (blobs && blobs.url) || `/api/apps/${settings.id}/assets`;
+  const type = blobs?.type || 'upload';
+  const method = blobs?.method || 'post';
+  const url = blobs?.url || `/api/apps/${settings.id}/assets`;
 
-  return { type, method, url, serialize: blobs && blobs.serialize ? blobs.serialize : null };
+  return { type, method, url, serialize: blobs?.serialize ? blobs.serialize : null };
 }
 
 function get(args: MakeActionParameters<ResourceGetActionDefinition>): ResourceGetAction {
   const { app, definition } = args;
   const resource = app.resources[definition.resource];
-  const method = (resource && resource.get && resource.get.method) || 'GET';
+  const method = resource?.get?.method || 'GET';
   const url =
-    (resource && resource.get && resource.get.url) ||
+    resource?.get?.url ||
     resource.url ||
-    `/api/apps/${settings.id}/resources/${definition.resource}`;
+    `${settings.apiUrl}/api/apps/${settings.id}/resources/${definition.resource}`;
   const { id = 'id' } = resource;
 
   return {
@@ -60,11 +60,11 @@ function get(args: MakeActionParameters<ResourceGetActionDefinition>): ResourceG
 function query(args: MakeActionParameters<ResourceQueryActionDefinition>): ResourceQueryAction {
   const { app, definition } = args;
   const resource = app.resources[definition.resource];
-  const method = (resource && resource.query && resource.query.method) || 'GET';
+  const method = resource?.query?.method || 'GET';
   const url =
-    (resource && resource.query && resource.query.url) ||
+    resource?.query?.url ||
     resource.url ||
-    `/api/apps/${settings.id}/resources/${definition.resource}`;
+    `${settings.apiUrl}/api/apps/${settings.id}/resources/${definition.resource}`;
 
   return {
     ...requestLikeAction({
@@ -85,11 +85,11 @@ function query(args: MakeActionParameters<ResourceQueryActionDefinition>): Resou
 function create(args: MakeActionParameters<ResourceCreateActionDefinition>): ResourceCreateAction {
   const { app, definition } = args;
   const resource = app.resources[definition.resource];
-  const method = (resource && resource.create && resource.create.method) || 'POST';
+  const method = resource?.create?.method || 'POST';
   const url =
-    (resource && resource.create && resource.create.url) ||
+    resource?.create?.url ||
     resource.url ||
-    `/api/apps/${settings.id}/resources/${definition.resource}`;
+    `${settings.apiUrl}/api/apps/${settings.id}/resources/${definition.resource}`;
 
   return {
     ...requestLikeAction({
@@ -110,11 +110,11 @@ function create(args: MakeActionParameters<ResourceCreateActionDefinition>): Res
 function update(args: MakeActionParameters<ResourceUpdateActionDefinition>): ResourceUpdateAction {
   const { app, definition } = args;
   const resource = app.resources[definition.resource];
-  const method = (resource && resource.update && resource.update.method) || 'PUT';
+  const method = resource?.update?.method || 'PUT';
   const url =
-    (resource && resource.update && resource.update.url) ||
+    resource?.update?.url ||
     resource.url ||
-    `/api/apps/${settings.id}/resources/${definition.resource}`;
+    `${settings.apiUrl}/api/apps/${settings.id}/resources/${definition.resource}`;
   const { id = 'id' } = resource;
 
   return {
@@ -136,11 +136,11 @@ function update(args: MakeActionParameters<ResourceUpdateActionDefinition>): Res
 function remove(args: MakeActionParameters<ResourceDeleteActionDefinition>): ResourceDeleteAction {
   const { app, definition } = args;
   const resource = app.resources[definition.resource];
-  const method = (resource && resource.update && resource.update.method) || 'POST';
+  const method = resource?.update?.method || 'POST';
   const url =
-    (resource && resource.update && resource.update.url) ||
+    resource?.update?.url ||
     resource.url ||
-    `/api/apps/${settings.id}/resources/${definition.resource}`;
+    `${settings.apiUrl}/api/apps/${settings.id}/resources/${definition.resource}`;
   const { id = 'id' } = resource;
 
   return {

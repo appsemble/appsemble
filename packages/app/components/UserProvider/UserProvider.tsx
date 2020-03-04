@@ -74,6 +74,7 @@ export default function UserProvider({ children }: UserProviderProps): React.Rea
   const [isLoading, setLoading] = React.useState(!!definition.security);
   const [state, setState] = React.useState(initialState);
   const [exp, setExp] = React.useState(null);
+  const [authorization, setAuthorization] = React.useState<string>(null);
 
   /**
    * Reset everything to its initial state for a logged out user.
@@ -82,7 +83,7 @@ export default function UserProvider({ children }: UserProviderProps): React.Rea
     localStorage.removeItem(REFRESH_TOKEN);
     setExp(null);
     setState(initialState);
-    delete axios.defaults.headers.common.authorization;
+    setAuthorization(null);
   }, []);
 
   /**
@@ -92,7 +93,7 @@ export default function UserProvider({ children }: UserProviderProps): React.Rea
    * @param params Additional parameters, which depend on the grant type.
    */
   const fetchToken = React.useCallback(
-    async (grantType: string, params: Record<string, string>) => {
+    async (grantType: string, params: { [key: string]: string }) => {
       const {
         data: { access_token: accessToken, refresh_token: rt },
       } = await axios.post<TokenResponse>(
@@ -106,9 +107,10 @@ export default function UserProvider({ children }: UserProviderProps): React.Rea
       );
       const payload = jwtDecode<JwtPayload>(accessToken);
       localStorage.setItem(REFRESH_TOKEN, rt);
-      axios.defaults.headers.common.authorization = `Bearer ${accessToken}`;
+      const auth = `Bearer ${accessToken}`;
+      setAuthorization(auth);
       setExp(payload.exp);
-      return payload;
+      return [auth, payload] as const;
     },
     [],
   );
@@ -122,24 +124,27 @@ export default function UserProvider({ children }: UserProviderProps): React.Rea
   const login = React.useCallback(
     async <P extends {}>(grantType: string, params: P) => {
       try {
-        const { sub } = await fetchToken(grantType, params);
+        const [auth, { sub }] = await fetchToken(grantType, params);
+        const config = { headers: { authorization: auth } };
         const [{ data: userInfo }, role] = await Promise.all([
-          axios.get<UserInfo>(`${settings.apiUrl}/api/connect/userinfo`),
-          axios.get<AppMember>(`${settings.apiUrl}/api/apps/${settings.id}/members/${sub}`).then(
-            ({ data }) => data.role,
-            error => {
-              const { policy, role: defaultRole } = definition.security.default;
-              if (
-                policy === 'everyone' ||
-                (policy === 'organization' &&
-                  // XXX Make it so we don’t rely on the error message.
-                  error.data.message === 'User is not a member of the organization.')
-              ) {
-                return defaultRole;
-              }
-              throw error;
-            },
-          ),
+          axios.get<UserInfo>(`${settings.apiUrl}/api/connect/userinfo`, config),
+          axios
+            .get<AppMember>(`${settings.apiUrl}/api/apps/${settings.id}/members/${sub}`, config)
+            .then(
+              ({ data }) => data.role,
+              error => {
+                const { policy, role: defaultRole } = definition.security.default;
+                if (
+                  policy === 'everyone' ||
+                  (policy === 'organization' &&
+                    // XXX Make it so we don’t rely on the error message.
+                    error.data.message === 'User is not a member of the organization.')
+                ) {
+                  return defaultRole;
+                }
+                throw error;
+              },
+            ),
         ]);
         setState({
           isLoggedIn: true,
@@ -226,6 +231,21 @@ export default function UserProvider({ children }: UserProviderProps): React.Rea
       clearTimeout(timeoutId);
     };
   }, [exp, fetchToken, logout]);
+
+  React.useEffect(() => {
+    if (!authorization) {
+      return undefined;
+    }
+
+    const interceptor = axios.interceptors.request.use(config => {
+      // Only assign the authorization header to requests made to the Appsemble API.
+      if (new URL(axios.getUri(config)).origin === settings.apiUrl) {
+        Object.assign(config.headers, { authorization });
+      }
+      return config;
+    });
+    return () => axios.interceptors.request.eject(interceptor);
+  }, [authorization]);
 
   // The value is memoized to prevent unnecessary rerenders.
   const value = React.useMemo(() => ({ authorizationCodeLogin, passwordLogin, logout, ...state }), [

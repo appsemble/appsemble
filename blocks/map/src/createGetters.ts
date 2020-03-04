@@ -1,3 +1,4 @@
+import { Parameters } from '@appsemble/sdk';
 import { compileFilters } from '@appsemble/utils';
 
 export interface LatLngMapper {
@@ -5,33 +6,7 @@ export interface LatLngMapper {
   lng: (data: any) => any;
 }
 
-export interface BlockParameters {
-  latitude: string;
-  longitude: string;
-  disableClustering?: boolean;
-
-  /**
-   * The maximum radius that a cluster will cover from the central marker (in pixels). Default 80.
-   * Decreasing will make more, smaller clusters.
-   * You can also use a function that accepts the current map zoom
-   * and returns the maximum cluster radius in pixels.
-   *
-   * @minimum 1
-   * @TJS-type integer
-   */
-  maxClusterRadius?: number;
-}
-
-export interface BlockActions {
-  onMarkerClick: {};
-}
-
-export interface Events {
-  listen: 'data';
-  emit: 'move';
-}
-
-export default function createGetters(params: BlockParameters): LatLngMapper {
+export default function createGetters(params: Parameters): LatLngMapper {
   return {
     lat:
       params.latitude == null

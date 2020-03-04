@@ -5,7 +5,6 @@ import { remapData } from '@appsemble/utils';
 import { h, VNode } from 'preact';
 import { useCallback, useEffect, useState } from 'preact/hooks';
 
-import { Actions, Events, Parameters } from '../block';
 import styles from './index.css';
 
 const messages = {
@@ -25,7 +24,7 @@ bootstrap(
     events,
     ready,
     utils,
-  }: BlockProps<Parameters, Actions, Events>): VNode => {
+  }: BlockProps): VNode => {
     const [data, setData] = useState<Item[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
@@ -71,7 +70,7 @@ bootstrap(
         <thead>
           <tr>
             {fields.map(field => (
-              <th key={`header.${field.name}`}>{field.label || field.name}</th>
+              <th key={`header.${field.name}`}>{field.label ?? field.name}</th>
             ))}
           </tr>
         </thead>

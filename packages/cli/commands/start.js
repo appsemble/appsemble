@@ -12,12 +12,6 @@ export function builder(yargs) {
       type: 'number',
       default: 9999,
     })
-    .option('webpack-config', {
-      desc: 'The webpack configuration file to use for blocks.',
-      alias: 'c',
-      default: 'webpack.config',
-      normalize: true,
-    })
     .option('database-host', {
       desc:
         'The host of the database to connect to. This defaults to the connected database container.',
@@ -124,12 +118,7 @@ export async function handler(argv) {
   const start = await serverImport('start');
   const blocks = await discoverBlocks(process.cwd());
   const webpackConfigs = await Promise.all(
-    blocks.map(block =>
-      loadWebpackConfig(argv.webpackConfig, block.id, {
-        mode: 'development',
-        publicPath: `/api/blocks/${block.id}/versions/${block.version}`,
-      }),
-    ),
+    blocks.map(block => loadWebpackConfig(block, 'development')),
   );
   return start(argv, { webpackConfigs });
 }

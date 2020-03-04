@@ -38,7 +38,7 @@ export default function Field({
   onChange,
   onRangeChange,
   ...props
-}: FieldProps & FilterField): JSX.Element {
+}: FieldProps & FilterField): React.ReactElement {
   const intl = useIntl();
   const { name } = props;
 

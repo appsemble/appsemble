@@ -3,6 +3,7 @@ import chalk from 'chalk';
 import { cosmiconfig } from 'cosmiconfig';
 import fs from 'fs-extra';
 import path from 'path';
+import { inspect } from 'util';
 
 const explorer = cosmiconfig('appsemble');
 
@@ -19,7 +20,7 @@ export default async function getBlockConfig(dir) {
   }
   const { config, filepath } = found;
   logger.info(`Found configuration file: ${filepath}`);
-  const pkg = await fs.readJSON(path.resolve(filepath, '../package.json'));
+  const pkg = await fs.readJSON(path.join(dir, 'package.json'));
   if (!pkg.private) {
     logger.warn(
       `It is ${chalk.underline.yellow('highly recommended')} to set “${chalk.green(
@@ -31,9 +32,11 @@ export default async function getBlockConfig(dir) {
     description: pkg.description,
     id: pkg.name,
     version: pkg.version,
+    webpack: 'webpack.config',
+    dist: 'dist',
     ...config,
     dir,
   };
-  logger.verbose('Resolved configuration:', result);
+  logger.verbose(`Resolved block configuration: ${inspect(result, { colors: true })}`);
   return result;
 }

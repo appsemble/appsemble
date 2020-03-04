@@ -1,22 +1,16 @@
 /** @jsx h */
-import { bootstrap as sdkBootstrap, BootstrapParams, EventParams } from '@appsemble/sdk';
+import { bootstrap as sdkBootstrap, BootstrapParams } from '@appsemble/sdk';
 import IntlMessageFormat from 'intl-messageformat';
 import { ComponentType, createContext, Fragment, h, render, VNode } from 'preact';
 import { useContext } from 'preact/hooks';
 
-export interface BlockProps<P = any, A = {}, E extends EventParams = {}>
-  extends BootstrapParams<P, A, E> {
-  /**
-   * The DOM node on which the block is mounted.
-   */
-  preactRoot: Element;
-
+export interface BlockProps extends BootstrapParams {
   /**
    * A function that must be called to indicate the block is ready to be rendered.
    */
   ready: () => void;
 
-  messages: Record<string, IntlMessageFormat>;
+  messages: { [id: string]: IntlMessageFormat };
 }
 
 const Context = createContext<BlockProps>(null);
@@ -24,22 +18,18 @@ const Context = createContext<BlockProps>(null);
 /**
  * Mount a Preact component returned by a bootstrap function in the shadow DOM of a block.
  */
-export function mount<P, A = {}, E extends EventParams = {}>(
-  Component: ComponentType<BlockProps<P, A, E>>,
-  messages?: Record<string, string>,
-  createRoot: () => Element = () => document.createElement('div'),
-): (params: BootstrapParams<P, A, E>) => Promise<void> {
+export function mount(
+  Component: ComponentType<BlockProps>,
+  messages?: { [id: string]: string },
+): (params: BootstrapParams) => Promise<void> {
   return params =>
     new Promise(ready => {
-      const preactRoot = params.shadowRoot.appendChild(createRoot());
-
       const props = {
         ...params,
         ready,
-        preactRoot,
         messages: messages
           ? Object.entries(messages).reduce(
-              (acc: Record<string, IntlMessageFormat>, [key, message]) => {
+              (acc: { [id: string]: IntlMessageFormat }, [key, message]) => {
                 acc[key] = new IntlMessageFormat(message);
                 return acc;
               },
@@ -52,17 +42,16 @@ export function mount<P, A = {}, E extends EventParams = {}>(
           <Component {...props} />
         </Context.Provider>
       );
-      render(component, preactRoot);
-      params.utils.addCleanup(() => render(null, preactRoot, preactRoot));
+      render(component, params.shadowRoot);
+      params.utils.addCleanup(() => render(null, params.shadowRoot));
     });
 }
 
-export function bootstrap<P, A = {}, E extends EventParams = {}>(
-  Component: ComponentType<BlockProps<P, A, E>>,
-  messages?: Record<string, string>,
-  reactRoot?: () => Element,
+export function bootstrap(
+  Component: ComponentType<BlockProps>,
+  messages?: { [id: string]: string },
 ): void {
-  sdkBootstrap<P, A, E>(mount(Component, messages, reactRoot));
+  sdkBootstrap(mount(Component, messages));
 }
 
 /**
@@ -83,7 +72,7 @@ export function useBlock(): BlockProps {
 
 export interface FormattedMessageProps {
   id: string;
-  values?: Record<string, number | string | ((str: string) => VNode)>;
+  values?: { [key: string]: number | string | ((str: string) => VNode) };
 }
 
 export function FormattedMessage({ id, values }: FormattedMessageProps): VNode {

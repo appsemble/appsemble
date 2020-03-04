@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/cli",
-  "version": "0.11.4",
+  "version": "0.11.5",
   "homepage": "https://appsemble.dev",
   "bugs": {
     "url": "https://gitlab.com/appsemble/appsemble/issues"
@@ -16,11 +16,8 @@
   "directories": {
     "bin": "bin"
   },
-  "scripts": {
-    "tsc": "../../config/bin/tscstub.js"
-  },
   "dependencies": {
-    "@appsemble/node-utils": "0.11.4",
+    "@appsemble/node-utils": "0.11.5",
     "axios": "^0.19.2",
     "chalk": "^3.0.0",
     "cosmiconfig": "^6.0.0",
@@ -39,8 +36,10 @@
     "read-pkg-up": "^7.0.1",
     "typescript": "^3.7.5",
     "typescript-json-schema": "^0.42.0",
-    "webpack-merge": "^4.2.2",
     "yargs": "^15.1.0"
+  },
+  "devDependencies": {
+    "axios-mock-adapter": "^1.17.0"
   },
   "peerDependencies": {
     "webpack": "^4.41.2"

@@ -1,9 +1,10 @@
 /** @jsx h */
 import { BlockProps, FormattedMessage } from '@appsemble/preact';
 import classNames from 'classnames';
-import { Component, h, VNode } from 'preact';
+import { h, VNode } from 'preact';
+import { useCallback, useEffect, useState } from 'preact/hooks';
 
-import { Actions, Field, FileField, Parameters } from '../../../block';
+import { Field, FileField } from '../../../block';
 import BooleanInput from '../BooleanInput';
 import EnumInput from '../EnumInput';
 import FileInput from '../FileInput';
@@ -12,22 +13,11 @@ import NumberInput from '../NumberInput';
 import StringInput from '../StringInput';
 import styles from './FormBlock.css';
 
-type FormBlockProps = BlockProps<Parameters, Actions>;
-
-type Values = Record<string, any>;
+interface Values {
+  [key: string]: any;
+}
 
 type Validator = (field: Field, event: Event, value: any) => boolean;
-
-interface FormBlockState {
-  errors: {
-    [name: string]: string;
-  };
-  validity: {
-    [name: string]: boolean;
-  };
-  submitting: boolean;
-  values: Values;
-}
 
 const inputs = {
   enum: EnumInput,
@@ -70,138 +60,133 @@ const validators: { [name: string]: Validator } = {
   boolean: () => true,
 };
 
-/**
- * Render Material UI based a form based on a JSON schema
- */
-export default class FormBlock extends Component<FormBlockProps, FormBlockState> {
-  state: FormBlockState = {
-    errors: {},
-    validity: {
-      ...this.props.block.parameters.fields.reduce<{ [name: string]: boolean }>(
-        (acc, { defaultValue, name, required, type }) => {
-          let valid = !required;
-          if (required) {
-            valid = defaultValue !== undefined;
-          }
-          if ((type as any) === 'boolean') {
-            valid = true;
-          }
-          acc[name] = valid;
-          return acc;
-        },
-        {},
-      ),
-    },
-    submitting: false,
-    values: {
-      ...this.props.block.parameters.fields.reduce<Values>(
-        (acc, { defaultValue, name, repeated }: FileField) => {
-          acc[name] = defaultValue !== undefined ? defaultValue : repeated && [];
-          return acc;
-        },
-        {},
-      ),
-      ...this.props.data,
-    },
-  };
-
-  componentDidMount(): void {
-    const { ready } = this.props;
-    ready();
-  }
-
-  validateField = (event: Event, value: any): boolean => {
-    const {
-      block: {
-        parameters: { fields },
+export default function FormBlock({ actions, block, data, events, ready }: BlockProps): VNode {
+  const [errors, setErrors] = useState<{ [name: string]: string }>({});
+  const [disabled, setDisabled] = useState(!!block.events?.listen?.data);
+  const [validity, setValidity] = useState({
+    ...block.parameters.fields.reduce<{ [name: string]: boolean }>(
+      (acc, { defaultValue, name, required, type }) => {
+        let valid = !required;
+        if (required) {
+          valid = defaultValue !== undefined;
+        }
+        if ((type as any) === 'boolean') {
+          valid = true;
+        }
+        acc[name] = valid;
+        return acc;
       },
-    } = this.props;
+      {},
+    ),
+  });
+  const [submitting, setSubmitting] = useState(false);
+  const [values, setValues] = useState({
+    ...block.parameters.fields.reduce<Values>(
+      (acc, { defaultValue, name, repeated, required }: FileField) => {
+        if (defaultValue === undefined && !required) {
+          return acc;
+        }
 
-    const { name } = event.target as HTMLInputElement;
-    const field = fields.find(f => f.name === name);
+        acc[name] = defaultValue !== undefined ? defaultValue : repeated && [];
+        return acc;
+      },
+      {},
+    ),
+    ...data,
+  });
 
-    if (Object.prototype.hasOwnProperty.call(validators, field.type)) {
-      return validators[field.type](field, event, value);
-    }
-    return true;
-  };
+  const validateField = useCallback(
+    (event: Event, value: any): boolean => {
+      const { fields } = block.parameters;
+      const { name } = event.target as HTMLInputElement;
+      const field = fields.find(f => f.name === name);
 
-  onChange = (event: Event, value: any): void => {
-    const { name } = event.target as HTMLInputElement;
-    const valid = this.validateField(event, value);
+      if (Object.prototype.hasOwnProperty.call(validators, field.type)) {
+        return validators[field.type](field, event, value);
+      }
+      return true;
+    },
+    [block],
+  );
 
-    this.setState(({ errors, validity, values }) => ({
-      values: {
+  const onChange = useCallback(
+    (event: Event, value: any): void => {
+      const { name } = event.target as HTMLInputElement;
+      const valid = validateField(event, value);
+
+      setErrors({ ...errors, [name]: valid ? null : 'Invalid' });
+      setValidity({ ...validity, [name]: valid });
+      setValues({
         ...values,
         [(event.target as HTMLInputElement).name]: value,
-      },
-      errors: { ...errors, [name]: valid ? null : 'Invalid' },
-      validity: { ...validity, [name]: valid },
-    }));
-  };
+      });
+    },
+    [errors, validateField, validity, values],
+  );
 
-  onSubmit = (event: Event): void => {
-    event.preventDefault();
+  const onSubmit = useCallback(
+    (event: Event): void => {
+      event.preventDefault();
 
-    this.setState(({ submitting, values }, { actions }) => {
       if (!submitting) {
         actions.onSubmit
           .dispatch(values)
           .then(() => {
-            this.setState({
-              submitting: false,
-            });
+            setSubmitting(true);
             return actions.onSubmitSuccess.dispatch(values);
           })
           .catch(error => {
             if (error.message !== 'Schema Validation Failed') {
-              this.setState({
-                submitting: false,
-              });
+              setSubmitting(false);
               throw error;
             }
-            this.setState({
-              errors: error.data,
-              submitting: false,
-            });
+            setErrors(error.data);
+            setSubmitting(false);
           });
       }
-      return {
-        submitting: true,
-      };
-    });
-  };
 
-  render(): VNode {
-    const { block } = this.props;
-    const { errors, submitting, validity, values } = this.state;
+      setSubmitting(true);
+    },
+    [actions, submitting, values],
+  );
 
-    return (
-      <form className={styles.root} noValidate onSubmit={this.onSubmit}>
-        {block.parameters.fields.map(field => {
-          const Comp = inputs[field.type];
-          return (
-            <Comp
-              key={field.name}
-              error={errors[field.name]}
-              // @ts-ignore
-              field={field}
-              onInput={this.onChange}
-              // @ts-ignore
-              value={values[field.name]}
-            />
-          );
-        })}
-        <div className={styles.buttonWrapper}>
-          <button
-            className={classNames('button', 'is-primary', styles.submit)}
-            disabled={!Object.values(validity).every(v => v) || submitting}
-            type="submit"
-          >
-            <FormattedMessage id="submit" />
-          </button>
-        </div>
-      </form>
-    );
-  }
+  const receiveData = useCallback((d: any) => {
+    setDisabled(false);
+    setValues(d);
+  }, []);
+
+  useEffect(() => {
+    events.on.data(receiveData);
+    ready();
+  }, [block, events, ready, receiveData]);
+
+  return (
+    <form className={styles.root} noValidate onSubmit={onSubmit}>
+      {disabled && <progress className="progress is-small is-primary" />}
+      {block.parameters.fields.map(field => {
+        const Comp = inputs[field.type];
+        return (
+          <Comp
+            key={field.name}
+            disabled={disabled}
+            error={errors[field.name]}
+            // @ts-ignore
+            field={field}
+            onInput={onChange}
+            // @ts-ignore
+            value={values[field.name]}
+          />
+        );
+      })}
+      <div className={styles.buttonWrapper}>
+        <button
+          className={classNames('button', 'is-primary', styles.submit)}
+          disabled={!Object.values(validity).every(v => v) || submitting || disabled}
+          type="submit"
+        >
+          <FormattedMessage id="submit" />
+        </button>
+      </div>
+    </form>
+  );
 }

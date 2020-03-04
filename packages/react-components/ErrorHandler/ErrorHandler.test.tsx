@@ -4,8 +4,8 @@ import * as React from 'react';
 import ErrorHandler from './ErrorHandler';
 
 it('should render its children if no errors are thrown', () => {
-  const Child = (): JSX.Element => <p>Test</p>;
-  const Fallback = (): JSX.Element => <p>Something went wrong!</p>;
+  const Child = (): React.ReactElement => <p>Test</p>;
+  const Fallback = (): React.ReactElement => <p>Something went wrong!</p>;
   const result = mount(
     <ErrorHandler fallback={Fallback}>
       <Child />
@@ -17,10 +17,10 @@ it('should render its children if no errors are thrown', () => {
 
 it('should render its fallback when errors are thrown', () => {
   jest.spyOn(console, 'error').mockImplementation();
-  const Child = (): JSX.Element => {
+  const Child = (): React.ReactElement => {
     throw Error('test');
   };
-  const Fallback = (): JSX.Element => <p>Something went wrong!</p>;
+  const Fallback = (): React.ReactElement => <p>Something went wrong!</p>;
   const result = mount(
     <ErrorHandler fallback={Fallback}>
       <Child />
