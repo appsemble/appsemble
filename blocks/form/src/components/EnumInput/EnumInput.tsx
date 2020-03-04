@@ -1,5 +1,6 @@
 /** @jsx h */
 import { Select } from '@appsemble/preact-components';
+import classNames from 'classnames';
 import { h, VNode } from 'preact';
 
 import { EnumField, InputProps } from '../../../block';
@@ -16,20 +17,20 @@ export default function EnumInput({ disabled, field, onInput, value = '' }: Enum
       disabled={disabled}
       iconLeft={field.icon}
       id={field.name}
-      label={field.label || field.name}
+      label={field.label ?? field.name}
       name={field.name}
       onInput={onInput}
       required={field.required}
       value={value}
     >
-      {!value && (
-        <option className={styles.hidden} value={null}>
-          {field.label}
+      {(!field.required || !value) && (
+        <option className={classNames({ [styles.hidden]: field.required })} value={null}>
+          {field.placeholder ?? ''}
         </option>
       )}
       {field.enum.map(choice => (
         <option key={choice.value} value={choice.value}>
-          {choice.label || choice.value}
+          {choice.label ?? choice.value}
         </option>
       ))}
     </Select>
