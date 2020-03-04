@@ -85,7 +85,7 @@ export default function AppSettings(): React.ReactElement {
               </span>
             </span>
             <span className="file-name">
-              {(icon && icon.name) || <FormattedMessage {...messages.noFile} />}
+              {icon?.name || <FormattedMessage {...messages.noFile} />}
             </span>
           </label>
         </div>

@@ -268,7 +268,7 @@ export default class FilterBlock extends React.Component<BlockProps, FilterBlock
         return !!(value as string[]).length;
       }
 
-      return field && field.defaultValue !== undefined ? field.defaultValue === value : !!value;
+      return field?.defaultValue !== undefined ? field.defaultValue === value : !!value;
     });
 
     return (

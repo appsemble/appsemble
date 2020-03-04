@@ -12,6 +12,10 @@ import { MakeActionParameters } from '../../types';
 import uploadBlobs from '../uploadBlobs';
 import xmlToJson from '../xmlToJson';
 
+interface Mapper {
+  [filter: string]: MapperFunction;
+}
+
 export function requestLikeAction<T extends RequestLikeActionTypes>({
   definition: { base, blobs = {}, method = 'GET', schema, query, url, serialize },
   onSuccess,
@@ -19,32 +23,21 @@ export function requestLikeAction<T extends RequestLikeActionTypes>({
 }: MakeActionParameters<RequestLikeActionDefinition<T>>): RequestLikeAction<'request'> {
   const regex = /{(.+?)}/g;
   const urlMatch = url.match(regex);
-  const urlMappers =
-    urlMatch &&
-    urlMatch
-      .map(match => match.substring(1, match.length - 1))
-      .reduce<{ [filter: string]: MapperFunction }>(
-        (acc, filter) => ({ ...acc, [filter]: compileFilters(filter) }),
-        {},
-      );
+  const urlMappers = urlMatch
+    ?.map(match => match.substring(1, match.length - 1))
+    .reduce<Mapper>((acc, filter) => ({ ...acc, [filter]: compileFilters(filter) }), {});
 
   const queryMappers =
     query &&
-    Object.entries(query).reduce<{ [k: string]: { [key: string]: MapperFunction } }>(
-      (acc, [queryKey, queryValue]) => {
-        const queryMatch = String(queryValue).match(regex);
-        if (queryMatch) {
-          acc[queryKey] = queryMatch
-            .map(match => match.substring(1, match.length - 1))
-            .reduce<{ [filter: string]: MapperFunction }>(
-              (subAcc, filter) => ({ ...subAcc, [filter]: compileFilters(filter) }),
-              {},
-            );
-        }
-        return acc;
-      },
-      {},
-    );
+    Object.entries(query).reduce<{ [k: string]: Mapper }>((acc, [queryKey, queryValue]) => {
+      const queryMatch = String(queryValue).match(regex);
+      if (queryMatch) {
+        acc[queryKey] = queryMatch
+          .map(match => match.substring(1, match.length - 1))
+          .reduce((subAcc, filter) => ({ ...subAcc, [filter]: compileFilters(filter) }), {});
+      }
+      return acc;
+    }, {});
 
   return {
     type: 'request',
