@@ -7,6 +7,10 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Fixed
+
+- Block(`@appsemble/form`): Fix issue where optional fields were marked as invalid.
+
 ## [0.11.5] - 2020-03-03
 
 ### Added

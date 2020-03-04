@@ -82,7 +82,11 @@ export default function FormBlock({ actions, block, data, events, ready }: Block
   const [submitting, setSubmitting] = useState(false);
   const [values, setValues] = useState({
     ...block.parameters.fields.reduce<Values>(
-      (acc, { defaultValue, name, repeated }: FileField) => {
+      (acc, { defaultValue, name, repeated, required }: FileField) => {
+        if (defaultValue === undefined && !required) {
+          return acc;
+        }
+
         acc[name] = defaultValue !== undefined ? defaultValue : repeated && [];
         return acc;
       },
