@@ -211,6 +211,10 @@ export default function Block({
     showDialog,
   ]);
 
+  const header = block.header ? (
+    <h6 className={classNames('title is-6', styles.title)}>{block.header}</h6>
+  ) : null;
+
   switch (manifest.layout) {
     case 'float':
       return ReactDOM.createPortal(
@@ -218,10 +222,20 @@ export default function Block({
         document.body,
       );
     case 'static':
-      return <div ref={ref} className={classNames(styles.static, className)} />;
+      return (
+        <>
+          {header}
+          <div ref={ref} className={classNames(styles.static, className)} />
+        </>
+      );
     case 'hidden':
       return null;
     default:
-      return <div ref={ref} className={classNames(styles.grow, className)} />;
+      return (
+        <>
+          {header}
+          <div ref={ref} className={classNames(styles.grow, className)} />
+        </>
+      );
   }
 }
