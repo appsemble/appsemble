@@ -95,8 +95,8 @@ export default class Card extends Component<BlockProps & CardProps, CardState> {
     }
 
     try {
-      const contentField = block?.parameters?.reply?.content || 'content';
-      const parentId = block?.parameters?.reply?.parentId || 'parentId';
+      const contentField = block?.parameters?.reply?.content ?? 'content';
+      const parentId = block?.parameters?.reply?.parentId ?? 'parentId';
 
       const result = await actions.onSubmitReply.dispatch({
         [parentId]: content.id,
