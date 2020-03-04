@@ -189,7 +189,7 @@ export default {
           $ref: '#/components/responses/app',
         },
       },
-      security: [{ studio: [] }],
+      security: [{ studio: [] }, { cli: ['apps:write'] }],
     },
     delete: {
       tags: ['app'],
