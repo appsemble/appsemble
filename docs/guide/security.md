@@ -54,7 +54,7 @@ security:
     Reader:
       description: Anyone viewing the app.
     Admin:
-      descriptoin: Administrators of the app.
+      description: Administrators of the app.
       inherits:
         - Reader
 ```
