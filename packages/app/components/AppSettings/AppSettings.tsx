@@ -76,7 +76,7 @@ export default function AppSettings(): React.ReactElement {
     if (subscription) {
       const { endpoint } = subscription;
       axios
-        .get<SubscriptionResponse>(`/api/apps/${settings.id}/subscriptions`, {
+        .get<SubscriptionResponse>(`${settings.apiUrl}/api/apps/${settings.id}/subscriptions`, {
           params: { endpoint },
         })
         .then(({ data }) => {
@@ -140,7 +140,7 @@ export default function AppSettings(): React.ReactElement {
   ): Promise<void> => {
     try {
       const { endpoint } = subscription;
-      await axios.patch(`/api/apps/${settings.id}/subscriptions`, {
+      await axios.patch(`${settings.apiUrl}/api/apps/${settings.id}/subscriptions`, {
         endpoint,
         resource,
         action,

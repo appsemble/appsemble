@@ -38,7 +38,7 @@ function get(args: MakeActionParameters<ResourceGetActionDefinition>): ResourceG
   const url =
     resource?.get?.url ||
     resource.url ||
-    `/api/apps/${settings.id}/resources/${definition.resource}`;
+    `${settings.apiUrl}/api/apps/${settings.id}/resources/${definition.resource}`;
   const { id = 'id' } = resource;
 
   return {
@@ -64,7 +64,7 @@ function query(args: MakeActionParameters<ResourceQueryActionDefinition>): Resou
   const url =
     resource?.query?.url ||
     resource.url ||
-    `/api/apps/${settings.id}/resources/${definition.resource}`;
+    `${settings.apiUrl}/api/apps/${settings.id}/resources/${definition.resource}`;
 
   return {
     ...requestLikeAction({
@@ -89,7 +89,7 @@ function create(args: MakeActionParameters<ResourceCreateActionDefinition>): Res
   const url =
     resource?.create?.url ||
     resource.url ||
-    `/api/apps/${settings.id}/resources/${definition.resource}`;
+    `${settings.apiUrl}/api/apps/${settings.id}/resources/${definition.resource}`;
 
   return {
     ...requestLikeAction({
@@ -114,7 +114,7 @@ function update(args: MakeActionParameters<ResourceUpdateActionDefinition>): Res
   const url =
     resource?.update?.url ||
     resource.url ||
-    `/api/apps/${settings.id}/resources/${definition.resource}`;
+    `${settings.apiUrl}/api/apps/${settings.id}/resources/${definition.resource}`;
   const { id = 'id' } = resource;
 
   return {
@@ -140,7 +140,7 @@ function remove(args: MakeActionParameters<ResourceDeleteActionDefinition>): Res
   const url =
     resource?.update?.url ||
     resource.url ||
-    `/api/apps/${settings.id}/resources/${definition.resource}`;
+    `${settings.apiUrl}/api/apps/${settings.id}/resources/${definition.resource}`;
   const { id = 'id' } = resource;
 
   return {
