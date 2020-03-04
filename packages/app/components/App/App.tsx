@@ -4,13 +4,12 @@ import { IntlProvider } from 'react-intl';
 import { BrowserRouter } from 'react-router-dom';
 
 import AppDefinitionProvider from '../AppDefinitionProvider/AppDefinitionProvider';
-import BottomNavigation from '../BottomNavigation';
 import ErrorFallback from '../ErrorFallback';
 import Main from '../Main';
 import MenuProvider from '../MenuProvider';
+import Navigation from '../Navigation';
 import PermissionRequest from '../PermissionRequest';
 import ServiceWorkerRegistrationProvider from '../ServiceWorkerRegistrationProvider';
-import SideNavigation from '../SideNavigation';
 import UserProvider from '../UserProvider/UserProvider';
 
 interface AppProps {
@@ -36,8 +35,7 @@ export default function App({ serviceWorkerRegistrationPromise }: AppProps): Rea
                   <MenuProvider>
                     <PermissionRequest />
                     <Main />
-                    <SideNavigation />
-                    <BottomNavigation />
+                    <Navigation />
                   </MenuProvider>
                 </UserProvider>
               </ServiceWorkerRegistrationProvider>
