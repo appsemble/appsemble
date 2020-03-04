@@ -6,11 +6,6 @@ import { useContext } from 'preact/hooks';
 
 export interface BlockProps extends BootstrapParams {
   /**
-   * The DOM node on which the block is mounted.
-   */
-  preactRoot: Element;
-
-  /**
    * A function that must be called to indicate the block is ready to be rendered.
    */
   ready: () => void;
@@ -26,16 +21,12 @@ const Context = createContext<BlockProps>(null);
 export function mount(
   Component: ComponentType<BlockProps>,
   messages?: { [id: string]: string },
-  createRoot: () => Element = () => document.createElement('div'),
 ): (params: BootstrapParams) => Promise<void> {
   return params =>
     new Promise(ready => {
-      const preactRoot = params.shadowRoot.appendChild(createRoot());
-
       const props = {
         ...params,
         ready,
-        preactRoot,
         messages: messages
           ? Object.entries(messages).reduce(
               (acc: { [id: string]: IntlMessageFormat }, [key, message]) => {
@@ -51,17 +42,16 @@ export function mount(
           <Component {...props} />
         </Context.Provider>
       );
-      render(component, preactRoot);
-      params.utils.addCleanup(() => render(null, preactRoot, preactRoot));
+      render(component, params.shadowRoot);
+      params.utils.addCleanup(() => render(null, params.shadowRoot));
     });
 }
 
 export function bootstrap(
   Component: ComponentType<BlockProps>,
   messages?: { [id: string]: string },
-  reactRoot?: () => Element,
 ): void {
-  sdkBootstrap(mount(Component, messages, reactRoot));
+  sdkBootstrap(mount(Component, messages));
 }
 
 /**
