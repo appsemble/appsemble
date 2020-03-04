@@ -10,9 +10,16 @@ type NumberInputProps = InputProps<number, NumberField>;
 /**
  * An input element for a number type schema.
  */
-export default function NumberInput({ error, field, onInput, value }: NumberInputProps): VNode {
+export default function NumberInput({
+  disabled,
+  error,
+  field,
+  onInput,
+  value,
+}: NumberInputProps): VNode {
   return (
     <Input
+      disabled={disabled}
       error={error && <FormattedMessage id="invalid" />}
       iconLeft={field.icon}
       id={field.name}
@@ -28,7 +35,7 @@ export default function NumberInput({ error, field, onInput, value }: NumberInpu
             : (event.target as HTMLInputElement).valueAsNumber,
         );
       }}
-      placeholder={field.placeholder}
+      placeholder={field.placeholder || field.label || field.name}
       readOnly={field.readOnly}
       required={field.required}
       step={field.step || field.type === 'integer' ? 1 : undefined}

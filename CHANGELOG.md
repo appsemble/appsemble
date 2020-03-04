@@ -7,10 +7,14 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.11.5] - 2020-03-03
+
 ### Added
 
 - App: Add support for defining query parameters in resource definitions.
 - App: Add support for query templates in `request` actions.
+- Block(`@appsemble/form`): Add `data` listen event.
+- Block(`@appsemble/list`): Add new list block.
 - Block(`@appsemble/stats`): Add new stats block.
 - CLI: Blocks can be published from parent and sibling directories.
 - CLI: Blocks can be served from parent and sibling directories in development.

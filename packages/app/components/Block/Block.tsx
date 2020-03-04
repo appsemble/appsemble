@@ -18,8 +18,8 @@ import { useAppDefinition } from '../AppDefinitionProvider';
 import { useServiceWorkerRegistration } from '../ServiceWorkerRegistrationProvider';
 import styles from './Block.css';
 
-const FA_URL = Array.from(document.styleSheets, sheet => sheet.href).find(
-  href => href && href.startsWith(`${window.location.origin}/fa/`),
+const FA_URL = Array.from(document.styleSheets, sheet => sheet.href).find(href =>
+  href?.startsWith(`${window.location.origin}/fa/`),
 );
 
 interface BlockProps {

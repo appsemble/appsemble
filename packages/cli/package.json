@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/cli",
-  "version": "0.11.4",
+  "version": "0.11.5",
   "homepage": "https://appsemble.dev",
   "bugs": {
     "url": "https://gitlab.com/appsemble/appsemble/issues"
@@ -17,7 +17,7 @@
     "bin": "bin"
   },
   "dependencies": {
-    "@appsemble/node-utils": "0.11.4",
+    "@appsemble/node-utils": "0.11.5",
     "axios": "^0.19.2",
     "chalk": "^3.0.0",
     "cosmiconfig": "^6.0.0",

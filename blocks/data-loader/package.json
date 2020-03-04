@@ -1,8 +1,8 @@
 {
   "name": "@appsemble/data-loader",
-  "version": "0.11.4",
+  "version": "0.11.5",
   "private": true,
   "dependencies": {
-    "@appsemble/sdk": "0.11.4"
+    "@appsemble/sdk": "0.11.5"
   }
 }
