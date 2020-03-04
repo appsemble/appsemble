@@ -1,11 +1,11 @@
 import { logger } from '@appsemble/node-utils';
+import axios from 'axios';
 import FormData from 'form-data';
 import fs from 'fs-extra';
 import { join } from 'path';
 
 import { authenticate } from '../../lib/authentication';
 import processCss from '../../lib/processCss';
-import { post } from '../../lib/request';
 
 export const command = 'upload <path>';
 export const description = 'Upload stylesheets to an organization.';
@@ -45,9 +45,9 @@ async function handleUpload(file, organization, type, block) {
   formData.append('style', Buffer.from(css), 'style.css');
 
   if (block) {
-    await post(`/api/organizations/${organization}/style/${type}/${block}`, formData);
+    await axios.post(`/api/organizations/${organization}/style/${type}/${block}`, formData);
   } else {
-    await post(`/api/organizations/${organization}/style/${type}`, formData);
+    await axios.post(`/api/organizations/${organization}/style/${type}`, formData);
   }
 
   logger.info(`Upload of ${type} stylesheet successful! 🎉`);

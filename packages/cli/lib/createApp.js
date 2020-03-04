@@ -1,9 +1,9 @@
 import { AppsembleError, logger } from '@appsemble/node-utils';
+import axios from 'axios';
 import FormData from 'form-data';
 import fs from 'fs-extra';
 import yaml from 'js-yaml';
 
-import { post } from './request';
 import traverseAppDirectory from './traverseAppDirectory';
 import traverseBlockThemes from './traverseBlockThemes';
 
@@ -46,7 +46,7 @@ export default async function createApp({
     throw error;
   }
 
-  const response = await post('/api/apps', formData);
+  const response = await axios.post('/api/apps', formData);
 
   if (file.isDirectory()) {
     // After uploading the app, upload block styles if they are available

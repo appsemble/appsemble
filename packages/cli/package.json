@@ -38,6 +38,9 @@
     "typescript-json-schema": "^0.42.0",
     "yargs": "^15.1.0"
   },
+  "devDependencies": {
+    "axios-mock-adapter": "^1.17.0"
+  },
   "peerDependencies": {
     "webpack": "^4.41.2"
   },
