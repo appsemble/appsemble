@@ -25,7 +25,7 @@ spec:
             - node
             - -r
             - esm
-            - packages/server
+            - packages/server/src
             - restore-dns
             - -vv
           env:

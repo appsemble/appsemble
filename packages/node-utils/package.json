@@ -13,10 +13,13 @@
   },
   "license": "LGPL-3.0-or-later",
   "author": "Appsemble <info@appsemble.com> (https://appsemble.com)",
+  "main": "src/index.js",
   "dependencies": {
     "chalk": "^3.0.0",
     "cli-highlight": "^2.1.4",
-    "winston": "^3.2.1"
+    "koa": "^2.11.0",
+    "winston": "^3.2.1",
+    "yargs": "^15.1.0"
   },
   "devDependencies": {
     "@appsemble/node-utils": "0.11.6",

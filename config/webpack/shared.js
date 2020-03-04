@@ -20,7 +20,10 @@ module.exports = (env, { mode }) => {
         './images/layers-2x.png$': 'leaflet/dist/images/layers-2x.png',
         './images/marker-icon.png$': 'leaflet/dist/images/marker-icon.png',
 
-        // Files from this workspace should resolve to the src directory.
+        // These packages need to have their main set to dist, but this needs to resolve to src in
+        // the Appsemble repository internally.
+        '@appsemble/preact': '@appsemble/preact/src',
+        '@appsemble/utils': '@appsemble/utils/src',
         '@appsemble/sdk': '@appsemble/sdk/src',
       },
     },

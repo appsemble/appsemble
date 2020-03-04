@@ -20,7 +20,7 @@ const publicPath = '/';
 module.exports = (env, argv) => {
   const { mode } = argv;
   const production = mode === 'production';
-  const studioEntry = path.resolve(__dirname, '../../packages/studio');
+  const studioEntry = path.resolve(__dirname, '../../packages/studio/src');
 
   return merge.smart(core(env, argv), {
     name: 'Appsemble Studio',

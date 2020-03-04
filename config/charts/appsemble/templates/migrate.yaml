@@ -24,7 +24,7 @@ spec:
             - node
             - -r
             - esm
-            - packages/server
+            - packages/server/src
             - migrate
             {{ with .Values.migrateTo }}
             - {{ . }}
