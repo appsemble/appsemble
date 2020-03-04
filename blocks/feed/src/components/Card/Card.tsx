@@ -95,11 +95,8 @@ export default class Card extends Component<BlockProps & CardProps, CardState> {
     }
 
     try {
-      const contentField =
-        (block.parameters && block.parameters.reply && block.parameters.reply.content) || 'content';
-      const parentId =
-        (block.parameters && block.parameters.reply && block.parameters.reply.parentId) ||
-        'parentId';
+      const contentField = block?.parameters?.reply?.content ?? 'content';
+      const parentId = block?.parameters?.reply?.parentId ?? 'parentId';
 
       const result = await actions.onSubmitReply.dispatch({
         [parentId]: content.id,
@@ -225,7 +222,7 @@ export default class Card extends Component<BlockProps & CardProps, CardState> {
               onClick={this.onButtonClick}
               type="button"
             >
-              {block.parameters.buttonLabel || 'Click'}
+              {block.parameters.buttonLabel ?? 'Click'}
             </button>
           )}
 

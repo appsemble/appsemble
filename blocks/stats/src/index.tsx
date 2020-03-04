@@ -28,7 +28,7 @@ attach(({ block, events }) => {
           <div className={styles.field}>
             <i className={`fas fa-${icon} ${styles.icon}`} />
             <div className={`has-text-weight-bold ${styles.value}`}>{remappers[name](data)}</div>
-            <div>{label || name}</div>
+            <div>{label ?? name}</div>
           </div>
         )),
       );

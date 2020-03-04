@@ -192,7 +192,7 @@ export default function AppDetails(): React.ReactElement {
           >
             {organizations.map((org, index) => (
               <option key={org.id} value={index}>
-                {org.name || org.id}
+                {org.name ?? org.id}
               </option>
             ))}
           </SimpleInput>
