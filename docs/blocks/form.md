@@ -89,9 +89,11 @@ An input field used to upload files.
 
 A dropdown list containing a list of predetermined values.
 
-| Parameter      | Description                                          |
-| -------------- | ---------------------------------------------------- |
-| fields[].value | The value and name of the field that can be selected |
+| Parameter             | Description                                                                   |
+| --------------------- | ----------------------------------------------------------------------------- |
+| fields[].placeholder  | The name of the default (empty) option when the enum field is _not_ required. |
+| fields[].enum[].value | The value and name of the field that can be selected                          |
+| fields[].enum[].label | The label of the field that can be selected                                   |
 
 #### `hidden`
 
