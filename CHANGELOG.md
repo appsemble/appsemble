@@ -7,6 +7,11 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Fixed
+
+- App: Fix invalid URLs when uploading assets.
+- Server: Fix issue with invalid role validation for pages with sub pages.
+
 ## [0.11.6] - 2020-03-05
 
 ### Added
