@@ -119,7 +119,12 @@ export function validateSecurity({ pages, roles, security }) {
       });
     }
 
-    page.blocks.forEach((block, blockIndex) => {
+    const blocks = [
+      ...(page.blocks || []),
+      Object.values(page.subPages || []).map(sub => sub.blocks),
+    ];
+
+    blocks.forEach((block, blockIndex) => {
       if (block.roles && block.roles.length) {
         block.roles.forEach(role => {
           if (!Object.keys(security.roles).includes(role)) {
