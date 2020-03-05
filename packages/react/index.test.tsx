@@ -46,6 +46,9 @@ beforeEach(() => {
     utils: {
       addCleanup() {},
       showMessage() {},
+      asset() {
+        return '';
+      },
     },
     theme: {
       primaryColor: '#ff0000',
