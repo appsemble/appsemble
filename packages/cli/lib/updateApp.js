@@ -33,17 +33,17 @@ export default async function updateApp({ appId, path, private: isPrivate, remot
       await traverseAppDirectory(path, formData);
     }
 
-    const { data: response } = await axios.patch(`/api/apps/${appId}`, formData);
+    const { data } = await axios.patch(`/api/apps/${appId}`, formData);
 
     if (file.isDirectory()) {
       // After uploading the app, upload block styles if they are available
-      await traverseBlockThemes(path, response.id);
+      await traverseBlockThemes(path, data.id);
     }
 
     const { host, protocol } = new URL(remote);
-    logger.info(`Successfully updated App ${response.definition.name}! 🙌`);
-    logger.info(`View app: ${protocol}//${response.path}.${response.OrganizationId}.${host}`);
-    logger.info(`Edit app: ${remote}/apps/${response.id}/edit`);
+    logger.info(`Successfully updated App ${data.definition.name}! 🙌`);
+    logger.info(`View app: ${protocol}//${data.path}.${data.OrganizationId}.${host}`);
+    logger.info(`Edit app: ${remote}/apps/${data.id}/edit`);
   } catch (error) {
     if (error instanceof yaml.YAMLException) {
       logger.error(`The YAML in ${path} is invalid.`);
