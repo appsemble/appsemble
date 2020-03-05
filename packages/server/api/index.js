@@ -45,9 +45,6 @@ export default ({ port = 9999, host = `http://localhost:${port}` } = {}) =>
 
         The OpenAPI explorer can be found on
         > ${host}/api/explorer
-
-        Rendered apps can be found on
-        > ${host}/:id
       `,
       license: {
         name: 'LGPL',
