@@ -121,7 +121,7 @@ export function validateSecurity({ pages, roles, security }) {
 
     const blocks = [
       ...(page.blocks || []),
-      Object.values(page.subPages || []).map(sub => sub.blocks),
+      ...Object.values(page.subPages || []).map(sub => sub.blocks),
     ];
 
     blocks.forEach((block, blockIndex) => {
