@@ -189,7 +189,7 @@ export default {
           $ref: '#/components/responses/app',
         },
       },
-      security: [{ studio: [] }],
+      security: [{ studio: [] }, { cli: ['apps:write'] }],
     },
     delete: {
       tags: ['app'],
@@ -600,7 +600,7 @@ export default {
           description: 'The block style has been updated succesfully.',
         },
       },
-      security: [{ studio: [] }],
+      security: [{ studio: [] }, { cli: ['apps:write'] }],
     },
   },
 };
