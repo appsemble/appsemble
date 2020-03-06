@@ -46,15 +46,15 @@ export default async function createApp({
     throw error;
   }
 
-  const response = await axios.post('/api/apps', formData);
+  const { data } = await axios.post('/api/apps', formData);
 
   if (file.isDirectory()) {
     // After uploading the app, upload block styles if they are available
-    await traverseBlockThemes(path, response.id);
+    await traverseBlockThemes(path, data.id);
   }
 
-  logger.info(`Successfully created App ${response.definition.name}! 🙌`);
+  logger.info(`Successfully created app ${data.definition.name}! 🙌`);
   const { host, protocol } = new URL(remote);
-  logger.info(`View app: ${protocol}//${response.path}.${organizationId}.${host}`);
-  logger.info(`Edit app: ${remote}/apps/${response.id}/edit`);
+  logger.info(`View app: ${protocol}//${data.path}.${organizationId}.${host}`);
+  logger.info(`Edit app: ${remote}/apps/${data.id}/edit`);
 }
