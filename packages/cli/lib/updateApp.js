@@ -41,7 +41,7 @@ export default async function updateApp({ appId, path, private: isPrivate, remot
     }
 
     const { host, protocol } = new URL(remote);
-    logger.info(`Successfully updated App ${data.definition.name}! 🙌`);
+    logger.info(`Successfully updated app ${data.definition.name}! 🙌`);
     logger.info(`View app: ${protocol}//${data.path}.${data.OrganizationId}.${host}`);
     logger.info(`Edit app: ${remote}/apps/${data.id}/edit`);
   } catch (error) {
