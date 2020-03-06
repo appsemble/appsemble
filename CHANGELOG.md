@@ -7,6 +7,10 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Fixed
+
+- Server: Allow CLI to update app block themes if it has the `apps:write` scope.
+
 ## [0.11.6] - 2020-03-05
 
 ### Added
