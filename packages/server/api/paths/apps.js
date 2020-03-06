@@ -600,7 +600,7 @@ export default {
           description: 'The block style has been updated succesfully.',
         },
       },
-      security: [{ studio: [] }],
+      security: [{ studio: [] }, { cli: ['apps:write'] }],
     },
   },
 };
