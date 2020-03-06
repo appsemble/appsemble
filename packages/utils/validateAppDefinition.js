@@ -89,9 +89,11 @@ export function validateSecurityRoles(securityDefinition, role, checkedRoles = [
 /**
  * Validates security-related definitions within the app definition.
  *
- * @param {} definition The definition of the app
+ * @param {AppDefinition} definition The definition of the app
  */
-export function validateSecurity({ pages, roles, security }) {
+export function validateSecurity(definition) {
+  const { pages, roles, security } = definition;
+
   if (!Object.keys(security.roles).includes(security.default.role)) {
     throw new AppsembleValidationError(
       `Default role ‘${security.default.role}’ does not exist in list of roles.`,
@@ -108,7 +110,7 @@ export function validateSecurity({ pages, roles, security }) {
     });
   }
 
-  pages.forEach((page, pageIndex) => {
+  pages.forEach(page => {
     if (page.roles && page.roles.length) {
       page.roles.forEach(role => {
         if (!Object.keys(security.roles).includes(role)) {
@@ -118,18 +120,18 @@ export function validateSecurity({ pages, roles, security }) {
         }
       });
     }
+  });
 
-    page.blocks.forEach((block, blockIndex) => {
-      if (block.roles && block.roles.length) {
-        block.roles.forEach(role => {
-          if (!Object.keys(security.roles).includes(role)) {
-            throw new AppsembleValidationError(
-              `Role ‘${role}’ in pages.${pageIndex}.blocks.${blockIndex} roles does not exist.`,
-            );
-          }
-        });
-      }
-    });
+  const blocks = getAppBlocks(definition);
+
+  Object.entries(blocks).forEach(([key, block]) => {
+    if (block.roles && block.roles.length) {
+      block.roles.forEach(role => {
+        if (!Object.keys(security.roles).includes(role)) {
+          throw new AppsembleValidationError(`Role ‘${role}’ in ${key} roles does not exist.`);
+        }
+      });
+    }
   });
 }
 

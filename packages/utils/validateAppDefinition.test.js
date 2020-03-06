@@ -114,6 +114,37 @@ describe('validateSecurity', () => {
       new AppsembleValidationError('Role ‘Admins’ in pages.1.blocks.0 roles does not exist.'),
     );
   });
+
+  it('checks non-existent block roles in subpages', () => {
+    const definition = {
+      security: {
+        default: { role: 'Reader', policy: 'everyone' },
+        roles: {
+          Reader: {},
+          Admin: { inherits: ['Reader'] },
+        },
+      },
+      pages: [
+        {
+          name: 'Test Page A',
+          type: 'flow',
+          subPages: [
+            { name: 'SubPage A1', blocks: [{ type: 'test', version: '0.0.0', roles: [] }] },
+            {
+              name: 'SubPage A2',
+              blocks: [{ type: 'test', version: '0.0.0', roles: ['Admins'] }],
+            },
+          ],
+        },
+      ],
+    };
+
+    expect(() => validateSecurity(definition)).toThrow(
+      new AppsembleValidationError(
+        'Role ‘Admins’ in pages.0.subPages.1.blocks.0 roles does not exist.',
+      ),
+    );
+  });
 });
 
 describe('validateHooks', () => {

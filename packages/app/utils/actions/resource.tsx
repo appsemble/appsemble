@@ -26,7 +26,7 @@ function getBlobs(resource: Resource): BlobUploadType {
   const { blobs } = resource;
   const type = blobs?.type || 'upload';
   const method = blobs?.method || 'post';
-  const url = blobs?.url || `/api/apps/${settings.id}/assets`;
+  const url = blobs?.url ?? `${settings.apiUrl}/api/apps/${settings.id}/assets`;
 
   return { type, method, url, serialize: blobs?.serialize ? blobs.serialize : null };
 }
@@ -36,8 +36,8 @@ function get(args: MakeActionParameters<ResourceGetActionDefinition>): ResourceG
   const resource = app.resources[definition.resource];
   const method = resource?.get?.method || 'GET';
   const url =
-    resource?.get?.url ||
-    resource.url ||
+    resource?.get?.url ??
+    resource?.url ??
     `${settings.apiUrl}/api/apps/${settings.id}/resources/${definition.resource}`;
   const { id = 'id' } = resource;
 
@@ -62,8 +62,8 @@ function query(args: MakeActionParameters<ResourceQueryActionDefinition>): Resou
   const resource = app.resources[definition.resource];
   const method = resource?.query?.method || 'GET';
   const url =
-    resource?.query?.url ||
-    resource.url ||
+    resource?.query?.url ??
+    resource?.url ??
     `${settings.apiUrl}/api/apps/${settings.id}/resources/${definition.resource}`;
 
   return {
