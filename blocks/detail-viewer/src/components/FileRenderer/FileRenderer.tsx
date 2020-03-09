@@ -24,11 +24,7 @@ export default function FileRenderer({
         return url;
       }
 
-      if (block.parameters) {
-        return `${new URL(`${utils.asset(v)}`, window.location.origin)}`;
-      }
-
-      return v;
+      return `${new URL(`${utils.asset(v)}`, window.location.origin)}`;
     },
     [block, utils],
   );

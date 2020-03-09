@@ -34,8 +34,10 @@ export default function FeedBlock({ block: { parameters }, events, ready }: Bloc
   );
 
   const loadData = useCallback((d: Item[]) => {
-    setLoading(false);
+    console.log(d);
     setData(d);
+
+    setLoading(false);
   }, []);
 
   useEffect(() => {
