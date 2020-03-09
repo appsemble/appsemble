@@ -1,20 +1,27 @@
+import { Block } from '@appsemble/sdk';
+import { ActionDefinition, AppDefinition } from '@appsemble/types';
+
+export interface BlockMap {
+  [path: string]: Block;
+}
+
 /**
  * Extract all blocks from an app recipe.
  *
- * @param {Object} app The app from which to extract the blocks.
- * @returns {Object<String,Object>} A mapping of paths in the app recipe to blocks. The returned
- *   blocks are the same instance as that in the app recipe.
+ * @param app The app from which to extract the blocks.
+ * @returns A mapping of paths in the app recipe to blocks. The returned blocks are the same
+ *    instance as that in the app recipe.
  */
-export default function getAppBlocks(definition) {
-  const blocks = {};
+export default function getAppBlocks(definition: AppDefinition): BlockMap {
+  const blocks: BlockMap = {};
 
   definition.pages.forEach((page, pageIndex) => {
-    const parseBlocks = (block, prefix) => {
+    const parseBlocks = (block: Block, prefix: string): void => {
       blocks[prefix] = block;
       if (!block.actions) {
         return;
       }
-      Object.entries(block.actions).forEach(([actionKey, action]) => {
+      Object.entries(block.actions).forEach(([actionKey, action]: [string, ActionDefinition]) => {
         if (!('blocks' in action)) {
           return;
         }

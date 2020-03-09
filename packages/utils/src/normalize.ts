@@ -5,13 +5,13 @@
  * - Whitespace is replaced with a hyphen;
  * - The resulting string is lower case.
  *
- * @param {string} input The input string to normalize.
- * @param {boolean} stripTrailingHyphen Strip a trailing hyphen. Disable for example when processing
- *   user input directly while the user is typing.
+ * @param input The input string to normalize.
+ * @param stripTrailingHyphen Strip a trailing hyphen. Disable for example when processing user
+ *   input directly while the user is typing.
  *
- * @returns {string} The normalized string.
+ * @returns The normalized string.
  */
-export default function normalize(input, stripTrailingHyphen = true) {
+export default function normalize(input: string, stripTrailingHyphen = true): string {
   const normalized = input
     // Normalize accents. https://stackoverflow.com/a/37511463/1154610
     .normalize('NFD')

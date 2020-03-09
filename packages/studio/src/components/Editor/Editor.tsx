@@ -135,7 +135,7 @@ export default function Editor(): React.ReactElement {
             .definition as OpenAPIV3.SchemaObject,
           definition,
         );
-        const blockManifests: BlockManifest[] = await Promise.all(
+        const blockManifests: Omit<BlockManifest, 'parameters'>[] = await Promise.all(
           filterBlocks(Object.values(getAppBlocks(definition))).map(async block => {
             const { data } = await axios.get<BlockManifest>(
               `/api/blocks/${block.type}/versions/${block.version}`,

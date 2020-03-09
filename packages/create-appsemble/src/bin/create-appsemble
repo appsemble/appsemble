@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-const esm = require('esm')(module);
+require('@babel/register')({
+  extensions: ['.js', '.ts'],
+});
 
-if (module === require.main) {
-  esm('..').default(process.argv.slice(2));
-}
+require('..').default(process.argv.slice(2));
