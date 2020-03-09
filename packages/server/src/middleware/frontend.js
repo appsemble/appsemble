@@ -6,7 +6,7 @@ import path from 'path';
 
 export default async function frontend(webpackConfigs) {
   if (process.env.NODE_ENV === 'production') {
-    const distDir = path.resolve(__dirname, '../../../dist');
+    const distDir = path.resolve(__dirname, '../../../../dist');
     return compose([
       serve(distDir, { immutable: true, maxage: 365 * 24 * 60 * 60 * 1e3 }),
       async (ctx, next) => {
