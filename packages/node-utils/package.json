@@ -19,12 +19,12 @@
     "cli-highlight": "^2.1.4",
     "koa": "^2.11.0",
     "winston": "^3.2.1",
-    "yargs": "^15.1.0"
+    "yargs": "^15.3.0"
   },
   "devDependencies": {
     "@appsemble/node-utils": "0.11.6",
+    "@sinonjs/fake-timers": "^6.0.0",
     "axios-test-instance": "^1.0.1",
-    "koa": "^2.11.0",
-    "lolex": "^5.1.2"
+    "koa": "^2.11.0"
   }
 }

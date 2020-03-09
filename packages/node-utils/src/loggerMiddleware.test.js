@@ -1,8 +1,8 @@
 import { logger } from '@appsemble/node-utils';
+import FakeTimers from '@sinonjs/fake-timers';
 import { createInstance } from 'axios-test-instance';
 import chalk from 'chalk';
 import Koa from 'koa';
-import lolex from 'lolex';
 
 import loggerMiddleware from './loggerMiddleware';
 
@@ -15,7 +15,7 @@ let request;
 beforeEach(async () => {
   jest.spyOn(logger, 'info').mockImplementation(() => {});
   jest.spyOn(logger, 'log').mockImplementation(() => {});
-  clock = lolex.install();
+  clock = FakeTimers.install();
   app = new Koa();
   app.use(async (ctx, next) => {
     Object.defineProperty(ctx.request, 'origin', {

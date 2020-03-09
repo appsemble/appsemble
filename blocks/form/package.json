@@ -5,10 +5,10 @@
   "dependencies": {
     "@appsemble/preact": "0.11.6",
     "@appsemble/preact-components": "0.11.6",
-    "@fortawesome/fontawesome-common-types": "^0.2.26",
+    "@fortawesome/fontawesome-common-types": "^0.2.27",
     "classnames": "^2.2.6",
     "leaflet": "^1.5.1",
-    "preact": "^10.2.1",
+    "preact": "^10.3.3",
     "read-blob": "^1.1.0"
   }
 }
