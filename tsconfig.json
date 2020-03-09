@@ -5,7 +5,7 @@
     "baseUrl": ".",
     "noEmit": true,
     "paths": {
-      "@appsemble/sdk": ["packages/sdk/src"]
+      "@appsemble/*": ["packages/*/src"]
     }
   },
   "exclude": ["**/dist"]

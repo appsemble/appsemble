@@ -16,7 +16,7 @@ const publicPath = '/';
 module.exports = (env, argv) => {
   const { mode } = argv;
   const production = mode === 'production';
-  const appEntry = path.resolve(__dirname, '../../packages/app');
+  const appEntry = path.resolve(__dirname, '../../packages/app/src');
 
   return merge.smart(core(env, argv), {
     name: 'Appsemble App',
@@ -38,7 +38,7 @@ module.exports = (env, argv) => {
         chunks: [],
       }),
       new ServiceWorkerWebpackPlugin({
-        entry: require.resolve('@appsemble/service-worker/index.ts'),
+        entry: require.resolve('@appsemble/service-worker/src/index.ts'),
         filename: 'service-worker.js',
         minimize: production,
         publicPath,

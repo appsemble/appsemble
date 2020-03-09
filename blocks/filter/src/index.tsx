@@ -1,5 +1,4 @@
-import { bootstrap } from '@appsemble/react';
-import { provideIntl } from '@appsemble/react/intl';
+import { bootstrap, provideIntl } from '@appsemble/react';
 
 import FilterBlock from './components/FilterBlock';
 

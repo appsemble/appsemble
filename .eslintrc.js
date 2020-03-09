@@ -77,7 +77,7 @@ module.exports = {
   },
   overrides: [
     {
-      files: ['packages/server/migrations/**'],
+      files: ['packages/server/src/migrations/**'],
       rules: {
         'filenames/match-regex': 'off',
       },
