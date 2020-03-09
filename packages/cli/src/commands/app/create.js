@@ -11,7 +11,6 @@ export function builder(yargs) {
   return yargs
     .positional('paths', {
       describe: 'The paths to the apps to create.',
-      normalize: true,
     })
     .option('organization', {
       describe: 'The ID the app should be created for.',

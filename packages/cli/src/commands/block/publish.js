@@ -14,7 +14,6 @@ export function builder(yargs) {
   return yargs
     .positional('paths', {
       describe: 'The paths to the blocks to publish.',
-      normalize: true,
     })
     .option('build', {
       alias: 'b',
