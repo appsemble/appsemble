@@ -15,7 +15,7 @@ export default function Dropdown({
   className,
   label,
 }: DropdownProps): React.ReactElement {
-  const [isActive, setActive] = React.useState();
+  const [isActive, setActive] = React.useState(false);
   const ref = React.useRef<HTMLDivElement>();
 
   const toggle = React.useCallback(() => {

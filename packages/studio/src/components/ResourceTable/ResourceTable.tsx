@@ -41,8 +41,8 @@ export default function ResourceTable(): React.ReactElement {
   const push = useMessages();
 
   const [resources, setResources] = React.useState<Resource[]>();
-  const [deletingResource, setDeletingResource] = React.useState();
-  const [editingResource, setEditingResource] = React.useState();
+  const [deletingResource, setDeletingResource] = React.useState<Resource>();
+  const [editingResource, setEditingResource] = React.useState<Resource>();
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState(false);
   const warningDialog = useToggle();

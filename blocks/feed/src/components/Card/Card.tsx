@@ -111,7 +111,7 @@ export default class Card extends Component<BlockProps & CardProps, CardState> {
       // Scroll to the bottom of the reply container
       this.replyContainer.current.scrollTop = this.replyContainer.current.scrollHeight;
     } catch (e) {
-      utils.showMessage(messages.replyError.format());
+      utils.showMessage([].concat(messages.replyError.format()).join(''));
     }
   };
 
@@ -246,7 +246,7 @@ export default class Card extends Component<BlockProps & CardProps, CardState> {
                 <input
                   className="input"
                   onChange={this.onChange}
-                  placeholder={messages.reply.format()}
+                  placeholder={[].concat(messages.reply.format()).join('')}
                   required
                   value={message}
                 />

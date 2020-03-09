@@ -19,7 +19,7 @@ import messages from './messages';
 export default function AppSettings(): React.ReactElement {
   const { app } = useApp();
   const intl = useIntl();
-  const [icon, setIcon] = useState();
+  const [icon, setIcon] = useState<File>();
   const [iconUrl, setIconUrl] = useState(app.iconUrl);
   const [inputs, setInputs] = useState(app);
   const push = useMessages();
