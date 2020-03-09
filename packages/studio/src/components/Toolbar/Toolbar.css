@@ -1,0 +1,13 @@
+.root {
+  display: flex;
+  justify-content: space-between;
+}
+
+.icon {
+  margin-right: 8px;
+}
+
+.tag {
+  margin: 3px;
+  text-decoration: none !important;
+}

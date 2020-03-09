@@ -1,0 +1,28 @@
+.enter {
+  opacity: 0;
+}
+
+.enterActive {
+  opacity: 1;
+  transition: opacity 90ms ease-in;
+}
+
+.exit {
+  opacity: 1;
+}
+
+.exitActive {
+  opacity: 0;
+  transition: opacity 90ms ease-in;
+}
+
+.modal {
+  z-index: 3000 !important;
+}
+
+.closeButton {
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  z-index: 1;
+}

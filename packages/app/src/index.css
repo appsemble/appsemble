@@ -1,0 +1,7 @@
+html {
+  overflow-y: auto;
+}
+
+:global(.navbar.is-fixed-top) {
+  z-index: 2000;
+}

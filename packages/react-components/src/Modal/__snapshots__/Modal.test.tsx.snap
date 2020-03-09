@@ -1,0 +1,101 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`should not render a bulma modal when it is inactive 1`] = `
+<CSSTransition
+  classNames={
+    Object {
+      "enter": "enter",
+      "enterActive": "enterActive",
+      "exit": "exit",
+      "exitActive": "exitActive",
+    }
+  }
+  in={false}
+  mountOnEnter={true}
+  timeout={90}
+  unmountOnExit={true}
+>
+  <div
+    className="is-active modal modal"
+  >
+    <div
+      className="modal-background"
+      onClick={[Function]}
+      onKeyDown={[Function]}
+      role="presentation"
+    />
+    <div
+      className="modal-card"
+    >
+      <div
+        className="modal-card-head"
+      >
+        <p
+          className="modal-card-title"
+        />
+        <button
+          aria-label="Close dialog"
+          className="delete is-large"
+          onClick={[Function]}
+          type="button"
+        />
+      </div>
+      <div
+        className="modal-card-body"
+      >
+        test
+      </div>
+    </div>
+  </div>
+</CSSTransition>
+`;
+
+exports[`should render a bulma modal when it is active 1`] = `
+<CSSTransition
+  classNames={
+    Object {
+      "enter": "enter",
+      "enterActive": "enterActive",
+      "exit": "exit",
+      "exitActive": "exitActive",
+    }
+  }
+  in={true}
+  mountOnEnter={true}
+  timeout={90}
+  unmountOnExit={true}
+>
+  <div
+    className="is-active modal modal"
+  >
+    <div
+      className="modal-background"
+      onClick={[Function]}
+      onKeyDown={[Function]}
+      role="presentation"
+    />
+    <div
+      className="modal-card"
+    >
+      <div
+        className="modal-card-head"
+      >
+        <p
+          className="modal-card-title"
+        />
+        <button
+          aria-label="Close dialog"
+          className="delete is-large"
+          onClick={[Function]}
+          type="button"
+        />
+      </div>
+      <div
+        className="modal-card-body"
+      >
+        test
+      </div>
+    </div>
+  </div>
+</CSSTransition>
+`;

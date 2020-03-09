@@ -1,0 +1,38 @@
+.root {
+  bottom: 10px;
+  box-sizing: border-box;
+  margin-left: 10px;
+  margin-right: 10px;
+  position: fixed;
+  width: calc(100vw - 20px);
+  z-index: 3000;
+}
+
+.messageEnter {
+  opacity: 0;
+}
+
+.messageEnterActive {
+  opacity: 1;
+  transition: opacity 300ms ease-in;
+}
+
+.messageExit {
+  opacity: 1;
+}
+
+.messageExitActive {
+  opacity: 0;
+  transition: opacity 300ms ease-in;
+}
+
+.content {
+  min-height: 64px;
+  position: relative;
+}
+
+.deleteButton {
+  position: absolute;
+  right: 5px;
+  top: 5px;
+}

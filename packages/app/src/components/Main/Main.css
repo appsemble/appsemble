@@ -1,0 +1,13 @@
+.root {
+  bottom: 0;
+  box-sizing: border-box;
+  display: flex;
+  flex-flow: column;
+  left: 0;
+  max-height: 100vh;
+  min-height: 100vh;
+  padding-top: 3.25rem;
+  position: absolute;
+  right: 0;
+  top: 0;
+}

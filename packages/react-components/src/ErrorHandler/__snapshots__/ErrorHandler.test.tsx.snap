@@ -1,0 +1,25 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`should render its children if no errors are thrown 1`] = `
+<ErrorHandler
+  fallback={[Function]}
+>
+  <Child>
+    <p>
+      Test
+    </p>
+  </Child>
+</ErrorHandler>
+`;
+
+exports[`should render its fallback when errors are thrown 1`] = `
+<ErrorHandler
+  fallback={[Function]}
+>
+  <Fallback>
+    <p>
+      Something went wrong!
+    </p>
+  </Fallback>
+</ErrorHandler>
+`;

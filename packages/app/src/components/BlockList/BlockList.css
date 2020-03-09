@@ -1,0 +1,31 @@
+.transitionGroup,
+.transitionWrapper {
+  display: flex;
+  height: 100%;
+  position: relative;
+}
+
+.transitionWrapper {
+  left: 0;
+  position: absolute;
+  top: 0;
+  width: 100%;
+}
+
+.pageEnter {
+  opacity: 0;
+}
+
+.pageEnterActive {
+  opacity: 1;
+  transition: opacity 300ms ease-in;
+}
+
+.pageExit {
+  opacity: 1;
+}
+
+.pageExitActive {
+  opacity: 0;
+  transition: opacity 300ms ease-in;
+}

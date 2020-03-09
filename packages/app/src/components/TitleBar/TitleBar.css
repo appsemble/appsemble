@@ -1,0 +1,9 @@
+.brand {
+  flex: 1;
+}
+
+.container {
+  display: flex;
+  flex: 1;
+  justify-content: space-between;
+}

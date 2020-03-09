@@ -1,0 +1,35 @@
+.logoutButton {
+  background-color: transparent;
+  border: none;
+  border-radius: 2px;
+  color: hsl(0, 0%, 29%);
+  cursor: pointer;
+  display: block;
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.25;
+  outline: none;
+  padding: 0.5em 0.75em;
+  text-align: left;
+  text-decoration: none;
+  width: 100%;
+
+  &:hover {
+    background-color: hsl(0, 0%, 96.1%);
+    color: hsl(0, 0%, 21.2%);
+  }
+}
+
+.menuList {
+  background-color: hsl(0, 0%, 100%);
+
+  & > li > * {
+    border-radius: 0;
+    padding: 1em;
+
+    &.active {
+      background-color: var(--primary-color);
+      color: var(--primary-color-invert);
+    }
+  }
+}

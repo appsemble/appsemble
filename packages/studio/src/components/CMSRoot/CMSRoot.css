@@ -1,0 +1,12 @@
+.noResources {
+  display: grid;
+  text-align: center;
+}
+
+.noResource > * {
+  margin: auto;
+}
+
+.noResourcesIcon {
+  font-size: 6em;
+}
