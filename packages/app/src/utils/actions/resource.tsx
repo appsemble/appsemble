@@ -14,12 +14,13 @@ import {
   ResourceGetActionDefinition,
   ResourceQueryActionDefinition,
   ResourceSubscribeActionDefinition,
+  ResourceToggleSubscribeActionDefinition,
   ResourceUnsubscribeActionDefinition,
   ResourceUpdateActionDefinition,
 } from '@appsemble/types';
 import axios from 'axios';
 
-import { MakeActionParameters } from '../../types';
+import { MakeActionParameters, ServiceWorkerRegistrationContextType } from '../../types';
 import settings from '../settings';
 import { requestLikeAction } from './request';
 
@@ -233,4 +234,31 @@ function unsubscribe({
   };
 }
 
-export default { get, query, create, update, remove, subscribe, unsubscribe };
+function toggleSubscribe({
+  app,
+  definition,
+  pushNotifications,
+}: MakeActionParameters<ResourceToggleSubscribeActionDefinition>): BaseAction<
+  'resource.toggleSubscribe'
+> {
+  const resource = app.resources[definition.resource];
+  const { id = 'id' } = resource;
+
+  return {
+    dispatch: async data => {
+      const { endpoint } = await getSubscription(pushNotifications);
+      await axios.patch(`${settings.apiUrl}/api/apps/${settings.id}/subscriptions`, {
+        endpoint,
+        resource: definition.resource,
+        action: definition.action || 'update',
+        value: false,
+        resourceId: data[id],
+      });
+
+      return data;
+    },
+    type: 'resource.toggleSubscribe',
+  };
+}
+
+export default { get, query, create, update, remove, subscribe, unsubscribe, toggleSubscribe };

@@ -308,6 +308,9 @@ type ResourceSubscribeActionDefinition = BaseActionDefinition<'resource.subscrib
 type ResourceUnsubscribeActionDefinition = BaseActionDefinition<'resource.unsubscribe'> &
   BaseResourceSubscribeActionDefinition;
 
+type ResourceToggleSubscribeActionDefinition = BaseActionDefinition<'resource.toggleSubscribe'> &
+  BaseResourceSubscribeActionDefinition;
+
 export interface EventActionDefinition extends BaseActionDefinition<'event'> {
   /**
    * The name of the event to emit to.
@@ -332,6 +335,7 @@ export type ActionDefinition =
   | ResourceUpdateActionDefinition
   | ResourceSubscribeActionDefinition
   | ResourceUnsubscribeActionDefinition
+  | ResourceToggleSubscribeActionDefinition
   | EventActionDefinition
 
   // XXX This shouldn’t be here, but TypeScript won’t shut up without it.
