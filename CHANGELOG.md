@@ -7,6 +7,12 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- App: Add `resource.toggleSubscribe` action.
+- App: Add `resource.unsubscribe` action.
+- Server: Add option to toggle subscriptions.
+
 ### Fixed
 
 - App: Fix invalid URLs when uploading assets.
