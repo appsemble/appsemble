@@ -15,7 +15,6 @@ export function builder(yargs) {
   return yargs
     .positional('paths', {
       describe: 'The path to the block to register.',
-      normalize: true,
     })
     .option('build', {
       alias: 'b',
