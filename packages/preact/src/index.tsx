@@ -80,7 +80,7 @@ export function FormattedMessage({ id, values }: FormattedMessageProps): VNode {
   if (!Object.prototype.hasOwnProperty.call(messages, id)) {
     return <Fragment>Untranslated message ID: {id}</Fragment>;
   }
-  const formattedMessage = messages[id].formatHTMLMessage(values);
+  const formattedMessage = messages[id].format(values);
   // eslint-disable-next-line react/jsx-no-useless-fragment
   return <Fragment>{formattedMessage}</Fragment>;
 }

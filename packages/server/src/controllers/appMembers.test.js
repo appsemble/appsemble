@@ -1,5 +1,5 @@
+import FakeTimers from '@sinonjs/fake-timers';
 import { createInstance } from 'axios-test-instance';
-import lolex from 'lolex';
 
 import createServer from '../utils/createServer';
 import testSchema from '../utils/test/testSchema';
@@ -26,7 +26,7 @@ beforeAll(async () => {
 }, 10e3);
 
 beforeEach(async () => {
-  clock = lolex.install();
+  clock = FakeTimers.install();
 
   await truncate(db);
   ({ authorization, user } = await testToken(db));

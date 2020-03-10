@@ -13,7 +13,7 @@
   "license": "LGPL-3.0-or-later",
   "author": "Appsemble <info@appsemble.com> (https://appsemble.com)",
   "dependencies": {
-    "intl-messageformat": "^7.8.3"
+    "intl-messageformat": "^8.2.1"
   },
   "peerDependencies": {
     "@appsemble/sdk": "^0.11.6",

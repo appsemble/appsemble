@@ -1,4 +1,4 @@
-const dictionary = require('dictionary-en-us');
+const dictionary = require('dictionary-en');
 const fs = require('fs');
 const path = require('path');
 const english = require('retext-english');
