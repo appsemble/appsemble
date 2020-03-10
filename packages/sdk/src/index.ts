@@ -176,7 +176,8 @@ export type Action =
   | ResourceCreateAction
   | ResourceUpdateAction
   | ResourceDeleteAction
-  | BaseAction<'resource.subscribe'>;
+  | BaseAction<'resource.subscribe'>
+  | BaseAction<'resource.unsubscribe'>;
 
 /**
  * A block that is displayed on a page.

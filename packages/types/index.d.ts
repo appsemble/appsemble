@@ -290,8 +290,7 @@ type ResourceGetActionDefinition = ResourceActionDefinition<'resource.get'>;
 type ResourceQueryActionDefinition = ResourceActionDefinition<'resource.query'>;
 type ResourceUpdateActionDefinition = ResourceActionDefinition<'resource.update'>;
 
-export interface ResourceSubscribeActionDefinition
-  extends BaseActionDefinition<'resource.subscribe'> {
+interface BaseResourceSubscribeActionDefinition {
   /**
    * The name of the resource.
    */
@@ -302,6 +301,12 @@ export interface ResourceSubscribeActionDefinition
    */
   action?: 'create' | 'update' | 'delete';
 }
+
+type ResourceSubscribeActionDefinition = BaseActionDefinition<'resource.subscribe'> &
+  BaseResourceSubscribeActionDefinition;
+
+type ResourceUnsubscribeActionDefinition = BaseActionDefinition<'resource.unsubscribe'> &
+  BaseResourceSubscribeActionDefinition;
 
 export interface EventActionDefinition extends BaseActionDefinition<'event'> {
   /**
@@ -326,6 +331,7 @@ export type ActionDefinition =
   | ResourceQueryActionDefinition
   | ResourceUpdateActionDefinition
   | ResourceSubscribeActionDefinition
+  | ResourceUnsubscribeActionDefinition
   | EventActionDefinition
 
   // XXX This shouldn’t be here, but TypeScript won’t shut up without it.
