@@ -127,27 +127,41 @@ export async function updateSubscription(ctx) {
   }
 
   const [resourceSubscription] = appSubscription.ResourceSubscriptions;
-  if (!value) {
-    if (!resourceSubscription) {
-      // Subscription didn’t exist in the first place, do nothing
+  if (value !== undefined) {
+    if (!value) {
+      if (!resourceSubscription) {
+        // Subscription didn’t exist in the first place, do nothing
+        return;
+      }
+
+      // Remove the subscription
+      await resourceSubscription.destroy();
       return;
     }
 
-    // Remove the subscription
+    if (resourceSubscription) {
+      // Subscription already exists, do nothing
+      return;
+    }
+
+    await appSubscription.createResourceSubscription({
+      type: resource,
+      action,
+      ...(resourceId && { ResourceId: resourceId }),
+    });
+    return;
+  }
+
+  // Toggle subscription
+  if (!resourceSubscription) {
+    await appSubscription.createResourceSubscription({
+      type: resource,
+      action,
+      ...(resourceId && { ResourceId: resourceId }),
+    });
+  } else {
     await resourceSubscription.destroy();
-    return;
   }
-
-  if (resourceSubscription) {
-    // Subscription already exists, do nothing
-    return;
-  }
-
-  await appSubscription.createResourceSubscription({
-    type: resource,
-    action,
-    ...(resourceId && { ResourceId: resourceId }),
-  });
 }
 
 export async function broadcast(ctx) {

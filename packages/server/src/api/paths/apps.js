@@ -305,14 +305,15 @@ export default {
     },
     patch: {
       tags: ['app'],
-      description: 'Subscribe to an app’s push notifications',
+      description:
+        'Subscribe to an app’s push notifications. If value isn’t set it will toggle between subscribing and unsubscribing.',
       operationId: 'updateSubscription',
       requestBody: {
         content: {
           'application/json': {
             schema: {
               type: 'object',
-              required: ['endpoint', 'resource', 'action', 'value'],
+              required: ['endpoint', 'resource', 'action'],
               properties: {
                 endpoint: {
                   type: 'string',
