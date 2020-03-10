@@ -1,60 +1,34 @@
 /** @jsx h */
-import { withBlock } from '@appsemble/preact';
 import { remapData } from '@appsemble/utils';
 import classNames from 'classnames';
 import { Fragment, h, VNode } from 'preact';
-import { useCallback } from 'preact/hooks';
 
 import type { FileField, RendererProps } from '../../../block';
+import ImageField from '../ImageField';
 import styles from './index.css';
 
 /**
  * Render a string as is.
  */
-function FileRenderer({ field, utils, value }: RendererProps<FileField>): VNode {
-  const getSrc = useCallback(
-    (v: string | Blob): string => {
-      if (v instanceof Blob) {
-        const url = URL.createObjectURL(v);
-        utils.addCleanup(() => URL.revokeObjectURL(url));
-        return url;
-      }
-
-      return `${new URL(`${utils.asset(v)}`, window.location.origin)}`;
-    },
-    [utils],
-  );
-
+export default function FileRenderer({ field, value }: RendererProps<FileField>): VNode {
   return (
     <Fragment>
       {field.label && <h6 className="title is-6">{field.label}</h6>}
       {field.repeated ? (
         <div className={classNames('container', styles.repeated)}>
           {((value || []) as string[]).map((v, index) => (
-            <figure
+            <ImageField
               // eslint-disable-next-line react/no-array-index-key
-              key={`${field.label || field.name}.${index}`}
-              className={classNames('image', styles.root)}
-            >
-              <img
-                alt={field.label || field.name}
-                className={styles.img}
-                src={getSrc(field.repeatedName ? remapData(field.repeatedName, v) : v)}
-              />
-            </figure>
+              key={index}
+              label={field.label}
+              name={field.name}
+              src={field.repeatedName ? remapData(field.repeatedName, v) : v}
+            />
           ))}
         </div>
       ) : (
-        <figure className={classNames('image', styles.root)}>
-          <img
-            alt={field.label || field.name}
-            className={styles.img}
-            src={getSrc(value as string)}
-          />
-        </figure>
+        <ImageField label={field.label} name={field.name} src={value} />
       )}
     </Fragment>
   );
 }
-
-export default withBlock<RendererProps<FileField>>(FileRenderer);

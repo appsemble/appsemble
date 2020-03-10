@@ -13,6 +13,7 @@ import { callBootstrap } from '../../utils/bootstrapper';
 import injectCSS from '../../utils/injectCSS';
 import makeActions from '../../utils/makeActions';
 import prefixBlockURL from '../../utils/prefixBlockURL';
+import remap from '../../utils/remap';
 import settings from '../../utils/settings';
 import { useAppDefinition } from '../AppDefinitionProvider';
 import { useServiceWorkerRegistration } from '../ServiceWorkerRegistrationProvider';
@@ -160,6 +161,7 @@ export default function Block({
       definition.theme || pageTheme || block.theme ? `${bulmaBase}?${urlParams}` : bulmaBase;
 
     const utils = {
+      remap,
       showMessage: push,
       addCleanup(fn: Function) {
         cleanups.current.push(fn);
