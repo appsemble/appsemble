@@ -225,7 +225,7 @@ function unsubscribe({
         resource: definition.resource,
         action: definition.action || 'update',
         value: false,
-        resourceId: data[id],
+        ...(data?.[id] && { resourceId: data[id] }),
       });
 
       return data;
@@ -251,8 +251,7 @@ function toggleSubscribe({
         endpoint,
         resource: definition.resource,
         action: definition.action || 'update',
-        value: false,
-        resourceId: data[id],
+        ...(data?.[id] && { resourceId: data[id] }),
       });
 
       return data;

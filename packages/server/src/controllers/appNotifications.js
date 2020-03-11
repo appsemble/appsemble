@@ -105,7 +105,7 @@ export async function updateSubscription(ctx) {
             where: {
               type: resource,
               action,
-              ...(resourceId === undefined ? { ResourceId: null } : { ResourceId: resourceId }),
+              ResourceId: resourceId === undefined ? null : resourceId,
             },
             required: false,
           },
