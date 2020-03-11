@@ -14,6 +14,9 @@
   "license": "LGPL-3.0-or-later",
   "author": "Appsemble <info@appsemble.com> (https://appsemble.com)",
   "main": "src",
+  "scripts": {
+    "prepack": "babel --ignore '**/*.test.js' --ignore '**/*.test.ts' -x .js,.ts --copy-files -d dist src"
+  },
   "dependencies": {
     "@appsemble/node-utils": "^0.11.6",
     "@appsemble/utils": "^0.11.6",
@@ -33,7 +36,6 @@
     "cli-highlight": "^2.1.4",
     "date-fns": "^2.10.0",
     "dedent": "^0.7.0",
-    "esm": "^3.2.25",
     "fs-extra": "^8.1.0",
     "grant": "^4.7.0",
     "is-ip": "^3.1.0",

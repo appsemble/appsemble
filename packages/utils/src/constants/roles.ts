@@ -7,14 +7,15 @@ import {
   ManageMembers,
   ManageResources,
   ManageRoles,
+  Permission,
   PublishBlocks,
   PushNotifications,
   ViewApps,
 } from './permissions';
 
-const Member = [ViewApps];
-const AppEditor = [...Member, EditApps, PushNotifications, ManageResources];
-const Maintainer = [
+const Member: Permission[] = [ViewApps];
+const AppEditor: Permission[] = [...Member, EditApps, PushNotifications, ManageResources];
+const Maintainer: Permission[] = [
   ...AppEditor,
   EditThemes,
   PublishBlocks,
@@ -22,11 +23,13 @@ const Maintainer = [
   EditAppSettings,
   DeleteApps,
 ];
-const Owner = [...Maintainer, ManageMembers, ManageRoles];
+const Owner: Permission[] = [...Maintainer, ManageMembers, ManageRoles];
 
-export default {
+export const roles = {
   Member,
   AppEditor,
   Maintainer,
   Owner,
-};
+} as const;
+
+export type Role = keyof typeof roles;

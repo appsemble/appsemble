@@ -10,7 +10,7 @@ export const DeleteApps = 'DeleteApps';
 export const PushNotifications = 'PushNotifications';
 export const ManageResources = 'ManageResources';
 
-export default {
+export const permissions = {
   ViewApps,
   ManageRoles,
   ManageMembers,
@@ -22,4 +22,6 @@ export default {
   DeleteApps,
   PushNotifications,
   ManageResources,
-};
+} as const;
+
+export type Permission = keyof typeof permissions;

@@ -22,9 +22,7 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           command:
             - node
-            - -r
-            - esm
-            - packages/server/src
+            - packages/server/dist
             - migrate
             {{ with .Values.migrateTo }}
             - {{ . }}

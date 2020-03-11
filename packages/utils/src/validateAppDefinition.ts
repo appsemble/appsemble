@@ -1,6 +1,8 @@
+import { AppDefinition, BlockManifest, ResourceCall, Security } from '@appsemble/types';
 import Ajv from 'ajv';
+import { Promisable } from 'type-fest';
 
-import getAppBlocks from './getAppBlocks';
+import getAppBlocks, { BlockMap } from './getAppBlocks';
 
 const ajv = new Ajv();
 ajv.addFormat('fontawesome', () => true);
@@ -9,20 +11,21 @@ ajv.addFormat('fontawesome', () => true);
  * Used for throwing known Appsemble validation errors.
  */
 export class AppsembleValidationError extends Error {
+  data?: any;
+
   /**
    * @param {string} message The error message to show to the user.
    * @param {any} data Additional data that can be passed to convey additional info about the error.
    */
-  constructor(message, data) {
+  constructor(message: string, data?: any) {
     super(message);
     this.name = 'AppsembleError';
     this.data = data;
-    Error.captureStackTrace(this, this.constructor);
   }
 }
 
-async function checkBlocks(blocks, blockVersions) {
-  const blockVersionMap = new Map();
+async function checkBlocks(blocks: BlockMap, blockVersions: BlockManifest[]): Promise<void> {
+  const blockVersionMap = new Map<string, Map<string, BlockManifest>>();
   blockVersions.forEach(version => {
     if (!blockVersionMap.has(version.name)) {
       blockVersionMap.set(version.name, new Map());
@@ -64,10 +67,13 @@ async function checkBlocks(blocks, blockVersions) {
  *
  * @param securityDefinition The security definition to use for checking the role.
  * @param role The role the user is checked against.
- * @param userRole The role the user has.
  * @param checkedRoles Array containing the roles already checked.
  */
-export function validateSecurityRoles(securityDefinition, role, checkedRoles = []) {
+export function validateSecurityRoles(
+  securityDefinition: Security,
+  role: string,
+  checkedRoles: string[] = [],
+): void {
   if (checkedRoles.includes(role)) {
     throw new AppsembleValidationError(`Cyclic inheritance found for role ‘${role}’.`);
   }
@@ -89,9 +95,9 @@ export function validateSecurityRoles(securityDefinition, role, checkedRoles = [
 /**
  * Validates security-related definitions within the app definition.
  *
- * @param {AppDefinition} definition The definition of the app
+ * @param definition The definition of the app
  */
-export function validateSecurity(definition) {
+export function validateSecurity(definition: AppDefinition): void {
   const { pages, roles, security } = definition;
 
   if (!Object.keys(security.roles).includes(security.default.role)) {
@@ -140,14 +146,14 @@ export function validateSecurity(definition) {
  *
  * @param {} definition The definition of the app
  */
-export function validateHooks(definition) {
+export function validateHooks(definition: AppDefinition): void {
   const filter = ['create', 'update', 'delete'];
   Object.entries(definition.resources).forEach(([resourceKey, resource]) => {
     Object.entries(resource)
       .filter(([key]) => filter.includes(key))
-      .forEach(([actionKey, action]) => {
+      .forEach(([actionKey, action]: [string, ResourceCall]) => {
         const { hooks } = action;
-        if (hooks && hooks.notification && hooks.notification.to) {
+        if (hooks?.notification?.to) {
           hooks.notification.to.forEach(to => {
             if (
               to !== '$author' &&
@@ -163,7 +169,10 @@ export function validateHooks(definition) {
   });
 }
 
-export default async function validateAppDefinition(definition, getBlockVersions) {
+export default async function validateAppDefinition(
+  definition: AppDefinition,
+  getBlockVersions: (blockMap: BlockMap) => Promisable<BlockManifest[]>,
+): Promise<void> {
   const blocks = getAppBlocks(definition);
   const blockVersions = await getBlockVersions(blocks);
 

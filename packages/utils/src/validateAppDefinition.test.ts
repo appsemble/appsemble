@@ -1,8 +1,11 @@
+import { AppDefinition } from '@appsemble/types';
+
 import { AppsembleValidationError, validateHooks, validateSecurity } from './validateAppDefinition';
 
 describe('validateSecurity', () => {
   it('does not throw errors on valid definitions', () => {
-    const definition = {
+    const definition: AppDefinition = {
+      defaultPage: '',
       security: {
         default: { role: 'Reader', policy: 'everyone' },
         roles: {
@@ -26,7 +29,8 @@ describe('validateSecurity', () => {
   });
 
   it('throws errors on cyclic dependencies', () => {
-    const definition = {
+    const definition: AppDefinition = {
+      defaultPage: '',
       security: {
         default: { role: 'Reader', policy: 'everyone' },
         roles: {
@@ -34,6 +38,7 @@ describe('validateSecurity', () => {
           Admin: { inherits: ['Reader'] },
         },
       },
+      pages: [],
     };
 
     expect(() => validateSecurity(definition)).toThrow(
@@ -42,7 +47,8 @@ describe('validateSecurity', () => {
   });
 
   it('checks non-existent default roles', () => {
-    const definition = {
+    const definition: AppDefinition = {
+      defaultPage: '',
       security: {
         default: { role: 'Readers', policy: 'everyone' },
         roles: {
@@ -50,6 +56,7 @@ describe('validateSecurity', () => {
           Admin: { inherits: ['Reader'] },
         },
       },
+      pages: [],
     };
 
     expect(() => validateSecurity(definition)).toThrow(
@@ -58,7 +65,8 @@ describe('validateSecurity', () => {
   });
 
   it('checks non-existent app roles', () => {
-    const definition = {
+    const definition: AppDefinition = {
+      defaultPage: '',
       security: {
         default: { role: 'Reader', policy: 'everyone' },
         roles: {
@@ -67,6 +75,7 @@ describe('validateSecurity', () => {
         },
       },
       roles: ['Reader', 'Admins'],
+      pages: [],
     };
 
     expect(() => validateSecurity(definition)).toThrow(
@@ -75,7 +84,8 @@ describe('validateSecurity', () => {
   });
 
   it('checks non-existent page roles', () => {
-    const definition = {
+    const definition: AppDefinition = {
+      defaultPage: '',
       security: {
         default: { role: 'Reader', policy: 'everyone' },
         roles: {
@@ -96,7 +106,8 @@ describe('validateSecurity', () => {
   });
 
   it('checks non-existent block roles', () => {
-    const definition = {
+    const definition: AppDefinition = {
+      defaultPage: '',
       security: {
         default: { role: 'Reader', policy: 'everyone' },
         roles: {
@@ -116,7 +127,8 @@ describe('validateSecurity', () => {
   });
 
   it('checks non-existent block roles in subpages', () => {
-    const definition = {
+    const definition: AppDefinition = {
+      defaultPage: '',
       security: {
         default: { role: 'Reader', policy: 'everyone' },
         roles: {
@@ -149,7 +161,8 @@ describe('validateSecurity', () => {
 
 describe('validateHooks', () => {
   it('should validate the existance of roles in hooks', () => {
-    const definition = {
+    const definition: AppDefinition = {
+      defaultPage: '',
       security: {
         default: { role: 'Reader', policy: 'everyone' },
         roles: {
@@ -159,10 +172,12 @@ describe('validateHooks', () => {
       },
       resources: {
         TestResource: {
+          schema: { type: 'object' },
           create: {
             hooks: {
               notification: {
                 to: ['$author'],
+                data: { title: '', content: '', link: '' },
               },
             },
           },
@@ -170,18 +185,21 @@ describe('validateHooks', () => {
             hooks: {
               notification: {
                 to: ['$author', 'Reader'],
+                data: { title: '', content: '', link: '' },
               },
             },
           },
         },
       },
+      pages: [],
     };
 
     expect(() => validateHooks(definition)).not.toThrow();
   });
 
   it('should validate the existance of hook roles', () => {
-    const definition = {
+    const definition: AppDefinition = {
+      defaultPage: '',
       security: {
         default: { role: 'Reader', policy: 'everyone' },
         roles: {
@@ -191,15 +209,18 @@ describe('validateHooks', () => {
       },
       resources: {
         TestResource: {
+          schema: { type: 'object' },
           create: {
             hooks: {
               notification: {
                 to: ['foo'],
+                data: { title: '', content: '', link: '' },
               },
             },
           },
         },
       },
+      pages: [],
     };
 
     expect(() => validateHooks(definition)).toThrow(

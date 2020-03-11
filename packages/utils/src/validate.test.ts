@@ -16,7 +16,7 @@ describe('validate', () => {
   it('should convert required property errors', async () => {
     let error;
     try {
-      await validate({ required: ['skills'] }, {});
+      await validate({ type: 'object', required: ['skills'] }, {});
     } catch (err) {
       error = err;
     }

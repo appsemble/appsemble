@@ -1,10 +1,14 @@
+import { Block } from '@appsemble/sdk';
+
+export type IdentifiableBlock = Pick<Block, 'type' | 'version'>;
+
 /**
  * Normalize a block name by prefixing it with `@appsemble` is necessary.
  *
- * @param {string} name The input block name.
- * @returns {string} The normalized block name.
+ * @param name The input block name.
+ * @returns The normalized block name.
  */
-export function normalizeBlockName(name) {
+export function normalizeBlockName(name: string): string {
   if (name.startsWith('@')) {
     return name;
   }
@@ -17,9 +21,9 @@ export function normalizeBlockName(name) {
  * @param {Object[]} blocks Input blocks.
  * @returns {Object[]} Partial unique blocks. Only the type and version are returned.
  */
-export function filterBlocks(blocks) {
+export function filterBlocks(blocks: IdentifiableBlock[]): IdentifiableBlock[] {
   const visited = new Set();
-  const result = [];
+  const result: IdentifiableBlock[] = [];
 
   blocks.forEach(({ type, version }) => {
     const name = normalizeBlockName(type);

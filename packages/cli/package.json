@@ -18,10 +18,10 @@
   },
   "dependencies": {
     "@appsemble/node-utils": "0.11.6",
+    "@babel/register": "^7.8.6",
     "axios": "^0.19.2",
     "chalk": "^3.0.0",
     "cosmiconfig": "^6.0.0",
-    "esm": "^3.2.25",
     "fast-glob": "^3.2.2",
     "form-data": "^3.0.0",
     "fs-extra": "^8.1.0",
