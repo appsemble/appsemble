@@ -102,7 +102,11 @@ export async function updateSubscription(ctx) {
         include: [
           {
             model: ResourceSubscription,
-            where: { type: resource, action, ...(resourceId && { ResourceId: resourceId }) },
+            where: {
+              type: resource,
+              action,
+              ...(resourceId === undefined ? { ResourceId: null } : { ResourceId: resourceId }),
+            },
             required: false,
           },
         ],
