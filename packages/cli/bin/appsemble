@@ -2,5 +2,5 @@
 const esm = require('esm')(module);
 
 if (module === require.main) {
-  esm('../main').default(process.argv.slice(2));
+  esm('../src').default(process.argv.slice(2));
 }

@@ -9,7 +9,20 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixed
 
+- App: Fix invalid URLs when uploading assets.
+- Server: Allow CLI to update app block themes if it has the `apps:write` scope.
+- Server: Fix issue with invalid role validation for pages with sub pages.
+
+## [0.11.6] - 2020-03-05
+
+### Added
+
+- App: Add support for block headers.
+
+### Fixed
+
 - Block(`@appsemble/form`): Fix issue where optional fields were marked as invalid.
+- App: Fix leak of authorization header to third parties.
 
 ## [0.11.5] - 2020-03-03
 

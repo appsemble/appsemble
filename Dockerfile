@@ -26,7 +26,7 @@ COPY --from=frontend /app/dist /app/dist
 WORKDIR /app
 ENV NODE_ENV production
 USER node
-ENTRYPOINT ["node", "-r", "esm", "packages/server"]
+ENTRYPOINT ["node", "-r", "esm", "packages/server/src"]
 CMD ["start"]
-HEALTHCHECK CMD ["node", "-r", "esm", "packages/server", "health"]
+HEALTHCHECK CMD ["node", "-r", "esm", "packages/server/src", "health"]
 EXPOSE 9999

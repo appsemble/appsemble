@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/app",
-  "version": "0.11.5",
+  "version": "0.11.6",
   "private": true,
   "homepage": "https://appsemble.dev",
   "bugs": {
@@ -14,10 +14,10 @@
   "license": "LGPL-3.0-or-later",
   "author": "Appsemble <info@appsemble.com> (https://appsemble.com)",
   "dependencies": {
-    "@appsemble/react-components": "^0.11.5",
-    "@appsemble/sdk": "^0.11.5",
-    "@appsemble/types": "^0.11.5",
-    "@appsemble/utils": "^0.11.5",
+    "@appsemble/react-components": "^0.11.6",
+    "@appsemble/sdk": "^0.11.6",
+    "@appsemble/types": "^0.11.6",
+    "@appsemble/utils": "^0.11.6",
     "@sentry/browser": "^5.11.1",
     "axios": "^0.19.2",
     "classnames": "^2.2.6",
