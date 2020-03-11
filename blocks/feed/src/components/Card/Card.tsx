@@ -15,6 +15,7 @@ export interface CardProps {
   content: {
     id: number;
     status: string;
+    fotos: string[];
   };
   /**
    * Update function that can be called to update a single resource
@@ -116,14 +117,13 @@ export default class Card extends Component<BlockProps & CardProps, CardState> {
   };
 
   render(): VNode {
-    const { actions, block, content, messages, remappers, theme } = this.props;
+    const { actions, block, content, messages, remappers, theme, utils } = this.props;
     const { message, replies, valid } = this.state;
 
     const title: string = remappers.title(content);
     const subtitle: string = remappers.subtitle(content);
     const heading: string = remappers.heading(content);
     const picture: string = remappers.picture(content);
-    const pictures: string[] = remappers.pictures(content);
     const description: string = remappers.description(content);
     const latitude: number = remappers.latitude(content);
     const longitude: number = remappers.longitude(content);
@@ -173,26 +173,22 @@ export default class Card extends Component<BlockProps & CardProps, CardState> {
           </div>
         </div>
         <div className="card-image">
-          {picture && (
+          {picture && content?.fotos.length === 1 && (
             <figure className={styles.figure}>
               <img
                 alt={title || subtitle || heading || description}
                 className={styles.image}
-                src={`${
-                  block.parameters.pictureBase ? `${block.parameters.pictureBase}/` : ''
-                }${picture}`}
+                src={`${picture ? `${utils.asset(picture)}` : ''}`}
               />
             </figure>
           )}
-          {pictures && pictures.length > 1 && (
+          {content?.fotos && content?.fotos.length > 1 && (
             <div className={styles.images}>
-              {pictures.map(p => (
+              {content?.fotos.map(p => (
                 <figure key={p} className={`image is-64x64 ${styles.figure}`}>
                   <img
                     alt={title || subtitle || heading || description}
-                    src={`${
-                      block.parameters.pictureBase ? `${block.parameters.pictureBase}/` : ''
-                    }${p}`}
+                    src={`${p ? `${utils.asset(p)}` : ''}`}
                   />
                 </figure>
               ))}

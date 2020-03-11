@@ -16,6 +16,7 @@ function createRemapper(mapper: any): MapperFunction {
 interface Item {
   id: number;
   status: string;
+  fotos: string[];
 }
 
 /**
@@ -34,7 +35,6 @@ export default function FeedBlock({ block: { parameters }, events, ready }: Bloc
   );
 
   const loadData = useCallback((d: Item[]) => {
-    console.log(d);
     setData(d);
 
     setLoading(false);

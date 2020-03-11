@@ -26,7 +26,7 @@ export default function FileRenderer({
 
       return `${new URL(`${utils.asset(v)}`, window.location.origin)}`;
     },
-    [block, utils],
+    [utils],
   );
 
   return (

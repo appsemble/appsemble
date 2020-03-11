@@ -37,6 +37,9 @@ export interface RendererProps<F extends Field> extends Partial<BlockProps> {
   value: any;
 
   data: any;
+
+  block: any;
+  utils: any;
 }
 
 declare module '@appsemble/sdk' {
