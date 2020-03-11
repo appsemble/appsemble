@@ -1,4 +1,4 @@
-import { scopes } from '@appsemble/utils';
+import { scopes } from '../../../constants';
 
 export default {
   type: 'object',

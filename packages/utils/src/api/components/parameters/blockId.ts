@@ -1,4 +1,4 @@
-import { normalized } from '@appsemble/utils';
+import { normalized } from '../../../constants';
 
 export default {
   name: 'blockId',

@@ -1,5 +1,4 @@
-import { scopes } from '@appsemble/utils';
-
+import { scopes } from '../../../constants';
 import securityScheme from './cli';
 
 it('should match the known scopes defined in utils', () => {
