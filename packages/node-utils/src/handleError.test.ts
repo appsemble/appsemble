@@ -1,11 +1,13 @@
+import { Argv } from 'yargs';
+
 import AppsembleError from './AppsembleError';
 import handleError from './handleError';
 import { logger } from './logger';
 
-let yargs;
+let yargs: Argv;
 
 beforeEach(() => {
-  yargs = { showHelp: jest.fn() };
+  yargs = ({ showHelp: jest.fn() } as Partial<Argv>) as Argv;
   jest.spyOn(console, 'error').mockImplementation();
   jest.spyOn(process, 'exit').mockImplementation();
   jest.spyOn(logger, 'error').mockImplementation();

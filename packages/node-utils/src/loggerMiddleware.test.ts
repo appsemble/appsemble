@@ -1,20 +1,20 @@
-import { logger } from '@appsemble/node-utils';
 import FakeTimers from '@sinonjs/fake-timers';
-import { createInstance } from 'axios-test-instance';
+import { AxiosTestInstance, createInstance } from 'axios-test-instance';
 import chalk from 'chalk';
 import Koa from 'koa';
 
+import { logger } from './logger';
 import loggerMiddleware from './loggerMiddleware';
 
 class TestError extends Error {}
 
-let app;
-let clock;
-let request;
+let app: Koa;
+let clock: FakeTimers.InstalledClock;
+let request: AxiosTestInstance;
 
 beforeEach(async () => {
-  jest.spyOn(logger, 'info').mockImplementation(() => {});
-  jest.spyOn(logger, 'log').mockImplementation(() => {});
+  jest.spyOn(logger, 'info').mockImplementation(() => logger);
+  jest.spyOn(logger, 'log').mockImplementation(() => logger);
   clock = FakeTimers.install();
   app = new Koa();
   app.use(async (ctx, next) => {
