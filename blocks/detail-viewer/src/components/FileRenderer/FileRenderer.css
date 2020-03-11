@@ -10,9 +10,6 @@
 
 .img {
   height: 100% !important;
-
-  /* The way we use this, it is supported by all browsers. */
-  /* stylelint-disable-next-line plugin/no-unsupported-browser-features */
   object-fit: cover;
 }
 
