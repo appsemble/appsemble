@@ -14,7 +14,8 @@ import {
   ResourceGetActionDefinition,
   ResourceQueryActionDefinition,
   ResourceSubscribeActionDefinition,
-  ResourceToggleSubscribeActionDefinition,
+  ResourceSubscriptionStatusActionDefinition,
+  ResourceSubscriptionToggleActionDefinition,
   ResourceUnsubscribeActionDefinition,
   ResourceUpdateActionDefinition,
 } from '@appsemble/types';
@@ -188,7 +189,9 @@ function subscribe({
   app,
   definition,
   pushNotifications,
-}: MakeActionParameters<ResourceSubscribeActionDefinition>): BaseAction<'resource.subscribe'> {
+}: MakeActionParameters<ResourceSubscribeActionDefinition>): BaseAction<
+  'resource.subscription.subscribe'
+> {
   const resource = app.resources[definition.resource];
   const { id = 'id' } = resource;
 
@@ -205,7 +208,7 @@ function subscribe({
 
       return data;
     },
-    type: 'resource.subscribe',
+    type: 'resource.subscription.subscribe',
   };
 }
 
@@ -213,7 +216,9 @@ function unsubscribe({
   app,
   definition,
   pushNotifications,
-}: MakeActionParameters<ResourceUnsubscribeActionDefinition>): BaseAction<'resource.unsubscribe'> {
+}: MakeActionParameters<ResourceUnsubscribeActionDefinition>): BaseAction<
+  'resource.subscription.unsubscribe'
+> {
   const resource = app.resources[definition.resource];
   const { id = 'id' } = resource;
 
@@ -230,7 +235,7 @@ function unsubscribe({
 
       return data;
     },
-    type: 'resource.unsubscribe',
+    type: 'resource.subscription.unsubscribe',
   };
 }
 
@@ -238,8 +243,8 @@ function toggleSubscribe({
   app,
   definition,
   pushNotifications,
-}: MakeActionParameters<ResourceToggleSubscribeActionDefinition>): BaseAction<
-  'resource.toggleSubscribe'
+}: MakeActionParameters<ResourceSubscriptionToggleActionDefinition>): BaseAction<
+  'resource.subscription.toggle'
 > {
   const resource = app.resources[definition.resource];
   const { id = 'id' } = resource;
@@ -256,8 +261,46 @@ function toggleSubscribe({
 
       return data;
     },
-    type: 'resource.toggleSubscribe',
+    type: 'resource.subscription.toggle',
   };
 }
 
-export default { get, query, create, update, remove, subscribe, unsubscribe, toggleSubscribe };
+function subscriptionStatus({
+  app,
+  definition,
+  pushNotifications,
+}: MakeActionParameters<ResourceSubscriptionStatusActionDefinition>): BaseAction<
+  'resource.subscription.status'
+> {
+  const resource = app.resources[definition.resource];
+  const { id = 'id' } = resource;
+
+  return {
+    dispatch: async d => {
+      const { endpoint } = await getSubscription(pushNotifications);
+      const { data } = await axios.get(
+        d?.[id]
+          ? `${settings.apiUrl}/api/apps/${settings.id}/resources/${d[id]}/${definition.resource}/subscriptions`
+          : `${settings.apiUrl}/api/apps/${settings.id}/resources/${definition.resource}/subscriptions`,
+        {
+          params: { endpoint },
+        },
+      );
+
+      return data;
+    },
+    type: 'resource.subscription.status',
+  };
+}
+
+export default {
+  get,
+  query,
+  create,
+  update,
+  remove,
+  subscribe,
+  unsubscribe,
+  toggleSubscribe,
+  subscriptionStatus,
+};

@@ -9,9 +9,14 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
-- App: Add `resource.toggleSubscribe` action.
-- App: Add `resource.unsubscribe` action.
+- App: Add `resource.subscription.toggle` action.
+- App: Add `resource.subscription.status` action.
+- App: Add `resource.subscription.unsubscribe` action.
 - Server: Add option to toggle subscriptions.
+
+### Changed
+
+- App: Rename `resource.subscribe` action to `resource.subscription.subscribe`.
 
 ### Fixed
 

@@ -86,15 +86,16 @@ notifications to the user who initially created the resource.
 
 In order to allow users to subscribe to individual resources, assuming the `subscribers` property in
 the corresponding hook is set to `single` or `both`, it is possible to allow users to subscribe to
-an individual resource by making use of the action `resource.subscribe`.
+an individual resource by making use of the action `resource.subscription.subscribe`.
 
-The `resource.subscribe` action takes the values `resource` and optionally `action`. `resource`
-refers to which resource the user should subscribe to, whereas `action` refers to which event should
-trigger it. This can be either `update` or `delete`, defaulting to `update` if not specified.
+The `resource.subscription.subscribe` action takes the values `resource` and optionally `action`.
+`resource` refers to which resource the user should subscribe to, whereas `action` refers to which
+event should trigger it. This can be either `update` or `delete`, defaulting to `update` if not
+specified.
 
-The same principles are applied to `resource.unsubscribe`, which unsubscribes from an individual
-resource, and `resource.toggleSubscribe`, which subscribes to an individual resource if the user
-wasn’t subscribed before, and vice versa.
+The same principles are applied to `resource.subscription.unsubscribe`, which unsubscribes from an
+individual resource, and `resource.subscription.toggle`, which subscribes to an individual resource
+if the user wasn’t subscribed before, and vice versa.
 
 An example of what this could look like can be found in the code snippet below.
 
@@ -122,7 +123,7 @@ pages:
               label: Surname
         actions:
           onClick:
-            type: resource.subscribe
+            type: resource.subscription.subscribe
             resource: person
             action: update
         events:
