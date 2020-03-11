@@ -850,7 +850,10 @@ describe('getResourceSubscription', () => {
       { headers: { authorization: token }, params: { endpoint: 'https://example.com' } },
     );
 
-    expect(response).toMatchObject({ status: 200, data: { update: true, delete: false } });
+    expect(response).toMatchObject({
+      status: 200,
+      data: { id: resource.id, update: true, delete: false },
+    });
   });
 
   it('should return normally if user is not subscribed to the specific resource', async () => {
@@ -871,7 +874,10 @@ describe('getResourceSubscription', () => {
       { headers: { authorization: token }, params: { endpoint: 'https://example.com' } },
     );
 
-    expect(response).toMatchObject({ status: 200, data: { update: false, delete: false } });
+    expect(response).toMatchObject({
+      status: 200,
+      data: { id: resource.id, update: false, delete: false },
+    });
   });
 
   it('should 404 if resource is not found', async () => {

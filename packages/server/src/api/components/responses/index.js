@@ -5,6 +5,7 @@ import defaultResponse from './default';
 import invite from './invite';
 import organization from './organization';
 import resource from './resource';
+import subscriptions from './subscriptions';
 
 export default {
   app,
@@ -14,4 +15,5 @@ export default {
   resource,
   invite,
   organization,
+  subscriptions,
 };
