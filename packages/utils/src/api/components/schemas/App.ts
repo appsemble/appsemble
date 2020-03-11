@@ -20,7 +20,7 @@ export default {
       type: 'string',
       minLength: 1,
       maxLength: 30,
-      pattern: normalized,
+      pattern: normalized.source,
       description: `The URL path segment on which this app is reachable.
 
         This may only contain lower case characters, numbers, and hyphens. By default this is a
@@ -28,6 +28,7 @@ export default {
       `,
     },
     domain: {
+      type: 'string',
       oneOf: [
         { type: 'string', maxLength: 0 },
         { type: 'string', format: 'hostname' },
@@ -77,6 +78,7 @@ export default {
           `,
         },
         navigation: {
+          type: 'string',
           enum: ['bottom', 'left-menu', 'hidden'],
           description: `The navigation type to use.
 

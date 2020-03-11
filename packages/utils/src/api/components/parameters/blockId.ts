@@ -8,6 +8,6 @@ export default {
   required: true,
   schema: {
     type: 'string',
-    pattern: normalized,
+    pattern: normalized.source,
   },
 };

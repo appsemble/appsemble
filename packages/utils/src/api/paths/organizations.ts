@@ -313,6 +313,7 @@ export default {
         content: {
           'multipart/form-data': {
             schema: {
+              type: 'object',
               required: ['style'],
               properties: {
                 style: {
@@ -359,6 +360,7 @@ export default {
         content: {
           'multipart/form-data': {
             schema: {
+              type: 'object',
               required: ['style'],
               properties: {
                 style: {
@@ -410,6 +412,7 @@ export default {
         content: {
           'multipart/form-data': {
             schema: {
+              type: 'object',
               required: ['style'],
               properties: {
                 style: {

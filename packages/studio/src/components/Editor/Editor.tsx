@@ -9,6 +9,7 @@ import {
 } from '@appsemble/react-components';
 import { AppDefinition, BlockManifest } from '@appsemble/types';
 import {
+  api,
   filterBlocks,
   getAppBlocks,
   SchemaValidationError,
@@ -30,6 +31,8 @@ import HelmetIntl from '../HelmetIntl';
 import MonacoEditor from '../MonacoEditor';
 import styles from './Editor.css';
 import messages from './messages';
+
+const openApiDocumentPromise = RefParser.dereference(api({ host: window.location.origin }));
 
 export default function Editor(): React.ReactElement {
   const { app, setApp } = useApp();
@@ -56,10 +59,7 @@ export default function Editor(): React.ReactElement {
   const appUrl = `${window.location.protocol}//${app.path}.${app.OrganizationId}.${window.location.host}`;
 
   React.useEffect(() => {
-    axios
-      .get('/api/api.json')
-      .then(({ data }) => RefParser.dereference(data))
-      .then(setOpenApiDocument);
+    openApiDocumentPromise.then(setOpenApiDocument);
   }, []);
 
   React.useEffect(() => {

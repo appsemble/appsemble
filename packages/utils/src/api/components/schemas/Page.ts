@@ -1,4 +1,5 @@
 export default {
+  type: 'object',
   oneOf: [
     {
       type: 'object',
