@@ -7,14 +7,35 @@ import yaml from 'js-yaml';
 import traverseAppDirectory from './traverseAppDirectory';
 import traverseBlockThemes from './traverseBlockThemes';
 
+interface CreateAppParams {
+  /**
+   * The ID of the organization to upload for.
+   */
+  organizationId: string;
+
+  /**
+   * The path in which the App YAML is located.
+   */
+  path: string;
+
+  /**
+   * Whether the App should be marked as private.
+   */
+  private: boolean;
+
+  /**
+   * The remote server to create the app on.
+   */
+  remote: string;
+
+  /**
+   * Whether the App should be marked as a template.
+   */
+  template: boolean;
+}
+
 /**
  * Create a new App.
- *
- * @param {Object} params
- * @param {string} params.organizationId The ID of the organization to upload for.
- * @param {string} params.path The path in which the App YAML is located.
- * @param {boolean} params.private Whether the App should be marked as private.
- * @param {boolean} params.template Whether the App should be marked as a template.
  */
 export default async function createApp({
   organizationId,
@@ -22,7 +43,7 @@ export default async function createApp({
   private: isPrivate,
   remote,
   template,
-}) {
+}: CreateAppParams): Promise<void> {
   const file = await fs.stat(path);
   const formData = new FormData();
   formData.append('private', String(isPrivate));

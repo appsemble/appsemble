@@ -7,13 +7,13 @@ import postcssUrl from 'postcss-url';
 /**
  * Verifies and processes a CSS file using PostCSS.
  *
- * @param {string} path Filepath of the CSS file
+ * @param path Filepath of the CSS file
  */
-export default async function processCss(path) {
+export default async function processCss(path: string): Promise<string> {
   const data = await fs.readFile(path, 'utf8');
 
   const postcssConfig = await postcssrc();
-  const postCss = postcss(postcssConfig);
+  const postCss = postcss(postcssConfig.plugins);
   postCss.use(postcssUrl({ url: 'inline' }));
   postCss.use(postcssImport({ plugins: postCss.plugins }));
 

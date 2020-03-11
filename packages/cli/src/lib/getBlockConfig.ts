@@ -5,16 +5,17 @@ import fs from 'fs-extra';
 import path from 'path';
 import { inspect } from 'util';
 
-const explorer = cosmiconfig('appsemble');
+import { BlockConfig } from '../types';
 
 /**
  * Get the block configuration from a block directory.
  *
- * @param {string} dir The directory in which to search for the configuration file.
- * @returns {Object} The block configuration.
+ * @param dir The directory in which to search for the configuration file.
+ * @returns The block configuration.
  */
-export default async function getBlockConfig(dir) {
-  const found = await explorer.search(dir, { stopDir: dir });
+export default async function getBlockConfig(dir: string): Promise<BlockConfig> {
+  const explorer = cosmiconfig('appsemble', { stopDir: dir });
+  const found = await explorer.search(dir);
   if (!found) {
     throw new AppsembleError('No Appsemble configuration file found.');
   }

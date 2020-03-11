@@ -1,12 +1,12 @@
 import { logger } from '@appsemble/node-utils';
-import axios from 'axios';
+import axios, { AxiosInstance } from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import FormData from 'form-data';
 
 import { formData, requestLogger, responseLogger } from './interceptors';
 
-let instance;
-let mock;
+let instance: AxiosInstance;
+let mock: MockAdapter;
 
 describe('formData', () => {
   beforeAll(() => {

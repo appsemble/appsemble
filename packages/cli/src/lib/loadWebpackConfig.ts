@@ -1,5 +1,8 @@
 import { logger } from '@appsemble/node-utils';
 import path from 'path';
+import { Configuration } from 'webpack';
+
+import { BlockConfig } from '../types';
 
 /**
  * Load a webpack configuration file.
@@ -14,7 +17,11 @@ import path from 'path';
  *   CLI.
  * @returns {Object} The webpack configuration as exposed by the webpack configuration file.
  */
-export default async function loadWebpackConfig(block, mode, outputPath) {
+export default async function loadWebpackConfig(
+  block: BlockConfig,
+  mode?: 'development' | 'production',
+  outputPath?: string,
+): Promise<Configuration> {
   const configPath = require.resolve(path.resolve(block.dir, block.webpack));
   logger.info(`Using webpack config from ${configPath}`);
   const publicPath = `/api/blocks/${block.id}/versions/${block.version}`;

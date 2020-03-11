@@ -1,16 +1,31 @@
 import { logger } from '@appsemble/node-utils';
 import axios from 'axios';
 
+import { BlockConfig } from '../types';
 import makePayload from './makePayload';
+
+interface PublishParams {
+  /**
+   * The block configuration
+   */
+  config: BlockConfig;
+
+  ignoreConflict: boolean;
+
+  /**
+   * The path in which the block project is located.
+   */
+  path: string;
+}
 
 /**
  * Publish a new block version.
- *
- * @param {Object} params
- * @param {Object} params.config The block configuration
- * @param {string} params.path The path in which the block project is located.
  */
-export default async function publish({ config, ignoreConflict, path }) {
+export default async function publish({
+  config,
+  ignoreConflict,
+  path,
+}: PublishParams): Promise<void> {
   logger.info(`Publishing ${config.id}@${config.version}…`);
   const form = await makePayload({ config, path });
   try {

@@ -2,17 +2,19 @@ import { AppsembleError, logger } from '@appsemble/node-utils';
 import axios from 'axios';
 import inquirer from 'inquirer';
 
+import { BaseArguments } from '../types';
+
 export const CREDENTIALS_ENV_VAR = 'APPSEMBLE_CLIENT_CREDENTIALS';
 
-function validate(credentials) {
+function validate(credentials: string): boolean {
   return /.+:.+/.test(credentials);
 }
 
-function getService(remote) {
+function getService(remote: string): string {
   return `appsemble://${new URL(remote).host}`;
 }
 
-async function getKeytar() {
+async function getKeytar(): Promise<typeof import('keytar')> {
   try {
     return await import('keytar');
   } catch (error) {
@@ -22,7 +24,7 @@ async function getKeytar() {
   }
 }
 
-async function getClientCredentials(remote, inputCredentials) {
+async function getClientCredentials(remote: string, inputCredentials: string): Promise<string> {
   if (inputCredentials) {
     return inputCredentials;
   }
@@ -56,7 +58,7 @@ async function getClientCredentials(remote, inputCredentials) {
   return `${choice.account}:${choice.password}`;
 }
 
-export async function login({ clientCredentials, remote }) {
+export async function login({ clientCredentials, remote }: BaseArguments): Promise<void> {
   const { setPassword } = await getKeytar();
   let credentials = clientCredentials;
   if (credentials) {
@@ -81,14 +83,14 @@ export async function login({ clientCredentials, remote }) {
   logger.info(`Succesfully stored credentials for ${clientId} 🕶`);
 }
 
-export async function remove({ remote }) {
+export async function remove({ remote }: BaseArguments): Promise<void> {
   const { deletePassword, findCredentials } = await getKeytar();
   const choices = await findCredentials(getService(remote));
   if (choices.length === 0) {
     logger.warn('No client credentials are currently in use.');
     return;
   }
-  const { clientIds } = await inquirer.prompt([
+  const { clientIds } = await inquirer.prompt<{ clientIds: string[] }>([
     {
       name: 'clientIds',
       message: 'Select client ids to delete',
@@ -111,7 +113,11 @@ export async function remove({ remote }) {
  * @param {string} scope The OAuth2 scope to request.
  * @param {string} inputCredentials Client credentials passed from the command line.
  */
-export async function authenticate(remote = axios.defaults.baseURL, scope, inputCredentials) {
+export async function authenticate(
+  remote = axios.defaults.baseURL,
+  scope: string,
+  inputCredentials: string,
+): Promise<void> {
   const credentials = await getClientCredentials(remote, inputCredentials);
   logger.verbose(`Logging in to ${remote}`);
   const { data } = await axios.post(

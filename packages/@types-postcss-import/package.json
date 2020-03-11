@@ -1,0 +1,7 @@
+{
+  "name": "@types/postcss-import",
+  "version": "12.0.0",
+  "dependencies": {
+    "postcss": "^7.0.27"
+  }
+}

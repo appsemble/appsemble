@@ -1,4 +1,5 @@
 import { AppsembleError, logger } from '@appsemble/node-utils';
+import FormData from 'form-data';
 import fs from 'fs-extra';
 import yaml from 'js-yaml';
 import { join } from 'path';
@@ -8,10 +9,13 @@ import processCss from './processCss';
 /**
  * Traverses an app directory and appends the files it finds to the given FormData object.
  *
- * @param {string} path The path of the app directory to traverse.
- * @param {FormData} formData The FormData object to append the results into.
+ * @param path The path of the app directory to traverse.
+ * @param formData The FormData object to append the results into.
  */
-export default async function traverseAppDirectory(path, formData) {
+export default async function traverseAppDirectory(
+  path: string,
+  formData: FormData,
+): Promise<void> {
   logger.info(`Traversing directory for App files in ${path} 🕵`);
   const dir = await fs.readdir(path);
 
