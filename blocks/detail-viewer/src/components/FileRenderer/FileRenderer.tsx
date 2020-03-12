@@ -11,8 +11,8 @@ import styles from './FileRenderer.css';
  * Render a string as is.
  */
 export default function FileRenderer({
-  block,
   field,
+  parameters,
   utils,
   value,
 }: RendererProps<FileField>): VNode {
@@ -24,13 +24,13 @@ export default function FileRenderer({
         return url;
       }
 
-      if (block?.parameters?.fileBase) {
-        return `${new URL(`${block.parameters.fileBase}/${v}`, window.location.origin)}`;
+      if (parameters?.fileBase) {
+        return `${new URL(`${parameters.fileBase}/${v}`, window.location.origin)}`;
       }
 
       return v;
     },
-    [block, utils],
+    [parameters, utils],
   );
 
   return (

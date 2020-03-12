@@ -5,9 +5,7 @@ import { h } from 'mini-jsx';
 
 import styles from './index.css';
 
-attach(({ block, events }) => {
-  const { fields } = block.parameters;
-
+attach(({ events, parameters: { fields } }) => {
   const wrapper = (
     <div className={styles.wrapper}>
       <div className={styles.loader} />

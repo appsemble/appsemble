@@ -21,7 +21,7 @@ interface Item {
 /**
  * The top level component for the feed block.
  */
-export default function FeedBlock({ block: { parameters }, events, ready }: BlockProps): VNode {
+export default function FeedBlock({ events, parameters, ready }: BlockProps): VNode {
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState<Item[]>([]);
   const [remappers, setRemappers] = useState<Remappers>(undefined);

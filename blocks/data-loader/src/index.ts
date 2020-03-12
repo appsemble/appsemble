@@ -1,6 +1,6 @@
 import { bootstrap } from '@appsemble/sdk';
 
-bootstrap(({ actions, block, events, pageParameters, utils }) => {
+bootstrap(({ actions, events, pageParameters, parameters, utils }) => {
   async function loadData(d?: any): Promise<void> {
     try {
       const result = await actions.onLoad.dispatch({ ...pageParameters, ...d });
@@ -13,7 +13,7 @@ bootstrap(({ actions, block, events, pageParameters, utils }) => {
 
   events.on.refresh(loadData);
 
-  if (block.parameters?.skipInitialLoad) {
+  if (parameters?.skipInitialLoad) {
     return;
   }
 
