@@ -45,9 +45,8 @@ export default class Card extends Component<BlockProps & CardProps, CardState> {
   };
 
   async componentDidMount(): Promise<void> {
-    const { actions, block, content } = this.props;
-    const parentId =
-      (block.parameters && block.parameters.reply && block.parameters.reply.parentId) || 'parentId';
+    const { actions, content, parameters } = this.props;
+    const parentId = parameters.reply?.parentId ?? 'parentId';
 
     if (actions.onLoadReply.type !== 'noop') {
       const replies = await actions.onLoadReply.dispatch({
@@ -87,7 +86,7 @@ export default class Card extends Component<BlockProps & CardProps, CardState> {
   };
 
   onClick = async (): Promise<void> => {
-    const { actions, block, content, messages, utils } = this.props;
+    const { actions, content, messages, parameters, utils } = this.props;
     const { message, replies, valid } = this.state;
 
     if (!valid) {
@@ -95,8 +94,8 @@ export default class Card extends Component<BlockProps & CardProps, CardState> {
     }
 
     try {
-      const contentField = block?.parameters?.reply?.content ?? 'content';
-      const parentId = block?.parameters?.reply?.parentId ?? 'parentId';
+      const contentField = parameters.reply?.content ?? 'content';
+      const parentId = parameters.reply?.parentId ?? 'parentId';
 
       const result = await actions.onSubmitReply.dispatch({
         [parentId]: content.id,
@@ -116,7 +115,7 @@ export default class Card extends Component<BlockProps & CardProps, CardState> {
   };
 
   render(): VNode {
-    const { actions, block, content, messages, remappers, theme } = this.props;
+    const { actions, content, messages, parameters, remappers, theme } = this.props;
     const { message, replies, valid } = this.state;
 
     const title: string = remappers.title(content);
@@ -128,8 +127,8 @@ export default class Card extends Component<BlockProps & CardProps, CardState> {
     const latitude: number = remappers.latitude(content);
     const longitude: number = remappers.longitude(content);
 
-    if (block.parameters.pictureBase && block.parameters.pictureBase.endsWith('/')) {
-      block.parameters.pictureBase = block.parameters.pictureBase.slice(0, -1);
+    if (parameters.pictureBase && parameters.pictureBase.endsWith('/')) {
+      parameters.pictureBase = parameters.pictureBase.slice(0, -1);
     }
 
     let color;
@@ -178,9 +177,7 @@ export default class Card extends Component<BlockProps & CardProps, CardState> {
               <img
                 alt={title || subtitle || heading || description}
                 className={styles.image}
-                src={`${
-                  block.parameters.pictureBase ? `${block.parameters.pictureBase}/` : ''
-                }${picture}`}
+                src={`${parameters.pictureBase ? `${parameters.pictureBase}/` : ''}${picture}`}
               />
             </figure>
           )}
@@ -190,9 +187,7 @@ export default class Card extends Component<BlockProps & CardProps, CardState> {
                 <figure key={p} className={`image is-64x64 ${styles.figure}`}>
                   <img
                     alt={title || subtitle || heading || description}
-                    src={`${
-                      block.parameters.pictureBase ? `${block.parameters.pictureBase}/` : ''
-                    }${p}`}
+                    src={`${parameters.pictureBase ? `${parameters.pictureBase}/` : ''}${p}`}
                   />
                 </figure>
               ))}
@@ -222,7 +217,7 @@ export default class Card extends Component<BlockProps & CardProps, CardState> {
               onClick={this.onButtonClick}
               type="button"
             >
-              {block.parameters.buttonLabel ?? 'Click'}
+              {parameters.buttonLabel ?? 'Click'}
             </button>
           )}
 

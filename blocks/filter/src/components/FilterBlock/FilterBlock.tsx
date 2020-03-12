@@ -36,9 +36,7 @@ export default class FilterBlock extends React.Component<BlockProps, FilterBlock
 
   async componentDidMount(): Promise<void> {
     const {
-      block: {
-        parameters: { refreshTimeout },
-      },
+      parameters: { refreshTimeout },
     } = this.props;
 
     this.resetFilter();
@@ -57,9 +55,7 @@ export default class FilterBlock extends React.Component<BlockProps, FilterBlock
   fetchData = (filterParams?: Filter): Promise<any> => {
     const {
       actions,
-      block: {
-        parameters: { fields },
-      },
+      parameters: { fields },
     } = this.props;
 
     const { filter } = this.state;
@@ -96,10 +92,8 @@ export default class FilterBlock extends React.Component<BlockProps, FilterBlock
 
   resetFilter = (e?: React.MouseEvent<HTMLButtonElement>, skipHighlighted = true): void => {
     const {
-      block: {
-        parameters: { fields, highlight },
-      },
       events,
+      parameters: { fields, highlight },
     } = this.props;
 
     if (e && (e.target as HTMLButtonElement).disabled) {
@@ -151,34 +145,25 @@ export default class FilterBlock extends React.Component<BlockProps, FilterBlock
   };
 
   onChange = ({ target }: React.ChangeEvent<HTMLInputElement>): void => {
-    this.setState(
-      (
-        { filter, typingTimer },
-        {
-          block: {
-            parameters: { fields, highlight },
-          },
-        },
-      ) => {
-        const newFilter = {
-          ...filter,
-          [target.name]: target.value,
-        };
-        if (highlight && target.name === highlight) {
-          if (!fields.find(field => field.name === highlight).enum) {
-            // wait 300ms, then submit
-            clearTimeout(typingTimer);
+    this.setState(({ filter, typingTimer }, { parameters: { fields, highlight } }) => {
+      const newFilter = {
+        ...filter,
+        [target.name]: target.value,
+      };
+      if (highlight && target.name === highlight) {
+        if (!fields.find(field => field.name === highlight).enum) {
+          // wait 300ms, then submit
+          clearTimeout(typingTimer);
 
-            return {
-              filter: newFilter,
-              typingTimer: setTimeout(this.onFilter, 300),
-            };
-          }
-          setTimeout(this.onFilter, 0);
+          return {
+            filter: newFilter,
+            typingTimer: setTimeout(this.onFilter, 300),
+          };
         }
-        return { filter: newFilter };
-      },
-    );
+        setTimeout(this.onFilter, 0);
+      }
+      return { filter: newFilter };
+    });
   };
 
   onCheckBoxChange = async ({
@@ -251,9 +236,10 @@ export default class FilterBlock extends React.Component<BlockProps, FilterBlock
   };
 
   render(): React.ReactNode {
-    const { block } = this.props;
+    const {
+      parameters: { fields, highlight },
+    } = this.props;
     const { currentFilter, filter, isOpen, loading, newData } = this.state;
-    const { fields, highlight } = block.parameters;
     const highlightedField = highlight && fields.find(field => field.name === highlight);
     const showModal = !highlightedField || fields.length > 1;
 
