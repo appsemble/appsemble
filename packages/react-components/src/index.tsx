@@ -24,5 +24,6 @@ export { default as SimpleSubmit } from './SimpleSubmit';
 
 export { default as useClickOutside } from './hooks/useClickOutside';
 export { default as useMessages } from './hooks/useMessages';
+export { default as useObjectURL } from './hooks/useObjectURL';
 export { default as useQuery } from './hooks/useQuery';
 export { default as useToggle, Toggle } from './hooks/useToggle';
