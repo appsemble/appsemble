@@ -46,7 +46,7 @@ export default class Card extends Component<BlockProps & CardProps, CardState> {
 
   async componentDidMount(): Promise<void> {
     const { actions, content, parameters } = this.props;
-    const parentId = parameters?.reply?.parentId ?? 'parentId';
+    const parentId = parameters.reply?.parentId ?? 'parentId';
 
     if (actions.onLoadReply.type !== 'noop') {
       const replies = await actions.onLoadReply.dispatch({
@@ -94,8 +94,8 @@ export default class Card extends Component<BlockProps & CardProps, CardState> {
     }
 
     try {
-      const contentField = parameters?.reply?.content ?? 'content';
-      const parentId = parameters?.reply?.parentId ?? 'parentId';
+      const contentField = parameters.reply?.content ?? 'content';
+      const parentId = parameters.reply?.parentId ?? 'parentId';
 
       const result = await actions.onSubmitReply.dispatch({
         [parentId]: content.id,

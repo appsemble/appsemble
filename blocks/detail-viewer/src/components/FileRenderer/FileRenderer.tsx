@@ -24,7 +24,7 @@ export default function FileRenderer({
         return url;
       }
 
-      if (parameters?.fileBase) {
+      if (parameters.fileBase) {
         return `${new URL(`${parameters.fileBase}/${v}`, window.location.origin)}`;
       }
 

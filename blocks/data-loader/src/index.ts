@@ -13,7 +13,7 @@ bootstrap(({ actions, events, pageParameters, parameters, utils }) => {
 
   events.on.refresh(loadData);
 
-  if (parameters?.skipInitialLoad) {
+  if (parameters.skipInitialLoad) {
     return;
   }
 

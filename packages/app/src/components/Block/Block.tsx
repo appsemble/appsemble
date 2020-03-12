@@ -185,7 +185,7 @@ export default function Block({
 
       await callBootstrap(manifest, {
         actions,
-        parameters: block.parameters,
+        parameters: block.parameters || {},
         data: data || location.state,
         events,
         pageParameters: match.params,
