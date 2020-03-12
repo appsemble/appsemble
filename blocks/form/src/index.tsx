@@ -67,11 +67,11 @@ const messages = {
   unsupported: 'This file type is not supported',
 };
 
-bootstrap(({ actions, block, data, events, ready }) => {
+bootstrap(({ actions, data, events, parameters, ready }) => {
   const [errors, setErrors] = useState<{ [name: string]: string }>({});
-  const [disabled, setDisabled] = useState(!!block.events?.listen?.data);
+  const [disabled, setDisabled] = useState(true);
   const [validity, setValidity] = useState({
-    ...block.parameters.fields.reduce<{ [name: string]: boolean }>(
+    ...parameters.fields.reduce<{ [name: string]: boolean }>(
       (acc, { defaultValue, name, required, type }) => {
         let valid = !required;
         if (required) {
@@ -88,7 +88,7 @@ bootstrap(({ actions, block, data, events, ready }) => {
   });
   const [submitting, setSubmitting] = useState(false);
   const [values, setValues] = useState({
-    ...block.parameters.fields.reduce<Values>(
+    ...parameters.fields.reduce<Values>(
       (acc, { defaultValue, name, repeated, required }: FileField) => {
         if (defaultValue === undefined && !required) {
           return acc;
@@ -104,7 +104,7 @@ bootstrap(({ actions, block, data, events, ready }) => {
 
   const validateField = useCallback(
     (event: Event, value: any): boolean => {
-      const { fields } = block.parameters;
+      const { fields } = parameters;
       const { name } = event.target as HTMLInputElement;
       const field = fields.find(f => f.name === name);
 
@@ -113,7 +113,7 @@ bootstrap(({ actions, block, data, events, ready }) => {
       }
       return true;
     },
-    [block],
+    [parameters],
   );
 
   const onChange = useCallback(
@@ -163,14 +163,16 @@ bootstrap(({ actions, block, data, events, ready }) => {
   }, []);
 
   useEffect(() => {
-    events.on.data(receiveData);
+    // If a listener is present, wait until data has been received
+    const hasListener = events.on.data(receiveData);
+    setDisabled(hasListener);
     ready();
-  }, [block, events, ready, receiveData]);
+  }, [parameters, events, ready, receiveData]);
 
   return (
     <form className={styles.root} noValidate onSubmit={onSubmit}>
       {disabled && <progress className="progress is-small is-primary" />}
-      {block.parameters.fields.map(field => {
+      {parameters.fields.map(field => {
         const Comp = inputs[field.type];
         return (
           <Comp

@@ -16,7 +16,7 @@ const renderers = {
   string: StringRenderer,
 };
 
-bootstrap(({ block, events, ready, theme }) => {
+bootstrap(({ events, parameters, ready, theme }) => {
   const [data, setData] = useState(undefined);
 
   useEffect(() => {
@@ -30,14 +30,13 @@ bootstrap(({ block, events, ready, theme }) => {
 
   return (
     <div className={styles.root}>
-      {block.parameters.fields.map((field, index) => {
+      {parameters.fields.map((field, index) => {
         // Always default to string if type is not supported in renderers list.
         const Comp = renderers[field.type] || renderers.string;
 
         return (
           <Comp
             key={field.name || field.label || `${field.type}.${index}`}
-            block={block}
             data={data}
             // @ts-ignore
             field={field}

@@ -15,7 +15,7 @@ interface Item {
   id?: number;
 }
 
-bootstrap(({ actions, block: { parameters: { fields } }, events, ready, utils }) => {
+bootstrap(({ actions, events, parameters: { fields }, ready, utils }) => {
   const [data, setData] = useState<Item[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);

@@ -14,15 +14,7 @@ const messages = {
 };
 
 export default bootstrap(
-  ({
-    actions,
-    block: {
-      parameters: { fields = [], header },
-    },
-    events,
-    ready,
-    utils,
-  }) => {
+  ({ actions, parameters: { fields = [], header }, events, ready, utils }) => {
     const [data, setData] = useState<Item[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);

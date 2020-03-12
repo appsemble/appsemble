@@ -25,7 +25,7 @@ interface Item {
   status: string;
 }
 
-bootstrap(({ block: { parameters }, events, ready }) => {
+bootstrap(({ events, parameters, ready }) => {
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState<Item[]>([]);
   const [remappers, setRemappers] = useState<Remappers>(undefined);

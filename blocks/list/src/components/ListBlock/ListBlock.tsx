@@ -10,9 +10,7 @@ import styles from './ListBlock.css';
 
 export default function ListBlock({
   actions,
-  block: {
-    parameters: { fields = [], header },
-  },
+  parameters: { fields = [], header },
   events,
   ready,
   utils,

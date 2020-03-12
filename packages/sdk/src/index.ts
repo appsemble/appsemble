@@ -359,16 +359,18 @@ export interface Events {
    *
    * @param type The type of event to listen remove the listener from.
    * @param callback The callback to remove.
+   * @returns Boolean indicating whether a listener is implemented or not.
    */
-  off: { [K in keyof EventListeners]: (callback: (data: any, error?: string) => void) => void };
+  off: { [K in keyof EventListeners]: (callback: (data: any, error?: string) => void) => boolean };
 
   /**
    * Add an event listener for an Appsemble event.
    *
    * @param type The type of event to listen on.
    * @param callback A callback to register for the event.
+   * @returns Boolean indicating whether a listener is implemented or not.
    */
-  on: { [K in keyof EventListeners]: (callback: (data: any, error?: string) => void) => void };
+  on: { [K in keyof EventListeners]: (callback: (data: any, error?: string) => void) => boolean };
 }
 
 /**
@@ -381,9 +383,9 @@ export interface BootstrapParams {
   actions: { [K in keyof Actions]: Action };
 
   /**
-   * The block as it is defined in the app definition.
+   * The parameters as they are defined in the app definition.
    */
-  block: Block;
+  parameters: Parameters;
 
   /**
    * Any kind of data that has been passed in by some context.

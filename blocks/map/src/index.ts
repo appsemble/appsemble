@@ -11,11 +11,19 @@ import createGetters from './createGetters';
 import loadMarkers, { makeFilter } from './loadMarkers';
 
 attach(
-  ({ actions, block, data, events, shadowRoot, theme: { primaryColor, tileLayer }, utils }) => {
+  ({
+    actions,
+    data,
+    events,
+    parameters,
+    shadowRoot,
+    theme: { primaryColor, tileLayer },
+    utils,
+  }) => {
     const node = shadowRoot.appendChild(document.createElement('div'));
     const fetched = new Set<number>();
 
-    const get = createGetters(block.parameters);
+    const get = createGetters(parameters);
     const lat = Number(get.lat(data));
     const lng = Number(get.lng(data));
     const hasExplicitCenter = Number.isFinite(lat) && Number.isFinite(lng);
@@ -42,14 +50,12 @@ attach(
        * When the user has moved the map, fetch new relevant markers.
        */
       .on('moveend', () => {
-        if (block.events?.emit?.move) {
-          events.emit.move({
-            $filter: makeFilter(
-              [block.parameters.latitude || 'latitude', block.parameters.longitude || 'longitude'],
-              map.getBounds(),
-            ),
-          });
-        }
+        events.emit.move({
+          $filter: makeFilter(
+            [parameters.latitude || 'latitude', parameters.longitude || 'longitude'],
+            map.getBounds(),
+          ),
+        });
       })
 
       /**
@@ -87,10 +93,10 @@ attach(
 
     let cluster: MarkerClusterGroup;
 
-    if (!block.parameters.disableClustering) {
+    if (!parameters.disableClustering) {
       cluster = new MarkerClusterGroup({
         chunkedLoading: true,
-        maxClusterRadius: block.parameters.maxClusterRadius ?? 80,
+        maxClusterRadius: parameters.maxClusterRadius ?? 80,
       });
       map.addLayer(cluster);
     }
