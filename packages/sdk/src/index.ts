@@ -345,7 +345,10 @@ export interface Utils {
   showMessage: (message: string | Message) => void;
 
   /**
-   * Various blocks depend on app asset URLs.
+   * Get a URL serving an asset for the given asset id.
+   *
+   * @param assetId The id of the asset whose URL to get.
+   * @returns The URL that matches the given asset id.
    */
   asset: (assetId: string) => string;
 }
