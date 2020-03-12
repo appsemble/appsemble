@@ -6,9 +6,9 @@
  */
 export default class AppsembleError extends Error {
   /**
-   * @param {string} message The error message to show to the user.
+   * @param message The error message to show to the user.
    */
-  constructor(message) {
+  constructor(message: string) {
     super(message);
     this.name = 'AppsembleError';
     Error.captureStackTrace(this, this.constructor);

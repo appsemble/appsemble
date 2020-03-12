@@ -1,18 +1,25 @@
+import { AxiosError } from 'axios';
 import chalk from 'chalk';
 import highlight from 'cli-highlight';
+import { TransformableInfo } from 'logform';
 import { EOL } from 'os';
 import util from 'util';
 import winston from 'winston';
 
-const levels = ['crit', 'error', 'warn', 'info', 'verbose', 'silly'];
+interface ConfigureLoggerParams {
+  quiet?: number;
+  verbose?: number;
+}
+
+const levels = ['crit', 'error', 'warn', 'info', 'verbose', 'silly'] as const;
 const DEFAULT_LEVEL = levels.findIndex(level => level === 'info');
 const padding = Math.max(...levels.map(({ length }) => length));
 
-function headerCase(header) {
+function headerCase(header: string): string {
   return header.replace(/(^|-)\w/g, a => a.toUpperCase());
 }
 
-function httpErrorToString(error) {
+function httpErrorToString(error: AxiosError): string {
   const { request, response } = error;
   return [
     chalk.blue.bold('Request:'),
@@ -43,10 +50,10 @@ function httpErrorToString(error) {
   ].join(EOL);
 }
 
-function toString(info) {
+function toString(info: TransformableInfo): string {
   if (info instanceof Error) {
     if (info.request && info.response) {
-      return httpErrorToString(info);
+      return httpErrorToString((info as Error) as AxiosError);
     }
     return info.stack;
   }
@@ -72,7 +79,7 @@ export const logger = winston.createLogger({
     winston.format.colorize(),
     winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
     winston.format.printf(({ level, lines, timestamp }) =>
-      lines.map(line => `${timestamp} [${level}]: ${line}`).join(EOL),
+      lines.map((line: string) => `${timestamp} [${level}]: ${line}`).join(EOL),
     ),
   ),
   transports: [new winston.transports.Console()],
@@ -81,12 +88,12 @@ export const logger = winston.createLogger({
 /**
  * Set the logging level using a string or numeric value.
  *
- * @param {number|string} verbosity
+ * @param verbosity
  */
-export function setLogLevel(level = DEFAULT_LEVEL) {
+export function setLogLevel(level: number | string = DEFAULT_LEVEL): void {
   logger.level = Number.isNaN(Number(level))
-    ? level
-    : levels[Math.min(Math.max(level, 0), levels.length - 1)];
+    ? (level as string)
+    : levels[Math.min(Math.max(level as number, 0), levels.length - 1)];
   logger.silly(`Logging level set to ${logger.level}`);
 }
 
@@ -99,7 +106,7 @@ export function setLogLevel(level = DEFAULT_LEVEL) {
  * @param {number} argv.quiet The negative verbosity count.
  * @param {number} argv.verbose The verbosity count.
  */
-export function configureLogger({ quiet = 0, verbose = 0 }) {
+export function configureLogger({ quiet = 0, verbose = 0 }: ConfigureLoggerParams): void {
   process.on('warning', warning => {
     logger.warn(warning);
   });

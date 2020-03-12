@@ -1,22 +1,28 @@
 import chalk from 'chalk';
+import { Middleware } from 'koa';
 
 import { logger } from './logger';
 
-function rangeFormat(value, colorMap) {
-  return Object.entries(colorMap).find(([v]) => v === 'default' || value < Number(v))[1];
+interface RangeMap<T> {
+  [key: number]: T;
+  default: T;
+}
+
+function rangeFormat<T>(value: number, map: RangeMap<T>): T {
+  return Object.entries(map).find(([v]) => v === 'default' || value < Number(v))[1];
 }
 
 /**
  * Koa middleware for logging requests using the Appsemble logger.
  */
-export default function loggerMiddleware() {
+export default function loggerMiddleware(): Middleware {
   return async (ctx, next) => {
     const { href, res } = ctx;
     const start = Date.now();
     const method = chalk.bold(ctx.method);
     logger.info(`${method} ${href} — ${chalk.white(ctx.ip)}`);
 
-    function logResponse() {
+    function logResponse(): void {
       res.removeListener('finish', logResponse);
       res.removeListener('close', logResponse);
 
