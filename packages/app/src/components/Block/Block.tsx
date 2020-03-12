@@ -99,8 +99,9 @@ export default function Block({
               block.events?.emit?.[key]
                 ? () => {
                     ee.emit(block.events.emit[key], d, error === '' ? 'Error' : error);
+                    return true;
                   }
-                : () => {},
+                : () => false,
             ),
         ]),
       ),
@@ -110,17 +111,20 @@ export default function Block({
           block.events?.listen?.[key]
             ? (callback: (data: any, error?: string) => void) => {
                 ee.on(block.events.listen[key], callback);
+                return true;
               }
-            : () => {},
+            : () => false,
         ]),
       ),
       off: Object.fromEntries(
         (manifest.events?.listen ?? []).map(key => [
           key,
           block.events?.listen?.[key]
-            ? (callback: (data: any, error?: string) => void) =>
-                ee.off(block.events.listen[key], callback)
-            : () => {},
+            ? (callback: (data: any, error?: string) => void) => {
+                ee.off(block.events.listen[key], callback);
+                return true;
+              }
+            : () => false,
         ]),
       ),
     };
@@ -181,7 +185,7 @@ export default function Block({
 
       await callBootstrap(manifest, {
         actions,
-        block,
+        parameters: block.parameters,
         data: data || location.state,
         events,
         pageParameters: match.params,
