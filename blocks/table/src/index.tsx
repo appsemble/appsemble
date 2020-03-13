@@ -5,6 +5,7 @@ import { remapData } from '@appsemble/utils';
 import { h, VNode } from 'preact';
 import { useCallback, useEffect, useState } from 'preact/hooks';
 
+import { Field } from '../block';
 import styles from './index.css';
 
 const messages = {
@@ -39,6 +40,19 @@ bootstrap(({ actions, events, parameters: { fields }, ready, utils }: BlockProps
     [actions],
   );
 
+  const onClickCell = useCallback(
+    (event: Event, field: Field, item: Item): void => {
+      if (field.onClick === undefined) {
+        return;
+      }
+
+      // Prevent row click event from happening
+      event.stopPropagation();
+      actions[field.onClick].dispatch(item);
+    },
+    [actions],
+  );
+
   useEffect(() => {
     events.on.data(loadData);
     ready();
@@ -57,7 +71,7 @@ bootstrap(({ actions, events, parameters: { fields }, ready, utils }: BlockProps
   }
 
   return (
-    <table className="table is-hoverable is-striped is-fullwidth">
+    <table className="table is-hoverable is-striped is-fullwidth" role="grid">
       <thead>
         <tr>
           {fields.map(field => (
@@ -74,9 +88,12 @@ bootstrap(({ actions, events, parameters: { fields }, ready, utils }: BlockProps
           >
             {fields.map(field => {
               const value = remapData(field.name, item);
-
               return (
-                <td key={field.name}>
+                <td
+                  key={field.name}
+                  onClick={event => onClickCell(event, field, item)}
+                  role="gridcell"
+                >
                   {typeof value === 'string' ? value : JSON.stringify(value)}
                 </td>
               );
