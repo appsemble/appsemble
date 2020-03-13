@@ -6,6 +6,7 @@ import getAppBlocks, { BlockMap } from './getAppBlocks';
 
 const ajv = new Ajv();
 ajv.addFormat('fontawesome', () => true);
+ajv.addFormat('action', () => true);
 
 /**
  * Used for throwing known Appsemble validation errors.
