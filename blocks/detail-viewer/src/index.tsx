@@ -8,7 +8,7 @@ import { useEffect, useState } from 'preact/hooks';
 import FileRenderer from './components/FileRenderer';
 import GeoCoordinatesRenderer from './components/GeoCoordinatesRenderer';
 import StringRenderer from './components/StringRenderer';
-import styles from './DetailViewerBlock.css';
+import styles from './index.css';
 
 const renderers = {
   file: FileRenderer,
