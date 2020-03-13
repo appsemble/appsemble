@@ -10,6 +10,7 @@ import {
   isModuleDeclaration,
   parseJsonConfigFileContent,
   readConfigFile,
+  SyntaxKind,
   sys,
 } from 'typescript';
 import { buildGenerator } from 'typescript-json-schema';
@@ -19,7 +20,22 @@ function processActions(iface) {
   if (!iface || !iface.members.length) {
     return undefined;
   }
-  return Object.fromEntries(iface.members.map(member => [member.name.escapedText, {}]));
+
+  return Object.fromEntries(
+    iface.members.map(member => {
+      if (member.kind === SyntaxKind.IndexSignature) {
+        return ['$any', {}];
+      }
+
+      if (member.kind === SyntaxKind.PropertySignature && member.name.escapedText === '$any') {
+        throw new AppsembleError(
+          'Found ‘$any’ property signature in Actions interface. This is reserved to mark index signatures.',
+        );
+      }
+
+      return [member.name.escapedText, {}];
+    }),
+  );
 }
 
 function mergeInterfacesKeys(iface) {
