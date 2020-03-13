@@ -4,10 +4,6 @@ import { Promisable } from 'type-fest';
 
 import getAppBlocks, { BlockMap } from './getAppBlocks';
 
-const ajv = new Ajv();
-ajv.addFormat('fontawesome', () => true);
-ajv.addFormat('action', () => true);
-
 /**
  * Used for throwing known Appsemble validation errors.
  */
@@ -26,6 +22,9 @@ export class AppsembleValidationError extends Error {
 }
 
 async function checkBlocks(blocks: BlockMap, blockVersions: BlockManifest[]): Promise<void> {
+  const ajv = new Ajv();
+  ajv.addFormat('fontawesome', () => true);
+
   const blockVersionMap = new Map<string, Map<string, BlockManifest>>();
   blockVersions.forEach(version => {
     if (!blockVersionMap.has(version.name)) {
@@ -44,6 +43,7 @@ async function checkBlocks(blocks: BlockMap, blockVersions: BlockManifest[]): Pr
     }
     const version = versions.get(block.version);
     if (version.parameters) {
+      ajv.addFormat('action', property => Object.keys(block.actions || {}).includes(property));
       const validate = ajv.compile(version.parameters);
       const valid = validate(block.parameters || {});
       if (!valid) {
