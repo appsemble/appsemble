@@ -77,7 +77,13 @@ bootstrap(({ actions, events, parameters: { fields }, ready, utils }: BlockProps
             {fields.map(field => {
               const value = remapData(field.name, item);
               return (
-                <ItemCell key={field.name} field={field} item={item} onClick={onClick}>
+                <ItemCell
+                  key={field.name}
+                  className={onClick ? styles.clickable : undefined}
+                  field={field}
+                  item={item}
+                  onClick={onClick}
+                >
                   {typeof value === 'string' ? value : JSON.stringify(value)}
                 </ItemCell>
               );

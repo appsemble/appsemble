@@ -6,8 +6,12 @@ type ItemRowProps = { item: any; onClick: (item: any) => void } & h.JSX.HTMLAttr
   HTMLTableRowElement
 >;
 
-export default function ItemRow({ children, item, onClick }: ItemRowProps): VNode {
+export default function ItemRow({ children, className, item, onClick }: ItemRowProps): VNode {
   const onRowClick = useCallback(() => onClick(item), [item, onClick]);
 
-  return <tr onClick={onRowClick}>{children}</tr>;
+  return (
+    <tr className={className} onClick={onRowClick}>
+      {children}
+    </tr>
+  );
 }
