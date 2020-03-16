@@ -63,7 +63,7 @@ export async function createBlockVersion(ctx) {
 
   if (data.actions) {
     Object.keys(data.actions).forEach(key => {
-      if (!actionKeyRegex.test(key)) {
+      if (!actionKeyRegex.test(key) && key !== '$any') {
         throw Boom.badRequest(`Action “${key}” does match /${actionKeyRegex.source}/`);
       }
     });

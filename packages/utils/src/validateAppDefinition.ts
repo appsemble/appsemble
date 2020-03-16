@@ -41,12 +41,14 @@ async function checkBlocks(blocks: BlockMap, blockVersions: BlockManifest[]): Pr
     if (!versions.has(block.version)) {
       return { ...acc, [loc]: `Unknown block version “${type}@${block.version}”` };
     }
+
+    const actionParameters = new Set<string>();
     const version = versions.get(block.version);
     if (version.parameters) {
-      ajv.addFormat(
-        'action',
-        property => block.actions && Object.prototype.hasOwnProperty.call(block.actions, property),
-      );
+      ajv.addFormat('action', property => {
+        actionParameters.add(property);
+        return block.actions && Object.prototype.hasOwnProperty.call(block.actions, property);
+      });
       const validate = ajv.compile(version.parameters);
       const valid = validate(block.parameters || {});
       if (!valid) {
@@ -59,6 +61,16 @@ async function checkBlocks(blocks: BlockMap, blockVersions: BlockManifest[]): Pr
         );
       }
     }
+
+    Object.keys(block.actions || {}).forEach(key => {
+      if (
+        !actionParameters.has(key) &&
+        !Object.prototype.hasOwnProperty.call(version.actions, key)
+      ) {
+        throw new AppsembleValidationError(`Defined custom action “${key}” is unused.`);
+      }
+    });
+
     return acc;
   }, null);
   if (errors) {

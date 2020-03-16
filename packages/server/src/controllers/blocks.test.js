@@ -168,7 +168,7 @@ describe('blocks', () => {
     await instance.post('/api/blocks', { id: '@xkcd/standing' }, headers);
 
     const formData = new FormData();
-    formData.append('data', JSON.stringify({ actions: { $any: {} }, version: '1.32.9' }));
+    formData.append('data', JSON.stringify({ actions: { $any: {}, $foo: {} }, version: '1.32.9' }));
     formData.append(
       'build/standing.png',
       fs.createReadStream(path.join(__dirname, '__fixtures__/standing.png')),
@@ -183,7 +183,7 @@ describe('blocks', () => {
 
     expect(response).toMatchObject({
       status: 400,
-      data: { message: 'Action “$any” does match /^[a-z]\\w*$/' },
+      data: { message: 'Action “$foo” does match /^[a-z]\\w*$/' },
     });
   });
 
