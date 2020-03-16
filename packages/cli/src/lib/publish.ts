@@ -10,6 +10,9 @@ interface PublishParams {
    */
   config: BlockConfig;
 
+  /**
+   * Prevent the command from crashing when a conflict has been detected.
+   */
   ignoreConflict: boolean;
 
   /**
