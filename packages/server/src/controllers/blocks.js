@@ -59,6 +59,15 @@ export async function createBlockVersion(ctx) {
   const { BlockAsset, BlockDefinition, BlockVersion } = db.models;
   const name = `@${organizationId}/${blockId}`;
   const { data, ...files } = ctx.request.body;
+  const actionKeyRegex = /^[a-z]\w*$/;
+
+  if (data.actions) {
+    Object.keys(data.actions).forEach(key => {
+      if (!actionKeyRegex.test(key)) {
+        throw Boom.badRequest(`Action “${key}” does match /${actionKeyRegex.source}/`);
+      }
+    });
+  }
 
   await checkRole(ctx, organizationId, permissions.PublishBlocks);
 
