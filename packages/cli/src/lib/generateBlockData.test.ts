@@ -71,8 +71,8 @@ describe('generateBlockData', () => {
     );
 
     expect(result).toStrictEqual({
-      actions: { emit: [], listen: [] },
-      events: {},
+      actions: {},
+      events: { emit: [], listen: [] },
       layout: 'float',
       parameters: { type: 'object' },
       resources: undefined,
@@ -220,7 +220,7 @@ describe('generateBlockData', () => {
     expect(result).toStrictEqual({
       layout: undefined,
       resources: undefined,
-      version: undefined,
+      version: '1.33.7',
       actions: undefined,
       events: undefined,
       parameters: {
