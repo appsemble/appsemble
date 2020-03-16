@@ -48,7 +48,7 @@ stages:
 .yarn:
   dependencies: []
   before_script:
-    - yarn --frozen-lockfile --ignore-optional
+    - yarn --frozen-lockfile --ignore-scripts
 
 ###################################################################################################
 #  Test Stage                                                                                     #
@@ -187,7 +187,6 @@ stylelint:
 
 # Test the code using unit tests.
 test:
-  extends: .yarn
   services:
     - name: postgres:11
   only:
@@ -200,6 +199,7 @@ test:
     POSTGRES_PASSWORD: password
     DATABASE_URL: 'postgres://admin:password@postgres:5432/testAppsemble'
   script:
+    - yarn --frozen-lockfile
     - yarn jest --coverage --reporters default --reporters jest-junit
   artifacts:
     reports:
