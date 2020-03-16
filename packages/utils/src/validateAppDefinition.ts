@@ -43,7 +43,10 @@ async function checkBlocks(blocks: BlockMap, blockVersions: BlockManifest[]): Pr
     }
     const version = versions.get(block.version);
     if (version.parameters) {
-      ajv.addFormat('action', property => Object.keys(block.actions || {}).includes(property));
+      ajv.addFormat(
+        'action',
+        property => block.actions && Object.prototype.hasOwnProperty.call(block.actions, property),
+      );
       const validate = ajv.compile(version.parameters);
       const valid = validate(block.parameters || {});
       if (!valid) {

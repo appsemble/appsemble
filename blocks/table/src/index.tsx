@@ -5,7 +5,7 @@ import { remapData } from '@appsemble/utils';
 import { h, VNode } from 'preact';
 import { useCallback, useEffect, useState } from 'preact/hooks';
 
-import { Field } from '../block';
+import { ItemCell, ItemRow } from './components';
 import styles from './index.css';
 
 const messages = {
@@ -32,23 +32,10 @@ bootstrap(({ actions, events, parameters: { fields }, ready, utils }: BlockProps
   }, []);
 
   const onClick = useCallback(
-    (d: Item): void => {
+    (d: any): void => {
       if (actions.onClick) {
         actions.onClick.dispatch(d);
       }
-    },
-    [actions],
-  );
-
-  const onClickCell = useCallback(
-    (event: Event, field: Field, item: Item): void => {
-      if (field.onClick === undefined) {
-        return;
-      }
-
-      // Prevent row click event from happening
-      event.stopPropagation();
-      actions[field.onClick].dispatch(item);
     },
     [actions],
   );
@@ -81,24 +68,21 @@ bootstrap(({ actions, events, parameters: { fields }, ready, utils }: BlockProps
       </thead>
       <tbody>
         {data.map((item, dataIndex) => (
-          <tr
+          <ItemRow
             key={item.id || dataIndex}
             className={actions.onClick.type !== 'noop' ? styles.clickable : undefined}
-            onClick={() => onClick(item)}
+            item={item}
+            onClick={onClick}
           >
             {fields.map(field => {
               const value = remapData(field.name, item);
               return (
-                <td
-                  key={field.name}
-                  onClick={event => onClickCell(event, field, item)}
-                  role="gridcell"
-                >
+                <ItemCell key={field.name} field={field} item={item} onClick={onClick}>
                   {typeof value === 'string' ? value : JSON.stringify(value)}
-                </td>
+                </ItemCell>
               );
             })}
-          </tr>
+          </ItemRow>
         ))}
       </tbody>
     </table>

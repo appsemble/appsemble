@@ -6,11 +6,11 @@ import {
   forEachChild,
   formatDiagnostic,
   formatDiagnosticsWithColorAndContext,
+  isIndexSignatureDeclaration,
   isInterfaceDeclaration,
   isModuleDeclaration,
   parseJsonConfigFileContent,
   readConfigFile,
-  SyntaxKind,
   sys,
 } from 'typescript';
 import { buildGenerator } from 'typescript-json-schema';
@@ -23,11 +23,11 @@ function processActions(iface) {
 
   return Object.fromEntries(
     iface.members.map(member => {
-      if (member.kind === SyntaxKind.IndexSignature) {
+      if (isIndexSignatureDeclaration(member)) {
         return ['$any', {}];
       }
 
-      if (member.kind === SyntaxKind.PropertySignature && member.name.escapedText === '$any') {
+      if (member.name.escapedText === '$any') {
         throw new AppsembleError(
           'Found ‘$any’ property signature in Actions interface. This is reserved to mark index signatures.',
         );

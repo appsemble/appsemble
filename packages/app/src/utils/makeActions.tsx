@@ -26,6 +26,19 @@ interface MakeActionsParams {
   ee: EventEmitter;
 }
 
+interface CreateActionParams {
+  actionDefinition: ActionDefinition;
+  app: AppDefinition;
+  ee: EventEmitter;
+  extraCreators: ActionCreators;
+  flowActions: FlowActions;
+  history: RouteComponentProps['history'];
+  pageReady: Promise<void>;
+  pushNotifications: ServiceWorkerRegistrationContextType;
+  showDialog: ShowDialogAction;
+  type: Action['type'];
+}
+
 function createAction({
   actionDefinition,
   app,
@@ -37,18 +50,7 @@ function createAction({
   pushNotifications,
   showDialog,
   type,
-}: {
-  actionDefinition: ActionDefinition;
-  app: AppDefinition;
-  ee: EventEmitter;
-  extraCreators: ActionCreators;
-  flowActions: FlowActions;
-  history: RouteComponentProps['history'];
-  pageReady: Promise<void>;
-  pushNotifications: ServiceWorkerRegistrationContextType;
-  showDialog: ShowDialogAction;
-  type: Action['type'];
-}): Action {
+}: CreateActionParams): Action {
   const actionCreator: ActionCreator = actionCreators[type] || extraCreators[type];
   const action = actionCreator({
     definition: actionDefinition,
@@ -145,7 +147,7 @@ export default function makeActions({
       return acc;
     }, {});
 
-  let anyActions = {};
+  let anyActions: object;
   if (actions.$any) {
     anyActions = Object.keys(context.actions)
       .filter(key => !actionMap[key])
