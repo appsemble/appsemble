@@ -1,8 +1,8 @@
 /** @jsx h */
-import { BlockProps, bootstrap, FormattedMessage } from '@appsemble/preact';
+import { bootstrap, FormattedMessage } from '@appsemble/preact';
 import { Loader } from '@appsemble/preact-components';
 import { remapData } from '@appsemble/utils';
-import { h, VNode } from 'preact';
+import { h } from 'preact';
 import { useCallback, useEffect, useState } from 'preact/hooks';
 
 import styles from './index.css';
@@ -15,7 +15,7 @@ interface Item {
   id?: number;
 }
 
-bootstrap(({ actions, events, parameters: { fields }, ready, utils }: BlockProps): VNode => {
+bootstrap(({ actions, events, parameters: { fields }, ready, utils }) => {
   const [data, setData] = useState<Item[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
