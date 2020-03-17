@@ -42,6 +42,31 @@ export default {
       security: [{ studio: [] }, { app: ['resources:manage'] }, {}],
     },
   },
+  '/apps/{appId}/resources/{resourceType}/subscriptions': {
+    parameters: [
+      { $ref: '#/components/parameters/appId' },
+      { $ref: '#/components/parameters/resourceType' },
+      { $ref: '#/components/parameters/endpoint' },
+    ],
+    get: {
+      tags: ['resource'],
+      description: 'Get the current subscription status of this resource.',
+      operationId: 'getResourceTypeSubscription',
+      responses: {
+        200: {
+          description: 'The subscription status for this resource.',
+          content: {
+            'application/json': {
+              schema: {
+                $ref: '#/components/schemas/ResourceSubscription',
+              },
+            },
+          },
+        },
+      },
+      security: [{ studio: [] }, { app: ['openid'] }, {}],
+    },
+  },
   '/apps/{appId}/resources/{resourceType}/{resourceId}': {
     parameters: [
       { $ref: '#/components/parameters/appId' },
@@ -97,15 +122,7 @@ export default {
     ],
     get: {
       tags: ['resource'],
-      parameters: [
-        {
-          name: 'endpoint',
-          in: 'query',
-          description: 'The URL of the endpoint associated with the subscription.',
-          required: true,
-          schema: { type: 'string', format: 'uri' },
-        },
-      ],
+      parameters: [{ $ref: '#/components/parameters/endpoint' }],
       description: 'Get the subscription status of a resource.',
       operationId: 'getResourceSubscription',
       responses: {
@@ -116,6 +133,7 @@ export default {
               schema: {
                 type: 'object',
                 properties: {
+                  id: { type: 'number' },
                   update: { type: 'boolean' },
                   delete: { type: 'boolean' },
                 },

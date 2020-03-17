@@ -367,6 +367,77 @@ export async function getResourceById(ctx) {
   };
 }
 
+export async function getResourceTypeSubscription(ctx) {
+  const { appId, resourceType } = ctx.params;
+  const { App, AppSubscription, Resource, ResourceSubscription } = ctx.db.models;
+  const { endpoint } = ctx.query;
+
+  const app = await App.findByPk(appId, {
+    attributes: ['definition'],
+    include: [
+      {
+        model: Resource,
+        attributes: ['id'],
+        where: { type: resourceType },
+        required: false,
+      },
+      {
+        attributes: ['id', 'UserId'],
+        model: AppSubscription,
+        include: [
+          {
+            model: ResourceSubscription,
+            where: { type: resourceType },
+            required: false,
+          },
+        ],
+        required: false,
+        where: { endpoint },
+      },
+    ],
+  });
+  verifyResourceDefinition(app, resourceType);
+
+  if (!app.Resources.length) {
+    throw Boom.notFound('Resource not found.');
+  }
+
+  if (!app.AppSubscriptions.length) {
+    throw Boom.notFound('User is not subscribed to this app.');
+  }
+
+  const [appSubscription] = app.AppSubscriptions;
+
+  if (!appSubscription) {
+    throw Boom.notFound('Subscription not found');
+  }
+
+  ctx.body = appSubscription.ResourceSubscriptions.reduce(
+    (acc, { ResourceId, action }) => {
+      if (ResourceId) {
+        if (!acc.subscriptions) {
+          acc.subscriptions = {};
+        }
+
+        if (!acc.subscriptions[ResourceId]) {
+          acc.subscriptions[ResourceId] = { update: false, delete: false };
+        }
+
+        acc.subscriptions[ResourceId] = {
+          ...acc.subscriptions[ResourceId],
+          [action]: true,
+        };
+
+        return acc;
+      }
+
+      acc[action] = true;
+      return acc;
+    },
+    { create: false, update: false, delete: false },
+  );
+}
+
 export async function getResourceSubscription(ctx) {
   const { appId, resourceId, resourceType } = ctx.params;
   const { App, AppSubscription, Resource, ResourceSubscription } = ctx.db.models;
@@ -407,7 +478,7 @@ export async function getResourceSubscription(ctx) {
   }
 
   const subscriptions = app.AppSubscriptions[0].ResourceSubscriptions;
-  const result = { update: false, delete: false };
+  const result = { id: resourceId, update: false, delete: false };
 
   subscriptions.forEach(({ action }) => {
     result[action] = true;

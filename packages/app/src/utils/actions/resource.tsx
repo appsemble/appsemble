@@ -14,11 +14,14 @@ import {
   ResourceGetActionDefinition,
   ResourceQueryActionDefinition,
   ResourceSubscribeActionDefinition,
+  ResourceSubscriptionStatusActionDefinition,
+  ResourceSubscriptionToggleActionDefinition,
+  ResourceUnsubscribeActionDefinition,
   ResourceUpdateActionDefinition,
 } from '@appsemble/types';
 import axios from 'axios';
 
-import { MakeActionParameters } from '../../types';
+import { MakeActionParameters, ServiceWorkerRegistrationContextType } from '../../types';
 import settings from '../settings';
 import { requestLikeAction } from './request';
 
@@ -160,45 +163,144 @@ function remove(args: MakeActionParameters<ResourceDeleteActionDefinition>): Res
   };
 }
 
+async function getSubscription(
+  pushNotifications: ServiceWorkerRegistrationContextType,
+): Promise<PushSubscription> {
+  const { permission, requestPermission, subscribe: sub } = pushNotifications;
+  let { subscription } = pushNotifications;
+
+  if (!subscription && permission === 'default') {
+    const newPermission = await requestPermission();
+    if (newPermission !== 'granted') {
+      throw Error('Unable to subscribe. Permission was denied.');
+    }
+
+    subscription = await sub();
+  } else if (permission === 'granted' && !subscription) {
+    subscription = await sub();
+  } else if (permission === 'denied') {
+    throw Error('Unable to subscribe. Permission was denied.');
+  }
+
+  return subscription;
+}
+
 function subscribe({
   app,
   definition,
   pushNotifications,
-}: MakeActionParameters<ResourceSubscribeActionDefinition>): BaseAction<'resource.subscribe'> {
+}: MakeActionParameters<ResourceSubscribeActionDefinition>): BaseAction<
+  'resource.subscription.subscribe'
+> {
   const resource = app.resources[definition.resource];
   const { id = 'id' } = resource;
 
   return {
     dispatch: async data => {
-      const { permission, requestPermission, subscribe: sub } = pushNotifications;
-      let { subscription } = pushNotifications;
-
-      if (!subscription && permission === 'default') {
-        const newPermission = await requestPermission();
-        if (newPermission !== 'granted') {
-          throw Error('Unable to subscribe. Permission was denied.');
-        }
-
-        subscription = await sub();
-      } else if (permission === 'granted' && !subscription) {
-        subscription = await sub();
-      } else if (permission === 'denied') {
-        throw Error('Unable to subscribe. Permission was denied.');
-      }
-
-      const { endpoint } = subscription;
+      const { endpoint } = await getSubscription(pushNotifications);
       await axios.patch(`${settings.apiUrl}/api/apps/${settings.id}/subscriptions`, {
         endpoint,
         resource: definition.resource,
         action: definition.action || 'update',
         value: true,
-        resourceId: data[id],
+        ...(data?.[id] && { resourceId: data[id] }),
       });
 
       return data;
     },
-    type: 'resource.subscribe',
+    type: 'resource.subscription.subscribe',
   };
 }
 
-export default { get, query, create, update, remove, subscribe };
+function unsubscribe({
+  app,
+  definition,
+  pushNotifications,
+}: MakeActionParameters<ResourceUnsubscribeActionDefinition>): BaseAction<
+  'resource.subscription.unsubscribe'
+> {
+  const resource = app.resources[definition.resource];
+  const { id = 'id' } = resource;
+
+  return {
+    dispatch: async data => {
+      const { endpoint } = await getSubscription(pushNotifications);
+      await axios.patch(`${settings.apiUrl}/api/apps/${settings.id}/subscriptions`, {
+        endpoint,
+        resource: definition.resource,
+        action: definition.action || 'update',
+        value: false,
+        ...(data?.[id] && { resourceId: data[id] }),
+      });
+
+      return data;
+    },
+    type: 'resource.subscription.unsubscribe',
+  };
+}
+
+function toggleSubscribe({
+  app,
+  definition,
+  pushNotifications,
+}: MakeActionParameters<ResourceSubscriptionToggleActionDefinition>): BaseAction<
+  'resource.subscription.toggle'
+> {
+  const resource = app.resources[definition.resource];
+  const { id = 'id' } = resource;
+
+  return {
+    dispatch: async data => {
+      const { endpoint } = await getSubscription(pushNotifications);
+      await axios.patch(`${settings.apiUrl}/api/apps/${settings.id}/subscriptions`, {
+        endpoint,
+        resource: definition.resource,
+        action: definition.action || 'update',
+        ...(data?.[id] && { resourceId: data[id] }),
+      });
+
+      return data;
+    },
+    type: 'resource.subscription.toggle',
+  };
+}
+
+function subscriptionStatus({
+  app,
+  definition,
+  pushNotifications,
+}: MakeActionParameters<ResourceSubscriptionStatusActionDefinition>): BaseAction<
+  'resource.subscription.status'
+> {
+  const resource = app.resources[definition.resource];
+  const { id = 'id' } = resource;
+
+  return {
+    dispatch: async d => {
+      const { endpoint } = await getSubscription(pushNotifications);
+      const { data } = await axios.get(
+        d?.[id]
+          ? `${settings.apiUrl}/api/apps/${settings.id}/resources/${d[id]}/${definition.resource}/subscriptions`
+          : `${settings.apiUrl}/api/apps/${settings.id}/resources/${definition.resource}/subscriptions`,
+        {
+          params: { endpoint },
+        },
+      );
+
+      return data;
+    },
+    type: 'resource.subscription.status',
+  };
+}
+
+export default {
+  get,
+  query,
+  create,
+  update,
+  remove,
+  subscribe,
+  unsubscribe,
+  toggleSubscribe,
+  subscriptionStatus,
+};

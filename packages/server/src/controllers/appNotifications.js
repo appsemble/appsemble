@@ -102,7 +102,11 @@ export async function updateSubscription(ctx) {
         include: [
           {
             model: ResourceSubscription,
-            where: { type: resource, action, ...(resourceId && { ResourceId: resourceId }) },
+            where: {
+              type: resource,
+              action,
+              ResourceId: resourceId === undefined ? null : resourceId,
+            },
             required: false,
           },
         ],
@@ -126,19 +130,41 @@ export async function updateSubscription(ctx) {
     await appSubscription.setUser(user.id);
   }
 
-  if (!value) {
-    const [resourceSubscription] = appSubscription.ResourceSubscriptions;
-    if (!resourceSubscription) {
+  const [resourceSubscription] = appSubscription.ResourceSubscriptions;
+  if (value !== undefined) {
+    if (!value) {
+      if (!resourceSubscription) {
+        // Subscription didn’t exist in the first place, do nothing
+        return;
+      }
+
+      // Remove the subscription
+      await resourceSubscription.destroy();
       return;
     }
 
-    await resourceSubscription.destroy();
-  } else {
+    if (resourceSubscription) {
+      // Subscription already exists, do nothing
+      return;
+    }
+
     await appSubscription.createResourceSubscription({
       type: resource,
       action,
       ...(resourceId && { ResourceId: resourceId }),
     });
+    return;
+  }
+
+  // Toggle subscription
+  if (!resourceSubscription) {
+    await appSubscription.createResourceSubscription({
+      type: resource,
+      action,
+      ...(resourceId && { ResourceId: resourceId }),
+    });
+  } else {
+    await resourceSubscription.destroy();
   }
 }
 
