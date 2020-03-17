@@ -23,6 +23,7 @@ function createRemapper(mapper: any): MapperFunction {
 interface Item {
   id: number;
   status: string;
+  fotos: string[];
 }
 
 bootstrap(({ events, parameters, ready }) => {

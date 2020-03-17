@@ -164,6 +164,9 @@ export default function Block({
       addCleanup(fn: Function) {
         cleanups.current.push(fn);
       },
+      asset(id: string) {
+        return `${settings.apiUrl}/api/apps/${settings.id}/assets/${id}`;
+      },
     };
 
     (async () => {
