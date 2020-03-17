@@ -6,6 +6,7 @@ import {
   Icon,
   Input,
   useMessages,
+  useObjectURL,
 } from '@appsemble/react-components';
 import { normalize } from '@appsemble/utils';
 import axios from 'axios';
@@ -19,10 +20,10 @@ import messages from './messages';
 export default function AppSettings(): React.ReactElement {
   const { app } = useApp();
   const intl = useIntl();
-  const [icon, setIcon] = useState();
-  const [iconUrl, setIconUrl] = useState(app.iconUrl);
+  const [icon, setIcon] = useState<File>();
   const [inputs, setInputs] = useState(app);
   const push = useMessages();
+  const iconUrl = useObjectURL(icon || app.iconUrl);
 
   const onSubmit = async (event: FormEvent): Promise<void> => {
     event.preventDefault();
@@ -60,14 +61,9 @@ export default function AppSettings(): React.ReactElement {
     [],
   );
 
-  const onIconChange = React.useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>): void => {
-      const file = e.target.files[0];
-      setIcon(file);
-      setIconUrl(file ? URL.createObjectURL(file) : `/api/apps/${app.id}/icon`);
-    },
-    [app.id],
-  );
+  const onIconChange = React.useCallback((e: React.ChangeEvent<HTMLInputElement>): void => {
+    setIcon(e.target.files[0]);
+  }, []);
 
   return (
     <Form onSubmit={onSubmit}>

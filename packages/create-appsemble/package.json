@@ -19,9 +19,9 @@
   },
   "dependencies": {
     "@appsemble/node-utils": "^0.11.6",
-    "esm": "^3.2.25",
+    "@babel/register": "^7.8.6",
     "fs-extra": "^8.1.0",
-    "inquirer": "^7.0.4",
-    "yargs": "^15.1.0"
+    "inquirer": "^7.0.6",
+    "yargs": "^15.3.0"
   }
 }

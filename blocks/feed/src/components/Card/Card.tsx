@@ -46,9 +46,8 @@ export default class Card extends Component<BlockProps & CardProps, CardState> {
   };
 
   async componentDidMount(): Promise<void> {
-    const { actions, block, content } = this.props;
-    const parentId =
-      (block.parameters && block.parameters.reply && block.parameters.reply.parentId) || 'parentId';
+    const { actions, content, parameters } = this.props;
+    const parentId = parameters.reply?.parentId ?? 'parentId';
 
     if (actions.onLoadReply.type !== 'noop') {
       const replies = await actions.onLoadReply.dispatch({
@@ -88,7 +87,7 @@ export default class Card extends Component<BlockProps & CardProps, CardState> {
   };
 
   onClick = async (): Promise<void> => {
-    const { actions, block, content, messages, utils } = this.props;
+    const { actions, content, messages, parameters, utils } = this.props;
     const { message, replies, valid } = this.state;
 
     if (!valid) {
@@ -96,8 +95,8 @@ export default class Card extends Component<BlockProps & CardProps, CardState> {
     }
 
     try {
-      const contentField = block?.parameters?.reply?.content ?? 'content';
-      const parentId = block?.parameters?.reply?.parentId ?? 'parentId';
+      const contentField = parameters.reply?.content ?? 'content';
+      const parentId = parameters.reply?.parentId ?? 'parentId';
 
       const result = await actions.onSubmitReply.dispatch({
         [parentId]: content.id,
@@ -112,12 +111,12 @@ export default class Card extends Component<BlockProps & CardProps, CardState> {
       // Scroll to the bottom of the reply container
       this.replyContainer.current.scrollTop = this.replyContainer.current.scrollHeight;
     } catch (e) {
-      utils.showMessage(messages.replyError.format());
+      utils.showMessage([].concat(messages.replyError.format()).join(''));
     }
   };
 
   render(): VNode {
-    const { actions, block, content, messages, remappers, theme, utils } = this.props;
+    const { actions, content, messages, parameters, remappers, theme, utils } = this.props;
     const { message, replies, valid } = this.state;
 
     const title: string = remappers.title(content);
@@ -128,8 +127,8 @@ export default class Card extends Component<BlockProps & CardProps, CardState> {
     const latitude: number = remappers.latitude(content);
     const longitude: number = remappers.longitude(content);
 
-    if (block.parameters.pictureBase && block.parameters.pictureBase.endsWith('/')) {
-      block.parameters.pictureBase = block.parameters.pictureBase.slice(0, -1);
+    if (parameters.pictureBase && parameters.pictureBase.endsWith('/')) {
+      parameters.pictureBase = parameters.pictureBase.slice(0, -1);
     }
 
     let color;
@@ -218,7 +217,7 @@ export default class Card extends Component<BlockProps & CardProps, CardState> {
               onClick={this.onButtonClick}
               type="button"
             >
-              {block.parameters.buttonLabel ?? 'Click'}
+              {parameters.buttonLabel ?? 'Click'}
             </button>
           )}
 
@@ -242,7 +241,7 @@ export default class Card extends Component<BlockProps & CardProps, CardState> {
                 <input
                   className="input"
                   onChange={this.onChange}
-                  placeholder={messages.reply.format()}
+                  placeholder={[].concat(messages.reply.format()).join('')}
                   required
                   value={message}
                 />

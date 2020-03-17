@@ -1,19 +1,10 @@
 import {
   Action,
-  BaseAction,
   Block,
   BodyHTTPMethods,
   HTTPMethods,
-  LinkAction,
   LogAction,
-  Message,
-  RequestAction,
   RequestLikeActionTypes,
-  ResourceCreateAction,
-  ResourceDeleteAction,
-  ResourceGetAction,
-  ResourceQueryAction,
-  ResourceUpdateAction,
   Theme,
 } from '@appsemble/sdk';
 import { IconName } from '@fortawesome/fontawesome-common-types';
@@ -75,8 +66,8 @@ export type Navigation = 'bottom' | 'left-menu' | 'hidden';
  */
 export interface ResourceHooks {
   notification: {
-    to: string[];
-    subscribe: 'all' | 'single' | 'both';
+    to?: string[];
+    subscribe?: 'all' | 'single' | 'both';
     data: {
       title: string;
       content: string;
@@ -89,49 +80,49 @@ export interface ResourceCall {
   /**
    * The HTTP method to use for making the HTTP request.
    */
-  method: HTTPMethods;
+  method?: HTTPMethods;
 
   /**
    * The URL to which to make the resource request.
    */
-  url: string;
+  url?: string;
 
   /**
    * The associated hooks with the resource action.
    */
-  hooks: ResourceHooks;
+  hooks?: ResourceHooks;
 
   /**
    * Query parameters to pass along with the request.
    */
-  query: { [key: string]: string };
+  query?: { [key: string]: string };
 }
 
 export interface Resource {
   /**
    * The definition for the `resource.create` action.
    */
-  create: ResourceCall;
+  create?: ResourceCall;
 
   /**
    * The definition for the `resource.delete` action.
    */
-  delete: ResourceCall;
+  delete?: ResourceCall;
 
   /**
    * The definition for the `resource.get` action.
    */
-  get: ResourceCall;
+  get?: ResourceCall;
 
   /**
    * The definition for the `resource.query` action.
    */
-  query: ResourceCall;
+  query?: ResourceCall;
 
   /**
    * The definition for the `resource.update` action.
    */
-  update: ResourceCall;
+  update?: ResourceCall;
 
   /**
    * How to upload blobs.
@@ -357,7 +348,7 @@ export interface BlockManifest {
   /**
    * The type of layout to be used for the block.
    */
-  layout: 'float' | 'static' | 'grow' | 'hidden' | null;
+  layout?: 'float' | 'static' | 'grow' | 'hidden' | null;
 
   /**
    * Array of urls associated to the files of the block.
@@ -373,9 +364,22 @@ export interface BlockManifest {
    * The events that are supported by a block.
    */
   events?: {
-    listen: string[];
-    emit: string[];
+    listen?: string[];
+    emit?: string[];
   };
+
+  /**
+   * A JSON schema to validate block parameters.
+   *
+   * Since multiple JSON schema typings exist and not all of them play nice with each other, this
+   * type is set to `object`.
+   */
+  parameters?: object;
+
+  /**
+   * @deprecated
+   */
+  resources?: null;
 }
 
 /**

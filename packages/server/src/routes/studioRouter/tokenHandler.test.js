@@ -1,6 +1,6 @@
+import FakeTimers from '@sinonjs/fake-timers';
 import { createInstance } from 'axios-test-instance';
 import { verify } from 'jsonwebtoken';
-import lolex from 'lolex';
 import { SequelizeInstanceError } from 'sequelize';
 
 import createServer from '../../utils/createServer';
@@ -23,7 +23,7 @@ beforeAll(async () => {
 }, 10e3);
 
 beforeEach(async () => {
-  clock = lolex.install();
+  clock = FakeTimers.install();
   clock.setSystemTime(new Date('2000-01-01T00:00:00Z'));
   await truncate(db);
   ({ refreshToken, user } = await testToken(db, 'resources:manage'));
