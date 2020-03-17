@@ -226,42 +226,13 @@ export default {
     parameters: [{ $ref: '#/components/parameters/appId' }],
     get: {
       tags: ['app'],
-      parameters: [
-        {
-          name: 'endpoint',
-          in: 'query',
-          description: 'The URL of the endpoint associated with the subscription.',
-          required: true,
-          schema: { type: 'string', format: 'uri' },
-        },
-      ],
+      parameters: [{ $ref: '#/components/parameters/endpoint' }],
       description: 'Fetch all subscription settings of an app.',
       operationId: 'getSubscription',
       responses: {
         200: {
           description: 'The subscription settings.',
-          content: {
-            'application/json': {
-              schema: {
-                type: 'object',
-                additionalProperties: {
-                  type: 'object',
-                  properties: {
-                    create: { type: 'boolean' },
-                    update: { type: 'boolean' },
-                    delete: { type: 'boolean' },
-                    subscriptions: {
-                      type: 'object',
-                      additionalProperties: {
-                        type: 'object',
-                        properties: { update: { type: 'boolean' }, delete: { type: 'boolean' } },
-                      },
-                    },
-                  },
-                },
-              },
-            },
-          },
+          $ref: '#/components/responses/subscriptions',
         },
       },
     },
@@ -305,14 +276,15 @@ export default {
     },
     patch: {
       tags: ['app'],
-      description: 'Subscribe to an app’s push notifications',
+      description:
+        'Subscribe to an app’s push notifications. If value isn’t set it will toggle between subscribing and unsubscribing.',
       operationId: 'updateSubscription',
       requestBody: {
         content: {
           'application/json': {
             schema: {
               type: 'object',
-              required: ['endpoint', 'resource', 'action', 'value'],
+              required: ['endpoint', 'resource', 'action'],
               properties: {
                 endpoint: {
                   type: 'string',

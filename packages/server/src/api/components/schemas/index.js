@@ -14,6 +14,7 @@ import Page from './Page';
 import Rating from './Rating';
 import Resource from './Resource';
 import ResourceDefinition from './ResourceDefinition';
+import ResourceSubscription from './ResourceSubscription';
 import Security from './Security';
 import SubPage from './SubPage';
 import Theme from './Theme';
@@ -39,6 +40,7 @@ export default {
   Rating,
   Resource,
   ResourceDefinition,
+  ResourceSubscription,
   Theme,
   User,
   UserEmail,
