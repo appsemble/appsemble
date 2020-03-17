@@ -4,17 +4,30 @@ import fs from 'fs-extra';
 import klaw from 'klaw';
 import path from 'path';
 
+import { BlockConfig } from '../types';
 import generateBlockData from './generateBlockData';
+
+interface MakePayloadParams {
+  /**
+   * The block configuration
+   */
+  config: BlockConfig;
+
+  /**
+   * The path in which the block project is located.
+   */
+  path: string;
+}
 
 /**
  * Configure the payload for a new block version upload.
  *
- * @param {Object} params
- * @param {Object} params.config The block configuration
- * @param {string} params.path The path in which the block project is located.
- * @returns {FormData} The payload that should be sent to the version endpoint.
+ * @returns The payload that should be sent to the version endpoint.
  */
-export default async function makePayload({ config, path: p }) {
+export default async function makePayload({
+  config,
+  path: p,
+}: MakePayloadParams): Promise<FormData> {
   const { output } = config;
   const distPath = output ? path.resolve(p, output) : p;
   const form = new FormData();

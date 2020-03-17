@@ -7,12 +7,17 @@ import processCss from './processCss';
 /**
  * Uploads an app block theme
  *
- * @param {string} filePath The path of the index.css file
- * @param {string} organization The ID of the organization the block belongs to.
- * @param {string} appId The ID of the app to upload the theme for.
- * @param {string} block The name of the block.
+ * @param filePath The path of the index.css file
+ * @param organization The ID of the organization the block belongs to.
+ * @param appId The ID of the app to upload the theme for.
+ * @param block The name of the block.
  */
-export default async function uploadAppBlockTheme(filePath, organization, appId, block) {
+export default async function uploadAppBlockTheme(
+  filePath: string,
+  organization: string,
+  appId: number,
+  block: string,
+): Promise<void> {
   logger.info(`Upload ${organization}/${block} stylesheet for app ${appId}`);
 
   const css = await processCss(filePath);

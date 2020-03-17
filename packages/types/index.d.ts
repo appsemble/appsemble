@@ -348,7 +348,7 @@ export interface BlockManifest {
   /**
    * The type of layout to be used for the block.
    */
-  layout: 'float' | 'static' | 'grow' | 'hidden' | null;
+  layout?: 'float' | 'static' | 'grow' | 'hidden' | null;
 
   /**
    * Array of urls associated to the files of the block.
@@ -364,11 +364,22 @@ export interface BlockManifest {
    * The events that are supported by a block.
    */
   events?: {
-    listen: string[];
-    emit: string[];
+    listen?: string[];
+    emit?: string[];
   };
 
-  parameters: OpenAPIV3.NonArraySchemaObject;
+  /**
+   * A JSON schema to validate block parameters.
+   *
+   * Since multiple JSON schema typings exist and not all of them play nice with each other, this
+   * type is set to `object`.
+   */
+  parameters?: object;
+
+  /**
+   * @deprecated
+   */
+  resources?: null;
 }
 
 /**

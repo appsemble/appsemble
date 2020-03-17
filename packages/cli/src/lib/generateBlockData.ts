@@ -1,22 +1,31 @@
 import { AppsembleError, logger } from '@appsemble/node-utils';
+import { BlockManifest } from '@appsemble/types';
 import path from 'path';
 import {
   createProgram,
   findConfigFile,
   forEachChild,
   formatDiagnostic,
+  FormatDiagnosticsHost,
   formatDiagnosticsWithColorAndContext,
+  Identifier,
+  InterfaceDeclaration,
   isIndexSignatureDeclaration,
   isInterfaceDeclaration,
   isModuleDeclaration,
   parseJsonConfigFileContent,
+  Program,
   readConfigFile,
+  SourceFile,
   sys,
 } from 'typescript';
-import { buildGenerator } from 'typescript-json-schema';
+import { buildGenerator, Definition } from 'typescript-json-schema';
 import { inspect } from 'util';
 
-function processActions(iface) {
+import { BlockConfig, BlockPayload } from '../types';
+
+// XXX specify any
+function processActions(iface: InterfaceDeclaration): BlockManifest['actions'] {
   if (!iface || !iface.members.length) {
     return undefined;
   }
@@ -27,25 +36,30 @@ function processActions(iface) {
         return ['$any', {}];
       }
 
-      if (member.name.escapedText === '$any') {
+      if ((member.name as Identifier).escapedText === '$any') {
         throw new AppsembleError(
           'Found ‘$any’ property signature in Actions interface. This is reserved to mark index signatures.',
         );
       }
 
-      return [member.name.escapedText, {}];
+      return [(member.name as Identifier).escapedText, {}];
     }),
   );
 }
 
-function mergeInterfacesKeys(iface) {
+// XXX specify any
+function mergeInterfacesKeys(iface: InterfaceDeclaration): string[] {
   if (!iface || !iface.members.length) {
     return undefined;
   }
-  return iface.members.map(member => member.name.escapedText);
+  return iface.members.map(member => (member.name as Identifier).escapedText as string);
 }
 
-function processEvents(eventListenerInterface, eventEmitterInterface) {
+// XXX specify any
+function processEvents(
+  eventListenerInterface: InterfaceDeclaration,
+  eventEmitterInterface: InterfaceDeclaration,
+): BlockManifest['events'] {
   const listen = mergeInterfacesKeys(eventListenerInterface);
   const emit = mergeInterfacesKeys(eventEmitterInterface);
   if (!listen && !emit) {
@@ -54,7 +68,7 @@ function processEvents(eventListenerInterface, eventEmitterInterface) {
   return { emit, listen };
 }
 
-function processParameters(program, sourceFile) {
+function processParameters(program: Program, sourceFile: SourceFile): Definition {
   if (!sourceFile) {
     return undefined;
   }
@@ -79,11 +93,11 @@ function processParameters(program, sourceFile) {
 /**
  * Get the TypeScript program for a given path.
  *
- * @param {string} blockPath The path for which to get the TypeScript program.
+ * @param blockPath The path for which to get the TypeScript program.
  * @returns The TypeScript program.
  */
-function getProgram(blockPath) {
-  const diagnosticHost = {
+function getProgram(blockPath: string): Program {
+  const diagnosticHost: FormatDiagnosticsHost = {
     getNewLine: () => sys.newLine,
     getCurrentDirectory: sys.getCurrentDirectory,
     getCanonicalFileName: x => x,
@@ -121,17 +135,20 @@ function getProgram(blockPath) {
   return createProgram(fileNames, options);
 }
 
-function getFromContext(blockConfig, fullPath) {
+function getFromContext(
+  blockConfig: BlockConfig,
+  fullPath: string,
+): Pick<BlockManifest, 'actions' | 'events' | 'parameters'> {
   if ('actions' in blockConfig && 'events' in blockConfig && 'parameters' in blockConfig) {
     return blockConfig;
   }
   logger.info(`Extracting data from TypeScript project ${fullPath}`);
   const program = getProgram(fullPath);
 
-  let actionInterface;
-  let eventEmitterInterface;
-  let eventListenerInterface;
-  let parametersSourceFile;
+  let actionInterface: InterfaceDeclaration;
+  let eventEmitterInterface: InterfaceDeclaration;
+  let eventListenerInterface: InterfaceDeclaration;
+  let parametersSourceFile: SourceFile;
 
   program.getSourceFiles().forEach(sourceFile => {
     const fileName = path.relative(process.cwd(), sourceFile.fileName);
@@ -213,10 +230,10 @@ function getFromContext(blockConfig, fullPath) {
  *
  * Uses the .appsemblerc file and the type definitions of the block.
  *
- * @param {*} config The content of the .appsemblerc file
- * @param {*} fullPath The path to the .appsemblerc file
+ * @param config The content of the .appsemblerc file
+ * @param fullPath The path to the .appsemblerc file
  */
-export default function generateBlockData(config, fullPath) {
+export default function generateBlockData(config: BlockConfig, fullPath: string): BlockPayload {
   const { layout, resources, version } = config;
   const { actions, events, parameters } = getFromContext(config, fullPath);
 

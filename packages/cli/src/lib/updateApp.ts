@@ -4,19 +4,20 @@ import FormData from 'form-data';
 import fs from 'fs-extra';
 import yaml from 'js-yaml';
 
+import { UpdateAppArguments } from '../types';
 import traverseAppDirectory from './traverseAppDirectory';
 import traverseBlockThemes from './traverseBlockThemes';
 
 /**
  * Create a new App.
- *
- * @param {Object} params
- * @param {number} params.appId The ID of the app to update.
- * @param {string} params.path The path in which the app YAML is located.
- * @param {boolean} params.private Whether the app should be marked as private.
- * @param {boolean} params.template Whether the app should be marked as a template.
  */
-export default async function updateApp({ appId, path, private: isPrivate, remote, template }) {
+export default async function updateApp({
+  appId,
+  path,
+  private: isPrivate,
+  remote,
+  template,
+}: UpdateAppArguments): Promise<void> {
   try {
     const file = await fs.stat(path);
     const formData = new FormData();
