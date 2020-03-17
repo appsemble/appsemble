@@ -1,3 +1,4 @@
+import { BlockManifest } from '@appsemble/types';
 import fg from 'fast-glob';
 import fs from 'fs-extra';
 import path from 'path';
@@ -12,7 +13,7 @@ import getBlockConfig from './getBlockConfig';
  * @param {string} root The project root in which to find workspaces.
  * @returns {Object[]} Discovered Appsemble blocks.
  */
-export default async function discoverBlocks(root) {
+export default async function discoverBlocks(root: string): Promise<Partial<BlockManifest>[]> {
   const {
     // Lerna workspaces
     packages = [],
@@ -21,18 +22,15 @@ export default async function discoverBlocks(root) {
   } = await fs.readJSON(path.resolve(root, 'package.json'));
   const dirs = await fg([].concat(packages, workspaces), {
     absolute: true,
-    followSymlinkedDirectories: true,
+    followSymbolicLinks: true,
     onlyDirectories: true,
   });
-  return dirs
-    .concat(root)
-    .map(getBlockConfig)
-    .reduce(
-      (acc, result) =>
-        result.then(
-          async config => [...(await acc), config],
-          () => acc,
-        ),
-      [],
-    );
+  const manifests = await Promise.all(
+    dirs
+      .concat(root)
+      .map(getBlockConfig)
+      // Ignore non-block workspaces.
+      .map(p => p.catch(() => null)),
+  );
+  return manifests.filter(Boolean);
 }

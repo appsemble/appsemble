@@ -3,15 +3,13 @@ import axios from 'axios';
 import os from 'os';
 
 import { version } from '../../package.json';
+import { BaseArguments } from '../types';
 import { formData, requestLogger, responseLogger } from './interceptors';
 
 /**
  * Configure the default axios URL.
- *
- * @param {Object} argv
- * @param {string} argv.remote The URL to make requests to.
  */
-export default function initAxios({ remote }) {
+export default function initAxios({ remote }: BaseArguments): void {
   axios.defaults.baseURL = remote;
   logger.verbose(`Request remote set to ${remote}`);
   axios.defaults.headers.common[

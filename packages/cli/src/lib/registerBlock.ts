@@ -3,7 +3,15 @@ import axios from 'axios';
 
 import getBlockConfig from './getBlockConfig';
 
-export default async function registerBlock({ ignoreConflict, path }) {
+interface RegisterBlockParams {
+  ignoreConflict: boolean;
+  path: string;
+}
+
+export default async function registerBlock({
+  ignoreConflict,
+  path,
+}: RegisterBlockParams): Promise<void> {
   const config = await getBlockConfig(path);
   logger.info(`Registering block ${config.id}`);
   const { description, id } = config;
