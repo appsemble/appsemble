@@ -164,6 +164,29 @@ describe('blocks', () => {
     expect(status).toBe(201);
   });
 
+  it('should not accept invalid action names', async () => {
+    await instance.post('/api/blocks', { id: '@xkcd/standing' }, headers);
+
+    const formData = new FormData();
+    formData.append('data', JSON.stringify({ actions: { $any: {}, $foo: {} }, version: '1.32.9' }));
+    formData.append(
+      'build/standing.png',
+      fs.createReadStream(path.join(__dirname, '__fixtures__/standing.png')),
+    );
+    formData.append(
+      'build/testblock.js',
+      fs.createReadStream(path.join(__dirname, '__fixtures__/testblock.js')),
+    );
+    const response = await instance.post('/api/blocks/@xkcd/standing/versions', formData, {
+      headers: { ...headers.headers, ...formData.getHeaders() },
+    });
+
+    expect(response).toMatchObject({
+      status: 400,
+      data: { message: 'Action “$foo” does match /^[a-z]\\w*$/' },
+    });
+  });
+
   it('should be possible to fetch uploaded block versions', async () => {
     await instance.post('/api/blocks', { id: '@xkcd/standing' }, headers);
 

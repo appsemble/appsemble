@@ -10,6 +10,7 @@ import {
   formatDiagnosticsWithColorAndContext,
   Identifier,
   InterfaceDeclaration,
+  isIndexSignatureDeclaration,
   isInterfaceDeclaration,
   isModuleDeclaration,
   parseJsonConfigFileContent,
@@ -28,8 +29,21 @@ function processActions(iface: InterfaceDeclaration): BlockManifest['actions'] {
   if (!iface || !iface.members.length) {
     return undefined;
   }
+
   return Object.fromEntries(
-    iface.members.map(member => [(member.name as Identifier).escapedText, {}]),
+    iface.members.map(member => {
+      if (isIndexSignatureDeclaration(member)) {
+        return ['$any', {}];
+      }
+
+      if ((member.name as Identifier).escapedText === '$any') {
+        throw new AppsembleError(
+          'Found ‘$any’ property signature in Actions interface. This is reserved to mark index signatures.',
+        );
+      }
+
+      return [(member.name as Identifier).escapedText, {}];
+    }),
   );
 }
 

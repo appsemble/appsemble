@@ -5,6 +5,7 @@ import { remapData } from '@appsemble/utils';
 import { h } from 'preact';
 import { useCallback, useEffect, useState } from 'preact/hooks';
 
+import { ItemCell, ItemRow } from './components';
 import styles from './index.css';
 
 const messages = {
@@ -31,7 +32,7 @@ bootstrap(({ actions, events, parameters: { fields }, ready, utils }) => {
   }, []);
 
   const onClick = useCallback(
-    (d: Item): void => {
+    (d: any): void => {
       if (actions.onClick) {
         actions.onClick.dispatch(d);
       }
@@ -57,7 +58,7 @@ bootstrap(({ actions, events, parameters: { fields }, ready, utils }) => {
   }
 
   return (
-    <table className="table is-hoverable is-striped is-fullwidth">
+    <table className="table is-hoverable is-striped is-fullwidth" role="grid">
       <thead>
         <tr>
           {fields.map(field => (
@@ -67,21 +68,27 @@ bootstrap(({ actions, events, parameters: { fields }, ready, utils }) => {
       </thead>
       <tbody>
         {data.map((item, dataIndex) => (
-          <tr
+          <ItemRow
             key={item.id || dataIndex}
             className={actions.onClick.type !== 'noop' ? styles.clickable : undefined}
-            onClick={() => onClick(item)}
+            item={item}
+            onClick={onClick}
           >
             {fields.map(field => {
               const value = remapData(field.name, item);
-
               return (
-                <td key={field.name}>
+                <ItemCell
+                  key={field.name}
+                  className={onClick ? styles.clickable : undefined}
+                  field={field}
+                  item={item}
+                  onClick={onClick}
+                >
                   {typeof value === 'string' ? value : JSON.stringify(value)}
-                </td>
+                </ItemCell>
               );
             })}
-          </tr>
+          </ItemRow>
         ))}
       </tbody>
     </table>
