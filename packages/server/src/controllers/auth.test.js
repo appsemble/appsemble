@@ -5,31 +5,31 @@ import createServer from '../utils/createServer';
 import testSchema from '../utils/test/testSchema';
 import truncate from '../utils/test/truncate';
 
-describe('auth controller', () => {
-  let User;
-  let EmailAuthorization;
-  let ResetPasswordToken;
-  let db;
-  let request;
-  let server;
+let User;
+let EmailAuthorization;
+let ResetPasswordToken;
+let db;
+let request;
+let server;
 
-  beforeAll(async () => {
-    db = await testSchema('auth');
+beforeAll(async () => {
+  db = await testSchema('auth');
 
-    server = await createServer({ db, argv: { host: 'http://localhost', secret: 'test' } });
-    request = await createInstance(server);
-    ({ EmailAuthorization, ResetPasswordToken, User } = db.models);
-  }, 10e3);
+  server = await createServer({ db, argv: { host: 'http://localhost', secret: 'test' } });
+  request = await createInstance(server);
+  ({ EmailAuthorization, ResetPasswordToken, User } = db.models);
+}, 10e3);
 
-  beforeEach(async () => {
-    await truncate(db);
-  });
+beforeEach(async () => {
+  await truncate(db);
+});
 
-  afterAll(async () => {
-    await request.close();
-    await db.close();
-  });
+afterAll(async () => {
+  await request.close();
+  await db.close();
+});
 
+describe('registerEmail', () => {
   it('should register valid email addresses', async () => {
     const data = { email: 'test@example.com', password: 'password' };
     const response = await request.post('/api/email', data);
@@ -61,7 +61,9 @@ describe('auth controller', () => {
 
     expect(response).toMatchObject({ status: 409 });
   });
+});
 
+describe('verifyEmail', () => {
   it('should verify existing email addresses', async () => {
     await request.post('/api/email', { email: 'test@example.com', password: 'password' });
     const email = await EmailAuthorization.findByPk('test@example.com');
@@ -86,7 +88,9 @@ describe('auth controller', () => {
     expect(responseB).toMatchObject({ status: 400 });
     expect(responseC).toMatchObject({ status: 404 });
   });
+});
 
+describe('requestResetPassword', () => {
   it('should create a password reset token', async () => {
     const data = { email: 'test@example.com', password: 'password' };
     await request.post('/api/email', data);
@@ -124,7 +128,9 @@ describe('auth controller', () => {
 
     expect(response).toMatchObject({ status: 204 });
   });
+});
 
+describe('resetPassword', () => {
   it('should return not found when resetting using a non-existent token', async () => {
     const response = await request.post('/api/email/reset', {
       token: 'idontexist',
