@@ -232,4 +232,15 @@ describe('generateBlockData', () => {
       },
     });
   });
+
+  it('should handle TypeScript pre emit diagnostics', () => {
+    function fn(): void {
+      generateBlockData(
+        { id: '', layout: 'float', version: '1.33.7', webpack: '', dist: '', output: '', dir: '' },
+        path.join(__dirname, '__fixtures__/generateBlockData/tsError'),
+      );
+    }
+    expect(fn).toThrow(AppsembleError);
+    expect(fn).toThrow(/'unused' is declared but its value is never read/);
+  });
 });
