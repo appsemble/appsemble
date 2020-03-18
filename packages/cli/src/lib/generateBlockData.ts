@@ -8,6 +8,7 @@ import {
   formatDiagnostic,
   FormatDiagnosticsHost,
   formatDiagnosticsWithColorAndContext,
+  getPreEmitDiagnostics,
   Identifier,
   InterfaceDeclaration,
   isIndexSignatureDeclaration,
@@ -132,7 +133,14 @@ function getProgram(blockPath: string): Program {
   delete options.declaration;
   delete options.declarationDir;
   delete options.declarationMap;
-  return createProgram(fileNames, options);
+  const program = createProgram(fileNames, options);
+  const preEmitDiagnostics = getPreEmitDiagnostics(program);
+  if (preEmitDiagnostics.length) {
+    throw new AppsembleError(
+      formatDiagnosticsWithColorAndContext(preEmitDiagnostics, diagnosticHost),
+    );
+  }
+  return program;
 }
 
 function getFromContext(
