@@ -1,5 +1,5 @@
 import { BootstrapParams } from '@appsemble/sdk';
-import { BaseIconOptions, DivIcon, Icon } from 'leaflet';
+import { DivIcon, Icon } from 'leaflet';
 
 import styles from './createMarker.css';
 
@@ -15,11 +15,11 @@ const KNOWN_MARKER_ICONS = new Set(['map-marker', 'map-marker-alt', 'map-pin', '
  *
  * @param parameters Parameters defined by the app creator.
  */
-export default function createIcon({
+export default async function createIcon({
   parameters: { icons = {} },
   theme,
   utils,
-}: BootstrapParams): Icon<BaseIconOptions> {
+}: BootstrapParams): Promise<Icon | DivIcon> {
   const { anchor } = icons;
   if ('asset' in icons) {
     return new Icon({
