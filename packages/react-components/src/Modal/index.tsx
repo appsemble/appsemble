@@ -50,7 +50,7 @@ interface ModalProps<T extends React.ElementType> extends WrappedComponentProps 
 /**
  * Render an aria compliant modal overlay.
  */
-class Modal<T extends React.ElementType = 'div'> extends React.Component<
+export class Modal<T extends React.ElementType = 'div'> extends React.Component<
   ModalProps<T> & React.ComponentPropsWithoutRef<T>
 > {
   static defaultProps: Partial<ModalProps<'div'>> = {
