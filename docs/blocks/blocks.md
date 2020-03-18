@@ -9,6 +9,7 @@ Without blocks it is not possible to develop any interesting apps. To get you st
 comes with several official blocks that can be used in any app.
 
 - [Action Button](/blocks/action-button)
+- [Button List](/blocks/button-list)
 - [Detail Viewer](/blocks/detail-viewer)
 - [Feed](/blocks/feed)
 - [Filter](/blocks/filter)

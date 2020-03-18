@@ -12,6 +12,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - App: Add `resource.subscription.toggle` action.
 - App: Add `resource.subscription.status` action.
 - App: Add `resource.subscription.unsubscribe` action.
+- Block(`@appsemble/button-list`): Add new button list block.
 - Server: Add option to toggle subscriptions.
 
 ### Changed
