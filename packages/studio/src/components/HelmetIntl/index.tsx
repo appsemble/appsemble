@@ -1,6 +1,15 @@
-import { injectIntl } from 'react-intl';
+import React from 'react';
+import { Helmet } from 'react-helmet';
+import { injectIntl, MessageDescriptor, WrappedComponentProps } from 'react-intl';
 
-import HelmetIntl from './HelmetIntl';
+interface HelmIntlProps extends WrappedComponentProps {
+  title: MessageDescriptor;
+  titleValues?: { [key: string]: string };
+}
+
+function HelmetIntl({ intl, title, titleValues = {} }: HelmIntlProps): React.ReactElement {
+  return <Helmet title={intl.formatMessage(title, titleValues)} />;
+}
 
 // XXX https://github.com/akameco/babel-plugin-react-intl-auto/issues/98
 export default injectIntl(HelmetIntl);
