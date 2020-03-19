@@ -29,7 +29,7 @@ export default function loadMarkers(
   if (!Array.isArray(markers)) {
     return;
   }
-  markers.forEach(marker => {
+  markers.forEach(async marker => {
     if (fetched.has(marker.id)) {
       return;
     }
@@ -39,7 +39,7 @@ export default function loadMarkers(
     if (Number.isNaN(Number(lat)) || Number.isNaN(Number(lng))) {
       return;
     }
-    const m = new Marker([lat, lng], { icon: createIcon(params) });
+    const m = new Marker([lat, lng], { icon: await createIcon(params) });
     m.on('click', params.actions.onMarkerClick.dispatch.bind(null, marker));
     target.addLayer(m);
   });

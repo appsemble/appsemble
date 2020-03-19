@@ -17,16 +17,16 @@ interface AbstractMarkerIcon {
    * - `thumbtrack`
    */
   anchor?: [number, number];
-}
 
-interface FontAwesomeMarkerIcon extends AbstractMarkerIcon {
   /**
-   * The size of marker icons in pixels.
+   * The height of marker icons in pixels.
    *
    * @default 28
    */
   size?: number;
+}
 
+interface FontAwesomeMarkerIcon extends AbstractMarkerIcon {
   /**
    * A Font Awesome icon name to use.
    */

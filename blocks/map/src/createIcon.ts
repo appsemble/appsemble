@@ -10,24 +10,54 @@ import styles from './createMarker.css';
  */
 const KNOWN_MARKER_ICONS = new Set(['map-marker', 'map-marker-alt', 'map-pin', 'thumbtack']);
 
+const sizeMap = new Map<string, Promise<[number, number]>>();
+
 /**
- * Create an SVG marker based on the coordinates from https://fontawesome.com/icons/map-marker-alt
+ * Get the natural width and height of an image url as a tuple.
  *
- * @param parameters Parameters defined by the app creator.
+ * The value is memoized.
+ *
+ * @param url The URL for which to get the image dimensions.
+ * @returns The natural width and height as a tuple.
+ */
+function getIconSize(url: string): Promise<[number, number]> {
+  if (!sizeMap.has(url)) {
+    sizeMap.set(
+      url,
+      new Promise((resolve, reject) => {
+        const image = new Image();
+        image.onload = () => resolve([image.naturalWidth, image.naturalHeight]);
+        image.onerror = reject;
+        image.src = url;
+      }),
+    );
+  }
+  return sizeMap.get(url);
+}
+
+/**
+ * Create a leaflet icon based on an asset id or a font awesome icon.
+ *
+ * @param blockParams The block parameters.
+ * @returns The leaflet icon.
  */
 export default async function createIcon({
   parameters: { icons = {} },
   theme,
   utils,
 }: BootstrapParams): Promise<Icon | DivIcon> {
-  const { anchor } = icons;
+  const { anchor, size = 28 } = icons;
   if ('asset' in icons) {
+    const iconUrl = utils.asset(icons.asset);
+    const [naturalWidth, naturalHeight] = await getIconSize(iconUrl);
+    const width = (size * naturalWidth) / naturalHeight;
     return new Icon({
-      iconUrl: utils.asset(icons.asset),
-      iconAnchor: anchor,
+      iconUrl,
+      iconAnchor: anchor || [width / 2, size / 2],
+      iconSize: [width, size],
     });
   }
-  const { icon = 'map-marker-alt', size = 28 } = icons;
+  const { icon = 'map-marker-alt' } = icons;
   const html = document.createElement('i');
   html.className = `fas fa-${icon}`;
   html.style.fontSize = `${size}px`;
