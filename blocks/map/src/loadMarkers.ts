@@ -22,7 +22,7 @@ export default function loadMarkers(
   markers: BlockMarker[],
   fetched: Set<number>,
   get: LatLngMapper,
-  _: any,
+  data: any,
   params: BootstrapParams,
   target: LayerGroup | Map,
 ): void {
@@ -39,8 +39,8 @@ export default function loadMarkers(
     if (Number.isNaN(Number(lat)) || Number.isNaN(Number(lng))) {
       return;
     }
-    const m = new Marker([lat, lng], { icon: await createIcon(params) });
-    m.on('click', params.actions.onMarkerClick.dispatch.bind(null, marker));
-    target.addLayer(m);
+    new Marker([lat, lng], { icon: await createIcon(params, data && data.id === marker.id) })
+      .on('click', params.actions.onMarkerClick.dispatch.bind(null, marker))
+      .addTo(target);
   });
 }
