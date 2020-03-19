@@ -202,7 +202,7 @@ describe('addSubscription', () => {
 });
 
 describe('updateSubscription', () => {
-  it('should update subscription settings', async () => {
+  it('should update resource type subscription settings', async () => {
     const app = await App.create(defaultApp(organizationId));
     await app.createAppSubscription({
       endpoint: 'https://example.com',
@@ -243,7 +243,58 @@ describe('updateSubscription', () => {
     expect(subscription.UserId).toStrictEqual(user.id);
   });
 
-  it('should remove subscription settings if set to false', async () => {
+  it('should update individual resource subscription settings', async () => {
+    const app = await App.create(defaultApp(organizationId));
+    await app.createAppSubscription({
+      endpoint: 'https://example.com',
+      p256dh: 'abc',
+      auth: 'def',
+    });
+    const { id } = await app.createResource({ type: 'person', data: {} });
+
+    const response = await request.patch(
+      `/api/apps/${app.id}/subscriptions`,
+      {
+        endpoint: 'https://example.com',
+        resource: 'person',
+        action: 'update',
+        resourceId: id,
+        value: true,
+      },
+      { headers: { authorization } },
+    );
+
+    const responseB = await request.get(`/api/apps/${app.id}/subscriptions`, {
+      params: { endpoint: 'https://example.com' },
+    });
+
+    const subscription = await AppSubscription.findOne({
+      where: { endpoint: 'https://example.com' },
+    });
+
+    expect(response).toMatchObject({ status: 204, data: {} });
+    expect(responseB).toMatchObject({
+      status: 200,
+      data: {
+        person: {
+          create: false,
+          update: false,
+          delete: false,
+          subscriptions: {
+            [id]: { update: true, delete: false },
+          },
+        },
+        pet: {
+          create: false,
+          update: false,
+          delete: false,
+        },
+      },
+    });
+    expect(subscription.UserId).toStrictEqual(user.id);
+  });
+
+  it('should remove resource type subscription settings if set to false', async () => {
     const app = await App.create(defaultApp(organizationId));
     const subscription = await app.createAppSubscription({
       endpoint: 'https://example.com',
@@ -262,6 +313,195 @@ describe('updateSubscription', () => {
     });
 
     expect(response).toMatchObject({ status: 204, data: {} });
+    expect(responseB).toMatchObject({
+      status: 200,
+      data: {
+        person: {
+          create: false,
+          update: false,
+          delete: false,
+        },
+        pet: {
+          create: false,
+          update: false,
+          delete: false,
+        },
+      },
+    });
+  });
+
+  it('should remove individual resource subscription settings if set to false', async () => {
+    const app = await App.create(defaultApp(organizationId));
+    const subscription = await app.createAppSubscription({
+      endpoint: 'https://example.com',
+      p256dh: 'abc',
+      auth: 'def',
+    });
+    const { id } = await app.createResource({ type: 'person', data: {} });
+
+    await subscription.createResourceSubscription({
+      type: 'person',
+      action: 'update',
+      ResourceId: id,
+    });
+
+    const responseA = await request.get(`/api/apps/${app.id}/subscriptions`, {
+      params: { endpoint: 'https://example.com' },
+    });
+    const response = await request.patch(
+      `/api/apps/${app.id}/subscriptions`,
+      {
+        endpoint: 'https://example.com',
+        resource: 'person',
+        action: 'update',
+        resourceId: id,
+        value: false,
+      },
+      { headers: { authorization } },
+    );
+    const responseB = await request.get(`/api/apps/${app.id}/subscriptions`, {
+      params: { endpoint: 'https://example.com' },
+    });
+
+    expect(response).toMatchObject({ status: 204, data: {} });
+    expect(responseA).toMatchObject({
+      status: 200,
+      data: {
+        person: {
+          create: false,
+          update: false,
+          delete: false,
+          subscriptions: { [id]: { update: true, delete: false } },
+        },
+        pet: {
+          create: false,
+          update: false,
+          delete: false,
+        },
+      },
+    });
+    expect(responseB).toMatchObject({
+      status: 200,
+      data: {
+        person: {
+          create: false,
+          update: false,
+          delete: false,
+        },
+        pet: {
+          create: false,
+          update: false,
+          delete: false,
+        },
+      },
+    });
+  });
+
+  it('should toggle resource type subscriptions if value isn’t set', async () => {
+    const app = await App.create(defaultApp(organizationId));
+    await app.createAppSubscription({
+      endpoint: 'https://example.com',
+      p256dh: 'abc',
+      auth: 'def',
+    });
+
+    await request.patch(
+      `/api/apps/${app.id}/subscriptions`,
+      { endpoint: 'https://example.com', resource: 'person', action: 'create' },
+      { headers: { authorization } },
+    );
+    const responseA = await request.get(`/api/apps/${app.id}/subscriptions`, {
+      params: { endpoint: 'https://example.com' },
+    });
+
+    await request.patch(
+      `/api/apps/${app.id}/subscriptions`,
+      { endpoint: 'https://example.com', resource: 'person', action: 'create' },
+      { headers: { authorization } },
+    );
+    const responseB = await request.get(`/api/apps/${app.id}/subscriptions`, {
+      params: { endpoint: 'https://example.com' },
+    });
+
+    expect(responseA).toMatchObject({
+      status: 200,
+      data: {
+        person: {
+          create: true,
+          update: false,
+          delete: false,
+        },
+        pet: {
+          create: false,
+          update: false,
+          delete: false,
+        },
+      },
+    });
+
+    expect(responseB).toMatchObject({
+      status: 200,
+      data: {
+        person: {
+          create: false,
+          update: false,
+          delete: false,
+        },
+        pet: {
+          create: false,
+          update: false,
+          delete: false,
+        },
+      },
+    });
+  });
+
+  it('should toggle individual resource subscriptions if value isn’t set', async () => {
+    const app = await App.create(defaultApp(organizationId));
+    await app.createAppSubscription({
+      endpoint: 'https://example.com',
+      p256dh: 'abc',
+      auth: 'def',
+    });
+    const { id } = await app.createResource({ type: 'person', data: {} });
+
+    await request.patch(
+      `/api/apps/${app.id}/subscriptions`,
+      { endpoint: 'https://example.com', resource: 'person', action: 'update', resourceId: id },
+      { headers: { authorization } },
+    );
+    const responseA = await request.get(`/api/apps/${app.id}/subscriptions`, {
+      params: { endpoint: 'https://example.com' },
+    });
+
+    await request.patch(
+      `/api/apps/${app.id}/subscriptions`,
+      { endpoint: 'https://example.com', resource: 'person', action: 'update', resourceId: id },
+      { headers: { authorization } },
+    );
+    const responseB = await request.get(`/api/apps/${app.id}/subscriptions`, {
+      params: { endpoint: 'https://example.com' },
+    });
+
+    expect(responseA).toMatchObject({
+      status: 200,
+      data: {
+        person: {
+          create: false,
+          update: false,
+          delete: false,
+          subscriptions: {
+            [id]: { update: true, delete: false },
+          },
+        },
+        pet: {
+          create: false,
+          update: false,
+          delete: false,
+        },
+      },
+    });
+
     expect(responseB).toMatchObject({
       status: 200,
       data: {

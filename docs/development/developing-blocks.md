@@ -99,7 +99,7 @@ Now lets make the text of the button configurable using the app definition.
 ```diff
   button.type = 'button';
 - button.innerText = 'Click me!';
-+ button.innerText = block.parameters.text || 'Click me!';
++ button.innerText = parameters.text || 'Click me!';
   button.classList.add('button');
 ```
 
@@ -140,21 +140,21 @@ Let’s to a little rewrite of our block.
 ```diff
   import { attach } from '@appsemble/sdk';
 
-  attach(({ actions, block, data, events, pageParameters, shadowRoot, utils }) => {
+  attach(({ actions, data, events, pageParameters, parameters, shadowRoot, utils }) => {
 +   const wrapper = document.createElement('div');
 +   const text = document.createElement('p');
     const button = document.createElement('button');
 +   text.innerText = data ? `I was linked from ${data.text}` : 'I was loaded without data';
     button.type = 'button';
     button.innerText = 'Click me!';
-    button.innerText = block.parameters.text;
+    button.innerText = parameters.text;
     button.classList.add('button');
     button.addEventListener(
       'click',
       event => {
         event.preventDefault();
 -       actions.onClick.dispatch();
-+       actions.onClick.dispatch(block.parameters);
++       actions.onClick.dispatch(parameters);
       },
       true,
     );
@@ -180,9 +180,9 @@ add a delay and a message when the user is navigating to the other page.
     'click',
     event => {
       event.preventDefault();
--     actions.onClick.dispatch(block.parameters);
+-     actions.onClick.dispatch(parameters);
 +     utils.showMessage('Handling click actions in 5 seconds…');
-+     setTimeout(() => actions.onClick.dispatch(block.parameters), 5000);
++     setTimeout(() => actions.onClick.dispatch(parameters), 5000);
     },
     true,
   );
@@ -215,7 +215,7 @@ data received from the event.
 ```diff
   import { attach } from '@appsemble/sdk';
 
-  attach(({ actions, block, data, events, pageParameters, shadowRoot, utils }) => {
+  attach(({ actions, data, events, pageParameters, parameters, shadowRoot, utils }) => {
     const wrapper = document.createElement('div');
     const text = document.createElement('p');
     const button = document.createElement('button');
@@ -225,16 +225,16 @@ data received from the event.
     button.innerText = block.parameters.text;
     button.classList.add('button');
 +   events.on.data(data => {
-+     console.log('My parameters:', block.parameters);
++     console.log('My parameters:', parameters);
 +     console.log('Event data:', data);
 +   });
     button.addEventListener(
       'click',
       event => {
         event.preventDefault();
-+       events.emit.click(block.parameters);
++       events.emit.click(parameters);
 -       utils.showMessage('Handling click actions in 5 seconds…');
--       setTimeout(() => actions.onClick.dispatch(block.parameters), 5000);
+-       setTimeout(() => actions.onClick.dispatch(parameters), 5000);
       },
       true,
     );

@@ -3,23 +3,6 @@
 exports[`mount should mount the react component 1`] = `
 <Component
   actions={Object {}}
-  block={
-    Object {
-      "theme": Object {
-        "dangerColor": "#4b0082",
-        "infoColor": "#00ff00",
-        "linkColor": "#ff7f00",
-        "primaryColor": "#ff0000",
-        "splashColor": "#8b00ff",
-        "successColor": "#ffff00",
-        "themeColor": "#ffffff",
-        "tileLayer": "https://cartodb-basemaps-c.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png",
-        "warningColor": "#0000ff",
-      },
-      "type": "test",
-      "version": "0.0.0",
-    }
-  }
   data={Object {}}
   events={
     Object {
@@ -28,6 +11,7 @@ exports[`mount should mount the react component 1`] = `
       "on": [Function],
     }
   }
+  parameters={Object {}}
   reactRoot={<div />}
   shadowRoot={
     Object {
@@ -50,6 +34,7 @@ exports[`mount should mount the react component 1`] = `
   utils={
     Object {
       "addCleanup": [Function],
+      "asset": [Function],
       "showMessage": [Function],
     }
   }
@@ -63,23 +48,6 @@ exports[`mount should mount the react component 1`] = `
 exports[`withBlock should pass block props to the child element 1`] = `
 <Component
   actions={Object {}}
-  block={
-    Object {
-      "theme": Object {
-        "dangerColor": "#4b0082",
-        "infoColor": "#00ff00",
-        "linkColor": "#ff7f00",
-        "primaryColor": "#ff0000",
-        "splashColor": "#8b00ff",
-        "successColor": "#ffff00",
-        "themeColor": "#ffffff",
-        "tileLayer": "https://cartodb-basemaps-c.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png",
-        "warningColor": "#0000ff",
-      },
-      "type": "test",
-      "version": "0.0.0",
-    }
-  }
   data={Object {}}
   events={
     Object {
@@ -88,6 +56,7 @@ exports[`withBlock should pass block props to the child element 1`] = `
       "on": [Function],
     }
   }
+  parameters={Object {}}
   reactRoot={<div />}
   shadowRoot={
     Object {
@@ -110,6 +79,7 @@ exports[`withBlock should pass block props to the child element 1`] = `
   utils={
     Object {
       "addCleanup": [Function],
+      "asset": [Function],
       "showMessage": [Function],
     }
   }
@@ -117,23 +87,6 @@ exports[`withBlock should pass block props to the child element 1`] = `
   <withBlock()>
     <Component
       actions={Object {}}
-      block={
-        Object {
-          "theme": Object {
-            "dangerColor": "#4b0082",
-            "infoColor": "#00ff00",
-            "linkColor": "#ff7f00",
-            "primaryColor": "#ff0000",
-            "splashColor": "#8b00ff",
-            "successColor": "#ffff00",
-            "themeColor": "#ffffff",
-            "tileLayer": "https://cartodb-basemaps-c.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png",
-            "warningColor": "#0000ff",
-          },
-          "type": "test",
-          "version": "0.0.0",
-        }
-      }
       data={Object {}}
       events={
         Object {
@@ -142,6 +95,7 @@ exports[`withBlock should pass block props to the child element 1`] = `
           "on": [Function],
         }
       }
+      parameters={Object {}}
       reactRoot={<div />}
       shadowRoot={
         Object {
@@ -164,6 +118,7 @@ exports[`withBlock should pass block props to the child element 1`] = `
       utils={
         Object {
           "addCleanup": [Function],
+          "asset": [Function],
           "showMessage": [Function],
         }
       }

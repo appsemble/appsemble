@@ -2,7 +2,7 @@ import './index.css';
 
 import { attach } from '@appsemble/sdk';
 
-attach(({ actions, block, data }) => {
+attach(({ actions, data, parameters: { icon } }) => {
   let node;
   if (actions.onClick.type === 'link') {
     node = document.createElement('a');
@@ -11,7 +11,7 @@ attach(({ actions, block, data }) => {
     node = document.createElement('button');
     node.type = 'button';
   }
-  node.classList.add('fas', `fa-${block.parameters.icon}`);
+  node.classList.add('fas', `fa-${icon}`);
   node.addEventListener(
     'click',
     event => {

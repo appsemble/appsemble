@@ -5,40 +5,40 @@ import testSchema from '../utils/test/testSchema';
 import testToken from '../utils/test/testToken';
 import truncate from '../utils/test/truncate';
 
-describe('user', () => {
-  let db;
-  let user;
-  let request;
-  let server;
-  let token;
-  let EmailAuthorization;
-  let Organization;
+let db;
+let user;
+let request;
+let server;
+let token;
+let EmailAuthorization;
+let Organization;
 
-  beforeAll(async () => {
-    db = await testSchema('user');
+beforeAll(async () => {
+  db = await testSchema('user');
 
-    server = await createServer({ db, argv: { host: 'http://localhost', secret: 'test' } });
-    request = await createInstance(server);
-    ({ EmailAuthorization, Organization } = db.models);
-  }, 10e3);
+  server = await createServer({ db, argv: { host: 'http://localhost', secret: 'test' } });
+  request = await createInstance(server);
+  ({ EmailAuthorization, Organization } = db.models);
+}, 10e3);
 
-  beforeEach(async () => {
-    await truncate(db);
-    ({ authorization: token, user } = await testToken(db));
-    await user.createOrganization(
-      {
-        id: 'testorganization',
-        name: 'Test Organization',
-      },
-      { through: { role: 'Owner' } },
-    );
-  });
+beforeEach(async () => {
+  await truncate(db);
+  ({ authorization: token, user } = await testToken(db));
+  await user.createOrganization(
+    {
+      id: 'testorganization',
+      name: 'Test Organization',
+    },
+    { through: { role: 'Owner' } },
+  );
+});
 
-  afterAll(async () => {
-    await request.close();
-    await db.close();
-  });
+afterAll(async () => {
+  await request.close();
+  await db.close();
+});
 
+describe('getUser', () => {
   it('should return a user profile', async () => {
     const response = await request.get('/api/user', { headers: { authorization: token } });
 
@@ -58,7 +58,27 @@ describe('user', () => {
     const response = await request.get('/api/user');
     expect(response).toMatchObject({ status: 401 });
   });
+});
 
+describe('getUserOrganizations', () => {
+  it('should fetch all user organizations', async () => {
+    const organizationB = await Organization.create({ id: 'testorganizationb' });
+    await organizationB.addUser(user.id);
+
+    const response = await request.get('/api/user/organizations', {
+      headers: { authorization: token },
+    });
+    expect(response).toMatchObject({
+      status: 200,
+      data: [
+        { id: 'testorganization', name: 'Test Organization', role: 'Owner' },
+        { id: 'testorganizationb', name: null, role: 'Member' },
+      ],
+    });
+  });
+});
+
+describe('updateUser', () => {
   it('should update the user display name', async () => {
     const response = await request.put(
       '/api/user',
@@ -70,41 +90,6 @@ describe('user', () => {
       status: 200,
       data: { name: 'John' },
     });
-  });
-
-  it('should be possible to add new email addresses', async () => {
-    const response = await request.post(
-      '/api/user/email',
-      { email: 'test2@example.com' },
-      { headers: { authorization: token } },
-    );
-
-    expect(response).toMatchObject({ status: 201 });
-
-    const responseB = await request.get('/api/user/email', { headers: { authorization: token } });
-    expect(responseB).toMatchObject({
-      status: 200,
-      data: [
-        {
-          email: 'test2@example.com',
-          verified: false,
-        },
-        {
-          email: 'test@example.com',
-          verified: true,
-        },
-      ],
-    });
-  });
-
-  it('should not be possible to register the same email twice', async () => {
-    const response = await request.post(
-      '/api/user/email',
-      { email: 'test@example.com' },
-      { headers: { authorization: token } },
-    );
-
-    expect(response).toMatchObject({ status: 409 });
   });
 
   it('should set a verified email as primary email', async () => {
@@ -166,7 +151,46 @@ describe('user', () => {
       },
     });
   });
+});
 
+describe('addEmail', () => {
+  it('should be possible to add new email addresses', async () => {
+    const response = await request.post(
+      '/api/user/email',
+      { email: 'test2@example.com' },
+      { headers: { authorization: token } },
+    );
+
+    expect(response).toMatchObject({ status: 201 });
+
+    const responseB = await request.get('/api/user/email', { headers: { authorization: token } });
+    expect(responseB).toMatchObject({
+      status: 200,
+      data: [
+        {
+          email: 'test2@example.com',
+          verified: false,
+        },
+        {
+          email: 'test@example.com',
+          verified: true,
+        },
+      ],
+    });
+  });
+
+  it('should not be possible to register the same email twice', async () => {
+    const response = await request.post(
+      '/api/user/email',
+      { email: 'test@example.com' },
+      { headers: { authorization: token } },
+    );
+
+    expect(response).toMatchObject({ status: 409 });
+  });
+});
+
+describe('removeEmail', () => {
   it('should delete emails', async () => {
     await EmailAuthorization.create({
       email: 'test2@example.com',
@@ -219,22 +243,6 @@ describe('user', () => {
         error: 'Not Acceptable',
         message: 'Deleting this email results in the inability to access this account.',
       },
-    });
-  });
-
-  it('should fetch all user organizations', async () => {
-    const organizationB = await Organization.create({ id: 'testorganizationb' });
-    await organizationB.addUser(user.id);
-
-    const response = await request.get('/api/user/organizations', {
-      headers: { authorization: token },
-    });
-    expect(response).toMatchObject({
-      status: 200,
-      data: [
-        { id: 'testorganization', name: 'Test Organization', role: 'Owner' },
-        { id: 'testorganizationb', name: null, role: 'Member' },
-      ],
     });
   });
 });

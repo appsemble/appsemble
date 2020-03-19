@@ -4,7 +4,6 @@
 
 .icon {
   height: 128px !important;
-  /* stylelint-disable-next-line plugin/no-unsupported-browser-features */
   object-fit: contain;
   width: 128px !important;
 }

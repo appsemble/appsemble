@@ -17,21 +17,7 @@ let bootstrapParams: BootstrapParams;
 beforeEach(() => {
   bootstrapParams = {
     actions: {},
-    block: {
-      type: 'test',
-      version: '0.0.0',
-      theme: {
-        primaryColor: '#ff0000',
-        linkColor: '#ff7f00',
-        successColor: '#ffff00',
-        infoColor: '#00ff00',
-        warningColor: '#0000ff',
-        dangerColor: '#4b0082',
-        splashColor: '#8b00ff',
-        themeColor: '#ffffff',
-        tileLayer: 'https://cartodb-basemaps-c.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png',
-      },
-    },
+    parameters: {},
     data: {},
     events: {
       emit() {},
@@ -46,6 +32,9 @@ beforeEach(() => {
     utils: {
       addCleanup() {},
       showMessage() {},
+      asset() {
+        return '';
+      },
     },
     theme: {
       primaryColor: '#ff0000',

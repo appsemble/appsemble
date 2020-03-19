@@ -10,12 +10,7 @@ import styles from './FileRenderer.css';
 /**
  * Render a string as is.
  */
-export default function FileRenderer({
-  block,
-  field,
-  utils,
-  value,
-}: RendererProps<FileField>): VNode {
+export default function FileRenderer({ field, utils, value }: RendererProps<FileField>): VNode {
   const getSrc = useCallback(
     (v: string | Blob): string => {
       if (v instanceof Blob) {
@@ -24,13 +19,9 @@ export default function FileRenderer({
         return url;
       }
 
-      if (block?.parameters?.fileBase) {
-        return `${new URL(`${block.parameters.fileBase}/${v}`, window.location.origin)}`;
-      }
-
-      return v;
+      return `${new URL(`${utils.asset(v)}`, window.location.origin)}`;
     },
-    [block, utils],
+    [utils],
   );
 
   return (

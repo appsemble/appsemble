@@ -60,7 +60,13 @@ The resource actions available are:
 - **resource.create**: Create a new resource.
 - **resource.update**: Update an existing resource.
 - **resource.delete**: Delete an existing resource.
-- **resource.subscribe**: Subscribe to an existing resource to receive push notifications. (See
+- **resource.subscription.subscribe**: Subscribe to an existing resource to receive push
+  notifications. (See [notifications](notifications).)
+- **resource.subscription.unsubscribe**: Unsubscribes from an existing resource subscription. (See
+  [notifications](notifications).)
+- **resource.subscription.toggle**: Toggle between subscribing and unsubscribing to an existing
+  resource. (See [notifications](notifications).)
+- **resource.subscription.status**: Fetch the status of a resource subscription. (See
   [notifications](notifications).)
 
 ## External resources

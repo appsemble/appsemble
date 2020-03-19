@@ -176,7 +176,10 @@ export type Action =
   | ResourceCreateAction
   | ResourceUpdateAction
   | ResourceDeleteAction
-  | BaseAction<'resource.subscribe'>;
+  | BaseAction<'resource.subscription.subscribe'>
+  | BaseAction<'resource.subscription.unsubscribe'>
+  | BaseAction<'resource.subscription.toggle'>
+  | BaseAction<'resource.subscription.status'>;
 
 /**
  * A block that is displayed on a page.
@@ -343,6 +346,14 @@ export interface Utils {
    * Show a bulma style message.
    */
   showMessage: (message: string | Message) => void;
+
+  /**
+   * Get a URL serving an asset for the given asset id.
+   *
+   * @param assetId The id of the asset whose URL to get.
+   * @returns The URL that matches the given asset id.
+   */
+  asset: (assetId: string) => string;
 }
 
 export interface Events {
@@ -359,16 +370,18 @@ export interface Events {
    *
    * @param type The type of event to listen remove the listener from.
    * @param callback The callback to remove.
+   * @returns Boolean indicating whether a listener is implemented or not.
    */
-  off: { [K in keyof EventListeners]: (callback: (data: any, error?: string) => void) => void };
+  off: { [K in keyof EventListeners]: (callback: (data: any, error?: string) => void) => boolean };
 
   /**
    * Add an event listener for an Appsemble event.
    *
    * @param type The type of event to listen on.
    * @param callback A callback to register for the event.
+   * @returns Boolean indicating whether a listener is implemented or not.
    */
-  on: { [K in keyof EventListeners]: (callback: (data: any, error?: string) => void) => void };
+  on: { [K in keyof EventListeners]: (callback: (data: any, error?: string) => void) => boolean };
 }
 
 /**
@@ -381,9 +394,9 @@ export interface BootstrapParams {
   actions: { [K in keyof Actions]: Action };
 
   /**
-   * The block as it is defined in the app definition.
+   * The parameters as they are defined in the app definition.
    */
-  block: Block;
+  parameters: Parameters;
 
   /**
    * Any kind of data that has been passed in by some context.
