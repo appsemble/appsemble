@@ -1,7 +1,7 @@
 import { mount } from 'enzyme';
 import * as React from 'react';
 
-import ErrorHandler from './ErrorHandler';
+import ErrorHandler from '.';
 
 it('should render its children if no errors are thrown', () => {
   const Child = (): React.ReactElement => <p>Test</p>;

@@ -3,7 +3,7 @@ import React from 'react';
 
 import Message from '../Message';
 import { useSimpleForm } from '../SimpleForm';
-import styles from './SimpleFormError.css';
+import styles from './index.css';
 
 interface SimpleFormErrorProps {
   children: React.ComponentType<{ error: Error }>;

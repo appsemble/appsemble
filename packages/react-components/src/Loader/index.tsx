@@ -1,1 +1,17 @@
-export { default } from './Loader';
+import classNames from 'classnames';
+import * as React from 'react';
+
+import styles from './index.css';
+
+interface LoaderProps {
+  className?: string;
+  component?: React.ElementType;
+}
+
+export default function Loader({
+  className,
+  component: Component = 'div',
+  ...props
+}: LoaderProps): React.ReactElement {
+  return <Component className={classNames(styles.loader, className)} {...props} />;
+}
