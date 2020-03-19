@@ -3,7 +3,7 @@ import * as React from 'react';
 
 import FormComponent from '../FormComponent';
 import Icon from '../Icon';
-import styles from './Input.css';
+import styles from './index.css';
 
 type InputProps = Omit<React.ComponentPropsWithoutRef<typeof FormComponent>, 'children'> &
   Omit<React.ComponentPropsWithoutRef<'input'>, 'label' | 'onChange'> & {
