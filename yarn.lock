@@ -3148,10 +3148,10 @@ babel-plugin-macros@^2.0.0, babel-plugin-macros@^2.8.0:
     cosmiconfig "^6.0.0"
     resolve "^1.12.0"
 
-babel-plugin-react-intl-auto@^3.1.0:
-  version "3.1.0"
-  resolved "https://registry.yarnpkg.com/babel-plugin-react-intl-auto/-/babel-plugin-react-intl-auto-3.1.0.tgz#f847d892c90f2f2a68582d11f4f3e816f990b03c"
-  integrity sha512-rbId1YRRFoKdkhgYSumxW/Qqlh/35+HeZiyGeHa/g/t0tdTManbk9pXWZGuEsxpBiIjfzm+upSMn8HTRVAh/tA==
+babel-plugin-react-intl-auto@^3.1.1:
+  version "3.1.1"
+  resolved "https://registry.yarnpkg.com/babel-plugin-react-intl-auto/-/babel-plugin-react-intl-auto-3.1.1.tgz#8fd6a8eaf52c4c7990abb0422e9dafa98594f3f1"
+  integrity sha512-os6EFRxgEcus2SmMjb07BUl1aSPVWesWh9XvNMeomy/P0Xsq4J9UvNRmOyX8Xdzcs6oGdJkFSplZawio9tbvtQ==
   dependencies:
     "@babel/core" "^7.5.5"
     "@babel/traverse" "^7.5.5"

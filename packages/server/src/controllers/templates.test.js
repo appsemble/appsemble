@@ -6,76 +6,76 @@ import testSchema from '../utils/test/testSchema';
 import testToken from '../utils/test/testToken';
 import truncate from '../utils/test/truncate';
 
-describe('Template API', () => {
-  let db;
-  let server;
-  let token;
-  let App;
-  let Resource;
-  let request;
-  let templates;
-  let user;
-  let clock;
+let db;
+let server;
+let token;
+let App;
+let Resource;
+let request;
+let templates;
+let user;
+let clock;
 
-  beforeAll(async () => {
-    db = await testSchema('templates');
+beforeAll(async () => {
+  db = await testSchema('templates');
 
-    server = await createServer({ db, argv: { host: 'http://localhost', secret: 'test' } });
-    request = await createInstance(server);
-    ({ App, Resource } = db.models);
-  }, 10e3);
+  server = await createServer({ db, argv: { host: 'http://localhost', secret: 'test' } });
+  request = await createInstance(server);
+  ({ App, Resource } = db.models);
+}, 10e3);
 
-  beforeEach(async () => {
-    await truncate(db);
-    ({ authorization: token, user } = await testToken(db));
-    await user.createOrganization(
-      {
-        id: 'testorganization',
-        name: 'Test Organization',
+beforeEach(async () => {
+  await truncate(db);
+  ({ authorization: token, user } = await testToken(db));
+  await user.createOrganization(
+    {
+      id: 'testorganization',
+      name: 'Test Organization',
+    },
+    { through: { role: 'Maintainer' } },
+  );
+  clock = FakeTimers.install();
+
+  const template = {
+    path: 'test-template',
+    template: true,
+    vapidPublicKey: 'a',
+    vapidPrivateKey: 'b',
+    OrganizationId: 'testorganization',
+    definition: {
+      name: 'Test Template',
+      description: 'Description',
+      pages: [],
+    },
+  };
+
+  const t1 = await App.create(template, { raw: true });
+  const t2 = await App.create(
+    {
+      ...template,
+      path: 'test-template-2',
+      definition: { ...template.definition, name: 'Test App 2' },
+      resources: {
+        test: { schema: { type: 'object', properties: { name: { type: 'string' } } } },
       },
-      { through: { role: 'Maintainer' } },
-    );
-    clock = FakeTimers.install();
+    },
+    { raw: true },
+  );
+  await t2.createResource({ type: 'test', data: { name: 'foo' } });
 
-    const template = {
-      path: 'test-template',
-      template: true,
-      vapidPublicKey: 'a',
-      vapidPrivateKey: 'b',
-      OrganizationId: 'testorganization',
-      definition: {
-        name: 'Test Template',
-        description: 'Description',
-        pages: [],
-      },
-    };
+  templates = [t1, t2];
+});
 
-    const t1 = await App.create(template, { raw: true });
-    const t2 = await App.create(
-      {
-        ...template,
-        path: 'test-template-2',
-        definition: { ...template.definition, name: 'Test App 2' },
-        resources: {
-          test: { schema: { type: 'object', properties: { name: { type: 'string' } } } },
-        },
-      },
-      { raw: true },
-    );
-    await t2.createResource({ type: 'test', data: { name: 'foo' } });
+afterEach(() => {
+  clock.uninstall();
+});
 
-    templates = [t1, t2];
-  });
+afterAll(async () => {
+  await request.close();
+  await db.close();
+});
 
-  afterEach(() => {
-    clock.uninstall();
-  });
-
-  afterAll(async () => {
-    await request.close();
-    await db.close();
-  });
-
+describe('getAppTemplates', () => {
   it('should return a list of available templates', async () => {
     const response = await request.get('/api/templates', {
       headers: { authorization: token },
@@ -99,7 +99,9 @@ describe('Template API', () => {
       ],
     });
   });
+});
 
+describe('createTemplateApp', () => {
   it('should create a new app using a template', async () => {
     const response = await request.post(
       '/api/templates',
