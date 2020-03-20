@@ -7,20 +7,26 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.12.0] - 2020-03-20
+
 ### Added
 
 - App: Add `resource.subscription.toggle` action.
 - App: Add `resource.subscription.status` action.
 - App: Add `resource.subscription.unsubscribe` action.
+- Preact: Publish `@appsemble/preact` on the `npm` registry.
+- SDK: Add `asset` utility function.
 - Server: Add option to toggle subscriptions.
 
 ### Changed
 
 - App: Rename `resource.subscribe` action to `resource.subscription.subscribe`.
+- CLI: Use explicit user agent.
 
 ### Fixed
 
 - App: Fix invalid URLs when uploading assets.
+- App: Pass data between flow pages.
 - Server: Allow CLI to update app block themes if it has the `apps:write` scope.
 - Server: Fix issue with invalid role validation for pages with sub pages.
 
