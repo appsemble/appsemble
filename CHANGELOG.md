@@ -7,25 +7,28 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+
+- App: Add support for custom `action` format for parameters. This can be used to refer to other
+  actions by name, including custom defined actions.
+- Block(`@appsemble/button-list`): Add new button list block.
+- SDK: Add support for index signature actions.
+
 ## [0.12.0] - 2020-03-20
 
 ### Added
 
-- App: Add support for custom `action` format for parameters. This can be used to refer to other
-  actions by name, including custom defined actions.
 - App: Add `resource.subscription.toggle` action.
 - App: Add `resource.subscription.status` action.
 - App: Add `resource.subscription.unsubscribe` action.
-- Block(`@appsemble/button-list`): Add new button list block.
 - Preact: Publish `@appsemble/preact` on the `npm` registry.
-- Server: Add option to toggle subscriptions.
-- SDK: Add support for index signature actions.
 - SDK: Add `asset` utility function.
+- Server: Add option to toggle subscriptions.
 
 ### Changed
 
 - App: Rename `resource.subscribe` action to `resource.subscription.subscribe`.
-- Block(`@appsemble/table`): Add support for defining custom actions.
 - CLI: Use explicit user agent.
 
 ### Fixed
