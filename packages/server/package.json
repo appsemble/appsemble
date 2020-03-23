@@ -54,7 +54,7 @@
     "koas-operations": "^0.2.0",
     "koas-parameters": "^0.2.0",
     "koas-security": "^0.2.0",
-    "koas-serializer": "^0.2.0",
+    "koas-serializer": "^0.2.1",
     "koas-spec-handler": "^0.2.0",
     "koas-status-code": "^0.2.0",
     "koas-swagger-ui": "^0.2.0",

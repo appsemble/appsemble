@@ -6,5 +6,10 @@ export default {
         $ref: '#/components/schemas/Resource',
       },
     },
+    'text/csv': {
+      schema: {
+        type: 'string',
+      },
+    },
   },
 };

@@ -1,9 +1,14 @@
 export default function convertToCsv(body) {
   let obj;
-  try {
-    obj = JSON.parse(body);
-  } catch (e) {
-    return '';
+
+  if (typeof body === 'object') {
+    obj = body;
+  } else {
+    try {
+      obj = JSON.parse(body);
+    } catch (e) {
+      return '';
+    }
   }
 
   if (Object(obj) !== obj) {

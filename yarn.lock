@@ -11203,10 +11203,10 @@ koas-security@^0.2.0:
     openapi-types "^1.3.5"
     type-fest "^0.8.1"
 
-koas-serializer@^0.2.0:
-  version "0.2.0"
-  resolved "https://registry.yarnpkg.com/koas-serializer/-/koas-serializer-0.2.0.tgz#f72ca03c3ec88e62fb67dc8140753944c991e226"
-  integrity sha512-sAfwGi9kJbvYzTuSn5QmRXX6PcsiFX0Fxg5EL4FIvFuNoSlsLJ+nhxsLnq7l2N1UngM0RXI413vEi5/l/Rlufg==
+koas-serializer@^0.2.1:
+  version "0.2.1"
+  resolved "https://registry.yarnpkg.com/koas-serializer/-/koas-serializer-0.2.1.tgz#edc568423b29d988cf5a6f9b0eacc2e830f36ac0"
+  integrity sha512-Lx5mrcurMOcLmwL/99APiaY109+s1B4x2MgtAHweReFf1fDJbuxb2bVd8psASfzpCReCu54E9+I2oXRKdVr/zw==
   dependencies:
     openapi-types "^1.3.5"
     type-is "^1.6.18"
