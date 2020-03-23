@@ -1,0 +1,59 @@
+export default function convertToCsv(body) {
+  let obj;
+  try {
+    obj = JSON.parse(body);
+  } catch (e) {
+    return '';
+  }
+
+  if (Object(obj) !== obj) {
+    // don’t parse primitives
+    return '';
+  }
+
+  const data = Array.isArray(obj) ? obj : [obj];
+  const separator = ',';
+  const lineEnd = '\r\n';
+
+  if (!Object.keys(obj).length) {
+    // no data to convert, do nothing
+    return '';
+  }
+
+  const headers = Array.from(
+    data.reduce((acc, object) => {
+      Object.keys(object).forEach(key => {
+        acc.add(key);
+      });
+      return acc;
+    }, new Set()),
+  );
+  let result = headers.join(',') + lineEnd;
+
+  data.forEach((object, index) => {
+    const values = headers.map(header => {
+      let value = object[header];
+      if (value == null) {
+        return '';
+      }
+
+      if (value !== Object(value)) {
+        // value is primitive
+        value = `${object[header]}`;
+      } else {
+        // value is not a primitive
+        value = JSON.stringify(object[header]);
+      }
+
+      if (value.includes(separator) || value.includes(lineEnd)) {
+        value = `"${value}"`;
+      }
+
+      return value;
+    });
+
+    result += `${values.join(separator)}${index === data.length - 1 ? '' : lineEnd}`;
+  });
+
+  return result;
+}
