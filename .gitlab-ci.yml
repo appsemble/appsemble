@@ -136,6 +136,8 @@ pack:
       - tags
   script:
     - yarn workspace @appsemble/sdk pack
+    - yarn workspace @appsemble/preact pack
+    - yarn workspace @appsemble/node-utils pack
     - mkdir build/
     - find packages -name '*.tgz' -exec mv {} ./build/ \;
   artifacts:
@@ -247,7 +249,7 @@ publish npm:
     - tags
   script:
     - npm config set //registry.npmjs.org/:_authToken "$NPM_TOKEN"
-    - find . -exec npm publish {} \;
+    - find . -exec npm publish --access public {} \;
 
 ###################################################################################################
 #  Deploy Stage                                                                                   #

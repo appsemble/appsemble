@@ -2,7 +2,7 @@ import { shallow } from 'enzyme';
 import React from 'react';
 import { createIntl, IntlShape } from 'react-intl';
 
-import Modal from './Modal';
+import { Modal } from './index';
 
 let intl: IntlShape;
 

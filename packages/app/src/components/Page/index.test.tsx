@@ -3,7 +3,7 @@ import { shallow } from 'enzyme';
 import React from 'react';
 
 import * as AppDefinitionProvider from '../AppDefinitionProvider';
-import Page from './Page';
+import Page from '.';
 
 jest.mock('events', () => ({
   EventEmitter: class EventEmitter {},
