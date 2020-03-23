@@ -13,6 +13,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - App: Add `resource.subscription.status` action.
 - App: Add `resource.subscription.unsubscribe` action.
 - Server: Add option to toggle subscriptions.
+- Server: Add support for outputting CSV in resource API.
 
 ### Changed
 
