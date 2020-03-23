@@ -19,6 +19,7 @@ export default function convertToCsv(body) {
   const data = Array.isArray(obj) ? obj : [obj];
   const separator = ',';
   const lineEnd = '\r\n';
+  const quote = '"';
 
   if (!Object.keys(obj).length) {
     // no data to convert, do nothing
@@ -33,7 +34,7 @@ export default function convertToCsv(body) {
       return acc;
     }, new Set()),
   );
-  let result = headers.join(',') + lineEnd;
+  let result = headers.join(separator) + lineEnd;
 
   data.forEach((object, index) => {
     const values = headers.map(header => {
@@ -50,8 +51,8 @@ export default function convertToCsv(body) {
         value = JSON.stringify(object[header]);
       }
 
-      if (value.includes(separator) || value.includes(lineEnd)) {
-        value = `"${value}"`;
+      if (value.includes(separator) || value.includes(lineEnd) || value.includes('"')) {
+        value = `${quote}${value.replace(new RegExp(quote, 'g'), `${quote}${quote}`)}${quote}`;
       }
 
       return value;
