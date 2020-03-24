@@ -25,7 +25,9 @@ export default sequelize => {
     },
   );
 
-  BlockAsset.associate = () => {};
+  BlockAsset.associate = ({ Organization }) => {
+    BlockAsset.belongsTo(Organization, { foreignKey: { allowNull: false } });
+  };
 
   return BlockAsset;
 };

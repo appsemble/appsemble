@@ -10,11 +10,16 @@ export default sequelize => {
         allowNull: false,
         references: { model: 'App' },
       },
-      BlockDefinitionId: {
+      /**
+       * This refers to the organization and name of a block
+       * it is agnostic of the version of the block.
+       *
+       * Format: @organizationName/blockName
+       */
+      block: {
         type: DataTypes.STRING,
         primaryKey: true,
         allowNull: false,
-        references: { model: 'BlockDefinition' },
       },
       style: { type: DataTypes.TEXT },
     },
@@ -28,9 +33,8 @@ export default sequelize => {
     },
   );
 
-  AppBlockStyle.associate = ({ App, BlockDefinition }) => {
+  AppBlockStyle.associate = ({ App }) => {
     AppBlockStyle.belongsTo(App);
-    AppBlockStyle.belongsTo(BlockDefinition);
   };
 
   return AppBlockStyle;
