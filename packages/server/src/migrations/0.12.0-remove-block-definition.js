@@ -11,6 +11,7 @@ export default {
    * - Changes PK of BlockVersion to be [name, version, OrganizationId]
    * - Removes FK checks on OrganizationBlockStyle and AppBlockStyle
    * - Renames "BlockDefinitionId" in OrganizationBlockStyle and AppBlockStyle to "block"
+   * - Removes the paranoid "deleted" column in BlockVersion
    */
   async up(db) {
     const queryInterface = db.getQueryInterface();
@@ -32,6 +33,8 @@ export default {
         key: 'id',
       },
     });
+
+    await queryInterface.removeColumn('BlockVersion', 'deleted');
 
     await queryInterface.addColumn('BlockAsset', 'OrganizationId', {
       type: DataTypes.STRING,
