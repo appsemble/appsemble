@@ -7,6 +7,12 @@ import fs from 'fs';
  * @returns The handled string.
  */
 export default async function readFileOrString(string: string | Buffer): Promise<string | Buffer> {
-  const stats = await fs.promises.stat(string);
-  return stats.isFile() ? fs.promises.readFile(string) : string;
+  try {
+    return await fs.promises.readFile(string);
+  } catch (err) {
+    if (err.code === 'ENOENT') {
+      return string;
+    }
+    throw err;
+  }
 }
