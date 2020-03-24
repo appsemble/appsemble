@@ -1,6 +1,6 @@
 import { logger } from '@appsemble/node-utils';
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
-import FormData from 'form-data';
+import * as FormData from 'form-data';
 
 /**
  * An {@link axios} request interceptor to add support for {@link form-data}.

@@ -1,6 +1,6 @@
 import { Button, Loader, Message, useMessages, useQuery } from '@appsemble/react-components';
 import axios from 'axios';
-import React from 'react';
+import * as React from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link } from 'react-router-dom';
 

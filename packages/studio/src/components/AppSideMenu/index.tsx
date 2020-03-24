@@ -1,7 +1,7 @@
 import { Icon } from '@appsemble/react-components';
 import { permissions } from '@appsemble/utils';
 import classNames from 'classnames';
-import React from 'react';
+import * as React from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useRouteMatch } from 'react-router-dom';
 

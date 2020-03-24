@@ -1,7 +1,8 @@
 import { bootstrap as sdkBootstrap, BootstrapParams } from '@appsemble/sdk';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import retargetEvents from 'react-shadow-dom-retarget-events';
+// @ts-ignore
+import * as retargetEvents from 'react-shadow-dom-retarget-events';
 
 export { provideIntl } from './intl';
 

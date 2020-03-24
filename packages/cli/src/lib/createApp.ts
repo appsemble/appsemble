@@ -1,8 +1,8 @@
 import { AppsembleError, logger } from '@appsemble/node-utils';
 import axios from 'axios';
-import FormData from 'form-data';
-import fs from 'fs-extra';
-import yaml from 'js-yaml';
+import * as FormData from 'form-data';
+import * as fs from 'fs-extra';
+import * as yaml from 'js-yaml';
 
 import traverseAppDirectory from './traverseAppDirectory';
 import traverseBlockThemes from './traverseBlockThemes';

@@ -6,7 +6,7 @@ import {
   SimpleSubmit,
 } from '@appsemble/react-components';
 import axios from 'axios';
-import React from 'react';
+import * as React from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Link, useLocation } from 'react-router-dom';
 

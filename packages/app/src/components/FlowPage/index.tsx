@@ -1,6 +1,6 @@
 import { BootstrapParams } from '@appsemble/sdk';
 import { AppDefinition, FlowPage as FlowPageType } from '@appsemble/types';
-import React from 'react';
+import * as React from 'react';
 import { useHistory } from 'react-router-dom';
 
 import makeActions from '../../utils/makeActions';

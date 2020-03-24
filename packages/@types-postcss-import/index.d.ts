@@ -13,4 +13,7 @@ interface AtImportOptions {
 
 declare function atImport(options: AtImportOptions): Transformer;
 
+// eslint-disable-next-line no-redeclare
+declare namespace atImport {}
+
 export = atImport;

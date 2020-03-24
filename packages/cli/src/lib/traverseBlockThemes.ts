@@ -1,5 +1,5 @@
 import { logger } from '@appsemble/node-utils';
-import fs from 'fs-extra';
+import * as fs from 'fs-extra';
 import { join } from 'path';
 import { Promisable } from 'type-fest';
 

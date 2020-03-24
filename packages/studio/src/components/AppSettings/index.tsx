@@ -10,7 +10,7 @@ import {
 } from '@appsemble/react-components';
 import { normalize } from '@appsemble/utils';
 import axios from 'axios';
-import React, { FormEvent, ReactText, useState } from 'react';
+import * as React from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import { useApp } from '../AppContext';
@@ -20,12 +20,12 @@ import messages from './messages';
 export default function AppSettings(): React.ReactElement {
   const { app } = useApp();
   const intl = useIntl();
-  const [icon, setIcon] = useState<File>();
-  const [inputs, setInputs] = useState(app);
+  const [icon, setIcon] = React.useState<File>();
+  const [inputs, setInputs] = React.useState(app);
   const push = useMessages();
   const iconUrl = useObjectURL(icon || app.iconUrl);
 
-  const onSubmit = async (event: FormEvent): Promise<void> => {
+  const onSubmit = async (event: React.FormEvent): Promise<void> => {
     event.preventDefault();
     const data = new FormData();
 
@@ -54,7 +54,7 @@ export default function AppSettings(): React.ReactElement {
   };
 
   const onChange = React.useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>, value: ReactText | boolean) => {
+    (event: React.ChangeEvent<HTMLInputElement>, value: React.ReactText | boolean) => {
       event.persist();
       setInputs(val => ({ ...val, [event.target.name]: value }));
     },

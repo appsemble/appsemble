@@ -10,7 +10,7 @@ import {
 } from '@appsemble/react-components';
 import axios, { AxiosError } from 'axios';
 import classNames from 'classnames';
-import React from 'react';
+import * as React from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 

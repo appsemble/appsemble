@@ -2,7 +2,8 @@ import { BootstrapParams } from '@appsemble/sdk';
 import * as enzyme from 'enzyme';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import retargetEvents from 'react-shadow-dom-retarget-events';
+// @ts-ignore
+import * as retargetEvents from 'react-shadow-dom-retarget-events';
 
 import { mount, withBlock } from '.';
 

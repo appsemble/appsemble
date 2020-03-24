@@ -1,6 +1,6 @@
 import { logger } from '@appsemble/node-utils';
 import axios from 'axios';
-import FormData from 'form-data';
+import * as FormData from 'form-data';
 
 import processCss from './processCss';
 

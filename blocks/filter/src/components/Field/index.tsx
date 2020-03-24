@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import React, { useCallback } from 'react';
+import * as React from 'react';
 import { useIntl } from 'react-intl';
 
 import { Filter, FilterField, RangeFilter } from '../../../block';
@@ -42,7 +42,7 @@ export default function Field({
   const intl = useIntl();
   const { name } = props;
 
-  const generateField = useCallback((): React.ReactNode => {
+  const generateField = React.useCallback(() => {
     if (enumerator) {
       switch (type) {
         case 'checkbox':

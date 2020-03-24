@@ -1,6 +1,6 @@
 import { AppsembleError, logger } from '@appsemble/node-utils';
 import axios from 'axios';
-import inquirer from 'inquirer';
+import * as inquirer from 'inquirer';
 
 import { BaseArguments } from '../types';
 

@@ -1,4 +1,4 @@
-import jsonpointer from 'jsonpointer';
+import * as jsonpointer from 'jsonpointer';
 
 function recurse(
   object: { [key: string]: any },

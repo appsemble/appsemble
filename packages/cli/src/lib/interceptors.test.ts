@@ -1,7 +1,7 @@
 import { logger } from '@appsemble/node-utils';
 import axios, { AxiosInstance } from 'axios';
 import MockAdapter from 'axios-mock-adapter';
-import FormData from 'form-data';
+import * as FormData from 'form-data';
 
 import { formData, requestLogger, responseLogger } from './interceptors';
 

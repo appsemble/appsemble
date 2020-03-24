@@ -3,8 +3,8 @@ import { Block as BlockType } from '@appsemble/sdk';
 import { baseTheme, normalize, normalizeBlockName } from '@appsemble/utils';
 import classNames from 'classnames';
 import { EventEmitter } from 'events';
-import React from 'react';
-import ReactDOM from 'react-dom';
+import * as React from 'react';
+import * as ReactDOM from 'react-dom';
 import { useHistory, useLocation, useRouteMatch } from 'react-router-dom';
 
 import { ShowDialogAction } from '../../types';

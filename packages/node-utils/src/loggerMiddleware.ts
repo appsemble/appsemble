@@ -1,4 +1,4 @@
-import chalk from 'chalk';
+import * as chalk from 'chalk';
 import { Middleware } from 'koa';
 
 import { logger } from './logger';

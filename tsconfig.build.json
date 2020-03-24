@@ -3,7 +3,6 @@
 {
   "compilerOptions": {
     "declaration": true,
-    "esModuleInterop": true,
     "jsx": "react",
     "lib": ["dom", "esnext"],
     "module": "es2020",

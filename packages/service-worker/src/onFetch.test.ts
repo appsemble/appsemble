@@ -1,4 +1,4 @@
-import makeServiceWorkerEnv from 'service-worker-mock';
+import * as makeServiceWorkerEnv from 'service-worker-mock';
 
 import onFetch from './onFetch';
 import * as utils from './utils';

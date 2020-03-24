@@ -1,7 +1,7 @@
 import { BlockProps } from '@appsemble/react';
 import { Modal } from '@appsemble/react-components';
 import classNames from 'classnames';
-import React from 'react';
+import * as React from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import { Filter, RangeFilter } from '../../../block';

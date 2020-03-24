@@ -1,4 +1,4 @@
-import fs from 'fs';
+import * as fs from 'fs';
 
 /**
  * If the string represents an existing path, read the file. Otherwise, return the string itself.

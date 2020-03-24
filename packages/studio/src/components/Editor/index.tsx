@@ -18,10 +18,10 @@ import {
 import axios from 'axios';
 import classNames from 'classnames';
 import { safeDump, safeLoad } from 'js-yaml';
-import RefParser from 'json-schema-ref-parser';
+import * as RefParser from 'json-schema-ref-parser';
 import { isEqual } from 'lodash';
 import { OpenAPIV3 } from 'openapi-types';
-import React from 'react';
+import * as React from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link, useHistory, useLocation, useParams } from 'react-router-dom';
 

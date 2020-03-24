@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import { Promisable } from 'type-fest';
 
 import Form from '../Form';

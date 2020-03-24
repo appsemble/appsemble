@@ -1,6 +1,6 @@
 import { Button } from '@appsemble/react-components';
 import classNames from 'classnames';
-import React from 'react';
+import * as React from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import styles from './index.css';

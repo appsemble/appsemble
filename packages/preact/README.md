@@ -12,7 +12,7 @@ npm install @appsemble/preact preact
 
 ```tsx
 import { bootstrap } from '@appsemble/preact';
-import React from 'react';
+import * as React from 'react';
 
 function MyBlock({ actions }) {
   return (

@@ -12,7 +12,7 @@ npm install @appsemble/react
 
 ```tsx
 import { bootstrap } from '@appsemble/react';
-import React from 'react';
+import * as React from 'react';
 
 bootstrap(({ actions }) => (
   <button onClick={actions.click.dispatch} type="button">

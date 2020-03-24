@@ -1,6 +1,6 @@
 import { Icon } from '@appsemble/react-components';
 import classNames from 'classnames';
-import React from 'react';
+import * as React from 'react';
 
 import styles from './index.css';
 

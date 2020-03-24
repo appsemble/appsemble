@@ -1,7 +1,7 @@
 import { Checkbox, FormComponent, Loader, useMessages } from '@appsemble/react-components';
 import { ResourceHooks } from '@appsemble/types';
 import axios from 'axios';
-import React from 'react';
+import * as React from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import settings from '../../utils/settings';

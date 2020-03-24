@@ -3,7 +3,7 @@ import { Block as BlockType } from '@appsemble/sdk';
 import { Security } from '@appsemble/types';
 import { checkAppRole } from '@appsemble/utils';
 import { EventEmitter } from 'events';
-import React from 'react';
+import * as React from 'react';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 
 import { ShowDialogAction } from '../../types';

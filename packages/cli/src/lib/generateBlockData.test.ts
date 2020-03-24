@@ -1,5 +1,5 @@
 import { AppsembleError } from '@appsemble/node-utils';
-import path from 'path';
+import * as path from 'path';
 import * as ts from 'typescript';
 
 import generateBlockData from './generateBlockData';
