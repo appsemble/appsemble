@@ -1,5 +1,5 @@
 import { logger } from '@appsemble/node-utils';
-import * as path from 'path';
+import path from 'path';
 import { Configuration } from 'webpack';
 
 import { BlockConfig } from '../types';

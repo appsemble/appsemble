@@ -1,10 +1,10 @@
 import { AxiosError } from 'axios';
-import * as chalk from 'chalk';
+import chalk from 'chalk';
 import highlight from 'cli-highlight';
 import { TransformableInfo } from 'logform';
 import { EOL } from 'os';
-import * as util from 'util';
-import * as winston from 'winston';
+import util from 'util';
+import winston from 'winston';
 
 interface ConfigureLoggerParams {
   quiet?: number;

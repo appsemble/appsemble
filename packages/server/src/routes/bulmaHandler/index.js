@@ -1,7 +1,7 @@
 import { baseTheme } from '@appsemble/utils';
 import autoprefixer from 'autoprefixer';
 import sass from 'node-sass';
-import * as postcss from 'postcss';
+import postcss from 'postcss';
 
 const bulmaPath = require.resolve('bulma/bulma.sass').replace(/\\/g, '/');
 const functionPath = require.resolve('bulma/sass/utilities/functions.sass').replace(/\\/g, '/');

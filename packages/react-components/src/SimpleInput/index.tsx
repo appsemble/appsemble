@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 
 import Input from '../Input';
 import { useSimpleForm } from '../SimpleForm';

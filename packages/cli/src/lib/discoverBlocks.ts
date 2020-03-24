@@ -1,7 +1,7 @@
 import { BlockManifest } from '@appsemble/types';
-import * as fg from 'fast-glob';
-import * as fs from 'fs-extra';
-import * as path from 'path';
+import fg from 'fast-glob';
+import fs from 'fs-extra';
+import path from 'path';
 
 import getBlockConfig from './getBlockConfig';
 

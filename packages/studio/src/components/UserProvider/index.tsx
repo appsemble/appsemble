@@ -1,6 +1,6 @@
 import { UserInfo } from '@appsemble/types';
 import axios from 'axios';
-import * as jwtDecode from 'jwt-decode';
+import jwtDecode from 'jwt-decode';
 import * as React from 'react';
 
 import { UserContext } from '../../hooks/useUser';

@@ -1,6 +1,6 @@
 import { AppsembleError, logger } from '@appsemble/node-utils';
 import { BlockManifest } from '@appsemble/types';
-import * as path from 'path';
+import path from 'path';
 import {
   createProgram,
   findConfigFile,

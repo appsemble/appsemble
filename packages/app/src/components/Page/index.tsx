@@ -3,7 +3,7 @@ import { Block } from '@appsemble/sdk';
 import { AppDefinition, BasicPage, Page as PageType } from '@appsemble/types';
 import { checkAppRole, normalize } from '@appsemble/utils';
 import { EventEmitter } from 'events';
-import * as React from 'react';
+import React from 'react';
 import { useIntl } from 'react-intl';
 import { Redirect, useHistory, useLocation } from 'react-router-dom';
 

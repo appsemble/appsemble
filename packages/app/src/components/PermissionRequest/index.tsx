@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 
 import { useAppDefinition } from '../AppDefinitionProvider';
 import { useServiceWorkerRegistration } from '../ServiceWorkerRegistrationProvider';

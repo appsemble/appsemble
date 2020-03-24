@@ -1,7 +1,7 @@
 import { TabsPage as TabsPageType } from '@appsemble/types';
 import { normalize } from '@appsemble/utils';
 import classNames from 'classnames';
-import * as React from 'react';
+import React from 'react';
 import { Link, Redirect, Route, Switch, useRouteMatch } from 'react-router-dom';
 
 import BlockList from '../BlockList';

@@ -1,5 +1,5 @@
 import { Icon } from '@appsemble/react-components';
-import * as React from 'react';
+import React from 'react';
 
 import { Enum } from '../../../block';
 import styles from './index.css';

@@ -1,7 +1,7 @@
 import { Icon } from '@appsemble/react-components';
 import { IconName } from '@fortawesome/fontawesome-common-types';
 import classNames from 'classnames';
-import * as React from 'react';
+import React from 'react';
 
 interface SocialLoginButtonProps {
   className?: string;

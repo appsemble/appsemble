@@ -12,7 +12,7 @@ import {
 import { Organization, Rating } from '@appsemble/types';
 import { permissions } from '@appsemble/utils';
 import axios from 'axios';
-import * as React from 'react';
+import React, { useEffect, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useHistory } from 'react-router-dom';
 
@@ -27,9 +27,9 @@ import messages from './messages';
 
 export default function AppDetails(): React.ReactElement {
   const { app } = useApp();
-  const [organization, setOrganization] = React.useState<Organization>(undefined);
-  const [ratings, setRatings] = React.useState<Rating[]>([]);
-  const [showCloneDialog, setShowCloneDialog] = React.useState(false);
+  const [organization, setOrganization] = useState<Organization>(undefined);
+  const [ratings, setRatings] = useState<Rating[]>([]);
+  const [showCloneDialog, setShowCloneDialog] = useState(false);
   const history = useHistory();
   const intl = useIntl();
 
@@ -37,7 +37,7 @@ export default function AppDetails(): React.ReactElement {
   const push = useMessages();
   const { userInfo } = useUser();
 
-  React.useEffect(() => {
+  useEffect(() => {
     const fetchOrganization = async (): Promise<void> => {
       const { data } = await axios.get<Organization>(`/api/organizations/${app.OrganizationId}`);
       setOrganization(data);
@@ -45,7 +45,7 @@ export default function AppDetails(): React.ReactElement {
     fetchOrganization();
   }, [app.OrganizationId]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const fetchRatings = async (): Promise<void> => {
       const { data } = await axios.get<Rating[]>(`/api/apps/${app.id}/ratings`);
       setRatings(data);
@@ -54,22 +54,19 @@ export default function AppDetails(): React.ReactElement {
     fetchRatings();
   }, [app.OrganizationId, app.id]);
 
-  const onRate = React.useCallback(
-    (rating: Rating) => {
-      const existingRating = ratings.find(r => r.UserId === rating.UserId);
+  const onRate = (rating: Rating): void => {
+    const existingRating = ratings.find(r => r.UserId === rating.UserId);
 
-      if (existingRating) {
-        setRatings(ratings.map(r => (r.UserId === rating.UserId ? rating : r)));
-      } else {
-        setRatings([rating, ...ratings]);
-      }
-      push({ color: 'success', body: intl.formatMessage(messages.ratingSuccessful) });
-    },
-    [intl, push, ratings],
-  );
+    if (existingRating) {
+      setRatings(ratings.map(r => (r.UserId === rating.UserId ? rating : r)));
+    } else {
+      setRatings([rating, ...ratings]);
+    }
+    push({ color: 'success', body: intl.formatMessage(messages.ratingSuccessful) });
+  };
 
-  const closeDialog = React.useCallback(() => setShowCloneDialog(false), []);
-  const showDialog = React.useCallback(() => setShowCloneDialog(true), []);
+  const closeDialog = (): void => setShowCloneDialog(false);
+  const showDialog = (): void => setShowCloneDialog(true);
   const cloneApp = React.useCallback(
     async ({ description, name, private: isPrivate, selectedOrganization }) => {
       const { data: clone } = await axios.post('/api/templates', {

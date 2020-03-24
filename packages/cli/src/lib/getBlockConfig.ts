@@ -1,8 +1,8 @@
 import { AppsembleError, logger } from '@appsemble/node-utils';
-import * as chalk from 'chalk';
+import chalk from 'chalk';
 import { cosmiconfig } from 'cosmiconfig';
-import * as fs from 'fs-extra';
-import * as path from 'path';
+import fs from 'fs-extra';
+import path from 'path';
 import { inspect } from 'util';
 
 import { BlockConfig } from '../types';

@@ -1,7 +1,7 @@
-import * as FakeTimers from '@sinonjs/fake-timers';
+import FakeTimers from '@sinonjs/fake-timers';
 import { AxiosTestInstance, createInstance } from 'axios-test-instance';
-import * as chalk from 'chalk';
-import * as Koa from 'koa';
+import chalk from 'chalk';
+import Koa from 'koa';
 
 import { logger } from './logger';
 import loggerMiddleware from './loggerMiddleware';

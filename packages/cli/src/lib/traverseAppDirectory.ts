@@ -1,7 +1,7 @@
 import { AppsembleError, logger } from '@appsemble/node-utils';
-import * as FormData from 'form-data';
-import * as fs from 'fs-extra';
-import * as yaml from 'js-yaml';
+import FormData from 'form-data';
+import fs from 'fs-extra';
+import yaml from 'js-yaml';
 import { join } from 'path';
 
 import processCss from './processCss';

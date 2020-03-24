@@ -1,5 +1,5 @@
 import { attach } from '@appsemble/sdk';
-import * as marked from 'marked';
+import marked from 'marked';
 
 import styles from './index.css';
 

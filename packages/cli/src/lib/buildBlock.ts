@@ -1,5 +1,5 @@
 import { logger } from '@appsemble/node-utils';
-import * as webpack from 'webpack';
+import webpack, { Stats } from 'webpack';
 
 import { BlockConfig } from '../types';
 import loadWebpackConfig from './loadWebpackConfig';
@@ -19,10 +19,7 @@ interface BuildBlockParams {
 /**
  * Builds a block using Webpack.
  */
-export default async function buildBlock({
-  config,
-  path,
-}: BuildBlockParams): Promise<webpack.Stats> {
+export default async function buildBlock({ config, path }: BuildBlockParams): Promise<Stats> {
   const conf = await loadWebpackConfig(config, 'production', path);
 
   logger.info(`Building ${config.id}@${config.version} 🔨`);

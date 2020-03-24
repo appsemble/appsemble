@@ -2,7 +2,7 @@ import { Icon, Loader } from '@appsemble/react-components';
 import { App } from '@appsemble/types';
 import { permissions } from '@appsemble/utils';
 import axios from 'axios';
-import * as React from 'react';
+import React from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link } from 'react-router-dom';
 

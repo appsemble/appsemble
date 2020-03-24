@@ -1,7 +1,7 @@
 import { Loader, useMessages } from '@appsemble/react-components';
 import axios from 'axios';
 import classNames from 'classnames';
-import * as React from 'react';
+import React from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import useUser from '../../hooks/useUser';

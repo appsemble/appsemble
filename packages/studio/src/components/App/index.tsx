@@ -1,5 +1,5 @@
 import { ErrorHandler, MessagesProvider } from '@appsemble/react-components';
-import * as React from 'react';
+import React from 'react';
 import Helmet from 'react-helmet';
 import { IntlProvider } from 'react-intl';
 import { BrowserRouter, Redirect, Route, Switch } from 'react-router-dom';

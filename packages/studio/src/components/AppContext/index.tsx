@@ -2,7 +2,7 @@ import { Loader } from '@appsemble/react-components';
 import { App } from '@appsemble/types';
 import { permissions } from '@appsemble/utils';
 import axios from 'axios';
-import * as React from 'react';
+import React from 'react';
 import { Redirect, Route, Switch, useRouteMatch } from 'react-router-dom';
 
 import useOrganizations from '../../hooks/useOrganizations';

@@ -11,7 +11,7 @@ import {
 } from '@appsemble/react-components';
 import axios from 'axios';
 import { OpenAPIV3 } from 'openapi-types';
-import * as React from 'react';
+import React from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link, useHistory, useRouteMatch } from 'react-router-dom';
 

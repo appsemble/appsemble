@@ -1,5 +1,5 @@
 import { normalize } from '@appsemble/utils';
-import * as React from 'react';
+import React from 'react';
 import { Redirect, Route, Switch } from 'react-router-dom';
 
 import { useAppDefinition } from '../AppDefinitionProvider';

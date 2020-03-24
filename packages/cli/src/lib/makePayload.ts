@@ -1,8 +1,8 @@
 import { logger } from '@appsemble/node-utils';
-import * as FormData from 'form-data';
-import * as fs from 'fs-extra';
-import * as klaw from 'klaw';
-import * as path from 'path';
+import FormData from 'form-data';
+import fs from 'fs-extra';
+import klaw from 'klaw';
+import path from 'path';
 
 import { BlockConfig } from '../types';
 import generateBlockData from './generateBlockData';

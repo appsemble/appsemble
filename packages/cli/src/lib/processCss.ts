@@ -1,8 +1,8 @@
-import * as fs from 'fs-extra';
-import * as postcss from 'postcss';
-import * as postcssImport from 'postcss-import';
-import * as postcssrc from 'postcss-load-config';
-import * as postcssUrl from 'postcss-url';
+import fs from 'fs-extra';
+import postcss from 'postcss';
+import postcssImport from 'postcss-import';
+import postcssrc from 'postcss-load-config';
+import postcssUrl from 'postcss-url';
 
 /**
  * Verifies and processes a CSS file using PostCSS.

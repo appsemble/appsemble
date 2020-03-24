@@ -1,4 +1,4 @@
-import * as postcss from 'postcss';
+import postcss from 'postcss';
 
 export class StyleValidationError extends Error {}
 

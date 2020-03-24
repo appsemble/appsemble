@@ -1,5 +1,5 @@
 import { OpenAPIV3 } from 'openapi-types';
-import * as ZSchema from 'z-schema';
+import ZSchema from 'z-schema';
 
 const validator = new ZSchema({
   breakOnFirstError: false,

@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import * as React from 'react';
+import React from 'react';
 
 import Portal from '../Portal';
 import ProfileDropdown from '../ProfileDropdown';

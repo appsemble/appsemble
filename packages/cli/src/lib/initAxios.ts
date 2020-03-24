@@ -1,6 +1,6 @@
 import { logger } from '@appsemble/node-utils';
 import axios from 'axios';
-import * as os from 'os';
+import os from 'os';
 
 import { version } from '../../package.json';
 import { BaseArguments } from '../types';

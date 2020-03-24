@@ -1,6 +1,6 @@
 import { BasicPage, FlowPage, TabsPage, UserInfo } from '@appsemble/types';
 import { shallow } from 'enzyme';
-import * as React from 'react';
+import React from 'react';
 
 import * as AppDefinitionProvider from '../AppDefinitionProvider';
 import Page from '.';
