@@ -87,6 +87,7 @@ export default {
         content: {
           'multipart/form-data': {
             schema: {
+              type: 'object',
               required: ['data'],
               properties: {
                 data: {
@@ -136,7 +137,7 @@ export default {
         in: 'path',
         description: 'The path segments of the asset to get.',
         required: true,
-        schema: { type: 'array' },
+        schema: { type: 'array', items: { type: 'string' } },
       },
     ],
     get: {

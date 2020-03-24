@@ -8,6 +8,7 @@ export default {
         content: {
           'multipart/form-data': {
             schema: {
+              type: 'object',
               required: ['OrganizationId', 'definition'],
               properties: {
                 definition: {
@@ -135,6 +136,7 @@ export default {
         content: {
           'multipart/form-data': {
             schema: {
+              type: 'object',
               properties: {
                 definition: {
                   $ref: '#/components/schemas/App/properties/definition',
@@ -252,7 +254,8 @@ export default {
                   type: 'string',
                 },
                 expirationTime: {
-                  oneOf: [{ enum: [null] }, { type: 'number' }],
+                  type: 'number',
+                  nullable: true,
                 },
                 keys: {
                   type: 'object',
@@ -556,6 +559,7 @@ export default {
         content: {
           'multipart/form-data': {
             schema: {
+              type: 'object',
               required: ['style'],
               properties: {
                 style: {

@@ -1,4 +1,4 @@
-import { partialNormalized } from '@appsemble/utils';
+import { partialNormalized } from '../../../constants';
 
 export default {
   type: 'object',

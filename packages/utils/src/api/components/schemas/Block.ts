@@ -1,4 +1,4 @@
-import { partialNormalized } from '@appsemble/utils';
+import { partialNormalized } from '../../../constants';
 
 export default {
   type: 'object',
@@ -60,9 +60,11 @@ export default {
       description: 'An object describing the names of the events the block can listen and emit to.',
       properties: {
         listen: {
+          type: 'object',
           additionalProperties: { type: 'string' },
         },
         emit: {
+          type: 'object',
           additionalProperties: { type: 'string' },
         },
       },

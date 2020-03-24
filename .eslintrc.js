@@ -88,7 +88,7 @@ module.exports = {
         'no-undef': 'off',
         'no-unused-vars': 'off',
         'no-use-before-define': 'off',
-        'filenames/match-regex': ['error', /^\.?[a-z]+(\.config|\.setup|\.test|\.d)?$/i, true],
+        'filenames/match-regex': ['error', /^\.?[a-z\d]+(\.config|\.setup|\.test|\.d)?$/i, true],
         'import/no-unresolved': 'off',
         'react/no-unknown-property': 'off',
         'react/prop-types': 'off',

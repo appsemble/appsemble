@@ -1,4 +1,4 @@
-import { normalized } from '@appsemble/utils';
+import { normalized } from '../../../constants';
 
 export default {
   type: 'object',
@@ -7,7 +7,7 @@ export default {
   properties: {
     id: {
       type: 'string',
-      pattern: normalized,
+      pattern: normalized.source,
       minLength: 1,
       maxLength: 30,
       description: 'The unique identifier for the organization.',

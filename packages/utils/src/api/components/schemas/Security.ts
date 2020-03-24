@@ -4,6 +4,7 @@ export default {
   required: ['default', 'roles'],
   properties: {
     login: {
+      type: 'string',
       enum: ['password'],
       description: `
         If specified, use the legacy email / password login method to login.

@@ -1,3 +1,5 @@
+import { OpenAPIV3 } from 'openapi-types';
+
 import apps from './apps';
 import assets from './assets';
 import blocks from './blocks';
@@ -24,4 +26,4 @@ export default {
   ...resources,
   ...templates,
   ...user,
-};
+} as OpenAPIV3.PathsObject;

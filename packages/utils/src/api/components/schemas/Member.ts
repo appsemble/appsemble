@@ -1,4 +1,4 @@
-import { roles } from '@appsemble/utils';
+import { roles } from '../../../constants';
 
 export default {
   type: 'object',

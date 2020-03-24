@@ -1,4 +1,4 @@
-import { normalized } from '@appsemble/utils';
+import { normalized } from '../../../constants';
 
 export default {
   name: 'blockId',
@@ -8,6 +8,6 @@ export default {
   required: true,
   schema: {
     type: 'string',
-    pattern: normalized,
+    pattern: normalized.source,
   },
 };

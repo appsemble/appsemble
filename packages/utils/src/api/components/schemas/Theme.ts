@@ -22,7 +22,7 @@ export default {
       $ref: '#/components/schemas/Color',
       default: '#5191ff',
       description: `The primary color used within the app.
-      
+
       This is used in various elements like the navbar.`,
     },
     linkColor: {

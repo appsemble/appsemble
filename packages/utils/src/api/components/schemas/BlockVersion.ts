@@ -13,10 +13,11 @@ export default {
     },
     version: {
       type: 'string',
-      pattern: /^\d+\.\d+\.\d+$/,
+      pattern: /^\d+\.\d+\.\d+$/.source,
       description: 'A [semver](https://semver.org) representation of the block version.',
     },
     layout: {
+      type: 'string',
       description: `How the block will be displayed on the screen.
 
         - **\`float\`**: The block will float somewhere on the screen.
@@ -50,10 +51,12 @@ export default {
       description: 'An object describing the names of the events the block can listen and emit to.',
       properties: {
         listen: {
-          additionalProperties: { type: 'string' },
+          type: 'array',
+          items: { type: 'string' },
         },
         emit: {
-          additionalProperties: { type: 'string' },
+          type: 'array',
+          items: { type: 'string' },
         },
       },
     },
