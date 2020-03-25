@@ -938,6 +938,26 @@
   resolved "https://registry.yarnpkg.com/@braintree/sanitize-url/-/sanitize-url-3.1.0.tgz#8ff71d51053cd5ee4981e5a501d80a536244f7fd"
   integrity sha512-GcIY79elgB+azP74j8vqkiXz8xLFfIzbQJdlwOPisgbKT00tviJQuEghOXSMVxJ00HoYJbGswr4kcllUc4xCcg==
 
+"@browser-logos/chrome@^1.0.17":
+  version "1.0.17"
+  resolved "https://registry.yarnpkg.com/@browser-logos/chrome/-/chrome-1.0.17.tgz#69577e7eb1d55c901e48ae843b3e0cd08b1787d6"
+  integrity sha512-kpRi4jKmouyXvcX3BYoqUR51phIehA3+IavUTB5nr2QdwT6Ak0UME415Sb+WW4P56aemRk2z7NBh7sVUHneV7A==
+
+"@browser-logos/edge@^2.0.4":
+  version "2.0.4"
+  resolved "https://registry.yarnpkg.com/@browser-logos/edge/-/edge-2.0.4.tgz#320bc22a1dc2803963e463b15de73c168ec5efe5"
+  integrity sha512-e5BDOcN64GwIhRN/gv7sQc6RPXhsPXaWmN0HKCG0QvDsS6JwaQdhWDWpfNqsJexHJ9ZBELfec1Q4kEhKZt8ETg==
+
+"@browser-logos/firefox@^3.0.8":
+  version "3.0.8"
+  resolved "https://registry.yarnpkg.com/@browser-logos/firefox/-/firefox-3.0.8.tgz#f6ce370711b41c885023c7c13455fc55c189bad1"
+  integrity sha512-5oU1fMPSNmjeBPCarO4DanLg7T1RpTi8ffsOfS2fWvaXF9GOUNccMQ6/+XFrzKf7FY76OcSN+BeK/L6qYHEAEw==
+
+"@browser-logos/safari@^1.0.7":
+  version "1.0.7"
+  resolved "https://registry.yarnpkg.com/@browser-logos/safari/-/safari-1.0.7.tgz#9e1acbc3316405e416493327aa5f1e762e8d60e2"
+  integrity sha512-lkskEtZTbI7JLaY0iyDwWuLo3P+kTfEcOkGVqDi4ByTAKktViQ+Fac2UwC1lLAuonVQkOk95b1hgAZPpzS1j4w==
+
 "@cnakazawa/watch@^1.0.3":
   version "1.0.4"
   resolved "https://registry.yarnpkg.com/@cnakazawa/watch/-/watch-1.0.4.tgz#f864ae85004d0fcab6f50be9141c4da368d1656a"
@@ -2393,11 +2413,6 @@
     strip-ansi "^4.0.0"
     text-table "^0.2.0"
     webpack-log "^1.1.2"
-
-"@wesselkuipers/leaflet.markercluster@^1.4.4":
-  version "1.4.4"
-  resolved "https://registry.yarnpkg.com/@wesselkuipers/leaflet.markercluster/-/leaflet.markercluster-1.4.4.tgz#ac123028a0cd316711630e8a7ef38a6f58f7b7b6"
-  integrity sha512-1xHxNK2mFZcSr3utc549oO9j1JO0EewV7boeISQviJJdcgJEoe7/9K+MQzx9bGX/iJBEMe9gtGGOyoZsBJYK3g==
 
 "@wesselkuipers/odata-sequelize@^1.0.14":
   version "1.0.14"
@@ -12021,11 +12036,6 @@ marked@^0.3.12:
   resolved "https://registry.yarnpkg.com/marked/-/marked-0.3.19.tgz#5d47f709c4c9fc3c216b6d46127280f40b39d790"
   integrity sha512-ea2eGWOqNxPcXv8dyERdSr/6FmzvWwzjMxpfGB/sbMccXoct+xY+YukPD+QTUZwyvK7BZwcr4m21WBOW41pAkg==
 
-marked@^0.8.0:
-  version "0.8.0"
-  resolved "https://registry.yarnpkg.com/marked/-/marked-0.8.0.tgz#ec5c0c9b93878dc52dd54be8d0e524097bd81a99"
-  integrity sha512-MyUe+T/Pw4TZufHkzAfDj6HarCBWia2y27/bhuYkTaiUnfDYFnCP3KUN+9oM7Wi6JA2rymtVYbQu3spE0GCmxQ==
-
 marksy@^8.0.0:
   version "8.0.0"
   resolved "https://registry.yarnpkg.com/marksy/-/marksy-8.0.0.tgz#b595f121fd47058df9dda1448f6ee156ab48810a"
@@ -12433,11 +12443,6 @@ mini-css-extract-plugin@^0.9.0:
     normalize-url "1.9.1"
     schema-utils "^1.0.0"
     webpack-sources "^1.1.0"
-
-mini-jsx@^2.0.0:
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/mini-jsx/-/mini-jsx-2.0.0.tgz#231af1da41d6a4e78f3d48068a7f1e14f734ee3f"
-  integrity sha512-K2lADm51wdjQrbsPXciR4WH/lGfQLrA+OYYMpCx9+ox+Tltw2gY4IaArYdQfD4zi2dWL0FS3z0xqa3P2i7BgQw==
 
 minify@^4.1.1:
   version "4.1.3"
@@ -14990,11 +14995,6 @@ postgres-interval@^1.1.0:
   dependencies:
     xtend "^4.0.0"
 
-preact@^10.3.3:
-  version "10.3.3"
-  resolved "https://registry.yarnpkg.com/preact/-/preact-10.3.3.tgz#31a949cdc89dd1cf72bc2b94f80ad55d1ac8c7e6"
-  integrity sha512-8EWUuHuLhX48uK0acnnXwBL/ZyrgeadnyhxG6hFI85BhwmquyGwWzfj2SylCNdEyltkdgbY3FZzQOM2mG1leAg==
-
 prebuild-install@5.3.3, prebuild-install@^5.3.3:
   version "5.3.3"
   resolved "https://registry.yarnpkg.com/prebuild-install/-/prebuild-install-5.3.3.tgz#ef4052baac60d465f5ba6bf003c9c1de79b9da8e"
@@ -15686,11 +15686,6 @@ react@^16.13.0, react@^16.8.0:
     loose-envify "^1.1.0"
     object-assign "^4.1.1"
     prop-types "^15.6.2"
-
-read-blob@^1.1.0:
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/read-blob/-/read-blob-1.1.0.tgz#66792f7bdd0cca00850faccdf11ec6bf2061a791"
-  integrity sha1-Znkve90MygCFD6zN8R7GvyBhp5E=
 
 read-cache@^1.0.0:
   version "1.0.0"
