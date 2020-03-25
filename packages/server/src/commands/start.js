@@ -143,8 +143,8 @@ export async function handler(argv, { webpackConfigs } = {}) {
   const httpServer = argv.ssl
     ? https.createServer(
         {
-          key: readFileOrString(argv.sslKey),
-          cert: readFileOrString(argv.sslCert),
+          key: await readFileOrString(argv.sslKey),
+          cert: await readFileOrString(argv.sslCert),
         },
         callback,
       )
