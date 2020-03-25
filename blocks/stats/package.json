@@ -2,6 +2,7 @@
   "name": "@appsemble/stats",
   "version": "0.12.0",
   "private": true,
+  "description": "A block that renders some simple statistics in a friendly manner.",
   "dependencies": {
     "@appsemble/sdk": "^0.12.0",
     "@appsemble/utils": "^0.12.0",

@@ -2,6 +2,7 @@
   "name": "@appsemble/form",
   "version": "0.12.0",
   "private": true,
+  "description": "A block used for inputting and submitting sets of data.",
   "dependencies": {
     "@appsemble/preact": "0.12.0",
     "@appsemble/preact-components": "0.12.0",
