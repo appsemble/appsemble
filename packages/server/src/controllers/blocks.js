@@ -47,13 +47,14 @@ export async function queryBlocks(ctx) {
 }
 
 export async function publishBlock(ctx) {
-  const { blockId, organizationId } = ctx.params;
   const { db } = ctx;
   const { BlockAsset, BlockVersion } = db.models;
-  const name = `@${organizationId}/${blockId}`;
   const { data, ...files } = ctx.request.body;
-  const { version } = data;
+  const { id, version } = data;
   const actionKeyRegex = /^[a-z]\w*$/;
+
+  const [org, blockId] = id.split('/');
+  const OrganizationId = org.slice(1);
 
   if (data.actions) {
     Object.keys(data.actions).forEach(key => {
@@ -63,14 +64,14 @@ export async function publishBlock(ctx) {
     });
   }
 
-  await checkRole(ctx, organizationId, permissions.PublishBlocks);
+  await checkRole(ctx, OrganizationId, permissions.PublishBlocks);
 
   if (isEmpty(files)) {
     throw Boom.badRequest('At least one file should be uploaded');
   }
 
   const blockDefinition = await BlockVersion.findOne({
-    where: { name: blockId, OrganizationId: organizationId },
+    where: { name: blockId, OrganizationId },
     order: [['created', 'DESC']],
     raw: true,
   });
@@ -78,7 +79,7 @@ export async function publishBlock(ctx) {
   // If there is a previous version and it has a higher semver, throw an error.
   if (blockDefinition && semver.gte(blockDefinition.version, version)) {
     throw Boom.badRequest(
-      `Version semver (${version}) is lower than the current version of ${blockDefinition.version}.`,
+      `Version semver (${version}) is equal to or lower than the current version of ${blockDefinition.version}.`,
     );
   }
 
@@ -90,18 +91,15 @@ export async function publishBlock(ctx) {
         layout = null,
         parameters,
         resources = null,
-      } = await BlockVersion.create(
-        { ...data, name: blockId, OrganizationId: organizationId },
-        { transaction },
-      );
+      } = await BlockVersion.create({ ...data, name: blockId, OrganizationId }, { transaction });
 
       Object.keys(files).forEach(filename => {
-        logger.verbose(`Creating block assets for ${name}@${version}: ${filename}`);
+        logger.verbose(`Creating block assets for ${id}@${version}: ${filename}`);
       });
       await BlockAsset.bulkCreate(
         Object.entries(files).map(([filename, file]) => ({
           name: blockId,
-          OrganizationId: organizationId,
+          OrganizationId,
           version,
           filename,
           mime: file.mime,
@@ -120,12 +118,12 @@ export async function publishBlock(ctx) {
         events,
         version,
         files: fileKeys,
-        id: name,
+        id,
       };
     });
   } catch (err) {
     if (err instanceof UniqueConstraintError || err instanceof DatabaseError) {
-      throw Boom.conflict(`Block “${name}@${data.version}” already exists`);
+      throw Boom.conflict(`Block “${id}@${data.version}” already exists`);
     }
     throw err;
   }

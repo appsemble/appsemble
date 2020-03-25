@@ -7,9 +7,13 @@ export default {
   `,
   required: ['version'],
   properties: {
-    block: {
+    id: {
       $ref: '#/components/schemas/BlockDefinition/properties/id',
       description: 'The id of the block definition to which this version applies.',
+    },
+    description: {
+      $ref: '#/components/schemas/BlockDefinition/properties/description',
+      description: 'The description of the block.',
     },
     version: {
       type: 'string',

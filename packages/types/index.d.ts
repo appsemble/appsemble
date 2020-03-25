@@ -355,7 +355,12 @@ export interface BlockManifest {
    * pattern: ^@[a-z]([a-z\d-]{0,30}[a-z\d])?\/[a-z]([a-z\d-]{0,30}[a-z\d])$
    * The name of a block.
    */
-  name: string;
+  id: string;
+
+  /**
+   * The description of the block.
+   */
+  description?: string;
 
   /**
    * A [semver](https://semver.org) representation of the block version.

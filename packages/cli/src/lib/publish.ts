@@ -32,7 +32,7 @@ export default async function publish({
   logger.info(`Publishing ${config.id}@${config.version}…`);
   const form = await makePayload({ config, path });
   try {
-    await axios.post(`/api/blocks/${config.id}/versions`, form);
+    await axios.post('/api/blocks', form);
     logger.info(`Successfully published ${config.id}@${config.version} 🎉`);
   } catch (err) {
     if (!ignoreConflict || !err.request || err.response.status !== 409) {

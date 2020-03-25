@@ -41,7 +41,7 @@ export interface UpdateAppArguments extends BaseArguments {
 
 export type BlockPayload = Pick<
   BlockManifest,
-  'actions' | 'events' | 'parameters' | 'resources' | 'version' | 'layout'
+  'id' | 'description' | 'actions' | 'events' | 'parameters' | 'resources' | 'version' | 'layout'
 >;
 
 export interface BlockConfig extends BlockPayload {

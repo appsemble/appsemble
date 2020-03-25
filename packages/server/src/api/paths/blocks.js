@@ -1,16 +1,31 @@
 export default {
   '/blocks': {
     post: {
-      tags: ['block'],
-      description: 'Publish a new block or a new version of an existing block.',
+      tags: ['block version'],
+      description: 'Publish a block.',
       operationId: 'publishBlock',
       requestBody: {
-        description: 'The block definition to publish.',
-        $ref: '#/components/requestBodies/blockDefinition',
+        description: 'The new block version to publish.',
+        content: {
+          'multipart/form-data': {
+            schema: {
+              required: ['data'],
+              properties: {
+                data: {
+                  $ref: '#/components/schemas/BlockVersion',
+                },
+              },
+              additionalProperties: {
+                type: 'string',
+                format: 'binary',
+              },
+            },
+          },
+        },
       },
       responses: {
         201: {
-          $ref: '#/components/responses/blockDefinition',
+          $ref: '#/components/responses/blockVersion',
         },
       },
       security: [{ cli: ['blocks:write'] }],
