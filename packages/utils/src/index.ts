@@ -1,3 +1,4 @@
+export { default as api } from './api';
 export * from './blockUtils';
 export * from './constants';
 export { default as normalize } from './normalize';

@@ -7,6 +7,13 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- App: Add support for custom `action` format for parameters. This can be used to refer to other
+  actions by name, including custom defined actions.
+- Block(`@appsemble/button-list`): Add new button list block.
+- SDK: Add support for index signature actions.
+
 ## [0.12.0] - 2020-03-20
 
 ### Added

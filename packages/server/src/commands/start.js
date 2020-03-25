@@ -1,11 +1,10 @@
 import { logger, readFileOrString } from '@appsemble/node-utils';
-import { asciiLogo } from '@appsemble/utils';
+import { api, asciiLogo } from '@appsemble/utils';
 import * as Sentry from '@sentry/node';
 import http from 'http';
 import https from 'https';
 import Koa from 'koa';
 
-import api from '../api';
 import migrations from '../migrations';
 import addDBHooks from '../utils/addDBHooks';
 import createServer from '../utils/createServer';

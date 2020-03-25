@@ -1,4 +1,5 @@
 import { loggerMiddleware } from '@appsemble/node-utils';
+import { api } from '@appsemble/utils';
 import faPkg from '@fortawesome/fontawesome-free/package.json';
 import Boom from '@hapi/boom';
 import cors from '@koa/cors';
@@ -22,7 +23,6 @@ import koasSwaggerUI from 'koas-swagger-ui';
 import path from 'path';
 import raw from 'raw-body';
 
-import api from '../api';
 import * as operations from '../controllers';
 import appMapper from '../middleware/appMapper';
 import boom from '../middleware/boom';
