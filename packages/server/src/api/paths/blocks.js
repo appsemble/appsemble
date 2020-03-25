@@ -2,10 +2,10 @@ export default {
   '/blocks': {
     post: {
       tags: ['block'],
-      description: 'Register a new block.',
-      operationId: 'createBlockDefinition',
+      description: 'Publish a new block or a new version of an existing block.',
+      operationId: 'publishBlock',
       requestBody: {
-        description: 'The block definition to create.',
+        description: 'The block definition to publish.',
         $ref: '#/components/requestBodies/blockDefinition',
       },
       responses: {
@@ -17,11 +17,11 @@ export default {
     },
     get: {
       tags: ['block'],
-      description: 'Get all existing block definitions.',
-      operationId: 'queryBlockDefinitions',
+      description: 'Get all block’s latest definitions.',
+      operationId: 'queryBlocks',
       responses: {
         200: {
-          description: 'The list of all block definitions.',
+          description: 'The list of all latest block definitions.',
           content: {
             'application/json': {
               schema: {
@@ -44,10 +44,10 @@ export default {
     get: {
       tags: ['block'],
       description: 'Get a single block',
-      operationId: 'getBlockDefinition',
+      operationId: 'getBlock',
       responses: {
         200: {
-          description: 'The app that matches the given id.',
+          description: 'The latest version of the block that matches the given id.',
           $ref: '#/components/responses/blockDefinition',
         },
       },

@@ -394,7 +394,7 @@ export async function getOrganizationBlockStyle(ctx) {
   const blockStyle = await OrganizationBlockStyle.findOne({
     where: {
       OrganizationId: organizationId,
-      BlockDefinitionId: `@${blockOrganizationId}/${blockId}`,
+      block: `@${blockOrganizationId}/${blockId}`,
     },
   });
 
@@ -406,7 +406,7 @@ export async function getOrganizationBlockStyle(ctx) {
 export async function setOrganizationBlockStyle(ctx) {
   const { blockId, blockOrganizationId, organizationId } = ctx.params;
   const { db } = ctx;
-  const { BlockDefinition, Organization, OrganizationBlockStyle } = db.models;
+  const { BlockVersion, Organization, OrganizationBlockStyle } = db.models;
   const { style } = ctx.request.body;
   const css = style.toString().trim();
 
@@ -420,7 +420,9 @@ export async function setOrganizationBlockStyle(ctx) {
 
     await checkRole(ctx, organization.id, permissions.EditThemes);
 
-    const block = await BlockDefinition.findByPk(`@${blockOrganizationId}/${blockId}`);
+    const block = await BlockVersion.findOne({
+      where: { name: blockId, OrganizationId: blockOrganizationId },
+    });
     if (!block) {
       throw Boom.notFound('Block not found.');
     }
@@ -428,7 +430,7 @@ export async function setOrganizationBlockStyle(ctx) {
     await OrganizationBlockStyle.upsert({
       style: css.length ? css.toString() : null,
       OrganizationId: organization.id,
-      BlockDefinitionId: block.id,
+      block: block.id,
     });
   } catch (e) {
     if (e instanceof StyleValidationError) {

@@ -431,7 +431,7 @@ export async function getAppBlockStyle(ctx) {
   const blockStyle = await AppBlockStyle.findOne({
     where: {
       AppId: appId,
-      BlockDefinitionId: `@${organizationId}/${blockId}`,
+      block: `@${organizationId}/${blockId}`,
     },
   });
 
@@ -443,7 +443,7 @@ export async function getAppBlockStyle(ctx) {
 export async function setAppBlockStyle(ctx) {
   const { appId, blockId, organizationId } = ctx.params;
   const { db } = ctx;
-  const { App, AppBlockStyle, BlockDefinition } = db.models;
+  const { App, AppBlockStyle, BlockVersion } = db.models;
   const { style } = ctx.request.body;
   const css = style.toString().trim();
 
@@ -455,7 +455,9 @@ export async function setAppBlockStyle(ctx) {
       throw Boom.notFound('App not found.');
     }
 
-    const block = await BlockDefinition.findByPk(`@${organizationId}/${blockId}`);
+    const block = await BlockVersion.findOne({
+      where: { name: blockId, OrganizationId: organizationId },
+    });
     if (!block) {
       throw Boom.notFound('Block not found.');
     }
@@ -466,10 +468,10 @@ export async function setAppBlockStyle(ctx) {
       await AppBlockStyle.upsert({
         style: css.toString(),
         AppId: app.id,
-        BlockDefinitionId: block.id,
+        block: block.id,
       });
     } else {
-      await AppBlockStyle.destroy({ where: { AppId: app.id, BlockDefinitionId: block.id } });
+      await AppBlockStyle.destroy({ where: { AppId: app.id, block: block.id } });
     }
 
     ctx.status = 204;

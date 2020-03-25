@@ -18,6 +18,8 @@ export default {
 
         This should be used to give app builders an indication of what the block does.
 
+        The latest version’s description is used.
+
         The [CommonMark](https://commonmark.org) Markdown format is allowed.
       `,
     },
