@@ -2414,6 +2414,11 @@
     text-table "^0.2.0"
     webpack-log "^1.1.2"
 
+"@wesselkuipers/leaflet.markercluster@^1.4.4":
+  version "1.4.4"
+  resolved "https://registry.yarnpkg.com/@wesselkuipers/leaflet.markercluster/-/leaflet.markercluster-1.4.4.tgz#ac123028a0cd316711630e8a7ef38a6f58f7b7b6"
+  integrity sha512-1xHxNK2mFZcSr3utc549oO9j1JO0EewV7boeISQviJJdcgJEoe7/9K+MQzx9bGX/iJBEMe9gtGGOyoZsBJYK3g==
+
 "@wesselkuipers/odata-sequelize@^1.0.14":
   version "1.0.14"
   resolved "https://registry.yarnpkg.com/@wesselkuipers/odata-sequelize/-/odata-sequelize-1.0.14.tgz#bc63d6b1738952d971fff931c848f78fc916ae4d"
@@ -12036,6 +12041,11 @@ marked@^0.3.12:
   resolved "https://registry.yarnpkg.com/marked/-/marked-0.3.19.tgz#5d47f709c4c9fc3c216b6d46127280f40b39d790"
   integrity sha512-ea2eGWOqNxPcXv8dyERdSr/6FmzvWwzjMxpfGB/sbMccXoct+xY+YukPD+QTUZwyvK7BZwcr4m21WBOW41pAkg==
 
+marked@^0.8.0:
+  version "0.8.0"
+  resolved "https://registry.yarnpkg.com/marked/-/marked-0.8.0.tgz#ec5c0c9b93878dc52dd54be8d0e524097bd81a99"
+  integrity sha512-MyUe+T/Pw4TZufHkzAfDj6HarCBWia2y27/bhuYkTaiUnfDYFnCP3KUN+9oM7Wi6JA2rymtVYbQu3spE0GCmxQ==
+
 marksy@^8.0.0:
   version "8.0.0"
   resolved "https://registry.yarnpkg.com/marksy/-/marksy-8.0.0.tgz#b595f121fd47058df9dda1448f6ee156ab48810a"
@@ -12443,6 +12453,11 @@ mini-css-extract-plugin@^0.9.0:
     normalize-url "1.9.1"
     schema-utils "^1.0.0"
     webpack-sources "^1.1.0"
+
+mini-jsx@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/mini-jsx/-/mini-jsx-2.0.0.tgz#231af1da41d6a4e78f3d48068a7f1e14f734ee3f"
+  integrity sha512-K2lADm51wdjQrbsPXciR4WH/lGfQLrA+OYYMpCx9+ox+Tltw2gY4IaArYdQfD4zi2dWL0FS3z0xqa3P2i7BgQw==
 
 minify@^4.1.1:
   version "4.1.3"
@@ -14995,6 +15010,11 @@ postgres-interval@^1.1.0:
   dependencies:
     xtend "^4.0.0"
 
+preact@^10.3.3:
+  version "10.3.3"
+  resolved "https://registry.yarnpkg.com/preact/-/preact-10.3.3.tgz#31a949cdc89dd1cf72bc2b94f80ad55d1ac8c7e6"
+  integrity sha512-8EWUuHuLhX48uK0acnnXwBL/ZyrgeadnyhxG6hFI85BhwmquyGwWzfj2SylCNdEyltkdgbY3FZzQOM2mG1leAg==
+
 prebuild-install@5.3.3, prebuild-install@^5.3.3:
   version "5.3.3"
   resolved "https://registry.yarnpkg.com/prebuild-install/-/prebuild-install-5.3.3.tgz#ef4052baac60d465f5ba6bf003c9c1de79b9da8e"
@@ -15686,6 +15706,11 @@ react@^16.13.0, react@^16.8.0:
     loose-envify "^1.1.0"
     object-assign "^4.1.1"
     prop-types "^15.6.2"
+
+read-blob@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/read-blob/-/read-blob-1.1.0.tgz#66792f7bdd0cca00850faccdf11ec6bf2061a791"
+  integrity sha1-Znkve90MygCFD6zN8R7GvyBhp5E=
 
 read-cache@^1.0.0:
   version "1.0.0"

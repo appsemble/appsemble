@@ -21,7 +21,7 @@ module.exports = (env, argv) => {
 
   return merge.smart(core(env, argv), {
     name: 'Appsemble App',
-    entry: [{ app: appEntry }, { legacy: [legacyEntry] }],
+    entry: { app: [appEntry], legacy: [legacyEntry] },
     output: {
       filename: production ? '_/[hash].js' : '_/app/[name].js',
       publicPath,
