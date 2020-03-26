@@ -28,11 +28,13 @@ afterEach(async () => {
 });
 
 it('should download a block asset', async () => {
+  await db.models.Organization.create({ id: 'linux', name: 'Linux' });
   await db.models.BlockAsset.create({
     filename: 'tux.png',
     content: await fs.promises.readFile(path.join(__dirname, '__fixtures__', 'tux.png')),
     mime: 'image/png',
-    name: '@linux/tux',
+    OrganizationId: 'linux',
+    name: 'tux',
     version: '3.1.4',
   });
   const response = await request.get('/api/blocks/@linux/tux/versions/3.1.4/tux.png', {
