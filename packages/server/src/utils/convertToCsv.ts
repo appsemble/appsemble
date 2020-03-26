@@ -23,16 +23,15 @@ export default function convertToCsv(body: { [key: string]: any }): string {
 
   const data = Array.isArray(body) ? body : [body];
 
-  const headers = [...new Set(data.map(Object.keys).flat())].sort();
+  const headers = [...new Set(data.map(Object.keys).flat())]
+    .sort()
+    .map(header => header.replace(quoteRegex, `${quote}${quote}`));
 
   if (headers.length === 0) {
     throw new AppsembleError('No headers could be found');
   }
 
-  let result =
-    headers.map(header => header.replace(quoteRegex, `${quote}${quote}`)).join(separator) + lineEnd;
-
-  data.forEach(object => {
+  const lines = data.map(object => {
     const values = headers.map(header => {
       let value = object[header];
       if (value == null) {
@@ -50,8 +49,8 @@ export default function convertToCsv(body: { [key: string]: any }): string {
       return value;
     });
 
-    result += `${values.join(separator)}${lineEnd}`;
+    return `${values.join(separator)}`;
   });
 
-  return result;
+  return `${headers.join(separator)}${lineEnd}${lines.join(lineEnd)}${lineEnd}`;
 }
