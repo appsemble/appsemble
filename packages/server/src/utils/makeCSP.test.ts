@@ -1,7 +1,7 @@
-import makeCSP from './makeCSP';
+import makeCSP, { ContentSecurityPolicy } from './makeCSP';
 
 describe('makeCSP', () => {
-  const fixtures = {
+  const fixtures: { [expected: string]: ContentSecurityPolicy } = {
     "script-src 'self'": {
       'script-src': ["'self'"],
     },

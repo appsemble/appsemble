@@ -1,11 +1,12 @@
-import { createInstance } from 'axios-test-instance';
-import Koa from 'koa';
+import { Boom } from '@hapi/boom';
+import { AxiosTestInstance, createInstance } from 'axios-test-instance';
+import Koa, { Context } from 'koa';
 
 import tinyRouter from './tinyRouter';
 
-let app;
-let context;
-let request;
+let app: Koa;
+let context: Context;
+let request: AxiosTestInstance;
 
 beforeEach(async () => {
   app = new Koa();
@@ -35,7 +36,7 @@ it('should assign the match group to params', async () => {
 });
 
 it('should throw method not allowed if a URL is matched, but not for the given method', async () => {
-  let error;
+  let error: Boom;
   app.on('error', (err) => {
     error = err;
   });

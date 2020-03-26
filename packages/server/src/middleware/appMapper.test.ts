@@ -1,14 +1,14 @@
-import { createInstance } from 'axios-test-instance';
-import Koa from 'koa';
+import { AxiosTestInstance, createInstance } from 'axios-test-instance';
+import Koa, { Context, Middleware } from 'koa';
 
 import appMapper from './appMapper';
 
-let platformMiddleware;
-let appMiddleware;
-let fakeHostname;
-let app;
-let context;
-let request;
+let platformMiddleware: Middleware;
+let appMiddleware: Middleware;
+let fakeHostname: string;
+let app: Koa;
+let context: Context;
+let request: AxiosTestInstance;
 
 beforeEach(async () => {
   platformMiddleware = jest.fn();

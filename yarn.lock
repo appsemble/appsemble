@@ -1715,6 +1715,14 @@
   resolved "https://registry.yarnpkg.com/@types/anymatch/-/anymatch-1.3.1.tgz#336badc1beecb9dacc38bea2cf32adf627a8421a"
   integrity sha512-/+CRPXpBDpo2RK9C68N3b2cOvO0Cf5B9aPijHsoDQTHivnGSObdOF2BRQOYjojWTDy6nQvMjmqRXIxH55VjxxA==
 
+"@types/autoprefixer@^9.7.2":
+  version "9.7.2"
+  resolved "https://registry.yarnpkg.com/@types/autoprefixer/-/autoprefixer-9.7.2.tgz#64b3251c9675feef5a631b7dd34cfea50a8fdbcc"
+  integrity sha512-QX7U7YW3zX3ex6MECtWO9folTGsXeP4b8bSjTq3I1ODM+H+sFHwGKuof+T+qBcDClGlCGtDb3SVfiTVfmcxw4g==
+  dependencies:
+    "@types/browserslist" "*"
+    postcss "7.x.x"
+
 "@types/babel__core@^7.1.0":
   version "7.1.6"
   resolved "https://registry.yarnpkg.com/@types/babel__core/-/babel__core-7.1.6.tgz#16ff42a5ae203c9af1c6e190ed1f30f83207b610"
@@ -1755,6 +1763,11 @@
   dependencies:
     "@types/connect" "*"
     "@types/node" "*"
+
+"@types/browserslist@*":
+  version "4.8.0"
+  resolved "https://registry.yarnpkg.com/@types/browserslist/-/browserslist-4.8.0.tgz#60489aefdf0fcb56c2d8eb65267ff08dad7a526d"
+  integrity sha512-4PyO9OM08APvxxo1NmQyQKlJdowPCOQIy5D/NLO3aO0vGC57wsMptvGp3b8IbYnupFZr92l1dlVief1JvS6STQ==
 
 "@types/bulma-calendar@^6.0.0":
   version "6.0.0"
@@ -2062,6 +2075,13 @@
   dependencies:
     "@types/node" "*"
 
+"@types/node-sass@^4.11.0":
+  version "4.11.0"
+  resolved "https://registry.yarnpkg.com/@types/node-sass/-/node-sass-4.11.0.tgz#b0372075546e83f39df52bd37359eab00165a04d"
+  integrity sha512-uNpVWhwVmbB5luE7b8vxcJwu5np75YkVTBJS0O3ar+hrxqLfyhOKXg9NYBwJ6mMQX/V6/8d6mMZTB7x2r5x9Bw==
+  dependencies:
+    "@types/node" "*"
+
 "@types/node@*", "@types/node@^12.11.1":
   version "12.12.31"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-12.12.31.tgz#d6b4f9645fee17f11319b508fb1001797425da51"
@@ -2081,6 +2101,13 @@
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/@types/parse-json/-/parse-json-4.0.0.tgz#2f8bb441434d163b35fb8ffdccd7138927ffb8c0"
   integrity sha512-//oorEZjL6sbPcKUaCdIGlIUeH26mgzimjBB77G6XRgnDl/L5wOnpyBGRe/Mmf5CVW3PwEBE1NjiMZ/ssFh4wA==
+
+"@types/postcss-import@^12.0.0":
+  version "12.0.0"
+  resolved "https://registry.yarnpkg.com/@types/postcss-import/-/postcss-import-12.0.0.tgz#d7c584b2651258ed5b3657d25467df1c4aec33e1"
+  integrity sha512-AFgOR4zOOp/izuY7n5aEr/0SJ5e8fNYVxMkx49IA3Jf/Bs6Hhd6staMoSkdiTr9fi0z3Q1Ts5SqpFI5vv4k7BQ==
+  dependencies:
+    postcss "^7.0.27"
 
 "@types/postcss-load-config@^2.0.1":
   version "2.0.1"
@@ -2204,6 +2231,13 @@
   integrity sha512-NBLpxauF9s0dG+g3KFRo7iQwEuSa9E9Sn+SG/4SxECVOIG/0JBIK3Qc4b+81vH3/1dXJqMfm1JFh8vVsgp5/Dw==
   dependencies:
     "@types/webpack" "*"
+
+"@types/sharp@^0.24.0":
+  version "0.24.0"
+  resolved "https://registry.yarnpkg.com/@types/sharp/-/sharp-0.24.0.tgz#28abfeac45b4dcb472305503105322e97a6c2672"
+  integrity sha512-+0WeyJajTSoIacBzonsq856whNJC+cN9FNEs0yZ6hFq/V1CZmlqM8vBRy7TKZunH+gIO7SwDCzgXYWRRbzqfDA==
+  dependencies:
+    "@types/node" "*"
 
 "@types/sinonjs__fake-timers@^6.0.0":
   version "6.0.0"
