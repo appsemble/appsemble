@@ -20,6 +20,8 @@ describe('generateBlockData', () => {
       path.join(__dirname, '__fixtures__/generateBlockData/valid'),
     );
     expect(result).toStrictEqual({
+      description: undefined,
+      id: '',
       layout: 'float',
       resources: undefined,
       version: '1.33.7',
@@ -71,6 +73,8 @@ describe('generateBlockData', () => {
     );
 
     expect(result).toStrictEqual({
+      description: undefined,
+      id: '',
       actions: {},
       events: { emit: [], listen: [] },
       layout: 'float',
@@ -218,6 +222,8 @@ describe('generateBlockData', () => {
     );
 
     expect(result).toStrictEqual({
+      description: undefined,
+      id: '',
       layout: undefined,
       resources: undefined,
       version: '1.33.7',

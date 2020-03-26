@@ -23,7 +23,7 @@ export async function getBlock(ctx) {
   }
 
   ctx.body = {
-    id: `@${organizationId}/${blockId}`,
+    name: `@${organizationId}/${blockId}`,
     description: blockDefinition.description,
     version: blockDefinition.version,
   };
@@ -40,7 +40,7 @@ export async function queryBlocks(ctx) {
   );
 
   ctx.body = blockDefinitions.map(({ OrganizationId, description, name, version }) => ({
-    id: `@${OrganizationId}/${name}`,
+    name: `@${OrganizationId}/${name}`,
     description,
     version,
   }));
@@ -50,10 +50,10 @@ export async function publishBlock(ctx) {
   const { db } = ctx;
   const { BlockAsset, BlockVersion } = db.models;
   const { data, ...files } = ctx.request.body;
-  const { id, version } = data;
+  const { name, version } = data;
   const actionKeyRegex = /^[a-z]\w*$/;
 
-  const [org, blockId] = id.split('/');
+  const [org, blockId] = name.split('/');
   const OrganizationId = org.slice(1);
 
   if (data.actions) {
@@ -87,6 +87,7 @@ export async function publishBlock(ctx) {
     await db.transaction(async transaction => {
       const {
         actions = null,
+        description = null,
         events,
         layout = null,
         parameters,
@@ -94,7 +95,7 @@ export async function publishBlock(ctx) {
       } = await BlockVersion.create({ ...data, name: blockId, OrganizationId }, { transaction });
 
       Object.keys(files).forEach(filename => {
-        logger.verbose(`Creating block assets for ${id}@${version}: ${filename}`);
+        logger.verbose(`Creating block assets for ${name}@${version}: ${filename}`);
       });
       await BlockAsset.bulkCreate(
         Object.entries(files).map(([filename, file]) => ({
@@ -118,12 +119,13 @@ export async function publishBlock(ctx) {
         events,
         version,
         files: fileKeys,
-        id,
+        name,
+        description,
       };
     });
   } catch (err) {
     if (err instanceof UniqueConstraintError || err instanceof DatabaseError) {
-      throw Boom.conflict(`Block “${id}@${data.version}” already exists`);
+      throw Boom.conflict(`Block “${name}@${data.version}” already exists`);
     }
     throw err;
   }
@@ -152,7 +154,7 @@ export async function getBlockVersion(ctx) {
 
   ctx.body = {
     files: files.map(f => f.filename),
-    id: name,
+    name,
     version: blockVersion,
     ...version,
   };
@@ -173,5 +175,5 @@ export async function getBlockVersions(ctx) {
     throw Boom.notFound('Block not found.');
   }
 
-  ctx.body = blockVersions.map(blockVersion => ({ id: name, ...blockVersion }));
+  ctx.body = blockVersions.map(blockVersion => ({ name, ...blockVersion }));
 }

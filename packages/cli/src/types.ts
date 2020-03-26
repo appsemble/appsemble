@@ -41,12 +41,12 @@ export interface UpdateAppArguments extends BaseArguments {
 
 export type BlockPayload = Pick<
   BlockManifest,
-  'id' | 'description' | 'actions' | 'events' | 'parameters' | 'resources' | 'version' | 'layout'
+  'name' | 'description' | 'actions' | 'events' | 'parameters' | 'resources' | 'version' | 'layout'
 >;
 
 export interface BlockConfig extends BlockPayload {
   description?: string;
-  id: string;
+  name: string;
   webpack: string;
   dist: string;
   output: string;

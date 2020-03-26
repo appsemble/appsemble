@@ -355,7 +355,7 @@ export interface BlockManifest {
    * pattern: ^@[a-z]([a-z\d-]{0,30}[a-z\d])?\/[a-z]([a-z\d-]{0,30}[a-z\d])$
    * The name of a block.
    */
-  id: string;
+  name: string;
 
   /**
    * The description of the block.

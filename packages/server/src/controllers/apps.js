@@ -24,10 +24,22 @@ function getBlockVersions(db) {
       raw: true,
       where: {
         [Op.or]: uniqWith(
-          Object.values(blocks).map(({ type, version }) => ({
-            name: type.startsWith('@') ? type : `@appsemble/${type}`,
-            version,
-          })),
+          Object.values(blocks).map(({ type, version }) => {
+            const includesOrg = type.startsWith('@');
+            const OrganizationId = includesOrg ? type.split('/')[0].slice(1) : 'appsemble';
+            const name = includesOrg
+              ? type
+                  .split('/')
+                  .slice(1)
+                  .join('/')
+              : type;
+
+            return {
+              name,
+              OrganizationId,
+              version,
+            };
+          }),
           isEqual,
         ),
       },

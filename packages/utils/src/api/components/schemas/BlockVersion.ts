@@ -9,9 +9,9 @@ export default {
   `,
   required: ['version'],
   properties: {
-    id: {
+    name: {
       $ref: '#/components/schemas/BlockDefinition/properties/id',
-      description: 'The id of the block definition to which this version applies.',
+      description: 'The name of the block definition to which this version applies.',
     },
     description: {
       $ref: '#/components/schemas/BlockDefinition/properties/description',
