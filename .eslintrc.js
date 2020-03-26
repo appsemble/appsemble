@@ -88,6 +88,8 @@ module.exports = {
         'no-undef': 'off',
         'no-unused-vars': 'off',
         'no-use-before-define': 'off',
+        'no-unused-expressions': 'off',
+
         'filenames/match-regex': ['error', /^\.?[a-z\d]+(\.config|\.setup|\.test|\.d)?$/i, true],
         'import/no-unresolved': 'off',
         'react/no-unknown-property': 'off',
@@ -119,6 +121,7 @@ module.exports = {
         '@typescript-eslint/no-non-null-assertion': 'error',
         '@typescript-eslint/no-parameter-properties': 'error',
         '@typescript-eslint/no-use-before-define': 'error',
+        '@typescript-eslint/no-unused-expressions': 'error',
         '@typescript-eslint/no-var-requires': 'error',
         '@typescript-eslint/prefer-namespace-keyword': 'error',
         '@typescript-eslint/prefer-optional-chain': 'error',

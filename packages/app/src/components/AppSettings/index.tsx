@@ -113,7 +113,7 @@ export default function AppSettings(): React.ReactElement {
       return;
     }
 
-    if (window.Notification && window.Notification.permission === 'denied') {
+    if (window.Notification?.permission === 'denied') {
       push({ body: intl.formatMessage(messages.blocked), color: 'warning' });
       return;
     }
