@@ -1,12 +1,12 @@
 {
   "name": "@appsemble/filter",
-  "version": "0.12.0",
+  "version": "0.12.1",
   "private": true,
   "description": "A block that can filter data and pass it to other blocks using the event API.",
   "dependencies": {
-    "@appsemble/react": "^0.12.0",
-    "@appsemble/react-components": "^0.12.0",
-    "@appsemble/sdk": "^0.12.0",
+    "@appsemble/react": "^0.12.1",
+    "@appsemble/react-components": "^0.12.1",
+    "@appsemble/sdk": "^0.12.1",
     "@fortawesome/fontawesome-common-types": "^0.2.27",
     "classnames": "^2.2.6",
     "react": "^16.13.0",

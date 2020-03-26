@@ -7,6 +7,18 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.12.1] - 2020-03-26
+
+### Added
+
+- App: Add support for custom `action` format for parameters. This can be used to refer to other
+  actions by name, including custom defined actions.
+- App: Handle unsupported browsers.
+- Block(`@appsemble/button-list`): Add new button list block.
+- SDK: Add support for index signature actions.
+- Server: Handle unsupported browsers.
+- Server: Serve block assets from the app host URL instead of the studio host URL.
+
 ## [0.12.0] - 2020-03-20
 
 ### Added

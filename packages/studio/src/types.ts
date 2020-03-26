@@ -56,6 +56,14 @@ export interface Organization {
 
 declare global {
   interface Window {
+    /**
+     * This boolean indicates if Appsemble has loaded normally.
+     *
+     * If this is not been set, this means Appsemble didn’t load, probably because it doesn’t
+     * recognize newer JavaScript features.
+     */
+    appsembleHasLoaded: boolean;
+
     settings: {
       enableRegistration: boolean;
       logins: string[];

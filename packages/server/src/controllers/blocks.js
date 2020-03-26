@@ -175,22 +175,3 @@ export async function getBlockVersions(ctx) {
 
   ctx.body = blockVersions.map(blockVersion => ({ id: name, ...blockVersion }));
 }
-
-export async function getBlockAsset(ctx) {
-  const { blockId, blockVersion, organizationId, path } = ctx.params;
-  const { BlockAsset } = ctx.db.models;
-  const asset = await BlockAsset.findOne({
-    where: {
-      name: blockId,
-      OrganizationId: organizationId,
-      version: blockVersion,
-      filename: path.join('/'),
-    },
-  });
-  if (asset == null) {
-    ctx.throw(404);
-    return;
-  }
-  ctx.type = asset.mime;
-  ctx.body = asset.content;
-}
