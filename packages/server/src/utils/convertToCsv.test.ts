@@ -3,6 +3,11 @@ import { AppsembleError } from '@appsemble/node-utils/src';
 import convertToCsv from './convertToCsv';
 
 describe('convertToCsv', () => {
+  it('should throw an error if input is null', () => {
+    const input: any = null;
+
+    expect(() => convertToCsv(input as any)).toThrow(new AppsembleError('No data'));
+  });
   it('should return an error if the input has no keys', () => {
     const input = {};
 
@@ -22,30 +27,35 @@ describe('convertToCsv', () => {
       { foo: 123, baz: 1 },
       { foo: 123, bar: 'bar' },
     ];
-    const output = 'foo,baz,bar\r\n123,1,\r\n123,,bar';
+    const output = 'bar,baz,foo\r\n,1,123\r\nbar,,123\r\n';
 
     expect(convertToCsv(input)).toStrictEqual(output);
   });
 
   it('should support an arrays of objects', () => {
     const input = [{ foo: 123 }, { foo: 321 }];
-    const output = 'foo\r\n123\r\n321';
+    const output = 'foo\r\n123\r\n321\r\n';
 
     expect(convertToCsv(input)).toStrictEqual(output);
   });
 
-  it('should escape non-primitives', () => {
-    const inputs = [{ foo: 'foo,bar' }, { foo: 'foo\r\nbar' }];
-    const outputs = ['foo\r\n"foo,bar"', 'foo\r\n"foo\r\nbar"'];
+  it('should escape strings containing commas', () => {
+    const input = [{ foo: 'foo,bar' }];
+    const output = 'foo\r\n"foo,bar"\r\n';
 
-    inputs.forEach((input, index) => {
-      expect(convertToCsv(input)).toStrictEqual(outputs[index]);
-    });
+    expect(convertToCsv(input)).toStrictEqual(output);
+  });
+
+  it('should escape strings containing newlines', () => {
+    const input = { foo: 'foo\r\nbar' };
+    const output = 'foo\r\n"foo\r\nbar"\r\n';
+
+    expect(convertToCsv(input)).toStrictEqual(output);
   });
 
   it('should escape quotes', () => {
     const input = { foo: 'Lots of "str"ings"' };
-    const output = 'foo\r\n"Lots of ""str""ings"""';
+    const output = 'foo\r\n"Lots of ""str""ings"""\r\n';
 
     expect(convertToCsv(input)).toStrictEqual(output);
   });
