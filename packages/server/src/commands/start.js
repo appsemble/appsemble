@@ -1,4 +1,4 @@
-import { logger } from '@appsemble/node-utils';
+import { logger, readFileOrString } from '@appsemble/node-utils';
 import { api, asciiLogo } from '@appsemble/utils';
 import * as Sentry from '@sentry/node';
 import http from 'http';
@@ -9,7 +9,6 @@ import migrations from '../migrations';
 import addDBHooks from '../utils/addDBHooks';
 import createServer from '../utils/createServer';
 import migrate from '../utils/migrate';
-import readFileOrString from '../utils/readFileOrString';
 import setupModels, { handleDbException } from '../utils/setupModels';
 import databaseBuilder from './builder/database';
 
