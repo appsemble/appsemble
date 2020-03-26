@@ -1,11 +1,11 @@
 {
   "name": "@appsemble/detail-viewer",
-  "version": "0.12.0",
+  "version": "0.12.1",
   "private": true,
   "dependencies": {
-    "@appsemble/preact": "0.12.0",
-    "@appsemble/preact-components": "0.12.0",
-    "@appsemble/utils": "0.12.0",
+    "@appsemble/preact": "0.12.1",
+    "@appsemble/preact-components": "0.12.1",
+    "@appsemble/utils": "0.12.1",
     "classnames": "^2.2.6",
     "preact": "^10.3.3"
   }
