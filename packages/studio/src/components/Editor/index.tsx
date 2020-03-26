@@ -26,10 +26,18 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { Link, useHistory, useLocation, useParams } from 'react-router-dom';
 
 import { useApp } from '../AppContext';
+import GUIEditor from '../GUIEditor';
 import HelmetIntl from '../HelmetIntl';
-import MonacoEditor from '../MonacoEditor';
+import MonacoEditor, { SelectedBlockParent } from '../MonacoEditor';
 import styles from './index.css';
 import messages from './messages';
+
+export enum GuiEditorStep {
+  'YAML',
+  'SELECT',
+  'ADD',
+  'EDIT',
+}
 
 export default function Editor(): React.ReactElement {
   const { app, setApp } = useApp();
@@ -45,6 +53,10 @@ export default function Editor(): React.ReactElement {
   const [warningDialog, setWarningDialog] = React.useState(false);
   const [deleteDialog, setDeleteDialog] = React.useState(false);
   const [openApiDocument, setOpenApiDocument] = React.useState<OpenAPIV3.Document>();
+  const [editorStep, setEditorStep] = React.useState<GuiEditorStep>(GuiEditorStep.YAML);
+
+  const [selectedItem, setselectedItem] = React.useState();
+  const [selectedBlockParent, setSelectedBlockParent] = React.useState<SelectedBlockParent>();
 
   const frame = React.useRef<HTMLIFrameElement>();
   const history = useHistory();
@@ -231,7 +243,7 @@ export default function Editor(): React.ReactElement {
     }
   }, [app.OrganizationId, appName, history, intl, params, push]);
 
-  const onDeleteClick = React.useCallback(() => setDeleteDialog(true), []);
+  // const onDeleteClick = React.useCallback(() => setDeleteDialog(true), []);
 
   const onUpload = React.useCallback(async () => {
     if (valid) {
@@ -278,8 +290,8 @@ export default function Editor(): React.ReactElement {
   }
 
   const onValueChange = onMonacoChange;
-  let value;
-  let language;
+  let value: any;
+  let language: any;
 
   switch (location.hash) {
     case '#style-core':
@@ -294,6 +306,41 @@ export default function Editor(): React.ReactElement {
     default:
       value = recipe;
       language = 'yaml';
+  }
+
+  function getEditor(): any {
+    switch (editorStep) {
+      case GuiEditorStep.ADD:
+        return <GUIEditor editorStep={editorStep} />;
+      case GuiEditorStep.EDIT:
+        return <GUIEditor editorStep={editorStep} selectedItem={selectedItem} />;
+      case GuiEditorStep.SELECT:
+        return (
+          <MonacoEditor
+            language={language}
+            onSave={onSave}
+            onValueChange={onValueChange}
+            selectedItem={(item: any) => setselectedItem(item)}
+            setSelectedBlockParent={(item: SelectedBlockParent) => {
+              setSelectedBlockParent(item);
+            }}
+            value={value}
+          />
+        );
+      default:
+        return (
+          <MonacoEditor
+            language={language}
+            onSave={onSave}
+            onValueChange={onValueChange}
+            selectedItem={(item: any) => setselectedItem(item)}
+            setSelectedBlockParent={(item: SelectedBlockParent) => {
+              setSelectedBlockParent(item);
+            }}
+            value={value}
+          />
+        );
+    }
   }
 
   return (
@@ -326,50 +373,109 @@ export default function Editor(): React.ReactElement {
                   </span>
                 </a>
               </span>
-              <span className="navbar-item">
+              {/* <span className="navbar-item">
                 <Button color="danger" icon="trash-alt" onClick={onDeleteClick}>
                   <FormattedMessage {...messages.delete} />
+                </Button>
+              </span> */}
+              <span className="navbar-item">
+                <Button
+                  color="primary"
+                  icon="random"
+                  onClick={() => {
+                    if (editorStep !== GuiEditorStep.YAML) {
+                      setEditorStep(GuiEditorStep.YAML);
+                    } else {
+                      setEditorStep(GuiEditorStep.SELECT);
+                    }
+                  }}
+                >
+                  <FormattedMessage {...messages.switchGUI} />
                 </Button>
               </span>
             </div>
           </nav>
-          <div className={classNames('tabs', 'is-boxed', styles.editorTabs)}>
-            <ul>
-              <li
-                className={classNames({ 'is-active': location.hash === '#editor' })}
-                value="editor"
-              >
-                <Link to="#editor">
-                  <Icon icon="file-code" />
-                  <FormattedMessage {...messages.recipe} />
-                </Link>
-              </li>
-              <li
-                className={classNames({ 'is-active': location.hash === '#style-core' })}
-                value="style-core"
-              >
-                <Link to="#style-core">
-                  <Icon icon="brush" />
-                  <FormattedMessage {...messages.coreStyle} />
-                </Link>
-              </li>
-              <li
-                className={classNames({ 'is-active': location.hash === '#style-shared' })}
-                value="style-shared"
-              >
-                <Link to="#style-shared">
-                  <Icon icon="brush" />
-                  <FormattedMessage {...messages.sharedStyle} />
-                </Link>
-              </li>
-            </ul>
+          <div
+            className={
+              editorStep === GuiEditorStep.ADD
+                ? classNames('is-hidden')
+                : classNames('tabs', 'is-boxed', styles.editorTabs)
+            }
+          >
+            {editorStep === GuiEditorStep.YAML ? (
+              <ul>
+                <li
+                  className={classNames({ 'is-active': location.hash === '#editor' })}
+                  value="editor"
+                >
+                  <Link to="#editor">
+                    <Icon icon="file-code" />
+                    <FormattedMessage {...messages.recipe} />
+                  </Link>
+                </li>
+                <li
+                  className={classNames({ 'is-active': location.hash === '#style-core' })}
+                  value="style-core"
+                >
+                  <Link to="#style-core">
+                    <Icon icon="brush" />
+                    <FormattedMessage {...messages.coreStyle} />
+                  </Link>
+                </li>
+                <li
+                  className={classNames({ 'is-active': location.hash === '#style-shared' })}
+                  value="style-shared"
+                >
+                  <Link to="#style-shared">
+                    <Icon icon="brush" />
+                    <FormattedMessage {...messages.sharedStyle} />
+                  </Link>
+                </li>
+              </ul>
+            ) : (
+              <ul>
+                <li
+                  className={classNames({ 'is-active': location.hash === '#editor' })}
+                  value="editor"
+                >
+                  <Link to="#editor">
+                    <Icon icon="file-code" />
+                    <FormattedMessage {...messages.recipe} />
+                  </Link>
+                </li>
+                <li value="addblock">
+                  <Button
+                    color="success"
+                    disabled={
+                      selectedBlockParent !== undefined ? !selectedBlockParent.allowAddBlock : true
+                    }
+                    icon="plus"
+                    onClick={() => setEditorStep(GuiEditorStep.ADD)}
+                  >
+                    <FormattedMessage {...messages.addBlock} />
+                  </Button>
+                </li>
+                <li value="editblock">
+                  <Button
+                    color="warning"
+                    disabled={
+                      selectedBlockParent !== undefined ? !selectedBlockParent.allowAddBlock : true
+                    }
+                    icon="edit"
+                    onClick={() => setEditorStep(GuiEditorStep.EDIT)}
+                  >
+                    <FormattedMessage {...messages.editBlock} />
+                  </Button>
+                </li>
+                <li value="removeblock">
+                  <Button color="danger" icon="trash-alt">
+                    <FormattedMessage {...messages.deleteBlock} />
+                  </Button>
+                </li>
+              </ul>
+            )}
           </div>
-          <MonacoEditor
-            language={language}
-            onSave={onSave}
-            onValueChange={onValueChange}
-            value={value}
-          />
+          {getEditor()}
           <Modal
             className="is-paddingless"
             isActive={warningDialog}

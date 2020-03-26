@@ -30,4 +30,8 @@ export default defineMessages({
   sharedStyle: 'Shared style',
   iframeTitle: 'App preview',
   cancel: 'Cancel',
+  switchGUI: 'Switch Interface',
+  addBlock: 'Add Block',
+  editBlock: 'Edit ',
+  deleteBlock: 'Delete ',
 });
