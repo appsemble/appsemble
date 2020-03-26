@@ -89,7 +89,7 @@ export default async function createServer({ app = new Koa(), argv = {}, db, web
             }),
         }),
         koasSerializer({
-          'text/csv': body => convertToCsv(body),
+          'text/csv': convertToCsv,
         }),
         koasStatusCode(),
         koasOperations({ operations }),

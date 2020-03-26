@@ -1,23 +1,23 @@
+import { AppsembleError } from '@appsemble/node-utils/src';
+
 import convertToCsv from './convertToCsv';
 
 describe('convertToCsv', () => {
-  it('returns an empty string if the input is empty', () => {
+  it('should return an error if the input has no keys', () => {
     const input = {};
-    const output = '';
 
-    expect(convertToCsv(input)).toStrictEqual(output);
+    expect(() => convertToCsv(input)).toThrow(new AppsembleError('No headers could be found'));
   });
 
-  it('returns an empty string if the input is a primitive', () => {
-    const inputs = ['foo', '123'];
-    const output = '';
+  it('sould return an error if the input is a primitive', () => {
+    const input = 'foo';
 
-    inputs.forEach(input => {
-      expect(convertToCsv(input)).toStrictEqual(output);
-    });
+    expect(() => convertToCsv(input as any)).toThrow(
+      new AppsembleError('Data is of an invalid type'),
+    );
   });
 
-  it('correctly combines all headers', () => {
+  it('should correctly combines all headers', () => {
     const input = [
       { foo: 123, baz: 1 },
       { foo: 123, bar: 'bar' },
@@ -27,14 +27,14 @@ describe('convertToCsv', () => {
     expect(convertToCsv(input)).toStrictEqual(output);
   });
 
-  it('supports arrays of objects', () => {
+  it('should support an arrays of objects', () => {
     const input = [{ foo: 123 }, { foo: 321 }];
     const output = 'foo\r\n123\r\n321';
 
     expect(convertToCsv(input)).toStrictEqual(output);
   });
 
-  it('escapes non-primitives', () => {
+  it('should escape non-primitives', () => {
     const inputs = [{ foo: 'foo,bar' }, { foo: 'foo\r\nbar' }];
     const outputs = ['foo\r\n"foo,bar"', 'foo\r\n"foo\r\nbar"'];
 
@@ -43,7 +43,7 @@ describe('convertToCsv', () => {
     });
   });
 
-  it('escapes quotes', () => {
+  it('should escape quotes', () => {
     const input = { foo: 'Lots of "str"ings"' };
     const output = 'foo\r\n"Lots of ""str""ings"""';
 
