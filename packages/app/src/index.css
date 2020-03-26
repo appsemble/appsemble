@@ -5,3 +5,19 @@ html {
 :global(.navbar.is-fixed-top) {
   z-index: 2000;
 }
+
+:global(#legacy-browser-support) {
+  display: none;
+
+  & :global(.browsers) {
+    margin: auto;
+    text-align: center;
+
+    & :global(.browser-logo) {
+      display: inline-block;
+      margin: 8px 48px;
+      max-width: 240px;
+      width: 50%;
+    }
+  }
+}

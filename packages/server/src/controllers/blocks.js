@@ -169,18 +169,3 @@ export async function getBlockVersions(ctx) {
 
   ctx.body = blockVersions;
 }
-
-export async function getBlockAsset(ctx) {
-  const { blockId, blockVersion, organizationId, path } = ctx.params;
-  const name = `@${organizationId}/${blockId}`;
-  const { BlockAsset } = ctx.db.models;
-  const asset = await BlockAsset.findOne({
-    where: { name, version: blockVersion, filename: path.join('/') },
-  });
-  if (asset == null) {
-    ctx.throw(404);
-    return;
-  }
-  ctx.type = asset.mime;
-  ctx.body = asset.content;
-}

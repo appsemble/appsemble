@@ -27,6 +27,7 @@ export default async function indexHandler(ctx) {
       message: 'The app you are looking for could not be found.',
     });
     ctx.status = 404;
+    return;
   }
 
   const blocks = filterBlocks(Object.values(getAppBlocks(app.definition)));
@@ -54,7 +55,6 @@ export default async function indexHandler(ctx) {
     'default-src': ["'self'"],
     'script-src': [
       "'self'",
-      host,
       // This is needed for Webpack.
       process.env.NODE_ENV !== 'production' && "'unsafe-eval'",
     ],

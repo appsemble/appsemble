@@ -19,7 +19,6 @@ export default function FlowPage({
   ee,
   page,
   showDialog,
-  ...blockListProps
 }: FlowPageProps): React.ReactElement {
   const history = useHistory();
   const [currentPage, setCurrentPage] = React.useState(0);
@@ -28,24 +27,6 @@ export default function FlowPage({
 
   let actions: BootstrapParams['actions'];
 
-  const next = React.useCallback(
-    async (d: any): Promise<any> => {
-      const { subPages } = page;
-
-      if (currentPage + 1 === subPages.length) {
-        await actions.onFlowFinish.dispatch(d);
-
-        return d;
-      }
-
-      setCurrentPage(currentPage + 1);
-      setData(d);
-
-      return d;
-    },
-    [actions, currentPage, page],
-  );
-
   const finish = React.useCallback(
     async (d: any): Promise<any> => {
       await actions.onFlowFinish.dispatch(d);
@@ -53,6 +34,22 @@ export default function FlowPage({
       return d;
     },
     [actions],
+  );
+
+  const next = React.useCallback(
+    async (d: any): Promise<any> => {
+      const { subPages } = page;
+
+      if (currentPage + 1 === subPages.length) {
+        return finish(d);
+      }
+
+      setData(d);
+      setCurrentPage(currentPage + 1);
+
+      return d;
+    },
+    [currentPage, finish, page],
   );
 
   const back = React.useCallback(
@@ -110,7 +107,6 @@ export default function FlowPage({
       <DotProgressBar active={currentPage} amount={page.subPages.length} />
       <BlockList
         key={currentPage}
-        {...blockListProps}
         blocks={page.subPages[currentPage].blocks}
         data={data}
         ee={ee}

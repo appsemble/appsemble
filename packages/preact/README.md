@@ -5,7 +5,7 @@
 ## Installation
 
 ```sh
-npm install @appsemble/preact preact@next
+npm install @appsemble/preact preact
 ```
 
 ## Hello world example
