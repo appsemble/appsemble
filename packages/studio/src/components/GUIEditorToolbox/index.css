@@ -1,0 +1,17 @@
+.footer {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.flexContainer {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  height: 100%;
+  justify-content: space-between;
+  margin-left: 8px;
+  margin-right: 8px;
+}

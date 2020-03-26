@@ -1,0 +1,40 @@
+.blockFrame {
+  align-items: center;
+  background: hsl(0, 0%, 96%);
+  display: flex;
+  flex-direction: column;
+  float: left;
+  margin-bottom: 12px;
+  margin-left: 12px;
+  overflow: hidden !important;
+  text-overflow: ellipsis;
+  width: 120px;
+}
+.blockFrame:hover {
+  cursor: pointer;
+}
+
+.blockFrameSelected {
+  align-items: center;
+  background: hsl(204, 86%, 53%);
+  display: flex;
+  flex-direction: column;
+  float: left;
+  margin-bottom: 12px;
+  margin-left: 12px;
+  overflow: hidden !important;
+  text-overflow: ellipsis;
+  width: 120px;
+}
+
+.subtext {
+  display: inline-block;
+  overflow: hidden !important;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  width: 120px;
+}
+.main {
+  flex: 1;
+}
