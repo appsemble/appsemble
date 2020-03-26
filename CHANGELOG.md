@@ -7,6 +7,10 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- Server: Add support for outputting CSV in resource API.
+
 ## [0.12.1] - 2020-03-26
 
 ### Added
@@ -29,7 +33,6 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Preact: Publish `@appsemble/preact` on the `npm` registry.
 - SDK: Add `asset` utility function.
 - Server: Add option to toggle subscriptions.
-- Server: Add support for outputting CSV in resource API.
 
 ### Changed
 
