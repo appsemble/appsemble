@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/studio",
-  "version": "0.12.0",
+  "version": "0.12.1",
   "private": true,
   "homepage": "https://appsemble.dev",
   "bugs": {
@@ -14,10 +14,10 @@
   "license": "LGPL-3.0-or-later",
   "author": "Appsemble <info@appsemble.com> (https://appsemble.com)",
   "dependencies": {
-    "@appsemble/react-components": "0.12.0",
-    "@appsemble/sdk": "0.12.0",
-    "@appsemble/types": "0.12.0",
-    "@appsemble/utils": "0.12.0",
+    "@appsemble/react-components": "0.12.1",
+    "@appsemble/sdk": "0.12.1",
+    "@appsemble/types": "0.12.1",
+    "@appsemble/utils": "0.12.1",
     "@browser-logos/chrome": "^1.0.17",
     "@browser-logos/edge": "^2.0.4",
     "@browser-logos/firefox": "^3.0.8",
