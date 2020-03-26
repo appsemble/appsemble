@@ -54,7 +54,6 @@ export default async function indexHandler(ctx) {
     'default-src': ["'self'"],
     'script-src': [
       "'self'",
-      host,
       // This is needed for Webpack.
       process.env.NODE_ENV !== 'production' && "'unsafe-eval'",
     ],

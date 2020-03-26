@@ -1,3 +1,5 @@
+import { semver } from '../../../constants';
+
 export default {
   type: 'object',
   description: `A version of a block definition
@@ -13,7 +15,7 @@ export default {
     },
     version: {
       type: 'string',
-      pattern: /^\d+\.\d+\.\d+$/.source,
+      pattern: semver.source,
       description: 'A [semver](https://semver.org) representation of the block version.',
     },
     layout: {

@@ -127,28 +127,4 @@ export default {
       },
     },
   },
-  '/blocks/@{organizationId}/{blockId}/versions/{blockVersion}/{path}': {
-    parameters: [
-      { $ref: '#/components/parameters/organizationId' },
-      { $ref: '#/components/parameters/blockId' },
-      { $ref: '#/components/parameters/blockVersion' },
-      {
-        name: 'path',
-        in: 'path',
-        description: 'The path segments of the asset to get.',
-        required: true,
-        schema: { type: 'array', items: { type: 'string' } },
-      },
-    ],
-    get: {
-      tags: ['block version'],
-      description: 'Get an asset of a block version.',
-      operationId: 'getBlockAsset',
-      responses: {
-        200: {
-          description: 'The Block asset.',
-        },
-      },
-    },
-  },
 };
