@@ -242,7 +242,7 @@ function getFromContext(
  * @param fullPath The path to the .appsemblerc file
  */
 export default function generateBlockData(config: BlockConfig, fullPath: string): BlockPayload {
-  const { description, layout, name, resources, version } = config;
+  const { description, id: name, layout, resources, version } = config;
   const { actions, events, parameters } = getFromContext(config, fullPath);
 
   logger.verbose(`Using name: ${inspect(name, { colors: true, depth: 20 })}`);

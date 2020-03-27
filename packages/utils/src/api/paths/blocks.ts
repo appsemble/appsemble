@@ -9,6 +9,7 @@ export default {
         content: {
           'multipart/form-data': {
             schema: {
+              type: 'object',
               required: ['data'],
               properties: {
                 data: {

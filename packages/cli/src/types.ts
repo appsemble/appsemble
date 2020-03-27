@@ -46,7 +46,7 @@ export type BlockPayload = Pick<
 
 export interface BlockConfig extends BlockPayload {
   description?: string;
-  name: string;
+  id: string;
   webpack: string;
   dist: string;
   output: string;
