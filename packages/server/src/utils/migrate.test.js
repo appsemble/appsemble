@@ -100,7 +100,7 @@ it('should run downgrades in sequence', async () => {
   await Meta.create({ version: '0.0.3' });
   let resolve;
   m003.down.mockReturnValue(
-    new Promise(r => {
+    new Promise((r) => {
       resolve = r;
     }),
   );
@@ -115,7 +115,7 @@ it('should run upgrades in sequence', async () => {
   await Meta.create({ version: '0.0.1' });
   let resolve;
   m001.up.mockReturnValue(
-    new Promise(r => {
+    new Promise((r) => {
       resolve = r;
     }),
   );

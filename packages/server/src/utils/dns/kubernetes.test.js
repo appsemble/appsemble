@@ -16,7 +16,7 @@ beforeEach(() => {
       version: 'test',
     },
   });
-  jest.spyOn(fs, 'readFile').mockImplementation(async filename => {
+  jest.spyOn(fs, 'readFile').mockImplementation(async (filename) => {
     switch (filename) {
       case '/var/run/secrets/kubernetes.io/serviceaccount/ca.crt':
         return '-----BEGIN CERTIFICATE-----\nFake/Kubernetes/SSL/certificate==\n-----END CERTIFICATE-----';

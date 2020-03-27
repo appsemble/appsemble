@@ -25,10 +25,10 @@ interface BlockListProps {
 
 function filterBlocks(security: Security, blocks: BlockType[], userRole: string): BlockType[] {
   return blocks.filter(
-    block =>
+    (block) =>
       block.roles === undefined ||
       block.roles.length === 0 ||
-      block.roles.some(r => checkAppRole(security, r, userRole)),
+      block.roles.some((r) => checkAppRole(security, r, userRole)),
   );
 }
 
@@ -63,7 +63,7 @@ export default function BlockList({
 
   React.useEffect(() => {
     setPageReady(
-      new Promise(resolve => {
+      new Promise((resolve) => {
         resolvePageReady.current = resolve;
       }),
     );

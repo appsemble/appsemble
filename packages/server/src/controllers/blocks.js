@@ -62,7 +62,7 @@ export async function createBlockVersion(ctx) {
   const actionKeyRegex = /^[a-z]\w*$/;
 
   if (data.actions) {
-    Object.keys(data.actions).forEach(key => {
+    Object.keys(data.actions).forEach((key) => {
       if (!actionKeyRegex.test(key) && key !== '$any') {
         throw Boom.badRequest(`Action “${key}” does match /${actionKeyRegex.source}/`);
       }
@@ -82,7 +82,7 @@ export async function createBlockVersion(ctx) {
   }
 
   try {
-    await db.transaction(async transaction => {
+    await db.transaction(async (transaction) => {
       const {
         actions = null,
         events,
@@ -92,7 +92,7 @@ export async function createBlockVersion(ctx) {
         version,
       } = await BlockVersion.create({ ...data, name }, { transaction });
 
-      Object.keys(files).forEach(filename => {
+      Object.keys(files).forEach((filename) => {
         logger.verbose(`Creating block assets for ${name}@${data.version}: ${filename}`);
       });
       await BlockAsset.bulkCreate(
@@ -148,7 +148,7 @@ export async function getBlockVersion(ctx) {
     where: { name, version: blockVersion },
   });
 
-  ctx.body = { files: files.map(f => f.filename), name, version: blockVersion, ...version };
+  ctx.body = { files: files.map((f) => f.filename), name, version: blockVersion, ...version };
 }
 
 export async function getBlockVersions(ctx) {

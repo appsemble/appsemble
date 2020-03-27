@@ -183,7 +183,7 @@ class Card extends Component<BlockProps & CardProps, CardState> {
           )}
           {content?.fotos && content?.fotos.length > 1 && (
             <div className={styles.images}>
-              {content?.fotos.map(p => (
+              {content?.fotos.map((p) => (
                 <figure key={p} className={`image is-64x64 ${styles.figure}`}>
                   <img
                     alt={title || subtitle || heading || description}
@@ -224,7 +224,7 @@ class Card extends Component<BlockProps & CardProps, CardState> {
           {actions.onLoadReply.type !== 'noop' && (
             <Fragment>
               <div ref={this.replyContainer} className={styles.replies}>
-                {replies.map(reply => {
+                {replies.map((reply) => {
                   const author = remappers.author(reply);
                   const replyContent = remappers.content(reply);
                   return (

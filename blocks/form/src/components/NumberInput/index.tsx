@@ -27,7 +27,7 @@ export default function NumberInput({
       max={field.max}
       min={field.min}
       name={field.name}
-      onInput={event => {
+      onInput={(event) => {
         onInput(
           event,
           field.type === 'integer'

@@ -23,7 +23,7 @@ export default function SideMenuButton(): React.ReactElement {
   }
 
   const currentPage = definition.pages.find(
-    p => normalize(p.name) === location.pathname.split('/')[1],
+    (p) => normalize(p.name) === location.pathname.split('/')[1],
   );
 
   const navigation = currentPage?.navigation || definition.navigation || 'left-menu';

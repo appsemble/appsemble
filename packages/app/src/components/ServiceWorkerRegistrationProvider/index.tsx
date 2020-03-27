@@ -26,7 +26,7 @@ export default function ServiceWorkerRegistrationProvider({
   const [subscription, setSubscription] = React.useState<PushSubscription>();
 
   React.useEffect(() => {
-    serviceWorkerRegistrationPromise.then(registration =>
+    serviceWorkerRegistrationPromise.then((registration) =>
       registration?.pushManager.getSubscription().then(setSubscription),
     );
   }, [serviceWorkerRegistrationPromise]);

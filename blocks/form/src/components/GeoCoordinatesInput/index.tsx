@@ -35,7 +35,7 @@ class GeoCoordinatesInput extends Component<GeoCoordinatesInputProps> {
       attributionControl: false,
       layers: [new TileLayer(tileLayer)],
     })
-      .once('locationerror', error => {
+      .once('locationerror', (error) => {
         // See: https://developer.mozilla.org/en-US/docs/Web/API/PositionError
         if (error.code && error.code === 1) {
           utils.showMessage({

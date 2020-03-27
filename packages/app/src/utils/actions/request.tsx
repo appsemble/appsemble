@@ -24,7 +24,7 @@ export function requestLikeAction<T extends RequestLikeActionTypes>({
   const regex = /{(.+?)}/g;
   const urlMatch = url.match(regex);
   const urlMappers = urlMatch
-    ?.map(match => match.substring(1, match.length - 1))
+    ?.map((match) => match.substring(1, match.length - 1))
     .reduce<Mapper>((acc, filter) => ({ ...acc, [filter]: compileFilters(filter) }), {});
 
   const queryMappers =
@@ -33,7 +33,7 @@ export function requestLikeAction<T extends RequestLikeActionTypes>({
       const queryMatch = String(queryValue).match(regex);
       if (queryMatch) {
         acc[queryKey] = queryMatch
-          .map(match => match.substring(1, match.length - 1))
+          .map((match) => match.substring(1, match.length - 1))
           .reduce((subAcc, filter) => ({ ...subAcc, [filter]: compileFilters(filter) }), {});
       }
       return acc;
@@ -74,7 +74,7 @@ export function requestLikeAction<T extends RequestLikeActionTypes>({
             if (value instanceof Blob) {
               formData.append(key, value);
             } else if (Array.isArray(value)) {
-              value.forEach(item => {
+              value.forEach((item) => {
                 // Recursively iterate over values
                 processFormData(key, item);
               });

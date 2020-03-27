@@ -55,10 +55,10 @@ export default function AppDetails(): React.ReactElement {
   }, [app.OrganizationId, app.id]);
 
   const onRate = (rating: Rating): void => {
-    const existingRating = ratings.find(r => r.UserId === rating.UserId);
+    const existingRating = ratings.find((r) => r.UserId === rating.UserId);
 
     if (existingRating) {
-      setRatings(ratings.map(r => (r.UserId === rating.UserId ? rating : r)));
+      setRatings(ratings.map((r) => (r.UserId === rating.UserId ? rating : r)));
     } else {
       setRatings([rating, ...ratings]);
     }
@@ -88,7 +88,7 @@ export default function AppDetails(): React.ReactElement {
   }
 
   const createOrganizations =
-    organizations?.filter(org => checkRole(org.role, permissions.CreateApps)) || [];
+    organizations?.filter((org) => checkRole(org.role, permissions.CreateApps)) || [];
 
   return (
     <>
@@ -132,7 +132,7 @@ export default function AppDetails(): React.ReactElement {
       </div>
       {userInfo && <RateApp app={app} className={styles.ratingButton} onRate={onRate} />}
       <div className="content">
-        {ratings.map(rating => (
+        {ratings.map((rating) => (
           <div key={rating.$created} className={styles.rating}>
             <span className="is-block has-text-weight-bold">
               {rating.name || <FormattedMessage {...messages.anonymous} />}

@@ -82,14 +82,14 @@ const deepRename = (object, keys, { createdHash, updatedHash }) => {
   const obj = isArray ? [...object] : { ...object };
 
   const entries = [...Object.keys(obj), ...Object.getOwnPropertySymbols(obj)];
-  entries.forEach(key => {
+  entries.forEach((key) => {
     const value = obj[key];
 
     if (isArray) {
-      if (keys.some(k => k === value)) {
+      if (keys.some((k) => k === value)) {
         obj[key] = `data.${value}`;
       }
-    } else if (keys.some(k => k === key)) {
+    } else if (keys.some((k) => k === key)) {
       obj[`data.${key}`] = value;
       delete obj[key];
     }
@@ -142,7 +142,7 @@ async function verifyAppRole(ctx, app, resource, resourceType, action) {
   }
 
   const author = roles.includes('$author');
-  const filteredRoles = roles.filter(r => r !== '$author');
+  const filteredRoles = roles.filter((r) => r !== '$author');
 
   if (!author && !filteredRoles.length) {
     return;
@@ -156,7 +156,7 @@ async function verifyAppRole(ctx, app, resource, resourceType, action) {
     return;
   }
 
-  const member = app.Users.find(u => u.id === user.id);
+  const member = app.Users.find((u) => u.id === user.id);
   const { policy, role: defaultRole } = app.definition.security.default;
   let role;
 
@@ -184,7 +184,7 @@ async function verifyAppRole(ctx, app, resource, resourceType, action) {
     }
   }
 
-  if (!filteredRoles.some(r => checkAppRole(app.definition.security, r, role))) {
+  if (!filteredRoles.some((r) => checkAppRole(app.definition.security, r, role))) {
     throw Boom.forbidden('User does not have sufficient permissions.');
   }
 }
@@ -201,7 +201,7 @@ async function sendSubscriptionNotifications(
 ) {
   const { App, AppSubscription, ResourceSubscription, User } = ctx.db.models;
   const { appId } = ctx.params;
-  const roles = notification.to.filter(n => n !== '$author');
+  const roles = notification.to.filter((n) => n !== '$author');
   const author = resourceUserId && notification.to.includes('$author');
   const subscribers = notification.subscribe;
 
@@ -265,7 +265,7 @@ async function sendSubscriptionNotifications(
     subscriptions.push(...resourceSubscribers);
   }
 
-  subscriptions.forEach(subscription => {
+  subscriptions.forEach((subscription) => {
     sendNotification(ctx, app, subscription, options);
   });
 }
@@ -307,7 +307,7 @@ export async function queryResources(ctx) {
       include: [{ model: User, attributes: ['id', 'name'], required: false }],
     });
 
-    ctx.body = resources.map(resource => ({
+    ctx.body = resources.map((resource) => ({
       ...resource.data,
       id: resource.id,
       $created: resource.created,

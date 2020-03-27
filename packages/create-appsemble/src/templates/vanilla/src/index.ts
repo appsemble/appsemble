@@ -16,7 +16,7 @@ attach(({ actions, block, data, events, pageParameters, shadowRoot, utils }) => 
   button.classList.add('button');
   button.addEventListener(
     'click',
-    event => {
+    (event) => {
       event.preventDefault();
       actions.onClick.dispatch();
     },

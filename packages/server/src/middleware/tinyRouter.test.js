@@ -36,7 +36,7 @@ it('should assign the match group to params', async () => {
 
 it('should throw method not allowed if a URL is matched, but not for the given method', async () => {
   let error;
-  app.on('error', err => {
+  app.on('error', (err) => {
     error = err;
   });
   app.use(

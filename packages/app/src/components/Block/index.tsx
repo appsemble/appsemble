@@ -18,7 +18,7 @@ import { useAppDefinition } from '../AppDefinitionProvider';
 import { useServiceWorkerRegistration } from '../ServiceWorkerRegistrationProvider';
 import styles from './index.css';
 
-const FA_URL = Array.from(document.styleSheets, sheet => sheet.href).find(href =>
+const FA_URL = Array.from(document.styleSheets, (sheet) => sheet.href).find((href) =>
   href?.startsWith(`${window.location.origin}/fa/`),
 );
 
@@ -72,11 +72,11 @@ export default function Block({
   const pushNotifications = useServiceWorkerRegistration();
 
   const blockName = normalizeBlockName(block.type);
-  const manifest = blockManifests.find(m => m.name === blockName && m.version === block.version);
+  const manifest = blockManifests.find((m) => m.name === blockName && m.version === block.version);
 
   React.useEffect(
     () => () => {
-      cleanups.current.forEach(async fn => fn());
+      cleanups.current.forEach(async (fn) => fn());
     },
     [],
   );
@@ -92,7 +92,7 @@ export default function Block({
 
     const events = {
       emit: Object.fromEntries(
-        (manifest.events?.emit ?? []).map(key => [
+        (manifest.events?.emit ?? []).map((key) => [
           key,
           (d: any, error?: string) =>
             pageReady.then(
@@ -106,7 +106,7 @@ export default function Block({
         ]),
       ),
       on: Object.fromEntries(
-        (manifest.events?.listen ?? []).map(key => [
+        (manifest.events?.listen ?? []).map((key) => [
           key,
           block.events?.listen?.[key]
             ? (callback: (data: any, error?: string) => void) => {
@@ -117,7 +117,7 @@ export default function Block({
         ]),
       ),
       off: Object.fromEntries(
-        (manifest.events?.listen ?? []).map(key => [
+        (manifest.events?.listen ?? []).map((key) => [
           key,
           block.events?.listen?.[key]
             ? (callback: (data: any, error?: string) => void) => {
@@ -142,7 +142,7 @@ export default function Block({
       ee,
     });
     const { theme: pageTheme } = definition.pages.find(
-      page => normalize(page.name) === match.path.slice(1).split('/')[0],
+      (page) => normalize(page.name) === match.path.slice(1).split('/')[0],
     );
     const BULMA_URL = document.querySelector('#bulma-style-app') as HTMLLinkElement;
     const [bulmaBase] = BULMA_URL.href.split('?');
@@ -176,13 +176,13 @@ export default function Block({
             bulmaUrl,
             FA_URL,
             ...manifest.files
-              .filter(url => url.endsWith('.css'))
-              .map(url => prefixBlockURL(block, url)),
+              .filter((url) => url.endsWith('.css'))
+              .map((url) => prefixBlockURL(block, url)),
             `${window.location.origin}/api/organizations/${settings.organizationId}/style/shared`,
             `${window.location.origin}/api/organizations/${settings.organizationId}/style/block/${manifest.name}`,
             `${window.location.origin}/api/apps/${settings.id}/style/block/${manifest.name}`,
             (document.getElementById('appsemble-style-shared') as HTMLLinkElement)?.href,
-          ].map(url => injectCSS(shadowRoot, url)),
+          ].map((url) => injectCSS(shadowRoot, url)),
         );
       }
 

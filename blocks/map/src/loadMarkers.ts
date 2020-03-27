@@ -34,7 +34,7 @@ export default function loadMarkers(
   if (!Array.isArray(markers)) {
     return;
   }
-  markers.forEach(marker => {
+  markers.forEach((marker) => {
     if (fetched.has(marker.id)) {
       return;
     }

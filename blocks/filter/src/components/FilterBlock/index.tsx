@@ -62,7 +62,7 @@ export default class FilterBlock extends React.Component<BlockProps, FilterBlock
 
     // Convert date fields to unix timestamps without mutating filter itself
     const convertedFilter = Object.entries(filter).reduce<Filter>((acc, [key, value]) => {
-      const field = fields.find(f => f.name === key);
+      const field = fields.find((f) => f.name === key);
       if (field.type && field.type === 'date') {
         if (field.range) {
           acc[key] = {};
@@ -101,7 +101,7 @@ export default class FilterBlock extends React.Component<BlockProps, FilterBlock
     }
 
     const defaultFilter = fields
-      .filter(field => (skipHighlighted ? field.name !== highlight : true))
+      .filter((field) => (skipHighlighted ? field.name !== highlight : true))
       .reduce<Filter>((acc, { defaultValue, name, type }) => {
         if (defaultValue) {
           acc[name] = defaultValue;
@@ -151,7 +151,7 @@ export default class FilterBlock extends React.Component<BlockProps, FilterBlock
         [target.name]: target.value,
       };
       if (highlight && target.name === highlight) {
-        if (!fields.find(field => field.name === highlight).enum) {
+        if (!fields.find((field) => field.name === highlight).enum) {
           // wait 300ms, then submit
           clearTimeout(typingTimer);
 
@@ -186,7 +186,7 @@ export default class FilterBlock extends React.Component<BlockProps, FilterBlock
       return {
         filter: {
           ...filter,
-          [name]: entry.filter(e => e !== value),
+          [name]: entry.filter((e) => e !== value),
         },
       };
     });
@@ -240,7 +240,7 @@ export default class FilterBlock extends React.Component<BlockProps, FilterBlock
       parameters: { fields, highlight },
     } = this.props;
     const { currentFilter, filter, isOpen, loading, newData } = this.state;
-    const highlightedField = highlight && fields.find(field => field.name === highlight);
+    const highlightedField = highlight && fields.find((field) => field.name === highlight);
     const showModal = !highlightedField || fields.length > 1;
 
     // check if filter has any field set that isn't already highlighted or its default value
@@ -249,7 +249,7 @@ export default class FilterBlock extends React.Component<BlockProps, FilterBlock
         return false;
       }
 
-      const field = fields.find(f => f.name === key);
+      const field = fields.find((f) => f.name === key);
       if (field.type === 'checkbox') {
         return !!(value as string[]).length;
       }
@@ -266,8 +266,8 @@ export default class FilterBlock extends React.Component<BlockProps, FilterBlock
             title={<FormattedMessage {...messages.filter} />}
           >
             {fields
-              .filter(field => field.name !== highlight)
-              .map(field => (
+              .filter((field) => field.name !== highlight)
+              .map((field) => (
                 <Field
                   {...field}
                   key={field.name}

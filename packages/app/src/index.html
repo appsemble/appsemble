@@ -45,7 +45,7 @@
     <link rel="stylesheet" href="/api/apps/{{ app.id }}/style/shared" id="appsemble-style-shared" />
     {{/app.sharedStyle}}
     <script nonce="{{{ nonce }}}">
-      window.addEventListener('load', function() {
+      window.addEventListener('load', function () {
         if (!window.appsembleHasLoaded) {
           document.getElementById('app').innerHTML = document.getElementById(
             'legacy-browser-support',

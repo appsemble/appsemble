@@ -2,7 +2,7 @@ import { configureLogger, handleError } from '@appsemble/node-utils';
 import path from 'path';
 import yargs from 'yargs';
 
-export default async argv => {
+export default async (argv) => {
   yargs
     .option('verbose', {
       alias: 'v',

@@ -7,7 +7,7 @@ describe('mapValues', () => {
     };
     const data = Object.create(proto);
     data.yep = 'Overwrite me.';
-    const result = mapValues(data, value => `${value} Done.`);
+    const result = mapValues(data, (value) => `${value} Done.`);
     expect(result).toStrictEqual({
       yep: 'Overwrite me. Done.',
     });
