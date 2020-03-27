@@ -11,8 +11,8 @@ interface MonacoEditorProps {
   onValueChange: (value: string) => void;
   onSave: () => void;
   options: editor.IEditorOptions;
-  selectedItem: any;
-  setSelectedBlockParent: any;
+  selectedItem?: any;
+  setSelectedBlockParent?: any;
 }
 
 interface SelectedItem {
@@ -166,8 +166,10 @@ export default class MonacoEditor extends React.Component<MonacoEditorProps> {
         }
       }
     }
-    this.props.selectedItem(selectedItem);
-    this.containsBlockParent(selectedItem);
+    if (this.props.selectedItem !== undefined) {
+      this.props.selectedItem(selectedItem);
+      this.containsBlockParent(selectedItem);
+    }
   };
 
   render(): React.ReactElement {

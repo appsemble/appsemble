@@ -53,7 +53,7 @@ export default function Editor(): React.ReactElement {
   const [warningDialog, setWarningDialog] = React.useState(false);
   const [deleteDialog, setDeleteDialog] = React.useState(false);
   const [openApiDocument, setOpenApiDocument] = React.useState<OpenAPIV3.Document>();
-  const [editorStep, setEditorStep] = React.useState<GuiEditorStep>(GuiEditorStep.YAML);
+  const [editorStep, setEditorStep] = React.useState<GuiEditorStep>(GuiEditorStep.SELECT);
 
   const [selectedItem, setselectedItem] = React.useState();
   const [selectedBlockParent, setSelectedBlockParent] = React.useState<SelectedBlockParent>();
@@ -311,7 +311,7 @@ export default function Editor(): React.ReactElement {
   function getEditor(): any {
     switch (editorStep) {
       case GuiEditorStep.ADD:
-        return <GUIEditor editorStep={editorStep} />;
+        return <GUIEditor editorStep={editorStep} selectedBlockParent={selectedBlockParent} />;
       case GuiEditorStep.EDIT:
         return <GUIEditor editorStep={editorStep} selectedItem={selectedItem} />;
       case GuiEditorStep.SELECT:
@@ -333,10 +333,6 @@ export default function Editor(): React.ReactElement {
             language={language}
             onSave={onSave}
             onValueChange={onValueChange}
-            selectedItem={(item: any) => setselectedItem(item)}
-            setSelectedBlockParent={(item: SelectedBlockParent) => {
-              setSelectedBlockParent(item);
-            }}
             value={value}
           />
         );

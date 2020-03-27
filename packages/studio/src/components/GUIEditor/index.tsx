@@ -18,8 +18,18 @@ export default function GUIEditor(params: any): React.ReactElement {
         />
       );
     case GuiEditorStep.EDIT:
-      return <GUIEditorEditBlock selectedBlock={selectedBlock} />;
+      return (
+        <GUIEditorEditBlock
+          selectedBlock={selectedBlock}
+          selectedBlockParent={params.selectedBlockParent}
+          setEditorStep={(step: GuiEditorStep) => setEditorStep(step)}
+        />
+      );
     default:
-      return <div>error</div>;
+      return (
+        <div>
+          error - this will automaticly get resolved when GUI editor has GUI select interface
+        </div>
+      );
   }
 }
