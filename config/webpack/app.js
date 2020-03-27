@@ -23,7 +23,7 @@ module.exports = (env, argv) => {
     name: 'Appsemble App',
     entry: { app: [appEntry], legacy: [legacyEntry] },
     output: {
-      filename: production ? '_/[hash].js' : '_/app/[name].js',
+      filename: production ? '_/[contentHash].js' : '_/app/[name].js',
       publicPath,
     },
     plugins: [
@@ -53,7 +53,7 @@ module.exports = (env, argv) => {
         },
       }),
       new MiniCssExtractPlugin({
-        filename: production ? '_/[hash].css' : '_/app/[name].css',
+        filename: production ? '_/[contentHash].css' : '_/app/[name].css',
       }),
     ],
   });
