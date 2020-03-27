@@ -21,11 +21,10 @@ module.exports = (env, argv) => {
   const { mode } = argv;
   const production = mode === 'production';
   const studioEntry = path.resolve(__dirname, '../../packages/studio/src');
-  const legacyEntry = path.join(studioEntry, 'legacy');
 
   return merge.smart(core(env, argv), {
     name: 'Appsemble Studio',
-    entry: { studio: [studioEntry], legacy: [legacyEntry] },
+    entry: [studioEntry],
     output: {
       filename: production ? '_/[contentHash].js' : '_/studio/[name].js',
       publicPath,

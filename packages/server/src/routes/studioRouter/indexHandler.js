@@ -1,3 +1,5 @@
+import crypto from 'crypto';
+
 import createSettings from '../../utils/createSettings';
 import makeCSP from '../../utils/makeCSP';
 import sentryDsnToReportUri from '../../utils/sentryDsnToReportUri';
@@ -16,6 +18,7 @@ export default async function indexHandler(ctx) {
   if (argv.oauthGoogleKey) {
     logins.push('google');
   }
+  const nonce = crypto.randomBytes(16).toString('base64');
   const reportUri = sentryDsnToReportUri(sentryDsn);
   const [settingsHash, settings] = createSettings({
     enableRegistration: !disableRegistration,
@@ -31,6 +34,7 @@ export default async function indexHandler(ctx) {
     'script-src': [
       "'self'",
       settingsHash,
+      `'nonce-${nonce}'`,
       // This is needed for Webpack.
       process.env.NODE_ENV !== 'production' && "'unsafe-eval'",
     ],

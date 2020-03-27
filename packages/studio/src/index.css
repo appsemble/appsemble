@@ -15,8 +15,6 @@ body {
 }
 
 :global(#legacy-browser-support) {
-  display: none;
-
   & :global(.browsers) {
     margin: auto;
     text-align: center;

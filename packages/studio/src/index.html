@@ -8,6 +8,15 @@
     <title>Appsemble</title>
     <link rel="stylesheet" href="<%= faURL %>" />
     <link rel="stylesheet" href="<%= bulmaURL %>" />
+    <script nonce="{{{ nonce }}}">
+      window.addEventListener('load', function() {
+        if (!window.appsembleHasLoaded) {
+          document.getElementById('app').innerHTML = document.getElementById(
+            'legacy-browser-support',
+          ).innerHTML;
+        }
+      });
+    </script>
     {{{settings}}}
   </head>
   <body class="has-navbar-fixed-top">
@@ -25,7 +34,7 @@
           </p>
         </section>
       </noscript>
-      <div id="legacy-browser-support">
+      <script id="legacy-browser-support" type="text/x-template">
         <div class="is-fixed-top is-primary navbar">
           <header class="navbar-brand">
             <h2 class="has-text-white navbar-item title">Appsemble</h2>
@@ -69,7 +78,7 @@
             </div>
           </div>
         </div>
-      </div>
+      </script>
     </div>
   </body>
 </html>
