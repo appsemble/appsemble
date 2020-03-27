@@ -6,7 +6,7 @@ html {
   z-index: 2000;
 }
 
-:global(#legacy-browser-support) {
+:global(#app) {
   & :global(.browsers) {
     margin: auto;
     text-align: center;
