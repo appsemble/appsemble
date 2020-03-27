@@ -727,7 +727,7 @@ describe('setOrganizationBlockStyle', () => {
     );
 
     const style = await OrganizationBlockStyle.findOne({
-      where: { OrganizationId: organization.id, BlockDefinitionId: '@appsemble/testblock' },
+      where: { OrganizationId: organization.id, block: '@appsemble/testblock' },
     });
 
     expect(responseA.status).toBe(204);

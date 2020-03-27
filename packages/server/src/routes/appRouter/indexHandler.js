@@ -32,19 +32,23 @@ export default async function indexHandler(ctx) {
 
   const blocks = filterBlocks(Object.values(getAppBlocks(app.definition)));
   const blockManifests = await BlockVersion.findAll({
-    attributes: ['name', 'version', 'layout', 'actions', 'events'],
+    attributes: ['name', 'OrganizationId', 'version', 'layout', 'actions', 'events'],
     include: [
       {
         attributes: ['filename'],
         model: BlockAsset,
         where: {
           name: { [Op.col]: 'BlockVersion.name' },
+          OrganizationId: { [Op.col]: 'BlockVersion.OrganizationId' },
           version: { [Op.col]: 'BlockVersion.version' },
         },
       },
     ],
     where: {
-      [Op.or]: blocks.map(({ type, version }) => ({ name: type, version })),
+      [Op.or]: blocks.map(({ type, version }) => {
+        const [org, name] = type.split('/');
+        return { name, OrganizationId: org.slice(1), version };
+      }),
     },
   });
   const { host, sentryDsn } = ctx.argv;
@@ -68,8 +72,8 @@ export default async function indexHandler(ctx) {
   const [settingsHash, settings] = createSettings({
     apiUrl: host,
     blockManifests: blockManifests.map(
-      ({ BlockAssets, actions, events, layout, name, version }) => ({
-        name,
+      ({ BlockAssets, OrganizationId, actions, events, layout, name, version }) => ({
+        name: `@${OrganizationId}/${name}`,
         version,
         layout,
         actions,

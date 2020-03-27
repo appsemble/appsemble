@@ -11,41 +11,133 @@ let templateParams;
 
 beforeAll(async () => {
   db = await testSchema('apps');
-  const { BlockAsset, BlockDefinition, BlockVersion, Organization } = db.models;
+  const { BlockAsset, BlockVersion, Organization } = db.models;
   const organization = await Organization.create({ id: 'test' });
-  await BlockDefinition.bulkCreate([
-    { id: '@test/a' },
-    { id: '@test/b' },
-    { id: '@appsemble/a' },
-    { id: '@appsemble/b' },
-  ]);
+  await Organization.create({ id: 'appsemble' });
+
   await BlockVersion.bulkCreate([
-    { name: '@test/a', version: '0.0.0' },
-    { name: '@test/a', version: '0.0.1' },
-    { name: '@test/b', version: '0.0.0' },
-    { name: '@test/b', version: '0.0.2' },
-    { name: '@appsemble/a', version: '0.1.0' },
-    { name: '@appsemble/a', version: '0.1.1' },
-    { name: '@appsemble/b', version: '0.1.0' },
-    { name: '@appsemble/b', version: '0.1.2' },
+    { name: 'a', OrganizationId: 'test', version: '0.0.0' },
+    { name: 'a', OrganizationId: 'test', version: '0.0.1' },
+    { name: 'b', OrganizationId: 'test', version: '0.0.0' },
+    { name: 'b', OrganizationId: 'test', version: '0.0.2' },
+    { name: 'a', OrganizationId: 'appsemble', version: '0.1.0' },
+    { name: 'a', OrganizationId: 'appsemble', version: '0.1.1' },
+    { name: 'b', OrganizationId: 'appsemble', version: '0.1.0' },
+    { name: 'b', OrganizationId: 'appsemble', version: '0.1.2' },
   ]);
   await BlockAsset.bulkCreate([
-    { name: '@test/a', version: '0.0.0', filename: 'a0.js', content: Buffer.from('') },
-    { name: '@test/a', version: '0.0.0', filename: 'a0.css', content: Buffer.from('') },
-    { name: '@test/a', version: '0.0.1', filename: 'a1.js', content: Buffer.from('') },
-    { name: '@test/a', version: '0.0.1', filename: 'a1.css', content: Buffer.from('') },
-    { name: '@test/b', version: '0.0.0', filename: 'b0.js', content: Buffer.from('') },
-    { name: '@test/b', version: '0.0.0', filename: 'b0.css', content: Buffer.from('') },
-    { name: '@test/b', version: '0.0.2', filename: 'b2.js', content: Buffer.from('') },
-    { name: '@test/b', version: '0.0.2', filename: 'b2.css', content: Buffer.from('') },
-    { name: '@appsemble/a', version: '0.1.0', filename: 'a0.js', content: Buffer.from('') },
-    { name: '@appsemble/a', version: '0.1.0', filename: 'a0.css', content: Buffer.from('') },
-    { name: '@appsemble/a', version: '0.1.1', filename: 'a1.js', content: Buffer.from('') },
-    { name: '@appsemble/a', version: '0.1.1', filename: 'a1.css', content: Buffer.from('') },
-    { name: '@appsemble/b', version: '0.1.0', filename: 'b0.js', content: Buffer.from('') },
-    { name: '@appsemble/b', version: '0.1.0', filename: 'b0.css', content: Buffer.from('') },
-    { name: '@appsemble/b', version: '0.1.2', filename: 'b2.js', content: Buffer.from('') },
-    { name: '@appsemble/b', version: '0.1.2', filename: 'b2.css', content: Buffer.from('') },
+    {
+      OrganizationId: 'test',
+      name: 'a',
+      version: '0.0.0',
+      filename: 'a0.js',
+      content: Buffer.from(''),
+    },
+    {
+      OrganizationId: 'test',
+      name: 'a',
+      version: '0.0.0',
+      filename: 'a0.css',
+      content: Buffer.from(''),
+    },
+    {
+      OrganizationId: 'test',
+      name: 'a',
+      version: '0.0.1',
+      filename: 'a1.js',
+      content: Buffer.from(''),
+    },
+    {
+      OrganizationId: 'test',
+      name: 'a',
+      version: '0.0.1',
+      filename: 'a1.css',
+      content: Buffer.from(''),
+    },
+    {
+      OrganizationId: 'test',
+      name: 'b',
+      version: '0.0.0',
+      filename: 'b0.js',
+      content: Buffer.from(''),
+    },
+    {
+      OrganizationId: 'test',
+      name: 'b',
+      version: '0.0.0',
+      filename: 'b0.css',
+      content: Buffer.from(''),
+    },
+    {
+      OrganizationId: 'test',
+      name: 'b',
+      version: '0.0.2',
+      filename: 'b2.js',
+      content: Buffer.from(''),
+    },
+    {
+      OrganizationId: 'test',
+      name: 'b',
+      version: '0.0.2',
+      filename: 'b2.css',
+      content: Buffer.from(''),
+    },
+    {
+      OrganizationId: 'appsemble',
+      name: 'a',
+      version: '0.1.0',
+      filename: 'a0.js',
+      content: Buffer.from(''),
+    },
+    {
+      OrganizationId: 'appsemble',
+      name: 'a',
+      version: '0.1.0',
+      filename: 'a0.css',
+      content: Buffer.from(''),
+    },
+    {
+      OrganizationId: 'appsemble',
+      name: 'a',
+      version: '0.1.1',
+      filename: 'a1.js',
+      content: Buffer.from(''),
+    },
+    {
+      OrganizationId: 'appsemble',
+      name: 'a',
+      version: '0.1.1',
+      filename: 'a1.css',
+      content: Buffer.from(''),
+    },
+    {
+      OrganizationId: 'appsemble',
+      name: 'b',
+      version: '0.1.0',
+      filename: 'b0.js',
+      content: Buffer.from(''),
+    },
+    {
+      OrganizationId: 'appsemble',
+      name: 'b',
+      version: '0.1.0',
+      filename: 'b0.css',
+      content: Buffer.from(''),
+    },
+    {
+      OrganizationId: 'appsemble',
+      name: 'b',
+      version: '0.1.2',
+      filename: 'b2.js',
+      content: Buffer.from(''),
+    },
+    {
+      OrganizationId: 'appsemble',
+      name: 'b',
+      version: '0.1.2',
+      filename: 'b2.css',
+      content: Buffer.from(''),
+    },
   ]);
   await organization.createApp({
     definition: {

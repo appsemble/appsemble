@@ -430,7 +430,7 @@ export async function setOrganizationBlockStyle(ctx) {
     await OrganizationBlockStyle.upsert({
       style: css.length ? css.toString() : null,
       OrganizationId: organization.id,
-      block: block.id,
+      block: `@${block.OrganizationId}/${block.name}`,
     });
   } catch (e) {
     if (e instanceof StyleValidationError) {
