@@ -1512,7 +1512,8 @@ describe('patchApp', () => {
 describe('setAppBlockStyle', () => {
   it('should delete block stylesheet when uploading empty stylesheets for an app', async () => {
     await BlockVersion.create({
-      id: '@appsemble/testblock',
+      name: 'testblock',
+      OrganizationId: 'appsemble',
       description: 'This is a test block for testing purposes.',
       version: '0.0.0',
     });
@@ -1553,13 +1554,14 @@ describe('setAppBlockStyle', () => {
       formB,
       { headers: { ...formB.getHeaders(), authorization } },
     );
+
     expect(responseB).toMatchObject({
       status: 204,
       data: '',
     });
 
     const style = await AppBlockStyle.findOne({
-      where: { AppId: id, BlockDefinitionId: '@appsemble/testblock' },
+      where: { AppId: id, block: '@appsemble/testblock' },
     });
     expect(style).toBeNull();
   });
@@ -1569,6 +1571,7 @@ describe('setAppBlockStyle', () => {
       OrganizationId: 'appsemble',
       name: 'styledblock',
       description: 'This is a test block for testing purposes.',
+      version: '0.0.0',
     });
 
     const { id } = await App.create({
@@ -1603,6 +1606,7 @@ describe('setAppBlockStyle', () => {
       OrganizationId: 'appsemble',
       name: 'block',
       description: 'This is a test block for testing purposes.',
+      version: '0.0.0',
     });
 
     const form = new FormData();

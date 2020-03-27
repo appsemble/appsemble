@@ -16,12 +16,12 @@ function fixture(filename: string): string {
 describe('generateBlockData', () => {
   it('should extract configuration from a TypeScript project', () => {
     const result = generateBlockData(
-      { id: '', layout: 'float', version: '1.33.7', webpack: '', dist: '', output: '', dir: '' },
+      { name: '', layout: 'float', version: '1.33.7', webpack: '', dist: '', output: '', dir: '' },
       path.join(__dirname, '__fixtures__/generateBlockData/valid'),
     );
     expect(result).toStrictEqual({
       description: undefined,
-      id: '',
+      name: '',
       layout: 'float',
       resources: undefined,
       version: '1.33.7',
@@ -67,14 +67,14 @@ describe('generateBlockData', () => {
         dist: '',
         output: '',
         dir: '',
-        id: '',
+        name: '',
       },
       fixture('valid'),
     );
 
     expect(result).toStrictEqual({
       description: undefined,
-      id: '',
+      name: '',
       actions: {},
       events: { emit: [], listen: [] },
       layout: 'float',
@@ -87,7 +87,7 @@ describe('generateBlockData', () => {
 
   it('should prefer actions overrides over TypeScript actions', () => {
     const result = generateBlockData(
-      { actions: {}, version: '1.33.7', webpack: '', dist: '', output: '', dir: '', id: '' },
+      { actions: {}, version: '1.33.7', webpack: '', dist: '', output: '', dir: '', name: '' },
       fixture('valid'),
     );
 
@@ -103,7 +103,7 @@ describe('generateBlockData', () => {
         dist: '',
         output: '',
         dir: '',
-        id: '',
+        name: '',
       },
       fixture('valid'),
     );
@@ -120,7 +120,7 @@ describe('generateBlockData', () => {
         dist: '',
         output: '',
         dir: '',
-        id: '',
+        name: '',
       },
       fixture('valid'),
     );
@@ -136,7 +136,7 @@ describe('generateBlockData', () => {
           dist: '',
           output: '',
           dir: '',
-          id: '',
+          name: '',
           version: '1.33.7',
         },
         fixture('duplicateActions'),
@@ -156,7 +156,7 @@ describe('generateBlockData', () => {
           dist: '',
           output: '',
           dir: '',
-          id: '',
+          name: '',
           version: '1.33.7',
         },
         fixture('duplicateEventEmitters'),
@@ -176,7 +176,7 @@ describe('generateBlockData', () => {
           dist: '',
           output: '',
           dir: '',
-          id: '',
+          name: '',
           version: '1.33.7',
         },
         fixture('duplicateEventListeners'),
@@ -196,7 +196,7 @@ describe('generateBlockData', () => {
           dist: '',
           output: '',
           dir: '',
-          id: '',
+          name: '',
           version: '1.33.7',
         },
         fixture('duplicateParameters'),
@@ -215,7 +215,7 @@ describe('generateBlockData', () => {
         dist: '',
         output: '',
         dir: '',
-        id: '',
+        name: '',
         version: '1.33.7',
       },
       fixture('fontawesomeParameters'),
@@ -223,7 +223,7 @@ describe('generateBlockData', () => {
 
     expect(result).toStrictEqual({
       description: undefined,
-      id: '',
+      name: '',
       layout: undefined,
       resources: undefined,
       version: '1.33.7',
@@ -242,7 +242,15 @@ describe('generateBlockData', () => {
   it('should handle TypeScript pre emit diagnostics', () => {
     function fn(): void {
       generateBlockData(
-        { id: '', layout: 'float', version: '1.33.7', webpack: '', dist: '', output: '', dir: '' },
+        {
+          name: '',
+          layout: 'float',
+          version: '1.33.7',
+          webpack: '',
+          dist: '',
+          output: '',
+          dir: '',
+        },
         path.join(__dirname, '__fixtures__/generateBlockData/tsError'),
       );
     }

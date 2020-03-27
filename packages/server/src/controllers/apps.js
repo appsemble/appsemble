@@ -45,7 +45,10 @@ function getBlockVersions(db) {
       },
     });
 
-    return blockVersions;
+    return blockVersions.map(blockVersion => ({
+      ...blockVersion,
+      name: `@${blockVersion.OrganizationId}/${blockVersion.name}`,
+    }));
   };
 }
 
@@ -480,10 +483,10 @@ export async function setAppBlockStyle(ctx) {
       await AppBlockStyle.upsert({
         style: css.toString(),
         AppId: app.id,
-        block: block.id,
+        block: block.name,
       });
     } else {
-      await AppBlockStyle.destroy({ where: { AppId: app.id, block: block.id } });
+      await AppBlockStyle.destroy({ where: { AppId: app.id, block: block.name } });
     }
 
     ctx.status = 204;
