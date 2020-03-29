@@ -20,22 +20,33 @@ export default function GUIEditorToolbox(params: any): React.ReactElement {
           A simple button that performs an action when clicked. It can be used to trigger actions
           such as redirecting to other pages. By default it displays in the lower-right corner,
           allowing for easy access on mobile devices.
+          {selectedBlock !== undefined ? (
+            <a
+              href={`https://appsemble.dev/blocks/${selectedBlock.id.split('/')[1]}`}
+              rel="noopener noreferrer"
+              target="_blank"
+            >
+              {' '}
+              More info
+            </a>
+          ) : (
+            ''
+          )}
         </div>
       ) : (
         ''
       )}
       <div className={styles.footer}>
-        {selectedBlock !== undefined ? (
-          <a
-            href={`https://appsemble.dev/blocks/${selectedBlock.id.split('/')[1]}`}
-            rel="noopener noreferrer"
-            target="_blank"
-          >
-            More info
-          </a>
-        ) : (
-          ''
-        )}
+        <Button
+          className="button is-warning"
+          icon="angle-left"
+          onClick={() => {
+            params.setEditorStep(GuiEditorStep.SELECT);
+          }}
+          style={{ alignContent: 'flex-start' }}
+        >
+          Back
+        </Button>
 
         <Button
           className="button is-success"
