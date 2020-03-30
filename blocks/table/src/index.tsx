@@ -59,13 +59,15 @@ bootstrap(({ actions, events, parameters: { fields }, ready, utils }) => {
 
   return (
     <table className="table is-hoverable is-striped is-fullwidth" role="grid">
-      <thead>
-        <tr>
-          {fields.map((field) => (
-            <th key={`header.${field.name}`}>{field.label ?? field.name}</th>
-          ))}
-        </tr>
-      </thead>
+      {fields.some((field) => field.label) && (
+        <thead>
+          <tr>
+            {fields.map((field) => (
+              <th key={`header.${field.name}`}>{field.label ?? null}</th>
+            ))}
+          </tr>
+        </thead>
+      )}
       <tbody>
         {data.map((item, dataIndex) => (
           <ItemRow
