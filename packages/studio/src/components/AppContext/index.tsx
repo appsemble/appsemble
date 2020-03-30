@@ -52,7 +52,7 @@ export default function AppContext(): React.ReactElement {
     return <Loader />;
   }
 
-  const organization = organizations.find(org => org.id === app.OrganizationId);
+  const organization = organizations.find((org) => org.id === app.OrganizationId);
 
   return (
     <Context.Provider value={value}>

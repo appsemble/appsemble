@@ -34,7 +34,7 @@ export default function BooleanInput({
                 disabled={disabled}
                 id={field.name}
                 name={field.name}
-                onInput={event => {
+                onInput={(event) => {
                   onInput(event, (event.target as HTMLInputElement).checked);
                 }}
                 readOnly={field.readOnly}

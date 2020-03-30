@@ -7,7 +7,7 @@ import { DataTypes } from 'sequelize';
  * primary key which includes the block version reference. For this reason, a numeric id is used as
  * the primary key..
  */
-export default sequelize => {
+export default (sequelize) => {
   const BlockAsset = sequelize.define(
     'BlockAsset',
     {

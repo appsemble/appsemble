@@ -29,6 +29,6 @@ export async function handler() {
     version,
     ...inputPkg,
   };
-  await fs.copy(inputPath, outputPath, { filter: src => src !== pkgPath });
+  await fs.copy(inputPath, outputPath, { filter: (src) => src !== pkgPath });
   await fs.outputJson(path.join(outputPath, 'package.json'), outputPkg, { spaces: 2 });
 }

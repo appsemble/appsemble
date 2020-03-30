@@ -22,17 +22,19 @@ export default function Main(): React.ReactElement {
   }
 
   let defaultPath;
-  const routes = definition.pages.map(page => {
+  const routes = definition.pages.map((page) => {
     const path = `/${[
       normalize(page.name),
-      ...(page.parameters || []).map(parameter => `:${parameter}`),
+      ...(page.parameters || []).map((parameter) => `:${parameter}`),
       ...((Object.prototype.hasOwnProperty.call(page, 'subPages') && [':subPage?']) || []),
     ].join('/')}`;
 
     if (page.name === definition.defaultPage) {
       defaultPath = path;
     }
-    return <Route key={path} exact path={path} render={props => <Page page={page} {...props} />} />;
+    return (
+      <Route key={path} exact path={path} render={(props) => <Page page={page} {...props} />} />
+    );
   });
 
   return (

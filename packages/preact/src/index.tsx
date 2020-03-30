@@ -22,8 +22,8 @@ export function mount(
   Component: ComponentType<BlockProps>,
   messages?: { [id: string]: string },
 ): (params: BootstrapParams) => Promise<void> {
-  return params =>
-    new Promise(ready => {
+  return (params) =>
+    new Promise((ready) => {
       const props = {
         ...params,
         ready,
@@ -62,7 +62,7 @@ export function withBlock<P extends object>(
 ): ComponentType<P> {
   return (props: P) => (
     // @ts-ignore
-    <Context.Consumer>{values => <Component {...props} {...values} />}</Context.Consumer>
+    <Context.Consumer>{(values) => <Component {...props} {...values} />}</Context.Consumer>
   );
 }
 

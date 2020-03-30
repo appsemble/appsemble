@@ -43,7 +43,17 @@
     <link rel="stylesheet" href="/api/apps/{{ app.id }}/style/core" id="appsemble-style-core" />
     {{/app.style}} {{#app.sharedStyle}}
     <link rel="stylesheet" href="/api/apps/{{ app.id }}/style/shared" id="appsemble-style-shared" />
-    {{/app.sharedStyle}} {{{ settings }}}
+    {{/app.sharedStyle}}
+    <script nonce="{{{ nonce }}}">
+      window.addEventListener('load', function () {
+        if (!window.appsembleHasLoaded) {
+          document.getElementById('app').innerHTML = document.getElementById(
+            'legacy-browser-support',
+          ).innerHTML;
+        }
+      });
+    </script>
+    {{{ settings }}}
   </head>
   <body>
     <div class="is-fixed-top is-primary navbar">
@@ -60,7 +70,7 @@
           </p>
         </section>
       </noscript>
-      <div id="legacy-browser-support">
+      <script id="legacy-browser-support" type="text/x-template">
         <div class="content section">
           <h3>Your browser is not supported.</h3>
           <p>
@@ -102,7 +112,7 @@
             </div>
           </div>
         </div>
-      </div>
+      </script>
     </div>
   </body>
 </html>

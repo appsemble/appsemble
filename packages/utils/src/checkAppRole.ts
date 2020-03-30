@@ -22,7 +22,7 @@ export default function checkAppRole(
   }
 
   if (securityDefinition.roles[userRole].inherits) {
-    return securityDefinition.roles[userRole].inherits.some(inheritedRole =>
+    return securityDefinition.roles[userRole].inherits.some((inheritedRole) =>
       checkAppRole(securityDefinition, role, inheritedRole),
     );
   }

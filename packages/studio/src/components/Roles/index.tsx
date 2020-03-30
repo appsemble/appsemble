@@ -38,12 +38,12 @@ export default function Roles(): React.ReactElement {
       );
 
       setMembers([
-        ...organizationMembers.map(orgMem => {
-          const appMember = appMembers.find(appMem => appMem.id === orgMem.id);
+        ...organizationMembers.map((orgMem) => {
+          const appMember = appMembers.find((appMem) => appMem.id === orgMem.id);
           return appMember || { ...orgMem, role: app.definition.security.default.role };
         }),
         ...appMembers.filter(
-          appMem => !organizationMembers.find(orgMem => orgMem.id === appMem.id),
+          (appMem) => !organizationMembers.find((orgMem) => orgMem.id === appMem.id),
         ),
       ]);
     };
@@ -99,7 +99,7 @@ export default function Roles(): React.ReactElement {
           </tr>
         </thead>
         <tbody>
-          {members.map(member => (
+          {members.map((member) => (
             <tr key={member.id}>
               <td>
                 <span>{member.name || member.primaryEmail || member.id}</span>{' '}
@@ -121,9 +121,9 @@ export default function Roles(): React.ReactElement {
                     <select
                       defaultValue={member.role}
                       disabled={submittingMemberRoleId === member.id}
-                      onChange={event => onChangeRole(event, member.id)}
+                      onChange={(event) => onChangeRole(event, member.id)}
                     >
-                      {Object.keys(app.definition.security.roles).map(role => (
+                      {Object.keys(app.definition.security.roles).map((role) => (
                         <option key={role} value={role}>
                           {role}
                         </option>

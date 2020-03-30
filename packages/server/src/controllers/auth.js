@@ -39,7 +39,7 @@ export async function registerEmail(ctx) {
   let user;
 
   try {
-    await ctx.db.transaction(async transaction => {
+    await ctx.db.transaction(async (transaction) => {
       user = await User.create({ password: hashedPassword, primaryEmail: email }, { transaction });
       await user.createEmailAuthorization({ email, key }, { transaction });
     });
@@ -64,7 +64,7 @@ export async function registerEmail(ctx) {
     .sendEmail({ email }, 'welcome', {
       url: `${ctx.origin}/verify?token=${key}`,
     })
-    .catch(error => {
+    .catch((error) => {
       logger.error(error);
     });
 
@@ -83,7 +83,7 @@ export async function registerOAuth(ctx) {
   }
 
   try {
-    await ctx.db.transaction(async transaction => {
+    await ctx.db.transaction(async (transaction) => {
       await registerUser(auth, organization, transaction);
     });
   } catch (e) {

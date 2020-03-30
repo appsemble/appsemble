@@ -3,6 +3,7 @@ import { api } from '@appsemble/utils';
 import faPkg from '@fortawesome/fontawesome-free/package.json';
 import Boom from '@hapi/boom';
 import cors from '@koa/cors';
+import isIp from 'is-ip';
 import Koa from 'koa';
 import compose from 'koa-compose';
 import compress from 'koa-compress';
@@ -91,8 +92,11 @@ export default async function createServer({ app = new Koa(), argv = {}, db, web
         koasStatusCode(),
         koasOperations({ operations }),
       ]),
-      () => {
-        throw Boom.notFound('URL not found');
+      ({ hostname }, next) => {
+        if (new URL(argv.host).hostname === hostname || isIp(hostname)) {
+          throw Boom.notFound('URL not found');
+        }
+        return next();
       },
     ]),
   );
@@ -104,7 +108,7 @@ export default async function createServer({ app = new Koa(), argv = {}, db, web
   app.use(
     appMapper(
       compose([
-        conditional(ctx => ctx.path.startsWith('/api') || ctx.path === '/oauth2/token', cors()),
+        conditional((ctx) => ctx.path.startsWith('/api') || ctx.path === '/oauth2/token', cors()),
         apiMiddleware,
         studioRouter,
         oauth2(argv),

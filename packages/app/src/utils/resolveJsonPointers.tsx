@@ -8,7 +8,7 @@ function recurse(
     return object;
   }
   if (Array.isArray(object)) {
-    return object.map(value => recurse(value, root));
+    return object.map((value) => recurse(value, root));
   }
   if (!Object.hasOwnProperty.call(object, '$ref')) {
     return Object.entries(object).reduce((acc: { [key: string]: any }, [key, value]) => {

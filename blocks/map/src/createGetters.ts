@@ -10,11 +10,11 @@ export default function createGetters(params: Parameters): LatLngMapper {
   return {
     lat:
       params.latitude == null
-        ? data => data.latitude
+        ? (data) => data.latitude
         : compileFilters(params.latitude, { intl: null }),
     lng:
       params.longitude == null
-        ? data => data.longitude
+        ? (data) => data.longitude
         : compileFilters(params.longitude, { intl: null }),
   };
 }

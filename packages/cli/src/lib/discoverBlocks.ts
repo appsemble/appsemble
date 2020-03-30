@@ -30,7 +30,7 @@ export default async function discoverBlocks(root: string): Promise<Partial<Bloc
       .concat(root)
       .map(getBlockConfig)
       // Ignore non-block workspaces.
-      .map(p => p.catch(() => null)),
+      .map((p) => p.catch(() => null)),
   );
   return manifests.filter(Boolean);
 }

@@ -72,7 +72,7 @@ export default class FileEntry extends Component<FileEntryProps> {
     const ctx = canvas.getContext('2d');
 
     // Attempting to read width/height without waiting for it to load results in the values being 0.
-    await new Promise(resolve => {
+    await new Promise((resolve) => {
       img.onload = resolve;
       img.src = URL.createObjectURL(file);
     });
@@ -93,8 +93,8 @@ export default class FileEntry extends Component<FileEntryProps> {
 
     ctx.drawImage(img, 0, 0, width, height);
 
-    return new Promise(resolve => {
-      canvas.toBlob(blob => resolve(blob), file.type, quality);
+    return new Promise((resolve) => {
+      canvas.toBlob((blob) => resolve(blob), file.type, quality);
     });
   };
 

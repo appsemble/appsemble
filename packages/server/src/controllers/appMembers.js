@@ -12,7 +12,7 @@ export async function getAppMembers(ctx) {
     throw Boom.notFound('App not found');
   }
 
-  ctx.body = app.Users.map(user => ({
+  ctx.body = app.Users.map((user) => ({
     id: user.id,
     name: user.name,
     primaryEmail: user.primaryEmail,
@@ -43,7 +43,7 @@ export async function getAppMember(ctx) {
     throw Boom.notFound('User does not exist.');
   }
 
-  const member = app.Users.find(u => u.id === memberId);
+  const member = app.Users.find((u) => u.id === memberId);
   let role = member ? member.AppMember.role : null;
 
   if (!member && policy === 'everyone') {

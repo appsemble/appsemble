@@ -55,7 +55,7 @@ export async function createOrganization(ctx) {
     ctx.body = {
       id: organization.id,
       name: organization.name,
-      members: organization.Users.map(u => ({
+      members: organization.Users.map((u) => ({
         id: u.id,
         name: u.name,
         primaryEmail: u.primaryEmail,
@@ -83,7 +83,7 @@ export async function getMembers(ctx) {
     throw Boom.notFound('Organization not found.');
   }
 
-  ctx.body = organization.Users.map(user => ({
+  ctx.body = organization.Users.map((user) => ({
     id: user.id,
     name: user.name,
     primaryEmail: user.primaryEmail,
@@ -102,7 +102,7 @@ export async function getInvites(ctx) {
     throw Boom.notFound('Organization not found.');
   }
 
-  ctx.body = organization.OrganizationInvites.map(invite => ({
+  ctx.body = organization.OrganizationInvites.map((invite) => ({
     email: invite.email,
   }));
 }
@@ -218,7 +218,7 @@ export async function resendInvitation(ctx) {
 
   await checkRole(ctx, organization.id, permissions.ManageMembers);
 
-  const invite = await organization.OrganizationInvites.find(i => i.email === email);
+  const invite = await organization.OrganizationInvites.find((i) => i.email === email);
   if (!invite) {
     throw Boom.notFound('This person was not invited previously.');
   }
@@ -253,11 +253,11 @@ export async function removeMember(ctx) {
   const { user } = ctx.state;
 
   const organization = await Organization.findByPk(organizationId, { include: [User] });
-  if (!organization.Users.some(u => u.id === Number(user.id))) {
+  if (!organization.Users.some((u) => u.id === Number(user.id))) {
     throw Boom.notFound('User is not part of this organization.');
   }
 
-  if (!organization.Users.some(u => u.id === memberId)) {
+  if (!organization.Users.some((u) => u.id === memberId)) {
     throw Boom.notFound('This member is not part of this organization.');
   }
 
@@ -279,7 +279,7 @@ export async function setRole(ctx) {
   const { user } = ctx.state;
 
   const organization = await Organization.findByPk(organizationId, { include: [User] });
-  if (!organization.Users.some(u => u.id === Number(user.id))) {
+  if (!organization.Users.some((u) => u.id === Number(user.id))) {
     throw Boom.notFound('User is not part of this organization.');
   }
 
@@ -289,7 +289,7 @@ export async function setRole(ctx) {
 
   await checkRole(ctx, organization.id, permissions.ManageRoles);
 
-  const member = organization.Users.find(m => m.id === Number(memberId));
+  const member = organization.Users.find((m) => m.id === Number(memberId));
   if (!member) {
     throw Boom.notFound('This member is not part of this organization.');
   }

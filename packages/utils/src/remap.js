@@ -12,7 +12,7 @@ const dateTimeFormat = new Intl.DateTimeFormat(undefined, {
 });
 
 const filters = {
-  date: () => object => {
+  date: () => (object) => {
     let date;
     if (object instanceof Number) {
       date = new Date(object);
@@ -33,7 +33,7 @@ const filters = {
     }
     return date;
   },
-  get: (context, name) => object => {
+  get: (context, name) => (object) => {
     if (object == null) {
       return undefined;
     }
@@ -107,7 +107,7 @@ export function compileFilters(mapperString, context) {
     }
   }
   processCurrent();
-  return value => result.reduce((acc, fn) => fn(acc), value);
+  return (value) => result.reduce((acc, fn) => fn(acc), value);
 }
 
 /**
@@ -136,7 +136,7 @@ export function remapData(mapperData, inputData, context) {
     return compileFilters(mapperData, context)(inputData);
   }
   if (Array.isArray(mapperData)) {
-    return mapperData.map(value => remapData(value, inputData, context));
+    return mapperData.map((value) => remapData(value, inputData, context));
   }
   if (mapperData instanceof Object) {
     return Object.entries(mapperData).reduce((acc, [key, value]) => {

@@ -57,7 +57,7 @@ export async function publishBlock(ctx) {
   const OrganizationId = org.slice(1);
 
   if (data.actions) {
-    Object.keys(data.actions).forEach(key => {
+    Object.keys(data.actions).forEach((key) => {
       if (!actionKeyRegex.test(key) && key !== '$any') {
         throw Boom.badRequest(`Action “${key}” does match /${actionKeyRegex.source}/`);
       }
@@ -84,7 +84,7 @@ export async function publishBlock(ctx) {
   }
 
   try {
-    await db.transaction(async transaction => {
+    await db.transaction(async (transaction) => {
       const {
         actions = null,
         description = null,
@@ -94,7 +94,7 @@ export async function publishBlock(ctx) {
         resources = null,
       } = await BlockVersion.create({ ...data, name: blockId, OrganizationId }, { transaction });
 
-      Object.keys(files).forEach(filename => {
+      Object.keys(files).forEach((filename) => {
         logger.verbose(`Creating block assets for ${name}@${version}: ${filename}`);
       });
       await BlockAsset.bulkCreate(
@@ -153,7 +153,7 @@ export async function getBlockVersion(ctx) {
   });
 
   ctx.body = {
-    files: files.map(f => f.filename),
+    files: files.map((f) => f.filename),
     name,
     version: blockVersion,
     ...version,
@@ -175,5 +175,5 @@ export async function getBlockVersions(ctx) {
     throw Boom.notFound('Block not found.');
   }
 
-  ctx.body = blockVersions.map(blockVersion => ({ name, ...blockVersion }));
+  ctx.body = blockVersions.map((blockVersion) => ({ name, ...blockVersion }));
 }

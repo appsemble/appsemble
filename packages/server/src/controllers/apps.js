@@ -19,7 +19,7 @@ import getAppFromRecord from '../utils/getAppFromRecord';
 import getDefaultIcon from '../utils/getDefaultIcon';
 
 function getBlockVersions(db) {
-  return async blocks => {
+  return async (blocks) => {
     const blockVersions = await db.models.BlockVersion.findAll({
       raw: true,
       where: {
@@ -27,12 +27,7 @@ function getBlockVersions(db) {
           Object.values(blocks).map(({ type, version }) => {
             const includesOrg = type.startsWith('@');
             const OrganizationId = includesOrg ? type.split('/')[0].slice(1) : 'appsemble';
-            const name = includesOrg
-              ? type
-                  .split('/')
-                  .slice(1)
-                  .join('/')
-              : type;
+            const name = includesOrg ? type.split('/').slice(1).join('/') : type;
 
             return {
               name,
@@ -45,7 +40,7 @@ function getBlockVersions(db) {
       },
     });
 
-    return blockVersions.map(blockVersion => ({
+    return blockVersions.map((blockVersion) => ({
       ...blockVersion,
       name: `@${blockVersion.OrganizationId}/${blockVersion.name}`,
     }));
@@ -191,7 +186,7 @@ export async function queryApps(ctx) {
     raw: true,
   });
   const ignoredFields = ['yaml'];
-  ctx.body = apps.map(app => getAppFromRecord(app, ignoredFields));
+  ctx.body = apps.map((app) => getAppFromRecord(app, ignoredFields));
 }
 
 export async function queryMyApps(ctx) {
@@ -214,10 +209,10 @@ export async function queryMyApps(ctx) {
     include: [{ model: AppRating, attributes: [] }],
     group: ['App.id'],
     order: [literal('"RatingAverage" DESC NULLS LAST'), ['id', 'ASC']],
-    where: { OrganizationId: { [Op.in]: memberships.map(m => m.OrganizationId) } },
+    where: { OrganizationId: { [Op.in]: memberships.map((m) => m.OrganizationId) } },
   });
   const ignoredFields = ['yaml'];
-  ctx.body = apps.map(app => getAppFromRecord(app, ignoredFields));
+  ctx.body = apps.map((app) => getAppFromRecord(app, ignoredFields));
 }
 
 export async function updateApp(ctx) {

@@ -32,7 +32,7 @@ describe('normalized', () => {
     '1',
     '10-second-move',
     '13-37',
-  ])('should match %j', string => {
+  ])('should match %j', (string) => {
     expect(string).toMatch(normalized);
   });
 
@@ -47,7 +47,7 @@ describe('normalized', () => {
     'under_score',
     'aććëņtèd',
     '🐱',
-  ])('should not match %j', string => {
+  ])('should not match %j', (string) => {
     expect(string).not.toMatch(normalized);
   });
 });

@@ -21,7 +21,7 @@ export function mount(
   Component: React.ComponentType<BlockProps>,
   root?: HTMLElement,
 ): (params: BootstrapParams) => void {
-  return params => {
+  return (params) => {
     const reactRoot = params.shadowRoot.appendChild(
       root ? root.cloneNode() : document.createElement('div'),
     ) as HTMLElement;
@@ -69,7 +69,7 @@ export function withBlock<P extends object>(
   Component: React.ComponentType<P & Omit<BlockProps, keyof P>>,
 ): React.ComponentType<P> {
   function Wrapper(props: P): React.ReactElement {
-    return <Consumer>{values => <Component {...values} {...props} />}</Consumer>;
+    return <Consumer>{(values) => <Component {...values} {...props} />}</Consumer>;
   }
   if (process.env.NODE_ENV !== 'production') {
     Wrapper.displayName = `withBlock(${Component.displayName || Component.name})`;

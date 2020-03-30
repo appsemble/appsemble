@@ -26,16 +26,16 @@ const tests = {
   ],
 };
 
-it.each(fs.readdirSync(templateDir).map(f => path.parse(f).name))(
+it.each(fs.readdirSync(templateDir).map((f) => path.parse(f).name))(
   'should have tests for %s',
-  name => {
+  (name) => {
     expect(tests).toHaveProperty(name);
     expect(tests[name].length).toBeGreaterThan(0);
   },
 );
 
 describe.each(Object.entries(tests))('%s', (name, testValues) => {
-  it.each(testValues)(`should render ${name} %#`, async values => {
+  it.each(testValues)(`should render ${name} %#`, async (values) => {
     const { html, text } = await renderEmail(name, values);
     expect(text).toMatchSnapshot('text');
     expect(html).toMatchSnapshot('html');

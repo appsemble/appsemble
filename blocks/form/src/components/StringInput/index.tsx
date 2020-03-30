@@ -25,7 +25,7 @@ export default function StringInput({
       label={label ?? name}
       maxLength={maxLength}
       name={name}
-      onInput={event => onInput(event, (event.target as HTMLInputElement).value)}
+      onInput={(event) => onInput(event, (event.target as HTMLInputElement).value)}
       placeholder={placeholder ?? label ?? name}
       readOnly={readOnly}
       required={required}

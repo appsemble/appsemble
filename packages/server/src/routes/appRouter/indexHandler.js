@@ -1,4 +1,5 @@
 import { filterBlocks, getAppBlocks } from '@appsemble/utils';
+import crypto from 'crypto';
 import qs from 'querystring';
 import { Op } from 'sequelize';
 
@@ -52,23 +53,8 @@ export default async function indexHandler(ctx) {
     },
   });
   const { host, sentryDsn } = ctx.argv;
+  const nonce = crypto.randomBytes(16).toString('base64');
   const reportUri = sentryDsnToReportUri(sentryDsn);
-  const csp = {
-    'report-uri': [reportUri],
-    'connect-src': ['*', 'blob:', 'data:'],
-    'default-src': ["'self'"],
-    'script-src': [
-      "'self'",
-      // This is needed for Webpack.
-      process.env.NODE_ENV !== 'production' && "'unsafe-eval'",
-    ],
-    'img-src': ['*', 'blob:', 'data:', host],
-    'media-src': ['*', 'blob:', 'data:', host],
-    'style-src': ["'self'", "'unsafe-inline'", host, 'https://fonts.googleapis.com'],
-    'font-src': ["'self'", 'data:', 'https://fonts.gstatic.com', host],
-    'frame-src': ["'self'", '*.vimeo.com', '*.youtube.com'],
-  };
-
   const [settingsHash, settings] = createSettings({
     apiUrl: host,
     blockManifests: blockManifests.map(
@@ -87,11 +73,29 @@ export default async function indexHandler(ctx) {
     definition: app.definition,
     sentryDsn,
   });
-  csp['script-src'].push(settingsHash);
+  const csp = {
+    'report-uri': [reportUri],
+    'connect-src': ['*', 'blob:', 'data:'],
+    'default-src': ["'self'"],
+    'script-src': [
+      "'self'",
+      `'nonce-${nonce}'`,
+      settingsHash,
+      // This is needed for Webpack.
+      process.env.NODE_ENV !== 'production' && "'unsafe-eval'",
+    ],
+    'img-src': ['*', 'blob:', 'data:', host],
+    'media-src': ['*', 'blob:', 'data:', host],
+    'style-src': ["'self'", "'unsafe-inline'", host, 'https://fonts.googleapis.com'],
+    'font-src': ["'self'", 'data:', 'https://fonts.gstatic.com', host],
+    'frame-src': ["'self'", '*.vimeo.com', '*.youtube.com'],
+  };
+
   ctx.body = await render('app.html', {
     app,
     bulmaURL: `${bulmaURL}?${qs.stringify(app.definition.theme)}`,
     faURL,
+    nonce,
     settings,
   });
   ctx.set('Content-Security-Policy', makeCSP(csp));
