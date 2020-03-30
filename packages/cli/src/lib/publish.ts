@@ -29,7 +29,7 @@ export default async function publish({
   ignoreConflict,
   path,
 }: PublishParams): Promise<void> {
-  logger.info(`Publishing ${config.name}@${config.version}…`);
+  logger.info(`Publishing ${config.id}@${config.version}…`);
   const form = await makePayload({ config, path });
   try {
     await axios.post('/api/blocks', form);

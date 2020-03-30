@@ -87,7 +87,7 @@ describe('generateBlockData', () => {
 
   it('should prefer actions overrides over TypeScript actions', () => {
     const result = generateBlockData(
-      { actions: {}, version: '1.33.7', webpack: '', dist: '', output: '', dir: '', name: '' },
+      { actions: {}, version: '1.33.7', webpack: '', dist: '', output: '', dir: '', id: '' },
       fixture('valid'),
     );
 
