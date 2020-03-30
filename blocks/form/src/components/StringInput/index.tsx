@@ -22,7 +22,7 @@ export default function StringInput({
       disabled={disabled}
       error={error && <FormattedMessage id="invalid" />}
       id={name}
-      label={label ?? name}
+      label={label}
       maxLength={maxLength}
       name={name}
       onInput={(event) => onInput(event, (event.target as HTMLInputElement).value)}

@@ -41,7 +41,7 @@ export default function BooleanInput({
                 required={field.required}
                 type="checkbox"
               />
-              {field.labelText ?? field.label ?? field.name}
+              {field.labelText ?? field.label ?? null}
             </label>
             {error && (
               <p className={classNames('help', { 'is-danger': error })}>
