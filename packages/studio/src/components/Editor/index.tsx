@@ -1,3 +1,4 @@
+import RefParser from '@apidevtools/json-schema-ref-parser';
 import {
   Button,
   CardFooterButton,
@@ -19,7 +20,6 @@ import {
 import axios from 'axios';
 import classNames from 'classnames';
 import { safeDump, safeLoad } from 'js-yaml';
-import RefParser from 'json-schema-ref-parser';
 import { isEqual } from 'lodash';
 import { OpenAPIV3 } from 'openapi-types';
 import React from 'react';
@@ -136,7 +136,7 @@ export default function Editor(): React.ReactElement {
           definition,
         );
         const blockManifests: Omit<BlockManifest, 'parameters'>[] = await Promise.all(
-          filterBlocks(Object.values(getAppBlocks(definition))).map(async block => {
+          filterBlocks(Object.values(getAppBlocks(definition))).map(async (block) => {
             const { data } = await axios.get<BlockManifest>(
               `/api/blocks/${block.type}/versions/${block.version}`,
             );
@@ -248,7 +248,7 @@ export default function Editor(): React.ReactElement {
   }, [initialRecipe, recipe, uploadApp, valid]);
 
   const onMonacoChange = React.useCallback(
-    value => {
+    (value) => {
       switch (location.hash) {
         case '#editor':
           setRecipe(value);

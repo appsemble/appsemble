@@ -22,7 +22,7 @@ export default function CMSRoot(): React.ReactElement {
           <ul>
             {Object.keys(app.definition.resources)
               .sort()
-              .map(resource => (
+              .map((resource) => (
                 <li key={resource}>
                   <Link to={`${match.url}/${resource}`}>{resource}</Link>
                 </li>

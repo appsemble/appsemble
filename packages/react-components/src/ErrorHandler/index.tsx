@@ -20,7 +20,7 @@ export default class ErrorHandler extends React.Component<ErrorHandlerProps, Err
 
   componentDidCatch(error: Error, info: React.ErrorInfo): void {
     this.setState({ error: true });
-    withScope(scope => {
+    withScope((scope) => {
       Object.entries(info).forEach(([key, value]) => {
         scope.setExtra(key, value);
       });

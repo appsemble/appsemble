@@ -118,7 +118,7 @@ export default function OpenIDLogin(): React.ReactElement {
           {app.definition.resources
             ? Object.keys(app.definition.resources)
                 .sort()
-                .map(resource => (
+                .map((resource) => (
                   <li key={resource}>
                     <FormattedMessage {...messages.manageResource} values={{ resource }} />
                   </li>

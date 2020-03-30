@@ -35,7 +35,7 @@ export default async function uploadBlobs(
         ),
       );
 
-      return extractBlobs(data, key => fileMap.get(key))[0];
+      return extractBlobs(data, (key) => fileMap.get(key))[0];
     }
     default: {
       const filesMap = new Map(
@@ -55,7 +55,7 @@ export default async function uploadBlobs(
           ),
         ),
       );
-      return extractBlobs(data, key => filesMap.get(key))[0];
+      return extractBlobs(data, (key) => filesMap.get(key))[0];
     }
   }
 }

@@ -29,7 +29,7 @@ bootstrap(({ actions, parameters: { fields } }) => {
     <table className="table">
       <thead>
         <tr>
-          {fields.map(field => (
+          {fields.map((field) => (
             <th key={field}>{field}</th>
           ))}
         </tr>
@@ -37,7 +37,7 @@ bootstrap(({ actions, parameters: { fields } }) => {
       <tbody>
         {data.map((item, dataIndex) => (
           <tr key={item.id || dataIndex}>
-            {fields.map(field => (
+            {fields.map((field) => (
               <td key={field}>{item[field]}</td>
             ))}
           </tr>

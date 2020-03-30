@@ -26,7 +26,7 @@ async function checkBlocks(blocks: BlockMap, blockVersions: BlockManifest[]): Pr
   ajv.addFormat('fontawesome', () => true);
 
   const blockVersionMap = new Map<string, Map<string, BlockManifest>>();
-  blockVersions.forEach(version => {
+  blockVersions.forEach((version) => {
     if (!blockVersionMap.has(version.name)) {
       blockVersionMap.set(version.name, new Map());
     }
@@ -45,7 +45,7 @@ async function checkBlocks(blocks: BlockMap, blockVersions: BlockManifest[]): Pr
     const actionParameters = new Set<string>();
     const version = versions.get(block.version);
     if (version.parameters) {
-      ajv.addFormat('action', property => {
+      ajv.addFormat('action', (property) => {
         actionParameters.add(property);
         return block.actions && Object.prototype.hasOwnProperty.call(block.actions, property);
       });
@@ -62,7 +62,7 @@ async function checkBlocks(blocks: BlockMap, blockVersions: BlockManifest[]): Pr
       }
     }
 
-    Object.keys(block.actions || {}).forEach(key => {
+    Object.keys(block.actions || {}).forEach((key) => {
       if (
         !actionParameters.has(key) &&
         !Object.prototype.hasOwnProperty.call(version.actions, key)
@@ -102,7 +102,7 @@ export function validateSecurityRoles(
 
   if (securityRole.inherits) {
     checkedRoles.push(role);
-    securityRole.inherits.forEach(inheritedRole =>
+    securityRole.inherits.forEach((inheritedRole) =>
       validateSecurityRoles(securityDefinition, inheritedRole, checkedRoles),
     );
   }
@@ -122,19 +122,19 @@ export function validateSecurity(definition: AppDefinition): void {
     );
   }
 
-  Object.keys(security.roles).forEach(role => validateSecurityRoles(security, role, []));
+  Object.keys(security.roles).forEach((role) => validateSecurityRoles(security, role, []));
 
   if (roles) {
-    roles.forEach(role => {
+    roles.forEach((role) => {
       if (!Object.keys(security.roles).includes(role)) {
         throw new AppsembleValidationError(`Role ‘${role}’ in App roles does not exist.`);
       }
     });
   }
 
-  pages.forEach(page => {
+  pages.forEach((page) => {
     if (page.roles && page.roles.length) {
-      page.roles.forEach(role => {
+      page.roles.forEach((role) => {
         if (!Object.keys(security.roles).includes(role)) {
           throw new AppsembleValidationError(
             `Role ‘${role}’ in page ‘${page.name}’ roles does not exist.`,
@@ -148,7 +148,7 @@ export function validateSecurity(definition: AppDefinition): void {
 
   Object.entries(blocks).forEach(([key, block]) => {
     if (block.roles && block.roles.length) {
-      block.roles.forEach(role => {
+      block.roles.forEach((role) => {
         if (!Object.keys(security.roles).includes(role)) {
           throw new AppsembleValidationError(`Role ‘${role}’ in ${key} roles does not exist.`);
         }
@@ -170,7 +170,7 @@ export function validateHooks(definition: AppDefinition): void {
       .forEach(([actionKey, action]: [string, ResourceCall]) => {
         const { hooks } = action;
         if (hooks?.notification?.to) {
-          hooks.notification.to.forEach(to => {
+          hooks.notification.to.forEach((to) => {
             if (
               to !== '$author' &&
               !Object.prototype.hasOwnProperty.call(definition.security.roles, to)

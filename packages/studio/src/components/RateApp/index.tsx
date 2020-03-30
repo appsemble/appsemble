@@ -47,7 +47,7 @@ export default function RateApp({ app, className, onRate }: RateAppProps): React
         <Form onSubmit={submit}>
           <div className={styles.controls}>
             <FormComponent label={<FormattedMessage {...messages.rating} />} required>
-              <StarRating onClick={value => setRating(value)} value={rating} />
+              <StarRating onClick={(value) => setRating(value)} value={rating} />
             </FormComponent>
             <FormComponent id="description" label={<FormattedMessage {...messages.review} />}>
               <textarea

@@ -16,7 +16,7 @@ export default function PermissionRequest(): React.ReactElement {
       return null;
     }
 
-    requestPermission().then(p => {
+    requestPermission().then((p) => {
       if (p === 'granted') {
         subscribe();
       }

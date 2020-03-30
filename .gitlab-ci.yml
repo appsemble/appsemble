@@ -157,7 +157,7 @@ prettier:
       - '**/*.{html,json,md,scss,yaml,yml}'
       - yarn.lock
   script:
-    - yarn prettier
+    - yarn prettier .
 
 # Lint Markdown using remark.
 remark lint:

@@ -108,7 +108,7 @@ export default async function createServer({ app = new Koa(), argv = {}, db, web
   app.use(
     appMapper(
       compose([
-        conditional(ctx => ctx.path.startsWith('/api') || ctx.path === '/oauth2/token', cors()),
+        conditional((ctx) => ctx.path.startsWith('/api') || ctx.path === '/oauth2/token', cors()),
         apiMiddleware,
         studioRouter,
         oauth2(argv),

@@ -6,6 +6,6 @@
     "@appsemble/preact": "0.12.3",
     "@appsemble/preact-components": "0.12.3",
     "@appsemble/utils": "0.12.3",
-    "preact": "^10.3.3"
+    "preact": "^10.3.4"
   }
 }

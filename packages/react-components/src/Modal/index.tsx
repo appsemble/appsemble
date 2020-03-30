@@ -60,7 +60,7 @@ export class Modal<T extends React.ElementType = 'div'> extends React.Component<
     onClose() {},
   };
 
-  onKeyDown: React.KeyboardEventHandler = event => {
+  onKeyDown: React.KeyboardEventHandler = (event) => {
     const { onClose } = this.props;
 
     if (event.key === 'Escape') {

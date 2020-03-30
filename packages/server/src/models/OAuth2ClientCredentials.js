@@ -1,6 +1,6 @@
 import { DataTypes } from 'sequelize';
 
-export default sequelize => {
+export default (sequelize) => {
   const OAuth2ClientCredentials = sequelize.define(
     'OAuth2ClientCredentials',
     {

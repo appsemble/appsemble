@@ -23,7 +23,7 @@ interface PortalProps {
 export default function Portal({ children, element }: PortalProps): React.ReactElement {
   useEffect(() => {
     const fragment = document.createDocumentFragment();
-    element.childNodes.forEach(child => fragment.appendChild(child));
+    element.childNodes.forEach((child) => fragment.appendChild(child));
 
     // Cleanup function
     return () => {

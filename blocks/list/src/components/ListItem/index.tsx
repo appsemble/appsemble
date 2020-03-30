@@ -28,7 +28,7 @@ export default function ListItem({ actions, fields, header, item }: ListItemProp
   return (
     <ListItemWrapper actions={actions} className={styles.item} item={item} onClick={onItemClick}>
       {header && <h4>{remapData(header, item)}</h4>}
-      {fields.map(field => {
+      {fields.map((field) => {
         let value;
 
         if (field.name) {

@@ -19,7 +19,7 @@ export default async function manifestHandler(ctx) {
     background_color: splashColor,
     description,
     display: 'standalone',
-    icons: iconSizes.map(size => ({
+    icons: iconSizes.map((size) => ({
       src: `/icon-${size}.png`,
       type: 'image/png',
       sizes: `${size}x${size}`,

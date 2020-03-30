@@ -12,11 +12,11 @@ interface ConfigureLoggerParams {
 }
 
 const levels = ['crit', 'error', 'warn', 'info', 'verbose', 'silly'] as const;
-const DEFAULT_LEVEL = levels.findIndex(level => level === 'info');
+const DEFAULT_LEVEL = levels.findIndex((level) => level === 'info');
 const padding = Math.max(...levels.map(({ length }) => length));
 
 function headerCase(header: string): string {
-  return header.replace(/(^|-)\w/g, a => a.toUpperCase());
+  return header.replace(/(^|-)\w/g, (a) => a.toUpperCase());
 }
 
 function httpErrorToString(error: AxiosError): string {
@@ -40,7 +40,7 @@ function httpErrorToString(error: AxiosError): string {
         `HTTP/${request.res.httpVersion} ${response.status} ${response.statusText}`,
         ...Object.entries(response.headers)
           .map(([key, value]) => [headerCase(key), value])
-          .map(pair => pair.join(': '))
+          .map((pair) => pair.join(': '))
           .sort(),
         '',
         response.data instanceof Object ? JSON.stringify(response.data, null, 2) : response.data,
@@ -70,11 +70,11 @@ export const logger = winston.createLogger({
   level: levels[DEFAULT_LEVEL],
   levels: levels.reduce((acc, level, index) => ({ ...acc, [level]: index }), {}),
   format: winston.format.combine(
-    winston.format(info => ({
+    winston.format((info) => ({
       ...info,
       lines: toString(info)
         .split(/\r?\n/)
-        .map(line => `${''.padEnd(padding - info.level.length)}${line}`),
+        .map((line) => `${''.padEnd(padding - info.level.length)}${line}`),
     }))(),
     winston.format.colorize(),
     winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
@@ -107,11 +107,11 @@ export function setLogLevel(level: number | string = DEFAULT_LEVEL): void {
  * @param {number} argv.verbose The verbosity count.
  */
 export function configureLogger({ quiet = 0, verbose = 0 }: ConfigureLoggerParams): void {
-  process.on('warning', warning => {
+  process.on('warning', (warning) => {
     logger.warn(warning);
   });
 
-  process.on('unhandledRejection', error => {
+  process.on('unhandledRejection', (error) => {
     logger.error(error);
   });
 

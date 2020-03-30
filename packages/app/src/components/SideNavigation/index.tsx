@@ -19,7 +19,7 @@ export default function SideNavigation({ pages }: SideNavigationProps): React.Re
     <SideMenu>
       <nav>
         <ul className={`menu-list ${styles.menuList}`}>
-          {pages.map(page => (
+          {pages.map((page) => (
             <li key={page.name}>
               <NavLink activeClassName={styles.active} to={`/${normalize(page.name)}`}>
                 {page.icon ? <Icon className={styles.icon} icon={page.icon} /> : null}

@@ -19,7 +19,7 @@ bootstrap(({ actions, events, parameters: { buttons }, ready, utils }) => {
 
   return (
     <div className="buttons is-centered">
-      {buttons.map(button => (
+      {buttons.map((button) => (
         <Button
           action={button.onClick ? actions[button.onClick] : actions.onClick}
           button={button}
