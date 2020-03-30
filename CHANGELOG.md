@@ -7,6 +7,9 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+- Block(`@appsemble/detail-viewer`): Make `field.label` render no label instead of `field.name` if
+  the label is undefined.
+
 ## [0.12.3] - 2020-03-27
 
 ### Fixes
