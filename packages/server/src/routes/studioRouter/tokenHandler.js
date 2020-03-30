@@ -119,7 +119,7 @@ export default async function tokenHandler(ctx) {
           throw new GrantError('invalid_scope');
         }
         scope = requestedScope.split(' ').sort();
-        if (!scope.every(s => clientScopes.includes(s))) {
+        if (!scope.every((s) => clientScopes.includes(s))) {
           throw new GrantError('invalid_scope');
         }
         aud = client.id;

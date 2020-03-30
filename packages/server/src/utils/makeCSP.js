@@ -11,11 +11,6 @@ export default function makeCSP(csp) {
     .map(([key, values]) => [key, values.filter(Boolean)])
     .filter(([, values]) => values && values.length)
     .sort(([a], [b]) => a.localeCompare(b))
-    .map(
-      ([key, values]) =>
-        `${key} ${Array.from(new Set(values))
-          .sort()
-          .join(' ')}`,
-    )
+    .map(([key, values]) => `${key} ${Array.from(new Set(values)).sort().join(' ')}`)
     .join('; ');
 }

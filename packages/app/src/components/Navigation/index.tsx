@@ -19,17 +19,17 @@ export default function Navigation(): React.ReactElement {
   const location = useLocation();
 
   const currentPage = definition.pages.find(
-    p => normalize(p.name) === location.pathname.split('/')[1],
+    (p) => normalize(p.name) === location.pathname.split('/')[1],
   );
 
   const navigation = currentPage?.navigation || definition.navigation || 'left-menu';
   const checkPagePermissions = (page: Page): boolean => {
     const roles = page.roles || definition.roles || [];
-    return roles.length === 0 || roles.some(r => checkAppRole(definition.security, r, role));
+    return roles.length === 0 || roles.some((r) => checkAppRole(definition.security, r, role));
   };
 
   const pages = definition.pages.filter(
-    page => !page.parameters && !page.hideFromMenu && checkPagePermissions(page),
+    (page) => !page.parameters && !page.hideFromMenu && checkPagePermissions(page),
   );
 
   switch (navigation) {

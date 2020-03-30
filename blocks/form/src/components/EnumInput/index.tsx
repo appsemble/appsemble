@@ -28,7 +28,7 @@ export default function EnumInput({ disabled, field, onInput, value = '' }: Enum
           {field.placeholder ?? ''}
         </option>
       )}
-      {field.enum.map(choice => (
+      {field.enum.map((choice) => (
         <option key={choice.value} value={choice.value}>
           {choice.label ?? choice.value}
         </option>

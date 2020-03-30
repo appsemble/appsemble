@@ -1,4 +1,4 @@
-import SwaggerParser from 'swagger-parser';
+import SwaggerParser from '@apidevtools/swagger-parser';
 
 import api from '.';
 

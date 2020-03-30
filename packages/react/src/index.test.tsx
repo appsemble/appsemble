@@ -53,7 +53,7 @@ beforeEach(() => {
 describe('mount', () => {
   it('should mount the react component', () => {
     let component: React.ReactElement;
-    (ReactDOM.render as jest.Mock).mockImplementation(c => {
+    (ReactDOM.render as jest.Mock).mockImplementation((c) => {
       component = c;
     });
     mount(() => <div>test</div>, document.createElement('div'))(bootstrapParams);
@@ -70,7 +70,7 @@ describe('withBlock', () => {
   it('should pass block props to the child element', () => {
     const Test = withBlock(() => null);
     let component: React.ReactElement;
-    (ReactDOM.render as jest.Mock).mockImplementation(c => {
+    (ReactDOM.render as jest.Mock).mockImplementation((c) => {
       component = c;
     });
     mount(() => <Test />, document.createElement('div'))(bootstrapParams);

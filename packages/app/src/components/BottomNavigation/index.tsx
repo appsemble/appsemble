@@ -17,7 +17,7 @@ export default function BottomNavigation({ pages }: BottomNavigationProps): Reac
   return (
     <nav className="bottom-nav">
       <ul className={styles.list}>
-        {pages.map(page => (
+        {pages.map((page) => (
           <li key={page.name} className="bottom-nav-item">
             <NavLink
               activeClassName="is-active"

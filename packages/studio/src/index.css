@@ -12,10 +12,6 @@ body {
 
 :global(#app) {
   height: 100%;
-}
-
-:global(#legacy-browser-support) {
-  display: none;
 
   & :global(.browsers) {
     margin: auto;

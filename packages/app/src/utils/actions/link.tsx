@@ -36,7 +36,7 @@ export default function link({
 
       return `/${[
         normalize(toPage.name),
-        ...(toPage.parameters || []).map(name =>
+        ...(toPage.parameters || []).map((name) =>
           Object.hasOwnProperty.call(mappers, name) ? mappers[name](data) : data[name],
         ),
         ...(subPage ? [normalize(subPage.name)] : []),

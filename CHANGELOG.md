@@ -11,6 +11,19 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 - Server: Add support for outputting CSV in resource API.
 
+## [0.12.3] - 2020-03-27
+
+### Fixes
+
+- App: Fix loading blocks.
+
+## [0.12.2] - 2020-03-27
+
+### Fixes
+
+- App: Fix serving apps.
+- Studio: Fix serving Appsemble studio.
+
 ## [0.12.1] - 2020-03-26
 
 ### Added

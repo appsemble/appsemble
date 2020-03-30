@@ -150,7 +150,7 @@ export default function makeActions({
   let anyActions: object;
   if (actions?.$any) {
     anyActions = Object.keys(context.actions || {})
-      .filter(key => !actionMap[key])
+      .filter((key) => !actionMap[key])
       .reduce<{ [key: string]: Action }>((acc, on) => {
         const actionDefinition = context.actions[on];
         const { type } = actionDefinition;

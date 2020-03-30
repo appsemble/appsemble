@@ -23,7 +23,7 @@ export default function AppList(): React.ReactElement {
   const intl = useIntl();
   const { userInfo } = useUser();
 
-  const onFilterChange = React.useCallback(event => {
+  const onFilterChange = React.useCallback((event) => {
     setFilter(event.target.value);
   }, []);
 
@@ -52,11 +52,11 @@ export default function AppList(): React.ReactElement {
     return <Loader />;
   }
 
-  const filteredApps = apps.filter(app =>
+  const filteredApps = apps.filter((app) =>
     app.definition.name.toLowerCase().includes(filter.toLowerCase()),
   );
 
-  const createOrganizations = organizations.filter(org =>
+  const createOrganizations = organizations.filter((org) =>
     checkRole(org.role, permissions.CreateApps),
   );
 
@@ -75,7 +75,7 @@ export default function AppList(): React.ReactElement {
         </p>
       </div>
       <div className={styles.appList}>
-        {filteredApps.map(app => (
+        {filteredApps.map((app) => (
           <AppCard key={app.id} app={app} />
         ))}
         {createOrganizations.length >= 1 && <CreateAppCard />}

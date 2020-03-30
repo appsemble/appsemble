@@ -35,7 +35,7 @@ export default async function makePayload({
   form.append('data', JSON.stringify(data));
   return new Promise((resolve, reject) => {
     klaw(distPath)
-      .on('data', file => {
+      .on('data', (file) => {
         if (!file.stats.isFile()) {
           return;
         }

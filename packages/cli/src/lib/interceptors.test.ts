@@ -17,7 +17,7 @@ describe('formData', () => {
 
   it('should add headers for form-data requests', async () => {
     let headers;
-    mock.onAny('/').reply(config => {
+    mock.onAny('/').reply((config) => {
       headers = config.headers;
       return [200];
     });
@@ -31,7 +31,7 @@ describe('formData', () => {
 
   it('should not add headers to non form-data requests', async () => {
     let headers;
-    mock.onAny('/').reply(config => {
+    mock.onAny('/').reply((config) => {
       headers = config.headers;
       return [200];
     });

@@ -61,7 +61,7 @@ attach(
       /**
        *  When a location error occurs because location is disabled, show a message to the user.
        */
-      .once('locationerror', error => {
+      .once('locationerror', (error) => {
         // See: https://developer.mozilla.org/en-US/docs/Web/API/PositionError
         if (error?.code === 1) {
           utils.showMessage({
@@ -101,7 +101,7 @@ attach(
       map.addLayer(cluster);
     }
 
-    events.on.data(d => {
+    events.on.data((d) => {
       loadMarkers(d, fetched, get, data, actions, cluster || map);
     });
   },

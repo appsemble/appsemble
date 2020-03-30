@@ -128,7 +128,7 @@ export async function handler(argv, { webpackConfigs } = {}) {
       return;
     }
     logger.error(err);
-    Sentry.withScope(scope => {
+    Sentry.withScope((scope) => {
       scope.setTag('ip', ctx.ip);
       scope.setTag('level', 'error');
       scope.setTag('method', ctx.method);

@@ -68,7 +68,7 @@ export default function ResourceTable(): React.ReactElement {
         body: intl.formatMessage(messages.deleteSuccess, { id: deletingResource.id }),
         color: 'primary',
       });
-      setResources(resources.filter(resource => resource.id !== deletingResource.id));
+      setResources(resources.filter((resource) => resource.id !== deletingResource.id));
       setDeletingResource(undefined);
       warningDialog.disable();
     } catch (e) {
@@ -128,7 +128,7 @@ export default function ResourceTable(): React.ReactElement {
         );
 
         setResources(
-          resources.map(resource =>
+          resources.map((resource) =>
             resource.id === editingResource.id ? editingResource : resource,
           ),
         );
@@ -175,7 +175,7 @@ export default function ResourceTable(): React.ReactElement {
 
   React.useEffect(() => {
     if (resources && mode === 'edit') {
-      setEditingResource(resources.find(resource => resource.id === Number(resourceId)));
+      setEditingResource(resources.find((resource) => resource.id === Number(resourceId)));
     }
   }, [mode, resourceId, resources]);
 
@@ -237,13 +237,13 @@ export default function ResourceTable(): React.ReactElement {
           <thead>
             <tr>
               <th>Actions</th>
-              {keys.map(property => (
+              {keys.map((property) => (
                 <th key={property}>{property}</th>
               ))}
             </tr>
           </thead>
           <tbody>
-            {resources.map(resource => (
+            {resources.map((resource) => (
               <tr key={resource.id}>
                 <td className={styles.actionsCell}>
                   <Link className="button" to={`${match.url}/edit/${resource.id}`}>
@@ -256,7 +256,7 @@ export default function ResourceTable(): React.ReactElement {
                     onClick={() => promptDeleteResource(resource)}
                   />
                 </td>
-                {keys.map(key => (
+                {keys.map((key) => (
                   <td key={key} className={styles.contentCell}>
                     {typeof resource[key] === 'string'
                       ? resource[key]
@@ -298,7 +298,7 @@ export default function ResourceTable(): React.ReactElement {
           )
         }
       >
-        {keys.map(key => {
+        {keys.map((key) => {
           const prop = (schema?.properties[key] || {}) as OpenAPIV3.SchemaObject;
           let value = '';
           let type: React.ComponentPropsWithoutRef<typeof Input>['type'] = 'text';

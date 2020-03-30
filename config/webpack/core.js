@@ -18,7 +18,7 @@ module.exports = (env, argv) => {
           test: /\.(gif|jpe?g|png|svg|woff2?)$/,
           loader: 'file-loader',
           options: {
-            name: production ? '_/[hash].[ext]' : '_/[name].[ext]',
+            name: production ? '_/[contentHash].[ext]' : '_/[name].[ext]',
             publicPath,
           },
         },

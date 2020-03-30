@@ -16,7 +16,7 @@ let organizationId;
 let clock;
 let user;
 
-const exampleApp = orgId => ({
+const exampleApp = (orgId) => ({
   definition: {
     name: 'Test App',
     defaultPage: 'Test Page',

@@ -153,7 +153,7 @@ module.exports = {
           'error',
           'isFinite',
           'isNaN',
-          ...restricted.filter(r => r !== 'self'),
+          ...restricted.filter((r) => r !== 'self'),
         ],
       },
     },

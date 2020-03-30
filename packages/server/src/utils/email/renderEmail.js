@@ -12,17 +12,9 @@ import visit from 'unist-util-visit';
 
 export const templateDir = path.resolve(__dirname, '../../templates/email');
 
-const remark = unified()
-  .use(remarkParse)
-  .use(frontmatter)
-  .use(remarkStringify)
-  .freeze();
+const remark = unified().use(remarkParse).use(frontmatter).use(remarkStringify).freeze();
 
-const rehype = unified()
-  .use(remarkRehype)
-  .use(rehypeDocument)
-  .use(rehypeStringify)
-  .freeze();
+const rehype = unified().use(remarkRehype).use(rehypeDocument).use(rehypeStringify).freeze();
 
 /**
  * Render a markdown email template.
@@ -48,7 +40,7 @@ export default async function renderEmail(templateName, values) {
     throw new Error(`Unknown template value: ${key}`);
   }
 
-  visit(mdast, 'link', node => {
+  visit(mdast, 'link', (node) => {
     // eslint-disable-next-line no-param-reassign
     node.url = node.url.replace(/{{(\w+)}}/, replace);
   });

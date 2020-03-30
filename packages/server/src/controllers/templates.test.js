@@ -152,7 +152,7 @@ describe('createTemplateApp', () => {
     const { id } = response.data;
     const resources = await Resource.findAll({ where: { AppId: id, type: 'test' } }, { raw: true });
 
-    expect(resources.map(r => r.data)).toStrictEqual([{ name: 'foo' }]);
+    expect(resources.map((r) => r.data)).toStrictEqual([{ name: 'foo' }]);
   });
 
   it('should append a number when creating a new app using a template with a duplicate name', async () => {

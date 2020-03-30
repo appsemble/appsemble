@@ -20,7 +20,7 @@ export default function OrganizationInvite(): React.ReactElement {
   const [joined, setJoined] = React.useState(false);
 
   const sendResponse = React.useCallback(
-    async response => {
+    async (response) => {
       setSubmitting(true);
 
       try {

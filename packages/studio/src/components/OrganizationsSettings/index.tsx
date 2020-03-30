@@ -64,14 +64,16 @@ export default function OrganizationsSettings(): React.ReactElement {
   const [removingInvite, setRemovingInvite] = React.useState<Invite>();
 
   const onOrganizationChange = React.useCallback(
-    async event => {
+    async (event) => {
       setLoading(true);
       const organizationId = event.target.value;
       const { data: members } = await axios.get(`/api/organizations/${organizationId}/members`);
       const { data: invites } = await axios.get(`/api/organizations/${organizationId}/invites`);
       setSelectedOrganization(organizationId);
       setOrganizations(
-        organizations.map(org => (org.id === organizationId ? { ...org, members, invites } : org)),
+        organizations.map((org) =>
+          org.id === organizationId ? { ...org, members, invites } : org,
+        ),
       );
       setLoading(false);
     },
@@ -105,9 +107,9 @@ export default function OrganizationsSettings(): React.ReactElement {
 
   const onInviteMember = React.useCallback(
     async ({ email }: Invite) => {
-      const organization = organizations.find(o => o.id === selectedOrganization);
+      const organization = organizations.find((o) => o.id === selectedOrganization);
 
-      if (organization.members.some(m => m.primaryEmail === email)) {
+      if (organization.members.some((m) => m.primaryEmail === email)) {
         push({
           body: intl.formatMessage(messages.existingMemberWarning),
           color: 'warning',
@@ -118,7 +120,7 @@ export default function OrganizationsSettings(): React.ReactElement {
       try {
         await axios.post(`/api/organizations/${selectedOrganization}/invites`, { email });
         setOrganizations(
-          organizations.map(o =>
+          organizations.map((o) =>
             o.id === selectedOrganization
               ? { ...organization, invites: [...organization.invites, { email }] }
               : o,
@@ -149,7 +151,7 @@ export default function OrganizationsSettings(): React.ReactElement {
   );
 
   const resendInvitation = React.useCallback(
-    async invite => {
+    async (invite) => {
       await axios.post(`/api/organizations/${selectedOrganization}/invites/resend`, {
         email: invite.email,
       });
@@ -170,11 +172,11 @@ export default function OrganizationsSettings(): React.ReactElement {
         });
         setSubmittingRole(null);
         setOrganizations(
-          organizations.map(organization =>
+          organizations.map((organization) =>
             organization.id === selectedOrganization
               ? {
                   ...organization,
-                  members: organization.members.map(member =>
+                  members: organization.members.map((member) =>
                     member.id === userId ? { ...member, role } : member,
                   ),
                 }
@@ -182,8 +184,8 @@ export default function OrganizationsSettings(): React.ReactElement {
           ),
         );
         const member = organizations
-          .find(org => org.id === selectedOrganization)
-          .members.find(m => m.id === userId);
+          .find((org) => org.id === selectedOrganization)
+          .members.find((m) => m.id === userId);
         push({
           color: 'success',
           body: intl.formatMessage(messages.changeRoleSuccess, {
@@ -210,8 +212,8 @@ export default function OrganizationsSettings(): React.ReactElement {
   const onLeaveOrganization = React.useCallback(async () => {
     await axios.delete(`/api/organizations/${selectedOrganization}/members/${userInfo.sub}`);
 
-    const organization = organizations.find(o => o.id === selectedOrganization);
-    const newOrganizations = organizations.filter(o => o.id !== selectedOrganization);
+    const organization = organizations.find((o) => o.id === selectedOrganization);
+    const newOrganizations = organizations.filter((o) => o.id !== selectedOrganization);
 
     setRemovingMember(null);
     setSelectedOrganization(newOrganizations[0]?.id);
@@ -228,12 +230,12 @@ export default function OrganizationsSettings(): React.ReactElement {
   const onRemoveMember = React.useCallback(async () => {
     await axios.delete(`/api/organizations/${selectedOrganization}/members/${removingMember}`);
 
-    const organization = organizations.find(o => o.id === selectedOrganization);
-    const filteredMembers = organization.members.filter(m => m.id !== removingMember);
+    const organization = organizations.find((o) => o.id === selectedOrganization);
+    const filteredMembers = organization.members.filter((m) => m.id !== removingMember);
 
     setRemovingMember(null);
     setOrganizations(
-      organizations.map(o =>
+      organizations.map((o) =>
         o.id === organization.id ? { ...organization, members: filteredMembers } : o,
       ),
     );
@@ -248,8 +250,8 @@ export default function OrganizationsSettings(): React.ReactElement {
   }, [intl, organizations, push, removingMember, selectedOrganization, userInfo.sub]);
 
   const onRemoveInvite = React.useCallback(async () => {
-    const organization = organizations.find(o => o.id === selectedOrganization);
-    const filteredInvites = organization.invites.filter(m => m.email !== removingInvite.email);
+    const organization = organizations.find((o) => o.id === selectedOrganization);
+    const filteredInvites = organization.invites.filter((m) => m.email !== removingInvite.email);
 
     await axios.delete(`/api/organizations/${selectedOrganization}/invites`, {
       data: removingInvite,
@@ -257,7 +259,7 @@ export default function OrganizationsSettings(): React.ReactElement {
 
     setRemovingInvite(null);
     setOrganizations(
-      organizations.map(o =>
+      organizations.map((o) =>
         o.id === organization.id ? { ...organization, invites: filteredInvites } : o,
       ),
     );
@@ -285,7 +287,7 @@ export default function OrganizationsSettings(): React.ReactElement {
         selected = orgs[0].id;
         const { data: members } = await axios.get(`/api/organizations/${selected}/members`);
         const { data: invites } = await axios.get(`/api/organizations/${selected}/invites`);
-        orgs = orgs.map(org =>
+        orgs = orgs.map((org) =>
           org.id === selected ? { ...org, members, invites } : { ...org, members: [], invites: [] },
         );
         setOrganizations(orgs);
@@ -300,8 +302,8 @@ export default function OrganizationsSettings(): React.ReactElement {
     return <Loader />;
   }
 
-  const organization = organizations.find(o => o.id === selectedOrganization);
-  const { role } = organization?.members.find(u => u.id === userInfo.sub) || {};
+  const organization = organizations.find((o) => o.id === selectedOrganization);
+  const { role } = organization?.members.find((u) => u.id === userInfo.sub) || {};
   const canManageMembers = role && checkRole(role, permissions.ManageMembers);
   const canManageRoles = role && checkRole(role, permissions.ManageRoles);
 
@@ -346,7 +348,7 @@ export default function OrganizationsSettings(): React.ReactElement {
             maxLength={30}
             name="id"
             placeholder={intl.formatMessage(messages.organizationId)}
-            preprocess={value => normalize(value, false)}
+            preprocess={(value) => normalize(value, false)}
             required
           />
           <SimpleSubmit disabled={!userInfo.email_verified}>
@@ -366,7 +368,7 @@ export default function OrganizationsSettings(): React.ReactElement {
               onChange={onOrganizationChange}
               value={selectedOrganization}
             >
-              {organizations.map(org => (
+              {organizations.map((org) => (
                 <option key={org.id} value={org.id}>
                   {org.name}
                 </option>
@@ -407,7 +409,7 @@ export default function OrganizationsSettings(): React.ReactElement {
                 </tr>
               </thead>
               <tbody>
-                {organization.members.map(member => (
+                {organization.members.map((member) => (
                   <tr key={member.id}>
                     <td>
                       <span>{member.name || member.primaryEmail || member.id}</span>
@@ -444,7 +446,7 @@ export default function OrganizationsSettings(): React.ReactElement {
                       <div className={`field is-grouped ${styles.tags}`}>
                         {member.id === userInfo.sub &&
                           organization.members.length > 1 &&
-                          organization.members.some(m =>
+                          organization.members.some((m) =>
                             checkRole(m.role, permissions.ManageRoles),
                           ) && (
                             <p className={`control ${styles.memberButton}`}>
@@ -469,7 +471,7 @@ export default function OrganizationsSettings(): React.ReactElement {
                     </td>
                   </tr>
                 ))}
-                {organization.invites.map(invite => (
+                {organization.invites.map((invite) => (
                   <tr key={invite.email}>
                     <td>{invite.email}</td>
                     <td className="has-text-right">

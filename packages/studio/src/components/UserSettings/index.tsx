@@ -26,7 +26,7 @@ export default function UserSettings(): React.ReactElement {
   const [deleting, setDeleting] = React.useState<string>(null);
 
   const onSaveProfile = React.useCallback(
-    async values => {
+    async (values) => {
       await axios.put('/api/user', values);
       refreshUserInfo();
       push({ body: intl.formatMessage(messages.submitSuccess), color: 'success' });
@@ -35,7 +35,7 @@ export default function UserSettings(): React.ReactElement {
   );
 
   const onAddNewEmail = React.useCallback(
-    async values => {
+    async (values) => {
       await axios.post('/api/user/email', values);
       push({
         body: intl.formatMessage(messages.addEmailSuccess),

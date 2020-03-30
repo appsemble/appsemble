@@ -21,13 +21,12 @@ module.exports = (env, argv) => {
   const { mode } = argv;
   const production = mode === 'production';
   const studioEntry = path.resolve(__dirname, '../../packages/studio/src');
-  const legacyEntry = path.join(studioEntry, 'legacy');
 
   return merge.smart(core(env, argv), {
     name: 'Appsemble Studio',
-    entry: { studio: [studioEntry], legacy: [legacyEntry] },
+    entry: [studioEntry],
     output: {
-      filename: production ? '_/[hash].js' : '_/studio/[name].js',
+      filename: production ? '_/[contentHash].js' : '_/studio/[name].js',
       publicPath,
     },
     plugins: [
@@ -46,7 +45,7 @@ module.exports = (env, argv) => {
         globOptions: { ignore: ['**/node_modules/**', '**/package.json', '**/*.test.{js,ts,tsx}'] },
       }),
       new MiniCssExtractPlugin({
-        filename: production ? '_/[hash].css' : '_/studio/[name].css',
+        filename: production ? '_/[contentHash].css' : '_/studio/[name].css',
       }),
       new MonacoWebpackPlugin({ languages: ['css', 'json', 'yaml'] }),
     ],

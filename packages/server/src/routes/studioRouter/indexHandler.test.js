@@ -8,6 +8,8 @@ let request;
 let templateName;
 let templateData;
 
+jest.mock('crypto');
+
 beforeAll(async () => {
   app = new Koa();
   app.context.argv = { host: 'https://app.example:9999' };
@@ -40,7 +42,7 @@ it('should serve the studio index page with correct headers', async () => {
         "; font-src 'self' https://fonts.gstatic.com" +
         '; frame-src *.localhost:9999 http://localhost:9999' +
         '; img-src * blob: data:' +
-        "; script-src 'self' 'sha256-9sOokSPGKu0Vo4/TBZI1T7Bm5ThrXz9qTWATwd3augo=' 'unsafe-eval'" +
+        "; script-src 'nonce-AAAAAAAAAAAAAAAAAAAAAA==' 'self' 'sha256-9sOokSPGKu0Vo4/TBZI1T7Bm5ThrXz9qTWATwd3augo=' 'unsafe-eval'" +
         "; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
       'content-type': 'text/html; charset=utf-8',
     }),
@@ -70,7 +72,7 @@ it('should pass login options from argv to the studio', async () => {
         '; frame-src *.localhost:9999 http://localhost:9999' +
         '; img-src * blob: data:' +
         '; report-uri https://sentry.io/api/path/security/?sentry_key=secret' +
-        "; script-src 'self' 'sha256-u7Lwg39nDVoG/C+KUi2A+femGRBoDntSTyJiVRgbfqc=' 'unsafe-eval'" +
+        "; script-src 'nonce-AAAAAAAAAAAAAAAAAAAAAA==' 'self' 'sha256-u7Lwg39nDVoG/C+KUi2A+femGRBoDntSTyJiVRgbfqc=' 'unsafe-eval'" +
         "; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
       'content-type': 'text/html; charset=utf-8',
     }),

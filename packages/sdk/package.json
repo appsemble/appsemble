@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/sdk",
-  "version": "0.12.1",
+  "version": "0.12.3",
   "description": "Build your own blocks",
   "homepage": "https://appsemble.dev",
   "bugs": {
@@ -13,11 +13,11 @@
   },
   "license": "LGPL-3.0-or-later",
   "author": "Appsemble <info@appsemble.com> (https://appsemble.com)",
+  "browser": "dist",
+  "types": "dist",
   "files": [
     "dist"
   ],
-  "browser": "dist",
-  "types": "dist",
   "scripts": {
     "prepack": "tsc -p tsconfig.build.json"
   },

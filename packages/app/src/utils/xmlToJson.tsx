@@ -25,7 +25,7 @@ function parseFromString(value: string, schema: OpenAPIV3.SchemaObject): JsonVal
 }
 
 function matchNode(xmlObject: OpenAPIV3.XMLObject, tagName: string): (node: Element) => boolean {
-  return node =>
+  return (node) =>
     // eslint-disable-next-line eqeqeq
     node.prefix == xmlObject?.prefix && node.localName === (xmlObject?.name || tagName);
 }

@@ -50,7 +50,7 @@ async function getClientCredentials(remote: string, inputCredentials: string): P
       {
         name: 'choice',
         message: 'Select client id to use',
-        choices: choices.map(value => ({ name: value.account, value })),
+        choices: choices.map((value) => ({ name: value.account, value })),
         type: 'list',
       },
     ]));
@@ -99,7 +99,7 @@ export async function remove({ remote }: BaseArguments): Promise<void> {
     },
   ]);
   await Promise.all(
-    clientIds.map(async clientId => {
+    clientIds.map(async (clientId) => {
       await deletePassword(getService(remote), clientId);
       logger.info(`Succesfully delete client id ${clientId}`);
     }),

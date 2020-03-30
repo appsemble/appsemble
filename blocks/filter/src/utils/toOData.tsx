@@ -7,7 +7,7 @@ export default function toOData(fields: FilterField[], filter: Filter): string {
         return '';
       }
 
-      const field = fields.find(f => f.name === key);
+      const field = fields.find((f) => f.name === key);
 
       if (field.type === undefined || field.type === 'string') {
         return `substringof('${data}',${key})`;
@@ -25,7 +25,7 @@ export default function toOData(fields: FilterField[], filter: Filter): string {
           return '';
         }
 
-        return `(${(data as string[]).map(value => `${key} eq '${value}'`).join(' or ')})`;
+        return `(${(data as string[]).map((value) => `${key} eq '${value}'`).join(' or ')})`;
       }
 
       return `${key} eq '${data}'`;

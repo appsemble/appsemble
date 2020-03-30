@@ -132,7 +132,7 @@ export default function UserProvider({ children }: UserProviderProps): React.Rea
             .get<AppMember>(`${settings.apiUrl}/api/apps/${settings.id}/members/${sub}`, config)
             .then(
               ({ data }) => data.role,
-              error => {
+              (error) => {
                 const { policy, role: defaultRole } = definition.security.default;
                 if (
                   policy === 'everyone' ||
@@ -237,7 +237,7 @@ export default function UserProvider({ children }: UserProviderProps): React.Rea
       return undefined;
     }
 
-    const interceptor = axios.interceptors.request.use(config => {
+    const interceptor = axios.interceptors.request.use((config) => {
       // Only assign the authorization header to requests made to the Appsemble API.
       if (new URL(axios.getUri(config)).origin === settings.apiUrl) {
         Object.assign(config.headers, { authorization });
