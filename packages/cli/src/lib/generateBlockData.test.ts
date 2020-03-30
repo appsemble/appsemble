@@ -16,7 +16,7 @@ function fixture(filename: string): string {
 describe('generateBlockData', () => {
   it('should extract configuration from a TypeScript project', () => {
     const result = generateBlockData(
-      { name: '', layout: 'float', version: '1.33.7', webpack: '', dist: '', output: '', dir: '' },
+      { id: '', layout: 'float', version: '1.33.7', webpack: '', dist: '', output: '', dir: '' },
       path.join(__dirname, '__fixtures__/generateBlockData/valid'),
     );
     expect(result).toStrictEqual({
@@ -67,7 +67,7 @@ describe('generateBlockData', () => {
         dist: '',
         output: '',
         dir: '',
-        name: '',
+        id: '',
       },
       fixture('valid'),
     );
@@ -103,7 +103,7 @@ describe('generateBlockData', () => {
         dist: '',
         output: '',
         dir: '',
-        name: '',
+        id: '',
       },
       fixture('valid'),
     );
@@ -120,7 +120,7 @@ describe('generateBlockData', () => {
         dist: '',
         output: '',
         dir: '',
-        name: '',
+        id: '',
       },
       fixture('valid'),
     );
@@ -136,7 +136,7 @@ describe('generateBlockData', () => {
           dist: '',
           output: '',
           dir: '',
-          name: '',
+          id: '',
           version: '1.33.7',
         },
         fixture('duplicateActions'),
@@ -156,7 +156,7 @@ describe('generateBlockData', () => {
           dist: '',
           output: '',
           dir: '',
-          name: '',
+          id: '',
           version: '1.33.7',
         },
         fixture('duplicateEventEmitters'),
@@ -176,7 +176,7 @@ describe('generateBlockData', () => {
           dist: '',
           output: '',
           dir: '',
-          name: '',
+          id: '',
           version: '1.33.7',
         },
         fixture('duplicateEventListeners'),
@@ -196,7 +196,7 @@ describe('generateBlockData', () => {
           dist: '',
           output: '',
           dir: '',
-          name: '',
+          id: '',
           version: '1.33.7',
         },
         fixture('duplicateParameters'),
@@ -215,7 +215,7 @@ describe('generateBlockData', () => {
         dist: '',
         output: '',
         dir: '',
-        name: '',
+        id: '',
         version: '1.33.7',
       },
       fixture('fontawesomeParameters'),
@@ -243,7 +243,7 @@ describe('generateBlockData', () => {
     function fn(): void {
       generateBlockData(
         {
-          name: '',
+          id: '',
           layout: 'float',
           version: '1.33.7',
           webpack: '',
