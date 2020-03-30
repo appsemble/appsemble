@@ -1,20 +1,25 @@
-import { Button, Loader } from '@appsemble/react-components';
+import { Button, Loader, useMessages } from '@appsemble/react-components';
 import { Block } from '@appsemble/sdk';
 import axios from 'axios';
 import React from 'react';
+import { useIntl } from 'react-intl';
 
 import { GuiEditorStep } from '../Editor';
 import styles from './index.css';
+import messages from './messages';
 
 enum parameterType {
   STRING = 'string',
   BOOLEAN = 'boolean',
   INTEGER = 'integer',
+  NUMBER = 'number',
 }
 
 export default function GUIEditorEditBlock(params: any): React.ReactElement {
   const [selectedBlockParams, setSelectedBlockParams] = React.useState<Block>();
   const edittedParams: any[any] = [];
+  const intl = useIntl();
+  const push = useMessages();
 
   React.useEffect(() => {
     const getBlockParameters = async (): Promise<void> => {
@@ -28,12 +33,46 @@ export default function GUIEditorEditBlock(params: any): React.ReactElement {
     getBlockParameters();
   }, [params.selectedBlock.id]);
 
+  const submit = (): void => {
+    const requiredParam = selectedBlockParams.parameters.required;
+    const emptyRequiredParam: any[] = [];
+
+    Object.keys(selectedBlockParams.parameters.properties).map((item: any) => {
+      if (requiredParam !== undefined) {
+        requiredParam.map((requiredItem: string) => {
+          if (
+            (item.includes(requiredItem) && edittedParams[item] === undefined) ||
+            (item.includes(requiredItem) && edittedParams[item] === '')
+          ) {
+            emptyRequiredParam.push(item);
+          }
+          return emptyRequiredParam;
+        });
+      }
+      return requiredParam;
+    });
+
+    if (emptyRequiredParam.length === 0) {
+      params.save(edittedParams, selectedBlockParams);
+    } else {
+      emptyRequiredParam.map((requiredItem: string) =>
+        push({
+          body: intl.formatMessage(messages.errorRequiredParams) + requiredItem,
+          color: 'warning',
+        }),
+      );
+    }
+  };
+
   function handleChange(event: any, item: any): void {
     const { target } = event;
-    if (selectedBlockParams.parameters.properties[item].type === parameterType.BOOLEAN) {
+    const { type } = selectedBlockParams.parameters.properties[item];
+    if (type === parameterType.BOOLEAN) {
       edittedParams[item] = target.checked;
+    } else if (type === parameterType.STRING) {
+      edittedParams[item] = `'${target.value}'`;
     } else {
-      edittedParams[item] = target.value;
+      edittedParams[item] = `${target.value}`;
     }
   }
 
@@ -99,6 +138,7 @@ export default function GUIEditorEditBlock(params: any): React.ReactElement {
             </div>
           );
         case parameterType.INTEGER:
+        case parameterType.NUMBER:
           return (
             <div key={i} className="field" tabIndex={i}>
               <div className="control">
@@ -130,8 +170,6 @@ export default function GUIEditorEditBlock(params: any): React.ReactElement {
     return <Loader />;
   }
 
-  // TODO: function to write yaml code and put it on right spot
-
   return (
     <div className={styles.flexContainer}>
       <h1 className="title" style={{ textTransform: 'capitalize' }}>
@@ -151,17 +189,17 @@ export default function GUIEditorEditBlock(params: any): React.ReactElement {
           }}
           style={{ alignContent: 'flex-start' }}
         >
-          Back
+          {intl.formatMessage(messages.back)}
         </Button>
         <Button
           className="button is-success"
           icon="check"
           onClick={() => {
-            params.setEditorStep(GuiEditorStep.YAML);
+            submit();
           }}
           style={{ alignContent: 'flex-end' }}
         >
-          Save
+          {intl.formatMessage(messages.save)}
         </Button>
       </div>
     </div>

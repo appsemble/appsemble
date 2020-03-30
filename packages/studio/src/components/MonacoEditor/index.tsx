@@ -13,6 +13,7 @@ interface MonacoEditorProps {
   options: editor.IEditorOptions;
   selectedItem?: any;
   setSelectedBlockParent?: any;
+  setEditor?: any;
 }
 
 interface SelectedItem {
@@ -42,11 +43,13 @@ export default class MonacoEditor extends React.Component<MonacoEditorProps> {
   };
 
   componentDidMount(): void {
-    const { language, options, value } = this.props;
+    const { language, options, setEditor, value } = this.props;
     const model = editor.createModel(value, language);
 
     this.editor = editor.create(this.node.current, options);
     this.editor.setModel(model);
+
+    setEditor(this.editor);
 
     // eslint-disable-next-line no-bitwise
     this.editor.addCommand(KeyMod.CtrlCmd | KeyCode.KEY_S, this.onMonacoSave);
@@ -84,10 +87,6 @@ export default class MonacoEditor extends React.Component<MonacoEditorProps> {
   }
 
   componentWillUnmount(): void {
-    if (this.editor) {
-      this.editor.dispose();
-    }
-
     if (this.subscription) {
       this.subscription.dispose();
     }
