@@ -3,7 +3,7 @@ import { AppDefinition } from '@appsemble/types';
 import { AppsembleValidationError, validateHooks, validateSecurity } from './validateAppDefinition';
 
 describe('validateSecurity', () => {
-  it('does not throw errors on valid definitions', () => {
+  it('should not throw errors on valid definitions', () => {
     const definition: AppDefinition = {
       defaultPage: '',
       security: {
@@ -28,7 +28,7 @@ describe('validateSecurity', () => {
     expect(() => validateSecurity(definition)).not.toThrow();
   });
 
-  it('throws errors on cyclic dependencies', () => {
+  it('should throw errors on cyclic dependencies', () => {
     const definition: AppDefinition = {
       defaultPage: '',
       security: {
@@ -46,7 +46,7 @@ describe('validateSecurity', () => {
     );
   });
 
-  it('checks non-existent default roles', () => {
+  it('should check for non-existent default roles', () => {
     const definition: AppDefinition = {
       defaultPage: '',
       security: {
@@ -64,7 +64,7 @@ describe('validateSecurity', () => {
     );
   });
 
-  it('checks non-existent app roles', () => {
+  it('should check for non-existent app roles', () => {
     const definition: AppDefinition = {
       defaultPage: '',
       security: {
@@ -83,7 +83,7 @@ describe('validateSecurity', () => {
     );
   });
 
-  it('checks non-existent page roles', () => {
+  it('should check for non-existent page roles', () => {
     const definition: AppDefinition = {
       defaultPage: '',
       security: {
@@ -105,7 +105,7 @@ describe('validateSecurity', () => {
     );
   });
 
-  it('checks non-existent block roles', () => {
+  it('should check for non-existent block roles', () => {
     const definition: AppDefinition = {
       defaultPage: '',
       security: {
@@ -126,7 +126,7 @@ describe('validateSecurity', () => {
     );
   });
 
-  it('checks non-existent block roles in subpages', () => {
+  it('should check for non-existent block roles in subpages', () => {
     const definition: AppDefinition = {
       defaultPage: '',
       security: {
