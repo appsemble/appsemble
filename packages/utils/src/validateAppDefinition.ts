@@ -22,9 +22,6 @@ export class AppsembleValidationError extends Error {
 }
 
 async function checkBlocks(blocks: BlockMap, blockVersions: BlockManifest[]): Promise<void> {
-  const ajv = new Ajv();
-  ajv.addFormat('fontawesome', () => true);
-
   const blockVersionMap = new Map<string, Map<string, BlockManifest>>();
   blockVersions.forEach((version) => {
     if (!blockVersionMap.has(version.name)) {
@@ -45,6 +42,8 @@ async function checkBlocks(blocks: BlockMap, blockVersions: BlockManifest[]): Pr
     const actionParameters = new Set<string>();
     const version = versions.get(block.version);
     if (version.parameters) {
+      const ajv = new Ajv();
+      ajv.addFormat('fontawesome', () => true);
       ajv.addFormat('action', (property) => {
         actionParameters.add(property);
         return block.actions && Object.prototype.hasOwnProperty.call(block.actions, property);
@@ -65,14 +64,15 @@ async function checkBlocks(blocks: BlockMap, blockVersions: BlockManifest[]): Pr
     Object.keys(block.actions || {}).forEach((key) => {
       if (
         !actionParameters.has(key) &&
+        version.actions &&
         !Object.prototype.hasOwnProperty.call(version.actions, key)
       ) {
-        throw new AppsembleValidationError(`Defined custom action “${key}” is unused.`);
+        acc[`${loc}.versions.${key}`] = 'Unknown action type';
       }
     });
 
     return acc;
-  }, null);
+  }, null as { [error: string]: string });
   if (errors) {
     throw new AppsembleValidationError('Block validation failed', errors);
   }
@@ -85,7 +85,7 @@ async function checkBlocks(blocks: BlockMap, blockVersions: BlockManifest[]): Pr
  * @param role The role the user is checked against.
  * @param checkedRoles Array containing the roles already checked.
  */
-export function validateSecurityRoles(
+function validateSecurityRoles(
   securityDefinition: Security,
   role: string,
   checkedRoles: string[] = [],
