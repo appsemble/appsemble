@@ -40,22 +40,22 @@ describe('convertToCsv', () => {
   });
 
   it('should escape strings containing commas', () => {
-    const input = [{ foo: 'foo,bar' }];
-    const output = 'foo\r\n"foo,bar"\r\n';
+    const input = [{ 'foo,bar': 'foo,bar' }];
+    const output = '"foo,bar"\r\n"foo,bar"\r\n';
 
     expect(convertToCsv(input)).toStrictEqual(output);
   });
 
   it('should escape strings containing newlines', () => {
-    const input = { foo: 'foo\r\nbar' };
-    const output = 'foo\r\n"foo\r\nbar"\r\n';
+    const input = { 'foo\r\nline2': 'foo\r\nbar' };
+    const output = '"foo\r\nline2"\r\n"foo\r\nbar"\r\n';
 
     expect(convertToCsv(input)).toStrictEqual(output);
   });
 
   it('should escape quotes', () => {
-    const input = { foo: 'Lots of "str"ings"' };
-    const output = 'foo\r\n"Lots of ""str""ings"""\r\n';
+    const input = { 'foo "example" bar': 'Lots of "str"ings"' };
+    const output = '"foo ""example"" bar"\r\n"Lots of ""str""ings"""\r\n';
 
     expect(convertToCsv(input)).toStrictEqual(output);
   });

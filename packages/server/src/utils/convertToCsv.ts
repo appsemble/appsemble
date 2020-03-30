@@ -12,6 +12,10 @@ export default function convertToCsv(body: { [key: string]: any }): string {
   const lineEnd = '\r\n';
   const quote = '"';
   const quoteRegex = new RegExp(quote, 'g');
+  const escape = (value: string): string =>
+    value.includes(separator) || value.includes(lineEnd) || value.includes(quote)
+      ? `${quote}${value.replace(quoteRegex, `${quote}${quote}`)}${quote}`
+      : value;
 
   if (body == null) {
     throw new AppsembleError('No data');
@@ -23,16 +27,14 @@ export default function convertToCsv(body: { [key: string]: any }): string {
 
   const data = Array.isArray(body) ? body : [body];
 
-  const headers = [...new Set(data.map(Object.keys).flat())]
-    .sort()
-    .map(header => header.replace(quoteRegex, `${quote}${quote}`));
+  const headers = [...new Set(data.map(Object.keys).flat())].sort();
 
   if (headers.length === 0) {
     throw new AppsembleError('No headers could be found');
   }
 
-  const lines = data.map(object => {
-    const values = headers.map(header => {
+  const lines = data.map((object) => {
+    const values = headers.map((header) => {
       let value = object[header];
       if (value == null) {
         return '';
@@ -42,15 +44,11 @@ export default function convertToCsv(body: { [key: string]: any }): string {
         value = JSON.stringify(value);
       }
 
-      if (value.includes(separator) || value.includes(lineEnd) || value.includes(quote)) {
-        value = `${quote}${value.replace(quoteRegex, `${quote}${quote}`)}${quote}`;
-      }
-
-      return value;
+      return escape(value);
     });
 
     return `${values.join(separator)}`;
   });
 
-  return `${headers.join(separator)}${lineEnd}${lines.join(lineEnd)}${lineEnd}`;
+  return `${headers.map(escape).join(separator)}${lineEnd}${lines.join(lineEnd)}${lineEnd}`;
 }
