@@ -1,6 +1,133 @@
 import { AppDefinition } from '@appsemble/types';
 
-import { AppsembleValidationError, validateHooks, validateSecurity } from './validateAppDefinition';
+import {
+  AppsembleValidationError,
+  checkBlocks,
+  validateHooks,
+  validateSecurity,
+} from './validateAppDefinition';
+
+describe('checkBlocks', () => {
+  it('should validate block parameters using JSON schema', () => {
+    let error: AppsembleValidationError;
+    try {
+      checkBlocks(
+        { 'pages.0.blocks.0': { type: 'test', version: '1.2.3', parameters: { prop: 1 } } },
+        [
+          {
+            name: '@appsemble/test',
+            version: '1.2.3',
+            files: [],
+            parameters: {
+              type: 'object',
+              properties: {
+                prop: { type: 'string' },
+              },
+            },
+          },
+        ],
+      );
+    } catch (err) {
+      error = err;
+    }
+    expect(error).toBeInstanceOf(AppsembleValidationError);
+    expect(error.message).toBe('Block validation failed');
+    expect(error.data).toStrictEqual({
+      'pages.0.blocks.0.parameters.prop': 'should be string',
+    });
+  });
+
+  it('should not throw on success', () => {
+    expect(() =>
+      checkBlocks({ 'pages.0.blocks.0': { type: 'test', version: '1.2.3' } }, [
+        { name: '@appsemble/test', version: '1.2.3', files: [] },
+      ]),
+    ).not.toThrow();
+  });
+
+  it('should validate whether block types exist', () => {
+    let error: AppsembleValidationError;
+    try {
+      checkBlocks({ 'pages.0.blocks.0': { type: 'test', version: '1.2.3' } }, []);
+    } catch (err) {
+      error = err;
+    }
+    expect(error).toBeInstanceOf(AppsembleValidationError);
+    expect(error.message).toBe('Block validation failed');
+    expect(error.data).toStrictEqual({
+      'pages.0.blocks.0': 'Unknown block type “@appsemble/test”',
+    });
+  });
+
+  it('should throw on unknown action types', () => {
+    let error: AppsembleValidationError;
+    try {
+      checkBlocks(
+        { 'pages.0.blocks.0': { type: 'test', version: '1.2.3', actions: { onClick: {} } } },
+        [{ name: '@appsemble/test', version: '1.2.3', files: [], actions: { onTap: {} } }],
+      );
+    } catch (err) {
+      error = err;
+    }
+    expect(error).toBeInstanceOf(AppsembleValidationError);
+    expect(error.message).toBe('Block validation failed');
+    expect(error.data).toStrictEqual({
+      'pages.0.blocks.0.actions.onClick': 'Unknown action type',
+    });
+  });
+
+  it('should validate wildcard actions', () => {
+    let error: AppsembleValidationError;
+    try {
+      checkBlocks(
+        {
+          'pages.0.blocks.0': {
+            type: 'test',
+            version: '1.2.3',
+            actions: { onClick: {}, onTap: {} },
+            parameters: { customAction: 'onClick' },
+          },
+        },
+        [
+          {
+            name: '@appsemble/test',
+            version: '1.2.3',
+            files: [],
+            actions: { $any: {} },
+            parameters: {
+              type: 'object',
+              properties: { customAction: { type: 'string', format: 'action' } },
+            },
+          },
+        ],
+      );
+    } catch (err) {
+      error = err;
+    }
+    expect(error).toBeInstanceOf(AppsembleValidationError);
+    expect(error.message).toBe('Block validation failed');
+    expect(error.data).toStrictEqual({
+      'pages.0.blocks.0.actions.onTap': 'Unknown action type',
+    });
+  });
+
+  it('should throw if a block doens’t support actions', () => {
+    let error: AppsembleValidationError;
+    try {
+      checkBlocks(
+        { 'pages.0.blocks.0': { type: 'test', version: '1.2.3', actions: { onClick: {} } } },
+        [{ name: '@appsemble/test', version: '1.2.3', files: [] }],
+      );
+    } catch (err) {
+      error = err;
+    }
+    expect(error).toBeInstanceOf(AppsembleValidationError);
+    expect(error.message).toBe('Block validation failed');
+    expect(error.data).toStrictEqual({
+      'pages.0.blocks.0.actions': 'This block doesn’t support any actions',
+    });
+  });
+});
 
 describe('validateSecurity', () => {
   it('should not throw errors on valid definitions', () => {

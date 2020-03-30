@@ -21,7 +21,7 @@ export class AppsembleValidationError extends Error {
   }
 }
 
-async function checkBlocks(blocks: BlockMap, blockVersions: BlockManifest[]): Promise<void> {
+export function checkBlocks(blocks: BlockMap, blockVersions: BlockManifest[]): void {
   const blockVersionMap = new Map<string, Map<string, BlockManifest>>();
   blockVersions.forEach((version) => {
     if (!blockVersionMap.has(version.name)) {
@@ -54,26 +54,32 @@ async function checkBlocks(blocks: BlockMap, blockVersions: BlockManifest[]): Pr
         return validate.errors.reduce(
           (accumulator, error) => ({
             ...accumulator,
-            [`${loc}.parameters${error.dataPath}`]: error,
+            [`${loc}.parameters${error.dataPath}`]: error.message,
           }),
           acc,
         );
       }
     }
 
+    if (!version.actions) {
+      if (block.actions) {
+        return { ...acc, [`${loc}.actions`]: 'This block doesn’t support any actions' };
+      }
+      return acc;
+    }
+
     Object.keys(block.actions || {}).forEach((key) => {
-      if (
-        !actionParameters.has(key) &&
-        version.actions &&
-        !Object.prototype.hasOwnProperty.call(version.actions, key)
-      ) {
-        acc[`${loc}.versions.${key}`] = 'Unknown action type';
+      if (version.actions.$any && actionParameters.has(key)) {
+        return;
+      }
+      if (!Object.prototype.hasOwnProperty.call(version.actions, key)) {
+        acc[`${loc}.actions.${key}`] = 'Unknown action type';
       }
     });
 
     return acc;
-  }, null as { [error: string]: string });
-  if (errors) {
+  }, {} as { [error: string]: string });
+  if (Object.keys(errors).length) {
     throw new AppsembleValidationError('Block validation failed', errors);
   }
 }
@@ -200,5 +206,5 @@ export default async function validateAppDefinition(
     validateHooks(definition);
   }
 
-  await checkBlocks(blocks, blockVersions);
+  checkBlocks(blocks, blockVersions);
 }
