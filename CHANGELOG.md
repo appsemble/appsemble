@@ -7,6 +7,9 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+- CLI: Remove `block register` command. You can now always use `block publish` when publishing new
+  blocks or new block versions.
+
 ## [0.12.3] - 2020-03-27
 
 ### Fixes
