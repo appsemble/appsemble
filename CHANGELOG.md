@@ -7,6 +7,12 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- Server: Add support for outputting CSV in resource API.
+
+### Changed
+
 - CLI: Remove `block register` command. You can now always use `block publish` when publishing new
   blocks or new block versions.
 

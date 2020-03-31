@@ -20,6 +20,11 @@ export default {
                 },
               },
             },
+            'text/csv': {
+              schema: {
+                type: 'string',
+              },
+            },
           },
         },
       },
