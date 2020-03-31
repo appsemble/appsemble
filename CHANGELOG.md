@@ -7,7 +7,11 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
-### Changes
+### Added
+
+- Server: Add support for outputting CSV in resource API.
+
+### Changed
 
 - Block(`@appsemble/detail-viewer`): Make `field.label` render no label instead of `field.name` if
   the label is undefined.
