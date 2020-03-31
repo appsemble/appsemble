@@ -111,7 +111,7 @@ describe('checkBlocks', () => {
     });
   });
 
-  it('should throw if a block doens’t support actions', () => {
+  it('should throw if a block doesn’t support actions', () => {
     let error: AppsembleValidationError;
     try {
       checkBlocks(
