@@ -11,23 +11,23 @@ A block used for inputting and submitting sets of data.
 
 ## Actions
 
-| Action          | Required | Description                                                               |
-| --------------- | -------- | ------------------------------------------------------------------------- |
-| onSubmit        | true     | Action that gets dispatched when the form is submitted                    |
-| onSubmitSuccess | false    | Action that gets dispatched when the form has been submitted successfully |
+| Action          | Required | Description                                                                |
+| --------------- | -------- | -------------------------------------------------------------------------- |
+| onSubmit        | true     | Action that gets dispatched when the form is submitted.                    |
+| onSubmitSuccess | false    | Action that gets dispatched when the form has been submitted successfully. |
 
 ## Parameters
 
 | Parameter             | Default      | Description                                                                               |
 | --------------------- | ------------ | ----------------------------------------------------------------------------------------- |
-| fields                |              | A list of objects describing each field that can be entered in the form                   |
+| fields                |              | A list of objects describing each field that can be entered in the form.                  |
 | fields[].defaultValue |              | The default value for the field.                                                          |
-| fields[].name         |              | The name used when storing this field                                                     |
-| fields[].label        | field[].name | User-facing label describing the field                                                    |
-| fields[].type         | string       | The type of the data                                                                      |
-| fields[].maxWidth     |              | The maximum width of uploaded images                                                      |
-| fields[].maxHeight    |              | The maximum height of uploaded images                                                     |
-| fields[].quality      |              | The quality modifier to use when uploading images, in percentages                         |
+| fields[].name         |              | The name used when storing this field.                                                    |
+| fields[].label        | field[].name | User-facing label describing the field. If not defined, no label will be displayed.       |
+| fields[].type         | string       | The type of the data.                                                                     |
+| fields[].maxWidth     |              | The maximum width of uploaded images.                                                     |
+| fields[].maxHeight    |              | The maximum height of uploaded images.                                                    |
+| fields[].quality      |              | The quality modifier to use when uploading images, in percentages.                        |
 | fields[].required     | false        | Whether the field is required or not. The form input will be validated based on its type. |
 
 ## Events
@@ -46,10 +46,10 @@ Based on the type of field, additional parameters are available.
 
 A regular text entry field.
 
-| Parameter            | Description                                                                                 |
-| -------------------- | ------------------------------------------------------------------------------------------- |
-| fields[].placeholder | Placeholder value displayed when field is empty                                             |
-| fields[].multiline   | Boolean value representing whether to use a multline text field or a single line text field |
+| Parameter            | Description                                                                                  |
+| -------------------- | -------------------------------------------------------------------------------------------- |
+| fields[].placeholder | Placeholder value displayed when field is empty.                                             |
+| fields[].multiline   | Boolean value representing whether to use a multline text field or a single line text field. |
 
 ##### `number` and `integer`
 
@@ -58,19 +58,19 @@ A number entry field.
 Both `number` and `integer` represent numbers with the latter representing whole numbers and the
 former allowing for decimals.
 
-| Parameter     | Description                                                 |
-| ------------- | ----------------------------------------------------------- |
-| fields[].min  | The minimum allowed value                                   |
-| fields[].max  | The maximum allowed value                                   |
-| fields[].step | The size of a step whenever the increment button is pressed |
+| Parameter     | Description                                                  |
+| ------------- | ------------------------------------------------------------ |
+| fields[].min  | The minimum allowed value.                                   |
+| fields[].max  | The maximum allowed value.                                   |
+| fields[].step | The size of a step whenever the increment button is pressed. |
 
 ##### `boolean`
 
 A checkbox that returns `true` when checked and `false` when not.
 
-| Parameter          | Description                                |
-| ------------------ | ------------------------------------------ |
-| fields[].labelText | The text that appears next to the checkbox |
+| Parameter          | Description                                                                                                                                                                     |
+| ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| fields[].labelText | The text that appears next to the checkbox. `field.label` will be displayed if not defined. If `field.labelText` and `field.label` are not defined, no label will be displayed. |
 
 ##### `geocoordinates`
 
@@ -80,10 +80,10 @@ A location picker used to select a location.
 
 An input field used to upload files.
 
-| Parameter         | Description                                                                                                                              |
-| ----------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
-| fields[].accept   | A list of accepted [MIME-types](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Complete_list_of_MIME_types) |
-| fields[].repeated | Boolean value representing whether to accept one file or multiple files                                                                  |
+| Parameter         | Description                                                                                                                               |
+| ----------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| fields[].accept   | A list of accepted [MIME-types](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Complete_list_of_MIME_types). |
+| fields[].repeated | Boolean value representing whether to accept one file or multiple files.                                                                  |
 
 ##### `enum`
 
@@ -92,8 +92,8 @@ A dropdown list containing a list of predetermined values.
 | Parameter             | Description                                                                   |
 | --------------------- | ----------------------------------------------------------------------------- |
 | fields[].placeholder  | The name of the default (empty) option when the enum field is _not_ required. |
-| fields[].enum[].value | The value and name of the field that can be selected                          |
-| fields[].enum[].label | The label of the field that can be selected                                   |
+| fields[].enum[].value | The value and name of the field that can be selected.                         |
+| fields[].enum[].label | The label of the field that can be selected.                                  |
 
 #### `hidden`
 
