@@ -2,9 +2,15 @@ import { partialNormalized, partialSemver } from '@appsemble/utils';
 
 import tinyRouter from '../../middleware/tinyRouter';
 import blockAssetHandler from './blockAssetHandler';
+import blockCSSHandler from './blockCSSHandler';
+import cssHandler from './cssHandler';
 import iconHandler from './iconHandler';
 import indexHandler from './indexHandler';
 import manifestHandler from './manifestHandler';
+import organizationBlockCSSHandler from './organizationBlockCSSHandler';
+import organizationCSSHandler from './organizationCSSHandler';
+
+const blockId = `(?<name>@${partialNormalized.source}/${partialNormalized.source})`;
 
 export default tinyRouter([
   {
@@ -17,9 +23,33 @@ export default tinyRouter([
   },
   {
     route: new RegExp(
-      `^/api/blocks/(?<name>@${partialNormalized.source}/${partialNormalized.source})/versions/(?<version>${partialSemver.source})/(?<filename>.+)$`,
+      `^/api/blocks/${blockId}/versions/(?<version>${partialSemver.source})/(?<filename>.+)$`,
     ),
     get: blockAssetHandler,
+  },
+  {
+    route: '/core.css',
+    get: cssHandler('style'),
+  },
+  {
+    route: '/organization/core.css',
+    get: organizationCSSHandler('coreStyle'),
+  },
+  {
+    route: '/shared.css',
+    get: cssHandler('sharedStyle'),
+  },
+  {
+    route: '/organization/shared.css',
+    get: organizationCSSHandler('sharedStyle'),
+  },
+  {
+    route: new RegExp(`^/${blockId}\\.css`),
+    get: blockCSSHandler,
+  },
+  {
+    route: new RegExp(`^/organization/${blockId}\\.css`),
+    get: organizationBlockCSSHandler,
   },
   {
     route: new RegExp(`^(/${partialNormalized.source})?`),

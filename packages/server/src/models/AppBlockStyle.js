@@ -35,6 +35,7 @@ export default (sequelize) => {
 
   AppBlockStyle.associate = ({ App }) => {
     AppBlockStyle.belongsTo(App);
+    App.hasMany(AppBlockStyle);
   };
 
   return AppBlockStyle;

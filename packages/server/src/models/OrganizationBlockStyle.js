@@ -34,6 +34,7 @@ export default (sequelize) => {
 
   OrganizationBlockStyle.associate = ({ Organization }) => {
     OrganizationBlockStyle.belongsTo(Organization, { foreignKey: 'OrganizationId' });
+    Organization.hasMany(OrganizationBlockStyle);
   };
 
   return OrganizationBlockStyle;
