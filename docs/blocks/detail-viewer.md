@@ -11,13 +11,13 @@ A block that can be used to display various fields based on input data.
 
 ## Parameters
 
-| Parameter      | Default       | Description                                                                               |
-| -------------- | ------------- | ----------------------------------------------------------------------------------------- |
-| fields         |               | A list of fields to display based on the name from the schema                             |
-| fileBase       |               | The base URL of the associated files                                                      |
-| fields[].name  |               | The name of the property of the data to fetch from. Supports dot notation.                |
-| fields[].label | fields[].name | The label that is presented to the user                                                   |
-| fields[].type  | string        | The data type of the field. Supported values: `string`, `geocoordinates`, `array`, `file` |
+| Parameter      | Default       | Description                                                                                 |
+| -------------- | ------------- | ------------------------------------------------------------------------------------------- |
+| fields         |               | A list of fields to display based on the name from the schema.                              |
+| fileBase       |               | The base URL of the associated files.                                                       |
+| fields[].name  |               | The name of the property of the data to fetch from. Supports dot notation.                  |
+| fields[].label | fields[].name | The label that is presented to the user. No label will be displayed if this is not defined. |
+| fields[].type  | string        | The data type of the field. Supported values: `string`, `geocoordinates`, `array`, `file`   |
 
 ## Events
 

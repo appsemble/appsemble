@@ -13,6 +13,12 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Changed
 
+- Block(`@appsemble/detail-viewer`): Make `field.label` render no label instead of `field.name` if
+  the label is undefined.
+- Block(`@appsemble/form`): Make `field.label` render no label instead of `field.name` if the label
+  is undefined.
+- Block(`@appsemble/table`): Make `field.label` render no label in the header if the label is
+  undefined. If no labels are defined at all, the table header won’t be displayed at all.
 - CLI: Remove `block register` command. You can now always use `block publish` when publishing new
   blocks or new block versions.
 

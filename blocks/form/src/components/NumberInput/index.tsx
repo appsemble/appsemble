@@ -23,7 +23,7 @@ export default function NumberInput({
       error={error && <FormattedMessage id="invalid" />}
       iconLeft={field.icon}
       id={field.name}
-      label={field.label || field.name}
+      label={field.label}
       max={field.max}
       min={field.min}
       name={field.name}
