@@ -29,20 +29,12 @@
     <title>{{ app.definition.name }}</title>
     <link rel="stylesheet" href="{{{ bulmaURL }}}" id="bulma-style-app" />
     <link rel="stylesheet" href="{{{ faURL }}}" />
-    <link
-      rel="stylesheet"
-      href="/api/organizations/{{ app.OrganizationId }}/style/shared"
-      id="organization-style-shared"
-    />
-    <link
-      rel="stylesheet"
-      href="/api/organizations/{{ app.OrganizationId }}/style/core"
-      id="organization-style-core"
-    />
+    <link rel="stylesheet" href="/organization/core.css" />
+    <link rel="stylesheet" href="/organization/shared.css" />
     {{#app.style}}
-    <link rel="stylesheet" href="/api/apps/{{ app.id }}/style/core" id="appsemble-style-core" />
+    <link rel="stylesheet" href="/core.css" />
     {{/app.style}} {{#app.sharedStyle}}
-    <link rel="stylesheet" href="/api/apps/{{ app.id }}/style/shared" id="appsemble-style-shared" />
+    <link rel="stylesheet" href="/shared.css" />
     {{/app.sharedStyle}}
     <script nonce="{{{ nonce }}}">
       window.addEventListener('load', function () {

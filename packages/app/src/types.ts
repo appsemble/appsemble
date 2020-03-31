@@ -41,7 +41,6 @@ declare global {
       blockManifests: BlockManifest[];
       vapidPublicKey: string;
       id: number;
-      organizationId: string;
       definition: AppDefinition;
       sentryDsn: string;
     };

@@ -178,10 +178,10 @@ export default function Block({
             ...manifest.files
               .filter((url) => url.endsWith('.css'))
               .map((url) => prefixBlockURL(block, url)),
-            `${window.location.origin}/api/organizations/${settings.organizationId}/style/shared`,
-            `${window.location.origin}/api/organizations/${settings.organizationId}/style/block/${manifest.name}`,
-            `${window.location.origin}/api/apps/${settings.id}/style/block/${manifest.name}`,
-            (document.getElementById('appsemble-style-shared') as HTMLLinkElement)?.href,
+            '/shared.css',
+            `/${manifest.name}.css`,
+            '/organization/shared.css',
+            `/organization/${manifest.name}.css`,
           ].map((url) => injectCSS(shadowRoot, url)),
         );
       }
