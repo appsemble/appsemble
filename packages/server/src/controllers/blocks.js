@@ -12,7 +12,15 @@ export async function getBlock(ctx) {
   const { BlockVersion } = ctx.db.models;
 
   const blockDefinition = await BlockVersion.findOne({
-    attributes: ['description', 'version'],
+    attributes: [
+      'description',
+      'version',
+      'actions',
+      'events',
+      'layout',
+      'parameters',
+      'resources',
+    ],
     raw: true,
     where: { name: blockId, OrganizationId: organizationId },
     order: [['created', 'DESC']],
@@ -22,10 +30,17 @@ export async function getBlock(ctx) {
     throw Boom.notFound('Block definition not found');
   }
 
+  const { actions, description, events, layout, parameters, resources, version } = blockDefinition;
+
   ctx.body = {
     name: `@${organizationId}/${blockId}`,
-    description: blockDefinition.description,
-    version: blockDefinition.version,
+    description,
+    version,
+    actions,
+    events,
+    layout,
+    parameters,
+    resources,
   };
 }
 
@@ -36,14 +51,31 @@ export async function queryBlocks(ctx) {
   // The alternative is to query everything and filter manually
   // See: https://github.com/sequelize/sequelize/issues/9509
   const [blockDefinitions] = await db.query(
-    'SELECT "OrganizationId", name, description, version FROM "BlockVersion" WHERE created IN (SELECT MAX(created) FROM "BlockVersion" GROUP BY "OrganizationId", name)',
+    'SELECT "OrganizationId", name, description, version, actions, events, layout, parameters, resources FROM "BlockVersion" WHERE created IN (SELECT MAX(created) FROM "BlockVersion" GROUP BY "OrganizationId", name)',
   );
 
-  ctx.body = blockDefinitions.map(({ OrganizationId, description, name, version }) => ({
-    name: `@${OrganizationId}/${name}`,
-    description,
-    version,
-  }));
+  ctx.body = blockDefinitions.map(
+    ({
+      OrganizationId,
+      actions,
+      description,
+      events,
+      layout,
+      name,
+      parameters,
+      resources,
+      version,
+    }) => ({
+      name: `@${OrganizationId}/${name}`,
+      description,
+      version,
+      actions,
+      events,
+      layout,
+      parameters,
+      resources,
+    }),
+  );
 }
 
 export async function publishBlock(ctx) {
@@ -79,7 +111,7 @@ export async function publishBlock(ctx) {
   // If there is a previous version and it has a higher semver, throw an error.
   if (blockDefinition && semver.gte(blockDefinition.version, version)) {
     throw Boom.badRequest(
-      `Version ${blockDefinition.version} is higher than the already existing @${name}@${version}.`,
+      `Version ${blockDefinition.version} is equal to or lower than the already existing ${name}@${version}.`,
     );
   }
 

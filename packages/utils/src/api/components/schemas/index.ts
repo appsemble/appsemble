@@ -1,7 +1,6 @@
 import App from './App';
 import Asset from './Asset';
 import Block from './Block';
-import BlockDefinition from './BlockDefinition';
 import BlockVersion from './BlockVersion';
 import Color from './Color';
 import Error from './Error';
@@ -24,7 +23,6 @@ import UserEmail from './UserEmail';
 export default {
   App,
   Asset,
-  BlockDefinition,
   Block,
   BlockVersion,
   Color,

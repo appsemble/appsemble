@@ -1,7 +1,7 @@
 import { createInstance } from 'axios-test-instance';
 import FormData from 'form-data';
 import fs from 'fs-extra';
-import { pick } from 'lodash';
+import { omit } from 'lodash';
 import path from 'path';
 
 import createServer from '../utils/createServer';
@@ -65,7 +65,7 @@ describe('getBlockDefinition', () => {
     });
 
     const { data: retrieved } = await instance.get('/api/blocks/@xkcd/test');
-    expect(retrieved).toStrictEqual(pick(original, ['name', 'version', 'description']));
+    expect(retrieved).toStrictEqual(omit(original, ['files']));
   });
 
   it('should return a 404 if the requested block definition doesn’t exist', async () => {
@@ -116,9 +116,8 @@ describe('queryBlockDefinitions', () => {
       headers: { ...headers.headers, ...formDataB.getHeaders() },
     });
 
-    const props = ['name', 'version', 'description'];
     const { data: bam } = await instance.get('/api/blocks');
-    expect(bam).toMatchObject([pick(apple, props), pick(pen, props)]);
+    expect(bam).toMatchObject([omit(apple, ['files']), omit(pen, ['files'])]);
   });
 });
 
@@ -259,7 +258,8 @@ describe('publishBlock', () => {
 
     expect(data).toStrictEqual({
       error: 'Bad Request',
-      message: 'Version semver (1.32.9) is equal to or lower than the current version of 1.32.9.',
+      message:
+        'Version 1.32.9 is equal to or lower than the already existing @xkcd/standing@1.32.9.',
       statusCode: 400,
     });
   });

@@ -37,13 +37,13 @@ export default {
       operationId: 'queryBlocks',
       responses: {
         200: {
-          description: 'The list of all latest block definitions.',
+          description: 'The list of all latest block versions.',
           content: {
             'application/json': {
               schema: {
                 type: 'array',
                 items: {
-                  $ref: '#/components/schemas/BlockDefinition',
+                  $ref: '#/components/schemas/BlockVersion',
                 },
               },
             },
@@ -64,7 +64,7 @@ export default {
       responses: {
         200: {
           description: 'The latest version of the block that matches the given id.',
-          $ref: '#/components/responses/blockDefinition',
+          $ref: '#/components/responses/blockVersion',
         },
       },
     },

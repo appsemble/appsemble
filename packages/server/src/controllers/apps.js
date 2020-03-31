@@ -1,5 +1,6 @@
 import {
   AppsembleValidationError,
+  blockNamePattern,
   normalize,
   permissions,
   StyleValidationError,
@@ -25,10 +26,11 @@ function getBlockVersions(db) {
       where: {
         [Op.or]: uniqWith(
           Object.values(blocks).map(({ type, version }) => {
-            const includesOrg = type.startsWith('@');
-            const OrganizationId = includesOrg ? type.split('/')[0].slice(1) : 'appsemble';
-            const name = includesOrg ? type.split('/').slice(1).join('/') : type;
-
+            const [, OrganizationId, name] = type.match(blockNamePattern) || [
+              null,
+              'appsemble',
+              type,
+            ];
             return {
               name,
               OrganizationId,

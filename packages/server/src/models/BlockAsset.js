@@ -18,10 +18,8 @@ export default (sequelize) => {
     },
     {
       freezeTableName: true,
-      paranoid: true,
       createdAt: 'created',
-      updatedAt: 'updated',
-      deletedAt: 'deleted',
+      updatedAt: false,
     },
   );
 

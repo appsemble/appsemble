@@ -22,7 +22,7 @@ export default (sequelize) => {
     {
       freezeTableName: true,
       createdAt: 'created',
-      updatedAt: 'updated',
+      updatedAt: false,
     },
   );
 

@@ -1,3 +1,4 @@
+import { AppsembleError } from '@appsemble/node-utils';
 import { DataTypes } from 'sequelize';
 
 export default {
@@ -11,7 +12,7 @@ export default {
    * - Changes PK of BlockVersion to be [name, version, OrganizationId]
    * - Removes FK checks on OrganizationBlockStyle and AppBlockStyle
    * - Renames "BlockDefinitionId" in OrganizationBlockStyle and AppBlockStyle to "block"
-   * - Removes the paranoid "deleted" column in BlockVersion
+   * - Removes the paranoid "deleted" column and "updated" columns in BlockVersion and BlockAsset
    */
   async up(db) {
     const queryInterface = db.getQueryInterface();
@@ -35,6 +36,9 @@ export default {
     });
 
     await queryInterface.removeColumn('BlockVersion', 'deleted');
+    await queryInterface.removeColumn('BlockVersion', 'updated');
+    await queryInterface.removeColumn('BlockAsset', 'deleted');
+    await queryInterface.removeColumn('BlockAsset', 'updated');
 
     await queryInterface.addColumn('BlockAsset', 'OrganizationId', {
       type: DataTypes.STRING,
@@ -109,6 +113,6 @@ export default {
   },
 
   async down() {
-    throw new AppsembleError('Due to complexity, down migrations from 0.12.0 are not supported.')
+    throw new AppsembleError('Due to complexity, down migrations from 0.12.0 are not supported.');
   },
 };

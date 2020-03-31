@@ -44,9 +44,9 @@ export type BlockPayload = Pick<
   'name' | 'description' | 'actions' | 'events' | 'parameters' | 'resources' | 'version' | 'layout'
 >;
 
-export type BlockConfig = Omit<BlockPayload, 'name'> & {
-  description?: string;
+export type BlockConfig = BlockPayload & {
   id: string;
+  description?: string;
   webpack: string;
   dist: string;
   output: string;
