@@ -7,6 +7,10 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- Server: Add support for outputting CSV in resource API.
+
 ## [0.12.3] - 2020-03-27
 
 ### Fixes

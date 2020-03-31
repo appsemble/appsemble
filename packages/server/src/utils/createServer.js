@@ -34,6 +34,7 @@ import tinyRouter from '../middleware/tinyRouter';
 import { appRouter, studioRouter } from '../routes';
 import bulmaHandler from '../routes/bulmaHandler';
 import authentication from './authentication';
+import convertToCsv from './convertToCsv';
 import Mailer from './email/Mailer';
 
 export default async function createServer({ app = new Koa(), argv = {}, db, webpackConfigs }) {
@@ -88,7 +89,9 @@ export default async function createServer({ app = new Koa(), argv = {}, db, web
               length: ctx.request.length,
             }),
         }),
-        koasSerializer(),
+        koasSerializer({
+          'text/csv': convertToCsv,
+        }),
         koasStatusCode(),
         koasOperations({ operations }),
       ]),
