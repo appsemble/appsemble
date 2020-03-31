@@ -9,16 +9,16 @@ import shared from './shared';
 /**
  * This webpack configuration is used by Appsemble blocks.
  */
-export default ({ dir, id }, argv) => {
-  const [, name] = id.split('/');
+export default ({ dir, name }, argv) => {
+  const [, blockName] = name.split('/');
   const srcPath = path.join(dir, 'src');
   const production = argv.mode === 'production';
 
-  return merge.smart(shared(name, argv), {
-    name: id,
+  return merge.smart(shared(blockName, argv), {
+    name,
     entry: [srcPath],
     output: {
-      filename: `${name}.js`,
+      filename: `${blockName}.js`,
     },
     module: {
       rules: [
@@ -38,7 +38,7 @@ export default ({ dir, id }, argv) => {
     },
     plugins: [
       new MiniCssExtractPlugin({
-        filename: `${name}.css`,
+        filename: `${blockName}.css`,
       }),
       new UnusedFilesWebpackPlugin({
         failOnUnused: production,

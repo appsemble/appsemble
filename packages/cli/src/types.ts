@@ -45,7 +45,6 @@ export type BlockPayload = Pick<
 >;
 
 export type BlockConfig = BlockPayload & {
-  id: string;
   description?: string;
   webpack: string;
   dist: string;

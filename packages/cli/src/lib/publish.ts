@@ -29,15 +29,15 @@ export default async function publish({
   ignoreConflict,
   path,
 }: PublishParams): Promise<void> {
-  logger.info(`Publishing ${config.id}@${config.version}…`);
+  logger.info(`Publishing ${config.name}@${config.version}…`);
   const form = await makePayload({ config, path });
   try {
     await axios.post('/api/blocks', form);
-    logger.info(`Successfully published ${config.id}@${config.version} 🎉`);
+    logger.info(`Successfully published ${config.name}@${config.version} 🎉`);
   } catch (err) {
     if (!ignoreConflict || !err.request || err.response.status !== 409) {
       throw err;
     }
-    logger.warn(`${config.id}@${config.version} was already published.`);
+    logger.warn(`${config.name}@${config.version} was already published.`);
   }
 }
