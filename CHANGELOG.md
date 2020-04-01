@@ -9,12 +9,15 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
+- Block(`@appsemble/map`): Add support for custom markers.
 - Server: Add support for outputting CSV in resource API.
 
 ### Changed
 
 - Block(`@appsemble/detail-viewer`): Make `field.label` render no label instead of `field.name` if
   the label is undefined.
+- Block(`@appsemble/map`): Change default marker from a custom icon to the Font Awesome
+  `map-marker-alt` icon.
 - Block(`@appsemble/form`): Make `field.label` render no label instead of `field.name` if the label
   is undefined.
 - Block(`@appsemble/table`): Make `field.label` render no label in the header if the label is

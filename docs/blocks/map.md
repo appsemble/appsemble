@@ -23,12 +23,18 @@ default.
 
 ## Parameters
 
-| Parameter         | Default   | Description                                                                                                                    |
-| ----------------- | --------- | ------------------------------------------------------------------------------------------------------------------------------ |
-| longitude         | longitude | The name of the field used to retrieve the longitude                                                                           |
-| latitude          | latitude  | The name of the field used to retrieve the latitude                                                                            |
-| disableClustering | false     | Whether clustering should be disabled or not.                                                                                  |
-| maxClusterRadius  | 80        | The maximum radius that a cluster will cover from the central marker (in pixels). Decreasing will make more, smaller clusters. |
+| Parameter         | Default        | Description                                                                                                                    |
+| ----------------- | -------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| longitude         | longitude      | The name of the field used to retrieve the longitude                                                                           |
+| latitude          | latitude       | The name of the field used to retrieve the latitude                                                                            |
+| disableClustering | false          | Whether clustering should be disabled or not.                                                                                  |
+| maxClusterRadius  | 80             | The maximum radius that a cluster will cover from the central marker (in pixels). Decreasing will make more, smaller clusters. |
+| icons             |                | Custom icon configuration.                                                                                                     |
+| icons.icon        | map-marker-alt | A Font Awesome icon name to use.                                                                                               |
+| icons.asset       | automatic      | The id of an asset to use.                                                                                                     |
+| icons.anchor      | `[0, 0]`       | The anchor X and Y offset used for positioning the image.                                                                      |
+| icons.size        | 28             | The height of marker icons in pixels.                                                                                          |
+| icons.activeRatio | 28             | Enlarge an active marker with this ratio.                                                                                      |
 
 ## Events
 
