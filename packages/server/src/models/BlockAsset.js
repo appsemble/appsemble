@@ -7,7 +7,7 @@ import { DataTypes } from 'sequelize';
  * primary key which includes the block version reference. For this reason, a numeric id is used as
  * the primary key..
  */
-export default sequelize => {
+export default (sequelize) => {
   const BlockAsset = sequelize.define(
     'BlockAsset',
     {
@@ -18,14 +18,14 @@ export default sequelize => {
     },
     {
       freezeTableName: true,
-      paranoid: true,
       createdAt: 'created',
-      updatedAt: 'updated',
-      deletedAt: 'deleted',
+      updatedAt: false,
     },
   );
 
-  BlockAsset.associate = () => {};
+  BlockAsset.associate = ({ Organization }) => {
+    BlockAsset.belongsTo(Organization, { foreignKey: { allowNull: false } });
+  };
 
   return BlockAsset;
 };

@@ -25,7 +25,7 @@ export default function Toolbar(): React.ReactElement {
         </Link>
         <a
           className={`is-rounded is-warning tag ${styles.tag}`}
-          href={`https://gitlab.com/appsemble/appsemble/tags/${version}`}
+          href={`https://gitlab.com/appsemble/appsemble/releases/${version}`}
           rel="noopener noreferrer"
           target="_blank"
         >

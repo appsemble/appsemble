@@ -14,7 +14,7 @@ attach(({ actions, data, parameters: { icon } }) => {
   node.classList.add('fas', `fa-${icon}`);
   node.addEventListener(
     'click',
-    event => {
+    (event) => {
       event.preventDefault();
       actions.onClick.dispatch(data);
     },

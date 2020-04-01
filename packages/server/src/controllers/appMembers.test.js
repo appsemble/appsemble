@@ -7,8 +7,8 @@ import testToken from '../utils/test/testToken';
 import truncate from '../utils/test/truncate';
 
 let App;
-let BlockDefinition;
 let BlockVersion;
+let Organization;
 let User;
 let db;
 let request;
@@ -21,7 +21,7 @@ let user;
 beforeAll(async () => {
   db = await testSchema('apps');
   server = await createServer({ db, argv: { host: 'http://localhost', secret: 'test' } });
-  ({ App, BlockDefinition, BlockVersion, User } = db.models);
+  ({ App, BlockVersion, Organization, User } = db.models);
   request = await createInstance(server);
 }, 10e3);
 
@@ -38,12 +38,11 @@ beforeEach(async () => {
     { through: { role: 'Owner' } },
   ));
 
-  await BlockDefinition.create({
-    id: '@appsemble/test',
-  });
+  await Organization.create({ id: 'appsemble', name: 'Appsemble' });
   await BlockVersion.create({
-    name: '@appsemble/test',
+    name: 'test',
     version: '0.0.0',
+    OrganizationId: 'appsemble',
     parameters: {
       properties: {
         foo: {

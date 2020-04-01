@@ -17,7 +17,7 @@ export default async function traverseBlockThemes(path: string, appId: number): 
   }
 
   const themeDir = (await fs.readdir(join(path, 'theme'))).filter(
-    sub => fs.lstatSync(join(path, 'theme', sub)).isDirectory() && sub.startsWith('@'),
+    (sub) => fs.lstatSync(join(path, 'theme', sub)).isDirectory() && sub.startsWith('@'),
   );
 
   if (themeDir.length === 0) {
@@ -29,7 +29,7 @@ export default async function traverseBlockThemes(path: string, appId: number): 
   await themeDir.reduce<Promisable<void>>(async (acc, org) => {
     await acc;
     logger.info(`Traversing themes for organization ${org}`);
-    const orgDir = (await fs.readdir(join(path, 'theme', org))).filter(sub =>
+    const orgDir = (await fs.readdir(join(path, 'theme', org))).filter((sub) =>
       fs.lstatSync(join(path, 'theme', org, sub)).isDirectory(),
     );
 
@@ -41,7 +41,7 @@ export default async function traverseBlockThemes(path: string, appId: number): 
     await orgDir.reduce<Promisable<void>>(async (accumulator, blockDir) => {
       await accumulator;
       const blockStyleDir = await fs.readdir(join(path, 'theme', org, blockDir));
-      const indexCss = blockStyleDir.find(fname => fname.toLowerCase() === 'index.css');
+      const indexCss = blockStyleDir.find((fname) => fname.toLowerCase() === 'index.css');
       if (!indexCss) {
         logger.warn(`No index.css found, skipping directory ${join(path, 'theme', org, blockDir)}`);
         return;

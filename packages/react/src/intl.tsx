@@ -11,7 +11,7 @@ export function provideIntl(
   Component: React.ComponentType,
   intlProviderProps?: Partial<IntlConfig>,
 ): React.ComponentType<BlockProps> {
-  return props => (
+  return (props) => (
     <IntlProvider defaultLocale="en-US" locale="en-US" {...intlProviderProps}>
       <Component {...props} />
     </IntlProvider>

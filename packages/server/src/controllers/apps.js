@@ -1,5 +1,6 @@
 import {
   AppsembleValidationError,
+  blockNamePattern,
   normalize,
   permissions,
   StyleValidationError,
@@ -19,21 +20,32 @@ import getAppFromRecord from '../utils/getAppFromRecord';
 import getDefaultIcon from '../utils/getDefaultIcon';
 
 function getBlockVersions(db) {
-  return async blocks => {
+  return async (blocks) => {
     const blockVersions = await db.models.BlockVersion.findAll({
       raw: true,
       where: {
         [Op.or]: uniqWith(
-          Object.values(blocks).map(({ type, version }) => ({
-            name: type.startsWith('@') ? type : `@appsemble/${type}`,
-            version,
-          })),
+          Object.values(blocks).map(({ type, version }) => {
+            const [, OrganizationId, name] = type.match(blockNamePattern) || [
+              null,
+              'appsemble',
+              type,
+            ];
+            return {
+              name,
+              OrganizationId,
+              version,
+            };
+          }),
           isEqual,
         ),
       },
     });
 
-    return blockVersions;
+    return blockVersions.map((blockVersion) => ({
+      ...blockVersion,
+      name: `@${blockVersion.OrganizationId}/${blockVersion.name}`,
+    }));
   };
 }
 
@@ -176,7 +188,7 @@ export async function queryApps(ctx) {
     raw: true,
   });
   const ignoredFields = ['yaml'];
-  ctx.body = apps.map(app => getAppFromRecord(app, ignoredFields));
+  ctx.body = apps.map((app) => getAppFromRecord(app, ignoredFields));
 }
 
 export async function queryMyApps(ctx) {
@@ -199,10 +211,10 @@ export async function queryMyApps(ctx) {
     include: [{ model: AppRating, attributes: [] }],
     group: ['App.id'],
     order: [literal('"RatingAverage" DESC NULLS LAST'), ['id', 'ASC']],
-    where: { OrganizationId: { [Op.in]: memberships.map(m => m.OrganizationId) } },
+    where: { OrganizationId: { [Op.in]: memberships.map((m) => m.OrganizationId) } },
   });
   const ignoredFields = ['yaml'];
-  ctx.body = apps.map(app => getAppFromRecord(app, ignoredFields));
+  ctx.body = apps.map((app) => getAppFromRecord(app, ignoredFields));
 }
 
 export async function updateApp(ctx) {
@@ -431,7 +443,7 @@ export async function getAppBlockStyle(ctx) {
   const blockStyle = await AppBlockStyle.findOne({
     where: {
       AppId: appId,
-      BlockDefinitionId: `@${organizationId}/${blockId}`,
+      block: `@${organizationId}/${blockId}`,
     },
   });
 
@@ -443,7 +455,7 @@ export async function getAppBlockStyle(ctx) {
 export async function setAppBlockStyle(ctx) {
   const { appId, blockId, organizationId } = ctx.params;
   const { db } = ctx;
-  const { App, AppBlockStyle, BlockDefinition } = db.models;
+  const { App, AppBlockStyle, BlockVersion } = db.models;
   const { style } = ctx.request.body;
   const css = style.toString().trim();
 
@@ -455,7 +467,9 @@ export async function setAppBlockStyle(ctx) {
       throw Boom.notFound('App not found.');
     }
 
-    const block = await BlockDefinition.findByPk(`@${organizationId}/${blockId}`);
+    const block = await BlockVersion.findOne({
+      where: { name: blockId, OrganizationId: organizationId },
+    });
     if (!block) {
       throw Boom.notFound('Block not found.');
     }
@@ -466,10 +480,10 @@ export async function setAppBlockStyle(ctx) {
       await AppBlockStyle.upsert({
         style: css.toString(),
         AppId: app.id,
-        BlockDefinitionId: block.id,
+        block: block.name,
       });
     } else {
-      await AppBlockStyle.destroy({ where: { AppId: app.id, BlockDefinitionId: block.id } });
+      await AppBlockStyle.destroy({ where: { AppId: app.id, block: block.name } });
     }
 
     ctx.status = 204;

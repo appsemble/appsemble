@@ -12,4 +12,16 @@ body {
 
 :global(#app) {
   height: 100%;
+
+  & :global(.browsers) {
+    margin: auto;
+    text-align: center;
+
+    & :global(.browser-logo) {
+      display: inline-block;
+      margin: 8px 48px;
+      max-width: 240px;
+      width: 50%;
+    }
+  }
 }

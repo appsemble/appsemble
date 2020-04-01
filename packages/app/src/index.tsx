@@ -18,3 +18,5 @@ ReactDOM.render(
   <App serviceWorkerRegistrationPromise={serviceWorkerRegistrationPromise} />,
   document.getElementById('app'),
 );
+
+window.appsembleHasLoaded = true;

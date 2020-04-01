@@ -65,7 +65,7 @@ export default function MessagesProvider({ children }: MessagesProviderProps): R
       {children}
       <div className={styles.root}>
         <TransitionGroup>
-          {messages.current.map(message => (
+          {messages.current.map((message) => (
             <CSSTransition
               key={message.id}
               classNames={{

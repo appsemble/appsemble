@@ -24,7 +24,7 @@ export default function AppSideMenu(): React.ReactElement {
   const { userInfo } = useUser();
   const [isCollapsed, setCollapsed] = React.useState(false);
   const organizations = useOrganizations();
-  const organization = organizations?.find(org => org.id === app.OrganizationId);
+  const organization = organizations?.find((org) => org.id === app.OrganizationId);
   const match = useRouteMatch();
 
   return (
@@ -62,7 +62,7 @@ export default function AppSideMenu(): React.ReactElement {
                 <ul>
                   {Object.keys(app.definition.resources)
                     .sort()
-                    .map(resource => (
+                    .map((resource) => (
                       <li key={resource}>
                         <NavLink
                           className={styles.menuItem}

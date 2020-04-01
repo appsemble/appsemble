@@ -7,7 +7,7 @@ beforeEach(() => {
   originalCurrentScript = document.currentScript;
   Object.defineProperty(document, 'currentScript', {
     value: {
-      dispatchEvent: jest.fn(e => {
+      dispatchEvent: jest.fn((e) => {
         event = e;
       }),
     },

@@ -5,7 +5,7 @@
  * @param url The URL of the stylesheet to insert.
  */
 export default async function injectCSS(parent: Node, url?: string): Promise<void> {
-  await new Promise(resolve => {
+  await new Promise((resolve) => {
     if (!url) {
       resolve();
       return;

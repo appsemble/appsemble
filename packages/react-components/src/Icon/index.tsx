@@ -1,3 +1,4 @@
+import { BulmaSize } from '@appsemble/sdk';
 import { IconName, IconPrefix } from '@fortawesome/fontawesome-common-types';
 import classNames from 'classnames';
 import * as React from 'react';
@@ -7,7 +8,7 @@ interface IconProps {
   icon: IconName;
   iconSize?: 'lg' | '2x' | '3x';
   prefix?: IconPrefix;
-  size?: 'small' | 'medium' | 'large';
+  size?: Exclude<BulmaSize, 'normal'>;
 }
 
 const iconSizeMap: { [size in IconProps['size']]: IconProps['iconSize'] } = {

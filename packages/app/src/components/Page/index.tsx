@@ -57,7 +57,7 @@ export default function Page({ page }: PageProps): React.ReactElement {
   const checkPagePermissions = React.useCallback(
     (p: PageType): boolean => {
       const roles = p.roles || definition.roles || [];
-      return roles.length === 0 || roles.some(r => checkAppRole(definition.security, r, role));
+      return roles.length === 0 || roles.some((r) => checkAppRole(definition.security, r, role));
     },
     [definition, role],
   );
@@ -66,14 +66,14 @@ export default function Page({ page }: PageProps): React.ReactElement {
     const permission = checkPagePermissions(page);
     if (!permission) {
       const defaultPagePermission = checkPagePermissions(
-        definition.pages.find(p => p.name === definition.defaultPage),
+        definition.pages.find((p) => p.name === definition.defaultPage),
       );
 
       if (defaultPagePermission) {
         history.replace('/');
       } else {
         const redirectPage = definition.pages.find(
-          p => p.parameters === undefined && checkPagePermissions(p),
+          (p) => p.parameters === undefined && checkPagePermissions(p),
         );
 
         if (!redirectPage) {
@@ -101,7 +101,7 @@ export default function Page({ page }: PageProps): React.ReactElement {
   React.useEffect(() => {
     setBlocks([
       ...(page.type === 'tabs' || page.type === 'flow'
-        ? page.subPages.map(f => f.blocks).flat()
+        ? page.subPages.map((f) => f.blocks).flat()
         : []),
       ...(!page.type || page.type === 'page' ? (page as BasicPage).blocks : []),
     ]);

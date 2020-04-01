@@ -42,16 +42,18 @@ export default function FormComponent({
 }: FormComponentProps): VNode {
   return (
     <div className="field">
-      <label className={`label ${styles.label}`} htmlFor={id}>
-        <span className={styles.labelContent}>{label}</span>
-        {required || (
-          <span
-            className={`is-inline has-text-weight-normal has-text-grey-light ${styles.optional}`}
-          >
-            ({messages.optional})
-          </span>
-        )}
-      </label>
+      {label && (
+        <label className={`label ${styles.label}`} htmlFor={id}>
+          <span className={styles.labelContent}>{label}</span>
+          {required || (
+            <span
+              className={`is-inline has-text-weight-normal has-text-grey-light ${styles.optional}`}
+            >
+              ({messages.optional})
+            </span>
+          )}
+        </label>
+      )}
       <div className={classNames('control', { 'has-icons-left': iconLeft })}>{children}</div>
     </div>
   );

@@ -252,7 +252,7 @@ export interface Block {
 }
 
 /**
- * A color know to Bulma.
+ * A color known to Bulma.
  */
 export type BulmaColor =
   | 'dark'
@@ -263,6 +263,8 @@ export type BulmaColor =
   | 'warning'
   | 'danger'
   | 'white';
+
+export type BulmaSize = 'small' | 'normal' | 'medium' | 'large';
 
 export interface Message {
   /**
@@ -356,7 +358,7 @@ export interface Utils {
    * @param assetId The id of the asset whose URL to get.
    * @returns The URL that matches the given asset id.
    */
-  asset: (assetId: string) => string;
+  asset: (assetId: number | string) => string;
 }
 
 export interface Events {

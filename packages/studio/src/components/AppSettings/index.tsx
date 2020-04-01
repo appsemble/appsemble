@@ -56,7 +56,7 @@ export default function AppSettings(): React.ReactElement {
   const onChange = React.useCallback(
     (event: React.ChangeEvent<HTMLInputElement>, value: ReactText | boolean) => {
       event.persist();
-      setInputs(val => ({ ...val, [event.target.name]: value }));
+      setInputs((val) => ({ ...val, [event.target.name]: value }));
     },
     [],
   );

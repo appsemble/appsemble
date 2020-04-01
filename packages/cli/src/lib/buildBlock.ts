@@ -22,7 +22,7 @@ interface BuildBlockParams {
 export default async function buildBlock({ config, path }: BuildBlockParams): Promise<Stats> {
   const conf = await loadWebpackConfig(config, 'production', path);
 
-  logger.info(`Building ${config.id}@${config.version} 🔨`);
+  logger.info(`Building ${config.name}@${config.version} 🔨`);
 
   const compiler = webpack(conf);
   return new Promise((resolve, reject) =>

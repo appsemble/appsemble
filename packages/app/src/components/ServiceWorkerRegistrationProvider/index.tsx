@@ -22,23 +22,21 @@ export default function ServiceWorkerRegistrationProvider({
   children,
   serviceWorkerRegistrationPromise,
 }: ServiceWorkerRegistrationProviderProps): React.ReactElement {
-  const [permission, setPermission] = React.useState<Permission>(window.Notification.permission);
+  const [permission, setPermission] = React.useState<Permission>(window.Notification?.permission);
   const [subscription, setSubscription] = React.useState<PushSubscription>();
 
   React.useEffect(() => {
-    serviceWorkerRegistrationPromise.then(registration => {
-      if (registration) {
-        registration.pushManager.getSubscription().then(setSubscription);
-      }
-    });
+    serviceWorkerRegistrationPromise.then((registration) =>
+      registration?.pushManager.getSubscription().then(setSubscription),
+    );
   }, [serviceWorkerRegistrationPromise]);
 
   const requestPermission = React.useCallback(async () => {
-    if (window.Notification.permission === 'default') {
+    if (window.Notification?.permission === 'default') {
       setPermission('pending');
     }
 
-    const newPermission = await window.Notification.requestPermission();
+    const newPermission = await window.Notification?.requestPermission();
     setPermission(newPermission);
 
     return newPermission;
@@ -54,7 +52,7 @@ export default function ServiceWorkerRegistrationProvider({
       }
     }
 
-    let sub = await registration.pushManager.getSubscription();
+    let sub = await registration?.pushManager?.getSubscription();
 
     if (!sub) {
       const { id, vapidPublicKey } = settings;
@@ -63,7 +61,7 @@ export default function ServiceWorkerRegistrationProvider({
         userVisibleOnly: true,
       };
 
-      sub = await registration.pushManager.subscribe(options);
+      sub = await registration?.pushManager?.subscribe(options);
       await axios.post(`${settings.apiUrl}/api/apps/${id}/subscriptions`, sub);
     }
 

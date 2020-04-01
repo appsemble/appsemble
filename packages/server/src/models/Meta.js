@@ -3,7 +3,7 @@ import { DataTypes } from 'sequelize';
 /**
  * Define database metadata.
  */
-export default sequelize => {
+export default (sequelize) => {
   const Meta = sequelize.define(
     'Meta',
     {

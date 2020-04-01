@@ -24,7 +24,7 @@ export default async function loadWebpackConfig(
 ): Promise<Configuration> {
   const configPath = require.resolve(path.resolve(block.dir, block.webpack));
   logger.info(`Using webpack config from ${configPath}`);
-  const publicPath = `/api/blocks/${block.id}/versions/${block.version}`;
+  const publicPath = `/api/blocks/${block.name}/versions/${block.version}`;
   let config = await import(configPath);
   config = await (config.default || config);
   config = config instanceof Function ? await config(block, { mode, publicPath }) : config;

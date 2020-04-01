@@ -1,7 +1,7 @@
 import { roles } from '@appsemble/utils';
 import { DataTypes } from 'sequelize';
 
-export default sequelize => {
+export default (sequelize) => {
   const Member = sequelize.define(
     'Member',
     {

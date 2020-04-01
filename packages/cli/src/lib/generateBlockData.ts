@@ -32,7 +32,7 @@ function processActions(iface: InterfaceDeclaration): BlockManifest['actions'] {
   }
 
   return Object.fromEntries(
-    iface.members.map(member => {
+    iface.members.map((member) => {
       if (isIndexSignatureDeclaration(member)) {
         return ['$any', {}];
       }
@@ -53,7 +53,7 @@ function mergeInterfacesKeys(iface: InterfaceDeclaration): string[] {
   if (!iface || !iface.members.length) {
     return undefined;
   }
-  return iface.members.map(member => (member.name as Identifier).escapedText as string);
+  return iface.members.map((member) => (member.name as Identifier).escapedText as string);
 }
 
 // XXX specify any
@@ -101,7 +101,7 @@ function getProgram(blockPath: string): Program {
   const diagnosticHost: FormatDiagnosticsHost = {
     getNewLine: () => sys.newLine,
     getCurrentDirectory: sys.getCurrentDirectory,
-    getCanonicalFileName: x => x,
+    getCanonicalFileName: (x) => x,
   };
   const tsConfigPath = findConfigFile(blockPath, sys.fileExists);
   const { config, error } = readConfigFile(tsConfigPath, sys.readFile);
@@ -111,7 +111,7 @@ function getProgram(blockPath: string): Program {
   if (!config.files || !config.include) {
     config.files = sys
       .readDirectory(blockPath, ['.ts', '.tsx'])
-      .map(f => path.relative(blockPath, f));
+      .map((f) => path.relative(blockPath, f));
   }
   const { errors, fileNames, options } = parseJsonConfigFileContent(
     config,
@@ -158,7 +158,7 @@ function getFromContext(
   let eventListenerInterface: InterfaceDeclaration;
   let parametersSourceFile: SourceFile;
 
-  program.getSourceFiles().forEach(sourceFile => {
+  program.getSourceFiles().forEach((sourceFile) => {
     const fileName = path.relative(process.cwd(), sourceFile.fileName);
     // Filter TypeScript default libs
     if (program.isSourceFileDefaultLibrary(sourceFile)) {
@@ -166,7 +166,7 @@ function getFromContext(
       return;
     }
     logger.verbose(`Searching metadata in: ${fileName}`);
-    forEachChild(sourceFile, mod => {
+    forEachChild(sourceFile, (mod) => {
       // This node doesn’t override SDK types
       if (!isModuleDeclaration(mod)) {
         return;
@@ -175,7 +175,7 @@ function getFromContext(
       if (mod.name.text !== '@appsemble/sdk') {
         return;
       }
-      forEachChild(mod.body, iface => {
+      forEachChild(mod.body, (iface) => {
         // Appsemble only uses module interface augmentation.
         if (!isInterfaceDeclaration(iface)) {
           return;
@@ -242,9 +242,11 @@ function getFromContext(
  * @param fullPath The path to the .appsemblerc file
  */
 export default function generateBlockData(config: BlockConfig, fullPath: string): BlockPayload {
-  const { layout, resources, version } = config;
+  const { description, layout, name, resources, version } = config;
   const { actions, events, parameters } = getFromContext(config, fullPath);
 
+  logger.verbose(`Using name: ${inspect(name, { colors: true, depth: 20 })}`);
+  logger.verbose(`Using description: ${inspect(description, { colors: true, depth: 20 })}`);
   logger.verbose(`Using version: ${inspect(version, { colors: true, depth: 20 })}`);
   logger.verbose(`Using layout: ${inspect(layout, { colors: true, depth: 20 })}`);
   logger.verbose(`Using actions: ${inspect(actions, { colors: true, depth: 20 })}`);
@@ -252,6 +254,8 @@ export default function generateBlockData(config: BlockConfig, fullPath: string)
   logger.verbose(`Using parameters: ${inspect(parameters, { colors: true, depth: 20 })}`);
 
   return {
+    name,
+    description,
     actions,
     events,
     layout,

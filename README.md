@@ -57,11 +57,7 @@ The blocks can be published using the Appsemble CLI. Note that in order to publi
 to be authenticated in the CLI. After having registered an Appsemble account, you can authenticate
 yourself using `yarn appsemble auth login`.
 
-```sh
-yarn appsemble block register blocks/*
-```
-
-To update a block without registering it as a new block, the following command can be used.
+To publish a new block version, the following command can be used.
 
 ```sh
 yarn appsemble block publish blocks/*

@@ -45,7 +45,7 @@ export default function extractBlobs(
     files.push(object);
     result = replacer(object);
   } else if (Array.isArray(object)) {
-    result = object.map(value => {
+    result = object.map((value) => {
       const [nestedResult, nestedFiles] = extractBlobs(value, replacer);
       files.push(...nestedFiles);
       return nestedResult;

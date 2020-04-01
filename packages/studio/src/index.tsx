@@ -11,3 +11,5 @@ const { sentryDsn } = settings;
 init({ dsn: sentryDsn });
 
 ReactDOM.render(<App />, document.getElementById('app'));
+
+window.appsembleHasLoaded = true;

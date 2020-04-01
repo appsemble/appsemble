@@ -12,11 +12,11 @@ export default function PermissionRequest(): React.ReactElement {
   const { permission, requestPermission, subscribe } = useServiceWorkerRegistration();
 
   if (definition.notifications && definition.notifications === 'startup') {
-    if (window.Notification.permission === 'denied') {
+    if (window.Notification?.permission === 'denied') {
       return null;
     }
 
-    requestPermission().then(p => {
+    requestPermission().then((p) => {
       if (p === 'granted') {
         subscribe();
       }

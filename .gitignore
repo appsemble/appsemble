@@ -1,12 +1,28 @@
-*.log
-*.tgz
-/coverage/
-/public/
-/gl-*
-/build/
-dist/
+# Node modules
 node_modules/
-junit.xml
+
+# Build output for various packages
+dist/
+
+# This may be used for testting create-appsemble
 /blocks/test/
-/.docz
+
+# Jest output
+/coverage/
 __diff_output__/
+junit.xml
+
+# Use this prefix for GitLab reports
+/gl-*
+
+# Log files by various tools, such as yarn
+*.log
+
+# Generated npm packages
+*.tgz
+
+# Any kind of certificate used for using SSL locally
+*.pem
+
+# Docz output directory
+/.docz/

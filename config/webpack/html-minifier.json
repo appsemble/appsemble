@@ -2,6 +2,8 @@
   "collapseBooleanAttributes": true,
   "collapseInlineTagWhitespace": true,
   "collapseWhitespace": true,
+  "minifyJS": true,
+  "processScripts": ["text/x-template"],
   "removeAttributeQuotes": true,
   "removeComments": true,
   "removeOptionalTags": true,

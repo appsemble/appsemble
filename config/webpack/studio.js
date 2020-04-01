@@ -24,7 +24,7 @@ module.exports = (env, argv) => {
     name: 'Appsemble Studio',
     entry: [studioEntry],
     output: {
-      filename: production ? '_/[hash].js' : '_/studio/[name].js',
+      filename: production ? '_/[contentHash].js' : '_/studio/[name].js',
       publicPath,
     },
     plugins: [
@@ -43,7 +43,7 @@ module.exports = (env, argv) => {
         globOptions: { ignore: ['**/node_modules/**', '**/package.json', '**/*.test.{js,ts,tsx}'] },
       }),
       new MiniCssExtractPlugin({
-        filename: production ? '_/[hash].css' : '_/studio/[name].css',
+        filename: production ? '_/[contentHash].css' : '_/studio/[name].css',
       }),
       new MonacoWebpackPlugin({ languages: ['css', 'json', 'yaml'] }),
     ],

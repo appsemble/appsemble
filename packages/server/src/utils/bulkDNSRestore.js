@@ -27,7 +27,7 @@ export default async function bulkDNSRestore(hostname, db, dnsConfig, chunkSize)
     // eslint-disable-next-line no-await-in-loop
     await dnsConfig.add(
       ...apps
-        .flatMap(app => [app.domain, `${app.path}.${app.OrganizationId}.${hostname}`])
+        .flatMap((app) => [app.domain, `${app.path}.${app.OrganizationId}.${hostname}`])
         .filter(Boolean),
     );
   }

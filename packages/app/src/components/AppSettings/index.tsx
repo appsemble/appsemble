@@ -54,7 +54,7 @@ export default function AppSettings(): React.ReactElement {
     const subs = Object.entries(definition.resources).reduce<ResourceState>(
       (acc, [resourceType, resource]) => {
         Object.keys(resource)
-          .filter(key => ['create', 'update', 'delete'].includes(key))
+          .filter((key) => ['create', 'update', 'delete'].includes(key))
           .forEach((key: keyof SubscriptionState) => {
             if (
               resource[key].hooks &&
@@ -113,7 +113,7 @@ export default function AppSettings(): React.ReactElement {
       return;
     }
 
-    if (window.Notification && window.Notification.permission === 'denied') {
+    if (window.Notification?.permission === 'denied') {
       push({ body: intl.formatMessage(messages.blocked), color: 'warning' });
       return;
     }
@@ -201,11 +201,11 @@ export default function AppSettings(): React.ReactElement {
                 >
                   {(Object.keys(resource) as (keyof SubscriptionState)[])
                     .filter(
-                      key =>
+                      (key) =>
                         resource[key].notification.subscribe === 'all' ||
                         resource[key].notification.subscribe === 'both',
                     )
-                    .map(key => (
+                    .map((key) => (
                       <Checkbox
                         key={key}
                         className={styles.subscribeCheckbox}

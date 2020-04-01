@@ -7,6 +7,49 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- Block(`@appsemble/map`): Add support for custom markers.
+- Server: Add support for outputting CSV in resource API.
+
+### Changed
+
+- Block(`@appsemble/detail-viewer`): Make `field.label` render no label instead of `field.name` if
+  the label is undefined.
+- Block(`@appsemble/map`): Change default marker from a custom icon to the Font Awesome
+  `map-marker-alt` icon.
+- Block(`@appsemble/form`): Make `field.label` render no label instead of `field.name` if the label
+  is undefined.
+- Block(`@appsemble/table`): Make `field.label` render no label in the header if the label is
+  undefined. If no labels are defined at all, the table header won’t be displayed at all.
+- CLI: Remove `block register` command. You can now always use `block publish` when publishing new
+  blocks or new block versions.
+
+## [0.12.3] - 2020-03-27
+
+### Fixes
+
+- App: Fix loading blocks.
+
+## [0.12.2] - 2020-03-27
+
+### Fixes
+
+- App: Fix serving apps.
+- Studio: Fix serving Appsemble studio.
+
+## [0.12.1] - 2020-03-26
+
+### Added
+
+- App: Add support for custom `action` format for parameters. This can be used to refer to other
+  actions by name, including custom defined actions.
+- App: Handle unsupported browsers.
+- Block(`@appsemble/button-list`): Add new button list block.
+- SDK: Add support for index signature actions.
+- Server: Handle unsupported browsers.
+- Server: Serve block assets from the app host URL instead of the studio host URL.
+
 ## [0.12.0] - 2020-03-20
 
 ### Added

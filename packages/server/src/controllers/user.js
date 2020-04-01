@@ -48,7 +48,7 @@ export async function getUserOrganizations(ctx) {
     ],
   });
 
-  ctx.body = dbUser.Organizations.map(org => ({
+  ctx.body = dbUser.Organizations.map((org) => ({
     id: org.id,
     name: org.name,
     role: org.Member.role,

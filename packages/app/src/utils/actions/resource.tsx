@@ -196,7 +196,7 @@ function subscribe({
   const { id = 'id' } = resource;
 
   return {
-    dispatch: async data => {
+    dispatch: async (data) => {
       const { endpoint } = await getSubscription(pushNotifications);
       await axios.patch(`${settings.apiUrl}/api/apps/${settings.id}/subscriptions`, {
         endpoint,
@@ -223,7 +223,7 @@ function unsubscribe({
   const { id = 'id' } = resource;
 
   return {
-    dispatch: async data => {
+    dispatch: async (data) => {
       const { endpoint } = await getSubscription(pushNotifications);
       await axios.patch(`${settings.apiUrl}/api/apps/${settings.id}/subscriptions`, {
         endpoint,
@@ -250,7 +250,7 @@ function toggleSubscribe({
   const { id = 'id' } = resource;
 
   return {
-    dispatch: async data => {
+    dispatch: async (data) => {
       const { endpoint } = await getSubscription(pushNotifications);
       await axios.patch(`${settings.apiUrl}/api/apps/${settings.id}/subscriptions`, {
         endpoint,
@@ -276,7 +276,7 @@ function subscriptionStatus({
   const { id = 'id' } = resource;
 
   return {
-    dispatch: async d => {
+    dispatch: async (d) => {
       const { endpoint } = await getSubscription(pushNotifications);
       const { data } = await axios.get(
         d?.[id]
