@@ -113,7 +113,7 @@ export default function GUIEditorEditBlock(params: any): React.ReactElement {
                 ) : (
                   <input
                     className="input"
-                    onChange={event => handleChange(event, item)}
+                    onChange={(event) => handleChange(event, item)}
                     placeholder={item}
                     type="text"
                     value={edittedParams[i]}
@@ -129,7 +129,7 @@ export default function GUIEditorEditBlock(params: any): React.ReactElement {
                 <label className="checkbox" style={{ textTransform: 'capitalize' }}>
                   <input
                     checked={edittedParams[i]}
-                    onChange={event => handleChange(event, item)}
+                    onChange={(event) => handleChange(event, item)}
                     type="checkbox"
                   />
                   {` ${label}`} {required ? <strong>*</strong> : ''}
@@ -148,7 +148,7 @@ export default function GUIEditorEditBlock(params: any): React.ReactElement {
                 <input
                   checked={edittedParams[i]}
                   className="input"
-                  onChange={event => handleChange(event, item)}
+                  onChange={(event) => handleChange(event, item)}
                   type="number"
                 />
               </div>

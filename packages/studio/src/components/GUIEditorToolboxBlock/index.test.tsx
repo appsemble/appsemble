@@ -67,10 +67,7 @@ describe('<GUIEditorToolboxBlock /> rendering', () => {
     });
 
     it('should change block class to blockFrameSelected when clicked', () => {
-      wrapper
-        .find('.blockFrame')
-        .last()
-        .simulate('click');
+      wrapper.find('.blockFrame').last().simulate('click');
       expect(wrapper.find('.blockFrameSelected')).toHaveLength(1);
       expect(wrapper).toMatchSnapshot();
     });
