@@ -1,4 +1,4 @@
-import { Page } from '@appsemble/types';
+import type { Page } from '@appsemble/types';
 import { checkAppRole, normalize } from '@appsemble/utils';
 import React from 'react';
 import { useLocation } from 'react-router-dom';

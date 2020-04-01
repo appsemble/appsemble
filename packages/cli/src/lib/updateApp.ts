@@ -4,7 +4,7 @@ import FormData from 'form-data';
 import fs from 'fs-extra';
 import yaml from 'js-yaml';
 
-import { UpdateAppArguments } from '../types';
+import type { UpdateAppArguments } from '../types';
 import traverseAppDirectory from './traverseAppDirectory';
 import traverseBlockThemes from './traverseBlockThemes';
 

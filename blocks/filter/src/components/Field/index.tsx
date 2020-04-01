@@ -2,7 +2,7 @@ import classNames from 'classnames';
 import React, { useCallback } from 'react';
 import { useIntl } from 'react-intl';
 
-import { Filter, FilterField, RangeFilter } from '../../../block';
+import type { Filter, FilterField, RangeFilter } from '../../../block';
 import CheckBoxField from '../CheckBoxField';
 import DateField from '../DateField';
 import EnumField from '../EnumField';

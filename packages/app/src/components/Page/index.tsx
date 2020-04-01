@@ -1,13 +1,13 @@
 import { useMessages } from '@appsemble/react-components';
-import { Block } from '@appsemble/sdk';
-import { AppDefinition, BasicPage, Page as PageType } from '@appsemble/types';
+import type { Block } from '@appsemble/sdk';
+import type { AppDefinition, BasicPage, Page as PageType } from '@appsemble/types';
 import { checkAppRole, normalize } from '@appsemble/utils';
 import { EventEmitter } from 'events';
 import React from 'react';
 import { useIntl } from 'react-intl';
 import { Redirect, useHistory, useLocation } from 'react-router-dom';
 
-import { ShowDialogParams } from '../../types';
+import type { ShowDialogParams } from '../../types';
 import { useAppDefinition } from '../AppDefinitionProvider';
 import BlockList from '../BlockList';
 import FlowPage from '../FlowPage';

@@ -3,7 +3,7 @@ import { FormattedMessage } from '@appsemble/preact';
 import { Input } from '@appsemble/preact-components';
 import { h, VNode } from 'preact';
 
-import { InputProps, StringField } from '../../../block';
+import type { InputProps, StringField } from '../../../block';
 
 type StringInputProps = InputProps<string, StringField>;
 

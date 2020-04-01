@@ -1,5 +1,5 @@
 import { Button, Loader, Message, useQuery } from '@appsemble/react-components';
-import { App } from '@appsemble/types';
+import type { App } from '@appsemble/types';
 import axios from 'axios';
 import * as React from 'react';
 import { FormattedMessage } from 'react-intl';

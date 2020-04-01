@@ -3,7 +3,7 @@ import { Select } from '@appsemble/preact-components';
 import classNames from 'classnames';
 import { h, VNode } from 'preact';
 
-import { EnumField, InputProps } from '../../../block';
+import type { EnumField, InputProps } from '../../../block';
 import styles from './index.css';
 
 type EnumInputProps = InputProps<string, EnumField>;

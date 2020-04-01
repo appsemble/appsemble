@@ -1,7 +1,7 @@
-import { BootstrapParams } from '@appsemble/sdk';
+import type { BootstrapParams } from '@appsemble/sdk';
 import { LatLngBounds, LayerGroup, Map, Marker } from 'leaflet';
 
-import { LatLngMapper } from './createGetters';
+import type { LatLngMapper } from './createGetters';
 import createIcon from './createIcon';
 
 export function makeFilter(fields: [string, string], bounds: LatLngBounds): string {

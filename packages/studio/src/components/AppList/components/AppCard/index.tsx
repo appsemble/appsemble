@@ -1,4 +1,4 @@
-import { App } from '@appsemble/types';
+import type { App } from '@appsemble/types';
 import classNames from 'classnames';
 import React from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';

@@ -1,11 +1,11 @@
 /** @jsx h */
 import { Icon } from '@appsemble/preact-components';
-import { BootstrapParams } from '@appsemble/sdk';
+import type { BootstrapParams } from '@appsemble/sdk';
 import { remapData } from '@appsemble/utils';
 import { h, VNode } from 'preact';
 import { useCallback } from 'preact/hooks';
 
-import { Field, Item } from '../../../block';
+import type { Field, Item } from '../../../block';
 import ListItemWrapper from '../ListItemWrapper';
 import styles from './index.css';
 

@@ -1,5 +1,5 @@
 import { Icon } from '@appsemble/react-components';
-import { Page } from '@appsemble/types';
+import type { Page } from '@appsemble/types';
 import { normalize } from '@appsemble/utils';
 import React from 'react';
 import { NavLink } from 'react-router-dom';

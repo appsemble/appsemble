@@ -1,5 +1,5 @@
 import { AppsembleError, logger } from '@appsemble/node-utils';
-import FormData from 'form-data';
+import type FormData from 'form-data';
 import fs from 'fs-extra';
 import yaml from 'js-yaml';
 import { join } from 'path';

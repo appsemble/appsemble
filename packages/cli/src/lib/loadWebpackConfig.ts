@@ -1,8 +1,8 @@
 import { logger } from '@appsemble/node-utils';
 import path from 'path';
-import { Configuration } from 'webpack';
+import type { Configuration } from 'webpack';
 
-import { BlockConfig } from '../types';
+import type { BlockConfig } from '../types';
 
 /**
  * Load a webpack configuration file.

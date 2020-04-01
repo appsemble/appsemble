@@ -1,5 +1,5 @@
 import { Loader } from '@appsemble/react-components';
-import { AppMember, UserInfo } from '@appsemble/types';
+import type { AppMember, UserInfo } from '@appsemble/types';
 import axios from 'axios';
 import jwtDecode from 'jwt-decode';
 import * as React from 'react';

@@ -1,4 +1,4 @@
-import { ParameterizedContext } from 'koa';
+import type { ParameterizedContext } from 'koa';
 
 import serveIcon from '../serveIcon';
 

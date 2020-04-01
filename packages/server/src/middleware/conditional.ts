@@ -1,4 +1,4 @@
-import { Context, Middleware } from 'koa';
+import type { Context, Middleware } from 'koa';
 
 export default function conditional(
   check: (ctx: Context) => boolean,

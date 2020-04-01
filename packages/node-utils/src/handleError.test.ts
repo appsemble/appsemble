@@ -1,4 +1,4 @@
-import { Argv } from 'yargs';
+import type { Argv } from 'yargs';
 
 import AppsembleError from './AppsembleError';
 import handleError from './handleError';

@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { IntlConfig, IntlProvider } from 'react-intl';
 
-import { BlockProps } from '.';
+import type { BlockProps } from '.';
 
 /**
  * A HOC which provides `intl` in a block written in React.

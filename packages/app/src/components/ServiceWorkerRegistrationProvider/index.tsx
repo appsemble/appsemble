@@ -1,7 +1,7 @@
 import axios from 'axios';
 import * as React from 'react';
 
-import { Permission, ServiceWorkerRegistrationContextType } from '../../types';
+import type { Permission, ServiceWorkerRegistrationContextType } from '../../types';
 import settings from '../../utils/settings';
 import urlB64ToUint8Array from '../../utils/urlB64ToUint8Array';
 

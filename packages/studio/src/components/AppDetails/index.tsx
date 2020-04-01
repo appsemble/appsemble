@@ -9,7 +9,7 @@ import {
   SimpleInput,
   useMessages,
 } from '@appsemble/react-components';
-import { Organization, Rating } from '@appsemble/types';
+import type { Organization, Rating } from '@appsemble/types';
 import { permissions } from '@appsemble/utils';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';

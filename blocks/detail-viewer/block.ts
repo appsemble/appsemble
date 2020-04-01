@@ -1,4 +1,4 @@
-import { BlockProps } from '@appsemble/preact';
+import type { BlockProps } from '@appsemble/preact';
 
 interface AbstractField {
   label?: string;

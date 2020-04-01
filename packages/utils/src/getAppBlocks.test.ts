@@ -1,4 +1,4 @@
-import { AppDefinition } from '@appsemble/types';
+import type { AppDefinition } from '@appsemble/types';
 
 import getAppBlocks from './getAppBlocks';
 

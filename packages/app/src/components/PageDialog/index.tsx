@@ -2,7 +2,7 @@ import { Modal } from '@appsemble/react-components';
 import classNames from 'classnames';
 import React from 'react';
 
-import { ShowDialogParams } from '../../types';
+import type { ShowDialogParams } from '../../types';
 import BlockList from '../BlockList';
 import styles from './index.css';
 

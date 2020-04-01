@@ -1,6 +1,6 @@
 /** @jsx h */
-import { BootstrapParams } from '@appsemble/sdk';
-import { Item } from 'blocks/list/block';
+import type { BootstrapParams } from '@appsemble/sdk';
+import type { Item } from 'blocks/list/block';
 import { h, VNode } from 'preact';
 
 type ListItemWrapperProps = (

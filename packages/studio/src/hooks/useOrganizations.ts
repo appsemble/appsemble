@@ -1,6 +1,6 @@
 import { createContext, useContext } from 'react';
 
-import { Organization } from '../types';
+import type { Organization } from '../types';
 
 export const OrganizationContext = createContext<Organization[]>(null);
 

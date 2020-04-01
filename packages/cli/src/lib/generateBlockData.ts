@@ -1,5 +1,5 @@
 import { AppsembleError, logger } from '@appsemble/node-utils';
-import { BlockManifest } from '@appsemble/types';
+import type { BlockManifest } from '@appsemble/types';
 import path from 'path';
 import {
   createProgram,
@@ -23,7 +23,7 @@ import {
 import { buildGenerator, Definition } from 'typescript-json-schema';
 import { inspect } from 'util';
 
-import { BlockConfig, BlockPayload } from '../types';
+import type { BlockConfig, BlockPayload } from '../types';
 
 // XXX specify any
 function processActions(iface: InterfaceDeclaration): BlockManifest['actions'] {

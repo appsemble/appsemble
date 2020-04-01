@@ -1,4 +1,4 @@
-import { BlockManifest } from '@appsemble/types';
+import type { BlockManifest } from '@appsemble/types';
 import fg from 'fast-glob';
 import fs from 'fs-extra';
 import path from 'path';

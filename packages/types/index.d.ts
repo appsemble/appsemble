@@ -7,8 +7,8 @@ import {
   RequestLikeActionTypes,
   Theme,
 } from '@appsemble/sdk';
-import { IconName } from '@fortawesome/fontawesome-common-types';
-import { OpenAPIV3 } from 'openapi-types';
+import type { IconName } from '@fortawesome/fontawesome-common-types';
+import type { OpenAPIV3 } from 'openapi-types';
 
 /**
  * OpenID Connect specifies a set of standard claims about the end-user, which cover common profile

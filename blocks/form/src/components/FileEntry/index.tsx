@@ -3,7 +3,7 @@ import { FormattedMessage } from '@appsemble/preact';
 import classNames from 'classnames';
 import { Component, Fragment, h, VNode } from 'preact';
 
-import { FileField, InputProps } from '../../../block';
+import type { FileField, InputProps } from '../../../block';
 import styles from './index.css';
 
 interface FileEntryProps extends InputProps<string | Blob, FileField> {

@@ -1,5 +1,5 @@
 import crypto from 'crypto';
-import { JsonObject } from 'type-fest';
+import type { JsonObject } from 'type-fest';
 
 export default function createSettings(settings: JsonObject): [string, string] {
   const script = `window.settings=${JSON.stringify(settings)}`;

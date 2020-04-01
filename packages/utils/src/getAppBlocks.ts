@@ -1,5 +1,5 @@
-import { Block } from '@appsemble/sdk';
-import { ActionDefinition, AppDefinition } from '@appsemble/types';
+import type { Block } from '@appsemble/sdk';
+import type { ActionDefinition, AppDefinition } from '@appsemble/types';
 
 export interface BlockMap {
   [path: string]: Block;

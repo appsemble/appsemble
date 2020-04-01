@@ -5,7 +5,7 @@ import fs from 'fs-extra';
 import path from 'path';
 import { inspect } from 'util';
 
-import { BlockConfig } from '../types';
+import type { BlockConfig } from '../types';
 
 /**
  * Get the block configuration from a block directory.

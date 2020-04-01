@@ -11,7 +11,7 @@ import {
   SimpleSubmit,
   useMessages,
 } from '@appsemble/react-components';
-import { Organization } from '@appsemble/types';
+import type { Organization } from '@appsemble/types';
 import { normalize, permissions, roles } from '@appsemble/utils';
 import axios from 'axios';
 import * as React from 'react';
@@ -19,7 +19,7 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { Link } from 'react-router-dom';
 
 import useUser from '../../hooks/useUser';
-import { Member, Role } from '../../types';
+import type { Member, Role } from '../../types';
 import checkRole from '../../utils/checkRole';
 import HelmetIntl from '../HelmetIntl';
 import styles from './index.css';

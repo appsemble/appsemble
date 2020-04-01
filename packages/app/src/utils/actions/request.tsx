@@ -1,14 +1,14 @@
-import {
+import type {
   HTTPMethodsUpper,
   RequestAction,
   RequestLikeAction,
   RequestLikeActionTypes,
 } from '@appsemble/sdk';
-import { RequestLikeActionDefinition } from '@appsemble/types';
+import type { RequestLikeActionDefinition } from '@appsemble/types';
 import { compileFilters, MapperFunction, remapData, validate } from '@appsemble/utils';
 import axios, { AxiosRequestConfig } from 'axios';
 
-import { MakeActionParameters } from '../../types';
+import type { MakeActionParameters } from '../../types';
 import uploadBlobs from '../uploadBlobs';
 import xmlToJson from '../xmlToJson';
 

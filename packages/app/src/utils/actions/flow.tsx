@@ -1,7 +1,7 @@
-import { BaseAction } from '@appsemble/sdk';
-import { BaseActionDefinition } from '@appsemble/types';
+import type { BaseAction } from '@appsemble/sdk';
+import type { BaseActionDefinition } from '@appsemble/types';
 
-import { MakeActionParameters } from '../../types';
+import type { MakeActionParameters } from '../../types';
 
 // See Page.jsx
 function next({
