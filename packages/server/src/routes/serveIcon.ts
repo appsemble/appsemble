@@ -1,8 +1,20 @@
+import { Context } from 'koa';
 import sharp from 'sharp';
 
 import getDefaultIcon from '../utils/getDefaultIcon';
 
-export default async function serveIcon(ctx, { background, format, height, icon, width }) {
+interface ServeIconOptions {
+  background?: string;
+  format: string;
+  height: number;
+  icon?: Buffer;
+  width: number;
+}
+
+export default async function serveIcon(
+  ctx: Context,
+  { background, format, height, icon, width }: ServeIconOptions,
+): Promise<void> {
   // Allow icon to be null.
   const finalIcon = icon || getDefaultIcon();
   let img = sharp(finalIcon);

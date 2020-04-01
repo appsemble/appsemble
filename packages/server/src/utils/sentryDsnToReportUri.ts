@@ -1,4 +1,4 @@
-export default function sentryDsnToReportUri(dsn) {
+export default function sentryDsnToReportUri(dsn: string): string {
   if (!dsn) {
     return null;
   }

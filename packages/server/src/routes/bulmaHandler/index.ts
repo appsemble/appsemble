@@ -1,5 +1,7 @@
+import { Theme } from '@appsemble/sdk';
 import { baseTheme } from '@appsemble/utils';
 import autoprefixer from 'autoprefixer';
+import { Context } from 'koa';
 import sass from 'node-sass';
 import postcss from 'postcss';
 
@@ -16,7 +18,7 @@ const postCss = postcss([autoprefixer]);
  * @param {Object} params
  * @returns {string} SASS string containing the base Appsemble style augmented by user parameters.
  */
-function processStyle(params) {
+function processStyle(params: Theme): string {
   return `
     @charset "utf-8";
     @import url(https://fonts.googleapis.com/css?family=Libre+Franklin|Open+Sans);
@@ -64,15 +66,13 @@ function processStyle(params) {
  *
  * @param {Koa.Context} ctx The Koa context.
  */
-export default async function bulmaHandler(ctx) {
-  const options = {
+export default async function bulmaHandler(ctx: Context): Promise<void> {
+  const { css } = sass.renderSync({
     data: processStyle(ctx.query),
     outputStyle: 'compressed',
-  };
+  });
 
-  const { css } = sass.renderSync(options);
-
-  ctx.body = await postCss.process(css).css;
+  ctx.body = postCss.process(css).css;
   ctx.type = 'text/css';
   ctx.set('Cache-Control', 'max-age=31536000,immutable');
 }

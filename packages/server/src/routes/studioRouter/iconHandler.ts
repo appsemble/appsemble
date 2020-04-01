@@ -1,6 +1,16 @@
+import { ParameterizedContext } from 'koa';
+
 import serveIcon from '../serveIcon';
 
-export default async function iconHandler(ctx) {
+interface Params {
+  format: string;
+  height: string;
+  width: string;
+}
+
+export default async function iconHandler(
+  ctx: ParameterizedContext<{}, { params: Params }>,
+): Promise<void> {
   const { params } = ctx;
   const width = Number(params.width);
   const height = Number(params.height || params.width);

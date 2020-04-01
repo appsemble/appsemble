@@ -1,7 +1,9 @@
+import { Middleware } from 'koa';
+
 /**
  * Koa middleware for handling Boom errors.
  */
-export default function boom() {
+export default function boom(): Middleware {
   return async (ctx, next) => {
     try {
       await next();
