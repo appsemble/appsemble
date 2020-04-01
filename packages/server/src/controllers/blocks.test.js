@@ -344,6 +344,7 @@ describe('getBlockVersions', () => {
         actions: null,
         events: null,
         layout: null,
+        parameters: null,
         resources: null,
         version: '1.32.9',
       },

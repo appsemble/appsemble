@@ -198,7 +198,15 @@ export async function getBlockVersions(ctx) {
   const { BlockVersion } = ctx.db.models;
 
   const blockVersions = await BlockVersion.findAll({
-    attributes: ['version', 'actions', 'layout', 'resources', 'events', 'description'],
+    attributes: [
+      'actions',
+      'description',
+      'events',
+      'layout',
+      'version',
+      'resources',
+      'parameters',
+    ],
     raw: true,
     where: { name: blockId, OrganizationId: organizationId },
   });
