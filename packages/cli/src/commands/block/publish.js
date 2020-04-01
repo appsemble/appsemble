@@ -41,7 +41,6 @@ export async function handler({ build, clientCredentials, ignoreConflict, paths,
       await buildBlock({ path: resolve(dir, config.dist), config });
     }
 
-    logger.info(`Publishing ${config.id}@${config.version}…`);
     await publish({ config, ignoreConflict, path: dir });
   }, {});
 }
