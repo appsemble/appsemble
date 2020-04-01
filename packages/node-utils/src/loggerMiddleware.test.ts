@@ -48,7 +48,7 @@ it('should log requests', async () => {
 });
 
 it('should log success responses as info', async () => {
-  app.use(ctx => {
+  app.use((ctx) => {
     clock.tick(1);
     ctx.status = 200;
   });
@@ -62,7 +62,7 @@ it('should log success responses as info', async () => {
 });
 
 it('should log redirect responses as info', async () => {
-  app.use(ctx => {
+  app.use((ctx) => {
     clock.tick(33);
     ctx.redirect('/');
   });
@@ -76,7 +76,7 @@ it('should log redirect responses as info', async () => {
 });
 
 it('should log bad responses as warn', async () => {
-  app.use(ctx => {
+  app.use((ctx) => {
     clock.tick(3);
     ctx.status = 400;
   });
@@ -90,7 +90,7 @@ it('should log bad responses as warn', async () => {
 });
 
 it('should log error responses as error', async () => {
-  app.use(ctx => {
+  app.use((ctx) => {
     clock.tick(53);
     ctx.status = 503;
   });
@@ -104,7 +104,7 @@ it('should log error responses as error', async () => {
 });
 
 it('should log long request lengths yellow', async () => {
-  app.use(ctx => {
+  app.use((ctx) => {
     clock.tick(400);
     ctx.status = 200;
   });
@@ -118,7 +118,7 @@ it('should log long request lengths yellow', async () => {
 });
 
 it('should log extremely long request lengths red', async () => {
-  app.use(ctx => {
+  app.use((ctx) => {
     clock.tick(1337);
     ctx.status = 200;
   });
@@ -149,7 +149,7 @@ it('should log errors as internal server errors and rethrow', async () => {
 });
 
 it('should append the response length if it is defined', async () => {
-  app.use(ctx => {
+  app.use((ctx) => {
     clock.tick(1);
     ctx.status = 200;
     ctx.body = '{}';

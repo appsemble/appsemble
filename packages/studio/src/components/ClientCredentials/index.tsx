@@ -15,7 +15,7 @@ import * as React from 'react';
 import { FormattedDate, FormattedMessage, useIntl } from 'react-intl';
 
 import { OAuth2ClientCredentials } from '../../types';
-import styles from './ClientCredentials.css';
+import styles from './index.css';
 import messages from './messages';
 import scopeDescriptions from './scopeDescriptions';
 
@@ -48,7 +48,7 @@ export default function ClientCredentials(): React.ReactElement {
   const onDelete = React.useCallback(
     (client: OAuth2ClientCredentials) => async () => {
       await axios.delete(`/api/oauth2/client-credentials/${client.id}`);
-      setClients(clients.filter(c => c.id !== client.id));
+      setClients(clients.filter((c) => c.id !== client.id));
     },
     [clients],
   );
@@ -159,7 +159,7 @@ export default function ClientCredentials(): React.ReactElement {
               </tr>
             </thead>
             <tbody>
-              {clients.map(client => (
+              {clients.map((client) => (
                 <tr key={client.id}>
                   <td>{client.description}</td>
                   <td>
@@ -178,7 +178,7 @@ export default function ClientCredentials(): React.ReactElement {
                   </td>
                   <td>
                     <Join separator=", ">
-                      {client.scopes.map(scope => (
+                      {client.scopes.map((scope) => (
                         <data
                           key={scope}
                           className={styles.scope}

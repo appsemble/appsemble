@@ -43,12 +43,22 @@
     <link rel="stylesheet" href="/api/apps/{{ app.id }}/style/core" id="appsemble-style-core" />
     {{/app.style}} {{#app.sharedStyle}}
     <link rel="stylesheet" href="/api/apps/{{ app.id }}/style/shared" id="appsemble-style-shared" />
-    {{/app.sharedStyle}} {{{ settings }}}
+    {{/app.sharedStyle}}
+    <script nonce="{{{ nonce }}}">
+      window.addEventListener('load', function () {
+        if (!window.appsembleHasLoaded) {
+          document.getElementById('app').innerHTML = document.getElementById(
+            'legacy-browser-support',
+          ).innerHTML;
+        }
+      });
+    </script>
+    {{{ settings }}}
   </head>
   <body>
     <div class="is-fixed-top is-primary navbar">
       <header class="navbar-brand">
-        <h1 class="navbar-item title is-4">{{ app.definition.name }}</h1>
+        <h2 class="navbar-item title is-4">{{ app.definition.name }}</h2>
       </header>
     </div>
     <div id="app">
@@ -60,6 +70,49 @@
           </p>
         </section>
       </noscript>
+      <script id="legacy-browser-support" type="text/x-template">
+        <div class="content section">
+          <h3>Your browser is not supported.</h3>
+          <p>
+            {{ app.definition.name }} is built using the latest web technology. This requires a
+            modern browser.
+          </p>
+          <p>Please upgrade your browser to use {{ app.definition.name }}.</p>
+          <div class="browsers">
+            <div class="browser-logo">
+              <a href="https://www.google.com/chrome" rel="noopener noreferrer" target="_blank">
+                <img alt="Google Chrome" src="<%= require('@browser-logos/chrome/chrome.png') %>" />
+                <h5>Google Chrome</h5>
+              </a>
+              <p>The world’s most popular browser by Google</p>
+            </div>
+            <div class="browser-logo">
+              <a href="https://www.microsoft.com/edge" rel="noopener noreferrer" target="_blank">
+                <img alt="Microsoft Edge" src="<%= require('@browser-logos/edge/edge.png') %>" />
+                <h5>Microsoft Edge</h5>
+              </a>
+              <p>The new Microsoft browser to replace Internet Explorer</p>
+            </div>
+            <div class="browser-logo">
+              <a href="https://www.mozilla.org/firefox" rel="noopener noreferrer" target="_blank">
+                <img
+                  alt="Mozilla Firefox"
+                  src="<%= require('@browser-logos/firefox/firefox.png') %>"
+                />
+                <h5>Mozilla Firefox</h5>
+              </a>
+              <p>The free and open source web browser</p>
+            </div>
+            <div class="browser-logo">
+              <a href="https://www.apple.com/safari" rel="noopener noreferrer" target="_blank">
+                <img alt="Apple Safari" src="<%= require('@browser-logos/safari/safari.png') %>" />
+                <h5>Apple Safari</h5>
+              </a>
+              <p>The default browser for your Apple device</p>
+            </div>
+          </div>
+        </div>
+      </script>
     </div>
   </body>
 </html>

@@ -43,7 +43,7 @@ export function register(
   if (!callbacks) {
     throw new Error('This block shouldn’t have been loaded. What’s going on?');
   }
-  callbacks.forEach(resolve => resolve(fn));
+  callbacks.forEach((resolve) => resolve(fn));
 }
 
 function getBootstrap(blockDefId: string): Promisable<BootstrapFunction> {
@@ -54,7 +54,7 @@ function getBootstrap(blockDefId: string): Promisable<BootstrapFunction> {
     resolvers.set(blockDefId, []);
   }
   const waiting = resolvers.get(blockDefId);
-  return new Promise(resolve => {
+  return new Promise((resolve) => {
     waiting.push(resolve);
   });
 }
@@ -71,8 +71,8 @@ export async function callBootstrap(
 ): Promise<void> {
   if (!loadedBlocks.has(manifest.name)) {
     manifest.files
-      .filter(url => url.endsWith('.js'))
-      .forEach(url => {
+      .filter((url) => url.endsWith('.js'))
+      .forEach((url) => {
         const script = document.createElement('script');
         script.src = prefixBlockURL({ type: manifest.name, version: manifest.version }, url);
         script.addEventListener('AppsembleBootstrap', (event: AppsembleBootstrapEvent) => {

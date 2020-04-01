@@ -33,7 +33,7 @@ bootstrap(({ events, parameters, ready }) => {
 
   const onUpdate = useCallback(
     (resource: Item): void => {
-      setData(data.map(entry => (entry.id === resource.id ? resource : entry)));
+      setData(data.map((entry) => (entry.id === resource.id ? resource : entry)));
     },
     [data],
   );
@@ -79,7 +79,7 @@ bootstrap(({ events, parameters, ready }) => {
 
   return (
     <div className={styles.root}>
-      {data.map(content => (
+      {data.map((content) => (
         <Card key={content.id} content={content} onUpdate={onUpdate} remappers={remappers} />
       ))}
     </div>

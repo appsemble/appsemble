@@ -1,7 +1,7 @@
 import { attach } from '@appsemble/sdk';
 import marked from 'marked';
 
-import styles from './style.css';
+import styles from './index.css';
 
 /**
  * @param {Object} block The block as it was specified by the app creator.

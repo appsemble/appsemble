@@ -7,7 +7,8 @@ export interface Field {
   /**
    * An optional label used in the header of the table.
    *
-   * If this isn’t specified, the field’s name will be used instead.
+   * If this isn’t specified, no label will be shown.
+   * If no fields have a label, the table header row won’t be shown.
    */
   label?: string;
 

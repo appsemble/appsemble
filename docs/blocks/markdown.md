@@ -24,7 +24,7 @@ It is recommended to use a YAML ´literal block´, as shown in the example below
 
 ```yaml
 type: markdown
-version: 0.11.6
+version: 0.12.3
 parameters:
   content: |
     > Do Androids Dream of Electric Sheep?

@@ -249,7 +249,7 @@ export interface Block {
 }
 
 /**
- * A color know to Bulma.
+ * A color known to Bulma.
  */
 export type BulmaColor =
   | 'dark'
@@ -260,6 +260,8 @@ export type BulmaColor =
   | 'warning'
   | 'danger'
   | 'white';
+
+export type BulmaSize = 'small' | 'normal' | 'medium' | 'large';
 
 export interface Message {
   /**

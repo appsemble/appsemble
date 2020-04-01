@@ -29,7 +29,7 @@ export default function loadMarkers(
   if (!Array.isArray(markers)) {
     return;
   }
-  markers.forEach(async marker => {
+  markers.forEach(async (marker) => {
     if (fetched.has(marker.id)) {
       return;
     }

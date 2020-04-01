@@ -31,25 +31,25 @@ export default async function traverseAppDirectory(
   formData.append('yaml', data);
   formData.append('definition', JSON.stringify(app));
 
-  const icon = dir.find(entry => entry.match(/^icon\.(png|svg)$/));
+  const icon = dir.find((entry) => entry.match(/^icon\.(png|svg)$/));
   if (icon) {
     const iconPath = join(path, icon);
     logger.info(`Including icon ${iconPath}`);
     formData.append('icon', fs.createReadStream(iconPath));
   }
 
-  const theme = dir.find(entry => entry.toLowerCase() === 'theme');
+  const theme = dir.find((entry) => entry.toLowerCase() === 'theme');
   if (theme) {
-    const themeDir = (await fs.readdir(join(path, theme))).filter(sub =>
+    const themeDir = (await fs.readdir(join(path, theme))).filter((sub) =>
       fs.lstatSync(join(path, theme, sub)).isDirectory(),
     );
 
-    const core = themeDir.find(entry => entry.toLowerCase() === 'core');
-    const shared = themeDir.find(entry => entry.toLowerCase() === 'shared');
+    const core = themeDir.find((entry) => entry.toLowerCase() === 'core');
+    const shared = themeDir.find((entry) => entry.toLowerCase() === 'shared');
 
     if (core) {
       const coreDir = await fs.readdir(join(path, theme, core));
-      const coreCss = coreDir.find(file => file.toLowerCase() === 'index.css');
+      const coreCss = coreDir.find((file) => file.toLowerCase() === 'index.css');
       if (coreCss) {
         logger.info('Including core style');
         const css = await processCss(join(path, theme, core, coreCss));
@@ -61,7 +61,7 @@ export default async function traverseAppDirectory(
 
     if (shared) {
       const sharedDir = await fs.readdir(join(path, theme, shared));
-      const sharedCss = sharedDir.find(file => file.toLowerCase() === 'index.css');
+      const sharedCss = sharedDir.find((file) => file.toLowerCase() === 'index.css');
       if (sharedCss) {
         logger.info('Including shared style');
         const css = await processCss(join(path, theme, shared, sharedCss));

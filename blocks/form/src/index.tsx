@@ -42,7 +42,7 @@ const validators: { [name: string]: Validator } = {
     if (field.accept) {
       if (field.repeated) {
         return (
-          (value as File[]).every(file => field.accept.includes(file.type)) &&
+          (value as File[]).every((file) => field.accept.includes(file.type)) &&
           (value as File[]).length >= 1
         );
       }
@@ -106,7 +106,7 @@ bootstrap(({ actions, data, events, parameters, ready }) => {
     (event: Event, value: any): boolean => {
       const { fields } = parameters;
       const { name } = event.target as HTMLInputElement;
-      const field = fields.find(f => f.name === name);
+      const field = fields.find((f) => f.name === name);
 
       if (Object.prototype.hasOwnProperty.call(validators, field.type)) {
         return validators[field.type](field, event, value);
@@ -142,7 +142,7 @@ bootstrap(({ actions, data, events, parameters, ready }) => {
             setSubmitting(true);
             return actions.onSubmitSuccess.dispatch(values);
           })
-          .catch(error => {
+          .catch((error) => {
             if (error.message !== 'Schema Validation Failed') {
               setSubmitting(false);
               throw error;
@@ -172,7 +172,7 @@ bootstrap(({ actions, data, events, parameters, ready }) => {
   return (
     <form className={styles.root} noValidate onSubmit={onSubmit}>
       {disabled && <progress className="progress is-small is-primary" />}
-      {parameters.fields.map(field => {
+      {parameters.fields.map((field) => {
         const Comp = inputs[field.type];
         return (
           <Comp
@@ -190,7 +190,7 @@ bootstrap(({ actions, data, events, parameters, ready }) => {
       <div className={styles.buttonWrapper}>
         <button
           className={classNames('button', 'is-primary', styles.submit)}
-          disabled={!Object.values(validity).every(v => v) || submitting || disabled}
+          disabled={!Object.values(validity).every((v) => v) || submitting || disabled}
           type="submit"
         >
           <FormattedMessage id="submit" />

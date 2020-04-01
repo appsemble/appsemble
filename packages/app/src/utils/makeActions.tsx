@@ -104,7 +104,7 @@ function createAction({
 }
 
 export default function makeActions({
-  actions = {},
+  actions,
   context,
   definition,
   ee,
@@ -115,7 +115,7 @@ export default function makeActions({
   pushNotifications,
   showDialog,
 }: MakeActionsParams): { [key: string]: Action } {
-  const actionMap = Object.entries(actions)
+  const actionMap = Object.entries(actions || {})
     .filter(([key]) => key !== '$any')
     .reduce<{ [key: string]: Action }>((acc, [on, { required }]) => {
       let actionDefinition: ActionDefinition;
@@ -148,9 +148,9 @@ export default function makeActions({
     }, {});
 
   let anyActions: object;
-  if (actions.$any) {
-    anyActions = Object.keys(context.actions)
-      .filter(key => !actionMap[key])
+  if (actions?.$any) {
+    anyActions = Object.keys(context.actions || {})
+      .filter((key) => !actionMap[key])
       .reduce<{ [key: string]: Action }>((acc, on) => {
         const actionDefinition = context.actions[on];
         const { type } = actionDefinition;

@@ -9,18 +9,62 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
+- Server: Add support for outputting CSV in resource API.
+
+### Changed
+
+- Block(`@appsemble/detail-viewer`): Make `field.label` render no label instead of `field.name` if
+  the label is undefined.
+- Block(`@appsemble/form`): Make `field.label` render no label instead of `field.name` if the label
+  is undefined.
+- Block(`@appsemble/table`): Make `field.label` render no label in the header if the label is
+  undefined. If no labels are defined at all, the table header won’t be displayed at all.
+
+## [0.12.3] - 2020-03-27
+
+### Fixes
+
+- App: Fix loading blocks.
+
+## [0.12.2] - 2020-03-27
+
+### Fixes
+
+- App: Fix serving apps.
+- Studio: Fix serving Appsemble studio.
+
+## [0.12.1] - 2020-03-26
+
+### Added
+
+- App: Add support for custom `action` format for parameters. This can be used to refer to other
+  actions by name, including custom defined actions.
+- App: Handle unsupported browsers.
+- Block(`@appsemble/button-list`): Add new button list block.
+- SDK: Add support for index signature actions.
+- Server: Handle unsupported browsers.
+- Server: Serve block assets from the app host URL instead of the studio host URL.
+
+## [0.12.0] - 2020-03-20
+
+### Added
+
 - App: Add `resource.subscription.toggle` action.
 - App: Add `resource.subscription.status` action.
 - App: Add `resource.subscription.unsubscribe` action.
+- Preact: Publish `@appsemble/preact` on the `npm` registry.
+- SDK: Add `asset` utility function.
 - Server: Add option to toggle subscriptions.
 
 ### Changed
 
 - App: Rename `resource.subscribe` action to `resource.subscription.subscribe`.
+- CLI: Use explicit user agent.
 
 ### Fixed
 
 - App: Fix invalid URLs when uploading assets.
+- App: Pass data between flow pages.
 - Server: Allow CLI to update app block themes if it has the `apps:write` scope.
 - Server: Fix issue with invalid role validation for pages with sub pages.
 

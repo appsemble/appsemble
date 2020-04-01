@@ -118,7 +118,7 @@ export async function handler(argv) {
   const start = await serverImport('start');
   const blocks = await discoverBlocks(process.cwd());
   const webpackConfigs = await Promise.all(
-    blocks.map(block => loadWebpackConfig(block, 'development')),
+    blocks.map((block) => loadWebpackConfig(block, 'development')),
   );
   return start(argv, { webpackConfigs });
 }
