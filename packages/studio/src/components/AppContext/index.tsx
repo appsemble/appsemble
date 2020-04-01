@@ -1,5 +1,5 @@
 import { Loader } from '@appsemble/react-components';
-import { App } from '@appsemble/types';
+import type { App } from '@appsemble/types';
 import { permissions } from '@appsemble/utils';
 import axios from 'axios';
 import React from 'react';

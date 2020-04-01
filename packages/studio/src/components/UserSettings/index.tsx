@@ -13,7 +13,7 @@ import React from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import useUser from '../../hooks/useUser';
-import { UserEmail } from '../../types';
+import type { UserEmail } from '../../types';
 import HelmetIntl from '../HelmetIntl';
 import styles from './index.css';
 import messages from './messages';

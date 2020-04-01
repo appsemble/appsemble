@@ -1,13 +1,13 @@
 import { Loader } from '@appsemble/react-components';
-import { Block as BlockType } from '@appsemble/sdk';
-import { Security } from '@appsemble/types';
+import type { Block as BlockType } from '@appsemble/sdk';
+import type { Security } from '@appsemble/types';
 import { checkAppRole } from '@appsemble/utils';
-import { EventEmitter } from 'events';
+import type { EventEmitter } from 'events';
 import React from 'react';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 
-import { ShowDialogAction } from '../../types';
-import { ActionCreators } from '../../utils/actions';
+import type { ShowDialogAction } from '../../types';
+import type { ActionCreators } from '../../utils/actions';
 import { useAppDefinition } from '../AppDefinitionProvider';
 import Block from '../Block';
 import { useUser } from '../UserProvider';

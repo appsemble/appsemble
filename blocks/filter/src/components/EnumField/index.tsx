@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Enum } from '../../../block';
+import type { Enum } from '../../../block';
 
 interface EnumFieldProps {
   value: any;

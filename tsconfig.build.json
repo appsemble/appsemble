@@ -4,6 +4,7 @@
   "compilerOptions": {
     "declaration": true,
     "esModuleInterop": true,
+    "importsNotUsedAsValues": "error",
     "jsx": "react",
     "lib": ["dom", "esnext"],
     "module": "es2020",

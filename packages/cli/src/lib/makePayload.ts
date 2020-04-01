@@ -4,7 +4,7 @@ import fs from 'fs-extra';
 import klaw from 'klaw';
 import path from 'path';
 
-import { BlockConfig } from '../types';
+import type { BlockConfig } from '../types';
 import generateBlockData from './generateBlockData';
 
 interface MakePayloadParams {

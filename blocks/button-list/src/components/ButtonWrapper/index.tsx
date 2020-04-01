@@ -1,5 +1,5 @@
 /** @jsx h */
-import { Action, LinkAction } from '@appsemble/sdk';
+import type { Action, LinkAction } from '@appsemble/sdk';
 import { h, VNode } from 'preact';
 
 type ButtonWrapperProps = Omit<

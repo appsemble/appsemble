@@ -1,7 +1,7 @@
 import { logger } from '@appsemble/node-utils';
 import webpack, { Stats } from 'webpack';
 
-import { BlockConfig } from '../types';
+import type { BlockConfig } from '../types';
 import loadWebpackConfig from './loadWebpackConfig';
 
 interface BuildBlockParams {

@@ -1,7 +1,7 @@
-import { Theme } from '@appsemble/sdk';
+import type { Theme } from '@appsemble/sdk';
 import { baseTheme } from '@appsemble/utils';
 import autoprefixer from 'autoprefixer';
-import { Context } from 'koa';
+import type { Context } from 'koa';
 import sass from 'node-sass';
 import postcss from 'postcss';
 

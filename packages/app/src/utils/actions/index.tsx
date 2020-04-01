@@ -1,7 +1,7 @@
-import { Action } from '@appsemble/sdk';
-import { ActionDefinition } from '@appsemble/types';
+import type { Action } from '@appsemble/sdk';
+import type { ActionDefinition } from '@appsemble/types';
 
-import { MakeActionParameters } from '../../types';
+import type { MakeActionParameters } from '../../types';
 import dialog from './dialog';
 import event from './event';
 import flow from './flow';

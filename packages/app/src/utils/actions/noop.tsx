@@ -1,4 +1,4 @@
-import { BaseAction } from '@appsemble/sdk';
+import type { BaseAction } from '@appsemble/sdk';
 
 export default function noop(): BaseAction<'noop'> {
   return {

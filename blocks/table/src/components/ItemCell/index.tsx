@@ -1,5 +1,5 @@
 /** @jsx h */
-import { Field } from 'blocks/table/block';
+import type { Field } from 'blocks/table/block';
 import { h, VNode } from 'preact';
 import { useCallback } from 'preact/hooks';
 

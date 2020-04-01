@@ -8,7 +8,7 @@ import {
   Modal,
   useMessages,
 } from '@appsemble/react-components';
-import { AppDefinition, BlockManifest } from '@appsemble/types';
+import type { AppDefinition, BlockManifest } from '@appsemble/types';
 import {
   api,
   filterBlocks,
@@ -21,7 +21,7 @@ import axios from 'axios';
 import classNames from 'classnames';
 import { safeDump, safeLoad } from 'js-yaml';
 import { isEqual } from 'lodash';
-import { OpenAPIV3 } from 'openapi-types';
+import type { OpenAPIV3 } from 'openapi-types';
 import React from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link, useHistory, useLocation, useParams } from 'react-router-dom';

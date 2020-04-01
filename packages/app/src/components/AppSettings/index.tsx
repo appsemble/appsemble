@@ -1,5 +1,5 @@
 import { Checkbox, FormComponent, Loader, useMessages } from '@appsemble/react-components';
-import { ResourceHooks } from '@appsemble/types';
+import type { ResourceHooks } from '@appsemble/types';
 import axios from 'axios';
 import React from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';

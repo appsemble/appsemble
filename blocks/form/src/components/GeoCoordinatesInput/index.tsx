@@ -6,7 +6,7 @@ import classNames from 'classnames';
 import { CircleMarker, LocationEvent, Map, TileLayer } from 'leaflet';
 import { Component, createRef, h, VNode } from 'preact';
 
-import { GeoCoordinatesField, InputProps } from '../../../block';
+import type { GeoCoordinatesField, InputProps } from '../../../block';
 import styles from './index.css';
 
 type GeoCoordinatesInputProps = InputProps<{}, GeoCoordinatesField> & BlockProps;

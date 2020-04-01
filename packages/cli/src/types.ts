@@ -1,4 +1,4 @@
-import { BlockManifest } from '@appsemble/types';
+import type { BlockManifest } from '@appsemble/types';
 
 /**
  * THe base arguments from the command line.

@@ -1,10 +1,10 @@
-import { BlockProps } from '@appsemble/react';
+import type { BlockProps } from '@appsemble/react';
 import { Modal } from '@appsemble/react-components';
 import classNames from 'classnames';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import { Filter, RangeFilter } from '../../../block';
+import type { Filter, RangeFilter } from '../../../block';
 import toOData from '../../utils/toOData';
 import Field from '../Field';
 import styles from './index.css';

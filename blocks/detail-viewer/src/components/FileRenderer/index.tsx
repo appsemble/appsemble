@@ -5,7 +5,7 @@ import classNames from 'classnames';
 import { Fragment, h, VNode } from 'preact';
 import { useCallback } from 'preact/hooks';
 
-import { FileField, RendererProps } from '../../../block';
+import type { FileField, RendererProps } from '../../../block';
 import styles from './index.css';
 
 /**

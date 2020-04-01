@@ -1,5 +1,5 @@
 import isIp from 'is-ip';
-import { Middleware } from 'koa';
+import type { Middleware } from 'koa';
 
 export default function appMapper(
   platformMiddleware: Middleware,

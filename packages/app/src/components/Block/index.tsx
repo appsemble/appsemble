@@ -1,14 +1,14 @@
 import { useMessages } from '@appsemble/react-components';
-import { Block as BlockType } from '@appsemble/sdk';
+import type { Block as BlockType } from '@appsemble/sdk';
 import { baseTheme, normalize, normalizeBlockName } from '@appsemble/utils';
 import classNames from 'classnames';
-import { EventEmitter } from 'events';
+import type { EventEmitter } from 'events';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { useHistory, useLocation, useRouteMatch } from 'react-router-dom';
 
-import { ShowDialogAction } from '../../types';
-import { ActionCreators } from '../../utils/actions';
+import type { ShowDialogAction } from '../../types';
+import type { ActionCreators } from '../../utils/actions';
 import { callBootstrap } from '../../utils/bootstrapper';
 import injectCSS from '../../utils/injectCSS';
 import makeActions from '../../utils/makeActions';

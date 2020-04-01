@@ -1,5 +1,5 @@
-import { Action, Block } from '@appsemble/sdk';
-import {
+import type { Action, Block } from '@appsemble/sdk';
+import type {
   ActionDefinition,
   ActionType,
   AppDefinition,
@@ -7,10 +7,10 @@ import {
   RequestLikeActionDefinition,
 } from '@appsemble/types';
 import { remapData } from '@appsemble/utils';
-import { EventEmitter } from 'events';
-import { RouteComponentProps } from 'react-router-dom';
+import type { EventEmitter } from 'events';
+import type { RouteComponentProps } from 'react-router-dom';
 
-import { FlowActions, ServiceWorkerRegistrationContextType, ShowDialogAction } from '../types';
+import type { FlowActions, ServiceWorkerRegistrationContextType, ShowDialogAction } from '../types';
 import actionCreators, { ActionCreator, ActionCreators } from './actions';
 
 interface MakeActionsParams {

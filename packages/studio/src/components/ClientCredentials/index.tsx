@@ -14,7 +14,7 @@ import axios from 'axios';
 import * as React from 'react';
 import { FormattedDate, FormattedMessage, useIntl } from 'react-intl';
 
-import { OAuth2ClientCredentials } from '../../types';
+import type { OAuth2ClientCredentials } from '../../types';
 import styles from './index.css';
 import messages from './messages';
 import scopeDescriptions from './scopeDescriptions';

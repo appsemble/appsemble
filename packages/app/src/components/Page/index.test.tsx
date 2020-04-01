@@ -1,4 +1,4 @@
-import { BasicPage, FlowPage, TabsPage, UserInfo } from '@appsemble/types';
+import type { BasicPage, FlowPage, TabsPage, UserInfo } from '@appsemble/types';
 import { shallow } from 'enzyme';
 import React from 'react';
 

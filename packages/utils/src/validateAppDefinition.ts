@@ -1,6 +1,6 @@
-import { AppDefinition, BlockManifest, ResourceCall, Security } from '@appsemble/types';
+import type { AppDefinition, BlockManifest, ResourceCall, Security } from '@appsemble/types';
 import Ajv from 'ajv';
-import { Promisable } from 'type-fest';
+import type { Promisable } from 'type-fest';
 
 import getAppBlocks, { BlockMap } from './getAppBlocks';
 

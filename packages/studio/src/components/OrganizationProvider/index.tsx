@@ -3,7 +3,7 @@ import * as React from 'react';
 
 import { OrganizationContext } from '../../hooks/useOrganizations';
 import useUser from '../../hooks/useUser';
-import { Organization } from '../../types';
+import type { Organization } from '../../types';
 
 interface OrganizationProviderProps {
   children: React.ReactNode;

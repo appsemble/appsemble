@@ -1,4 +1,4 @@
-import { AppDefinition, BlockManifest } from '@appsemble/types';
+import type { AppDefinition, BlockManifest } from '@appsemble/types';
 import * as React from 'react';
 
 import resolveJsonPointers from '../../utils/resolveJsonPointers';

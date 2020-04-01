@@ -5,7 +5,7 @@ import { compileFilters, MapperFunction } from '@appsemble/utils';
 import { h } from 'preact';
 import { useCallback, useEffect, useState } from 'preact/hooks';
 
-import { Remappers } from '../block';
+import type { Remappers } from '../block';
 import Card from './components/Card';
 import styles from './index.css';
 

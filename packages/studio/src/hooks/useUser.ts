@@ -1,7 +1,7 @@
-import { UserInfo } from '@appsemble/types';
+import type { UserInfo } from '@appsemble/types';
 import { createContext, useContext } from 'react';
 
-import { TokenResponse } from '../types';
+import type { TokenResponse } from '../types';
 
 interface UserContext {
   login(tokenResponse: TokenResponse): void;

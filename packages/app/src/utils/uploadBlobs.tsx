@@ -1,4 +1,4 @@
-import { BlobUploadType } from '@appsemble/types';
+import type { BlobUploadType } from '@appsemble/types';
 import axios, { AxiosResponse } from 'axios';
 
 import extractBlobs, { RecursiveValue } from './extractBlobs';

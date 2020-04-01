@@ -1,7 +1,7 @@
 import { logger } from '@appsemble/node-utils';
 import axios from 'axios';
 
-import { BlockConfig } from '../types';
+import type { BlockConfig } from '../types';
 import makePayload from './makePayload';
 
 interface PublishParams {

@@ -3,7 +3,7 @@ import axios from 'axios';
 import os from 'os';
 
 import { version } from '../../package.json';
-import { BaseArguments } from '../types';
+import type { BaseArguments } from '../types';
 import { formData, requestLogger, responseLogger } from './interceptors';
 
 /**

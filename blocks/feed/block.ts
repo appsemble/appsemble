@@ -1,4 +1,4 @@
-import { MapperFunction } from '@appsemble/utils';
+import type { MapperFunction } from '@appsemble/utils';
 
 interface Reply {
   parentId?: string;

@@ -4,7 +4,7 @@ import React from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link } from 'react-router-dom';
 
-import { Organization } from '../../types';
+import type { Organization } from '../../types';
 import styles from './index.css';
 import messages from './messages';
 

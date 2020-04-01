@@ -1,4 +1,4 @@
-import { attach } from '@appsemble/sdk';
+import type { attach } from '@appsemble/sdk';
 
 /**
  * @param {Object} actions Prepared actions the block can dispatch.

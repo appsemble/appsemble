@@ -4,7 +4,7 @@ import classNames from 'classnames';
 import { h } from 'preact';
 import { useCallback, useEffect, useState } from 'preact/hooks';
 
-import { Field, FileField } from '../block';
+import type { Field, FileField } from '../block';
 import BooleanInput from './components/BooleanInput';
 import EnumInput from './components/EnumInput';
 import FileInput from './components/FileInput';

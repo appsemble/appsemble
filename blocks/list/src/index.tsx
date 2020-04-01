@@ -4,7 +4,7 @@ import { Loader } from '@appsemble/preact-components';
 import { h } from 'preact';
 import { useCallback, useEffect, useState } from 'preact/hooks';
 
-import { Item } from '../block';
+import type { Item } from '../block';
 import ListItem from './components/ListItem';
 import styles from './index.css';
 

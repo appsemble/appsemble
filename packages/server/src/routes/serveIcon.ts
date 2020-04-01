@@ -1,4 +1,4 @@
-import { Context } from 'koa';
+import type { Context } from 'koa';
 import sharp from 'sharp';
 
 import getDefaultIcon from '../utils/getDefaultIcon';
