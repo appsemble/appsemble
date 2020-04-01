@@ -158,6 +158,24 @@ export default function ResourceTable(): React.ReactElement {
     ],
   );
 
+  const download = React.useCallback(async () => {
+    const { data } = await axios.get(`/api/apps/${app.id}/resources/${resourceName}`, {
+      responseType: 'blob',
+      headers: {
+        Accept: 'text/csv',
+      },
+    });
+
+    const downloadUrl = URL.createObjectURL(new Blob([data]));
+    const link = document.createElement('a');
+    link.href = downloadUrl;
+    link.setAttribute('download', `${resourceName}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(downloadUrl);
+  }, [app, resourceName]);
+
   React.useEffect(() => {
     if (app.definition.resources[resourceName]?.schema) {
       setLoading(true);
@@ -226,12 +244,20 @@ export default function ResourceTable(): React.ReactElement {
         titleValues={{ name: app.definition.name, resourceName }}
       />
       <h1 className="title">Resource {resourceName}</h1>
-      <Link className="button is-primary" to={`${match.url}/new`}>
-        <Icon icon="plus-square" />
-        <span>
-          <FormattedMessage {...messages.createButton} />
-        </span>
-      </Link>
+      <div className="buttons">
+        <Link className="button is-primary" to={`${match.url}/new`}>
+          <Icon icon="plus-square" />
+          <span>
+            <FormattedMessage {...messages.createButton} />
+          </span>
+        </Link>
+        <Button onClick={download}>
+          <Icon icon="download" />
+          <span>
+            <FormattedMessage {...messages.export} />
+          </span>
+        </Button>
+      </div>
       <div className="table-container">
         <table className="table is-striped is-hoverable is-fullwidth">
           <thead>
