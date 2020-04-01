@@ -11,7 +11,7 @@ export async function getBlock(ctx) {
   const { blockId, organizationId } = ctx.params;
   const { BlockVersion } = ctx.db.models;
 
-  const blockDefinition = await BlockVersion.findOne({
+  const blockVersion = await BlockVersion.findOne({
     attributes: [
       'description',
       'version',
@@ -26,11 +26,11 @@ export async function getBlock(ctx) {
     order: [['created', 'DESC']],
   });
 
-  if (!blockDefinition) {
+  if (!blockVersion) {
     throw Boom.notFound('Block definition not found');
   }
 
-  const { actions, description, events, layout, parameters, resources, version } = blockDefinition;
+  const { actions, description, events, layout, parameters, resources, version } = blockVersion;
 
   ctx.body = {
     name: `@${organizationId}/${blockId}`,
@@ -50,11 +50,11 @@ export async function queryBlocks(ctx) {
   // Sequelize does not support subqueries
   // The alternative is to query everything and filter manually
   // See: https://github.com/sequelize/sequelize/issues/9509
-  const [blockDefinitions] = await db.query(
+  const [blockVersions] = await db.query(
     'SELECT "OrganizationId", name, description, version, actions, events, layout, parameters, resources FROM "BlockVersion" WHERE created IN (SELECT MAX(created) FROM "BlockVersion" GROUP BY "OrganizationId", name)',
   );
 
-  ctx.body = blockDefinitions.map(
+  ctx.body = blockVersions.map(
     ({
       OrganizationId,
       actions,
@@ -102,16 +102,16 @@ export async function publishBlock(ctx) {
     throw Boom.badRequest('At least one file should be uploaded');
   }
 
-  const blockDefinition = await BlockVersion.findOne({
+  const blockVersion = await BlockVersion.findOne({
     where: { name: blockId, OrganizationId },
     order: [['created', 'DESC']],
     raw: true,
   });
 
   // If there is a previous version and it has a higher semver, throw an error.
-  if (blockDefinition && semver.gte(blockDefinition.version, version)) {
+  if (blockVersion && semver.gte(blockVersion.version, version)) {
     throw Boom.badRequest(
-      `Version ${blockDefinition.version} is equal to or lower than the already existing ${name}@${version}.`,
+      `Version ${blockVersion.version} is equal to or lower than the already existing ${name}@${version}.`,
     );
   }
 

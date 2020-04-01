@@ -44,7 +44,7 @@ afterAll(async () => {
   await db.close();
 });
 
-describe('getBlockDefinition', () => {
+describe('getBlock', () => {
   it('should be possible to retrieve a block definition', async () => {
     const formData = new FormData();
     formData.append(
@@ -78,7 +78,7 @@ describe('getBlockDefinition', () => {
   });
 });
 
-describe('queryBlockDefinitions', () => {
+describe('queryBlocks', () => {
   it('should be possible to query block definitions', async () => {
     const formDataA = new FormData();
     formDataA.append(
