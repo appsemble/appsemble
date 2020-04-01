@@ -12,8 +12,8 @@ export interface Block {
 }
 
 export default function GUIEditorToolboxBlock(params: any): React.ReactElement {
-  const [blocks, setBlocks] = React.useState<Block[]>();
-  const [selectedBlock, setSelectedBlock] = React.useState<Block>();
+  const [blocks, setBlocks] = React.useState<Block[]>(params.blocks);
+  const [selectedBlock, setSelectedBlock] = React.useState<Block>(params.initialSelectedBlock);
 
   React.useEffect(() => {
     const getBlocks = async (): Promise<void> => {
