@@ -2,64 +2,91 @@ import { logger } from '@appsemble/node-utils';
 import { permissions } from '@appsemble/utils';
 import Boom from '@hapi/boom';
 import { isEmpty } from 'lodash';
+import semver from 'semver';
 import { DatabaseError, UniqueConstraintError } from 'sequelize';
 
 import checkRole from '../utils/checkRole';
 
-export async function createBlockDefinition(ctx) {
-  const { BlockDefinition } = ctx.db.models;
-  const { body } = ctx.request;
-  const { description, id } = body;
-  const blockDefinition = { description, id };
-  const [organizationId] = id.split('/');
-
-  await checkRole(ctx, organizationId.slice(1), permissions.PublishBlocks);
-
-  try {
-    await BlockDefinition.create(blockDefinition, { raw: true });
-  } catch (error) {
-    if (error instanceof UniqueConstraintError) {
-      throw Boom.conflict(`Another block definition with id “${id}” already exists`);
-    }
-    throw error;
-  }
-
-  ctx.body = blockDefinition;
-}
-
-export async function getBlockDefinition(ctx) {
+export async function getBlock(ctx) {
   const { blockId, organizationId } = ctx.params;
-  const { BlockDefinition } = ctx.db.models;
+  const { BlockVersion } = ctx.db.models;
 
-  const blockDefinition = await BlockDefinition.findByPk(`@${organizationId}/${blockId}`, {
+  const blockVersion = await BlockVersion.findOne({
+    attributes: [
+      'description',
+      'version',
+      'actions',
+      'events',
+      'layout',
+      'parameters',
+      'resources',
+    ],
     raw: true,
+    where: { name: blockId, OrganizationId: organizationId },
+    order: [['created', 'DESC']],
   });
 
-  if (!blockDefinition) {
+  if (!blockVersion) {
     throw Boom.notFound('Block definition not found');
   }
 
+  const { actions, description, events, layout, parameters, resources, version } = blockVersion;
+
   ctx.body = {
-    id: blockDefinition.id,
-    description: blockDefinition.description,
+    name: `@${organizationId}/${blockId}`,
+    description,
+    version,
+    actions,
+    events,
+    layout,
+    parameters,
+    resources,
   };
 }
 
-export async function queryBlockDefinitions(ctx) {
-  const { BlockDefinition } = ctx.db.models;
+export async function queryBlocks(ctx) {
+  const { db } = ctx;
 
-  const blockDefinitions = await BlockDefinition.findAll({ raw: true });
+  // Sequelize does not support subqueries
+  // The alternative is to query everything and filter manually
+  // See: https://github.com/sequelize/sequelize/issues/9509
+  const [blockVersions] = await db.query(
+    'SELECT "OrganizationId", name, description, version, actions, events, layout, parameters, resources FROM "BlockVersion" WHERE created IN (SELECT MAX(created) FROM "BlockVersion" GROUP BY "OrganizationId", name)',
+  );
 
-  ctx.body = blockDefinitions.map(({ description, id }) => ({ id, description }));
+  ctx.body = blockVersions.map(
+    ({
+      OrganizationId,
+      actions,
+      description,
+      events,
+      layout,
+      name,
+      parameters,
+      resources,
+      version,
+    }) => ({
+      name: `@${OrganizationId}/${name}`,
+      description,
+      version,
+      actions,
+      events,
+      layout,
+      parameters,
+      resources,
+    }),
+  );
 }
 
-export async function createBlockVersion(ctx) {
-  const { blockId, organizationId } = ctx.params;
+export async function publishBlock(ctx) {
   const { db } = ctx;
-  const { BlockAsset, BlockDefinition, BlockVersion } = db.models;
-  const name = `@${organizationId}/${blockId}`;
+  const { BlockAsset, BlockVersion } = db.models;
   const { data, ...files } = ctx.request.body;
+  const { name, version } = data;
   const actionKeyRegex = /^[a-z]\w*$/;
+
+  const [org, blockId] = name.split('/');
+  const OrganizationId = org.slice(1);
 
   if (data.actions) {
     Object.keys(data.actions).forEach((key) => {
@@ -69,36 +96,44 @@ export async function createBlockVersion(ctx) {
     });
   }
 
-  await checkRole(ctx, organizationId, permissions.PublishBlocks);
+  await checkRole(ctx, OrganizationId, permissions.PublishBlocks);
 
   if (isEmpty(files)) {
     throw Boom.badRequest('At least one file should be uploaded');
   }
 
-  const blockDefinition = await BlockDefinition.findByPk(name, { raw: true });
+  const blockVersion = await BlockVersion.findOne({
+    where: { name: blockId, OrganizationId },
+    order: [['created', 'DESC']],
+    raw: true,
+  });
 
-  if (!blockDefinition) {
-    throw Boom.notFound('Block definition not found');
+  // If there is a previous version and it has a higher semver, throw an error.
+  if (blockVersion && semver.gte(blockVersion.version, version)) {
+    throw Boom.badRequest(
+      `Version ${blockVersion.version} is equal to or lower than the already existing ${name}@${version}.`,
+    );
   }
 
   try {
     await db.transaction(async (transaction) => {
       const {
         actions = null,
+        description = null,
         events,
         layout = null,
         parameters,
         resources = null,
-        version,
-      } = await BlockVersion.create({ ...data, name }, { transaction });
+      } = await BlockVersion.create({ ...data, name: blockId, OrganizationId }, { transaction });
 
       Object.keys(files).forEach((filename) => {
-        logger.verbose(`Creating block assets for ${name}@${data.version}: ${filename}`);
+        logger.verbose(`Creating block assets for ${name}@${version}: ${filename}`);
       });
       await BlockAsset.bulkCreate(
         Object.entries(files).map(([filename, file]) => ({
-          name,
-          version: data.version,
+          name: blockId,
+          OrganizationId,
+          version,
           filename,
           mime: file.mime,
           content: file.contents,
@@ -117,11 +152,12 @@ export async function createBlockVersion(ctx) {
         version,
         files: fileKeys,
         name,
+        description,
       };
     });
   } catch (err) {
     if (err instanceof UniqueConstraintError || err instanceof DatabaseError) {
-      throw Boom.conflict(`Block version “${name}@${data.version}” already exists`);
+      throw Boom.conflict(`Block “${name}@${data.version}” already exists`);
     }
     throw err;
   }
@@ -133,9 +169,9 @@ export async function getBlockVersion(ctx) {
   const { BlockAsset, BlockVersion } = ctx.db.models;
 
   const version = await BlockVersion.findOne({
-    attributes: ['actions', 'events', 'layout', 'resources', 'parameters'],
+    attributes: ['actions', 'events', 'layout', 'resources', 'parameters', 'description'],
     raw: true,
-    where: { name, version: blockVersion },
+    where: { name: blockId, OrganizationId: organizationId, version: blockVersion },
   });
 
   if (!version) {
@@ -145,27 +181,39 @@ export async function getBlockVersion(ctx) {
   const files = await BlockAsset.findAll({
     attributes: ['filename'],
     raw: true,
-    where: { name, version: blockVersion },
+    where: { name: blockId, OrganizationId: organizationId, version: blockVersion },
   });
 
-  ctx.body = { files: files.map((f) => f.filename), name, version: blockVersion, ...version };
+  ctx.body = {
+    files: files.map((f) => f.filename),
+    name,
+    version: blockVersion,
+    ...version,
+  };
 }
 
 export async function getBlockVersions(ctx) {
   const { blockId, organizationId } = ctx.params;
   const name = `@${organizationId}/${blockId}`;
-  const { BlockDefinition, BlockVersion } = ctx.db.models;
-
-  const blockDefinition = await BlockDefinition.findOne({ where: { id: name } });
-  if (!blockDefinition) {
-    throw Boom.notFound('Block definition not found');
-  }
+  const { BlockVersion } = ctx.db.models;
 
   const blockVersions = await BlockVersion.findAll({
-    attributes: ['version', 'actions', 'layout', 'resources', 'events'],
+    attributes: [
+      'actions',
+      'description',
+      'events',
+      'layout',
+      'version',
+      'resources',
+      'parameters',
+    ],
     raw: true,
-    where: { name },
+    where: { name: blockId, OrganizationId: organizationId },
   });
 
-  ctx.body = blockVersions;
+  if (blockVersions.length === 0) {
+    throw Boom.notFound('Block not found.');
+  }
+
+  ctx.body = blockVersions.map((blockVersion) => ({ name, ...blockVersion }));
 }

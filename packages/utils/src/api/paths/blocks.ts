@@ -1,33 +1,49 @@
 export default {
   '/blocks': {
     post: {
-      tags: ['block'],
-      description: 'Register a new block.',
-      operationId: 'createBlockDefinition',
+      tags: ['block version'],
+      description: 'Publish a block.',
+      operationId: 'publishBlock',
       requestBody: {
-        description: 'The block definition to create.',
-        $ref: '#/components/requestBodies/blockDefinition',
+        description: 'The new block version to publish.',
+        content: {
+          'multipart/form-data': {
+            schema: {
+              type: 'object',
+              required: ['data'],
+              properties: {
+                data: {
+                  $ref: '#/components/schemas/BlockVersion',
+                },
+              },
+              additionalProperties: {
+                type: 'string',
+                format: 'binary',
+              },
+            },
+          },
+        },
       },
       responses: {
         201: {
-          $ref: '#/components/responses/blockDefinition',
+          $ref: '#/components/responses/blockVersion',
         },
       },
       security: [{ cli: ['blocks:write'] }],
     },
     get: {
       tags: ['block'],
-      description: 'Get all existing block definitions.',
-      operationId: 'queryBlockDefinitions',
+      description: 'Get all block’s latest definitions.',
+      operationId: 'queryBlocks',
       responses: {
         200: {
-          description: 'The list of all block definitions.',
+          description: 'The list of all latest block versions.',
           content: {
             'application/json': {
               schema: {
                 type: 'array',
                 items: {
-                  $ref: '#/components/schemas/BlockDefinition',
+                  $ref: '#/components/schemas/BlockVersion',
                 },
               },
             },
@@ -44,11 +60,11 @@ export default {
     get: {
       tags: ['block'],
       description: 'Get a single block',
-      operationId: 'getBlockDefinition',
+      operationId: 'getBlock',
       responses: {
         200: {
-          description: 'The app that matches the given id.',
-          $ref: '#/components/responses/blockDefinition',
+          description: 'The latest version of the block that matches the given id.',
+          $ref: '#/components/responses/blockVersion',
         },
       },
     },

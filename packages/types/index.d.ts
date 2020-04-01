@@ -358,6 +358,11 @@ export interface BlockManifest {
   name: string;
 
   /**
+   * The description of the block.
+   */
+  description?: string;
+
+  /**
    * A [semver](https://semver.org) representation of the block version.
    *
    * Pattern:

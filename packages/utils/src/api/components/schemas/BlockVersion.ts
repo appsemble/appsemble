@@ -1,4 +1,4 @@
-import { semver } from '../../../constants';
+import { partialNormalized, semver } from '../../../constants';
 
 export default {
   type: 'object',
@@ -9,9 +9,17 @@ export default {
   `,
   required: ['version'],
   properties: {
-    block: {
-      $ref: '#/components/schemas/BlockDefinition/properties/id',
-      description: 'The id of the block definition to which this version applies.',
+    name: {
+      type: 'string',
+      description: `The name of a block to which tihs version applies.
+
+        This uses the same form as scoped npm packages. For example, \`@appsemble/form\`.
+      `,
+      pattern: `^@${partialNormalized.source}/${partialNormalized.source}$`,
+    },
+    description: {
+      type: 'string',
+      description: 'The description of the block.',
     },
     version: {
       type: 'string',

@@ -2,6 +2,7 @@
   "name": "@appsemble/map",
   "version": "0.12.3",
   "private": true,
+  "description": "A block that displays a map powered by OpenStreetMap that can be used to display and interact with markers.",
   "dependencies": {
     "@appsemble/sdk": "0.12.3",
     "@appsemble/utils": "0.12.3",

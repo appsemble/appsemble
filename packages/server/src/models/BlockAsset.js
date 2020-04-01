@@ -18,14 +18,14 @@ export default (sequelize) => {
     },
     {
       freezeTableName: true,
-      paranoid: true,
       createdAt: 'created',
-      updatedAt: 'updated',
-      deletedAt: 'deleted',
+      updatedAt: false,
     },
   );
 
-  BlockAsset.associate = () => {};
+  BlockAsset.associate = ({ Organization }) => {
+    BlockAsset.belongsTo(Organization, { foreignKey: { allowNull: false } });
+  };
 
   return BlockAsset;
 };

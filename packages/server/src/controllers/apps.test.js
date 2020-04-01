@@ -10,7 +10,6 @@ import truncate from '../utils/test/truncate';
 let App;
 let AppBlockStyle;
 let AppRating;
-let BlockDefinition;
 let BlockVersion;
 let Organization;
 let User;
@@ -25,15 +24,7 @@ let user;
 beforeAll(async () => {
   db = await testSchema('apps');
   server = await createServer({ db, argv: { host: 'http://localhost', secret: 'test' } });
-  ({
-    App,
-    AppBlockStyle,
-    AppRating,
-    BlockDefinition,
-    BlockVersion,
-    Organization,
-    User,
-  } = db.models);
+  ({ App, AppBlockStyle, AppRating, BlockVersion, Organization, User } = db.models);
   request = await createInstance(server);
 }, 10e3);
 
@@ -50,11 +41,11 @@ beforeEach(async () => {
     { through: { role: 'Owner' } },
   ));
 
-  await BlockDefinition.create({
-    id: '@appsemble/test',
-  });
+  await Organization.create({ id: 'appsemble', name: 'Appsemble' });
+
   await BlockVersion.create({
-    name: '@appsemble/test',
+    name: 'test',
+    OrganizationId: 'appsemble',
     version: '0.0.0',
     parameters: {
       properties: {
@@ -1512,9 +1503,11 @@ describe('patchApp', () => {
 
 describe('setAppBlockStyle', () => {
   it('should delete block stylesheet when uploading empty stylesheets for an app', async () => {
-    await BlockDefinition.create({
-      id: '@appsemble/testblock',
+    await BlockVersion.create({
+      name: 'testblock',
+      OrganizationId: 'appsemble',
       description: 'This is a test block for testing purposes.',
+      version: '0.0.0',
     });
 
     const { id } = await App.create(
@@ -1553,21 +1546,24 @@ describe('setAppBlockStyle', () => {
       formB,
       { headers: { ...formB.getHeaders(), authorization } },
     );
+
     expect(responseB).toMatchObject({
       status: 204,
       data: '',
     });
 
     const style = await AppBlockStyle.findOne({
-      where: { AppId: id, BlockDefinitionId: '@appsemble/testblock' },
+      where: { AppId: id, block: '@appsemble/testblock' },
     });
     expect(style).toBeNull();
   });
 
   it('should not allow invalid stylesheets when uploading block stylesheets to an app', async () => {
-    await BlockDefinition.create({
-      id: '@appsemble/styledblock',
+    await BlockVersion.create({
+      OrganizationId: 'appsemble',
+      name: 'styledblock',
       description: 'This is a test block for testing purposes.',
+      version: '0.0.0',
     });
 
     const { id } = await App.create({
@@ -1598,9 +1594,11 @@ describe('setAppBlockStyle', () => {
   });
 
   it('should not allow uploading block stylesheets to non-existent apps', async () => {
-    await BlockDefinition.create({
-      id: '@appsemble/block',
+    await BlockVersion.create({
+      OrganizationId: 'appsemble',
+      name: 'block',
       description: 'This is a test block for testing purposes.',
+      version: '0.0.0',
     });
 
     const form = new FormData();

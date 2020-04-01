@@ -36,7 +36,6 @@ function importModels(db) {
   db.import('../models/Resource');
   db.import('../models/Asset');
   db.import('../models/BlockAsset');
-  db.import('../models/BlockDefinition');
   db.import('../models/BlockVersion');
   db.import('../models/AppBlockStyle');
   db.import('../models/OrganizationBlockStyle');

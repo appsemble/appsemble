@@ -8,7 +8,7 @@ import getBlockConfig from '../../lib/getBlockConfig';
 import publish from '../../lib/publish';
 
 export const command = 'publish <paths...>';
-export const description = 'Publish a new version of an existing block.';
+export const description = 'Publish a block.';
 
 export function builder(yargs) {
   return yargs

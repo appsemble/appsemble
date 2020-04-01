@@ -6,7 +6,7 @@ import testSchema from '../utils/test/testSchema';
 import testToken from '../utils/test/testToken';
 import truncate from '../utils/test/truncate';
 
-let BlockDefinition;
+let BlockVersion;
 let Organization;
 let OrganizationBlockStyle;
 let OrganizationInvite;
@@ -25,7 +25,7 @@ beforeAll(async () => {
 
   server = await createServer({ db, argv: { host: 'http://localhost', secret: 'test' } });
   ({
-    BlockDefinition,
+    BlockVersion,
     EmailAuthorization,
     Organization,
     OrganizationBlockStyle,
@@ -45,6 +45,7 @@ beforeEach(async () => {
     },
     { through: { role: 'Owner' } },
   );
+  await Organization.create({ id: 'appsemble', name: 'Appsemble' });
 });
 
 afterAll(async () => {
@@ -667,8 +668,10 @@ describe('getOrganizationBlockStyle', () => {
 
 describe('setOrganizationBlockStyle', () => {
   it('should validate and update block stylesheets when uploading block stylesheets for an organization', async () => {
-    await BlockDefinition.create({
-      id: '@appsemble/testblock',
+    await BlockVersion.create({
+      name: 'testblock',
+      OrganizationId: 'appsemble',
+      version: '0.0.0',
       description: 'This is a test block for testing purposes.',
     });
 
@@ -693,8 +696,10 @@ describe('setOrganizationBlockStyle', () => {
   });
 
   it('should set block stylesheets to null when uploading empty stylesheets for an organization', async () => {
-    await BlockDefinition.create({
-      id: '@appsemble/testblock',
+    await BlockVersion.create({
+      name: 'testblock',
+      OrganizationId: 'appsemble',
+      version: '0.0.0',
       description: 'This is a test block for testing purposes.',
     });
 
@@ -722,7 +727,7 @@ describe('setOrganizationBlockStyle', () => {
     );
 
     const style = await OrganizationBlockStyle.findOne({
-      where: { OrganizationId: organization.id, BlockDefinitionId: '@appsemble/testblock' },
+      where: { OrganizationId: organization.id, block: '@appsemble/testblock' },
     });
 
     expect(responseA.status).toBe(204);
@@ -731,8 +736,10 @@ describe('setOrganizationBlockStyle', () => {
   });
 
   it('should not allow invalid stylesheets when uploading block stylesheets to an organization', async () => {
-    await BlockDefinition.create({
-      id: '@appsemble/testblock',
+    await BlockVersion.create({
+      name: 'testblock',
+      OrganizationId: 'appsemble',
+      version: '0.0.0',
       description: 'This is a test block for testing purposes.',
     });
 
@@ -758,8 +765,10 @@ describe('setOrganizationBlockStyle', () => {
   });
 
   it('should not allow uploading block stylesheets to non-existent organizations', async () => {
-    await BlockDefinition.create({
-      id: '@appsemble/testblock',
+    await BlockVersion.create({
+      name: 'testblock',
+      OrganizationId: 'appsemble',
+      version: '0.0.0',
       description: 'This is a test block for testing purposes.',
     });
 

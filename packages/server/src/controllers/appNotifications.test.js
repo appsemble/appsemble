@@ -7,8 +7,6 @@ import testToken from '../utils/test/testToken';
 import truncate from '../utils/test/truncate';
 
 let App;
-let BlockDefinition;
-let BlockVersion;
 let AppSubscription;
 let db;
 let request;
@@ -62,7 +60,7 @@ const defaultApp = (id) => ({
 beforeAll(async () => {
   db = await testSchema('apps');
   server = await createServer({ db, argv: { host: 'http://localhost', secret: 'test' } });
-  ({ App, AppSubscription, BlockDefinition, BlockVersion } = db.models);
+  ({ App, AppSubscription } = db.models);
   request = await createInstance(server);
 }, 10e3);
 
@@ -78,21 +76,6 @@ beforeEach(async () => {
     },
     { through: { role: 'Owner' } },
   ));
-
-  await BlockDefinition.create({
-    id: '@appsemble/test',
-  });
-  await BlockVersion.create({
-    name: '@appsemble/test',
-    version: '0.0.0',
-    parameters: {
-      properties: {
-        foo: {
-          type: 'number',
-        },
-      },
-    },
-  });
 });
 
 afterEach(() => {
