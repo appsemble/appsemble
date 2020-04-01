@@ -257,10 +257,10 @@ describe('publishBlock', () => {
     });
 
     expect(data).toStrictEqual({
-      error: 'Bad Request',
+      error: 'Conflict',
       message:
         'Version 1.32.9 is equal to or lower than the already existing @xkcd/standing@1.32.9.',
-      statusCode: 400,
+      statusCode: 409,
     });
   });
 

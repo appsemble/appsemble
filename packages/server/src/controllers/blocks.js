@@ -110,7 +110,7 @@ export async function publishBlock(ctx) {
 
   // If there is a previous version and it has a higher semver, throw an error.
   if (blockVersion && semver.gte(blockVersion.version, version)) {
-    throw Boom.badRequest(
+    throw Boom.conflict(
       `Version ${blockVersion.version} is equal to or lower than the already existing ${name}@${version}.`,
     );
   }
