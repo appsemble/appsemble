@@ -10,7 +10,7 @@ import manifestHandler from './manifestHandler';
 import organizationBlockCSSHandler from './organizationBlockCSSHandler';
 import organizationCSSHandler from './organizationCSSHandler';
 
-const blockId = `(?<name>@${partialNormalized.source}/${partialNormalized.source})`;
+const blockName = `(?<name>@${partialNormalized.source}/${partialNormalized.source})`;
 
 export default tinyRouter([
   {
@@ -23,7 +23,7 @@ export default tinyRouter([
   },
   {
     route: new RegExp(
-      `^/api/blocks/${blockId}/versions/(?<version>${partialSemver.source})/(?<filename>.+)$`,
+      `^/api/blocks/${blockName}/versions/(?<version>${partialSemver.source})/(?<filename>.+)$`,
     ),
     get: blockAssetHandler,
   },
@@ -44,11 +44,11 @@ export default tinyRouter([
     get: organizationCSSHandler('sharedStyle'),
   },
   {
-    route: new RegExp(`^/${blockId}\\.css`),
+    route: new RegExp(`^/${blockName}\\.css`),
     get: blockCSSHandler,
   },
   {
-    route: new RegExp(`^/organization/${blockId}\\.css`),
+    route: new RegExp(`^/organization/${blockName}\\.css`),
     get: organizationBlockCSSHandler,
   },
   {

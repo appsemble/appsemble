@@ -35,12 +35,23 @@ export default (sequelize) => {
       deletedAt: 'deleted',
     },
   );
-  App.associate = ({ AppMember, AppSubscription, Asset, Organization, Resource, User }) => {
+  App.associate = ({
+    AppBlockStyle,
+    AppMember,
+    AppSubscription,
+    Asset,
+    Organization,
+    OrganizationBlockStyle,
+    Resource,
+    User,
+  }) => {
     App.hasMany(Resource);
     App.belongsTo(Organization, { foreignKey: { allowNull: false } });
     App.belongsToMany(User, { through: AppMember });
     App.hasMany(AppSubscription);
     App.hasMany(Asset);
+    App.hasMany(AppBlockStyle);
+    App.hasMany(OrganizationBlockStyle);
   };
   return App;
 };
