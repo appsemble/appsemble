@@ -169,10 +169,8 @@ export default function ResourceTable(): React.ReactElement {
     const downloadUrl = URL.createObjectURL(new Blob([data]));
     const link = document.createElement('a');
     link.href = downloadUrl;
-    link.setAttribute('download', `${resourceName}.csv`);
-    document.body.appendChild(link);
+    link.download = `${resourceName}.csv`;
     link.click();
-    link.remove();
     URL.revokeObjectURL(downloadUrl);
   }, [app, resourceName]);
 
