@@ -16,10 +16,10 @@ interface MonacoEditorProps {
   setEditor?: any;
 }
 
-interface SelectedItem {
+export interface SelectedItem {
   content?: string;
   indent: string;
-  parents?: [any];
+  parents?: [{ name: string; line: number; indent: number }];
 }
 
 export interface SelectedBlockParent {
@@ -123,7 +123,7 @@ export default class MonacoEditor extends React.Component<MonacoEditorProps> {
   };
 
   getSelectedItemParents = (model: any, position: any): void => {
-    const lines = model.getValue().split('\n');
+    const lines = model.getValue().split(/\r?\n/g);
     let selectedItem: SelectedItem;
     for (let i = 1; i <= lines.length; i += 1) {
       if (i !== 1) {

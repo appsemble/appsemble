@@ -1,5 +1,6 @@
-import { Button, Loader, useMessages } from '@appsemble/react-components';
-import { Block } from '@appsemble/sdk';
+import { Button, Checkbox, Input, Loader, useMessages } from '@appsemble/react-components';
+import { BlockManifest } from '@appsemble/types';
+import { stripBlockName } from '@appsemble/utils';
 import axios from 'axios';
 import React from 'react';
 import { useIntl } from 'react-intl';
@@ -15,8 +16,15 @@ enum parameterType {
   NUMBER = 'number',
 }
 
+interface SelectedBlock extends BlockManifest {
+  parameters: {
+    properties: any;
+    required?: string[];
+  };
+}
+
 export default function GUIEditorEditBlock(params: any): React.ReactElement {
-  const [selectedBlockParams, setSelectedBlockParams] = React.useState<Block>();
+  const [selectedBlockParams, setSelectedBlockParams] = React.useState<SelectedBlock>();
   const edittedParams: any[any] = [];
   const intl = useIntl();
   const push = useMessages();
@@ -64,21 +72,21 @@ export default function GUIEditorEditBlock(params: any): React.ReactElement {
     }
   };
 
-  function handleChange(event: any, item: any): void {
+  function handleChange(event: any, name: any): void {
     const { target } = event;
-    const { type } = selectedBlockParams.parameters.properties[item];
+    const { type } = selectedBlockParams.parameters.properties[name];
     if (type === parameterType.BOOLEAN) {
-      edittedParams[item] = target.checked;
+      edittedParams[name] = target.checked;
     } else if (type === parameterType.STRING) {
-      edittedParams[item] = `'${target.value}'`;
+      edittedParams[name] = `'${target.value}'`;
     } else {
-      edittedParams[item] = `${target.value}`;
+      edittedParams[name] = `${target.value}`;
     }
   }
 
   // function to make proper input field/form per param type
   function renderInputFields(item: string, i: any): any {
-    const parameterItem = selectedBlockParams.parameters.properties[item];
+    const schema = selectedBlockParams.parameters.properties[item];
     const requiredParam = selectedBlockParams.parameters.required;
     const label = item.replace(/([a-z0-9])([A-Z])/g, '$1 $2');
     let required = false;
@@ -92,77 +100,75 @@ export default function GUIEditorEditBlock(params: any): React.ReactElement {
       });
     }
 
-    if (parameterItem.type !== undefined) {
-      switch (parameterItem.type) {
-        case parameterType.STRING:
-          return (
-            <div key={i} className="field" tabIndex={i}>
+    switch (schema.type) {
+      case parameterType.STRING:
+        return (
+          <div key={i} className="field" tabIndex={i}>
+            <label className="label" style={{ textTransform: 'capitalize' }}>
+              {label} {required ? <strong>*</strong> : ''}
+            </label>
+            <div className="control">
+              {item.includes('content') || item.includes('description') ? (
+                <textarea
+                  className="textarea"
+                  onChange={(event: React.ChangeEvent<HTMLTextAreaElement>) =>
+                    handleChange(event, item)
+                  }
+                  placeholder={item}
+                  value={edittedParams[i]}
+                />
+              ) : (
+                <Input
+                  className="input"
+                  name="text"
+                  onChange={(event) => handleChange(event, item)}
+                  placeholder={item}
+                  type="text"
+                  value={edittedParams[i]}
+                />
+              )}
+            </div>
+          </div>
+        );
+      case parameterType.BOOLEAN:
+        return (
+          <div key={i} className="field" tabIndex={i}>
+            <div className="control">
+              <label className="checkbox" style={{ textTransform: 'capitalize' }}>
+                <Checkbox
+                  checked={edittedParams[i]}
+                  name="boolean"
+                  onChange={(event) => handleChange(event, item)}
+                />
+                {` ${label}`} {required ? <strong>*</strong> : ''}
+              </label>
+            </div>
+          </div>
+        );
+      case parameterType.INTEGER:
+      case parameterType.NUMBER:
+        return (
+          <div key={i} className="field" tabIndex={i}>
+            <div className="control">
               <label className="label" style={{ textTransform: 'capitalize' }}>
                 {label} {required ? <strong>*</strong> : ''}
               </label>
-              <div className="control">
-                {item.includes('content') || item.includes('description') ? (
-                  <textarea
-                    className="textarea"
-                    onChange={(event: React.ChangeEvent<HTMLTextAreaElement>) =>
-                      handleChange(event, item)
-                    }
-                    placeholder={item}
-                    value={edittedParams[i]}
-                  />
-                ) : (
-                  <input
-                    className="input"
-                    onChange={(event) => handleChange(event, item)}
-                    placeholder={item}
-                    type="text"
-                    value={edittedParams[i]}
-                  />
-                )}
-              </div>
+              <Input
+                checked={edittedParams[i]}
+                className="input"
+                name="number"
+                onChange={(event) => handleChange(event, item)}
+                type="number"
+              />
             </div>
-          );
-        case parameterType.BOOLEAN:
-          return (
-            <div key={i} className="field" tabIndex={i}>
-              <div className="control">
-                <label className="checkbox" style={{ textTransform: 'capitalize' }}>
-                  <input
-                    checked={edittedParams[i]}
-                    onChange={(event) => handleChange(event, item)}
-                    type="checkbox"
-                  />
-                  {` ${label}`} {required ? <strong>*</strong> : ''}
-                </label>
-              </div>
-            </div>
-          );
-        case parameterType.INTEGER:
-        case parameterType.NUMBER:
-          return (
-            <div key={i} className="field" tabIndex={i}>
-              <div className="control">
-                <label className="label" style={{ textTransform: 'capitalize' }}>
-                  {label} {required ? <strong>*</strong> : ''}
-                </label>
-                <input
-                  checked={edittedParams[i]}
-                  className="input"
-                  onChange={(event) => handleChange(event, item)}
-                  type="number"
-                />
-              </div>
-            </div>
-          );
-        default:
-          return (
-            <div key={i} className="field" tabIndex={i}>
-              {item}: {parameterItem.type}
-            </div>
-          );
-      }
-    } else {
-      return '';
+          </div>
+        );
+      default:
+        return (
+          <div key={i} className="field" tabIndex={i}>
+            {item}: {schema.type}
+          </div>
+        );
     }
   }
 
@@ -172,9 +178,7 @@ export default function GUIEditorEditBlock(params: any): React.ReactElement {
 
   return (
     <div className={styles.flexContainer}>
-      <h1 className="title" style={{ textTransform: 'capitalize' }}>
-        <strong>{params.selectedBlock.name.split('/')[1]}</strong>
-      </h1>
+      <h2 className="title">{stripBlockName(params.selectedBlock.name)}</h2>
       <div className={styles.main}>
         {Object.keys(selectedBlockParams.parameters.properties).map((item: any, i: any) =>
           renderInputFields(item, i),

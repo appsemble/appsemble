@@ -243,7 +243,7 @@ export default function Editor(): React.ReactElement {
     }
   }, [app.OrganizationId, appName, history, intl, params, push]);
 
-  // const onDeleteClick = React.useCallback(() => setDeleteDialog(true), []);
+  const onDeleteClick = React.useCallback(() => setDeleteDialog(true), []);
 
   const onUpload = React.useCallback(async () => {
     if (valid) {
@@ -290,8 +290,8 @@ export default function Editor(): React.ReactElement {
   }
 
   const onValueChange = onMonacoChange;
-  let value: any;
-  let language: any;
+  let value: string;
+  let language: string;
 
   switch (location.hash) {
     case '#style-core':
@@ -306,49 +306,6 @@ export default function Editor(): React.ReactElement {
     default:
       value = recipe;
       language = 'yaml';
-  }
-
-  function getEditor(): any {
-    switch (editorStep) {
-      case GuiEditorStep.ADD:
-        return (
-          <GUIEditor
-            appRecipe={recipe}
-            editor={editor}
-            editorStep={editorStep}
-            save={() => onSave()}
-            selectedBlockParent={selectedBlockParent}
-            setRecipe={(rec: any) => setRecipe(rec)}
-          />
-        );
-      case GuiEditorStep.EDIT:
-        return (
-          <GUIEditor
-            appRecipe={recipe}
-            editor={editor}
-            editorStep={editorStep}
-            save={() => onSave()}
-            selectedItem={selectedItem}
-            setRecipe={(rec: any) => setRecipe(rec)}
-          />
-        );
-      case GuiEditorStep.SELECT:
-      case GuiEditorStep.YAML:
-      default:
-        return (
-          <MonacoEditor
-            language={language}
-            onSave={onSave}
-            onValueChange={onValueChange}
-            selectedItem={(item: any) => setselectedItem(item)}
-            setEditor={(edi: any) => setEditor(edi)}
-            setSelectedBlockParent={(item: SelectedBlockParent) => {
-              setSelectedBlockParent(item);
-            }}
-            value={value}
-          />
-        );
-    }
   }
 
   return (
@@ -381,11 +338,11 @@ export default function Editor(): React.ReactElement {
                   </span>
                 </a>
               </span>
-              {/* <span className="navbar-item">
+              <span className="navbar-item">
                 <Button color="danger" icon="trash-alt" onClick={onDeleteClick}>
                   <FormattedMessage {...messages.delete} />
                 </Button>
-              </span> */}
+              </span>
               <span className="navbar-item">
                 <Button
                   color="primary"
@@ -405,9 +362,7 @@ export default function Editor(): React.ReactElement {
           </nav>
           <div
             className={
-              editorStep === GuiEditorStep.ADD
-                ? classNames('is-hidden')
-                : classNames('tabs', 'is-boxed', styles.editorTabs)
+              editorStep === GuiEditorStep.ADD ? 'is-hidden' : `tabs is-boxed ${styles.editorTabs}`
             }
           >
             {editorStep === GuiEditorStep.YAML ? (
@@ -483,7 +438,32 @@ export default function Editor(): React.ReactElement {
               </ul>
             )}
           </div>
-          {getEditor()}
+          {
+            {
+              [GuiEditorStep.ADD || GuiEditorStep.EDIT]: (
+                <GUIEditor
+                  appRecipe={recipe}
+                  editorStep={editorStep}
+                  monacoEditor={editor}
+                  save={onSave}
+                  selectedBlockParent={selectedBlockParent}
+                  selectedItem={selectedItem}
+                  setRecipe={setRecipe}
+                />
+              ),
+              [GuiEditorStep.SELECT || GuiEditorStep.YAML]: (
+                <MonacoEditor
+                  language={language}
+                  onSave={onSave}
+                  onValueChange={onValueChange}
+                  selectedItem={setselectedItem}
+                  setEditor={setEditor}
+                  setSelectedBlockParent={setSelectedBlockParent}
+                  value={value}
+                />
+              ),
+            }[editorStep]
+          }
           <Modal
             className="is-paddingless"
             isActive={warningDialog}

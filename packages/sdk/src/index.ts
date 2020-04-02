@@ -66,10 +66,8 @@ export interface EventListeners {}
  * }
  */
 
-export interface Parameters {
-  properties: any;
-  required?: string[];
-}
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface Parameters {}
 
 /*
  * HTTP methods that support a request body.

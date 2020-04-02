@@ -3,7 +3,7 @@ import { Block } from '@appsemble/sdk';
 export type IdentifiableBlock = Pick<Block, 'type' | 'version'>;
 
 /**
- * Normalize a block name by prefixing it with `@appsemble` is necessary.
+ * Normalize a block name by prefixing it with `@appsemble` if necessary.
  *
  * @param name The input block name.
  * @returns The normalized block name.
@@ -13,6 +13,21 @@ export function normalizeBlockName(name: string): string {
     return name;
   }
   return `@appsemble/${name}`;
+}
+
+/**
+ * Return a block name without the organization prefix.
+ *
+ * @param name The input block name.
+ * @returns The prettified block name.
+ */
+export function stripBlockName(name: string): string {
+  if (name.startsWith('@')) {
+    if (name.split.length > 1) {
+      return name.split('/')[1];
+    }
+  }
+  return name;
 }
 
 /**
