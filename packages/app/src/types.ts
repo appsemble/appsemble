@@ -1,5 +1,11 @@
-import type { Action, Block } from '@appsemble/sdk';
-import type { ActionDefinition, AppDefinition, BlockManifest, UserInfo } from '@appsemble/types';
+import type { Action } from '@appsemble/sdk';
+import type {
+  ActionDefinition,
+  AppDefinition,
+  Block,
+  BlockManifest,
+  UserInfo,
+} from '@appsemble/types';
 import type { EventEmitter } from 'events';
 import type { RouteComponentProps } from 'react-router-dom';
 import type { JsonValue } from 'type-fest';
