@@ -249,11 +249,8 @@ export default function ResourceTable(): React.ReactElement {
             <FormattedMessage {...messages.createButton} />
           </span>
         </Link>
-        <Button onClick={download}>
-          <Icon icon="download" />
-          <span>
-            <FormattedMessage {...messages.export} />
-          </span>
+        <Button icon="download" onClick={download}>
+          <FormattedMessage {...messages.export} />
         </Button>
       </div>
       <div className="table-container">
