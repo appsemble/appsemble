@@ -10,7 +10,7 @@ import { fs } from 'memfs';
  *
  * jest.mock('fs');
  *
- * beforeEarch(() => {
+ * beforeEach(() => {
  *   vol.fromJson({
  *     'package.json': JSON.stringify({})
  *   });
