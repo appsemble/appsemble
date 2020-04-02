@@ -1,3 +1,5 @@
+import { partialNormalized } from '@appsemble/utils';
+
 import { cacheFirst, requestFirst } from './utils';
 
 /**
@@ -15,11 +17,13 @@ export default function onFetch(event: FetchEvent): void {
   }
   const { origin, pathname } = new URL(request.url);
 
-  // This is a request to an external service This should not be cached.
+  // This is a request to an external service or the Appsemble API. This should not be cached.
   if (origin !== self.location.origin) {
     return;
   }
 
+  // Caching range requests cause issues in Safari. Also, range requests shouldn’t be made to this
+  // origin anyway.
   if (request.headers.has('range')) {
     return;
   }
@@ -35,50 +39,26 @@ export default function onFetch(event: FetchEvent): void {
     return;
   }
 
-  // This is an organization style sheet. It may have been updated, so request a new one if
-  // available.
-  if (/^\/api\/organizations\/[0-9a-z-]+\/style\//.test(pathname)) {
-    event.respondWith(requestFirst(request));
-    return;
-  }
-
-  // This is an app specific style sheet. It may have been updated, so request a new one if
-  // available.
-  if (/^\/api\/apps\/\d+\/style\//.test(pathname)) {
-    event.respondWith(requestFirst(request));
-    return;
-  }
-
-  // Other requests made to the Appsemble API should not be cached.
-  if (pathname.startsWith('/api/')) {
-    return;
-  }
-
-  // Requests made to the API explorer should not be cached.
-  if (pathname.startsWith('/api/explorer')) {
-    return;
-  }
-
-  // This is a generated app file. It should be attempted to use the most recent version, but it is
-  // acceptable to fallback to the cache, so the app works offline. E.g. '/1/manifest.json',
-  // '/1/icon.png'.
-  if (/^\/\d+\//.test(pathname)) {
-    event.respondWith(requestFirst(request));
-    return;
-  }
-
-  // This is a static file. Let’s cache it.
-  if (pathname.includes('.')) {
+  // Static app files are immutable, because they are hashed, and should be cached.
+  if (/^\/_\/.+/.test(pathname)) {
     event.respondWith(cacheFirst(request));
     return;
   }
 
+  // This is a generated app file. It should be attempted to use the most recent version, but it is
+  // acceptable to fallback to the cache, so the app works offline. E.g. '/manifest.json',
+  // '/icon.png', '/core.css'.
+  if (pathname.includes('.')) {
+    event.respondWith(requestFirst(request));
+    return;
+  }
+
   // If the URL either consists of a normalized path, it should be remapped to the cached url which
-  // consists of the client URL path. E.g. '@my-org/my-app', '@my-org/my-app/home'.
-  const match = pathname.match(/^(\/@[0-9a-z-]+\/[0-9a-z-]+)(\/|$)/);
+  // consists of the client URL path. E.g. '/', '/home', '/my-page''
+  const match = pathname.match(`^/${partialNormalized.source}?`);
   if (match) {
     // eslint-disable-next-line compat/compat
-    event.respondWith(requestFirst(new Request(`${origin}${match[1]}`)));
+    event.respondWith(requestFirst(new Request(`${origin}${match[0]}`)));
   }
 
   // This is unhandled. Let’s just use the default browser behaviour to be safe.
