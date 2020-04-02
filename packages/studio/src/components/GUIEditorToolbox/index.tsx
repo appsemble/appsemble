@@ -15,14 +15,14 @@ export default function GUIEditorToolbox(params: any): React.ReactElement {
       {selectedBlock !== undefined ? (
         <div>
           <h1 className="subtitle" style={{ textTransform: 'capitalize' }}>
-            <strong>{selectedBlock.id.split('/')[1]}</strong>
+            <strong>{selectedBlock.name.split('/')[1]}</strong>
           </h1>
           A simple button that performs an action when clicked. It can be used to trigger actions
           such as redirecting to other pages. By default it displays in the lower-right corner,
           allowing for easy access on mobile devices.
           {selectedBlock !== undefined ? (
             <a
-              href={`https://appsemble.dev/blocks/${selectedBlock.id.split('/')[1]}`}
+              href={`https://appsemble.dev/blocks/${selectedBlock.name.split('/')[1]}`}
               rel="noopener noreferrer"
               target="_blank"
             >

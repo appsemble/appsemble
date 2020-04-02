@@ -6,7 +6,7 @@ import React from 'react';
 import styles from './index.css';
 
 export interface Block {
-  id: string;
+  name: string;
   description?: string;
   iconName: IconName;
 }
@@ -22,8 +22,8 @@ export default function GUIEditorToolboxBlock(params: any): React.ReactElement {
       const blocksArr: Block[] = [];
       data.map((block: Block): Block[] => {
         let iconName: IconName = 'question';
-        if (block.id.split('/')[0].includes('appsemble')) {
-          switch (block.id.split('/')[1]) {
+        if (block.name.split('/')[0].includes('appsemble')) {
+          switch (block.name.split('/')[1]) {
             case 'map':
               iconName = 'map-marked-alt';
               break;
@@ -66,7 +66,7 @@ export default function GUIEditorToolboxBlock(params: any): React.ReactElement {
           }
 
           blocksArr.push({
-            id: block.id,
+            name: block.name,
             description: block.description,
             iconName,
           });
@@ -93,7 +93,7 @@ export default function GUIEditorToolboxBlock(params: any): React.ReactElement {
     <div className={styles.main}>
       {blocks.map((block: Block) => (
         <div
-          key={block.id}
+          key={block.name}
           className={selectedBlock === block ? styles.blockFrameSelected : styles.blockFrame}
           onClick={() => [setSelectedBlock(block), params.selectedBlock(block)]}
           onKeyDown={() => onKeyDown}
@@ -101,7 +101,7 @@ export default function GUIEditorToolboxBlock(params: any): React.ReactElement {
           tabIndex={0}
         >
           <Icon icon={block.iconName} size="large" />
-          <h2 className={styles.subtext}>{block.id.split('/')[1]}</h2>
+          <h2 className={styles.subtext}>{block.name.split('/')[1]}</h2>
         </div>
       ))}
     </div>

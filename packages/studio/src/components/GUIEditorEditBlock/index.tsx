@@ -25,13 +25,13 @@ export default function GUIEditorEditBlock(params: any): React.ReactElement {
     const getBlockParameters = async (): Promise<void> => {
       setSelectedBlockParams(undefined);
       // TODO: get block version
-      const { data } = await axios.get(`/api/blocks/${params.selectedBlock.id}/versions/0.11.6`);
+      const { data } = await axios.get(`/api/blocks/${params.selectedBlock.name}/versions/0.11.6`);
       if (data !== undefined) {
         setSelectedBlockParams(data);
       }
     };
     getBlockParameters();
-  }, [params.selectedBlock.id]);
+  }, [params.selectedBlock.name]);
 
   const submit = (): void => {
     const requiredParam = selectedBlockParams.parameters.required;
@@ -173,7 +173,7 @@ export default function GUIEditorEditBlock(params: any): React.ReactElement {
   return (
     <div className={styles.flexContainer}>
       <h1 className="title" style={{ textTransform: 'capitalize' }}>
-        <strong>{params.selectedBlock.id.split('/')[1]}</strong>
+        <strong>{params.selectedBlock.name.split('/')[1]}</strong>
       </h1>
       <div className={styles.main}>
         {Object.keys(selectedBlockParams.parameters.properties).map((item: any, i: any) =>

@@ -6,17 +6,17 @@ import GUIEditorToolboxBlock, { Block } from '.';
 
 const blocks: Block[] = [
   {
-    id: 'map',
+    name: 'map',
     description: 'map description',
     iconName: 'map',
   },
   {
-    id: 'navigation',
+    name: 'navigation',
     description: 'navigation description',
     iconName: 'route',
   },
   {
-    id: 'markdown',
+    name: 'markdown',
     description: 'markdown description',
     iconName: 'font',
   },

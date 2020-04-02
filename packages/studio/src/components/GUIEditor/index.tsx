@@ -23,7 +23,7 @@ export default function GUIEditor(params: any): React.ReactElement {
     const range = new Range(line + 1, 1, line + 1, 1);
     const id = { major: 1, minor: 1 };
 
-    const typeText = `${tab(parentIndent + 2)}- type: ${selectedBlock.id.split('/')[1]}\n`;
+    const typeText = `${tab(parentIndent + 2)}- type: ${selectedBlock.name.split('/')[1]}\n`;
     // TODO: dynamic versioning
     const versionText = `${tab(parentIndent + 4)}version: 0.11.6\n${tab(
       parentIndent + 4,
