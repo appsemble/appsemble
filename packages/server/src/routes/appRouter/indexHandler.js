@@ -17,7 +17,7 @@ export default async function indexHandler(ctx) {
   const { render } = ctx.state;
   const { BlockAsset, BlockVersion } = ctx.db.models;
   const app = await getApp(ctx, {
-    attributes: ['definition', 'id', 'OrganizationId', 'sharedStyle', 'style', 'vapidPublicKey'],
+    attributes: ['definition', 'id', 'sharedStyle', 'style', 'vapidPublicKey'],
     raw: true,
   });
 
@@ -69,7 +69,6 @@ export default async function indexHandler(ctx) {
     ),
     id: app.id,
     vapidPublicKey: app.vapidPublicKey,
-    organizationId: app.OrganizationId,
     definition: app.definition,
     sentryDsn,
   });
@@ -86,8 +85,8 @@ export default async function indexHandler(ctx) {
     ],
     'img-src': ['*', 'blob:', 'data:', host],
     'media-src': ['*', 'blob:', 'data:', host],
-    'style-src': ["'self'", "'unsafe-inline'", host, 'https://fonts.googleapis.com'],
-    'font-src': ["'self'", 'data:', 'https://fonts.gstatic.com', host],
+    'style-src': ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
+    'font-src': ["'self'", 'data:', 'https://fonts.gstatic.com'],
     'frame-src': ["'self'", '*.vimeo.com', '*.youtube.com'],
   };
 

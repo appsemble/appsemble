@@ -249,7 +249,6 @@ it('should render the index page', async () => {
     ],
     id: 1,
     vapidPublicKey: '',
-    organizationId: 'test',
     definition: {
       pages: [
         {

@@ -5,12 +5,13 @@ import * as path from 'path';
 
 import boomMiddleware from '../../middleware/boom';
 import testSchema from '../../utils/test/testSchema';
+import truncate from '../../utils/test/truncate';
 import appRouter from '.';
 
 let request;
 let db;
 
-beforeEach(async () => {
+beforeAll(async () => {
   db = await testSchema('blockAssetHandler');
   request = await createInstance(
     new Koa()
@@ -24,7 +25,12 @@ beforeEach(async () => {
 });
 
 afterEach(async () => {
+  await truncate(db);
+});
+
+afterAll(async () => {
   await request.close();
+  await db.close();
 });
 
 it('should download a block asset', async () => {
