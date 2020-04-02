@@ -1,18 +1,23 @@
 import bulkDNSRestore from './bulkDNSRestore';
 import testSchema from './test/testSchema';
+import truncate from './test/truncate';
 
 let db;
 let dnsConfig;
 
-beforeEach(async () => {
+beforeAll(async () => {
   db = await testSchema('bulkDNSRestore');
+});
+
+beforeEach(async () => {
+  await truncate(db);
+  await db.models.Organization.create({ id: 'test' });
   dnsConfig = {
     add: jest.fn(),
   };
-  await db.models.Organization.create({ id: 'test' });
 });
 
-afterEach(async () => {
+afterAll(async () => {
   await db.close();
 });
 
