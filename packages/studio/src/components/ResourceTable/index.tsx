@@ -15,6 +15,7 @@ import React from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link, useHistory, useRouteMatch } from 'react-router-dom';
 
+import download from '../../utils/download';
 import { useApp } from '../AppContext';
 import HelmetIntl from '../HelmetIntl';
 import styles from './index.css';
@@ -158,20 +159,12 @@ export default function ResourceTable(): React.ReactElement {
     ],
   );
 
-  const download = React.useCallback(async () => {
-    const { data } = await axios.get(`/api/apps/${app.id}/resources/${resourceName}`, {
-      responseType: 'blob',
-      headers: {
-        Accept: 'text/csv',
-      },
-    });
-
-    const downloadUrl = URL.createObjectURL(new Blob([data]));
-    const link = document.createElement('a');
-    link.href = downloadUrl;
-    link.download = `${resourceName}.csv`;
-    link.click();
-    URL.revokeObjectURL(downloadUrl);
+  const downloadCsv = React.useCallback(async () => {
+    await download(
+      `/api/apps/${app.id}/resources/${resourceName}`,
+      `${resourceName}.csv`,
+      'text/csv',
+    );
   }, [app, resourceName]);
 
   React.useEffect(() => {
@@ -249,7 +242,7 @@ export default function ResourceTable(): React.ReactElement {
             <FormattedMessage {...messages.createButton} />
           </span>
         </Link>
-        <Button icon="download" onClick={download}>
+        <Button icon="download" onClick={downloadCsv}>
           <FormattedMessage {...messages.export} />
         </Button>
       </div>
