@@ -7,10 +7,6 @@ const sharedProperties = {
     This will be displayed on the top of the page and in the side menu.
   `,
   },
-  type: {
-    type: 'string',
-    enum: ['flow', 'page', 'tabs'],
-  },
   icon: {
     type: 'string',
     description: `An optional icon from the fontawesome icon set
@@ -59,6 +55,10 @@ export default {
       required: ['name', 'blocks'],
       properties: {
         ...sharedProperties,
+        type: {
+          type: 'string',
+          enum: ['page'],
+        },
         blocks: {
           type: 'array',
           minItems: 1,
@@ -75,6 +75,10 @@ export default {
       required: ['name', 'subPages'],
       properties: {
         ...sharedProperties,
+        type: {
+          type: 'string',
+          enum: ['flow', 'tabs'],
+        },
         subPages: {
           type: 'array',
           minItems: 1,
