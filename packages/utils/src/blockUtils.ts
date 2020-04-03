@@ -1,4 +1,4 @@
-import type { Block } from '@appsemble/sdk';
+import type { Block } from '@appsemble/types';
 
 export type IdentifiableBlock = Pick<Block, 'type' | 'version'>;
 

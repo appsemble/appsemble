@@ -1,6 +1,5 @@
 import {
   Action,
-  Block,
   BodyHTTPMethods,
   HTTPMethods,
   LogAction,
@@ -9,6 +8,74 @@ import {
 } from '@appsemble/sdk';
 import type { IconName } from '@fortawesome/fontawesome-common-types';
 import type { OpenAPIV3 } from 'openapi-types';
+import type { JsonObject } from 'type-fest';
+
+/**
+ * A block that is displayed on a page.
+ */
+export interface Block {
+  /**
+   * The type of the block.
+   *
+   * A block type follow the format `@organization/name`.
+   * If the organization is _appsemble_, it may be omitted.
+   *
+   * Pattern:
+   * ^(@[a-z]([a-z\d-]{0,30}[a-z\d])?\/)?[a-z]([a-z\d-]{0,30}[a-z\d])$
+   *
+   * Examples:
+   * - `form`
+   * - `@amsterdam/splash`
+   */
+  type: string;
+
+  /**
+   * A [semver](https://semver.org) representation of the block version.
+   *
+   * Pattern:
+   * ^\d+\.\d+\.\d+$
+   */
+  version: string;
+
+  /**
+   * An optional header to render above the block.
+   */
+  header?: string;
+
+  /**
+   * The theme of the block.
+   */
+  theme?: Theme;
+
+  /**
+   * A free form mapping of named paramters.
+   *
+   * The exact meaning of the parameters depends on the block type.
+   */
+  parameters?: JsonObject;
+
+  /**
+   * A mapping of actions that can be fired by the block to action handlers.
+   *
+   * The exact meaning of the parameters depends on the block type.
+   */
+  actions?: { [action: string]: ActionDefinition };
+
+  /**
+   * Mapping of the events the block can listen to and emit.
+   *
+   * The exact meaning of the parameters depends on the block type.
+   */
+  events?: {
+    listen?: { [listener: string]: string };
+    emit?: { [emitter: string]: string };
+  };
+
+  /**
+   * A list of roles that are allowed to view this block.
+   */
+  roles?: string[];
+}
 
 /**
  * OpenID Connect specifies a set of standard claims about the end-user, which cover common profile
@@ -160,7 +227,7 @@ interface BaseActionDefinition<T extends Action['type']> {
   /**
    * The element to use as the base when returning the response data.
    */
-  base: string;
+  base?: string;
 
   /**
    * The type of the action.
@@ -171,7 +238,7 @@ interface BaseActionDefinition<T extends Action['type']> {
    * A remapper function. This may be used to remap data before it is passed into the action
    * function.
    */
-  remap: string;
+  remap?: string;
 }
 
 interface DialogActionDefinition extends BaseActionDefinition<'dialog'> {

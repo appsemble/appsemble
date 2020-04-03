@@ -66,6 +66,7 @@ describe('getAppBlocks', () => {
               version: '0.0.0',
               actions: {
                 onSomeAction: {
+                  type: 'dialog' as const,
                   blocks: [
                     { type: 'test', version: '0.0.0' },
                     { type: 'test', version: '0.0.0' },
@@ -104,6 +105,7 @@ describe('getAppBlocks', () => {
                   version: '0.0.0',
                   actions: {
                     onSomeAction: {
+                      type: 'dialog',
                       blocks: [
                         { type: 'test', version: '0.0.0' },
                         { type: 'test', version: '0.0.0' },

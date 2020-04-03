@@ -98,11 +98,6 @@ export type HTTPMethodsLower = 'delete' | 'get' | BodyHTTPMethodsLower;
  */
 export type HTTPMethods = HTTPMethodsUpper | HTTPMethodsLower;
 
-export interface EventParams {
-  emit?: string;
-  listen?: string;
-}
-
 export interface BaseAction<T extends string> {
   /**
    * The type of the action.
@@ -180,73 +175,6 @@ export type Action =
   | BaseAction<'resource.subscription.unsubscribe'>
   | BaseAction<'resource.subscription.toggle'>
   | BaseAction<'resource.subscription.status'>;
-
-/**
- * A block that is displayed on a page.
- */
-export interface Block {
-  /**
-   * The type of the block.
-   *
-   * A block type follow the format `@organization/name`.
-   * If the organization is _appsemble_, it may be omitted.
-   *
-   * Pattern:
-   * ^(@[a-z]([a-z\d-]{0,30}[a-z\d])?\/)?[a-z]([a-z\d-]{0,30}[a-z\d])$
-   *
-   * Examples:
-   * - `form`
-   * - `@amsterdam/splash`
-   */
-  type: string;
-
-  /**
-   * A [semver](https://semver.org) representation of the block version.
-   *
-   * Pattern:
-   * ^\d+\.\d+\.\d+$
-   */
-  version: string;
-
-  /**
-   * An optional header to render above the block.
-   */
-  header?: string;
-
-  /**
-   * The theme of the block.
-   */
-  theme?: Theme;
-
-  /**
-   * A free form mapping of named paramters.
-   *
-   * The exact meaning of the parameters depends on the block type.
-   */
-  parameters?: Parameters;
-
-  /**
-   * A mapping of actions that can be fired by the block to action handlers.
-   *
-   * The exact meaning of the parameters depends on the block type.
-   */
-  actions?: Actions;
-
-  /**
-   * Mapping of the events the block can listen to and emit.
-   *
-   * The exact meaning of the parameters depends on the block type.
-   */
-  events?: {
-    listen: { [K in keyof EventListeners]: string };
-    emit: { [K in keyof EventEmitters]: string };
-  };
-
-  /**
-   * A list of roles that are allowed to view this block.
-   */
-  roles?: string[];
-}
 
 /**
  * A color known to Bulma.

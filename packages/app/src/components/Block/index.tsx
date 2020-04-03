@@ -1,5 +1,5 @@
 import { useMessages } from '@appsemble/react-components';
-import type { Block as BlockType } from '@appsemble/sdk';
+import type { Block as BlockType } from '@appsemble/types';
 import { baseTheme, normalize, normalizeBlockName } from '@appsemble/utils';
 import classNames from 'classnames';
 import type { EventEmitter } from 'events';
