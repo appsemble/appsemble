@@ -1,4 +1,4 @@
-import type { Theme } from '@appsemble/sdk';
+import type { Theme } from '@appsemble/types';
 import { baseTheme } from '@appsemble/utils';
 import autoprefixer from 'autoprefixer';
 import type { Context } from 'koa';

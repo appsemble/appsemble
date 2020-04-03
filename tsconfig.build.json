@@ -6,7 +6,7 @@
     "esModuleInterop": true,
     "importsNotUsedAsValues": "error",
     "jsx": "react",
-    "lib": ["dom", "esnext"],
+    "lib": ["esnext"],
     "module": "es2020",
     "moduleResolution": "node",
     "noUnusedLocals": true,
