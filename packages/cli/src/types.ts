@@ -1,4 +1,5 @@
 import type { BlockManifest } from '@appsemble/types';
+import type { URL as URL_, URLSearchParams as URLSearchParams_ } from 'url';
 
 /**
  * THe base arguments from the command line.
@@ -44,10 +45,17 @@ export type BlockPayload = Pick<
   'name' | 'description' | 'actions' | 'events' | 'parameters' | 'resources' | 'version' | 'layout'
 >;
 
-export type BlockConfig = BlockPayload & {
-  description?: string;
+export interface BlockConfig extends BlockPayload {
   webpack: string;
   dist: string;
   output: string;
   dir: string;
-};
+}
+
+declare global {
+  // https://github.com/DefinitelyTyped/DefinitelyTyped/issues/34960
+  // eslint-disable-next-line no-redeclare
+  const URL: typeof URL_;
+  // eslint-disable-next-line no-redeclare
+  const URLSearchParams: typeof URLSearchParams_;
+}

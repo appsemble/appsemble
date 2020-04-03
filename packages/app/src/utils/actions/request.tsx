@@ -1,12 +1,7 @@
-import type {
-  HTTPMethodsUpper,
-  RequestAction,
-  RequestLikeAction,
-  RequestLikeActionTypes,
-} from '@appsemble/sdk';
+import type { RequestAction, RequestLikeAction, RequestLikeActionTypes } from '@appsemble/sdk';
 import type { RequestLikeActionDefinition } from '@appsemble/types';
 import { compileFilters, MapperFunction, remapData, validate } from '@appsemble/utils';
-import axios, { AxiosRequestConfig } from 'axios';
+import axios, { AxiosRequestConfig, Method } from 'axios';
 
 import type { MakeActionParameters } from '../../types';
 import uploadBlobs from '../uploadBlobs';
@@ -42,7 +37,7 @@ export function requestLikeAction<T extends RequestLikeActionTypes>({
   return {
     type: 'request',
     async dispatch(data) {
-      const methodUpper = method.toUpperCase() as HTTPMethodsUpper;
+      const methodUpper = method.toUpperCase() as Method;
       const req: AxiosRequestConfig = {
         method: methodUpper,
         url: url.replace(regex, (_, filter) => urlMappers[filter](data)),

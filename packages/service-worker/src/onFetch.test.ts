@@ -42,13 +42,22 @@ it('should pass through hot-update requests', async () => {
   expect(utils.requestFirst).not.toHaveBeenCalled();
 });
 
+it('should pass through requests that have a range header', async () => {
+  const request = new Request('/range.request', {
+    headers: { range: 'bytes=0-1024' },
+  });
+  await trigger('fetch', request);
+  expect(utils.cacheFirst).not.toHaveBeenCalled();
+  expect(utils.requestFirst).not.toHaveBeenCalled();
+});
+
 it('should try to request app index URL first', async () => {
-  const request = new Request('/@foo/test123');
+  const request = new Request('/');
   await trigger('fetch', request);
   expect(utils.cacheFirst).not.toHaveBeenCalled();
   expect(utils.requestFirst).toHaveBeenCalledWith(
     expect.objectContaining({
-      url: 'http://localhost/@foo/test123',
+      url: 'http://localhost/',
     }),
   );
 });
@@ -59,13 +68,13 @@ it('should remap nested app URLs', async () => {
   expect(utils.cacheFirst).not.toHaveBeenCalled();
   expect(utils.requestFirst).toHaveBeenCalledWith(
     expect.objectContaining({
-      url: 'http://localhost/@foo/asd',
+      url: 'http://localhost/',
     }),
   );
 });
 
 it('should try to request app related content first', async () => {
-  const request = new Request('/457/manifest.json');
+  const request = new Request('/manifest.json');
   await trigger('fetch', request);
   expect(utils.cacheFirst).not.toHaveBeenCalled();
   expect(utils.requestFirst).toHaveBeenCalledWith(request);
@@ -73,6 +82,13 @@ it('should try to request app related content first', async () => {
 
 it('should cache block version requests', async () => {
   const request = new Request('/api/blocks/@appsemble/form/versions/0.1.2');
+  await trigger('fetch', request);
+  expect(utils.cacheFirst).toHaveBeenCalledWith(request);
+  expect(utils.requestFirst).not.toHaveBeenCalled();
+});
+
+it('should cache static app file requests', async () => {
+  const request = new Request('/_/somehash.js');
   await trigger('fetch', request);
   expect(utils.cacheFirst).toHaveBeenCalledWith(request);
   expect(utils.requestFirst).not.toHaveBeenCalled();
@@ -86,64 +102,29 @@ it('should cache block version asset requests', async () => {
 });
 
 it('should try to request organization styles', async () => {
-  const request = new Request('/api/organizations/42/style/core');
+  const request = new Request('/organization/core.css');
   await trigger('fetch', request);
   expect(utils.cacheFirst).not.toHaveBeenCalled();
   expect(utils.requestFirst).toHaveBeenCalledWith(request);
 });
 
 it('should try to request organization block styles', async () => {
-  const request = new Request('/api/organizations/42/style/blocks/@foo/bar');
+  const request = new Request('/organization/@foo/bar.css');
   await trigger('fetch', request);
   expect(utils.cacheFirst).not.toHaveBeenCalled();
   expect(utils.requestFirst).toHaveBeenCalledWith(request);
 });
 
 it('should try to request app specific styles', async () => {
-  const request = new Request('/api/apps/42/style/core');
+  const request = new Request('/core.css');
   await trigger('fetch', request);
   expect(utils.cacheFirst).not.toHaveBeenCalled();
   expect(utils.requestFirst).toHaveBeenCalledWith(request);
 });
 
 it('should try to request app specific block styles', async () => {
-  const request = new Request('/api/apps/42/style/blocks/@foo/bar');
+  const request = new Request('/@foo/bar.css');
   await trigger('fetch', request);
   expect(utils.cacheFirst).not.toHaveBeenCalled();
   expect(utils.requestFirst).toHaveBeenCalledWith(request);
-});
-
-it('should pass through other API requests', async () => {
-  const request = new Request('/api/apps/26/resources/banana/123');
-  await trigger('fetch', request);
-  expect(utils.cacheFirst).not.toHaveBeenCalled();
-  expect(utils.requestFirst).not.toHaveBeenCalled();
-});
-
-it('should pass through API explorer requests', async () => {
-  const request = new Request('/api/explorer');
-  await trigger('fetch', request);
-  expect(utils.cacheFirst).not.toHaveBeenCalled();
-  expect(utils.requestFirst).not.toHaveBeenCalled();
-});
-
-it('should pass asset requests', async () => {
-  const request = new Request('/api/apps/26/assets/1');
-  await trigger('fetch', request);
-  expect(utils.cacheFirst).not.toHaveBeenCalled();
-  expect(utils.requestFirst).not.toHaveBeenCalled();
-});
-
-it('should pass internal requests', async () => {
-  const request = new Request('/apps');
-  await trigger('fetch', request);
-  expect(utils.cacheFirst).not.toHaveBeenCalled();
-  expect(utils.requestFirst).not.toHaveBeenCalled();
-});
-
-it('should try to get static assets from the cache first', async () => {
-  const request = new Request('/@foo/app/76fade46f4eac.js');
-  await trigger('fetch', request);
-  expect(utils.cacheFirst).toHaveBeenCalledWith(request);
-  expect(utils.requestFirst).not.toHaveBeenCalled();
 });

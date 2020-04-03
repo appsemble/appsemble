@@ -1,14 +1,15 @@
-import {
+import type {
   Action,
-  BodyHTTPMethods,
   HTTPMethods,
   LogAction,
   RequestLikeActionTypes,
   Theme,
-} from '@appsemble/sdk';
+} from '@appsemble/sdk/src/types';
 import type { IconName } from '@fortawesome/fontawesome-common-types';
 import type { OpenAPIV3 } from 'openapi-types';
 import type { JsonObject } from 'type-fest';
+
+export type { Theme };
 
 /**
  * A block that is displayed on a page.
@@ -45,7 +46,7 @@ export interface Block {
   /**
    * The theme of the block.
    */
-  theme?: Theme;
+  theme?: Partial<Theme>;
 
   /**
    * A free form mapping of named paramters.
@@ -218,12 +219,12 @@ export interface Resource {
 
 export interface BlobUploadType {
   type?: 'upload';
-  method?: BodyHTTPMethods;
+  method?: HTTPMethods;
   serialize?: 'custom';
   url?: string;
 }
 
-interface BaseActionDefinition<T extends Action['type']> {
+export interface BaseActionDefinition<T extends Action['type']> {
   /**
    * The element to use as the base when returning the response data.
    */
@@ -241,7 +242,7 @@ interface BaseActionDefinition<T extends Action['type']> {
   remap?: string;
 }
 
-interface DialogActionDefinition extends BaseActionDefinition<'dialog'> {
+export interface DialogActionDefinition extends BaseActionDefinition<'dialog'> {
   /**
    * If false, the dialog cannot be closed by clicking outside of the dialog or on the close button.
    */
@@ -263,7 +264,7 @@ interface DialogActionDefinition extends BaseActionDefinition<'dialog'> {
   title?: string;
 }
 
-interface LinkActionDefinition extends BaseActionDefinition<'link'> {
+export interface LinkActionDefinition extends BaseActionDefinition<'link'> {
   /**
    * Where to link to.
    *
@@ -277,7 +278,7 @@ interface LinkActionDefinition extends BaseActionDefinition<'link'> {
   parameters?: { [key: string]: any };
 }
 
-interface LogActionDefinition extends BaseActionDefinition<'log'> {
+export interface LogActionDefinition extends BaseActionDefinition<'log'> {
   /**
    * The logging level on which to log.
    *
@@ -286,8 +287,9 @@ interface LogActionDefinition extends BaseActionDefinition<'log'> {
   level: LogAction['level'];
 }
 
-interface RequestLikeActionDefinition<T extends RequestLikeActionTypes = RequestLikeActionTypes>
-  extends BaseActionDefinition<T> {
+export interface RequestLikeActionDefinition<
+  T extends RequestLikeActionTypes = RequestLikeActionTypes
+> extends BaseActionDefinition<T> {
   /**
    * The element to use as the base when returning the response data.
    */
@@ -333,7 +335,7 @@ interface RequestLikeActionDefinition<T extends RequestLikeActionTypes = Request
   onError?: ActionDefinition;
 }
 
-interface ResourceActionDefinition<T extends RequestLikeActionTypes>
+export interface ResourceActionDefinition<T extends RequestLikeActionTypes>
   extends RequestLikeActionDefinition<T> {
   /**
    * The name of the resource.
@@ -341,14 +343,15 @@ interface ResourceActionDefinition<T extends RequestLikeActionTypes>
   resource: string;
 }
 
-type RequestActionDefinition = RequestLikeActionDefinition<'request'>;
-type ResourceCreateActionDefinition = ResourceActionDefinition<'resource.create'>;
-type ResourceDeleteActionDefinition = ResourceActionDefinition<'resource.delete'>;
-type ResourceGetActionDefinition = ResourceActionDefinition<'resource.get'>;
-type ResourceQueryActionDefinition = ResourceActionDefinition<'resource.query'>;
-type ResourceUpdateActionDefinition = ResourceActionDefinition<'resource.update'>;
+export type RequestActionDefinition = RequestLikeActionDefinition<'request'>;
+export type ResourceCreateActionDefinition = ResourceActionDefinition<'resource.create'>;
+export type ResourceDeleteActionDefinition = ResourceActionDefinition<'resource.delete'>;
+export type ResourceGetActionDefinition = ResourceActionDefinition<'resource.get'>;
+export type ResourceQueryActionDefinition = ResourceActionDefinition<'resource.query'>;
+export type ResourceUpdateActionDefinition = ResourceActionDefinition<'resource.update'>;
 
-interface BaseResourceSubscribeActionDefinition {
+export interface BaseResourceSubscribeActionDefinition<T extends Action['type']>
+  extends BaseActionDefinition<T> {
   /**
    * The name of the resource.
    */
@@ -360,23 +363,22 @@ interface BaseResourceSubscribeActionDefinition {
   action?: 'create' | 'update' | 'delete';
 }
 
-type ResourceSubscribeActionDefinition = BaseActionDefinition<'resource.subscription.subscribe'> &
-  BaseResourceSubscribeActionDefinition;
+export type ResourceSubscribeActionDefinition = BaseResourceSubscribeActionDefinition<
+  'resource.subscription.subscribe'
+>;
 
-type ResourceUnsubscribeActionDefinition = BaseActionDefinition<
+export type ResourceUnsubscribeActionDefinition = BaseResourceSubscribeActionDefinition<
   'resource.subscription.unsubscribe'
-> &
-  BaseResourceSubscribeActionDefinition;
+>;
 
-type ResourceSubscriptionToggleActionDefinition = BaseActionDefinition<
+export type ResourceSubscriptionToggleActionDefinition = BaseResourceSubscribeActionDefinition<
   'resource.subscription.toggle'
-> &
-  BaseResourceSubscribeActionDefinition;
+>;
 
-type ResourceSubscriptionStatusActionDefinition = BaseActionDefinition<
-  'resource.subscription.status'
-> &
-  Pick<BaseResourceSubscribeActionDefinition, 'resource'>;
+export type ResourceSubscriptionStatusActionDefinition = Omit<
+  BaseResourceSubscribeActionDefinition<'resource.subscription.status'>,
+  'action'
+>;
 
 export interface EventActionDefinition extends BaseActionDefinition<'event'> {
   /**
@@ -510,7 +512,7 @@ export interface BasePage {
   /**
    * The global theme for the page.
    */
-  theme?: Theme;
+  theme?: Partial<Theme>;
 
   /**
    * The navigation type to use.
@@ -530,17 +532,17 @@ interface SubPage {
   blocks: Block[];
 }
 
-interface BasicPage extends BasePage {
+export interface BasicPage extends BasePage {
   type?: 'page';
   blocks: Block[];
 }
 
-interface FlowPage extends BasePage {
+export interface FlowPage extends BasePage {
   type: 'flow';
   subPages: SubPage[];
 }
 
-interface TabsPage extends BasePage {
+export interface TabsPage extends BasePage {
   type: 'tabs';
   subPages: SubPage[];
 }
@@ -599,7 +601,7 @@ export interface AppDefinition {
   /**
    * The global theme for the app.
    */
-  theme?: Theme;
+  theme?: Partial<Theme>;
 }
 
 /**
