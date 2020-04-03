@@ -50,6 +50,7 @@ it('should serve the studio index page with correct headers', async () => {
   });
   expect(templateName).toBe('studio.html');
   expect(templateData).toStrictEqual({
+    nonce: 'AAAAAAAAAAAAAAAAAAAAAA==',
     settings: '<script>window.settings={"enableRegistration":true,"logins":[]}</script>',
   });
 });
@@ -80,6 +81,7 @@ it('should pass login options from argv to the studio', async () => {
   });
   expect(templateName).toBe('studio.html');
   expect(templateData).toStrictEqual({
+    nonce: 'AAAAAAAAAAAAAAAAAAAAAA==',
     settings:
       '<script>window.settings={"enableRegistration":false,"logins":["gitlab","google"],"sentryDsn":"https://secret@sentry.io/path"}</script>',
   });

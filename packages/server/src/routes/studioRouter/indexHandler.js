@@ -48,6 +48,6 @@ export default async function indexHandler(ctx) {
     'frame-src': [`*.${new URL(host).host}`, host],
   });
   ctx.set('Content-Security-Policy', csp);
-  ctx.body = await render('studio.html', { settings });
+  ctx.body = await render('studio.html', { nonce, settings });
   ctx.type = 'text/html';
 }
