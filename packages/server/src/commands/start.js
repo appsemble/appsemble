@@ -6,10 +6,11 @@ import https from 'https';
 import Koa from 'koa';
 
 import migrations from '../migrations';
+import { initDB } from '../models';
 import addDBHooks from '../utils/addDBHooks';
 import createServer from '../utils/createServer';
 import migrate from '../utils/migrate';
-import setupModels, { handleDbException } from '../utils/setupModels';
+import { handleDBError } from '../utils/sqlUtils';
 import databaseBuilder from './builder/database';
 
 export const PORT = 9999;
@@ -99,7 +100,7 @@ export async function handler(argv, { webpackConfigs } = {}) {
   let db;
 
   try {
-    db = await setupModels({
+    db = initDB({
       host: argv.databaseHost,
       port: argv.databasePort,
       username: argv.databaseUser,
@@ -109,7 +110,7 @@ export async function handler(argv, { webpackConfigs } = {}) {
       uri: argv.databaseUrl,
     });
   } catch (dbException) {
-    handleDbException(dbException);
+    handleDBError(dbException);
   }
 
   if (argv.migrateTo) {
