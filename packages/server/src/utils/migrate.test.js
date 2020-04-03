@@ -1,7 +1,6 @@
 import { AppsembleError } from '@appsemble/node-utils';
 
 import migrate from './migrate';
-import testSchema from './test/testSchema';
 
 let db;
 let Meta;
@@ -14,7 +13,8 @@ let m100;
 let migrations;
 
 beforeEach(async () => {
-  db = await testSchema('migrate');
+  const testSchema = await import('./test/testSchema');
+  db = await testSchema.default('migrate');
   ({ Meta } = db.models);
   m000 = { key: '0.0.0', up: jest.fn(), down: jest.fn() };
   m001 = { key: '0.0.1', up: jest.fn(), down: jest.fn() };
@@ -27,6 +27,7 @@ beforeEach(async () => {
 
 afterEach(async () => {
   await db.close();
+  jest.resetModuleRegistry();
 });
 
 it('should fail if multiple meta entries are found', async () => {

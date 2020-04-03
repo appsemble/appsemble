@@ -15,6 +15,7 @@ import React from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link, useHistory, useRouteMatch } from 'react-router-dom';
 
+import download from '../../utils/download';
 import { useApp } from '../AppContext';
 import HelmetIntl from '../HelmetIntl';
 import styles from './index.css';
@@ -158,6 +159,14 @@ export default function ResourceTable(): React.ReactElement {
     ],
   );
 
+  const downloadCsv = React.useCallback(async () => {
+    await download(
+      `/api/apps/${app.id}/resources/${resourceName}`,
+      `${resourceName}.csv`,
+      'text/csv',
+    );
+  }, [app, resourceName]);
+
   React.useEffect(() => {
     if (app.definition.resources[resourceName]?.schema) {
       setLoading(true);
@@ -226,12 +235,17 @@ export default function ResourceTable(): React.ReactElement {
         titleValues={{ name: app.definition.name, resourceName }}
       />
       <h1 className="title">Resource {resourceName}</h1>
-      <Link className="button is-primary" to={`${match.url}/new`}>
-        <Icon icon="plus-square" />
-        <span>
-          <FormattedMessage {...messages.createButton} />
-        </span>
-      </Link>
+      <div className="buttons">
+        <Link className="button is-primary" to={`${match.url}/new`}>
+          <Icon icon="plus-square" />
+          <span>
+            <FormattedMessage {...messages.createButton} />
+          </span>
+        </Link>
+        <Button icon="download" onClick={downloadCsv}>
+          <FormattedMessage {...messages.export} />
+        </Button>
+      </div>
       <div className="table-container">
         <table className="table is-striped is-hoverable is-fullwidth">
           <thead>
