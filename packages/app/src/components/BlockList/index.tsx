@@ -1,6 +1,5 @@
 import { Loader } from '@appsemble/react-components';
-import type { Block as BlockType } from '@appsemble/sdk';
-import type { Security } from '@appsemble/types';
+import type { Block as BlockType, Security } from '@appsemble/types';
 import { checkAppRole } from '@appsemble/utils';
 import type { EventEmitter } from 'events';
 import React from 'react';

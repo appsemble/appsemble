@@ -63,7 +63,13 @@ describe('checkBlocks', () => {
     let error: AppsembleValidationError;
     try {
       checkBlocks(
-        { 'pages.0.blocks.0': { type: 'test', version: '1.2.3', actions: { onClick: {} } } },
+        {
+          'pages.0.blocks.0': {
+            type: 'test',
+            version: '1.2.3',
+            actions: { onClick: { type: 'noop' } },
+          },
+        },
         [{ name: '@appsemble/test', version: '1.2.3', files: [], actions: { onTap: {} } }],
       );
     } catch (err) {
@@ -84,7 +90,7 @@ describe('checkBlocks', () => {
           'pages.0.blocks.0': {
             type: 'test',
             version: '1.2.3',
-            actions: { onClick: {}, onTap: {} },
+            actions: { onClick: { type: 'noop' }, onTap: { type: 'noop' } },
             parameters: { customAction: 'onClick' },
           },
         },
@@ -115,7 +121,13 @@ describe('checkBlocks', () => {
     let error: AppsembleValidationError;
     try {
       checkBlocks(
-        { 'pages.0.blocks.0': { type: 'test', version: '1.2.3', actions: { onClick: {} } } },
+        {
+          'pages.0.blocks.0': {
+            type: 'test',
+            version: '1.2.3',
+            actions: { onClick: { type: 'noop' } },
+          },
+        },
         [{ name: '@appsemble/test', version: '1.2.3', files: [] }],
       );
     } catch (err) {

@@ -1,8 +1,9 @@
-import type { Action, Block } from '@appsemble/sdk';
+import type { Action } from '@appsemble/sdk';
 import type {
   ActionDefinition,
   ActionType,
   AppDefinition,
+  Block,
   Page,
   RequestLikeActionDefinition,
 } from '@appsemble/types';

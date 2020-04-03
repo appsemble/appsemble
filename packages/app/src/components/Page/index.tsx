@@ -1,6 +1,5 @@
 import { useMessages } from '@appsemble/react-components';
-import type { Block } from '@appsemble/sdk';
-import type { AppDefinition, BasicPage, Page as PageType } from '@appsemble/types';
+import type { AppDefinition, BasicPage, Block, Page as PageType } from '@appsemble/types';
 import { checkAppRole, normalize } from '@appsemble/utils';
 import { EventEmitter } from 'events';
 import React from 'react';
