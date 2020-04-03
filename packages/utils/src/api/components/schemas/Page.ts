@@ -72,7 +72,7 @@ export default {
     {
       type: 'object',
       description: 'This describes what a page will look like in the app.',
-      required: ['name', 'subPages'],
+      required: ['name', 'type', 'subPages'],
       properties: {
         ...sharedProperties,
         type: {
