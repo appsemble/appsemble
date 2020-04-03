@@ -11,21 +11,25 @@ let db;
 
 beforeAll(async () => {
   db = await testSchema('organizationCSSHandler');
-  request = await createInstance(
-    new Koa()
-      .use((ctx, next) => {
-        ctx.db = db;
-        ctx.argv = { host: 'http://localhost' };
-        Object.defineProperty(ctx, 'origin', { value: 'http://app.org.localhost' });
-        return next();
-      })
-      .use(boomMiddleware())
-      .use(appRouter),
-  );
+
+  beforeEach(async () => {
+    request = await createInstance(
+      new Koa()
+        .use((ctx, next) => {
+          ctx.db = db;
+          ctx.argv = { host: 'http://localhost' };
+          Object.defineProperty(ctx, 'origin', { value: 'http://app.org.localhost' });
+          return next();
+        })
+        .use(boomMiddleware())
+        .use(appRouter),
+    );
+  });
 });
 
 afterEach(async () => {
   await truncate(db);
+  await request.close();
 });
 
 afterAll(async () => {

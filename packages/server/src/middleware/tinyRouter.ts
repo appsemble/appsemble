@@ -28,8 +28,11 @@ export default <StateT = {}, CustomT = {}>(
 
   let match: RegExpMatchArray;
   const result = routes.find(({ route }) => {
+    if (typeof route === 'string') {
+      return path === route;
+    }
     match = path.match(route);
-    return match || (typeof route === 'string' && path === route);
+    return match;
   });
   if (!result) {
     return next();
