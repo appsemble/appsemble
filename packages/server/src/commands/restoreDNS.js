@@ -1,6 +1,7 @@
+import { initDB } from '../models';
 import bulkDNSRestore from '../utils/bulkDNSRestore';
 import dns from '../utils/dns';
-import setupModels, { handleDbException } from '../utils/setupModels';
+import { handleDBError } from '../utils/sqlUtils';
 import databaseBuilder from './builder/database';
 
 export const command = 'restore-dns';
@@ -37,7 +38,7 @@ export async function handler(argv) {
   let db;
 
   try {
-    db = await setupModels({
+    db = initDB({
       host: argv.databaseHost,
       port: argv.databasePort,
       username: argv.databaseUser,
@@ -47,7 +48,7 @@ export async function handler(argv) {
       uri: argv.databaseUrl,
     });
   } catch (dbException) {
-    handleDbException(dbException);
+    handleDBError(dbException);
   }
 
   const dnsConfig = await dns(argv);

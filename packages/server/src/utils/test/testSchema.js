@@ -1,6 +1,6 @@
 import Sequelize from 'sequelize';
 
-import setupModels from '../setupModels';
+import { initDB } from '../../models';
 
 /**
  * Create a temporary test database.
@@ -25,7 +25,7 @@ export default async function testSchema(spec, options = {}) {
     .toLowerCase();
 
   await root.query(`CREATE DATABASE ${dbName}`);
-  const db = await setupModels({
+  const db = initDB({
     ...options,
     uri: `${database.replace(/\/\w+$/, '')}/${dbName}`,
   });
