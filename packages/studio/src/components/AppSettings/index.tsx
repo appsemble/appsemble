@@ -10,7 +10,7 @@ import {
   useMessages,
   useObjectURL,
 } from '@appsemble/react-components';
-import { normalize, stripBlockName } from '@appsemble/utils';
+import { normalize } from '@appsemble/utils';
 import axios from 'axios';
 import React, { FormEvent, ReactText, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -72,13 +72,13 @@ export default function AppSettings(): React.ReactElement {
   }, []);
 
   const onDelete = React.useCallback(async () => {
-    const { id } = app;
+    const { OrganizationId, id, path } = app;
 
     try {
       await axios.delete(`/api/apps/${id}`);
       push({
         body: intl.formatMessage(messages.deleteSuccess, {
-          name: `@${app.OrganizationId}/${stripBlockName(app.path)}`,
+          name: `@${OrganizationId}/${path}`,
         }),
         color: 'info',
       });

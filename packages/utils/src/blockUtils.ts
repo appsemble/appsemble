@@ -35,18 +35,3 @@ export function filterBlocks(blocks: IdentifiableBlock[]): IdentifiableBlock[] {
   });
   return result;
 }
-
-/**
- * Return a block name without the organization prefix.
- *
- * @param name The input block name.
- * @returns The prettified block name.
- */
-export function stripBlockName(name: string): string {
-  if (name.startsWith('@')) {
-    if (name.split.length > 1) {
-      return name.split('/')[1];
-    }
-  }
-  return name;
-}
