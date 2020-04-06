@@ -1,4 +1,4 @@
-import { Button, Checkbox, Input, Loader, useMessages } from '@appsemble/react-components';
+import { Button, Checkbox, Form, Input, Loader, useMessages } from '@appsemble/react-components';
 import { BlockManifest } from '@appsemble/types';
 import { stripBlockName } from '@appsemble/utils';
 import axios from 'axios';
@@ -6,6 +6,7 @@ import React from 'react';
 import { useIntl } from 'react-intl';
 
 import { GuiEditorStep } from '../Editor';
+import { Block } from '../GUIEditorToolboxBlock';
 import styles from './index.css';
 import messages from './messages';
 
@@ -23,7 +24,17 @@ interface SelectedBlock extends BlockManifest {
   };
 }
 
-export default function GUIEditorEditBlock(params: any): React.ReactElement {
+interface GUIEditorEditBlockProps {
+  save: (edittedParams: object[], selectedBlockParams: SelectedBlock) => void;
+  selectedBlock: Block;
+  setEditorStep: (value: GuiEditorStep) => void;
+}
+
+export default function GUIEditorEditBlock({
+  save,
+  selectedBlock,
+  setEditorStep,
+}: GUIEditorEditBlockProps): React.ReactElement {
   const [selectedBlockParams, setSelectedBlockParams] = React.useState<SelectedBlock>();
   const edittedParams: any[any] = [];
   const intl = useIntl();
@@ -33,13 +44,13 @@ export default function GUIEditorEditBlock(params: any): React.ReactElement {
     const getBlockParameters = async (): Promise<void> => {
       setSelectedBlockParams(undefined);
       // TODO: get block version
-      const { data } = await axios.get(`/api/blocks/${params.selectedBlock.name}/versions/0.11.6`);
+      const { data } = await axios.get(`/api/blocks/${selectedBlock.name}/versions/0.11.6`);
       if (data !== undefined) {
         setSelectedBlockParams(data);
       }
     };
     getBlockParameters();
-  }, [params.selectedBlock.name]);
+  }, [selectedBlock.name]);
 
   const submit = (): void => {
     const requiredParam = selectedBlockParams.parameters.required;
@@ -61,7 +72,7 @@ export default function GUIEditorEditBlock(params: any): React.ReactElement {
     });
 
     if (emptyRequiredParam.length === 0) {
-      params.save(edittedParams, selectedBlockParams);
+      save(edittedParams, selectedBlockParams);
     } else {
       emptyRequiredParam.map((requiredItem: string) =>
         push({
@@ -88,17 +99,10 @@ export default function GUIEditorEditBlock(params: any): React.ReactElement {
   function renderInputFields(item: string, i: any): any {
     const schema = selectedBlockParams.parameters.properties[item];
     const requiredParam = selectedBlockParams.parameters.required;
-    const label = item.replace(/([a-z0-9])([A-Z])/g, '$1 $2');
-    let required = false;
+    const required = requiredParam !== undefined ? requiredParam.includes(item) : false;
 
-    if (requiredParam !== undefined) {
-      requiredParam.map((requiredItem: string) => {
-        if (item.includes(requiredItem)) {
-          required = true;
-        }
-        return required;
-      });
-    }
+    // TODO: make title field in API and call title instead of normalizing this way
+    const label = item.replace(/([a-z0-9])([A-Z])/g, '$1 $2');
 
     switch (schema.type) {
       case parameterType.STRING:
@@ -177,8 +181,8 @@ export default function GUIEditorEditBlock(params: any): React.ReactElement {
   }
 
   return (
-    <div className={styles.flexContainer}>
-      <h2 className="title">{stripBlockName(params.selectedBlock.name)}</h2>
+    <Form className={styles.flexContainer} onSubmit={submit}>
+      <h2 className="title">{stripBlockName(selectedBlock.name)}</h2>
       <div className={styles.main}>
         {Object.keys(selectedBlockParams.parameters.properties).map((item: any, i: any) =>
           renderInputFields(item, i),
@@ -188,9 +192,7 @@ export default function GUIEditorEditBlock(params: any): React.ReactElement {
         <Button
           className="button is-warning"
           icon="angle-left"
-          onClick={() => {
-            params.setEditorStep(GuiEditorStep.ADD);
-          }}
+          onClick={() => setEditorStep(GuiEditorStep.ADD)}
           style={{ alignContent: 'flex-start' }}
         >
           {intl.formatMessage(messages.back)}
@@ -198,14 +200,12 @@ export default function GUIEditorEditBlock(params: any): React.ReactElement {
         <Button
           className="button is-success"
           icon="check"
-          onClick={() => {
-            submit();
-          }}
+          onClick={submit}
           style={{ alignContent: 'flex-end' }}
         >
           {intl.formatMessage(messages.save)}
         </Button>
       </div>
-    </div>
+    </Form>
   );
 }
