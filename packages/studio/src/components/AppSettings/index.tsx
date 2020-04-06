@@ -90,9 +90,7 @@ export default function AppSettings(): React.ReactElement {
 
   const onDeleteClick = React.useCallback(() => setDeleteDialog(true), []);
 
-  const onClose = React.useCallback(() => {
-    setDeleteDialog(false);
-  }, []);
+  const onClose = React.useCallback(() => setDeleteDialog(false), []);
 
   return (
     <Form onSubmit={onSubmit}>
