@@ -10,6 +10,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ### Added
 
 - Block(`@appsemble/map`): Add support for custom markers.
+- CLI: Publish `@appsemble/cli` on the `npm` registry.
 - Server: Add support for outputting CSV in resource API.
 
 ### Changed

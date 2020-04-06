@@ -5,6 +5,7 @@
     "packages/*"
   ],
   "scripts": {
+    "appsemble": "packages/cli/bin/appsemble",
     "build:app": "webpack --config config/webpack/app.js --mode production",
     "build:studio": "webpack --config config/webpack/studio.js --mode production",
     "eslint": "eslint --max-warnings 0 --ext js,md,ts,tsx",

@@ -3,4 +3,4 @@ require('@babel/register')({
   extensions: ['.js', '.ts'],
 });
 
-require('../src').default(process.argv.slice(2));
+require('../src/main').default(process.argv.slice(2));
