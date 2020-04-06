@@ -3,14 +3,24 @@ import axios from 'axios';
 import FormData from 'form-data';
 import fs from 'fs-extra';
 import { join } from 'path';
+import type { Argv } from 'yargs';
 
 import { authenticate } from '../../lib/authentication';
 import processCss from '../../lib/processCss';
+import type { BaseArguments } from '../../types';
+
+interface UploadThemeArguments extends BaseArguments {
+  path: string;
+  organization: string;
+  shared: boolean;
+  core: boolean;
+  block: string;
+}
 
 export const command = 'upload <path>';
 export const description = 'Upload stylesheets to an organization.';
 
-export function builder(yargs) {
+export function builder(yargs: Argv): Argv {
   return yargs
     .positional('path', {
       describe: 'The path to the stylesheet to upload.',
@@ -37,7 +47,12 @@ export function builder(yargs) {
     });
 }
 
-async function handleUpload(file, organization, type, block) {
+async function handleUpload(
+  file: string,
+  organization: string,
+  type: string,
+  block?: string,
+): Promise<void> {
   logger.info(`Upload ${type} stylesheet for organization ${organization}`);
 
   const css = await processCss(file);
@@ -53,7 +68,11 @@ async function handleUpload(file, organization, type, block) {
   logger.info(`Upload of ${type} stylesheet successful! 🎉`);
 }
 
-function determineType(shared, core, block) {
+function determineType(
+  shared: boolean,
+  core: boolean,
+  block: string,
+): 'block' | 'core' | 'shared' | null {
   if (shared) {
     return 'shared';
   }
@@ -77,7 +96,7 @@ export async function handler({
   path,
   remote,
   shared,
-}) {
+}: UploadThemeArguments): Promise<void> {
   const themeDir = await fs.stat(path);
   await authenticate(remote, 'organizations:styles:write', clientCredentials);
 
@@ -139,8 +158,8 @@ export async function handler({
           'block',
           `${subDir}/${styleSubDir}`,
         );
-      }, null);
-  }, null);
+      }, null as Promise<void>);
+  }, null as Promise<void>);
 
   logger.info('All done! 👋');
 }

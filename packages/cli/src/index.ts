@@ -6,7 +6,7 @@ import yargs from 'yargs';
 import { CREDENTIALS_ENV_VAR } from './lib/authentication';
 import initAxios from './lib/initAxios';
 
-export default async (argv) => {
+export default async (argv: string[]): Promise<void> => {
   const explorer = cosmiconfig('appsembleServer');
   const found = await explorer.search(process.cwd());
 

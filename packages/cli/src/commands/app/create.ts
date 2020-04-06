@@ -1,13 +1,22 @@
 import { logger } from '@appsemble/node-utils';
 import fg from 'fast-glob';
+import type { Argv } from 'yargs';
 
 import { authenticate } from '../../lib/authentication';
 import createApp from '../../lib/createApp';
+import type { BaseArguments } from '../../types';
+
+interface CreateAppArguments extends BaseArguments {
+  paths: string[];
+  organization: string;
+  private: boolean;
+  template: boolean;
+}
 
 export const command = 'create <paths...>';
 export const description = 'Create a new App based on a specified YAML file or directory.';
 
-export function builder(yargs) {
+export function builder(yargs: Argv): Argv {
   return yargs
     .positional('paths', {
       describe: 'The paths to the apps to create.',
@@ -35,7 +44,7 @@ export async function handler({
   private: isPrivate,
   remote,
   template,
-}) {
+}: CreateAppArguments): Promise<void> {
   await authenticate(remote, 'apps:write', clientCredentials);
   const organizationId = organization.startsWith('@') ? organization.slice(1) : organization;
 

@@ -1,10 +1,13 @@
+import type { Argv } from 'yargs';
+
 import pkg from '../../package.json';
 import serverImport from '../lib/serverImport';
+import type { BaseArguments } from '../types';
 
 export const command = 'migrate [to]';
 export const description = 'Migrate the Appsemble database';
 
-export function builder(yargs) {
+export function builder(yargs: Argv): Argv {
   return yargs
     .positional('to', {
       desc: 'The database version to migrate to.',
@@ -42,7 +45,7 @@ export function builder(yargs) {
     });
 }
 
-export async function handler(argv) {
+export async function handler(argv: BaseArguments): Promise<void> {
   const migrate = await serverImport('migrate');
   return migrate(argv);
 }

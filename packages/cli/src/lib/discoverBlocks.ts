@@ -1,8 +1,8 @@
-import type { BlockManifest } from '@appsemble/types';
 import fg from 'fast-glob';
 import fs from 'fs-extra';
 import path from 'path';
 
+import type { BlockConfig } from '../types';
 import getBlockConfig from './getBlockConfig';
 
 /**
@@ -10,10 +10,10 @@ import getBlockConfig from './getBlockConfig';
  *
  * Both Lerna and Yarn workspaces are supported.
  *
- * @param {string} root The project root in which to find workspaces.
- * @returns {Object[]} Discovered Appsemble blocks.
+ * @param root The project root in which to find workspaces.
+ * @returns Discovered Appsemble blocks.
  */
-export default async function discoverBlocks(root: string): Promise<Partial<BlockManifest>[]> {
+export default async function discoverBlocks(root: string): Promise<BlockConfig[]> {
   const {
     // Lerna workspaces
     packages = [],
