@@ -11,7 +11,6 @@ export default class Mailer {
    * @param {Object} argv The CLI arguments passed to the Appsemble server.
    */
   constructor({ smtpFrom, smtpHost, smtpPass, smtpPort, smtpSecure, smtpUser }) {
-    this.from = smtpFrom;
     if (smtpHost) {
       const auth = (smtpUser && smtpPass && { user: smtpUser, pass: smtpPass }) || null;
       this.transport = nodemailer.createTransport(
@@ -60,7 +59,7 @@ export default class Mailer {
     const stringTo = to.name ? `${to.name} <${to.email}>` : to.email;
     logger.info(`Sending email:\nTo: ${stringTo}\nSubject: ${subject}\n\n${text}`);
     if (this.transport) {
-      await this.transport.sendMail({ html, subject, text, to: stringTo, from: this.from });
+      await this.transport.sendMail({ html, subject, text, to: stringTo });
     }
     logger.verbose('Email sent succesfully.');
   }
