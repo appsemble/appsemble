@@ -9,8 +9,10 @@ account, we need to verify your email address.
 
 Please click [this link]({{url}}) below to verify your email address
 
-**Didn’t request this email?** No worries! Your address may have been entered by mistake. If you
-ignore or delete this email, nothing will happen to your account.
+**Didn’t request this email?**
+
+No worries! Your address may have been entered by mistake. If you ignore or delete this email,
+nothing will happen to your account.
 
 Kind regards,
 
