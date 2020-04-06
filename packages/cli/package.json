@@ -12,9 +12,15 @@
   },
   "license": "LGPL-3.0-or-later",
   "author": "Appsemble <info@appsemble.com> (https://appsemble.com)",
-  "main": "main.js",
-  "directories": {
-    "bin": "bin"
+  "main": "dist/main",
+  "bin": {
+    "appsemble": "dist/main.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "prepack": "babel --ignore '**/__fixtures__' --ignore '**/*.test.ts' -x .ts -d dist src"
   },
   "dependencies": {
     "@appsemble/node-utils": "0.12.3",

@@ -1,4 +1,6 @@
 import type { BlockManifest } from '@appsemble/types';
+import type { PackageJson } from 'read-pkg-up';
+import type { JsonObject } from 'type-fest';
 import type { URL as URL_, URLSearchParams as URLSearchParams_ } from 'url';
 
 /**
@@ -50,6 +52,10 @@ export interface BlockConfig extends BlockPayload {
   dist: string;
   output: string;
   dir: string;
+}
+
+export interface MonoRepoPackageJson extends PackageJson {
+  appsembleServer?: JsonObject;
 }
 
 declare global {

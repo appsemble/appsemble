@@ -138,6 +138,7 @@ pack:
     - yarn workspace @appsemble/sdk pack
     - yarn workspace @appsemble/preact pack
     - yarn workspace @appsemble/node-utils pack
+    - yarn workspace @appsemble/cli pack
     - mkdir build/
     - find packages -name '*.tgz' -exec mv {} ./build/ \;
   artifacts:

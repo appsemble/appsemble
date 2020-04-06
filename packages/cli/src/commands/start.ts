@@ -1,11 +1,14 @@
+import type { Argv } from 'yargs';
+
 import discoverBlocks from '../lib/discoverBlocks';
 import loadWebpackConfig from '../lib/loadWebpackConfig';
 import serverImport from '../lib/serverImport';
+import type { BaseArguments } from '../types';
 
 export const command = 'start';
 export const description = 'Start the Appsemble development server.';
 
-export function builder(yargs) {
+export function builder(yargs: Argv): Argv {
   return yargs
     .option('port', {
       desc: 'The HTTP server port to use. (Development only)',
@@ -114,7 +117,7 @@ export function builder(yargs) {
     });
 }
 
-export async function handler(argv) {
+export async function handler(argv: BaseArguments): Promise<void> {
   const start = await serverImport('start');
   const blocks = await discoverBlocks(process.cwd());
   const webpackConfigs = await Promise.all(

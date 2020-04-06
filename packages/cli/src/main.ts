@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 import { configureLogger, handleError } from '@appsemble/node-utils';
 import { cosmiconfig } from 'cosmiconfig';
 import path from 'path';
@@ -6,7 +7,7 @@ import yargs from 'yargs';
 import { CREDENTIALS_ENV_VAR } from './lib/authentication';
 import initAxios from './lib/initAxios';
 
-export default async (argv) => {
+export default async function main(argv: string[]): Promise<void> {
   const explorer = cosmiconfig('appsembleServer');
   const found = await explorer.search(process.cwd());
 
@@ -38,4 +39,8 @@ export default async (argv) => {
     parser = parser.config(found.config);
   }
   parser.parse(argv);
-};
+}
+
+if (require.main === module) {
+  main(process.argv.slice(2));
+}
