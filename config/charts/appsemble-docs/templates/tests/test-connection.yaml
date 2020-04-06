@@ -8,7 +8,7 @@ metadata:
     app.kubernetes.io/instance: {{ .Release.Name }}
     app.kubernetes.io/managed-by: {{ .Release.Service }}
   annotations:
-    "helm.sh/hook": test-success
+    "helm.sh/hook": test
 spec:
   containers:
     - name: wget
