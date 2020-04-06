@@ -18,4 +18,11 @@ export default defineMessages({
   saveChanges: 'Save changes',
   updateSuccess: 'Successfully updated settings.',
   updateError: 'Something went wrong when trying to update the settings.',
+  deleteSuccess: 'Succesfully deleted app {name}',
+  delete: 'Delete',
+  deleteWarningTitle: 'Deleting app',
+  deleteWarning: 'Are you sure you want to delete this app? This action cannot be reverted.',
+  errorDelete: 'Something went wrong trying to delete this app',
+  cancel: 'Cancel',
+  dangerZone: 'Danger App',
 });

@@ -1,17 +1,20 @@
 import {
   Button,
+  CardFooterButton,
   Checkbox,
   Form,
   FormComponent,
   Icon,
   Input,
+  Modal,
   useMessages,
   useObjectURL,
 } from '@appsemble/react-components';
-import { normalize } from '@appsemble/utils';
+import { normalize, stripBlockName } from '@appsemble/utils';
 import axios from 'axios';
 import React, { FormEvent, ReactText, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
+import { useHistory } from 'react-router-dom';
 
 import { useApp } from '../AppContext';
 import styles from './index.css';
@@ -22,8 +25,11 @@ export default function AppSettings(): React.ReactElement {
   const intl = useIntl();
   const [icon, setIcon] = useState<File>();
   const [inputs, setInputs] = useState(app);
+  const [deleteDialog, setDeleteDialog] = React.useState(false);
+
   const push = useMessages();
   const iconUrl = useObjectURL(icon || app.iconUrl);
+  const history = useHistory();
 
   const onSubmit = async (event: FormEvent): Promise<void> => {
     event.preventDefault();
@@ -63,6 +69,29 @@ export default function AppSettings(): React.ReactElement {
 
   const onIconChange = React.useCallback((e: React.ChangeEvent<HTMLInputElement>): void => {
     setIcon(e.target.files[0]);
+  }, []);
+
+  const onDelete = React.useCallback(async () => {
+    const { id } = app;
+
+    try {
+      await axios.delete(`/api/apps/${id}`);
+      push({
+        body: intl.formatMessage(messages.deleteSuccess, {
+          name: `@${app.OrganizationId}/${stripBlockName(app.path)}`,
+        }),
+        color: 'info',
+      });
+      history.push('/apps');
+    } catch (e) {
+      push(intl.formatMessage(messages.errorDelete));
+    }
+  }, [app, history, intl, push]);
+
+  const onDeleteClick = React.useCallback(() => setDeleteDialog(true), []);
+
+  const onClose = React.useCallback(() => {
+    setDeleteDialog(false);
   }, []);
 
   return (
@@ -144,6 +173,32 @@ export default function AppSettings(): React.ReactElement {
       <Button type="submit">
         <FormattedMessage {...messages.saveChanges} />
       </Button>
+      <div className={styles.dangerZone}>
+        <label className="label">
+          <FormattedMessage {...messages.dangerZone} />
+        </label>
+      </div>
+      <Button color="danger" icon="trash-alt" onClick={onDeleteClick}>
+        <FormattedMessage {...messages.delete} />
+      </Button>
+      <Modal
+        className="is-paddingless"
+        isActive={deleteDialog}
+        onClose={onClose}
+        title={<FormattedMessage {...messages.deleteWarningTitle} />}
+      >
+        <div className={styles.dialogContent}>
+          <FormattedMessage {...messages.deleteWarning} />
+        </div>
+        <footer className="card-footer">
+          <CardFooterButton onClick={onClose}>
+            <FormattedMessage {...messages.cancel} />
+          </CardFooterButton>
+          <CardFooterButton color="danger" onClick={onDelete}>
+            <FormattedMessage {...messages.delete} />
+          </CardFooterButton>
+        </footer>
+      </Modal>
     </Form>
   );
 }
