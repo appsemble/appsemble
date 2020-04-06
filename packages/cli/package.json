@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/cli",
-  "version": "0.12.3",
+  "version": "0.12.4",
   "homepage": "https://appsemble.dev",
   "bugs": {
     "url": "https://gitlab.com/appsemble/appsemble/issues"
@@ -23,8 +23,8 @@
     "prepack": "babel --ignore '**/__fixtures__' --ignore '**/*.test.ts' -x .ts -d dist src"
   },
   "dependencies": {
-    "@appsemble/node-utils": "0.12.3",
-    "@appsemble/types": "0.12.3",
+    "@appsemble/node-utils": "0.12.4",
+    "@appsemble/types": "0.12.4",
     "@babel/register": "^7.9.0",
     "axios": "^0.19.2",
     "chalk": "^3.0.0",
