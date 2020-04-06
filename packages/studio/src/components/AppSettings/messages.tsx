@@ -24,5 +24,5 @@ export default defineMessages({
   deleteWarning: 'Are you sure you want to delete this app? This action cannot be reverted.',
   errorDelete: 'Something went wrong trying to delete this app',
   cancel: 'Cancel',
-  dangerZone: 'Danger App',
+  dangerZone: 'Delete app',
 });
