@@ -1,0 +1,10 @@
+.help {
+  display: flex;
+  justify-content: space-between;
+  min-height: 1em;
+}
+
+.counter {
+  flex: 0 0 auto;
+  margin-left: 4px;
+}
