@@ -3,7 +3,7 @@ import Mailer from './Mailer';
 let mailer;
 
 beforeEach(() => {
-  mailer = new Mailer({});
+  mailer = new Mailer({ smtpFrom: 'Appsemble <info@appsemble.com>' });
 });
 
 describe('verify', () => {
@@ -39,6 +39,7 @@ describe('sendEmail', () => {
       url: 'https://example.appsemble.app/verify?code=test',
     });
     expect(mailer.transport.sendMail).toHaveBeenCalledWith({
+      from: 'Appsemble <info@appsemble.com>',
       to: 'Me <test@example.com>',
       subject: 'Confirm account registration',
       text: expect.any(String),
@@ -54,6 +55,7 @@ describe('sendEmail', () => {
       url: 'https://example.appsemble.app/verify?code=test',
     });
     expect(mailer.transport.sendMail).toHaveBeenCalledWith({
+      from: 'Appsemble <info@appsemble.com>',
       to: 'test@example.com',
       subject: 'Confirm account registration',
       text: expect.any(String),
