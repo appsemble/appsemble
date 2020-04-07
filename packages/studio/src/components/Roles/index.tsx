@@ -1,4 +1,4 @@
-import { Loader, useMessages } from '@appsemble/react-components';
+import { Loader, Table, Title, useMessages } from '@appsemble/react-components';
 import axios from 'axios';
 import classNames from 'classnames';
 import React from 'react';
@@ -82,12 +82,12 @@ export default function Roles(): React.ReactElement {
   }
 
   return (
-    <div className="content">
+    <>
       <HelmetIntl title={messages.title} />
-      <h3>
+      <Title>
         <FormattedMessage {...messages.members} />
-      </h3>
-      <table className="table is-hoverable is-striped">
+      </Title>
+      <Table>
         <thead>
           <tr>
             <th>
@@ -135,7 +135,7 @@ export default function Roles(): React.ReactElement {
             </tr>
           ))}
         </tbody>
-      </table>
-    </div>
+      </Table>
+    </>
   );
 }

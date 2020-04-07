@@ -1,4 +1,4 @@
-import { Button, Loader, useQuery } from '@appsemble/react-components';
+import { Button, Loader, Title, useQuery } from '@appsemble/react-components';
 import type { UserInfo } from '@appsemble/types';
 import axios from 'axios';
 import classNames from 'classnames';
@@ -97,7 +97,7 @@ export default function OAuth2Connect({ match }: RouteComponentProps<Params>): R
             </figure>
           </a>
           <a href={profile.profile} rel="noopener noreferrer" target="_blank">
-            <h2 className="title">{profile.name}</h2>
+            <Title level={2}>{profile.name}</Title>
           </a>
           {profile.email ? <h5 className="subtitle">{profile.email}</h5> : null}
         </header>

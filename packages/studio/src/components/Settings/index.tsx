@@ -1,4 +1,4 @@
-import { Icon } from '@appsemble/react-components';
+import { Content, Icon } from '@appsemble/react-components';
 import classNames from 'classnames';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
@@ -42,7 +42,7 @@ export default function Settings(): React.ReactElement {
           </span>
         </NavLink>
       </SideMenu>
-      <div className={styles.content}>
+      <Content className={styles.content} fullwidth pad>
         <Switch>
           <Route exact path={`${match.path}/user`}>
             <UserSettings />
@@ -55,7 +55,7 @@ export default function Settings(): React.ReactElement {
           </Route>
           <Redirect to={`${match.path}/user`} />
         </Switch>
-      </div>
+      </Content>
     </div>
   );
 }

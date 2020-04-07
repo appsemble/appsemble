@@ -1,6 +1,7 @@
 import { defineMessages } from 'react-intl';
 
 export default defineMessages({
+  title: 'OAuth2 client credentials',
   explanation: 'OAuth2 client credentials allow applications to perform actions on your behalf.',
   empty:
     'You currently haven’t registered any OAuth2 clients. If you don’t know what this is, you should probably leave this empty.',

@@ -1,4 +1,6 @@
 import {
+  Content,
+  FormButtons,
   Message,
   SimpleForm,
   SimpleFormError,
@@ -6,12 +8,10 @@ import {
   SimpleSubmit,
 } from '@appsemble/react-components';
 import axios from 'axios';
-import classNames from 'classnames';
 import * as React from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import HelmetIntl from '../HelmetIntl';
-import styles from './index.css';
 import messages from './messages';
 
 interface FormValues {
@@ -27,21 +27,14 @@ export default function ResetPassword(): React.ReactElement {
   }, []);
 
   return (
-    <>
+    <Content pad>
       <HelmetIntl title={messages.title} />
       {success ? (
-        <div className={classNames('container', styles.root)}>
-          <Message color="success">
-            <FormattedMessage {...messages.requestSuccess} />
-          </Message>
-        </div>
+        <Message color="success">
+          <FormattedMessage {...messages.requestSuccess} />
+        </Message>
       ) : (
-        <SimpleForm
-          className={`container ${styles.root}`}
-          defaultValues={{ email: '' }}
-          onSubmit={submit}
-          resetOnSuccess
-        >
+        <SimpleForm defaultValues={{ email: '' }} onSubmit={submit} resetOnSuccess>
           <SimpleFormError>
             {() => <FormattedMessage {...messages.requestFailed} />}
           </SimpleFormError>
@@ -57,11 +50,13 @@ export default function ResetPassword(): React.ReactElement {
               typeMismatch: <FormattedMessage {...messages.emailMissing} />,
             }}
           />
-          <SimpleSubmit className="is-pulled-right">
-            <FormattedMessage {...messages.requestButton} />
-          </SimpleSubmit>
+          <FormButtons>
+            <SimpleSubmit className="is-pulled-right">
+              <FormattedMessage {...messages.requestButton} />
+            </SimpleSubmit>
+          </FormButtons>
         </SimpleForm>
       )}
-    </>
+    </Content>
   );
 }

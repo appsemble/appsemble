@@ -7,6 +7,7 @@ import {
   Select,
   SimpleForm,
   SimpleInput,
+  Title,
   useMessages,
 } from '@appsemble/react-components';
 import type { Organization, Rating } from '@appsemble/types';
@@ -126,9 +127,9 @@ export default function AppDetails(): React.ReactElement {
         {app.definition.description && (
           <blockquote className={styles.description}>{app.definition.description}</blockquote>
         )}
-        <h3>
+        <Title>
           <FormattedMessage {...messages.ratings} />
-        </h3>
+        </Title>
       </div>
       {userInfo && <RateApp app={app} className={styles.ratingButton} onRate={onRate} />}
       <div className="content">

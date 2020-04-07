@@ -1,4 +1,6 @@
 import {
+  Content,
+  FormButtons,
   PasswordInput,
   SimpleForm,
   SimpleFormError,
@@ -38,7 +40,7 @@ export default function Login(): React.ReactElement {
   );
 
   return (
-    <div className={styles.root}>
+    <Content pad>
       <HelmetIntl title={messages.title} />
       <SimpleForm defaultValues={{ email: '', password: '' }} onSubmit={onPasswordLogin}>
         <SimpleFormError>{() => <FormattedMessage {...messages.loginFailed} />}</SimpleFormError>
@@ -64,7 +66,7 @@ export default function Login(): React.ReactElement {
             valueMissing: <FormattedMessage {...messages.passwordRequired} />,
           }}
         />
-        <div className={styles.loginBottom}>
+        <FormButtons>
           <div>
             {settings.enableRegistration && (
               <Link
@@ -81,7 +83,7 @@ export default function Login(): React.ReactElement {
           <SimpleSubmit>
             <FormattedMessage {...messages.loginButton} />
           </SimpleSubmit>
-        </div>
+        </FormButtons>
       </SimpleForm>
       <div className={styles.socialLogins}>
         {loginMethods.has('google') && (
@@ -95,6 +97,6 @@ export default function Login(): React.ReactElement {
           </SocialLoginButton>
         )}
       </div>
-    </div>
+    </Content>
   );
 }
