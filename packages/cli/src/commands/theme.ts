@@ -5,5 +5,5 @@ export const command = 'theme';
 export const description = 'Commands related to themes.';
 
 export function builder(yargs: Argv): Argv {
-  return yargs.commandDir(path.join(__dirname, 'theme'));
+  return yargs.commandDir(path.join(__dirname, 'theme'), { extensions: ['js', 'ts'] });
 }
