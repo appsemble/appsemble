@@ -1,13 +1,13 @@
 {
   "name": "@appsemble/feed",
-  "version": "0.12.3",
+  "version": "0.12.4",
   "private": true,
   "description": "A block that displays a feed of cards.",
   "dependencies": {
-    "@appsemble/preact": "0.12.3",
-    "@appsemble/preact-components": "0.12.3",
-    "@appsemble/sdk": "0.12.3",
-    "@appsemble/utils": "0.12.3",
+    "@appsemble/preact": "0.12.4",
+    "@appsemble/preact-components": "0.12.4",
+    "@appsemble/sdk": "0.12.4",
+    "@appsemble/utils": "0.12.4",
     "preact": "^10.3.4"
   }
 }

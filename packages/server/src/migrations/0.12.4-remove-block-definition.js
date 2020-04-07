@@ -2,7 +2,7 @@ import { AppsembleError } from '@appsemble/node-utils';
 import { DataTypes } from 'sequelize';
 
 export default {
-  key: '0.12.0',
+  key: '0.12.4',
 
   /**
    * Summary:

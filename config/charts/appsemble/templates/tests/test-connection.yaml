@@ -9,7 +9,7 @@ metadata:
     app.kubernetes.io/version: {{ .Chart.AppVersion }}
     helm.sh/chart: {{ include "appsemble.chart" . }}
   annotations:
-    helm.sh/hook: test-success
+    helm.sh/hook: test
 spec:
   containers:
     - name: wget

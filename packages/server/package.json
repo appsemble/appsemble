@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/server",
-  "version": "0.12.3",
+  "version": "0.12.4",
   "private": true,
   "homepage": "https://appsemble.dev",
   "bugs": {
@@ -18,8 +18,8 @@
     "prepack": "babel --ignore '**/*.test.js' --ignore '**/*.test.ts' -x .js,.ts --copy-files -d dist src"
   },
   "dependencies": {
-    "@appsemble/node-utils": "^0.12.3",
-    "@appsemble/utils": "^0.12.3",
+    "@appsemble/node-utils": "^0.12.4",
+    "@appsemble/utils": "^0.12.4",
     "@fortawesome/fontawesome-free": "^5.13.0",
     "@hapi/boom": "^9.1.0",
     "@koa/cors": "^3.0.0",
@@ -59,6 +59,7 @@
     "koas-status-code": "^0.2.1",
     "koas-swagger-ui": "^0.2.1",
     "lodash": "^4.17.15",
+    "memfs": "^3.1.2",
     "mustache": "^4.0.1",
     "node-sass": "^4.13.1",
     "nodemailer": "^6.4.6",
