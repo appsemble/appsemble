@@ -30,7 +30,7 @@ export default async function main(argv: string[]): Promise<void> {
       description: `OAuth2 client credentials formatted as "client_id:client_secret". This may also be defined in the ${CREDENTIALS_ENV_VAR} environment variable.`,
     })
     .middleware([configureLogger, initAxios])
-    .commandDir(path.join(__dirname, 'commands'))
+    .commandDir(path.join(__dirname, 'commands'), { extensions: ['js', 'ts'] })
     .demandCommand(1)
     .fail(handleError)
     .help()
