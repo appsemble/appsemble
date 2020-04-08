@@ -53,15 +53,22 @@ export default bootstrap(
       }
     }, [base, blockData]);
 
-    const loadData = useCallback((d: Item[], err: string): void => {
-      if (err) {
-        setError(true);
-      } else {
-        setData(d);
-        setError(false);
-      }
-      setLoading(false);
-    }, []);
+    const loadData = useCallback(
+      (d: any, err: string): void => {
+        if (err) {
+          setError(true);
+        } else {
+          if (base != null) {
+            setData(d[base]);
+          } else {
+            setData(d);
+          }
+          setError(false);
+        }
+        setLoading(false);
+      },
+      [base],
+    );
 
     useEffect(() => {
       events.on.data(loadData);
