@@ -7,6 +7,15 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- Block(`@appsemble/filter`): Added `exact` property for fields. When enabled, the values will be
+  checked using equality instead of partial matches.
+
+### Changed
+
+- Block(`@appsemble/filter`): Make `type` property for fields required.
+
 ## [0.12.4] - 2020-04-06
 
 ### Added

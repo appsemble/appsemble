@@ -5,8 +5,8 @@ import { useCallback, useEffect, useState } from 'preact/hooks';
 
 import Button from './components/Button';
 
-bootstrap(({ actions, events, parameters: { buttons }, ready, utils }) => {
-  const [data, setData] = useState<any>(null);
+bootstrap(({ actions, data: defaultData, events, parameters: { buttons }, ready, utils }) => {
+  const [data, setData] = useState<any>(defaultData);
 
   const loadData = useCallback((d: any): void => {
     setData(d);
