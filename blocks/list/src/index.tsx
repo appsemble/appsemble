@@ -10,7 +10,7 @@ import styles from './index.css';
 
 const messages = {
   error: 'An error occurred when fetching the data.',
-  noData: 'No data.',
+  noData: 'There is no data available.',
 };
 
 export default bootstrap(
