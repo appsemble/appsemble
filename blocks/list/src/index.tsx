@@ -14,10 +14,44 @@ const messages = {
 };
 
 export default bootstrap(
-  ({ actions, parameters: { fields = [], header }, events, ready, utils }) => {
+  ({
+    actions,
+    parameters: { fields = [], header, base },
+    data: blockData,
+    events,
+    ready,
+    utils,
+  }) => {
     const [data, setData] = useState<Item[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
+
+    useEffect(() => {
+      let initialData = null;
+      let shouldNotLoad = null;
+
+      if (blockData != null) {
+        if (base != null) {
+          initialData = blockData[base];
+        } else {
+          initialData = blockData;
+        }
+
+        if (!Array.isArray(initialData)) {
+          initialData = null;
+        } else {
+          shouldNotLoad = true;
+        }
+
+        if (initialData !== null) {
+          setData(initialData);
+        }
+
+        if (shouldNotLoad) {
+          setLoading(false);
+        }
+      }
+    }, [base, blockData]);
 
     const loadData = useCallback((d: Item[], err: string): void => {
       if (err) {
