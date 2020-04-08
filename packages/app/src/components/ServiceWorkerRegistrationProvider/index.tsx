@@ -62,7 +62,8 @@ export default function ServiceWorkerRegistrationProvider({
       };
 
       sub = await registration?.pushManager?.subscribe(options);
-      await axios.post(`${settings.apiUrl}/api/apps/${id}/subscriptions`, sub);
+      const { endpoint, keys } = sub.toJSON();
+      await axios.post(`${settings.apiUrl}/api/apps/${id}/subscriptions`, { endpoint, keys });
     }
 
     setSubscription(sub);
