@@ -13,14 +13,16 @@ export default class Mailer {
   constructor({ smtpFrom, smtpHost, smtpPass, smtpPort, smtpSecure, smtpUser }) {
     if (smtpHost) {
       const auth = (smtpUser && smtpPass && { user: smtpUser, pass: smtpPass }) || null;
-      this.transport = nodemailer.createTransport({
-        port: smtpPort || smtpSecure ? 465 : 587,
-        pool: true,
-        host: smtpHost,
-        secure: smtpSecure,
-        from: smtpFrom,
-        auth,
-      });
+      this.transport = nodemailer.createTransport(
+        {
+          port: smtpPort || smtpSecure ? 465 : 587,
+          pool: true,
+          host: smtpHost,
+          secure: smtpSecure,
+          auth,
+        },
+        { from: smtpFrom },
+      );
     }
   }
 

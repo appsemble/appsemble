@@ -6,6 +6,7 @@ import {
   Input,
   Loader,
   Modal,
+  Select,
   useMessages,
   useToggle,
 } from '@appsemble/react-components';
@@ -92,6 +93,18 @@ export default function ResourceTable(): React.ReactElement {
       });
     },
     [app, editingResource, resourceName],
+  );
+
+  const onSelectChange = React.useCallback(
+    (event: React.ChangeEvent<HTMLSelectElement>) => {
+      const { value } = event.target;
+      const { name } = event.target;
+      setEditingResource({
+        ...editingResource,
+        [name]: value,
+      });
+    },
+    [editingResource],
   );
 
   const submitCreate = React.useCallback(
@@ -228,6 +241,12 @@ export default function ResourceTable(): React.ReactElement {
   const { schema } = app.definition.resources[resourceName];
   const keys = ['id', ...Object.keys(schema?.properties || {})];
 
+  enum InputType {
+    'OBJECT',
+    'ENUM',
+    'INPUT',
+  }
+
   return (
     <>
       <HelmetIntl
@@ -316,6 +335,7 @@ export default function ResourceTable(): React.ReactElement {
           const prop = (schema?.properties[key] || {}) as OpenAPIV3.SchemaObject;
           let value = '';
           let type: React.ComponentPropsWithoutRef<typeof Input>['type'] = 'text';
+          let inputType: InputType = InputType.INPUT;
 
           if (editingResource?.[key]) {
             value = editingResource[key];
@@ -330,30 +350,100 @@ export default function ResourceTable(): React.ReactElement {
             type = 'email';
           } else if (prop.format === 'password') {
             type = 'password';
+          } else if (prop.type === 'object') {
+            inputType = InputType.OBJECT;
+          } else if (prop.enum !== undefined) {
+            inputType = InputType.ENUM;
           }
 
-          return (
-            <Input
-              key={key}
-              disabled={prop.readOnly || key === 'id'}
-              label={
-                prop.title ? (
-                  <>
-                    {`${prop.title} `}
-                    <span className="has-text-weight-normal has-text-grey-light">({key})</span>
-                  </>
-                ) : (
-                  key
-                )
-              }
-              name={key}
-              onChange={onChange}
-              placeholder={prop.example}
-              required={schema?.required?.includes(key)}
-              type={type}
-              value={value}
-            />
-          );
+          switch (inputType) {
+            default:
+            case InputType.INPUT:
+              return (
+                <Input
+                  key={key}
+                  disabled={prop.readOnly || key === 'id'}
+                  label={
+                    prop.title ? (
+                      <>
+                        {`${prop.title} `}
+                        <span className="has-text-weight-normal has-text-grey-light">({key})</span>
+                      </>
+                    ) : (
+                      key
+                    )
+                  }
+                  name={key}
+                  onChange={onChange}
+                  placeholder={prop.example}
+                  required={schema?.required?.includes(key)}
+                  type={type}
+                  value={value}
+                />
+              );
+            case InputType.ENUM:
+              return (
+                <Select
+                  key={key}
+                  label={
+                    prop.title ? (
+                      <>
+                        {`${prop.title} `}
+                        <span className="has-text-weight-normal has-text-grey-light">({key})</span>
+                      </>
+                    ) : (
+                      key
+                    )
+                  }
+                  name={key}
+                  onChange={onSelectChange}
+                  required={schema?.required?.includes(key)}
+                  value={value}
+                >
+                  {prop.enum.map((option) => (
+                    <option key={option} value={option}>
+                      {option}
+                    </option>
+                  ))}
+                </Select>
+              );
+            case InputType.OBJECT:
+              return Object.keys(prop.properties).map((propKey: string) => {
+                const objectProp = (prop.properties[propKey] || {}) as OpenAPIV3.SchemaObject;
+
+                if (objectProp.type === 'integer' || objectProp.type === 'number') {
+                  type = 'number';
+                } else if (objectProp.format === 'email') {
+                  type = 'email';
+                } else if (objectProp.format === 'password') {
+                  type = 'password';
+                }
+
+                return (
+                  <Input
+                    key={propKey}
+                    label={
+                      prop.title ? (
+                        <>
+                          {`${propKey} `}
+                          <span className="has-text-weight-normal has-text-grey-light">
+                            ({prop.title})
+                          </span>
+                        </>
+                      ) : (
+                        key
+                      )
+                    }
+                    name={propKey}
+                    onChange={onChange}
+                    placeholder={prop.example}
+                    required={prop.required?.includes(propKey)}
+                    type={type}
+                    value={value}
+                  />
+                );
+              });
+          }
         })}
       </Modal>
       <Modal

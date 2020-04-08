@@ -5,7 +5,7 @@ import { FormattedMessage } from 'react-intl';
 
 import messages from './messages';
 
-interface FormComponentProps {
+export interface FormComponentProps {
   children: React.ReactNode;
 
   /**

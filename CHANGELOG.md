@@ -7,6 +7,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.12.4] - 2020-04-06
+
 ### Added
 
 - Block(`@appsemble/map`): Add support for custom markers.
