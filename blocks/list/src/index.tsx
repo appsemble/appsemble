@@ -27,8 +27,8 @@ export default bootstrap(
     const [error, setError] = useState(false);
 
     useEffect(() => {
-      let initialData = null;
-      let shouldNotLoad = null;
+      let initialData = [];
+      let shouldLoad = false;
 
       if (blockData != null) {
         if (base != null) {
@@ -38,18 +38,12 @@ export default bootstrap(
         }
 
         if (!Array.isArray(initialData)) {
-          initialData = null;
-        } else {
-          shouldNotLoad = true;
+          initialData = [];
+          shouldLoad = true;
         }
 
-        if (initialData !== null) {
-          setData(initialData);
-        }
-
-        if (shouldNotLoad) {
-          setLoading(false);
-        }
+        setData(initialData);
+        setLoading(shouldLoad);
       }
     }, [base, blockData]);
 
