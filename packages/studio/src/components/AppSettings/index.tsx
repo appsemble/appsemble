@@ -186,7 +186,11 @@ export default function AppSettings(): React.ReactElement {
       </Content>
       <hr />
       <Content>
-        <Message color="danger" header={<FormattedMessage {...messages.dangerZone} />}>
+        <Message
+          className={styles.dangerZone}
+          color="danger"
+          header={<FormattedMessage {...messages.dangerZone} />}
+        >
           <p className="content">
             <FormattedMessage {...messages.deleteHelp} />
           </p>
