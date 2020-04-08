@@ -31,7 +31,7 @@ export default function Register(): React.ReactElement {
   );
 
   return (
-    <Content pad>
+    <Content padding>
       <HelmetIntl title={messages.title} />
       <SimpleForm defaultValues={{ email: '', password: '' }} onSubmit={register}>
         <SimpleFormError>

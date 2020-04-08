@@ -10,6 +10,6 @@ interface FormProps extends Omit<React.ComponentPropsWithoutRef<'form'>, 'noVali
 /**
  * A simple form wrapper that ensures `noValidate` is passed and `onSubmit` is used.
  */
-export default function Form({ ...props }: FormProps): React.ReactElement {
+export default function Form(props: FormProps): React.ReactElement {
   return <form {...props} noValidate />;
 }

@@ -34,7 +34,7 @@ export default function EditPassword(): React.ReactElement {
   }
 
   return (
-    <Content pad>
+    <Content padding>
       <HelmetIntl title={messages.title} />
       {success ? (
         <Message color="success">

@@ -42,7 +42,7 @@ export default function Settings(): React.ReactElement {
           </span>
         </NavLink>
       </SideMenu>
-      <Content className={styles.content} fullwidth pad>
+      <Content className={styles.content} fullwidth padding>
         <Switch>
           <Route exact path={`${match.path}/user`}>
             <UserSettings />

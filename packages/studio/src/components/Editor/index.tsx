@@ -345,7 +345,6 @@ export default function Editor(): React.ReactElement {
             value={value}
           />
           <Modal
-            className="is-paddingless"
             footer={
               <>
                 <CardFooterButton onClick={onClose}>

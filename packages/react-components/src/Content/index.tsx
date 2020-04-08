@@ -22,7 +22,7 @@ interface ContentProps {
   /**
    * If true, add a padding of 10px.
    */
-  pad?: boolean;
+  padding?: boolean;
 }
 
 /**
@@ -32,10 +32,12 @@ export default function Content({
   children,
   className,
   fullwidth,
-  pad,
+  padding,
 }: ContentProps): React.ReactElement {
   return (
-    <div className={classNames(className, { [styles.center]: !fullwidth, [styles.pad]: pad })}>
+    <div
+      className={classNames(className, { [styles.center]: !fullwidth, [styles.padding]: padding })}
+    >
       {children}
     </div>
   );

@@ -27,7 +27,7 @@ export default function ResetPassword(): React.ReactElement {
   }, []);
 
   return (
-    <Content pad>
+    <Content padding>
       <HelmetIntl title={messages.title} />
       {success ? (
         <Message color="success">

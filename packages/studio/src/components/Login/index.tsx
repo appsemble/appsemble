@@ -40,7 +40,7 @@ export default function Login(): React.ReactElement {
   );
 
   return (
-    <Content pad>
+    <Content padding>
       <HelmetIntl title={messages.title} />
       <SimpleForm defaultValues={{ email: '', password: '' }} onSubmit={onPasswordLogin}>
         <SimpleFormError>{() => <FormattedMessage {...messages.loginFailed} />}</SimpleFormError>
