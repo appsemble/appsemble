@@ -1,4 +1,12 @@
-import { SimpleForm, SimpleInput, SimpleSubmit, useMessages } from '@appsemble/react-components';
+import {
+  Content,
+  FormButtons,
+  SimpleForm,
+  SimpleInput,
+  SimpleSubmit,
+  Title,
+  useMessages,
+} from '@appsemble/react-components';
 import axios from 'axios';
 import React from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -29,9 +37,12 @@ export default function Notifications(): React.ReactElement {
   const disabled = notifications === undefined;
 
   return (
-    <>
+    <Content>
       <HelmetIntl title={messages.title} />
 
+      <Title>
+        <FormattedMessage {...messages.title} />
+      </Title>
       <div className="content">
         {disabled && (
           <p>
@@ -61,22 +72,24 @@ export default function Notifications(): React.ReactElement {
           <SimpleInput
             disabled={disabled}
             label={<FormattedMessage {...messages.titleLabel} />}
+            maxLength={30}
             name="title"
             required
-            type="text"
           />
           <SimpleInput
             disabled={disabled}
             label={<FormattedMessage {...messages.bodyLabel} />}
+            maxLength={100}
             name="body"
             required
-            type="text"
           />
-          <SimpleSubmit disabled={disabled}>
-            <FormattedMessage {...messages.requestButton} />
-          </SimpleSubmit>
+          <FormButtons>
+            <SimpleSubmit disabled={disabled}>
+              <FormattedMessage {...messages.requestButton} />
+            </SimpleSubmit>
+          </FormButtons>
         </SimpleForm>
       </div>
-    </>
+    </Content>
   );
 }

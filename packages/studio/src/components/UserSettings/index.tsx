@@ -1,11 +1,15 @@
 import {
   Button,
   CardFooterButton,
+  Content,
+  FormButtons,
   Modal,
   SimpleForm,
   SimpleFormError,
   SimpleInput,
   SimpleSubmit,
+  Table,
+  Title,
   useMessages,
 } from '@appsemble/react-components';
 import axios, { AxiosError } from 'axios';
@@ -105,26 +109,32 @@ export default function UserSettings(): React.ReactElement {
 
   return (
     <>
-      <div className="content">
-        <HelmetIntl title={messages.title} />
+      <HelmetIntl title={messages.title} />
+      <Content>
+        <Title>
+          <FormattedMessage {...messages.profile} />
+        </Title>
         <SimpleForm defaultValues={{ name: userInfo.name || '' }} onSubmit={onSaveProfile}>
           <SimpleFormError>{() => <FormattedMessage {...messages.submitError} />}</SimpleFormError>
           <SimpleInput
+            help={<FormattedMessage {...messages.displayNameHelp} />}
             iconLeft="user"
             label={<FormattedMessage {...messages.displayName} />}
             name="name"
             placeholder={intl.formatMessage(messages.displayName)}
           />
-          <div className="control">
+          <FormButtons>
             <SimpleSubmit>
               <FormattedMessage {...messages.saveProfile} />
             </SimpleSubmit>
-          </div>
+          </FormButtons>
         </SimpleForm>
-        <hr />
-        <h4>
+      </Content>
+      <hr />
+      <Content>
+        <Title>
           <FormattedMessage {...messages.emails} />
-        </h4>
+        </Title>
         <SimpleForm defaultValues={{ email: '' }} onSubmit={onAddNewEmail} resetOnSuccess>
           <SimpleFormError>
             {({ error }) =>
@@ -143,92 +153,88 @@ export default function UserSettings(): React.ReactElement {
             required
             type="email"
           />
-          <div className="control">
+          <FormButtons>
             <SimpleSubmit>
               <FormattedMessage {...messages.addEmail} />
             </SimpleSubmit>
-          </div>
+          </FormButtons>
         </SimpleForm>
-        <hr />
-        <table className="table">
-          <thead>
-            <tr>
-              <th>
-                <FormattedMessage {...messages.email} />
-              </th>
-              <th className="has-text-right">
-                <FormattedMessage {...messages.actions} />
-              </th>
+      </Content>
+      <hr />
+      <Table>
+        <thead>
+          <tr>
+            <th>
+              <FormattedMessage {...messages.email} />
+            </th>
+            <th className="has-text-right">
+              <FormattedMessage {...messages.actions} />
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          {emails.map(({ email, verified }) => (
+            <tr key={email}>
+              <td>
+                <span>{email}</span>
+                <div className={`tags ${styles.tags}`}>
+                  {email === userInfo.email && (
+                    <span className="tag is-primary">
+                      <FormattedMessage {...messages.primary} />
+                    </span>
+                  )}
+                  {verified ? (
+                    <span className="tag is-success">
+                      <FormattedMessage {...messages.verified} />
+                    </span>
+                  ) : (
+                    <span className="tag is-warning">
+                      <FormattedMessage {...messages.unverified} />
+                    </span>
+                  )}
+                </div>
+              </td>
+              <td className={`has-text-right ${styles.buttonGroup}`}>
+                {verified && email !== userInfo.email && (
+                  <Button className="control" color="info" onClick={() => setPrimaryEmail(email)}>
+                    <FormattedMessage {...messages.setPrimaryEmail} />
+                  </Button>
+                )}
+                {!verified && (
+                  <Button className="control is-outlined" onClick={() => resendVerification(email)}>
+                    <FormattedMessage {...messages.resendVerification} />
+                  </Button>
+                )}
+                {email !== userInfo.email && (
+                  <Button
+                    className="control"
+                    color="danger"
+                    icon="trash-alt"
+                    onClick={() => onDeleteEmailClick(email)}
+                  />
+                )}
+              </td>
             </tr>
-          </thead>
-          <tbody>
-            {emails.map(({ email, verified }) => (
-              <tr key={email}>
-                <td>
-                  <span>{email}</span>
-                  <div className={`tags ${styles.tags}`}>
-                    {email === userInfo.email && (
-                      <span className="tag is-primary">
-                        <FormattedMessage {...messages.primary} />
-                      </span>
-                    )}
-                    {verified ? (
-                      <span className="tag is-success">
-                        <FormattedMessage {...messages.verified} />
-                      </span>
-                    ) : (
-                      <span className="tag is-warning">
-                        <FormattedMessage {...messages.unverified} />
-                      </span>
-                    )}
-                  </div>
-                </td>
-                <td className={`has-text-right ${styles.buttonGroup}`}>
-                  {verified && email !== userInfo.email && (
-                    <Button className="control" color="info" onClick={() => setPrimaryEmail(email)}>
-                      <FormattedMessage {...messages.setPrimaryEmail} />
-                    </Button>
-                  )}
-                  {!verified && (
-                    <Button
-                      className="control is-outlined"
-                      onClick={() => resendVerification(email)}
-                    >
-                      <FormattedMessage {...messages.resendVerification} />
-                    </Button>
-                  )}
-                  {email !== userInfo.email && (
-                    <Button
-                      className="control"
-                      color="danger"
-                      icon="trash-alt"
-                      onClick={() => onDeleteEmailClick(email)}
-                    />
-                  )}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+          ))}
+        </tbody>
+      </Table>
 
       <Modal
-        className="is-paddingless"
+        footer={
+          <>
+            <CardFooterButton onClick={onCloseDeleteDialog}>
+              <FormattedMessage {...messages.cancel} />
+            </CardFooterButton>
+            <CardFooterButton color="danger" onClick={deleteEmail}>
+              <FormattedMessage {...messages.deleteEmail} />
+            </CardFooterButton>
+          </>
+        }
         isActive={!!deleting}
         onClose={onCloseDeleteDialog}
         title={<FormattedMessage {...messages.emailWarningTitle} />}
       >
-        <div className={styles.dialogContent}>
-          <FormattedMessage {...messages.emailWarning} />
-        </div>
-        <footer className="card-footer">
-          <CardFooterButton onClick={onCloseDeleteDialog}>
-            <FormattedMessage {...messages.cancel} />
-          </CardFooterButton>
-          <CardFooterButton color="danger" onClick={deleteEmail}>
-            <FormattedMessage {...messages.deleteEmail} />
-          </CardFooterButton>
-        </footer>
+        <FormattedMessage {...messages.emailWarning} />
       </Modal>
     </>
   );

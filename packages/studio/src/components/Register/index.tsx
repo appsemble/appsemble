@@ -1,4 +1,6 @@
 import {
+  Content,
+  FormButtons,
   PasswordInput,
   SimpleForm,
   SimpleFormError,
@@ -11,7 +13,6 @@ import { FormattedMessage } from 'react-intl';
 
 import useUser from '../../hooks/useUser';
 import HelmetIntl from '../HelmetIntl';
-import styles from './index.css';
 import messages from './messages';
 
 interface RegistrationFormValues {
@@ -30,46 +31,46 @@ export default function Register(): React.ReactElement {
   );
 
   return (
-    <SimpleForm
-      className={styles.root}
-      defaultValues={{ email: '', password: '' }}
-      onSubmit={register}
-    >
+    <Content padding>
       <HelmetIntl title={messages.title} />
-      <SimpleFormError>
-        {({ error }: { error: AxiosError }) =>
-          error.response && error.response.status === 409 ? (
-            <FormattedMessage {...messages.emailConflict} />
-          ) : (
-            <FormattedMessage {...messages.registerFailed} />
-          )
-        }
-      </SimpleFormError>
-      <SimpleInput
-        autoComplete="email"
-        iconLeft="envelope"
-        label={<FormattedMessage {...messages.emailLabel} />}
-        name="email"
-        required
-        type="email"
-        validityMessages={{
-          typeMismatch: <FormattedMessage {...messages.emailInvalid} />,
-          valueMissing: <FormattedMessage {...messages.emailRequired} />,
-        }}
-      />
-      <SimpleInput
-        autoComplete="new-password"
-        component={PasswordInput}
-        label={<FormattedMessage {...messages.passwordLabel} />}
-        name="password"
-        required
-        validityMessages={{
-          valueMissing: <FormattedMessage {...messages.passwordRequired} />,
-        }}
-      />
-      <SimpleSubmit className="is-pulled-right">
-        <FormattedMessage {...messages.registerButton} />
-      </SimpleSubmit>
-    </SimpleForm>
+      <SimpleForm defaultValues={{ email: '', password: '' }} onSubmit={register}>
+        <SimpleFormError>
+          {({ error }: { error: AxiosError }) =>
+            error.response && error.response.status === 409 ? (
+              <FormattedMessage {...messages.emailConflict} />
+            ) : (
+              <FormattedMessage {...messages.registerFailed} />
+            )
+          }
+        </SimpleFormError>
+        <SimpleInput
+          autoComplete="email"
+          iconLeft="envelope"
+          label={<FormattedMessage {...messages.emailLabel} />}
+          name="email"
+          required
+          type="email"
+          validityMessages={{
+            typeMismatch: <FormattedMessage {...messages.emailInvalid} />,
+            valueMissing: <FormattedMessage {...messages.emailRequired} />,
+          }}
+        />
+        <SimpleInput
+          autoComplete="new-password"
+          component={PasswordInput}
+          label={<FormattedMessage {...messages.passwordLabel} />}
+          name="password"
+          required
+          validityMessages={{
+            valueMissing: <FormattedMessage {...messages.passwordRequired} />,
+          }}
+        />
+        <FormButtons>
+          <SimpleSubmit className="is-pulled-right">
+            <FormattedMessage {...messages.registerButton} />
+          </SimpleSubmit>
+        </FormButtons>
+      </SimpleForm>
+    </Content>
   );
 }

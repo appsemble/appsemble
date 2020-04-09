@@ -4,9 +4,5 @@
 }
 
 .content {
-  box-sizing: border-box;
   flex: 1;
-  height: 100%;
-  overflow-x: auto;
-  padding: 10px;
 }
