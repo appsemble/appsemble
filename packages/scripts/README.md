@@ -4,4 +4,4 @@
 
 Type `yarn scripts` for a full list of functionalities.
 
-Scrips are meant to run from within the Appsemble repository project root.
+Scripts are meant to run from within the Appsemble repository project root.
