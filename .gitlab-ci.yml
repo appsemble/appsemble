@@ -263,6 +263,7 @@ review:
   script:
     # This is the only way to make sure the review environment can be overwritten
     - helm delete "$CI_ENVIRONMENT_SLUG" || true
+    - helm repo add stable https://kubernetes-charts.storage.googleapis.com
     - helm dependency build config/charts/appsemble
     - helm install "$CI_ENVIRONMENT_SLUG" config/charts/appsemble
       --atomic
@@ -347,6 +348,7 @@ staging:
   script:
     # This is the only way to make sure staging can be overwritten
     - helm delete staging || true
+    - helm repo add stable https://kubernetes-charts.storage.googleapis.com
     - helm dependency build config/charts/appsemble
     # First, install from the last stable tag.
     - helm install staging config/charts/appsemble
