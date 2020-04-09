@@ -11,6 +11,11 @@ the following contents in a file named _.docker-compose.yaml_.
 ```yaml
 version: '3.5'
 
+x-database-name: &database-name ${DATABASE_NAME:-appsemble_database_name}
+x-database-user: &database-user ${DATABASE_USER:-appsemble_database_user}
+x-database-password: &database-password ${DATABASE_PASSWORD:-appsemble_database_password}
+x-secret: &secret ${SECRET:-appsemble_secret_LwP4gsYuuoFb3dRhEW_4iPVPLcfIvsDuBHDJHDbjQ}
+
 networks:
   appsemble:
     name: appsemble
@@ -25,10 +30,11 @@ services:
     restart: always
     environment:
       DATABASE_HOST: postgresql
-      DATABASE_NAME: appsemble_database_name
-      DATABASE_USER: appsemble_database_user
-      DATABASE_PASSWORD: appsemble_database_password
-      HOST: http://localhost:9999
+      DATABASE_NAME: *database-name
+      DATABASE_USER: *database-user
+      DATABASE_PASSWORD: *database-password
+      HOST: http://localhost:8000
+      SECRET: *secret
     ports:
       # Expose Appsemble at port 8000.
       - '8000:9999'
@@ -39,11 +45,11 @@ services:
       - appsemble
     restart: always
     environment:
-      POSTGRES_DB: appsemble_database_name
-      POSTGRES_USER: appsemble_database_user
-      POSTGRES_PASSWORD: appsemble_database_password
+      POSTGRES_DB: *database-name
+      POSTGRES_USER: *database-user
+      POSTGRES_PASSWORD: *database-password
     volumes:
-      - ./postgresql_data:/var/lib/postgresql/data
+      - $HOME/.local/share/appsemble-postgresql:/var/lib/postgresql/data
     ports:
       - '5432:5432'
 ```
@@ -52,7 +58,7 @@ It is highly recommended to specify the version of the `appsemble/appsemble` ima
 `latest` with a specific version. All available versions can be found on [Appsemble tags page][] on
 Docker Hub.
 
-It is also recommended to modify the database name, user, and password.
+It is also recommended to modify the database name, user, and password, and the Appsemble secret.
 
 To start the service, run the following command.
 
@@ -60,7 +66,8 @@ To start the service, run the following command.
 $ docker-compose up -d
 ```
 
-The Appsemble studio should now be available on [localhost:8000](http://localhost:8000).
+The Appsemble studio should now be available on [localhost:8000](http://localhost:8000). The
+database will be stored in `~/.local/share/appsemble-postgresql` in your own home folder.
 
 The database needs to be migrated to the current version first. This can be done by running:
 
@@ -68,8 +75,8 @@ The database needs to be migrated to the current version first. This can be done
 $ docker run --network=appsemble \
   -it appsemble/appsemble:latest migrate \
   --database-host postgresql \
-  --database-name appsemble_database_name
-  --database-user appsemble_database_user
+  --database-name appsemble_database_name \
+  --database-user appsemble_database_user \
   --database-password appsemble_database_password
 ```
 
