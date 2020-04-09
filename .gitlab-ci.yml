@@ -5,6 +5,7 @@ stages:
   - publish
   - deploy
   - provision
+  - e2e
 
 ###################################################################################################
 #  Job Templates                                                                                  #
@@ -499,3 +500,20 @@ provision production:
     - yarn appsemble config set remote https://appsemble.app
     - yarn appsemble config set ignore-conflict true
     - yarn appsemble block publish blocks/*
+
+###################################################################################################
+#  End to End Stage                                                                               #
+###################################################################################################
+
+lighthouse:
+  stage: e2e
+  dependencies: []
+  only:
+    - schedules
+  script:
+    - yarn --frozen-lockfile
+  artifacts:
+    expose_as: Lighthouse reports
+    paths:
+      - reports
+    expire_in: 7 days

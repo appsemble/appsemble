@@ -64,6 +64,7 @@
     "@types/postcss-import": "^12.0.0",
     "@types/postcss-load-config": "^2.0.1",
     "@types/postcss-url": "^8.0.1",
+    "@types/puppeteer": "^1.20.4",
     "@types/react": "^16.9.26",
     "@types/react-dom": "^16.9.5",
     "@types/react-helmet": "^5.0.15",
@@ -169,6 +170,7 @@
     "migrate-to": "next",
     "oauth-gitlab-key": "9739ffe4a5007fb7ac0bac53e2d70f7286add09190b73f40eeac33259cb81f15",
     "oauth-gitlab-secret": "8f83b39e5731f0c771fe39bff54ae326877f9434d431feeea6d79f00f292cdb0",
-    "secret": "Local Appsemble development secret"
+    "secret": "Local Appsemble development secret",
+    "remote": "http://localhost:8000"
   }
 }
