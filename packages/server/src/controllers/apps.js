@@ -124,7 +124,6 @@ export async function createApp(ctx) {
 
     for (let i = 1; i < 11; i += 1) {
       const p = i === 1 ? path : `${path}-${i}`;
-      // eslint-disable-next-line no-await-in-loop
       const count = await App.count({ where: { path: p } });
       if (count === 0) {
         result.path = p;

@@ -12,7 +12,6 @@ export default async function bulkDNSRestore(hostname, db, dnsConfig, chunkSize)
   let apps;
   let appCount = 0;
   for (let i = 0; !apps || apps.length === chunkSize; i += 1) {
-    // eslint-disable-next-line no-await-in-loop
     apps = await db.models.App.findAll({
       attributes: ['domain', 'path', 'OrganizationId'],
       where: { domain: { [Op.not]: null } },
@@ -24,7 +23,6 @@ export default async function bulkDNSRestore(hostname, db, dnsConfig, chunkSize)
       break;
     }
     appCount += apps.length;
-    // eslint-disable-next-line no-await-in-loop
     await dnsConfig.add(
       ...apps
         .flatMap((app) => [app.domain, `${app.path}.${app.OrganizationId}.${hostname}`])
