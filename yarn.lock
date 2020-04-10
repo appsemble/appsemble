@@ -16467,11 +16467,6 @@ react@^16.13.1, react@^16.8.0:
     object-assign "^4.1.1"
     prop-types "^15.6.2"
 
-read-blob@^1.1.0:
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/read-blob/-/read-blob-1.1.0.tgz#66792f7bdd0cca00850faccdf11ec6bf2061a791"
-  integrity sha1-Znkve90MygCFD6zN8R7GvyBhp5E=
-
 read-cache@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/read-cache/-/read-cache-1.0.0.tgz#e664ef31161166c9751cdbe8dbcf86b5fb58f774"

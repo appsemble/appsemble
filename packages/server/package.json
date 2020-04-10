@@ -25,7 +25,6 @@
     "@koa/cors": "^3.0.0",
     "@sentry/node": "^5.15.3",
     "@wesselkuipers/odata-sequelize": "^1.0.14",
-    "ajv": "^6.12.0",
     "autoprefixer": "^9.7.5",
     "axios": "^0.19.2",
     "bcrypt": "4.0.1",
@@ -35,7 +34,6 @@
     "bulma-switch": "^2.0.0",
     "cli-highlight": "^2.1.4",
     "date-fns": "^2.11.1",
-    "dedent": "^0.7.0",
     "fs-extra": "^9.0.0",
     "grant": "^4.7.0",
     "is-ip": "^3.1.0",
@@ -63,7 +61,6 @@
     "mustache": "^4.0.1",
     "node-sass": "^4.13.1",
     "nodemailer": "^6.4.6",
-    "odata-parser": "^1.4.1",
     "pg": "^7.18.2",
     "pg-hstore": "^2.3.3",
     "postcss": "^7.0.27",
@@ -86,6 +83,7 @@
     "yargs": "^15.3.1"
   },
   "devDependencies": {
+    "@appsemble/types": "0.12.4",
     "@sinonjs/fake-timers": "^6.0.1",
     "axios-mock-adapter": "^1.18.1",
     "axios-test-instance": "^1.0.1",
