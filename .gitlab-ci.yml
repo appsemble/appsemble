@@ -2,10 +2,11 @@ image: node:12-slim
 
 stages:
   - test
+  - build
   - publish
   - deploy
   - provision
-  - e2e
+  - end 2 end
 
 ###################################################################################################
 #  Job Templates                                                                                  #
@@ -46,35 +47,6 @@ stages:
 ###################################################################################################
 #  Test Stage                                                                                     #
 ###################################################################################################
-
-# Build the Docker image.
-build docker image:
-  extends: .docker
-  only:
-    - branches
-    - merge_requests
-    - tags
-  except:
-    - schedules
-  script:
-    - docker build -t "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME" .
-    - docker push "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME"
-
-# Build the Docker image.
-build docs image:
-  extends: .docker
-  only:
-    - branches
-    - merge_requests
-    - tags
-  except:
-    - schedules
-  script:
-    - docker build .
-      --build-arg "CI_COMMIT_REF_NAME=$CI_COMMIT_REF_NAME"
-      --file config/docs/Dockerfile
-      --tag "$CI_REGISTRY_IMAGE/docs:$CI_COMMIT_REF_NAME"
-    - docker push "$CI_REGISTRY_IMAGE/docs:$CI_COMMIT_REF_NAME"
 
 # Scan for dependency vulnerabilities.
 dependency scanning:
@@ -118,27 +90,6 @@ helm lint:
       - config/charts/**/*.*
   script:
     - helm lint config/charts/*
-
-# Build the npm packages that should be published.
-pack:
-  extends: .yarn
-  only:
-    refs:
-      - branches
-      - merge_requests
-      - tags
-  script:
-    - yarn workspace @appsemble/sdk pack
-    - yarn workspace @appsemble/preact pack
-    - yarn workspace @appsemble/node-utils pack
-    - yarn workspace @appsemble/cli pack
-    - mkdir build/
-    - find packages -name '*.tgz' -exec mv {} ./build/ \;
-  artifacts:
-    name: '$CI_COMMIT_REF_NAME'
-    expose_as: packages
-    paths:
-      - 'build/'
 
 # Check formatting using prettier.
 prettier:
@@ -212,13 +163,75 @@ tsc:
     - yarn workspaces run tsc
 
 ###################################################################################################
+#  Build Stage                                                                                    #
+###################################################################################################
+
+# Build the Docker image.
+build docker image:
+  extends: .docker
+  stage: build
+  needs: []
+  only:
+    - branches
+    - merge_requests
+    - tags
+  except:
+    - schedules
+  script:
+    - docker build -t "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME" .
+    - docker push "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME"
+
+# Build the Docker image.
+build docs image:
+  extends: .docker
+  stage: build
+  needs: []
+  only:
+    - branches
+    - merge_requests
+    - tags
+  except:
+    - schedules
+  script:
+    - docker build .
+      --build-arg "CI_COMMIT_REF_NAME=$CI_COMMIT_REF_NAME"
+      --file config/docs/Dockerfile
+      --tag "$CI_REGISTRY_IMAGE/docs:$CI_COMMIT_REF_NAME"
+    - docker push "$CI_REGISTRY_IMAGE/docs:$CI_COMMIT_REF_NAME"
+
+# Build the npm packages that should be published.
+pack:
+  extends: .yarn
+  stage: build
+  needs: []
+  only:
+    refs:
+      - branches
+      - merge_requests
+      - tags
+  script:
+    - yarn workspace @appsemble/sdk pack
+    - yarn workspace @appsemble/preact pack
+    - yarn workspace @appsemble/node-utils pack
+    - yarn workspace @appsemble/cli pack
+    - mkdir build/
+    - find packages -name '*.tgz' -exec mv {} ./build/ \;
+  artifacts:
+    name: '$CI_COMMIT_REF_NAME'
+    expose_as: packages
+    paths:
+      - 'build/'
+
+###################################################################################################
 #  Publish Stage                                                                                  #
 ###################################################################################################
 
 # Publish the Docker image that was built to Docker Hub.
-publish:docker:latest:
+publish docker:
   extends: .docker
   stage: publish
+  needs:
+    - build docker image
   variables:
     GIT_STRATEGY: none
   only:
@@ -237,6 +250,8 @@ publish npm:
   stage: publish
   dependencies:
     - pack
+  needs:
+    - pack
   variables:
     GIT_STRATEGY: none
   only:
@@ -254,6 +269,8 @@ review:
   extends: .helm
   stage: deploy
   when: manual
+  needs:
+    - build docker image
   only:
     - merge_requests
   allow_failure: false
@@ -279,7 +296,7 @@ review:
       --set "ingress.enabled=true"
       --set "ingress.host=${CI_ENVIRONMENT_URL/https:\/\//}"
       --set "ingress.tls.secretName=$CI_ENVIRONMENT_SLUG-tls"
-      --set "migrateTo=999.999.999"
+      --set "migrateTo=next"
       --set "global.postgresql.existingSecret=postgresql-secret"
       --set "provision.account.name=$BOT_ACCOUNT_NAME"
       --set "provision.account.clientCredentials=$APPSEMBLE_CLIENT_CREDENTIALS"
@@ -309,6 +326,8 @@ review docs:
   extends: .helm
   stage: deploy
   when: manual
+  needs:
+    - build docs image
   only:
     - merge_requests
   allow_failure: false
@@ -341,6 +360,8 @@ stop review docs:
 staging:
   extends: .helm
   stage: deploy
+  needs:
+    - build docker image
   only:
     - schedules
   environment:
@@ -389,6 +410,8 @@ staging:
 staging docs:
   extends: .helm
   stage: deploy
+  needs:
+    - build docs image
   only:
     - master@appsemble/appsemble
   except:
@@ -410,6 +433,8 @@ staging docs:
 production:
   extends: .helm
   stage: deploy
+  needs:
+    - publish docker
   only:
     - tags
   dependencies: []
@@ -438,6 +463,8 @@ production:
 production docs:
   extends: .helm
   stage: deploy
+  needs:
+    - build docs image
   only:
     - tags
   allow_failure: false
@@ -466,6 +493,8 @@ provision review:
     - merge_requests
   dependencies:
     - review
+  needs:
+    - review
   environment:
     name: review/provision/$CI_COMMIT_REF_SLUG
   script:
@@ -481,6 +510,8 @@ provision staging:
   stage: provision
   only:
     - schedules
+  needs:
+    - staging
   environment:
     name: staging/provision
   script:
@@ -494,6 +525,8 @@ provision production:
   stage: provision
   only:
     - tags
+  needs:
+    - production
   environment:
     name: production provision
   script:
@@ -506,8 +539,10 @@ provision production:
 ###################################################################################################
 
 lighthouse:
-  stage: e2e
+  stage: end 2 end
   dependencies: []
+  needs:
+    - provision staging
   only:
     - schedules
   script:
