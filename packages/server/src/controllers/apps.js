@@ -480,10 +480,12 @@ export async function setAppBlockStyle(ctx) {
       await AppBlockStyle.upsert({
         style: css.toString(),
         AppId: app.id,
-        block: block.name,
+        block: `@${block.OrganizationId}/${block.name}`,
       });
     } else {
-      await AppBlockStyle.destroy({ where: { AppId: app.id, block: block.name } });
+      await AppBlockStyle.destroy({
+        where: { AppId: app.id, block: `@${block.OrganizationId}/${block.name}` },
+      });
     }
 
     ctx.status = 204;
