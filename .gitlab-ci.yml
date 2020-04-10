@@ -279,7 +279,7 @@ review:
       --set "ingress.enabled=true"
       --set "ingress.host=${CI_ENVIRONMENT_URL/https:\/\//}"
       --set "ingress.tls.secretName=$CI_ENVIRONMENT_SLUG-tls"
-      --set "migrateTo=999.999.999"
+      --set "migrateTo=next"
       --set "global.postgresql.existingSecret=postgresql-secret"
       --set "provision.account.name=$BOT_ACCOUNT_NAME"
       --set "provision.account.clientCredentials=$APPSEMBLE_CLIENT_CREDENTIALS"
