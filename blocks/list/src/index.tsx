@@ -27,23 +27,13 @@ export default bootstrap(
     const [error, setError] = useState(false);
 
     useEffect(() => {
-      let initialData = [];
-      let shouldLoad = false;
-
       if (blockData != null) {
-        if (base != null) {
-          initialData = blockData[base];
-        } else {
-          initialData = blockData;
-        }
+        const newData = base != null ? blockData[base] : blockData;
 
-        if (!Array.isArray(initialData)) {
-          initialData = [];
-          shouldLoad = true;
+        if (Array.isArray(newData)) {
+          setData(newData);
+          setLoading(false);
         }
-
-        setData(initialData);
-        setLoading(shouldLoad);
       }
     }, [base, blockData]);
 
