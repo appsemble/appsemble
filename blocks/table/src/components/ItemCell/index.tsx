@@ -1,7 +1,8 @@
 /** @jsx h */
-import type { Field } from 'blocks/table/block';
 import { h, VNode } from 'preact';
 import { useCallback } from 'preact/hooks';
+
+import type { Field } from '../../../block';
 
 type ItemCellProps = {
   item: any;
