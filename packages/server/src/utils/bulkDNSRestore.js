@@ -1,6 +1,8 @@
 import { logger } from '@appsemble/node-utils';
 import { Op } from 'sequelize';
 
+import { App } from '../models';
+
 /**
  * Add DNS entries for all apps in the database in chunks
  *
@@ -12,7 +14,7 @@ export default async function bulkDNSRestore(hostname, db, dnsConfig, chunkSize)
   let apps;
   let appCount = 0;
   for (let i = 0; !apps || apps.length === chunkSize; i += 1) {
-    apps = await db.models.App.findAll({
+    apps = await App.findAll({
       attributes: ['domain', 'path', 'OrganizationId'],
       where: { domain: { [Op.not]: null } },
       order: ['OrganizationId', 'path'],

@@ -1,16 +1,19 @@
-import Sequelize from 'sequelize';
+import { Sequelize } from 'sequelize';
 
-import { initDB } from '../../models';
+import { initDB, InitDBParams } from '../../models';
 
 /**
  * Create a temporary test database.
  *
  * The database will be deleted when it is closed.
  *
- * @param {string} spec The name of the test case.
- * @param {Object} options Additional sequelize options.
+ * @param spec The name of the test case.
+ * @param options Additional sequelize options.
  */
-export default async function testSchema(spec, options = {}) {
+export default async function testSchema(
+  spec: string,
+  options: InitDBParams = {},
+): Promise<Sequelize> {
   const database = process.env.DATABASE_URL || 'postgres://admin:password@localhost:5432/appsemble';
   const root = new Sequelize(database, {
     logging: false,
@@ -34,6 +37,7 @@ export default async function testSchema(spec, options = {}) {
   // Stub db.close(), so also the test database is dropped and the root database connection is
   // closed.
   const { close } = db;
+  // @ts-ignore
   db.close = async (...args) => {
     await close.apply(db, args);
     await root.query(`DROP DATABASE ${dbName}`);

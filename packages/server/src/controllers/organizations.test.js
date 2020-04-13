@@ -1,17 +1,19 @@
 import { createInstance } from 'axios-test-instance';
 import FormData from 'form-data';
 
+import {
+  BlockVersion,
+  EmailAuthorization,
+  Organization,
+  OrganizationBlockStyle,
+  OrganizationInvite,
+  User,
+} from '../models';
 import createServer from '../utils/createServer';
 import testSchema from '../utils/test/testSchema';
 import testToken from '../utils/test/testToken';
 import truncate from '../utils/test/truncate';
 
-let BlockVersion;
-let Organization;
-let OrganizationBlockStyle;
-let OrganizationInvite;
-let User;
-let EmailAuthorization;
 let db;
 let request;
 let server;
@@ -24,20 +26,12 @@ beforeAll(async () => {
   db = await testSchema('organizations');
 
   server = await createServer({ db, argv: { host: 'http://localhost', secret: 'test' } });
-  ({
-    BlockVersion,
-    EmailAuthorization,
-    Organization,
-    OrganizationBlockStyle,
-    OrganizationInvite,
-    User,
-  } = db.models);
   request = await createInstance(server);
 }, 10e3);
 
 beforeEach(async () => {
-  await truncate(db);
-  ({ authorization, clientToken, user } = await testToken(db, 'organizations:styles:write'));
+  await truncate();
+  ({ authorization, clientToken, user } = await testToken('organizations:styles:write'));
   organization = await user.createOrganization(
     {
       id: 'testorganization',

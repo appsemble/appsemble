@@ -1,6 +1,7 @@
 import FakeTimers from '@sinonjs/fake-timers';
 import { createInstance } from 'axios-test-instance';
 
+import { OAuth2ClientCredentials } from '../models';
 import createServer from '../utils/createServer';
 import testSchema from '../utils/test/testSchema';
 import testToken from '../utils/test/testToken';
@@ -23,8 +24,8 @@ beforeAll(async () => {
 beforeEach(async () => {
   clock = FakeTimers.install();
   clock.setSystemTime(new Date('2000-01-01T00:00:00Z'));
-  await truncate(db);
-  ({ authorization, user } = await testToken(db));
+  await truncate();
+  ({ authorization, user } = await testToken());
   request.defaults.headers.authorization = authorization;
 });
 
@@ -76,8 +77,7 @@ describe('registerOAuth2ClientCredentials', () => {
 
 describe('listOAuth2ClientCredentials', () => {
   it('should list register OAuth2 client credentials for the authenticated user', async () => {
-    const { OAuth2ClientCredentials } = db.models;
-    const { user: otherUser } = await testToken(db, undefined, 'someone.else@example.com');
+    const { user: otherUser } = await testToken(undefined, 'someone.else@example.com');
     await OAuth2ClientCredentials.create({
       description: 'Test client',
       expires: new Date('2000-02-02T00:00:00Z'),
@@ -111,7 +111,6 @@ describe('listOAuth2ClientCredentials', () => {
   });
 
   it('should omit expired credentials', async () => {
-    const { OAuth2ClientCredentials } = db.models;
     await OAuth2ClientCredentials.create({
       description: 'Test client',
       expires: new Date('2000-02-02T00:00:00Z'),

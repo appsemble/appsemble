@@ -1,3 +1,4 @@
+import { App, Organization } from '../models';
 import bulkDNSRestore from './bulkDNSRestore';
 import testSchema from './test/testSchema';
 import truncate from './test/truncate';
@@ -10,8 +11,8 @@ beforeAll(async () => {
 });
 
 beforeEach(async () => {
-  await truncate(db);
-  await db.models.Organization.create({ id: 'test' });
+  await truncate();
+  await Organization.create({ id: 'test' });
   dnsConfig = {
     add: jest.fn(),
   };
@@ -24,7 +25,7 @@ afterAll(async () => {
 it('should add DNS settings for all apps', async () => {
   await Promise.all(
     Array.from(Array(7), async (_, index) => {
-      await db.models.App.create({
+      await App.create({
         domain: `app${index}.example.com`,
         path: `path${index}`,
         definition: {},
@@ -63,7 +64,7 @@ it('should add DNS settings for all apps', async () => {
 it('should skip the last bulk of apps if it is empty', async () => {
   await Promise.all(
     Array.from(Array(4), async (_, index) => {
-      await db.models.App.create({
+      await App.create({
         domain: `app${index}.example.com`,
         path: `path${index}`,
         definition: {},

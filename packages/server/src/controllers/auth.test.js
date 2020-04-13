@@ -1,13 +1,11 @@
 import { createInstance } from 'axios-test-instance';
 import bcrypt from 'bcrypt';
 
+import { EmailAuthorization, ResetPasswordToken, User } from '../models';
 import createServer from '../utils/createServer';
 import testSchema from '../utils/test/testSchema';
 import truncate from '../utils/test/truncate';
 
-let User;
-let EmailAuthorization;
-let ResetPasswordToken;
 let db;
 let request;
 let server;
@@ -17,11 +15,10 @@ beforeAll(async () => {
 
   server = await createServer({ db, argv: { host: 'http://localhost', secret: 'test' } });
   request = await createInstance(server);
-  ({ EmailAuthorization, ResetPasswordToken, User } = db.models);
 }, 10e3);
 
 beforeEach(async () => {
-  await truncate(db);
+  await truncate();
 });
 
 afterAll(async () => {
