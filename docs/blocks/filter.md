@@ -24,7 +24,7 @@ A block that can filter data and pass it to other blocks using the event API.
 | fields                |                                              | A list of objects describing each field that can be filtered                                                                      |
 | fields[].name         |                                              | The name used when storing this field                                                                                             |
 | fields[].label        | field[].name                                 | User-facing label describing the field                                                                                            |
-| fields[].type         | string                                       | The type of the data                                                                                                              |
+| fields[].type         |                                              | The type of the data                                                                                                              |
 | fields[].range        | false                                        | Whether a range picker should be used                                                                                             |
 | fields[].defaultValue |                                              | The default value used for the field. If not set, an empty filter option is added to allow for not filtering on this field at all |
 | fields[].icon         |                                              | Name of the [Font Awesome icon](https://fontawesome.com/icons?d=gallery&m=free) to be displayed next to the label.                |

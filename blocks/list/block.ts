@@ -41,6 +41,13 @@ declare module '@appsemble/sdk' {
      * Will not render if undefined.
      */
     header?: string;
+
+    /**
+     * An optional name of the field that contains the data.
+     *
+     * If not defined, received data will be treated as an array.
+     */
+    base?: string;
     fields?: Field[];
   }
 

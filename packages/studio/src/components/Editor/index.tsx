@@ -345,22 +345,21 @@ export default function Editor(): React.ReactElement {
             value={value}
           />
           <Modal
-            className="is-paddingless"
+            footer={
+              <>
+                <CardFooterButton onClick={onClose}>
+                  <FormattedMessage {...messages.cancel} />
+                </CardFooterButton>
+                <CardFooterButton color="warning" onClick={uploadApp}>
+                  <FormattedMessage {...messages.publish} />
+                </CardFooterButton>
+              </>
+            }
             isActive={warningDialog}
             onClose={onClose}
             title={<FormattedMessage {...messages.resourceWarningTitle} />}
           >
-            <div className={styles.dialogContent}>
-              <FormattedMessage {...messages.resourceWarning} />
-            </div>
-            <footer className="card-footer">
-              <CardFooterButton onClick={onClose}>
-                <FormattedMessage {...messages.cancel} />
-              </CardFooterButton>
-              <CardFooterButton color="warning" onClick={uploadApp}>
-                <FormattedMessage {...messages.publish} />
-              </CardFooterButton>
-            </footer>
+            <FormattedMessage {...messages.resourceWarning} />
           </Modal>
         </Form>
       </div>

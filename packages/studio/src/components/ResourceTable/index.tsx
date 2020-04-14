@@ -5,6 +5,8 @@ import {
   Icon,
   Loader,
   Modal,
+  Table,
+  Title,
   useMessages,
   useToggle,
 } from '@appsemble/react-components';
@@ -238,7 +240,7 @@ export default function ResourceTable(): React.ReactElement {
         title={messages.title}
         titleValues={{ name: app.definition.name, resourceName }}
       />
-      <h1 className="title">Resource {resourceName}</h1>
+      <Title>Resource {resourceName}</Title>
       <div className="buttons">
         <Link className="button is-primary" to={`${match.url}/new`}>
           <Icon icon="plus-square" />
@@ -250,42 +252,40 @@ export default function ResourceTable(): React.ReactElement {
           <FormattedMessage {...messages.export} />
         </Button>
       </div>
-      <div className="table-container">
-        <table className="table is-striped is-hoverable is-fullwidth">
-          <thead>
-            <tr>
-              <th>Actions</th>
-              {keys.map((property) => (
-                <th key={property}>{property}</th>
+      <Table>
+        <thead>
+          <tr>
+            <th>Actions</th>
+            {keys.map((property) => (
+              <th key={property}>{property}</th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {resources.map((resource) => (
+            <tr key={resource.id}>
+              <td className={styles.actionsCell}>
+                <Link className="button" to={`${match.url}/edit/${resource.id}`}>
+                  <Icon className="has-text-info" icon="pen" size="small" />
+                </Link>
+                <Button
+                  color="danger"
+                  icon="trash"
+                  inverted
+                  onClick={() => promptDeleteResource(resource)}
+                />
+              </td>
+              {keys.map((key) => (
+                <td key={key} className={styles.contentCell}>
+                  {typeof resource[key] === 'string'
+                    ? resource[key]
+                    : JSON.stringify(resource[key])}
+                </td>
               ))}
             </tr>
-          </thead>
-          <tbody>
-            {resources.map((resource) => (
-              <tr key={resource.id}>
-                <td className={styles.actionsCell}>
-                  <Link className="button" to={`${match.url}/edit/${resource.id}`}>
-                    <Icon className="has-text-info" icon="pen" size="small" />
-                  </Link>
-                  <Button
-                    color="danger"
-                    icon="trash"
-                    inverted
-                    onClick={() => promptDeleteResource(resource)}
-                  />
-                </td>
-                {keys.map((key) => (
-                  <td key={key} className={styles.contentCell}>
-                    {typeof resource[key] === 'string'
-                      ? resource[key]
-                      : JSON.stringify(resource[key])}
-                  </td>
-                ))}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+          ))}
+        </tbody>
+      </Table>
       <Modal
         component={Form}
         footer={

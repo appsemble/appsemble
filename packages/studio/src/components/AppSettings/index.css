@@ -17,5 +17,6 @@
 }
 
 .dangerZone {
-  margin-top: 0.75rem;
+  border: 1px solid var(--danger-color);
+  box-sizing: border-box;
 }

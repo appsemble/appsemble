@@ -10,24 +10,49 @@ import styles from './index.css';
 
 const messages = {
   error: 'An error occurred when fetching the data.',
-  noData: 'No data.',
+  noData: 'There is no data available.',
 };
 
 export default bootstrap(
-  ({ actions, parameters: { fields = [], header }, events, ready, utils }) => {
+  ({
+    actions,
+    parameters: { fields = [], header, base },
+    data: blockData,
+    events,
+    ready,
+    utils,
+  }) => {
     const [data, setData] = useState<Item[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
 
-    const loadData = useCallback((d: Item[], err: string): void => {
-      if (err) {
-        setError(true);
-      } else {
-        setData(d);
-        setError(false);
+    useEffect(() => {
+      if (blockData != null) {
+        const newData = base != null ? blockData[base] : blockData;
+
+        if (Array.isArray(newData)) {
+          setData(newData);
+          setLoading(false);
+        }
       }
-      setLoading(false);
-    }, []);
+    }, [base, blockData]);
+
+    const loadData = useCallback(
+      (d: any, err: string): void => {
+        if (err) {
+          setError(true);
+        } else {
+          if (base != null) {
+            setData(d[base]);
+          } else {
+            setData(d);
+          }
+          setError(false);
+        }
+        setLoading(false);
+      },
+      [base],
+    );
 
     useEffect(() => {
       events.on.data(loadData);
