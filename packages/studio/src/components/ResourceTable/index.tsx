@@ -3,10 +3,8 @@ import {
   CardFooterButton,
   Form,
   Icon,
-  Input,
   Loader,
   Modal,
-  Select,
   useMessages,
   useToggle,
 } from '@appsemble/react-components';
@@ -19,6 +17,7 @@ import { Link, useHistory, useRouteMatch } from 'react-router-dom';
 import download from '../../utils/download';
 import { useApp } from '../AppContext';
 import HelmetIntl from '../HelmetIntl';
+import JSONSchemaEditor from '../JSONSchemaEditor';
 import styles from './index.css';
 import messages from './messages';
 
@@ -79,30 +78,22 @@ export default function ResourceTable(): React.ReactElement {
   }, [appId, deletingResource, intl, push, resourceName, resources, warningDialog]);
 
   const onChange = React.useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>, value: string) => {
+    (event: React.ChangeEvent<HTMLInputElement>, value: any, type: string, objectName: string) => {
       const { name } = event.target;
       if (name === 'id') {
         return;
       }
-      const { type } = app.definition.resources[resourceName].schema.properties[
-        name
-      ] as OpenAPIV3.SchemaObject;
-      setEditingResource({
-        ...editingResource,
-        [name]: type === 'object' || type === 'array' ? JSON.parse(value) : value,
-      });
-    },
-    [app, editingResource, resourceName],
-  );
-
-  const onSelectChange = React.useCallback(
-    (event: React.ChangeEvent<HTMLSelectElement>) => {
-      const { value } = event.target;
-      const { name } = event.target;
-      setEditingResource({
-        ...editingResource,
-        [name]: value,
-      });
+      if (type === 'object' || type === 'array') {
+        setEditingResource({
+          ...editingResource,
+          [objectName]: { ...editingResource[objectName], [name]: value },
+        });
+      } else {
+        setEditingResource({
+          ...editingResource,
+          [name]: value,
+        });
+      }
     },
     [editingResource],
   );
@@ -241,12 +232,6 @@ export default function ResourceTable(): React.ReactElement {
   const { schema } = app.definition.resources[resourceName];
   const keys = ['id', ...Object.keys(schema?.properties || {})];
 
-  enum InputType {
-    'OBJECT',
-    'ENUM',
-    'INPUT',
-  }
-
   return (
     <>
       <HelmetIntl
@@ -333,117 +318,28 @@ export default function ResourceTable(): React.ReactElement {
       >
         {keys.map((key) => {
           const prop = (schema?.properties[key] || {}) as OpenAPIV3.SchemaObject;
-          let value = '';
-          let type: React.ComponentPropsWithoutRef<typeof Input>['type'] = 'text';
-          let inputType: InputType = InputType.INPUT;
 
-          if (editingResource?.[key]) {
-            value = editingResource[key];
-            if (typeof value === 'object') {
-              value = JSON.stringify(value);
-            }
-          }
-
-          if (prop.type === 'integer' || prop.type === 'number') {
-            type = 'number';
-          } else if (prop.format === 'email') {
-            type = 'email';
-          } else if (prop.format === 'password') {
-            type = 'password';
-          } else if (prop.type === 'object') {
-            inputType = InputType.OBJECT;
-          } else if (prop.enum !== undefined) {
-            inputType = InputType.ENUM;
-          }
-
-          switch (inputType) {
-            default:
-            case InputType.INPUT:
-              return (
-                <Input
-                  key={key}
-                  disabled={prop.readOnly || key === 'id'}
-                  label={
-                    prop.title ? (
-                      <>
-                        {`${prop.title} `}
-                        <span className="has-text-weight-normal has-text-grey-light">({key})</span>
-                      </>
-                    ) : (
-                      key
-                    )
-                  }
-                  name={key}
-                  onChange={onChange}
-                  placeholder={prop.example}
-                  required={schema?.required?.includes(key)}
-                  type={type}
-                  value={value}
-                />
-              );
-            case InputType.ENUM:
-              return (
-                <Select
-                  key={key}
-                  label={
-                    prop.title ? (
-                      <>
-                        {`${prop.title} `}
-                        <span className="has-text-weight-normal has-text-grey-light">({key})</span>
-                      </>
-                    ) : (
-                      key
-                    )
-                  }
-                  name={key}
-                  onChange={onSelectChange}
-                  required={schema?.required?.includes(key)}
-                  value={value}
-                >
-                  {prop.enum.map((option) => (
-                    <option key={option} value={option}>
-                      {option}
-                    </option>
-                  ))}
-                </Select>
-              );
-            case InputType.OBJECT:
-              return Object.keys(prop.properties).map((propKey: string) => {
-                const objectProp = (prop.properties[propKey] || {}) as OpenAPIV3.SchemaObject;
-
-                if (objectProp.type === 'integer' || objectProp.type === 'number') {
-                  type = 'number';
-                } else if (objectProp.format === 'email') {
-                  type = 'email';
-                } else if (objectProp.format === 'password') {
-                  type = 'password';
-                }
-
-                return (
-                  <Input
-                    key={propKey}
-                    label={
-                      prop.title ? (
-                        <>
-                          {`${propKey} `}
-                          <span className="has-text-weight-normal has-text-grey-light">
-                            ({prop.title})
-                          </span>
-                        </>
-                      ) : (
-                        key
-                      )
-                    }
-                    name={propKey}
-                    onChange={onChange}
-                    placeholder={prop.example}
-                    required={prop.required?.includes(propKey)}
-                    type={type}
-                    value={value}
-                  />
-                );
-              });
-          }
+          return (
+            <JSONSchemaEditor
+              key={key}
+              disabled={prop.readOnly || key === 'id'}
+              label={
+                prop.title ? (
+                  <>
+                    {`${prop.title} `}
+                    <span className="has-text-weight-normal has-text-grey-light">({key})</span>
+                  </>
+                ) : (
+                  key
+                )
+              }
+              onChange={onChange}
+              prop={prop}
+              propName={key}
+              required={schema?.required?.includes(key) || prop.readOnly || key === 'id'}
+              schema={schema}
+            />
+          );
         })}
       </Modal>
       <Modal
