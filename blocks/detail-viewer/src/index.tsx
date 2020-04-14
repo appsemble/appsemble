@@ -16,15 +16,17 @@ const renderers = {
   string: StringRenderer,
 };
 
-bootstrap(({ events, parameters, ready, theme }) => {
-  const [data, setData] = useState(undefined);
+bootstrap(({ data: blockData, events, parameters, ready, theme }) => {
+  const [data, setData] = useState(blockData);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    events.on.data(setData);
+    const hasListener = events.on.data(setData);
+    setLoading(hasListener);
     ready();
   }, [events, ready]);
 
-  if (data === undefined) {
+  if (loading) {
     return <Loader />;
   }
 
