@@ -29,7 +29,7 @@ export default async function buildBlock({ config, path }: BuildBlockParams): Pr
     compiler.run((err, stats) => {
       if (err) {
         reject(err);
-      } else if (stats.hasErrors) {
+      } else if (stats.hasErrors()) {
         reject(new AppsembleError(stats.toString({ colors: true })));
       } else {
         logger.verbose(stats.toString({ colors: true }));
