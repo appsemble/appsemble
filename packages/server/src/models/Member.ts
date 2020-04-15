@@ -6,7 +6,7 @@ export default class Member extends Model {
     Member.init(
       {
         role: {
-          type: DataTypes.ENUM(Object.keys(roles) as any),
+          type: DataTypes.ENUM(...Object.keys(roles)),
           defaultValue: 'Member',
         },
       },
