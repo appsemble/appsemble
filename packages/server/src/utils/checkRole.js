@@ -1,6 +1,8 @@
 import { roles } from '@appsemble/utils';
 import Boom from '@hapi/boom';
 
+import { Member } from '../models';
+
 /**
  * Check if the authenticated user has permission to perform an action within an organization.
  *
@@ -11,7 +13,6 @@ import Boom from '@hapi/boom';
 
 export default async function checkRole(ctx, organizationId, permissions) {
   const { user } = ctx.state;
-  const { Member } = ctx.db.models;
   if (!user) {
     throw Boom.unauthorized();
   }

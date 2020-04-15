@@ -1,15 +1,12 @@
 import FakeTimers from '@sinonjs/fake-timers';
 import { createInstance } from 'axios-test-instance';
 
+import { App, BlockVersion, Organization, User } from '../models';
 import createServer from '../utils/createServer';
 import testSchema from '../utils/test/testSchema';
 import testToken from '../utils/test/testToken';
 import truncate from '../utils/test/truncate';
 
-let App;
-let BlockVersion;
-let Organization;
-let User;
 let db;
 let request;
 let server;
@@ -21,15 +18,14 @@ let user;
 beforeAll(async () => {
   db = await testSchema('apps');
   server = await createServer({ db, argv: { host: 'http://localhost', secret: 'test' } });
-  ({ App, BlockVersion, Organization, User } = db.models);
   request = await createInstance(server);
 }, 10e3);
 
 beforeEach(async () => {
   clock = FakeTimers.install();
 
-  await truncate(db);
-  ({ authorization, user } = await testToken(db));
+  await truncate();
+  ({ authorization, user } = await testToken());
   ({ id: organizationId } = await user.createOrganization(
     {
       id: 'testorganization',

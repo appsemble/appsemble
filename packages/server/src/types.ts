@@ -7,3 +7,11 @@ declare global {
   // eslint-disable-next-line no-redeclare
   const URLSearchParams: typeof URLSearchParams_;
 }
+
+declare module 'sequelize' {
+  // eslint-disable-next-line @typescript-eslint/no-namespace
+  namespace Model {
+    // eslint-disable-next-line import/prefer-default-export
+    export function associate(): void;
+  }
+}

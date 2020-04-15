@@ -1,8 +1,9 @@
 import Boom from '@hapi/boom';
 
+import { App, Asset } from '../models';
+
 export async function getAssetById(ctx) {
   const { appId, assetId } = ctx.params;
-  const { App, Asset } = ctx.db.models;
 
   const app = await App.findByPk(appId, {
     include: [{ model: Asset, where: { id: assetId }, required: false }],
@@ -23,9 +24,8 @@ export async function getAssetById(ctx) {
 }
 
 export async function createAsset(ctx) {
-  const { db, request } = ctx;
+  const { request } = ctx;
   const { appId } = ctx.params;
-  const { App } = db.models;
   const { body, type } = request;
   const { user } = ctx.state;
 

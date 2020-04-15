@@ -4,11 +4,11 @@ import Boom from '@hapi/boom';
 import semver from 'semver';
 import { DatabaseError, UniqueConstraintError } from 'sequelize';
 
+import { BlockAsset, BlockVersion } from '../models';
 import checkRole from '../utils/checkRole';
 
 export async function getBlock(ctx) {
   const { blockId, organizationId } = ctx.params;
-  const { BlockVersion } = ctx.db.models;
 
   const blockVersion = await BlockVersion.findOne({
     attributes: [
@@ -79,7 +79,6 @@ export async function queryBlocks(ctx) {
 
 export async function publishBlock(ctx) {
   const { db } = ctx;
-  const { BlockAsset, BlockVersion } = db.models;
   const { files, ...data } = ctx.request.body;
   const { name, version } = data;
   const actionKeyRegex = /^[a-z]\w*$/;
@@ -161,7 +160,6 @@ export async function publishBlock(ctx) {
 export async function getBlockVersion(ctx) {
   const { blockId, blockVersion, organizationId } = ctx.params;
   const name = `@${organizationId}/${blockId}`;
-  const { BlockAsset, BlockVersion } = ctx.db.models;
 
   const version = await BlockVersion.findOne({
     attributes: ['actions', 'events', 'layout', 'resources', 'parameters', 'description'],
@@ -190,7 +188,6 @@ export async function getBlockVersion(ctx) {
 export async function getBlockVersions(ctx) {
   const { blockId, organizationId } = ctx.params;
   const name = `@${organizationId}/${blockId}`;
-  const { BlockVersion } = ctx.db.models;
 
   const blockVersions = await BlockVersion.findAll({
     attributes: [

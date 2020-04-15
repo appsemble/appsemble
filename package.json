@@ -121,7 +121,6 @@
     "monaco-editor": "^0.20.0",
     "monaco-editor-webpack-plugin": "1.9.0",
     "optimize-css-assets-webpack-plugin": "^5.0.3",
-    "postcss-discard-font-face": "^3.0.0",
     "postcss-loader": "^3.0.0",
     "postcss-preset-env": "^6.7.0",
     "prettier": "^2.0.2",

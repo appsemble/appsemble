@@ -4,6 +4,14 @@ import parseOData from '@wesselkuipers/odata-sequelize';
 import crypto from 'crypto';
 import { Op } from 'sequelize';
 
+import {
+  App,
+  AppSubscription,
+  Organization,
+  Resource,
+  ResourceSubscription,
+  User,
+} from '../models';
 import checkRole from '../utils/checkRole';
 import sendNotification from '../utils/sendNotification';
 
@@ -199,7 +207,6 @@ async function sendSubscriptionNotifications(
   resourceId,
   options,
 ) {
-  const { App, AppSubscription, ResourceSubscription, User } = ctx.db.models;
   const { appId } = ctx.params;
   const roles = notification.to.filter((n) => n !== '$author');
   const author = resourceUserId && notification.to.includes('$author');
@@ -276,7 +283,6 @@ export async function queryResources(ctx) {
 
   const query = generateQuery(ctx, { updatedHash, createdHash });
   const { appId, resourceType } = ctx.params;
-  const { App, Organization, User } = ctx.db.models;
   const { user } = ctx.state;
 
   const app = await App.findByPk(appId, {
@@ -325,7 +331,6 @@ export async function queryResources(ctx) {
 
 export async function getResourceById(ctx) {
   const { appId, resourceId, resourceType } = ctx.params;
-  const { App, Organization, User } = ctx.db.models;
   const { user } = ctx.state;
 
   const app = await App.findByPk(appId, {
@@ -369,7 +374,6 @@ export async function getResourceById(ctx) {
 
 export async function getResourceTypeSubscription(ctx) {
   const { appId, resourceType } = ctx.params;
-  const { App, AppSubscription, Resource, ResourceSubscription } = ctx.db.models;
   const { endpoint } = ctx.query;
 
   const app = await App.findByPk(appId, {
@@ -440,7 +444,6 @@ export async function getResourceTypeSubscription(ctx) {
 
 export async function getResourceSubscription(ctx) {
   const { appId, resourceId, resourceType } = ctx.params;
-  const { App, AppSubscription, Resource, ResourceSubscription } = ctx.db.models;
   const { endpoint } = ctx.query;
 
   const app = await App.findByPk(appId, {
@@ -489,7 +492,6 @@ export async function getResourceSubscription(ctx) {
 
 export async function createResource(ctx) {
   const { appId, resourceType } = ctx.params;
-  const { App, Organization, User } = ctx.db.models;
   const { user } = ctx.state;
 
   const app = await App.findByPk(appId, {
@@ -551,7 +553,6 @@ export async function createResource(ctx) {
 
 export async function updateResource(ctx) {
   const { appId, resourceId, resourceType } = ctx.params;
-  const { App, Organization, Resource, User } = ctx.db.models;
   const { user } = ctx.state;
 
   const app = await App.findByPk(appId, {
@@ -636,7 +637,6 @@ export async function updateResource(ctx) {
 
 export async function deleteResource(ctx) {
   const { appId, resourceId, resourceType } = ctx.params;
-  const { App, Organization, Resource, User } = ctx.db.models;
   const { user } = ctx.state;
 
   const app = await App.findByPk(appId, {

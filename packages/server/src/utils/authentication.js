@@ -2,10 +2,9 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { Op } from 'sequelize';
 
-export default function authentication(
-  { host, secret },
-  { App, EmailAuthorization, OAuth2ClientCredentials, User },
-) {
+import { App, EmailAuthorization, OAuth2ClientCredentials, User } from '../models';
+
+export default function authentication({ host, secret }) {
   return {
     async basic(email, password) {
       const { User: user } = await EmailAuthorization.findOne({
