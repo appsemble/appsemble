@@ -21,9 +21,8 @@ import {
   sys,
 } from 'typescript';
 import { buildGenerator, Definition } from 'typescript-json-schema';
-import { inspect } from 'util';
 
-import type { BlockConfig, BlockPayload } from '../types';
+import type { BlockConfig } from '../types';
 
 // XXX specify any
 function processActions(iface: InterfaceDeclaration): BlockManifest['actions'] {
@@ -143,7 +142,15 @@ function getProgram(blockPath: string): Program {
   return program;
 }
 
-function getFromContext(
+/**
+ * Generate a block manifest from the block metadata and TypeScript project.
+ *
+ * Uses the .appsemblerc file and the type definitions of the block.
+ *
+ * @param config The content of the .appsemblerc file
+ * @param fullPath The path to the .appsemblerc file
+ */
+export default function getBlockConfigFromTypeScript(
   blockConfig: BlockConfig,
   fullPath: string,
 ): Pick<BlockManifest, 'actions' | 'events' | 'parameters'> {
@@ -230,37 +237,5 @@ function getFromContext(
       'parameters' in blockConfig
         ? blockConfig.parameters
         : processParameters(program, parametersSourceFile),
-  };
-}
-
-/**
- * Generate a full block manifest from the block metadata.
- *
- * Uses the .appsemblerc file and the type definitions of the block.
- *
- * @param config The content of the .appsemblerc file
- * @param fullPath The path to the .appsemblerc file
- */
-export default function generateBlockData(config: BlockConfig, fullPath: string): BlockPayload {
-  const { description, layout, name, resources, version } = config;
-  const { actions, events, parameters } = getFromContext(config, fullPath);
-
-  logger.verbose(`Using name: ${inspect(name, { colors: true, depth: 20 })}`);
-  logger.verbose(`Using description: ${inspect(description, { colors: true, depth: 20 })}`);
-  logger.verbose(`Using version: ${inspect(version, { colors: true, depth: 20 })}`);
-  logger.verbose(`Using layout: ${inspect(layout, { colors: true, depth: 20 })}`);
-  logger.verbose(`Using actions: ${inspect(actions, { colors: true, depth: 20 })}`);
-  logger.verbose(`Using events: ${inspect(events, { colors: true, depth: 20 })}`);
-  logger.verbose(`Using parameters: ${inspect(parameters, { colors: true, depth: 20 })}`);
-
-  return {
-    name,
-    description,
-    actions,
-    events,
-    layout,
-    parameters,
-    resources,
-    version,
   };
 }
