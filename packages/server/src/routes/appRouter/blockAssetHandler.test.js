@@ -4,6 +4,7 @@ import Koa from 'koa';
 import * as path from 'path';
 
 import boomMiddleware from '../../middleware/boom';
+import { BlockAsset, Organization } from '../../models';
 import testSchema from '../../utils/test/testSchema';
 import truncate from '../../utils/test/truncate';
 import appRouter from '.';
@@ -13,19 +14,11 @@ let db;
 
 beforeAll(async () => {
   db = await testSchema('blockAssetHandler');
-  request = await createInstance(
-    new Koa()
-      .use((ctx, next) => {
-        ctx.db = db;
-        return next();
-      })
-      .use(boomMiddleware())
-      .use(appRouter),
-  );
+  request = await createInstance(new Koa().use(boomMiddleware()).use(appRouter));
 });
 
 afterEach(async () => {
-  await truncate(db);
+  await truncate();
 });
 
 afterAll(async () => {
@@ -34,8 +27,8 @@ afterAll(async () => {
 });
 
 it('should download a block asset', async () => {
-  await db.models.Organization.create({ id: 'linux', name: 'Linux' });
-  await db.models.BlockAsset.create({
+  await Organization.create({ id: 'linux', name: 'Linux' });
+  await BlockAsset.create({
     filename: 'tux.png',
     content: await fs.promises.readFile(path.join(__dirname, '__fixtures__', 'tux.png')),
     mime: 'image/png',

@@ -1,8 +1,9 @@
 import Boom from '@hapi/boom';
 
+import { App, AppRating, User } from '../models';
+
 export async function getAppRatings(ctx) {
   const { appId } = ctx.params;
-  const { AppRating, User } = ctx.db.models;
 
   const ratings = await AppRating.findAll({ where: { AppId: appId }, include: [User], raw: true });
   ctx.body = ratings.map(({ UserId, created, description, rating, updated, ...r }) => ({
@@ -17,7 +18,6 @@ export async function getAppRatings(ctx) {
 
 export async function submitAppRating(ctx) {
   const { appId: AppId } = ctx.params;
-  const { App, AppRating, User } = ctx.db.models;
   const {
     user: { id: userId },
   } = ctx.state;

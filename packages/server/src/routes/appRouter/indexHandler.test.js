@@ -1,6 +1,7 @@
 import { createInstance } from 'axios-test-instance';
 import Koa from 'koa';
 
+import { BlockAsset, BlockVersion, Organization } from '../../models';
 import createServer from '../../utils/createServer';
 import testSchema from '../../utils/test/testSchema';
 
@@ -11,7 +12,6 @@ let templateParams;
 
 beforeAll(async () => {
   db = await testSchema('apps');
-  const { BlockAsset, BlockVersion, Organization } = db.models;
   const organization = await Organization.create({ id: 'test' });
   await Organization.create({ id: 'appsemble' });
 

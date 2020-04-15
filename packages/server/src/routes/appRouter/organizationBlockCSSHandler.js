@@ -1,10 +1,10 @@
 import * as Boom from '@hapi/boom';
 
+import { Organization, OrganizationBlockStyle } from '../../models';
 import getApp from '../../utils/getApp';
 
 export default async function organizationBlockCSSHandler(ctx) {
   const { name } = ctx.params;
-  const { Organization, OrganizationBlockStyle } = ctx.db.models;
 
   const app = await getApp(ctx, {
     attributes: [],

@@ -3,6 +3,7 @@ import { createInstance } from 'axios-test-instance';
 import { verify } from 'jsonwebtoken';
 import { SequelizeInstanceError } from 'sequelize';
 
+import { OAuth2ClientCredentials } from '../../models';
 import createServer from '../../utils/createServer';
 import testSchema from '../../utils/test/testSchema';
 import testToken from '../../utils/test/testToken';
@@ -25,8 +26,8 @@ beforeAll(async () => {
 beforeEach(async () => {
   clock = FakeTimers.install();
   clock.setSystemTime(new Date('2000-01-01T00:00:00Z'));
-  await truncate(db);
-  ({ refreshToken, user } = await testToken(db, 'resources:manage'));
+  await truncate();
+  ({ refreshToken, user } = await testToken('resources:manage'));
 });
 
 afterEach(async () => {
@@ -228,7 +229,7 @@ describe('authorization_code', () => {
 
 describe('client_credentials', () => {
   beforeEach(async () => {
-    await db.models.OAuth2ClientCredentials.create({
+    await OAuth2ClientCredentials.create({
       description: 'Test credentials',
       id: 'testClientId',
       expires: new Date('2000-01-02T00:00:00Z'),

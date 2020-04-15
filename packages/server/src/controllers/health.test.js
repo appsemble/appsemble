@@ -16,7 +16,7 @@ describe('checkHealth', () => {
   }, 10e3);
 
   beforeEach(async () => {
-    await truncate(db);
+    await truncate();
   });
 
   afterAll(async () => {

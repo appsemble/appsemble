@@ -4,11 +4,11 @@ import { randomBytes } from 'crypto';
 import { isPast, parseISO } from 'date-fns';
 import { Op, UniqueConstraintError } from 'sequelize';
 
+import { OAuth2ClientCredentials, OAuthAuthorization } from '../models';
 import createJWTResponse from '../utils/createJWTResponse';
 import getUserInfo from '../utils/getUserInfo';
 
 export async function registerOAuth2ClientCredentials(ctx) {
-  const { OAuth2ClientCredentials } = ctx.db.models;
   const { body } = ctx.request;
   const { user } = ctx.state;
 
@@ -43,7 +43,6 @@ export async function registerOAuth2ClientCredentials(ctx) {
 }
 
 export async function listOAuth2ClientCredentials(ctx) {
-  const { OAuth2ClientCredentials } = ctx.db.models;
   const { user } = ctx.state;
 
   const credentials = await OAuth2ClientCredentials.findAll({
@@ -62,7 +61,6 @@ export async function listOAuth2ClientCredentials(ctx) {
 }
 
 export async function deleteOAuth2ClientCredentials(ctx) {
-  const { OAuth2ClientCredentials } = ctx.db.models;
   const { clientId } = ctx.params;
   const { user } = ctx.state;
 
@@ -79,7 +77,6 @@ export async function deleteOAuth2ClientCredentials(ctx) {
 }
 
 export async function getPendingOAuth2Profile(ctx) {
-  const { OAuthAuthorization } = ctx.db.models;
   const { code, provider } = ctx.query;
 
   const authorization = await OAuthAuthorization.findOne({
@@ -107,7 +104,6 @@ export async function getPendingOAuth2Profile(ctx) {
 
 export async function connectPendingOAuth2Profile(ctx) {
   const { argv } = ctx;
-  const { OAuthAuthorization } = ctx.db.models;
   const { code, provider } = ctx.request.body;
   let { user } = ctx.state;
 

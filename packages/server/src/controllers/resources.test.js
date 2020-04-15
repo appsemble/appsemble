@@ -1,13 +1,12 @@
 import FakeTimers from '@sinonjs/fake-timers';
 import { createInstance } from 'axios-test-instance';
 
+import { App, Resource } from '../models';
 import createServer from '../utils/createServer';
 import testSchema from '../utils/test/testSchema';
 import testToken from '../utils/test/testToken';
 import truncate from '../utils/test/truncate';
 
-let App;
-let Resource;
 let db;
 let request;
 let server;
@@ -59,12 +58,11 @@ beforeAll(async () => {
   db = await testSchema('resources');
   server = await createServer({ db, argv: { host: 'http://localhost', secret: 'test' } });
   request = await createInstance(server);
-  ({ App, Resource } = db.models);
 }, 10e3);
 
 beforeEach(async () => {
-  await truncate(db);
-  ({ authorization: token, user } = await testToken(db));
+  await truncate();
+  ({ authorization: token, user } = await testToken());
   ({ id: organizationId } = await user.createOrganization(
     {
       id: 'testorganization',

@@ -1,12 +1,11 @@
 import { createInstance } from 'axios-test-instance';
 
+import { App, Asset } from '../models';
 import createServer from '../utils/createServer';
 import testSchema from '../utils/test/testSchema';
 import testToken from '../utils/test/testToken';
 import truncate from '../utils/test/truncate';
 
-let App;
-let Asset;
 let db;
 let request;
 let server;
@@ -20,12 +19,11 @@ beforeAll(async () => {
 
   server = await createServer({ db, argv: { host: 'http://localhost', secret: 'test' } });
   request = await createInstance(server);
-  ({ App, Asset } = db.models);
 }, 10e3);
 
 beforeEach(async () => {
-  await truncate(db);
-  ({ authorization, user } = await testToken(db));
+  await truncate();
+  ({ authorization, user } = await testToken());
   ({ id: organizationId } = await user.createOrganization(
     {
       id: 'testorganization',

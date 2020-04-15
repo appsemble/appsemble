@@ -2,6 +2,7 @@ import { createInstance } from 'axios-test-instance';
 import Koa from 'koa';
 
 import boomMiddleware from '../../middleware/boom';
+import { Organization } from '../../models';
 import testSchema from '../../utils/test/testSchema';
 import truncate from '../../utils/test/truncate';
 import appRouter from '.';
@@ -16,7 +17,6 @@ beforeAll(async () => {
     request = await createInstance(
       new Koa()
         .use((ctx, next) => {
-          ctx.db = db;
           ctx.argv = { host: 'http://localhost' };
           Object.defineProperty(ctx, 'origin', { value: 'http://app.org.localhost' });
           return next();
@@ -28,7 +28,7 @@ beforeAll(async () => {
 });
 
 afterEach(async () => {
-  await truncate(db);
+  await truncate();
   await request.close();
 });
 
@@ -38,7 +38,7 @@ afterAll(async () => {
 });
 
 it('should serve organization core CSS', async () => {
-  const org = await db.models.Organization.create({
+  const org = await Organization.create({
     id: 'org',
     coreStyle: 'body { color: green; }',
     sharedStyle: 'body { color: purple; }',
@@ -60,7 +60,7 @@ it('should serve organization core CSS', async () => {
 });
 
 it('should serve organization shared CSS', async () => {
-  const org = await db.models.Organization.create({
+  const org = await Organization.create({
     id: 'org',
     coreStyle: 'body { color: green; }',
     sharedStyle: 'body { color: purple; }',

@@ -3,11 +3,18 @@ import Boom from '@hapi/boom';
 import crypto from 'crypto';
 import { Op, UniqueConstraintError } from 'sequelize';
 
+import {
+  BlockVersion,
+  EmailAuthorization,
+  Organization,
+  OrganizationBlockStyle,
+  OrganizationInvite,
+  User,
+} from '../models';
 import checkRole from '../utils/checkRole';
 
 export async function getOrganization(ctx) {
   const { organizationId } = ctx.params;
-  const { Organization } = ctx.db.models;
 
   const organization = await Organization.findByPk(organizationId);
   if (!organization) {
@@ -22,7 +29,6 @@ export async function getOrganization(ctx) {
 
 export async function createOrganization(ctx) {
   const { id, name } = ctx.request.body;
-  const { EmailAuthorization, Organization, User } = ctx.db.models;
   const {
     user: { id: userId },
   } = ctx.state;
@@ -74,7 +80,6 @@ export async function createOrganization(ctx) {
 
 export async function getMembers(ctx) {
   const { organizationId } = ctx.params;
-  const { Organization, User } = ctx.db.models;
 
   const organization = await Organization.findByPk(organizationId, {
     include: [User],
@@ -93,7 +98,6 @@ export async function getMembers(ctx) {
 
 export async function getInvites(ctx) {
   const { organizationId } = ctx.params;
-  const { Organization, OrganizationInvite } = ctx.db.models;
 
   const organization = await Organization.findByPk(organizationId, {
     include: [OrganizationInvite],
@@ -109,7 +113,6 @@ export async function getInvites(ctx) {
 
 export async function getInvitation(ctx) {
   const { token } = ctx.params;
-  const { Organization, OrganizationInvite } = ctx.db.models;
 
   const invite = await OrganizationInvite.findOne(
     {
@@ -130,7 +133,6 @@ export async function getInvitation(ctx) {
 export async function respondInvitation(ctx) {
   const { organizationId } = ctx.params;
   const { response, token } = ctx.request.body;
-  const { Organization, OrganizationInvite } = ctx.db.models;
   const {
     user: { id: userId },
   } = ctx.state;
@@ -158,7 +160,6 @@ export async function inviteMember(ctx) {
   const { mailer } = ctx;
   const { organizationId } = ctx.params;
   const { email } = ctx.request.body;
-  const { EmailAuthorization, Organization, OrganizationInvite, User } = ctx.db.models;
   const { user } = ctx.state;
 
   const organization = await Organization.findByPk(organizationId, { include: [User] });
@@ -207,7 +208,6 @@ export async function resendInvitation(ctx) {
   const { mailer } = ctx;
   const { organizationId } = ctx.params;
   const { email } = ctx.request.body;
-  const { Organization, OrganizationInvite } = ctx.db.models;
 
   const organization = await Organization.findByPk(organizationId, {
     include: [OrganizationInvite],
@@ -235,7 +235,6 @@ export async function resendInvitation(ctx) {
 
 export async function removeInvite(ctx) {
   const { email } = ctx.request.body;
-  const { OrganizationInvite } = ctx.db.models;
 
   const invite = await OrganizationInvite.findOne({ where: { email } });
   if (!invite) {
@@ -249,7 +248,6 @@ export async function removeInvite(ctx) {
 
 export async function removeMember(ctx) {
   const { memberId, organizationId } = ctx.params;
-  const { Organization, User } = ctx.db.models;
   const { user } = ctx.state;
 
   const organization = await Organization.findByPk(organizationId, { include: [User] });
@@ -274,7 +272,6 @@ export async function removeMember(ctx) {
 
 export async function setRole(ctx) {
   const { memberId, organizationId } = ctx.params;
-  const { Organization, User } = ctx.db.models;
   const { role } = ctx.request.body;
   const { user } = ctx.state;
 
@@ -305,7 +302,6 @@ export async function setRole(ctx) {
 
 export async function getOrganizationCoreStyle(ctx) {
   const { organizationId } = ctx.params;
-  const { Organization } = ctx.db.models;
   const organization = await Organization.findByPk(organizationId, { raw: true });
 
   if (!organization) {
@@ -319,8 +315,6 @@ export async function getOrganizationCoreStyle(ctx) {
 
 export async function setOrganizationCoreStyle(ctx) {
   const { organizationId } = ctx.params;
-  const { db } = ctx;
-  const { Organization } = db.models;
   const { style } = ctx.request.body;
   const css = style.toString().trim();
 
@@ -347,7 +341,6 @@ export async function setOrganizationCoreStyle(ctx) {
 
 export async function getOrganizationSharedStyle(ctx) {
   const { organizationId } = ctx.params;
-  const { Organization } = ctx.db.models;
   const organization = await Organization.findByPk(organizationId, { raw: true });
 
   if (!organization) {
@@ -361,8 +354,6 @@ export async function getOrganizationSharedStyle(ctx) {
 
 export async function setOrganizationSharedStyle(ctx) {
   const { organizationId } = ctx.params;
-  const { db } = ctx;
-  const { Organization } = db.models;
   const { style } = ctx.request.body;
   const css = style.toString().trim();
 
@@ -389,7 +380,6 @@ export async function setOrganizationSharedStyle(ctx) {
 
 export async function getOrganizationBlockStyle(ctx) {
   const { blockId, blockOrganizationId, organizationId } = ctx.params;
-  const { OrganizationBlockStyle } = ctx.db.models;
 
   const blockStyle = await OrganizationBlockStyle.findOne({
     where: {
@@ -405,8 +395,6 @@ export async function getOrganizationBlockStyle(ctx) {
 
 export async function setOrganizationBlockStyle(ctx) {
   const { blockId, blockOrganizationId, organizationId } = ctx.params;
-  const { db } = ctx;
-  const { BlockVersion, Organization, OrganizationBlockStyle } = db.models;
   const { style } = ctx.request.body;
   const css = style.toString().trim();
 
