@@ -9,6 +9,7 @@ import useOrganizations from '../../hooks/useOrganizations';
 import AppDetails from '../AppDetails';
 import AppSettings from '../AppSettings';
 import AppSideMenu from '../AppSideMenu';
+import Assets from '../Assets';
 import CMS from '../CMS';
 import Editor from '../Editor';
 import Notifications from '../Notifications';
@@ -70,6 +71,13 @@ export default function AppContext(): React.ReactElement {
               permission={permissions.EditApps}
             >
               <Editor />
+            </ProtectedRoute>
+            <ProtectedRoute
+              organization={organization}
+              path={`${match.path}/assets`}
+              permission={permissions.EditApps}
+            >
+              <Assets />
             </ProtectedRoute>
             <ProtectedRoute
               organization={organization}
