@@ -1,5 +1,6 @@
 import FakeTimers from '@sinonjs/fake-timers';
 import { createInstance } from 'axios-test-instance';
+import webpush from 'web-push';
 
 import createServer from '../utils/createServer';
 import testSchema from '../utils/test/testSchema';
@@ -7,6 +8,7 @@ import testToken from '../utils/test/testToken';
 import truncate from '../utils/test/truncate';
 
 let App;
+let AppSubscription;
 let Resource;
 let db;
 let request;
@@ -27,12 +29,27 @@ const exampleApp = (orgId) => ({
           required: ['foo'],
           properties: { foo: { type: 'string' } },
         },
+        update: {
+          hooks: {
+            notification: {
+              subscribe: 'both',
+            },
+          },
+        },
       },
       testResourceB: {
         schema: {
           type: 'object',
-          required: ['foo'],
-          properties: { bar: { type: 'string' } },
+          required: ['bar'],
+          properties: { bar: { type: 'string' }, testResourceId: { type: 'number' } },
+        },
+        references: {
+          testResourceId: {
+            resource: 'testResource',
+            create: {
+              trigger: ['update'],
+            },
+          },
         },
       },
     },
@@ -59,7 +76,7 @@ beforeAll(async () => {
   db = await testSchema('resources');
   server = await createServer({ db, argv: { host: 'http://localhost', secret: 'test' } });
   request = await createInstance(server);
-  ({ App, Resource } = db.models);
+  ({ App, AppSubscription, Resource } = db.models);
 }, 10e3);
 
 beforeEach(async () => {
@@ -912,5 +929,159 @@ describe('getResourceSubscription', () => {
       status: 404,
       data: { message: 'User is not subscribed to this app.' },
     });
+  });
+});
+
+describe('Resource Notifications', () => {
+  it('should not call sendNotification if resource has no subscribers', async () => {
+    const app = await App.create(exampleApp(organizationId), { raw: true });
+    const resource = await Resource.create({
+      type: 'testResource',
+      AppId: app.id,
+      data: { foo: 'I am Foo.' },
+    });
+
+    const endpoint = 'https://example.com';
+    const p256dh = 'abc';
+    const auth = 'def';
+
+    await AppSubscription.create({
+      endpoint,
+      p256dh,
+      auth,
+      AppId: app.id,
+    });
+
+    const spy = jest.spyOn(webpush, 'sendNotification').mockImplementation(() => {});
+    await request.put(
+      `/api/apps/${app.id}/resources/testResource/${resource.id}`,
+      { foo: 'I am not Foo.' },
+      { headers: { authorization: token } },
+    );
+
+    expect(spy).toHaveBeenCalledTimes(0);
+    spy.mockRestore();
+  });
+
+  it('should process subscription hooks', async () => {
+    const app = await App.create(exampleApp(organizationId), { raw: true });
+    const resource = await Resource.create({
+      type: 'testResource',
+      AppId: app.id,
+      data: { foo: 'I am Foo.' },
+    });
+
+    const endpoint = 'https://example.com';
+    const p256dh = 'abc';
+    const auth = 'def';
+
+    await AppSubscription.create({
+      endpoint,
+      p256dh,
+      auth,
+      AppId: app.id,
+    });
+
+    await request.patch(
+      `/api/apps/${app.id}/subscriptions`,
+      {
+        endpoint: 'https://example.com',
+        resource: 'testResource',
+        resourceId: resource.id,
+        action: 'update',
+        value: true,
+      },
+      { headers: { authorization: token } },
+    );
+
+    const spy = jest.spyOn(webpush, 'sendNotification').mockImplementation(() => {});
+    await request.put(
+      `/api/apps/${app.id}/resources/testResource/${resource.id}`,
+      { foo: 'I am not Foo.' },
+      { headers: { authorization: token } },
+    );
+
+    expect(spy).toHaveBeenCalledWith(
+      {
+        endpoint,
+        keys: { auth, p256dh },
+      },
+      JSON.stringify({
+        icon: 'http://test-app.testorganization.localhost/icon-96.png',
+        badge: 'http://test-app.testorganization.localhost/icon-96.png',
+        timestamp: 0,
+        title: 'testResource',
+        body: `Updated ${resource.id}`,
+      }),
+      {
+        vapidDetails: {
+          privateKey: app.vapidPrivateKey,
+          publicKey: app.vapidPublicKey,
+          subject: 'mailto: support@appsemble.com',
+        },
+      },
+    );
+    spy.mockRestore();
+  });
+
+  it('should trigger parent hooks if associated child has subscription hooks', async () => {
+    const app = await App.create(exampleApp(organizationId), { raw: true });
+    const resource = await Resource.create({
+      type: 'testResource',
+      AppId: app.id,
+      data: { foo: 'I am Foo.' },
+    });
+
+    const endpoint = 'https://example.com';
+    const p256dh = 'abc';
+    const auth = 'def';
+
+    await AppSubscription.create({
+      endpoint,
+      p256dh,
+      auth,
+      AppId: app.id,
+    });
+
+    await request.patch(
+      `/api/apps/${app.id}/subscriptions`,
+      {
+        endpoint: 'https://example.com',
+        resource: 'testResource',
+        resourceId: resource.id,
+        action: 'update',
+        value: true,
+      },
+      { headers: { authorization: token } },
+    );
+
+    const spy = jest.spyOn(webpush, 'sendNotification').mockImplementation(() => {});
+    await request.post(
+      `/api/apps/${app.id}/resources/testResourceB`,
+      { bar: 'I am bar.', testResourceId: resource.id },
+      { headers: { authorization: token } },
+    );
+
+    expect(spy).toHaveBeenCalledWith(
+      {
+        endpoint,
+        keys: { auth, p256dh },
+      },
+      JSON.stringify({
+        icon: 'http://test-app.testorganization.localhost/icon-96.png',
+        badge: 'http://test-app.testorganization.localhost/icon-96.png',
+        timestamp: 0,
+        title: 'testResource',
+        body: `Updated ${resource.id}`,
+      }),
+      {
+        vapidDetails: {
+          privateKey: app.vapidPrivateKey,
+          publicKey: app.vapidPublicKey,
+          subject: 'mailto: support@appsemble.com',
+        },
+      },
+    );
+    spy.mockRestore();
   });
 });

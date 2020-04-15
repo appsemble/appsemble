@@ -180,8 +180,9 @@ async function sendSubscriptionNotifications(
 ) {
   const { App, AppSubscription, ResourceSubscription, User } = ctx.db.models;
   const { appId } = ctx.params;
-  const roles = notification.to.filter((n) => n !== '$author');
-  const author = resourceUserId && notification.to.includes('$author');
+  const to = notification.to || [];
+  const roles = to.filter((n) => n !== '$author');
+  const author = resourceUserId && to.includes('$author');
   const subscribers = notification.subscribe;
 
   if (!roles.length && !author && !subscribers) {
@@ -190,7 +191,7 @@ async function sendSubscriptionNotifications(
 
   const subscriptions = [];
 
-  if (roles || author) {
+  if (roles.length || author) {
     const roleSubscribers = await AppSubscription.findAll({
       where: { AppId: appId },
       attributes: ['id', 'auth', 'p256dh', 'endpoint'],
@@ -476,7 +477,7 @@ async function processHooks(ctx, app, resource, action) {
   ) {
     const { notification } = resourceDefinition[action].hooks;
     const { data } = notification;
-    sendSubscriptionNotifications(
+    await sendSubscriptionNotifications(
       ctx,
       app,
       notification,
@@ -497,31 +498,28 @@ async function processHooks(ctx, app, resource, action) {
 }
 
 async function processReferenceHooks(ctx, app, resource, action) {
-  const { Resource } = ctx.db;
-  Object.entries(app.definition.resources[resource.type].references || {}).forEach(
-    async ([propertyName, reference]) => {
-      const otherResourceDefinition = app.definition.resources[reference.resource];
-      if (!reference[action] || !reference[action].trigger || !reference[action].trigger.length) {
-        // do nothing
-        return;
-      }
-      if (!otherResourceDefinition[action].hooks) {
-        // do nothing
-        return;
-      }
+  const { Resource } = ctx.db.models;
+  await Promise.all(
+    Object.entries(app.definition.resources[resource.type].references || {}).map(
+      async ([propertyName, reference]) => {
+        if (!reference[action] || !reference[action].trigger || !reference[action].trigger.length) {
+          // do nothing
+          return;
+        }
 
-      const { triggers } = reference[action];
-      const ids = [].concat(resource[propertyName]);
-      const parents = await Resource.findAll({
-        where: { id: { [Op.in]: ids }, type: reference.resource, AppId: app.id },
-      });
+        const { trigger } = reference[action];
+        const ids = [].concat(resource.data[propertyName]);
+        const parents = await Resource.findAll({
+          where: { id: ids, type: reference.resource, AppId: app.id },
+        });
 
-      Promise.all(
-        parents.map((parent) =>
-          Promise.all(triggers.map((trigger) => processHooks(ctx, app, parent, trigger))),
-        ),
-      );
-    },
+        await Promise.all(
+          parents.map((parent) =>
+            Promise.all(trigger.map((t) => processHooks(ctx, app, parent, t))),
+          ),
+        );
+      },
+    ),
   );
 }
 
