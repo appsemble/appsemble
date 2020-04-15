@@ -11,6 +11,9 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 - Block(`@appsemble/filter`): Added `exact` property for fields. When enabled, the values will be
   checked using equality instead of partial matches.
+- Block(`@appsemble/list`): Add `base` property. This can be used when using initial data passed
+  through from other actions.
+- Block(`@appsemble/list`): Add support for receiving initial data.
 
 ### Changed
 

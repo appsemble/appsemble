@@ -8,6 +8,8 @@ import {
   Modal,
   SimpleForm,
   SimpleInput,
+  Table,
+  Title,
 } from '@appsemble/react-components';
 import { scopes as knownScopes } from '@appsemble/utils';
 import axios from 'axios';
@@ -15,6 +17,7 @@ import * as React from 'react';
 import { FormattedDate, FormattedMessage, useIntl } from 'react-intl';
 
 import type { OAuth2ClientCredentials } from '../../types';
+import HelmetIntl from '../HelmetIntl';
 import styles from './index.css';
 import messages from './messages';
 import scopeDescriptions from './scopeDescriptions';
@@ -60,7 +63,11 @@ export default function ClientCredentials(): React.ReactElement {
   }, [setClients]);
 
   return (
-    <div>
+    <>
+      <HelmetIntl title={messages.title} />
+      <Title>
+        <FormattedMessage {...messages.title} />
+      </Title>
       <p className="content">
         <FormattedMessage {...messages.explanation} />
       </p>
@@ -140,75 +147,73 @@ export default function ClientCredentials(): React.ReactElement {
         )}
       </Modal>
       {clients.length ? (
-        <div className="table-container">
-          <table className={`table is-narrow is-fullwidth is-hoverable ${styles.table}`}>
-            <thead>
-              <tr>
-                <th>
-                  <FormattedMessage {...messages.description} />
-                </th>
-                <th>
-                  <FormattedMessage {...messages.created} />
-                </th>
-                <th>
-                  <FormattedMessage {...messages.expires} />
-                </th>
-                <th colSpan={2}>
-                  <FormattedMessage {...messages.scope} />
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {clients.map((client) => (
-                <tr key={client.id}>
-                  <td>{client.description}</td>
-                  <td>
-                    <time dateTime={client.$created}>
-                      <FormattedDate value={client.$created} />
+        <Table className={styles.table}>
+          <thead>
+            <tr>
+              <th>
+                <FormattedMessage {...messages.description} />
+              </th>
+              <th>
+                <FormattedMessage {...messages.created} />
+              </th>
+              <th>
+                <FormattedMessage {...messages.expires} />
+              </th>
+              <th colSpan={2}>
+                <FormattedMessage {...messages.scope} />
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {clients.map((client) => (
+              <tr key={client.id}>
+                <td>{client.description}</td>
+                <td>
+                  <time dateTime={client.$created}>
+                    <FormattedDate value={client.$created} />
+                  </time>
+                </td>
+                <td>
+                  {client.expires ? (
+                    <time dateTime={client.expires}>
+                      <FormattedDate value={client.expires} />
                     </time>
-                  </td>
-                  <td>
-                    {client.expires ? (
-                      <time dateTime={client.expires}>
-                        <FormattedDate value={client.expires} />
-                      </time>
-                    ) : (
-                      <FormattedMessage {...messages.never} />
-                    )}
-                  </td>
-                  <td>
-                    <Join separator=", ">
-                      {client.scopes.map((scope) => (
-                        <data
-                          key={scope}
-                          className={styles.scope}
-                          title={intl.formatMessage(
-                            Object.hasOwnProperty.call(scopeDescriptions, scope)
-                              ? scopeDescriptions[scope as keyof typeof scopeDescriptions]
-                              : messages.unknownScope,
-                          )}
-                          value={scope}
-                        >
-                          {scope}
-                        </data>
-                      ))}
-                    </Join>
-                  </td>
-                  <td>
-                    <Button className="is-pulled-right" color="danger" onClick={onDelete(client)}>
-                      <FormattedMessage {...messages.revoke} />
-                    </Button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+                  ) : (
+                    <FormattedMessage {...messages.never} />
+                  )}
+                </td>
+                <td>
+                  <Join separator=", ">
+                    {client.scopes.map((scope) => (
+                      <data
+                        key={scope}
+                        className={styles.scope}
+                        title={intl.formatMessage(
+                          Object.hasOwnProperty.call(scopeDescriptions, scope)
+                            ? scopeDescriptions[scope as keyof typeof scopeDescriptions]
+                            : messages.unknownScope,
+                        )}
+                        value={scope}
+                      >
+                        {scope}
+                      </data>
+                    ))}
+                  </Join>
+                </td>
+                <td>
+                  <Button className="is-pulled-right" color="danger" onClick={onDelete(client)}>
+                    <FormattedMessage {...messages.revoke} />
+                  </Button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </Table>
       ) : (
         <p>
           <FormattedMessage {...messages.empty} />
         </p>
       )}
-    </div>
+    </>
   );
 }

@@ -2,3 +2,4 @@
 /config/charts/*/templates
 dist/
 /coverage/
+/reports/

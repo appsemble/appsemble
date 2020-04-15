@@ -32,7 +32,6 @@
     "yargs": "^15.3.1"
   },
   "devDependencies": {
-    "@appsemble/node-utils": "0.12.4",
     "@sinonjs/fake-timers": "^6.0.1",
     "axios-test-instance": "^1.0.1",
     "koa": "^2.11.0"

@@ -3,8 +3,9 @@ import crypto from 'crypto';
 import { addMinutes } from 'date-fns';
 import { Op } from 'sequelize';
 
+import { App, EmailAuthorization, OAuth2AuthorizationCode, User } from '../models';
+
 export async function getUserInfo(ctx) {
-  const { EmailAuthorization, User } = ctx.db.models;
   const { id } = ctx.state.user;
 
   const user = await User.findOne({
@@ -44,7 +45,6 @@ export async function getUserInfo(ctx) {
 }
 
 export async function createAuthorizationCode(ctx) {
-  const { App, OAuth2AuthorizationCode } = ctx.db.models;
   const { appId, redirectUri } = ctx.request.body;
   const { host } = ctx.argv;
   const { id } = ctx.state.user;

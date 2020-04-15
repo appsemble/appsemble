@@ -2,10 +2,11 @@ image: node:12-slim
 
 stages:
   - test
+  - build
   - publish
   - deploy
-  - migrate
   - provision
+  - end 2 end
 
 ###################################################################################################
 #  Job Templates                                                                                  #
@@ -21,7 +22,7 @@ stages:
     - echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY
 
 # A preconfigured environment for using Helm.
-.helm-simple:
+.helm:
   image:
     # This is the most official Helm image at the moment.
     # https://github.com/helm/helm/issues/5682#issuecomment-490084864
@@ -29,16 +30,9 @@ stages:
     entrypoint: [/bin/sh, -c]
   dependencies: []
 
-# A preconfigured, initialized environment for using Helm.
-.helm:
-  extends: .helm-simple
-  before_script:
-    - helm repo add stable https://kubernetes-charts.storage.googleapis.com
-    - helm dependency build config/charts/appsemble
-
 # A job preset for deleting Helm Charts.
 .helm-delete:
-  extends: .helm-simple
+  extends: .helm
   variables:
     GIT_STRATEGY: none
   script:
@@ -53,35 +47,6 @@ stages:
 ###################################################################################################
 #  Test Stage                                                                                     #
 ###################################################################################################
-
-# Build the Docker image.
-build docker image:
-  extends: .docker
-  only:
-    - branches
-    - merge_requests
-    - tags
-  except:
-    - schedules
-  script:
-    - docker build -t "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME" .
-    - docker push "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME"
-
-# Build the Docker image.
-build docs image:
-  extends: .docker
-  only:
-    - branches
-    - merge_requests
-    - tags
-  except:
-    - schedules
-  script:
-    - docker build .
-      --build-arg "CI_COMMIT_REF_NAME=$CI_COMMIT_REF_NAME"
-      --file config/docs/Dockerfile
-      --tag "$CI_REGISTRY_IMAGE/docs:$CI_COMMIT_REF_NAME"
-    - docker push "$CI_REGISTRY_IMAGE/docs:$CI_COMMIT_REF_NAME"
 
 # Scan for dependency vulnerabilities.
 dependency scanning:
@@ -125,27 +90,6 @@ helm lint:
       - config/charts/**/*.*
   script:
     - helm lint config/charts/*
-
-# Build the npm packages that should be published.
-pack:
-  extends: .yarn
-  only:
-    refs:
-      - branches
-      - merge_requests
-      - tags
-  script:
-    - yarn workspace @appsemble/sdk pack
-    - yarn workspace @appsemble/preact pack
-    - yarn workspace @appsemble/node-utils pack
-    - yarn workspace @appsemble/cli pack
-    - mkdir build/
-    - find packages -name '*.tgz' -exec mv {} ./build/ \;
-  artifacts:
-    name: '$CI_COMMIT_REF_NAME'
-    expose_as: packages
-    paths:
-      - 'build/'
 
 # Check formatting using prettier.
 prettier:
@@ -219,13 +163,76 @@ tsc:
     - yarn workspaces run tsc
 
 ###################################################################################################
+#  Build Stage                                                                                    #
+###################################################################################################
+
+# Build the Docker image.
+build docker image:
+  extends: .docker
+  stage: build
+  needs: []
+  only:
+    - branches
+    - merge_requests
+    - schedules
+    - tags
+  except:
+    - schedules
+  script:
+    - docker build -t "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME" .
+    - docker push "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME"
+
+# Build the Docker image.
+build docs image:
+  extends: .docker
+  stage: build
+  needs: []
+  only:
+    - branches
+    - merge_requests
+    - tags
+  except:
+    - schedules
+  script:
+    - docker build .
+      --build-arg "CI_COMMIT_REF_NAME=$CI_COMMIT_REF_NAME"
+      --file config/docs/Dockerfile
+      --tag "$CI_REGISTRY_IMAGE/docs:$CI_COMMIT_REF_NAME"
+    - docker push "$CI_REGISTRY_IMAGE/docs:$CI_COMMIT_REF_NAME"
+
+# Build the npm packages that should be published.
+pack:
+  extends: .yarn
+  stage: build
+  needs: []
+  only:
+    refs:
+      - branches
+      - merge_requests
+      - tags
+  script:
+    - yarn workspace @appsemble/sdk pack
+    - yarn workspace @appsemble/preact pack
+    - yarn workspace @appsemble/node-utils pack
+    - yarn workspace @appsemble/cli pack
+    - mkdir build/
+    - find packages -name '*.tgz' -exec mv {} ./build/ \;
+  artifacts:
+    name: '$CI_COMMIT_REF_NAME'
+    expose_as: packages
+    paths:
+      - 'build/'
+
+###################################################################################################
 #  Publish Stage                                                                                  #
 ###################################################################################################
 
 # Publish the Docker image that was built to Docker Hub.
-publish:docker:latest:
+publish docker:
   extends: .docker
   stage: publish
+  needs:
+    - build docker image
   variables:
     GIT_STRATEGY: none
   only:
@@ -244,6 +251,8 @@ publish npm:
   stage: publish
   dependencies:
     - pack
+  needs:
+    - pack
   variables:
     GIT_STRATEGY: none
   only:
@@ -261,6 +270,8 @@ review:
   extends: .helm
   stage: deploy
   when: manual
+  needs:
+    - build docker image
   only:
     - merge_requests
   allow_failure: false
@@ -269,6 +280,10 @@ review:
     url: https://$CI_ENVIRONMENT_SLUG.appsemble.review
     on_stop: stop review
   script:
+    # This is the only way to make sure the review environment can be overwritten
+    - helm delete "$CI_ENVIRONMENT_SLUG" || true
+    - helm repo add stable https://kubernetes-charts.storage.googleapis.com
+    - helm dependency build config/charts/appsemble
     - helm install "$CI_ENVIRONMENT_SLUG" config/charts/appsemble
       --atomic
       --set "app=$CI_ENVIRONMENT_SLUG"
@@ -282,7 +297,7 @@ review:
       --set "ingress.enabled=true"
       --set "ingress.host=${CI_ENVIRONMENT_URL/https:\/\//}"
       --set "ingress.tls.secretName=$CI_ENVIRONMENT_SLUG-tls"
-      --set "migrateTo=999.999.999"
+      --set "migrateTo=next"
       --set "global.postgresql.existingSecret=postgresql-secret"
       --set "provision.account.name=$BOT_ACCOUNT_NAME"
       --set "provision.account.clientCredentials=$APPSEMBLE_CLIENT_CREDENTIALS"
@@ -312,6 +327,8 @@ review docs:
   extends: .helm
   stage: deploy
   when: manual
+  needs:
+    - build docs image
   only:
     - merge_requests
   allow_failure: false
@@ -344,18 +361,39 @@ stop review docs:
 staging:
   extends: .helm
   stage: deploy
+  needs:
+    - build docker image
   only:
-    - master@appsemble/appsemble
-  except:
     - schedules
   environment:
     name: staging
     url: https://staging.appsemble.review
   script:
-    - helm upgrade staging config/charts/appsemble
+    # This is the only way to make sure staging can be overwritten
+    - helm delete staging || true
+    - helm repo add stable https://kubernetes-charts.storage.googleapis.com
+    - helm dependency build config/charts/appsemble
+    # First, install from the last stable tag.
+    - helm install staging config/charts/appsemble
       --atomic
-      --install
       --set "app=$CI_ENVIRONMENT_SLUG"
+      --set "global.postgresql.existingSecret=postgresql-secret"
+      --set "ingress.annotations.cert-manager\.io/cluster-issuer=letsencrypt-dev"
+      --set "ingress.annotations.kubernetes\.io/ingress\.class=nginx"
+      --set "ingress.annotations.nginx\.ingress\.kubernetes\.io/proxy-body-size=50m"
+      --set "ingress.enabled=true"
+      --set "ingress.host=staging.appsemble.review"
+      --set "ingress.tls.secretName=staging-tls"
+      --set "postgresql.fullnameOverride=staging-postgresql"
+      --set "provision.account.clientCredentials=$APPSEMBLE_CLIENT_CREDENTIALS"
+      --set "provision.account.email=$BOT_ACCOUNT_EMAIL"
+      --set "provision.account.name=$BOT_ACCOUNT_NAME"
+      --set "provision.account.organizations={appsemble,amsterdam,10-second-move}"
+      --set "sentrySecret=sentry"
+    # Then upgrade to the current version
+    - helm upgrade staging config/charts/appsemble
+      --set "app=$CI_ENVIRONMENT_SLUG"
+      --set "global.postgresql.existingSecret=postgresql-secret"
       --set "image.pullPolicy=Always"
       --set "image.repository=$CI_REGISTRY_IMAGE"
       --set "image.tag=master"
@@ -365,8 +403,7 @@ staging:
       --set "ingress.enabled=true"
       --set "ingress.host=staging.appsemble.review"
       --set "ingress.tls.secretName=staging-tls"
-      --set "migrateTo=999.999.999"
-      --set "global.postgresql.existingSecret=postgresql-secret"
+      --set "migrateTo=next"
       --set "postgresql.fullnameOverride=staging-postgresql"
       --set "sentrySecret=sentry"
 
@@ -374,6 +411,8 @@ staging:
 staging docs:
   extends: .helm
   stage: deploy
+  needs:
+    - build docs image
   only:
     - master@appsemble/appsemble
   except:
@@ -392,41 +431,11 @@ staging docs:
       --set "ingress.annotations.kubernetes\.io/ingress\.class=nginx"
       --set "url=$CI_ENVIRONMENT_URL"
 
-# Wipe the staging environment, reset the staging environment to the latest release, and upgrade to master.
-reset staging:
-  extends: .helm
-  stage: deploy
-  only:
-    - schedules
-  environment:
-    name: staging
-    url: https://staging.appsemble.review
-  script:
-    # We can’s use `--replace` because of https://github.com/helm/helm/issues/3134
-    - helm delete staging
-    - helm install staging config/charts/appsemble
-      --atomic
-      --set "app=$CI_ENVIRONMENT_SLUG"
-      --set "image.pullPolicy=Always"
-      --set "image.repository=$CI_REGISTRY_IMAGE"
-      --set "image.tag=master"
-      --set "ingress.annotations.cert-manager\.io/cluster-issuer=letsencrypt-dev"
-      --set "ingress.annotations.kubernetes\.io/ingress\.class=nginx"
-      --set "ingress.annotations.nginx\.ingress\.kubernetes\.io/proxy-body-size=50m"
-      --set "ingress.enabled=true"
-      --set "ingress.host=staging.appsemble.review"
-      --set "ingress.tls.secretName=staging-tls"
-      --set "global.postgresql.existingSecret=postgresql-secret"
-      --set "provision.account.name=$BOT_ACCOUNT_NAME"
-      --set "provision.account.clientCredentials=$APPSEMBLE_CLIENT_CREDENTIALS"
-      --set "provision.account.email=$BOT_ACCOUNT_EMAIL"
-      --set "provision.account.organizations={appsemble,amsterdam}"
-      --set "postgresql.fullnameOverride=staging-postgresql"
-      --set "sentrySecret=sentry"
-
 production:
   extends: .helm
   stage: deploy
+  needs:
+    - publish docker
   only:
     - tags
   dependencies: []
@@ -455,6 +464,8 @@ production:
 production docs:
   extends: .helm
   stage: deploy
+  needs:
+    - build docs image
   only:
     - tags
   allow_failure: false
@@ -472,56 +483,6 @@ production docs:
       --set "url=$CI_ENVIRONMENT_URL"
 
 ###################################################################################################
-#  Migrate Stage                                                                                  #
-###################################################################################################
-
-# Test migrations by Downgrading to latest, then upgrading back to master.
-migrate staging:
-  extends: .helm
-  stage: migrate
-  only:
-    - schedules
-  environment:
-    name: staging
-    url: https://staging.appsemble.review
-  script:
-    # Downgrade to latest
-    - helm delete staging
-    - helm install staging config/charts/appsemble
-      --atomic
-      --set "app=$CI_ENVIRONMENT_SLUG"
-      --set "ingress.annotations.cert-manager\.io/cluster-issuer=letsencrypt-dev"
-      --set "ingress.annotations.kubernetes\.io/ingress\.class=nginx"
-      --set "ingress.annotations.nginx\.ingress\.kubernetes\.io/proxy-body-size=50m"
-      --set "ingress.enabled=true"
-      --set "ingress.host=staging.appsemble.review"
-      --set "ingress.tls.secretName=staging-tls"
-      --set "global.postgresql.existingSecret=postgresql-secret"
-      --set "provision.account.name=$BOT_ACCOUNT_NAME"
-      --set "provision.account.clientCredentials=$APPSEMBLE_CLIENT_CREDENTIALS"
-      --set "provision.account.email=$BOT_ACCOUNT_EMAIL"
-      --set "provision.account.organizations={appsemble,amsterdam}"
-      --set "postgresql.fullnameOverride=staging-postgresql"
-      --set "sentrySecret=sentry"
-    # Upgrade to master
-    - helm upgrade staging config/charts/appsemble
-      --atomic
-      --set "app=$CI_ENVIRONMENT_SLUG"
-      --set "image.pullPolicy=Always"
-      --set "image.repository=$CI_REGISTRY_IMAGE"
-      --set "image.tag=master"
-      --set "ingress.annotations.cert-manager\.io/cluster-issuer=letsencrypt-dev"
-      --set "ingress.annotations.kubernetes\.io/ingress\.class=nginx"
-      --set "ingress.annotations.nginx\.ingress\.kubernetes\.io/proxy-body-size=50m"
-      --set "ingress.enabled=true"
-      --set "ingress.host=staging.appsemble.review"
-      --set "ingress.tls.secretName=staging-tls"
-      --set "migrateTo=999.999.999"
-      --set "global.postgresql.existingSecret=postgresql-secret"
-      --set "postgresql.fullnameOverride=staging-postgresql"
-      --set "sentrySecret=sentry"
-
-###################################################################################################
 #  Provision Stage                                                                                #
 ###################################################################################################
 
@@ -532,6 +493,8 @@ provision review:
   only:
     - merge_requests
   dependencies:
+    - review
+  needs:
     - review
   environment:
     name: review/provision/$CI_COMMIT_REF_SLUG
@@ -547,13 +510,15 @@ provision staging:
   extends: .yarn
   stage: provision
   only:
-    - master@appsemble/appsemble
+    - schedules
+  needs:
+    - staging
   environment:
     name: staging/provision
   script:
     - yarn appsemble config set remote https://staging.appsemble.review
-    - yarn appsemble config set ignore-conflict true
     - yarn appsemble block publish blocks/*
+    - yarn appsemble app create --organization appsemble --template apps/*
 
 # Provision the production environment with the blocks that were built in the build stage.
 provision production:
@@ -561,9 +526,30 @@ provision production:
   stage: provision
   only:
     - tags
+  needs:
+    - production
   environment:
     name: production provision
   script:
     - yarn appsemble config set remote https://appsemble.app
     - yarn appsemble config set ignore-conflict true
     - yarn appsemble block publish blocks/*
+
+###################################################################################################
+#  End to End Stage                                                                               #
+###################################################################################################
+
+lighthouse:
+  stage: end 2 end
+  dependencies: []
+  needs:
+    - provision staging
+  only:
+    - schedules
+  script:
+    - yarn --frozen-lockfile
+  artifacts:
+    expose_as: Lighthouse reports
+    paths:
+      - reports
+    expire_in: 7 days

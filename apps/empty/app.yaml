@@ -1,4 +1,4 @@
-name: Empty App
+name: Empty
 description: Empty App is a bare-bones app with two pages and buttons switching between them.
 defaultPage: Example Page A
 

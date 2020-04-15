@@ -17,11 +17,22 @@ interface MessageProps {
    * The message type.
    */
   color?: BulmaColor;
+
+  /**
+   * An optional header for the message.
+   */
+  header?: React.ReactNode;
 }
 
-export default function Message({ children, className, color }: MessageProps): React.ReactElement {
+export default function Message({
+  children,
+  className,
+  color,
+  header,
+}: MessageProps): React.ReactElement {
   return (
     <div className={classNames('message', className, { [`is-${color}`]: color })}>
+      {header && <h6 className="message-header">{header}</h6>}
       <div className="message-body">{children}</div>
     </div>
   );

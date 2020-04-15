@@ -20,7 +20,7 @@ export function builder(yargs) {
 
 export async function handler(argv) {
   const { to } = argv;
-  if (!semver.valid(to)) {
+  if (to !== 'next' && !semver.valid(to)) {
     throw new AppsembleError(`A valid semver is required. Got ${to}`);
   }
   let db;

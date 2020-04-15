@@ -1,6 +1,8 @@
 import {
   Button,
   CardFooterButton,
+  Content,
+  FormButtons,
   Icon,
   Loader,
   Message,
@@ -9,6 +11,8 @@ import {
   SimpleForm,
   SimpleInput,
   SimpleSubmit,
+  Table,
+  Title,
   useMessages,
 } from '@appsemble/react-components';
 import type { Organization } from '@appsemble/types';
@@ -309,11 +313,11 @@ export default function OrganizationsSettings(): React.ReactElement {
 
   return (
     <>
-      <div className="content">
-        <HelmetIntl title={messages.title} />
-        <h2>
+      <HelmetIntl title={messages.title} />
+      <Content>
+        <Title>
           <FormattedMessage {...messages.createOrganization} />
-        </h2>
+        </Title>
         {!userInfo.email_verified && (
           <Message color="warning">
             <FormattedMessage
@@ -351,16 +355,21 @@ export default function OrganizationsSettings(): React.ReactElement {
             preprocess={(value) => normalize(value, false)}
             required
           />
-          <SimpleSubmit disabled={!userInfo.email_verified}>
-            <FormattedMessage {...messages.create} />
-          </SimpleSubmit>
+          <FormButtons>
+            <SimpleSubmit disabled={!userInfo.email_verified}>
+              <FormattedMessage {...messages.create} />
+            </SimpleSubmit>
+          </FormButtons>
         </SimpleForm>
+      </Content>
 
-        {!!organizations.length && organization && (
-          <>
-            <h2>
+      {!!organizations.length && organization && (
+        <>
+          <hr />
+          <Content>
+            <Title>
               <FormattedMessage {...messages.manageOrganization} />
-            </h2>
+            </Title>
             <Select
               disabled={organizations.length === 1}
               label={<FormattedMessage {...messages.selectedOrganization} />}
@@ -385,145 +394,162 @@ export default function OrganizationsSettings(): React.ReactElement {
                   required
                   type="email"
                 />
-                <SimpleSubmit>
-                  <FormattedMessage {...messages.inviteMember} />
-                </SimpleSubmit>
+                <FormButtons>
+                  <SimpleSubmit>
+                    <FormattedMessage {...messages.inviteMember} />
+                  </SimpleSubmit>
+                </FormButtons>
               </SimpleForm>
             )}
+          </Content>
 
-            <h3>
-              <FormattedMessage
-                {...messages.organizationMembers}
-                values={{ organization: organization.name }}
-              />
-            </h3>
-            <table className="table is-hoverable is-striped">
-              <thead>
-                <tr>
-                  <th>
-                    <FormattedMessage {...messages.member} />
-                  </th>
-                  <th className="has-text-right">
-                    <FormattedMessage {...messages.actions} />
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {organization.members.map((member) => (
-                  <tr key={member.id}>
-                    <td>
-                      <span>{member.name || member.primaryEmail || member.id}</span>
-                      <div className={`tags ${styles.tags}`}>
-                        {member.id === userInfo.sub && (
-                          <span className="tag is-success">
-                            <FormattedMessage {...messages.you} />
-                          </span>
-                        )}
-                      </div>
-                    </td>
-                    <td className="has-text-right">
-                      {canManageRoles ? (
-                        <Select
-                          className={styles.roleSelect}
-                          defaultValue={member.role}
-                          disabled={member.id === userInfo.sub || submittingRole === member.id}
-                          fullwidth={false}
-                          loading={submittingRole === member.id}
-                          name={`role-${member.id}`}
-                          onChange={(event: React.ChangeEvent<HTMLSelectElement>) =>
-                            onChangeRole(event, member.id)
-                          }
-                        >
-                          {Object.keys(roles).map((r: Role) => (
-                            <option key={r} value={r}>
-                              {intl.formatMessage(messages[r])}
-                            </option>
-                          ))}
-                        </Select>
-                      ) : (
-                        <FormattedMessage {...messages[member.role]} />
+          <Title level={5}>
+            <FormattedMessage
+              {...messages.organizationMembers}
+              values={{ organization: organization.name }}
+            />
+          </Title>
+          <Table>
+            <thead>
+              <tr>
+                <th>
+                  <FormattedMessage {...messages.member} />
+                </th>
+                <th className="has-text-right">
+                  <FormattedMessage {...messages.actions} />
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {organization.members.map((member) => (
+                <tr key={member.id}>
+                  <td>
+                    <span>{member.name || member.primaryEmail || member.id}</span>
+                    <div className={`tags ${styles.tags}`}>
+                      {member.id === userInfo.sub && (
+                        <span className="tag is-success">
+                          <FormattedMessage {...messages.you} />
+                        </span>
                       )}
-                      <div className={`field is-grouped ${styles.tags}`}>
-                        {member.id === userInfo.sub &&
-                          organization.members.length > 1 &&
-                          organization.members.some((m) =>
-                            checkRole(m.role, permissions.ManageRoles),
-                          ) && (
-                            <p className={`control ${styles.memberButton}`}>
-                              <Button
-                                color="danger"
-                                icon="sign-out-alt"
-                                onClick={() => onRemoveMemberClick(member.id)}
-                              />
-                            </p>
-                          )}
-                        {member.id !== userInfo.sub && canManageMembers && (
+                    </div>
+                  </td>
+                  <td className="has-text-right">
+                    {canManageRoles ? (
+                      <Select
+                        className={styles.roleSelect}
+                        defaultValue={member.role}
+                        disabled={member.id === userInfo.sub || submittingRole === member.id}
+                        fullwidth={false}
+                        loading={submittingRole === member.id}
+                        name={`role-${member.id}`}
+                        onChange={(event: React.ChangeEvent<HTMLSelectElement>) =>
+                          onChangeRole(event, member.id)
+                        }
+                      >
+                        {Object.keys(roles).map((r: Role) => (
+                          <option key={r} value={r}>
+                            {intl.formatMessage(messages[r])}
+                          </option>
+                        ))}
+                      </Select>
+                    ) : (
+                      <FormattedMessage {...messages[member.role]} />
+                    )}
+                    <div className={`field is-grouped ${styles.tags}`}>
+                      {member.id === userInfo.sub &&
+                        organization.members.length > 1 &&
+                        organization.members.some((m) =>
+                          checkRole(m.role, permissions.ManageRoles),
+                        ) && (
                           <p className={`control ${styles.memberButton}`}>
                             <Button
                               color="danger"
-                              icon="trash-alt"
+                              icon="sign-out-alt"
                               onClick={() => onRemoveMemberClick(member.id)}
-                              type="button"
                             />
                           </p>
                         )}
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-                {organization.invites.map((invite) => (
-                  <tr key={invite.email}>
-                    <td>{invite.email}</td>
-                    <td className="has-text-right">
-                      {canManageMembers ? (
-                        <div className={`field is-grouped ${styles.tags}`}>
-                          <p className={`control ${styles.memberButton}`}>
-                            <Button
-                              className="control is-outlined"
-                              onClick={() => resendInvitation(invite)}
-                            >
-                              <FormattedMessage {...messages.resendInvitation} />
-                            </Button>
-                          </p>
-                          <p className={`control ${styles.memberButton}`}>
-                            <Button color="danger" onClick={() => onRemoveInviteClick(invite)}>
-                              <Icon icon="trash-alt" size="small" />
-                            </Button>
-                          </p>
-                        </div>
-                      ) : (
-                        <FormattedMessage {...messages.invited} />
+                      {member.id !== userInfo.sub && canManageMembers && (
+                        <p className={`control ${styles.memberButton}`}>
+                          <Button
+                            color="danger"
+                            icon="trash-alt"
+                            onClick={() => onRemoveMemberClick(member.id)}
+                            type="button"
+                          />
+                        </p>
                       )}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </>
-        )}
-      </div>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+              {organization.invites.map((invite) => (
+                <tr key={invite.email}>
+                  <td>{invite.email}</td>
+                  <td className="has-text-right">
+                    {canManageMembers ? (
+                      <div className={`field is-grouped ${styles.tags}`}>
+                        <p className={`control ${styles.memberButton}`}>
+                          <Button
+                            className="control is-outlined"
+                            onClick={() => resendInvitation(invite)}
+                          >
+                            <FormattedMessage {...messages.resendInvitation} />
+                          </Button>
+                        </p>
+                        <p className={`control ${styles.memberButton}`}>
+                          <Button color="danger" onClick={() => onRemoveInviteClick(invite)}>
+                            <Icon icon="trash-alt" size="small" />
+                          </Button>
+                        </p>
+                      </div>
+                    ) : (
+                      <FormattedMessage {...messages.invited} />
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
+        </>
+      )}
 
       <Modal
-        className="is-paddingless"
+        footer={
+          <>
+            <CardFooterButton onClick={onCloseInviteDialog}>
+              <FormattedMessage {...messages.cancel} />
+            </CardFooterButton>
+            <CardFooterButton color="danger" onClick={onRemoveInvite}>
+              <FormattedMessage {...messages.removeInvite} />
+            </CardFooterButton>
+          </>
+        }
         isActive={!!removingInvite}
         onClose={onCloseInviteDialog}
         title={<FormattedMessage {...messages.removeInviteWarningTitle} />}
       >
-        <div className={styles.dialogContent}>
-          <FormattedMessage {...messages.removeInviteWarning} />
-        </div>
-        <footer className="card-footer">
-          <CardFooterButton onClick={onCloseInviteDialog}>
-            <FormattedMessage {...messages.cancel} />
-          </CardFooterButton>
-          <CardFooterButton color="danger" onClick={onRemoveInvite}>
-            <FormattedMessage {...messages.removeInvite} />
-          </CardFooterButton>
-        </footer>
+        <FormattedMessage {...messages.removeInviteWarning} />
       </Modal>
 
       <Modal
-        className="is-paddingless"
+        footer={
+          <>
+            <CardFooterButton onClick={onCloseDeleteDialog}>
+              <FormattedMessage {...messages.cancel} />
+            </CardFooterButton>
+            <CardFooterButton
+              color="danger"
+              onClick={removingMember === userInfo.sub ? onLeaveOrganization : onRemoveMember}
+            >
+              {removingMember === userInfo.sub ? (
+                <FormattedMessage {...messages.leaveOrganization} />
+              ) : (
+                <FormattedMessage {...messages.removeMember} />
+              )}
+            </CardFooterButton>
+          </>
+        }
         isActive={!!removingMember}
         onClose={onCloseDeleteDialog}
         title={
@@ -534,28 +560,11 @@ export default function OrganizationsSettings(): React.ReactElement {
           )
         }
       >
-        <div className={styles.dialogContent}>
-          {removingMember === userInfo.sub ? (
-            <FormattedMessage {...messages.leaveOrganizationWarning} />
-          ) : (
-            <FormattedMessage {...messages.removeMemberWarning} />
-          )}
-        </div>
-        <footer className="card-footer">
-          <CardFooterButton onClick={onCloseDeleteDialog}>
-            <FormattedMessage {...messages.cancel} />
-          </CardFooterButton>
-          <CardFooterButton
-            color="danger"
-            onClick={removingMember === userInfo.sub ? onLeaveOrganization : onRemoveMember}
-          >
-            {removingMember === userInfo.sub ? (
-              <FormattedMessage {...messages.leaveOrganization} />
-            ) : (
-              <FormattedMessage {...messages.removeMember} />
-            )}
-          </CardFooterButton>
-        </footer>
+        {removingMember === userInfo.sub ? (
+          <FormattedMessage {...messages.leaveOrganizationWarning} />
+        ) : (
+          <FormattedMessage {...messages.removeMemberWarning} />
+        )}
       </Modal>
     </>
   );

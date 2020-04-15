@@ -1,3 +1,4 @@
+import { App, Organization } from '../models';
 import getApp from './getApp';
 import testSchema from './test/testSchema';
 import truncate from './test/truncate';
@@ -10,8 +11,8 @@ beforeAll(async () => {
 });
 
 beforeEach(async () => {
-  await truncate(db);
-  await db.models.Organization.create({
+  await truncate();
+  await Organization.create({
     id: 'test-organization',
     name: 'Test Organization',
   });
@@ -23,7 +24,7 @@ afterAll(async () => {
 
 describe('getApp', () => {
   it('should resolve an app by its default domain', async () => {
-    dbApp = await db.models.App.create({
+    dbApp = await App.create({
       definition: {
         name: 'Test App',
         defaultPage: 'Test Page',
@@ -39,7 +40,6 @@ describe('getApp', () => {
         argv: {
           host: 'http://localhost:9999',
         },
-        db,
         origin: 'http://test-app.test-organization.localhost:9999',
       },
       {
@@ -66,7 +66,7 @@ describe('getApp', () => {
   });
 
   it('should allow passing an optional url parameter', async () => {
-    dbApp = await db.models.App.create({
+    dbApp = await App.create({
       definition: {
         name: 'Test App',
         defaultPage: 'Test Page',
@@ -82,7 +82,6 @@ describe('getApp', () => {
         argv: {
           host: 'http://localhost:9999',
         },
-        db,
         origin: 'http://localhost:9999',
       },
       {
@@ -110,7 +109,7 @@ describe('getApp', () => {
   });
 
   it('should resolve apps with custom domains', async () => {
-    dbApp = await db.models.App.create({
+    dbApp = await App.create({
       definition: {
         name: 'Test App',
         defaultPage: 'Test Page',
@@ -127,7 +126,6 @@ describe('getApp', () => {
         argv: {
           host: 'http://localhost:9999',
         },
-        db,
         origin: 'http://example.com',
       },
       {

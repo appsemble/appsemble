@@ -2,6 +2,7 @@ import { createInstance } from 'axios-test-instance';
 import Koa from 'koa';
 
 import boomMiddleware from '../../middleware/boom';
+import { Organization } from '../../models';
 import testSchema from '../../utils/test/testSchema';
 import truncate from '../../utils/test/truncate';
 import appRouter from '.';
@@ -14,7 +15,6 @@ beforeAll(async () => {
   request = await createInstance(
     new Koa()
       .use((ctx, next) => {
-        ctx.db = db;
         ctx.argv = { host: 'http://localhost' };
         Object.defineProperty(ctx, 'origin', { value: 'http://app.org.localhost' });
         return next();
@@ -25,7 +25,7 @@ beforeAll(async () => {
 });
 
 afterEach(async () => {
-  await truncate(db);
+  await truncate();
 });
 
 afterAll(async () => {
@@ -34,7 +34,7 @@ afterAll(async () => {
 });
 
 it('should serve app block CSS', async () => {
-  const org = await db.models.Organization.create({ id: 'org' });
+  const org = await Organization.create({ id: 'org' });
   const app = await org.createApp({
     definition: {},
     path: 'app',
@@ -56,7 +56,7 @@ it('should serve app block CSS', async () => {
 });
 
 it('should fallback to empty CSS', async () => {
-  const org = await db.models.Organization.create({ id: 'org' });
+  const org = await Organization.create({ id: 'org' });
   await org.createApp({
     definition: {},
     path: 'app',

@@ -26,3 +26,6 @@ junit.xml
 
 # Docz output directory
 /.docz/
+
+# Lighthouse reports
+/reports/

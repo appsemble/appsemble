@@ -1,6 +1,7 @@
 import FakeTimers from '@sinonjs/fake-timers';
 import { createInstance } from 'axios-test-instance';
 
+import { OAuth2AuthorizationCode } from '../models';
 import createServer from '../utils/createServer';
 import testSchema from '../utils/test/testSchema';
 import testToken from '../utils/test/testToken';
@@ -9,23 +10,21 @@ import truncate from '../utils/test/truncate';
 let authorization;
 let clock;
 let db;
-let OAuth2AuthorizationCode;
 let request;
 let server;
 let user;
 
 beforeAll(async () => {
   db = await testSchema('organizations');
-  ({ OAuth2AuthorizationCode } = db.models);
   server = await createServer({ db, argv: { host: 'http://localhost', secret: 'test' } });
   request = await createInstance(server);
 });
 
 beforeEach(async () => {
-  await truncate(db);
+  await truncate();
   clock = FakeTimers.install();
   clock.setSystemTime(new Date('2000-01-01T00:00:00Z'));
-  ({ authorization, user } = await testToken(db));
+  ({ authorization, user } = await testToken());
 });
 
 afterEach(() => {

@@ -75,7 +75,7 @@ export default async function createServer({ app = new Koa(), argv = {}, db, web
       await koas(api(), [
         koasSpecHandler(),
         koasSwaggerUI({ url: '/explorer' }),
-        koasSecurity(authentication(argv, db.models)),
+        koasSecurity(authentication(argv)),
         () => (ctx, next) => {
           if (ctx.users) {
             [ctx.state.user] = Object.values(ctx.users);

@@ -23,8 +23,8 @@ beforeAll(async () => {
 }, 10e3);
 
 beforeEach(async () => {
-  await truncate(db);
-  ({ clientToken, user } = await testToken(db, 'blocks:write'));
+  await truncate();
+  ({ clientToken, user } = await testToken('blocks:write'));
   await user.createOrganization(
     {
       id: 'xkcd',

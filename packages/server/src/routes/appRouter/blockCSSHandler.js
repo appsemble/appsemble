@@ -1,10 +1,10 @@
 import * as Boom from '@hapi/boom';
 
+import { AppBlockStyle } from '../../models';
 import getApp from '../../utils/getApp';
 
 export default async function blockCSSHandler(ctx) {
   const { name } = ctx.params;
-  const { AppBlockStyle } = ctx.db.models;
 
   const app = await getApp(ctx, {
     attributes: [],
