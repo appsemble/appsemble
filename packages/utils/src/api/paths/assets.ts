@@ -1,6 +1,21 @@
 export default {
   '/apps/{appId}/assets': {
     parameters: [{ $ref: '#/components/parameters/appId' }],
+    get: {
+      tags: ['asset'],
+      description: 'Get all of the app’s assets.',
+      operationId: 'getAssets',
+      responses: {
+        200: {
+          description: 'The assets associated with the app.',
+          content: {
+            'application/josn': {
+              schema: { $ref: '#/components/schemas/Asset' },
+            },
+          },
+        },
+      },
+    },
     post: {
       tags: ['asset'],
       description: 'Upload a new asset.',

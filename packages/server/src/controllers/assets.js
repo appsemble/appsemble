@@ -2,6 +2,23 @@ import Boom from '@hapi/boom';
 
 import { App, Asset } from '../models';
 
+export async function getAssets(ctx) {
+  const { appId } = ctx.params;
+  const app = await App.findByPk(appId, {
+    include: [{ model: Asset, required: false }],
+  });
+
+  if (!app) {
+    throw Boom.notFound('App not found');
+  }
+
+  ctx.body = app.Assets.map((asset) => ({
+    id: asset.id,
+    mime: asset.mime,
+    filename: asset.filename,
+  }));
+}
+
 export async function getAssetById(ctx) {
   const { appId, assetId } = ctx.params;
 
