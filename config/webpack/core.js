@@ -15,7 +15,7 @@ module.exports = (env, argv) => {
     module: {
       rules: [
         {
-          test: /\.(gif|jpe?g|png|svg|woff2?)$/,
+          test: /\.(gif|jpe?g|png|svg|ttf|woff2?)$/,
           loader: 'file-loader',
           options: {
             name: production ? '_/[contentHash].[ext]' : '_/[name].[ext]',
