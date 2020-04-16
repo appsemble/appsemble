@@ -7,9 +7,12 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.12.5] - 2020-04-16
+
 ### Added
 
-- Block(`@appsemble/filter`): Added `exact` property for fields. When enabled, the values will be
+- Block(`@appsemble/detail-viewer`): Add support for icons in string fields.
+- Block(`@appsemble/filter`): Add `exact` property for fields. When enabled, the values will be
   checked using equality instead of partial matches.
 - Block(`@appsemble/list`): Add `base` property. This can be used when using initial data passed
   through from other actions.
@@ -18,6 +21,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ### Changed
 
 - Block(`@appsemble/filter`): Make `type` property for fields required.
+- Server: Flatten the block publish API.
+- CLI: Fix compatibility with the updated block publish API.
 
 ## [0.12.4] - 2020-04-06
 
