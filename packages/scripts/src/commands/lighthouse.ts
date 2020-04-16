@@ -29,10 +29,18 @@ export function builder(yargs: Argv): Argv {
 
 export async function handler({ headless }: Args): Promise<void> {
   let chrome: LaunchedChrome;
+  const chromeFlags: string[] = [];
+  if (headless) {
+    chromeFlags.push('--headless');
+  }
+  if ('CI' in process.env) {
+    chromeFlags.push('--no-sandbox');
+  }
+  logger.verbose(`Using Chrome flags: ${chromeFlags.join(' ')}`);
   try {
     chrome = await launch({
       chromePath: executablePath(),
-      chromeFlags: headless ? ['--headless'] : [],
+      chromeFlags,
     });
 
     const metrics: string[] = [];

@@ -546,7 +546,8 @@ lighthouse:
     - schedules
   script:
     - yarn --frozen-lockfile
-    - yarn scripts lighthouse
+    - config/bin/install-chrome-dependencies.sh
+    - yarn scripts lighthouse -v
   artifacts:
     expose_as: Lighthouse reports
     paths:
