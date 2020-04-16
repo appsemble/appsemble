@@ -52,7 +52,7 @@ export default tinyRouter([
     get: organizationBlockCSSHandler,
   },
   {
-    route: new RegExp(`^(/${partialNormalized.source})?`),
+    route: new RegExp(/^[^.]+$/),
     get: indexHandler,
   },
 ]);
