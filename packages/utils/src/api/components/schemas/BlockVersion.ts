@@ -7,11 +7,12 @@ export default {
     Block versions can’t be updated or deleted. This ensures apps that use a block version can never
     be broken by alterations of block definitions.
   `,
-  required: ['version'],
+  required: ['name', 'version', 'files'],
   properties: {
     name: {
       type: 'string',
-      description: `The name of a block to which tihs version applies.
+      readOnly: true,
+      description: `The name of a block.
 
         This uses the same form as scoped npm packages. For example, \`@appsemble/form\`.
       `,
@@ -77,10 +78,11 @@ export default {
     },
     files: {
       type: 'array',
-      readOnly: true,
       description: 'A list of file assets that belong to the app version.',
+      minLength: 1,
       items: {
         type: 'string',
+        format: 'binary',
       },
     },
   },
