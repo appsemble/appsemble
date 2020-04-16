@@ -9,7 +9,7 @@ export default {
         200: {
           description: 'The assets associated with the app.',
           content: {
-            'application/josn': {
+            'application/json': {
               schema: { $ref: '#/components/schemas/Asset' },
             },
           },

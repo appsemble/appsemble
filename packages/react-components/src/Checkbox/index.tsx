@@ -38,6 +38,11 @@ type CheckboxProps = Omit<React.ComponentPropsWithoutRef<typeof FormComponent>, 
      * By default (false), the label will be rendered after the checkbox.
      */
     rtl?: boolean;
+
+    /**
+     * The class used for the FormComponent wrapper.
+     */
+    wrapperClassName?: string;
   };
 
 /**
@@ -53,6 +58,7 @@ export default class Checkbox extends React.Component<CheckboxProps> {
   render(): React.ReactElement {
     const {
       className,
+      wrapperClassName,
       error,
       help,
       label,
@@ -65,7 +71,7 @@ export default class Checkbox extends React.Component<CheckboxProps> {
     } = this.props;
 
     return (
-      <FormComponent id={id} label={label} required>
+      <FormComponent className={wrapperClassName} id={id} label={label} required>
         <input
           {...props}
           checked={value}
