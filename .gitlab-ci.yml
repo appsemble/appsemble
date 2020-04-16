@@ -546,8 +546,11 @@ lighthouse:
     - schedules
   script:
     - yarn --frozen-lockfile
+    - yarn scripts lighthouse
   artifacts:
     expose_as: Lighthouse reports
     paths:
       - reports
+    reports:
+      metrics: reports/metrics.txt
     expire_in: 7 days
