@@ -176,8 +176,6 @@ build docker image:
     - merge_requests
     - schedules
     - tags
-  except:
-    - schedules
   script:
     - docker build -t "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME" .
     - docker push "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME"
@@ -548,8 +546,12 @@ lighthouse:
     - schedules
   script:
     - yarn --frozen-lockfile
+    - config/bin/install-chrome-dependencies.sh
+    - yarn scripts lighthouse -v
   artifacts:
     expose_as: Lighthouse reports
     paths:
       - reports
+    reports:
+      metrics: reports/metrics.txt
     expire_in: 7 days

@@ -2,7 +2,7 @@ import { AppsembleError } from '@appsemble/node-utils';
 import path from 'path';
 import * as ts from 'typescript';
 
-import generateBlockData from './generateBlockData';
+import getBlockConfigFromTypeScript from './getBlockConfigFromTypeScript';
 
 /**
  * Get the path to a fixture for this file.
@@ -10,21 +10,16 @@ import generateBlockData from './generateBlockData';
  * @param filename The fixture filename to resolve.
  */
 function fixture(filename: string): string {
-  return path.join(__dirname, '__fixtures__/generateBlockData', filename);
+  return path.join(__dirname, '__fixtures__/getBlockConfigFromTypeScript', filename);
 }
 
-describe('generateBlockData', () => {
+describe('getBlockConfigFromTypeScript', () => {
   it('should extract configuration from a TypeScript project', () => {
-    const result = generateBlockData(
+    const result = getBlockConfigFromTypeScript(
       { name: '', layout: 'float', version: '1.33.7', webpack: '', dist: '', output: '', dir: '' },
-      path.join(__dirname, '__fixtures__/generateBlockData/valid'),
+      path.join(__dirname, '__fixtures__/getBlockConfigFromTypeScript/valid'),
     );
     expect(result).toStrictEqual({
-      description: undefined,
-      name: '',
-      layout: 'float',
-      resources: undefined,
-      version: '1.33.7',
       actions: { testAction: {} },
       events: { emit: ['testEmit'], listen: ['testListener'] },
       parameters: {
@@ -56,37 +51,26 @@ describe('generateBlockData', () => {
 
   it('should not use TypeScript if all metadata is present in the original config', () => {
     jest.spyOn(ts, 'createProgram');
-    const result = generateBlockData(
-      {
-        actions: {},
-        events: { emit: [], listen: [] },
-        layout: 'float',
-        parameters: { type: 'object' },
-        version: '1.33.7',
-        webpack: '',
-        dist: '',
-        output: '',
-        dir: '',
-        name: '',
-      },
-      fixture('valid'),
-    );
-
-    expect(result).toStrictEqual({
-      description: undefined,
-      name: '',
+    const input = {
       actions: {},
-      events: { emit: [], listen: [] },
+      events: { emit: [] as string[], listen: [] as string[] },
       layout: 'float',
       parameters: { type: 'object' },
-      resources: undefined,
       version: '1.33.7',
-    });
+      webpack: '',
+      dist: '',
+      output: '',
+      dir: '',
+      name: '',
+    } as const;
+    const result = getBlockConfigFromTypeScript(input, fixture('valid'));
+
+    expect(result).toBe(input);
     expect(ts.createProgram).not.toHaveBeenCalled();
   });
 
   it('should prefer actions overrides over TypeScript actions', () => {
-    const result = generateBlockData(
+    const result = getBlockConfigFromTypeScript(
       { actions: {}, version: '1.33.7', webpack: '', dist: '', output: '', dir: '', name: '' },
       fixture('valid'),
     );
@@ -95,7 +79,7 @@ describe('generateBlockData', () => {
   });
 
   it('should prefer events overrides over TypeScript events', () => {
-    const result = generateBlockData(
+    const result = getBlockConfigFromTypeScript(
       {
         events: { emit: ['onSuccess'] },
         version: '1.33.7',
@@ -112,7 +96,7 @@ describe('generateBlockData', () => {
   });
 
   it('should prefer parameters overrides over TypeScript parameters', () => {
-    const result = generateBlockData(
+    const result = getBlockConfigFromTypeScript(
       {
         parameters: { type: 'object' },
         version: '1.33.7',
@@ -130,7 +114,7 @@ describe('generateBlockData', () => {
 
   it('should throw if duplicate Actions are found', () => {
     expect(() =>
-      generateBlockData(
+      getBlockConfigFromTypeScript(
         {
           webpack: '',
           dist: '',
@@ -143,14 +127,14 @@ describe('generateBlockData', () => {
       ),
     ).toThrow(
       new AppsembleError(
-        "Found duplicate interface 'Actions' in 'packages/cli/src/lib/__fixtures__/generateBlockData/duplicateActions/index.ts:31'",
+        "Found duplicate interface 'Actions' in 'packages/cli/src/lib/__fixtures__/getBlockConfigFromTypeScript/duplicateActions/index.ts:31'",
       ),
     );
   });
 
   it('should throw if duplicate EventEmitters are found', () => {
     expect(() =>
-      generateBlockData(
+      getBlockConfigFromTypeScript(
         {
           webpack: '',
           dist: '',
@@ -163,14 +147,14 @@ describe('generateBlockData', () => {
       ),
     ).toThrow(
       new AppsembleError(
-        "Found duplicate interface 'EventEmitters' in 'packages/cli/src/lib/__fixtures__/generateBlockData/duplicateEventEmitters/index.ts:31'",
+        "Found duplicate interface 'EventEmitters' in 'packages/cli/src/lib/__fixtures__/getBlockConfigFromTypeScript/duplicateEventEmitters/index.ts:31'",
       ),
     );
   });
 
   it('should throw if duplicate EventListeners are found', () => {
     expect(() =>
-      generateBlockData(
+      getBlockConfigFromTypeScript(
         {
           webpack: '',
           dist: '',
@@ -183,14 +167,14 @@ describe('generateBlockData', () => {
       ),
     ).toThrow(
       new AppsembleError(
-        "Found duplicate interface 'EventListeners' in 'packages/cli/src/lib/__fixtures__/generateBlockData/duplicateEventListeners/index.ts:31'",
+        "Found duplicate interface 'EventListeners' in 'packages/cli/src/lib/__fixtures__/getBlockConfigFromTypeScript/duplicateEventListeners/index.ts:31'",
       ),
     );
   });
 
   it('should throw if duplicate Parameters are found', () => {
     expect(() =>
-      generateBlockData(
+      getBlockConfigFromTypeScript(
         {
           webpack: '',
           dist: '',
@@ -203,13 +187,13 @@ describe('generateBlockData', () => {
       ),
     ).toThrow(
       new AppsembleError(
-        "Found duplicate interface 'Parameters' in 'packages/cli/src/lib/__fixtures__/generateBlockData/duplicateParameters/index.ts:31'",
+        "Found duplicate interface 'Parameters' in 'packages/cli/src/lib/__fixtures__/getBlockConfigFromTypeScript/duplicateParameters/index.ts:31'",
       ),
     );
   });
 
   it('should handle fontawesome icons', () => {
-    const result = generateBlockData(
+    const result = getBlockConfigFromTypeScript(
       {
         webpack: '',
         dist: '',
@@ -222,11 +206,6 @@ describe('generateBlockData', () => {
     );
 
     expect(result).toStrictEqual({
-      description: undefined,
-      name: '',
-      layout: undefined,
-      resources: undefined,
-      version: '1.33.7',
       actions: undefined,
       events: undefined,
       parameters: {
@@ -241,7 +220,7 @@ describe('generateBlockData', () => {
 
   it('should handle TypeScript pre emit diagnostics', () => {
     function fn(): void {
-      generateBlockData(
+      getBlockConfigFromTypeScript(
         {
           name: '',
           layout: 'float',
@@ -251,7 +230,7 @@ describe('generateBlockData', () => {
           output: '',
           dir: '',
         },
-        path.join(__dirname, '__fixtures__/generateBlockData/tsError'),
+        path.join(__dirname, '__fixtures__/getBlockConfigFromTypeScript/tsError'),
       );
     }
     expect(fn).toThrow(AppsembleError);

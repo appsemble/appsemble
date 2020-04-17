@@ -42,12 +42,18 @@ export interface UpdateAppArguments extends BaseArguments {
   template: boolean;
 }
 
-export type BlockPayload = Pick<
-  BlockManifest,
-  'name' | 'description' | 'actions' | 'events' | 'parameters' | 'resources' | 'version' | 'layout'
->;
-
-export interface BlockConfig extends BlockPayload {
+export interface BlockConfig
+  extends Pick<
+    BlockManifest,
+    | 'name'
+    | 'description'
+    | 'actions'
+    | 'events'
+    | 'parameters'
+    | 'resources'
+    | 'version'
+    | 'layout'
+  > {
   webpack: string;
   dist: string;
   output: string;

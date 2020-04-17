@@ -9,17 +9,7 @@ export default {
         content: {
           'multipart/form-data': {
             schema: {
-              type: 'object',
-              required: ['data'],
-              properties: {
-                data: {
-                  $ref: '#/components/schemas/BlockVersion',
-                },
-              },
-              additionalProperties: {
-                type: 'string',
-                format: 'binary',
-              },
+              $ref: '#/components/schemas/BlockVersion',
             },
           },
         },

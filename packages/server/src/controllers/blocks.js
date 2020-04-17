@@ -1,7 +1,6 @@
 import { logger } from '@appsemble/node-utils';
 import { permissions } from '@appsemble/utils';
 import Boom from '@hapi/boom';
-import { isEmpty } from 'lodash';
 import semver from 'semver';
 import { DatabaseError, UniqueConstraintError } from 'sequelize';
 
@@ -80,7 +79,7 @@ export async function queryBlocks(ctx) {
 
 export async function publishBlock(ctx) {
   const { db } = ctx;
-  const { data, ...files } = ctx.request.body;
+  const { files, ...data } = ctx.request.body;
   const { name, version } = data;
   const actionKeyRegex = /^[a-z]\w*$/;
 
@@ -96,10 +95,6 @@ export async function publishBlock(ctx) {
   }
 
   await checkRole(ctx, OrganizationId, permissions.PublishBlocks);
-
-  if (isEmpty(files)) {
-    throw Boom.badRequest('At least one file should be uploaded');
-  }
 
   const blockVersion = await BlockVersion.findOne({
     where: { name: blockId, OrganizationId },
@@ -125,22 +120,22 @@ export async function publishBlock(ctx) {
         resources = null,
       } = await BlockVersion.create({ ...data, name: blockId, OrganizationId }, { transaction });
 
-      Object.keys(files).forEach((filename) => {
-        logger.verbose(`Creating block assets for ${name}@${version}: ${filename}`);
+      files.forEach((file) => {
+        logger.verbose(
+          `Creating block assets for ${name}@${version}: ${decodeURIComponent(file.basename)}`,
+        );
       });
       await BlockAsset.bulkCreate(
-        Object.entries(files).map(([filename, file]) => ({
+        files.map((file) => ({
           name: blockId,
           OrganizationId,
           version,
-          filename,
+          filename: decodeURIComponent(file.basename),
           mime: file.mime,
           content: file.contents,
         })),
         { logging: false, transaction },
       );
-
-      const fileKeys = Object.entries(files).map(([key]) => key);
 
       ctx.body = {
         actions,
@@ -149,7 +144,7 @@ export async function publishBlock(ctx) {
         resources,
         events,
         version,
-        files: fileKeys,
+        files: files.map((file) => decodeURIComponent(file.basename)),
         name,
         description,
       };
