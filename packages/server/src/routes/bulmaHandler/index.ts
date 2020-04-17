@@ -21,7 +21,7 @@ const postCss = postcss([autoprefixer]);
 function processStyle(params: Theme): string {
   return `
     @charset "utf-8";
-    @import url(https://fonts.googleapis.com/css?family=Libre+Franklin|Open+Sans);
+    @import url(https://fonts.googleapis.com/css?display=swap&family=Libre+Franklin|Open+Sans);
     $family-sans-serif: 'Libre Franklin', sans-serif !default;
     $primary: ${params.primaryColor || baseTheme.primaryColor};
     $link: ${params.linkColor || baseTheme.linkColor};

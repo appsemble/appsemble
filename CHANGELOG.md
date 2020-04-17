@@ -7,6 +7,15 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- App: Add meta description tag.
+- App: Add minimal `robots.txt`.
+
+### Fixes
+
+- App: Fix app theme color.
+
 ## [0.12.5] - 2020-04-16
 
 ### Added

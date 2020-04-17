@@ -9,6 +9,7 @@ import indexHandler from './indexHandler';
 import manifestHandler from './manifestHandler';
 import organizationBlockCSSHandler from './organizationBlockCSSHandler';
 import organizationCSSHandler from './organizationCSSHandler';
+import robotsHandler from './robotsHandler';
 
 const blockName = `(?<name>@${partialNormalized.source}/${partialNormalized.source})`;
 
@@ -16,6 +17,10 @@ export default tinyRouter([
   {
     route: '/manifest.json',
     get: manifestHandler,
+  },
+  {
+    route: '/robots.txt',
+    get: robotsHandler,
   },
   {
     route: /^\/icon-(?<width>\d+)(x(?<height>\d+))?\.(?<format>png|jpg|tiff|webp)$/,
@@ -52,7 +57,7 @@ export default tinyRouter([
     get: organizationBlockCSSHandler,
   },
   {
-    route: new RegExp(`^(/${partialNormalized.source})?`),
+    route: new RegExp(/^[^.]+$/),
     get: indexHandler,
   },
 ]);
