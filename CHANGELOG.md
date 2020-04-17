@@ -9,8 +9,14 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
+- App: Add meta description tag.
+- App: Add minimal `robots.txt`.
 - Studio: Add asset management page for apps. This can be used to preview, download, delete, and
   update assets.
+
+### Fixes
+
+- App: Fix app theme color.
 
 ## [0.12.5] - 2020-04-16
 

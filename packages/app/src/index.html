@@ -7,10 +7,8 @@
       name="viewport"
       content="initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=0,width=device-width"
     />
-    <meta
-      name="theme-color"
-      content="{{ (app.definition.theme && app.definition.theme.themeColor) || '#ffffff' }}"
-    />
+    <meta name="theme-color" content="{{{ themeColor }}}" />
+    <meta name="description" content="{{{ app.definition.description }}}" />
     <link rel="icon" sizes="16x16" href="/icon-16.png" />
     <link rel="icon" sizes="32x32" href="/icon-32.png" />
     <link rel="icon" sizes="96x96" href="/icon-96.png" />

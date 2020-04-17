@@ -96,6 +96,7 @@ export default async function indexHandler(ctx) {
     faURL,
     nonce,
     settings,
+    themeColor: (app.definition.theme && app.definition.theme.themeColor) || '#ffffff',
   });
   ctx.set('Content-Security-Policy', makeCSP(csp));
 }
