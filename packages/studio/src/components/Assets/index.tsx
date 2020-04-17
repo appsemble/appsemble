@@ -19,10 +19,11 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import download from '../../utils/download';
 import { useApp } from '../AppContext';
 import HelmetIntl from '../HelmetIntl';
+import AssetPreview from './components/AssetPreview';
 import styles from './index.css';
 import messages from './messages';
 
-interface Asset {
+export interface Asset {
   id: string;
   mime: string;
   filename: string;
@@ -51,14 +52,17 @@ export default function Assets(): React.ReactElement {
 
   const onUpload = React.useCallback(async () => {
     const formData = new FormData();
-    formData.append('file', file);
-    const { data } = await axios.post(`/api/apps/${app.id}/assets`, formData);
+    formData.append('file', file, file.name);
+    const { data } = await axios.post(`/api/apps/${app.id}/assets`, file, {
+      headers: { 'content-type': file.type },
+    });
 
     push({ color: 'success', body: intl.formatMessage(messages.uploadSuccess, { id: data.id }) });
 
+    setAssets([...assets, data]);
     setFile(null);
     onClose();
-  }, [app, file, intl, onClose, push]);
+  }, [app, assets, file, intl, onClose, push]);
 
   const onFileChange = React.useCallback((e: React.ChangeEvent<HTMLInputElement>): void => {
     setFile(e.target.files[0]);
@@ -76,11 +80,13 @@ export default function Assets(): React.ReactElement {
     push(
       intl.formatMessage(messages.deleteSuccess, {
         amount: selectedAssets.length,
-        assets: selectedAssets.join(', '),
+        assets: selectedAssets.sort().join(', '),
       }),
     );
     onClose();
-  }, [app, intl, onClose, push, selectedAssets]);
+    setAssets(assets.filter((asset) => !selectedAssets.includes(asset.id)));
+    setSelectedAssets([]);
+  }, [app, assets, intl, onClose, push, selectedAssets]);
 
   const onPreviewClick = React.useCallback((asset: Asset) => {
     setPreviewedAsset(asset);
@@ -125,7 +131,6 @@ export default function Assets(): React.ReactElement {
       <Title>
         <FormattedMessage {...messages.assets} />
       </Title>
-      <div>I am assets. I have {assets.length} assets.</div>
       <div className="buttons">
         <Button color="primary" icon="upload" onClick={onUploadClick}>
           <FormattedMessage {...messages.uploadButton} />
@@ -247,6 +252,13 @@ export default function Assets(): React.ReactElement {
             </div>
           </FormComponent>
         </Content>
+      </Modal>
+      <Modal
+        isActive={dialog === 'preview'}
+        onClose={onClose}
+        title={<FormattedMessage {...messages.preview} />}
+      >
+        <AssetPreview asset={previewedAsset} />
       </Modal>
     </>
   );

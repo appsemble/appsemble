@@ -60,7 +60,7 @@ export async function createAsset(ctx) {
   );
 
   ctx.status = 201;
-  ctx.body = { id: asset.id };
+  ctx.body = { id: asset.id, mime: asset.mime, filename: asset.filename };
 }
 
 export async function deleteAsset(ctx) {

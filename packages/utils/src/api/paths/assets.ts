@@ -31,7 +31,7 @@ export default {
           description: 'The asset that was created.',
           content: {
             'application/json': {
-              schema: { $ref: '#/components/schemas/Asset/properties/id' },
+              schema: { $ref: '#/components/schemas/Asset' },
             },
           },
         },
