@@ -17,6 +17,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ### Fixes
 
 - App: Fix app theme color.
+- Studio: Add asset management page for apps. This can be used to preview, download, delete, and
+  update assets.
 
 ## [0.12.5] - 2020-04-16
 
