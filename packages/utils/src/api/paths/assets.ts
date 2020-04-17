@@ -54,5 +54,16 @@ export default {
         },
       },
     },
+    delete: {
+      tags: ['asset'],
+      description: 'Remove an existing asset',
+      operationId: 'deleteAsset',
+      responses: {
+        204: {
+          description: 'The asset was successfully deleted.',
+        },
+      },
+      security: [{ studio: [] }, { app: ['resources:manage'] }],
+    },
   },
 };
