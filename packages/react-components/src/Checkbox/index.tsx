@@ -60,7 +60,7 @@ export default class Checkbox extends React.Component<CheckboxProps> {
       className,
       wrapperClassName,
       error,
-      help,
+      help = null,
       label,
       name,
       value,
@@ -85,11 +85,9 @@ export default class Checkbox extends React.Component<CheckboxProps> {
           onChange={this.onChange}
           type="checkbox"
         />
-        {help && (
-          <label className={classNames({ 'is-danger': error })} htmlFor={id}>
-            {help}
-          </label>
-        )}
+        <label className={classNames({ 'is-danger': error })} htmlFor={id}>
+          {help}
+        </label>
       </FormComponent>
     );
   }

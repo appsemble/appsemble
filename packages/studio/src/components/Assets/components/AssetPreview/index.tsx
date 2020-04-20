@@ -24,9 +24,9 @@ export default function AssetPreview({ asset }: { asset: Asset }): React.ReactEl
   }
 
   const url = `/api/apps/${app.id}/assets/${asset.id}`;
-  const isImage = asset.mime.startsWith('image');
-  const isAudio = asset.mime.startsWith('audio');
-  const isVideo = asset.mime.startsWith('video');
+  const isImage = asset.mime.startsWith('image/');
+  const isAudio = asset.mime.startsWith('audio/');
+  const isVideo = asset.mime.startsWith('video/');
 
   return (
     <Content className={styles.preview}>

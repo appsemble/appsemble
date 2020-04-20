@@ -7,7 +7,8 @@ import checkRole from '../utils/checkRole';
 export async function getAssets(ctx) {
   const { appId } = ctx.params;
   const app = await App.findByPk(appId, {
-    include: [{ model: Asset, required: false }],
+    attributes: [],
+    include: [{ model: Asset, attributes: ['id', 'mime', 'filename'], required: false }],
   });
 
   if (!app) {
@@ -67,7 +68,8 @@ export async function deleteAsset(ctx) {
   const { appId, assetId } = ctx.params;
 
   const app = await App.findByPk(appId, {
-    include: [{ model: Asset, where: { id: assetId }, required: false }],
+    attributes: ['OrganizationId'],
+    include: [{ model: Asset, attributes: ['id'], where: { id: assetId }, required: false }],
   });
 
   if (!app) {

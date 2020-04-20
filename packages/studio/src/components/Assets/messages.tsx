@@ -8,6 +8,8 @@ export default defineMessages({
     one {asset}
     other {assets}
   }`,
+  id: 'Id',
+  mime: 'File type',
   filename: 'Filename',
   actions: 'Actions',
   preview: 'Preview',
@@ -26,4 +28,6 @@ export default defineMessages({
   chooseFile: 'Choose file…',
   noFile: 'No file chosen',
   uploadSuccess: 'Successfully uploaded asset {id}',
+  error: 'Something went wrong when fetching this app’s assets.',
+  downloadError: 'Something went wrong when downloading this asset.',
 });

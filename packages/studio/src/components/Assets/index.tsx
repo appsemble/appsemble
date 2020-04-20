@@ -6,6 +6,7 @@ import {
   FormComponent,
   Icon,
   Loader,
+  Message,
   Modal,
   Table,
   Title,
@@ -36,6 +37,7 @@ export default function Assets(): React.ReactElement {
 
   const [assets, setAssets] = React.useState<Asset[]>([]);
   const [loading, setLoading] = React.useState(true);
+  const [error, setError] = React.useState(false);
   const [selectedAssets, setSelectedAssets] = React.useState<string[]>([]);
   const [dialog, setDialog] = React.useState<'upload' | 'preview' | 'delete'>(null);
   const [previewedAsset, setPreviewedAsset] = React.useState<Asset>(null);
@@ -95,31 +97,49 @@ export default function Assets(): React.ReactElement {
 
   const downloadAsset = React.useCallback(
     async (asset) => {
-      const { filename, id } = asset;
-      const mime = extension(asset.mime);
+      try {
+        const { filename, id } = asset;
+        const mime = extension(asset.mime);
 
-      await download(`/api/apps/${app.id}/assets/${id}`, filename || mime ? `${id}.${mime}` : id);
+        await download(`/api/apps/${app.id}/assets/${id}`, filename || mime ? `${id}.${mime}` : id);
+      } catch (e) {
+        push(intl.formatMessage(messages.downloadError));
+      }
     },
-    [app],
+    [app, push, intl],
   );
 
   const onAssetCheckboxClick = React.useCallback(
-    (asset: Asset) => {
-      if (selectedAssets.includes(asset.id)) {
-        setSelectedAssets(selectedAssets.filter((a) => a !== asset.id));
+    (event: React.ChangeEvent<HTMLInputElement>, checked: boolean) => {
+      const id = event.target.name.replace(/^asset/, '');
+
+      if (!checked) {
+        setSelectedAssets(selectedAssets.filter((a) => a !== id));
       } else {
-        setSelectedAssets([...selectedAssets, asset.id]);
+        setSelectedAssets([...selectedAssets, id]);
       }
     },
     [selectedAssets],
   );
 
   React.useEffect(() => {
-    axios.get<Asset[]>(`/api/apps/${app.id}/assets`).then((result) => {
-      setAssets(result.data);
-      setLoading(false);
-    });
+    try {
+      axios.get<Asset[]>(`/api/apps/${app.id}/assets`).then((result) => {
+        setAssets(result.data);
+        setLoading(false);
+      });
+    } catch (e) {
+      setError(true);
+    }
   }, [app]);
+
+  if (error) {
+    return (
+      <Message color="danger">
+        <FormattedMessage {...error} />
+      </Message>
+    );
+  }
 
   if (loading) {
     return <Loader />;
@@ -150,8 +170,12 @@ export default function Assets(): React.ReactElement {
             <th>
               <FormattedMessage {...messages.actions} />
             </th>
-            <th>Id</th>
-            <th>MIME</th>
+            <th>
+              <FormattedMessage {...messages.id} />
+            </th>
+            <th>
+              <FormattedMessage {...messages.mime} />
+            </th>
             <th>
               <FormattedMessage {...messages.filename} />
             </th>
@@ -166,10 +190,9 @@ export default function Assets(): React.ReactElement {
               <td>
                 <Checkbox
                   checked={selectedAssets.includes(asset.id)}
-                  help=" "
                   id={`check${asset.id}`}
                   name={`check${asset.id}`}
-                  onChange={() => onAssetCheckboxClick(asset)}
+                  onChange={onAssetCheckboxClick}
                   wrapperClassName={`is-inline-block ${styles.assetCheckbox}`}
                 />
                 <Button color="primary" icon="download" onClick={() => downloadAsset(asset)} />
