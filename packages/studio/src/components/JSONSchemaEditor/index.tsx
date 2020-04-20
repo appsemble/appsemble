@@ -1,7 +1,9 @@
-import { Checkbox, Input, Select } from '@appsemble/react-components';
+import { Checkbox, FormComponent, Input, Select } from '@appsemble/react-components';
 import type { OpenAPIV3 } from 'openapi-types';
 import * as React from 'react';
 import type { Definition } from 'typescript-json-schema';
+
+import FileInput from './FileInput';
 
 interface JSONSchemaEditorProps {
   required?: boolean;
@@ -23,7 +25,9 @@ export default function JSONSchemaEditor({
   schema,
 }: JSONSchemaEditorProps): React.ReactElement {
   let type: React.ComponentPropsWithoutRef<typeof Input>['type'] = 'text';
+  const acceptedFiles: any = [];
   const returnElements: React.ReactElement[] = [];
+  const [fileValue, setFileValue] = React.useState([]);
 
   if (prop.type === 'integer' || prop.type === 'number') {
     type = 'number';
@@ -31,6 +35,15 @@ export default function JSONSchemaEditor({
     type = 'email';
   } else if (prop.format === 'password') {
     type = 'password';
+  } else if (prop.type === 'array') {
+    if (prop.items) {
+      Object.entries(prop.items).forEach(([key, object]) => {
+        if (key === 'appsembleFile') {
+          type = 'file';
+          acceptedFiles.push(object.type);
+        }
+      });
+    }
   }
 
   if (prop.enum) {
@@ -60,6 +73,22 @@ export default function JSONSchemaEditor({
   }
 
   switch (prop.type) {
+    case 'array':
+      return (
+        <FormComponent label={label} required={required}>
+          <FileInput
+            key={propName}
+            disabled={disabled}
+            onInput={(event: any, value: any) => {
+              onChange(event, value);
+            }}
+            prop={prop}
+            propName={propName}
+            repeated
+            value={fileValue}
+          />
+        </FormComponent>
+      );
     case 'boolean':
       return (
         <Checkbox

@@ -1,0 +1,11 @@
+.repeatedContainer {
+  background-color: hsl(0, 0%, 100%);
+  background-image: url(./background.svg);
+  box-shadow: 0 -5px 11px 0 hsla(0, 0%, 4%, 0.07), 0 5px 11px 0 hsla(0, 0%, 4%, 0.07);
+  display: flex;
+  flex-flow: row;
+  height: 7.5em;
+  margin-top: 2em;
+  overflow-x: auto;
+  padding: 6px 0;
+}

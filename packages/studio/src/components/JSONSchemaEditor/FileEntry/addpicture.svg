@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="24px" height="24px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 43.1 (39012) - http://www.bohemiancoding.com/sketch -->
+    <title>Icons/Bold/Gallery Copy</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <path d="M16,11.3351317 L15.9019359,11.2025987 L14.570721,9.55920711 C13.6618938,8.43778101 12.1993679,8.50342865 11.3932746,9.69707948 L10.6042737,10.8654201 C10.1872477,11.4829459 9.6386194,11.4771689 9.2316699,10.8506305 L6.02821038,5.91859205 C5.22739281,4.68565529 3.8135737,4.69770584 3.03002901,5.94240425 L0.0768599284,10.6336553 L-6.34908792e-16,10.7581908 L0,1.99406028 C0,0.892771196 0.894513756,0 1.99406028,0 L14.0059397,0 C15.1072288,0 16,0.894513756 16,1.99406028 L16,11.3351317 Z M16,13.0158262 L16,14.0059397 C16,15.1072288 15.1054862,16 14.0059397,16 L1.99406028,16 C0.892771196,16 0,15.1054862 0,14.0059397 L0,12.6622126 L0.925491174,11.1626216 L3.87630915,6.47514239 C4.27135002,5.84760097 4.78682178,5.8432074 5.18958303,6.46329762 L8.39304255,11.395336 C9.18963717,12.6217711 10.6147158,12.6367772 11.4330004,11.4250737 L12.2220012,10.2567331 C12.652564,9.61916231 13.308296,9.5897288 13.7938171,10.1888263 L15.1115481,11.8148096 L16,13.0158262 Z M11.5,7 C12.3284271,7 13,6.32842712 13,5.5 C13,4.67157288 12.3284271,4 11.5,4 C10.6715729,4 10,4.67157288 10,5.5 C10,6.32842712 10.6715729,7 11.5,7 Z" id="path-1"></path>
+    </defs>
+    <g id="Symbols" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Icons/Bold/Gallery-Copy">
+            <g id="Path-2-+-Oval-6-+-Color/Rood-Mask" transform="translate(4.000000, 4.000000)">
+                <mask id="mask-2" fill="white">
+                    <use xlink:href="#path-1"></use>
+                </mask>
+                <use id="Mask" fill="#9B9B9B" xlink:href="#path-1"></use>
+                <g id="Color/Wit" mask="url(#mask-2)" fill="#FFFFFF">
+                    <g transform="translate(-17.000000, -16.000000)" id="Rectangle-Copy">
+                        <rect x="0" y="0" width="50" height="50"></rect>
+                    </g>
+                </g>
+            </g>
+            <circle id="Oval-4" fill="#BEBEBE" cx="17" cy="17" r="5"></circle>
+            <g id="Group-2" transform="translate(14.500000, 14.500000)" stroke="#FFFFFF" stroke-linecap="round">
+                <path d="M0.5,2.5 L4.5,2.5" id="Line"></path>
+                <path d="M2.5,0.5 L2.5,4.5" id="Line"></path>
+            </g>
+        </g>
+    </g>
+</svg>

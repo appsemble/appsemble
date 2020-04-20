@@ -37,7 +37,7 @@ type InputProps = Omit<React.ComponentPropsWithoutRef<typeof FormComponent>, 'ch
      *
      * This may be extended if necessary.
      */
-    type?: 'color' | 'email' | 'number' | 'password' | 'search' | 'tel' | 'text' | 'url';
+    type?: 'color' | 'email' | 'number' | 'password' | 'search' | 'tel' | 'text' | 'url' | 'file';
   };
 
 /**
@@ -49,6 +49,7 @@ export default React.forwardRef<HTMLInputElement, InputProps>(
       control,
       error,
       iconLeft,
+      iconRight,
       help,
       label,
       maxLength,

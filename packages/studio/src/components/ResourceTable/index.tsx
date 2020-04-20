@@ -85,7 +85,7 @@ export default function ResourceTable(): React.ReactElement {
       if (name === 'id') {
         return;
       }
-      if (type === 'object' || type === 'array') {
+      if (type === 'object') {
         setEditingResource({
           ...editingResource,
           [objectName]: { ...editingResource[objectName], [name]: value },
@@ -103,6 +103,7 @@ export default function ResourceTable(): React.ReactElement {
   const submitCreate = React.useCallback(
     async (event: React.FormEvent) => {
       event.preventDefault();
+
       try {
         const { data } = await axios.post<Resource>(
           `/api/apps/${appId}/resources/${resourceName}`,

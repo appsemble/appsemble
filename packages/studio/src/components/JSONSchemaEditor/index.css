@@ -1,0 +1,8 @@
+.row {
+  align-self: center;
+  display: inline-block;
+}
+
+.bottom {
+  display: absolute;
+}
