@@ -3,8 +3,7 @@ import {
   CardFooterButton,
   Checkbox,
   Content,
-  FormComponent,
-  Icon,
+  FileUpload,
   Loader,
   Message,
   Modal,
@@ -247,33 +246,14 @@ export default function Assets(): React.ReactElement {
         title={<FormattedMessage {...messages.uploadTitle} />}
       >
         <Content>
-          <FormComponent
-            className="has-text-centered"
-            id="icon-upload"
+          <FileUpload
+            className={styles.filePicker}
+            fileButtonLabel={<FormattedMessage {...messages.chooseFile} />}
+            fileLabel={file?.name || <FormattedMessage {...messages.noFile} />}
+            formComponentClassName={styles.filePicker}
             label={<FormattedMessage {...messages.file} />}
-            required
-          >
-            <div className="file has-name">
-              <label className={`file-label ${styles.filePicker}`} htmlFor="file-upload">
-                <input
-                  className="file-input"
-                  id="file-upload"
-                  name="file"
-                  onChange={onFileChange}
-                  type="file"
-                />
-                <span className="file-cta">
-                  <Icon icon="upload" />
-                  <span className="file-label">
-                    <FormattedMessage {...messages.chooseFile} />
-                  </span>
-                </span>
-                <span className="file-name">
-                  {file?.name || <FormattedMessage {...messages.noFile} />}
-                </span>
-              </label>
-            </div>
-          </FormComponent>
+            onChange={onFileChange}
+          />
         </Content>
       </Modal>
       <Modal
