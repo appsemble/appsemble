@@ -556,3 +556,8 @@ lighthouse:
     reports:
       metrics: reports/metrics.txt
     expire_in: 7 days
+
+# Test 10 Second Dance in the staging environment.
+10 second dance:
+  stage: end 2 end
+  trigger: appsemble/10-second-dance
