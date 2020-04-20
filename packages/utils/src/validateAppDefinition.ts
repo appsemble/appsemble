@@ -192,10 +192,6 @@ export function validateHooks(definition: AppDefinition): void {
 }
 
 export function validateReferences(definition: AppDefinition): void {
-  if (!definition.resources) {
-    return;
-  }
-
   Object.entries(definition.resources).forEach(([resourceType, resource]) => {
     if (resource.references) {
       Object.entries(resource.references).forEach(([field, reference]) => {
