@@ -577,8 +577,8 @@ export async function createResource(ctx) {
   };
   ctx.status = 201;
 
-  await processReferenceHooks(ctx, app, createdResource, action);
-  await processHooks(ctx, app, createdResource, action);
+  processReferenceHooks(ctx, app, createdResource, action);
+  processHooks(ctx, app, createdResource, action);
 }
 
 export async function updateResource(ctx) {
@@ -642,8 +642,8 @@ export async function updateResource(ctx) {
     $updated: resource.updated,
   };
 
-  await processReferenceHooks(ctx, app, resource, action);
-  await processHooks(ctx, app, resource, action);
+  processReferenceHooks(ctx, app, resource, action);
+  processHooks(ctx, app, resource, action);
 }
 
 export async function deleteResource(ctx) {
@@ -682,6 +682,6 @@ export async function deleteResource(ctx) {
   await resource.destroy();
   ctx.status = 204;
 
-  await processReferenceHooks(ctx, app, resource, action);
-  await processHooks(ctx, app, resource, action);
+  processReferenceHooks(ctx, app, resource, action);
+  processHooks(ctx, app, resource, action);
 }

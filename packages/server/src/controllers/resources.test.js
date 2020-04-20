@@ -4,6 +4,7 @@ import webpush from 'web-push';
 
 import { App, AppSubscription, Resource } from '../models';
 import createServer from '../utils/createServer';
+import createWaitableMock from '../utils/test/createWaitableMock';
 import testSchema from '../utils/test/testSchema';
 import testToken from '../utils/test/testToken';
 import truncate from '../utils/test/truncate';
@@ -15,6 +16,7 @@ let token;
 let organizationId;
 let clock;
 let user;
+let originalSendNotification;
 
 const exampleApp = (orgId) => ({
   definition: {
@@ -74,6 +76,7 @@ beforeAll(async () => {
   db = await testSchema('resources');
   server = await createServer({ db, argv: { host: 'http://localhost', secret: 'test' } });
   request = await createInstance(server);
+  originalSendNotification = webpush.sendNotification;
 }, 10e3);
 
 beforeEach(async () => {
@@ -96,6 +99,7 @@ afterEach(() => {
 afterAll(async () => {
   await request.close();
   await db.close();
+  webpush.sendNotification = originalSendNotification;
 });
 
 describe('getResourceById', () => {
@@ -991,14 +995,15 @@ describe('Resource Notifications', () => {
       { headers: { authorization: token } },
     );
 
-    const spy = jest.spyOn(webpush, 'sendNotification').mockImplementation(() => {});
+    webpush.sendNotification = createWaitableMock();
     await request.put(
       `/api/apps/${app.id}/resources/testResource/${resource.id}`,
       { foo: 'I am not Foo.' },
       { headers: { authorization: token } },
     );
 
-    expect(spy).toHaveBeenCalledWith(
+    await webpush.sendNotification.waitToHaveBeenCalled(1);
+    expect(webpush.sendNotification).toHaveBeenCalledWith(
       {
         endpoint,
         keys: { auth, p256dh },
@@ -1018,7 +1023,6 @@ describe('Resource Notifications', () => {
         },
       },
     );
-    spy.mockRestore();
   });
 
   it('should trigger parent hooks if associated child has subscription hooks', async () => {
@@ -1052,14 +1056,15 @@ describe('Resource Notifications', () => {
       { headers: { authorization: token } },
     );
 
-    const spy = jest.spyOn(webpush, 'sendNotification').mockImplementation(() => {});
+    webpush.sendNotification = createWaitableMock();
     await request.post(
       `/api/apps/${app.id}/resources/testResourceB`,
       { bar: 'I am bar.', testResourceId: resource.id },
       { headers: { authorization: token } },
     );
 
-    expect(spy).toHaveBeenCalledWith(
+    await webpush.sendNotification.waitToHaveBeenCalled(1);
+    expect(webpush.sendNotification).toHaveBeenCalledWith(
       {
         endpoint,
         keys: { auth, p256dh },
@@ -1079,6 +1084,5 @@ describe('Resource Notifications', () => {
         },
       },
     );
-    spy.mockRestore();
   });
 });
