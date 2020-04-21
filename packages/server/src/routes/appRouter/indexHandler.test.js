@@ -186,7 +186,7 @@ beforeAll(async () => {
   });
   const server = await createServer({ app, argv: { host: 'http://host.example', secret: 'test' } });
   request = await createInstance(server);
-}, 10e3);
+});
 
 afterEach(() => {
   templateName = undefined;

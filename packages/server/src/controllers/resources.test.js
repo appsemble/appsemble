@@ -57,7 +57,7 @@ beforeAll(createTestSchema('resources'));
 beforeAll(async () => {
   server = await createServer({ argv: { host: 'http://localhost', secret: 'test' } });
   request = await createInstance(server);
-}, 10e3);
+});
 
 beforeEach(async () => {
   ({ authorization: token, user } = await testToken());

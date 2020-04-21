@@ -18,7 +18,7 @@ beforeAll(createTestSchema('blocks'));
 
 beforeAll(async () => {
   server = await createServer({ argv: { host: 'http://localhost', secret: 'test' } });
-}, 10e3);
+});
 
 beforeEach(async () => {
   ({ clientToken, user } = await testToken('blocks:write'));

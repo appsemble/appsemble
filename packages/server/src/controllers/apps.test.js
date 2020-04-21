@@ -19,7 +19,7 @@ beforeAll(createTestSchema('apps'));
 beforeAll(async () => {
   server = await createServer({ argv: { host: 'http://localhost', secret: 'test' } });
   request = await createInstance(server);
-}, 10e3);
+});
 
 beforeEach(async () => {
   clock = FakeTimers.install();
