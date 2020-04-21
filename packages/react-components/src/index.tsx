@@ -7,6 +7,7 @@ export { default as Dropdown } from './Dropdown';
 export { default as ErrorHandler } from './ErrorHandler';
 export { default as Form } from './Form';
 export { default as FormButtons } from './FormButtons';
+export { default as FileUpload } from './FileUpload';
 export { default as FormComponent } from './FormComponent';
 export { default as Icon } from './Icon';
 export { default as IconButton } from './IconButton';

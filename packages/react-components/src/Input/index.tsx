@@ -37,7 +37,17 @@ type InputProps = Omit<React.ComponentPropsWithoutRef<typeof FormComponent>, 'ch
      *
      * This may be extended if necessary.
      */
-    type?: 'color' | 'email' | 'number' | 'password' | 'search' | 'tel' | 'text' | 'url' | 'file';
+    type?:
+      | 'color'
+      | 'email'
+      | 'number'
+      | 'password'
+      | 'search'
+      | 'tel'
+      | 'text'
+      | 'url'
+      | 'file'
+      | 'date';
   };
 
 /**
