@@ -5,7 +5,13 @@ import bcrypt from 'bcrypt';
 import crypto from 'crypto';
 import { DatabaseError, UniqueConstraintError } from 'sequelize';
 
-import { EmailAuthorization, OAuthAuthorization, ResetPasswordToken, User } from '../models';
+import {
+  EmailAuthorization,
+  OAuthAuthorization,
+  ResetPasswordToken,
+  transactional,
+  User,
+} from '../models';
 import createJWTResponse from '../utils/createJWTResponse';
 
 async function mayRegister({ argv }) {
@@ -39,7 +45,7 @@ export async function registerEmail(ctx) {
   let user;
 
   try {
-    await ctx.db.transaction(async (transaction) => {
+    await transactional(async (transaction) => {
       user = await User.create({ password: hashedPassword, primaryEmail: email }, { transaction });
       await user.createEmailAuthorization({ email, key }, { transaction });
     });
@@ -82,7 +88,7 @@ export async function registerOAuth(ctx) {
   }
 
   try {
-    await ctx.db.transaction(async (transaction) => {
+    await transactional(async (transaction) => {
       await registerUser(auth, organization, transaction);
     });
   } catch (e) {

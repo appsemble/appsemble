@@ -35,10 +35,8 @@ export function builder(yargs) {
 }
 
 export async function handler(argv) {
-  let db;
-
   try {
-    db = initDB({
+    initDB({
       host: argv.databaseHost,
       port: argv.databasePort,
       username: argv.databaseUser,
@@ -52,5 +50,5 @@ export async function handler(argv) {
   }
 
   const dnsConfig = await dns(argv);
-  await bulkDNSRestore(new URL(argv.host).hostname, db, dnsConfig, 50);
+  await bulkDNSRestore(new URL(argv.host).hostname, dnsConfig, 50);
 }

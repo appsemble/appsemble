@@ -7,6 +7,7 @@ import { Op } from 'sequelize';
 import {
   App,
   AppSubscription,
+  getDB,
   Organization,
   Resource,
   ResourceSubscription,
@@ -45,7 +46,7 @@ function generateQuery(ctx, { createdHash, updatedHash }) {
             .replace(/\$updated/g, updatedHash)
             .replace(/\$created/g, createdHash),
         ),
-        ctx.db,
+        getDB(),
       );
     } catch (e) {
       return {};

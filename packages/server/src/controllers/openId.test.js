@@ -3,20 +3,19 @@ import { createInstance } from 'axios-test-instance';
 
 import { OAuth2AuthorizationCode } from '../models';
 import createServer from '../utils/createServer';
-import testSchema from '../utils/test/testSchema';
+import { closeTestSchema, createTestSchema, truncate } from '../utils/test/testSchema';
 import testToken from '../utils/test/testToken';
-import truncate from '../utils/test/truncate';
 
 let authorization;
 let clock;
-let db;
 let request;
 let server;
 let user;
 
+beforeAll(createTestSchema('openid'));
+
 beforeAll(async () => {
-  db = await testSchema('organizations');
-  server = await createServer({ db, argv: { host: 'http://localhost', secret: 'test' } });
+  server = await createServer({ argv: { host: 'http://localhost', secret: 'test' } });
   request = await createInstance(server);
 });
 
@@ -27,14 +26,17 @@ beforeEach(async () => {
   ({ authorization, user } = await testToken());
 });
 
+afterEach(truncate);
+
 afterEach(() => {
   clock.uninstall();
 });
 
 afterAll(async () => {
   await request.close();
-  await db.close();
 });
+
+afterAll(closeTestSchema);
 
 describe('getUserInfo', () => {
   it('should return userinfo formatted as defined by OpenID', async () => {

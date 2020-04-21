@@ -1,4 +1,4 @@
-import { Options, Sequelize } from 'sequelize';
+import { Options, Sequelize, Transaction } from 'sequelize';
 
 import { logSQL } from '../utils/sqlUtils';
 import App from './App';
@@ -130,4 +130,17 @@ export function getDB(): Sequelize {
     throw new Error('The database hasn’t ben initialized yet. Call initDB() first.');
   }
   return db;
+}
+
+/**
+ * Run queries in a transaction.
+ *
+ * If the callback function fails, the transaction will be rolled back.
+ *
+ * @param callback The function that will be called with a transaction.
+ */
+export async function transactional<T>(
+  callback: (transaction: Transaction) => Promise<T>,
+): Promise<T> {
+  return getDB().transaction(callback);
 }

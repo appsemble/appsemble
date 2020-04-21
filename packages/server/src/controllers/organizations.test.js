@@ -10,11 +10,9 @@ import {
   User,
 } from '../models';
 import createServer from '../utils/createServer';
-import testSchema from '../utils/test/testSchema';
+import { closeTestSchema, createTestSchema, truncate } from '../utils/test/testSchema';
 import testToken from '../utils/test/testToken';
-import truncate from '../utils/test/truncate';
 
-let db;
 let request;
 let server;
 let authorization;
@@ -22,15 +20,14 @@ let clientToken;
 let organization;
 let user;
 
-beforeAll(async () => {
-  db = await testSchema('organizations');
+beforeAll(createTestSchema('organizations'));
 
-  server = await createServer({ db, argv: { host: 'http://localhost', secret: 'test' } });
+beforeAll(async () => {
+  server = await createServer({ argv: { host: 'http://localhost', secret: 'test' } });
   request = await createInstance(server);
-}, 10e3);
+});
 
 beforeEach(async () => {
-  await truncate();
   ({ authorization, clientToken, user } = await testToken('organizations:styles:write'));
   organization = await user.createOrganization(
     {
@@ -42,10 +39,13 @@ beforeEach(async () => {
   await Organization.create({ id: 'appsemble', name: 'Appsemble' });
 });
 
+afterEach(truncate);
+
 afterAll(async () => {
   await request.close();
-  await db.close();
 });
+
+afterAll(closeTestSchema);
 
 describe('getOrganization', () => {
   it('should fetch an organization', async () => {

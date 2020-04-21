@@ -3,39 +3,33 @@ import Koa from 'koa';
 
 import boomMiddleware from '../../middleware/boom';
 import { Organization } from '../../models';
-import testSchema from '../../utils/test/testSchema';
-import truncate from '../../utils/test/truncate';
+import { closeTestSchema, createTestSchema, truncate } from '../../utils/test/testSchema';
 import appRouter from '.';
 
 let request;
-let db;
+
+beforeAll(createTestSchema('organizationcsshandler'));
 
 beforeAll(async () => {
-  db = await testSchema('organizationCSSHandler');
-
-  beforeEach(async () => {
-    request = await createInstance(
-      new Koa()
-        .use((ctx, next) => {
-          ctx.argv = { host: 'http://localhost' };
-          Object.defineProperty(ctx, 'origin', { value: 'http://app.org.localhost' });
-          return next();
-        })
-        .use(boomMiddleware())
-        .use(appRouter),
-    );
-  });
+  request = await createInstance(
+    new Koa()
+      .use((ctx, next) => {
+        ctx.argv = { host: 'http://localhost' };
+        Object.defineProperty(ctx, 'origin', { value: 'http://app.org.localhost' });
+        return next();
+      })
+      .use(boomMiddleware())
+      .use(appRouter),
+  );
 });
 
-afterEach(async () => {
-  await truncate();
-  await request.close();
-});
+afterEach(truncate);
 
 afterAll(async () => {
   await request.close();
-  await db.close();
 });
+
+afterAll(closeTestSchema);
 
 it('should serve organization core CSS', async () => {
   const org = await Organization.create({

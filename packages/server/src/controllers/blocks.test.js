@@ -5,25 +5,22 @@ import { omit } from 'lodash';
 import path from 'path';
 
 import createServer from '../utils/createServer';
-import testSchema from '../utils/test/testSchema';
+import { closeTestSchema, createTestSchema, truncate } from '../utils/test/testSchema';
 import testToken from '../utils/test/testToken';
-import truncate from '../utils/test/truncate';
 
-let db;
 let server;
 let instance;
 let headers;
 let user;
 let clientToken;
 
-beforeAll(async () => {
-  db = await testSchema('blocks');
+beforeAll(createTestSchema('blocks'));
 
-  server = await createServer({ db, argv: { host: 'http://localhost', secret: 'test' } });
-}, 10e3);
+beforeAll(async () => {
+  server = await createServer({ argv: { host: 'http://localhost', secret: 'test' } });
+});
 
 beforeEach(async () => {
-  await truncate();
   ({ clientToken, user } = await testToken('blocks:write'));
   await user.createOrganization(
     {
@@ -40,9 +37,9 @@ afterEach(async () => {
   await instance.close();
 });
 
-afterAll(async () => {
-  await db.close();
-});
+afterEach(truncate);
+
+afterAll(closeTestSchema);
 
 describe('getBlock', () => {
   it('should be possible to retrieve a block definition', async () => {
