@@ -46,6 +46,7 @@ export default {
         additionalProperties: {
           type: 'object',
           properties: {
+            resource: { type: 'string' },
             create: referenceAction,
             update: referenceAction,
             delete: referenceAction,
