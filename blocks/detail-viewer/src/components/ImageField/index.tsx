@@ -1,6 +1,6 @@
 /** @jsx h */
+import { useBlock } from '@appsemble/preact';
 import { useObjectURL } from '@appsemble/preact-components';
-import { useBlock } from '@appsemble/preact/src';
 import type { Remapper } from '@appsemble/sdk';
 import classNames from 'classnames';
 import { h, VNode } from 'preact';

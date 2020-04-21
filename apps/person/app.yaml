@@ -101,13 +101,17 @@ pages:
         version: 0.12.5
         parameters:
           fields:
-            - name: firstName
+            - name:
+                - prop: firstName
               label: First Name
-            - name: lastName
+            - name:
+                - prop: lastName
               label: Surname
-            - name: email
+            - name:
+                - prop: email
               label: Email Address
-            - name: description
+            - name:
+                - prop: description
               label: Description
         events:
           listen:

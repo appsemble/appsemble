@@ -9,13 +9,13 @@ export interface FileField extends AbstractField {
   name: Remapper;
   type: 'file';
   repeated?: boolean;
-  repeatedName?: string;
+  repeatedName?: Remapper;
 }
 
 export interface GeoCoordinatesField extends AbstractField {
   name?: Remapper;
-  latitude?: string;
-  longitude?: string;
+  latitude?: Remapper;
+  longitude?: Remapper;
   type: 'geocoordinates';
 }
 

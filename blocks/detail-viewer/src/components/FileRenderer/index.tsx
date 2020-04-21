@@ -1,4 +1,4 @@
-import { remapData } from '@appsemble/utils';
+import { useBlock } from '@appsemble/preact';
 import classNames from 'classnames';
 import { Fragment, h, VNode } from 'preact';
 
@@ -10,6 +10,8 @@ import styles from './index.css';
  * Render a string as is.
  */
 export default function FileRenderer({ field, value }: RendererProps<FileField>): VNode {
+  const { utils } = useBlock();
+
   return (
     <Fragment>
       {field.label && <h6 className="title is-6">{field.label}</h6>}
@@ -21,7 +23,7 @@ export default function FileRenderer({ field, value }: RendererProps<FileField>)
               key={index}
               label={field.label}
               name={field.name}
-              src={field.repeatedName ? remapData(field.repeatedName, v) : v}
+              src={field.repeatedName ? utils.remap(field.repeatedName, v) : v}
             />
           ))}
         </div>
