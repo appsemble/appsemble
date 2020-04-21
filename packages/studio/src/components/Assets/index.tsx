@@ -189,7 +189,6 @@ export default function Assets(): React.ReactElement {
               <td>
                 <Checkbox
                   checked={selectedAssets.includes(asset.id)}
-                  id={`check${asset.id}`}
                   name={`check${asset.id}`}
                   onChange={onAssetCheckboxClick}
                   wrapperClassName={`is-inline-block ${styles.assetCheckbox}`}
@@ -252,7 +251,9 @@ export default function Assets(): React.ReactElement {
             fileLabel={file?.name || <FormattedMessage {...messages.noFile} />}
             formComponentClassName={styles.filePicker}
             label={<FormattedMessage {...messages.file} />}
+            name="file"
             onChange={onFileChange}
+            required
           />
         </Content>
       </Modal>

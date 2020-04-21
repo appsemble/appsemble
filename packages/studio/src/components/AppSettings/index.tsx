@@ -104,6 +104,7 @@ export default function AppSettings(): React.ReactElement {
             fileLabel={icon?.name || <FormattedMessage {...messages.noFile} />}
             help={<FormattedMessage {...messages.iconDescription} />}
             label={<FormattedMessage {...messages.icon} />}
+            name="icon"
             onChange={onIconChange}
             preview={
               <figure className={`image is-128x128 ${styles.iconContainer}`}>
@@ -114,7 +115,6 @@ export default function AppSettings(): React.ReactElement {
                 />
               </figure>
             }
-            required={false}
           />
           <div className={styles.private}>
             <Checkbox

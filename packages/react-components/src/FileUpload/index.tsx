@@ -3,7 +3,9 @@ import React from 'react';
 
 import { FormComponent, Icon } from '../index';
 
-interface FileUploadProps extends Omit<React.HTMLAttributes<HTMLInputElement>, 'onChange'> {
+interface FileUploadProps {
+  id?: string;
+  name: string;
   accept?: string;
   label?: React.ReactNode;
   fileButtonLabel?: React.ReactNode;
@@ -18,6 +20,8 @@ interface FileUploadProps extends Omit<React.HTMLAttributes<HTMLInputElement>, '
 }
 
 export default function FileUpload({
+  name,
+  id = name,
   accept,
   className,
   fileButtonLabel,
@@ -28,23 +32,18 @@ export default function FileUpload({
   label,
   onChange,
   preview = null,
-  required = true,
+  required = false,
 }: FileUploadProps): React.ReactElement {
   return (
-    <FormComponent
-      className={formComponentClassName}
-      id="icon-upload"
-      label={label}
-      required={required}
-    >
+    <FormComponent className={formComponentClassName} id={id} label={label} required={required}>
       {preview}
       <div className="file has-name">
         <label className={`file-label ${className}`} htmlFor="file-upload">
           <input
             accept={accept}
             className="file-input"
-            id="file-upload"
-            name="file"
+            id={id}
+            name={name}
             onChange={onChange}
             type="file"
           />
