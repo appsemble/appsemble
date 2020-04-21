@@ -25,9 +25,9 @@ export default function JSONSchemaEditor({
   schema,
 }: JSONSchemaEditorProps): React.ReactElement {
   let type: React.ComponentPropsWithoutRef<typeof Input>['type'] = 'text';
-  const acceptedFiles: any = [];
+  let acceptedFiles = 'file_extension';
   const returnElements: React.ReactElement[] = [];
-  const [files, setFiles] = React.useState<any[]>([null]);
+  const [files, setFiles] = React.useState<File[]>([null]);
   const [fileResults, setFileResults] = React.useState<string[]>([]);
   const blobUploadType: BlobUploadType = {
     method: 'POST',
@@ -42,27 +42,26 @@ export default function JSONSchemaEditor({
       const index = Number(key);
       const value = [].concat(selectedFile);
       const filesState = files;
-      const filesResultState = fileResults;
+      const fileResultState = fileResults;
 
       if (value[0] !== undefined) {
         const result = (await uploadBlobs(value, blobUploadType)) as string;
-
+        const resultValue = result[0];
         if (index + 1 === files.length) {
           setFiles([selectedFile, ...files]);
-          setFileResults([result, ...fileResults]);
+          fileResultState[index] = resultValue;
+          setFileResults(fileResultState);
         } else {
           filesState[index] = selectedFile;
           setFiles(filesState);
-
-          filesResultState[index] = result;
-          setFileResults(filesResultState);
+          fileResultState[index] = resultValue;
+          setFileResults(fileResultState);
         }
       } else {
         filesState.splice(index, 1);
         setFiles(filesState);
-
-        filesResultState.splice(index, 1);
-        setFileResults(filesResultState);
+        fileResultState.splice(index, 1);
+        setFileResults(fileResultState);
       }
 
       onChange(e, fileResults);
@@ -81,9 +80,8 @@ export default function JSONSchemaEditor({
   } else if (prop.type === 'array') {
     if (prop.items) {
       Object.entries(prop.items).forEach(([key, object]) => {
-        if (key === 'appsembleFile') {
-          type = 'file';
-          acceptedFiles.push(object.type);
+        if (key === 'appsembleFile' && object) {
+          acceptedFiles = object.type;
         }
       });
     }
@@ -92,6 +90,7 @@ export default function JSONSchemaEditor({
   if (prop.enum) {
     return (
       <Select
+        defaultValue="default"
         label={
           prop.title ? (
             <>
@@ -106,6 +105,9 @@ export default function JSONSchemaEditor({
         onChange={onChange}
         required={schema?.required?.includes(propName)}
       >
+        <option disabled hidden value="default">
+          Choose here
+        </option>
         {prop.enum.map((option) => (
           <option key={option} value={option}>
             {option}
@@ -133,7 +135,7 @@ export default function JSONSchemaEditor({
       return (
         <div>
           <FormComponent label={label} required={required}>
-            {returnElements.map((element: any) => element)}
+            {returnElements.map((element: React.ReactElement) => element)}
           </FormComponent>
         </div>
       );
@@ -184,7 +186,7 @@ export default function JSONSchemaEditor({
         );
       });
 
-      return <div>{returnElements.map((element: any) => element)}</div>;
+      return <div>{returnElements.map((element: React.ReactElement) => element)}</div>;
     case 'string':
     case 'number':
       return (
