@@ -1,7 +1,13 @@
 const path = require('path');
 const restricted = require('eslint-restricted-globals');
 
-const configs = [path.join(__dirname, 'config/**'), '*.config.js', '.*rc.js', '**/jest.setup.ts'];
+const configs = [
+  path.join(__dirname, 'config/**'),
+  '*.config.js',
+  '.*rc.js',
+  '**/jest.setup.ts',
+  '**/__mocks__/**',
+];
 const tests = ['**/*.test.{js,ts,tsx}'];
 
 module.exports = {
