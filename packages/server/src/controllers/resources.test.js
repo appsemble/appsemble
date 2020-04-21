@@ -3,11 +3,9 @@ import { createInstance } from 'axios-test-instance';
 
 import { App, Resource } from '../models';
 import createServer from '../utils/createServer';
-import testSchema from '../utils/test/testSchema';
+import { closeTestSchema, createTestSchema, truncate } from '../utils/test/testSchema';
 import testToken from '../utils/test/testToken';
-import truncate from '../utils/test/truncate';
 
-let db;
 let request;
 let server;
 let token;
@@ -54,14 +52,14 @@ const exampleApp = (orgId) => ({
   OrganizationId: orgId,
 });
 
+beforeAll(createTestSchema('resources'));
+
 beforeAll(async () => {
-  db = await testSchema('resources');
-  server = await createServer({ db, argv: { host: 'http://localhost', secret: 'test' } });
+  server = await createServer({ argv: { host: 'http://localhost', secret: 'test' } });
   request = await createInstance(server);
 }, 10e3);
 
 beforeEach(async () => {
-  await truncate();
   ({ authorization: token, user } = await testToken());
   ({ id: organizationId } = await user.createOrganization(
     {
@@ -73,14 +71,17 @@ beforeEach(async () => {
   clock = FakeTimers.install();
 });
 
+afterEach(truncate);
+
 afterEach(() => {
   clock.uninstall();
 });
 
 afterAll(async () => {
   await request.close();
-  await db.close();
 });
+
+afterAll(closeTestSchema);
 
 describe('getResourceById', () => {
   it('should be able to fetch a resource', async () => {

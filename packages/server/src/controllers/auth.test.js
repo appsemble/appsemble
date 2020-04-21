@@ -3,28 +3,25 @@ import bcrypt from 'bcrypt';
 
 import { EmailAuthorization, ResetPasswordToken, User } from '../models';
 import createServer from '../utils/createServer';
-import testSchema from '../utils/test/testSchema';
-import truncate from '../utils/test/truncate';
+import { closeTestSchema, createTestSchema, truncate } from '../utils/test/testSchema';
 
-let db;
 let request;
 let server;
 
-beforeAll(async () => {
-  db = await testSchema('auth');
+beforeAll(createTestSchema('auth'));
 
-  server = await createServer({ db, argv: { host: 'http://localhost', secret: 'test' } });
+beforeAll(async () => {
+  server = await createServer({ argv: { host: 'http://localhost', secret: 'test' } });
   request = await createInstance(server);
 }, 10e3);
 
-beforeEach(async () => {
-  await truncate();
-});
+afterEach(truncate);
 
 afterAll(async () => {
   await request.close();
-  await db.close();
 });
+
+afterAll(closeTestSchema);
 
 describe('registerEmail', () => {
   it('should register valid email addresses', async () => {

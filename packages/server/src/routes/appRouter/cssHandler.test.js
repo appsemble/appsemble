@@ -3,15 +3,14 @@ import Koa from 'koa';
 
 import boomMiddleware from '../../middleware/boom';
 import { Organization } from '../../models';
-import testSchema from '../../utils/test/testSchema';
-import truncate from '../../utils/test/truncate';
+import { closeTestSchema, createTestSchema, truncate } from '../../utils/test/testSchema';
 import appRouter from '.';
 
 let request;
-let db;
+
+beforeAll(createTestSchema('csshandler'));
 
 beforeAll(async () => {
-  db = await testSchema('cssHandler');
   request = await createInstance(
     new Koa()
       .use((ctx, next) => {
@@ -24,14 +23,13 @@ beforeAll(async () => {
   );
 });
 
-afterEach(async () => {
-  await truncate();
-});
+afterEach(truncate);
 
 afterAll(async () => {
   await request.close();
-  await db.close();
 });
+
+afterAll(closeTestSchema);
 
 it('should serve app core CSS', async () => {
   const org = await Organization.create({ id: 'org' });

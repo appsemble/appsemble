@@ -4,7 +4,7 @@ import Boom from '@hapi/boom';
 import semver from 'semver';
 import { DatabaseError, UniqueConstraintError } from 'sequelize';
 
-import { BlockAsset, BlockVersion } from '../models';
+import { BlockAsset, BlockVersion, getDB, transactional } from '../models';
 import checkRole from '../utils/checkRole';
 
 export async function getBlock(ctx) {
@@ -44,12 +44,10 @@ export async function getBlock(ctx) {
 }
 
 export async function queryBlocks(ctx) {
-  const { db } = ctx;
-
   // Sequelize does not support subqueries
   // The alternative is to query everything and filter manually
   // See: https://github.com/sequelize/sequelize/issues/9509
-  const [blockVersions] = await db.query(
+  const [blockVersions] = await getDB().query(
     'SELECT "OrganizationId", name, description, version, actions, events, layout, parameters, resources FROM "BlockVersion" WHERE created IN (SELECT MAX(created) FROM "BlockVersion" GROUP BY "OrganizationId", name)',
   );
 
@@ -78,7 +76,6 @@ export async function queryBlocks(ctx) {
 }
 
 export async function publishBlock(ctx) {
-  const { db } = ctx;
   const { files, ...data } = ctx.request.body;
   const { name, version } = data;
   const actionKeyRegex = /^[a-z]\w*$/;
@@ -110,7 +107,7 @@ export async function publishBlock(ctx) {
   }
 
   try {
-    await db.transaction(async (transaction) => {
+    await transactional(async (transaction) => {
       const {
         actions = null,
         description = null,

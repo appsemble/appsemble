@@ -2,11 +2,9 @@ import { createInstance } from 'axios-test-instance';
 
 import { App, Asset } from '../models';
 import createServer from '../utils/createServer';
-import testSchema from '../utils/test/testSchema';
+import { closeTestSchema, createTestSchema, truncate } from '../utils/test/testSchema';
 import testToken from '../utils/test/testToken';
-import truncate from '../utils/test/truncate';
 
-let db;
 let request;
 let server;
 let organizationId;
@@ -14,15 +12,14 @@ let user;
 let authorization;
 let app;
 
-beforeAll(async () => {
-  db = await testSchema('assets');
+beforeAll(createTestSchema('assets'));
 
-  server = await createServer({ db, argv: { host: 'http://localhost', secret: 'test' } });
+beforeAll(async () => {
+  server = await createServer({ argv: { host: 'http://localhost', secret: 'test' } });
   request = await createInstance(server);
 }, 10e3);
 
 beforeEach(async () => {
-  await truncate();
   ({ authorization, user } = await testToken());
   ({ id: organizationId } = await user.createOrganization(
     {
@@ -53,10 +50,13 @@ beforeEach(async () => {
   });
 });
 
+afterEach(truncate);
+
 afterAll(async () => {
   await request.close();
-  await db.close();
 });
+
+afterAll(closeTestSchema);
 
 describe('getAssetById', () => {
   it('should be able to fetch an asset', async () => {
