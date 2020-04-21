@@ -29,7 +29,6 @@ export default async function uploadBlobs(
               });
 
               const id = responseData instanceof Object ? responseData.id : responseData;
-
               return [file, `${id}`];
             },
           ),
