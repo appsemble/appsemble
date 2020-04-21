@@ -4,6 +4,8 @@ import { DataTypes, Model, Sequelize } from 'sequelize';
  * Define database metadata.
  */
 export default class Meta extends Model {
+  version: string;
+
   static initialize(sequelize: Sequelize): void {
     Meta.init(
       {

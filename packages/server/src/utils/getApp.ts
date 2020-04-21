@@ -1,6 +1,8 @@
 import Boom from '@hapi/boom';
+import type { FindOptions } from 'sequelize';
 
 import { App } from '../models';
+import type { KoaContext } from '../types';
 
 /**
  * Get an app from the database based on the Koa context and URL.
@@ -11,7 +13,11 @@ import { App } from '../models';
  *
  * @returns The app matching the url.
  */
-export default async function getApp({ argv, origin }, queryOptions, url = origin) {
+export default async function getApp(
+  { argv, origin }: KoaContext,
+  queryOptions: FindOptions,
+  url = origin,
+): Promise<App> {
   const platformHost = new URL(argv.host).hostname;
   const { hostname } = new URL(url);
 

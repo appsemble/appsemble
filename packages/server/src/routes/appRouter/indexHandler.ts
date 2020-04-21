@@ -4,6 +4,7 @@ import qs from 'querystring';
 import { Op } from 'sequelize';
 
 import { BlockAsset, BlockVersion } from '../../models';
+import type { KoaContext } from '../../types';
 import createSettings from '../../utils/createSettings';
 import getApp from '../../utils/getApp';
 import makeCSP from '../../utils/makeCSP';
@@ -13,7 +14,7 @@ import { bulmaURL, faURL } from '../../utils/styleURL';
 /**
  * https://developers.google.com/web/fundamentals/web-app-manifest
  */
-export default async function indexHandler(ctx) {
+export default async function indexHandler(ctx: KoaContext): Promise<void> {
   ctx.type = 'text/html';
   const { render } = ctx.state;
   const app = await getApp(ctx, {

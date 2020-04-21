@@ -1,5 +1,8 @@
+import type * as types from '@appsemble/types';
 import yaml from 'js-yaml';
 import { omit } from 'lodash';
+
+import type * as models from '../models';
 
 /**
  * Normalizes an app record for consistant return values.
@@ -7,7 +10,10 @@ import { omit } from 'lodash';
  * @param {Object} record The sequelize App model to normalize.
  * @param {string[]} omittedValues A list of fields to omit from the result.
  */
-export default function getAppFromRecord(record, omittedValues = []) {
+export default function getAppFromRecord(
+  record: models.App,
+  omittedValues: (keyof types.App)[] = [],
+): Partial<types.App> {
   const data = record.dataValues !== undefined ? record.dataValues : record;
   const result = {
     id: data.id,

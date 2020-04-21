@@ -1,14 +1,14 @@
-import { createInstance } from 'axios-test-instance';
+import { AxiosTestInstance, createInstance } from 'axios-test-instance';
 import Koa from 'koa';
 
 import boomMiddleware from '../../middleware/boom';
-import { Organization } from '../../models';
+import { App, AppBlockStyle, Organization } from '../../models';
 import { closeTestSchema, createTestSchema, truncate } from '../../utils/test/testSchema';
 import appRouter from '.';
 
-let request;
+let request: AxiosTestInstance;
 
-beforeAll(createTestSchema('organizationblockcsshandler'));
+beforeAll(createTestSchema('blockcsshandler'));
 
 beforeAll(async () => {
   request = await createInstance(
@@ -32,18 +32,20 @@ afterAll(async () => {
 afterAll(closeTestSchema);
 
 it('should serve app block CSS', async () => {
-  const org = await Organization.create({ id: 'org' });
-  await org.createApp({
+  await Organization.create({ id: 'org' });
+  const app = await App.create({
+    OrganizationId: 'org',
     definition: {},
     path: 'app',
     vapidPrivateKey: '',
     vapidPublicKey: '',
   });
-  await org.createOrganizationBlockStyle({
+  await AppBlockStyle.create({
+    AppId: app.id,
     block: '@foo/bar',
     style: 'body { color: cyan; }',
   });
-  const response = await request.get('/organization/@foo/bar.css');
+  const response = await request.get('/@foo/bar.css');
   expect(response).toMatchObject({
     status: 200,
     headers: {
@@ -54,14 +56,15 @@ it('should serve app block CSS', async () => {
 });
 
 it('should fallback to empty CSS', async () => {
-  const org = await Organization.create({ id: 'org' });
-  await org.createApp({
+  await Organization.create({ id: 'org' });
+  await App.create({
+    OrganizationId: 'org',
     definition: {},
     path: 'app',
     vapidPrivateKey: '',
     vapidPublicKey: '',
   });
-  const response = await request.get('/organization/@foo/bar.css');
+  const response = await request.get('/@foo/bar.css');
   expect(response).toMatchObject({
     status: 200,
     headers: {
@@ -72,7 +75,7 @@ it('should fallback to empty CSS', async () => {
 });
 
 it('should handle if an app is not found', async () => {
-  const response = await request.get('/organization/@foo/bar.css');
+  const response = await request.get('/@foo/bar.css');
   expect(response).toMatchObject({
     status: 404,
     data: {

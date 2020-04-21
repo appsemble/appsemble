@@ -1,9 +1,9 @@
-import { createInstance } from 'axios-test-instance';
+import { AxiosTestInstance, createInstance } from 'axios-test-instance';
 import Koa from 'koa';
 
 import appRouter from '.';
 
-let request;
+let request: AxiosTestInstance;
 
 beforeAll(async () => {
   request = await createInstance(new Koa().use(appRouter));

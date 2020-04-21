@@ -3,6 +3,12 @@ import { DataTypes, Model, Sequelize } from 'sequelize';
 import App from './App';
 
 export default class AppBlockStyle extends Model {
+  AppId: number;
+
+  block: string;
+
+  style: string;
+
   static initialize(sequelize: Sequelize): void {
     AppBlockStyle.init(
       {

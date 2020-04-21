@@ -1,9 +1,14 @@
 import * as Boom from '@hapi/boom';
 
 import { Organization, OrganizationBlockStyle } from '../../models';
+import type { KoaContext } from '../../types';
 import getApp from '../../utils/getApp';
 
-export default async function organizationBlockCSSHandler(ctx) {
+interface Params {
+  name: string;
+}
+
+export default async function organizationBlockCSSHandler(ctx: KoaContext<Params>): Promise<void> {
   const { name } = ctx.params;
 
   const app = await getApp(ctx, {
@@ -29,7 +34,7 @@ export default async function organizationBlockCSSHandler(ctx) {
   }
 
   const org = app.Organization;
-  const [style] = org && org.OrganizationBlockStyles;
+  const [style] = org?.OrganizationBlockStyles;
   ctx.body = style ? style.style : '';
   ctx.type = 'css';
 }

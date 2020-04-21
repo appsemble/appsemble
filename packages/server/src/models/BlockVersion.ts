@@ -1,9 +1,33 @@
+import type { ActionType, BlockManifest } from '@appsemble/types';
 import { DataTypes, Model, Sequelize } from 'sequelize';
 
 import BlockAsset from './BlockAsset';
 import Organization from './Organization';
 
-export default class BlockVersion extends Model {
+export default class BlockVersion extends Model implements Omit<BlockManifest, 'files'> {
+  OrganizationId: string;
+
+  name: string;
+
+  version: string;
+
+  layout?: 'float' | 'static' | 'grow' | 'hidden' | null;
+
+  description: string;
+
+  parameters: object;
+
+  resources: any;
+
+  actions?: { [key: string]: ActionType };
+
+  events: {
+    listen?: string[];
+    emit?: string[];
+  };
+
+  BlockAssets?: BlockAsset[];
+
   static initialize(sequelize: Sequelize): void {
     BlockVersion.init(
       {

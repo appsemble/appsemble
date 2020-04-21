@@ -1,5 +1,6 @@
 import { baseTheme, normalize } from '@appsemble/utils';
 
+import type { KoaContext } from '../../types';
 import getApp from '../../utils/getApp';
 
 const iconSizes = [48, 144, 192, 512];
@@ -7,12 +8,12 @@ const iconSizes = [48, 144, 192, 512];
 /**
  * https://developers.google.com/web/fundamentals/web-app-manifest
  */
-export default async function manifestHandler(ctx) {
+export default async function manifestHandler(ctx: KoaContext): Promise<void> {
   const app = await getApp(ctx, {
     attributes: ['definition'],
     raw: true,
   });
-  const { defaultPage, description, name, theme = { baseTheme } } = app.definition;
+  const { defaultPage, description, name, theme = baseTheme } = app.definition;
   const { themeColor = '#ffffff', splashColor = themeColor } = theme;
 
   ctx.body = {

@@ -1,6 +1,6 @@
-import type { Context } from 'koa';
 import sharp from 'sharp';
 
+import type { KoaContext } from '../types';
 import getDefaultIcon from '../utils/getDefaultIcon';
 
 interface ServeIconOptions {
@@ -12,7 +12,7 @@ interface ServeIconOptions {
 }
 
 export default async function serveIcon(
-  ctx: Context,
+  ctx: KoaContext,
   { background, format, height, icon, width }: ServeIconOptions,
 ): Promise<void> {
   // Allow icon to be null.

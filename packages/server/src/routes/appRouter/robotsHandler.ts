@@ -1,5 +1,5 @@
-import type { Context } from 'koa';
+import type { KoaContext } from '../../types';
 
-export default async function robotsHandler(ctx: Context): Promise<void> {
+export default async function robotsHandler(ctx: KoaContext): Promise<void> {
   ctx.body = 'User-agent: *\nAllow: *\n';
 }

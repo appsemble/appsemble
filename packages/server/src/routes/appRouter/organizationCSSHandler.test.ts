@@ -1,14 +1,14 @@
-import { createInstance } from 'axios-test-instance';
+import { AxiosTestInstance, createInstance } from 'axios-test-instance';
 import Koa from 'koa';
 
 import boomMiddleware from '../../middleware/boom';
-import { Organization } from '../../models';
+import { App, Organization } from '../../models';
 import { closeTestSchema, createTestSchema, truncate } from '../../utils/test/testSchema';
 import appRouter from '.';
 
-let request;
+let request: AxiosTestInstance;
 
-beforeAll(createTestSchema('csshandler'));
+beforeAll(createTestSchema('organizationcsshandler'));
 
 beforeAll(async () => {
   request = await createInstance(
@@ -31,48 +31,54 @@ afterAll(async () => {
 
 afterAll(closeTestSchema);
 
-it('should serve app core CSS', async () => {
-  const org = await Organization.create({ id: 'org' });
-  await org.createApp({
+it('should serve organization core CSS', async () => {
+  await Organization.create({
+    id: 'org',
+    coreStyle: 'body { color: green; }',
+    sharedStyle: 'body { color: purple; }',
+  });
+  await App.create({
+    OrganizationId: 'org',
     definition: {},
     path: 'app',
-    style: 'body { color: red; }',
-    sharedStyle: 'body { color: blue; }',
     vapidPrivateKey: '',
     vapidPublicKey: '',
   });
-  const response = await request.get('/core.css');
+  const response = await request.get('/organization/core.css');
   expect(response).toMatchObject({
     status: 200,
     headers: {
       'content-type': 'text/css; charset=utf-8',
     },
-    data: 'body { color: red; }',
+    data: 'body { color: green; }',
   });
 });
 
-it('should serve app shared CSS', async () => {
-  const org = await Organization.create({ id: 'org' });
-  await org.createApp({
+it('should serve organization shared CSS', async () => {
+  await Organization.create({
+    id: 'org',
+    coreStyle: 'body { color: green; }',
+    sharedStyle: 'body { color: purple; }',
+  });
+  await App.create({
+    OrganizationId: 'org',
     definition: {},
     path: 'app',
-    style: 'body { color: red; }',
-    sharedStyle: 'body { color: blue; }',
     vapidPrivateKey: '',
     vapidPublicKey: '',
   });
-  const response = await request.get('/shared.css');
+  const response = await request.get('/organization/shared.css');
   expect(response).toMatchObject({
     status: 200,
     headers: {
       'content-type': 'text/css; charset=utf-8',
     },
-    data: 'body { color: blue; }',
+    data: 'body { color: purple; }',
   });
 });
 
 it('should handle if an app is not found', async () => {
-  const response = await request.get('/core.css');
+  const response = await request.get('/organization/core.css');
   expect(response).toMatchObject({
     status: 404,
     data: {

@@ -2,6 +2,7 @@ import { logger } from '@appsemble/node-utils';
 import { Op } from 'sequelize';
 
 import { App } from '../models';
+import type { DNSImplementation } from './dns';
 
 /**
  * Add DNS entries for all apps in the database in chunks
@@ -9,7 +10,11 @@ import { App } from '../models';
  * @param dnsConfig The DNS configuration instance to use.
  * @param chunkSize How many apps to register per DNS add request.
  */
-export default async function bulkDNSRestore(hostname, dnsConfig, chunkSize) {
+export default async function bulkDNSRestore(
+  hostname: string,
+  dnsConfig: DNSImplementation,
+  chunkSize: number,
+): Promise<void> {
   let apps;
   let appCount = 0;
   for (let i = 0; !apps || apps.length === chunkSize; i += 1) {
