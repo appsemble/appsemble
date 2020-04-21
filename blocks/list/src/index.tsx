@@ -64,11 +64,19 @@ export default bootstrap(
     }
 
     if (error) {
-      return <FormattedMessage id="error" />;
+      return (
+        <span>
+          <FormattedMessage id="error" />
+        </span>
+      );
     }
 
     if (!data.length) {
-      return <FormattedMessage id="noData" />;
+      return (
+        <span>
+          <FormattedMessage id="noData" />
+        </span>
+      );
     }
 
     return (
