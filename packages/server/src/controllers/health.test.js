@@ -4,25 +4,25 @@ import { getDB } from '../models';
 import createServer from '../utils/createServer';
 import { closeTestSchema, createTestSchema, truncate } from '../utils/test/testSchema';
 
+let request;
+let server;
+
 beforeAll(createTestSchema('health'));
 
+beforeAll(async () => {
+  server = await createServer({ argv: { host: 'http://localhost', secret: 'test' } });
+  request = await createInstance(server);
+}, 10e3);
+
 afterEach(truncate);
+
+afterAll(async () => {
+  await request.close();
+});
 
 afterAll(closeTestSchema);
 
 describe('checkHealth', () => {
-  let request;
-  let server;
-
-  beforeAll(async () => {
-    server = await createServer({ argv: { host: 'http://localhost', secret: 'test' } });
-    request = await createInstance(server);
-  }, 10e3);
-
-  afterAll(async () => {
-    await request.close();
-  });
-
   it('should return status ok if all services are connected properly', async () => {
     const response = await request.get('/api/health');
 
