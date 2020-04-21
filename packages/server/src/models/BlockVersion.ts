@@ -16,6 +16,7 @@ export default class BlockVersion extends Model {
         name: { type: DataTypes.STRING, primaryKey: true, unique: 'blockVersionComposite' },
         version: { type: DataTypes.STRING, primaryKey: true, unique: 'blockVersionComposite' },
         description: { type: DataTypes.TEXT },
+        icon: { type: DataTypes.BLOB },
         layout: { type: DataTypes.STRING },
         actions: { type: DataTypes.JSON },
         parameters: { type: DataTypes.JSON },

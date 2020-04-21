@@ -46,7 +46,8 @@
   },
   "devDependencies": {
     "@appsemble/types": "0.12.5",
-    "axios-mock-adapter": "^1.18.1"
+    "axios-mock-adapter": "^1.18.1",
+    "concat-stream": "^2.0.0"
   },
   "peerDependencies": {
     "webpack": "^4.41.2"

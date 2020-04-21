@@ -11,6 +11,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 - App: Add meta description tag.
 - App: Add minimal `robots.txt`.
+- CLI: Add support for block icons.
+- Server: Add support for block icons.
 
 ### Fixes
 

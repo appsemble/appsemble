@@ -5,6 +5,7 @@ import { omit } from 'lodash';
 import path from 'path';
 
 import createServer from '../utils/createServer';
+import getDefaultIcon from '../utils/getDefaultIcon';
 import { closeTestSchema, createTestSchema, truncate } from '../utils/test/testSchema';
 import testToken from '../utils/test/testToken';
 
@@ -136,6 +137,7 @@ describe('publishBlock', () => {
       events: null,
       files: ['build/standing.png', 'build/testblock.js'],
       name: '@xkcd/standing',
+      iconUrl: '/api/blocks/@xkcd/standing/versions/1.32.9/icon',
       layout: null,
       resources: null,
       parameters: null,
@@ -312,6 +314,7 @@ describe('getBlockVersions', () => {
         description: 'Version 1.32.9!',
         actions: null,
         events: null,
+        iconUrl: '/api/blocks/@xkcd/standing/versions/1.32.9/icon',
         layout: null,
         parameters: null,
         resources: null,
@@ -327,5 +330,54 @@ describe('getBlockVersions', () => {
       error: 'Not Found',
       message: 'Block not found.',
     });
+  });
+});
+
+describe.only('getBlockIcon', () => {
+  it('should serve the block icon', async () => {
+    const icon = await fs.readFile(path.join(__dirname, '__fixtures__/testpattern.png'));
+    const formData = new FormData();
+    formData.append('name', '@xkcd/test');
+    formData.append('description', 'foo');
+    formData.append('version', '1.33.8');
+    formData.append('files', Buffer.from(''), 'test.js');
+    formData.append('icon', icon);
+
+    await instance.post('/api/blocks', formData, {
+      headers: { ...headers.headers, ...formData.getHeaders() },
+    });
+
+    const response = await instance.get('/api/blocks/@xkcd/test/versions/1.33.8/icon', {
+      responseType: 'arraybuffer',
+    });
+    expect(response.headers['content-type']).toBe('image/png');
+    expect(response.data.equals(icon)).toBe(true);
+  });
+
+  it('should return a 404 if the requested block definition doesn’t exist', async () => {
+    const { data } = await instance.get('/api/blocks/@non/existent');
+    expect(data).toStrictEqual({
+      error: 'Not Found',
+      message: 'Block definition not found',
+      statusCode: 404,
+    });
+  });
+
+  it('should return the default icon if no block icon was defined', async () => {
+    const formData = new FormData();
+    formData.append('name', '@xkcd/test');
+    formData.append('description', 'foo');
+    formData.append('version', '1.33.8');
+    formData.append('files', Buffer.from(''), 'test.js');
+
+    await instance.post('/api/blocks', formData, {
+      headers: { ...headers.headers, ...formData.getHeaders() },
+    });
+
+    const response = await instance.get('/api/blocks/@xkcd/test/versions/1.33.8/icon', {
+      responseType: 'arraybuffer',
+    });
+    expect(response.headers['content-type']).toBe('image/svg+xml');
+    expect(response.data.equals(getDefaultIcon())).toBe(true);
   });
 });

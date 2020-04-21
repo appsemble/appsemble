@@ -20,6 +20,8 @@ export default async function makePayload(config: BlockConfig): Promise<FormData
   const form = new FormData();
   const { description, layout, name, resources, version } = config;
   const { actions, events, parameters } = getBlockConfigFromTypeScript(config);
+  const files = await fs.readdir(dir);
+  const icon = files.find((entry) => entry.match(/^icon\.(png|svg)$/));
 
   function append(field: string, value: any): void {
     if (value) {
@@ -39,6 +41,12 @@ export default async function makePayload(config: BlockConfig): Promise<FormData
   append('resources', resources);
   append('parameters', parameters);
   append('version', version);
+
+  if (icon) {
+    const iconPath = path.join(dir, icon);
+    logger.info(`Using icon: ${iconPath}`);
+    form.append('icon', fs.createReadStream(iconPath));
+  }
 
   return new Promise((resolve, reject) => {
     klaw(distPath)
