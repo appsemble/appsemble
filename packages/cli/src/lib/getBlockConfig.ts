@@ -34,7 +34,6 @@ export default async function getBlockConfig(dir: string): Promise<BlockConfig> 
     name: pkg.name,
     version: pkg.version,
     webpack: 'webpack.config',
-    dist: 'dist',
     ...config,
     dir,
   };

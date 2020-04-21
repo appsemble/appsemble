@@ -8,32 +8,18 @@ import { inspect } from 'util';
 import type { BlockConfig } from '../types';
 import getBlockConfigFromTypeScript from './getBlockConfigFromTypeScript';
 
-interface MakePayloadParams {
-  /**
-   * The block configuration
-   */
-  config: BlockConfig;
-
-  /**
-   * The path in which the block project is located.
-   */
-  path: string;
-}
-
 /**
  * Configure the payload for a new block version upload.
  *
+ * @param config The block configuration
  * @returns The payload that should be sent to the version endpoint.
  */
-export default async function makePayload({
-  config,
-  path: p,
-}: MakePayloadParams): Promise<FormData> {
-  const { output } = config;
-  const distPath = output ? path.resolve(p, output) : p;
+export default async function makePayload(config: BlockConfig): Promise<FormData> {
+  const { dir, output } = config;
+  const distPath = path.resolve(dir, output);
   const form = new FormData();
   const { description, layout, name, resources, version } = config;
-  const { actions, events, parameters } = getBlockConfigFromTypeScript(config, p);
+  const { actions, events, parameters } = getBlockConfigFromTypeScript(config);
 
   function append(field: string, value: any): void {
     if (value) {

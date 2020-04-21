@@ -54,9 +54,19 @@ export interface BlockConfig
     | 'version'
     | 'layout'
   > {
+  /**
+   * The path to the webpack configuration file relative to the block project directory.
+   */
   webpack: string;
-  dist: string;
+
+  /**
+   * The build output directory relative to the block project directory.
+   */
   output: string;
+
+  /**
+   * The absolute directory of the block project.
+   */
   dir: string;
 }
 
