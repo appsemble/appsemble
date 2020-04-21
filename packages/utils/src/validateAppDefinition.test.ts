@@ -4,6 +4,7 @@ import {
   AppsembleValidationError,
   checkBlocks,
   validateHooks,
+  validateReferences,
   validateSecurity,
 } from './validateAppDefinition';
 
@@ -365,6 +366,94 @@ describe('validateHooks', () => {
     expect(() => validateHooks(definition)).toThrow(
       new AppsembleValidationError(
         'Role ‘foo’ in resources.TestResource.create.hooks.notification.to does not exist.',
+      ),
+    );
+  });
+});
+
+describe('validateReferences', () => {
+  it('should validate resource references', () => {
+    const definition: AppDefinition = {
+      defaultPage: '',
+      security: {
+        default: { role: 'Reader', policy: 'everyone' },
+        roles: {
+          Reader: {},
+          Admin: { inherits: ['Reader'] },
+        },
+      },
+      pages: [],
+      resources: {
+        test: {},
+        testGroup: {
+          schema: { type: 'object', properties: { testId: { type: 'string' } } },
+          references: {
+            testId: {
+              resource: 'test',
+            },
+          },
+        },
+      },
+    };
+
+    expect(() => validateReferences(definition)).not.toThrow();
+  });
+
+  it('should throw if referenced resource does not exist', () => {
+    const definition: AppDefinition = {
+      defaultPage: '',
+      security: {
+        default: { role: 'Reader', policy: 'everyone' },
+        roles: {
+          Reader: {},
+          Admin: { inherits: ['Reader'] },
+        },
+      },
+      pages: [],
+      resources: {
+        testGroup: {
+          schema: { type: 'object', properties: { testId: { type: 'string' } } },
+          references: {
+            testId: {
+              resource: 'test',
+            },
+          },
+        },
+      },
+    };
+
+    expect(() => validateReferences(definition)).toThrow(
+      new AppsembleValidationError('Resource “test” referenced by “testGroup” does not exist.'),
+    );
+  });
+
+  it('should throw if referenced resource property does not exist', () => {
+    const definition: AppDefinition = {
+      defaultPage: '',
+      security: {
+        default: { role: 'Reader', policy: 'everyone' },
+        roles: {
+          Reader: {},
+          Admin: { inherits: ['Reader'] },
+        },
+      },
+      pages: [],
+      resources: {
+        test: {},
+        testGroup: {
+          schema: { type: 'object', properties: {} },
+          references: {
+            testId: {
+              resource: 'test',
+            },
+          },
+        },
+      },
+    };
+
+    expect(() => validateReferences(definition)).toThrow(
+      new AppsembleValidationError(
+        'Property “testId” referencing “test” does not exist in resource “testGroup”',
       ),
     );
   });
