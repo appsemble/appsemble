@@ -3,10 +3,9 @@ import {
   CardFooterButton,
   Checkbox,
   Content,
+  FileUpload,
   Form,
   FormButtons,
-  FormComponent,
-  Icon,
   Input,
   Message,
   Modal,
@@ -99,35 +98,24 @@ export default function AppSettings(): React.ReactElement {
     <>
       <Content>
         <Form onSubmit={onSubmit}>
-          <FormComponent id="icon-upload" label={<FormattedMessage {...messages.icon} />}>
-            <figure className={`image is-128x128 ${styles.iconContainer}`}>
-              <img alt={intl.formatMessage(messages.icon)} className={styles.icon} src={iconUrl} />
-            </figure>
-            <div className="file has-name">
-              <label className="file-label" htmlFor="icon-upload">
-                <input
-                  accept="image/jpeg, image/png, image/tiff, image/webp"
-                  className="file-input"
-                  id="icon-upload"
-                  name="icon"
-                  onChange={onIconChange}
-                  type="file"
+          <FileUpload
+            accept="image/jpeg, image/png, image/tiff, image/webp"
+            fileButtonLabel={<FormattedMessage {...messages.icon} />}
+            fileLabel={icon?.name || <FormattedMessage {...messages.noFile} />}
+            help={<FormattedMessage {...messages.iconDescription} />}
+            label={<FormattedMessage {...messages.icon} />}
+            name="icon"
+            onChange={onIconChange}
+            preview={
+              <figure className={`image is-128x128 ${styles.iconContainer}`}>
+                <img
+                  alt={intl.formatMessage(messages.icon)}
+                  className={styles.icon}
+                  src={iconUrl}
                 />
-                <span className="file-cta">
-                  <Icon icon="upload" />
-                  <span className="file-label">
-                    <FormattedMessage {...messages.icon} />
-                  </span>
-                </span>
-                <span className="file-name">
-                  {icon?.name || <FormattedMessage {...messages.noFile} />}
-                </span>
-              </label>
-            </div>
-            <p className="help">
-              <FormattedMessage {...messages.iconDescription} />
-            </p>
-          </FormComponent>
+              </figure>
+            }
+          />
           <div className={styles.private}>
             <Checkbox
               className="is-marginless"

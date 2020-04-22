@@ -61,6 +61,7 @@
     "@types/klaw": "^3.0.0",
     "@types/leaflet": "^1.5.12",
     "@types/marked": "^0.7.3",
+    "@types/mime-types": "^2.1.0",
     "@types/node-sass": "^4.11.0",
     "@types/postcss-import": "^12.0.0",
     "@types/postcss-load-config": "^2.0.1",

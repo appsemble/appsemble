@@ -18,10 +18,14 @@ attach(({ events, parameters: { fields } }) => {
   });
 
   events.on.data((data, error) => {
+    while (wrapper.lastElementChild) {
+      wrapper.removeChild(wrapper.lastElementChild);
+    }
+
     if (error) {
-      wrapper.firstChild.replaceWith('error');
+      wrapper.append('error');
     } else {
-      wrapper.firstChild.replaceWith(
+      wrapper.append(
         ...fields.map(({ icon, label, name }) => (
           <div className={styles.field}>
             <i className={`fas fa-${icon} ${styles.icon}`} />
