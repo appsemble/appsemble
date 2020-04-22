@@ -7,7 +7,7 @@ it('should create a form-data payload', async () => {
   const payload = await makePayload({
     webpack: 'webpack.config',
     name: '@org/block',
-    output: 'dist',
+    output: 'output',
     version: '1.2.3',
     dir: path.join(__dirname, '__fixtures__', 'makePayload', 'no-icon'),
     parameters: { type: 'object' },
@@ -42,7 +42,7 @@ Content-Disposition: form-data; name="version"\r
 Content-Disposition: form-data; name="files"; filename="block.js"\r
 Content-Type: application/javascript\r
 \r
-export const foo = 'bar';
+export default 'no-icon';
 \r
 --${boundary}--\r
 `);
@@ -52,7 +52,7 @@ it('should include an icon if one is present', async () => {
   const payload = await makePayload({
     webpack: 'webpack.config',
     name: '@org/block',
-    output: 'dist',
+    output: 'output',
     version: '1.2.3',
     dir: path.join(__dirname, '__fixtures__', 'makePayload', 'with-icon'),
     parameters: {},
@@ -94,7 +94,7 @@ Content-Type: image/svg+xml\r
 Content-Disposition: form-data; name="files"; filename="block.js"\r
 Content-Type: application/javascript\r
 \r
-export const foo = 'bar';
+export default 'with-icon';
 \r
 --${boundary}--\r
 `);

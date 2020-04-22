@@ -13,6 +13,10 @@ function fixture(filename: string): string {
   return path.join(__dirname, '__fixtures__/getBlockConfigFromTypeScript', filename);
 }
 
+beforeEach(() => {
+  jest.spyOn(process, 'cwd').mockReturnValue(__dirname);
+});
+
 describe('getBlockConfigFromTypeScript', () => {
   it('should extract configuration from a TypeScript project', () => {
     const result = getBlockConfigFromTypeScript({
@@ -122,7 +126,7 @@ describe('getBlockConfigFromTypeScript', () => {
       }),
     ).toThrow(
       new AppsembleError(
-        "Found duplicate interface 'Actions' in 'packages/cli/src/lib/__fixtures__/getBlockConfigFromTypeScript/duplicateActions/index.ts:31'",
+        "Found duplicate interface 'Actions' in '__fixtures__/getBlockConfigFromTypeScript/duplicateActions/index.ts:31'",
       ),
     );
   });
@@ -138,7 +142,7 @@ describe('getBlockConfigFromTypeScript', () => {
       }),
     ).toThrow(
       new AppsembleError(
-        "Found duplicate interface 'EventEmitters' in 'packages/cli/src/lib/__fixtures__/getBlockConfigFromTypeScript/duplicateEventEmitters/index.ts:31'",
+        "Found duplicate interface 'EventEmitters' in '__fixtures__/getBlockConfigFromTypeScript/duplicateEventEmitters/index.ts:31'",
       ),
     );
   });
@@ -154,7 +158,7 @@ describe('getBlockConfigFromTypeScript', () => {
       }),
     ).toThrow(
       new AppsembleError(
-        "Found duplicate interface 'EventListeners' in 'packages/cli/src/lib/__fixtures__/getBlockConfigFromTypeScript/duplicateEventListeners/index.ts:31'",
+        "Found duplicate interface 'EventListeners' in '__fixtures__/getBlockConfigFromTypeScript/duplicateEventListeners/index.ts:31'",
       ),
     );
   });
@@ -170,7 +174,7 @@ describe('getBlockConfigFromTypeScript', () => {
       }),
     ).toThrow(
       new AppsembleError(
-        "Found duplicate interface 'Parameters' in 'packages/cli/src/lib/__fixtures__/getBlockConfigFromTypeScript/duplicateParameters/index.ts:31'",
+        "Found duplicate interface 'Parameters' in '__fixtures__/getBlockConfigFromTypeScript/duplicateParameters/index.ts:31'",
       ),
     );
   });
