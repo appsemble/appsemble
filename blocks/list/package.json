@@ -9,6 +9,6 @@
     "@appsemble/sdk": "0.12.5",
     "@appsemble/utils": "0.12.5",
     "@fortawesome/fontawesome-common-types": "^0.2.28",
-    "preact": "^10.3.4"
+    "preact": "^10.4.1"
   }
 }
