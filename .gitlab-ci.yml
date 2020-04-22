@@ -441,6 +441,7 @@ production:
     name: production/appsemble
     url: https://appsemble.app
   script:
+    - helm dependency build config/charts/appsemble
     - helm upgrade appsemble config/charts/appsemble
       --set "app=$CI_ENVIRONMENT_SLUG"
       --set "global.postgresql.existingSecret=$POSTGRESQL_SECRET"
