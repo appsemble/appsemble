@@ -1,6 +1,6 @@
 import { createInstance } from 'axios-test-instance';
 
-import { App, Asset } from '../models';
+import { App, Asset, Member } from '../models';
 import createServer from '../utils/createServer';
 import { closeTestSchema, createTestSchema, truncate } from '../utils/test/testSchema';
 import testToken from '../utils/test/testToken';
@@ -57,6 +57,87 @@ afterAll(async () => {
 });
 
 afterAll(closeTestSchema);
+
+describe('getAssets', () => {
+  it('should return an empty array if no assets exist', async () => {
+    const response = await request.get(`/api/apps/${app.id}/assets`);
+    expect(response).toMatchObject({
+      status: 200,
+      data: [],
+    });
+  });
+
+  it('should fetch all of the app’s assets', async () => {
+    const assetA = await app.createAsset({
+      mime: 'application/octet-stream',
+      filename: 'test.bin',
+      data: Buffer.from('buffer'),
+    });
+
+    const assetB = await app.createAsset({
+      mime: 'application/octet-stream',
+      filename: 'foo.bin',
+      data: Buffer.from('bar'),
+    });
+
+    const response = await request.get(`/api/apps/${app.id}/assets`);
+    expect(response).toMatchObject({
+      status: 200,
+      data: [
+        { id: assetA.id, mime: assetA.mime, filename: assetA.filename },
+        { id: assetB.id, mime: assetB.mime, filename: assetB.filename },
+      ],
+    });
+  });
+
+  it('should not fetch another app’s assets', async () => {
+    const assetA = await app.createAsset({
+      mime: 'application/octet-stream',
+      filename: 'test.bin',
+      data: Buffer.from('buffer'),
+    });
+
+    const assetB = await app.createAsset({
+      mime: 'application/octet-stream',
+      filename: 'foo.bin',
+      data: Buffer.from('bar'),
+    });
+
+    const appB = await App.create({
+      definition: {
+        name: 'Test App',
+        defaultPage: 'Test Page',
+        security: {
+          default: {
+            role: 'Reader',
+            policy: 'everyone',
+          },
+          roles: {
+            Reader: {},
+          },
+        },
+      },
+      path: 'test-app-B',
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organizationId,
+    });
+    await appB.createAsset({
+      mime: 'application/octet-stream',
+      filename: 'foo.bin',
+      data: Buffer.from('bar'),
+    });
+
+    const response = await request.get(`/api/apps/${app.id}/assets`);
+    expect(response).toMatchObject({
+      status: 200,
+      data: [
+        { id: assetA.id, mime: assetA.mime, filename: assetA.filename },
+        { id: assetB.id, mime: assetB.mime, filename: assetB.filename },
+      ],
+    });
+  });
+});
 
 describe('getAssetById', () => {
   it('should be able to fetch an asset', async () => {
@@ -172,6 +253,78 @@ describe('createAsset', () => {
     expect(response).toMatchObject({
       status: 201,
       data: { id: expect.any(Number) },
+    });
+  });
+});
+
+describe('deleteAsset', () => {
+  it('should delete existing assets', async () => {
+    const asset = await app.createAsset({
+      mime: 'application/octet-stream',
+      filename: 'test.bin',
+      data: Buffer.from('buffer'),
+    });
+
+    const response = await request.delete(`/api/apps/${app.id}/assets/${asset.id}`, {
+      headers: { authorization },
+    });
+
+    expect(response.status).toStrictEqual(204);
+  });
+
+  it('should not delete assets if the user has insufficient permissions', async () => {
+    await Member.update({ role: 'Member' }, { where: { UserId: user.id } });
+
+    const asset = await app.createAsset({
+      mime: 'application/octet-stream',
+      filename: 'test.bin',
+      data: Buffer.from('buffer'),
+    });
+
+    const response = await request.delete(`/api/apps/${app.id}/assets/${asset.id}`, {
+      headers: { authorization },
+    });
+
+    expect(response).toMatchObject({
+      status: 403,
+      data: { message: 'User does not have sufficient permissions.' },
+    });
+  });
+
+  it('should not delete existing assets from different apps', async () => {
+    const appB = await App.create({
+      definition: {
+        name: 'Test App',
+        defaultPage: 'Test Page',
+        security: {
+          default: {
+            role: 'Reader',
+            policy: 'everyone',
+          },
+          roles: {
+            Reader: {},
+          },
+        },
+      },
+      path: 'test-app-B',
+      vapidPublicKey: 'a',
+      vapidPrivateKey: 'b',
+      OrganizationId: organizationId,
+    });
+
+    const asset = await appB.createAsset({
+      mime: 'application/octet-stream',
+      filename: 'test.bin',
+      data: Buffer.from('buffer'),
+    });
+
+    const response = await request.delete(`/api/apps/${app.id}/assets/${asset.id}`, {
+      headers: { authorization },
+    });
+
+    expect(response).toMatchObject({
+      status: 404,
+      data: { message: 'Asset not found', statusCode: 404, error: 'Not Found' },
     });
   });
 });
