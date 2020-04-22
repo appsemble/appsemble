@@ -5,6 +5,7 @@ export { default as Checkbox } from './Checkbox';
 export { default as Content } from './Content';
 export { default as Dropdown } from './Dropdown';
 export { default as ErrorHandler } from './ErrorHandler';
+export { default as FileUpload } from './FileUpload';
 export { default as Form } from './Form';
 export { default as FormButtons } from './FormButtons';
 export { default as FileUpload } from './FileUpload';
