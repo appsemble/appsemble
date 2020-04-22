@@ -9997,6 +9997,11 @@ inquirer@^7.0.0, inquirer@^7.1.0:
     strip-ansi "^6.0.0"
     through "^2.3.6"
 
+install-chrome-dependencies@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/install-chrome-dependencies/-/install-chrome-dependencies-1.0.0.tgz#71efb444b5a328bb2a0c44fa14a902be8a9976e5"
+  integrity sha512-3bhu6cDeQGlX4UJjJ6eACG527y77PslxP+o7+QRIo5e60VKopGm3Fdz3LOx/A1cP7E4hrYlX7gcw6VkjvyB21A==
+
 internal-ip@^4.3.0:
   version "4.3.0"
   resolved "https://registry.yarnpkg.com/internal-ip/-/internal-ip-4.3.0.tgz#845452baad9d2ca3b69c635a137acb9a0dad0907"
