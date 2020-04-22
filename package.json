@@ -111,7 +111,6 @@
     "eslint-restricted-globals": "^0.2.0",
     "file-loader": "^4.3.0",
     "gatsby-remark-mermaid": "^1.2.0",
-    "gitlab-yarn-audit": "^1.0.0",
     "html-webpack-plugin": "^4.0.2",
     "husky": "^4.2.3",
     "identity-obj-proxy": "^3.0.0",
