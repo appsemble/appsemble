@@ -207,7 +207,6 @@ review:
     - if: $CI_MERGE_REQUEST_PROJECT_PATH == 'appsemble/appsemble'
     - if: $CI_MERGE_REQUEST_ID
       when: manual
-  allow_failure: false
   environment:
     name: review/$CI_COMMIT_REF_SLUG
     url: https://$CI_ENVIRONMENT_SLUG.appsemble.review
@@ -251,6 +250,7 @@ stop review:
   rules:
     - if: $CI_MERGE_REQUEST_ID
       when: manual
+  allow_failure: true
   environment:
     name: review/$CI_COMMIT_REF_SLUG
     action: stop
@@ -265,7 +265,6 @@ review docs:
     - if: $CI_MERGE_REQUEST_PROJECT_PATH == 'appsemble/appsemble'
     - if: $CI_MERGE_REQUEST_ID
       when: manual
-  allow_failure: false
   environment:
     name: review/docs/$CI_COMMIT_REF_SLUG
     url: https://$CI_ENVIRONMENT_SLUG.appsemble.review
@@ -287,6 +286,7 @@ stop review docs:
   rules:
     - if: $CI_MERGE_REQUEST_ID
       when: manual
+  allow_failure: true
   environment:
     name: review/docs/$CI_COMMIT_REF_SLUG
     action: stop
