@@ -80,22 +80,19 @@ export default function ResourceTable(): React.ReactElement {
   }, [appId, deletingResource, intl, push, resourceName, resources, warningDialog]);
 
   const onChange = React.useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>, value: any, type: string, objectName: string) => {
-      const { name } = event.target;
+    (event: any, value: any) => {
+      let { name } = event?.target;
+      if (name.includes('.')) {
+        const objectParentName = event.target.name.split(/\./g)[0];
+        name = objectParentName;
+      }
       if (name === 'id') {
         return;
       }
-      if (type === 'object') {
-        setEditingResource({
-          ...editingResource,
-          [objectName]: { ...editingResource[objectName], [name]: value },
-        });
-      } else {
-        setEditingResource({
-          ...editingResource,
-          [name]: value,
-        });
-      }
+      setEditingResource({
+        ...editingResource,
+        [name]: value,
+      });
     },
     [editingResource],
   );
@@ -323,23 +320,12 @@ export default function ResourceTable(): React.ReactElement {
           return (
             <JSONSchemaEditor
               key={key}
-              appId={app.id}
               disabled={prop.readOnly || key === 'id'}
-              label={
-                prop.title ? (
-                  <>
-                    {`${prop.title} `}
-                    <span className="has-text-weight-normal has-text-grey-light">({key})</span>
-                  </>
-                ) : (
-                  key
-                )
-              }
+              name={key}
               onChange={onChange}
-              prop={prop}
-              propName={key}
-              required={schema?.required?.includes(key) || prop.readOnly || key === 'id'}
+              required={schema?.required?.includes(key)}
               schema={schema}
+              value={editingResource?.[key]}
             />
           );
         })}

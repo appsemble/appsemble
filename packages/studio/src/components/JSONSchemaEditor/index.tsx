@@ -5,36 +5,74 @@ import type { OpenAPIV3 } from 'openapi-types';
 import * as React from 'react';
 import type { Definition } from 'typescript-json-schema';
 
+import JSONSchemaObjectEditor from '../JSONSchemaObjectEditor';
+
 interface JSONSchemaEditorProps {
+  /**
+   * Whether or not the editor is disabled.
+   *
+   * This value is recursively passed down to all child inputs.
+   */
+  disabled?: boolean;
+
+  /**
+   * The name of the property thas is being rendered.
+   *
+   * The name is determined by the parent schema. It is used for recursion.
+   */
+  name?: string;
+
+  /**
+   * Whether or not the property is required.
+   *
+   * This is determined by the parent schema. It is used for recursion.
+   */
   required?: boolean;
+
+  /**
+   * The schema used to render the form elements.
+   */
   schema: OpenAPIV3.SchemaObject | Definition;
-  prop: OpenAPIV3.SchemaObject;
-  propName: string;
-  onChange: any;
-  label: string | React.ReactElement;
-  disabled: boolean;
-  appId: number;
+
+  /**
+   * The handler that is called whenever a value changes.
+   */
+  onChange: (name: any, value?: any) => void;
+
+  /**
+   * The value used to populate the editor.
+   */
+  value: any;
 }
 
 export default function JSONSchemaEditor({
-  appId,
   disabled,
-  label,
+  name,
   onChange,
-  prop,
-  propName,
   required,
   schema,
+  value,
 }: JSONSchemaEditorProps): React.ReactElement {
   let type: React.ComponentPropsWithoutRef<typeof Input>['type'] = 'text';
   let acceptedFiles = 'file_extension';
+  const prop = (schema?.properties
+    ? schema?.properties[name] || {}
+    : schema) as OpenAPIV3.SchemaObject;
+  const label = prop.title ? (
+    <>
+      {`${prop.title} `}
+      <span className="has-text-weight-normal has-text-grey-light">({name})</span>
+    </>
+  ) : (
+    name
+  );
   const returnElements: React.ReactElement[] = [];
   const [files, setFiles] = React.useState<File[]>([null]);
   const [fileResults, setFileResults] = React.useState<string[]>([]);
   const blobUploadType: BlobUploadType = {
     method: 'POST',
     serialize: null,
-    url: `/api/apps/${appId}/assets`,
+    url: '/api/apps/5/assets',
   };
 
   const onFileChange = React.useCallback(
@@ -42,12 +80,11 @@ export default function JSONSchemaEditor({
       e.persist();
       const selectedFile = e.target.files[0];
       const index = Number(key);
-      const value = [].concat(selectedFile);
+      const val = [].concat(selectedFile);
       const filesState = files;
       const fileResultState = fileResults;
-
-      if (value[0] !== undefined) {
-        const result = (await uploadBlobs(value, blobUploadType)) as string;
+      if (val[0] !== undefined) {
+        const result = (await uploadBlobs(val, blobUploadType)) as string;
         const resultValue = result[0];
         if (index + 1 === files.length) {
           setFiles([selectedFile, ...files]);
@@ -93,19 +130,10 @@ export default function JSONSchemaEditor({
     return (
       <Select
         defaultValue="default"
-        label={
-          prop.title ? (
-            <>
-              {`${prop.title} `}
-              <span className="has-text-weight-normal has-text-grey-light">({propName})</span>
-            </>
-          ) : (
-            propName
-          )
-        }
-        name={propName}
+        label={label}
+        name={name}
         onChange={onChange}
-        required={schema?.required?.includes(propName)}
+        required={required}
       >
         <option disabled hidden value="default">
           Choose here
@@ -128,7 +156,7 @@ export default function JSONSchemaEditor({
             accept={acceptedFiles}
             fileButtonLabel="Choose file"
             fileLabel={file?.name || 'no file'}
-            name={propName}
+            name={name}
             onChange={(event) => onFileChange(event, key)}
           />,
         );
@@ -144,68 +172,38 @@ export default function JSONSchemaEditor({
     case 'boolean':
       return (
         <Checkbox
-          help={propName}
-          label={
-            prop.title ? (
-              <>
-                {`${prop.title} `}
-                <span className="has-text-weight-normal has-text-grey-light">({propName})</span>
-              </>
-            ) : (
-              propName
-            )
-          }
-          name={propName}
+          disabled={disabled || prop.readOnly}
+          help={name}
+          label={label}
+          name={name}
           onChange={onChange}
+          required={required}
         />
       );
     case 'object':
-      Object.entries(prop.properties).forEach(([key, object]) => {
-        const objectProp = object as OpenAPIV3.SchemaObject;
-
-        returnElements.push(
-          <JSONSchemaEditor
-            key={key}
-            appId={appId}
-            disabled={prop.readOnly || key === 'id'}
-            label={
-              prop.title ? (
-                <>
-                  {`${key} `}
-                  <span className="has-text-weight-normal has-text-grey-light">({prop.title})</span>
-                </>
-              ) : (
-                key
-              )
-            }
-            onChange={(event: React.ChangeEvent<HTMLInputElement>, value: string) =>
-              onChange(event, value, prop.type, propName)
-            }
-            prop={objectProp}
-            propName={key}
-            required={prop?.required?.includes(key)}
-            schema={schema}
-          />,
-        );
-      });
-
-      return <div>{returnElements.map((element: React.ReactElement) => element)}</div>;
+      return (
+        <JSONSchemaObjectEditor
+          disabled={disabled}
+          name={name}
+          onChange={onChange}
+          required={required}
+          schema={prop.properties}
+          value={value}
+        />
+      );
     case 'string':
     case 'number':
+    default:
       return (
         <Input
           disabled={disabled}
           label={label}
-          name={propName}
-          onChange={(event, value) => {
-            onChange(event, value, type);
-          }}
+          name={name}
+          onChange={onChange}
           placeholder={prop.example}
           required={required}
           type={type}
         />
       );
-    default:
-      return null;
   }
 }
