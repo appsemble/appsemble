@@ -1,10 +1,11 @@
 import Boom from '@hapi/boom';
 
+import { BlockAsset } from '../../models';
+
 /**
  * Serve a block asset.
  */
 export default async function blockAssetHandler(ctx) {
-  const { BlockAsset } = ctx.db.models;
   const { filename, name, version } = ctx.params;
   const [org, blockId] = name.split('/');
 

@@ -15,13 +15,14 @@ import { col, fn, literal, Op, UniqueConstraintError } from 'sequelize';
 import sharp from 'sharp';
 import * as webpush from 'web-push';
 
+import { App, AppBlockStyle, AppRating, BlockVersion, Member } from '../models';
 import checkRole from '../utils/checkRole';
 import getAppFromRecord from '../utils/getAppFromRecord';
 import getDefaultIcon from '../utils/getDefaultIcon';
 
-function getBlockVersions(db) {
+function getBlockVersions() {
   return async (blocks) => {
-    const blockVersions = await db.models.BlockVersion.findAll({
+    const blockVersions = await BlockVersion.findAll({
       raw: true,
       where: {
         [Op.or]: uniqWith(
@@ -76,8 +77,6 @@ function handleAppValidationError(error, app) {
 }
 
 export async function createApp(ctx) {
-  const { db } = ctx;
-  const { App } = db.models;
   const {
     OrganizationId,
     definition,
@@ -120,7 +119,7 @@ export async function createApp(ctx) {
     }
 
     await checkRole(ctx, OrganizationId, permissions.CreateApps);
-    await validateAppDefinition(definition, getBlockVersions(ctx.db));
+    await validateAppDefinition(definition, getBlockVersions());
 
     for (let i = 1; i < 11; i += 1) {
       const p = i === 1 ? path : `${path}-${i}`;
@@ -147,7 +146,6 @@ export async function createApp(ctx) {
 
 export async function getAppById(ctx) {
   const { appId } = ctx.params;
-  const { App, AppRating } = ctx.db.models;
 
   const app = await App.findByPk(appId, {
     raw: true,
@@ -170,8 +168,6 @@ export async function getAppById(ctx) {
 }
 
 export async function queryApps(ctx) {
-  const { App, AppRating } = ctx.db.models;
-
   const apps = await App.findAll({
     attributes: {
       include: [
@@ -191,7 +187,6 @@ export async function queryApps(ctx) {
 }
 
 export async function queryMyApps(ctx) {
-  const { App, AppRating, Member } = ctx.db.models;
   const { user } = ctx.state;
 
   const memberships = await Member.findAll({
@@ -217,9 +212,7 @@ export async function queryMyApps(ctx) {
 }
 
 export async function updateApp(ctx) {
-  const { db } = ctx;
   const { appId } = ctx.params;
-  const { App } = db.models;
   const { definition, domain, path, sharedStyle, style, yaml } = ctx.request.body;
 
   let result;
@@ -251,7 +244,7 @@ export async function updateApp(ctx) {
       result.yaml = jsYaml.safeDump(definition);
     }
 
-    await validateAppDefinition(definition, getBlockVersions(ctx.db));
+    await validateAppDefinition(definition, getBlockVersions());
 
     const dbApp = await App.findOne({ where: { id: appId } });
 
@@ -269,9 +262,7 @@ export async function updateApp(ctx) {
 }
 
 export async function patchApp(ctx) {
-  const { db } = ctx;
   const { appId } = ctx.params;
-  const { App } = db.models;
   const {
     definition,
     domain,
@@ -291,7 +282,7 @@ export async function patchApp(ctx) {
 
     if (definition) {
       result.definition = definition;
-      await validateAppDefinition(definition, getBlockVersions(ctx.db));
+      await validateAppDefinition(definition, getBlockVersions());
     }
 
     if (path) {
@@ -374,7 +365,6 @@ export async function patchApp(ctx) {
 
 export async function deleteApp(ctx) {
   const { appId } = ctx.params;
-  const { App } = ctx.db.models;
 
   const app = await App.findByPk(appId);
 
@@ -390,7 +380,6 @@ export async function deleteApp(ctx) {
 
 export async function getAppIcon(ctx) {
   const { appId } = ctx.params;
-  const { App } = ctx.db.models;
   const app = await App.findByPk(appId, { raw: true });
 
   if (!app) {
@@ -407,7 +396,6 @@ export async function getAppIcon(ctx) {
 
 export async function getAppCoreStyle(ctx) {
   const { appId } = ctx.params;
-  const { App } = ctx.db.models;
 
   const app = await App.findByPk(appId, { raw: true });
 
@@ -422,7 +410,6 @@ export async function getAppCoreStyle(ctx) {
 
 export async function getAppSharedStyle(ctx) {
   const { appId } = ctx.params;
-  const { App } = ctx.db.models;
 
   const app = await App.findByPk(appId, { raw: true });
 
@@ -437,7 +424,6 @@ export async function getAppSharedStyle(ctx) {
 
 export async function getAppBlockStyle(ctx) {
   const { appId, blockId, organizationId } = ctx.params;
-  const { AppBlockStyle } = ctx.db.models;
 
   const blockStyle = await AppBlockStyle.findOne({
     where: {
@@ -453,8 +439,6 @@ export async function getAppBlockStyle(ctx) {
 
 export async function setAppBlockStyle(ctx) {
   const { appId, blockId, organizationId } = ctx.params;
-  const { db } = ctx;
-  const { App, AppBlockStyle, BlockVersion } = db.models;
   const { style } = ctx.request.body;
   const css = style.toString().trim();
 

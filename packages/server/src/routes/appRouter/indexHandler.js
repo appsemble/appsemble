@@ -3,6 +3,7 @@ import crypto from 'crypto';
 import qs from 'querystring';
 import { Op } from 'sequelize';
 
+import { BlockAsset, BlockVersion } from '../../models';
 import createSettings from '../../utils/createSettings';
 import getApp from '../../utils/getApp';
 import makeCSP from '../../utils/makeCSP';
@@ -15,7 +16,6 @@ import { bulmaURL, faURL } from '../../utils/styleURL';
 export default async function indexHandler(ctx) {
   ctx.type = 'text/html';
   const { render } = ctx.state;
-  const { BlockAsset, BlockVersion } = ctx.db.models;
   const app = await getApp(ctx, {
     attributes: ['definition', 'id', 'sharedStyle', 'style', 'vapidPublicKey'],
     raw: true,
@@ -96,6 +96,7 @@ export default async function indexHandler(ctx) {
     faURL,
     nonce,
     settings,
+    themeColor: (app.definition.theme && app.definition.theme.themeColor) || '#ffffff',
   });
   ctx.set('Content-Security-Policy', makeCSP(csp));
 }

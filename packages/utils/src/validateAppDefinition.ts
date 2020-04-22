@@ -191,6 +191,26 @@ export function validateHooks(definition: AppDefinition): void {
   });
 }
 
+export function validateReferences(definition: AppDefinition): void {
+  Object.entries(definition.resources).forEach(([resourceType, resource]) => {
+    if (resource.references) {
+      Object.entries(resource.references).forEach(([field, reference]) => {
+        if (!definition.resources[reference.resource]) {
+          throw new AppsembleValidationError(
+            `Resource “${reference.resource}” referenced by “${resourceType}” does not exist.`,
+          );
+        }
+
+        if (!resource.schema.properties[field]) {
+          throw new AppsembleValidationError(
+            `Property “${field}” referencing “${reference.resource}” does not exist in resource “${resourceType}”`,
+          );
+        }
+      });
+    }
+  });
+}
+
 export default async function validateAppDefinition(
   definition: AppDefinition,
   getBlockVersions: (blockMap: BlockMap) => Promisable<BlockManifest[]>,
@@ -203,6 +223,7 @@ export default async function validateAppDefinition(
   }
 
   if (definition.resources) {
+    validateReferences(definition);
     validateHooks(definition);
   }
 

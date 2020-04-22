@@ -4,6 +4,12 @@ import { verify } from 'jsonwebtoken';
 import querystring from 'querystring';
 import raw from 'raw-body';
 
+import {
+  EmailAuthorization,
+  OAuth2AuthorizationCode,
+  OAuth2ClientCredentials,
+  User,
+} from '../../models';
 import createJWTResponse from '../../utils/createJWTResponse';
 import getApp from '../../utils/getApp';
 
@@ -33,12 +39,6 @@ function checkTokenRequestParameters(query, allowed) {
  */
 export default async function tokenHandler(ctx) {
   const { argv, header } = ctx;
-  const {
-    EmailAuthorization,
-    OAuth2AuthorizationCode,
-    OAuth2ClientCredentials,
-    User,
-  } = ctx.db.models;
   let aud;
   let refreshToken;
   let scope;

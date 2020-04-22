@@ -21,7 +21,10 @@ bootstrap(({ data: blockData, events, parameters, ready, theme }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const hasListener = events.on.data(setData);
+    const hasListener = events.on.data((d) => {
+      setData(d);
+      setLoading(false);
+    });
     setLoading(hasListener);
     ready();
   }, [events, ready]);

@@ -1,29 +1,24 @@
 import { createInstance } from 'axios-test-instance';
 
+import { EmailAuthorization, Organization } from '../models';
 import createServer from '../utils/createServer';
-import testSchema from '../utils/test/testSchema';
+import { closeTestSchema, createTestSchema, truncate } from '../utils/test/testSchema';
 import testToken from '../utils/test/testToken';
-import truncate from '../utils/test/truncate';
 
-let db;
 let user;
 let request;
 let server;
 let token;
-let EmailAuthorization;
-let Organization;
+
+beforeAll(createTestSchema('user'));
 
 beforeAll(async () => {
-  db = await testSchema('user');
-
-  server = await createServer({ db, argv: { host: 'http://localhost', secret: 'test' } });
+  server = await createServer({ argv: { host: 'http://localhost', secret: 'test' } });
   request = await createInstance(server);
-  ({ EmailAuthorization, Organization } = db.models);
-}, 10e3);
+});
 
 beforeEach(async () => {
-  await truncate(db);
-  ({ authorization: token, user } = await testToken(db));
+  ({ authorization: token, user } = await testToken());
   await user.createOrganization(
     {
       id: 'testorganization',
@@ -35,8 +30,11 @@ beforeEach(async () => {
 
 afterAll(async () => {
   await request.close();
-  await db.close();
 });
+
+afterEach(truncate);
+
+afterAll(closeTestSchema);
 
 describe('getUser', () => {
   it('should return a user profile', async () => {

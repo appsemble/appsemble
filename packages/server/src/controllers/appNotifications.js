@@ -2,13 +2,13 @@ import { logger } from '@appsemble/node-utils';
 import { permissions } from '@appsemble/utils';
 import Boom from '@hapi/boom';
 
+import { App, AppSubscription, ResourceSubscription } from '../models';
 import checkRole from '../utils/checkRole';
 import sendNotification from '../utils/sendNotification';
 
 export async function getSubscription(ctx) {
   const { appId } = ctx.params;
   const { endpoint } = ctx.query;
-  const { App, AppSubscription, ResourceSubscription } = ctx.db.models;
 
   const app = await App.findByPk(appId, {
     attributes: ['definition'],
@@ -69,7 +69,6 @@ export async function getSubscription(ctx) {
 
 export async function addSubscription(ctx) {
   const { appId } = ctx.params;
-  const { App, AppSubscription } = ctx.db.models;
   const { user } = ctx.state;
   const { endpoint, keys } = ctx.request.body;
 
@@ -89,7 +88,6 @@ export async function addSubscription(ctx) {
 
 export async function updateSubscription(ctx) {
   const { appId } = ctx.params;
-  const { App, AppSubscription, ResourceSubscription } = ctx.db.models;
   const { user } = ctx.state;
   const { action, endpoint, resource, resourceId, value } = ctx.request.body;
 
@@ -170,11 +168,10 @@ export async function updateSubscription(ctx) {
 
 export async function broadcast(ctx) {
   const { appId } = ctx.params;
-  const { App, AppSubscription } = ctx.db.models;
   const { body, title } = ctx.request.body;
 
   const app = await App.findByPk(appId, {
-    include: [AppSubscription],
+    include: { model: AppSubscription, attributes: ['id', 'auth', 'p256dh', 'endpoint'] },
   });
 
   if (!app) {
@@ -185,6 +182,7 @@ export async function broadcast(ctx) {
 
   // XXX: Replace with paginated requests
   logger.verbose(`Sending ${app.AppSubscriptions.length} notifications for app ${app.id}`);
+
   app.AppSubscriptions.forEach((subscription) => {
     sendNotification(ctx, app, subscription, { title, body });
   });

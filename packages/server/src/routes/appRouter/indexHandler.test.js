@@ -1,17 +1,17 @@
 import { createInstance } from 'axios-test-instance';
 import Koa from 'koa';
 
+import { BlockAsset, BlockVersion, Organization } from '../../models';
 import createServer from '../../utils/createServer';
-import testSchema from '../../utils/test/testSchema';
+import { closeTestSchema, createTestSchema, truncate } from '../../utils/test/testSchema';
 
-let db;
 let request;
 let templateName;
 let templateParams;
 
+beforeAll(createTestSchema('approuter'));
+
 beforeAll(async () => {
-  db = await testSchema('apps');
-  const { BlockAsset, BlockVersion, Organization } = db.models;
   const organization = await Organization.create({ id: 'test' });
   await Organization.create({ id: 'appsemble' });
 
@@ -184,23 +184,22 @@ beforeAll(async () => {
     };
     return next();
   });
-  const server = await createServer({
-    app,
-    argv: { host: 'http://host.example', secret: 'test' },
-    db,
-  });
+  const server = await createServer({ app, argv: { host: 'http://host.example', secret: 'test' } });
   request = await createInstance(server);
-}, 10e3);
+});
 
 afterEach(() => {
   templateName = undefined;
   templateParams = undefined;
 });
 
+afterEach(truncate);
+
 afterAll(async () => {
   await request.close();
-  await db.close();
 });
+
+afterAll(closeTestSchema);
 
 it('should render the index page', async () => {
   const { headers, status } = await request.get('/');

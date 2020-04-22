@@ -1,4 +1,4 @@
-import Sequelize from 'sequelize';
+import { Options, Sequelize, Transaction } from 'sequelize';
 
 import { logSQL } from '../utils/sqlUtils';
 import App from './App';
@@ -23,7 +23,65 @@ import Resource from './Resource';
 import ResourceSubscription from './ResourceSubscription';
 import User from './User';
 
-let db;
+let db: Sequelize;
+
+export interface InitDBParams {
+  host?: string;
+  port?: string;
+  username?: string;
+  password?: string;
+  database?: string;
+  uri?: string;
+  ssl?: boolean;
+}
+
+const models = [
+  App,
+  AppBlockStyle,
+  AppMember,
+  AppRating,
+  AppSubscription,
+  Asset,
+  BlockAsset,
+  BlockVersion,
+  EmailAuthorization,
+  Member,
+  Meta,
+  OAuth2AuthorizationCode,
+  OAuth2ClientCredentials,
+  OAuthAuthorization,
+  Organization,
+  OrganizationBlockStyle,
+  OrganizationInvite,
+  ResetPasswordToken,
+  Resource,
+  ResourceSubscription,
+  User,
+];
+
+export {
+  App,
+  AppBlockStyle,
+  AppMember,
+  AppRating,
+  AppSubscription,
+  Asset,
+  BlockAsset,
+  BlockVersion,
+  EmailAuthorization,
+  Member,
+  Meta,
+  OAuth2AuthorizationCode,
+  OAuth2ClientCredentials,
+  OAuthAuthorization,
+  Organization,
+  OrganizationBlockStyle,
+  OrganizationInvite,
+  ResetPasswordToken,
+  Resource,
+  ResourceSubscription,
+  User,
+};
 
 export function initDB({
   host = process.env.NODE_ENV === 'production' ? 'postgres' : 'localhost',
@@ -33,15 +91,15 @@ export function initDB({
   database,
   uri,
   ssl = false,
-}) {
+}: InitDBParams): Sequelize {
   if (db) {
     throw new Error('initDB() was called multiple times within the same context.');
   }
-  const options = {
+  const options: Options = {
     logging: logSQL,
     retry: { max: 3 },
   };
-  let args;
+  let args: [Options] | [string, Options];
   if (uri) {
     args = [uri, options];
   } else {
@@ -59,38 +117,30 @@ export function initDB({
       }),
     ];
   }
-  db = new Sequelize(...args);
+  db = new Sequelize(...(args as [Options]));
 
-  App(db);
-  Member(db);
-  User(db);
-  AppMember(db);
-  Organization(db);
-  OrganizationInvite(db);
-  EmailAuthorization(db);
-  ResetPasswordToken(db);
-  OAuthAuthorization(db);
-  OAuth2AuthorizationCode(db);
-  OAuth2ClientCredentials(db);
-  Resource(db);
-  Asset(db);
-  BlockAsset(db);
-  BlockVersion(db);
-  AppBlockStyle(db);
-  OrganizationBlockStyle(db);
-  Meta(db);
-  AppSubscription(db);
-  AppRating(db);
-  ResourceSubscription(db);
-
-  Object.values(db.models).forEach((model) => model.associate(db.models));
+  models.forEach((model) => model.initialize(db));
+  models.forEach((model) => model.associate && model.associate());
 
   return db;
 }
 
-export function getDB() {
+export function getDB(): Sequelize {
   if (!db) {
     throw new Error('The database hasn’t ben initialized yet. Call initDB() first.');
   }
   return db;
+}
+
+/**
+ * Run queries in a transaction.
+ *
+ * If the callback function fails, the transaction will be rolled back.
+ *
+ * @param callback The function that will be called with a transaction.
+ */
+export async function transactional<T>(
+  callback: (transaction: Transaction) => Promise<T>,
+): Promise<T> {
+  return getDB().transaction(callback);
 }

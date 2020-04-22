@@ -1,32 +1,27 @@
 import FakeTimers from '@sinonjs/fake-timers';
 import { createInstance } from 'axios-test-instance';
 
+import { App, Resource } from '../models';
 import createServer from '../utils/createServer';
-import testSchema from '../utils/test/testSchema';
+import { closeTestSchema, createTestSchema, truncate } from '../utils/test/testSchema';
 import testToken from '../utils/test/testToken';
-import truncate from '../utils/test/truncate';
 
-let db;
 let server;
 let token;
-let App;
-let Resource;
 let request;
 let templates;
 let user;
 let clock;
 
-beforeAll(async () => {
-  db = await testSchema('templates');
+beforeAll(createTestSchema('templates'));
 
-  server = await createServer({ db, argv: { host: 'http://localhost', secret: 'test' } });
+beforeAll(async () => {
+  server = await createServer({ argv: { host: 'http://localhost', secret: 'test' } });
   request = await createInstance(server);
-  ({ App, Resource } = db.models);
-}, 10e3);
+});
 
 beforeEach(async () => {
-  await truncate(db);
-  ({ authorization: token, user } = await testToken(db));
+  ({ authorization: token, user } = await testToken());
   await user.createOrganization(
     {
       id: 'testorganization',
@@ -66,14 +61,17 @@ beforeEach(async () => {
   templates = [t1, t2];
 });
 
+afterEach(truncate);
+
 afterEach(() => {
   clock.uninstall();
 });
 
 afterAll(async () => {
   await request.close();
-  await db.close();
 });
+
+afterAll(closeTestSchema);
 
 describe('getAppTemplates', () => {
   it('should return a list of available templates', async () => {
@@ -126,8 +124,8 @@ describe('createTemplateApp', () => {
           pages: [],
         },
         domain: null,
-        iconUrl: '/api/apps/5/icon',
-        id: 5,
+        iconUrl: '/api/apps/3/icon',
+        id: 3,
         path: 'test-app',
         private: false,
         yaml: 'name: Test app\ndescription: This is a test app\npages: []\n',

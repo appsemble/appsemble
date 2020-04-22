@@ -1,15 +1,14 @@
 import { logger } from '@appsemble/node-utils';
 import { permissions } from '@appsemble/utils';
 import Boom from '@hapi/boom';
-import { isEmpty } from 'lodash';
 import semver from 'semver';
 import { DatabaseError, UniqueConstraintError } from 'sequelize';
 
+import { BlockAsset, BlockVersion, getDB, transactional } from '../models';
 import checkRole from '../utils/checkRole';
 
 export async function getBlock(ctx) {
   const { blockId, organizationId } = ctx.params;
-  const { BlockVersion } = ctx.db.models;
 
   const blockVersion = await BlockVersion.findOne({
     attributes: [
@@ -45,12 +44,10 @@ export async function getBlock(ctx) {
 }
 
 export async function queryBlocks(ctx) {
-  const { db } = ctx;
-
   // Sequelize does not support subqueries
   // The alternative is to query everything and filter manually
   // See: https://github.com/sequelize/sequelize/issues/9509
-  const [blockVersions] = await db.query(
+  const [blockVersions] = await getDB().query(
     'SELECT "OrganizationId", name, description, version, actions, events, layout, parameters, resources FROM "BlockVersion" WHERE created IN (SELECT MAX(created) FROM "BlockVersion" GROUP BY "OrganizationId", name)',
   );
 
@@ -79,9 +76,7 @@ export async function queryBlocks(ctx) {
 }
 
 export async function publishBlock(ctx) {
-  const { db } = ctx;
-  const { BlockAsset, BlockVersion } = db.models;
-  const { data, ...files } = ctx.request.body;
+  const { files, ...data } = ctx.request.body;
   const { name, version } = data;
   const actionKeyRegex = /^[a-z]\w*$/;
 
@@ -98,10 +93,6 @@ export async function publishBlock(ctx) {
 
   await checkRole(ctx, OrganizationId, permissions.PublishBlocks);
 
-  if (isEmpty(files)) {
-    throw Boom.badRequest('At least one file should be uploaded');
-  }
-
   const blockVersion = await BlockVersion.findOne({
     where: { name: blockId, OrganizationId },
     order: [['created', 'DESC']],
@@ -116,7 +107,7 @@ export async function publishBlock(ctx) {
   }
 
   try {
-    await db.transaction(async (transaction) => {
+    await transactional(async (transaction) => {
       const {
         actions = null,
         description = null,
@@ -126,22 +117,22 @@ export async function publishBlock(ctx) {
         resources = null,
       } = await BlockVersion.create({ ...data, name: blockId, OrganizationId }, { transaction });
 
-      Object.keys(files).forEach((filename) => {
-        logger.verbose(`Creating block assets for ${name}@${version}: ${filename}`);
+      files.forEach((file) => {
+        logger.verbose(
+          `Creating block assets for ${name}@${version}: ${decodeURIComponent(file.basename)}`,
+        );
       });
       await BlockAsset.bulkCreate(
-        Object.entries(files).map(([filename, file]) => ({
+        files.map((file) => ({
           name: blockId,
           OrganizationId,
           version,
-          filename,
+          filename: decodeURIComponent(file.basename),
           mime: file.mime,
           content: file.contents,
         })),
         { logging: false, transaction },
       );
-
-      const fileKeys = Object.entries(files).map(([key]) => key);
 
       ctx.body = {
         actions,
@@ -150,7 +141,7 @@ export async function publishBlock(ctx) {
         resources,
         events,
         version,
-        files: fileKeys,
+        files: files.map((file) => decodeURIComponent(file.basename)),
         name,
         description,
       };
@@ -166,7 +157,6 @@ export async function publishBlock(ctx) {
 export async function getBlockVersion(ctx) {
   const { blockId, blockVersion, organizationId } = ctx.params;
   const name = `@${organizationId}/${blockId}`;
-  const { BlockAsset, BlockVersion } = ctx.db.models;
 
   const version = await BlockVersion.findOne({
     attributes: ['actions', 'events', 'layout', 'resources', 'parameters', 'description'],
@@ -195,7 +185,6 @@ export async function getBlockVersion(ctx) {
 export async function getBlockVersions(ctx) {
   const { blockId, organizationId } = ctx.params;
   const name = `@${organizationId}/${blockId}`;
-  const { BlockVersion } = ctx.db.models;
 
   const blockVersions = await BlockVersion.findAll({
     attributes: [

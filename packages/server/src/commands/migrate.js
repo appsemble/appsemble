@@ -39,6 +39,6 @@ export async function handler(argv) {
     handleDBError(dbException);
   }
 
-  await migrate(db, to, migrations);
+  await migrate(to, migrations);
   await db.close();
 }

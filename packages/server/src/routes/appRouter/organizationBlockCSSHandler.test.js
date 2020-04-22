@@ -2,19 +2,18 @@ import { createInstance } from 'axios-test-instance';
 import Koa from 'koa';
 
 import boomMiddleware from '../../middleware/boom';
-import testSchema from '../../utils/test/testSchema';
-import truncate from '../../utils/test/truncate';
+import { Organization } from '../../models';
+import { closeTestSchema, createTestSchema, truncate } from '../../utils/test/testSchema';
 import appRouter from '.';
 
 let request;
-let db;
+
+beforeAll(createTestSchema('organizationblockcsshandler'));
 
 beforeAll(async () => {
-  db = await testSchema('cssHandler');
   request = await createInstance(
     new Koa()
       .use((ctx, next) => {
-        ctx.db = db;
         ctx.argv = { host: 'http://localhost' };
         Object.defineProperty(ctx, 'origin', { value: 'http://app.org.localhost' });
         return next();
@@ -24,17 +23,16 @@ beforeAll(async () => {
   );
 });
 
-afterEach(async () => {
-  await truncate(db);
-});
+afterEach(truncate);
 
 afterAll(async () => {
   await request.close();
-  await db.close();
 });
 
+afterAll(closeTestSchema);
+
 it('should serve app block CSS', async () => {
-  const org = await db.models.Organization.create({ id: 'org' });
+  const org = await Organization.create({ id: 'org' });
   await org.createApp({
     definition: {},
     path: 'app',
@@ -56,7 +54,7 @@ it('should serve app block CSS', async () => {
 });
 
 it('should fallback to empty CSS', async () => {
-  const org = await db.models.Organization.create({ id: 'org' });
+  const org = await Organization.create({ id: 'org' });
   await org.createApp({
     definition: {},
     path: 'app',

@@ -5,6 +5,13 @@ import bcrypt from 'bcrypt';
 import crypto from 'crypto';
 import { DatabaseError, UniqueConstraintError } from 'sequelize';
 
+import {
+  EmailAuthorization,
+  OAuthAuthorization,
+  ResetPasswordToken,
+  transactional,
+  User,
+} from '../models';
 import createJWTResponse from '../utils/createJWTResponse';
 
 async function mayRegister({ argv }) {
@@ -32,14 +39,13 @@ export async function registerEmail(ctx) {
   await mayRegister(ctx);
   const { argv, mailer } = ctx;
   const { email, password } = ctx.request.body;
-  const { User } = ctx.db.models;
 
   const hashedPassword = await bcrypt.hash(password, 10);
   const key = crypto.randomBytes(40).toString('hex');
   let user;
 
   try {
-    await ctx.db.transaction(async (transaction) => {
+    await transactional(async (transaction) => {
       user = await User.create({ password: hashedPassword, primaryEmail: email }, { transaction });
       await user.createEmailAuthorization({ email, key }, { transaction });
     });
@@ -76,14 +82,13 @@ export async function registerOAuth(ctx) {
   const {
     body: { accessToken, id, organization, provider },
   } = ctx.request;
-  const { OAuthAuthorization } = ctx.db.models;
   const auth = await OAuthAuthorization.findOne({ where: { provider, id, token: accessToken } });
   if (!auth) {
     throw Boom.notFound('Could not find any matching credentials.');
   }
 
   try {
-    await ctx.db.transaction(async (transaction) => {
+    await transactional(async (transaction) => {
       await registerUser(auth, organization, transaction);
     });
   } catch (e) {
@@ -105,7 +110,6 @@ export async function connectOAuth(ctx) {
     body: { accessToken, id, provider, userId },
   } = ctx.request;
 
-  const { OAuthAuthorization, User } = ctx.db.models;
   const auth = await OAuthAuthorization.findOne({ where: { provider, id, token: accessToken } });
   const user = await User.findById(userId);
 
@@ -122,7 +126,6 @@ export async function verifyEmail(ctx) {
   const {
     body: { token },
   } = ctx.request;
-  const { EmailAuthorization } = ctx.db.models;
 
   const email = await EmailAuthorization.findOne({ where: { key: token } });
 
@@ -140,7 +143,6 @@ export async function verifyEmail(ctx) {
 export async function resendEmailVerification(ctx) {
   const { mailer } = ctx;
   const { email } = ctx.request.body;
-  const { EmailAuthorization } = ctx.db.models;
 
   const record = await EmailAuthorization.findByPk(email, { raw: true });
   if (record && !record.verified) {
@@ -156,7 +158,6 @@ export async function resendEmailVerification(ctx) {
 export async function requestResetPassword(ctx) {
   const { mailer } = ctx;
   const { email } = ctx.request.body;
-  const { EmailAuthorization } = ctx.db.models;
 
   const emailRecord = await EmailAuthorization.findByPk(email);
 
@@ -176,7 +177,6 @@ export async function requestResetPassword(ctx) {
 
 export async function resetPassword(ctx) {
   const { token } = ctx.request.body;
-  const { ResetPasswordToken } = ctx.db.models;
 
   const tokenRecord = await ResetPasswordToken.findByPk(token);
 

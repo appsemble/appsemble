@@ -4,38 +4,29 @@ import Koa from 'koa';
 import * as path from 'path';
 
 import boomMiddleware from '../../middleware/boom';
-import testSchema from '../../utils/test/testSchema';
-import truncate from '../../utils/test/truncate';
+import { BlockAsset, Organization } from '../../models';
+import { closeTestSchema, createTestSchema, truncate } from '../../utils/test/testSchema';
 import appRouter from '.';
 
 let request;
-let db;
+
+beforeAll(createTestSchema('blockassethandler'));
 
 beforeAll(async () => {
-  db = await testSchema('blockAssetHandler');
-  request = await createInstance(
-    new Koa()
-      .use((ctx, next) => {
-        ctx.db = db;
-        return next();
-      })
-      .use(boomMiddleware())
-      .use(appRouter),
-  );
+  request = await createInstance(new Koa().use(boomMiddleware()).use(appRouter));
 });
 
-afterEach(async () => {
-  await truncate(db);
-});
+afterEach(truncate);
 
 afterAll(async () => {
   await request.close();
-  await db.close();
 });
 
+afterAll(closeTestSchema);
+
 it('should download a block asset', async () => {
-  await db.models.Organization.create({ id: 'linux', name: 'Linux' });
-  await db.models.BlockAsset.create({
+  await Organization.create({ id: 'linux', name: 'Linux' });
+  await BlockAsset.create({
     filename: 'tux.png',
     content: await fs.promises.readFile(path.join(__dirname, '__fixtures__', 'tux.png')),
     mime: 'image/png',

@@ -97,10 +97,8 @@ export function builder(yargs) {
 }
 
 export async function handler(argv, { webpackConfigs } = {}) {
-  let db;
-
   try {
-    db = initDB({
+    initDB({
       host: argv.databaseHost,
       port: argv.databasePort,
       username: argv.databaseUser,
@@ -114,10 +112,10 @@ export async function handler(argv, { webpackConfigs } = {}) {
   }
 
   if (argv.migrateTo) {
-    await migrate(db, argv.migrateTo, migrations);
+    await migrate(argv.migrateTo, migrations);
   }
 
-  await addDBHooks(db, argv);
+  await addDBHooks(argv);
 
   const app = new Koa();
   if (argv.sentryDsn) {
@@ -139,7 +137,7 @@ export async function handler(argv, { webpackConfigs } = {}) {
     });
   });
 
-  const callback = await createServer({ app, argv, db, webpackConfigs });
+  const callback = await createServer({ app, argv, webpackConfigs });
   const httpServer = argv.ssl
     ? https.createServer(
         {

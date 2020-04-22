@@ -1,10 +1,10 @@
 import qs from 'qs';
 
+import { OAuthAuthorization } from '../../models';
 import getUserInfo from '../../utils/getUserInfo';
 import indexHandler from './indexHandler';
 
 export default async function oauth2CallbackHandler(ctx, next) {
-  const { OAuthAuthorization } = ctx.db.models;
   const { code } = ctx.query;
   const { provider } = ctx.session.grant;
   const authorization = await OAuthAuthorization.findOne({

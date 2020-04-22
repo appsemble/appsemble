@@ -4,12 +4,11 @@ import crypto from 'crypto';
 import { col, fn, UniqueConstraintError } from 'sequelize';
 import { generateVAPIDKeys } from 'web-push';
 
+import { App, Resource } from '../models';
 import checkRole from '../utils/checkRole';
 import getAppFromRecord from '../utils/getAppFromRecord';
 
 export async function getAppTemplates(ctx) {
-  const { App, Resource } = ctx.db.models;
-
   const templates = await App.findAll({
     where: { template: true },
     attributes: {
@@ -44,7 +43,6 @@ export async function createTemplateApp(ctx) {
     resources,
     templateId,
   } = ctx.request.body;
-  const { App, Resource } = ctx.db.models;
 
   const template = await App.findOne({
     where: { id: templateId },

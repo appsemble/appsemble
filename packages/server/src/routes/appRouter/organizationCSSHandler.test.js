@@ -2,43 +2,37 @@ import { createInstance } from 'axios-test-instance';
 import Koa from 'koa';
 
 import boomMiddleware from '../../middleware/boom';
-import testSchema from '../../utils/test/testSchema';
-import truncate from '../../utils/test/truncate';
+import { Organization } from '../../models';
+import { closeTestSchema, createTestSchema, truncate } from '../../utils/test/testSchema';
 import appRouter from '.';
 
 let request;
-let db;
+
+beforeAll(createTestSchema('organizationcsshandler'));
 
 beforeAll(async () => {
-  db = await testSchema('organizationCSSHandler');
-
-  beforeEach(async () => {
-    request = await createInstance(
-      new Koa()
-        .use((ctx, next) => {
-          ctx.db = db;
-          ctx.argv = { host: 'http://localhost' };
-          Object.defineProperty(ctx, 'origin', { value: 'http://app.org.localhost' });
-          return next();
-        })
-        .use(boomMiddleware())
-        .use(appRouter),
-    );
-  });
+  request = await createInstance(
+    new Koa()
+      .use((ctx, next) => {
+        ctx.argv = { host: 'http://localhost' };
+        Object.defineProperty(ctx, 'origin', { value: 'http://app.org.localhost' });
+        return next();
+      })
+      .use(boomMiddleware())
+      .use(appRouter),
+  );
 });
 
-afterEach(async () => {
-  await truncate(db);
-  await request.close();
-});
+afterEach(truncate);
 
 afterAll(async () => {
   await request.close();
-  await db.close();
 });
 
+afterAll(closeTestSchema);
+
 it('should serve organization core CSS', async () => {
-  const org = await db.models.Organization.create({
+  const org = await Organization.create({
     id: 'org',
     coreStyle: 'body { color: green; }',
     sharedStyle: 'body { color: purple; }',
@@ -60,7 +54,7 @@ it('should serve organization core CSS', async () => {
 });
 
 it('should serve organization shared CSS', async () => {
-  const org = await db.models.Organization.create({
+  const org = await Organization.create({
     id: 'org',
     coreStyle: 'body { color: green; }',
     sharedStyle: 'body { color: purple; }',

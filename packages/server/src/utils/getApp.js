@@ -1,5 +1,7 @@
 import Boom from '@hapi/boom';
 
+import { App } from '../models';
+
 /**
  * Get an app from the database based on the Koa context and URL.
  *
@@ -9,9 +11,7 @@ import Boom from '@hapi/boom';
  *
  * @returns The app matching the url.
  */
-export default async function getApp({ argv, db, origin }, queryOptions, url = origin) {
-  const { App } = db.models;
-
+export default async function getApp({ argv, origin }, queryOptions, url = origin) {
   const platformHost = new URL(argv.host).hostname;
   const { hostname } = new URL(url);
 
