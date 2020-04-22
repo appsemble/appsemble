@@ -9,7 +9,10 @@ it('should invoke kubernetes if the kubernetes-ingress app domain strategy is us
   };
   jest.spyOn(kubernetes, 'default').mockResolvedValue(stubDNS);
   const result = await dns({ host: '', appDomainStrategy: 'kubernetes-ingress' });
-  expect(kubernetes.default).toHaveBeenCalledWith({ appDomainStrategy: 'kubernetes-ingress' });
+  expect(kubernetes.default).toHaveBeenCalledWith({
+    host: '',
+    appDomainStrategy: 'kubernetes-ingress',
+  });
   expect(result).toBe(stubDNS);
 });
 

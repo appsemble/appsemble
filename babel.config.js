@@ -17,7 +17,7 @@ module.exports = (api) => {
     ['@babel/plugin-transform-runtime', { helpers: true }],
     production && ['babel-plugin-transform-react-remove-prop-types', { removeImport: true }],
     ['@babel/plugin-proposal-optional-chaining', { loose: true }],
-    ['@babel/plugin-proposal-class-properties', { loose: true }],
+    production && ['@babel/plugin-proposal-class-properties', { loose: true }],
   ];
 
   return {
