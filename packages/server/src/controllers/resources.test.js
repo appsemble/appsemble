@@ -1,19 +1,20 @@
 import FakeTimers from '@sinonjs/fake-timers';
 import { createInstance } from 'axios-test-instance';
+import webpush from 'web-push';
 
-import { App, Resource } from '../models';
+import { App, AppSubscription, Resource } from '../models';
 import createServer from '../utils/createServer';
-import testSchema from '../utils/test/testSchema';
+import createWaitableMock from '../utils/test/createWaitableMock';
+import { closeTestSchema, createTestSchema, truncate } from '../utils/test/testSchema';
 import testToken from '../utils/test/testToken';
-import truncate from '../utils/test/truncate';
 
-let db;
 let request;
 let server;
 let token;
 let organizationId;
 let clock;
 let user;
+let originalSendNotification;
 
 const exampleApp = (orgId) => ({
   definition: {
@@ -26,12 +27,27 @@ const exampleApp = (orgId) => ({
           required: ['foo'],
           properties: { foo: { type: 'string' } },
         },
+        update: {
+          hooks: {
+            notification: {
+              subscribe: 'both',
+            },
+          },
+        },
       },
       testResourceB: {
         schema: {
           type: 'object',
-          required: ['foo'],
-          properties: { bar: { type: 'string' } },
+          required: ['bar'],
+          properties: { bar: { type: 'string' }, testResourceId: { type: 'number' } },
+        },
+        references: {
+          testResourceId: {
+            resource: 'testResource',
+            create: {
+              trigger: ['update'],
+            },
+          },
         },
       },
     },
@@ -54,14 +70,15 @@ const exampleApp = (orgId) => ({
   OrganizationId: orgId,
 });
 
+beforeAll(createTestSchema('resources'));
+
 beforeAll(async () => {
-  db = await testSchema('resources');
-  server = await createServer({ db, argv: { host: 'http://localhost', secret: 'test' } });
+  server = await createServer({ argv: { host: 'http://localhost', secret: 'test' } });
   request = await createInstance(server);
-}, 10e3);
+  originalSendNotification = webpush.sendNotification;
+});
 
 beforeEach(async () => {
-  await truncate();
   ({ authorization: token, user } = await testToken());
   ({ id: organizationId } = await user.createOrganization(
     {
@@ -73,14 +90,18 @@ beforeEach(async () => {
   clock = FakeTimers.install();
 });
 
+afterEach(truncate);
+
 afterEach(() => {
   clock.uninstall();
 });
 
 afterAll(async () => {
   await request.close();
-  await db.close();
+  webpush.sendNotification = originalSendNotification;
 });
+
+afterAll(closeTestSchema);
 
 describe('getResourceById', () => {
   it('should be able to fetch a resource', async () => {
@@ -910,5 +931,159 @@ describe('getResourceSubscription', () => {
       status: 404,
       data: { message: 'User is not subscribed to this app.' },
     });
+  });
+});
+
+describe('Resource Notifications', () => {
+  it('should not call sendNotification if resource has no subscribers', async () => {
+    const app = await App.create(exampleApp(organizationId), { raw: true });
+    const resource = await Resource.create({
+      type: 'testResource',
+      AppId: app.id,
+      data: { foo: 'I am Foo.' },
+    });
+
+    const endpoint = 'https://example.com';
+    const p256dh = 'abc';
+    const auth = 'def';
+
+    await AppSubscription.create({
+      endpoint,
+      p256dh,
+      auth,
+      AppId: app.id,
+    });
+
+    const spy = jest.spyOn(webpush, 'sendNotification').mockImplementation(() => {});
+    await request.put(
+      `/api/apps/${app.id}/resources/testResource/${resource.id}`,
+      { foo: 'I am not Foo.' },
+      { headers: { authorization: token } },
+    );
+
+    expect(spy).toHaveBeenCalledTimes(0);
+    spy.mockRestore();
+  });
+
+  it('should process subscription hooks', async () => {
+    const app = await App.create(exampleApp(organizationId), { raw: true });
+    const resource = await Resource.create({
+      type: 'testResource',
+      AppId: app.id,
+      data: { foo: 'I am Foo.' },
+    });
+
+    const endpoint = 'https://example.com';
+    const p256dh = 'abc';
+    const auth = 'def';
+
+    await AppSubscription.create({
+      endpoint,
+      p256dh,
+      auth,
+      AppId: app.id,
+    });
+
+    await request.patch(
+      `/api/apps/${app.id}/subscriptions`,
+      {
+        endpoint: 'https://example.com',
+        resource: 'testResource',
+        resourceId: resource.id,
+        action: 'update',
+        value: true,
+      },
+      { headers: { authorization: token } },
+    );
+
+    webpush.sendNotification = createWaitableMock();
+    await request.put(
+      `/api/apps/${app.id}/resources/testResource/${resource.id}`,
+      { foo: 'I am not Foo.' },
+      { headers: { authorization: token } },
+    );
+
+    await webpush.sendNotification.waitToHaveBeenCalled(1);
+    expect(webpush.sendNotification).toHaveBeenCalledWith(
+      {
+        endpoint,
+        keys: { auth, p256dh },
+      },
+      JSON.stringify({
+        icon: 'http://test-app.testorganization.localhost/icon-96.png',
+        badge: 'http://test-app.testorganization.localhost/icon-96.png',
+        timestamp: 0,
+        title: 'testResource',
+        body: `Updated ${resource.id}`,
+      }),
+      {
+        vapidDetails: {
+          privateKey: app.vapidPrivateKey,
+          publicKey: app.vapidPublicKey,
+          subject: 'mailto: support@appsemble.com',
+        },
+      },
+    );
+  });
+
+  it('should trigger parent hooks if associated child has subscription hooks', async () => {
+    const app = await App.create(exampleApp(organizationId), { raw: true });
+    const resource = await Resource.create({
+      type: 'testResource',
+      AppId: app.id,
+      data: { foo: 'I am Foo.' },
+    });
+
+    const endpoint = 'https://example.com';
+    const p256dh = 'abc';
+    const auth = 'def';
+
+    await AppSubscription.create({
+      endpoint,
+      p256dh,
+      auth,
+      AppId: app.id,
+    });
+
+    await request.patch(
+      `/api/apps/${app.id}/subscriptions`,
+      {
+        endpoint: 'https://example.com',
+        resource: 'testResource',
+        resourceId: resource.id,
+        action: 'update',
+        value: true,
+      },
+      { headers: { authorization: token } },
+    );
+
+    webpush.sendNotification = createWaitableMock();
+    await request.post(
+      `/api/apps/${app.id}/resources/testResourceB`,
+      { bar: 'I am bar.', testResourceId: resource.id },
+      { headers: { authorization: token } },
+    );
+
+    await webpush.sendNotification.waitToHaveBeenCalled(1);
+    expect(webpush.sendNotification).toHaveBeenCalledWith(
+      {
+        endpoint,
+        keys: { auth, p256dh },
+      },
+      JSON.stringify({
+        icon: 'http://test-app.testorganization.localhost/icon-96.png',
+        badge: 'http://test-app.testorganization.localhost/icon-96.png',
+        timestamp: 0,
+        title: 'testResource',
+        body: `Updated ${resource.id}`,
+      }),
+      {
+        vapidDetails: {
+          privateKey: app.vapidPrivateKey,
+          publicKey: app.vapidPublicKey,
+          subject: 'mailto: support@appsemble.com',
+        },
+      },
+    );
   });
 });

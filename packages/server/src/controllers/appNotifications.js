@@ -171,7 +171,7 @@ export async function broadcast(ctx) {
   const { body, title } = ctx.request.body;
 
   const app = await App.findByPk(appId, {
-    include: [AppSubscription],
+    include: { model: AppSubscription, attributes: ['id', 'auth', 'p256dh', 'endpoint'] },
   });
 
   if (!app) {
@@ -182,6 +182,7 @@ export async function broadcast(ctx) {
 
   // XXX: Replace with paginated requests
   logger.verbose(`Sending ${app.AppSubscriptions.length} notifications for app ${app.id}`);
+
   app.AppSubscriptions.forEach((subscription) => {
     sendNotification(ctx, app, subscription, { title, body });
   });

@@ -5,26 +5,24 @@ import * as path from 'path';
 
 import boomMiddleware from '../../middleware/boom';
 import { BlockAsset, Organization } from '../../models';
-import testSchema from '../../utils/test/testSchema';
-import truncate from '../../utils/test/truncate';
+import { closeTestSchema, createTestSchema, truncate } from '../../utils/test/testSchema';
 import appRouter from '.';
 
 let request;
-let db;
+
+beforeAll(createTestSchema('blockassethandler'));
 
 beforeAll(async () => {
-  db = await testSchema('blockAssetHandler');
   request = await createInstance(new Koa().use(boomMiddleware()).use(appRouter));
 });
 
-afterEach(async () => {
-  await truncate();
-});
+afterEach(truncate);
 
 afterAll(async () => {
   await request.close();
-  await db.close();
 });
+
+afterAll(closeTestSchema);
 
 it('should download a block asset', async () => {
   await Organization.create({ id: 'linux', name: 'Linux' });

@@ -6,11 +6,10 @@ import { App } from '../models';
 /**
  * Add DNS entries for all apps in the database in chunks
  *
- * @param db The database instance to use.
  * @param dnsConfig The DNS configuration instance to use.
  * @param chunkSize How many apps to register per DNS add request.
  */
-export default async function bulkDNSRestore(hostname, db, dnsConfig, chunkSize) {
+export default async function bulkDNSRestore(hostname, dnsConfig, chunkSize) {
   let apps;
   let appCount = 0;
   for (let i = 0; !apps || apps.length === chunkSize; i += 1) {

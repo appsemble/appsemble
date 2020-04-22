@@ -3,11 +3,9 @@ import { createInstance } from 'axios-test-instance';
 
 import { App, AppSubscription } from '../models';
 import createServer from '../utils/createServer';
-import testSchema from '../utils/test/testSchema';
+import { closeTestSchema, createTestSchema, truncate } from '../utils/test/testSchema';
 import testToken from '../utils/test/testToken';
-import truncate from '../utils/test/truncate';
 
-let db;
 let request;
 let server;
 let authorization;
@@ -56,16 +54,18 @@ const defaultApp = (id) => ({
   OrganizationId: id,
 });
 
+beforeAll(createTestSchema('appnotifications'));
+
 beforeAll(async () => {
-  db = await testSchema('apps');
-  server = await createServer({ db, argv: { host: 'http://localhost', secret: 'test' } });
+  server = await createServer({ argv: { host: 'http://localhost', secret: 'test' } });
   request = await createInstance(server);
-}, 10e3);
+});
+
+afterEach(truncate);
 
 beforeEach(async () => {
   clock = FakeTimers.install();
 
-  await truncate();
   ({ authorization, user } = await testToken());
   ({ id: organizationId } = await user.createOrganization(
     {
@@ -82,8 +82,9 @@ afterEach(() => {
 
 afterAll(async () => {
   await request.close();
-  await db.close();
 });
+
+afterAll(closeTestSchema);
 
 describe('getNotification', () => {
   it('should subscription statuses to resources', async () => {

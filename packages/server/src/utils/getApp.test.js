@@ -1,26 +1,21 @@
 import { App, Organization } from '../models';
 import getApp from './getApp';
-import testSchema from './test/testSchema';
-import truncate from './test/truncate';
+import { closeTestSchema, createTestSchema, truncate } from './test/testSchema';
 
-let db;
 let dbApp;
 
-beforeAll(async () => {
-  db = await testSchema('getApp');
-});
+beforeAll(createTestSchema('getapp'));
 
 beforeEach(async () => {
-  await truncate();
   await Organization.create({
     id: 'test-organization',
     name: 'Test Organization',
   });
 });
 
-afterAll(async () => {
-  await db.close();
-});
+afterEach(truncate);
+
+afterAll(closeTestSchema);
 
 describe('getApp', () => {
   it('should resolve an app by its default domain', async () => {

@@ -1,48 +1,69 @@
 import { Sequelize } from 'sequelize';
 
-import { initDB, InitDBParams } from '../../models';
+import { getDB, initDB, InitDBParams } from '../../models';
+
+let dbName: string;
+let rootDB: Sequelize;
 
 /**
  * Create a temporary test database.
  *
  * The database will be deleted when it is closed.
  *
+ * @example
+ * ```ts
+ * beforeAll(createTestSchema('testfile'));
+ *
+ * afterEach(truncate);
+ *
+ * afterAll(closeTestSchema);
+ * ```
+ *
  * @param spec The name of the test case.
  * @param options Additional sequelize options.
  */
-export default async function testSchema(
-  spec: string,
-  options: InitDBParams = {},
-): Promise<Sequelize> {
-  const database = process.env.DATABASE_URL || 'postgres://admin:password@localhost:5432/appsemble';
-  const root = new Sequelize(database, {
-    logging: false,
-    retry: { max: 3 },
-  });
+export function createTestSchema(spec: string, options: InitDBParams = {}): () => Promise<void> {
+  return async () => {
+    const database =
+      process.env.DATABASE_URL || 'postgres://admin:password@localhost:5432/appsemble';
+    rootDB = new Sequelize(database, {
+      logging: false,
+      retry: { max: 3 },
+    });
 
-  const dbName = root
-    .escape(`appsemble_test_${spec}_${new Date().toISOString()}`)
-    .replace(/'/g, '')
-    .replace(/\W+/g, '_')
-    .substring(0, 63)
-    .toLowerCase();
+    dbName = rootDB
+      .escape(`appsemble_test_${spec}_${new Date().toISOString()}`)
+      .replace(/'/g, '')
+      .replace(/\W+/g, '_')
+      .substring(0, 63)
+      .toLowerCase();
 
-  await root.query(`CREATE DATABASE ${dbName}`);
-  const db = initDB({
-    ...options,
-    uri: `${database.replace(/\/\w+$/, '')}/${dbName}`,
-  });
-  await db.sync();
-
-  // Stub db.close(), so also the test database is dropped and the root database connection is
-  // closed.
-  const { close } = db;
-  // @ts-ignore
-  db.close = async (...args) => {
-    await close.apply(db, args);
-    await root.query(`DROP DATABASE ${dbName}`);
-    await root.close();
+    await rootDB.query(`CREATE DATABASE ${dbName}`);
+    const db = initDB({
+      ...options,
+      uri: `${database.replace(/\/\w+$/, '')}/${dbName}`,
+    });
+    await db.sync();
   };
+}
 
-  return db;
+/**
+ * Close the created test schema.
+ */
+export async function closeTestSchema(): Promise<void> {
+  const db = getDB();
+  await db.close();
+  await rootDB.query(`DROP DATABASE ${dbName}`);
+  await rootDB.close();
+}
+
+/**
+ * Truncate the entire database and reset id generators.
+ *
+ * This is ~50% faster than `db.truncate()` and resets id generators.
+ */
+export async function truncate(): Promise<void> {
+  const db = getDB();
+  const tables = Object.values(db.models).map(({ tableName }) => `"${tableName}"`);
+  await db.query(`TRUNCATE ${tables.join(', ')} RESTART IDENTITY`);
 }

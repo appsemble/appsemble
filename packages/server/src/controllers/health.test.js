@@ -1,29 +1,28 @@
 import { createInstance } from 'axios-test-instance';
 
+import { getDB } from '../models';
 import createServer from '../utils/createServer';
-import testSchema from '../utils/test/testSchema';
-import truncate from '../utils/test/truncate';
+import { closeTestSchema, createTestSchema, truncate } from '../utils/test/testSchema';
+
+let request;
+let server;
+
+beforeAll(createTestSchema('health'));
+
+beforeAll(async () => {
+  server = await createServer({ argv: { host: 'http://localhost', secret: 'test' } });
+  request = await createInstance(server);
+});
+
+afterEach(truncate);
+
+afterAll(async () => {
+  await request.close();
+});
+
+afterAll(closeTestSchema);
 
 describe('checkHealth', () => {
-  let db;
-  let request;
-  let server;
-
-  beforeAll(async () => {
-    db = await testSchema('health');
-    server = await createServer({ db, argv: { host: 'http://localhost', secret: 'test' } });
-    request = await createInstance(server);
-  }, 10e3);
-
-  beforeEach(async () => {
-    await truncate();
-  });
-
-  afterAll(async () => {
-    await request.close();
-    await db.close();
-  });
-
   it('should return status ok if all services are connected properly', async () => {
     const response = await request.get('/api/health');
 
@@ -34,7 +33,7 @@ describe('checkHealth', () => {
   });
 
   it('should fail if the database is disconnected', async () => {
-    jest.spyOn(db, 'authenticate').mockImplementation(() => Promise.reject(new Error('stub')));
+    jest.spyOn(getDB(), 'authenticate').mockImplementation(() => Promise.reject(new Error('stub')));
     const response = await request.get('/api/health');
 
     expect(response).toMatchObject({

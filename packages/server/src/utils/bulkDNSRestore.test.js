@@ -1,14 +1,10 @@
 import { App, Organization } from '../models';
 import bulkDNSRestore from './bulkDNSRestore';
-import testSchema from './test/testSchema';
-import truncate from './test/truncate';
+import { closeTestSchema, createTestSchema, truncate } from './test/testSchema';
 
-let db;
 let dnsConfig;
 
-beforeAll(async () => {
-  db = await testSchema('bulkDNSRestore');
-});
+beforeAll(createTestSchema('bulkdnsrestore'));
 
 beforeEach(async () => {
   await truncate();
@@ -18,9 +14,9 @@ beforeEach(async () => {
   };
 });
 
-afterAll(async () => {
-  await db.close();
-});
+afterEach(truncate);
+
+afterAll(closeTestSchema);
 
 it('should add DNS settings for all apps', async () => {
   await Promise.all(
@@ -35,7 +31,7 @@ it('should add DNS settings for all apps', async () => {
       });
     }),
   );
-  await bulkDNSRestore('localhost', db, dnsConfig, 2);
+  await bulkDNSRestore('localhost', dnsConfig, 2);
   expect(dnsConfig.add).toHaveBeenCalledTimes(4);
   expect(dnsConfig.add).toHaveBeenNthCalledWith(
     1,
@@ -74,7 +70,7 @@ it('should skip the last bulk of apps if it is empty', async () => {
       });
     }),
   );
-  await bulkDNSRestore('localhost', db, dnsConfig, 2);
+  await bulkDNSRestore('localhost', dnsConfig, 2);
   expect(dnsConfig.add).toHaveBeenCalledTimes(2);
   expect(dnsConfig.add).toHaveBeenNthCalledWith(
     1,

@@ -1,8 +1,10 @@
 import { AppsembleError, logger } from '@appsemble/node-utils';
 import semver from 'semver';
 
-export default async function migrate(db, toVersion, migrations) {
-  const { Meta } = db.models;
+import { getDB, Meta } from '../models';
+
+export default async function migrate(toVersion, migrations) {
+  const db = getDB();
   await Meta.sync();
   const to = toVersion === 'next' ? migrations[migrations.length - 1].key : toVersion;
   const metas = await Meta.findAll();
