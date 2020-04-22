@@ -333,7 +333,7 @@ describe('getBlockVersions', () => {
   });
 });
 
-describe.only('getBlockIcon', () => {
+describe('getBlockIcon', () => {
   it('should serve the block icon', async () => {
     const icon = await fs.readFile(path.join(__dirname, '__fixtures__/testpattern.png'));
     const formData = new FormData();
