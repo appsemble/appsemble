@@ -323,6 +323,7 @@ export default function ResourceTable(): React.ReactElement {
           return (
             <JSONSchemaEditor
               key={key}
+              appId={app.id}
               disabled={prop.readOnly || key === 'id'}
               label={
                 prop.title ? (

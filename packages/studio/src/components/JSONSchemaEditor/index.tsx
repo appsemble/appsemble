@@ -13,9 +13,11 @@ interface JSONSchemaEditorProps {
   onChange: any;
   label: string | React.ReactElement;
   disabled: boolean;
+  appId: number;
 }
 
 export default function JSONSchemaEditor({
+  appId,
   disabled,
   label,
   onChange,
@@ -32,7 +34,7 @@ export default function JSONSchemaEditor({
   const blobUploadType: BlobUploadType = {
     method: 'POST',
     serialize: null,
-    url: 'http://localhost:9999/api/apps/5/assets',
+    url: `/api/apps/${appId}/assets`,
   };
 
   const onFileChange = React.useCallback(
@@ -164,6 +166,7 @@ export default function JSONSchemaEditor({
         returnElements.push(
           <JSONSchemaEditor
             key={key}
+            appId={appId}
             disabled={prop.readOnly || key === 'id'}
             label={
               prop.title ? (
