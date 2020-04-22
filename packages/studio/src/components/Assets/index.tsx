@@ -85,7 +85,7 @@ export default function Assets(): React.ReactElement {
       }),
     );
     onClose();
-    setAssets(assets.filter((asset) => !selectedAssets.includes(asset.id)));
+    setAssets(assets.filter((asset) => !selectedAssets.includes(`${asset.id}`)));
     setSelectedAssets([]);
   }, [app, assets, intl, onClose, push, selectedAssets]);
 
@@ -189,7 +189,7 @@ export default function Assets(): React.ReactElement {
               <td>
                 <Checkbox
                   checked={selectedAssets.includes(asset.id)}
-                  name={`check${asset.id}`}
+                  name={`asset${asset.id}`}
                   onChange={onAssetCheckboxClick}
                   wrapperClassName={`is-inline-block ${styles.assetCheckbox}`}
                 />
