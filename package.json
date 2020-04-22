@@ -8,6 +8,7 @@
     "appsemble": "node packages/cli/bin/appsemble",
     "build:app": "webpack --config config/webpack/app.js --mode production",
     "build:studio": "webpack --config config/webpack/studio.js --mode production",
+    "create-appsemble": "ts-node -TP packages/create-appsemble/tsconfig.json packages/create-appsemble/src",
     "eslint": "eslint --max-warnings 0 --ext js,md,ts,tsx",
     "prettier": "prettier --check",
     "start": "node packages/cli/bin/appsemble start",

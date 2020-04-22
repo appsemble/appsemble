@@ -1,9 +1,10 @@
-import { configureLogger, handleError } from '@appsemble/node-utils';
+#!/usr/bin/env node
+import { configureLogger, handleError, logger } from '@appsemble/node-utils';
 import path from 'path';
 import yargs from 'yargs';
 
-export default async (argv) => {
-  yargs
+async function main(): Promise<any> {
+  return yargs
     .option('verbose', {
       alias: 'v',
       describe: 'Increase verbosity',
@@ -15,10 +16,13 @@ export default async (argv) => {
       type: 'count',
     })
     .middleware([configureLogger])
-    .commandDir(path.join(__dirname, 'commands'))
+    .commandDir(path.join(__dirname, 'commands'), { extensions: ['js', 'ts'] })
     .demandCommand(1)
     .fail(handleError)
     .help()
-    .completion()
-    .parse(argv);
-};
+    .completion().argv;
+}
+
+if (module === require.main) {
+  main().catch((error) => logger.error(error));
+}

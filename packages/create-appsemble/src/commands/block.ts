@@ -1,14 +1,15 @@
 import fs from 'fs-extra';
 import inquirer from 'inquirer';
 import path from 'path';
+import type { PackageJson } from 'type-fest';
 
-import { version } from '../../package.json';
+import readPackageJson from '../lib/readPackageJson';
 
 export const command = 'block';
 export const description = 'Bootstrap a new Appsemble block.';
 
-export async function handler() {
-  const templateDir = path.resolve(__dirname, '../templates');
+export async function handler(): Promise<void> {
+  const templateDir = path.resolve(__dirname, '../../templates');
   const choices = await fs.readdir(templateDir);
   const answers = await inquirer.prompt([
     { name: 'organization', message: 'For which organization is the block?' },
@@ -20,10 +21,11 @@ export async function handler() {
       message: 'What kind of block project should be bootstrapped?',
     },
   ]);
+  const { version } = await readPackageJson();
   const outputPath = path.join(process.cwd(), 'blocks', answers.name);
   const inputPath = path.join(templateDir, answers.type);
   const pkgPath = path.join(inputPath, 'package.json');
-  const inputPkg = await fs.readJson(pkgPath);
+  const inputPkg: PackageJson = await fs.readJson(pkgPath);
   const outputPkg = {
     name: `@${answers.organization}/${answers.name}`,
     version,
