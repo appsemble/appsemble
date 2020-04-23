@@ -26,7 +26,7 @@
     "@appsemble/node-utils": "0.12.5",
     "@babel/register": "^7.9.0",
     "axios": "^0.19.2",
-    "chalk": "^3.0.0",
+    "chalk": "^4.0.0",
     "cosmiconfig": "^6.0.0",
     "fast-glob": "^3.2.2",
     "form-data": "^3.0.0",
@@ -39,7 +39,7 @@
     "postcss-load-config": "^2.1.0",
     "postcss-url": "^8.0.0",
     "read-pkg-up": "^7.0.1",
-    "type-fest": "^0.12.0",
+    "type-fest": "^0.13.1",
     "typescript": "^3.8.3",
     "typescript-json-schema": "^0.42.0",
     "yargs": "^15.3.1"
@@ -53,6 +53,6 @@
     "webpack": "^4.41.2"
   },
   "optionalDependencies": {
-    "keytar": "^5.4.0"
+    "keytar": "^5.5.0"
   }
 }

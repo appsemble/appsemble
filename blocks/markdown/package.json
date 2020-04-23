@@ -5,6 +5,6 @@
   "description": "A simple block that can display content based on Markdown input.",
   "dependencies": {
     "@appsemble/sdk": "0.12.5",
-    "marked": "^0.8.2"
+    "marked": "^1.0.0"
   }
 }

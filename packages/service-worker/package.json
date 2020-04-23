@@ -14,7 +14,7 @@
   "license": "LGPL-3.0-or-later",
   "author": "Appsemble <info@appsemble.com> (https://appsemble.com)",
   "dependencies": {
-    "type-fest": "^0.12.0"
+    "type-fest": "^0.13.1"
   },
   "devDependencies": {
     "service-worker-mock": "^2.0.5"
