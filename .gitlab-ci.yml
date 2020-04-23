@@ -8,6 +8,13 @@ stages:
   - provision
   - end 2 end
 
+workflow:
+  rules:
+    # By default, run jobs for every merge request.
+    - if: $CI_MERGE_REQUEST_ID
+    # By default, run jobs for every job on master.
+    - if: $CI_COMMIT_BRANCH == "master"
+
 ###################################################################################################
 #  Job Templates                                                                                  #
 ###################################################################################################
@@ -48,31 +55,9 @@ stages:
 #  Test Stage                                                                                     #
 ###################################################################################################
 
-# Scan for dependency vulnerabilities.
-dependency scanning:
-  extends: .yarn
-  allow_failure: true
-  only:
-    refs:
-      - triggers
-    changes:
-      - yarn.lock
-  script:
-    - yarn gitlab-yarn-audit
-  artifacts:
-    reports:
-      dependency_scanning: gl-dependency-scanning.json
-
 # Lint JavaScript code using ESLint.
 eslint:
   extends: .yarn
-  only:
-    refs:
-      - branches
-      - merge_requests
-    changes:
-      - '**/*.{js,jsx,ts,tsx}'
-      - yarn.lock
   script:
     - yarn eslint --format gitlab .
   artifacts:
@@ -82,51 +67,24 @@ eslint:
 # Lint Helm charts.
 helm lint:
   extends: .helm
-  only:
-    refs:
-      - branches
-      - merge_requests
-    changes:
-      - config/charts/**/*.*
   script:
     - helm lint config/charts/*
 
 # Check formatting using prettier.
 prettier:
   extends: .yarn
-  only:
-    refs:
-      - branches
-      - merge_requests
-    changes:
-      - '**/*.{html,json,md,scss,yaml,yml}'
-      - yarn.lock
   script:
     - yarn prettier .
 
 # Lint Markdown using remark.
 remark lint:
   extends: .yarn
-  only:
-    refs:
-      - branches
-      - merge_requests
-    changes:
-      - '**/*.{dic,md}'
-      - yarn.lock
   script:
     - yarn remark --frail .
 
 # Lint CSS using stylelint.
 stylelint:
   extends: .yarn
-  only:
-    refs:
-      - branches
-      - merge_requests
-    changes:
-      - '**/*.css'
-      - yarn.lock
   script:
     # The --report-needless-disables flag is broken. Add this in package.json when it works again.
     # https://github.com/stylelint/stylelint/issues/4203
@@ -136,10 +94,6 @@ stylelint:
 test:
   services:
     - name: postgres:11
-  only:
-    - branches
-    - merge_requests
-    - tags
   variables:
     POSTGRES_DB: testAppsemble
     POSTGRES_USER: admin
@@ -155,10 +109,6 @@ test:
 # Check type validity for our TypeScript files.
 tsc:
   extends: .yarn
-  only:
-    - branches
-    - merge_requests
-    - tags
   script:
     - yarn workspaces run tsc
 
@@ -171,11 +121,6 @@ build docker image:
   extends: .docker
   stage: build
   needs: []
-  only:
-    - branches
-    - merge_requests
-    - schedules
-    - tags
   script:
     - docker build -t "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME" .
     - docker push "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME"
@@ -185,12 +130,6 @@ build docs image:
   extends: .docker
   stage: build
   needs: []
-  only:
-    - branches
-    - merge_requests
-    - tags
-  except:
-    - schedules
   script:
     - docker build .
       --build-arg "CI_COMMIT_REF_NAME=$CI_COMMIT_REF_NAME"
@@ -203,11 +142,6 @@ pack:
   extends: .yarn
   stage: build
   needs: []
-  only:
-    refs:
-      - branches
-      - merge_requests
-      - tags
   script:
     - yarn workspace @appsemble/sdk pack
     - yarn workspace @appsemble/preact pack
@@ -233,8 +167,8 @@ publish docker:
     - build docker image
   variables:
     GIT_STRATEGY: none
-  only:
-    - tags
+  rules:
+    - if: $CI_COMMIT_TAG
   script:
     - echo $DOCKER_HUB_PASSWORD | docker login -u $DOCKER_HUB_USER --password-stdin
     - docker pull "$CI_REGISTRY_IMAGE:$CI_COMMIT_TAG"
@@ -253,8 +187,8 @@ publish npm:
     - pack
   variables:
     GIT_STRATEGY: none
-  only:
-    - tags
+  rules:
+    - if: $CI_COMMIT_TAG
   script:
     - npm config set //registry.npmjs.org/:_authToken "$NPM_TOKEN"
     - find . -exec npm publish --access public {} \;
@@ -267,12 +201,12 @@ publish npm:
 review:
   extends: .helm
   stage: deploy
-  when: manual
   needs:
     - build docker image
-  only:
-    - merge_requests
-  allow_failure: false
+  rules:
+    - if: $CI_MERGE_REQUEST_PROJECT_PATH == 'appsemble/appsemble'
+    - if: $CI_MERGE_REQUEST_ID
+      when: manual
   environment:
     name: review/$CI_COMMIT_REF_SLUG
     url: https://$CI_ENVIRONMENT_SLUG.appsemble.review
@@ -313,9 +247,10 @@ review:
 stop review:
   extends: .helm-delete
   stage: deploy
-  when: manual
-  only:
-    - merge_requests
+  rules:
+    - if: $CI_MERGE_REQUEST_ID
+      when: manual
+  allow_failure: true
   environment:
     name: review/$CI_COMMIT_REF_SLUG
     action: stop
@@ -324,12 +259,12 @@ stop review:
 review docs:
   extends: .helm
   stage: deploy
-  when: manual
   needs:
     - build docs image
-  only:
-    - merge_requests
-  allow_failure: false
+  rules:
+    - if: $CI_MERGE_REQUEST_PROJECT_PATH == 'appsemble/appsemble'
+    - if: $CI_MERGE_REQUEST_ID
+      when: manual
   environment:
     name: review/docs/$CI_COMMIT_REF_SLUG
     url: https://$CI_ENVIRONMENT_SLUG.appsemble.review
@@ -348,9 +283,10 @@ review docs:
 stop review docs:
   extends: .helm-delete
   stage: deploy
-  when: manual
-  only:
-    - merge_requests
+  rules:
+    - if: $CI_MERGE_REQUEST_ID
+      when: manual
+  allow_failure: true
   environment:
     name: review/docs/$CI_COMMIT_REF_SLUG
     action: stop
@@ -361,8 +297,8 @@ staging:
   stage: deploy
   needs:
     - build docker image
-  only:
-    - schedules
+  rules:
+    - if: $CI_PIPELINE_SOURCE == 'schedule'
   environment:
     name: staging
     url: https://staging.appsemble.review
@@ -411,10 +347,8 @@ staging docs:
   stage: deploy
   needs:
     - build docs image
-  only:
-    - master@appsemble/appsemble
-  except:
-    - schedules
+  rules:
+    - if: $CI_PIPELINE_SOURCE == 'schedule'
   allow_failure: false
   environment:
     name: staging docs
@@ -434,13 +368,14 @@ production:
   stage: deploy
   needs:
     - publish docker
-  only:
-    - tags
+  rules:
+    - if: $CI_PIPELINE_SOURCE == 'schedule'
   dependencies: []
   environment:
     name: production/appsemble
     url: https://appsemble.app
   script:
+    - helm dependency build config/charts/appsemble
     - helm upgrade appsemble config/charts/appsemble
       --set "app=$CI_ENVIRONMENT_SLUG"
       --set "global.postgresql.existingSecret=$POSTGRESQL_SECRET"
@@ -464,8 +399,8 @@ production docs:
   stage: deploy
   needs:
     - build docs image
-  only:
-    - tags
+  rules:
+    - if: $CI_COMMIT_TAG
   allow_failure: false
   environment:
     name: production/docs
@@ -488,8 +423,8 @@ production docs:
 provision review:
   extends: .yarn
   stage: provision
-  only:
-    - merge_requests
+  rules:
+    - if: $CI_MERGE_REQUEST_ID
   dependencies:
     - review
   needs:
@@ -507,8 +442,8 @@ provision review:
 provision staging:
   extends: .yarn
   stage: provision
-  only:
-    - schedules
+  rules:
+    - if: $CI_PIPELINE_SOURCE == 'schedule'
   needs:
     - staging
   environment:
@@ -522,8 +457,8 @@ provision staging:
 provision production:
   extends: .yarn
   stage: provision
-  only:
-    - tags
+  rules:
+    - if: $CI_COMMIT_TAG
   needs:
     - production
   environment:
@@ -543,8 +478,8 @@ lighthouse:
   dependencies: []
   needs:
     - provision staging
-  only:
-    - schedules
+  rules:
+    - if: $CI_PIPELINE_SOURCE == 'schedule'
   script:
     - yarn --frozen-lockfile
     - yarn install-chrome-dependencies
@@ -560,6 +495,6 @@ lighthouse:
 # Test 10 Second Dance in the staging environment.
 10 second dance:
   stage: end 2 end
-  only:
-    - schedules
+  rules:
+    - if: $CI_PIPELINE_SOURCE == 'schedule'
   trigger: appsemble/10-second-dance
