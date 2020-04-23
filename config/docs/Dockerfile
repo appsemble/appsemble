@@ -3,8 +3,8 @@ ARG CI_COMMIT_REF_NAME=dev
 ENV CI_COMMIT_REF_NAME $CI_COMMIT_REF_NAME
 WORKDIR /build
 COPY . .
-RUN config/bin/install-chrome-dependencies.sh \
- && yarn --frozen-lockfile \
+RUN yarn --frozen-lockfile \
+ && yarn install-chrome-dependencies \
  && yarn docz build
 
 FROM nginx:1.15-alpine
