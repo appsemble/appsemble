@@ -11,6 +11,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 - App: Add meta description tag.
 - App: Add minimal `robots.txt`.
+- CLI: Add support for block icons.
+- Server: Add support for block icons.
 - Studio: Add asset management page for apps. This can be used to preview, download, delete, and
   update assets.
 

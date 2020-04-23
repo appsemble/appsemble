@@ -8,32 +8,20 @@ import { inspect } from 'util';
 import type { BlockConfig } from '../types';
 import getBlockConfigFromTypeScript from './getBlockConfigFromTypeScript';
 
-interface MakePayloadParams {
-  /**
-   * The block configuration
-   */
-  config: BlockConfig;
-
-  /**
-   * The path in which the block project is located.
-   */
-  path: string;
-}
-
 /**
  * Configure the payload for a new block version upload.
  *
+ * @param config The block configuration
  * @returns The payload that should be sent to the version endpoint.
  */
-export default async function makePayload({
-  config,
-  path: p,
-}: MakePayloadParams): Promise<FormData> {
-  const { output } = config;
-  const distPath = output ? path.resolve(p, output) : p;
+export default async function makePayload(config: BlockConfig): Promise<FormData> {
+  const { dir, output } = config;
+  const distPath = path.resolve(dir, output);
   const form = new FormData();
   const { description, layout, name, resources, version } = config;
-  const { actions, events, parameters } = getBlockConfigFromTypeScript(config, p);
+  const { actions, events, parameters } = getBlockConfigFromTypeScript(config);
+  const files = await fs.readdir(dir);
+  const icon = files.find((entry) => entry.match(/^icon\.(png|svg)$/));
 
   function append(field: string, value: any): void {
     if (value) {
@@ -53,6 +41,12 @@ export default async function makePayload({
   append('resources', resources);
   append('parameters', parameters);
   append('version', version);
+
+  if (icon) {
+    const iconPath = path.join(dir, icon);
+    logger.info(`Using icon: ${iconPath}`);
+    form.append('icon', fs.createReadStream(iconPath));
+  }
 
   return new Promise((resolve, reject) => {
     klaw(distPath)

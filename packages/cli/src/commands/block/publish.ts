@@ -1,6 +1,5 @@
 import { logger } from '@appsemble/node-utils';
 import fg from 'fast-glob';
-import { resolve } from 'path';
 import type { Argv } from 'yargs';
 
 import { authenticate } from '../../lib/authentication';
@@ -52,9 +51,9 @@ export async function handler({
     const config = await getBlockConfig(dir);
 
     if (build) {
-      await buildBlock({ path: resolve(dir, config.dist), config });
+      await buildBlock(config);
     }
 
-    await publish({ config, ignoreConflict, path: dir });
+    await publish(config, ignoreConflict);
   }, null as Promise<void>);
 }

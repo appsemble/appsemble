@@ -47,6 +47,7 @@
     "@types/bluebird": "^3.5.30",
     "@types/bulma-calendar": "^6.0.0",
     "@types/classnames": "^2.2.10",
+    "@types/concat-stream": "^1.6.0",
     "@types/css-modules": "^1.0.0",
     "@types/enzyme": "^3.10.5",
     "@types/enzyme-adapter-react-16": "^1.0.6",

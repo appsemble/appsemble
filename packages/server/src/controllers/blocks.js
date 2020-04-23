@@ -1,11 +1,14 @@
 import { logger } from '@appsemble/node-utils';
 import { permissions } from '@appsemble/utils';
 import Boom from '@hapi/boom';
+import * as fileType from 'file-type';
+import isSvg from 'is-svg';
 import semver from 'semver';
 import { DatabaseError, UniqueConstraintError } from 'sequelize';
 
 import { BlockAsset, BlockVersion, getDB, transactional } from '../models';
 import checkRole from '../utils/checkRole';
+import getDefaultIcon from '../utils/getDefaultIcon';
 
 export async function getBlock(ctx) {
   const { blockId, organizationId } = ctx.params;
@@ -30,13 +33,15 @@ export async function getBlock(ctx) {
   }
 
   const { actions, description, events, layout, parameters, resources, version } = blockVersion;
+  const name = `@${organizationId}/${blockId}`;
 
   ctx.body = {
-    name: `@${organizationId}/${blockId}`,
+    name,
     description,
     version,
     actions,
     events,
+    iconUrl: `/api/blocks/${name}/versions/${version}/icon`,
     layout,
     parameters,
     resources,
@@ -68,6 +73,7 @@ export async function queryBlocks(ctx) {
       version,
       actions,
       events,
+      iconUrl: `/api/blocks/@${OrganizationId}/${name}/versions/${version}/icon`,
       layout,
       parameters,
       resources,
@@ -76,7 +82,7 @@ export async function queryBlocks(ctx) {
 }
 
 export async function publishBlock(ctx) {
-  const { files, ...data } = ctx.request.body;
+  const { files, icon, ...data } = ctx.request.body;
   const { name, version } = data;
   const actionKeyRegex = /^[a-z]\w*$/;
 
@@ -115,7 +121,10 @@ export async function publishBlock(ctx) {
         layout = null,
         parameters,
         resources = null,
-      } = await BlockVersion.create({ ...data, name: blockId, OrganizationId }, { transaction });
+      } = await BlockVersion.create(
+        { ...data, icon: icon && icon.contents, name: blockId, OrganizationId },
+        { transaction },
+      );
 
       files.forEach((file) => {
         logger.verbose(
@@ -136,6 +145,7 @@ export async function publishBlock(ctx) {
 
       ctx.body = {
         actions,
+        iconUrl: `/api/blocks/${name}/versions/${version}/icon`,
         layout,
         parameters,
         resources,
@@ -176,6 +186,7 @@ export async function getBlockVersion(ctx) {
 
   ctx.body = {
     files: files.map((f) => f.filename),
+    iconUrl: `/api/blocks/${name}/versions/${blockVersion}/icon`,
     name,
     version: blockVersion,
     ...version,
@@ -204,5 +215,27 @@ export async function getBlockVersions(ctx) {
     throw Boom.notFound('Block not found.');
   }
 
-  ctx.body = blockVersions.map((blockVersion) => ({ name, ...blockVersion }));
+  ctx.body = blockVersions.map((blockVersion) => ({
+    name,
+    iconUrl: `/api/blocks/${name}/versions/${blockVersion.version}/icon`,
+    ...blockVersion,
+  }));
+}
+
+export async function getBlockIcon(ctx) {
+  const { blockId, blockVersion, organizationId } = ctx.params;
+
+  const version = await BlockVersion.findOne({
+    attributes: ['icon'],
+    raw: true,
+    where: { name: blockId, OrganizationId: organizationId, version: blockVersion },
+  });
+
+  if (!version) {
+    throw Boom.notFound('Block version not found');
+  }
+
+  const icon = version.icon || getDefaultIcon();
+  ctx.type = isSvg(icon) ? 'svg' : (await fileType.fromBuffer(icon)).mime;
+  ctx.body = icon;
 }

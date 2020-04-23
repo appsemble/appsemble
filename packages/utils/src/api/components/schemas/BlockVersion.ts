@@ -22,6 +22,17 @@ export default {
       type: 'string',
       description: 'The description of the block.',
     },
+    icon: {
+      type: 'string',
+      format: 'binary',
+      description: 'An icon to represent the block in Appsemble studio.',
+    },
+    iconUrl: {
+      type: 'string',
+      format: 'uri',
+      description: 'The relative URL on which the icon is served',
+      readOnly: true,
+    },
     version: {
       type: 'string',
       pattern: semver.source,

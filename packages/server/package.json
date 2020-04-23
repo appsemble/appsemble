@@ -34,9 +34,11 @@
     "bulma-switch": "^2.0.0",
     "cli-highlight": "^2.1.4",
     "date-fns": "^2.11.1",
+    "file-type": "^14.1.4",
     "fs-extra": "^9.0.0",
     "grant": "^4.7.0",
     "is-ip": "^3.1.0",
+    "is-svg": "^4.2.1",
     "js-yaml": "^3.13.1",
     "jsonwebtoken": "^8.5.1",
     "koa": "^2.11.0",
@@ -57,7 +59,6 @@
     "koas-status-code": "^0.2.1",
     "koas-swagger-ui": "^0.2.1",
     "lodash": "^4.17.15",
-    "memfs": "^3.1.2",
     "mustache": "^4.0.1",
     "node-sass": "^4.13.1",
     "nodemailer": "^6.4.6",
@@ -89,6 +90,7 @@
     "axios-test-instance": "^1.0.1",
     "form-data": "^3.0.0",
     "jest-image-snapshot": "^3.0.1",
-    "koa-webpack": "^5.3.0"
+    "koa-webpack": "^5.3.0",
+    "memfs": "^3.1.2"
   }
 }

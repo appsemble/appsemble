@@ -4,33 +4,15 @@ import axios from 'axios';
 import type { BlockConfig } from '../types';
 import makePayload from './makePayload';
 
-interface PublishParams {
-  /**
-   * The block configuration
-   */
-  config: BlockConfig;
-
-  /**
-   * Prevent the command from crashing when a conflict has been detected.
-   */
-  ignoreConflict: boolean;
-
-  /**
-   * The path in which the block project is located.
-   */
-  path: string;
-}
-
 /**
  * Publish a new block version.
+ *
+ * @param config The block configuration
+ * @param ignoreConflict Prevent the command from crashing when a conflict has been detected.
  */
-export default async function publish({
-  config,
-  ignoreConflict,
-  path,
-}: PublishParams): Promise<void> {
+export default async function publish(config: BlockConfig, ignoreConflict: boolean): Promise<void> {
   logger.info(`Publishing ${config.name}@${config.version}…`);
-  const form = await makePayload({ config, path });
+  const form = await makePayload(config);
   try {
     await axios.post('/api/blocks', form);
     logger.info(`Successfully published ${config.name}@${config.version} 🎉`);
