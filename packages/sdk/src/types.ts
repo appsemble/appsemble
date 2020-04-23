@@ -78,12 +78,13 @@ export type Action =
   | BaseAction<'dialog'>
   | BaseAction<'dialog.error'>
   | BaseAction<'dialog.ok'>
+  | BaseAction<'event'>
   | BaseAction<'flow.back'>
   | BaseAction<'flow.cancel'>
   | BaseAction<'flow.finish'>
   | BaseAction<'flow.next'>
   | BaseAction<'noop'>
-  | BaseAction<'event'>
+  | BaseAction<'static'>
   | LinkAction
   | LogAction
   | RequestAction
