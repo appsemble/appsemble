@@ -161,3 +161,12 @@ by sending an event action that matches the name of what the block is listening 
 | Parameter | Required | Description                    |
 | --------- | -------- | ------------------------------ |
 | event     | true     | The name of the event to emit. |
+
+## `static`
+
+The `static` action returns static data defined in the action definition. This is useful for example
+for stubbing data.
+
+| Parameter | Required | Description                |
+| --------- | -------- | -------------------------- |
+| value     | true     | The static value to return |

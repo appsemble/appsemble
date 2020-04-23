@@ -10,6 +10,7 @@ import log from './log';
 import noop from './noop';
 import request from './request';
 import resource from './resource';
+import staticAction from './static';
 
 // XXX fix type, this requires a generic mapping key to type.
 export type ActionCreator = (args: MakeActionParameters<ActionDefinition>) => Action;
@@ -38,4 +39,5 @@ export default {
   'resource.subscription.unsubscribe': resource.unsubscribe,
   'resource.subscription.toggle': resource.toggleSubscribe,
   'resource.subscription.status': resource.subscriptionStatus,
+  static: staticAction,
 } as ActionCreators;

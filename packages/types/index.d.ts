@@ -407,6 +407,13 @@ export interface EventActionDefinition extends BaseActionDefinition<'event'> {
   event: string;
 }
 
+export interface StaticActionDefinition extends BaseActionDefinition<'static'> {
+  /**
+   * The value to return.
+   */
+  value: any;
+}
+
 export type ActionDefinition =
   | BaseActionDefinition<'flow.back'>
   | BaseActionDefinition<'flow.cancel'>
@@ -414,6 +421,7 @@ export type ActionDefinition =
   | BaseActionDefinition<'flow.next'>
   | BaseActionDefinition<'noop'>
   | DialogActionDefinition
+  | EventActionDefinition
   | LinkActionDefinition
   | LogActionDefinition
   | RequestActionDefinition
@@ -426,7 +434,7 @@ export type ActionDefinition =
   | ResourceUnsubscribeActionDefinition
   | ResourceSubscriptionToggleActionDefinition
   | ResourceSubscriptionStatusActionDefinition
-  | EventActionDefinition
+  | StaticActionDefinition
 
   // XXX This shouldn’t be here, but TypeScript won’t shut up without it.
   | RequestLikeActionDefinition;
