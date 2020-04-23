@@ -1,9 +1,9 @@
-import type { Middleware } from 'koa';
+import type { KoaMiddleware } from '../types';
 
 /**
  * Koa middleware for handling Boom errors.
  */
-export default function boom(): Middleware {
+export default function boom(): KoaMiddleware {
   return async (ctx, next) => {
     try {
       await next();

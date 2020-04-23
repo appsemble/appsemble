@@ -689,6 +689,10 @@ export interface App {
    * An app icon url
    */
   iconUrl?: string;
+
+  $created?: string;
+
+  $updated?: string;
 }
 
 /**

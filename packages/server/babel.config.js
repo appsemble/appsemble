@@ -4,7 +4,6 @@ module.exports = {
     '@babel/plugin-syntax-dynamic-import',
     ['@babel/plugin-transform-modules-commonjs', { loose: true }],
     ['@babel/plugin-proposal-optional-chaining', { loose: true }],
-    ['@babel/plugin-proposal-class-properties', { loose: true }],
   ],
   retainLines: true,
 };

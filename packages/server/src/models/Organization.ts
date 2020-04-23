@@ -7,6 +7,16 @@ import OrganizationInvite from './OrganizationInvite';
 import User from './User';
 
 export default class Organization extends Model {
+  id: string;
+
+  name: string;
+
+  coreStyle: string;
+
+  sharedStyle: string;
+
+  OrganizationBlockStyles: OrganizationBlockStyle[];
+
   static initialize(sequelize: Sequelize): void {
     Organization.init(
       {

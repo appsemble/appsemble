@@ -5,8 +5,36 @@ import fs from 'fs-extra';
 import https from 'https';
 import path from 'path';
 
-async function readK8sSecret(filename) {
+import type { Argv } from '../../types';
+import type { DNSImplementation } from '.';
+
+async function readK8sSecret(filename: string): Promise<string> {
   return fs.readFile(path.join('/var/run/secrets/kubernetes.io/serviceaccount', filename), 'utf-8');
+}
+
+interface Rule {
+  host: string;
+  http: {
+    paths: {
+      path: string;
+      backend: {
+        serviceName: string;
+        servicePort: string | number;
+      };
+    }[];
+  };
+}
+
+interface TLS {
+  hosts: string[];
+  secretName: string;
+}
+
+interface Ingress {
+  spec: {
+    rules: Rule[];
+    tls: TLS[];
+  };
 }
 
 /**
@@ -22,7 +50,7 @@ export default async function kubernetes({
   ingressServicePort,
   kubernetesServiceHost = 'kubernetes.default.svc',
   kubernetesServicePort = 443,
-}) {
+}: Argv): Promise<DNSImplementation> {
   const K8S_HOST = `https://${kubernetesServiceHost}:${kubernetesServicePort}`;
   const ca = await readK8sSecret('ca.crt');
   const namespace = await readK8sSecret('namespace');
@@ -39,7 +67,7 @@ export default async function kubernetes({
   logger.info(`Using Kubernetes API version: ${info.title} ${info.version}`);
   const url = `${K8S_HOST}/apis/networking.k8s.io/v1beta1/namespaces/${namespace}/ingresses/${ingressName}`;
 
-  function formatRule(domain) {
+  function formatRule(domain: string): Rule {
     return {
       host: domain,
       http: {
@@ -56,14 +84,14 @@ export default async function kubernetes({
     };
   }
 
-  function formatTLS(domain) {
+  function formatTLS(domain: string): TLS {
     return {
       hosts: [domain],
       secretName: `${normalize(domain)}-tls`,
     };
   }
 
-  async function add(...domains) {
+  async function add(...domains: string[]): Promise<void> {
     domains.forEach((domain) => {
       logger.info(`Registering ingress rule for ${domain}`);
     });
@@ -87,12 +115,12 @@ export default async function kubernetes({
     );
   }
 
-  async function update(oldDomain, newDomain) {
+  async function update(oldDomain: string, newDomain: string): Promise<void> {
     const {
       data: {
         spec: { rules, tls },
       },
-    } = await axios.get(url, config);
+    } = await axios.get<Ingress>(url, config);
     logger.info(`Changing ingress rule for ${oldDomain} to ${newDomain}`);
     const ops = [];
     const ruleIndex = rules.findIndex((rule) => rule.host === oldDomain);
@@ -120,7 +148,7 @@ export default async function kubernetes({
     await axios.patch(url, ops, config);
   }
 
-  async function remove(domain) {
+  async function remove(domain: string): Promise<void> {
     await update(domain, host);
   }
 

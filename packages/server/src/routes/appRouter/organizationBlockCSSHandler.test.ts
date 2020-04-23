@@ -1,14 +1,14 @@
-import { createInstance } from 'axios-test-instance';
+import { AxiosTestInstance, createInstance } from 'axios-test-instance';
 import Koa from 'koa';
 
 import boomMiddleware from '../../middleware/boom';
-import { Organization } from '../../models';
+import { App, Organization, OrganizationBlockStyle } from '../../models';
 import { closeTestSchema, createTestSchema, truncate } from '../../utils/test/testSchema';
 import appRouter from '.';
 
-let request;
+let request: AxiosTestInstance;
 
-beforeAll(createTestSchema('organizationcsshandler'));
+beforeAll(createTestSchema('organizationblockcsshandler'));
 
 beforeAll(async () => {
   request = await createInstance(
@@ -31,52 +31,51 @@ afterAll(async () => {
 
 afterAll(closeTestSchema);
 
-it('should serve organization core CSS', async () => {
-  const org = await Organization.create({
-    id: 'org',
-    coreStyle: 'body { color: green; }',
-    sharedStyle: 'body { color: purple; }',
-  });
-  await org.createApp({
+it('should serve app block CSS', async () => {
+  await Organization.create({ id: 'org' });
+  await App.create({
+    OrganizationId: 'org',
     definition: {},
     path: 'app',
     vapidPrivateKey: '',
     vapidPublicKey: '',
   });
-  const response = await request.get('/organization/core.css');
+  await OrganizationBlockStyle.create({
+    OrganizationId: 'org',
+    block: '@foo/bar',
+    style: 'body { color: cyan; }',
+  });
+  const response = await request.get('/organization/@foo/bar.css');
   expect(response).toMatchObject({
     status: 200,
     headers: {
       'content-type': 'text/css; charset=utf-8',
     },
-    data: 'body { color: green; }',
+    data: 'body { color: cyan; }',
   });
 });
 
-it('should serve organization shared CSS', async () => {
-  const org = await Organization.create({
-    id: 'org',
-    coreStyle: 'body { color: green; }',
-    sharedStyle: 'body { color: purple; }',
-  });
-  await org.createApp({
+it('should fallback to empty CSS', async () => {
+  await Organization.create({ id: 'org' });
+  await App.create({
+    OrganizationId: 'org',
     definition: {},
     path: 'app',
     vapidPrivateKey: '',
     vapidPublicKey: '',
   });
-  const response = await request.get('/organization/shared.css');
+  const response = await request.get('/organization/@foo/bar.css');
   expect(response).toMatchObject({
     status: 200,
     headers: {
       'content-type': 'text/css; charset=utf-8',
     },
-    data: 'body { color: purple; }',
+    data: '',
   });
 });
 
 it('should handle if an app is not found', async () => {
-  const response = await request.get('/organization/core.css');
+  const response = await request.get('/organization/@foo/bar.css');
   expect(response).toMatchObject({
     status: 404,
     data: {

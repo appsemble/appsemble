@@ -1,9 +1,19 @@
 import { AppsembleError, logger } from '@appsemble/node-utils';
 import semver from 'semver';
+import type { Sequelize } from 'sequelize';
+import type { Promisable } from 'type-fest';
 
 import { getDB, Meta } from '../models';
 
-export default async function migrate(toVersion, migrations) {
+export interface Migration {
+  key: string;
+
+  up(db: Sequelize): Promisable<void>;
+
+  down(db: Sequelize): Promisable<void>;
+}
+
+export default async function migrate(toVersion: string, migrations: Migration[]): Promise<void> {
   const db = getDB();
   await Meta.sync();
   const to = toVersion === 'next' ? migrations[migrations.length - 1].key : toVersion;
@@ -11,7 +21,7 @@ export default async function migrate(toVersion, migrations) {
   if (metas.length > 1) {
     throw new AppsembleError('Multiple Meta entries found. The database requires a manual fix.');
   }
-  let meta;
+  let meta: Meta;
   if (metas.length === 0) {
     logger.warn('No old database meta information was found.');
     logger.info('Synchronizing database models as-is.');
@@ -27,23 +37,23 @@ export default async function migrate(toVersion, migrations) {
   logger.info(`Current database version: ${meta.version}`);
   if (semver.gt(to, meta.version)) {
     const f = migrations.filter(({ key }) => semver.gt(key, meta.version) && semver.lte(key, to));
-    await f.reduce(async (previous, migration) => {
-      await previous;
+    for (const migration of f) {
       logger.info(`Upgrade to ${migration.key} started`);
       await migration.up(db);
       await Meta.update({ version: migration.key }, { where: {} });
       logger.info(`Upgrade to ${migration.key} successful`);
-    }, null);
+    }
   } else {
-    const f = migrations.filter(({ key }) => semver.lte(key, meta.version) && semver.gt(key, to));
-    await f.reduceRight(async (previous, migration) => {
-      await previous;
+    const f = migrations
+      .filter(({ key }) => semver.lte(key, meta.version) && semver.gt(key, to))
+      .reverse();
+    for (const migration of f) {
       logger.info(`Downgrade from ${migration.key} started`);
       const migrationIndex = migrations.lastIndexOf(migration);
       const version = migrationIndex ? migrations[migrationIndex - 1].key : '0.0.0';
       await migration.down(db);
       await Meta.update({ version }, { where: {} });
       logger.info(`Downgrade from ${migration.key} successful`);
-    }, null);
+    }
   }
 }

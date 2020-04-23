@@ -1,9 +1,14 @@
 import * as Boom from '@hapi/boom';
 
 import { AppBlockStyle } from '../../models';
+import type { KoaContext } from '../../types';
 import getApp from '../../utils/getApp';
 
-export default async function blockCSSHandler(ctx) {
+interface Params {
+  name: string;
+}
+
+export default async function blockCSSHandler(ctx: KoaContext<Params>): Promise<void> {
   const { name } = ctx.params;
 
   const app = await getApp(ctx, {

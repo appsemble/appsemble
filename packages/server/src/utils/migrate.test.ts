@@ -1,16 +1,16 @@
 import { AppsembleError } from '@appsemble/node-utils';
 
 import { getDB, Meta } from '../models';
-import migrate from './migrate';
+import migrate, { Migration } from './migrate';
 import { closeTestSchema, createTestSchema, truncate } from './test/testSchema';
 
-let m000;
-let m001;
-let m002;
-let m003;
-let m010;
-let m100;
-let migrations;
+let m000: Migration;
+let m001: Migration;
+let m002: Migration;
+let m003: Migration;
+let m010: Migration;
+let m100: Migration;
+let migrations: Migration[];
 
 beforeAll(createTestSchema('migrate'));
 
@@ -31,8 +31,8 @@ afterAll(closeTestSchema);
 it('should fail if multiple meta entries are found', async () => {
   await Meta.create({ version: '0.0.0' });
   await Meta.create({ version: '1.2.3' });
+  await expect(migrate(null, [])).rejects.toThrow(AppsembleError);
   await expect(migrate(null, [])).rejects.toThrow(
-    AppsembleError,
     'Multiple Meta entries found. The database requires a manual fix.',
   );
 });
@@ -97,8 +97,8 @@ it('should upgrade if the given version is higher than the database meta version
 
 it('should run downgrades in sequence', async () => {
   await Meta.create({ version: '0.0.3' });
-  let resolve;
-  m003.down.mockReturnValue(
+  let resolve: () => void;
+  (m003.down as jest.Mock).mockReturnValue(
     new Promise((r) => {
       resolve = r;
     }),
@@ -112,8 +112,8 @@ it('should run downgrades in sequence', async () => {
 
 it('should run upgrades in sequence', async () => {
   await Meta.create({ version: '0.0.1' });
-  let resolve;
-  m001.up.mockReturnValue(
+  let resolve: () => void;
+  (m001.up as jest.Mock).mockReturnValue(
     new Promise((r) => {
       resolve = r;
     }),

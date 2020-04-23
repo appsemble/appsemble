@@ -1,7 +1,16 @@
+import type { Theme } from '@appsemble/types';
+
+import type { KoaContext } from '../../types';
 import getApp from '../../utils/getApp';
 import serveIcon from '../serveIcon';
 
-export default async function iconHandler(ctx) {
+interface Params {
+  format: string;
+  height: string;
+  width: string;
+}
+
+export default async function iconHandler(ctx: KoaContext<Params>): Promise<void> {
   const { params } = ctx;
   const app = await getApp(ctx, {
     attributes: ['definition', 'icon'],
@@ -14,9 +23,10 @@ export default async function iconHandler(ctx) {
   let background;
 
   if (opaque) {
-    const { themeColor = '#ffffff', splashColor = themeColor } = app.definition.theme || {};
+    const { themeColor = '#ffffff', splashColor = themeColor } =
+      app.definition.theme || ({} as Theme);
     background = splashColor;
   }
 
-  await serveIcon(ctx, { background, format, height, icon: app && app.icon, width });
+  await serveIcon(ctx, { background, format, height, icon: app?.icon, width });
 }

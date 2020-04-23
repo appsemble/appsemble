@@ -1,4 +1,4 @@
-import { createInstance } from 'axios-test-instance';
+import { AxiosTestInstance, createInstance } from 'axios-test-instance';
 import * as fs from 'fs';
 import Koa from 'koa';
 import * as path from 'path';
@@ -8,7 +8,7 @@ import { BlockAsset, Organization } from '../../models';
 import { closeTestSchema, createTestSchema, truncate } from '../../utils/test/testSchema';
 import appRouter from '.';
 
-let request;
+let request: AxiosTestInstance;
 
 beforeAll(createTestSchema('blockassethandler'));
 

@@ -1,3 +1,4 @@
+import type { AppDefinition } from '@appsemble/types';
 import { DataTypes, Model, Sequelize } from 'sequelize';
 
 import AppBlockStyle from './AppBlockStyle';
@@ -10,6 +11,46 @@ import Resource from './Resource';
 import User from './User';
 
 export default class App extends Model {
+  id: number;
+
+  definition: AppDefinition;
+
+  domain: string;
+
+  icon: Buffer;
+
+  path: string;
+
+  private: boolean;
+
+  template: boolean;
+
+  style: string;
+
+  sharedStyle: string;
+
+  yaml: string;
+
+  vapidPublicKey: string;
+
+  vapidPivateKey: string;
+
+  updated: Date;
+
+  created: Date;
+
+  OrganizationId: string;
+
+  AppBlockStyles: AppBlockStyle[];
+
+  Organization: Organization;
+
+  RatingAverage?: number;
+
+  RatingCount?: number;
+
+  dataValues?: App;
+
   static initialize(sequelize: Sequelize): void {
     App.init(
       {

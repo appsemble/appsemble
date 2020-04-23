@@ -1,14 +1,14 @@
-import { createInstance } from 'axios-test-instance';
+import { AxiosTestInstance, createInstance } from 'axios-test-instance';
 import Koa from 'koa';
 
 import boomMiddleware from '../../middleware/boom';
-import { Organization } from '../../models';
+import { App, Organization } from '../../models';
 import { closeTestSchema, createTestSchema, truncate } from '../../utils/test/testSchema';
 import appRouter from '.';
 
-let request;
+let request: AxiosTestInstance;
 
-beforeAll(createTestSchema('blockcsshandler'));
+beforeAll(createTestSchema('csshandler'));
 
 beforeAll(async () => {
   request = await createInstance(
@@ -31,48 +31,50 @@ afterAll(async () => {
 
 afterAll(closeTestSchema);
 
-it('should serve app block CSS', async () => {
-  const org = await Organization.create({ id: 'org' });
-  const app = await org.createApp({
+it('should serve app core CSS', async () => {
+  await Organization.create({ id: 'org' });
+  await App.create({
+    OrganizationId: 'org',
     definition: {},
     path: 'app',
+    style: 'body { color: red; }',
+    sharedStyle: 'body { color: blue; }',
     vapidPrivateKey: '',
     vapidPublicKey: '',
   });
-  await app.createAppBlockStyle({
-    block: '@foo/bar',
-    style: 'body { color: cyan; }',
-  });
-  const response = await request.get('/@foo/bar.css');
+  const response = await request.get('/core.css');
   expect(response).toMatchObject({
     status: 200,
     headers: {
       'content-type': 'text/css; charset=utf-8',
     },
-    data: 'body { color: cyan; }',
+    data: 'body { color: red; }',
   });
 });
 
-it('should fallback to empty CSS', async () => {
-  const org = await Organization.create({ id: 'org' });
-  await org.createApp({
+it('should serve app shared CSS', async () => {
+  await Organization.create({ id: 'org' });
+  await App.create({
+    OrganizationId: 'org',
     definition: {},
     path: 'app',
+    style: 'body { color: red; }',
+    sharedStyle: 'body { color: blue; }',
     vapidPrivateKey: '',
     vapidPublicKey: '',
   });
-  const response = await request.get('/@foo/bar.css');
+  const response = await request.get('/shared.css');
   expect(response).toMatchObject({
     status: 200,
     headers: {
       'content-type': 'text/css; charset=utf-8',
     },
-    data: '',
+    data: 'body { color: blue; }',
   });
 });
 
 it('should handle if an app is not found', async () => {
-  const response = await request.get('/@foo/bar.css');
+  const response = await request.get('/core.css');
   expect(response).toMatchObject({
     status: 404,
     data: {

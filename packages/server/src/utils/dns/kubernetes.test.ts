@@ -5,7 +5,7 @@ import { vol } from 'memfs';
 
 import kubernetes from './kubernetes';
 
-let backend;
+let backend: MockAdapter;
 jest.mock('fs');
 
 beforeEach(() => {
@@ -26,7 +26,7 @@ beforeEach(() => {
 
 it('should log the Kubernetes API version', async () => {
   jest.spyOn(logger, 'info');
-  await kubernetes({});
+  await kubernetes({ host: '' });
   expect(logger.info).toHaveBeenCalledWith('Using Kubernetes API version: Kubernetes test');
 });
 
@@ -38,6 +38,7 @@ describe('add', () => {
       )
       .reply(200);
     const { add } = await kubernetes({
+      host: '',
       ingressName: 'ingress-name',
       ingressServiceName: 'test-ingress',
       ingressServicePort: 'port',
@@ -130,6 +131,7 @@ describe('update', () => {
       )
       .reply(200);
     const { update } = await kubernetes({
+      host: '',
       ingressName: 'foo',
       ingressServiceName: 'test-ingress',
       ingressServicePort: 'port',
@@ -176,6 +178,7 @@ describe('update', () => {
       )
       .reply(200);
     const { update } = await kubernetes({
+      host: '',
       ingressName: 'foo',
       ingressServiceName: 'test-ingress',
       ingressServicePort: 'port',
@@ -222,6 +225,7 @@ describe('update', () => {
       )
       .reply(200);
     const { update } = await kubernetes({
+      host: '',
       ingressName: 'foo',
       ingressServiceName: 'test-ingress',
       ingressServicePort: 'port',

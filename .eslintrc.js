@@ -115,6 +115,16 @@ module.exports = {
                 message: 'Use ComponentPropsWithoutRef instead',
                 fixWith: 'ComponentPropsWithoutRef',
               },
+              Context: {
+                message:
+                  'The builtin Koa Context type is too loose. Use the custom KoaContext instead.',
+                fixWith: 'KoaContext',
+              },
+              Middleware: {
+                message:
+                  'The builtin Koa Middleware type is too loose. Use the custom KoaMiddleware instead.',
+                fixWith: 'KoaMiddleware',
+              },
             },
           },
         ],
