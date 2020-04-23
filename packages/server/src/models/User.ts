@@ -9,6 +9,18 @@ import Organization from './Organization';
 import ResetPasswordToken from './ResetPasswordToken';
 
 export default class User extends Model {
+  id: number;
+
+  name: string;
+
+  primaryEmail: string;
+
+  password: string;
+
+  AppMember: AppMember;
+
+  EmailAuthorizations: EmailAuthorization[];
+
   static initialize(sequelize: Sequelize): void {
     User.init(
       {

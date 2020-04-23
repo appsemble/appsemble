@@ -2,9 +2,10 @@ import { logger } from '@appsemble/node-utils';
 import Boom from '@hapi/boom';
 
 import { getDB } from '../models';
+import type { KoaContext } from '../types';
 
 // eslint-disable-next-line import/prefer-default-export
-export async function checkHealth(ctx) {
+export async function checkHealth(ctx: KoaContext): Promise<void> {
   const status = {
     database: true,
   };

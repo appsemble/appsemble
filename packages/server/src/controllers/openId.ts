@@ -4,8 +4,14 @@ import { addMinutes } from 'date-fns';
 import { Op } from 'sequelize';
 
 import { App, EmailAuthorization, OAuth2AuthorizationCode, User } from '../models';
+import type { KoaContext } from '../types';
 
-export async function getUserInfo(ctx) {
+interface Params {
+  appId: number;
+  redirectUri: string;
+}
+
+export async function getUserInfo(ctx: KoaContext<Params>): Promise<void> {
   const { id } = ctx.state.user;
 
   const user = await User.findOne({
@@ -44,7 +50,7 @@ export async function getUserInfo(ctx) {
   };
 }
 
-export async function createAuthorizationCode(ctx) {
+export async function createAuthorizationCode(ctx: KoaContext<Params>): Promise<void> {
   const { appId, redirectUri } = ctx.request.body;
   const { host } = ctx.argv;
   const { id } = ctx.state.user;

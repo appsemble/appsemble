@@ -1,10 +1,16 @@
 import { permissions } from '@appsemble/utils';
 import Boom from '@hapi/boom';
 
-import { App, Organization, User } from '../models';
+import { App, AppMember, Organization, User } from '../models';
+import type { KoaContext } from '../types';
 import checkRole from '../utils/checkRole';
 
-export async function getAppMembers(ctx) {
+interface Params {
+  appId: string;
+  memberId: number;
+}
+
+export async function getAppMembers(ctx: KoaContext<Params>): Promise<void> {
   const { appId } = ctx.params;
 
   const app = await App.findByPk(appId, { include: [User] });
@@ -20,7 +26,7 @@ export async function getAppMembers(ctx) {
   }));
 }
 
-export async function getAppMember(ctx) {
+export async function getAppMember(ctx: KoaContext<Params>): Promise<void> {
   const { appId, memberId } = ctx.params;
 
   const app = await App.findByPk(appId, {
@@ -71,7 +77,7 @@ export async function getAppMember(ctx) {
   };
 }
 
-export async function setAppMember(ctx) {
+export async function setAppMember(ctx: KoaContext<Params>): Promise<void> {
   const { appId, memberId } = ctx.params;
   const { role } = ctx.request.body;
 
@@ -103,7 +109,11 @@ export async function setAppMember(ctx) {
       await member.AppMember.update({ role });
     }
   } else {
-    await app.addUser(user, { through: { role } });
+    await AppMember.create({
+      UserId: user.id,
+      AppId: app.id,
+      role,
+    });
   }
 
   ctx.body = {

@@ -1,4 +1,14 @@
+import type { TokenResponse } from '@appsemble/types';
 import { sign } from 'jsonwebtoken';
+
+import type { Argv } from '../types';
+
+interface Options {
+  aud?: string;
+  expires?: number;
+  refreshToken?: boolean;
+  scope?: string;
+}
 
 /**
  * Create a JSON web token response.
@@ -17,10 +27,10 @@ import { sign } from 'jsonwebtoken';
  * @param options.refreshToken If explicitly set to `false`, not refresh token will be generated.
  */
 export default function createJWTResponse(
-  sub,
-  { host, secret },
-  { aud = host, expires = 3600, refreshToken = true, scope } = {},
-) {
+  sub: string,
+  { host, secret }: Argv,
+  { aud = host, expires = 3600, refreshToken = true, scope }: Options = {},
+): TokenResponse {
   const iat = Math.floor(Date.now() / 1000);
   const payload = {
     // The audience this token is for, i.e. the web platform host or an OAuth2 client id.
@@ -33,7 +43,7 @@ export default function createJWTResponse(
     // This token can be used to authenticate the user having this id.
     sub,
   };
-  const response = {
+  const response: TokenResponse = {
     // The access token token expires in an hour.
     access_token: sign({ ...payload, exp: iat + expires }, secret),
     expires_in: expires,

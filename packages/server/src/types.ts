@@ -17,19 +17,33 @@ declare module 'sequelize' {
   }
 }
 
+declare module 'koa' {
+  interface Request {
+    body: any;
+  }
+}
+
 export interface Argv {
   appDomainStrategy?: string;
+  disableRegistration?: boolean;
   host: string;
   ingressName?: string;
   ingressServiceName?: string;
   ingressServicePort?: string | number;
   kubernetesServiceHost?: string;
   kubernetesServicePort?: string | number;
+  oauthGitlabKey?: string;
+  oauthGoogleKey?: string;
+  secret?: string;
   sentryDsn?: string;
 }
 
 export interface AppsembleState {
   render: (template: string, params: object) => Promise<string>;
+
+  user: {
+    id: number;
+  };
 }
 
 export interface AppsembleContext<P extends {} = {}> {

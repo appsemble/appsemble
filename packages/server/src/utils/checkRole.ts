@@ -2,6 +2,7 @@ import { roles } from '@appsemble/utils';
 import Boom from '@hapi/boom';
 
 import { Member } from '../models';
+import type { KoaContext } from '../types';
 
 /**
  * Check if the authenticated user has permission to perform an action within an organization.
@@ -10,8 +11,11 @@ import { Member } from '../models';
  * @param {string} organizationId The id of which to check if the user may persoem the action for.
  * @param {string[]} permissions An array of required permissions or a single required permission.
  */
-
-export default async function checkRole(ctx, organizationId, permissions) {
+export default async function checkRole(
+  ctx: KoaContext,
+  organizationId: string,
+  permissions: string,
+): Promise<true> {
   const { user } = ctx.state;
   if (!user) {
     throw Boom.unauthorized();

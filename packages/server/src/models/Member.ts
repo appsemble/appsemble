@@ -1,7 +1,9 @@
-import { roles } from '@appsemble/utils';
+import { Role, roles } from '@appsemble/utils';
 import { DataTypes, Model, Sequelize } from 'sequelize';
 
 export default class Member extends Model {
+  role: Role;
+
   static initialize(sequelize: Sequelize): void {
     Member.init(
       {

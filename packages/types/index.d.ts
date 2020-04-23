@@ -113,6 +113,44 @@ export interface UserInfo {
   picture: string;
 }
 
+/**
+ * The payload stored in our JSON web tokens
+ */
+export interface JwtPayload {
+  aud: string;
+  exp: number;
+  iat: string;
+  iss: string;
+  scope: string;
+  sub: string;
+}
+
+/**
+ * A response for a login token request
+ */
+export interface TokenResponse {
+  /**
+   * The bearer access token to use for authenticating requests.
+   */
+  // eslint-disable-next-line camelcase
+  access_token: string;
+
+  /**
+   * How long until the access token expires in seconds from now.
+   */
+  // eslint-disable-next-line camelcase
+  expires_in: number;
+
+  /**
+   * A refresh token for getting a new access token.
+   */
+  // eslint-disable-next-line camelcase
+  refresh_token?: string;
+
+  // eslint-disable-next-line camelcase
+  token_type: 'bearer';
+}
+
 export interface Security {
   login?: 'password';
   default: {

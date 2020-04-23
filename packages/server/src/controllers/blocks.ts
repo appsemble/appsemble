@@ -1,16 +1,25 @@
 import { logger } from '@appsemble/node-utils';
+import type { BlockManifest } from '@appsemble/types';
 import { permissions } from '@appsemble/utils';
 import Boom from '@hapi/boom';
 import * as fileType from 'file-type';
 import isSvg from 'is-svg';
 import semver from 'semver';
 import { DatabaseError, UniqueConstraintError } from 'sequelize';
+import type { VFile } from 'vfile';
 
 import { BlockAsset, BlockVersion, getDB, transactional } from '../models';
+import type { KoaContext } from '../types';
 import checkRole from '../utils/checkRole';
 import getDefaultIcon from '../utils/getDefaultIcon';
 
-export async function getBlock(ctx) {
+interface Params {
+  blockId: string;
+  blockVersion: string;
+  organizationId: string;
+}
+
+export async function getBlock(ctx: KoaContext<Params>): Promise<void> {
   const { blockId, organizationId } = ctx.params;
 
   const blockVersion = await BlockVersion.findOne({
@@ -48,7 +57,7 @@ export async function getBlock(ctx) {
   };
 }
 
-export async function queryBlocks(ctx) {
+export async function queryBlocks(ctx: KoaContext<Params>): Promise<void> {
   // Sequelize does not support subqueries
   // The alternative is to query everything and filter manually
   // See: https://github.com/sequelize/sequelize/issues/9509
@@ -81,8 +90,13 @@ export async function queryBlocks(ctx) {
   );
 }
 
-export async function publishBlock(ctx) {
-  const { files, icon, ...data } = ctx.request.body;
+interface PublishBlockBody extends Omit<BlockManifest, 'files'> {
+  files: (VFile & { mime: string })[];
+  icon: VFile;
+}
+
+export async function publishBlock(ctx: KoaContext<Params>): Promise<void> {
+  const { files, icon, ...data }: PublishBlockBody = ctx.request.body;
   const { name, version } = data;
   const actionKeyRegex = /^[a-z]\w*$/;
 
@@ -122,7 +136,7 @@ export async function publishBlock(ctx) {
         parameters,
         resources = null,
       } = await BlockVersion.create(
-        { ...data, icon: icon && icon.contents, name: blockId, OrganizationId },
+        { ...data, icon: icon?.contents, name: blockId, OrganizationId },
         { transaction },
       );
 
@@ -164,7 +178,7 @@ export async function publishBlock(ctx) {
   }
 }
 
-export async function getBlockVersion(ctx) {
+export async function getBlockVersion(ctx: KoaContext<Params>): Promise<void> {
   const { blockId, blockVersion, organizationId } = ctx.params;
   const name = `@${organizationId}/${blockId}`;
 
@@ -193,7 +207,7 @@ export async function getBlockVersion(ctx) {
   };
 }
 
-export async function getBlockVersions(ctx) {
+export async function getBlockVersions(ctx: KoaContext<Params>): Promise<void> {
   const { blockId, organizationId } = ctx.params;
   const name = `@${organizationId}/${blockId}`;
 
@@ -222,7 +236,7 @@ export async function getBlockVersions(ctx) {
   }));
 }
 
-export async function getBlockIcon(ctx) {
+export async function getBlockIcon(ctx: KoaContext<Params>): Promise<void> {
   const { blockId, blockVersion, organizationId } = ctx.params;
 
   const version = await BlockVersion.findOne({

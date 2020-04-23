@@ -3,6 +3,12 @@ import { DataTypes, Model, Sequelize } from 'sequelize';
 import User from './User';
 
 export default class EmailAuthorization extends Model {
+  email: string;
+
+  verified: boolean;
+
+  key: string;
+
   static initialize(sequelize: Sequelize): void {
     EmailAuthorization.init(
       {

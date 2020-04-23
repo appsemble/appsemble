@@ -1,5 +1,11 @@
 import type { AppDefinition } from '@appsemble/types';
-import { DataTypes, Model, Sequelize } from 'sequelize';
+import {
+  DataTypes,
+  HasManyGetAssociationsMixin,
+  HasManyRemoveAssociationMixin,
+  Model,
+  Sequelize,
+} from 'sequelize';
 
 import AppBlockStyle from './AppBlockStyle';
 import AppMember from './AppMember';
@@ -33,7 +39,7 @@ export default class App extends Model {
 
   vapidPublicKey: string;
 
-  vapidPivateKey: string;
+  vapidPrivateKey: string;
 
   updated: Date;
 
@@ -44,6 +50,18 @@ export default class App extends Model {
   AppBlockStyles: AppBlockStyle[];
 
   Organization: Organization;
+
+  Assets: Asset[];
+
+  Users: User[];
+
+  Resources: Resource[];
+
+  ResourceCount: number;
+
+  getUsers: HasManyGetAssociationsMixin<User>;
+
+  removeUser: HasManyRemoveAssociationMixin<User, number>;
 
   RatingAverage?: number;
 

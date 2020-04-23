@@ -2,9 +2,15 @@ import { permissions } from '@appsemble/utils';
 import Boom from '@hapi/boom';
 
 import { App, Asset } from '../models';
+import type { KoaContext } from '../types';
 import checkRole from '../utils/checkRole';
 
-export async function getAssets(ctx) {
+interface Params {
+  appId: string;
+  assetId: string;
+}
+
+export async function getAssets(ctx: KoaContext<Params>): Promise<void> {
   const { appId } = ctx.params;
   const app = await App.findByPk(appId, {
     attributes: [],
@@ -22,7 +28,7 @@ export async function getAssets(ctx) {
   }));
 }
 
-export async function getAssetById(ctx) {
+export async function getAssetById(ctx: KoaContext<Params>): Promise<void> {
   const { appId, assetId } = ctx.params;
 
   const app = await App.findByPk(appId, {
@@ -43,7 +49,7 @@ export async function getAssetById(ctx) {
   ctx.body = asset.data;
 }
 
-export async function createAsset(ctx) {
+export async function createAsset(ctx: KoaContext<Params>): Promise<void> {
   const { request } = ctx;
   const { appId } = ctx.params;
   const { body, type } = request;
@@ -55,8 +61,8 @@ export async function createAsset(ctx) {
     throw Boom.notFound('App not found');
   }
 
-  const asset = await app.createAsset(
-    { mime: type, data: body, ...(user && { UserId: user.id }) },
+  const asset = await Asset.create(
+    { AppId: app.id, mime: type, data: body, ...(user && { UserId: user.id }) },
     { raw: true },
   );
 
@@ -64,7 +70,7 @@ export async function createAsset(ctx) {
   ctx.body = { id: asset.id, mime: asset.mime, filename: asset.filename };
 }
 
-export async function deleteAsset(ctx) {
+export async function deleteAsset(ctx: KoaContext<Params>): Promise<void> {
   const { appId, assetId } = ctx.params;
 
   const app = await App.findByPk(appId, {

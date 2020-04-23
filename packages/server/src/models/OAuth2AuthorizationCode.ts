@@ -4,6 +4,12 @@ import App from './App';
 import User from './User';
 
 export default class OAuth2AuthorizationCode extends Model {
+  code: string;
+
+  redirectUri: string;
+
+  expires: Date;
+
   static initialize(sequelize: Sequelize): void {
     OAuth2AuthorizationCode.init(
       {

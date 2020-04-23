@@ -1,5 +1,6 @@
 import crypto from 'crypto';
 
+import type { KoaContext } from '../../types';
 import createSettings from '../../utils/createSettings';
 import makeCSP from '../../utils/makeCSP';
 import sentryDsnToReportUri from '../../utils/sentryDsnToReportUri';
@@ -7,7 +8,7 @@ import sentryDsnToReportUri from '../../utils/sentryDsnToReportUri';
 /**
  * Serve `index.html` for editor related routes.
  */
-export default async function indexHandler(ctx) {
+export default async function indexHandler(ctx: KoaContext): Promise<void> {
   const { render } = ctx.state;
   const { argv } = ctx;
   const { disableRegistration, host, sentryDsn } = argv;

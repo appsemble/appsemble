@@ -5,10 +5,11 @@ import { col, fn, UniqueConstraintError } from 'sequelize';
 import { generateVAPIDKeys } from 'web-push';
 
 import { App, Resource } from '../models';
+import type { KoaContext } from '../types';
 import checkRole from '../utils/checkRole';
 import getAppFromRecord from '../utils/getAppFromRecord';
 
-export async function getAppTemplates(ctx) {
+export async function getAppTemplates(ctx: KoaContext): Promise<void> {
   const templates = await App.findAll({
     where: { template: true },
     attributes: {
@@ -18,23 +19,15 @@ export async function getAppTemplates(ctx) {
     group: ['App.id'],
   });
 
-  ctx.body = templates.map(
-    ({
-      dataValues: {
-        ResourceCount,
-        definition: { description, name },
-        id,
-      },
-    }) => ({
-      id,
-      name,
-      description,
-      resources: Number(ResourceCount) > 0,
-    }),
-  );
+  ctx.body = templates.map(({ ResourceCount, definition: { description, name }, id }) => ({
+    id,
+    name,
+    description,
+    resources: Number(ResourceCount) > 0,
+  }));
 }
 
-export async function createTemplateApp(ctx) {
+export async function createTemplateApp(ctx: KoaContext): Promise<void> {
   const {
     description,
     name,
@@ -59,10 +52,11 @@ export async function createTemplateApp(ctx) {
     await checkRole(ctx, template.OrganizationId, permissions.ViewApps);
   }
 
+  const path = name ? normalize(name) : normalize(template.definition.name);
   try {
-    const path = name ? normalize(name) : normalize(template);
     const keys = generateVAPIDKeys();
     const result = {
+      path,
       definition: {
         ...template.definition,
         description,
@@ -73,9 +67,7 @@ export async function createTemplateApp(ctx) {
       vapidPrivateKey: keys.privateKey,
       OrganizationId: organizationId,
       ...(resources && {
-        Resources: [].concat(
-          template.Resources.map(({ dataValues: { data, type } }) => ({ type, data })),
-        ),
+        Resources: [].concat(template.Resources.map(({ data, type }) => ({ type, data }))),
       }),
     };
 
@@ -99,9 +91,7 @@ export async function createTemplateApp(ctx) {
     ctx.status = 201;
   } catch (error) {
     if (error instanceof UniqueConstraintError) {
-      throw Boom.conflict(
-        `Another app with path “${name ? normalize(name) : normalize(template)}” already exists`,
-      );
+      throw Boom.conflict(`Another app with path “${path}” already exists`);
     }
 
     throw error;
