@@ -17,8 +17,7 @@ const referenceAction = {
   properties: {
     trigger: {
       type: 'array',
-      items: { type: 'string' },
-      enum: ['create', 'update', 'delete'],
+      items: { type: 'string', enum: ['create', 'update', 'delete'] },
       minItems: 1,
       uniqueItems: true,
     },
