@@ -353,7 +353,6 @@ staging docs:
     - build docs image
   rules:
     - if: $CI_PIPELINE_SOURCE == 'schedule'
-  allow_failure: false
   environment:
     name: staging docs
     url: https://staging.appsemble.dev
@@ -405,7 +404,6 @@ production docs:
     - build docs image
   rules:
     - if: $CI_COMMIT_TAG
-  allow_failure: false
   environment:
     name: production/docs
     url: https://appsemble.dev
