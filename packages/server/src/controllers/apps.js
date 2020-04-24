@@ -148,7 +148,6 @@ export async function getAppById(ctx) {
   const { appId } = ctx.params;
 
   const app = await App.findByPk(appId, {
-    raw: true,
     attributes: {
       include: [
         [fn('AVG', col('AppRatings.rating')), 'RatingAverage'],
@@ -180,7 +179,6 @@ export async function queryApps(ctx) {
     include: [{ model: AppRating, attributes: [] }],
     group: ['App.id'],
     order: [literal('"RatingAverage" DESC NULLS LAST'), ['id', 'ASC']],
-    raw: true,
   });
   const ignoredFields = ['yaml'];
   ctx.body = apps.map((app) => getAppFromRecord(app, ignoredFields));
@@ -255,7 +253,7 @@ export async function updateApp(ctx) {
     await checkRole(ctx, dbApp.OrganizationId, [permissions.EditApps, permissions.EditAppSettings]);
     await dbApp.update(result, { where: { id: appId } });
 
-    ctx.body = getAppFromRecord({ ...dbApp.dataValues, ...result });
+    ctx.body = getAppFromRecord({ ...dbApp, ...result });
   } catch (error) {
     handleAppValidationError(error, result);
   }
@@ -357,7 +355,7 @@ export async function patchApp(ctx) {
 
     await dbApp.update(result, { where: { id: appId } });
 
-    ctx.body = getAppFromRecord({ ...dbApp.dataValues, ...result });
+    ctx.body = getAppFromRecord(dbApp);
   } catch (error) {
     handleAppValidationError(error, result);
   }
