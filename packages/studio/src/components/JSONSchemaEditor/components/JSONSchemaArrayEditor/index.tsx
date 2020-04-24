@@ -85,7 +85,7 @@ export default function JSONSchemaArrayEditor({
             <Button
               // eslint-disable-next-line react/no-array-index-key
               key={`remove.${index}`}
-              icon="trash"
+              icon="minus"
               name={`${name}.${index}`}
               onClick={removeItem}
             />

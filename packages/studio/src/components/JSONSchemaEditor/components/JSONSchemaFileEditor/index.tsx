@@ -3,6 +3,10 @@ import { FileUpload, FormComponent } from '@appsemble/react-components';
 import type { BlobUploadType } from '@appsemble/types';
 import type { OpenAPIV3 } from 'openapi-types';
 import * as React from 'react';
+import { FormattedMessage } from 'react-intl';
+
+import { useApp } from '../../../AppContext';
+import messages from './messages';
 
 interface JSONSchemaFileEditorProps {
   /**
@@ -43,13 +47,14 @@ export default function JSONSchemaFileEditor({
   required,
 }: JSONSchemaFileEditorProps): React.ReactElement {
   let acceptedFiles = 'file_extension';
+  const { app } = useApp();
 
   const [files, setFiles] = React.useState<File[]>([null]);
   const [fileResults, setFileResults] = React.useState<string[]>([]);
   const blobUploadType: BlobUploadType = {
     method: 'POST',
     serialize: null,
-    url: '/api/apps/5/assets',
+    url: `/api/apps/${app.id}/assets`,
   };
 
   const onFileChange = React.useCallback(
@@ -101,10 +106,12 @@ export default function JSONSchemaFileEditor({
         <FileUpload
           key={key}
           accept={acceptedFiles}
-          fileButtonLabel="Choose file"
-          fileLabel={file?.name || 'no file'}
+          fileButtonLabel={<FormattedMessage {...messages.chooseFile} />}
+          fileLabel={file?.name || <FormattedMessage {...messages.noFile} />}
+          label={<FormattedMessage {...messages.file} />}
           name={name}
           onChange={(event) => onFileChange(event, key)}
+          required
         />
       ))}
     </FormComponent>

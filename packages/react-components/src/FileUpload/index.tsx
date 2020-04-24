@@ -38,7 +38,7 @@ export default function FileUpload({
     <FormComponent className={formComponentClassName} id={id} label={label} required={required}>
       {preview}
       <div className="file has-name">
-        <label className={`file-label ${className}`}>
+        <label className={`file-label ${className}`} htmlFor="file-upload">
           <input
             accept={accept}
             className="file-input"
