@@ -13,10 +13,6 @@ import NumberInput from './components/NumberInput';
 import StringInput from './components/StringInput';
 import styles from './index.css';
 
-interface Values {
-  [key: string]: any;
-}
-
 type Validator = (field: Field, event: Event, value: any) => boolean;
 
 const inputs = {
