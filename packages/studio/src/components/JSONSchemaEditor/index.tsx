@@ -1,12 +1,12 @@
-import uploadBlobs from '@appsemble/app/src/utils/uploadBlobs';
-import { Checkbox, FileUpload, FormComponent, Input, Select } from '@appsemble/react-components';
-import type { BlobUploadType } from '@appsemble/types';
+import { Checkbox, Select } from '@appsemble/react-components';
 import type { OpenAPIV3 } from 'openapi-types';
 import * as React from 'react';
 import type { Definition } from 'typescript-json-schema';
 
-import JSONSchemaArrayEditor from '../JSONSchemaArrayEditor';
-import JSONSchemaObjectEditor from '../JSONSchemaObjectEditor';
+import JSONSchemaArrayEditor from './components/JSONSchemaArrayEditor';
+import JSONSchemaFileEditor from './components/JSONSchemaFileEditor';
+import JSONSchemaObjectEditor from './components/JSONSchemaObjectEditor';
+import JSONSchemaStringEditor from './components/JSONSchemaStringEditor';
 
 interface JSONSchemaEditorProps {
   /**
@@ -54,8 +54,6 @@ export default function JSONSchemaEditor({
   schema,
   value,
 }: JSONSchemaEditorProps): React.ReactElement {
-  let type: React.ComponentPropsWithoutRef<typeof Input>['type'] = 'text';
-  let acceptedFiles = 'file_extension';
   const prop = (schema?.properties
     ? schema?.properties[name] || {}
     : schema) as OpenAPIV3.SchemaObject;
@@ -67,66 +65,7 @@ export default function JSONSchemaEditor({
   ) : (
     name
   );
-  let fileUpload = false;
-  const [files, setFiles] = React.useState<File[]>([null]);
-  const [fileResults, setFileResults] = React.useState<string[]>([]);
-  const blobUploadType: BlobUploadType = {
-    method: 'POST',
-    serialize: null,
-    url: '/api/apps/5/assets',
-  };
-
-  const onFileChange = React.useCallback(
-    async (e: React.ChangeEvent<HTMLInputElement>, key: string) => {
-      e.persist();
-      const selectedFile = e.target.files[0];
-      const index = Number(key);
-      const val = [].concat(selectedFile);
-      const filesState = files;
-      const fileResultState = fileResults;
-      if (val[0] !== undefined) {
-        const result = (await uploadBlobs(val, blobUploadType)) as string;
-        const resultValue = result[0];
-        if (index + 1 === files.length) {
-          setFiles([selectedFile, ...files]);
-          fileResultState[index] = resultValue;
-          setFileResults(fileResultState);
-        } else {
-          filesState[index] = selectedFile;
-          setFiles(filesState);
-          fileResultState[index] = resultValue;
-          setFileResults(fileResultState);
-        }
-      } else {
-        filesState.splice(index, 1);
-        setFiles(filesState);
-        fileResultState.splice(index, 1);
-        setFileResults(fileResultState);
-      }
-
-      onChange(e, fileResults);
-    },
-    [files, fileResults, onChange, blobUploadType],
-  );
-
-  if (prop.type === 'integer' || prop.type === 'number') {
-    type = 'number';
-  } else if (prop.format === 'email') {
-    type = 'email';
-  } else if (prop.format === 'password') {
-    type = 'password';
-  } else if (prop.format === 'date-time') {
-    type = 'date';
-  } else if (prop.type === 'array') {
-    if (prop.items) {
-      Object.entries(prop.items).forEach(([key, object]) => {
-        if (key === 'appsembleFile' && object) {
-          acceptedFiles = object.type;
-          fileUpload = true;
-        }
-      });
-    }
-  }
+  const disable = disabled || prop.readOnly;
 
   if (prop.enum) {
     return (
@@ -143,42 +82,35 @@ export default function JSONSchemaEditor({
     );
   }
 
-  if (fileUpload) {
-    return (
-      <FormComponent label={label} required={required}>
-        {Object.entries(files).map(([key, file]) => (
-          <FileUpload
-            key={key}
-            accept={acceptedFiles}
-            fileButtonLabel="Choose file"
-            fileLabel={file?.name || 'no file'}
-            name={name}
-            onChange={(event) => onFileChange(event, key)}
-          />
-        ))}
-      </FormComponent>
-    );
+  if (prop.type === 'array') {
+    if (prop?.items.hasOwnProperty('appsembleFile')) {
+      return (
+        <JSONSchemaFileEditor
+          label={label}
+          name={name}
+          onChange={onChange}
+          prop={prop}
+          required={required}
+        />
+      );
+    }
   }
 
   switch (prop.type) {
     case 'array':
       return (
-        <div>
-          {' '}
-          <FormComponent label={label} required={required}>
-            <JSONSchemaArrayEditor
-              name={name}
-              onChange={onChange}
-              required={required}
-              schema={prop.items}
-            />
-          </FormComponent>
-        </div>
+        <JSONSchemaArrayEditor
+          label={label}
+          name={name}
+          onChange={onChange}
+          required={required}
+          schema={prop.items}
+        />
       );
     case 'boolean':
       return (
         <Checkbox
-          disabled={disabled || prop.readOnly}
+          disabled={disable}
           help={name}
           label={label}
           name={name}
@@ -189,7 +121,7 @@ export default function JSONSchemaEditor({
     case 'object':
       return (
         <JSONSchemaObjectEditor
-          disabled={disabled}
+          disabled={disable}
           name={name}
           onChange={onChange}
           required={required}
@@ -201,14 +133,13 @@ export default function JSONSchemaEditor({
     case 'number':
     default:
       return (
-        <Input
-          disabled={disabled}
+        <JSONSchemaStringEditor
+          disabled={disable}
           label={label}
           name={name}
           onChange={onChange}
-          placeholder={prop.example}
+          prop={prop}
           required={required}
-          type={type}
         />
       );
   }

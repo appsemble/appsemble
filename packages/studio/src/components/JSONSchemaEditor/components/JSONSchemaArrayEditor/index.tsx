@@ -1,9 +1,9 @@
-import { Button } from '@appsemble/react-components';
+import { Button, FormComponent } from '@appsemble/react-components';
 import type { OpenAPIV3 } from 'openapi-types';
 import * as React from 'react';
 import type { Definition } from 'typescript-json-schema';
 
-import JSONSchemaEditor from '../JSONSchemaEditor';
+import JSONSchemaEditor from '../..';
 
 interface JSONSchemaArrayEditorProps {
   /**
@@ -29,11 +29,18 @@ interface JSONSchemaArrayEditorProps {
    * The handler that is called whenever a value changes.
    */
   onChange: (name: any, value?: any) => void;
+
+  /**
+   * The label rendered above the input field.
+   */
+  label: string | React.ReactElement;
 }
 
 export default function JSONSchemaArrayEditor({
+  label,
   name,
   onChange,
+  required,
   schema,
 }: JSONSchemaArrayEditorProps): React.ReactElement {
   const [arrayValue, setArrayValue] = React.useState([]);
@@ -63,27 +70,29 @@ export default function JSONSchemaArrayEditor({
 
   return (
     <div>
-      {arrayValue.map((val, index) => (
-        // eslint-disable-next-line react/no-array-index-key
-        <div key={index}>
-          <JSONSchemaEditor
-            // eslint-disable-next-line react/no-array-index-key
-            key={`input.${index}`}
-            name={`${name}.${index}`}
-            onChange={onPropertyChange}
-            schema={schema}
-            value={val}
-          />
-          <Button
-            // eslint-disable-next-line react/no-array-index-key
-            key={`remove.${index}`}
-            icon="trash"
-            name={`${name}.${index}`}
-            onClick={removeItem}
-          />
-        </div>
-      ))}
-      <Button icon="plus" name={name} onClick={() => setArrayValue([...arrayValue, undefined])} />
+      <FormComponent label={label} required={required}>
+        {arrayValue.map((val, index) => (
+          // eslint-disable-next-line react/no-array-index-key
+          <div key={index}>
+            <JSONSchemaEditor
+              // eslint-disable-next-line react/no-array-index-key
+              key={`input.${index}`}
+              name={`${name}.${index}`}
+              onChange={onPropertyChange}
+              schema={schema}
+              value={val}
+            />
+            <Button
+              // eslint-disable-next-line react/no-array-index-key
+              key={`remove.${index}`}
+              icon="trash"
+              name={`${name}.${index}`}
+              onClick={removeItem}
+            />
+          </div>
+        ))}
+        <Button icon="plus" name={name} onClick={() => setArrayValue([...arrayValue, undefined])} />
+      </FormComponent>
     </div>
   );
 }

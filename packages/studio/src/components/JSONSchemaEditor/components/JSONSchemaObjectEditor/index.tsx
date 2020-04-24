@@ -2,7 +2,7 @@ import type { OpenAPIV3 } from 'openapi-types';
 import * as React from 'react';
 import type { Definition } from 'typescript-json-schema';
 
-import JSONSchemaEditor from '../JSONSchemaEditor';
+import JSONSchemaEditor from '../..';
 
 interface JSONSchemaObjectEditorProps {
   /**
