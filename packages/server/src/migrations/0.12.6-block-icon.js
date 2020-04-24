@@ -1,7 +1,7 @@
 import { DataTypes } from 'sequelize';
 
 export default {
-  key: '0.12.5',
+  key: '0.12.6',
 
   /**
    * Summary:
