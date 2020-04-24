@@ -5,6 +5,7 @@ import type { OpenAPIV3 } from 'openapi-types';
 import * as React from 'react';
 import type { Definition } from 'typescript-json-schema';
 
+import JSONSchemaArrayEditor from '../JSONSchemaArrayEditor';
 import JSONSchemaObjectEditor from '../JSONSchemaObjectEditor';
 
 interface JSONSchemaEditorProps {
@@ -66,7 +67,7 @@ export default function JSONSchemaEditor({
   ) : (
     name
   );
-  const returnElements: React.ReactElement[] = [];
+  let fileUpload = false;
   const [files, setFiles] = React.useState<File[]>([null]);
   const [fileResults, setFileResults] = React.useState<string[]>([]);
   const blobUploadType: BlobUploadType = {
@@ -121,6 +122,7 @@ export default function JSONSchemaEditor({
       Object.entries(prop.items).forEach(([key, object]) => {
         if (key === 'appsembleFile' && object) {
           acceptedFiles = object.type;
+          fileUpload = true;
         }
       });
     }
@@ -128,14 +130,8 @@ export default function JSONSchemaEditor({
 
   if (prop.enum) {
     return (
-      <Select
-        defaultValue="default"
-        label={label}
-        name={name}
-        onChange={onChange}
-        required={required}
-      >
-        <option disabled hidden value="default">
+      <Select label={label} name={name} onChange={onChange} required={required} value={value || ''}>
+        <option disabled hidden value="">
           Choose here
         </option>
         {prop.enum.map((option) => (
@@ -147,10 +143,10 @@ export default function JSONSchemaEditor({
     );
   }
 
-  switch (prop.type) {
-    case 'array':
-      Object.entries(files).forEach(([key, file]) => {
-        returnElements.push(
+  if (fileUpload) {
+    return (
+      <FormComponent label={label} required={required}>
+        {Object.entries(files).map(([key, file]) => (
           <FileUpload
             key={key}
             accept={acceptedFiles}
@@ -158,14 +154,24 @@ export default function JSONSchemaEditor({
             fileLabel={file?.name || 'no file'}
             name={name}
             onChange={(event) => onFileChange(event, key)}
-          />,
-        );
-      });
+          />
+        ))}
+      </FormComponent>
+    );
+  }
 
+  switch (prop.type) {
+    case 'array':
       return (
         <div>
+          {' '}
           <FormComponent label={label} required={required}>
-            {returnElements.map((element: React.ReactElement) => element)}
+            <JSONSchemaArrayEditor
+              name={name}
+              onChange={onChange}
+              required={required}
+              schema={prop.items}
+            />
           </FormComponent>
         </div>
       );

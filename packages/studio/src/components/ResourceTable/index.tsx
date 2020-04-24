@@ -81,9 +81,14 @@ export default function ResourceTable(): React.ReactElement {
 
   const onChange = React.useCallback(
     (event: any, value: any) => {
-      let { name } = event?.target;
+      let name = '';
+      if (event?.target.name) {
+        name = event.target.name;
+      } else {
+        name = event.currentTarget.name;
+      }
       if (name.includes('.')) {
-        const objectParentName = event.target.name.split(/\./g)[0];
+        const objectParentName = name.split(/\./g)[0];
         name = objectParentName;
       }
       if (name === 'id') {
