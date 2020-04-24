@@ -3,31 +3,32 @@ import { createInstance } from 'axios-test-instance';
 import { verify } from 'jsonwebtoken';
 import { SequelizeInstanceError } from 'sequelize';
 
+import { OAuth2ClientCredentials } from '../../models';
 import createServer from '../../utils/createServer';
-import testSchema from '../../utils/test/testSchema';
+import { closeTestSchema, createTestSchema, truncate } from '../../utils/test/testSchema';
 import testToken from '../../utils/test/testToken';
-import truncate from '../../utils/test/truncate';
 
 let clock;
-let db;
 let request;
 let server;
 let user;
 let refreshToken;
 
-beforeAll(async () => {
-  db = await testSchema('oauth');
+beforeAll(createTestSchema('tokenhandler'));
 
-  server = await createServer({ db, argv: { host: 'http://localhost', secret: 'test' } });
+beforeAll(async () => {
+  server = await createServer({ argv: { host: 'http://localhost', secret: 'test' } });
   request = await createInstance(server);
-}, 10e3);
+});
 
 beforeEach(async () => {
   clock = FakeTimers.install();
   clock.setSystemTime(new Date('2000-01-01T00:00:00Z'));
-  await truncate(db);
-  ({ refreshToken, user } = await testToken(db, 'resources:manage'));
+  await truncate();
+  ({ refreshToken, user } = await testToken('resources:manage'));
 });
+
+afterEach(truncate);
 
 afterEach(async () => {
   clock.uninstall();
@@ -35,8 +36,9 @@ afterEach(async () => {
 
 afterAll(async () => {
   await request.close();
-  await db.close();
 });
+
+afterAll(closeTestSchema);
 
 it('should not accept invalid content types', async () => {
   const response = await request.post('/oauth2/token', {});
@@ -228,7 +230,7 @@ describe('authorization_code', () => {
 
 describe('client_credentials', () => {
   beforeEach(async () => {
-    await db.models.OAuth2ClientCredentials.create({
+    await OAuth2ClientCredentials.create({
       description: 'Test credentials',
       id: 'testClientId',
       expires: new Date('2000-01-02T00:00:00Z'),

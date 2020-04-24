@@ -1,12 +1,12 @@
 import { Button, Checkbox, Form, Input, Loader, useMessages } from '@appsemble/react-components';
-import { BlockManifest } from '@appsemble/types';
+import type { BlockManifest } from '@appsemble/types';
 import { stripBlockName } from '@appsemble/utils';
 import axios from 'axios';
 import React from 'react';
 import { useIntl } from 'react-intl';
 
 import { GuiEditorStep } from '../Editor';
-import { Block } from '../GUIEditorToolboxBlock';
+import type { Block } from '../GUIEditorToolboxBlock';
 import styles from './index.css';
 import messages from './messages';
 

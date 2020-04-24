@@ -1,4 +1,7 @@
-import { BlockManifest } from '@appsemble/types';
+import type { BlockManifest } from '@appsemble/types';
+import type { PackageJson } from 'read-pkg-up';
+import type { JsonObject } from 'type-fest';
+import type { URL as URL_, URLSearchParams as URLSearchParams_ } from 'url';
 
 /**
  * THe base arguments from the command line.
@@ -39,15 +42,32 @@ export interface UpdateAppArguments extends BaseArguments {
   template: boolean;
 }
 
-export type BlockPayload = Pick<
-  BlockManifest,
-  'name' | 'description' | 'actions' | 'events' | 'parameters' | 'resources' | 'version' | 'layout'
->;
-
-export type BlockConfig = BlockPayload & {
-  description?: string;
+export interface BlockConfig
+  extends Pick<
+    BlockManifest,
+    | 'name'
+    | 'description'
+    | 'actions'
+    | 'events'
+    | 'parameters'
+    | 'resources'
+    | 'version'
+    | 'layout'
+  > {
   webpack: string;
   dist: string;
   output: string;
   dir: string;
-};
+}
+
+export interface MonoRepoPackageJson extends PackageJson {
+  appsembleServer?: JsonObject;
+}
+
+declare global {
+  // https://github.com/DefinitelyTyped/DefinitelyTyped/issues/34960
+  // eslint-disable-next-line no-redeclare
+  const URL: typeof URL_;
+  // eslint-disable-next-line no-redeclare
+  const URLSearchParams: typeof URLSearchParams_;
+}

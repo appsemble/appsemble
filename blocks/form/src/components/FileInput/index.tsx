@@ -1,7 +1,7 @@
 /** @jsx h */
 import { Component, h, VNode } from 'preact';
 
-import { FileField, InputProps } from '../../../block';
+import type { FileField, InputProps } from '../../../block';
 import FileEntry from '../FileEntry';
 import styles from './index.css';
 

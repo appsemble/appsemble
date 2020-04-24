@@ -1,7 +1,7 @@
-import { AxiosError } from 'axios';
+import type { AxiosError } from 'axios';
 import chalk from 'chalk';
 import highlight from 'cli-highlight';
-import { TransformableInfo } from 'logform';
+import type { TransformableInfo } from 'logform';
 import { EOL } from 'os';
 import util from 'util';
 import winston from 'winston';

@@ -40,6 +40,10 @@ export default function convertToCsv(body: { [key: string]: any }): string {
         return '';
       }
 
+      if ((value as any).toJSON instanceof Function) {
+        value = value.toJSON();
+      }
+
       if (typeof value !== 'string') {
         value = JSON.stringify(value);
       }

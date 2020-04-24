@@ -253,10 +253,6 @@ export default {
                 endpoint: {
                   type: 'string',
                 },
-                expirationTime: {
-                  type: 'number',
-                  nullable: true,
-                },
                 keys: {
                   type: 'object',
                   required: ['p256dh', 'auth'],

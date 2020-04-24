@@ -9,7 +9,40 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
+- App: Add meta description tag.
+- App: Add minimal `robots.txt`.
+- Studio: Add asset management page for apps. This can be used to preview, download, delete, and
+  update assets.
+
+### Fixes
+
+- App: Fix app theme color.
+- Studio: Add asset management page for apps. This can be used to preview, download, delete, and
+  update assets.
+
+## [0.12.5] - 2020-04-16
+
+### Added
+
+- Block(`@appsemble/detail-viewer`): Add support for icons in string fields.
+- Block(`@appsemble/filter`): Add `exact` property for fields. When enabled, the values will be
+  checked using equality instead of partial matches.
+- Block(`@appsemble/list`): Add `base` property. This can be used when using initial data passed
+  through from other actions.
+- Block(`@appsemble/list`): Add support for receiving initial data.
+
+### Changed
+
+- Block(`@appsemble/filter`): Make `type` property for fields required.
+- Server: Flatten the block publish API.
+- CLI: Fix compatibility with the updated block publish API.
+
+## [0.12.4] - 2020-04-06
+
+### Added
+
 - Block(`@appsemble/map`): Add support for custom markers.
+- CLI: Publish `@appsemble/cli` on the `npm` registry.
 - Server: Add support for outputting CSV in resource API.
 
 ### Changed
@@ -27,13 +60,13 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [0.12.3] - 2020-03-27
 
-### Fixes
+### Fixed
 
 - App: Fix loading blocks.
 
 ## [0.12.2] - 2020-03-27
 
-### Fixes
+### Fixed
 
 - App: Fix serving apps.
 - Studio: Fix serving Appsemble studio.

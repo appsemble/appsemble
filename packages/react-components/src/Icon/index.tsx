@@ -1,5 +1,5 @@
-import { BulmaSize } from '@appsemble/sdk';
-import { IconName, IconPrefix } from '@fortawesome/fontawesome-common-types';
+import type { BulmaSize } from '@appsemble/sdk';
+import type { IconName, IconPrefix } from '@fortawesome/fontawesome-common-types';
 import classNames from 'classnames';
 import * as React from 'react';
 

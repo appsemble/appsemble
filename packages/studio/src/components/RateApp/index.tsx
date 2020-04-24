@@ -1,5 +1,12 @@
-import { Button, CardFooterButton, Form, FormComponent, Modal } from '@appsemble/react-components';
-import { App, Rating } from '@appsemble/types';
+import {
+  Button,
+  CardFooterButton,
+  Form,
+  FormComponent,
+  Modal,
+  TextArea,
+} from '@appsemble/react-components';
+import type { App, Rating } from '@appsemble/types';
 import axios from 'axios';
 import React from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -49,17 +56,14 @@ export default function RateApp({ app, className, onRate }: RateAppProps): React
             <FormComponent label={<FormattedMessage {...messages.rating} />} required>
               <StarRating onClick={(value) => setRating(value)} value={rating} />
             </FormComponent>
-            <FormComponent id="description" label={<FormattedMessage {...messages.review} />}>
-              <textarea
-                className="textarea"
-                id="description"
-                maxLength={500}
-                name="description"
-                onChange={onDescriptionChange}
-                placeholder={intl.formatMessage(messages.descriptionPlaceholder)}
-                value={description}
-              />
-            </FormComponent>
+            <TextArea
+              label={<FormattedMessage {...messages.review} />}
+              maxLength={500}
+              name="description"
+              onChange={onDescriptionChange}
+              placeholder={intl.formatMessage(messages.descriptionPlaceholder)}
+              value={description}
+            />
           </div>
 
           <footer className="card-footer">

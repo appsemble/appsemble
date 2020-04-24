@@ -4,8 +4,9 @@
   "compilerOptions": {
     "declaration": true,
     "esModuleInterop": true,
+    "importsNotUsedAsValues": "error",
     "jsx": "react",
-    "lib": ["dom", "esnext"],
+    "lib": ["esnext"],
     "module": "es2020",
     "moduleResolution": "node",
     "noUnusedLocals": true,
@@ -14,7 +15,7 @@
     "strict": true,
     "strictFunctionTypes": false,
     "strictNullChecks": false,
-    "target": "es2020",
+    "target": "es2019",
     "types": ["jest"]
   },
   "exclude": ["**/*.test.ts", "**/*.test.tsx", "**/dist"]

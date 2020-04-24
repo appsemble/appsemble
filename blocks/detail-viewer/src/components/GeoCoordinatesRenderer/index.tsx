@@ -4,7 +4,7 @@ import { remapData } from '@appsemble/utils';
 import { h, VNode } from 'preact';
 
 import iconUrl from '../../../../../themes/amsterdam/core/marker.svg';
-import { GeoCoordinatesField, RendererProps } from '../../../block';
+import type { GeoCoordinatesField, RendererProps } from '../../../block';
 import styles from './index.css';
 
 /**

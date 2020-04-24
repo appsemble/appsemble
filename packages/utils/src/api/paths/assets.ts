@@ -1,6 +1,21 @@
 export default {
   '/apps/{appId}/assets': {
     parameters: [{ $ref: '#/components/parameters/appId' }],
+    get: {
+      tags: ['asset'],
+      description: 'Get all of the app’s assets.',
+      operationId: 'getAssets',
+      responses: {
+        200: {
+          description: 'The assets associated with the app.',
+          content: {
+            'application/json': {
+              schema: { $ref: '#/components/schemas/Asset' },
+            },
+          },
+        },
+      },
+    },
     post: {
       tags: ['asset'],
       description: 'Upload a new asset.',
@@ -16,7 +31,7 @@ export default {
           description: 'The asset that was created.',
           content: {
             'application/json': {
-              schema: { $ref: '#/components/schemas/Asset/properties/id' },
+              schema: { $ref: '#/components/schemas/Asset' },
             },
           },
         },
@@ -38,6 +53,17 @@ export default {
           description: 'The asset that matches the given id.',
         },
       },
+    },
+    delete: {
+      tags: ['asset'],
+      description: 'Remove an existing asset',
+      operationId: 'deleteAsset',
+      responses: {
+        204: {
+          description: 'The asset was successfully deleted.',
+        },
+      },
+      security: [{ studio: [] }, { app: ['resources:manage'] }],
     },
   },
 };

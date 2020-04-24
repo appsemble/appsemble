@@ -12,6 +12,19 @@ const query = {
   additionalProperties: { type: 'string' },
 };
 
+const referenceAction = {
+  type: 'object',
+  properties: {
+    trigger: {
+      type: 'array',
+      items: { type: 'string' },
+      enum: ['create', 'update', 'delete'],
+      minItems: 1,
+      uniqueItems: true,
+    },
+  },
+};
+
 export default {
   type: 'object',
   additionalProperties: {
@@ -27,11 +40,17 @@ export default {
         description: `
           References to other resources.
 
-          The key if the property that references the other resource. The value is the type of the
-          resource that’s referenced.
+          The key if the property that references the other resource.
+          The value is an object describing the name of the resource and how it should behave.
         `,
         additionalProperties: {
-          type: 'string',
+          type: 'object',
+          properties: {
+            resource: { type: 'string' },
+            create: referenceAction,
+            update: referenceAction,
+            delete: referenceAction,
+          },
         },
       },
       url: {

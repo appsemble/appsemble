@@ -3,6 +3,7 @@ import crypto from 'crypto';
 import qs from 'querystring';
 import { Op } from 'sequelize';
 
+import { BlockAsset, BlockVersion } from '../../models';
 import createSettings from '../../utils/createSettings';
 import getApp from '../../utils/getApp';
 import makeCSP from '../../utils/makeCSP';
@@ -15,9 +16,8 @@ import { bulmaURL, faURL } from '../../utils/styleURL';
 export default async function indexHandler(ctx) {
   ctx.type = 'text/html';
   const { render } = ctx.state;
-  const { BlockAsset, BlockVersion } = ctx.db.models;
   const app = await getApp(ctx, {
-    attributes: ['definition', 'id', 'OrganizationId', 'sharedStyle', 'style', 'vapidPublicKey'],
+    attributes: ['definition', 'id', 'sharedStyle', 'style', 'vapidPublicKey'],
     raw: true,
   });
 
@@ -69,7 +69,6 @@ export default async function indexHandler(ctx) {
     ),
     id: app.id,
     vapidPublicKey: app.vapidPublicKey,
-    organizationId: app.OrganizationId,
     definition: app.definition,
     sentryDsn,
   });
@@ -86,8 +85,8 @@ export default async function indexHandler(ctx) {
     ],
     'img-src': ['*', 'blob:', 'data:', host],
     'media-src': ['*', 'blob:', 'data:', host],
-    'style-src': ["'self'", "'unsafe-inline'", host, 'https://fonts.googleapis.com'],
-    'font-src': ["'self'", 'data:', 'https://fonts.gstatic.com', host],
+    'style-src': ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
+    'font-src': ["'self'", 'data:', 'https://fonts.gstatic.com'],
     'frame-src': ["'self'", '*.vimeo.com', '*.youtube.com'],
   };
 
@@ -97,6 +96,7 @@ export default async function indexHandler(ctx) {
     faURL,
     nonce,
     settings,
+    themeColor: (app.definition.theme && app.definition.theme.themeColor) || '#ffffff',
   });
   ctx.set('Content-Security-Policy', makeCSP(csp));
 }

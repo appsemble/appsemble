@@ -1,5 +1,5 @@
 import { Icon, Loader } from '@appsemble/react-components';
-import { IconName } from '@fortawesome/fontawesome-common-types';
+import type { IconName } from '@fortawesome/fontawesome-common-types';
 import axios from 'axios';
 import React from 'react';
 

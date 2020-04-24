@@ -3,8 +3,9 @@ import semver from 'semver';
 
 import pkg from '../../package.json';
 import migrations from '../migrations';
+import { initDB } from '../models';
 import migrate from '../utils/migrate';
-import setupModels, { handleDbException } from '../utils/setupModels';
+import { handleDBError } from '../utils/sqlUtils';
 import databaseBuilder from './builder/database';
 
 export const command = 'migrate [to]';
@@ -19,12 +20,12 @@ export function builder(yargs) {
 
 export async function handler(argv) {
   const { to } = argv;
-  if (!semver.valid(to)) {
+  if (to !== 'next' && !semver.valid(to)) {
     throw new AppsembleError(`A valid semver is required. Got ${to}`);
   }
   let db;
   try {
-    db = await setupModels({
+    db = initDB({
       sync: false,
       host: argv.databaseHost,
       port: argv.databasePort,
@@ -35,9 +36,9 @@ export async function handler(argv) {
       uri: argv.databaseUrl,
     });
   } catch (dbException) {
-    handleDbException(dbException);
+    handleDBError(dbException);
   }
 
-  await migrate(db, to, migrations);
+  await migrate(to, migrations);
   await db.close();
 }

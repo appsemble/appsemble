@@ -6,10 +6,11 @@ import https from 'https';
 import Koa from 'koa';
 
 import migrations from '../migrations';
+import { initDB } from '../models';
 import addDBHooks from '../utils/addDBHooks';
 import createServer from '../utils/createServer';
 import migrate from '../utils/migrate';
-import setupModels, { handleDbException } from '../utils/setupModels';
+import { handleDBError } from '../utils/sqlUtils';
 import databaseBuilder from './builder/database';
 
 export const PORT = 9999;
@@ -96,10 +97,8 @@ export function builder(yargs) {
 }
 
 export async function handler(argv, { webpackConfigs } = {}) {
-  let db;
-
   try {
-    db = await setupModels({
+    initDB({
       host: argv.databaseHost,
       port: argv.databasePort,
       username: argv.databaseUser,
@@ -109,14 +108,14 @@ export async function handler(argv, { webpackConfigs } = {}) {
       uri: argv.databaseUrl,
     });
   } catch (dbException) {
-    handleDbException(dbException);
+    handleDBError(dbException);
   }
 
   if (argv.migrateTo) {
-    await migrate(db, argv.migrateTo, migrations);
+    await migrate(argv.migrateTo, migrations);
   }
 
-  await addDBHooks(db, argv);
+  await addDBHooks(argv);
 
   const app = new Koa();
   if (argv.sentryDsn) {
@@ -138,7 +137,7 @@ export async function handler(argv, { webpackConfigs } = {}) {
     });
   });
 
-  const callback = await createServer({ app, argv, db, webpackConfigs });
+  const callback = await createServer({ app, argv, webpackConfigs });
   const httpServer = argv.ssl
     ? https.createServer(
         {

@@ -1,7 +1,7 @@
-import { BaseAction } from '@appsemble/sdk';
-import { DialogActionDefinition } from '@appsemble/types';
+import type { BaseAction } from '@appsemble/sdk';
+import type { DialogActionDefinition } from '@appsemble/types';
 
-import { MakeActionParameters } from '../../types';
+import type { MakeActionParameters } from '../../types';
 
 export default function dialog({
   definition,

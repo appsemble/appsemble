@@ -1,4 +1,4 @@
-import { Filter, FilterField, RangeFilter } from '../../block';
+import type { Filter, FilterField, RangeFilter } from '../../block';
 
 export default function toOData(fields: FilterField[], filter: Filter): string {
   return Object.entries(filter)
@@ -9,7 +9,7 @@ export default function toOData(fields: FilterField[], filter: Filter): string {
 
       const field = fields.find((f) => f.name === key);
 
-      if (field.type === undefined || field.type === 'string') {
+      if (field.type === 'string' && !field.exact) {
         return `substringof('${data}',${key})`;
       }
 

@@ -1,5 +1,5 @@
-import { BulmaColor } from '@appsemble/sdk';
-import { IconName } from '@fortawesome/fontawesome-common-types';
+import type { BulmaColor } from '@appsemble/sdk';
+import type { IconName } from '@fortawesome/fontawesome-common-types';
 import classNames from 'classnames';
 import * as React from 'react';
 

@@ -4,11 +4,6 @@
   padding: 10px;
 }
 
-.loginBottom {
-  display: flex;
-  justify-content: space-between;
-}
-
 .formLink {
   display: block;
 }

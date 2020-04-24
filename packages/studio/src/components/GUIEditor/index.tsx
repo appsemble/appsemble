@@ -6,8 +6,8 @@ import React from 'react';
 import { GuiEditorStep } from '../Editor';
 import GUIEditorEditBlock from '../GUIEditorEditBlock';
 import GUIEditorToolbox from '../GUIEditorToolbox';
-import { Block } from '../GUIEditorToolboxBlock';
-import { SelectedBlockParent, SelectedItem } from '../MonacoEditor';
+import type { Block } from '../GUIEditorToolboxBlock';
+import type { SelectedBlockParent, SelectedItem } from '../MonacoEditor';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const indentString = require('indent-string');

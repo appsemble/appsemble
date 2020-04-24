@@ -3,7 +3,7 @@ import { FormattedMessage } from '@appsemble/preact';
 import { Input } from '@appsemble/preact-components';
 import { h, VNode } from 'preact';
 
-import { InputProps, StringField } from '../../../block';
+import type { InputProps, StringField } from '../../../block';
 
 type StringInputProps = InputProps<string, StringField>;
 
@@ -13,7 +13,7 @@ type StringInputProps = InputProps<string, StringField>;
 export default function StringInput({
   disabled,
   error,
-  field: { format, label, maxLength, multiline, name, placeholder, readOnly, required },
+  field: { format, icon, label, maxLength, multiline, name, placeholder, readOnly, required },
   onInput,
   value = '',
 }: StringInputProps): VNode {
@@ -21,6 +21,7 @@ export default function StringInput({
     <Input
       disabled={disabled}
       error={error && <FormattedMessage id="invalid" />}
+      iconLeft={icon}
       id={name}
       label={label}
       maxLength={maxLength}

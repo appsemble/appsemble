@@ -2,18 +2,11 @@ import FakeTimers from '@sinonjs/fake-timers';
 import { createInstance } from 'axios-test-instance';
 import FormData from 'form-data';
 
+import { App, AppBlockStyle, AppRating, BlockVersion, Organization, User } from '../models';
 import createServer from '../utils/createServer';
-import testSchema from '../utils/test/testSchema';
+import { closeTestSchema, createTestSchema, truncate } from '../utils/test/testSchema';
 import testToken from '../utils/test/testToken';
-import truncate from '../utils/test/truncate';
 
-let App;
-let AppBlockStyle;
-let AppRating;
-let BlockVersion;
-let Organization;
-let User;
-let db;
 let request;
 let server;
 let authorization;
@@ -21,18 +14,17 @@ let organizationId;
 let clock;
 let user;
 
+beforeAll(createTestSchema('apps'));
+
 beforeAll(async () => {
-  db = await testSchema('apps');
-  server = await createServer({ db, argv: { host: 'http://localhost', secret: 'test' } });
-  ({ App, AppBlockStyle, AppRating, BlockVersion, Organization, User } = db.models);
+  server = await createServer({ argv: { host: 'http://localhost', secret: 'test' } });
   request = await createInstance(server);
-}, 10e3);
+});
 
 beforeEach(async () => {
   clock = FakeTimers.install();
 
-  await truncate(db);
-  ({ authorization, user } = await testToken(db));
+  ({ authorization, user } = await testToken());
   ({ id: organizationId } = await user.createOrganization(
     {
       id: 'testorganization',
@@ -57,14 +49,17 @@ beforeEach(async () => {
   });
 });
 
+afterEach(truncate);
+
 afterEach(() => {
   clock.uninstall();
 });
 
 afterAll(async () => {
   await request.close();
-  await db.close();
 });
+
+afterAll(closeTestSchema);
 
 describe('queryApps', () => {
   it('should return an empty array of apps', async () => {
@@ -1502,6 +1497,44 @@ describe('patchApp', () => {
 });
 
 describe('setAppBlockStyle', () => {
+  it('should validate and update css when updating an app’s block style', async () => {
+    await BlockVersion.create({
+      name: 'testblock',
+      OrganizationId: 'appsemble',
+      description: 'This is a test block for testing purposes.',
+      version: '0.0.0',
+    });
+
+    const { id } = await App.create(
+      {
+        path: 'bar',
+        definition: {
+          name: 'Test App',
+          defaultPage: 'Test Page',
+          pages: [{ name: 'Test', blocks: { type: 'testblock', version: '0.0.0' } }],
+        },
+        vapidPublicKey: 'a',
+        vapidPrivateKey: 'b',
+        OrganizationId: organizationId,
+      },
+      { raw: true },
+    );
+
+    const form = new FormData();
+    form.append('style', Buffer.from('body { color: yellow; }'), {
+      contentType: 'text/css',
+      filename: 'style.css',
+    });
+    const response = await request.post(`/api/apps/${id}/style/block/@appsemble/testblock`, form, {
+      headers: { ...form.getHeaders(), authorization },
+    });
+
+    const style = await request.get(`/api/apps/${id}/style/block/@appsemble/testblock`);
+
+    expect(response).toMatchObject({ status: 204 });
+    expect(style).toMatchObject({ status: 200, data: 'body { color: yellow; }' });
+  });
+
   it('should delete block stylesheet when uploading empty stylesheets for an app', async () => {
     await BlockVersion.create({
       name: 'testblock',

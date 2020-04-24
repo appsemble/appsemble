@@ -1,4 +1,7 @@
 {
   "extends": "../../tsconfig",
-  "exclude": ["**/dist", "**/__fixtures__"]
+  "exclude": ["**/dist", "**/__fixtures__"],
+  "compilerOptions": {
+    "types": ["jest", "node"]
+  }
 }

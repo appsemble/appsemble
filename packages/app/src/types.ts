@@ -1,8 +1,14 @@
-import { Action, Block } from '@appsemble/sdk';
-import { ActionDefinition, AppDefinition, BlockManifest, UserInfo } from '@appsemble/types';
-import { EventEmitter } from 'events';
-import { RouteComponentProps } from 'react-router-dom';
-import { JsonValue } from 'type-fest';
+import type { Action } from '@appsemble/sdk';
+import type {
+  ActionDefinition,
+  AppDefinition,
+  Block,
+  BlockManifest,
+  UserInfo,
+} from '@appsemble/types';
+import type { EventEmitter } from 'events';
+import type { RouteComponentProps } from 'react-router-dom';
+import type { JsonValue } from 'type-fest';
 
 declare module '@appsemble/sdk' {
   interface Actions {
@@ -41,7 +47,6 @@ declare global {
       blockManifests: BlockManifest[];
       vapidPublicKey: string;
       id: number;
-      organizationId: string;
       definition: AppDefinition;
       sentryDsn: string;
     };

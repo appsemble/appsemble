@@ -103,7 +103,7 @@ export default function CreateAppCard(): React.ReactElement {
             <CardFooterButton onClick={closeModal}>
               <FormattedMessage {...messages.cancel} />
             </CardFooterButton>
-            <CardFooterButton type="submit">
+            <CardFooterButton color="primary" type="submit">
               <FormattedMessage {...messages.create} />
             </CardFooterButton>
           </>

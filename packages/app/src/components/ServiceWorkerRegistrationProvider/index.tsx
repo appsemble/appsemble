@@ -1,7 +1,7 @@
 import axios from 'axios';
 import * as React from 'react';
 
-import { Permission, ServiceWorkerRegistrationContextType } from '../../types';
+import type { Permission, ServiceWorkerRegistrationContextType } from '../../types';
 import settings from '../../utils/settings';
 import urlB64ToUint8Array from '../../utils/urlB64ToUint8Array';
 
@@ -62,7 +62,8 @@ export default function ServiceWorkerRegistrationProvider({
       };
 
       sub = await registration?.pushManager?.subscribe(options);
-      await axios.post(`${settings.apiUrl}/api/apps/${id}/subscriptions`, sub);
+      const { endpoint, keys } = sub.toJSON();
+      await axios.post(`${settings.apiUrl}/api/apps/${id}/subscriptions`, { endpoint, keys });
     }
 
     setSubscription(sub);

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Promisable } from 'type-fest';
+import type { Promisable } from 'type-fest';
 
 import Form from '../Form';
 

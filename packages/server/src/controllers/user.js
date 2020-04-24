@@ -2,10 +2,10 @@ import Boom from '@hapi/boom';
 import crypto from 'crypto';
 import { verify } from 'jsonwebtoken';
 
+import { EmailAuthorization, OAuthAuthorization, Organization, User } from '../models';
 import createJWTResponse from '../utils/createJWTResponse';
 
 export async function getUser(ctx) {
-  const { EmailAuthorization, Organization, User } = ctx.db.models;
   const { user } = ctx.state;
 
   const dbUser = await User.findOne({
@@ -35,7 +35,6 @@ export async function getUser(ctx) {
 }
 
 export async function getUserOrganizations(ctx) {
-  const { Organization, User } = ctx.db.models;
   const { user } = ctx.state;
 
   const dbUser = await User.findOne({
@@ -56,7 +55,6 @@ export async function getUserOrganizations(ctx) {
 }
 
 export async function updateUser(ctx) {
-  const { EmailAuthorization, User } = ctx.db.models;
   const { user } = ctx.state;
   const { email, name } = ctx.request.body;
 
@@ -94,7 +92,6 @@ export async function updateUser(ctx) {
 }
 
 export async function listEmails(ctx) {
-  const { EmailAuthorization } = ctx.db.models;
   const { user } = ctx.state;
 
   ctx.body = await EmailAuthorization.findAll({
@@ -107,7 +104,6 @@ export async function listEmails(ctx) {
 
 export async function addEmail(ctx) {
   const { mailer } = ctx;
-  const { EmailAuthorization, User } = ctx.db.models;
   const { user } = ctx.state;
   const { email } = ctx.request.body;
 
@@ -143,7 +139,6 @@ export async function addEmail(ctx) {
 }
 
 export async function removeEmail(ctx) {
-  const { EmailAuthorization, OAuthAuthorization, User } = ctx.db.models;
   const { user } = ctx.state;
   const { email } = ctx.request.body;
 

@@ -3,20 +3,23 @@ import {
   CardFooterButton,
   Form,
   Icon,
-  Input,
   Loader,
   Modal,
+  Table,
+  Title,
   useMessages,
   useToggle,
 } from '@appsemble/react-components';
 import axios from 'axios';
-import { OpenAPIV3 } from 'openapi-types';
+import type { OpenAPIV3 } from 'openapi-types';
 import React from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link, useHistory, useRouteMatch } from 'react-router-dom';
 
+import download from '../../utils/download';
 import { useApp } from '../AppContext';
 import HelmetIntl from '../HelmetIntl';
+import JSONSchemaEditor from '../JSONSchemaEditor';
 import styles from './index.css';
 import messages from './messages';
 
@@ -77,25 +80,32 @@ export default function ResourceTable(): React.ReactElement {
   }, [appId, deletingResource, intl, push, resourceName, resources, warningDialog]);
 
   const onChange = React.useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>, value: string) => {
-      const { name } = event.target;
+    (event: any, value: any) => {
+      let name = '';
+      if (event?.target.name) {
+        name = event.target.name;
+      } else {
+        name = event.currentTarget.name;
+      }
+      if (name.includes('.')) {
+        const objectParentName = name.split(/\./g)[0];
+        name = objectParentName;
+      }
       if (name === 'id') {
         return;
       }
-      const { type } = app.definition.resources[resourceName].schema.properties[
-        name
-      ] as OpenAPIV3.SchemaObject;
       setEditingResource({
         ...editingResource,
-        [name]: type === 'object' || type === 'array' ? JSON.parse(value) : value,
+        [name]: value,
       });
     },
-    [app, editingResource, resourceName],
+    [editingResource],
   );
 
   const submitCreate = React.useCallback(
     async (event: React.FormEvent) => {
       event.preventDefault();
+
       try {
         const { data } = await axios.post<Resource>(
           `/api/apps/${appId}/resources/${resourceName}`,
@@ -157,6 +167,14 @@ export default function ResourceTable(): React.ReactElement {
       resources,
     ],
   );
+
+  const downloadCsv = React.useCallback(async () => {
+    await download(
+      `/api/apps/${app.id}/resources/${resourceName}`,
+      `${resourceName}.csv`,
+      'text/csv',
+    );
+  }, [app, resourceName]);
 
   React.useEffect(() => {
     if (app.definition.resources[resourceName]?.schema) {
@@ -225,49 +243,52 @@ export default function ResourceTable(): React.ReactElement {
         title={messages.title}
         titleValues={{ name: app.definition.name, resourceName }}
       />
-      <h1 className="title">Resource {resourceName}</h1>
-      <Link className="button is-primary" to={`${match.url}/new`}>
-        <Icon icon="plus-square" />
-        <span>
-          <FormattedMessage {...messages.createButton} />
-        </span>
-      </Link>
-      <div className="table-container">
-        <table className="table is-striped is-hoverable is-fullwidth">
-          <thead>
-            <tr>
-              <th>Actions</th>
-              {keys.map((property) => (
-                <th key={property}>{property}</th>
+      <Title>Resource {resourceName}</Title>
+      <div className="buttons">
+        <Link className="button is-primary" to={`${match.url}/new`}>
+          <Icon icon="plus-square" />
+          <span>
+            <FormattedMessage {...messages.createButton} />
+          </span>
+        </Link>
+        <Button icon="download" onClick={downloadCsv}>
+          <FormattedMessage {...messages.export} />
+        </Button>
+      </div>
+      <Table>
+        <thead>
+          <tr>
+            <th>Actions</th>
+            {keys.map((property) => (
+              <th key={property}>{property}</th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {resources.map((resource) => (
+            <tr key={resource.id}>
+              <td className={styles.actionsCell}>
+                <Link className="button" to={`${match.url}/edit/${resource.id}`}>
+                  <Icon className="has-text-info" icon="pen" size="small" />
+                </Link>
+                <Button
+                  color="danger"
+                  icon="trash"
+                  inverted
+                  onClick={() => promptDeleteResource(resource)}
+                />
+              </td>
+              {keys.map((key) => (
+                <td key={key} className={styles.contentCell}>
+                  {typeof resource[key] === 'string'
+                    ? resource[key]
+                    : JSON.stringify(resource[key])}
+                </td>
               ))}
             </tr>
-          </thead>
-          <tbody>
-            {resources.map((resource) => (
-              <tr key={resource.id}>
-                <td className={styles.actionsCell}>
-                  <Link className="button" to={`${match.url}/edit/${resource.id}`}>
-                    <Icon className="has-text-info" icon="pen" size="small" />
-                  </Link>
-                  <Button
-                    color="danger"
-                    icon="trash"
-                    inverted
-                    onClick={() => promptDeleteResource(resource)}
-                  />
-                </td>
-                {keys.map((key) => (
-                  <td key={key} className={styles.contentCell}>
-                    {typeof resource[key] === 'string'
-                      ? resource[key]
-                      : JSON.stringify(resource[key])}
-                  </td>
-                ))}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+          ))}
+        </tbody>
+      </Table>
       <Modal
         component={Form}
         footer={
@@ -300,44 +321,16 @@ export default function ResourceTable(): React.ReactElement {
       >
         {keys.map((key) => {
           const prop = (schema?.properties[key] || {}) as OpenAPIV3.SchemaObject;
-          let value = '';
-          let type: React.ComponentPropsWithoutRef<typeof Input>['type'] = 'text';
-
-          if (editingResource?.[key]) {
-            value = editingResource[key];
-            if (typeof value === 'object') {
-              value = JSON.stringify(value);
-            }
-          }
-
-          if (prop.type === 'integer' || prop.type === 'number') {
-            type = 'number';
-          } else if (prop.format === 'email') {
-            type = 'email';
-          } else if (prop.format === 'password') {
-            type = 'password';
-          }
 
           return (
-            <Input
+            <JSONSchemaEditor
               key={key}
               disabled={prop.readOnly || key === 'id'}
-              label={
-                prop.title ? (
-                  <>
-                    {`${prop.title} `}
-                    <span className="has-text-weight-normal has-text-grey-light">({key})</span>
-                  </>
-                ) : (
-                  key
-                )
-              }
               name={key}
               onChange={onChange}
-              placeholder={prop.example}
               required={schema?.required?.includes(key)}
-              type={type}
-              value={value}
+              schema={schema}
+              value={editingResource?.[key]}
             />
           );
         })}

@@ -1,10 +1,10 @@
 import { useQuery } from '@appsemble/react-components';
-import { Permission } from '@appsemble/utils';
+import type { Permission } from '@appsemble/utils';
 import * as React from 'react';
 import { Redirect, Route, RouteProps, useLocation, useRouteMatch } from 'react-router-dom';
 
 import useUser from '../../hooks/useUser';
-import { Organization } from '../../types';
+import type { Organization } from '../../types';
 import checkRole from '../../utils/checkRole';
 
 interface ProtectedRouteProps extends RouteProps {

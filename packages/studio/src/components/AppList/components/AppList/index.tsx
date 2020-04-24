@@ -1,5 +1,5 @@
 import { Icon, Loader } from '@appsemble/react-components';
-import { App } from '@appsemble/types';
+import type { App } from '@appsemble/types';
 import { permissions } from '@appsemble/utils';
 import axios from 'axios';
 import React from 'react';
@@ -7,7 +7,7 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { Link } from 'react-router-dom';
 
 import useUser from '../../../../hooks/useUser';
-import { Organization } from '../../../../types';
+import type { Organization } from '../../../../types';
 import checkRole from '../../../../utils/checkRole';
 import HelmetIntl from '../../../HelmetIntl';
 import AppCard from '../AppCard';

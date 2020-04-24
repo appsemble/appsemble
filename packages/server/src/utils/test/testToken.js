@@ -1,15 +1,12 @@
 import bcrypt from 'bcrypt';
 import { randomBytes } from 'crypto';
 
+import { OAuth2ClientCredentials, User } from '../../models';
 import createJWTResponse from '../createJWTResponse';
 
 const password = bcrypt.hashSync('testpassword', 10);
 
-export default async function testToken(
-  { models: { OAuth2ClientCredentials, User } },
-  scope,
-  email = 'test@example.com',
-) {
+export default async function testToken(scope, email = 'test@example.com') {
   const argv = { host: 'http://localhost', secret: 'test' };
   const user = await User.create({ password, name: 'Test User', primaryEmail: email });
   await user.createEmailAuthorization({ email, verified: true });

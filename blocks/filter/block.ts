@@ -1,4 +1,4 @@
-import { IconName } from '@fortawesome/fontawesome-common-types';
+import type { IconName } from '@fortawesome/fontawesome-common-types';
 
 export interface Enum {
   value: string;
@@ -14,7 +14,8 @@ export interface FilterField {
   icon?: IconName;
   name: string;
   range?: boolean;
-  type?: 'date' | 'checkbox' | 'radio' | 'string';
+  type: 'date' | 'checkbox' | 'radio' | 'string';
+  exact?: boolean;
 }
 
 export interface RangeFilter {

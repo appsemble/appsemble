@@ -2,7 +2,7 @@
 import 'leaflet/dist/leaflet.css';
 
 import { BlockProps, withBlock } from '@appsemble/preact';
-import { Theme } from '@appsemble/sdk';
+import type { Theme } from '@appsemble/sdk';
 import {
   CircleMarker,
   Icon,

@@ -8,7 +8,7 @@ import {
   Modal,
   useMessages,
 } from '@appsemble/react-components';
-import { AppDefinition, BlockManifest } from '@appsemble/types';
+import type { AppDefinition, BlockManifest } from '@appsemble/types';
 import {
   api,
   filterBlocks,
@@ -21,7 +21,7 @@ import axios from 'axios';
 import classNames from 'classnames';
 import { safeDump, safeLoad } from 'js-yaml';
 import { isEqual } from 'lodash';
-import { OpenAPIV3 } from 'openapi-types';
+import type { OpenAPIV3 } from 'openapi-types';
 import React from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link, useHistory, useLocation, useParams } from 'react-router-dom';
@@ -53,7 +53,6 @@ export default function Editor(): React.ReactElement {
   const [valid, setValid] = React.useState(false);
   const [dirty, setDirty] = React.useState(true);
   const [warningDialog, setWarningDialog] = React.useState(false);
-  const [deleteDialog, setDeleteDialog] = React.useState(false);
   const [openApiDocument, setOpenApiDocument] = React.useState<OpenAPIV3.Document>();
 
   const [editorStep, setEditorStep] = React.useState<GuiEditorStep>(GuiEditorStep.SELECT);
@@ -226,25 +225,6 @@ export default function Editor(): React.ReactElement {
     setInitialRecipe(recipe);
   }, [intl, params, push, recipe, sharedStyle, style, setApp, valid]);
 
-  const onDelete = React.useCallback(async () => {
-    const { id } = params;
-
-    try {
-      await axios.delete(`/api/apps/${id}`);
-      push({
-        body: intl.formatMessage(messages.deleteSuccess, {
-          name: `@${app.OrganizationId}/${appName}`,
-        }),
-        color: 'info',
-      });
-      history.push('/apps');
-    } catch (e) {
-      push(intl.formatMessage(messages.errorDelete));
-    }
-  }, [app.OrganizationId, appName, history, intl, params, push]);
-
-  const onDeleteClick = React.useCallback(() => setDeleteDialog(true), []);
-
   const onUpload = React.useCallback(async () => {
     if (valid) {
       const newApp = safeLoad(recipe);
@@ -282,7 +262,6 @@ export default function Editor(): React.ReactElement {
 
   const onClose = React.useCallback(() => {
     setWarningDialog(false);
-    setDeleteDialog(false);
   }, []);
 
   if (recipe == null) {
@@ -337,11 +316,6 @@ export default function Editor(): React.ReactElement {
                     <FormattedMessage {...messages.viewLive} />
                   </span>
                 </a>
-              </span>
-              <span className="navbar-item">
-                <Button color="danger" icon="trash-alt" onClick={onDeleteClick}>
-                  <FormattedMessage {...messages.delete} />
-                </Button>
               </span>
               <span className="navbar-item">
                 <Button
@@ -465,40 +439,21 @@ export default function Editor(): React.ReactElement {
             }[editorStep]
           }
           <Modal
-            className="is-paddingless"
+            footer={
+              <>
+                <CardFooterButton onClick={onClose}>
+                  <FormattedMessage {...messages.cancel} />
+                </CardFooterButton>
+                <CardFooterButton color="warning" onClick={uploadApp}>
+                  <FormattedMessage {...messages.publish} />
+                </CardFooterButton>
+              </>
+            }
             isActive={warningDialog}
             onClose={onClose}
             title={<FormattedMessage {...messages.resourceWarningTitle} />}
           >
-            <div className={styles.dialogContent}>
-              <FormattedMessage {...messages.resourceWarning} />
-            </div>
-            <footer className="card-footer">
-              <CardFooterButton onClick={onClose}>
-                <FormattedMessage {...messages.cancel} />
-              </CardFooterButton>
-              <CardFooterButton color="warning" onClick={uploadApp}>
-                <FormattedMessage {...messages.publish} />
-              </CardFooterButton>
-            </footer>
-          </Modal>
-          <Modal
-            className="is-paddingless"
-            isActive={deleteDialog}
-            onClose={onClose}
-            title={<FormattedMessage {...messages.deleteWarningTitle} />}
-          >
-            <div className={styles.dialogContent}>
-              <FormattedMessage {...messages.deleteWarning} />
-            </div>
-            <footer className="card-footer">
-              <CardFooterButton onClick={onClose}>
-                <FormattedMessage {...messages.cancel} />
-              </CardFooterButton>
-              <CardFooterButton color="danger" onClick={onDelete}>
-                <FormattedMessage {...messages.delete} />
-              </CardFooterButton>
-            </footer>
+            <FormattedMessage {...messages.resourceWarning} />
           </Modal>
         </Form>
       </div>

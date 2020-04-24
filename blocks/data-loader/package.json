@@ -1,9 +1,9 @@
 {
   "name": "@appsemble/data-loader",
-  "version": "0.12.3",
+  "version": "0.12.5",
   "private": true,
   "description": "A block that fetches data and emits it using the events API.",
   "dependencies": {
-    "@appsemble/sdk": "0.12.3"
+    "@appsemble/sdk": "0.12.5"
   }
 }

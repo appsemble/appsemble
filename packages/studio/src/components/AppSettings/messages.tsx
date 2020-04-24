@@ -10,7 +10,7 @@ export default defineMessages({
   privateDescription:
     'If checked, prevent this app from appearing on the app list if the user is not part of this app’s organization.',
   path: 'Path',
-  pathDescription: 'The path used to access the app. This is relative to {basePath}.',
+  pathDescription: 'The path used to access the app.',
   documentation: 'documentation',
   domain: 'Domain name',
   domainDescription:
@@ -18,4 +18,12 @@ export default defineMessages({
   saveChanges: 'Save changes',
   updateSuccess: 'Successfully updated settings.',
   updateError: 'Something went wrong when trying to update the settings.',
+  deleteSuccess: 'Succesfully deleted app {name}',
+  delete: 'Delete app',
+  deleteHelp: 'Deleting an app cannot be undone.',
+  deleteWarningTitle: 'Deleting app',
+  deleteWarning: 'Are you sure you want to delete this app? This action cannot be reverted.',
+  errorDelete: 'Something went wrong trying to delete this app',
+  cancel: 'Cancel',
+  dangerZone: 'Dangerous actions',
 });

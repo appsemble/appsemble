@@ -27,6 +27,10 @@ export default function AppSideMenu(): React.ReactElement {
   const organization = organizations?.find((org) => org.id === app.OrganizationId);
   const match = useRouteMatch();
 
+  const editPermission = organization && checkRole(organization.role, permissions.EditApps);
+  const pushNotificationPermission =
+    organization && checkRole(organization.role, permissions.PushNotifications);
+
   return (
     <SideMenu isCollapsed={isCollapsed} toggleCollapse={() => setCollapsed(!isCollapsed)}>
       <NavLink className={styles.menuItem} exact to={match.url}>
@@ -35,18 +39,24 @@ export default function AppSideMenu(): React.ReactElement {
           <FormattedMessage {...messages.details} />
         </span>
       </NavLink>
-      {userInfo && (
+      {userInfo && organization && (
         <>
-          {organization && checkRole(organization.role, permissions.EditApps) && (
-            <NavLink className={styles.menuItem} exact to={`${match.url}/edit`}>
-              <Icon icon="edit" size="medium" />
-              <span className={classNames({ 'is-hidden': isCollapsed })}>
-                <FormattedMessage {...messages.editor} />
-              </span>
-            </NavLink>
-          )}
-          {organization && checkRole(organization.role, permissions.EditApps) && (
+          {editPermission && (
             <>
+              <NavLink className={styles.menuItem} exact to={`${match.url}/edit`}>
+                <Icon icon="edit" size="medium" />
+                <span className={classNames({ 'is-hidden': isCollapsed })}>
+                  <FormattedMessage {...messages.editor} />
+                </span>
+              </NavLink>
+
+              <NavLink className={styles.menuItem} exact={!isCollapsed} to={`${match.url}/assets`}>
+                <Icon icon="layer-group" size="medium" />
+                <span className={classNames({ 'is-hidden': isCollapsed })}>
+                  <FormattedMessage {...messages.assets} />
+                </span>
+              </NavLink>
+
               <NavLink
                 className={styles.menuItem}
                 exact={!isCollapsed}
@@ -76,7 +86,7 @@ export default function AppSideMenu(): React.ReactElement {
               )}
             </>
           )}
-          {organization && checkRole(organization.role, permissions.PushNotifications) && (
+          {pushNotificationPermission && (
             <NavLink
               className={styles.menuItem}
               exact={!isCollapsed}
@@ -88,23 +98,27 @@ export default function AppSideMenu(): React.ReactElement {
               </span>
             </NavLink>
           )}
-          {organization &&
-            app.definition.security !== undefined &&
-            checkRole(organization.role, permissions.EditApps) && (
-              <NavLink className={styles.menuItem} exact={!isCollapsed} to={`${match.url}/roles`}>
-                <Icon icon="users" size="medium" />
+          {editPermission && (
+            <>
+              {app.definition.security !== undefined && (
+                <NavLink className={styles.menuItem} exact={!isCollapsed} to={`${match.url}/roles`}>
+                  <Icon icon="users" size="medium" />
+                  <span className={classNames({ 'is-hidden': isCollapsed })}>
+                    <FormattedMessage {...messages.roles} />
+                  </span>
+                </NavLink>
+              )}
+              <NavLink
+                className={styles.menuItem}
+                exact={!isCollapsed}
+                to={`${match.url}/settings`}
+              >
+                <Icon icon="cogs" size="medium" />
                 <span className={classNames({ 'is-hidden': isCollapsed })}>
-                  <FormattedMessage {...messages.roles} />
+                  <FormattedMessage {...messages.settings} />
                 </span>
               </NavLink>
-            )}
-          {organization && checkRole(organization.role, permissions.EditAppSettings) && (
-            <NavLink className={styles.menuItem} exact={!isCollapsed} to={`${match.url}/settings`}>
-              <Icon icon="cogs" size="medium" />
-              <span className={classNames({ 'is-hidden': isCollapsed })}>
-                <FormattedMessage {...messages.settings} />
-              </span>
-            </NavLink>
+            </>
           )}
         </>
       )}

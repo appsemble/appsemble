@@ -1,4 +1,4 @@
-import { Parameters } from '@appsemble/sdk';
+import type { Parameters } from '@appsemble/sdk';
 import { compileFilters } from '@appsemble/utils';
 
 export interface LatLngMapper {

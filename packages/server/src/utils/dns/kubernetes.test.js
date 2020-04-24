@@ -1,7 +1,8 @@
 import { logger } from '@appsemble/node-utils';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
-import fs from 'fs-extra';
+// eslint-disable-next-line import/no-unresolved
+import { vol } from 'memfs';
 
 import kubernetes from './kubernetes';
 
@@ -16,17 +17,11 @@ beforeEach(() => {
       version: 'test',
     },
   });
-  jest.spyOn(fs, 'readFile').mockImplementation(async (filename) => {
-    switch (filename) {
-      case '/var/run/secrets/kubernetes.io/serviceaccount/ca.crt':
-        return '-----BEGIN CERTIFICATE-----\nFake/Kubernetes/SSL/certificate==\n-----END CERTIFICATE-----';
-      case '/var/run/secrets/kubernetes.io/serviceaccount/namespace':
-        return 'appsemble';
-      case '/var/run/secrets/kubernetes.io/serviceaccount/token':
-        return 'kubernetes.access.token';
-      default:
-        throw new Error('File not found');
-    }
+  vol.fromJSON({
+    '/var/run/secrets/kubernetes.io/serviceaccount/ca.crt':
+      '-----BEGIN CERTIFICATE-----\nFake/Kubernetes/SSL/certificate==\n-----END CERTIFICATE-----',
+    '/var/run/secrets/kubernetes.io/serviceaccount/namespace': 'appsemble',
+    '/var/run/secrets/kubernetes.io/serviceaccount/token': 'kubernetes.access.token',
   });
 });
 

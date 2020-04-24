@@ -1,9 +1,10 @@
-import { AppDefinition } from '@appsemble/types';
+import type { AppDefinition } from '@appsemble/types';
 
 import {
   AppsembleValidationError,
   checkBlocks,
   validateHooks,
+  validateReferences,
   validateSecurity,
 } from './validateAppDefinition';
 
@@ -63,7 +64,13 @@ describe('checkBlocks', () => {
     let error: AppsembleValidationError;
     try {
       checkBlocks(
-        { 'pages.0.blocks.0': { type: 'test', version: '1.2.3', actions: { onClick: {} } } },
+        {
+          'pages.0.blocks.0': {
+            type: 'test',
+            version: '1.2.3',
+            actions: { onClick: { type: 'noop' } },
+          },
+        },
         [{ name: '@appsemble/test', version: '1.2.3', files: [], actions: { onTap: {} } }],
       );
     } catch (err) {
@@ -84,7 +91,7 @@ describe('checkBlocks', () => {
           'pages.0.blocks.0': {
             type: 'test',
             version: '1.2.3',
-            actions: { onClick: {}, onTap: {} },
+            actions: { onClick: { type: 'noop' }, onTap: { type: 'noop' } },
             parameters: { customAction: 'onClick' },
           },
         },
@@ -115,7 +122,13 @@ describe('checkBlocks', () => {
     let error: AppsembleValidationError;
     try {
       checkBlocks(
-        { 'pages.0.blocks.0': { type: 'test', version: '1.2.3', actions: { onClick: {} } } },
+        {
+          'pages.0.blocks.0': {
+            type: 'test',
+            version: '1.2.3',
+            actions: { onClick: { type: 'noop' } },
+          },
+        },
         [{ name: '@appsemble/test', version: '1.2.3', files: [] }],
       );
     } catch (err) {
@@ -353,6 +366,94 @@ describe('validateHooks', () => {
     expect(() => validateHooks(definition)).toThrow(
       new AppsembleValidationError(
         'Role ‘foo’ in resources.TestResource.create.hooks.notification.to does not exist.',
+      ),
+    );
+  });
+});
+
+describe('validateReferences', () => {
+  it('should validate resource references', () => {
+    const definition: AppDefinition = {
+      defaultPage: '',
+      security: {
+        default: { role: 'Reader', policy: 'everyone' },
+        roles: {
+          Reader: {},
+          Admin: { inherits: ['Reader'] },
+        },
+      },
+      pages: [],
+      resources: {
+        test: {},
+        testGroup: {
+          schema: { type: 'object', properties: { testId: { type: 'string' } } },
+          references: {
+            testId: {
+              resource: 'test',
+            },
+          },
+        },
+      },
+    };
+
+    expect(() => validateReferences(definition)).not.toThrow();
+  });
+
+  it('should throw if referenced resource does not exist', () => {
+    const definition: AppDefinition = {
+      defaultPage: '',
+      security: {
+        default: { role: 'Reader', policy: 'everyone' },
+        roles: {
+          Reader: {},
+          Admin: { inherits: ['Reader'] },
+        },
+      },
+      pages: [],
+      resources: {
+        testGroup: {
+          schema: { type: 'object', properties: { testId: { type: 'string' } } },
+          references: {
+            testId: {
+              resource: 'test',
+            },
+          },
+        },
+      },
+    };
+
+    expect(() => validateReferences(definition)).toThrow(
+      new AppsembleValidationError('Resource “test” referenced by “testGroup” does not exist.'),
+    );
+  });
+
+  it('should throw if referenced resource property does not exist', () => {
+    const definition: AppDefinition = {
+      defaultPage: '',
+      security: {
+        default: { role: 'Reader', policy: 'everyone' },
+        roles: {
+          Reader: {},
+          Admin: { inherits: ['Reader'] },
+        },
+      },
+      pages: [],
+      resources: {
+        test: {},
+        testGroup: {
+          schema: { type: 'object', properties: {} },
+          references: {
+            testId: {
+              resource: 'test',
+            },
+          },
+        },
+      },
+    };
+
+    expect(() => validateReferences(definition)).toThrow(
+      new AppsembleValidationError(
+        'Property “testId” referencing “test” does not exist in resource “testGroup”',
       ),
     );
   });
