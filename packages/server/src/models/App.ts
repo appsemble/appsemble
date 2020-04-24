@@ -67,8 +67,6 @@ export default class App extends Model {
 
   RatingCount?: number;
 
-  dataValues?: App;
-
   static initialize(sequelize: Sequelize): void {
     App.init(
       {

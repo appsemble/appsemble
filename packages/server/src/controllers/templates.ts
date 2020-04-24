@@ -19,11 +19,11 @@ export async function getAppTemplates(ctx: KoaContext): Promise<void> {
     group: ['App.id'],
   });
 
-  ctx.body = templates.map(({ ResourceCount, definition: { description, name }, id }) => ({
-    id,
-    name,
-    description,
-    resources: Number(ResourceCount) > 0,
+  ctx.body = templates.map((template) => ({
+    id: template.id,
+    name: template.definition.name,
+    description: template.definition.description,
+    resources: template.get('ResourceCount') > 0,
   }));
 }
 
@@ -55,8 +55,7 @@ export async function createTemplateApp(ctx: KoaContext): Promise<void> {
   const path = name ? normalize(name) : normalize(template.definition.name);
   try {
     const keys = generateVAPIDKeys();
-    const result = {
-      path,
+    const result: Partial<App> = {
       definition: {
         ...template.definition,
         description,
