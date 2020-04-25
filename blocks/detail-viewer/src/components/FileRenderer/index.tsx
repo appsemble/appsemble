@@ -45,13 +45,15 @@ function FileRenderer({ field, utils, value }: RendererProps<FileField>): VNode 
           ))}
         </div>
       ) : (
-        <figure className={classNames('image', styles.root)}>
-          <img
-            alt={field.label || field.name}
-            className={styles.img}
-            src={getSrc(value as string)}
-          />
-        </figure>
+        (value as string) && (
+          <figure className={classNames('image', styles.root)}>
+            <img
+              alt={field.label || field.name}
+              className={styles.img}
+              src={getSrc(value as string)}
+            />
+          </figure>
+        )
       )}
     </Fragment>
   );
