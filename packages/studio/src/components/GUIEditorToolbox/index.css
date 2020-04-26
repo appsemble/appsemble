@@ -1,17 +1,26 @@
 .footer {
+  align-content: flex-end;
   align-items: center;
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
-  width: 100% !important;
 }
 
 .flexContainer {
   display: flex;
   flex: 1;
   flex-direction: column;
-  height: 100%;
-  justify-content: space-between;
+  height: 95%;
   margin-left: 8px;
   margin-right: 8px;
+  max-height: 95%;
+}
+
+.marginBottom {
+  margin-bottom: 16px;
+}
+
+.maxHeight {
+  max-height: 75%;
+  overflow-y: auto;
 }

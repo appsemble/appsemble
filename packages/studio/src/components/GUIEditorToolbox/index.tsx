@@ -1,37 +1,48 @@
 import { Button } from '@appsemble/react-components';
+import type { BlockManifest } from '@appsemble/types';
+import { stripBlockName } from '@appsemble/utils';
 import React from 'react';
 
 import { GuiEditorStep } from '../Editor';
-import GUIEditorToolboxBlock, { Block } from '../GUIEditorToolboxBlock';
+import GUIEditorToolboxBlock from '../GUIEditorToolboxBlock';
 import styles from './index.css';
 
-export default function GUIEditorToolbox(params: any): React.ReactElement {
-  const [selectedBlock, setSelectedBlock] = React.useState<Block>();
+interface GUIEditorToolboxProps {
+  setEditorStep: (step: GuiEditorStep) => void;
+  setSelectedBlock: (block: BlockManifest) => void;
+  blocks: BlockManifest[];
+  selectedBlock: BlockManifest;
+}
 
+export default function GUIEditorToolbox({
+  blocks,
+  selectedBlock,
+  setEditorStep,
+  setSelectedBlock,
+}: GUIEditorToolboxProps): React.ReactElement {
   return (
     <div className={styles.flexContainer}>
       <h1 className="title">Add block</h1>
-      <GUIEditorToolboxBlock selectedBlock={(block: Block) => setSelectedBlock(block)} />
+      <div className={styles.maxHeight}>
+        <GUIEditorToolboxBlock
+          blocks={blocks}
+          selectBlock={(block: BlockManifest) => setSelectedBlock(block)}
+        />
+      </div>
       {selectedBlock !== undefined ? (
-        <div>
+        <div className={styles.marginBottom}>
           <h1 className="subtitle" style={{ textTransform: 'capitalize' }}>
-            <strong>{selectedBlock.name.split('/')[1]}</strong>
+            <strong>{stripBlockName(selectedBlock.name)}</strong>
           </h1>
-          A simple button that performs an action when clicked. It can be used to trigger actions
-          such as redirecting to other pages. By default it displays in the lower-right corner,
-          allowing for easy access on mobile devices.
-          {selectedBlock !== undefined ? (
-            <a
-              href={`https://appsemble.dev/blocks/${selectedBlock.name.split('/')[1]}`}
-              rel="noopener noreferrer"
-              target="_blank"
-            >
-              {' '}
-              More info
-            </a>
-          ) : (
-            ''
-          )}
+          {selectedBlock.description}
+          <a
+            href={`https://appsemble.dev/blocks/${selectedBlock.name.split('/')[1]}`}
+            rel="noopener noreferrer"
+            target="_blank"
+          >
+            {' '}
+            More info
+          </a>
         </div>
       ) : (
         ''
@@ -41,7 +52,7 @@ export default function GUIEditorToolbox(params: any): React.ReactElement {
           className="button is-warning"
           icon="angle-left"
           onClick={() => {
-            params.setEditorStep(GuiEditorStep.SELECT);
+            setEditorStep(GuiEditorStep.SELECT);
           }}
           style={{ alignContent: 'flex-start' }}
         >
@@ -53,8 +64,7 @@ export default function GUIEditorToolbox(params: any): React.ReactElement {
           disabled={!selectedBlock}
           icon="angle-right"
           onClick={() => {
-            params.setEditorStep(GuiEditorStep.EDIT);
-            params.setSelectedBlock(selectedBlock);
+            setEditorStep(GuiEditorStep.EDIT);
           }}
           style={{ alignContent: 'flex-end' }}
         >

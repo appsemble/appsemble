@@ -11,20 +11,16 @@ interface MonacoEditorProps {
   onValueChange: (value: string) => void;
   onSave: () => void;
   options: editor.IEditorOptions;
-  selectedItem?: any;
-  setSelectedBlockParent?: any;
-  setEditor?: any;
+  editLocation?: any;
+  setEditor?: (value: editor.IStandaloneCodeEditor) => void;
+  setAllowAdd: (allow: boolean) => void;
+  setAllowEdit: (allow: boolean) => void;
 }
 
-export interface SelectedItem {
-  content?: string;
-  indent: string;
+export interface EditLocation {
+  blockName: string;
+  pageName: string;
   parents?: [{ name: string; line: number; indent: number }];
-}
-
-export interface SelectedBlockParent {
-  blockParent: SelectedItem['parents'];
-  allowAddBlock?: boolean;
 }
 
 export default class MonacoEditor extends React.Component<MonacoEditorProps> {
@@ -63,7 +59,7 @@ export default class MonacoEditor extends React.Component<MonacoEditorProps> {
     this.observer.observe(this.node.current);
 
     this.editor.onDidChangeCursorSelection(() => {
-      this.getSelectedItemParents(model, this.editor.getPosition());
+      this.getEditLocationParents(model, this.editor.getPosition());
     });
   }
 
@@ -104,70 +100,77 @@ export default class MonacoEditor extends React.Component<MonacoEditorProps> {
     this.props.onValueChange(this.editor.getModel().getValue());
   };
 
-  containsBlockParent = (selectedItem: SelectedItem): void => {
-    let selectedBlockParent: SelectedBlockParent;
-    let blockParent: SelectedItem['parents'];
-    let allowAddBlock = false;
+  containsBlockParent = (parents: EditLocation['parents']): string => {
+    let blockName: string;
 
-    if (selectedItem !== undefined) {
-      selectedItem.parents.map((parent: any): void => {
-        if (parent.name === 'blocks:') {
-          allowAddBlock = true;
-          blockParent = parent;
+    if (parents !== undefined) {
+      parents.some((parent: any): string => {
+        if (parent.name.includes('- type:')) {
+          const block = parent.name.split(' ');
+          blockName = block[block.length - 1];
+          this.props.setAllowEdit(true);
+          this.props.setAllowAdd(true);
         }
-        return parent;
+        if (parent.name.includes('blocks:')) {
+          this.props.setAllowAdd(true);
+        }
+        return blockName;
       });
-      selectedBlockParent = { blockParent, allowAddBlock };
-      this.props.setSelectedBlockParent(selectedBlockParent);
     }
+
+    return blockName;
   };
 
-  getSelectedItemParents = (model: any, position: any): void => {
+  getEditLocationParents = (model: any, position: any): void => {
     const lines = model.getValue().split(/\r?\n/g);
-    let selectedItem: SelectedItem;
+    let editLocation: EditLocation;
     for (let i = 1; i <= lines.length; i += 1) {
       if (i !== 1) {
         // if indent is not 1 look for parent structure
         if (model.getLineFirstNonWhitespaceColumn(i) > 1) {
           let newIndent = model.getLineFirstNonWhitespaceColumn(i);
-          const parents: SelectedItem['parents'] = [
+          const parents: EditLocation['parents'] = [
             {
               name: model.getLineContent(i).trim(),
               line: i,
               indent: model.getLineFirstNonWhitespaceColumn(i),
             },
           ];
-          let pC = 1;
+          let parentCount = 1;
 
           if (i === position.lineNumber) {
             while (newIndent !== 1) {
-              if (newIndent > model.getLineFirstNonWhitespaceColumn(i - pC)) {
-                if (model.getLineContent(i - pC) !== '') {
-                  newIndent = model.getLineFirstNonWhitespaceColumn(i - pC);
+              if (newIndent > model.getLineFirstNonWhitespaceColumn(i - parentCount)) {
+                if (model.getLineContent(i - parentCount) !== '') {
+                  newIndent = model.getLineFirstNonWhitespaceColumn(i - parentCount);
 
                   parents.push({
-                    name: model.getLineContent(i - pC).trim(),
-                    line: i - pC,
+                    name: model.getLineContent(i - parentCount).trim(),
+                    line: i - parentCount,
                     indent: newIndent,
                   });
                 }
               }
 
-              pC += 1;
+              parentCount += 1;
             }
-
-            selectedItem = {
-              content: model.getLineContent(i).trim(),
-              indent: model.getLineFirstNonWhitespaceColumn(i),
+            const blockName = this.containsBlockParent(parents);
+            const parentsNames = parents[parents.length - 2].name.split(': ');
+            const pageName = parentsNames[parentsNames.length - 1];
+            editLocation = {
+              pageName,
+              blockName,
               parents,
             };
           }
         }
       }
     }
-    if (this.props.selectedItem !== undefined) {
-      this.props.selectedItem(selectedItem);
-      this.containsBlockParent(selectedItem);
+    if (editLocation !== undefined) {
+      this.props.editLocation(editLocation);
+    } else {
+      this.props.setAllowEdit(false);
+      this.props.setAllowAdd(false);
     }
   };
 

@@ -29,7 +29,7 @@ import { Link, useHistory, useLocation, useParams } from 'react-router-dom';
 import { useApp } from '../AppContext';
 import GUIEditor from '../GUIEditor';
 import HelmetIntl from '../HelmetIntl';
-import MonacoEditor, { SelectedBlockParent } from '../MonacoEditor';
+import MonacoEditor, { EditLocation } from '../MonacoEditor';
 import styles from './index.css';
 import messages from './messages';
 
@@ -56,9 +56,10 @@ export default function Editor(): React.ReactElement {
   const [openApiDocument, setOpenApiDocument] = React.useState<OpenAPIV3.Document>();
 
   const [editorStep, setEditorStep] = React.useState<GuiEditorStep>(GuiEditorStep.SELECT);
-  const [selectedItem, setselectedItem] = React.useState();
-  const [editor, setEditor] = React.useState();
-  const [selectedBlockParent, setSelectedBlockParent] = React.useState<SelectedBlockParent>();
+  const [editLocation, setEditLocation] = React.useState<EditLocation>();
+  const [editor, setEditor] = React.useState<any>();
+  const [allowEdit, setAllowEdit] = React.useState(false);
+  const [allowAdd, setAllowAdd] = React.useState(false);
 
   const frame = React.useRef<HTMLIFrameElement>();
   const history = useHistory();
@@ -383,9 +384,7 @@ export default function Editor(): React.ReactElement {
                 <li value="addblock">
                   <Button
                     color="success"
-                    disabled={
-                      selectedBlockParent !== undefined ? !selectedBlockParent.allowAddBlock : true
-                    }
+                    disabled={!allowAdd}
                     icon="plus"
                     onClick={() => setEditorStep(GuiEditorStep.ADD)}
                   >
@@ -395,9 +394,7 @@ export default function Editor(): React.ReactElement {
                 <li value="editblock">
                   <Button
                     color="warning"
-                    disabled={
-                      selectedBlockParent !== undefined ? !selectedBlockParent.allowAddBlock : true
-                    }
+                    disabled={!allowEdit}
                     icon="edit"
                     onClick={() => setEditorStep(GuiEditorStep.EDIT)}
                   >
@@ -414,25 +411,37 @@ export default function Editor(): React.ReactElement {
           </div>
           {
             {
-              [GuiEditorStep.ADD || GuiEditorStep.EDIT]: (
+              [GuiEditorStep.EDIT]: (
                 <GUIEditor
-                  appRecipe={recipe}
+                  app={app}
+                  editLocation={editLocation}
                   editorStep={editorStep}
                   monacoEditor={editor}
                   save={onSave}
-                  selectedBlockParent={selectedBlockParent}
-                  selectedItem={selectedItem}
+                  setEditorStep={(step: GuiEditorStep) => setEditorStep(step)}
+                  setRecipe={setRecipe}
+                />
+              ),
+              [GuiEditorStep.ADD]: (
+                <GUIEditor
+                  app={app}
+                  editLocation={editLocation}
+                  editorStep={editorStep}
+                  monacoEditor={editor}
+                  save={onSave}
+                  setEditorStep={(step: GuiEditorStep) => setEditorStep(step)}
                   setRecipe={setRecipe}
                 />
               ),
               [GuiEditorStep.SELECT || GuiEditorStep.YAML]: (
                 <MonacoEditor
+                  editLocation={setEditLocation}
                   language={language}
                   onSave={onSave}
                   onValueChange={onValueChange}
-                  selectedItem={setselectedItem}
+                  setAllowAdd={(allow: boolean) => setAllowAdd(allow)}
+                  setAllowEdit={(allow: boolean) => setAllowEdit(allow)}
                   setEditor={setEditor}
-                  setSelectedBlockParent={setSelectedBlockParent}
                   value={value}
                 />
               ),

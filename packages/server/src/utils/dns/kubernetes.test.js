@@ -1,7 +1,6 @@
 import { logger } from '@appsemble/node-utils';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
-// eslint-disable-next-line import/no-unresolved
 import { vol } from 'memfs';
 
 import kubernetes from './kubernetes';

@@ -1,67 +1,54 @@
-import { Button, Checkbox, Form, Input, Loader, useMessages } from '@appsemble/react-components';
-import type { BlockManifest } from '@appsemble/types';
+import { Button, Loader, useMessages } from '@appsemble/react-components';
+import type { App } from '@appsemble/types';
 import { stripBlockName } from '@appsemble/utils';
-import axios from 'axios';
 import React from 'react';
 import { useIntl } from 'react-intl';
 
 import { GuiEditorStep } from '../Editor';
-import type { Block } from '../GUIEditorToolboxBlock';
+import type { SelectedBlockManifest } from '../GUIEditor';
+import JSONSchemaEditor from '../JSONSchemaEditor';
+import type { EditLocation } from '../MonacoEditor';
 import styles from './index.css';
 import messages from './messages';
 
-enum parameterType {
-  STRING = 'string',
-  BOOLEAN = 'boolean',
-  INTEGER = 'integer',
-  NUMBER = 'number',
-}
-
-interface SelectedBlock extends BlockManifest {
-  parameters: {
-    properties: any;
-    required?: string[];
-  };
+interface Resource {
+  id: number;
+  [key: string]: any;
 }
 
 interface GUIEditorEditBlockProps {
-  save: (edittedParams: object[], selectedBlockParams: SelectedBlock) => void;
-  selectedBlock: Block;
+  save: (edittedParams: any) => void;
+  selectedBlock: SelectedBlockManifest;
   setEditorStep: (value: GuiEditorStep) => void;
+  editLocation: EditLocation;
+  app: App;
+  setSelectedBlock: (block: SelectedBlockManifest) => void;
+  blockList: SelectedBlockManifest[];
 }
 
 export default function GUIEditorEditBlock({
+  app,
+  blockList,
+  editLocation,
   save,
   selectedBlock,
   setEditorStep,
+  setSelectedBlock,
 }: GUIEditorEditBlockProps): React.ReactElement {
-  const [selectedBlockParams, setSelectedBlockParams] = React.useState<SelectedBlock>();
-  const edittedParams: any[any] = [];
   const intl = useIntl();
   const push = useMessages();
-
-  React.useEffect(() => {
-    const getBlockParameters = async (): Promise<void> => {
-      setSelectedBlockParams(undefined);
-      // TODO: get block version
-      const { data } = await axios.get(`/api/blocks/${selectedBlock.name}/versions/0.11.6`);
-      if (data !== undefined) {
-        setSelectedBlockParams(data);
-      }
-    };
-    getBlockParameters();
-  }, [selectedBlock.name]);
+  const [editingResource, setEditingResource] = React.useState<Resource>();
 
   const submit = (): void => {
-    const requiredParam = selectedBlockParams.parameters.required;
+    const requiredParam = selectedBlock.parameters.required;
     const emptyRequiredParam: any[] = [];
 
-    Object.keys(selectedBlockParams.parameters.properties).map((item: any) => {
+    Object.keys(selectedBlock.parameters.properties).map((item: any) => {
       if (requiredParam !== undefined) {
         requiredParam.map((requiredItem: string) => {
           if (
-            (item.includes(requiredItem) && edittedParams[item] === undefined) ||
-            (item.includes(requiredItem) && edittedParams[item] === '')
+            (item.includes(requiredItem) && editingResource[item] === undefined) ||
+            (item.includes(requiredItem) && editingResource[item] === '')
           ) {
             emptyRequiredParam.push(item);
           }
@@ -72,7 +59,7 @@ export default function GUIEditorEditBlock({
     });
 
     if (emptyRequiredParam.length === 0) {
-      save(edittedParams, selectedBlockParams);
+      save(editingResource);
     } else {
       emptyRequiredParam.map((requiredItem: string) =>
         push({
@@ -83,110 +70,79 @@ export default function GUIEditorEditBlock({
     }
   };
 
-  function handleChange(event: any, name: any): void {
-    const { target } = event;
-    const { type } = selectedBlockParams.parameters.properties[name];
-    if (type === parameterType.BOOLEAN) {
-      edittedParams[name] = target.checked;
-    } else if (type === parameterType.STRING) {
-      edittedParams[name] = `'${target.value}'`;
-    } else {
-      edittedParams[name] = `${target.value}`;
-    }
-  }
+  // TODO: Duplicated onChange function from ResourceTable
+  const onChange = React.useCallback(
+    (event: any, value: any) => {
+      let name = '';
+      if (event?.target.name) {
+        name = event.target.name;
+      } else {
+        name = event.currentTarget.name;
+      }
+      if (name.includes('.')) {
+        const objectParentName = name.split(/\./g)[0];
+        name = objectParentName;
+      }
+      if (name === 'id') {
+        return;
+      }
+      setEditingResource({
+        ...editingResource,
+        [name]: value,
+      });
+    },
+    [editingResource],
+  );
 
-  // function to make proper input field/form per param type
-  function renderInputFields(item: string, i: any): any {
-    const schema = selectedBlockParams.parameters.properties[item];
-    const requiredParam = selectedBlockParams.parameters.required;
-    const required = requiredParam !== undefined ? requiredParam.includes(item) : false;
-
-    // TODO: make title field in API and call title instead of normalizing this way
-    const label = item.replace(/([a-z0-9])([A-Z])/g, '$1 $2');
-
-    switch (schema.type) {
-      case parameterType.STRING:
-        return (
-          <div key={i} className="field" tabIndex={i}>
-            <label className="label" style={{ textTransform: 'capitalize' }}>
-              {label} {required ? <strong>*</strong> : ''}
-            </label>
-            <div className="control">
-              {item.includes('content') || item.includes('description') ? (
-                <textarea
-                  className="textarea"
-                  onChange={(event: React.ChangeEvent<HTMLTextAreaElement>) =>
-                    handleChange(event, item)
-                  }
-                  placeholder={item}
-                  value={edittedParams[i]}
-                />
-              ) : (
-                <Input
-                  className="input"
-                  name="text"
-                  onChange={(event) => handleChange(event, item)}
-                  placeholder={item}
-                  type="text"
-                  value={edittedParams[i]}
-                />
-              )}
-            </div>
-          </div>
-        );
-      case parameterType.BOOLEAN:
-        return (
-          <div key={i} className="field" tabIndex={i}>
-            <div className="control">
-              <label className="checkbox" style={{ textTransform: 'capitalize' }}>
-                <Checkbox
-                  checked={edittedParams[i]}
-                  name="boolean"
-                  onChange={(event) => handleChange(event, item)}
-                />
-                {` ${label}`} {required ? <strong>*</strong> : ''}
-              </label>
-            </div>
-          </div>
-        );
-      case parameterType.INTEGER:
-      case parameterType.NUMBER:
-        return (
-          <div key={i} className="field" tabIndex={i}>
-            <div className="control">
-              <label className="label" style={{ textTransform: 'capitalize' }}>
-                {label} {required ? <strong>*</strong> : ''}
-              </label>
-              <Input
-                checked={edittedParams[i]}
-                className="input"
-                name="number"
-                onChange={(event) => handleChange(event, item)}
-                type="number"
-              />
-            </div>
-          </div>
-        );
-      default:
-        return (
-          <div key={i} className="field" tabIndex={i}>
-            {item}: {schema.type}
-          </div>
-        );
-    }
-  }
-
-  if (selectedBlockParams === undefined) {
+  if (blockList === [] || blockList === undefined || blockList.length === 0) {
     return <Loader />;
   }
+  if (selectedBlock === undefined) {
+    blockList.map((b) => {
+      if (b.name.includes(editLocation.blockName)) {
+        setSelectedBlock(b);
+      }
+      return b;
+    });
+
+    app.definition.pages.map((page: any) => {
+      if (page.name.includes(editLocation.pageName)) {
+        page.blocks.map((val: any) => {
+          if (val.type.includes(editLocation.blockName)) {
+            if (!editingResource) {
+              Object.entries(val.parameters).map((param: any) => {
+                // console.log(`${param[0]}: ${param[1]}`);
+                setEditingResource({
+                  ...editingResource,
+                  [param[0]]: param[1],
+                });
+                return param;
+              });
+            }
+          }
+          return val;
+        });
+      }
+      return page;
+    });
+    return <Loader />;
+  }
+  const keys = [...Object.keys(selectedBlock.parameters.properties || {})];
 
   return (
-    <Form className={styles.flexContainer} onSubmit={submit}>
+    <div className={styles.flexContainer} onSubmit={submit}>
       <h2 className="title">{stripBlockName(selectedBlock.name)}</h2>
       <div className={styles.main}>
-        {Object.keys(selectedBlockParams.parameters.properties).map((item: any, i: any) =>
-          renderInputFields(item, i),
-        )}
+        {keys.map((key) => (
+          <JSONSchemaEditor
+            key={key}
+            name={key}
+            onChange={onChange}
+            required={selectedBlock?.parameters?.required?.includes(key)}
+            schema={selectedBlock}
+            value={editingResource?.[key]}
+          />
+        ))}
       </div>
       <div className={styles.footer}>
         <Button
@@ -206,6 +162,6 @@ export default function GUIEditorEditBlock({
           {intl.formatMessage(messages.save)}
         </Button>
       </div>
-    </Form>
+    </div>
   );
 }
