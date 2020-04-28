@@ -41,12 +41,11 @@ export default function GUIEditor({
   editorStep,
   setEditorStep,
 }: GUIEditorProps): React.ReactElement {
-  const [selectedBlock, setSelectedBlock] = React.useState<SelectedBlockManifest>();
-  const [blocks, setBlocks] = React.useState<SelectedBlockManifest[]>([]);
+  const [selectedBlock, setSelectedBlock] = React.useState<SelectedBlockManifest>(undefined);
+  const [blocks, setBlocks] = React.useState<SelectedBlockManifest[]>(undefined);
 
   React.useEffect(() => {
     const getBlocks = async (): Promise<void> => {
-      setBlocks(undefined);
       const { data } = await axios.get('/api/blocks');
       setBlocks(data);
     };
@@ -100,6 +99,20 @@ export default function GUIEditor({
     // setEditorStep(GuiEditorStep.ADD);
   };
 
+  const getSelectedBlock = React.useCallback((): SelectedBlockManifest => {
+    let block: SelectedBlockManifest;
+    if (blocks) {
+      blocks.map((b: SelectedBlockManifest) => {
+        if (b.name.includes(editLocation.blockName)) {
+          setSelectedBlock(b);
+          block = b;
+        }
+        return block;
+      });
+    }
+    return block;
+  }, [blocks, editLocation.blockName, setSelectedBlock]);
+
   switch (editorStep) {
     case GuiEditorStep.ADD:
     default:
@@ -115,12 +128,10 @@ export default function GUIEditor({
       return (
         <GUIEditorEditBlock
           app={app}
-          blockList={blocks}
           editLocation={editLocation}
           save={save}
-          selectedBlock={selectedBlock}
+          selectedBlock={selectedBlock || getSelectedBlock()}
           setEditorStep={(step: GuiEditorStep) => setEditorStep(step)}
-          setSelectedBlock={(block: SelectedBlockManifest) => setSelectedBlock(block)}
         />
       );
   }

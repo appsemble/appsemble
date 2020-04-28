@@ -57,6 +57,7 @@ export default function JSONSchemaEditor({
   const prop = (schema?.properties
     ? schema?.properties[name] || {}
     : schema) as OpenAPIV3.SchemaObject;
+
   const label = prop.title ? (
     <>
       {`${prop.title} `}
@@ -80,6 +81,10 @@ export default function JSONSchemaEditor({
         ))}
       </Select>
     );
+  }
+
+  if (prop.anyOf) {
+    return <div>anyOf</div>;
   }
 
   if (prop.type === 'array') {
@@ -116,6 +121,7 @@ export default function JSONSchemaEditor({
           name={name}
           onChange={onChange}
           required={required}
+          value={value}
         />
       );
     case 'object':
@@ -131,7 +137,7 @@ export default function JSONSchemaEditor({
       );
     case 'string':
     case 'number':
-    default:
+    case 'integer':
       return (
         <JSONSchemaStringEditor
           disabled={disable}
@@ -140,7 +146,10 @@ export default function JSONSchemaEditor({
           onChange={onChange}
           prop={prop}
           required={required}
+          value={value || ''}
         />
       );
+    default:
+      return <div>hi</div>;
   }
 }

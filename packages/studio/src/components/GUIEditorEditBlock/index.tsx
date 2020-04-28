@@ -20,24 +20,20 @@ interface GUIEditorEditBlockProps {
   save: (edittedParams: any) => void;
   selectedBlock: SelectedBlockManifest;
   setEditorStep: (value: GuiEditorStep) => void;
-  editLocation: EditLocation;
   app: App;
-  setSelectedBlock: (block: SelectedBlockManifest) => void;
-  blockList: SelectedBlockManifest[];
+  editLocation: EditLocation;
 }
 
 export default function GUIEditorEditBlock({
   app,
-  blockList,
   editLocation,
   save,
   selectedBlock,
   setEditorStep,
-  setSelectedBlock,
 }: GUIEditorEditBlockProps): React.ReactElement {
   const intl = useIntl();
   const push = useMessages();
-  const [editingResource, setEditingResource] = React.useState<Resource>();
+  const [editingResource, setEditingResource] = React.useState<Resource>(undefined);
 
   const submit = (): void => {
     const requiredParam = selectedBlock.parameters.required;
@@ -94,55 +90,57 @@ export default function GUIEditorEditBlock({
     [editingResource],
   );
 
-  if (blockList === [] || blockList === undefined || blockList.length === 0) {
-    return <Loader />;
-  }
-  if (selectedBlock === undefined) {
-    blockList.map((b) => {
-      if (b.name.includes(editLocation.blockName)) {
-        setSelectedBlock(b);
-      }
-      return b;
-    });
-
-    app.definition.pages.map((page: any) => {
-      if (page.name.includes(editLocation.pageName)) {
-        page.blocks.map((val: any) => {
-          if (val.type.includes(editLocation.blockName)) {
-            if (!editingResource) {
-              Object.entries(val.parameters).map((param: any) => {
-                // console.log(`${param[0]}: ${param[1]}`);
-                setEditingResource({
-                  ...editingResource,
-                  [param[0]]: param[1],
+  React.useEffect(() => {
+    if (selectedBlock === undefined) {
+      app.definition.pages.map((page: any) => {
+        if (page.name.includes(editLocation.pageName)) {
+          page.blocks.map((val: any) => {
+            if (val.type.includes(editLocation.blockName)) {
+              if (!editingResource) {
+                Object.entries(val.parameters).map((param: any) => {
+                  setEditingResource({
+                    ...editingResource,
+                    [param[0]]: param[1],
+                  });
+                  return param;
                 });
-                return param;
-              });
+              }
             }
-          }
-          return val;
-        });
-      }
-      return page;
-    });
+            return val;
+          });
+        }
+        return page;
+      });
+    }
+  }, [editingResource, editLocation.pageName, editLocation.blockName, app, selectedBlock]);
+
+  if (selectedBlock === undefined) {
     return <Loader />;
   }
-  const keys = [...Object.keys(selectedBlock.parameters.properties || {})];
+
+  const keys =
+    selectedBlock?.parameters !== null
+      ? [...Object.keys(selectedBlock?.parameters.properties || {})]
+      : undefined;
 
   return (
     <div className={styles.flexContainer} onSubmit={submit}>
       <h2 className="title">{stripBlockName(selectedBlock.name)}</h2>
       <div className={styles.main}>
-        {keys.map((key) => (
-          <JSONSchemaEditor
-            key={key}
-            name={key}
-            onChange={onChange}
-            required={selectedBlock?.parameters?.required?.includes(key)}
-            schema={selectedBlock}
-            value={editingResource?.[key]}
-          />
-        ))}
+        {keys ? (
+          keys.map((key) => (
+            <JSONSchemaEditor
+              key={key}
+              name={key}
+              onChange={onChange}
+              required={selectedBlock?.parameters?.required?.includes(key)}
+              schema={selectedBlock.parameters.properties[key]}
+              value={editingResource?.[key]}
+            />
+          ))
+        ) : (
+          <div>{stripBlockName(selectedBlock.name)} has no editable parameters </div>
+        )}
       </div>
       <div className={styles.footer}>
         <Button
