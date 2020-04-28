@@ -1,58 +1,61 @@
 import FakeTimers from '@sinonjs/fake-timers';
-import { createInstance } from 'axios-test-instance';
+import { AxiosTestInstance, createInstance } from 'axios-test-instance';
+import type Koa from 'koa';
 
-import { App, AppSubscription } from '../models';
+import { App, AppSubscription, Resource, ResourceSubscription, User } from '../models';
 import createServer from '../utils/createServer';
 import { closeTestSchema, createTestSchema, truncate } from '../utils/test/testSchema';
 import testToken from '../utils/test/testToken';
 
-let request;
-let server;
-let authorization;
-let organizationId;
-let clock;
-let user;
+let request: AxiosTestInstance;
+let server: Koa;
+let authorization: string;
+let organizationId: string;
+let clock: FakeTimers.InstalledClock;
+let user: User;
 
-const defaultApp = (id) => ({
-  definition: {
-    name: 'Test App',
-    defaultPage: 'Test Page',
-    security: {
-      default: {
-        role: 'Reader',
-        policy: 'everyone',
+const defaultApp = (id: string): Promise<App> =>
+  App.create({
+    definition: {
+      name: 'Test App',
+      defaultPage: 'Test Page',
+      security: {
+        default: {
+          role: 'Reader',
+          policy: 'everyone',
+        },
+        roles: {
+          Reader: {},
+        },
       },
-      roles: {
-        Reader: {},
-      },
-    },
-    resources: {
-      person: {
-        create: {
-          hooks: {
-            notification: {
-              to: ['$author'],
-              subscribe: 'both',
+      resources: {
+        person: {
+          create: {
+            hooks: {
+              notification: {
+                to: ['$author'],
+                subscribe: 'both',
+              },
+            },
+          },
+        },
+        pet: {
+          update: {
+            hooks: {
+              notification: {
+                subscribe: 'both',
+              },
             },
           },
         },
       },
-      pet: {
-        update: {
-          hooks: {
-            notification: {
-              subscribe: 'both',
-            },
-          },
-        },
-      },
+      pages: [{ name: '', blocks: [] }],
     },
-  },
-  path: 'test-app',
-  vapidPublicKey: 'a',
-  vapidPrivateKey: 'b',
-  OrganizationId: id,
-});
+    path: 'test-app',
+    vapidPublicKey: 'a',
+    vapidPrivateKey: 'b',
+    OrganizationId: id,
+  });
 
 beforeAll(createTestSchema('appnotifications'));
 
@@ -72,6 +75,7 @@ beforeEach(async () => {
       id: 'testorganization',
       name: 'Test Organization',
     },
+    // @ts-ignore
     { through: { role: 'Owner' } },
   ));
 });
@@ -88,15 +92,17 @@ afterAll(closeTestSchema);
 
 describe('getSubscription', () => {
   it('should subscription statuses to resources', async () => {
-    const app = await App.create(defaultApp(organizationId));
+    const app = await defaultApp(organizationId);
 
-    await app.createAppSubscription({
+    await AppSubscription.create({
+      AppId: app.id,
       endpoint: 'https://example.com',
       p256dh: 'abc',
       auth: 'def',
     });
 
-    const resource = await app.createResource({
+    const resource = await Resource.create({
+      AppId: app.id,
       type: 'person',
       data: { foo: 'I am Foo.' },
     });
@@ -136,7 +142,7 @@ describe('getSubscription', () => {
   });
 
   it('should 404 on non-existent subscriptions', async () => {
-    const app = await App.create(defaultApp(organizationId));
+    const app = await defaultApp(organizationId);
     const response = await request.get(`/api/apps/${app.id}/subscriptions`, {
       params: { endpoint: 'https://example.com' },
     });
@@ -154,7 +160,7 @@ describe('getSubscription', () => {
 
 describe('addSubscription', () => {
   it('should subscribe to apps', async () => {
-    const app = await App.create(defaultApp(organizationId));
+    const app = await defaultApp(organizationId);
 
     const response = await request.post(
       `/api/apps/${app.id}/subscriptions`,
@@ -185,8 +191,9 @@ describe('addSubscription', () => {
 
 describe('updateSubscription', () => {
   it('should update resource type subscription settings', async () => {
-    const app = await App.create(defaultApp(organizationId));
-    await app.createAppSubscription({
+    const app = await defaultApp(organizationId);
+    await AppSubscription.create({
+      AppId: app.id,
       endpoint: 'https://example.com',
       p256dh: 'abc',
       auth: 'def',
@@ -226,13 +233,14 @@ describe('updateSubscription', () => {
   });
 
   it('should update individual resource subscription settings', async () => {
-    const app = await App.create(defaultApp(organizationId));
-    await app.createAppSubscription({
+    const app = await defaultApp(organizationId);
+    await AppSubscription.create({
+      AppId: app.id,
       endpoint: 'https://example.com',
       p256dh: 'abc',
       auth: 'def',
     });
-    const { id } = await app.createResource({ type: 'person', data: {} });
+    const { id } = await Resource.create({ AppId: app.id, type: 'person', data: {} });
 
     const response = await request.patch(
       `/api/apps/${app.id}/subscriptions`,
@@ -277,13 +285,18 @@ describe('updateSubscription', () => {
   });
 
   it('should remove resource type subscription settings if set to false', async () => {
-    const app = await App.create(defaultApp(organizationId));
-    const subscription = await app.createAppSubscription({
+    const app = await defaultApp(organizationId);
+    const subscription = await AppSubscription.create({
+      AppId: app.id,
       endpoint: 'https://example.com',
       p256dh: 'abc',
       auth: 'def',
     });
-    await subscription.createResourceSubscription({ type: 'person', action: 'create' });
+    await ResourceSubscription.create({
+      AppSubscriptionId: subscription.id,
+      type: 'person',
+      action: 'create',
+    });
 
     const response = await request.patch(
       `/api/apps/${app.id}/subscriptions`,
@@ -313,15 +326,17 @@ describe('updateSubscription', () => {
   });
 
   it('should remove individual resource subscription settings if set to false', async () => {
-    const app = await App.create(defaultApp(organizationId));
-    const subscription = await app.createAppSubscription({
+    const app = await defaultApp(organizationId);
+    const subscription = await AppSubscription.create({
+      AppId: app.id,
       endpoint: 'https://example.com',
       p256dh: 'abc',
       auth: 'def',
     });
-    const { id } = await app.createResource({ type: 'person', data: {} });
+    const { id } = await Resource.create({ AppId: app.id, type: 'person', data: {} });
 
-    await subscription.createResourceSubscription({
+    await ResourceSubscription.create({
+      AppSubscriptionId: subscription.id,
       type: 'person',
       action: 'update',
       ResourceId: id,
@@ -380,8 +395,9 @@ describe('updateSubscription', () => {
   });
 
   it('should toggle resource type subscriptions if value isn’t set', async () => {
-    const app = await App.create(defaultApp(organizationId));
-    await app.createAppSubscription({
+    const app = await defaultApp(organizationId);
+    await AppSubscription.create({
+      AppId: app.id,
       endpoint: 'https://example.com',
       p256dh: 'abc',
       auth: 'def',
@@ -439,13 +455,14 @@ describe('updateSubscription', () => {
   });
 
   it('should toggle individual resource subscriptions if value isn’t set', async () => {
-    const app = await App.create(defaultApp(organizationId));
-    await app.createAppSubscription({
+    const app = await defaultApp(organizationId);
+    await AppSubscription.create({
+      AppId: app.id,
       endpoint: 'https://example.com',
       p256dh: 'abc',
       auth: 'def',
     });
-    const { id } = await app.createResource({ type: 'person', data: {} });
+    const { id } = await Resource.create({ AppId: app.id, type: 'person', data: {} });
 
     await request.patch(
       `/api/apps/${app.id}/subscriptions`,
@@ -502,7 +519,7 @@ describe('updateSubscription', () => {
   });
 
   it('should 404 on non-existent subscriptions', async () => {
-    const app = await App.create(defaultApp(organizationId));
+    const app = await defaultApp(organizationId);
     const response = await request.patch(
       `/api/apps/${app.id}/subscriptions`,
       { endpoint: 'https://example.com', resource: 'person', action: 'create', value: true },

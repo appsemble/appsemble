@@ -1,17 +1,18 @@
 import FakeTimers from '@sinonjs/fake-timers';
-import { createInstance } from 'axios-test-instance';
+import { AxiosTestInstance, createInstance } from 'axios-test-instance';
+import type Koa from 'koa';
 
 import { App, BlockVersion, Organization, User } from '../models';
 import createServer from '../utils/createServer';
 import { closeTestSchema, createTestSchema, truncate } from '../utils/test/testSchema';
 import testToken from '../utils/test/testToken';
 
-let request;
-let server;
-let authorization;
-let organizationId;
-let clock;
-let user;
+let request: AxiosTestInstance;
+let server: Koa;
+let authorization: string;
+let organizationId: string;
+let clock: FakeTimers.InstalledClock;
+let user: User;
 
 beforeAll(createTestSchema('appmembers'));
 
@@ -29,6 +30,7 @@ beforeEach(async () => {
       id: 'testorganization',
       name: 'Test Organization',
     },
+    // @ts-ignore
     { through: { role: 'Owner' } },
   ));
 
@@ -81,6 +83,7 @@ describe('getAppMembers', () => {
       OrganizationId: organizationId,
     });
 
+    // @ts-ignore
     await app.addUser(user, { through: { role: 'Reader' } });
 
     const response = await request.get(`/api/apps/${app.id}/members`, {
@@ -294,6 +297,7 @@ describe('setAppMember', () => {
     });
 
     const userB = await User.create({ name: 'Foo', primaryEmail: 'foo@example.com' });
+    // @ts-ignore
     await app.addUser(userB, { through: { role: 'Admin' } });
 
     const response = await request.post(
@@ -343,6 +347,7 @@ describe('setAppMember', () => {
     });
 
     const userB = await User.create({ name: 'Foo', primaryEmail: 'foo@example.com' });
+    // @ts-ignore
     await app.addUser(userB, { through: { role: 'Admin' } });
 
     const response = await request.post(

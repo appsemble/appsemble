@@ -1,6 +1,7 @@
 {
   "extends": "../../tsconfig",
   "compilerOptions": {
+    "jsxFactory": "h",
     "lib": ["dom", "esnext"]
   }
 }

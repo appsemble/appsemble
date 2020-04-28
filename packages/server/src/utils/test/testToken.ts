@@ -14,7 +14,7 @@ interface TestTokenResult {
 }
 
 export default async function testToken(
-  scope: string,
+  scope?: string,
   email = 'test@example.com',
 ): Promise<TestTokenResult> {
   const argv = { host: 'http://localhost', secret: 'test' };

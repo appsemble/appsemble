@@ -38,6 +38,7 @@ import type { Argv } from '../types';
 import authentication from './authentication';
 import convertToCsv from './convertToCsv';
 import Mailer from './email/Mailer';
+import readPackageJson from './readPackageJson';
 
 interface CreateServerOptions {
   app?: Koa;
@@ -84,7 +85,7 @@ export default async function createServer({
   const apiMiddleware = mount(
     '/api',
     compose([
-      await koas(api(), [
+      await koas(api(readPackageJson().version, argv), [
         koasSpecHandler(),
         koasSwaggerUI({ url: '/explorer' }),
         koasSecurity(authentication(argv) as any),

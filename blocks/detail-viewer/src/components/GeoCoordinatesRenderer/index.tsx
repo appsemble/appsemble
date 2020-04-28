@@ -1,4 +1,3 @@
-/** @jsx h */
 import { Location } from '@appsemble/preact-components';
 import { remapData } from '@appsemble/utils';
 import { h, VNode } from 'preact';

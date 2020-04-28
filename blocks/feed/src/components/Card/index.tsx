@@ -1,4 +1,3 @@
-/** @jsx h */
 import { BlockProps, FormattedMessage, withBlock } from '@appsemble/preact';
 import { Location } from '@appsemble/preact-components';
 import { Component, createRef, Fragment, h, VNode } from 'preact';

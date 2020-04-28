@@ -1,18 +1,19 @@
 import FakeTimers from '@sinonjs/fake-timers';
-import { createInstance } from 'axios-test-instance';
+import { AxiosTestInstance, createInstance } from 'axios-test-instance';
 import FormData from 'form-data';
+import type Koa from 'koa';
 
 import { App, AppBlockStyle, AppRating, BlockVersion, Organization, User } from '../models';
 import createServer from '../utils/createServer';
 import { closeTestSchema, createTestSchema, truncate } from '../utils/test/testSchema';
 import testToken from '../utils/test/testToken';
 
-let request;
-let server;
-let authorization;
-let organizationId;
-let clock;
-let user;
+let request: AxiosTestInstance;
+let server: Koa;
+let authorization: string;
+let organizationId: string;
+let clock: FakeTimers.InstalledClock;
+let user: User;
 
 beforeAll(createTestSchema('apps'));
 
@@ -30,6 +31,7 @@ beforeEach(async () => {
       id: 'testorganization',
       name: 'Test Organization',
     },
+    // @ts-ignore
     { through: { role: 'Owner' } },
   ));
 
@@ -295,6 +297,7 @@ describe('queryMyApps', () => {
 
     const responseA = await request.get('/api/apps/me', { headers: { authorization } });
 
+    // @ts-ignore
     await user.addOrganization(organizationB);
 
     const responseB = await request.get('/api/apps/me', { headers: { authorization } });
@@ -691,7 +694,6 @@ pages:
         vapidPrivateKey: `b${index}`,
         OrganizationId: organizationId,
       })),
-      { raw: true },
     );
 
     const form = new FormData();

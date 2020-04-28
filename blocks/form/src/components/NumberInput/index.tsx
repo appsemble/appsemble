@@ -1,4 +1,3 @@
-/** @jsx h */
 import { FormattedMessage } from '@appsemble/preact';
 import { Input } from '@appsemble/preact-components';
 import { h, VNode } from 'preact';

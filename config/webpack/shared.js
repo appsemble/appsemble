@@ -32,14 +32,6 @@ module.exports = (env, { mode }) => {
     module: {
       rules: [
         {
-          test: /\.[jt]sx?$/,
-          loader: 'babel-loader',
-          exclude: [/node_modules/],
-          options: {
-            envName: mode,
-          },
-        },
-        {
           test: /\.css$/,
           oneOf: [
             {
