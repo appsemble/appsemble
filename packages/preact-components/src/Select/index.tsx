@@ -1,4 +1,3 @@
-/** @jsx h */
 import { ClassAttributes, Component, h, JSX, PreactDOMAttributes, VNode } from 'preact';
 
 import FormComponent, { FormComponentProps } from '../FormComponent';

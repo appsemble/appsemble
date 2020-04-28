@@ -1,4 +1,3 @@
-/** @jsx h */
 import classNames from 'classnames';
 import { Component, ComponentChild, h, VNode } from 'preact';
 

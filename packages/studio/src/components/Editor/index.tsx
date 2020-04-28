@@ -32,7 +32,7 @@ import MonacoEditor from '../MonacoEditor';
 import styles from './index.css';
 import messages from './messages';
 
-const openApiDocumentPromise = RefParser.dereference(api({ host: window.location.origin }));
+const openApiDocumentPromise = RefParser.dereference(api('', { host: window.location.origin }));
 
 export default function Editor(): React.ReactElement {
   const { app, setApp } = useApp();

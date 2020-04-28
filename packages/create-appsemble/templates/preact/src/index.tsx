@@ -1,4 +1,3 @@
-/** @jsx h */
 import { bootstrap } from '@appsemble/preact';
 import { h } from 'preact';
 import { useEffect, useState } from 'preact/hooks';

@@ -20,7 +20,6 @@ import type { OAuth2ClientCredentials } from '../../types';
 import HelmetIntl from '../HelmetIntl';
 import styles from './index.css';
 import messages from './messages';
-import scopeDescriptions from './scopeDescriptions';
 
 export default function ClientCredentials(): React.ReactElement {
   const intl = useIntl();
@@ -127,19 +126,19 @@ export default function ClientCredentials(): React.ReactElement {
             />
             <SimpleInput<typeof Checkbox>
               component={Checkbox}
-              help={<FormattedMessage {...scopeDescriptions['blocks:write']} />}
+              help={<FormattedMessage {...messages['blocks:write']} />}
               label="blocks:write"
               name="blocks:write"
             />
             <SimpleInput<typeof Checkbox>
               component={Checkbox}
-              help={<FormattedMessage {...scopeDescriptions['organizations:styles:write']} />}
+              help={<FormattedMessage {...messages['organizations:styles:write']} />}
               label="organizations:styles:write"
               name="organizations:styles:write"
             />
             <SimpleInput<typeof Checkbox>
               component={Checkbox}
-              help={<FormattedMessage {...scopeDescriptions['apps:write']} />}
+              help={<FormattedMessage {...messages['apps:write']} />}
               label="apps:write"
               name="apps:write"
             />
@@ -189,8 +188,8 @@ export default function ClientCredentials(): React.ReactElement {
                         key={scope}
                         className={styles.scope}
                         title={intl.formatMessage(
-                          Object.hasOwnProperty.call(scopeDescriptions, scope)
-                            ? scopeDescriptions[scope as keyof typeof scopeDescriptions]
+                          Object.hasOwnProperty.call(messages, scope)
+                            ? messages[scope as keyof typeof messages]
                             : messages.unknownScope,
                         )}
                         value={scope}

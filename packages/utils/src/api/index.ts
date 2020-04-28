@@ -1,6 +1,5 @@
 import type { OpenAPIV3 } from 'openapi-types';
 
-import pkg from '../../package.json';
 import components from './components';
 import paths from './paths';
 import tags from './tags';
@@ -10,10 +9,10 @@ interface APIParams {
   host?: string;
 }
 
-export default ({
-  port = 9999,
-  host = `http://localhost:${port}`,
-}: APIParams = {}): OpenAPIV3.Document => ({
+export default (
+  version: string,
+  { port = 9999, host = `http://localhost:${port}` }: APIParams = {},
+): OpenAPIV3.Document => ({
   openapi: '3.0.2',
   components,
   externalDocs: {
@@ -35,7 +34,7 @@ export default ({
       name: 'LGPL',
       url: 'https://gitlab.com/appsemble/appsemble/blob/master/LICENSE.md',
     },
-    version: pkg.version,
+    version,
   },
   paths,
   servers: [{ url: '/api' }],

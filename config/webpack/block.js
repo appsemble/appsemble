@@ -23,6 +23,14 @@ export default ({ dir, name }, argv) => {
     module: {
       rules: [
         {
+          test: /\.tsx?$/,
+          loader: 'ts-loader',
+          options: {
+            transpileOnly: true,
+            configFile: path.join(dir, 'tsconfig.json'),
+          },
+        },
+        {
           test: /\.(gif|jpe?g|png|svg|woff2?)$/,
           loader: 'file-loader',
           options: {

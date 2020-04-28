@@ -72,6 +72,7 @@ module.exports = {
     'react/jsx-no-useless-fragment': 'error',
     'react/jsx-props-no-spreading': 'off',
     'react/jsx-sort-props': 'error',
+    'react/react-in-jsx-scope': 'off',
     'simple-import-sort/sort': 'error',
     'sort-destructure-keys/sort-destructure-keys': 'error',
     'jsx-a11y/label-has-associated-control': 'off',

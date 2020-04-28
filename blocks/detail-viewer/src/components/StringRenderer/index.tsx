@@ -1,4 +1,3 @@
-/** @jsx h */
 import { Fragment, h, VNode } from 'preact';
 
 import type { RendererProps, StringField } from '../../../block';

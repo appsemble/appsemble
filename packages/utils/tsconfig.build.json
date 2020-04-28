@@ -2,8 +2,7 @@
   "extends": "../../tsconfig.build.json",
   "include": ["src"],
   "compilerOptions": {
-    "jsxFactory": "h",
-    "lib": ["dom", "esnext"],
+    "module": "commonjs",
     "outDir": "dist"
   }
 }

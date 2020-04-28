@@ -15,7 +15,7 @@
   "author": "Appsemble <info@appsemble.com> (https://appsemble.com)",
   "sideEffects": false,
   "scripts": {
-    "prepack": "babel --ignore '**/*.test.js' --ignore '**/*.test.ts' -x .js,.ts -d dist src"
+    "prepack": "tsc -p tsconfig.build.json"
   },
   "dependencies": {
     "@appsemble/types": "0.12.5",

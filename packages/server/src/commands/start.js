@@ -10,6 +10,7 @@ import { initDB } from '../models';
 import addDBHooks from '../utils/addDBHooks';
 import createServer from '../utils/createServer';
 import migrate from '../utils/migrate';
+import readPackageJson from '../utils/readPackageJson';
 import { handleDBError } from '../utils/sqlUtils';
 import databaseBuilder from './builder/database';
 
@@ -150,6 +151,6 @@ export async function handler(argv, { webpackConfigs } = {}) {
 
   httpServer.listen(argv.port || PORT, '0.0.0.0', () => {
     logger.info(asciiLogo);
-    logger.info(api(argv).info.description);
+    logger.info(api(readPackageJson().version, argv).info.description);
   });
 }
