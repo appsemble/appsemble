@@ -56,6 +56,7 @@ export default function JSONSchemaObjectEditor({
   const onPropertyChange = React.useCallback(
     (event, val) => {
       const id = event.target.name.slice(name.length + 1);
+
       setObjectValue({ ...objectValue, [id]: val });
       objectState[id] = val;
       onChange(event, objectState);
@@ -65,13 +66,13 @@ export default function JSONSchemaObjectEditor({
 
   return (
     <div>
-      {Object.entries(schema).map(([propName, subSchema]) => (
+      {Object.entries(schema.properties).map(([propName, subSchema]) => (
         <JSONSchemaEditor
           key={propName}
           disabled={disabled}
           name={`${name}.${propName}`}
           onChange={onPropertyChange}
-          required={required}
+          required={required || schema.required.includes(propName)}
           schema={subSchema}
           value={value ? value[propName] : value}
         />

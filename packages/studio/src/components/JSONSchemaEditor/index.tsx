@@ -3,7 +3,9 @@ import type { OpenAPIV3 } from 'openapi-types';
 import * as React from 'react';
 import type { Definition } from 'typescript-json-schema';
 
+import type { SelectedBlockManifest } from '../GUIEditor';
 import JSONSchemaArrayEditor from './components/JSONSchemaArrayEditor';
+import JSONSchemaDefinedTypesEditor from './components/JSONSchemaDefinedTypesEditor';
 import JSONSchemaFileEditor from './components/JSONSchemaFileEditor';
 import JSONSchemaObjectEditor from './components/JSONSchemaObjectEditor';
 import JSONSchemaStringEditor from './components/JSONSchemaStringEditor';
@@ -33,7 +35,7 @@ interface JSONSchemaEditorProps {
   /**
    * The schema used to render the form elements.
    */
-  schema: OpenAPIV3.SchemaObject | Definition;
+  schema: OpenAPIV3.SchemaObject | Definition | SelectedBlockManifest;
 
   /**
    * The handler that is called whenever a value changes.
@@ -54,9 +56,21 @@ export default function JSONSchemaEditor({
   schema,
   value,
 }: JSONSchemaEditorProps): React.ReactElement {
-  const prop = (schema?.properties
-    ? schema?.properties[name] || {}
-    : schema) as OpenAPIV3.SchemaObject;
+  let prop: OpenAPIV3.SchemaObject;
+
+  function instanceOfSelectedBlockManifest(object: object): object is SelectedBlockManifest {
+    try {
+      return 'parameters' in object;
+    } catch {
+      return false;
+    }
+  }
+
+  if (!instanceOfSelectedBlockManifest(schema)) {
+    prop = (schema?.properties ? schema?.properties[name] || {} : schema) as OpenAPIV3.SchemaObject;
+  } else if (schema?.parameters) {
+    prop = schema?.parameters?.properties[name] || ({} as SelectedBlockManifest);
+  }
 
   const label = prop.title ? (
     <>
@@ -74,7 +88,7 @@ export default function JSONSchemaEditor({
         <option disabled hidden value="">
           Choose here
         </option>
-        {prop.enum.map((option) => (
+        {prop.enum.map((option: string) => (
           <option key={option} value={option}>
             {option}
           </option>
@@ -83,11 +97,20 @@ export default function JSONSchemaEditor({
     );
   }
 
-  if (prop.anyOf) {
-    return <div>anyOf</div>;
-  }
-
   if (prop.type === 'array') {
+    if (prop?.items.hasOwnProperty('anyOf') && instanceOfSelectedBlockManifest(schema)) {
+      return (
+        <JSONSchemaDefinedTypesEditor
+          definitions={schema.parameters.definitions}
+          label={label}
+          name={name}
+          onChange={onChange}
+          required={required}
+          schema={prop.items}
+          value={value}
+        />
+      );
+    }
     if (prop?.items.hasOwnProperty('appsembleFile')) {
       return (
         <JSONSchemaFileEditor
@@ -131,7 +154,7 @@ export default function JSONSchemaEditor({
           name={name}
           onChange={onChange}
           required={required}
-          schema={prop.properties}
+          schema={prop}
           value={value}
         />
       );

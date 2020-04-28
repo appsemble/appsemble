@@ -2,6 +2,7 @@ import type { App, BlockManifest } from '@appsemble/types';
 import axios from 'axios';
 // import yaml from 'js-yaml';
 import type { editor } from 'monaco-editor';
+import type { OpenAPIV3 } from 'openapi-types';
 import React from 'react';
 
 import { GuiEditorStep } from '../Editor';
@@ -32,6 +33,7 @@ export interface SelectedBlockManifest extends BlockManifest {
   parameters: {
     properties: any;
     required?: string[];
+    definitions?: OpenAPIV3.SchemaObject[];
   };
 }
 

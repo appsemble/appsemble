@@ -134,7 +134,7 @@ export default function GUIEditorEditBlock({
               name={key}
               onChange={onChange}
               required={selectedBlock?.parameters?.required?.includes(key)}
-              schema={selectedBlock.parameters.properties[key]}
+              schema={selectedBlock}
               value={editingResource?.[key]}
             />
           ))
