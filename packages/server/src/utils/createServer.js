@@ -36,6 +36,7 @@ import bulmaHandler from '../routes/bulmaHandler';
 import authentication from './authentication';
 import convertToCsv from './convertToCsv';
 import Mailer from './email/Mailer';
+import readPackageJson from './readPackageJson';
 
 export default async function createServer({ app = new Koa(), argv = {}, webpackConfigs }) {
   // eslint-disable-next-line no-param-reassign
@@ -72,7 +73,7 @@ export default async function createServer({ app = new Koa(), argv = {}, webpack
   const apiMiddleware = mount(
     '/api',
     compose([
-      await koas(api(), [
+      await koas(api(readPackageJson().version, argv), [
         koasSpecHandler(),
         koasSwaggerUI({ url: '/explorer' }),
         koasSecurity(authentication(argv)),
