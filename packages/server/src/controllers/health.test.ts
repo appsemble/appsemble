@@ -1,16 +1,15 @@
-import { createInstance } from 'axios-test-instance';
+import { AxiosTestInstance, createInstance } from 'axios-test-instance';
 
 import { getDB } from '../models';
 import createServer from '../utils/createServer';
 import { closeTestSchema, createTestSchema, truncate } from '../utils/test/testSchema';
 
-let request;
-let server;
+let request: AxiosTestInstance;
 
 beforeAll(createTestSchema('health'));
 
 beforeAll(async () => {
-  server = await createServer({ argv: { host: 'http://localhost', secret: 'test' } });
+  const server = await createServer({ argv: { host: 'http://localhost', secret: 'test' } });
   request = await createInstance(server);
 });
 
@@ -33,7 +32,7 @@ describe('checkHealth', () => {
   });
 
   it('should fail if the database is disconnected', async () => {
-    jest.spyOn(getDB(), 'authenticate').mockImplementation(() => Promise.reject(new Error('stub')));
+    jest.spyOn(getDB(), 'authenticate').mockRejectedValue(new Error('stub'));
     const response = await request.get('/api/health');
 
     expect(response).toMatchObject({

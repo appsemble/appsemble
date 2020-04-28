@@ -1,36 +1,34 @@
-import { createInstance } from 'axios-test-instance';
+import { AxiosTestInstance, createInstance } from 'axios-test-instance';
 import FormData from 'form-data';
 import fs from 'fs-extra';
 import { omit } from 'lodash';
 import path from 'path';
 
+import type { User } from '../models';
 import createServer from '../utils/createServer';
 import getDefaultIcon from '../utils/getDefaultIcon';
 import { closeTestSchema, createTestSchema, truncate } from '../utils/test/testSchema';
 import testToken from '../utils/test/testToken';
 
-let server;
-let instance;
-let headers;
-let user;
-let clientToken;
+let instance: AxiosTestInstance;
+let authorization: string;
+let user: User;
+let clientToken: string;
 
 beforeAll(createTestSchema('blocks'));
 
-beforeAll(async () => {
-  server = await createServer({ argv: { host: 'http://localhost', secret: 'test' } });
-});
-
 beforeEach(async () => {
+  const server = await createServer({ argv: { host: 'http://localhost', secret: 'test' } });
   ({ clientToken, user } = await testToken('blocks:write'));
   await user.createOrganization(
     {
       id: 'xkcd',
       name: 'xkcd',
     },
+    // @ts-ignore
     { through: { role: 'Maintainer' } },
   );
-  headers = { headers: { authorization: `Bearer ${clientToken}` } };
+  authorization = `Bearer ${clientToken}`;
   instance = await createInstance(server);
 });
 
@@ -60,7 +58,7 @@ describe('getBlock', () => {
     );
 
     const { data: original } = await instance.post('/api/blocks', formData, {
-      headers: { ...headers.headers, ...formData.getHeaders() },
+      headers: { authorization, ...formData.getHeaders() },
     });
 
     const { data: retrieved } = await instance.get('/api/blocks/@xkcd/test');
@@ -90,7 +88,7 @@ describe('queryBlocks', () => {
     );
 
     const { data: apple } = await instance.post('/api/blocks', formDataA, {
-      headers: { ...headers.headers, ...formDataA.getHeaders() },
+      headers: { authorization, ...formDataA.getHeaders() },
     });
 
     const formDataB = new FormData();
@@ -104,7 +102,7 @@ describe('queryBlocks', () => {
     );
 
     const { data: pen } = await instance.post('/api/blocks', formDataB, {
-      headers: { ...headers.headers, ...formDataB.getHeaders() },
+      headers: { authorization, ...formDataB.getHeaders() },
     });
 
     const { data: bam } = await instance.get('/api/blocks');
@@ -120,7 +118,7 @@ describe('publishBlock', () => {
     formData.append(
       'files',
       fs.createReadStream(path.join(__dirname, '__fixtures__/standing.png')),
-      { filename: encodeURIComponent('build/standing.png'), foo: 'bar' },
+      { filename: encodeURIComponent('build/standing.png') },
     );
     formData.append(
       'files',
@@ -129,7 +127,7 @@ describe('publishBlock', () => {
     );
 
     const { data, status } = await instance.post('/api/blocks', formData, {
-      headers: { ...headers.headers, ...formData.getHeaders() },
+      headers: { authorization, ...formData.getHeaders() },
     });
 
     expect(data).toStrictEqual({
@@ -164,7 +162,7 @@ describe('publishBlock', () => {
       { filepath: 'testblock.js' },
     );
     const response = await instance.post('/api/blocks', formData, {
-      headers: { ...headers.headers, ...formData.getHeaders() },
+      headers: { authorization, ...formData.getHeaders() },
     });
 
     expect(response).toMatchObject({
@@ -190,7 +188,7 @@ describe('publishBlock', () => {
     );
 
     await instance.post('/api/blocks', formData, {
-      headers: { ...headers.headers, ...formData.getHeaders() },
+      headers: { authorization, ...formData.getHeaders() },
     });
 
     const formData2 = new FormData();
@@ -212,7 +210,7 @@ describe('publishBlock', () => {
     );
 
     const { data } = await instance.post('/api/blocks', formData2, {
-      headers: { ...headers.headers, ...formData2.getHeaders() },
+      headers: { authorization, ...formData2.getHeaders() },
     });
 
     expect(data).toStrictEqual({
@@ -229,7 +227,7 @@ describe('publishBlock', () => {
     formData.append('version', '1.32.9');
 
     const { data, status } = await instance.post('/api/blocks', formData, {
-      headers: { ...headers.headers, ...formData.getHeaders() },
+      headers: { authorization, ...formData.getHeaders() },
     });
 
     expect(data).toStrictEqual({
@@ -265,7 +263,7 @@ describe('getBlockVersion', () => {
     );
 
     const { data: created } = await instance.post('/api/blocks', formData, {
-      headers: { ...headers.headers, ...formData.getHeaders() },
+      headers: { authorization, ...formData.getHeaders() },
     });
 
     const { data: retrieved, status } = await instance.get(
@@ -304,7 +302,7 @@ describe('getBlockVersions', () => {
       { filepath: 'testblock.js' },
     );
     await instance.post('/api/blocks', formData, {
-      headers: { ...headers.headers, ...formData.getHeaders() },
+      headers: { authorization, ...formData.getHeaders() },
     });
 
     const { data } = await instance.get('/api/blocks/@xkcd/standing/versions');
@@ -344,7 +342,7 @@ describe('getBlockIcon', () => {
     formData.append('icon', icon);
 
     await instance.post('/api/blocks', formData, {
-      headers: { ...headers.headers, ...formData.getHeaders() },
+      headers: { authorization, ...formData.getHeaders() },
     });
 
     const response = await instance.get('/api/blocks/@xkcd/test/versions/1.33.8/icon', {
@@ -371,7 +369,7 @@ describe('getBlockIcon', () => {
     formData.append('files', Buffer.from(''), 'test.js');
 
     await instance.post('/api/blocks', formData, {
-      headers: { ...headers.headers, ...formData.getHeaders() },
+      headers: { authorization, ...formData.getHeaders() },
     });
 
     const response = await instance.get('/api/blocks/@xkcd/test/versions/1.33.8/icon', {

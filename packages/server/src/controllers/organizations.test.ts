@@ -1,4 +1,4 @@
-import { createInstance } from 'axios-test-instance';
+import { AxiosTestInstance, createInstance } from 'axios-test-instance';
 import FormData from 'form-data';
 
 import {
@@ -13,17 +13,16 @@ import createServer from '../utils/createServer';
 import { closeTestSchema, createTestSchema, truncate } from '../utils/test/testSchema';
 import testToken from '../utils/test/testToken';
 
-let request;
-let server;
-let authorization;
-let clientToken;
-let organization;
-let user;
+let request: AxiosTestInstance;
+let authorization: string;
+let clientToken: string;
+let organization: Organization;
+let user: User;
 
 beforeAll(createTestSchema('organizations'));
 
 beforeAll(async () => {
-  server = await createServer({ argv: { host: 'http://localhost', secret: 'test' } });
+  const server = await createServer({ argv: { host: 'http://localhost', secret: 'test' } });
   request = await createInstance(server);
 });
 
@@ -34,6 +33,7 @@ beforeEach(async () => {
       id: 'testorganization',
       name: 'Test Organization',
     },
+    // @ts-ignore
     { through: { role: 'Owner' } },
   );
   await Organization.create({ id: 'appsemble', name: 'Appsemble' });
@@ -353,6 +353,7 @@ describe('removeInvite', () => {
 
 describe('removeMember', () => {
   it('should leave the organization if there are other members', async () => {
+    // @ts-ignore
     await organization.createUser();
 
     const { status } = await request.delete(
@@ -366,7 +367,9 @@ describe('removeMember', () => {
   });
 
   it('should remove other members from an organization', async () => {
+    // @ts-ignore
     const userB = await organization.createUser();
+    // @ts-ignore
 
     const { status } = await request.delete(
       `/api/organizations/testorganization/members/${userB.id}`,
@@ -419,6 +422,7 @@ describe('removeMember', () => {
 
 describe('setRole', () => {
   it('should change the role of other members', async () => {
+    // @ts-ignore
     const userB = await organization.createUser({ name: 'Foo', primaryEmail: 'test2@example.com' });
 
     const response = await request.put(

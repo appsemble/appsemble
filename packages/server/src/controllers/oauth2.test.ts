@@ -1,21 +1,20 @@
 import FakeTimers from '@sinonjs/fake-timers';
-import { createInstance } from 'axios-test-instance';
+import { AxiosTestInstance, createInstance } from 'axios-test-instance';
 
-import { OAuth2ClientCredentials } from '../models';
+import { OAuth2ClientCredentials, User } from '../models';
 import createServer from '../utils/createServer';
 import { closeTestSchema, createTestSchema, truncate } from '../utils/test/testSchema';
 import testToken from '../utils/test/testToken';
 
-let authorization;
-let clock;
-let request;
-let server;
-let user;
+let authorization: string;
+let clock: FakeTimers.InstalledClock;
+let request: AxiosTestInstance;
+let user: User;
 
 beforeAll(createTestSchema('oauth'));
 
 beforeAll(async () => {
-  server = await createServer({ argv: { host: 'http://localhost', secret: 'test' } });
+  const server = await createServer({ argv: { host: 'http://localhost', secret: 'test' } });
   request = await createInstance(server);
 });
 

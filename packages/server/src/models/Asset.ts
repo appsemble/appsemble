@@ -12,6 +12,8 @@ export default class Asset extends Model {
 
   data: Buffer;
 
+  UserId: number;
+
   static initialize(sequelize: Sequelize): void {
     Asset.init(
       {

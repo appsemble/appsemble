@@ -1,18 +1,19 @@
-import { createInstance } from 'axios-test-instance';
+import { AxiosTestInstance, createInstance } from 'axios-test-instance';
 import Koa from 'koa';
 
-import { BlockAsset, BlockVersion, Organization } from '../../models';
+import { App, BlockAsset, BlockVersion, Organization } from '../../models';
+import type { KoaContext } from '../../types';
 import createServer from '../../utils/createServer';
 import { closeTestSchema, createTestSchema, truncate } from '../../utils/test/testSchema';
 
-let request;
-let templateName;
-let templateParams;
+let request: AxiosTestInstance;
+let templateName: string;
+let templateParams: any;
 
 beforeAll(createTestSchema('approuter'));
 
 beforeAll(async () => {
-  const organization = await Organization.create({ id: 'test' });
+  await Organization.create({ id: 'test' });
   await Organization.create({ id: 'appsemble' });
 
   await BlockVersion.bulkCreate([
@@ -139,7 +140,8 @@ beforeAll(async () => {
       content: Buffer.from(''),
     },
   ]);
-  await organization.createApp({
+  await App.create({
+    OrganizationId: 'test',
     definition: {
       pages: [
         {
@@ -175,9 +177,9 @@ beforeAll(async () => {
     vapidPrivateKey: '',
   });
   const app = new Koa();
-  app.use((ctx, next) => {
+  app.use((ctx: KoaContext, next) => {
     Object.defineProperty(ctx, 'origin', { value: 'http://app.test.host.example' });
-    ctx.state.render = (name, params) => {
+    ctx.state.render = async (name, params) => {
       templateName = name;
       templateParams = params;
       return '';

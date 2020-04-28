@@ -29,6 +29,13 @@ declare module 'koa' {
 
 export interface Argv {
   appDomainStrategy?: string;
+  databaseHost?: string;
+  databasePort?: number;
+  databaseUser?: string;
+  databasePassword?: string;
+  databaseName?: string;
+  databaseSsl?: boolean;
+  databaseUrl?: string;
   disableRegistration?: boolean;
   host?: string;
   ingressName?: string;
@@ -36,6 +43,11 @@ export interface Argv {
   ingressServicePort?: string | number;
   kubernetesServiceHost?: string;
   kubernetesServicePort?: string | number;
+  migrateTo?: string;
+  port?: number;
+  ssl?: boolean;
+  sslKey?: string;
+  sslCert?: string;
   smtpFrom?: string;
   smtpHost?: string;
   smtpPass?: string;
@@ -48,6 +60,7 @@ export interface Argv {
   oauthGoogleSecret?: string;
   secret?: string;
   sentryDsn?: string;
+  to?: string;
 }
 
 export interface AppsembleState {

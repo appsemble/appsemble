@@ -1,21 +1,20 @@
-import { createInstance } from 'axios-test-instance';
+import { AxiosTestInstance, createInstance } from 'axios-test-instance';
 
-import { App, Asset, Member } from '../models';
+import { App, Asset, Member, User } from '../models';
 import createServer from '../utils/createServer';
 import { closeTestSchema, createTestSchema, truncate } from '../utils/test/testSchema';
 import testToken from '../utils/test/testToken';
 
-let request;
-let server;
-let organizationId;
-let user;
-let authorization;
-let app;
+let request: AxiosTestInstance;
+let organizationId: string;
+let user: User;
+let authorization: string;
+let app: App;
 
 beforeAll(createTestSchema('assets'));
 
 beforeAll(async () => {
-  server = await createServer({ argv: { host: 'http://localhost', secret: 'test' } });
+  const server = await createServer({ argv: { host: 'http://localhost', secret: 'test' } });
   request = await createInstance(server);
 });
 
@@ -26,6 +25,7 @@ beforeEach(async () => {
       id: 'testorganization',
       name: 'Test Organization',
     },
+    // @ts-ignore
     { through: { role: 'Owner' } },
   ));
 
@@ -68,13 +68,15 @@ describe('getAssets', () => {
   });
 
   it('should fetch all of the app’s assets', async () => {
-    const assetA = await app.createAsset({
+    const assetA = await Asset.create({
+      AppId: app.id,
       mime: 'application/octet-stream',
       filename: 'test.bin',
       data: Buffer.from('buffer'),
     });
 
-    const assetB = await app.createAsset({
+    const assetB = await Asset.create({
+      AppId: app.id,
       mime: 'application/octet-stream',
       filename: 'foo.bin',
       data: Buffer.from('bar'),
@@ -91,13 +93,15 @@ describe('getAssets', () => {
   });
 
   it('should not fetch another app’s assets', async () => {
-    const assetA = await app.createAsset({
+    const assetA = await Asset.create({
+      AppId: app.id,
       mime: 'application/octet-stream',
       filename: 'test.bin',
       data: Buffer.from('buffer'),
     });
 
-    const assetB = await app.createAsset({
+    const assetB = await Asset.create({
+      AppId: app.id,
       mime: 'application/octet-stream',
       filename: 'foo.bin',
       data: Buffer.from('bar'),
@@ -122,7 +126,8 @@ describe('getAssets', () => {
       vapidPrivateKey: 'b',
       OrganizationId: organizationId,
     });
-    await appB.createAsset({
+    await Asset.create({
+      AppId: appB.id,
       mime: 'application/octet-stream',
       filename: 'foo.bin',
       data: Buffer.from('bar'),
@@ -142,7 +147,8 @@ describe('getAssets', () => {
 describe('getAssetById', () => {
   it('should be able to fetch an asset', async () => {
     const data = Buffer.from('buffer');
-    const asset = await app.createAsset({
+    const asset = await Asset.create({
+      AppId: app.id,
       mime: 'application/octet-stream',
       filename: 'test.bin',
       data,
@@ -180,7 +186,8 @@ describe('getAssetById', () => {
       OrganizationId: organizationId,
     });
     const data = Buffer.from('buffer');
-    const asset = await appB.createAsset({
+    const asset = await Asset.create({
+      AppId: appB.id,
       mime: 'application/octet-stream',
       filename: 'test.bin',
       data,
@@ -259,7 +266,8 @@ describe('createAsset', () => {
 
 describe('deleteAsset', () => {
   it('should delete existing assets', async () => {
-    const asset = await app.createAsset({
+    const asset = await Asset.create({
+      AppId: app.id,
       mime: 'application/octet-stream',
       filename: 'test.bin',
       data: Buffer.from('buffer'),
@@ -275,7 +283,8 @@ describe('deleteAsset', () => {
   it('should not delete assets if the user has insufficient permissions', async () => {
     await Member.update({ role: 'Member' }, { where: { UserId: user.id } });
 
-    const asset = await app.createAsset({
+    const asset = await Asset.create({
+      AppId: app.id,
       mime: 'application/octet-stream',
       filename: 'test.bin',
       data: Buffer.from('buffer'),
@@ -312,7 +321,8 @@ describe('deleteAsset', () => {
       OrganizationId: organizationId,
     });
 
-    const asset = await appB.createAsset({
+    const asset = await Asset.create({
+      AppId: appB.id,
       mime: 'application/octet-stream',
       filename: 'test.bin',
       data: Buffer.from('buffer'),

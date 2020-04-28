@@ -175,7 +175,7 @@ export type Navigation = 'bottom' | 'left-menu' | 'hidden';
 export interface NotificationDefinition {
   to?: string[];
   subscribe?: 'all' | 'single' | 'both';
-  data: {
+  data?: {
     title: string;
     content: string;
     link: string;
@@ -213,7 +213,7 @@ export interface ResourceCall {
   /**
    * THe roles that are allowed to perform this action.
    */
-  roles: string[];
+  roles?: string[];
 }
 
 interface ResourceReferenceAction {

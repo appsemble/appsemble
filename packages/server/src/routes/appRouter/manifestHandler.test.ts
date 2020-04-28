@@ -1,15 +1,11 @@
-import { createInstance } from 'axios-test-instance';
+import { AxiosTestInstance, createInstance } from 'axios-test-instance';
 import Koa from 'koa';
 
-import getApp from '../../utils/getApp';
+import type { App } from '../../models';
+import * as getApp from '../../utils/getApp';
 import appRouter from '.';
 
-let request;
-
-jest.mock('../../utils/getApp', () => ({
-  __esModule: true,
-  default: jest.fn(),
-}));
+let request: AxiosTestInstance;
 
 beforeAll(async () => {
   request = await createInstance(new Koa().use(appRouter));
@@ -20,7 +16,7 @@ afterAll(async () => {
 });
 
 it('should serve a PWA manifest', async () => {
-  getApp.mockReturnValue({
+  jest.spyOn(getApp, 'default').mockResolvedValue(({
     path: 'test-app',
     definition: {
       name: 'Test App',
@@ -28,7 +24,7 @@ it('should serve a PWA manifest', async () => {
       theme: { splashColor: '#deffde', themeColor: '#fa86ff' },
     },
     OrganizationId: 'manitest',
-  });
+  } as Partial<App>) as App);
   const response = await request.get('/manifest.json');
   expect(response).toMatchObject({
     status: 200,
@@ -55,14 +51,14 @@ it('should serve a PWA manifest', async () => {
 });
 
 it('should fallback to sane defaults', async () => {
-  getApp.mockReturnValue({
+  jest.spyOn(getApp, 'default').mockResolvedValue(({
     path: 'test-app',
     definition: {
       name: 'Test App',
       defaultPage: 'Test Page',
     },
     OrganizationId: 'manitest',
-  });
+  } as Partial<App>) as App);
   const response = await request.get('/manifest.json');
   expect(response).toMatchObject({
     status: 200,

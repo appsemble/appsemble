@@ -1,90 +1,100 @@
 import FakeTimers from '@sinonjs/fake-timers';
-import { createInstance } from 'axios-test-instance';
+import { AxiosTestInstance, createInstance } from 'axios-test-instance';
 import webpush from 'web-push';
 
-import { App, AppSubscription, Resource } from '../models';
+import { App, AppSubscription, Resource, User } from '../models';
 import createServer from '../utils/createServer';
-import createWaitableMock from '../utils/test/createWaitableMock';
+import createWaitableMock, { EnhancedMock } from '../utils/test/createWaitableMock';
 import { closeTestSchema, createTestSchema, truncate } from '../utils/test/testSchema';
 import testToken from '../utils/test/testToken';
 
-let request;
-let server;
-let token;
-let organizationId;
-let clock;
-let user;
-let originalSendNotification;
+let request: AxiosTestInstance;
+let authorization: string;
+let organizationId: string;
+let clock: FakeTimers.InstalledClock;
+let user: User;
+let originalSendNotification: typeof webpush.sendNotification;
 
-const exampleApp = (orgId) => ({
-  definition: {
-    name: 'Test App',
-    defaultPage: 'Test Page',
-    resources: {
-      testResource: {
-        schema: {
-          type: 'object',
-          required: ['foo'],
-          properties: { foo: { type: 'string' } },
-        },
-        update: {
-          hooks: {
-            notification: {
-              subscribe: 'both',
+const exampleApp = (orgId: string, path = 'test-app'): Promise<App> =>
+  App.create({
+    definition: {
+      name: 'Test App',
+      defaultPage: 'Test Page',
+      resources: {
+        testResource: {
+          schema: {
+            type: 'object',
+            required: ['foo'],
+            properties: { foo: { type: 'string' } },
+          },
+          update: {
+            hooks: {
+              notification: {
+                subscribe: 'both',
+              },
             },
           },
         },
-      },
-      testResourceB: {
-        schema: {
-          type: 'object',
-          required: ['bar'],
-          properties: { bar: { type: 'string' }, testResourceId: { type: 'number' } },
-        },
-        references: {
-          testResourceId: {
-            resource: 'testResource',
-            create: {
-              trigger: ['update'],
+        testResourceB: {
+          schema: {
+            type: 'object',
+            required: ['bar'],
+            properties: { bar: { type: 'string' }, testResourceId: { type: 'number' } },
+          },
+          references: {
+            testResourceId: {
+              resource: 'testResource',
+              create: {
+                trigger: ['update'],
+              },
             },
+          },
+        },
+        secured: {
+          schema: { type: 'object' },
+          create: {
+            roles: ['Admin'],
+          },
+          query: {
+            roles: ['Reader'],
+          },
+        },
+      },
+      security: {
+        default: {
+          role: 'Reader',
+          policy: 'invite',
+        },
+        roles: {
+          Reader: {},
+          Admin: {
+            inherits: ['Reader'],
           },
         },
       },
     },
-    security: {
-      default: {
-        role: 'Reader',
-        policy: 'invite',
-      },
-      roles: {
-        Reader: {},
-        Admin: {
-          inherits: ['Reader'],
-        },
-      },
-    },
-  },
-  path: 'test-app',
-  vapidPublicKey: 'a',
-  vapidPrivateKey: 'b',
-  OrganizationId: orgId,
-});
+    path,
+    vapidPublicKey: 'a',
+    vapidPrivateKey: 'b',
+    OrganizationId: orgId,
+  });
 
 beforeAll(createTestSchema('resources'));
 
 beforeAll(async () => {
-  server = await createServer({ argv: { host: 'http://localhost', secret: 'test' } });
+  const server = await createServer({ argv: { host: 'http://localhost', secret: 'test' } });
   request = await createInstance(server);
   originalSendNotification = webpush.sendNotification;
 });
 
 beforeEach(async () => {
-  ({ authorization: token, user } = await testToken());
+  ({ authorization, user } = await testToken());
   ({ id: organizationId } = await user.createOrganization(
     {
       id: 'testorganization',
       name: 'Test Organization',
     },
+    // @ts-ignore
     { through: { role: 'Maintainer' } },
   ));
   clock = FakeTimers.install();
@@ -105,9 +115,13 @@ afterAll(closeTestSchema);
 
 describe('getResourceById', () => {
   it('should be able to fetch a resource', async () => {
-    const app = await App.create(exampleApp(organizationId));
+    const app = await exampleApp(organizationId);
 
-    const resource = await app.createResource({ type: 'testResource', data: { foo: 'bar' } });
+    const resource = await Resource.create({
+      AppId: app.id,
+      type: 'testResource',
+      data: { foo: 'bar' },
+    });
     const response = await request.get(`/api/apps/${app.id}/resources/testResource/${resource.id}`);
 
     expect(response).toMatchObject({
@@ -122,10 +136,14 @@ describe('getResourceById', () => {
   });
 
   it('should not be able to fetch a resources of a different app', async () => {
-    const appA = await App.create(exampleApp(organizationId));
-    const appB = await App.create({ ...exampleApp(organizationId), path: 'app-b' });
+    const appA = await exampleApp(organizationId);
+    const appB = await exampleApp(organizationId, 'app-b');
 
-    const resource = await appA.createResource({ type: 'testResource', data: { foo: 'bar' } });
+    const resource = await Resource.create({
+      AppId: appA.id,
+      type: 'testResource',
+      data: { foo: 'bar' },
+    });
     const responseA = await request.get(
       `/api/apps/${appB.id}/resources/testResource/${resource.id}`,
     );
@@ -138,8 +156,9 @@ describe('getResourceById', () => {
   });
 
   it('should return the resource author when fetching a single resource if it has one', async () => {
-    const app = await App.create(exampleApp(organizationId));
-    const resource = await app.createResource({
+    const app = await exampleApp(organizationId);
+    const resource = await Resource.create({
+      AppId: app.id,
       type: 'testResource',
       data: { foo: 'foo', bar: 1 },
       UserId: user.id,
@@ -161,8 +180,9 @@ describe('getResourceById', () => {
   });
 
   it('should ignore id in the data fields', async () => {
-    const app = await App.create(exampleApp(organizationId));
-    const resource = await app.createResource({
+    const app = await exampleApp(organizationId);
+    const resource = await Resource.create({
+      AppId: app.id,
       type: 'testResource',
       data: { id: 23, foo: 'foo', bar: 1 },
       UserId: user.id,
@@ -185,11 +205,19 @@ describe('getResourceById', () => {
 });
 describe('queryResources', () => {
   it('should be able to fetch all resources of a type', async () => {
-    const app = await App.create(exampleApp(organizationId));
+    const app = await exampleApp(organizationId);
 
-    const resourceA = await app.createResource({ type: 'testResource', data: { foo: 'bar' } });
-    const resourceB = await app.createResource({ type: 'testResource', data: { foo: 'baz' } });
-    await app.createResource({ type: 'testResourceB', data: { bar: 'baz' } });
+    const resourceA = await Resource.create({
+      AppId: app.id,
+      type: 'testResource',
+      data: { foo: 'bar' },
+    });
+    const resourceB = await Resource.create({
+      AppId: app.id,
+      type: 'testResource',
+      data: { foo: 'baz' },
+    });
+    await Resource.create({ AppId: app.id, type: 'testResourceB', data: { bar: 'baz' } });
 
     const response = await request.get(`/api/apps/${app.id}/resources/testResource`);
 
@@ -213,10 +241,14 @@ describe('queryResources', () => {
   });
 
   it('should be able to limit the amount of resources', async () => {
-    const app = await App.create(exampleApp(organizationId));
+    const app = await exampleApp(organizationId);
 
-    const resourceA = await app.createResource({ type: 'testResource', data: { foo: 'bar' } });
-    await app.createResource({ type: 'testResource', data: { foo: 'baz' } });
+    const resourceA = await Resource.create({
+      AppId: app.id,
+      type: 'testResource',
+      data: { foo: 'bar' },
+    });
+    await Resource.create({ AppId: app.id, type: 'testResource', data: { foo: 'baz' } });
 
     const response = await request.get(`/api/apps/${app.id}/resources/testResource?$top=1`);
 
@@ -234,11 +266,19 @@ describe('queryResources', () => {
   });
 
   it('should be able to sort fetched resources', async () => {
-    const app = await App.create(exampleApp(organizationId));
+    const app = await exampleApp(organizationId);
 
-    const resourceA = await app.createResource({ type: 'testResource', data: { foo: 'bar' } });
+    const resourceA = await Resource.create({
+      AppId: app.id,
+      type: 'testResource',
+      data: { foo: 'bar' },
+    });
     clock.tick(20e3);
-    const resourceB = await app.createResource({ type: 'testResource', data: { foo: 'baz' } });
+    const resourceB = await Resource.create({
+      AppId: app.id,
+      type: 'testResource',
+      data: { foo: 'baz' },
+    });
 
     const responseA = await request.get(
       `/api/apps/${app.id}/resources/testResource?$orderby=foo asc`,
@@ -292,9 +332,13 @@ describe('queryResources', () => {
   });
 
   it('should be able to select fields when fetching resources', async () => {
-    const app = await App.create(exampleApp(organizationId));
+    const app = await exampleApp(organizationId);
 
-    const resource = await app.createResource({ type: 'testResource', data: { foo: 'bar' } });
+    const resource = await Resource.create({
+      AppId: app.id,
+      type: 'testResource',
+      data: { foo: 'bar' },
+    });
     const response = await request.get(`/api/apps/${app.id}/resources/testResource?$select=id`);
 
     expect(response).toMatchObject({
@@ -304,9 +348,13 @@ describe('queryResources', () => {
   });
 
   it('should be able to filter fields when fetching resources', async () => {
-    const app = await App.create(exampleApp(organizationId));
-    const resource = await app.createResource({ type: 'testResource', data: { foo: 'foo' } });
-    await app.createResource({ type: 'testResource', data: { foo: 'bar' } });
+    const app = await exampleApp(organizationId);
+    const resource = await Resource.create({
+      AppId: app.id,
+      type: 'testResource',
+      data: { foo: 'foo' },
+    });
+    await Resource.create({ AppId: app.id, type: 'testResource', data: { foo: 'bar' } });
 
     const response = await request.get(
       `/api/apps/${app.id}/resources/testResource?$filter=foo eq 'foo'`,
@@ -326,12 +374,13 @@ describe('queryResources', () => {
   });
 
   it('should be able to filter multiple fields when fetching resources', async () => {
-    const app = await App.create(exampleApp(organizationId));
-    const resource = await app.createResource({
+    const app = await exampleApp(organizationId);
+    const resource = await Resource.create({
+      AppId: app.id,
       type: 'testResource',
       data: { foo: 'foo', bar: 1 },
     });
-    await app.createResource({ type: 'testResource', data: { foo: 'bar', bar: 2 } });
+    await Resource.create({ AppId: app.id, type: 'testResource', data: { foo: 'bar', bar: 2 } });
 
     const response = await request.get(
       `/api/apps/${app.id}/resources/testResource?$filter=substringof('oo', foo) and id le ${resource.id}`,
@@ -351,13 +400,15 @@ describe('queryResources', () => {
   });
 
   it('should be able to combine multiple functions when fetching resources', async () => {
-    const app = await App.create(exampleApp(organizationId));
-    const resource = await app.createResource({
+    const app = await exampleApp(organizationId);
+    const resource = await Resource.create({
+      AppId: app.id,
       type: 'testResource',
       data: { foo: 'foo', bar: 1 },
     });
     clock.tick(20e3);
-    const resourceB = await app.createResource({
+    const resourceB = await Resource.create({
+      AppId: app.id,
       type: 'testResource',
       data: { foo: 'bar', bar: 2 },
     });
@@ -384,8 +435,9 @@ describe('queryResources', () => {
   });
 
   it('should return the resource author if it has one', async () => {
-    const app = await App.create(exampleApp(organizationId));
-    const resource = await app.createResource({
+    const app = await exampleApp(organizationId);
+    const resource = await Resource.create({
+      AppId: app.id,
       type: 'testResource',
       data: { foo: 'foo', bar: 1 },
       UserId: user.id,
@@ -411,7 +463,7 @@ describe('queryResources', () => {
 
 describe('createResource', () => {
   it('should be able to create a new resource', async () => {
-    const app = await App.create(exampleApp(organizationId));
+    const app = await exampleApp(organizationId);
 
     const resource = { foo: 'bar' };
     const response = await request.post(`/api/apps/${app.id}/resources/testResource`, resource);
@@ -426,7 +478,7 @@ describe('createResource', () => {
   });
 
   it('should validate resources', async () => {
-    const app = await App.create(exampleApp(organizationId));
+    const app = await exampleApp(organizationId);
 
     const resource = {};
     const response = await request.post(`/api/apps/${app.id}/resources/testResource`, resource);
@@ -444,7 +496,7 @@ describe('createResource', () => {
   });
 
   it('should check if an app has a specific resource definition', async () => {
-    const app = await App.create(exampleApp(organizationId));
+    const app = await exampleApp(organizationId);
 
     const response = await request.get(`/api/apps/${app.id}/resources/thisDoesNotExist`);
     expect(response).toMatchObject({
@@ -472,7 +524,7 @@ describe('createResource', () => {
 
 describe('updateResource', () => {
   it('should be able to update an existing resource', async () => {
-    const app = await App.create(exampleApp(organizationId));
+    const app = await exampleApp(organizationId);
     const resource = await Resource.create({
       type: 'testResource',
       AppId: app.id,
@@ -484,7 +536,7 @@ describe('updateResource', () => {
     const response = await request.put(
       `/api/apps/${app.id}/resources/testResource/${resource.id}`,
       { foo: 'I am not Foo.' },
-      { headers: { authorization: token } },
+      { headers: { authorization } },
     );
 
     expect(response).toMatchObject({
@@ -511,7 +563,7 @@ describe('updateResource', () => {
   });
 
   it('should not be possible to update an existing resource through another resource', async () => {
-    const app = await App.create(exampleApp(organizationId));
+    const app = await exampleApp(organizationId);
     const resource = await Resource.create({
       type: 'testResource',
       AppId: app.id,
@@ -521,37 +573,37 @@ describe('updateResource', () => {
     const response = await request.put(
       `/api/apps/${app.id}/resources/testResourceB/${resource.id}`,
       { foo: 'I am not Foo.' },
-      { headers: { authorization: token } },
+      { headers: { authorization } },
     );
 
     expect(response).toMatchObject({ status: 404 });
   });
 
   it('should not be possible to update an existing resource through another app', async () => {
-    const app = await App.create(exampleApp(organizationId));
+    const app = await exampleApp(organizationId);
     const resource = await Resource.create({
       type: 'testResource',
       AppId: app.id,
       data: { foo: 'I am Foo.' },
     });
 
-    const appB = await App.create({ ...exampleApp(organizationId), path: 'app-b' });
+    const appB = await exampleApp(organizationId, 'app-b');
 
     const response = await request.put(
       `/api/apps/${appB.id}/resources/testResource/${resource.id}`,
       { foo: 'I am not Foo.' },
-      { headers: { authorization: token } },
+      { headers: { authorization } },
     );
 
     expect(response).toMatchObject({ status: 404 });
   });
 
   it('should not be possible to update a non-existent resource', async () => {
-    const app = await App.create(exampleApp(organizationId));
+    const app = await exampleApp(organizationId);
     const response = await request.put(
       `/api/apps/${app.id}/resources/testResource/0`,
       { foo: 'I am not Foo.' },
-      { headers: { authorization: token } },
+      { headers: { authorization } },
     );
 
     expect(response).toMatchObject({
@@ -565,7 +617,7 @@ describe('updateResource', () => {
   });
 
   it('should validate resources', async () => {
-    const app = await App.create(exampleApp(organizationId));
+    const app = await exampleApp(organizationId);
     const resource = await Resource.create({
       type: 'testResource',
       AppId: app.id,
@@ -575,7 +627,7 @@ describe('updateResource', () => {
     const response = await request.put(
       `/api/apps/${app.id}/resources/testResource/${resource.id}`,
       { bar: 123 },
-      { headers: { authorization: token } },
+      { headers: { authorization } },
     );
 
     expect(response).toMatchObject({
@@ -587,7 +639,7 @@ describe('updateResource', () => {
 
 describe('deleteResource', () => {
   it('should be able to delete an existing resource', async () => {
-    const app = await App.create(exampleApp(organizationId));
+    const app = await exampleApp(organizationId);
     const resource = await Resource.create({
       type: 'testResource',
       AppId: app.id,
@@ -608,7 +660,7 @@ describe('deleteResource', () => {
 
     const response = await request.delete(
       `/api/apps/${app.id}/resources/testResource/${resource.id}`,
-      { headers: { authorization: token } },
+      { headers: { authorization } },
     );
 
     expect(response).toMatchObject({ status: 204 });
@@ -628,9 +680,9 @@ describe('deleteResource', () => {
   });
 
   it('should not be able to delete a non-existent resource', async () => {
-    const app = await App.create(exampleApp(organizationId));
+    const app = await exampleApp(organizationId);
     const response = await request.delete(`/api/apps/${app.id}/resources/testResource/0`, {
-      headers: { authorization: token },
+      headers: { authorization },
     });
 
     expect(response).toMatchObject({
@@ -644,7 +696,7 @@ describe('deleteResource', () => {
   });
 
   it('should not be possible to delete an existing resource through another resource', async () => {
-    const app = await App.create(exampleApp(organizationId));
+    const app = await exampleApp(organizationId);
     const resource = await Resource.create({
       type: 'testResource',
       AppId: app.id,
@@ -653,7 +705,7 @@ describe('deleteResource', () => {
 
     const response = await request.delete(
       `/api/apps/${app.id}/resources/testResourceB/${resource.id}`,
-      { headers: { authorization: token } },
+      { headers: { authorization } },
     );
 
     expect(response).toMatchObject({ status: 404 });
@@ -672,17 +724,17 @@ describe('deleteResource', () => {
   });
 
   it('should not be possible to delete an existing resource through another app', async () => {
-    const app = await App.create(exampleApp(organizationId));
+    const app = await exampleApp(organizationId);
     const resource = await Resource.create({
       type: 'testResource',
       AppId: app.id,
       data: { foo: 'I am Foo.' },
     });
 
-    const appB = await App.create({ ...exampleApp(organizationId), path: 'app-b' });
+    const appB = await exampleApp(organizationId, 'app-b');
     const response = await request.delete(
       `/api/apps/${appB.id}/resources/testResource/${resource.id}`,
-      { headers: { authorization: token } },
+      { headers: { authorization } },
     );
 
     expect(response).toMatchObject({ status: 404 });
@@ -704,19 +756,27 @@ describe('deleteResource', () => {
 describe('verifyAppRole', () => {
   // The same logic gets applies to query, get, create, update, and delete.
   it('should return normally on secured actions if user is authenticated and has sufficient roles', async () => {
-    const appTemplate = exampleApp(organizationId);
-    appTemplate.definition.resources.testResource.query = {
+    const app = await exampleApp(organizationId);
+    app.definition.resources.testResource.query = {
       roles: ['Reader'],
     };
 
-    const app = await App.create(appTemplate);
+    // @ts-ignore
     await app.addUser(user.id, { through: { role: 'Reader' } });
-    const resourceA = await app.createResource({ type: 'testResource', data: { foo: 'bar' } });
-    const resourceB = await app.createResource({ type: 'testResource', data: { foo: 'baz' } });
-    await app.createResource({ type: 'testResourceB', data: { bar: 'baz' } });
+    const resourceA = await Resource.create({
+      AppId: app.id,
+      type: 'testResource',
+      data: { foo: 'bar' },
+    });
+    const resourceB = await Resource.create({
+      AppId: app.id,
+      type: 'testResource',
+      data: { foo: 'baz' },
+    });
+    await Resource.create({ AppId: app.id, type: 'testResourceB', data: { bar: 'baz' } });
 
     const response = await request.get(`/api/apps/${app.id}/resources/testResource`, {
-      headers: { authorization: token },
+      headers: { authorization },
     });
 
     expect(response).toMatchObject({
@@ -739,14 +799,15 @@ describe('verifyAppRole', () => {
   });
 
   it('should return normally on secured actions if user is the resource author', async () => {
-    const appTemplate = exampleApp(organizationId);
-    appTemplate.definition.resources.testResource.get = {
+    const app = await exampleApp(organizationId);
+    app.definition.resources.testResource.get = {
       roles: ['Admin', '$author'],
     };
 
-    const app = await App.create(appTemplate);
+    // @ts-ignore
     await app.addUser(user.id, { through: { role: 'Reader' } });
-    const resource = await app.createResource({
+    const resource = await Resource.create({
+      AppId: app.id,
       type: 'testResource',
       data: { foo: 'bar' },
       UserId: user.id,
@@ -755,7 +816,7 @@ describe('verifyAppRole', () => {
     const response = await request.get(
       `/api/apps/${app.id}/resources/testResource/${resource.id}`,
       {
-        headers: { authorization: token },
+        headers: { authorization },
       },
     );
 
@@ -775,13 +836,9 @@ describe('verifyAppRole', () => {
   });
 
   it('should return a 401 on unauthorized requests if roles are present', async () => {
-    const appTemplate = exampleApp(organizationId);
-    appTemplate.definition.resources.testResource.query = {
-      roles: ['Reader'],
-    };
+    const app = await exampleApp(organizationId);
 
-    const app = await App.create(appTemplate);
-    const response = await request.get(`/api/apps/${app.id}/resources/testResource`);
+    const response = await request.get(`/api/apps/${app.id}/resources/secured`);
 
     expect(response).toMatchObject({
       status: 401,
@@ -794,15 +851,10 @@ describe('verifyAppRole', () => {
   });
 
   it('should throw a 403 on secured actions if user is authenticated and is not a member', async () => {
-    const appTemplate = exampleApp(organizationId);
-    appTemplate.definition.resources.testResource.query = {
-      roles: ['Reader'],
-    };
+    const app = await exampleApp(organizationId);
 
-    const app = await App.create(appTemplate);
-
-    const response = await request.get(`/api/apps/${app.id}/resources/testResource`, {
-      headers: { authorization: token },
+    const response = await request.get(`/api/apps/${app.id}/resources/secured`, {
+      headers: { authorization },
     });
 
     expect(response).toMatchObject({
@@ -816,17 +868,18 @@ describe('verifyAppRole', () => {
   });
 
   it('should throw a 403 on secured actions if user is authenticated and has insufficient roles', async () => {
-    const appTemplate = exampleApp(organizationId);
-    appTemplate.definition.resources.testResource.query = {
-      roles: ['Admin'],
-    };
+    const app = await exampleApp(organizationId);
 
-    const app = await App.create(appTemplate);
+    // @ts-ignore
     await app.addUser(user.id, { through: { role: 'Reader' } });
 
-    const response = await request.get(`/api/apps/${app.id}/resources/testResource`, {
-      headers: { authorization: token },
-    });
+    const response = await request.post(
+      `/api/apps/${app.id}/resources/secured`,
+      {},
+      {
+        headers: { authorization },
+      },
+    );
 
     expect(response).toMatchObject({
       status: 403,
@@ -841,8 +894,9 @@ describe('verifyAppRole', () => {
 
 describe('getResourceSubscription', () => {
   it('should fetch resource subscriptions', async () => {
-    const app = await App.create(exampleApp(organizationId));
-    await app.createAppSubscription({
+    const app = await exampleApp(organizationId);
+    await AppSubscription.create({
+      AppId: app.id,
       endpoint: 'https://example.com',
       p256dh: 'abc',
       auth: 'def',
@@ -861,12 +915,12 @@ describe('getResourceSubscription', () => {
         action: 'update',
         value: true,
       },
-      { headers: { authorization: token } },
+      { headers: { authorization } },
     );
 
     const response = await request.get(
       `/api/apps/${app.id}/resources/testResource/${resource.id}/subscriptions`,
-      { headers: { authorization: token }, params: { endpoint: 'https://example.com' } },
+      { headers: { authorization }, params: { endpoint: 'https://example.com' } },
     );
 
     expect(response).toMatchObject({
@@ -876,8 +930,9 @@ describe('getResourceSubscription', () => {
   });
 
   it('should return normally if user is not subscribed to the specific resource', async () => {
-    const app = await App.create(exampleApp(organizationId));
-    await app.createAppSubscription({
+    const app = await exampleApp(organizationId);
+    await AppSubscription.create({
+      AppId: app.id,
       endpoint: 'https://example.com',
       p256dh: 'abc',
       auth: 'def',
@@ -890,7 +945,7 @@ describe('getResourceSubscription', () => {
 
     const response = await request.get(
       `/api/apps/${app.id}/resources/testResource/${resource.id}/subscriptions`,
-      { headers: { authorization: token }, params: { endpoint: 'https://example.com' } },
+      { headers: { authorization }, params: { endpoint: 'https://example.com' } },
     );
 
     expect(response).toMatchObject({
@@ -900,8 +955,9 @@ describe('getResourceSubscription', () => {
   });
 
   it('should 404 if resource is not found', async () => {
-    const app = await App.create(exampleApp(organizationId));
-    await app.createAppSubscription({
+    const app = await exampleApp(organizationId);
+    await AppSubscription.create({
+      AppId: app.id,
       endpoint: 'https://example.com',
       p256dh: 'abc',
       auth: 'def',
@@ -909,14 +965,14 @@ describe('getResourceSubscription', () => {
 
     const response = await request.get(
       `/api/apps/${app.id}/resources/testResource/0/subscriptions`,
-      { headers: { authorization: token }, params: { endpoint: 'https://example.com' } },
+      { headers: { authorization }, params: { endpoint: 'https://example.com' } },
     );
 
     expect(response).toMatchObject({ status: 404, data: { message: 'Resource not found.' } });
   });
 
   it('should 404 if user is not subscribed', async () => {
-    const app = await App.create(exampleApp(organizationId));
+    const app = await exampleApp(organizationId);
     const resource = await Resource.create({
       type: 'testResource',
       AppId: app.id,
@@ -924,7 +980,7 @@ describe('getResourceSubscription', () => {
     });
     const response = await request.get(
       `/api/apps/${app.id}/resources/testResource/${resource.id}/subscriptions`,
-      { headers: { authorization: token }, params: { endpoint: 'https://example.com' } },
+      { headers: { authorization }, params: { endpoint: 'https://example.com' } },
     );
 
     expect(response).toMatchObject({
@@ -936,7 +992,7 @@ describe('getResourceSubscription', () => {
 
 describe('Resource Notifications', () => {
   it('should not call sendNotification if resource has no subscribers', async () => {
-    const app = await App.create(exampleApp(organizationId), { raw: true });
+    const app = await exampleApp(organizationId);
     const resource = await Resource.create({
       type: 'testResource',
       AppId: app.id,
@@ -954,11 +1010,11 @@ describe('Resource Notifications', () => {
       AppId: app.id,
     });
 
-    const spy = jest.spyOn(webpush, 'sendNotification').mockImplementation(() => {});
+    const spy = jest.spyOn(webpush, 'sendNotification').mockResolvedValue(null);
     await request.put(
       `/api/apps/${app.id}/resources/testResource/${resource.id}`,
       { foo: 'I am not Foo.' },
-      { headers: { authorization: token } },
+      { headers: { authorization } },
     );
 
     expect(spy).toHaveBeenCalledTimes(0);
@@ -966,7 +1022,7 @@ describe('Resource Notifications', () => {
   });
 
   it('should process subscription hooks', async () => {
-    const app = await App.create(exampleApp(organizationId), { raw: true });
+    const app = await exampleApp(organizationId);
     const resource = await Resource.create({
       type: 'testResource',
       AppId: app.id,
@@ -993,17 +1049,17 @@ describe('Resource Notifications', () => {
         action: 'update',
         value: true,
       },
-      { headers: { authorization: token } },
+      { headers: { authorization } },
     );
 
     webpush.sendNotification = createWaitableMock();
     await request.put(
       `/api/apps/${app.id}/resources/testResource/${resource.id}`,
       { foo: 'I am not Foo.' },
-      { headers: { authorization: token } },
+      { headers: { authorization } },
     );
 
-    await webpush.sendNotification.waitToHaveBeenCalled(1);
+    await (webpush.sendNotification as EnhancedMock).waitToHaveBeenCalled(1);
     expect(webpush.sendNotification).toHaveBeenCalledWith(
       {
         endpoint,
@@ -1027,7 +1083,7 @@ describe('Resource Notifications', () => {
   });
 
   it('should trigger parent hooks if associated child has subscription hooks', async () => {
-    const app = await App.create(exampleApp(organizationId), { raw: true });
+    const app = await exampleApp(organizationId);
     const resource = await Resource.create({
       type: 'testResource',
       AppId: app.id,
@@ -1054,17 +1110,17 @@ describe('Resource Notifications', () => {
         action: 'update',
         value: true,
       },
-      { headers: { authorization: token } },
+      { headers: { authorization } },
     );
 
     webpush.sendNotification = createWaitableMock();
     await request.post(
       `/api/apps/${app.id}/resources/testResourceB`,
       { bar: 'I am bar.', testResourceId: resource.id },
-      { headers: { authorization: token } },
+      { headers: { authorization } },
     );
 
-    await webpush.sendNotification.waitToHaveBeenCalled(1);
+    await (webpush.sendNotification as EnhancedMock).waitToHaveBeenCalled(1);
     expect(webpush.sendNotification).toHaveBeenCalledWith(
       {
         endpoint,

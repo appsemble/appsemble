@@ -1,7 +1,6 @@
 import FakeTimers from '@sinonjs/fake-timers';
 import { AxiosTestInstance, createInstance } from 'axios-test-instance';
 import FormData from 'form-data';
-import type Koa from 'koa';
 
 import { App, AppBlockStyle, AppRating, BlockVersion, Organization, User } from '../models';
 import createServer from '../utils/createServer';
@@ -9,7 +8,6 @@ import { closeTestSchema, createTestSchema, truncate } from '../utils/test/testS
 import testToken from '../utils/test/testToken';
 
 let request: AxiosTestInstance;
-let server: Koa;
 let authorization: string;
 let organizationId: string;
 let clock: FakeTimers.InstalledClock;
@@ -18,7 +16,7 @@ let user: User;
 beforeAll(createTestSchema('apps'));
 
 beforeAll(async () => {
-  server = await createServer({ argv: { host: 'http://localhost', secret: 'test' } });
+  const server = await createServer({ argv: { host: 'http://localhost', secret: 'test' } });
   request = await createInstance(server);
 });
 

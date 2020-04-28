@@ -1,17 +1,16 @@
-import { createInstance } from 'axios-test-instance';
+import { AxiosTestInstance, createInstance } from 'axios-test-instance';
 import bcrypt from 'bcrypt';
 
 import { EmailAuthorization, ResetPasswordToken, User } from '../models';
 import createServer from '../utils/createServer';
 import { closeTestSchema, createTestSchema, truncate } from '../utils/test/testSchema';
 
-let request;
-let server;
+let request: AxiosTestInstance;
 
 beforeAll(createTestSchema('auth'));
 
 beforeAll(async () => {
-  server = await createServer({ argv: { host: 'http://localhost', secret: 'test' } });
+  const server = await createServer({ argv: { host: 'http://localhost', secret: 'test' } });
   request = await createInstance(server);
 });
 
@@ -95,6 +94,7 @@ describe('requestResetPassword', () => {
 
     const token = await ResetPasswordToken.findOne({
       where: { UserId: email.UserId },
+      include: [User],
     });
 
     const responseB = await request.post('/api/email/reset', {
@@ -102,7 +102,7 @@ describe('requestResetPassword', () => {
       password: 'newPassword',
     });
 
-    const user = await token.getUser();
+    const user = token.User;
     await user.reload();
 
     expect(responseA).toMatchObject({ status: 204 });

@@ -4,9 +4,12 @@ import * as Sentry from '@sentry/node';
 import http from 'http';
 import https from 'https';
 import Koa from 'koa';
+import type { Configuration } from 'webpack';
+import type { Argv } from 'yargs';
 
 import migrations from '../migrations';
 import { initDB } from '../models';
+import type { Argv as Args } from '../types';
 import addDBHooks from '../utils/addDBHooks';
 import createServer from '../utils/createServer';
 import migrate from '../utils/migrate';
@@ -14,11 +17,15 @@ import readPackageJson from '../utils/readPackageJson';
 import { handleDBError } from '../utils/sqlUtils';
 import databaseBuilder from './builder/database';
 
+interface AdditionalArguments {
+  webpackConfigs?: Configuration[];
+}
+
 export const PORT = 9999;
 export const command = 'start';
 export const description = 'Start the Appsemble server';
 
-export function builder(yargs) {
+export function builder(yargs: Argv): Argv {
   return databaseBuilder(yargs)
     .option('sentry-dsn', {
       desc: 'The Sentry DSN to use for error reporting. See https://sentry.io for details.',
@@ -97,7 +104,10 @@ export function builder(yargs) {
     });
 }
 
-export async function handler(argv, { webpackConfigs } = {}) {
+export async function handler(
+  argv: Args,
+  { webpackConfigs }: AdditionalArguments = {},
+): Promise<void> {
   try {
     initDB({
       host: argv.databaseHost,
@@ -123,7 +133,7 @@ export async function handler(argv, { webpackConfigs } = {}) {
     Sentry.init({ dsn: argv.sentryDsn });
   }
   app.on('error', (err, ctx) => {
-    if (err instanceof Koa.HttpError) {
+    if (err instanceof (Koa as any).HttpError) {
       // It is thrown by `ctx.throw()`.
       return;
     }

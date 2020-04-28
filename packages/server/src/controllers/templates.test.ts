@@ -1,32 +1,32 @@
 import FakeTimers from '@sinonjs/fake-timers';
-import { createInstance } from 'axios-test-instance';
+import { AxiosTestInstance, createInstance } from 'axios-test-instance';
 
-import { App, Resource } from '../models';
+import { App, Resource, User } from '../models';
 import createServer from '../utils/createServer';
 import { closeTestSchema, createTestSchema, truncate } from '../utils/test/testSchema';
 import testToken from '../utils/test/testToken';
 
-let server;
-let token;
-let request;
-let templates;
-let user;
-let clock;
+let authorization: string;
+let request: AxiosTestInstance;
+let templates: App[];
+let user: User;
+let clock: FakeTimers.InstalledClock;
 
 beforeAll(createTestSchema('templates'));
 
 beforeAll(async () => {
-  server = await createServer({ argv: { host: 'http://localhost', secret: 'test' } });
+  const server = await createServer({ argv: { host: 'http://localhost', secret: 'test' } });
   request = await createInstance(server);
 });
 
 beforeEach(async () => {
-  ({ authorization: token, user } = await testToken());
+  ({ authorization, user } = await testToken());
   await user.createOrganization(
     {
       id: 'testorganization',
       name: 'Test Organization',
     },
+    // @ts-ignore
     { through: { role: 'Maintainer' } },
   );
   clock = FakeTimers.install();
@@ -42,21 +42,18 @@ beforeEach(async () => {
       description: 'Description',
       pages: [],
     },
-  };
+  } as const;
 
-  const t1 = await App.create(template, { raw: true });
-  const t2 = await App.create(
-    {
-      ...template,
-      path: 'test-template-2',
-      definition: { ...template.definition, name: 'Test App 2' },
-      resources: {
-        test: { schema: { type: 'object', properties: { name: { type: 'string' } } } },
-      },
+  const t1 = await App.create(template);
+  const t2 = await App.create({
+    ...template,
+    path: 'test-template-2',
+    definition: { ...template.definition, name: 'Test App 2' },
+    resources: {
+      test: { schema: { type: 'object', properties: { name: { type: 'string' } } } },
     },
-    { raw: true },
-  );
-  await t2.createResource({ type: 'test', data: { name: 'foo' } });
+  });
+  await Resource.create({ AppId: t2.id, type: 'test', data: { name: 'foo' } });
 
   templates = [t1, t2];
 });
@@ -76,7 +73,7 @@ afterAll(closeTestSchema);
 describe('getAppTemplates', () => {
   it('should return a list of available templates', async () => {
     const response = await request.get('/api/templates', {
-      headers: { authorization: token },
+      headers: { authorization },
     });
 
     expect(response).toMatchObject({
@@ -109,7 +106,7 @@ describe('createTemplateApp', () => {
         description: 'This is a test app',
         organizationId: 'testorganization',
       },
-      { headers: { authorization: token } },
+      { headers: { authorization } },
     );
 
     expect(response).toMatchObject({
@@ -144,11 +141,11 @@ describe('createTemplateApp', () => {
         organizationId: 'testorganization',
         resources: true,
       },
-      { headers: { authorization: token } },
+      { headers: { authorization } },
     );
 
     const { id } = response.data;
-    const resources = await Resource.findAll({ where: { AppId: id, type: 'test' } }, { raw: true });
+    const resources = await Resource.findAll({ where: { AppId: id, type: 'test' } });
 
     expect(resources.map((r) => r.data)).toStrictEqual([{ name: 'foo' }]);
   });
@@ -162,7 +159,7 @@ describe('createTemplateApp', () => {
         description: 'This is a test app',
         organizationId: 'testorganization',
       },
-      { headers: { authorization: token } },
+      { headers: { authorization } },
     );
 
     const response = await request.post(
@@ -173,7 +170,7 @@ describe('createTemplateApp', () => {
         description: 'This is also a test app',
         organizationId: 'testorganization',
       },
-      { headers: { authorization: token } },
+      { headers: { authorization } },
     );
 
     expect(response).toMatchObject({
@@ -208,7 +205,7 @@ describe('createTemplateApp', () => {
         description: 'This is a test app',
         organizationId: 'testorganization',
       },
-      { headers: { authorization: token } },
+      { headers: { authorization } },
     );
 
     expect(response).toMatchObject({

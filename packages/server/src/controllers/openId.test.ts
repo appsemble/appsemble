@@ -1,21 +1,20 @@
 import FakeTimers from '@sinonjs/fake-timers';
-import { createInstance } from 'axios-test-instance';
+import { AxiosTestInstance, createInstance } from 'axios-test-instance';
 
-import { OAuth2AuthorizationCode } from '../models';
+import { App, OAuth2AuthorizationCode, Organization, User } from '../models';
 import createServer from '../utils/createServer';
 import { closeTestSchema, createTestSchema, truncate } from '../utils/test/testSchema';
 import testToken from '../utils/test/testToken';
 
-let authorization;
-let clock;
-let request;
-let server;
-let user;
+let authorization: string;
+let clock: FakeTimers.InstalledClock;
+let request: AxiosTestInstance;
+let user: User;
 
 beforeAll(createTestSchema('openid'));
 
 beforeAll(async () => {
-  server = await createServer({ argv: { host: 'http://localhost', secret: 'test' } });
+  const server = await createServer({ argv: { host: 'http://localhost', secret: 'test' } });
   request = await createInstance(server);
 });
 
@@ -70,7 +69,7 @@ describe('getUserInfo', () => {
 });
 
 describe('createAuthorizationCode', () => {
-  let organization;
+  let organization: Organization;
 
   beforeEach(async () => {
     organization = await user.createOrganization(
@@ -78,12 +77,14 @@ describe('createAuthorizationCode', () => {
         id: 'org',
         name: 'Test Organization',
       },
+      // @ts-ignore
       { through: { role: 'Owner' } },
     );
   });
 
   it('should create an authorization code linked to the user and app on a default domain', async () => {
-    const app = await organization.createApp({
+    const app = await App.create({
+      OrganizationId: organization.id,
       path: 'app',
       definition: {},
       vapidPublicKey: '',
@@ -113,7 +114,8 @@ describe('createAuthorizationCode', () => {
   });
 
   it('should create an authorization code linked to the user and app on a custom domain', async () => {
-    const app = await organization.createApp({
+    const app = await App.create({
+      OrganizationId: organization.id,
       path: 'app',
       domain: 'app.example',
       definition: {},
@@ -144,7 +146,8 @@ describe('createAuthorizationCode', () => {
   });
 
   it('should block invalid login attempts', async () => {
-    const app = await organization.createApp({
+    const app = await App.create({
+      OrganizationId: organization.id,
       path: 'app',
       domain: 'app.example',
       definition: {},

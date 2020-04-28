@@ -1,19 +1,20 @@
-import { createInstance } from 'axios-test-instance';
+import { AxiosTestInstance, createInstance } from 'axios-test-instance';
 import fs from 'fs-extra';
 import Koa from 'koa';
 import path from 'path';
 
-import getApp from '../../utils/getApp';
+import type { App } from '../../models';
+import * as getApp from '../../utils/getApp';
 import appRouter from '.';
 
-let request;
+let request: AxiosTestInstance;
 
-jest.mock('../../utils/getApp', () => ({
-  __esModule: true,
-  default: jest.fn(),
-}));
+// jest.mock('../../utils/getApp', () => ({
+//   __esModule: true,
+//   default: jest.fn(),
+// }));
 
-function readIcon() {
+function readIcon(): Promise<Buffer> {
   return fs.readFile(path.join(__dirname, '__fixtures__', 'tux.png'));
 }
 
@@ -26,56 +27,56 @@ afterAll(async () => {
 });
 
 it('should scale and serve the app icon', async () => {
-  getApp.mockReturnValue({
+  jest.spyOn(getApp, 'default').mockResolvedValue(({
     icon: await readIcon(),
-  });
+  } as Partial<App>) as App);
   const response = await request.get('/icon-150.png');
   expect(response.headers['content-type']).toBe('image/png');
   expect(response.data).toMatchImageSnapshot();
 });
 
 it('should use the splash color if an opaque icon is requested', async () => {
-  getApp.mockReturnValue({
+  jest.spyOn(getApp, 'default').mockResolvedValue(({
     definition: { theme: { splashColor: '#ff0000', themeColor: '#00ff00' } },
     icon: await readIcon(),
-  });
+  } as Partial<App>) as App);
   const response = await request.get('/icon-52.png?opaque');
   expect(response.headers['content-type']).toBe('image/png');
   expect(response.data).toMatchImageSnapshot();
 });
 
 it('should fall back to the theme color if splash color is undefined', async () => {
-  getApp.mockReturnValue({
+  jest.spyOn(getApp, 'default').mockResolvedValue(({
     definition: { theme: { themeColor: '#00ff00' } },
     icon: await readIcon(),
-  });
+  } as Partial<App>) as App);
   const response = await request.get('/icon-85.png?opaque');
   expect(response.headers['content-type']).toBe('image/png');
   expect(response.data).toMatchImageSnapshot();
 });
 
 it('should fall back to a white background if neither theme color not splash color is defined', async () => {
-  getApp.mockReturnValue({
+  jest.spyOn(getApp, 'default').mockResolvedValue(({
     definition: { theme: {} },
     icon: await readIcon(),
-  });
+  } as Partial<App>) as App);
   const response = await request.get('/icon-24.png?opaque');
   expect(response.headers['content-type']).toBe('image/png');
   expect(response.data).toMatchImageSnapshot();
 });
 
 it('should fall back to a white background if theme is undefined', async () => {
-  getApp.mockReturnValue({
+  jest.spyOn(getApp, 'default').mockResolvedValue(({
     definition: {},
     icon: await readIcon(),
-  });
+  } as Partial<App>) as App);
   const response = await request.get('/icon-235.png?opaque');
   expect(response.headers['content-type']).toBe('image/png');
   expect(response.data).toMatchImageSnapshot();
 });
 
 it('should fall back to the Appsemble icon if no app icon is defined', async () => {
-  getApp.mockReturnValue({});
+  jest.spyOn(getApp, 'default').mockResolvedValue(({} as Partial<App>) as App);
   const response = await request.get('/icon-42.png');
   expect(response.headers['content-type']).toBe('image/png');
   expect(response.data).toMatchImageSnapshot();

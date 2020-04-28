@@ -1,4 +1,7 @@
+import type { Argv } from 'yargs';
+
 import { initDB } from '../models';
+import type { Argv as Args } from '../types';
 import bulkDNSRestore from '../utils/bulkDNSRestore';
 import dns from '../utils/dns';
 import { handleDBError } from '../utils/sqlUtils';
@@ -7,7 +10,7 @@ import databaseBuilder from './builder/database';
 export const command = 'restore-dns';
 export const description = 'Restore the app DNS settings from the database in the host platform';
 
-export function builder(yargs) {
+export function builder(yargs: Argv): Argv {
   return databaseBuilder(yargs)
     .option('app-domain-strategy', {
       desc: 'How to link app domain names to apps',
@@ -34,7 +37,7 @@ export function builder(yargs) {
     });
 }
 
-export async function handler(argv) {
+export async function handler(argv: Args): Promise<void> {
   try {
     initDB({
       host: argv.databaseHost,
