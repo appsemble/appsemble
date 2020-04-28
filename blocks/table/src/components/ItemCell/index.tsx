@@ -1,4 +1,3 @@
-/** @jsx h */
 import { h, VNode } from 'preact';
 import { useCallback } from 'preact/hooks';
 

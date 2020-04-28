@@ -1,4 +1,3 @@
-/** @jsx h */
 import { withBlock } from '@appsemble/preact';
 import { remapData } from '@appsemble/utils';
 import classNames from 'classnames';

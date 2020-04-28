@@ -22,8 +22,8 @@ export default async function frontend(webpackConfigs) {
   const { default: webpack } = await import('webpack');
   const { default: webpackConfigApp } = await import('../../../../config/webpack/app');
   const { default: webpackConfigStudio } = await import('../../../../config/webpack/studio');
-  const configApp = webpackConfigApp(null, { mode: 'development' });
-  const configStudio = webpackConfigStudio(null, { mode: 'development' });
+  const configApp = webpackConfigApp('app', { mode: 'development' });
+  const configStudio = webpackConfigStudio('studio', { mode: 'development' });
   configApp.output.path = configApp.output.publicPath;
   configStudio.output.path = configStudio.output.publicPath;
   const compiler = webpack([configApp, configStudio, ...webpackConfigs]);

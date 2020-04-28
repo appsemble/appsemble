@@ -1,4 +1,3 @@
-/** @jsx h */
 import type { BootstrapParams } from '@appsemble/sdk';
 import { h, VNode } from 'preact';
 

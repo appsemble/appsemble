@@ -1,4 +1,3 @@
-/** @jsx h */
 import { bootstrap, FormattedMessage } from '@appsemble/preact';
 import classNames from 'classnames';
 import { h } from 'preact';

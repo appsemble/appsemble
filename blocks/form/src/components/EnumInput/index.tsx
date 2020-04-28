@@ -1,4 +1,3 @@
-/** @jsx h */
 import { Select } from '@appsemble/preact-components';
 import classNames from 'classnames';
 import { h, VNode } from 'preact';

@@ -1,4 +1,5 @@
 const merge = require('webpack-merge');
+const path = require('path');
 
 const shared = require('./shared');
 
@@ -14,6 +15,26 @@ module.exports = (env, argv) => {
   return merge.smart(shared(env, argv), {
     module: {
       rules: [
+        {
+          test: /\/messages\.tsx?$/,
+          loader: 'babel-loader',
+          options: {
+            plugins: ['babel-plugin-react-intl-auto'],
+          },
+        },
+        {
+          test: /\.tsx?$/,
+          loader: 'ts-loader',
+          options: {
+            transpileOnly: true,
+            configFile: path.join(
+              path.resolve(__dirname, '../..'),
+              'packages',
+              env,
+              'tsconfig.json',
+            ),
+          },
+        },
         {
           test: /\.(gif|jpe?g|png|svg|ttf|woff2?)$/,
           loader: 'file-loader',

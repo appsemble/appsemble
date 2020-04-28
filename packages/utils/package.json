@@ -14,6 +14,7 @@
   "license": "LGPL-3.0-or-later",
   "author": "Appsemble <info@appsemble.com> (https://appsemble.com)",
   "sideEffects": false,
+  "main": "src",
   "scripts": {
     "prepack": "babel --ignore '**/*.test.js' --ignore '**/*.test.ts' -x .js,.ts -d dist src"
   },

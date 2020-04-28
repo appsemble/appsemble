@@ -1,5 +1,14 @@
 import { parseISO } from 'date-fns';
 
+export interface RemapperContext {
+  intl: {
+    formatDate: (data: string) => string;
+    formatTime: (data: string) => string;
+  };
+}
+
+export type MapperFunction = (data: any) => any;
+
 const property = '.';
 const filter = '|';
 
@@ -11,17 +20,21 @@ const dateTimeFormat = new Intl.DateTimeFormat(undefined, {
   minute: '2-digit',
 });
 
-const filters = {
+interface Filters {
+  [key: string]: (context: RemapperContext, parameter?: string) => MapperFunction;
+}
+
+const filters: Filters = {
   date: () => (object) => {
     let date;
     if (object instanceof Number) {
-      date = new Date(object);
+      date = new Date(object as number);
     } else if (typeof object === 'string') {
       date = parseISO(object);
       if (Number.isNaN(date.getTime())) {
         date = new Date(object);
 
-        if (Number.isNaN(date)) {
+        if (Number.isNaN((date as any) as number)) {
           date = undefined;
         }
       }
@@ -33,7 +46,7 @@ const filters = {
     }
     return date;
   },
-  get: (context, name) => (object) => {
+  get: (_context, name) => (object) => {
     if (object == null) {
       return undefined;
     }
@@ -75,13 +88,13 @@ const filters = {
  * @param {Object} context The context to which remapper functions have access.
  * @returns {Function} the resulting mapper function.
  */
-export function compileFilters(mapperString, context) {
+export function compileFilters(mapperString: string, context?: RemapperContext): MapperFunction {
   const { length } = mapperString;
-  const result = [];
+  const result: MapperFunction[] = [];
   let type = property;
   let current = '';
 
-  function processCurrent() {
+  function processCurrent(): void {
     if (type === property) {
       result.push(filters.get(context, current));
     } else if (Object.hasOwnProperty.call(filters, current)) {
@@ -126,12 +139,12 @@ export function compileFilters(mapperString, context) {
  * { fooz: 'BAZ' }
  * ```
  *
- * @param {*} mapperData An (optionally nested) object which defines what to output.
- * @param {*} inputData The input data which should be mapped.
- * @param {Object} context The context to which remapper functions have access.
- * @returns {*} The resulting data as specified by the `mapperData` argument.
+ * @param mapperData An (optionally nested) object which defines what to output.
+ * @param inputData The input data which should be mapped.
+ * @param context The context to which remapper functions have access.
+ * @returns The resulting data as specified by the `mapperData` argument.
  */
-export function remapData(mapperData, inputData, context) {
+export function remapData(mapperData: any, inputData: any, context?: RemapperContext): any {
   if (typeof mapperData === 'string') {
     return compileFilters(mapperData, context)(inputData);
   }
@@ -142,7 +155,7 @@ export function remapData(mapperData, inputData, context) {
     return Object.entries(mapperData).reduce((acc, [key, value]) => {
       acc[key] = remapData(value, inputData, context);
       return acc;
-    }, {});
+    }, {} as any);
   }
   throw new Error('Invalid mapper data');
 }

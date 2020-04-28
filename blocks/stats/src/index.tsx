@@ -1,4 +1,3 @@
-/** @jsx h */
 import { attach } from '@appsemble/sdk';
 import { compileFilters, MapperFunction } from '@appsemble/utils';
 import { h } from 'mini-jsx';

@@ -1,4 +1,3 @@
-/** @jsx h */
 import { bootstrap } from '@appsemble/preact';
 import { Loader } from '@appsemble/preact-components';
 import { remapData } from '@appsemble/utils';
