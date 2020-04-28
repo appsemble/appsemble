@@ -1,4 +1,11 @@
-import { DataTypes, Model, Sequelize } from 'sequelize';
+import {
+  DataTypes,
+  HasManyAddAssociationMixin,
+  HasManyCreateAssociationMixin,
+  HasManyRemoveAssociationMixin,
+  Model,
+  Sequelize,
+} from 'sequelize';
 
 import App from './App';
 import AppMember from './AppMember';
@@ -19,7 +26,19 @@ export default class User extends Model {
 
   AppMember: AppMember;
 
+  Member: Member;
+
+  Organizations: Organization[];
+
   EmailAuthorizations: EmailAuthorization[];
+
+  OAuthAuthorizations: OAuthAuthorization[];
+
+  createOrganization: HasManyCreateAssociationMixin<Organization>;
+
+  addOAuthAuthorization: HasManyAddAssociationMixin<OAuthAuthorization, number>;
+
+  removeEmailAuthorizations: HasManyRemoveAssociationMixin<EmailAuthorization, number>;
 
   static initialize(sequelize: Sequelize): void {
     User.init(

@@ -1,6 +1,10 @@
+import type * as fs from 'fs';
 import type { ParameterizedContext } from 'koa';
 import type * as compose from 'koa-compose';
+import type { Session } from 'koa-session';
 import type { URL as URL_, URLSearchParams as URLSearchParams_ } from 'url';
+
+import type Mailer from './utils/email/Mailer';
 
 declare global {
   // https://github.com/DefinitelyTyped/DefinitelyTyped/issues/34960
@@ -26,19 +30,29 @@ declare module 'koa' {
 export interface Argv {
   appDomainStrategy?: string;
   disableRegistration?: boolean;
-  host: string;
+  host?: string;
   ingressName?: string;
   ingressServiceName?: string;
   ingressServicePort?: string | number;
   kubernetesServiceHost?: string;
   kubernetesServicePort?: string | number;
+  smtpFrom?: string;
+  smtpHost?: string;
+  smtpPass?: string;
+  smtpPort?: number;
+  smtpSecure?: boolean;
+  smtpUser?: string;
   oauthGitlabKey?: string;
+  oauthGitlabSecret?: string;
   oauthGoogleKey?: string;
+  oauthGoogleSecret?: string;
   secret?: string;
   sentryDsn?: string;
 }
 
 export interface AppsembleState {
+  fs: typeof fs;
+
   render: (template: string, params: object) => Promise<string>;
 
   user: {
@@ -52,10 +66,14 @@ export interface AppsembleContext<P extends {} = {}> {
    */
   argv: Argv;
 
+  mailer: Mailer;
+
   /**
    * URL parameters either from Koas or tinyRouter.
    */
   params: P;
+
+  session: Session;
 }
 
 export type KoaContext<P extends {} = {}> = ParameterizedContext<

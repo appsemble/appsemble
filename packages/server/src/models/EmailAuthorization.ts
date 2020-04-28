@@ -9,6 +9,10 @@ export default class EmailAuthorization extends Model {
 
   key: string;
 
+  UserId: number;
+
+  User: User;
+
   static initialize(sequelize: Sequelize): void {
     EmailAuthorization.init(
       {

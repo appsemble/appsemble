@@ -11,6 +11,14 @@ export default class Resource extends Model {
 
   data: any;
 
+  created: Date;
+
+  updated: Date;
+
+  UserId: number;
+
+  User: User;
+
   static initialize(sequelize: Sequelize): void {
     Resource.init(
       {

@@ -8,13 +8,13 @@ import type { KoaContext } from '../types';
  * Check if the authenticated user has permission to perform an action within an organization.
  *
  * @param ctx The Koa context that should contain the authenticated user and the database.
- * @param {string} organizationId The id of which to check if the user may persoem the action for.
- * @param {string[]} permissions An array of required permissions or a single required permission.
+ * @param organizationId The id of which to check if the user may persoem the action for.
+ * @param permissions An array of required permissions or a single required permission.
  */
 export default async function checkRole(
   ctx: KoaContext,
   organizationId: string,
-  permissions: string,
+  permissions: string | string[],
 ): Promise<true> {
   const { user } = ctx.state;
   if (!user) {

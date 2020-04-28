@@ -86,7 +86,7 @@ afterAll(async () => {
 
 afterAll(closeTestSchema);
 
-describe('getNotification', () => {
+describe('getSubscription', () => {
   it('should subscription statuses to resources', async () => {
     const app = await App.create(defaultApp(organizationId));
 

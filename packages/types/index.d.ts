@@ -111,6 +111,11 @@ export interface UserInfo {
    * The URL of the profile picture for the end-user.
    */
   picture: string;
+
+  /**
+   * A URL that links to the user profile.
+   */
+  profile: string;
 }
 
 /**
@@ -122,7 +127,7 @@ export interface JwtPayload {
   iat: string;
   iss: string;
   scope: string;
-  sub: string;
+  sub: number;
 }
 
 /**
@@ -167,19 +172,21 @@ export interface Security {
 
 export type Navigation = 'bottom' | 'left-menu' | 'hidden';
 
+export interface NotificationDefinition {
+  to?: string[];
+  subscribe?: 'all' | 'single' | 'both';
+  data: {
+    title: string;
+    content: string;
+    link: string;
+  };
+}
+
 /**
  * A collection of hooks that are triggered upon calling a resource actions.
  */
 export interface ResourceHooks {
-  notification: {
-    to?: string[];
-    subscribe?: 'all' | 'single' | 'both';
-    data: {
-      title: string;
-      content: string;
-      link: string;
-    };
-  };
+  notification: NotificationDefinition;
 }
 
 export interface ResourceCall {
@@ -202,6 +209,11 @@ export interface ResourceCall {
    * Query parameters to pass along with the request.
    */
   query?: { [key: string]: string };
+
+  /**
+   * THe roles that are allowed to perform this action.
+   */
+  roles: string[];
 }
 
 interface ResourceReferenceAction {
@@ -482,6 +494,12 @@ export interface ActionType {
    * Whether or not app creators are required to define this action.
    */
   required?: boolean;
+}
+
+export interface SubscriptionResponseResource {
+  create: boolean;
+  update: boolean;
+  delete: boolean;
 }
 
 export interface BlockManifest {

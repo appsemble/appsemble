@@ -137,7 +137,8 @@ export async function handler(argv, { webpackConfigs } = {}) {
     });
   });
 
-  const callback = await createServer({ app, argv, webpackConfigs });
+  const koa = await createServer({ app, argv, webpackConfigs });
+  const callback = koa.callback();
   const httpServer = argv.ssl
     ? https.createServer(
         {

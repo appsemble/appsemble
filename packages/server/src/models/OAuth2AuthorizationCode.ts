@@ -10,6 +10,8 @@ export default class OAuth2AuthorizationCode extends Model {
 
   expires: Date;
 
+  UserId: number;
+
   static initialize(sequelize: Sequelize): void {
     OAuth2AuthorizationCode.init(
       {

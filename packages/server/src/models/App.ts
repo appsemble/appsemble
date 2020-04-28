@@ -51,6 +51,8 @@ export default class App extends Model {
 
   Organization: Organization;
 
+  AppSubscriptions: AppSubscription[];
+
   Assets: Asset[];
 
   Users: User[];

@@ -4,6 +4,8 @@ import { DataTypes, Model, Sequelize } from 'sequelize';
 export default class Member extends Model {
   role: Role;
 
+  OrganizationId: string;
+
   static initialize(sequelize: Sequelize): void {
     Member.init(
       {

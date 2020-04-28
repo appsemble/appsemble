@@ -4,6 +4,12 @@ import AppSubscription from './AppSubscription';
 import Resource from './Resource';
 
 export default class ResourceSubscription extends Model {
+  ResourceId: number;
+
+  action: string;
+
+  type: string;
+
   static initialize(sequelize: Sequelize): void {
     ResourceSubscription.init(
       {

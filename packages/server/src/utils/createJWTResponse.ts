@@ -27,7 +27,7 @@ interface Options {
  * @param options.refreshToken If explicitly set to `false`, not refresh token will be generated.
  */
 export default function createJWTResponse(
-  sub: string,
+  sub: string | number,
   { host, secret }: Argv,
   { aud = host, expires = 3600, refreshToken = true, scope }: Options = {},
 ): TokenResponse {
