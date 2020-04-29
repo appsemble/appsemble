@@ -23,6 +23,13 @@ export default ({ dir, name }, argv) => {
     module: {
       rules: [
         {
+          test: /\/messages\.tsx?$/,
+          loader: 'babel-loader',
+          options: {
+            plugins: ['babel-plugin-react-intl-auto'],
+          },
+        },
+        {
           test: /\.tsx?$/,
           loader: 'ts-loader',
           options: {
