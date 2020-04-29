@@ -7,6 +7,12 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.12.7] - 2020-04-29
+
+### Fixed
+
+- CI: Fix the release process for production.
+
 ## [0.12.6] - 2020-04-29
 
 ### Added
@@ -18,7 +24,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Studio: Add asset management page for apps. This can be used to preview, download, delete, and
   update assets.
 
-### Fixes
+### Fixed
 
 - App: Fix app theme color.
 - Studio: Add asset management page for apps. This can be used to preview, download, delete, and

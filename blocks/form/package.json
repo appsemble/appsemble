@@ -1,11 +1,11 @@
 {
   "name": "@appsemble/form",
-  "version": "0.12.6",
+  "version": "0.12.7",
   "private": true,
   "description": "A block used for inputting and submitting sets of data.",
   "dependencies": {
-    "@appsemble/preact": "0.12.6",
-    "@appsemble/preact-components": "0.12.6",
+    "@appsemble/preact": "0.12.7",
+    "@appsemble/preact-components": "0.12.7",
     "@fortawesome/fontawesome-common-types": "^0.2.28",
     "classnames": "^2.2.6",
     "leaflet": "~1.5.1",
