@@ -1,4 +1,3 @@
-/** @jsx h */
 import { Component, h, VNode } from 'preact';
 
 import type { FileField, InputProps } from '../../../block';

@@ -10,6 +10,7 @@ import { initDB } from '../models';
 import addDBHooks from '../utils/addDBHooks';
 import createServer from '../utils/createServer';
 import migrate from '../utils/migrate';
+import readPackageJson from '../utils/readPackageJson';
 import { handleDBError } from '../utils/sqlUtils';
 import databaseBuilder from './builder/database';
 
@@ -97,10 +98,8 @@ export function builder(yargs) {
 }
 
 export async function handler(argv, { webpackConfigs } = {}) {
-  let db;
-
   try {
-    db = initDB({
+    initDB({
       host: argv.databaseHost,
       port: argv.databasePort,
       username: argv.databaseUser,
@@ -114,10 +113,10 @@ export async function handler(argv, { webpackConfigs } = {}) {
   }
 
   if (argv.migrateTo) {
-    await migrate(db, argv.migrateTo, migrations);
+    await migrate(argv.migrateTo, migrations);
   }
 
-  await addDBHooks(db, argv);
+  await addDBHooks(argv);
 
   const app = new Koa();
   if (argv.sentryDsn) {
@@ -139,7 +138,7 @@ export async function handler(argv, { webpackConfigs } = {}) {
     });
   });
 
-  const callback = await createServer({ app, argv, db, webpackConfigs });
+  const callback = await createServer({ app, argv, webpackConfigs });
   const httpServer = argv.ssl
     ? https.createServer(
         {
@@ -152,6 +151,6 @@ export async function handler(argv, { webpackConfigs } = {}) {
 
   httpServer.listen(argv.port || PORT, '0.0.0.0', () => {
     logger.info(asciiLogo);
-    logger.info(api(argv).info.description);
+    logger.info(api(readPackageJson().version, argv).info.description);
   });
 }

@@ -36,8 +36,9 @@ import bulmaHandler from '../routes/bulmaHandler';
 import authentication from './authentication';
 import convertToCsv from './convertToCsv';
 import Mailer from './email/Mailer';
+import readPackageJson from './readPackageJson';
 
-export default async function createServer({ app = new Koa(), argv = {}, db, webpackConfigs }) {
+export default async function createServer({ app = new Koa(), argv = {}, webpackConfigs }) {
   // eslint-disable-next-line no-param-reassign
   app.keys = [argv.secret];
   app.use(loggerMiddleware());
@@ -45,7 +46,7 @@ export default async function createServer({ app = new Koa(), argv = {}, db, web
 
   app.use(boom());
   app.use(range);
-  Object.assign(app.context, { argv, db, mailer: new Mailer(argv) });
+  Object.assign(app.context, { argv, mailer: new Mailer(argv) });
 
   koaQuerystring(app);
 
@@ -72,10 +73,10 @@ export default async function createServer({ app = new Koa(), argv = {}, db, web
   const apiMiddleware = mount(
     '/api',
     compose([
-      await koas(api(), [
+      await koas(api(readPackageJson().version, argv), [
         koasSpecHandler(),
         koasSwaggerUI({ url: '/explorer' }),
-        koasSecurity(authentication(argv, db.models)),
+        koasSecurity(authentication(argv)),
         () => (ctx, next) => {
           if (ctx.users) {
             [ctx.state.user] = Object.values(ctx.users);

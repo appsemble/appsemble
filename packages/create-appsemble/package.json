@@ -1,6 +1,6 @@
 {
   "name": "create-appsemble",
-  "version": "0.12.4",
+  "version": "0.12.5",
   "private": true,
   "homepage": "https://appsemble.dev",
   "bugs": {
@@ -13,15 +13,19 @@
   },
   "license": "LGPL-3.0-or-later",
   "author": "Appsemble <info@appsemble.com> (https://appsemble.com)",
-  "bin": "./bin/create-appsemble",
+  "bin": "dist/index.js",
+  "files": [
+    "dist",
+    "templates"
+  ],
   "scripts": {
-    "tsc": "../../config/bin/tscstub.js"
+    "prepack": "tsc -p tsconfig.build.json"
   },
   "dependencies": {
-    "@appsemble/node-utils": "^0.12.4",
-    "@babel/register": "^7.9.0",
+    "@appsemble/node-utils": "^0.12.5",
     "fs-extra": "^9.0.0",
     "inquirer": "^7.1.0",
+    "type-fest": "^0.13.1",
     "yargs": "^15.3.1"
   }
 }

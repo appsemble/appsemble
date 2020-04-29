@@ -1,11 +1,11 @@
 import { permissions } from '@appsemble/utils';
 import Boom from '@hapi/boom';
 
+import { App, Organization, User } from '../models';
 import checkRole from '../utils/checkRole';
 
 export async function getAppMembers(ctx) {
   const { appId } = ctx.params;
-  const { App, User } = ctx.db.models;
 
   const app = await App.findByPk(appId, { include: [User] });
   if (!app) {
@@ -22,7 +22,6 @@ export async function getAppMembers(ctx) {
 
 export async function getAppMember(ctx) {
   const { appId, memberId } = ctx.params;
-  const { App, Organization, User } = ctx.db.models;
 
   const app = await App.findByPk(appId, {
     include: [{ model: User, where: { id: memberId }, required: false }, Organization],
@@ -75,7 +74,6 @@ export async function getAppMember(ctx) {
 export async function setAppMember(ctx) {
   const { appId, memberId } = ctx.params;
   const { role } = ctx.request.body;
-  const { App, User } = ctx.db.models;
 
   const app = await App.findByPk(appId, { include: [User] });
   if (!app) {

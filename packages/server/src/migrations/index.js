@@ -5,6 +5,7 @@ import organizationRolesAndAuthentication from './0.10.0-organization-roles-and-
 import rolesSubscriptionsAssociations from './0.11.0-roles-subscriptions-associations';
 import nonNullableAssetAppId from './0.11.3-non-nullable-asset-app-id';
 import removeBlockDefinition from './0.12.4-remove-block-definition';
+import blockIcon from './0.12.6-block-icon';
 
 export default [
   postgresql,
@@ -14,4 +15,5 @@ export default [
   rolesSubscriptionsAssociations,
   nonNullableAssetAppId,
   removeBlockDefinition,
+  blockIcon,
 ];

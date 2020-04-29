@@ -1,6 +1,0 @@
-{
-  "private": true,
-  "dependencies": {
-    "@appsemble/sdk": "^0.12.4"
-  }
-}

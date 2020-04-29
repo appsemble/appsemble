@@ -1,29 +1,19 @@
 import Boom from '@hapi/boom';
-import type { Middleware } from 'koa';
+
+import type { KoaMiddleware } from '../types';
 
 type HttpMethod = 'delete' | 'get' | 'head' | 'options' | 'patch' | 'post' | 'put';
 
-type Route<StateT, CustomT> = {
+type Route = {
   route: string | RegExp;
 } & {
-  [method in HttpMethod]?: Middleware<StateT, CustomT & TinyRouterContext>;
+  [method in HttpMethod]?: KoaMiddleware;
 };
-
-interface TinyRouterContext {
-  /**
-   * Named parameters extracted using the URL regex.
-   */
-  params: null | {
-    [param: string]: string;
-  };
-}
 
 /**
  * A tiny dynamic router middleware for GET requests.
  */
-export default <StateT = {}, CustomT = {}>(
-  routes: Route<StateT, CustomT>[],
-): Middleware<StateT, CustomT & TinyRouterContext> => async (ctx, next) => {
+export default (routes: Route[]): KoaMiddleware => async (ctx, next) => {
   const { path } = ctx;
 
   let match: RegExpMatchArray;

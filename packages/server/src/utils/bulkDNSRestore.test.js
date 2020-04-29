@@ -1,30 +1,27 @@
+import { App, Organization } from '../models';
 import bulkDNSRestore from './bulkDNSRestore';
-import testSchema from './test/testSchema';
-import truncate from './test/truncate';
+import { closeTestSchema, createTestSchema, truncate } from './test/testSchema';
 
-let db;
 let dnsConfig;
 
-beforeAll(async () => {
-  db = await testSchema('bulkDNSRestore');
-});
+beforeAll(createTestSchema('bulkdnsrestore'));
 
 beforeEach(async () => {
-  await truncate(db);
-  await db.models.Organization.create({ id: 'test' });
+  await truncate();
+  await Organization.create({ id: 'test' });
   dnsConfig = {
     add: jest.fn(),
   };
 });
 
-afterAll(async () => {
-  await db.close();
-});
+afterEach(truncate);
+
+afterAll(closeTestSchema);
 
 it('should add DNS settings for all apps', async () => {
   await Promise.all(
     Array.from(Array(7), async (_, index) => {
-      await db.models.App.create({
+      await App.create({
         domain: `app${index}.example.com`,
         path: `path${index}`,
         definition: {},
@@ -34,7 +31,7 @@ it('should add DNS settings for all apps', async () => {
       });
     }),
   );
-  await bulkDNSRestore('localhost', db, dnsConfig, 2);
+  await bulkDNSRestore('localhost', dnsConfig, 2);
   expect(dnsConfig.add).toHaveBeenCalledTimes(4);
   expect(dnsConfig.add).toHaveBeenNthCalledWith(
     1,
@@ -63,7 +60,7 @@ it('should add DNS settings for all apps', async () => {
 it('should skip the last bulk of apps if it is empty', async () => {
   await Promise.all(
     Array.from(Array(4), async (_, index) => {
-      await db.models.App.create({
+      await App.create({
         domain: `app${index}.example.com`,
         path: `path${index}`,
         definition: {},
@@ -73,7 +70,7 @@ it('should skip the last bulk of apps if it is empty', async () => {
       });
     }),
   );
-  await bulkDNSRestore('localhost', db, dnsConfig, 2);
+  await bulkDNSRestore('localhost', dnsConfig, 2);
   expect(dnsConfig.add).toHaveBeenCalledTimes(2);
   expect(dnsConfig.add).toHaveBeenNthCalledWith(
     1,

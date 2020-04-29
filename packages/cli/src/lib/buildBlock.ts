@@ -1,26 +1,17 @@
-import { logger } from '@appsemble/node-utils';
+import { AppsembleError, logger } from '@appsemble/node-utils';
+import * as path from 'path';
 import webpack, { Stats } from 'webpack';
 
 import type { BlockConfig } from '../types';
 import loadWebpackConfig from './loadWebpackConfig';
 
-interface BuildBlockParams {
-  /**
-   * The config of the block to build.
-   */
-  config: BlockConfig;
-
-  /**
-   * The path of the block to build.
-   */
-  path: string;
-}
-
 /**
  * Builds a block using Webpack.
+ *
+ * @param config The config of the block to build.
  */
-export default async function buildBlock({ config, path }: BuildBlockParams): Promise<Stats> {
-  const conf = await loadWebpackConfig(config, 'production', path);
+export default async function buildBlock(config: BlockConfig): Promise<Stats> {
+  const conf = await loadWebpackConfig(config, 'production', path.join(config.dir, config.output));
 
   logger.info(`Building ${config.name}@${config.version} 🔨`);
 
@@ -29,10 +20,12 @@ export default async function buildBlock({ config, path }: BuildBlockParams): Pr
     compiler.run((err, stats) => {
       if (err) {
         reject(err);
+      } else if (stats.hasErrors()) {
+        reject(new AppsembleError(stats.toString({ colors: true })));
+      } else {
+        logger.verbose(stats.toString({ colors: true }));
+        resolve(stats);
       }
-
-      logger.verbose(stats.toString());
-      resolve(stats);
     }),
   );
 }

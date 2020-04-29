@@ -3,46 +3,63 @@ import FormData from 'form-data';
 import fs from 'fs-extra';
 import klaw from 'klaw';
 import path from 'path';
+import { inspect } from 'util';
 
 import type { BlockConfig } from '../types';
-import generateBlockData from './generateBlockData';
-
-interface MakePayloadParams {
-  /**
-   * The block configuration
-   */
-  config: BlockConfig;
-
-  /**
-   * The path in which the block project is located.
-   */
-  path: string;
-}
+import getBlockConfigFromTypeScript from './getBlockConfigFromTypeScript';
 
 /**
  * Configure the payload for a new block version upload.
  *
+ * @param config The block configuration
  * @returns The payload that should be sent to the version endpoint.
  */
-export default async function makePayload({
-  config,
-  path: p,
-}: MakePayloadParams): Promise<FormData> {
-  const { output } = config;
-  const distPath = output ? path.resolve(p, output) : p;
+export default async function makePayload(config: BlockConfig): Promise<FormData> {
+  const { dir, output } = config;
+  const distPath = path.resolve(dir, output);
   const form = new FormData();
-  const data = generateBlockData(config, p);
-  form.append('data', JSON.stringify(data));
+  const { description, layout, name, resources, version } = config;
+  const { actions, events, parameters } = getBlockConfigFromTypeScript(config);
+  const files = await fs.readdir(dir);
+  const icon = files.find((entry) => entry.match(/^icon\.(png|svg)$/));
+
+  function append(field: string, value: any): void {
+    if (value) {
+      const serialized = typeof value === 'string' ? value : JSON.stringify(value);
+      logger.verbose(`Using ${field}: ${inspect(value, { colors: true, depth: 20 })}`);
+      form.append(field, serialized);
+    } else {
+      logger.silly(`Skipping parameter ${field}`);
+    }
+  }
+
+  append('actions', actions);
+  append('description', description);
+  append('events', events);
+  append('layout', layout);
+  append('name', name);
+  append('resources', resources);
+  append('parameters', parameters);
+  append('version', version);
+
+  if (icon) {
+    const iconPath = path.join(dir, icon);
+    logger.info(`Using icon: ${iconPath}`);
+    form.append('icon', fs.createReadStream(iconPath));
+  }
+
   return new Promise((resolve, reject) => {
     klaw(distPath)
       .on('data', (file) => {
         if (!file.stats.isFile()) {
           return;
         }
-        const key = path.relative(distPath, file.path);
-        const realPath = path.relative(process.cwd(), file.path);
-        logger.info(`Adding file: “${realPath}” as “${key}”`);
-        form.append(key, fs.createReadStream(file.path));
+        const relativePath = path.relative(distPath, file.path);
+        const realPath = path.relative(process.cwd(), relativePath);
+        logger.info(`Adding file: “${realPath}” as “${relativePath}”`);
+        form.append('files', fs.createReadStream(file.path), {
+          filename: encodeURIComponent(relativePath),
+        });
       })
       .on('error', reject)
       .on('end', () => {

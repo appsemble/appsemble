@@ -1,6 +1,5 @@
-/** @jsx h */
 import { bootstrap, FormattedMessage } from '@appsemble/preact';
-import { Loader } from '@appsemble/preact-components';
+import { Loader, Message } from '@appsemble/preact-components';
 import { h } from 'preact';
 import { useCallback, useEffect, useState } from 'preact/hooks';
 
@@ -64,11 +63,19 @@ export default bootstrap(
     }
 
     if (error) {
-      return <FormattedMessage id="error" />;
+      return (
+        <Message className={styles.message} color="danger">
+          <FormattedMessage id="error" />
+        </Message>
+      );
     }
 
     if (!data.length) {
-      return <FormattedMessage id="noData" />;
+      return (
+        <Message className={styles.message}>
+          <FormattedMessage id="noData" />
+        </Message>
+      );
     }
 
     return (

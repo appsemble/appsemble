@@ -5,26 +5,24 @@ import { omit } from 'lodash';
 import path from 'path';
 
 import createServer from '../utils/createServer';
-import testSchema from '../utils/test/testSchema';
+import getDefaultIcon from '../utils/getDefaultIcon';
+import { closeTestSchema, createTestSchema, truncate } from '../utils/test/testSchema';
 import testToken from '../utils/test/testToken';
-import truncate from '../utils/test/truncate';
 
-let db;
 let server;
 let instance;
 let headers;
 let user;
 let clientToken;
 
-beforeAll(async () => {
-  db = await testSchema('blocks');
+beforeAll(createTestSchema('blocks'));
 
-  server = await createServer({ db, argv: { host: 'http://localhost', secret: 'test' } });
-}, 10e3);
+beforeAll(async () => {
+  server = await createServer({ argv: { host: 'http://localhost', secret: 'test' } });
+});
 
 beforeEach(async () => {
-  await truncate(db);
-  ({ clientToken, user } = await testToken(db, 'blocks:write'));
+  ({ clientToken, user } = await testToken('blocks:write'));
   await user.createOrganization(
     {
       id: 'xkcd',
@@ -40,24 +38,25 @@ afterEach(async () => {
   await instance.close();
 });
 
-afterAll(async () => {
-  await db.close();
-});
+afterEach(truncate);
+
+afterAll(closeTestSchema);
 
 describe('getBlock', () => {
   it('should be possible to retrieve a block definition', async () => {
     const formData = new FormData();
+    formData.append('name', '@xkcd/test');
+    formData.append('description', 'foo');
+    formData.append('version', '1.32.9');
     formData.append(
-      'data',
-      JSON.stringify({ name: '@xkcd/test', description: 'foo', version: '1.32.9' }),
-    );
-    formData.append(
-      'build/standing.png',
+      'files',
       fs.createReadStream(path.join(__dirname, '__fixtures__/standing.png')),
+      { filepath: 'standing.png' },
     );
     formData.append(
-      'build/testblock.js',
-      fs.createReadStream(path.join(__dirname, '__fixtures__/testblock.js')),
+      'files',
+      fs.createReadStream(path.join(__dirname, '__fixtures__/standing.png')),
+      { filepath: 'testblock.js' },
     );
 
     const { data: original } = await instance.post('/api/blocks', formData, {
@@ -81,17 +80,13 @@ describe('getBlock', () => {
 describe('queryBlocks', () => {
   it('should be possible to query block definitions', async () => {
     const formDataA = new FormData();
+    formDataA.append('name', '@xkcd/apple');
+    formDataA.append('version', '0.0.0');
+    formDataA.append('description', 'I’ve got an apple.');
     formDataA.append(
-      'data',
-      JSON.stringify({
-        name: '@xkcd/apple',
-        version: '0.0.0',
-        description: 'I’ve got an apple.',
-      }),
-    );
-    formDataA.append(
-      'build/standing.png',
+      'files',
       fs.createReadStream(path.join(__dirname, '__fixtures__/standing.png')),
+      { filepath: 'standing.png' },
     );
 
     const { data: apple } = await instance.post('/api/blocks', formDataA, {
@@ -99,17 +94,13 @@ describe('queryBlocks', () => {
     });
 
     const formDataB = new FormData();
+    formDataB.append('name', '@xkcd/pen');
+    formDataB.append('version', '0.0.0');
+    formDataB.append('description', 'I’ve got a pen.');
     formDataB.append(
-      'data',
-      JSON.stringify({
-        name: '@xkcd/pen',
-        version: '0.0.0',
-        description: 'I’ve got a pen.',
-      }),
-    );
-    formDataB.append(
-      'build/standing.png',
+      'files',
       fs.createReadStream(path.join(__dirname, '__fixtures__/standing.png')),
+      { filepath: 'standing.png' },
     );
 
     const { data: pen } = await instance.post('/api/blocks', formDataB, {
@@ -122,16 +113,19 @@ describe('queryBlocks', () => {
 });
 
 describe('publishBlock', () => {
-  it('should be possible to upload block versions where data is sent as the first parameter', async () => {
+  it('should be possible to upload encoded file paths', async () => {
     const formData = new FormData();
-    formData.append('data', JSON.stringify({ name: '@xkcd/standing', version: '1.32.9' }));
+    formData.append('name', '@xkcd/standing');
+    formData.append('version', '1.32.9');
     formData.append(
-      'build/standing.png',
+      'files',
       fs.createReadStream(path.join(__dirname, '__fixtures__/standing.png')),
+      { filename: encodeURIComponent('build/standing.png'), foo: 'bar' },
     );
     formData.append(
-      'build/testblock.js',
-      fs.createReadStream(path.join(__dirname, '__fixtures__/testblock.js')),
+      'files',
+      fs.createReadStream(path.join(__dirname, '__fixtures__/standing.png')),
+      { filepath: encodeURIComponent('build/testblock.js') },
     );
 
     const { data, status } = await instance.post('/api/blocks', formData, {
@@ -143,6 +137,7 @@ describe('publishBlock', () => {
       events: null,
       files: ['build/standing.png', 'build/testblock.js'],
       name: '@xkcd/standing',
+      iconUrl: '/api/blocks/@xkcd/standing/versions/1.32.9/icon',
       layout: null,
       resources: null,
       parameters: null,
@@ -155,21 +150,18 @@ describe('publishBlock', () => {
 
   it('should not accept invalid action names', async () => {
     const formData = new FormData();
+    formData.append('name', '@xkcd/standing');
+    formData.append('actions', JSON.stringify({ $any: {}, $foo: {} }));
+    formData.append('version', '1.32.9');
     formData.append(
-      'data',
-      JSON.stringify({
-        name: '@xkcd/standing',
-        actions: { $any: {}, $foo: {} },
-        version: '1.32.9',
-      }),
-    );
-    formData.append(
-      'build/standing.png',
+      'files',
       fs.createReadStream(path.join(__dirname, '__fixtures__/standing.png')),
+      { filepath: 'standing.png' },
     );
     formData.append(
-      'build/testblock.js',
-      fs.createReadStream(path.join(__dirname, '__fixtures__/testblock.js')),
+      'files',
+      fs.createReadStream(path.join(__dirname, '__fixtures__/standing.png')),
+      { filepath: 'testblock.js' },
     );
     const response = await instance.post('/api/blocks', formData, {
       headers: { ...headers.headers, ...formData.getHeaders() },
@@ -181,53 +173,20 @@ describe('publishBlock', () => {
     });
   });
 
-  it('should be possible to upload block versions where data is sent as the last parameter', async () => {
-    const formData = new FormData();
-    formData.append('data', JSON.stringify({ name: '@xkcd/standing', version: '1.32.9' }));
-    formData.append(
-      'build/standing.png',
-      fs.createReadStream(path.join(__dirname, '__fixtures__/standing.png')),
-    );
-    formData.append(
-      'build/testblock.js',
-      fs.createReadStream(path.join(__dirname, '__fixtures__/testblock.js')),
-    );
-
-    const { data, status } = await instance.post('/api/blocks', formData, {
-      headers: { ...headers.headers, ...formData.getHeaders() },
-    });
-
-    expect(data).toStrictEqual({
-      actions: null,
-      events: null,
-      files: ['build/standing.png', 'build/testblock.js'],
-      name: '@xkcd/standing',
-      parameters: null,
-      layout: null,
-      resources: null,
-      version: '1.32.9',
-      description: null,
-    });
-    expect(status).toBe(201);
-  });
-
   it('should not be possible to register the same block version twice', async () => {
     const formData = new FormData();
+    formData.append('name', '@xkcd/standing');
+    formData.append('description', 'This block has been uploaded for the purpose of unit testing.');
+    formData.append('version', '1.32.9');
     formData.append(
-      'data',
-      JSON.stringify({
-        name: '@xkcd/standing',
-        description: 'This block has been uploaded for the purpose of unit testing.',
-        version: '1.32.9',
-      }),
-    );
-    formData.append(
-      'build/standing.png',
+      'files',
       fs.createReadStream(path.join(__dirname, '__fixtures__/standing.png')),
+      { filepath: 'standing.png' },
     );
     formData.append(
-      'build/testblock.js',
-      fs.createReadStream(path.join(__dirname, '__fixtures__/testblock.js')),
+      'files',
+      fs.createReadStream(path.join(__dirname, '__fixtures__/standing.png')),
+      { filepath: 'testblock.js' },
     );
 
     await instance.post('/api/blocks', formData, {
@@ -235,21 +194,21 @@ describe('publishBlock', () => {
     });
 
     const formData2 = new FormData();
+    formData2.append('name', '@xkcd/standing');
     formData2.append(
-      'data',
-      JSON.stringify({
-        name: '@xkcd/standing',
-        description: 'This block has been uploaded for the purpose of unit testing.',
-        version: '1.32.9',
-      }),
+      'description',
+      'This block has been uploaded for the purpose of unit testing.',
     );
+    formData2.append('version', '1.32.9');
     formData2.append(
-      'build/standing.png',
+      'files',
       fs.createReadStream(path.join(__dirname, '__fixtures__/standing.png')),
+      { filepath: 'standing.png' },
     );
     formData2.append(
-      'build/testblock.js',
-      fs.createReadStream(path.join(__dirname, '__fixtures__/testblock.js')),
+      'files',
+      fs.createReadStream(path.join(__dirname, '__fixtures__/standing.png')),
+      { filepath: 'testblock.js' },
     );
 
     const { data } = await instance.post('/api/blocks', formData2, {
@@ -266,16 +225,24 @@ describe('publishBlock', () => {
 
   it('should require at least one file', async () => {
     const formData = new FormData();
-    formData.append('data', JSON.stringify({ name: '@xkcd/standing', version: '1.32.9' }));
+    formData.append('name', '@xkcd/standing');
+    formData.append('version', '1.32.9');
 
     const { data, status } = await instance.post('/api/blocks', formData, {
       headers: { ...headers.headers, ...formData.getHeaders() },
     });
 
     expect(data).toStrictEqual({
-      error: 'Bad Request',
-      message: 'At least one file should be uploaded',
-      statusCode: 400,
+      errors: [
+        {
+          code: 'OBJECT_MISSING_REQUIRED_PROPERTY',
+          description: expect.any(String),
+          message: 'Missing required property: files',
+          params: ['files'],
+          path: [],
+        },
+      ],
+      message: 'JSON schema validation failed',
     });
     expect(status).toBe(400);
   });
@@ -284,14 +251,17 @@ describe('publishBlock', () => {
 describe('getBlockVersion', () => {
   it('should be possible to retrieve a block version', async () => {
     const formData = new FormData();
-    formData.append('data', JSON.stringify({ name: '@xkcd/standing', version: '1.32.9' }));
+    formData.append('name', '@xkcd/standing');
+    formData.append('version', '1.32.9');
     formData.append(
-      'build/standing.png',
+      'files',
       fs.createReadStream(path.join(__dirname, '__fixtures__/standing.png')),
+      { filepath: 'standing.png' },
     );
     formData.append(
-      'build/testblock.js',
-      fs.createReadStream(path.join(__dirname, '__fixtures__/testblock.js')),
+      'files',
+      fs.createReadStream(path.join(__dirname, '__fixtures__/standing.png')),
+      { filepath: 'testblock.js' },
     );
 
     const { data: created } = await instance.post('/api/blocks', formData, {
@@ -320,17 +290,18 @@ describe('getBlockVersion', () => {
 describe('getBlockVersions', () => {
   it('should be possible to fetch uploaded block versions', async () => {
     const formData = new FormData();
+    formData.append('name', '@xkcd/standing');
+    formData.append('description', 'Version 1.32.9!');
+    formData.append('version', '1.32.9');
     formData.append(
-      'data',
-      JSON.stringify({ name: '@xkcd/standing', description: 'Version 1.32.9!', version: '1.32.9' }),
-    );
-    formData.append(
-      'build/standing.png',
+      'files',
       fs.createReadStream(path.join(__dirname, '__fixtures__/standing.png')),
+      { filepath: 'standing.png' },
     );
     formData.append(
-      'build/testblock.js',
-      fs.createReadStream(path.join(__dirname, '__fixtures__/testblock.js')),
+      'files',
+      fs.createReadStream(path.join(__dirname, '__fixtures__/standing.png')),
+      { filepath: 'testblock.js' },
     );
     await instance.post('/api/blocks', formData, {
       headers: { ...headers.headers, ...formData.getHeaders() },
@@ -343,6 +314,7 @@ describe('getBlockVersions', () => {
         description: 'Version 1.32.9!',
         actions: null,
         events: null,
+        iconUrl: '/api/blocks/@xkcd/standing/versions/1.32.9/icon',
         layout: null,
         parameters: null,
         resources: null,
@@ -358,5 +330,54 @@ describe('getBlockVersions', () => {
       error: 'Not Found',
       message: 'Block not found.',
     });
+  });
+});
+
+describe('getBlockIcon', () => {
+  it('should serve the block icon', async () => {
+    const icon = await fs.readFile(path.join(__dirname, '__fixtures__/testpattern.png'));
+    const formData = new FormData();
+    formData.append('name', '@xkcd/test');
+    formData.append('description', 'foo');
+    formData.append('version', '1.33.8');
+    formData.append('files', Buffer.from(''), 'test.js');
+    formData.append('icon', icon);
+
+    await instance.post('/api/blocks', formData, {
+      headers: { ...headers.headers, ...formData.getHeaders() },
+    });
+
+    const response = await instance.get('/api/blocks/@xkcd/test/versions/1.33.8/icon', {
+      responseType: 'arraybuffer',
+    });
+    expect(response.headers['content-type']).toBe('image/png');
+    expect(response.data.equals(icon)).toBe(true);
+  });
+
+  it('should return a 404 if the requested block definition doesn’t exist', async () => {
+    const { data } = await instance.get('/api/blocks/@non/existent');
+    expect(data).toStrictEqual({
+      error: 'Not Found',
+      message: 'Block definition not found',
+      statusCode: 404,
+    });
+  });
+
+  it('should return the default icon if no block icon was defined', async () => {
+    const formData = new FormData();
+    formData.append('name', '@xkcd/test');
+    formData.append('description', 'foo');
+    formData.append('version', '1.33.8');
+    formData.append('files', Buffer.from(''), 'test.js');
+
+    await instance.post('/api/blocks', formData, {
+      headers: { ...headers.headers, ...formData.getHeaders() },
+    });
+
+    const response = await instance.get('/api/blocks/@xkcd/test/versions/1.33.8/icon', {
+      responseType: 'arraybuffer',
+    });
+    expect(response.headers['content-type']).toBe('image/svg+xml');
+    expect(response.data.equals(getDefaultIcon())).toBe(true);
   });
 });

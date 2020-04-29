@@ -1,4 +1,3 @@
-/** @jsx h */
 import { useBlock } from '@appsemble/preact';
 import { Fragment, h, VNode } from 'preact';
 

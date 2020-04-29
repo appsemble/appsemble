@@ -1,9 +1,10 @@
 import type { Theme } from '@appsemble/types';
 import { baseTheme } from '@appsemble/utils';
 import autoprefixer from 'autoprefixer';
-import type { Context } from 'koa';
 import sass from 'node-sass';
 import postcss from 'postcss';
+
+import type { KoaContext } from '../../types';
 
 const bulmaPath = require.resolve('bulma/bulma.sass').replace(/\\/g, '/');
 const functionPath = require.resolve('bulma/sass/utilities/functions.sass').replace(/\\/g, '/');
@@ -21,7 +22,7 @@ const postCss = postcss([autoprefixer]);
 function processStyle(params: Theme): string {
   return `
     @charset "utf-8";
-    @import url(https://fonts.googleapis.com/css?family=Libre+Franklin|Open+Sans);
+    @import url(https://fonts.googleapis.com/css?display=swap&family=Libre+Franklin|Open+Sans);
     $family-sans-serif: 'Libre Franklin', sans-serif !default;
     $primary: ${params.primaryColor || baseTheme.primaryColor};
     $link: ${params.linkColor || baseTheme.linkColor};
@@ -66,7 +67,7 @@ function processStyle(params: Theme): string {
  *
  * @param {Koa.Context} ctx The Koa context.
  */
-export default async function bulmaHandler(ctx: Context): Promise<void> {
+export default async function bulmaHandler(ctx: KoaContext): Promise<void> {
   const { css } = sass.renderSync({
     data: processStyle(ctx.query),
     outputStyle: 'compressed',

@@ -9,17 +9,7 @@ export default {
         content: {
           'multipart/form-data': {
             schema: {
-              type: 'object',
-              required: ['data'],
-              properties: {
-                data: {
-                  $ref: '#/components/schemas/BlockVersion',
-                },
-              },
-              additionalProperties: {
-                type: 'string',
-                format: 'binary',
-              },
+              $ref: '#/components/schemas/BlockVersion',
             },
           },
         },
@@ -139,6 +129,24 @@ export default {
       responses: {
         200: {
           $ref: '#/components/responses/blockVersion',
+        },
+      },
+    },
+  },
+  '/blocks/@{organizationId}/{blockId}/versions/{blockVersion}/icon': {
+    parameters: [
+      { $ref: '#/components/parameters/organizationId' },
+      { $ref: '#/components/parameters/blockId' },
+      { $ref: '#/components/parameters/blockVersion' },
+    ],
+    get: {
+      tags: ['block'],
+      description: 'Get the icon of a block version.',
+      operationId: 'getBlockIcon',
+      responses: {
+        200: {
+          description: 'The icon that represents the block.',
+          // $ref: '#/components/responses/blockVersion',
         },
       },
     },

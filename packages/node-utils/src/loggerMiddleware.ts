@@ -1,5 +1,6 @@
 import chalk from 'chalk';
-import type { Middleware } from 'koa';
+import type { ParameterizedContext } from 'koa';
+import type * as compose from 'koa-compose';
 
 import { logger } from './logger';
 
@@ -15,7 +16,7 @@ function rangeFormat<T>(value: number, map: RangeMap<T>): T {
 /**
  * Koa middleware for logging requests using the Appsemble logger.
  */
-export default function loggerMiddleware(): Middleware {
+export default function loggerMiddleware(): compose.Middleware<ParameterizedContext<{}, {}>> {
   return async (ctx, next) => {
     const { href, res } = ctx;
     const start = Date.now();

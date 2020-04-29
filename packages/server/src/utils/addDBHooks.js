@@ -1,6 +1,7 @@
+import { App } from '../models';
 import dns from './dns';
 
-export default async function addDBHooks(db, argv) {
+export default async function addDBHooks(argv) {
   if (!argv.appDomainStrategy) {
     return;
   }
@@ -9,7 +10,7 @@ export default async function addDBHooks(db, argv) {
   if (!dnsConfig) {
     return;
   }
-  db.models.App.afterSave('attachDomain', async (app) => {
+  App.afterSave('attachDomain', async (app) => {
     const oldDomain = app.previous('domain');
     const oldPath = app.previous('path');
     const newDomain = app.domain;

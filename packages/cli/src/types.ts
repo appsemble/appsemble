@@ -42,15 +42,31 @@ export interface UpdateAppArguments extends BaseArguments {
   template: boolean;
 }
 
-export type BlockPayload = Pick<
-  BlockManifest,
-  'name' | 'description' | 'actions' | 'events' | 'parameters' | 'resources' | 'version' | 'layout'
->;
-
-export interface BlockConfig extends BlockPayload {
+export interface BlockConfig
+  extends Pick<
+    BlockManifest,
+    | 'name'
+    | 'description'
+    | 'actions'
+    | 'events'
+    | 'parameters'
+    | 'resources'
+    | 'version'
+    | 'layout'
+  > {
+  /**
+   * The path to the webpack configuration file relative to the block project directory.
+   */
   webpack: string;
-  dist: string;
+
+  /**
+   * The build output directory relative to the block project directory.
+   */
   output: string;
+
+  /**
+   * The absolute directory of the block project.
+   */
   dir: string;
 }
 

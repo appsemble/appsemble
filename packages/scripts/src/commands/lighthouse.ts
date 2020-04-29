@@ -29,14 +29,23 @@ export function builder(yargs: Argv): Argv {
 
 export async function handler({ headless }: Args): Promise<void> {
   let chrome: LaunchedChrome;
+  const chromeFlags: string[] = [];
+  if (headless) {
+    chromeFlags.push('--headless');
+  }
+  if ('CI' in process.env) {
+    chromeFlags.push('--no-sandbox');
+  }
+  logger.verbose(`Using Chrome flags: ${chromeFlags.join(' ')}`);
   try {
     chrome = await launch({
       chromePath: executablePath(),
-      chromeFlags: headless ? ['--headless'] : [],
+      chromeFlags,
     });
 
+    const metrics: string[] = [];
     for (const app of await readdir('apps')) {
-      const url = `https://${app}.staging.appsemble.review`;
+      const url = `https://${app}.appsemble.staging.appsemble.review`;
       logger.info(`Testing ${url}`);
       const { lhr, report } = await lighthouse(url, {
         port: chrome.port,
@@ -45,12 +54,16 @@ export async function handler({ headless }: Args): Promise<void> {
       });
       await outputFile(`reports/${app}.html`, report);
 
+      // Taken from https://github.com/pkesc/prometheus_lighthouse_exporter/blob/master/lighthouse_exporter.js
+      metrics.push(`# HELP lighthouse_${app} The Lighthouse scores for ${url}`);
+      metrics.push(`# TYPE lighthouse_${app} gauge`);
       logger.info(`Scores for ${url}`);
       logger.info('┌────────────────┬──────────┬───────┐');
       logger.info('│ Category       │ Baseline │ Score │');
       logger.info('├────────────────┼──────────┼───────┤');
       Object.entries(baselines).forEach(([category, baseline]) => {
         const score = lhr.categories[category].score * 100;
+        metrics.push(`lighthouse_${app}{category="${category}"} ${score}`);
         const message = `│ ${category.padEnd(14)} │ ${String(baseline).padStart(8)} │ ${String(
           score,
         ).padStart(5)} │`;
@@ -61,8 +74,10 @@ export async function handler({ headless }: Args): Promise<void> {
           logger.info(message);
         }
       });
+      metrics.push('');
       logger.info('└────────────────┴──────────┴───────┘\n');
     }
+    await outputFile('reports/metrics.txt', metrics.join('\n'));
   } finally {
     await chrome?.kill();
   }

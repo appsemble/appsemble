@@ -1,16 +1,16 @@
 import { logger } from '@appsemble/node-utils';
 import Boom from '@hapi/boom';
 
+import { getDB } from '../models';
+
 // eslint-disable-next-line import/prefer-default-export
 export async function checkHealth(ctx) {
-  const { db } = ctx;
-
   const status = {
     database: true,
   };
 
   try {
-    await db.authenticate();
+    await getDB().authenticate();
   } catch (err) {
     logger.error(err);
     status.database = false;

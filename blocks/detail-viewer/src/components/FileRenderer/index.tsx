@@ -1,4 +1,3 @@
-/** @jsx h */
 import { remapData } from '@appsemble/utils';
 import classNames from 'classnames';
 import { Fragment, h, VNode } from 'preact';
@@ -27,7 +26,7 @@ export default function FileRenderer({ field, value }: RendererProps<FileField>)
           ))}
         </div>
       ) : (
-        <ImageField label={field.label} name={field.name} src={value} />
+        value && <ImageField label={field.label} name={field.name} src={value} />
       )}
     </Fragment>
   );

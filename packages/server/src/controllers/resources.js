@@ -4,6 +4,15 @@ import parseOData from '@wesselkuipers/odata-sequelize';
 import crypto from 'crypto';
 import { Op } from 'sequelize';
 
+import {
+  App,
+  AppSubscription,
+  getDB,
+  Organization,
+  Resource,
+  ResourceSubscription,
+  User,
+} from '../models';
 import checkRole from '../utils/checkRole';
 import sendNotification from '../utils/sendNotification';
 
@@ -24,28 +33,7 @@ function verifyResourceDefinition(app, resourceType) {
     throw Boom.notFound(`App does not have a schema for resources called ${resourceType}`);
   }
 
-  const resource = app.definition.resources[resourceType];
-  const referenceProperties = {};
-
-  if (resource.references) {
-    Object.entries(resource.references).forEach(([field, resourceName]) => {
-      if (!app.definition.resources[resourceName]) {
-        throw Boom.notFound(
-          `Resource ${resourceName} referenced by ${resourceType} does not exist.`,
-        );
-      }
-
-      referenceProperties[field] = app.definition.resources[resourceName].id || {};
-    });
-  }
-
-  return {
-    ...resource.schema,
-    properties: {
-      ...resource.schema.properties,
-      ...referenceProperties,
-    },
-  };
+  return app.definition.resources[resourceType].schema;
 }
 
 function generateQuery(ctx, { createdHash, updatedHash }) {
@@ -58,7 +46,7 @@ function generateQuery(ctx, { createdHash, updatedHash }) {
             .replace(/\$updated/g, updatedHash)
             .replace(/\$created/g, createdHash),
         ),
-        ctx.db,
+        getDB(),
       );
     } catch (e) {
       return {};
@@ -199,10 +187,10 @@ async function sendSubscriptionNotifications(
   resourceId,
   options,
 ) {
-  const { App, AppSubscription, ResourceSubscription, User } = ctx.db.models;
   const { appId } = ctx.params;
-  const roles = notification.to.filter((n) => n !== '$author');
-  const author = resourceUserId && notification.to.includes('$author');
+  const to = notification.to || [];
+  const roles = to.filter((n) => n !== '$author');
+  const author = resourceUserId && to.includes('$author');
   const subscribers = notification.subscribe;
 
   if (!roles.length && !author && !subscribers) {
@@ -211,7 +199,7 @@ async function sendSubscriptionNotifications(
 
   const subscriptions = [];
 
-  if (roles || author) {
+  if (roles.length || author) {
     const roleSubscribers = await AppSubscription.findAll({
       where: { AppId: appId },
       attributes: ['id', 'auth', 'p256dh', 'endpoint'],
@@ -276,7 +264,6 @@ export async function queryResources(ctx) {
 
   const query = generateQuery(ctx, { updatedHash, createdHash });
   const { appId, resourceType } = ctx.params;
-  const { App, Organization, User } = ctx.db.models;
   const { user } = ctx.state;
 
   const app = await App.findByPk(appId, {
@@ -325,7 +312,6 @@ export async function queryResources(ctx) {
 
 export async function getResourceById(ctx) {
   const { appId, resourceId, resourceType } = ctx.params;
-  const { App, Organization, User } = ctx.db.models;
   const { user } = ctx.state;
 
   const app = await App.findByPk(appId, {
@@ -369,7 +355,6 @@ export async function getResourceById(ctx) {
 
 export async function getResourceTypeSubscription(ctx) {
   const { appId, resourceType } = ctx.params;
-  const { App, AppSubscription, Resource, ResourceSubscription } = ctx.db.models;
   const { endpoint } = ctx.query;
 
   const app = await App.findByPk(appId, {
@@ -440,7 +425,6 @@ export async function getResourceTypeSubscription(ctx) {
 
 export async function getResourceSubscription(ctx) {
   const { appId, resourceId, resourceType } = ctx.params;
-  const { App, AppSubscription, Resource, ResourceSubscription } = ctx.db.models;
   const { endpoint } = ctx.query;
 
   const app = await App.findByPk(appId, {
@@ -487,10 +471,65 @@ export async function getResourceSubscription(ctx) {
   ctx.body = result;
 }
 
+async function processHooks(ctx, app, resource, action) {
+  const resourceDefinition = app.definition.resources[resource.type];
+
+  if (
+    resourceDefinition[action] &&
+    resourceDefinition[action].hooks &&
+    resourceDefinition[action].hooks.notification
+  ) {
+    const { notification } = resourceDefinition[action].hooks;
+    const { data } = notification;
+    await sendSubscriptionNotifications(
+      ctx,
+      app,
+      notification,
+      // Don't send notifications to the creator when creating
+      action === 'create' ? null : resource.UserId,
+      resource.type,
+      action,
+      resource.id,
+      {
+        title: data && data.title ? data.title : resource.type,
+        body:
+          data && data.body
+            ? data.body
+            : `${action.charAt(0).toUpperCase()}${action.slice(1)}d ${resource.id}`,
+      },
+    );
+  }
+}
+
+async function processReferenceHooks(ctx, app, resource, action) {
+  await Promise.all(
+    Object.entries(app.definition.resources[resource.type].references || {}).map(
+      async ([propertyName, reference]) => {
+        if (!reference[action] || !reference[action].trigger || !reference[action].trigger.length) {
+          // do nothing
+          return;
+        }
+
+        const { trigger } = reference[action];
+        const ids = [].concat(resource.data[propertyName]);
+        const parents = await Resource.findAll({
+          where: { id: ids, type: reference.resource, AppId: app.id },
+        });
+
+        await Promise.all(
+          parents.map((parent) =>
+            Promise.all(trigger.map((t) => processHooks(ctx, app, parent, t))),
+          ),
+        );
+      },
+    ),
+  );
+}
+
 export async function createResource(ctx) {
   const { appId, resourceType } = ctx.params;
-  const { App, Organization, User } = ctx.db.models;
   const { user } = ctx.state;
+  const action = 'create';
 
   const app = await App.findByPk(appId, {
     ...(user && {
@@ -510,7 +549,7 @@ export async function createResource(ctx) {
   verifyResourceDefinition(app, resourceType);
 
   const { id: _, ...resource } = ctx.request.body;
-  await verifyAppRole(ctx, app, resource, resourceType, 'create');
+  await verifyAppRole(ctx, app, resource, resourceType, action);
   const { schema } = app.definition.resources[resourceType];
 
   try {
@@ -525,34 +564,28 @@ export async function createResource(ctx) {
     throw boom;
   }
 
-  const { created, id, updated } = await app.createResource({
+  const createdResource = await app.createResource({
     type: resourceType,
     data: resource,
     UserId: user && user.id,
   });
 
-  ctx.body = { ...resource, id, $created: created, $updated: updated };
+  ctx.body = {
+    ...resource,
+    id: createdResource.id,
+    $created: createdResource.created,
+    $updated: createdResource.updated,
+  };
   ctx.status = 201;
 
-  const resourceDefinition = app.definition.resources[resourceType];
-  if (
-    resourceDefinition.create &&
-    resourceDefinition.create.hooks &&
-    resourceDefinition.create.hooks.notification
-  ) {
-    const { notification } = resourceDefinition.create.hooks;
-    const { data } = notification;
-    sendSubscriptionNotifications(ctx, app, notification, null, resourceType, 'create', id, {
-      title: data && data.title ? data.title : resourceType,
-      body: data && data.body ? data.body : 'Created new',
-    });
-  }
+  processReferenceHooks(ctx, app, createdResource, action);
+  processHooks(ctx, app, createdResource, action);
 }
 
 export async function updateResource(ctx) {
   const { appId, resourceId, resourceType } = ctx.params;
-  const { App, Organization, Resource, User } = ctx.db.models;
   const { user } = ctx.state;
+  const action = 'update';
 
   const app = await App.findByPk(appId, {
     ...(user && {
@@ -578,7 +611,7 @@ export async function updateResource(ctx) {
     throw Boom.notFound('Resource not found');
   }
 
-  await verifyAppRole(ctx, app, resource, resourceType, 'update');
+  await verifyAppRole(ctx, app, resource, resourceType, action);
 
   const { id: _, ...updatedResource } = ctx.request.body;
   const { schema } = app.definition.resources[resourceType];
@@ -610,34 +643,14 @@ export async function updateResource(ctx) {
     $updated: resource.updated,
   };
 
-  const resourceDefinition = app.definition.resources[resourceType];
-  if (
-    resourceDefinition.update &&
-    resourceDefinition.update.hooks &&
-    resourceDefinition.update.hooks.notification
-  ) {
-    const { notification } = resourceDefinition.create.hooks;
-    const { data } = notification;
-    sendSubscriptionNotifications(
-      ctx,
-      app,
-      notification,
-      null,
-      resourceType,
-      'update',
-      resourceId,
-      {
-        title: data && data.title ? data.title : resourceType,
-        body: data && data.body ? data.body : `Updated ${resource.id}`,
-      },
-    );
-  }
+  processReferenceHooks(ctx, app, resource, action);
+  processHooks(ctx, app, resource, action);
 }
 
 export async function deleteResource(ctx) {
   const { appId, resourceId, resourceType } = ctx.params;
-  const { App, Organization, Resource, User } = ctx.db.models;
   const { user } = ctx.state;
+  const action = 'delete';
 
   const app = await App.findByPk(appId, {
     ...(user && {
@@ -665,31 +678,11 @@ export async function deleteResource(ctx) {
     throw Boom.notFound('Resource not found');
   }
 
-  await verifyAppRole(ctx, app, resource, resourceType, 'delete');
+  await verifyAppRole(ctx, app, resource, resourceType, action);
 
   await resource.destroy();
   ctx.status = 204;
 
-  const resourceDefinition = app.definition.resources[resourceType];
-  if (
-    resourceDefinition.delete &&
-    resourceDefinition.delete.hooks &&
-    resourceDefinition.delete.hooks.notification
-  ) {
-    const { notification } = resourceDefinition.create.hooks;
-    const { data } = notification;
-    sendSubscriptionNotifications(
-      ctx,
-      app,
-      notification,
-      resource.UserId,
-      resourceType,
-      'delete',
-      resourceId,
-      {
-        title: data && data.title ? data.title : resourceType,
-        body: data && data.body ? data.body : `Deleted ${resource.id}`,
-      },
-    );
-  }
+  processReferenceHooks(ctx, app, resource, action);
+  processHooks(ctx, app, resource, action);
 }

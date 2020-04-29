@@ -1,13 +1,14 @@
 import { AxiosTestInstance, createInstance } from 'axios-test-instance';
-import Koa, { Context, Middleware } from 'koa';
+import Koa from 'koa';
 
+import type { KoaContext, KoaMiddleware } from '../types';
 import appMapper from './appMapper';
 
-let platformMiddleware: Middleware;
-let appMiddleware: Middleware;
+let platformMiddleware: KoaMiddleware;
+let appMiddleware: KoaMiddleware;
 let fakeHostname: string;
 let app: Koa;
-let context: Context;
+let context: KoaContext;
 let request: AxiosTestInstance;
 
 beforeEach(async () => {
@@ -16,7 +17,7 @@ beforeEach(async () => {
   fakeHostname = 'localhost';
   app = new Koa();
   app.context.argv = { host: 'http://localhost:1337' };
-  app.use((ctx, next) => {
+  app.use((ctx: KoaContext, next) => {
     Object.defineProperty(ctx, 'hostname', { value: fakeHostname });
     context = ctx;
     return next();
