@@ -31,7 +31,7 @@ interface JSONSchemaFileEditorProps {
   /**
    * The properties of the schema object.
    */
-  prop: OpenAPIV3.SchemaObject;
+  schema: OpenAPIV3.SchemaObject;
 
   /**
    * The label rendered above the input field.
@@ -43,8 +43,8 @@ export default function JSONSchemaFileEditor({
   label,
   name,
   onChange,
-  prop,
   required,
+  schema,
 }: JSONSchemaFileEditorProps): React.ReactElement {
   let acceptedFiles = 'file_extension';
   const { app } = useApp();
@@ -90,9 +90,9 @@ export default function JSONSchemaFileEditor({
     [files, fileResults, onChange, blobUploadType],
   );
 
-  if (prop.type === 'array') {
-    if (prop.items) {
-      Object.entries(prop.items).forEach(([key, object]) => {
+  if (schema.type === 'array') {
+    if (schema.items) {
+      Object.entries(schema.items).forEach(([key, object]) => {
         if (key === 'appsembleFile' && object) {
           acceptedFiles = object.type;
         }

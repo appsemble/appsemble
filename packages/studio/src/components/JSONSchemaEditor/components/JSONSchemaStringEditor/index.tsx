@@ -32,7 +32,7 @@ interface JSONSchemaStringEditorProps {
   /**
    * The properties of the schema object.
    */
-  prop: OpenAPIV3.SchemaObject;
+  schema: OpenAPIV3.SchemaObject;
 
   /**
    * The label rendered above the input field.
@@ -45,18 +45,18 @@ export default function JSONSchemaStringEditor({
   label,
   name,
   onChange,
-  prop,
   required,
+  schema,
 }: JSONSchemaStringEditorProps): React.ReactElement {
   let type: React.ComponentPropsWithoutRef<typeof Input>['type'] = 'text';
 
-  if (prop.type === 'integer' || prop.type === 'number') {
+  if (schema.type === 'integer' || schema.type === 'number') {
     type = 'number';
-  } else if (prop.format === 'email') {
+  } else if (schema.format === 'email') {
     type = 'email';
-  } else if (prop.format === 'password') {
+  } else if (schema.format === 'password') {
     type = 'password';
-  } else if (prop.format === 'date-time') {
+  } else if (schema.format === 'date-time') {
     type = 'date';
   }
 
@@ -67,7 +67,7 @@ export default function JSONSchemaStringEditor({
         label={label}
         name={name}
         onChange={onChange}
-        placeholder={prop.example}
+        placeholder={schema.example}
         required={required}
         type={type}
       />

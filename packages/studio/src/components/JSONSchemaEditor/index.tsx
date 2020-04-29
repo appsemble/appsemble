@@ -1,7 +1,6 @@
-import { Checkbox, Select } from '@appsemble/react-components';
+import { Checkbox, Select, TextArea } from '@appsemble/react-components';
 import type { OpenAPIV3 } from 'openapi-types';
 import * as React from 'react';
-import type { Definition } from 'typescript-json-schema';
 
 import JSONSchemaArrayEditor from './components/JSONSchemaArrayEditor';
 import JSONSchemaFileEditor from './components/JSONSchemaFileEditor';
@@ -33,7 +32,7 @@ interface JSONSchemaEditorProps {
   /**
    * The schema used to render the form elements.
    */
-  schema: OpenAPIV3.SchemaObject | Definition;
+  schema: OpenAPIV3.SchemaObject;
 
   /**
    * The handler that is called whenever a value changes.
@@ -54,26 +53,23 @@ export default function JSONSchemaEditor({
   schema,
   value,
 }: JSONSchemaEditorProps): React.ReactElement {
-  const prop = (schema?.properties
-    ? schema?.properties[name] || {}
-    : schema) as OpenAPIV3.SchemaObject;
-  const label = prop.title ? (
+  const label = schema?.title ? (
     <>
-      {`${prop.title} `}
+      {`${schema.title} `}
       <span className="has-text-weight-normal has-text-grey-light">({name})</span>
     </>
   ) : (
     name
   );
-  const disable = disabled || prop.readOnly;
+  const disable = disabled || schema.readOnly;
 
-  if (prop.enum) {
+  if (schema.enum) {
     return (
-      <Select label={label} name={name} onChange={onChange} required={required} value={value || ''}>
+      <Select label={label} name={name} onChange={onChange} required={required} value={value}>
         <option disabled hidden value="">
-          Choose here
+          {' '}
         </option>
-        {prop.enum.map((option) => (
+        {schema.enum.map((option) => (
           <option key={option} value={option}>
             {option}
           </option>
@@ -82,29 +78,31 @@ export default function JSONSchemaEditor({
     );
   }
 
-  if (prop.type === 'array') {
-    if (prop?.items.hasOwnProperty('appsembleFile')) {
+  if (schema.type === 'array') {
+    if (schema?.items.hasOwnProperty('appsembleFile')) {
       return (
         <JSONSchemaFileEditor
           label={label}
           name={name}
           onChange={onChange}
-          prop={prop}
           required={required}
+          schema={schema}
         />
       );
     }
   }
 
-  switch (prop.type) {
+  switch (schema.type) {
     case 'array':
       return (
         <JSONSchemaArrayEditor
+          disabled={disabled}
           label={label}
           name={name}
           onChange={onChange}
           required={required}
-          schema={prop.items}
+          schema={schema}
+          value={value || []}
         />
       );
     case 'boolean':
@@ -125,21 +123,31 @@ export default function JSONSchemaEditor({
           name={name}
           onChange={onChange}
           required={required}
-          schema={prop.properties}
-          value={value}
+          schema={schema}
+          value={value || {}}
         />
       );
     case 'string':
     case 'number':
-    default:
       return (
         <JSONSchemaStringEditor
           disabled={disable}
           label={label}
           name={name}
           onChange={onChange}
-          prop={prop}
           required={required}
+          schema={schema}
+        />
+      );
+    default:
+      return (
+        <TextArea
+          disabled={disabled}
+          label={label}
+          name={name}
+          onChange={onChange}
+          required={required}
+          value={value}
         />
       );
   }

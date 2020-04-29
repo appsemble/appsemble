@@ -1,6 +1,5 @@
 import type { OpenAPIV3 } from 'openapi-types';
 import * as React from 'react';
-import type { Definition } from 'typescript-json-schema';
 
 import JSONSchemaEditor from '../..';
 
@@ -29,17 +28,17 @@ interface JSONSchemaObjectEditorProps {
   /**
    * The schema used to render the form elements.
    */
-  schema: OpenAPIV3.SchemaObject | Definition;
+  schema: OpenAPIV3.SchemaObject;
 
   /**
    * The handler that is called whenever a value changes.
    */
-  onChange: (name: any, value?: any) => void;
+  onChange: (event: React.SyntheticEvent, value?: { [key: string]: any }) => void;
 
   /**
    * The value used to populate the editor.
    */
-  value: any;
+  value: { [key: string]: any };
 }
 
 export default function JSONSchemaObjectEditor({
@@ -50,29 +49,24 @@ export default function JSONSchemaObjectEditor({
   schema,
   value,
 }: JSONSchemaObjectEditorProps): React.ReactElement {
-  const [objectValue, setObjectValue] = React.useState({});
-  const objectState: any = objectValue;
-
   const onPropertyChange = React.useCallback(
     (event, val) => {
       const id = event.target.name.slice(name.length + 1);
-      setObjectValue({ ...objectValue, [id]: val });
-      objectState[id] = val;
-      onChange(event, objectState);
+      onChange(event, { ...value, [id]: val });
     },
-    [onChange, objectValue, name.length, objectState],
+    [name, onChange, value],
   );
 
   return (
     <div>
-      {Object.entries(schema).map(([propName, subSchema]) => (
+      {Object.entries(schema.properties).map(([propName, subSchema]) => (
         <JSONSchemaEditor
           key={propName}
           disabled={disabled}
           name={`${name}.${propName}`}
           onChange={onPropertyChange}
           required={required}
-          schema={subSchema}
+          schema={subSchema as OpenAPIV3.SchemaObject}
           value={value ? value[propName] : value}
         />
       ))}
