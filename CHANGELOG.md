@@ -11,8 +11,10 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 - App: Add meta description tag.
 - App: Add minimal `robots.txt`.
+- Block(`detail-viewer`): Implement remappers.
 - CLI: Add support for block icons.
 - Server: Add support for block icons.
+- SDK: Add support for remappers using the `util.remap` function.
 - Studio: Add asset management page for apps. This can be used to preview, download, delete, and
   update assets.
 
