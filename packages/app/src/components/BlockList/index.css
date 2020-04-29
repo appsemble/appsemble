@@ -29,7 +29,3 @@
   opacity: 0;
   transition: opacity 300ms ease-in;
 }
-
-.bottomNavigationPadding {
-  padding-bottom: 109px;
-}

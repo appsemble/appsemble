@@ -10,9 +10,17 @@
 .static {
   flex: 0 0 auto;
   position: relative;
+
+  &:last-child {
+    padding-bottom: 109px;
+  }
 }
 
 .grow {
   flex: 1 1 auto;
   position: relative;
+
+  &:last-child {
+    padding-bottom: 109px;
+  }
 }

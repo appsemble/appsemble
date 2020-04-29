@@ -1,7 +1,6 @@
 import { Loader } from '@appsemble/react-components';
 import type { Block as BlockType, Security } from '@appsemble/types';
 import { checkAppRole } from '@appsemble/utils';
-import classNames from 'classnames';
 import type { EventEmitter } from 'events';
 import React from 'react';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
@@ -41,7 +40,7 @@ export default function BlockList({
   showDialog,
   transitions,
 }: BlockListProps): React.ReactElement {
-  const { blockManifests, definition, revision } = useAppDefinition();
+  const { definition, revision } = useAppDefinition();
   const { role } = useUser();
 
   const blockStatus = React.useRef(blocks.map(() => false));
@@ -70,14 +69,7 @@ export default function BlockList({
   }, [blocks]);
 
   const blockList = filterBlocks(definition.security, blocks, role);
-  const lastNonStaticBlock = blockList
-    .filter((b) => {
-      const { layout } = blockManifests.find(
-        (m) => m.name.endsWith(b.type) && m.version === b.version,
-      );
-      return layout === 'grow' || layout === 'static';
-    })
-    .pop();
+
   const list = blockList.map((block, index) => {
     const content = (
       <Block
@@ -85,10 +77,7 @@ export default function BlockList({
         // eslint-disable-next-line react/no-array-index-key
         key={`${revision}-${index}`}
         block={block}
-        className={classNames({
-          'is-hidden': isLoading,
-          [styles.bottomNavigationPadding]: block === lastNonStaticBlock,
-        })}
+        className={isLoading ? 'is-hidden' : null}
         data={data}
         ee={ee}
         extraCreators={extraCreators}
