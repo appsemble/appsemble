@@ -1952,6 +1952,13 @@
     "@types/minimatch" "*"
     "@types/node" "*"
 
+"@types/hast@^2.3.1":
+  version "2.3.1"
+  resolved "https://registry.yarnpkg.com/@types/hast/-/hast-2.3.1.tgz#b16872f2a6144c7025f296fb9636a667ebb79cd9"
+  integrity sha512-viwwrB+6xGzw+G1eWpF9geV3fnsDgXqHG+cqgiHrvQfDUW5hzhCyV7Sy3UJxhfRFBsgky2SSW33qi/YrIkjX5Q==
+  dependencies:
+    "@types/unist" "*"
+
 "@types/history@*":
   version "4.7.5"
   resolved "https://registry.yarnpkg.com/@types/history/-/history-4.7.5.tgz#527d20ef68571a4af02ed74350164e7a67544860"
@@ -17187,10 +17194,10 @@ regjsparser@^0.6.4:
   dependencies:
     jsesc "~0.5.0"
 
-rehype-document@^4.0.0:
-  version "4.0.0"
-  resolved "https://registry.yarnpkg.com/rehype-document/-/rehype-document-4.0.0.tgz#0d55b0d97a0a41fefa6e0d1b4fbc6c5bb047b94b"
-  integrity sha512-yaZGf1NqOzjEc799JtCkEVjctaVJ1utouSHqM4P1Sav4BteWq2YHSh6poBkbQVjwOX2rWVh/bmtC09wl8Gh0VQ==
+rehype-document@^5.0.0:
+  version "5.0.0"
+  resolved "https://registry.yarnpkg.com/rehype-document/-/rehype-document-5.0.0.tgz#f23ee822d6171d84c6e7e28ac05b09e6c83352df"
+  integrity sha512-OWTltrRiSNHC6CUK8LmZAca7rY8IEDc7YOQY4rqnlhh0wwFBVHqVcBN33Ig1hLDuAZ12QTg/cDvundVjZ8eIaA==
   dependencies:
     doctype "^2.0.0"
     hastscript "^5.0.0"
