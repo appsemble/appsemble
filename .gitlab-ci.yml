@@ -378,6 +378,7 @@ production:
     name: production/appsemble
     url: https://appsemble.app
   script:
+    - helm repo add stable https://kubernetes-charts.storage.googleapis.com
     - helm dependency build config/charts/appsemble
     - helm upgrade appsemble config/charts/appsemble
       --set "app=$CI_ENVIRONMENT_SLUG"

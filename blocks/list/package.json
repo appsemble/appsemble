@@ -1,13 +1,13 @@
 {
   "name": "@appsemble/list",
-  "version": "0.12.6",
+  "version": "0.12.7",
   "private": true,
   "description": "A block that can be used to display a vertically oriented list of data.",
   "dependencies": {
-    "@appsemble/preact": "0.12.6",
-    "@appsemble/preact-components": "0.12.6",
-    "@appsemble/sdk": "0.12.6",
-    "@appsemble/utils": "0.12.6",
+    "@appsemble/preact": "0.12.7",
+    "@appsemble/preact-components": "0.12.7",
+    "@appsemble/sdk": "0.12.7",
+    "@appsemble/utils": "0.12.7",
     "@fortawesome/fontawesome-common-types": "^0.2.28",
     "preact": "^10.4.1"
   }
