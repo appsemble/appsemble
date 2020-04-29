@@ -1,7 +1,7 @@
 import FakeTimers from '@sinonjs/fake-timers';
 import { AxiosTestInstance, createInstance } from 'axios-test-instance';
 
-import { App, Resource, User } from '../models';
+import { App, Member, Organization, Resource, User } from '../models';
 import createServer from '../utils/createServer';
 import { closeTestSchema, createTestSchema, truncate } from '../utils/test/testSchema';
 import testToken from '../utils/test/testToken';
@@ -21,14 +21,11 @@ beforeAll(async () => {
 
 beforeEach(async () => {
   ({ authorization, user } = await testToken());
-  await user.createOrganization(
-    {
-      id: 'testorganization',
-      name: 'Test Organization',
-    },
-    // @ts-ignore
-    { through: { role: 'Maintainer' } },
-  );
+  const organization = await Organization.create({
+    id: 'testorganization',
+    name: 'Test Organization',
+  });
+  await Member.create({ OrganizationId: organization.id, UserId: user.id, role: 'Maintainer' });
   clock = FakeTimers.install();
 
   const template = {

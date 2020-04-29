@@ -4,6 +4,7 @@ import FormData from 'form-data';
 import {
   BlockVersion,
   EmailAuthorization,
+  Member,
   Organization,
   OrganizationBlockStyle,
   OrganizationInvite,
@@ -28,14 +29,12 @@ beforeAll(async () => {
 
 beforeEach(async () => {
   ({ authorization, clientToken, user } = await testToken('organizations:styles:write'));
-  organization = await user.createOrganization(
-    {
-      id: 'testorganization',
-      name: 'Test Organization',
-    },
-    // @ts-ignore
-    { through: { role: 'Owner' } },
-  );
+  organization = await Organization.create({
+    id: 'testorganization',
+    name: 'Test Organization',
+  });
+  await Member.create({ OrganizationId: organization.id, UserId: user.id, role: 'Owner' });
+
   await Organization.create({ id: 'appsemble', name: 'Appsemble' });
 });
 
@@ -353,8 +352,8 @@ describe('removeInvite', () => {
 
 describe('removeMember', () => {
   it('should leave the organization if there are other members', async () => {
-    // @ts-ignore
-    await organization.createUser();
+    const userB = await User.create();
+    await Member.create({ UserId: userB.id, OrganizationId: organization.id, role: 'Member' });
 
     const { status } = await request.delete(
       `/api/organizations/testorganization/members/${user.id}`,
@@ -367,9 +366,8 @@ describe('removeMember', () => {
   });
 
   it('should remove other members from an organization', async () => {
-    // @ts-ignore
-    const userB = await organization.createUser();
-    // @ts-ignore
+    const userB = await User.create();
+    await Member.create({ UserId: userB.id, OrganizationId: organization.id, role: 'Member' });
 
     const { status } = await request.delete(
       `/api/organizations/testorganization/members/${userB.id}`,
@@ -422,8 +420,8 @@ describe('removeMember', () => {
 
 describe('setRole', () => {
   it('should change the role of other members', async () => {
-    // @ts-ignore
-    const userB = await organization.createUser({ name: 'Foo', primaryEmail: 'test2@example.com' });
+    const userB = await User.create({ name: 'foo', primaryEmail: 'test2@example.com' });
+    await Member.create({ UserId: user.id, OrganizationId: organization.id, role: 'Member' });
 
     const response = await request.put(
       `/api/organizations/testorganization/members/${userB.id}/role`,

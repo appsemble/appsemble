@@ -1,6 +1,6 @@
 import { AxiosTestInstance, createInstance } from 'axios-test-instance';
 
-import { App, Asset, Member, User } from '../models';
+import { App, Asset, Member, Organization, User } from '../models';
 import createServer from '../utils/createServer';
 import { closeTestSchema, createTestSchema, truncate } from '../utils/test/testSchema';
 import testToken from '../utils/test/testToken';
@@ -20,14 +20,11 @@ beforeAll(async () => {
 
 beforeEach(async () => {
   ({ authorization, user } = await testToken());
-  ({ id: organizationId } = await user.createOrganization(
-    {
-      id: 'testorganization',
-      name: 'Test Organization',
-    },
-    // @ts-ignore
-    { through: { role: 'Owner' } },
-  ));
+  ({ id: organizationId } = await Organization.create({
+    id: 'testorganization',
+    name: 'Test Organization',
+  }));
+  await Member.create({ OrganizationId: organizationId, UserId: user.id, role: 'Owner' });
 
   app = await App.create({
     definition: {

@@ -1,7 +1,7 @@
 import FakeTimers from '@sinonjs/fake-timers';
 import { AxiosTestInstance, createInstance } from 'axios-test-instance';
 
-import { App, OAuth2AuthorizationCode, Organization, User } from '../models';
+import { App, Member, OAuth2AuthorizationCode, Organization, User } from '../models';
 import createServer from '../utils/createServer';
 import { closeTestSchema, createTestSchema, truncate } from '../utils/test/testSchema';
 import testToken from '../utils/test/testToken';
@@ -72,14 +72,11 @@ describe('createAuthorizationCode', () => {
   let organization: Organization;
 
   beforeEach(async () => {
-    organization = await user.createOrganization(
-      {
-        id: 'org',
-        name: 'Test Organization',
-      },
-      // @ts-ignore
-      { through: { role: 'Owner' } },
-    );
+    organization = await Organization.create({
+      id: 'org',
+      name: 'Test Organization',
+    });
+    await Member.create({ OrganizationId: organization.id, UserId: user.id, role: 'Owner' });
   });
 
   it('should create an authorization code linked to the user and app on a default domain', async () => {

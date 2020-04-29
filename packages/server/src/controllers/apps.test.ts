@@ -2,7 +2,7 @@ import FakeTimers from '@sinonjs/fake-timers';
 import { AxiosTestInstance, createInstance } from 'axios-test-instance';
 import FormData from 'form-data';
 
-import { App, AppBlockStyle, AppRating, BlockVersion, Organization, User } from '../models';
+import { App, AppBlockStyle, AppRating, BlockVersion, Member, Organization, User } from '../models';
 import createServer from '../utils/createServer';
 import { closeTestSchema, createTestSchema, truncate } from '../utils/test/testSchema';
 import testToken from '../utils/test/testToken';
@@ -24,14 +24,11 @@ beforeEach(async () => {
   clock = FakeTimers.install();
 
   ({ authorization, user } = await testToken());
-  ({ id: organizationId } = await user.createOrganization(
-    {
-      id: 'testorganization',
-      name: 'Test Organization',
-    },
-    // @ts-ignore
-    { through: { role: 'Owner' } },
-  ));
+  ({ id: organizationId } = await Organization.create({
+    id: 'testorganization',
+    name: 'Test Organization',
+  }));
+  await Member.create({ OrganizationId: organizationId, UserId: user.id, role: 'Owner' });
 
   await Organization.create({ id: 'appsemble', name: 'Appsemble' });
 
@@ -295,8 +292,7 @@ describe('queryMyApps', () => {
 
     const responseA = await request.get('/api/apps/me', { headers: { authorization } });
 
-    // @ts-ignore
-    await user.addOrganization(organizationB);
+    await Member.create({ OrganizationId: organizationB.id, UserId: user.id, role: 'Member' });
 
     const responseB = await request.get('/api/apps/me', { headers: { authorization } });
 

@@ -1,4 +1,5 @@
 import { logger } from '@appsemble/node-utils';
+import type { SubscriptionResponse } from '@appsemble/types';
 import { permissions } from '@appsemble/utils';
 import Boom from '@hapi/boom';
 
@@ -38,8 +39,7 @@ export async function getSubscription(ctx: KoaContext<Params>): Promise<void> {
     throw Boom.notFound('Subscription not found');
   }
 
-  // XXX Fix this type
-  const resources: any = {};
+  const resources: SubscriptionResponse = {};
   if (app.definition.resources) {
     Object.keys(app.definition.resources).forEach((resource) => {
       resources[resource] = { create: false, update: false, delete: false };

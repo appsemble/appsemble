@@ -156,6 +156,22 @@ export interface TokenResponse {
   token_type: 'bearer';
 }
 
+export interface SubscriptionResponseResource {
+  create: boolean;
+  update: boolean;
+  delete: boolean;
+  subscriptions?: {
+    [id: string]: {
+      update: boolean;
+      delete: boolean;
+    };
+  };
+}
+
+export interface SubscriptionResponse {
+  [type: string]: SubscriptionResponseResource;
+}
+
 export interface Security {
   login?: 'password';
   default: {
@@ -494,12 +510,6 @@ export interface ActionType {
    * Whether or not app creators are required to define this action.
    */
   required?: boolean;
-}
-
-export interface SubscriptionResponseResource {
-  create: boolean;
-  update: boolean;
-  delete: boolean;
 }
 
 export interface BlockManifest {

@@ -1,7 +1,7 @@
 import FakeTimers from '@sinonjs/fake-timers';
 import { AxiosTestInstance, createInstance } from 'axios-test-instance';
 
-import { App, BlockVersion, Organization, User } from '../models';
+import { App, AppMember, BlockVersion, Member, Organization, User } from '../models';
 import createServer from '../utils/createServer';
 import { closeTestSchema, createTestSchema, truncate } from '../utils/test/testSchema';
 import testToken from '../utils/test/testToken';
@@ -23,14 +23,11 @@ beforeEach(async () => {
   clock = FakeTimers.install();
 
   ({ authorization, user } = await testToken());
-  ({ id: organizationId } = await user.createOrganization(
-    {
-      id: 'testorganization',
-      name: 'Test Organization',
-    },
-    // @ts-ignore
-    { through: { role: 'Owner' } },
-  ));
+  ({ id: organizationId } = await Organization.create({
+    id: 'testorganization',
+    name: 'Test Organization',
+  }));
+  await Member.create({ OrganizationId: organizationId, UserId: user.id, role: 'Owner' });
 
   await Organization.create({ id: 'appsemble', name: 'Appsemble' });
   await BlockVersion.create({
@@ -81,8 +78,7 @@ describe('getAppMembers', () => {
       OrganizationId: organizationId,
     });
 
-    // @ts-ignore
-    await app.addUser(user, { through: { role: 'Reader' } });
+    await AppMember.create({ UserId: user.id, AppId: app.id, role: 'Reader' });
 
     const response = await request.get(`/api/apps/${app.id}/members`, {
       headers: { authorization },
@@ -295,8 +291,7 @@ describe('setAppMember', () => {
     });
 
     const userB = await User.create({ name: 'Foo', primaryEmail: 'foo@example.com' });
-    // @ts-ignore
-    await app.addUser(userB, { through: { role: 'Admin' } });
+    await AppMember.create({ UserId: userB.id, AppId: app.id, role: 'Admin' });
 
     const response = await request.post(
       `/api/apps/${app.id}/members/${userB.id}`,
@@ -345,8 +340,7 @@ describe('setAppMember', () => {
     });
 
     const userB = await User.create({ name: 'Foo', primaryEmail: 'foo@example.com' });
-    // @ts-ignore
-    await app.addUser(userB, { through: { role: 'Admin' } });
+    await AppMember.create({ UserId: userB.id, AppId: app.id, role: 'Admin' });
 
     const response = await request.post(
       `/api/apps/${app.id}/members/${userB.id}`,

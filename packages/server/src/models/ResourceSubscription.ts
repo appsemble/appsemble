@@ -6,7 +6,7 @@ import Resource from './Resource';
 export default class ResourceSubscription extends Model {
   ResourceId: number;
 
-  action: string;
+  action: 'delete' | 'update' | 'create';
 
   type: string;
 

@@ -4,7 +4,7 @@ import fs from 'fs-extra';
 import { omit } from 'lodash';
 import path from 'path';
 
-import type { User } from '../models';
+import { Member, Organization, User } from '../models';
 import createServer from '../utils/createServer';
 import getDefaultIcon from '../utils/getDefaultIcon';
 import { closeTestSchema, createTestSchema, truncate } from '../utils/test/testSchema';
@@ -20,14 +20,11 @@ beforeAll(createTestSchema('blocks'));
 beforeEach(async () => {
   const server = await createServer({ argv: { host: 'http://localhost', secret: 'test' } });
   ({ clientToken, user } = await testToken('blocks:write'));
-  await user.createOrganization(
-    {
-      id: 'xkcd',
-      name: 'xkcd',
-    },
-    // @ts-ignore
-    { through: { role: 'Maintainer' } },
-  );
+  const organization = await Organization.create({
+    id: 'xkcd',
+    name: 'xkcd',
+  });
+  await Member.create({ OrganizationId: organization.id, UserId: user.id, role: 'Maintainer' });
   authorization = `Bearer ${clientToken}`;
   instance = await createInstance(server);
 });

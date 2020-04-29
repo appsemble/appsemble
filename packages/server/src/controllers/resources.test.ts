@@ -2,7 +2,7 @@ import FakeTimers from '@sinonjs/fake-timers';
 import { AxiosTestInstance, createInstance } from 'axios-test-instance';
 import webpush from 'web-push';
 
-import { App, AppSubscription, Resource, User } from '../models';
+import { App, AppMember, AppSubscription, Member, Organization, Resource, User } from '../models';
 import createServer from '../utils/createServer';
 import createWaitableMock, { EnhancedMock } from '../utils/test/createWaitableMock';
 import { closeTestSchema, createTestSchema, truncate } from '../utils/test/testSchema';
@@ -89,14 +89,11 @@ beforeAll(async () => {
 
 beforeEach(async () => {
   ({ authorization, user } = await testToken());
-  ({ id: organizationId } = await user.createOrganization(
-    {
-      id: 'testorganization',
-      name: 'Test Organization',
-    },
-    // @ts-ignore
-    { through: { role: 'Maintainer' } },
-  ));
+  ({ id: organizationId } = await Organization.create({
+    id: 'testorganization',
+    name: 'Test Organization',
+  }));
+  await Member.create({ UserId: user.id, OrganizationId: organizationId, role: 'Maintainer' });
   clock = FakeTimers.install();
 });
 
@@ -761,8 +758,7 @@ describe('verifyAppRole', () => {
       roles: ['Reader'],
     };
 
-    // @ts-ignore
-    await app.addUser(user.id, { through: { role: 'Reader' } });
+    await AppMember.create({ AppId: app.id, UserId: user.id, role: 'Reader' });
     const resourceA = await Resource.create({
       AppId: app.id,
       type: 'testResource',
@@ -804,8 +800,7 @@ describe('verifyAppRole', () => {
       roles: ['Admin', '$author'],
     };
 
-    // @ts-ignore
-    await app.addUser(user.id, { through: { role: 'Reader' } });
+    await AppMember.create({ AppId: app.id, UserId: user.id, role: 'Reader' });
     const resource = await Resource.create({
       AppId: app.id,
       type: 'testResource',
@@ -870,8 +865,7 @@ describe('verifyAppRole', () => {
   it('should throw a 403 on secured actions if user is authenticated and has insufficient roles', async () => {
     const app = await exampleApp(organizationId);
 
-    // @ts-ignore
-    await app.addUser(user.id, { through: { role: 'Reader' } });
+    await AppMember.create({ AppId: app.id, UserId: user.id, role: 'Reader' });
 
     const response = await request.post(
       `/api/apps/${app.id}/resources/secured`,
