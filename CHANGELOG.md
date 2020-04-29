@@ -7,6 +7,10 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Fixed
+
+- Server: Fix connection to database with self-signed certificate.
+
 ## [0.12.7] - 2020-04-29
 
 ### Fixed
