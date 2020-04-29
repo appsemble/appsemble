@@ -10,5 +10,6 @@ continue on this basic app to add more advanced features.
 1. [Appsemble studio](/guide/studio)
 2. [Basic app](/guide/basic-app)
 3. [Events](/guide/events)
-4. [Theming](/guide/theming)
-5. [Custom domain name](/guide/dns)
+4. [Remappers](/guide/remappers)
+5. [Theming](/guide/theming)
+6. [Custom domain name](/guide/dns)
