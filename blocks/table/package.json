@@ -1,12 +1,12 @@
 {
   "name": "@appsemble/table",
-  "version": "0.12.5",
+  "version": "0.12.6",
   "private": true,
   "description": "A block that can be used to display larger sets of data.",
   "dependencies": {
-    "@appsemble/preact": "0.12.5",
-    "@appsemble/preact-components": "0.12.5",
-    "@appsemble/utils": "0.12.5",
+    "@appsemble/preact": "0.12.6",
+    "@appsemble/preact-components": "0.12.6",
+    "@appsemble/utils": "0.12.6",
     "preact": "^10.4.1"
   }
 }
