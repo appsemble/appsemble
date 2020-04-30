@@ -31,13 +31,13 @@ export default {
           description: 'The data used to display the content of the notification.',
           properties: {
             title: {
-              // type: 'string',
-              format: 'remapper',
+              // XXX: This should be of type string|object for remapper types.
+              type: { oneOf: ['string', 'object'] },
               description: 'The title of the notification.',
             },
             content: {
-              // type: 'string',
-              format: 'remapper',
+              // XXX: This should be of type string|object for remapper types.
+              type: { oneOf: ['string', 'object'] },
               description: 'The body of the notification.',
             },
             link: {

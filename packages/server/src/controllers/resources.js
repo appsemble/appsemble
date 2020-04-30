@@ -1,4 +1,10 @@
-import { checkAppRole, permissions, SchemaValidationError, validate } from '@appsemble/utils';
+import {
+  checkAppRole,
+  permissions,
+  remap,
+  SchemaValidationError,
+  validate,
+} from '@appsemble/utils';
 import Boom from '@hapi/boom';
 import parseOData from '@wesselkuipers/odata-sequelize';
 import crypto from 'crypto';
@@ -482,6 +488,18 @@ async function processHooks(ctx, app, resource, action) {
     const { notification } = resourceDefinition[action].hooks;
     const { data } = notification;
 
+    const r = {
+      ...resource.data,
+      id: resource.id,
+      $created: resource.created,
+      $updated: resource.updated,
+    };
+
+    const title = data.title ? remap(data.title, r) : resource.type;
+    const content = data.content
+      ? remap(data.content, r)
+      : `${action.charAt(0).toUpperCase()}${action.slice(1)}d ${resource.id}`;
+
     await sendSubscriptionNotifications(
       ctx,
       app,
@@ -492,11 +510,8 @@ async function processHooks(ctx, app, resource, action) {
       action,
       resource.id,
       {
-        title: data && data.title ? data.title : resource.type,
-        body:
-          data && data.body
-            ? data.body
-            : `${action.charAt(0).toUpperCase()}${action.slice(1)}d ${resource.id}`,
+        title,
+        body: content,
       },
     );
   }
