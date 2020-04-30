@@ -481,6 +481,7 @@ async function processHooks(ctx, app, resource, action) {
   ) {
     const { notification } = resourceDefinition[action].hooks;
     const { data } = notification;
+
     await sendSubscriptionNotifications(
       ctx,
       app,

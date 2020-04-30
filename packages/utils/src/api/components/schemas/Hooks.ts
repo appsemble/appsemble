@@ -31,11 +31,13 @@ export default {
           description: 'The data used to display the content of the notification.',
           properties: {
             title: {
-              type: 'string',
+              // type: 'string',
+              format: 'remapper',
               description: 'The title of the notification.',
             },
-            body: {
-              type: 'string',
+            content: {
+              // type: 'string',
+              format: 'remapper',
               description: 'The body of the notification.',
             },
             link: {
