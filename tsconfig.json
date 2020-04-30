@@ -8,5 +8,5 @@
       "@appsemble/*": ["packages/*/src"]
     }
   },
-  "exclude": ["**/dist"]
+  "exclude": ["**/dist", "**/__fixtures__"]
 }

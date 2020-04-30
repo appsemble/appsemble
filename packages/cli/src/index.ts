@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+// eslint-disable-next-line filenames/match-exported
 import { configureLogger, handleError } from '@appsemble/node-utils';
 import { cosmiconfig } from 'cosmiconfig';
 import path from 'path';
