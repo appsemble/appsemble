@@ -84,12 +84,6 @@ module.exports = {
   },
   overrides: [
     {
-      files: ['packages/server/src/migrations/**'],
-      rules: {
-        'filenames/match-regex': 'off',
-      },
-    },
-    {
       files: ['**/*.ts', '**/*.tsx'],
       plugins: ['@typescript-eslint'],
       parser: '@typescript-eslint/parser',
@@ -144,6 +138,12 @@ module.exports = {
         '@typescript-eslint/no-var-requires': 'error',
         '@typescript-eslint/prefer-namespace-keyword': 'error',
         '@typescript-eslint/prefer-optional-chain': 'error',
+      },
+    },
+    {
+      files: ['packages/server/src/migrations/**'],
+      rules: {
+        'filenames/match-regex': 'off',
       },
     },
     {

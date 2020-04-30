@@ -1,4 +1,4 @@
-import { readJson } from 'fs-extra';
+import { readJsonSync } from 'fs-extra';
 import type { PackageJson } from 'type-fest';
 
 /**
@@ -8,6 +8,6 @@ import type { PackageJson } from 'type-fest';
  *
  * @returns The contents of package.json
  */
-export default function readPackageJson(): Promise<PackageJson> {
-  return readJson(require.resolve('../../package.json'));
+export default function readPackageJson(): PackageJson {
+  return readJsonSync(require.resolve('../../package.json'));
 }

@@ -13,6 +13,8 @@ export default class BlockVersion extends Model implements Omit<BlockManifest, '
 
   layout?: 'float' | 'static' | 'grow' | 'hidden' | null;
 
+  icon: Buffer;
+
   description: string;
 
   parameters: object;

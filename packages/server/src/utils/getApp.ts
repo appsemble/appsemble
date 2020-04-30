@@ -14,7 +14,7 @@ import type { KoaContext } from '../types';
  * @returns The app matching the url.
  */
 export default async function getApp(
-  { argv, origin }: KoaContext,
+  { argv, origin }: Pick<KoaContext, 'argv' | 'origin'>,
   queryOptions: FindOptions,
   url = origin,
 ): Promise<App> {

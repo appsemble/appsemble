@@ -14,24 +14,23 @@ export default function getAppFromRecord(
   record: models.App,
   omittedValues: (keyof types.App)[] = [],
 ): Partial<types.App> {
-  const data = record.dataValues !== undefined ? record.dataValues : record;
   const result = {
-    id: data.id,
-    $created: data.created,
-    $updated: data.updated,
-    domain: data.domain || null,
-    path: data.path,
-    private: Boolean(data.private),
-    iconUrl: `/api/apps/${data.id}/icon`,
-    definition: data.definition,
-    yaml: data.yaml || yaml.safeDump(data.definition),
-    ...(data.RatingCount && {
+    id: record.id,
+    $created: record.created,
+    $updated: record.updated,
+    domain: record.domain || null,
+    path: record.path,
+    private: Boolean(record.private),
+    iconUrl: `/api/apps/${record.id}/icon`,
+    definition: record.definition,
+    yaml: record.yaml || yaml.safeDump(record.definition),
+    ...(record.get('RatingCount') && {
       rating: {
-        average: data.RatingAverage ? Number(data.RatingAverage) : null,
-        count: data.RatingCount ? Number(data.RatingCount) : null,
+        average: record.get('RatingAverage') ? Number(record.get('RatingAverage')) : null,
+        count: record.get('RatingCount') ? Number(record.get('RatingCount')) : null,
       },
     }),
-    OrganizationId: data.OrganizationId,
+    OrganizationId: record.OrganizationId,
   };
 
   return omit(result, omittedValues);
