@@ -1,4 +1,4 @@
-interface EnhancedMock extends jest.Mock {
+export interface EnhancedMock extends jest.Mock {
   waitToHaveBeenCalled: (t: number) => Promise<any>;
 }
 

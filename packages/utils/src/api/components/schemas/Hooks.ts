@@ -34,7 +34,7 @@ export default {
               type: 'string',
               description: 'The title of the notification.',
             },
-            body: {
+            content: {
               type: 'string',
               description: 'The body of the notification.',
             },

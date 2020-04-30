@@ -13,23 +13,6 @@ export interface UserEmail {
   verified: boolean;
 }
 
-/**
- * A response for a login token request
- */
-export interface TokenResponse {
-  /**
-   * The bearer access token to use for authenticating requests.
-   */
-  // eslint-disable-next-line camelcase
-  access_token: string;
-
-  /**
-   * A refresh token for getting a new access token.
-   */
-  // eslint-disable-next-line camelcase
-  refresh_token: string;
-}
-
 export interface OAuth2ClientCredentials {
   $created?: string;
   id: string;

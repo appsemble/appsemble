@@ -1,6 +1,8 @@
 import { DataTypes, Model, Sequelize } from 'sequelize';
 
 export default class AppMember extends Model {
+  role: string;
+
   static initialize(sequelize: Sequelize): void {
     AppMember.init(
       {
