@@ -1,8 +1,20 @@
-import { DataTypes, Model, Sequelize } from 'sequelize';
+import { DataTypes, HasOneCreateAssociationMixin, Model, Sequelize } from 'sequelize';
 
 import User from './User';
 
 export default class EmailAuthorization extends Model {
+  email: string;
+
+  verified: boolean;
+
+  key: string;
+
+  UserId: number;
+
+  User: User;
+
+  createUser: HasOneCreateAssociationMixin<User>;
+
   static initialize(sequelize: Sequelize): void {
     EmailAuthorization.init(
       {

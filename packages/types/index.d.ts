@@ -111,6 +111,65 @@ export interface UserInfo {
    * The URL of the profile picture for the end-user.
    */
   picture: string;
+
+  /**
+   * A URL that links to the user profile.
+   */
+  profile: string;
+}
+
+/**
+ * The payload stored in our JSON web tokens
+ */
+export interface JwtPayload {
+  aud: string;
+  exp: number;
+  iat: string;
+  iss: string;
+  scope: string;
+  sub: number;
+}
+
+/**
+ * A response for a login token request
+ */
+export interface TokenResponse {
+  /**
+   * The bearer access token to use for authenticating requests.
+   */
+  // eslint-disable-next-line camelcase
+  access_token: string;
+
+  /**
+   * How long until the access token expires in seconds from now.
+   */
+  // eslint-disable-next-line camelcase
+  expires_in: number;
+
+  /**
+   * A refresh token for getting a new access token.
+   */
+  // eslint-disable-next-line camelcase
+  refresh_token?: string;
+
+  // eslint-disable-next-line camelcase
+  token_type: 'bearer';
+}
+
+export interface SubscriptionResponseResource {
+  create: boolean;
+  update: boolean;
+  delete: boolean;
+  subscriptions?: {
+    [id: string]: {
+      update: boolean;
+      delete: boolean;
+    };
+  };
+}
+
+export interface SubscriptionResponse {
+  [type: string]: SubscriptionResponseResource;
 }
 
 export interface Security {
@@ -129,19 +188,21 @@ export interface Security {
 
 export type Navigation = 'bottom' | 'left-menu' | 'hidden';
 
+export interface NotificationDefinition {
+  to?: string[];
+  subscribe?: 'all' | 'single' | 'both';
+  data?: {
+    title: string;
+    content: string;
+    link: string;
+  };
+}
+
 /**
  * A collection of hooks that are triggered upon calling a resource actions.
  */
 export interface ResourceHooks {
-  notification: {
-    to?: string[];
-    subscribe?: 'all' | 'single' | 'both';
-    data: {
-      title: string;
-      content: string;
-      link: string;
-    };
-  };
+  notification: NotificationDefinition;
 }
 
 export interface ResourceCall {
@@ -164,6 +225,11 @@ export interface ResourceCall {
    * Query parameters to pass along with the request.
    */
   query?: { [key: string]: string };
+
+  /**
+   * THe roles that are allowed to perform this action.
+   */
+  roles?: string[];
 }
 
 interface ResourceReferenceAction {
