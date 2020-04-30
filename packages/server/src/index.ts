@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { configureLogger, handleError } from '@appsemble/node-utils';
-import yargs from 'yargs';
+import yargs, { CommandModule } from 'yargs';
 
 import * as health from './commands/health';
 import * as migrate from './commands/migrate';
@@ -17,9 +17,9 @@ export { startHandler as start, migrateHandler as migrate };
 /**
  * The main entry point for the Appsemble production server.
  *
- * @param {string[]} argv The argument vector passed in from the command line.
+ * @param argv The argument vector passed in from the command line.
  */
-function main(argv) {
+function main(argv: string[]): void {
   yargs
     .usage('Usage:\n  $0 [command]')
     .scriptName(`docker run -p ${start.PORT} -ti appsemble/appsemble`)
@@ -34,10 +34,10 @@ function main(argv) {
       type: 'count',
     })
     .middleware([configureLogger])
-    .command(health)
-    .command(start)
-    .command(migrate)
-    .command(restoreDNS)
+    .command(health as CommandModule)
+    .command(start as CommandModule)
+    .command(migrate as CommandModule)
+    .command(restoreDNS as CommandModule)
     .fail(handleError)
     .help('help', 'Show this help message.')
     .alias('h', 'help')
