@@ -1,7 +1,5 @@
-import fs from 'fs-extra';
 import yaml from 'js-yaml';
 import type { InlineCode, Link, Parent } from 'mdast';
-import path from 'path';
 import rehypeDocument from 'rehype-document';
 import rehypeStringify from 'rehype-stringify';
 import frontmatter, { YamlNode } from 'remark-frontmatter';
@@ -11,7 +9,7 @@ import remarkStringify from 'remark-stringify';
 import unified from 'unified';
 import visit from 'unist-util-visit';
 
-export const templateDir = path.resolve(__dirname, '../../templates/email');
+import readAsset from '../readAsset';
 
 const remark = unified().use(remarkParse).use(frontmatter).use(remarkStringify).freeze();
 
@@ -39,7 +37,7 @@ export default async function renderEmail(
   templateName: string,
   values: { [key: string]: string },
 ): Promise<Email> {
-  const template = await fs.readFile(path.join(templateDir, `${templateName}.md`), 'utf-8');
+  const template = await readAsset(`email/${templateName}.md`, 'utf-8');
   let subject;
   const mdast = await remark.parse(template);
 

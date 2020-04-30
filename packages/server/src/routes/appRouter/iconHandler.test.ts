@@ -1,5 +1,5 @@
 import { AxiosTestInstance, createInstance } from 'axios-test-instance';
-import fs from 'fs-extra';
+import fs from 'fs';
 import Koa from 'koa';
 import path from 'path';
 
@@ -9,13 +9,8 @@ import appRouter from '.';
 
 let request: AxiosTestInstance;
 
-// jest.mock('../../utils/getApp', () => ({
-//   __esModule: true,
-//   default: jest.fn(),
-// }));
-
 function readIcon(): Promise<Buffer> {
-  return fs.readFile(path.join(__dirname, '__fixtures__', 'tux.png'));
+  return fs.promises.readFile(path.join(__dirname, '__fixtures__', 'tux.png'));
 }
 
 beforeAll(async () => {

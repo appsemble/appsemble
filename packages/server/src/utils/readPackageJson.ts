@@ -1,4 +1,4 @@
-import { readJsonSync } from 'fs-extra';
+import { readFileSync } from 'fs';
 import type { PackageJson } from 'type-fest';
 
 /**
@@ -9,5 +9,5 @@ import type { PackageJson } from 'type-fest';
  * @returns The contents of package.json
  */
 export default function readPackageJson(): PackageJson {
-  return readJsonSync(require.resolve('../../package.json'));
+  return JSON.parse(readFileSync(require.resolve('../../package.json'), 'utf-8'));
 }

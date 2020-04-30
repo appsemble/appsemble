@@ -11,7 +11,7 @@ import type { VFile } from 'vfile';
 import { BlockAsset, BlockVersion, getDB, transactional } from '../models';
 import type { KoaContext } from '../types';
 import checkRole from '../utils/checkRole';
-import getDefaultIcon from '../utils/getDefaultIcon';
+import readAsset from '../utils/readAsset';
 
 interface Params {
   blockId: string;
@@ -249,7 +249,7 @@ export async function getBlockIcon(ctx: KoaContext<Params>): Promise<void> {
     throw Boom.notFound('Block version not found');
   }
 
-  const icon = version.icon || getDefaultIcon();
+  const icon = version.icon || ((await readAsset('appsemble.svg')) as Buffer);
   ctx.type = isSvg(icon) ? 'svg' : (await fileType.fromBuffer(icon)).mime;
   ctx.body = icon;
 }
