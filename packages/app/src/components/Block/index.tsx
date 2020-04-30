@@ -1,6 +1,6 @@
 import { useMessages } from '@appsemble/react-components';
 import type { Block as BlockType } from '@appsemble/types';
-import { baseTheme, normalize, normalizeBlockName } from '@appsemble/utils';
+import { baseTheme, normalize, normalizeBlockName, remap } from '@appsemble/utils';
 import classNames from 'classnames';
 import type { EventEmitter } from 'events';
 import React from 'react';
@@ -13,7 +13,6 @@ import { callBootstrap } from '../../utils/bootstrapper';
 import injectCSS from '../../utils/injectCSS';
 import makeActions from '../../utils/makeActions';
 import prefixBlockURL from '../../utils/prefixBlockURL';
-import remap from '../../utils/remap';
 import settings from '../../utils/settings';
 import { useAppDefinition } from '../AppDefinitionProvider';
 import { useServiceWorkerRegistration } from '../ServiceWorkerRegistrationProvider';
