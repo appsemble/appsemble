@@ -27,7 +27,7 @@ let db: Sequelize;
 
 export interface InitDBParams {
   host?: string;
-  port?: string;
+  port?: number;
   username?: string;
   password?: string;
   database?: string;
@@ -112,7 +112,7 @@ export function initDB({
         password,
         database,
         dialectOptions: {
-          ssl,
+          ssl: ssl && { rejectUnauthorized: false },
         },
       }),
     ];

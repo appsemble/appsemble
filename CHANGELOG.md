@@ -9,16 +9,33 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
+- Block(`detail-viewer`): Implement remappers.
+- SDK: Add support for remappers using the `util.remap` function.
+
+## [0.12.8] - 2020-04-29
+
+### Fixed
+
+- Server: Fix connection to database with self-signed certificate.
+
+## [0.12.7] - 2020-04-29
+
+### Fixed
+
+- CI: Fix the release process for production.
+
+## [0.12.6] - 2020-04-29
+
+### Added
+
 - App: Add meta description tag.
 - App: Add minimal `robots.txt`.
-- Block(`detail-viewer`): Implement remappers.
 - CLI: Add support for block icons.
 - Server: Add support for block icons.
-- SDK: Add support for remappers using the `util.remap` function.
 - Studio: Add asset management page for apps. This can be used to preview, download, delete, and
   update assets.
 
-### Fixes
+### Fixed
 
 - App: Fix app theme color.
 - Studio: Add asset management page for apps. This can be used to preview, download, delete, and
