@@ -1,15 +1,15 @@
-import { CleanWebpackPlugin } from 'clean-webpack-plugin';
-import MiniCssExtractPlugin from 'mini-css-extract-plugin';
-import path from 'path';
-import { UnusedFilesWebpackPlugin } from 'unused-files-webpack-plugin';
-import merge from 'webpack-merge';
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const path = require('path');
+const { UnusedFilesWebpackPlugin } = require('unused-files-webpack-plugin');
+const merge = require('webpack-merge');
 
-import shared from './shared';
+const shared = require('./shared');
 
 /**
  * This webpack configuration is used by Appsemble blocks.
  */
-export default ({ dir, name }, argv) => {
+module.exports = ({ dir, name }, argv) => {
   const [, blockName] = name.split('/');
   const srcPath = path.join(dir, 'src');
   const production = argv.mode === 'production';
