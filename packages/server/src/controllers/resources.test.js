@@ -34,6 +34,24 @@ const exampleApp = (orgId) => ({
             },
           },
         },
+        create: {
+          hooks: {
+            notification: {
+              subscribe: 'all',
+              data: {
+                title: 'This is the title of a created testResource',
+                content: [
+                  {
+                    'string.format': {
+                      template: 'This is the created resource {id}’s body: {foo}',
+                      values: { id: [{ prop: 'id' }], foo: [{ prop: 'foo' }] },
+                    },
+                  },
+                ],
+              },
+            },
+          },
+        },
       },
       testResourceB: {
         schema: {
@@ -1015,6 +1033,63 @@ describe('Resource Notifications', () => {
         timestamp: 0,
         title: 'testResource',
         body: `Updated ${resource.id}`,
+      }),
+      {
+        vapidDetails: {
+          privateKey: app.vapidPrivateKey,
+          publicKey: app.vapidPublicKey,
+          subject: 'mailto: support@appsemble.com',
+        },
+      },
+    );
+  });
+
+  it('should remap the data definition of subscription hooks', async () => {
+    const app = await App.create(exampleApp(organizationId), { raw: true });
+
+    const endpoint = 'https://example.com';
+    const p256dh = 'abc';
+    const auth = 'def';
+
+    await AppSubscription.create({
+      endpoint,
+      p256dh,
+      auth,
+      AppId: app.id,
+    });
+
+    await request.patch(
+      `/api/apps/${app.id}/subscriptions`,
+      {
+        endpoint: 'https://example.com',
+        resource: 'testResource',
+        action: 'create',
+        value: true,
+      },
+      { headers: { authorization: token } },
+    );
+
+    webpush.sendNotification = createWaitableMock();
+    const {
+      data: { id },
+    } = await request.post(
+      `/api/apps/${app.id}/resources/testResource`,
+      { foo: 'I am Foo.' },
+      { headers: { authorization: token } },
+    );
+
+    await webpush.sendNotification.waitToHaveBeenCalled(1);
+    expect(webpush.sendNotification).toHaveBeenCalledWith(
+      {
+        endpoint,
+        keys: { auth, p256dh },
+      },
+      JSON.stringify({
+        icon: 'http://test-app.testorganization.localhost/icon-96.png',
+        badge: 'http://test-app.testorganization.localhost/icon-96.png',
+        timestamp: 0,
+        title: 'This is the title of a created testResource',
+        body: `This is the created resource ${id}’s body: I am Foo.`,
       }),
       {
         vapidDetails: {

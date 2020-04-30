@@ -495,8 +495,8 @@ async function processHooks(ctx, app, resource, action) {
       $updated: resource.updated,
     };
 
-    const title = data.title ? remap(data.title, r) : resource.type;
-    const content = data.content
+    const title = data?.title ? remap(data.title, r) : resource.type;
+    const content = data?.content
       ? remap(data.content, r)
       : `${action.charAt(0).toUpperCase()}${action.slice(1)}d ${resource.id}`;
 
