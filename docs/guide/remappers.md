@@ -6,7 +6,7 @@ route: /guide/remappers
 # Remappers
 
 Remapper functions are objects that define how a value should be transformed. This can be useful for
-various purposes, such as retrieving properties from data structured, transforming data, and
+various purposes, such as retrieving properties from data structures, transforming data, and
 formatting text. Remappers consist of an array of remapper objects. Each object has one key, which
 represents the remapper function. The value represents parameters to customize the behavior of the
 remapper.
