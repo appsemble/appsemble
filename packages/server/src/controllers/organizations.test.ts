@@ -420,8 +420,8 @@ describe('removeMember', () => {
 
 describe('setRole', () => {
   it('should change the role of other members', async () => {
-    const userB = await User.create({ name: 'foo', primaryEmail: 'test2@example.com' });
-    await Member.create({ UserId: user.id, OrganizationId: organization.id, role: 'Member' });
+    const userB = await User.create({ name: 'Foo', primaryEmail: 'test2@example.com' });
+    await Member.create({ UserId: userB.id, OrganizationId: organization.id, role: 'Member' });
 
     const response = await request.put(
       `/api/organizations/testorganization/members/${userB.id}/role`,
