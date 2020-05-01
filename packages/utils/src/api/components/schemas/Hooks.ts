@@ -29,17 +29,16 @@ export default {
         data: {
           type: 'object',
           description: 'The data used to display the content of the notification.',
+          additionalProperties: true,
           properties: {
-            title: {
-              // XXX: This should be of type string|object for remapper types.
-              type: { oneOf: ['string', 'object'] },
-              description: 'The title of the notification.',
-            },
-            content: {
-              // XXX: This should be of type string|object for remapper types.
-              type: { oneOf: ['string', 'object'] },
-              description: 'The body of the notification.',
-            },
+            // XXX: title and content are remapper properties,
+            // which currently can’t be defined correctly.
+            // title: {
+            //   description: 'The title of the notification.',
+            // },
+            // content: {
+            //   description: 'The body of the notification.',
+            // },
             link: {
               type: 'string',
               description: `The URL of the page the user gets redirected to after being clicked.

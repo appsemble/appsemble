@@ -1095,8 +1095,7 @@ describe('Resource Notifications', () => {
   });
 
   it('should remap the data definition of subscription hooks', async () => {
-    const app = await App.create(exampleApp(organizationId), { raw: true });
-
+    const app = await exampleApp(organizationId);
     const endpoint = 'https://example.com';
     const p256dh = 'abc';
     const auth = 'def';
@@ -1116,7 +1115,7 @@ describe('Resource Notifications', () => {
         action: 'create',
         value: true,
       },
-      { headers: { authorization: token } },
+      { headers: { authorization } },
     );
 
     webpush.sendNotification = createWaitableMock();
@@ -1125,10 +1124,10 @@ describe('Resource Notifications', () => {
     } = await request.post(
       `/api/apps/${app.id}/resources/testResource`,
       { foo: 'I am Foo.' },
-      { headers: { authorization: token } },
+      { headers: { authorization } },
     );
 
-    await webpush.sendNotification.waitToHaveBeenCalled(1);
+    await (webpush.sendNotification as EnhancedMock).waitToHaveBeenCalled(1);
     expect(webpush.sendNotification).toHaveBeenCalledWith(
       {
         endpoint,
