@@ -81,15 +81,17 @@ export default function ResourceTable(): React.ReactElement {
 
   const onChange = React.useCallback(
     (event: any, value: any) => {
-      let name = '';
-      if (event?.target.name) {
-        name = event.target.name;
-      } else {
-        name = event.currentTarget.name;
-      }
-      if (name.includes('.')) {
-        const objectParentName = name.split(/\./g)[0];
-        name = objectParentName;
+      let name = event;
+      if (event?.target) {
+        if (event?.target.name) {
+          name = event.target.name;
+        } else {
+          name = event.currentTarget.name;
+        }
+        if (name.includes('.')) {
+          const objectParentName = name.split(/\./g)[0];
+          name = objectParentName;
+        }
       }
       if (name === 'id') {
         return;
@@ -320,16 +322,16 @@ export default function ResourceTable(): React.ReactElement {
         }
       >
         {keys.map((key) => {
-          const prop = (schema?.properties[key] || {}) as OpenAPIV3.SchemaObject;
+          const propSchema = (schema?.properties[key] || {}) as OpenAPIV3.SchemaObject;
 
           return (
             <JSONSchemaEditor
               key={key}
-              disabled={prop.readOnly || key === 'id'}
+              disabled={propSchema.readOnly || key === 'id'}
               name={key}
               onChange={onChange}
               required={schema?.required?.includes(key)}
-              schema={schema}
+              schema={propSchema}
               value={editingResource?.[key]}
             />
           );

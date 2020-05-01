@@ -1,7 +1,6 @@
 import { Button, FormComponent } from '@appsemble/react-components';
 import type { OpenAPIV3 } from 'openapi-types';
 import * as React from 'react';
-import type { Definition } from 'typescript-json-schema';
 
 import JSONSchemaEditor from '../..';
 
@@ -14,6 +13,13 @@ interface JSONSchemaArrayEditorProps {
   name?: string;
 
   /**
+   * Whether or not the editor is disabled.
+   *
+   * This value is recursively passed down to all child inputs.
+   */
+  disabled?: boolean;
+
+  /**
    * Whether or not the property is required.
    *
    * This is determined by the parent schema. It is used for recursion.
@@ -23,7 +29,7 @@ interface JSONSchemaArrayEditorProps {
   /**
    * The schema used to render the form elements.
    */
-  schema: OpenAPIV3.SchemaObject | Definition;
+  schema: OpenAPIV3.ArraySchemaObject;
 
   /**
    * The handler that is called whenever a value changes.
@@ -34,52 +40,70 @@ interface JSONSchemaArrayEditorProps {
    * The label rendered above the input field.
    */
   label: string | React.ReactElement;
+
+  /**
+   * The value used to populate the editor.
+   */
+  value: any[];
 }
 
 export default function JSONSchemaArrayEditor({
+  disabled,
   label,
   name,
   onChange,
   required,
   schema,
+  value,
 }: JSONSchemaArrayEditorProps): React.ReactElement {
-  const [arrayValue, setArrayValue] = React.useState([]);
-  const arrayState: any = arrayValue;
+  const schemaItems = schema.items as OpenAPIV3.SchemaObject;
 
+  const defaults: any = {
+    array: [],
+    boolean: false,
+    object: {},
+    number: 0,
+    string: '',
+  };
   const onPropertyChange = React.useCallback(
     (event, val) => {
-      const id = event.target.name.slice(name.length + 1);
-
-      arrayState[id] = val;
-      setArrayValue(arrayState);
-
-      onChange(event, arrayState);
+      const index = Number(event.target.name.slice(name.length + 1));
+      onChange(
+        event,
+        value.map((v, i) => (i === index ? val : v)),
+      );
     },
-    [onChange, name, arrayState],
+    [onChange, name, value],
   );
 
   const removeItem = React.useCallback(
     (event) => {
-      const id = event.currentTarget.name.slice(name.length + 1);
-      arrayState.splice(id, 1);
-      setArrayValue(arrayState);
-      onChange(event, arrayState);
+      const index = Number(event.currentTarget.name.slice(name.length + 1));
+      onChange(
+        event,
+        value.filter((_val, i) => i !== index),
+      );
     },
-    [onChange, arrayState, name],
+    [onChange, name, value],
   );
+
+  const onItemAdded = React.useCallback(() => {
+    onChange(name, [...value, schemaItems.default ?? defaults[schemaItems.type]]);
+  }, [onChange, name, value, defaults, schemaItems]);
 
   return (
     <div>
       <FormComponent label={label} required={required}>
-        {arrayValue.map((val, index) => (
+        {value.map((val, index) => (
           // eslint-disable-next-line react/no-array-index-key
           <div key={index}>
             <JSONSchemaEditor
               // eslint-disable-next-line react/no-array-index-key
               key={`input.${index}`}
+              disabled={disabled}
               name={`${name}.${index}`}
               onChange={onPropertyChange}
-              schema={schema}
+              schema={schema.items as OpenAPIV3.SchemaObject}
               value={val}
             />
             <Button
@@ -91,7 +115,7 @@ export default function JSONSchemaArrayEditor({
             />
           </div>
         ))}
-        <Button icon="plus" name={name} onClick={() => setArrayValue([...arrayValue, undefined])} />
+        <Button icon="plus" name={name} onClick={onItemAdded} />
       </FormComponent>
     </div>
   );

@@ -1,12 +1,8 @@
-import { Checkbox, Select } from '@appsemble/react-components';
+import { Checkbox, Select, TextArea } from '@appsemble/react-components';
 import type { OpenAPIV3 } from 'openapi-types';
 import * as React from 'react';
-import type { Definition } from 'typescript-json-schema';
 
-import type { SelectedBlockManifest } from '../GUIEditor';
 import JSONSchemaArrayEditor from './components/JSONSchemaArrayEditor';
-import JSONSchemaDefinedTypesEditor from './components/JSONSchemaDefinedTypesEditor';
-import JSONSchemaFileEditor from './components/JSONSchemaFileEditor';
 import JSONSchemaObjectEditor from './components/JSONSchemaObjectEditor';
 import JSONSchemaStringEditor from './components/JSONSchemaStringEditor';
 
@@ -35,7 +31,7 @@ interface JSONSchemaEditorProps {
   /**
    * The schema used to render the form elements.
    */
-  schema: OpenAPIV3.SchemaObject | Definition | SelectedBlockManifest;
+  schema: OpenAPIV3.SchemaObject;
 
   /**
    * The handler that is called whenever a value changes.
@@ -58,37 +54,23 @@ export default function JSONSchemaEditor({
 }: JSONSchemaEditorProps): React.ReactElement {
   let prop: OpenAPIV3.SchemaObject;
 
-  function instanceOfSelectedBlockManifest(object: object): object is SelectedBlockManifest {
-    try {
-      return 'parameters' in object;
-    } catch {
-      return false;
-    }
-  }
-
-  if (!instanceOfSelectedBlockManifest(schema)) {
-    prop = (schema?.properties ? schema?.properties[name] || {} : schema) as OpenAPIV3.SchemaObject;
-  } else if (schema?.parameters) {
-    prop = schema?.parameters?.properties[name] || ({} as SelectedBlockManifest);
-  }
-
   const label = prop.title ? (
     <>
-      {`${prop.title} `}
+      {`${schema.title} `}
       <span className="has-text-weight-normal has-text-grey-light">({name})</span>
     </>
   ) : (
     name
   );
-  const disable = disabled || prop.readOnly;
+  const disable = disabled || schema.readOnly;
 
-  if (prop.enum) {
+  if (schema.enum) {
     return (
-      <Select label={label} name={name} onChange={onChange} required={required} value={value || ''}>
+      <Select label={label} name={name} onChange={onChange} required={required} value={value}>
         <option disabled hidden value="">
-          Choose here
+          {' '}
         </option>
-        {prop.enum.map((option: string) => (
+        {schema.enum.map((option) => (
           <option key={option} value={option}>
             {option}
           </option>
@@ -97,42 +79,17 @@ export default function JSONSchemaEditor({
     );
   }
 
-  if (prop.type === 'array') {
-    if (prop?.items.hasOwnProperty('anyOf') && instanceOfSelectedBlockManifest(schema)) {
-      return (
-        <JSONSchemaDefinedTypesEditor
-          definitions={schema.parameters.definitions}
-          label={label}
-          name={name}
-          onChange={onChange}
-          required={required}
-          schema={prop.items}
-          value={value}
-        />
-      );
-    }
-    if (prop?.items.hasOwnProperty('appsembleFile')) {
-      return (
-        <JSONSchemaFileEditor
-          label={label}
-          name={name}
-          onChange={onChange}
-          prop={prop}
-          required={required}
-        />
-      );
-    }
-  }
-
-  switch (prop.type) {
+  switch (schema.type) {
     case 'array':
       return (
         <JSONSchemaArrayEditor
+          disabled={disabled}
           label={label}
           name={name}
           onChange={onChange}
           required={required}
-          schema={prop.items}
+          schema={schema}
+          value={value || []}
         />
       );
     case 'boolean':
@@ -154,25 +111,34 @@ export default function JSONSchemaEditor({
           name={name}
           onChange={onChange}
           required={required}
-          schema={prop}
-          value={value}
+          schema={schema}
+          value={value || {}}
         />
       );
     case 'string':
-    case 'number':
     case 'integer':
+    case 'number':
       return (
         <JSONSchemaStringEditor
           disabled={disable}
           label={label}
           name={name}
           onChange={onChange}
-          prop={prop}
           required={required}
+          schema={schema}
           value={value || ''}
         />
       );
     default:
-      return <div>hi</div>;
+      return (
+        <TextArea
+          disabled={disabled}
+          label={label}
+          name={name}
+          onChange={onChange}
+          required={required}
+          value={JSON.stringify(value)}
+        />
+      );
   }
 }
