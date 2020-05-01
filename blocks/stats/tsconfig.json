@@ -3,6 +3,7 @@
   "compilerOptions": {
     "jsxFactory": "h",
     "lib": ["dom", "esnext"],
+    "rootDir": "src",
     "types": ["css-modules", "node"]
   }
 }

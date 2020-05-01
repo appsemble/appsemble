@@ -2,7 +2,6 @@ import React from 'react';
 import { useIntl } from 'react-intl';
 import { Link } from 'react-router-dom';
 
-import { version } from '../../../package.json';
 import ProfileDropdown from '../ProfileDropdown';
 import styles from './index.css';
 import messages from './messages';
@@ -25,11 +24,11 @@ export default function Toolbar(): React.ReactElement {
         </Link>
         <a
           className={`is-rounded is-warning tag ${styles.tag}`}
-          href={`https://gitlab.com/appsemble/appsemble/releases/${version}`}
+          href={`https://gitlab.com/appsemble/appsemble/releases/${process.env.APPSEMBLE_VERSION}`}
           rel="noopener noreferrer"
           target="_blank"
         >
-          {`alpha ${version}`}
+          {`alpha ${process.env.APPSEMBLE_VERSION}`}
         </a>
       </div>
       <div className="navbar-brand">

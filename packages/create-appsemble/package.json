@@ -3,13 +3,11 @@
   "version": "0.12.8",
   "private": true,
   "homepage": "https://appsemble.dev",
-  "bugs": {
-    "url": "https://gitlab.com/appsemble/appsemble/issues"
-  },
+  "bugs": "https://gitlab.com/appsemble/appsemble/issues",
   "repository": {
     "type": "git",
     "url": "https://gitlab.com/appsemble/appsemble.git",
-    "directory": "packages/app"
+    "directory": "packages/create-appsemble"
   },
   "license": "LGPL-3.0-or-later",
   "author": "Appsemble <info@appsemble.com> (https://appsemble.com)",
@@ -22,7 +20,7 @@
     "prepack": "tsc -p tsconfig.build.json"
   },
   "dependencies": {
-    "@appsemble/node-utils": "^0.12.8",
+    "@appsemble/node-utils": "0.12.8",
     "fs-extra": "^9.0.0",
     "inquirer": "^7.1.0",
     "type-fest": "^0.13.1",

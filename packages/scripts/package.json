@@ -3,9 +3,7 @@
   "version": "0.12.8",
   "private": true,
   "homepage": "https://appsemble.dev",
-  "bugs": {
-    "url": "https://gitlab.com/appsemble/appsemble/issues"
-  },
+  "bugs": "https://gitlab.com/appsemble/appsemble/issues",
   "repository": {
     "type": "git",
     "url": "https://gitlab.com/appsemble/appsemble.git",
@@ -19,7 +17,9 @@
     "chrome-launcher": "^0.13.1",
     "fs-extra": "^9.0.0",
     "lighthouse": "^5.6.0",
+    "lodash": "^4.17.15",
     "puppeteer": "^1.10.0",
+    "semver": "^7.3.2",
     "ts-node": "^8.9.0",
     "yargs": "^15.3.1"
   }
