@@ -38,6 +38,11 @@ interface JSONSchemaStringEditorProps {
    * The label rendered above the input field.
    */
   label: string | React.ReactElement;
+
+  /**
+   * The value used to populate the editor.
+   */
+  value: string;
 }
 
 export default function JSONSchemaStringEditor({
@@ -47,6 +52,7 @@ export default function JSONSchemaStringEditor({
   onChange,
   required,
   schema,
+  value,
 }: JSONSchemaStringEditorProps): React.ReactElement {
   let type: React.ComponentPropsWithoutRef<typeof Input>['type'] = 'text';
 
@@ -65,11 +71,13 @@ export default function JSONSchemaStringEditor({
       <Input
         disabled={disabled}
         label={label}
+        maxLength={schema.maxLength}
         name={name}
         onChange={onChange}
         placeholder={schema.example}
         required={required}
         type={type}
+        value={value}
       />
     </div>
   );

@@ -3,7 +3,6 @@ import type { OpenAPIV3 } from 'openapi-types';
 import * as React from 'react';
 
 import JSONSchemaArrayEditor from './components/JSONSchemaArrayEditor';
-import JSONSchemaFileEditor from './components/JSONSchemaFileEditor';
 import JSONSchemaObjectEditor from './components/JSONSchemaObjectEditor';
 import JSONSchemaStringEditor from './components/JSONSchemaStringEditor';
 
@@ -78,20 +77,6 @@ export default function JSONSchemaEditor({
     );
   }
 
-  if (schema.type === 'array') {
-    if (schema?.items.hasOwnProperty('appsembleFile')) {
-      return (
-        <JSONSchemaFileEditor
-          label={label}
-          name={name}
-          onChange={onChange}
-          required={required}
-          schema={schema}
-        />
-      );
-    }
-  }
-
   switch (schema.type) {
     case 'array':
       return (
@@ -128,6 +113,7 @@ export default function JSONSchemaEditor({
         />
       );
     case 'string':
+    case 'integer':
     case 'number':
       return (
         <JSONSchemaStringEditor
@@ -137,6 +123,7 @@ export default function JSONSchemaEditor({
           onChange={onChange}
           required={required}
           schema={schema}
+          value={value}
         />
       );
     default:
@@ -147,7 +134,7 @@ export default function JSONSchemaEditor({
           name={name}
           onChange={onChange}
           required={required}
-          value={value}
+          value={JSON.stringify(value)}
         />
       );
   }

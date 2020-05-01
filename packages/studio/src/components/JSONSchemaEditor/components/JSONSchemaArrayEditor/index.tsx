@@ -44,7 +44,6 @@ interface JSONSchemaArrayEditorProps {
   /**
    * The value used to populate the editor.
    */
-
   value: any[];
 }
 
