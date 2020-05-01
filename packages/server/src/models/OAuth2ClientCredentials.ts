@@ -3,6 +3,20 @@ import { DataTypes, Model, Sequelize } from 'sequelize';
 import User from './User';
 
 export default class OAuth2ClientCredentials extends Model {
+  id: string;
+
+  description: string;
+
+  secret: string;
+
+  expires: Date;
+
+  scopes: string;
+
+  created: Date;
+
+  UserId: number;
+
   static initialize(sequelize: Sequelize): void {
     OAuth2ClientCredentials.init(
       {
