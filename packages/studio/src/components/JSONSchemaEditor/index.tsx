@@ -134,7 +134,7 @@ export default function JSONSchemaEditor({
           name={name}
           onChange={onChange}
           required={required}
-          value={JSON.stringify(value)}
+          defaultValue={JSON.stringify(value, undefined, 2)}
         />
       );
   }
