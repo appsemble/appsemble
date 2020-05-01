@@ -1,4 +1,4 @@
-import { compileFilters, remapData } from './oldRemap';
+import { compileFilters, remapData } from './legacyRemap';
 
 describe('compileFilters', () => {
   const fixtures = [
