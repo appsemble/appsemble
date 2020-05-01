@@ -54,6 +54,37 @@ it('should throw method not allowed if a URL is matched, but not for the given m
   expect(error.output.statusCode).toBe(405);
 });
 
+it('should fall back to the any handler if it exists ', async () => {
+  const any = jest.fn();
+  app.use(
+    tinyRouter([
+      {
+        route: '/',
+        any,
+      },
+    ]),
+  );
+  await request.post('/');
+  expect(any).toHaveBeenCalled();
+});
+
+it('should pick method specific middleware over any', async () => {
+  const any = jest.fn();
+  const get = jest.fn();
+  app.use(
+    tinyRouter([
+      {
+        route: '/',
+        any,
+        get,
+      },
+    ]),
+  );
+  await request.get('/');
+  expect(any).not.toHaveBeenCalled();
+  expect(get).toHaveBeenCalled();
+});
+
 it('should not call next if there are matching routes', async () => {
   const middleware = jest.fn();
   app.use(
