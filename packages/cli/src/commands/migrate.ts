@@ -1,6 +1,6 @@
 import type { Argv } from 'yargs';
 
-import pkg from '../../package.json';
+import readPackageJson from '../lib/readPackageJson';
 import serverImport from '../lib/serverImport';
 import type { BaseArguments } from '../types';
 
@@ -11,7 +11,7 @@ export function builder(yargs: Argv): Argv {
   return yargs
     .positional('to', {
       desc: 'The database version to migrate to.',
-      default: pkg.version,
+      default: readPackageJson().version,
     })
     .option('database-host', {
       desc:

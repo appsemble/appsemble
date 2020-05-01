@@ -1,7 +1,8 @@
 import fs from 'fs';
 import path from 'path';
 
-import renderEmail, { templateDir } from './renderEmail';
+import { assetDir } from '../readAsset';
+import renderEmail from './renderEmail';
 
 const tests = {
   emailAdded: [
@@ -26,7 +27,7 @@ const tests = {
   ],
 };
 
-it.each(fs.readdirSync(templateDir).map((f) => path.parse(f).name))(
+it.each(fs.readdirSync(path.join(assetDir, 'email')).map((f) => path.parse(f).name))(
   'should have tests for %s',
   (name) => {
     expect(tests).toHaveProperty(name);

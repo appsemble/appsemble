@@ -21,7 +21,7 @@ import { App, AppBlockStyle, AppRating, BlockVersion, Member } from '../models';
 import type { KoaContext } from '../types';
 import checkRole from '../utils/checkRole';
 import getAppFromRecord from '../utils/getAppFromRecord';
-import getDefaultIcon from '../utils/getDefaultIcon';
+import readAsset from '../utils/readAsset';
 
 interface Params {
   appId: number;
@@ -390,7 +390,7 @@ export async function getAppIcon(ctx: KoaContext<Params>): Promise<void> {
     throw Boom.notFound('App not found');
   }
 
-  const icon = app.icon || getDefaultIcon();
+  const icon = app.icon || (await readAsset('appsemble.svg'));
   const metadata = await sharp(icon).metadata();
 
   ctx.body = icon;

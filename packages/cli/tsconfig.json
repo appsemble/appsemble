@@ -1,6 +1,5 @@
 {
   "extends": "../../tsconfig",
-  "exclude": ["**/dist", "**/__fixtures__"],
   "compilerOptions": {
     "module": "commonjs",
     "types": ["jest", "node"]

@@ -2,11 +2,11 @@ import { AppsembleError } from '@appsemble/node-utils';
 import semver from 'semver';
 import type { Argv } from 'yargs';
 
-import pkg from '../../package.json';
 import migrations from '../migrations';
 import { initDB } from '../models';
 import type { Argv as Args } from '../types';
 import migrate from '../utils/migrate';
+import readPackageJson from '../utils/readPackageJson';
 import { handleDBError } from '../utils/sqlUtils';
 import databaseBuilder from './builder/database';
 
@@ -16,7 +16,7 @@ export const description = 'Migrate the Appsemble database.';
 export function builder(yargs: Argv): Argv {
   return databaseBuilder(yargs).positional('to', {
     desc: 'The database version to migrate to.',
-    default: pkg.version,
+    default: readPackageJson().version,
   });
 }
 

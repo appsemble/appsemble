@@ -5,13 +5,13 @@
     "packages/*"
   ],
   "scripts": {
-    "appsemble": "node packages/cli/bin/appsemble",
+    "appsemble": "ts-node -TP packages/cli/tsconfig.json packages/cli/src",
     "build:app": "webpack --config config/webpack/app.js --mode production",
     "build:studio": "webpack --config config/webpack/studio.js --mode production",
     "create-appsemble": "ts-node -TP packages/create-appsemble/tsconfig.json packages/create-appsemble/src",
     "eslint": "eslint --max-warnings 0 --ext js,md,ts,tsx",
     "prettier": "prettier --check",
-    "start": "node packages/cli/bin/appsemble start",
+    "start": "ts-node -TP packages/cli/tsconfig.json packages/cli/src start",
     "stylelint": "stylelint",
     "test": "jest"
   },
@@ -32,15 +32,8 @@
     ]
   },
   "devDependencies": {
-    "@babel/cli": "^7.8.4",
     "@babel/core": "^7.9.0",
-    "@babel/plugin-proposal-class-properties": "^7.8.3",
-    "@babel/plugin-proposal-optional-chaining": "^7.9.0",
-    "@babel/plugin-syntax-dynamic-import": "^7.8.3",
-    "@babel/plugin-transform-runtime": "^7.9.0",
-    "@babel/preset-env": "^7.9.5",
-    "@babel/preset-typescript": "^7.9.0",
-    "@babel/runtime": "^7.9.2",
+    "@babel/plugin-transform-modules-commonjs": "^7.9.6",
     "@types/autoprefixer": "^9.7.2",
     "@types/bcrypt": "^3.0.0",
     "@types/bluebird": "^3.5.30",

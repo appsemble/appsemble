@@ -1,4 +1,4 @@
-import fs from 'fs-extra';
+import fs from 'fs';
 import compose from 'koa-compose';
 import serve from 'koa-static';
 import mustache from 'mustache';
@@ -14,7 +14,7 @@ export default async function frontend(webpackConfigs: Configuration[]): Promise
       serve(distDir, { immutable: true, maxage: 365 * 24 * 60 * 60 * 1e3 }),
       async (ctx: KoaContext, next) => {
         ctx.state.render = async (filename, data) => {
-          const template = await fs.readFile(path.join(distDir, filename), 'utf8');
+          const template = await fs.promises.readFile(path.join(distDir, filename), 'utf8');
           return mustache.render(template, data);
         };
         await next();

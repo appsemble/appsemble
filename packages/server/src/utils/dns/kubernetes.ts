@@ -1,7 +1,7 @@
 import { logger } from '@appsemble/node-utils';
 import { normalize } from '@appsemble/utils';
 import axios from 'axios';
-import fs from 'fs-extra';
+import fs from 'fs';
 import https from 'https';
 import path from 'path';
 
@@ -9,7 +9,10 @@ import type { Argv } from '../../types';
 import type { DNSImplementation } from '.';
 
 async function readK8sSecret(filename: string): Promise<string> {
-  return fs.readFile(path.join('/var/run/secrets/kubernetes.io/serviceaccount', filename), 'utf-8');
+  return fs.promises.readFile(
+    path.join('/var/run/secrets/kubernetes.io/serviceaccount', filename),
+    'utf-8',
+  );
 }
 
 interface Rule {

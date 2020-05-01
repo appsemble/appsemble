@@ -18,5 +18,5 @@
     "target": "es2019",
     "types": ["jest"]
   },
-  "exclude": ["**/*.test.ts", "**/*.test.tsx", "**/dist"]
+  "exclude": ["**/*.test.ts", "**/*.test.tsx", "**/dist", "**/__fixtures__"]
 }

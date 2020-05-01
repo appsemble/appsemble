@@ -1,12 +1,12 @@
 import { AxiosTestInstance, createInstance } from 'axios-test-instance';
 import FormData from 'form-data';
-import fs from 'fs-extra';
+import fs from 'fs';
 import { omit } from 'lodash';
 import path from 'path';
 
 import { Member, Organization, User } from '../models';
 import createServer from '../utils/createServer';
-import getDefaultIcon from '../utils/getDefaultIcon';
+import readAsset from '../utils/readAsset';
 import { closeTestSchema, createTestSchema, truncate } from '../utils/test/testSchema';
 import testToken from '../utils/test/testToken';
 
@@ -330,7 +330,7 @@ describe('getBlockVersions', () => {
 
 describe('getBlockIcon', () => {
   it('should serve the block icon', async () => {
-    const icon = await fs.readFile(path.join(__dirname, '__fixtures__/testpattern.png'));
+    const icon = await fs.promises.readFile(path.join(__dirname, '__fixtures__/testpattern.png'));
     const formData = new FormData();
     formData.append('name', '@xkcd/test');
     formData.append('description', 'foo');
@@ -373,6 +373,6 @@ describe('getBlockIcon', () => {
       responseType: 'arraybuffer',
     });
     expect(response.headers['content-type']).toBe('image/svg+xml');
-    expect(response.data.equals(getDefaultIcon())).toBe(true);
+    expect(response.data.equals(await readAsset('appsemble.svg'))).toBe(true);
   });
 });

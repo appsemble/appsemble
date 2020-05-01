@@ -1,5 +1,10 @@
 module.exports = {
   displayName: '@appsemble/app',
+  globals: {
+    'ts-jest': {
+      isolatedModules: true,
+    },
+  },
   moduleFileExtensions: ['js', 'ts', 'tsx', 'json'],
   moduleNameMapper: {
     [/@appsemble\/([\w-]+)/.source]: '@appsemble/$1/src',
