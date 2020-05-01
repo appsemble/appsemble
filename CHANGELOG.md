@@ -7,6 +7,11 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- Block(`detail-viewer`): Implement remappers.
+- SDK: Add support for remappers using the `util.remap` function.
+
 ## [0.12.8] - 2020-04-29
 
 ### Fixed

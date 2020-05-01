@@ -1,6 +1,5 @@
 import { bootstrap } from '@appsemble/preact';
 import { Loader } from '@appsemble/preact-components';
-import { remapData } from '@appsemble/utils';
 import { h } from 'preact';
 import { useEffect, useState } from 'preact/hooks';
 
@@ -45,7 +44,6 @@ bootstrap(({ data: blockData, events, parameters, ready, theme }) => {
             // @ts-ignore
             field={field}
             theme={theme}
-            value={field.name ? remapData(field.name, data) : null}
           />
         );
       })}

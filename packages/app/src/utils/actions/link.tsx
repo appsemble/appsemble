@@ -1,9 +1,14 @@
 import type { LinkAction } from '@appsemble/sdk';
 import type { LinkActionDefinition } from '@appsemble/types';
-import { compileFilters, normalize, partialNormalized, remapData } from '@appsemble/utils';
+import {
+  compileFilters,
+  mapValues,
+  normalize,
+  partialNormalized,
+  remapData,
+} from '@appsemble/utils';
 
 import type { MakeActionParameters } from '../../types';
-import mapValues from '../mapValues';
 
 const urlRegex = new RegExp(`^${partialNormalized.source}:`);
 

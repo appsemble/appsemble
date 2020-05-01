@@ -44,6 +44,7 @@ export function checkBlocks(blocks: BlockMap, blockVersions: BlockManifest[]): v
     if (version.parameters) {
       const ajv = new Ajv();
       ajv.addFormat('fontawesome', () => true);
+      ajv.addFormat('remapper', () => true);
       ajv.addFormat('action', (property) => {
         actionParameters.add(property);
         return block.actions && Object.prototype.hasOwnProperty.call(block.actions, property);

@@ -1,92 +1,100 @@
-import { compileFilters, remapData } from './remap';
+import remap, { Remapper } from './remap';
 
-describe('compileFilters', () => {
-  const fixtures = [
-    {
-      data: { foo: 'bar' },
-      mapper: 'foo',
-      expected: 'bar',
-    },
-    {
-      data: 'String',
-      mapper: '|upper',
-      expected: 'STRING',
-    },
-    {
-      data: 'String',
-      mapper: '|lower',
-      expected: 'string',
-    },
-    {
-      data: 'Chained filterS',
-      mapper: '|lower|upper',
-      expected: 'CHAINED FILTERS',
-    },
-    {
-      data: { nested: 'and filtered' },
-      mapper: 'nested|upper',
-      expected: 'AND FILTERED',
-    },
-    {
-      data: { deeply: { nested: 'data' } },
-      mapper: 'deeply.nested',
-      expected: 'data',
-    },
-    {
-      data: { foo: [42, 1337, Math.PI] },
-      mapper: 'foo.0',
-      expected: 42,
-    },
-    {
-      data: { foo: [42, 1337, Math.PI] },
-      mapper: 'foo.1',
-      expected: 1337,
-    },
-    {
-      data: { foo: [42, 1337, Math.PI] },
-      mapper: 'foo.2',
-      expected: Math.PI,
-    },
-    {
-      data: { foo: [42, 1337, Math.PI] },
-      mapper: 'foo.-1',
-      expected: Math.PI,
-    },
-    {
-      data: { foo: [42, 1337, Math.PI] },
-      mapper: 'foo.-2',
-      expected: 1337,
-    },
-    {
-      data: { foo: [42, 1337, Math.PI] },
-      mapper: 'foo.-3',
-      expected: 42,
-    },
-    {
-      data: { foo: [42, 1337, Math.PI] },
-      mapper: 'foo.length',
-      expected: 3,
-    },
-  ];
+interface TestCase {
+  description: string;
+  input: any;
+  mappers: Remapper;
+  expected: any;
+}
 
-  it.each(fixtures)('should process %p', ({ data, expected, mapper }) => {
-    const fn = compileFilters(mapper);
-    const result = fn(data);
-    expect(result).toStrictEqual(expected);
-  });
-});
+const cases: TestCase[] = [
+  // Raw string
+  {
+    description: 'return a literal string',
+    input: 'Whatever',
+    mappers: 'raw string',
+    expected: 'raw string',
+  },
 
-describe('remapData', () => {
-  const fixtures = [
-    {
-      data: { foo: { bar: 'baz' } },
-      mapper: { fooz: 'foo.bar' },
-      expected: { fooz: 'baz' },
-    },
-  ];
+  // Mapper object.from
+  {
+    description: 'create a new object from remappers',
+    input: { givenName: 'Patrick', familyName: 'Star', species: 'Starfish' },
+    mappers: [
+      { 'object.from': { firstName: [{ prop: 'givenName' }], lastName: [{ prop: 'familyName' }] } },
+    ],
+    expected: { firstName: 'Patrick', lastName: 'Star' },
+  },
 
-  it.each(fixtures)('should process %j', ({ data, expected, mapper }) => {
-    const result = remapData(mapper, data);
-    expect(result).toStrictEqual(expected);
-  });
+  // Mapper prop
+  {
+    description: 'get a simple property',
+    input: { name: 'Spongebob' },
+    mappers: [{ prop: 'name' }],
+    expected: 'Spongebob',
+  },
+  {
+    description: 'get a nested property',
+    input: { address: { town: 'Bikini Bottom' } },
+    mappers: [{ prop: 'address.town' }],
+    expected: 'Bikini Bottom',
+  },
+
+  // Mapper string.case
+  {
+    description: 'convert a string to upper case',
+    input: 'I’m a Goofy Goober',
+    mappers: [{ 'string.case': 'upper' }],
+    expected: 'I’M A GOOFY GOOBER',
+  },
+  {
+    description: 'convert a string to lower case',
+    input: 'We’re all Goofy Goobers',
+    mappers: [{ 'string.case': 'lower' }],
+    expected: 'we’re all goofy goobers',
+  },
+
+  // Mapper string.format
+  {
+    description: 'format a template string',
+    input: { name: 'Krusty Krab', food: 'krabby patties' },
+    mappers: [
+      {
+        'string.format': {
+          template: 'The {restaurant} serves {highlight}',
+          values: { restaurant: [{ prop: 'name' }], highlight: [{ prop: 'food' }] },
+        },
+      },
+    ],
+    expected: 'The Krusty Krab serves krabby patties',
+  },
+  {
+    description: 'escape formatting double curly brackets',
+    input: { food: 'krabby patty' },
+    mappers: [
+      {
+        'string.format': {
+          template: "A {burger} can be ressembled in ascii using: '{{I}}'",
+          values: { burger: [{ prop: 'food' }] },
+        },
+      },
+    ],
+    expected: 'A krabby patty can be ressembled in ascii using: {{I}}',
+  },
+  {
+    description: 'format unknown values to empty strings',
+    input: {},
+    mappers: [{ 'string.format': { template: '‘{value}’ is unknown', values: {} } }],
+    expected:
+      'The intl string context variable "value" was not provided to the string "‘{value}’ is unknown"',
+  },
+];
+
+const tests = cases.map(
+  ({ description, expected, input, mappers }) => [description, mappers, input, expected] as const,
+);
+
+it.each(tests)('should %s given %j', (_, mappers, input, expected) => {
+  const result = remap(mappers, input);
+  expect(result).toStrictEqual(expected);
 });

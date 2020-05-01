@@ -1,161 +1,94 @@
-import { parseISO } from 'date-fns';
+import IntlMessageFormat from 'intl-messageformat';
+import type { RequireExactlyOne } from 'type-fest';
 
-export interface RemapperContext {
-  intl: {
-    formatDate: (data: string) => string;
-    formatTime: (data: string) => string;
+import mapValues from './mapValues';
+
+export interface Remappers {
+  /**
+   * Create a new object given some predefined mapper keys.
+   */
+  'object.from': {
+    [key: string]: Remapper;
+  };
+
+  /**
+   * Get a property from an object.
+   */
+  prop: string;
+
+  /**
+   * Convert an input to lower or upper case.
+   */
+  'string.case': 'lower' | 'upper';
+
+  /**
+   * Format a string using remapped input variables.
+   */
+  'string.format': {
+    /**
+     * The template string to format.
+     */
+    template: string;
+    /**
+     * A set of remappers to convert the input to usable values.
+     */
+    values: {
+      [key: string]: Remapper;
+    };
   };
 }
 
-export type MapperFunction = (data: any) => any;
+export type Remapper = RequireExactlyOne<Remappers>[] | string;
 
-const property = '.';
-const filter = '|';
-
-const dateTimeFormat = new Intl.DateTimeFormat(undefined, {
-  year: 'numeric',
-  month: 'short',
-  day: 'numeric',
-  hour: '2-digit',
-  minute: '2-digit',
-});
-
-interface Filters {
-  [key: string]: (context: RemapperContext, parameter?: string) => MapperFunction;
-}
-
-const filters: Filters = {
-  date: () => (object) => {
-    let date;
-    if (object instanceof Number) {
-      date = new Date(object as number);
-    } else if (typeof object === 'string') {
-      date = parseISO(object);
-      if (Number.isNaN(date.getTime())) {
-        date = new Date(object);
-
-        if (Number.isNaN((date as any) as number)) {
-          date = undefined;
-        }
-      }
-    } else {
-      date = object;
-    }
-    if (date instanceof Date) {
-      return dateTimeFormat.format(date);
-    }
-    return date;
-  },
-  get: (_context, name) => (object) => {
-    if (object == null) {
-      return undefined;
-    }
-    if (Array.isArray(object)) {
-      const index = Number(name);
-      if (Number.isInteger(index)) {
-        const { length } = object;
-        // This adds support for n number indexing. For example -4, -1, 2, or 5 will return the 3rd
-        // item of an array of length 3.
-        return object[((index % length) + length) % length];
-      }
-    }
-    if (Object.prototype.hasOwnProperty.call(object, name)) {
-      return object[name];
-    }
-    return undefined;
-  },
-  lower: () => Function.call.bind(String.prototype.toLowerCase),
-  upper: () => Function.call.bind(String.prototype.toUpperCase),
+type MapperImplementations = {
+  [F in keyof Remappers]: (args: Remappers[F], input: any) => any;
 };
 
 /**
- * Compile a filter string into a function.
+ * Implementations of all remappers.
  *
- * This function defines a set of chained remapping filters into a callable function. A filter is
- * written using a pipe (`|`) operator, followed by the name of the filter. For example:
- *
- * ```js
- * '|lower'
- * '|upper'
- * ```
- *
- * A shorthand syntax exists for getting an object property. Simply add a dot (`.`) operator instead
- * of a pipe. This passes the name as an argument to the `get` filter.
- *
- * Besides the shorthand syntax for the `get` filter, it is not yet possible to pass arguments.
- *
- * @param {string} mapperString The string which defines the filters that should be used.
- * @param {Object} context The context to which remapper functions have access.
- * @returns {Function} the resulting mapper function.
+ * All arguments are deferred from {@link @appsemble/sdk#Remappers}
  */
-export function compileFilters(mapperString: string, context?: RemapperContext): MapperFunction {
-  const { length } = mapperString;
-  const result: MapperFunction[] = [];
-  let type = property;
-  let current = '';
+const mapperImplementations: MapperImplementations = {
+  'object.from': (mappers, input) =>
+    // This ESLint rule needs to be disabled, because remap is called recursively.
+    // eslint-disable-next-line @typescript-eslint/no-use-before-define
+    Object.fromEntries(Object.entries(mappers).map(([key, mapper]) => [key, remap(mapper, input)])),
 
-  function processCurrent(): void {
-    if (type === property) {
-      result.push(filters.get(context, current));
-    } else if (Object.hasOwnProperty.call(filters, current)) {
-      result.push(filters[current](context));
-    } else {
-      throw new Error(`Invalid filter ${current}`);
+  prop: (prop, obj) => prop.split('.').reduce((acc, p) => acc[p], obj),
+
+  'string.case': (stringCase, input) => {
+    if (stringCase === 'lower') {
+      return `${input}`.toLowerCase();
     }
-    current = '';
-  }
-
-  for (let i = 0; i < length; i += 1) {
-    const char = mapperString.charAt(i);
-    if (i === 0 && (char === property || char === filter)) {
-      type = char;
-    } else if (char === property) {
-      processCurrent();
-      type = property;
-    } else if (char === filter) {
-      processCurrent();
-      type = filter;
-    } else {
-      current += char;
+    if (stringCase === 'upper') {
+      return `${input}`.toUpperCase();
     }
-  }
-  processCurrent();
-  return (value) => result.reduce((acc, fn) => fn(acc), value);
-}
+    return input;
+  },
 
-/**
- * Map data given a set of mapping specifications.
- *
- * Example:
- *
- * ```js
- * > mapData({
- * >   fooz: 'foo.bar|upper'
- * > }, {
- * >   foo: {
- * >     bar: 'baz'
- * >   }
- * > });
- * { fooz: 'BAZ' }
- * ```
- *
- * @param mapperData An (optionally nested) object which defines what to output.
- * @param inputData The input data which should be mapped.
- * @param context The context to which remapper functions have access.
- * @returns The resulting data as specified by the `mapperData` argument.
- */
-export function remapData(mapperData: any, inputData: any, context?: RemapperContext): any {
-  if (typeof mapperData === 'string') {
-    return compileFilters(mapperData, context)(inputData);
+  'string.format': ({ template, values }, input) => {
+    try {
+      const msg = new IntlMessageFormat(template);
+      // This ESLint rule needs to be disabled, because remap is called recursively.
+      // eslint-disable-next-line @typescript-eslint/no-use-before-define
+      return msg.format(mapValues(values, (val) => remap(val, input)));
+    } catch (error) {
+      return error.message;
+    }
+  },
+};
+
+export default function remap(mappers: Remapper, input: any): any {
+  if (typeof mappers === 'string') {
+    return mappers;
   }
-  if (Array.isArray(mapperData)) {
-    return mapperData.map((value) => remapData(value, inputData, context));
-  }
-  if (mapperData instanceof Object) {
-    return Object.entries(mapperData).reduce((acc, [key, value]) => {
-      acc[key] = remapData(value, inputData, context);
-      return acc;
-    }, {} as any);
-  }
-  throw new Error('Invalid mapper data');
+  return mappers.reduce((acc, mapper) => {
+    const entries = Object.entries(mapper) as [[keyof MapperImplementations, any]];
+    if (entries.length !== 1) {
+      throw new Error(`Remapper has duplicate function definition: ${JSON.stringify(mapper)}`);
+    }
+    const [[name, args]] = entries;
+    return mapperImplementations[name](args, acc);
+  }, input);
 }
