@@ -135,16 +135,22 @@ pages:
         parameters:
           fileBase: 'https://appsemble.app/api/apps/14/assets'
           fields:
-            - name: location
+            - name:
+                - prop: location
               type: geocoordinates
               label: Location
-              latitude: latitude
-              longitude: longitude
-            - name: process
+              latitude:
+                - prop: latitude
+              longitude:
+                - prop: longitude
+            - name:
+                - prop: process
               label: Process
-            - name: notes
+            - name:
+                - prop: notes
               label: Notes
-            - name: photos
+            - name:
+                - prop: photos
               type: file
               label: Photos
               repeated: true

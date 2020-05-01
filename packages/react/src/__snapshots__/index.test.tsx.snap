@@ -35,6 +35,7 @@ exports[`mount should mount the react component 1`] = `
     Object {
       "addCleanup": [Function],
       "asset": [Function],
+      "remap": [Function],
       "showMessage": [Function],
     }
   }
@@ -80,6 +81,7 @@ exports[`withBlock should pass block props to the child element 1`] = `
     Object {
       "addCleanup": [Function],
       "asset": [Function],
+      "remap": [Function],
       "showMessage": [Function],
     }
   }
@@ -119,6 +121,7 @@ exports[`withBlock should pass block props to the child element 1`] = `
         Object {
           "addCleanup": [Function],
           "asset": [Function],
+          "remap": [Function],
           "showMessage": [Function],
         }
       }

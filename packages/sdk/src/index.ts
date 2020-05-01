@@ -72,6 +72,13 @@ export interface EventListeners {}
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface Parameters {}
 
+/**
+ * A user defined remapper function.
+ *
+ * @format remapper
+ */
+export type Remapper = string | object[];
+
 export interface Message {
   /**
    * The content of the message to display.
@@ -98,6 +105,9 @@ export interface PageParameters {
   [parameter: string]: string;
 }
 
+/**
+ * A set of utility functions provided by the Appsemble SDK.
+ */
 export interface Utils {
   /**
    * Register a function that should be called when the block is being removed.
@@ -105,6 +115,15 @@ export interface Utils {
    * Use this to clean up resouces that would otherwise stay in memory, e.g. object URLs.
    */
   addCleanup: (fn: () => void) => void;
+
+  /**
+   * Remap data based in a user defined remapper function.
+   *
+   * @param remapper The user defined remapper function.
+   * @param data The data to remap.
+   * @returns The result of the remapped data.
+   */
+  remap(remapper: Remapper, data: any): any;
 
   /**
    * Show a bulma style message.

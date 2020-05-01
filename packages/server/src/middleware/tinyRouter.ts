@@ -6,6 +6,7 @@ type HttpMethod = 'delete' | 'get' | 'head' | 'options' | 'patch' | 'post' | 'pu
 
 type Route = {
   route: string | RegExp;
+  any?: KoaMiddleware;
 } & {
   [method in HttpMethod]?: KoaMiddleware;
 };
@@ -27,9 +28,12 @@ export default (routes: Route[]): KoaMiddleware => async (ctx, next) => {
   if (!result) {
     return next();
   }
-  const method = ctx.method.toLowerCase();
+  let method = ctx.method.toLowerCase();
   if (!Object.prototype.hasOwnProperty.call(result, method)) {
-    throw Boom.methodNotAllowed();
+    if (!Object.prototype.hasOwnProperty.call(result, 'any')) {
+      throw Boom.methodNotAllowed();
+    }
+    method = 'any';
   }
   ctx.params = match?.groups ? { ...match.groups } : null;
   return result[method as HttpMethod](ctx, next);
