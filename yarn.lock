@@ -1934,6 +1934,13 @@
     "@types/qs" "*"
     "@types/serve-static" "*"
 
+"@types/follow-redirects@^1.8.0":
+  version "1.8.0"
+  resolved "https://registry.yarnpkg.com/@types/follow-redirects/-/follow-redirects-1.8.0.tgz#a6f47222546aee59d9a09aaea1146bc1a6726ec7"
+  integrity sha512-xFTn5zG9x9clBXhiTlmVrHDkBPEiYGmAoKr9dQdy8lZUoXcr01xVhXQW/MmUiYZZu2c1SpOleM90B7mN+CuXhA==
+  dependencies:
+    "@types/node" "*"
+
 "@types/fs-extra@^8.1.0":
   version "8.1.0"
   resolved "https://registry.yarnpkg.com/@types/fs-extra/-/fs-extra-8.1.0.tgz#1114834b53c3914806cd03b3304b37b3bd221a4d"
@@ -8224,7 +8231,7 @@ follow-redirects@1.5.10:
   dependencies:
     debug "=3.1.0"
 
-follow-redirects@^1.0.0:
+follow-redirects@^1.0.0, follow-redirects@^1.11.0:
   version "1.11.0"
   resolved "https://registry.yarnpkg.com/follow-redirects/-/follow-redirects-1.11.0.tgz#afa14f08ba12a52963140fe43212658897bc0ecb"
   integrity sha512-KZm0V+ll8PfBrKwMzdo5D13b1bur9Iq9Zd/RMmAoQQcl2PxxFml8cxXPaaPYVbV0RjNjq1CU7zIzAOqtUPudmA==

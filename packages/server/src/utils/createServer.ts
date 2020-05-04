@@ -125,8 +125,8 @@ export default async function createServer({
     appMapper(
       compose([
         conditional((ctx) => ctx.path.startsWith('/api') || ctx.path === '/oauth2/token', cors()),
-        apiMiddleware,
         studioRouter,
+        apiMiddleware,
         oauth2(argv),
       ]),
       compose([apiMiddleware, appRouter]),

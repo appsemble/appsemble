@@ -44,6 +44,7 @@
     "@types/enzyme": "^3.10.5",
     "@types/enzyme-adapter-react-16": "^1.0.6",
     "@types/events": "^3.0.0",
+    "@types/follow-redirects": "^1.8.0",
     "@types/fs-extra": "^8.1.0",
     "@types/hast": "^2.3.1",
     "@types/inquirer": "^6.5.0",
