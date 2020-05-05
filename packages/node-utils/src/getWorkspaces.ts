@@ -1,5 +1,5 @@
 import fg from 'fast-glob';
-import fs from 'fs-extra';
+import fs from 'fs';
 import path from 'path';
 
 /**
@@ -11,7 +11,9 @@ import path from 'path';
  * @returns Discovered Appsemble blocks.
  */
 export default async function getWorkspaces(cwd: string): Promise<string[]> {
-  const { workspaces = [] } = await fs.readJSON(path.resolve(cwd, 'package.json'));
+  const { workspaces = [] } = JSON.parse(
+    await fs.promises.readFile(path.join(cwd, 'package.json'), 'utf-8'),
+  );
   const dirs = await fg(workspaces, {
     cwd,
     absolute: true,
