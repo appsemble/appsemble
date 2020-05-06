@@ -1,6 +1,7 @@
 import { Button, Loader, useMessages } from '@appsemble/react-components';
 import type { App } from '@appsemble/types';
 import { stripBlockName } from '@appsemble/utils';
+import type { OpenAPIV3 } from 'openapi-types';
 import React from 'react';
 import { useIntl } from 'react-intl';
 
@@ -69,15 +70,17 @@ export default function GUIEditorEditBlock({
   // TODO: Duplicated onChange function from ResourceTable
   const onChange = React.useCallback(
     (event: any, value: any) => {
-      let name = '';
-      if (event?.target.name) {
-        name = event.target.name;
-      } else {
-        name = event.currentTarget.name;
-      }
-      if (name.includes('.')) {
-        const objectParentName = name.split(/\./g)[0];
-        name = objectParentName;
+      let name = event;
+      if (event?.target) {
+        if (event?.target.name) {
+          name = event.target.name;
+        } else {
+          name = event.currentTarget.name;
+        }
+        if (name.includes('.')) {
+          const objectParentName = name.split(/\./g)[0];
+          name = objectParentName;
+        }
       }
       if (name === 'id') {
         return;
@@ -92,24 +95,25 @@ export default function GUIEditorEditBlock({
 
   React.useEffect(() => {
     if (selectedBlock === undefined) {
-      app.definition.pages.map((page: any) => {
-        if (page.name.includes(editLocation.pageName)) {
-          page.blocks.map((val: any) => {
-            if (val.type.includes(editLocation.blockName)) {
+      app.definition.pages.map((pageVal: any) => {
+        if (pageVal.name.includes(editLocation.pageName)) {
+          pageVal.blocks.map((blockVal: any) => {
+            if (blockVal.type.includes(editLocation.blockName)) {
               if (!editingResource) {
-                Object.entries(val.parameters).map((param: any) => {
-                  setEditingResource({
-                    ...editingResource,
+                Object.entries(blockVal.parameters).map((param: any) => {
+                  // console.log(param);
+                  setEditingResource((prevEditingResource) => ({
+                    ...prevEditingResource,
                     [param[0]]: param[1],
-                  });
+                  }));
                   return param;
                 });
               }
             }
-            return val;
+            return blockVal;
           });
         }
-        return page;
+        return pageVal;
       });
     }
   }, [editingResource, editLocation.pageName, editLocation.blockName, app, selectedBlock]);
@@ -134,7 +138,7 @@ export default function GUIEditorEditBlock({
               name={key}
               onChange={onChange}
               required={selectedBlock?.parameters?.required?.includes(key)}
-              schema={selectedBlock}
+              schema={selectedBlock.parameters.properties[key] as OpenAPIV3.SchemaObject}
               value={editingResource?.[key]}
             />
           ))

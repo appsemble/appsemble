@@ -433,7 +433,19 @@ export default function Editor(): React.ReactElement {
                   setRecipe={setRecipe}
                 />
               ),
-              [GuiEditorStep.SELECT || GuiEditorStep.YAML]: (
+              [GuiEditorStep.SELECT]: (
+                <MonacoEditor
+                  editLocation={setEditLocation}
+                  language={language}
+                  onSave={onSave}
+                  onValueChange={onValueChange}
+                  setAllowAdd={(allow: boolean) => setAllowAdd(allow)}
+                  setAllowEdit={(allow: boolean) => setAllowEdit(allow)}
+                  setEditor={setEditor}
+                  value={value}
+                />
+              ),
+              [GuiEditorStep.YAML]: (
                 <MonacoEditor
                   editLocation={setEditLocation}
                   language={language}

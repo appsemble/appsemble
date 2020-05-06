@@ -52,9 +52,7 @@ export default function JSONSchemaEditor({
   schema,
   value,
 }: JSONSchemaEditorProps): React.ReactElement {
-  let prop: OpenAPIV3.SchemaObject;
-
-  const label = prop.title ? (
+  const label = schema.title ? (
     <>
       {`${schema.title} `}
       <span className="has-text-weight-normal has-text-grey-light">({name})</span>
@@ -77,6 +75,10 @@ export default function JSONSchemaEditor({
         ))}
       </Select>
     );
+  }
+
+  if (schema.anyOf || schema.allOf || schema.oneOf) {
+    return <div>This is not yet supported</div>;
   }
 
   switch (schema.type) {
@@ -132,12 +134,12 @@ export default function JSONSchemaEditor({
     default:
       return (
         <TextArea
+          defaultValue={JSON.stringify(value, undefined, 2)}
           disabled={disabled}
           label={label}
           name={name}
           onChange={onChange}
           required={required}
-          value={JSON.stringify(value)}
         />
       );
   }
