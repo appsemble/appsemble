@@ -1,5 +1,7 @@
 const path = require('path');
+// eslint-disable-next-line import/no-extraneous-dependencies
 const bulmaPkg = require('bulma/package.json');
+// eslint-disable-next-line import/no-extraneous-dependencies
 const faPkg = require('@fortawesome/fontawesome-free/package.json');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
