@@ -1,6 +1,5 @@
 {
   "extends": "../../tsconfig",
-  "exclude": ["**/templates"],
   "compilerOptions": {
     "module": "commonjs",
     "types": ["jest", "node"]

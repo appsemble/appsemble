@@ -1,6 +1,4 @@
-import fg from 'fast-glob';
-import fs from 'fs-extra';
-import path from 'path';
+import { getWorkspaces } from '@appsemble/node-utils';
 
 import type { BlockConfig } from '../types';
 import getBlockConfig from './getBlockConfig';
@@ -14,17 +12,7 @@ import getBlockConfig from './getBlockConfig';
  * @returns Discovered Appsemble blocks.
  */
 export default async function discoverBlocks(root: string): Promise<BlockConfig[]> {
-  const {
-    // Lerna workspaces
-    packages = [],
-    // Yarn workspaces
-    workspaces = [],
-  } = await fs.readJSON(path.resolve(root, 'package.json'));
-  const dirs = await fg([].concat(packages, workspaces), {
-    absolute: true,
-    followSymbolicLinks: true,
-    onlyDirectories: true,
-  });
+  const dirs = await getWorkspaces(root);
   const manifests = await Promise.all(
     dirs
       .concat(root)

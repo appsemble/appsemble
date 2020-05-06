@@ -1,9 +1,9 @@
 {
-  "extends": "../../tsconfig.build.json",
-  "include": ["src"],
+  "extends": "../../tsconfig.build",
   "compilerOptions": {
     "jsxFactory": "h",
     "lib": ["dom", "esnext"],
-    "outDir": "dist"
+    "outDir": "dist",
+    "rootDir": "src"
   }
 }
