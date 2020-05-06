@@ -80,7 +80,7 @@ const mapperImplementations: MapperImplementations = {
 };
 
 export default function remap(mappers: Remapper, input: any): any {
-  if (typeof mappers === 'string') {
+  if (typeof mappers === 'string' || mappers == null) {
     return mappers;
   }
   return mappers.reduce((acc, mapper) => {
