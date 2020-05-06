@@ -47,7 +47,7 @@ export default function JSONSchemaObjectEditor({
   onChange,
   required,
   schema,
-  value,
+  value = {},
 }: JSONSchemaObjectEditorProps): React.ReactElement {
   const onPropertyChange = React.useCallback(
     (event, val) => {

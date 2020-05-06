@@ -34,12 +34,12 @@ interface JSONSchemaArrayEditorProps {
   /**
    * The handler that is called whenever a value changes.
    */
-  onChange: (name: any, value?: any) => void;
+  onChange: (event: React.SyntheticEvent | string, value?: any[]) => void;
 
   /**
    * The label rendered above the input field.
    */
-  label: string | React.ReactElement;
+  label: React.ReactNode;
 
   /**
    * The value used to populate the editor.
@@ -54,7 +54,7 @@ export default function JSONSchemaArrayEditor({
   onChange,
   required,
   schema,
-  value,
+  value = [],
 }: JSONSchemaArrayEditorProps): React.ReactElement {
   const schemaItems = schema.items as OpenAPIV3.SchemaObject;
 
