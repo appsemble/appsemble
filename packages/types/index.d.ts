@@ -370,7 +370,7 @@ export interface LogActionDefinition extends BaseActionDefinition<'log'> {
    *
    * @default `info`.
    */
-  level: LogAction['level'];
+  level?: LogAction['level'];
 }
 
 export interface RequestLikeActionDefinition<
@@ -379,37 +379,37 @@ export interface RequestLikeActionDefinition<
   /**
    * The element to use as the base when returning the response data.
    */
-  base: string;
+  base?: string;
 
   /**
    * Specify how to handle blobs in the object to upload.
    */
-  blobs: BlobUploadType;
+  blobs?: BlobUploadType;
 
   /**
    * The HTTP method to use for making a request.
    */
-  method: HTTPMethods;
+  method?: HTTPMethods;
 
   /**
    * A JSON schema against which to validate data before uploading.
    */
-  schema: OpenAPIV3.SchemaObject;
+  schema?: OpenAPIV3.SchemaObject;
 
   /**
    * Query parameters to pass along with the request.
    */
-  query: { [key: string]: string };
+  query?: { [key: string]: string };
 
   /**
    * The URL to which to make the request.
    */
-  url: string;
+  url?: string;
 
   /**
    * How to serialize the request body.
    */
-  serialize: 'formdata';
+  serialize?: 'formdata';
 
   /**
    * An additional action to execute after the request has succeeded.
