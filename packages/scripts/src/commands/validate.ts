@@ -34,7 +34,7 @@ interface Workspace {
  */
 interface Result {
   /**
-   * The filename to which  the resultapplies.
+   * The filename to which the result applies.
    */
   filename: string;
 
