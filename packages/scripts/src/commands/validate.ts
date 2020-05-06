@@ -145,11 +145,6 @@ async function validate(
       'Should extend "../../tsconfig"',
     );
     assert(
-      tsConfig.compilerOptions?.rootDir === 'src',
-      'tsconfig.json',
-      'Root dir should be set to "src"',
-    );
-    assert(
       isEqual(Object.keys(tsConfig), ['extends', 'compilerOptions']),
       'tsconfig.json',
       'Only specifies "extends" and "compilerOptions" with "extends" first',

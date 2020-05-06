@@ -1,6 +1,4 @@
 {
   "extends": "../../tsconfig",
-  "compilerOptions": {
-    "rootDir": "src"
-  }
+  "compilerOptions": {}
 }

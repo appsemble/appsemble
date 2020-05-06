@@ -2,7 +2,6 @@
   "extends": "../../tsconfig",
   "compilerOptions": {
     "lib": ["dom", "esnext"],
-    "rootDir": "src",
     "types": ["babel-plugin-react-intl-auto", "css-modules", "jest"]
   }
 }

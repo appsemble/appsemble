@@ -2,7 +2,6 @@
   "extends": "../../tsconfig",
   "compilerOptions": {
     "types": ["node"],
-    "rootDir": "src",
     "module": "commonjs"
   }
 }

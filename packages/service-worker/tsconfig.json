@@ -2,7 +2,6 @@
   "extends": "../../tsconfig",
   "compilerOptions": {
     "lib": ["esnext", "webworker"],
-    "rootDir": "src",
     "types": ["jest", "node"]
   }
 }
