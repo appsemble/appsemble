@@ -2,6 +2,7 @@ import { getWorkspaces } from '@appsemble/node-utils';
 
 import type { BlockConfig } from '../types';
 import getBlockConfig from './getBlockConfig';
+
 /**
  * Discover Appsemble blocks based on workspaces in a monorepo.
  *
