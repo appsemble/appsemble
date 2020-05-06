@@ -44,7 +44,7 @@ interface Result {
   message: string;
 
   /**
-   * Checked on booliness to see if the result is a pass or fail.
+   * Checked on truthiness to see if the result is a pass or fail.
    */
   pass: any;
 
