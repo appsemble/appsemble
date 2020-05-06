@@ -39,7 +39,7 @@ interface Result {
   filename: string;
 
   /**
-   * The validateion message.
+   * The validation message.
    */
   message: string;
 
