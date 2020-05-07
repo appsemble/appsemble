@@ -34,7 +34,7 @@ interface JSONSchemaArrayEditorProps {
   /**
    * The handler that is called whenever a value changes.
    */
-  onChange: (event: React.SyntheticEvent | string, value?: any[]) => void;
+  onChange: (event: React.SyntheticEvent, value?: any[]) => void;
 
   /**
    * The label rendered above the input field.
@@ -67,7 +67,8 @@ export default function JSONSchemaArrayEditor({
   };
   const onPropertyChange = React.useCallback(
     (event, val) => {
-      const index = Number(event.target.name.slice(name.length + 1));
+      const slicedName = event.currentTarget.name.slice(name.length + 1).split('.')[0];
+      const index = Number(slicedName);
       onChange(
         event,
         value.map((v, i) => (i === index ? val : v)),
@@ -87,9 +88,12 @@ export default function JSONSchemaArrayEditor({
     [onChange, name, value],
   );
 
-  const onItemAdded = React.useCallback(() => {
-    onChange(name, [...value, schemaItems.default ?? defaults[schemaItems.type]]);
-  }, [onChange, name, value, defaults, schemaItems]);
+  const onItemAdded = React.useCallback(
+    (event: React.SyntheticEvent) => {
+      onChange(event, [...value, schemaItems.default ?? defaults[schemaItems.type]]);
+    },
+    [onChange, value, defaults, schemaItems],
+  );
 
   return (
     <div>

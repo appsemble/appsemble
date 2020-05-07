@@ -117,27 +117,23 @@ export default function JSONSchemaEditor({
       return (
         <JSONSchemaStringEditor
           disabled={disabled}
-          help={schema.description}
           label={label}
-          max={schema.maximum ?? schema.exclusiveMaximum}
-          min={schema.minimum ?? schema.exclusiveMinimum}
           name={name}
           onChange={onChange}
           required={required}
           schema={schema}
-          step={schema.multipleOf}
           value={value}
         />
       );
     default:
       return (
         <TextArea
+          defaultValue={JSON.stringify(value, undefined, 2)}
           disabled={disabled}
           label={label}
           name={name}
           onChange={onChange}
           required={required}
-          defaultValue={JSON.stringify(value, undefined, 2)}
         />
       );
   }

@@ -43,36 +43,16 @@ interface JSONSchemaStringEditorProps {
    * The value used to populate the editor.
    */
   value: string;
-
-  /**
-   * The help prompt rendered underneath the field.
-   */
-  help: string;
-
-  /**
-   * The max length indicator rendered at the bottom right of the field.
-   */
-  max: number | boolean;
-  /**
-   * The min length indicator rendered at the bottom right of the field.
-   */
-  min: number | boolean;
-
-  step: number;
 }
 
 export default function JSONSchemaStringEditor({
   disabled,
-  help,
   label,
-  max,
-  min,
   name,
   onChange,
   required,
   schema,
-  step,
-  value,
+  value = '',
 }: JSONSchemaStringEditorProps): React.ReactElement {
   let type: React.ComponentPropsWithoutRef<typeof Input>['type'] = 'text';
 
@@ -89,21 +69,21 @@ export default function JSONSchemaStringEditor({
   }
 
   return (
-    <div>
-      <Input
-        disabled={disabled}
-        help={help}
-        label={label}
-        maxLength={max as number}
-        minLength={min as number}
-        name={name}
-        onChange={onChange}
-        placeholder={schema.example}
-        required={required}
-        step={step}
-        type={type}
-        value={value}
-      />
-    </div>
+    <Input
+      disabled={disabled}
+      help={schema.description}
+      label={label}
+      max={schema.maximum}
+      maxLength={schema.maxLength}
+      min={schema.minimum}
+      minLength={schema.minLength}
+      name={name}
+      onChange={onChange}
+      placeholder={schema.example}
+      required={required}
+      step={schema.multipleOf}
+      type={type}
+      value={value}
+    />
   );
 }

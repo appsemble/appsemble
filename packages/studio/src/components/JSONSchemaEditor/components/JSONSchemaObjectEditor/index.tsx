@@ -51,7 +51,14 @@ export default function JSONSchemaObjectEditor({
 }: JSONSchemaObjectEditorProps): React.ReactElement {
   const onPropertyChange = React.useCallback(
     (event, val) => {
-      const id = event.target.name.slice(name.length + 1);
+      let id = '';
+      if (name) {
+        const splitId = event.currentTarget.name.slice(name.length + 1).split('.')[0];
+        id = splitId;
+      } else {
+        const splitName = event.currentTarget.name.split('.')[0];
+        id = splitName;
+      }
       onChange(event, { ...value, [id]: val });
     },
     [name, onChange, value],
@@ -63,11 +70,11 @@ export default function JSONSchemaObjectEditor({
         <JSONSchemaEditor
           key={propName}
           disabled={disabled}
-          name={`${name}.${propName}`}
+          name={name ? `${name}.${propName}` : propName}
           onChange={onPropertyChange}
-          required={required}
+          required={required || (schema?.required ? schema?.required.includes(propName) : required)}
           schema={subSchema as OpenAPIV3.SchemaObject}
-          value={value ? value[propName] : value}
+          value={value?.[propName]}
         />
       ))}
     </div>
