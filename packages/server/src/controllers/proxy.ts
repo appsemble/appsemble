@@ -14,12 +14,7 @@ interface Params {
 }
 
 async function proxyHandler(ctx: KoaContext<Params>): Promise<void> {
-  const { appId } = ctx.params;
-
-  const { path } = ctx.query;
-  if (!path) {
-    throw Boom.badRequest('Missing required query parameter: path');
-  }
+  const { appId, path } = ctx.params;
 
   const app = await App.findByPk(appId, { attributes: ['definition'] });
   if (!app) {

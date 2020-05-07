@@ -15,11 +15,11 @@ function proxy(method: string): OpenAPIV3.OperationObject {
 }
 
 export default {
-  '/apps/{appId}/proxy': {
+  '/apps/{appId}/proxy/{path}': {
     parameters: [
       { $ref: '#/components/parameters/appId' },
       {
-        in: 'query',
+        in: 'path',
         name: 'path',
         description: 'The path to the request action to proxy.',
         schema: { type: 'string' },
