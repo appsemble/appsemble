@@ -36,7 +36,7 @@ export default class AppRating extends Model {
         },
         UserId: {
           primaryKey: true,
-          type: DataTypes.INTEGER,
+          type: DataTypes.UUID,
           unique: 'UniqueRatingIndex',
           allowNull: false,
         },
