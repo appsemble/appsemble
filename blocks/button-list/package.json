@@ -2,6 +2,15 @@
   "name": "@appsemble/button-list",
   "version": "0.12.8",
   "private": true,
+  "homepage": "https://appsemble.dev",
+  "bugs": "https://gitlab.com/appsemble/appsemble/issues",
+  "repository": {
+    "type": "git",
+    "url": "https://gitlab.com/appsemble/appsemble.git",
+    "directory": "blocks/button-list"
+  },
+  "license": "LGPL-3.0-or-later",
+  "author": "Appsemble <info@appsemble.com> (https://appsemble.com)",
   "dependencies": {
     "@appsemble/preact": "0.12.8",
     "@appsemble/preact-components": "0.12.8",

@@ -21,7 +21,7 @@ jest.mock('react-router-dom', () => ({
 }));
 
 jest.mock('react-intl', () => {
-  const reactIntl = require.requireActual('react-intl');
+  const reactIntl = jest.requireActual('react-intl');
   const intl = reactIntl.createIntl({
     locale: 'en',
   });

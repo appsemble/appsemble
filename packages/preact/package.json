@@ -3,9 +3,7 @@
   "version": "0.12.8",
   "description": "Build your own blocks using Preact",
   "homepage": "https://appsemble.dev",
-  "bugs": {
-    "url": "https://gitlab.com/appsemble/appsemble/issues"
-  },
+  "bugs": "https://gitlab.com/appsemble/appsemble/issues",
   "repository": {
     "type": "git",
     "url": "https://gitlab.com/appsemble/appsemble.git",
@@ -23,7 +21,7 @@
     "prepack": "tsc -p tsconfig.build.json"
   },
   "dependencies": {
-    "intl-messageformat": "^8.3.7"
+    "intl-messageformat": "^8.3.10"
   },
   "peerDependencies": {
     "@appsemble/sdk": "^0.12.8",

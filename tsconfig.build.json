@@ -18,5 +18,13 @@
     "target": "es2019",
     "types": ["jest"]
   },
-  "exclude": ["**/*.test.ts", "**/*.test.tsx", "**/dist", "**/__fixtures__"]
+  "exclude": [
+    "**/*.test.ts",
+    "**/*.test.tsx",
+    "**/jest.setup.ts",
+    "**/dist",
+    "**/templates",
+    "**/__fixtures__",
+    "**/__mocks__"
+  ]
 }

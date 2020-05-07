@@ -3,9 +3,7 @@
   "version": "0.12.8",
   "private": true,
   "homepage": "https://appsemble.dev",
-  "bugs": {
-    "url": "https://gitlab.com/appsemble/appsemble/issues"
-  },
+  "bugs": "https://gitlab.com/appsemble/appsemble/issues",
   "repository": {
     "type": "git",
     "url": "https://gitlab.com/appsemble/appsemble.git",
@@ -30,14 +28,14 @@
     "js-yaml": "^3.13.1",
     "jwt-decode": "^2.2.0",
     "lodash": "^4.17.15",
-    "mime-types": "^2.1.26",
+    "mime-types": "^2.1.27",
     "monaco-editor": "^0.20.0",
     "monaco-yaml": "^2.4.0",
     "openapi-types": "^1.3.5",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-helmet": "^6.0.0",
-    "react-intl": "^4.5.0",
+    "react-intl": "^4.5.3",
     "react-router-dom": "^5.1.2",
     "resize-observer-polyfill": "^1.5.1"
   },

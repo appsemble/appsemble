@@ -116,6 +116,12 @@ tsc:
   script:
     - yarn workspaces run tsc
 
+# Check type validity for our TypeScript files.
+validate:
+  extends: .yarn
+  script:
+    - yarn scripts validate
+
 ###################################################################################################
 #  Build Stage                                                                                    #
 ###################################################################################################

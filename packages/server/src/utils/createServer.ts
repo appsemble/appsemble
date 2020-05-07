@@ -97,10 +97,9 @@ export default async function createServer({
         },
         koasParameters(),
         koasBodyParser({
-          '*/*': (body, _mediaTypeObject, ctx) =>
-            raw(body, {
-              length: ctx.request.length,
-            }),
+          parsers: {
+            '*/*': (body, _mediaTypeObject, ctx) => raw(body, { length: ctx.request.length }),
+          },
         }),
         koasSerializer({
           'text/csv': convertToCsv,

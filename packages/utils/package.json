@@ -3,9 +3,7 @@
   "version": "0.12.8",
   "private": true,
   "homepage": "https://appsemble.dev",
-  "bugs": {
-    "url": "https://gitlab.com/appsemble/appsemble/issues"
-  },
+  "bugs": "https://gitlab.com/appsemble/appsemble/issues",
   "repository": {
     "type": "git",
     "url": "https://gitlab.com/appsemble/appsemble.git",
@@ -21,12 +19,12 @@
   "dependencies": {
     "@appsemble/types": "0.12.8",
     "ajv": "^6.12.2",
-    "date-fns": "^2.12.0",
-    "intl-messageformat": "^8.3.1",
+    "date-fns": "^2.13.0",
+    "intl-messageformat": "^8.3.10",
     "openapi-types": "^1.3.5",
-    "postcss": "^7.0.27",
+    "postcss": "^7.0.29",
     "type-fest": "^0.13.1",
-    "z-schema": "^4.2.2"
+    "z-schema": "^4.2.3"
   },
   "devDependencies": {
     "@apidevtools/swagger-parser": "^9.0.1"

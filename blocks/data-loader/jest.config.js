@@ -1,6 +1,5 @@
 module.exports = {
-  coveragePathIgnorePatterns: ['.d.ts$'],
-  displayName: '@appsemble/node-utils',
+  displayName: '@appsemble/data-loader',
   globals: {
     'ts-jest': {
       isolatedModules: true,
@@ -10,5 +9,4 @@ module.exports = {
     [/@appsemble\/([\w-]+)/.source]: '@appsemble/$1/src',
   },
   preset: 'ts-jest',
-  testEnvironment: 'node',
 };

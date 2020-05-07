@@ -3,10 +3,13 @@ const path = require('path');
 const bulmaPkg = require('bulma/package.json');
 // eslint-disable-next-line import/no-extraneous-dependencies
 const faPkg = require('@fortawesome/fontawesome-free/package.json');
+// eslint-disable-next-line import/no-extraneous-dependencies
+const studioPkg = require('@appsemble/studio/package.json');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin');
 const { UnusedFilesWebpackPlugin } = require('unused-files-webpack-plugin');
+const { EnvironmentPlugin } = require('webpack');
 const merge = require('webpack-merge');
 
 const core = require('./core');
@@ -30,6 +33,9 @@ module.exports = (env, argv) => {
       publicPath,
     },
     plugins: [
+      new EnvironmentPlugin({
+        'process.env.APPSEMBLE_VERSION': studioPkg.version,
+      }),
       new HtmlWebpackPlugin({
         template: path.join(studioEntry, 'index.html'),
         templateParameters: {

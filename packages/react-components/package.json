@@ -3,9 +3,7 @@
   "version": "0.12.8",
   "private": true,
   "homepage": "https://appsemble.dev",
-  "bugs": {
-    "url": "https://gitlab.com/appsemble/appsemble/issues"
-  },
+  "bugs": "https://gitlab.com/appsemble/appsemble/issues",
   "repository": {
     "type": "git",
     "url": "https://gitlab.com/appsemble/appsemble.git",
@@ -24,9 +22,9 @@
     "bulma-calendar": "^6.0.7",
     "classnames": "^2.2.6",
     "leaflet": "~1.5.1",
-    "react-intl": "^4.5.0",
+    "react-intl": "^4.5.3",
     "react-router-dom": "^5.1.2",
-    "react-transition-group": "^4.3.0",
+    "react-transition-group": "^4.4.1",
     "type-fest": "^0.13.1"
   },
   "devDependencies": {
