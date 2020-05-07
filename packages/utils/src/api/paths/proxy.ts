@@ -22,6 +22,7 @@ export default {
         in: 'query',
         name: 'path',
         description: 'The path to the request action to proxy.',
+        schema: { type: 'string' },
       },
     ],
     get: proxy('Get'),
