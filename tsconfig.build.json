@@ -7,7 +7,6 @@
     "importsNotUsedAsValues": "error",
     "jsx": "react",
     "lib": ["esnext"],
-    "rootDir": "src",
     "module": "es2020",
     "moduleResolution": "node",
     "noUnusedLocals": true,
