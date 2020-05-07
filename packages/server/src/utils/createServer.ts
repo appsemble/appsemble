@@ -97,6 +97,7 @@ export default async function createServer({
         },
         koasParameters(),
         koasBodyParser({
+          ignore: ['proxyDelete', 'proxyGet', 'proxyPatch', 'proxyPost', 'proxyPut'],
           parsers: {
             '*/*': (body, _mediaTypeObject, ctx) => raw(body, { length: ctx.request.length }),
           },
@@ -124,8 +125,8 @@ export default async function createServer({
     appMapper(
       compose([
         conditional((ctx) => ctx.path.startsWith('/api') || ctx.path === '/oauth2/token', cors()),
-        studioRouter,
         apiMiddleware,
+        studioRouter,
         oauth2(argv),
       ]),
       compose([apiMiddleware, appRouter]),

@@ -9,6 +9,7 @@ import invite from './invite';
 import oauth from './oauth';
 import openid from './openid';
 import organizations from './organizations';
+import proxy from './proxy';
 import resources from './resources';
 import templates from './templates';
 import user from './user';
@@ -23,6 +24,7 @@ export default {
   ...openid,
   ...oauth,
   ...organizations,
+  ...proxy,
   ...resources,
   ...templates,
   ...user,

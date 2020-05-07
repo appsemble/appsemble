@@ -4,16 +4,16 @@ import * as Boom from '@hapi/boom';
 import { http } from 'follow-redirects';
 import { get } from 'lodash';
 
-import { version } from '../../../package.json';
-import { App } from '../../models';
-import type { KoaContext } from '../../types';
+import { version } from '../../package.json';
+import { App } from '../models';
+import type { KoaContext } from '../types';
 
 interface Params {
   appId: string;
   path: string;
 }
 
-export default async function proxyHandler(ctx: KoaContext<Params>): Promise<void> {
+async function proxyHandler(ctx: KoaContext<Params>): Promise<void> {
   const { appId } = ctx.params;
 
   const { path } = ctx.query;
@@ -66,3 +66,9 @@ export default async function proxyHandler(ctx: KoaContext<Params>): Promise<voi
     });
   });
 }
+
+export const proxyDelete = proxyHandler;
+export const proxyGet = proxyHandler;
+export const proxyPatch = proxyHandler;
+export const proxyPost = proxyHandler;
+export const proxyPut = proxyHandler;

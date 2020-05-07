@@ -1,9 +1,9 @@
 import { AxiosTestInstance, createInstance } from 'axios-test-instance';
 import Koa, { ParameterizedContext } from 'koa';
 
-import { App, Organization } from '../../models';
-import createServer from '../../utils/createServer';
-import { closeTestSchema, createTestSchema, truncate } from '../../utils/test/testSchema';
+import { App, Organization } from '../models';
+import createServer from '../utils/createServer';
+import { closeTestSchema, createTestSchema, truncate } from '../utils/test/testSchema';
 
 let request: AxiosTestInstance;
 let proxiedApp: Koa;
@@ -44,9 +44,24 @@ beforeEach(async () => {
                   type: 'request',
                   url: baseURL,
                 },
+                delete: {
+                  type: 'request',
+                  method: 'delete',
+                  url: baseURL,
+                },
+                patch: {
+                  type: 'request',
+                  method: 'patch',
+                  url: baseURL,
+                },
                 post: {
                   type: 'request',
                   method: 'post',
+                  url: baseURL,
+                },
+                put: {
+                  type: 'request',
+                  method: 'put',
                   url: baseURL,
                 },
                 path: {
@@ -121,10 +136,31 @@ it('should proxy simple GET request actions', async () => {
   expect(proxiedContext.path).toBe('/');
 });
 
+it('should proxy simple DELETE request actions', async () => {
+  const response = await request.delete('/api/apps/1/proxy?path=pages[0].blocks[0].actions.delete');
+  expect(response).toMatchObject({ status: 418, data: { message: 'I’m a teapot' } });
+  expect(proxiedContext.method).toBe('DELETE');
+  expect(proxiedContext.path).toBe('/');
+});
+
+it('should proxy simple PATCH request actions', async () => {
+  const response = await request.patch('/api/apps/1/proxy?path=pages[0].blocks[0].actions.patch');
+  expect(response).toMatchObject({ status: 418, data: { message: 'I’m a teapot' } });
+  expect(proxiedContext.method).toBe('PATCH');
+  expect(proxiedContext.path).toBe('/');
+});
+
 it('should proxy simple POST request actions', async () => {
   const response = await request.post('/api/apps/1/proxy?path=pages[0].blocks[0].actions.post');
   expect(response).toMatchObject({ status: 418, data: { message: 'I’m a teapot' } });
   expect(proxiedContext.method).toBe('POST');
+  expect(proxiedContext.path).toBe('/');
+});
+
+it('should proxy simple PUT request actions', async () => {
+  const response = await request.put('/api/apps/1/proxy?path=pages[0].blocks[0].actions.put');
+  expect(response).toMatchObject({ status: 418, data: { message: 'I’m a teapot' } });
+  expect(proxiedContext.method).toBe('PUT');
   expect(proxiedContext.path).toBe('/');
 });
 

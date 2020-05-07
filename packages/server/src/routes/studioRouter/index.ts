@@ -5,7 +5,6 @@ import faviconHandler from './faviconHandler';
 import iconHandler from './iconHandler';
 import indexHandler from './indexHandler';
 import oauth2CallbackHandler from './oauth2CallbackHandler';
-import proxyHandler from './proxyHandler';
 import tokenHandler from './tokenHandler';
 
 export default tinyRouter([
@@ -29,14 +28,6 @@ export default tinyRouter([
   {
     route: /^\/oauth2\/(?<provider>[a-z]+)\/callback$/,
     get: oauth2CallbackHandler,
-  },
-  {
-    route: /^\/api\/apps\/(?<appId>\d+)\/proxy$/,
-    any: proxyHandler,
-  },
-  {
-    route: /^\/api/,
-    any: (_ctx, next) => next(),
   },
   {
     route: new RegExp(`^(/${partialNormalized.source})*`),
