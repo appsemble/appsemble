@@ -60,7 +60,7 @@ it('should render the blocks for a page', () => {
       pages: [page],
     },
   });
-  const wrapper = shallow(<Page page={page} />);
+  const wrapper = shallow(<Page page={page} prefix="pages.0" />);
 
   expect(wrapper).toMatchSnapshot();
 });
@@ -94,7 +94,7 @@ it('should render tabs pages', () => {
       pages: [page],
     },
   });
-  const wrapper = shallow(<Page page={page} />);
+  const wrapper = shallow(<Page page={page} prefix="pages.0" />);
 
   expect(wrapper).toMatchSnapshot();
 });
@@ -128,7 +128,7 @@ it('should render flow page', () => {
       pages: [page],
     },
   });
-  const wrapper = shallow(<Page page={page} />);
+  const wrapper = shallow(<Page page={page} prefix="pages.0" />);
 
   expect(wrapper).toMatchSnapshot();
 });

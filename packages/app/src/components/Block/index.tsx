@@ -41,6 +41,7 @@ interface BlockProps {
   showDialog: ShowDialogAction;
   ready(block: BlockType): void;
   pageReady: Promise<void>;
+  prefix: string;
 }
 
 /**
@@ -57,6 +58,7 @@ export default function Block({
   extraCreators,
   flowActions,
   pageReady,
+  prefix,
   ready,
   showDialog,
 }: BlockProps): React.ReactElement {
@@ -139,6 +141,7 @@ export default function Block({
       flowActions,
       pushNotifications,
       pageReady,
+      prefix,
       ee,
     });
     const { theme: pageTheme } = definition.pages.find(
@@ -213,6 +216,7 @@ export default function Block({
     manifest,
     match,
     pageReady,
+    prefix,
     push,
     pushNotifications,
     ready,

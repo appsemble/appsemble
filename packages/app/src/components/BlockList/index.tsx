@@ -18,6 +18,7 @@ interface BlockListProps {
   ee: EventEmitter;
   extraCreators?: ActionCreators;
   flowActions?: {};
+  prefix: string;
   showDialog: ShowDialogAction;
   transitions?: boolean;
 }
@@ -37,6 +38,7 @@ export default function BlockList({
   ee,
   extraCreators,
   flowActions,
+  prefix,
   showDialog,
   transitions,
 }: BlockListProps): React.ReactElement {
@@ -83,6 +85,7 @@ export default function BlockList({
         extraCreators={extraCreators}
         flowActions={flowActions}
         pageReady={pageReady}
+        prefix={`${prefix}.${index}`}
         ready={ready}
         showDialog={showDialog}
       />

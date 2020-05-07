@@ -4,6 +4,7 @@ import { compileFilters, MapperFunction, remapData, validate } from '@appsemble/
 import axios, { AxiosRequestConfig, Method } from 'axios';
 
 import type { MakeActionParameters } from '../../types';
+import settings from '../settings';
 import uploadBlobs from '../uploadBlobs';
 import xmlToJson from '../xmlToJson';
 
@@ -12,9 +13,10 @@ interface Mapper {
 }
 
 export function requestLikeAction<T extends RequestLikeActionTypes>({
-  definition: { base, blobs = {}, method = 'GET', schema, query, url, serialize },
+  definition: { base, blobs = {}, method = 'GET', proxy = true, schema, query, url, serialize },
   onSuccess,
   onError,
+  prefix,
 }: MakeActionParameters<RequestLikeActionDefinition<T>>): RequestLikeAction<'request'> {
   const regex = /{(.+?)}/g;
   const urlMatch = url.match(regex);
@@ -40,7 +42,9 @@ export function requestLikeAction<T extends RequestLikeActionTypes>({
       const methodUpper = method.toUpperCase() as Method;
       const req: AxiosRequestConfig = {
         method: methodUpper,
-        url: url.replace(regex, (_, filter) => urlMappers[filter](data)),
+        url: proxy
+          ? `/api/apps/${settings.id}/proxy/${prefix}`
+          : url.replace(regex, (_, filter) => urlMappers[filter](data)),
         params:
           query &&
           Object.fromEntries(

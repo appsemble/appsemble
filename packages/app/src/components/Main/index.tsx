@@ -22,7 +22,7 @@ export default function Main(): React.ReactElement {
   }
 
   let defaultPath;
-  const routes = definition.pages.map((page) => {
+  const routes = definition.pages.map((page, index) => {
     const path = `/${[
       normalize(page.name),
       ...(page.parameters || []).map((parameter) => `:${parameter}`),
@@ -33,7 +33,9 @@ export default function Main(): React.ReactElement {
       defaultPath = path;
     }
     return (
-      <Route key={path} exact path={path} render={(props) => <Page page={page} {...props} />} />
+      <Route key={path} exact path={path}>
+        <Page page={page} prefix={`pages.${index}`} />
+      </Route>
     );
   });
 

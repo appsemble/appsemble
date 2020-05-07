@@ -18,9 +18,10 @@ import messages from './messages';
 
 interface PageProps {
   page: PageType;
+  prefix: string;
 }
 
-export default function Page({ page }: PageProps): React.ReactElement {
+export default function Page({ page, prefix }: PageProps): React.ReactElement {
   const { definition } = useAppDefinition();
   const history = useHistory();
   const intl = useIntl();
@@ -141,15 +142,30 @@ export default function Page({ page }: PageProps): React.ReactElement {
           definition={definition}
           ee={ee.current}
           page={page}
+          prefix={prefix}
           showDialog={showDialog}
         />
       );
       break;
     case 'tabs':
-      component = <TabsPage ee={ee.current} showDialog={showDialog} subPages={page.subPages} />;
+      component = (
+        <TabsPage
+          ee={ee.current}
+          prefix={prefix}
+          showDialog={showDialog}
+          subPages={page.subPages}
+        />
+      );
       break;
     default:
-      component = <BlockList blocks={page.blocks} ee={ee.current} showDialog={showDialog} />;
+      component = (
+        <BlockList
+          blocks={page.blocks}
+          ee={ee.current}
+          prefix={`${prefix}.blocks`}
+          showDialog={showDialog}
+        />
+      );
   }
 
   return (

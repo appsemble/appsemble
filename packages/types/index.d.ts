@@ -392,6 +392,13 @@ export interface RequestLikeActionDefinition<
   method?: HTTPMethods;
 
   /**
+   * Whether or not to proxy the request through the Appsemble proxy endpoint.
+   *
+   * @default true
+   */
+  proxy?: boolean;
+
+  /**
    * A JSON schema against which to validate data before uploading.
    */
   schema?: OpenAPIV3.SchemaObject;

@@ -60,6 +60,7 @@ export interface ShowDialogParams {
   data: any;
   close: () => void;
   fullscreen: boolean;
+  prefix: string;
   title?: string;
 }
 
@@ -80,6 +81,7 @@ export interface MakeActionParameters<D extends ActionDefinition> {
   onSuccess?: Action;
   onError?: Action;
   showDialog: ShowDialogAction;
+  prefix: string;
   pushNotifications: ServiceWorkerRegistrationContextType;
   ee: EventEmitter;
 }
