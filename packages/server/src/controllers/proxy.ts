@@ -2,7 +2,7 @@ import { logger } from '@appsemble/node-utils/src';
 import type { ActionDefinition } from '@appsemble/types';
 import * as Boom from '@hapi/boom';
 import { http } from 'follow-redirects';
-import { get } from 'lodash';
+import { get, pick } from 'lodash';
 
 import { version } from '../../package.json';
 import { App } from '../models';
@@ -12,6 +12,27 @@ interface Params {
   appId: string;
   path: string;
 }
+
+/**
+ * These request headers are forwarded when proxying requests.
+ */
+const allowRequestHeaders = [
+  'accept',
+  'accept-encoding',
+  'accept-language',
+  'cache-control',
+  'pragma',
+];
+
+/**
+ * These response headers are forwarded when proxying requests.
+ */
+const allowResponseHeaders = [
+  'content-encoding',
+  'content-length',
+  'content-type',
+  'transfer-encoding',
+];
 
 async function proxyHandler(ctx: KoaContext<Params>): Promise<void> {
   const { appId, path } = ctx.params;
@@ -44,13 +65,16 @@ async function proxyHandler(ctx: KoaContext<Params>): Promise<void> {
       {
         host: url.hostname,
         port: url.port,
-        headers: { 'user-agent': `AppsembleServer/${version}` },
+        headers: {
+          'user-agent': `AppsembleServer/${version}`,
+          ...pick(ctx.headers, allowRequestHeaders),
+        },
         method,
         path: `${url.pathname}${url.search}`,
       },
       (res) => {
         ctx.status = res.statusCode;
-        ctx.set(res.headers as any);
+        ctx.set(pick(res.headers as NodeJS.Dict<string>, allowResponseHeaders));
         ctx.status = res.statusCode;
         res.pipe(ctx.res, { end: true }).on('close', resolve);
       },

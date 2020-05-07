@@ -3,8 +3,10 @@ import Koa, { ParameterizedContext } from 'koa';
 
 import { App, Organization } from '../models';
 import createServer from '../utils/createServer';
+import readPackageJson from '../utils/readPackageJson';
 import { closeTestSchema, createTestSchema, truncate } from '../utils/test/testSchema';
 
+const { version } = readPackageJson();
 let request: AxiosTestInstance;
 let proxiedApp: Koa;
 let proxiedContext: ParameterizedContext;
@@ -121,6 +123,12 @@ it('should proxy simple GET request actions', async () => {
   const response = await request.get('/api/apps/1/proxy/pages.0.blocks.0.actions.get');
   expect(response).toMatchObject({ status: 418, data: { message: 'I’m a teapot' } });
   expect(proxiedContext.method).toBe('GET');
+  expect({ ...proxiedContext.headers }).toStrictEqual({
+    accept: 'application/json, text/plain, */*',
+    connection: 'close',
+    host: new URL(proxiedRequest.defaults.baseURL).host,
+    'user-agent': `AppsembleServer/${version}`,
+  });
   expect(proxiedContext.path).toBe('/');
 });
 
@@ -128,6 +136,12 @@ it('should proxy simple DELETE request actions', async () => {
   const response = await request.delete('/api/apps/1/proxy/pages.0.blocks.0.actions.delete');
   expect(response).toMatchObject({ status: 418, data: { message: 'I’m a teapot' } });
   expect(proxiedContext.method).toBe('DELETE');
+  expect({ ...proxiedContext.headers }).toStrictEqual({
+    accept: 'application/json, text/plain, */*',
+    connection: 'close',
+    host: new URL(proxiedRequest.defaults.baseURL).host,
+    'user-agent': `AppsembleServer/${version}`,
+  });
   expect(proxiedContext.path).toBe('/');
 });
 
@@ -135,6 +149,13 @@ it('should proxy simple PATCH request actions', async () => {
   const response = await request.patch('/api/apps/1/proxy/pages.0.blocks.0.actions.patch');
   expect(response).toMatchObject({ status: 418, data: { message: 'I’m a teapot' } });
   expect(proxiedContext.method).toBe('PATCH');
+  expect({ ...proxiedContext.headers }).toStrictEqual({
+    accept: 'application/json, text/plain, */*',
+    connection: 'close',
+    'content-length': '0',
+    host: new URL(proxiedRequest.defaults.baseURL).host,
+    'user-agent': `AppsembleServer/${version}`,
+  });
   expect(proxiedContext.path).toBe('/');
 });
 
@@ -142,6 +163,13 @@ it('should proxy simple POST request actions', async () => {
   const response = await request.post('/api/apps/1/proxy/pages.0.blocks.0.actions.post');
   expect(response).toMatchObject({ status: 418, data: { message: 'I’m a teapot' } });
   expect(proxiedContext.method).toBe('POST');
+  expect({ ...proxiedContext.headers }).toStrictEqual({
+    accept: 'application/json, text/plain, */*',
+    connection: 'close',
+    'content-length': '0',
+    host: new URL(proxiedRequest.defaults.baseURL).host,
+    'user-agent': `AppsembleServer/${version}`,
+  });
   expect(proxiedContext.path).toBe('/');
 });
 
@@ -149,6 +177,13 @@ it('should proxy simple PUT request actions', async () => {
   const response = await request.put('/api/apps/1/proxy/pages.0.blocks.0.actions.put');
   expect(response).toMatchObject({ status: 418, data: { message: 'I’m a teapot' } });
   expect(proxiedContext.method).toBe('PUT');
+  expect({ ...proxiedContext.headers }).toStrictEqual({
+    accept: 'application/json, text/plain, */*',
+    connection: 'close',
+    'content-length': '0',
+    host: new URL(proxiedRequest.defaults.baseURL).host,
+    'user-agent': `AppsembleServer/${version}`,
+  });
   expect(proxiedContext.path).toBe('/');
 });
 
