@@ -31,7 +31,7 @@ export default function PageDialog({
           blocks={dialog.blocks}
           data={dialog.data}
           extraCreators={dialog.actionCreators}
-          prefix={`${dialog.prefix}blocks`}
+          prefix={`${dialog.prefix}.blocks`}
           {...props}
         />
       )}
