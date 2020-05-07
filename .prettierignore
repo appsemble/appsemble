@@ -1,5 +1,5 @@
 /.docz
 /config/charts/*/templates
 dist/
-/coverage/
+coverage/
 /reports/
