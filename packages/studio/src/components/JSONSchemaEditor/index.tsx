@@ -129,10 +129,10 @@ export default function JSONSchemaEditor({
       return (
         <TextArea
           defaultValue={JSON.stringify(value, undefined, 2)}
-          disabled={disabled}
+          disabled
           label={label}
           name={name}
-          onChange={onChange}
+          onChange={null}
           required={required}
         />
       );
