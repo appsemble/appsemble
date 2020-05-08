@@ -81,6 +81,7 @@ exports[`should render flow page 1`] = `
         "type": "flow",
       }
     }
+    prefix="pages.0"
     showDialog={[Function]}
   />
   <PageDialog
@@ -97,6 +98,7 @@ exports[`should render tabs pages 1`] = `
   </TitleBar>
   <TabsPage
     ee={EventEmitter {}}
+    prefix="pages.0"
     showDialog={[Function]}
     subPages={
       Array [
@@ -155,6 +157,7 @@ exports[`should render the blocks for a page 1`] = `
       ]
     }
     ee={EventEmitter {}}
+    prefix="pages.0.blocks"
     showDialog={[Function]}
   />
   <PageDialog

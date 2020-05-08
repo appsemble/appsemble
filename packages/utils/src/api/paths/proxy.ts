@@ -10,7 +10,6 @@ function proxy(method: string): OpenAPIV3.OperationObject {
         description: 'The proxied response',
       },
     },
-    security: [{ app: ['proxy'] }, {}],
   };
 }
 
@@ -22,6 +21,7 @@ export default {
         in: 'path',
         name: 'path',
         description: 'The path to the request action to proxy.',
+        required: true,
         schema: { type: 'string' },
       },
     ],
