@@ -1,4 +1,4 @@
-import { parse } from 'date-fns';
+import { parse, parseISO } from 'date-fns';
 import IntlMessageFormat from 'intl-messageformat';
 import type { RequireExactlyOne } from 'type-fest';
 
@@ -63,7 +63,7 @@ const mapperImplementations: MapperImplementations = {
 
   prop: (prop, obj) => prop.split('.').reduce((acc, p) => acc[p], obj),
 
-  'date.parse': (format, input) => parse(input, format, new Date()),
+  'date.parse': (format, input) => (format ? parse(input, format, new Date()) : parseISO(input)),
 
   'string.case': (stringCase, input) => {
     if (stringCase === 'lower') {
