@@ -60,12 +60,11 @@ export default function JSONSchemaEditor({
   ) : (
     name
   );
-  const disable = disabled || schema.readOnly;
 
   if (schema.enum) {
     return (
-      <Select label={label} name={name} onChange={onChange} required={required} value={value}>
-        <option disabled hidden value="">
+      <Select label={label} name={name} onChange={onChange} required={required} value={value || ''}>
+        <option disabled hidden>
           {' '}
         </option>
         {schema.enum.map((option) => (
@@ -90,14 +89,14 @@ export default function JSONSchemaEditor({
           name={name}
           onChange={onChange}
           required={required}
-          schema={schema}
-          value={value || []}
+          schema={schema as OpenAPIV3.ArraySchemaObject}
+          value={value}
         />
       );
     case 'boolean':
       return (
         <Checkbox
-          disabled={disable}
+          disabled={disabled}
           help={name}
           label={label}
           name={name}
@@ -109,12 +108,12 @@ export default function JSONSchemaEditor({
     case 'object':
       return (
         <JSONSchemaObjectEditor
-          disabled={disable}
+          disabled={disabled}
           name={name}
           onChange={onChange}
           required={required}
           schema={schema}
-          value={value || {}}
+          value={value}
         />
       );
     case 'string':
@@ -122,7 +121,7 @@ export default function JSONSchemaEditor({
     case 'number':
       return (
         <JSONSchemaStringEditor
-          disabled={disable}
+          disabled={disabled}
           label={label}
           name={name}
           onChange={onChange}
@@ -135,10 +134,10 @@ export default function JSONSchemaEditor({
       return (
         <TextArea
           defaultValue={JSON.stringify(value, undefined, 2)}
-          disabled={disabled}
+          disabled
           label={label}
           name={name}
-          onChange={onChange}
+          onChange={null}
           required={required}
         />
       );

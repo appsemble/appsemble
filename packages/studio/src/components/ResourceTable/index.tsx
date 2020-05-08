@@ -11,7 +11,6 @@ import {
   useToggle,
 } from '@appsemble/react-components';
 import axios from 'axios';
-import type { OpenAPIV3 } from 'openapi-types';
 import React from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link, useHistory, useRouteMatch } from 'react-router-dom';
@@ -79,30 +78,9 @@ export default function ResourceTable(): React.ReactElement {
     }
   }, [appId, deletingResource, intl, push, resourceName, resources, warningDialog]);
 
-  const onChange = React.useCallback(
-    (event: any, value: any) => {
-      let name = event;
-      if (event?.target) {
-        if (event?.target.name) {
-          name = event.target.name;
-        } else {
-          name = event.currentTarget.name;
-        }
-        if (name.includes('.')) {
-          const objectParentName = name.split(/\./g)[0];
-          name = objectParentName;
-        }
-      }
-      if (name === 'id') {
-        return;
-      }
-      setEditingResource({
-        ...editingResource,
-        [name]: value,
-      });
-    },
-    [editingResource],
-  );
+  const onChange = React.useCallback((_event: React.ChangeEvent, value: any) => {
+    setEditingResource(value);
+  }, []);
 
   const submitCreate = React.useCallback(
     async (event: React.FormEvent) => {
@@ -321,21 +299,7 @@ export default function ResourceTable(): React.ReactElement {
           )
         }
       >
-        {keys.map((key) => {
-          const propSchema = (schema?.properties[key] || {}) as OpenAPIV3.SchemaObject;
-
-          return (
-            <JSONSchemaEditor
-              key={key}
-              disabled={propSchema.readOnly || key === 'id'}
-              name={key}
-              onChange={onChange}
-              required={schema?.required?.includes(key)}
-              schema={propSchema}
-              value={editingResource?.[key]}
-            />
-          );
-        })}
+        <JSONSchemaEditor onChange={onChange} schema={schema} value={editingResource} />
       </Modal>
       <Modal
         footer={

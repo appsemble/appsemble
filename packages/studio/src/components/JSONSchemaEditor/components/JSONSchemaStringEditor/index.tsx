@@ -52,7 +52,7 @@ export default function JSONSchemaStringEditor({
   onChange,
   required,
   schema,
-  value,
+  value = '',
 }: JSONSchemaStringEditorProps): React.ReactElement {
   let type: React.ComponentPropsWithoutRef<typeof Input>['type'] = 'text';
 
@@ -62,23 +62,28 @@ export default function JSONSchemaStringEditor({
     type = 'email';
   } else if (schema.format === 'password') {
     type = 'password';
-  } else if (schema.format === 'date-time') {
+  } else if (schema.format === 'date') {
     type = 'date';
+  } else if (schema.format === 'date-time') {
+    type = 'datetime-local';
   }
 
   return (
-    <div>
-      <Input
-        disabled={disabled}
-        label={label}
-        maxLength={schema.maxLength}
-        name={name}
-        onChange={onChange}
-        placeholder={schema.example}
-        required={required}
-        type={type}
-        value={value}
-      />
-    </div>
+    <Input
+      disabled={disabled}
+      help={schema.description}
+      label={label}
+      max={schema.maximum}
+      maxLength={schema.maxLength}
+      min={schema.minimum}
+      minLength={schema.minLength}
+      name={name}
+      onChange={onChange}
+      placeholder={schema.example}
+      required={required}
+      step={schema.multipleOf}
+      type={type}
+      value={value}
+    />
   );
 }
