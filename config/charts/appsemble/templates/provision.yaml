@@ -31,7 +31,8 @@ spec:
               DECLARE
                 UserId integer;
               BEGIN
-                INSERT INTO "User" (name, "primaryEmail", created, updated) VALUES (
+                INSERT INTO "User" (id, name, "primaryEmail", created, updated) VALUES (
+                  uuid_generate_v4(),
                   {{ .Values.provision.account.name | squote }},
                   {{ .Values.provision.account.email | squote }},
                   NOW(),
