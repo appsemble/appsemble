@@ -78,7 +78,7 @@ export default function ResourceTable(): React.ReactElement {
     }
   }, [appId, deletingResource, intl, push, resourceName, resources, warningDialog]);
 
-  const onChange = React.useCallback((event: React.ChangeEvent, value: any) => {
+  const onChange = React.useCallback((_event: React.ChangeEvent, value: any) => {
     setEditingResource(value);
   }, []);
 
