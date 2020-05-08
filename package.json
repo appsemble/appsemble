@@ -11,6 +11,7 @@
     "create-appsemble": "ts-node -TP packages/create-appsemble/tsconfig.json packages/create-appsemble/src",
     "eslint": "eslint --max-warnings 0 --ext js,md,ts,tsx",
     "prettier": "prettier --check",
+    "scripts": "ts-node -TP packages/scripts/tsconfig.json packages/scripts/src",
     "start": "ts-node -TP packages/cli/tsconfig.json packages/cli/src start",
     "stylelint": "stylelint",
     "test": "jest"
@@ -162,6 +163,7 @@
     "terser-webpack-plugin": "^3.0.1",
     "ts-jest": "^25.5.0",
     "ts-loader": "^7.0.3",
+    "ts-node": "^8.10.1",
     "typescript": "^3.8.3",
     "unified": "^9.0.0",
     "unused-files-webpack-plugin": "^3.4.0",
