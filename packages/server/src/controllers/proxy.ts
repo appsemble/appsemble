@@ -45,7 +45,7 @@ async function proxyHandler(ctx: KoaContext<Params>): Promise<void> {
   }
 
   const action = get(app.definition, path) as ActionDefinition;
-  if (!(action && 'url' in action)) {
+  if (action?.type !== 'request') {
     throw Boom.badRequest('path does not point to a proxyable action');
   }
 
