@@ -20,8 +20,8 @@ export default function GeoCoordinatesRenderer({
 
   const label = utils.remap(field.label, data);
   const value = utils.remap(field.name, data);
-  const lat = field.latitude ? utils.remap(field.latitude, value) : value.lat;
-  const lng = field.longitude ? utils.remap(field.longitude, value) : value.lng;
+  const lat = field.latitude ? utils.remap(field.latitude, value ?? data) : value.lat;
+  const lng = field.longitude ? utils.remap(field.longitude, value ?? data) : value.lng;
 
   return (
     <div className={styles.root}>
