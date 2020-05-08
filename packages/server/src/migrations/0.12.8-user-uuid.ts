@@ -1,3 +1,4 @@
+import { AppsembleError } from '@appsemble/node-utils';
 import { DataTypes, QueryTypes } from 'sequelize';
 import { v4 } from 'uuid';
 
@@ -8,10 +9,16 @@ export default {
 
   /**
    * Summary:
-   * - Drop user constraints
+   * - Drop user foreign key constraints
    * - Add new column for user ID
    * - Generate new UUID for each user
-   * -
+   * - Add a new UUID column in each related table
+   * - Update the new UUID column to the newly mapped user IDs
+   * - Remove old column in related tables
+   * - Rename new column to UserId in related tables
+   * - Remove old id column in user table
+   * - Rename newId to id
+   * - Re-add foreign key constraints in related tables
    */
   async up(db) {
     const queryInterface = db.getQueryInterface();
@@ -22,18 +29,18 @@ export default {
     });
 
     const tables = [
-      { name: 'AppMember', allowNull: true, onDelete: 'cascade' },
-      { name: 'AppRating', allowNull: true, onDelete: 'cascade' },
-      { name: 'AppSubscription', allowNull: true, onDelete: 'cascade' },
-      { name: 'Asset', allowNull: true, onDelete: 'cascade' },
-      { name: 'EmailAuthorization', allowNull: true, onDelete: 'cascade' },
-      { name: 'Member', allowNull: true, onDelete: 'cascade' },
-      { name: 'OAuth2AuthorizationCode', allowNull: true, onDelete: 'cascade' },
-      { name: 'OAuth2ClientCredentials', allowNull: true, onDelete: 'cascade' },
-      { name: 'OAuthAuthorization', allowNull: true, onDelete: 'cascade' },
-      { name: 'Resource', allowNull: true, onDelete: 'cascade' },
-      { name: 'OrganizationInvite', allowNull: true, onDelete: 'cascade' },
-      { name: 'ResetPasswordToken', allowNull: true, onDelete: 'cascade' },
+      { name: 'AppMember', allowNull: true, onDelete: 'set null' },
+      { name: 'AppRating', allowNull: false, onDelete: 'set null' },
+      { name: 'AppSubscription', allowNull: true, onDelete: 'set null' },
+      { name: 'Asset', allowNull: true, onDelete: 'set null' },
+      { name: 'EmailAuthorization', allowNull: false, onDelete: 'set null' },
+      { name: 'Member', allowNull: false, onDelete: 'set null' },
+      { name: 'OAuth2AuthorizationCode', allowNull: false, onDelete: 'cascade' },
+      { name: 'OAuth2ClientCredentials', allowNull: false, onDelete: 'cascade' },
+      { name: 'OAuthAuthorization', allowNull: true, onDelete: 'set null' },
+      { name: 'Resource', allowNull: true, onDelete: 'set null' },
+      { name: 'OrganizationInvite', allowNull: true, onDelete: 'set null' },
+      { name: 'ResetPasswordToken', allowNull: false, onDelete: 'cascade' },
     ];
 
     await queryInterface.addColumn('User', 'newId', {
@@ -95,8 +102,7 @@ export default {
     );
   },
 
-  async down(db) {
-    const queryInterface = db.getQueryInterface();
-    // await queryInterface.removeColumn('BlockVersion', 'icon');
+  async down() {
+    throw new AppsembleError('Due to complexity, down migrations from 0.13.0 are not supported.');
   },
 } as Migration;

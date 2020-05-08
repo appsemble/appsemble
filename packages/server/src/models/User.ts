@@ -59,7 +59,7 @@ export default class User extends Model {
   }
 
   static associate(): void {
-    User.belongsToMany(Organization, { through: Member });
+    User.belongsToMany(Organization, { through: Member, foreignKey: { allowNull: false } });
     User.belongsToMany(App, { through: AppMember });
     User.hasMany(OAuthAuthorization);
     User.hasMany(EmailAuthorization);
