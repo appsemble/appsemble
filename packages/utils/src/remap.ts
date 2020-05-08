@@ -1,3 +1,4 @@
+import { parse, parseISO } from 'date-fns';
 import IntlMessageFormat from 'intl-messageformat';
 import type { RequireExactlyOne } from 'type-fest';
 
@@ -15,6 +16,11 @@ export interface Remappers {
    * Get a property from an object.
    */
   prop: string;
+
+  /**
+   * Convert a string to a date using a given format.
+   */
+  'date.parse': string;
 
   /**
    * Convert an input to lower or upper case.
@@ -56,6 +62,8 @@ const mapperImplementations: MapperImplementations = {
     Object.fromEntries(Object.entries(mappers).map(([key, mapper]) => [key, remap(mapper, input)])),
 
   prop: (prop, obj) => prop.split('.').reduce((acc, p) => acc[p], obj),
+
+  'date.parse': (format, input) => (format ? parse(input, format, new Date()) : parseISO(input)),
 
   'string.case': (stringCase, input) => {
     if (stringCase === 'lower') {
