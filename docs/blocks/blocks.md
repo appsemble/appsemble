@@ -8,6 +8,9 @@ route: /blocks
 Without blocks it is not possible to develop any interesting apps. To get you started Appsemble
 comes with several official blocks that can be used in any app.
 
+These blocks are published and maintained by Appsemble. These can be expected to always work with
+the current version of Appsemble.
+
 - [Action Button](/blocks/action-button)
 - [Button List](/blocks/button-list)
 - [Detail Viewer](/blocks/detail-viewer)
