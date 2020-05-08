@@ -9,7 +9,7 @@ export default class EmailAuthorization extends Model {
 
   key: string;
 
-  UserId: number;
+  UserId: string;
 
   User: User;
 
@@ -33,6 +33,6 @@ export default class EmailAuthorization extends Model {
   }
 
   static associate(): void {
-    EmailAuthorization.belongsTo(User, { foreignKey: { allowNull: false } });
+    EmailAuthorization.belongsTo(User);
   }
 }

@@ -8,7 +8,7 @@ export default class OrganizationInvite extends Model {
 
   key: string;
 
-  UserId: number;
+  UserId: string;
 
   OrganizationId: string;
 

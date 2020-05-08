@@ -5,7 +5,7 @@ import User from './User';
 export default class ResetPasswordToken extends Model {
   token: string;
 
-  UserId: number;
+  UserId: string;
 
   User: User;
 

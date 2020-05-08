@@ -15,7 +15,7 @@ export default class OAuthAuthorization extends Model {
 
   code: string;
 
-  UserId: number;
+  UserId: string;
 
   User: string;
 

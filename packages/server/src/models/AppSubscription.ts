@@ -15,7 +15,7 @@ export default class AppSubscription extends Model {
 
   App: App;
 
-  UserId: number;
+  UserId: string;
 
   User: User;
 

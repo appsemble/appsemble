@@ -11,7 +11,7 @@ import styles from './index.css';
 import messages from './messages';
 
 export interface Member {
-  id: number;
+  id: string;
   name?: string;
   primaryEmail?: string;
   role: string;
@@ -23,7 +23,7 @@ export default function Roles(): React.ReactElement {
   const { userInfo } = useUser();
   const { app } = useApp();
   const [members, setMembers] = React.useState<Member[]>();
-  const [submittingMemberRoleId, setSubmittingMemberRoleId] = React.useState<number>();
+  const [submittingMemberRoleId, setSubmittingMemberRoleId] = React.useState<string>();
 
   React.useEffect(() => {
     const getMembers = async (): Promise<void> => {
@@ -51,7 +51,7 @@ export default function Roles(): React.ReactElement {
   }, [app]);
   const onChangeRole = async (
     event: React.ChangeEvent<HTMLSelectElement>,
-    userId: number,
+    userId: string,
   ): Promise<void> => {
     event.preventDefault();
     const { value: role } = event.target;

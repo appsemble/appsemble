@@ -10,7 +10,7 @@ export default class AppRating extends Model {
 
   AppId: number;
 
-  UserId: number;
+  UserId: string;
 
   User: User;
 

@@ -16,7 +16,7 @@ import Organization from './Organization';
 import ResetPasswordToken from './ResetPasswordToken';
 
 export default class User extends Model {
-  id: number;
+  id: string;
 
   name: string;
 
@@ -59,7 +59,7 @@ export default class User extends Model {
   }
 
   static associate(): void {
-    User.belongsToMany(Organization, { through: Member, foreignKey: { allowNull: false } });
+    User.belongsToMany(Organization, { through: Member });
     User.belongsToMany(App, { through: AppMember });
     User.hasMany(OAuthAuthorization);
     User.hasMany(EmailAuthorization);
