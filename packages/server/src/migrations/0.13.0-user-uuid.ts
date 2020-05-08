@@ -5,7 +5,7 @@ import { v4 } from 'uuid';
 import type { Migration } from '../utils/migrate';
 
 export default {
-  key: '0.12.8',
+  key: '0.13.0',
 
   /**
    * Summary:

@@ -7,7 +7,7 @@ import rolesSubscriptionsAssociations from './0.11.0-roles-subscriptions-associa
 import nonNullableAssetAppId from './0.11.3-non-nullable-asset-app-id';
 import removeBlockDefinition from './0.12.4-remove-block-definition';
 import blockIcon from './0.12.6-block-icon';
-import userUuid from './0.12.8-user-uuid';
+import userUuid from './0.13.0-user-uuid';
 
 export default [
   postgresql,
