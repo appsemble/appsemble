@@ -4,14 +4,16 @@ import * as Boom from '@hapi/boom';
 import { http } from 'follow-redirects';
 import { get, pick } from 'lodash';
 
-import { version } from '../../package.json';
 import { App } from '../models';
 import type { KoaContext } from '../types';
+import readPackageJson from '../utils/readPackageJson';
 
 interface Params {
   appId: string;
   path: string;
 }
+
+const { version } = readPackageJson();
 
 /**
  * These request headers are forwarded when proxying requests.
