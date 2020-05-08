@@ -10,6 +10,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ### Added
 
 - Block(`detail-viewer`): Implement remappers.
+- Create: Add `mini-jsx` template based on the current stats block.
 - SDK: Add support for remappers using the `util.remap` function.
 - Server: Add support for using remappers in the notification data definition.
 
