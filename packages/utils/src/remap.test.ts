@@ -1,4 +1,6 @@
-import remap, { Remapper } from './remap';
+import type { Remapper } from '@appsemble/types';
+
+import remap from './remap';
 
 interface TestCase {
   description: string;
