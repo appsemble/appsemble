@@ -8,7 +8,7 @@ dist/
 /blocks/test/
 
 # Jest output
-/coverage/
+coverage/
 __diff_output__/
 junit.xml
 

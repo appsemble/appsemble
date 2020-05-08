@@ -1,5 +1,5 @@
 import type { Next } from 'koa';
-import qs from 'qs';
+import qs, { ParsedQs } from 'qs';
 
 import { OAuthAuthorization } from '../../models';
 import type { KoaContext } from '../../types';
@@ -18,10 +18,10 @@ export default async function oauth2CallbackHandler(ctx: KoaContext, next: Next)
     const params = qs.parse(ctx.body);
     let sub;
     if (params.id_token) {
-      ({ sub } = params.id_token.payload);
+      ({ sub } = (params.id_token as ParsedQs).payload as ParsedQs);
     }
     if (sub == null) {
-      ({ sub } = await getUserInfo(provider, params.access_token));
+      ({ sub } = await getUserInfo(provider, (params as ParsedQs).access_token as string));
     }
     await OAuthAuthorization.upsert({
       id: sub,
