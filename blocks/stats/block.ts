@@ -1,10 +1,11 @@
+import type { Remapper } from '@appsemble/sdk';
 import type { IconName } from '@fortawesome/fontawesome-common-types';
 
 export interface Field {
   /**
-   * The name of the property to render.
+   * The value of the property to render.
    */
-  name: string;
+  value: Remapper;
 
   /**
    * The fontawesome icon to render.
@@ -13,10 +14,8 @@ export interface Field {
 
   /**
    * The label to render.
-   *
-   * This defaults to the field name.
    */
-  label?: string;
+  label?: Remapper;
 }
 
 declare module '@appsemble/sdk' {

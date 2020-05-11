@@ -1,44 +1,29 @@
-export {};
+import type { Remapper } from '@appsemble/sdk';
+import type { IconName } from '@fortawesome/fontawesome-common-types';
+
+export interface Field {
+  /**
+   * The value of the property to render.
+   */
+  value: Remapper;
+
+  /**
+   * The fontawesome icon to render.
+   */
+  icon: IconName;
+
+  /**
+   * The label to render.
+   */
+  label?: Remapper;
+}
 
 declare module '@appsemble/sdk' {
-  interface Parameters {
-    /**
-     * The title of the explanation
-     */
-    title: string;
-
-    /**
-     * The text that gets displayed behind the title
-     */
-    backdrop: string;
-
-    /**
-     * The icon displayed in the center.
-     *
-     * Based on Font Awesome icons
-     */
-    icon: string;
-
-    /**
-     * The description of the explanation
-     */
-    description: string;
-
-    /**
-     * The text of the submit button
-     */
-    submitText: string;
+  interface EventListeners {
+    data: {};
   }
 
-  interface Actions {
-    /**
-     * This action is dispatched when the submit button is pressed.
-     */
-    onSubmit: {};
-
-    /**
-     * This action is dispatched hwen the icon in the center is pressed.
-     */
-    onIconClick: {};
+  interface Parameters {
+    fields: Field[];
   }
 }
