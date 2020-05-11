@@ -21,6 +21,7 @@ export interface EditLocation {
   blockName: string;
   pageName: string;
   parents?: [{ name: string; line: number; indent: number }];
+  topParentLine?: number;
 }
 
 export default class MonacoEditor extends React.Component<MonacoEditorProps> {
@@ -59,7 +60,7 @@ export default class MonacoEditor extends React.Component<MonacoEditorProps> {
     this.observer.observe(this.node.current);
 
     this.editor.onDidChangeCursorSelection(() => {
-      this.getEditLocationParents(model, this.editor.getPosition());
+      this.getEditLocation(model, this.editor.getPosition());
     });
   }
 
@@ -121,12 +122,31 @@ export default class MonacoEditor extends React.Component<MonacoEditorProps> {
     return blockName;
   };
 
-  getEditLocationParents = (model: any, position: any): void => {
+  getEditLocation = (model: any, position: any): void => {
     const lines = model.getValue().split(/\r?\n/g);
     let editLocation: EditLocation;
+    let topParentLine = position.lineNumber;
+    let isTopParent = false;
+
+    while (!isTopParent) {
+      if (lines.length !== topParentLine) {
+        if (
+          model.getLineFirstNonWhitespaceColumn(topParentLine) <=
+          model.getLineFirstNonWhitespaceColumn(topParentLine + 1)
+        ) {
+          topParentLine += 1;
+        } else if (lines[topParentLine].includes('- type') || lines[topParentLine] === '') {
+          isTopParent = true;
+        } else {
+          topParentLine += 1;
+        }
+      } else {
+        isTopParent = true;
+      }
+    }
+
     for (let i = 1; i <= lines.length; i += 1) {
       if (i !== 1) {
-        // if indent is not 1 look for parent structure
         if (model.getLineFirstNonWhitespaceColumn(i) > 1) {
           let newIndent = model.getLineFirstNonWhitespaceColumn(i);
           const parents: EditLocation['parents'] = [
@@ -138,7 +158,7 @@ export default class MonacoEditor extends React.Component<MonacoEditorProps> {
           ];
           let parentCount = 1;
 
-          if (i === position.lineNumber) {
+          if (i === topParentLine) {
             while (newIndent !== 1) {
               if (newIndent > model.getLineFirstNonWhitespaceColumn(i - parentCount)) {
                 if (model.getLineContent(i - parentCount) !== '') {
@@ -151,22 +171,24 @@ export default class MonacoEditor extends React.Component<MonacoEditorProps> {
                   });
                 }
               }
-
               parentCount += 1;
             }
             const blockName = this.containsBlockParent(parents);
-            const parentsNames = parents[parents.length - 2].name.split(': ');
-            const pageName = parentsNames[parentsNames.length - 1];
-            editLocation = {
-              pageName,
-              blockName,
-              parents,
-            };
+            const pageParent = parents[parents.findIndex((x) => x.name.includes('pages:')) - 1];
+            if (pageParent) {
+              const pageName = pageParent.name.slice(8);
+              editLocation = {
+                pageName,
+                blockName,
+                parents,
+                topParentLine,
+              };
+            }
           }
         }
       }
     }
-    if (editLocation !== undefined) {
+    if (editLocation) {
       this.props.editLocation(editLocation);
     } else {
       this.props.setAllowEdit(false);

@@ -410,56 +410,28 @@ export default function Editor(): React.ReactElement {
               </ul>
             )}
           </div>
-          {
-            {
-              [GuiEditorStep.EDIT]: (
-                <GUIEditor
-                  app={app}
-                  editLocation={editLocation}
-                  editorStep={editorStep}
-                  monacoEditor={monacoEditor}
-                  save={onSave}
-                  setEditorStep={(step: GuiEditorStep) => setEditorStep(step)}
-                  setRecipe={setRecipe}
-                />
-              ),
-              [GuiEditorStep.ADD]: (
-                <GUIEditor
-                  app={app}
-                  editLocation={editLocation}
-                  editorStep={editorStep}
-                  monacoEditor={monacoEditor}
-                  save={onSave}
-                  setEditorStep={(step: GuiEditorStep) => setEditorStep(step)}
-                  setRecipe={setRecipe}
-                />
-              ),
-              [GuiEditorStep.SELECT]: (
-                <MonacoEditor
-                  editLocation={setEditLocation}
-                  language={language}
-                  onSave={onSave}
-                  onValueChange={onValueChange}
-                  setAllowAdd={(allow: boolean) => setAllowAdd(allow)}
-                  setAllowEdit={(allow: boolean) => setAllowEdit(allow)}
-                  setEditor={setMonacoEditor}
-                  value={value}
-                />
-              ),
-              [GuiEditorStep.YAML]: (
-                <MonacoEditor
-                  editLocation={setEditLocation}
-                  language={language}
-                  onSave={onSave}
-                  onValueChange={onValueChange}
-                  setAllowAdd={(allow: boolean) => setAllowAdd(allow)}
-                  setAllowEdit={(allow: boolean) => setAllowEdit(allow)}
-                  setEditor={setMonacoEditor}
-                  value={value}
-                />
-              ),
-            }[editorStep]
-          }
+          {editorStep === GuiEditorStep.ADD || editorStep === GuiEditorStep.EDIT ? (
+            <GUIEditor
+              app={app}
+              editLocation={editLocation}
+              editorStep={editorStep}
+              monacoEditor={monacoEditor}
+              save={onSave}
+              setEditorStep={(step: GuiEditorStep) => setEditorStep(step)}
+              setRecipe={setRecipe}
+            />
+          ) : (
+            <MonacoEditor
+              editLocation={setEditLocation}
+              language={language}
+              onSave={onSave}
+              onValueChange={onValueChange}
+              setAllowAdd={(allow: boolean) => setAllowAdd(allow)}
+              setAllowEdit={(allow: boolean) => setAllowEdit(allow)}
+              setEditor={setMonacoEditor}
+              value={value}
+            />
+          )}
           <Modal
             footer={
               <>

@@ -18,7 +18,7 @@ interface Resource {
 }
 
 interface GUIEditorEditBlockProps {
-  save: (edittedParams: any) => void;
+  save: (edittedParams: any, edit: boolean) => void;
   selectedBlock: SelectedBlockManifest;
   setEditorStep: (value: GuiEditorStep) => void;
   app: App;
@@ -35,28 +35,31 @@ export default function GUIEditorEditBlock({
   const intl = useIntl();
   const push = useMessages();
   const [editingResource, setEditingResource] = React.useState<Resource>(undefined);
+  const [editBlock, setEditBlock] = React.useState<boolean>(false);
 
   const submit = (): void => {
-    const requiredParam = selectedBlock.parameters.required;
     const emptyRequiredParam: any[] = [];
 
-    Object.keys(selectedBlock.parameters.properties).map((item: any) => {
-      if (requiredParam !== undefined) {
-        requiredParam.map((requiredItem: string) => {
-          if (
-            (item.includes(requiredItem) && editingResource[item] === undefined) ||
-            (item.includes(requiredItem) && editingResource[item] === '')
-          ) {
-            emptyRequiredParam.push(item);
-          }
-          return emptyRequiredParam;
-        });
-      }
-      return requiredParam;
-    });
+    if (selectedBlock.parameters) {
+      const requiredParam = selectedBlock.parameters.required;
+      Object.keys(selectedBlock.parameters.properties).map((item: any) => {
+        if (requiredParam !== undefined) {
+          requiredParam.map((requiredItem: string) => {
+            if (
+              (item.includes(requiredItem) && editingResource[item] === undefined) ||
+              (item.includes(requiredItem) && editingResource[item] === '')
+            ) {
+              emptyRequiredParam.push(item);
+            }
+            return emptyRequiredParam;
+          });
+        }
+        return requiredParam;
+      });
+    }
 
     if (emptyRequiredParam.length === 0) {
-      save(editingResource);
+      save(editingResource, editBlock);
     } else {
       emptyRequiredParam.map((requiredItem: string) =>
         push({
@@ -78,6 +81,7 @@ export default function GUIEditorEditBlock({
           pageVal.blocks.map((blockVal: any) => {
             if (blockVal.type.includes(editLocation.blockName)) {
               if (!editingResource) {
+                setEditBlock(true);
                 Object.entries(blockVal.parameters).map((param: any) => {
                   setEditingResource((prevEditingResource) => ({
                     ...prevEditingResource,
@@ -118,7 +122,11 @@ export default function GUIEditorEditBlock({
         <Button
           className="button is-warning"
           icon="angle-left"
-          onClick={() => setEditorStep(GuiEditorStep.ADD)}
+          onClick={
+            editBlock
+              ? () => setEditorStep(GuiEditorStep.SELECT)
+              : () => setEditorStep(GuiEditorStep.ADD)
+          }
           style={{ alignContent: 'flex-start' }}
         >
           {intl.formatMessage(messages.back)}

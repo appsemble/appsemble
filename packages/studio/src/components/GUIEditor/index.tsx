@@ -57,21 +57,25 @@ export default function GUIEditor({
     getBlocks();
   }, []);
 
-  const save = (edittedParams: any): void => {
+  const save = (edittedParams: any, edit: boolean): void => {
     const blockParent =
       editLocation.parents[editLocation.parents.findIndex((x) => x.name === 'blocks:')];
-    const range = new Range(blockParent.line + 1, 1, blockParent.line + 1, 1);
+    let range;
+    if (edit) {
+      range = new Range(blockParent.line + 1, 1, editLocation.topParentLine + 1, 1);
+    } else {
+      range = new Range(blockParent.line + 1, 1, blockParent.line + 1, 1);
+    }
+
     const text = indentString(
-      yaml
-        .safeDump([
-          {
-            type: stripBlockName(selectedBlock.name),
-            version: selectedBlock.version,
-            parameters: edittedParams,
-          },
-        ])
-        .replace('|', ''),
-      blockParent.indent + 2,
+      yaml.safeDump([
+        {
+          type: stripBlockName(selectedBlock.name),
+          version: selectedBlock.version,
+          parameters: edittedParams,
+        },
+      ]),
+      blockParent.indent + 1,
     );
     const op = {
       identifier: { major: 1, minor: 1 },
