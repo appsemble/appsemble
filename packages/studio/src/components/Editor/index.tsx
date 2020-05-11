@@ -21,6 +21,7 @@ import axios from 'axios';
 import classNames from 'classnames';
 import { safeDump, safeLoad } from 'js-yaml';
 import { isEqual } from 'lodash';
+import type { editor } from 'monaco-editor';
 import type { OpenAPIV3 } from 'openapi-types';
 import React from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -57,7 +58,7 @@ export default function Editor(): React.ReactElement {
 
   const [editorStep, setEditorStep] = React.useState<GuiEditorStep>(GuiEditorStep.SELECT);
   const [editLocation, setEditLocation] = React.useState<EditLocation>();
-  const [editor, setEditor] = React.useState<any>();
+  const [monacoEditor, setMonacoEditor] = React.useState<editor.IStandaloneCodeEditor>();
   const [allowEdit, setAllowEdit] = React.useState(false);
   const [allowAdd, setAllowAdd] = React.useState(false);
 
@@ -270,8 +271,8 @@ export default function Editor(): React.ReactElement {
   }
 
   const onValueChange = onMonacoChange;
-  let value: string;
-  let language: string;
+  let value;
+  let language;
 
   switch (location.hash) {
     case '#style-core':
@@ -416,7 +417,7 @@ export default function Editor(): React.ReactElement {
                   app={app}
                   editLocation={editLocation}
                   editorStep={editorStep}
-                  monacoEditor={editor}
+                  monacoEditor={monacoEditor}
                   save={onSave}
                   setEditorStep={(step: GuiEditorStep) => setEditorStep(step)}
                   setRecipe={setRecipe}
@@ -427,7 +428,7 @@ export default function Editor(): React.ReactElement {
                   app={app}
                   editLocation={editLocation}
                   editorStep={editorStep}
-                  monacoEditor={editor}
+                  monacoEditor={monacoEditor}
                   save={onSave}
                   setEditorStep={(step: GuiEditorStep) => setEditorStep(step)}
                   setRecipe={setRecipe}
@@ -441,7 +442,7 @@ export default function Editor(): React.ReactElement {
                   onValueChange={onValueChange}
                   setAllowAdd={(allow: boolean) => setAllowAdd(allow)}
                   setAllowEdit={(allow: boolean) => setAllowEdit(allow)}
-                  setEditor={setEditor}
+                  setEditor={setMonacoEditor}
                   value={value}
                 />
               ),
@@ -453,7 +454,7 @@ export default function Editor(): React.ReactElement {
                   onValueChange={onValueChange}
                   setAllowAdd={(allow: boolean) => setAllowAdd(allow)}
                   setAllowEdit={(allow: boolean) => setAllowEdit(allow)}
-                  setEditor={setEditor}
+                  setEditor={setMonacoEditor}
                   value={value}
                 />
               ),

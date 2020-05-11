@@ -67,33 +67,11 @@ export default function GUIEditorEditBlock({
     }
   };
 
-  // TODO: Duplicated onChange function from ResourceTable
-  const onChange = React.useCallback(
-    (event: any, value: any) => {
-      let name = event;
-      if (event?.target) {
-        if (event?.target.name) {
-          name = event.target.name;
-        } else {
-          name = event.currentTarget.name;
-        }
-        if (name.includes('.')) {
-          const objectParentName = name.split(/\./g)[0];
-          name = objectParentName;
-        }
-      }
-      if (name === 'id') {
-        return;
-      }
-      setEditingResource({
-        ...editingResource,
-        [name]: value,
-      });
-    },
-    [editingResource],
-  );
+  const onChange = React.useCallback((_event: any, value: any) => {
+    setEditingResource(value);
+  }, []);
 
-  React.useEffect(() => {
+  const initBlockParameters = React.useCallback(() => {
     if (selectedBlock === undefined) {
       app.definition.pages.map((pageVal: any) => {
         if (pageVal.name.includes(editLocation.pageName)) {
@@ -101,7 +79,6 @@ export default function GUIEditorEditBlock({
             if (blockVal.type.includes(editLocation.blockName)) {
               if (!editingResource) {
                 Object.entries(blockVal.parameters).map((param: any) => {
-                  // console.log(param);
                   setEditingResource((prevEditingResource) => ({
                     ...prevEditingResource,
                     [param[0]]: param[1],
@@ -119,29 +96,20 @@ export default function GUIEditorEditBlock({
   }, [editingResource, editLocation.pageName, editLocation.blockName, app, selectedBlock]);
 
   if (selectedBlock === undefined) {
+    initBlockParameters();
     return <Loader />;
   }
-
-  const keys =
-    selectedBlock?.parameters !== null
-      ? [...Object.keys(selectedBlock?.parameters.properties || {})]
-      : undefined;
 
   return (
     <div className={styles.flexContainer} onSubmit={submit}>
       <h2 className="title">{stripBlockName(selectedBlock.name)}</h2>
       <div className={styles.main}>
-        {keys ? (
-          keys.map((key) => (
-            <JSONSchemaEditor
-              key={key}
-              name={key}
-              onChange={onChange}
-              required={selectedBlock?.parameters?.required?.includes(key)}
-              schema={selectedBlock.parameters.properties[key] as OpenAPIV3.SchemaObject}
-              value={editingResource?.[key]}
-            />
-          ))
+        {selectedBlock?.parameters ? (
+          <JSONSchemaEditor
+            onChange={onChange}
+            schema={selectedBlock?.parameters as OpenAPIV3.SchemaObject}
+            value={editingResource}
+          />
         ) : (
           <div>{stripBlockName(selectedBlock.name)} has no editable parameters </div>
         )}

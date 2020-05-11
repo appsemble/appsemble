@@ -1,7 +1,10 @@
 import type { App, BlockManifest } from '@appsemble/types';
+import { stripBlockName } from '@appsemble/utils';
 import axios from 'axios';
-// import yaml from 'js-yaml';
+import indentString from 'indent-string';
+import yaml from 'js-yaml';
 import type { editor } from 'monaco-editor';
+import { Range } from 'monaco-editor';
 import type { OpenAPIV3 } from 'openapi-types';
 import React from 'react';
 
@@ -9,8 +12,6 @@ import { GuiEditorStep } from '../Editor';
 import GUIEditorEditBlock from '../GUIEditorEditBlock';
 import GUIEditorToolbox from '../GUIEditorToolbox';
 import type { EditLocation } from '../MonacoEditor';
-
-// const indentString = require('indent-string');
 
 interface GUIEditorProps {
   editorStep: GuiEditorStep;
@@ -31,7 +32,7 @@ export interface SelectedBlockManifest extends BlockManifest {
    * this is an extension of the existing BlockManifest.
    */
   parameters: {
-    properties: any;
+    properties: OpenAPIV3.BaseSchemaObject;
     required?: string[];
     definitions?: OpenAPIV3.SchemaObject[];
   };
@@ -41,7 +42,9 @@ export default function GUIEditor({
   app,
   editLocation,
   editorStep,
+  monacoEditor,
   setEditorStep,
+  setRecipe,
 }: GUIEditorProps): React.ReactElement {
   const [selectedBlock, setSelectedBlock] = React.useState<SelectedBlockManifest>(undefined);
   const [blocks, setBlocks] = React.useState<SelectedBlockManifest[]>(undefined);
@@ -55,50 +58,31 @@ export default function GUIEditor({
   }, []);
 
   const save = (edittedParams: any): void => {
-    // console.log('==================================================');
-    // console.log('edittedParams', edittedParams);
-    // console.log('selectedBlock', selectedBlock);
-    // console.log('editorStep', editorStep);
-    // console.log('editLocation', editLocation);
-    // console.log('app', app);
-    // const blockParent = Object.values(selectedBlockParent)[0];
-    //
-    // const parentIndent = blockParent.indent - 1;
-    // const { line } = blockParent;
-    // const range = new Range(line + 1, 1, line + 1, 1);
-    // const id = { major: 1, minor: 1 };
-    //
-    // let edittedParameters = '';
-    //
-    // Object.keys(edittedParams).map((item: any) => {
-    //   edittedParameters += `${item}: ${edittedParams[item]}\n`;
-    //   return edittedParameters;
-    // });
-    //
-    // const text = indentString(
-    //   yaml
-    //     .safeDump([
-    //       {
-    //         type: stripBlockName(selectedBlock.name),
-    //         version: '0.11.6',
-    //         parameters: edittedParameters,
-    //       },
-    //     ])
-    //     .replace('|', ''),
-    //   parentIndent + 2,
-    // );
-    //
-    // const op = {
-    //   identifier: id,
-    //   range,
-    //   text,
-    //   forceMoveMarkers: true,
-    // };
-    //
-    // monacoEditor.executeEdits('GUIEditor-saveBlock', [op]);
-    // setRecipe(monacoEditor.getValue());
-    // save();
-    // setEditorStep(GuiEditorStep.ADD);
+    const blockParent =
+      editLocation.parents[editLocation.parents.findIndex((x) => x.name === 'blocks:')];
+    const range = new Range(blockParent.line + 1, 1, blockParent.line + 1, 1);
+    const text = indentString(
+      yaml
+        .safeDump([
+          {
+            type: stripBlockName(selectedBlock.name),
+            version: selectedBlock.version,
+            parameters: edittedParams,
+          },
+        ])
+        .replace('|', ''),
+      blockParent.indent + 2,
+    );
+    const op = {
+      identifier: { major: 1, minor: 1 },
+      range,
+      text,
+      forceMoveMarkers: true,
+    };
+
+    monacoEditor.executeEdits('GUIEditor-saveBlock', [op]);
+    setRecipe(monacoEditor.getValue());
+    setEditorStep(GuiEditorStep.SELECT);
   };
 
   const getSelectedBlock = React.useCallback((): SelectedBlockManifest => {

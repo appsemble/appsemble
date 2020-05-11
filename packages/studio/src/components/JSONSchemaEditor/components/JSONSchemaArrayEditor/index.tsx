@@ -113,13 +113,14 @@ export default function JSONSchemaArrayEditor({
             <Button
               // eslint-disable-next-line react/no-array-index-key
               key={`remove.${index}`}
+              disabled={disabled}
               icon="minus"
               name={`${name}.${index}`}
               onClick={removeItem}
             />
           </div>
         ))}
-        <Button icon="plus" name={name} onClick={onItemAdded} />
+        <Button disabled={disabled} icon="plus" name={name} onClick={onItemAdded} />
       </FormComponent>
     </div>
   );
