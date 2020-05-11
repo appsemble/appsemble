@@ -31,6 +31,7 @@ spec:
               DECLARE
                 UserId integer;
               BEGIN
+                CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
                 INSERT INTO "User" (id, name, "primaryEmail", created, updated) VALUES (
                   uuid_generate_v4(),
                   {{ .Values.provision.account.name | squote }},
