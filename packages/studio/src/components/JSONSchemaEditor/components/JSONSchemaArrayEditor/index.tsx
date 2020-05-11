@@ -102,21 +102,13 @@ export default function JSONSchemaArrayEditor({
           // eslint-disable-next-line react/no-array-index-key
           <div key={index}>
             <JSONSchemaEditor
-              // eslint-disable-next-line react/no-array-index-key
-              key={`input.${index}`}
               disabled={disabled}
               name={`${name}.${index}`}
               onChange={onPropertyChange}
               schema={schema.items as OpenAPIV3.SchemaObject}
               value={val}
             />
-            <Button
-              // eslint-disable-next-line react/no-array-index-key
-              key={`remove.${index}`}
-              icon="minus"
-              name={`${name}.${index}`}
-              onClick={removeItem}
-            />
+            <Button icon="minus" name={`${name}.${index}`} onClick={removeItem} />
           </div>
         ))}
         <Button icon="plus" name={name} onClick={onItemAdded} />
