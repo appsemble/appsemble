@@ -29,7 +29,7 @@ spec:
             - |
               DO $$$$
               DECLARE
-                UserId integer;
+                UserId uuid;
               BEGIN
                 INSERT INTO "User" (id, name, "primaryEmail", created, updated) VALUES (
                   {{ .Values.provision.account.id | squote }},
