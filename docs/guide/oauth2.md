@@ -1,6 +1,6 @@
 ---
 menu: Guide
-route: /guide/security
+route: /guide/oauth2
 ---
 
 # OAuth2
