@@ -1,10 +1,10 @@
-import { Input } from '@appsemble/react-components';
+import { Checkbox } from '@appsemble/react-components';
 import type { OpenAPIV3 } from 'openapi-types';
 import * as React from 'react';
 
 import JSONSchemaLabel from '../JSONSchemaLabel';
 
-interface JSONSchemaStringEditorProps {
+interface JSONSchemaBooleanEditorProps {
   /**
    * Whether or not the editor is disabled.
    *
@@ -20,6 +20,13 @@ interface JSONSchemaStringEditorProps {
   name: string;
 
   /**
+   * Whether or not the property is required.
+   *
+   * This is determined by the parent schema. It is used for recursion.
+   */
+  required?: boolean;
+
+  /**
    * The handler that is called whenever a value changes.
    */
   onChange: (name: any, value?: any) => void;
@@ -30,13 +37,6 @@ interface JSONSchemaStringEditorProps {
   prefix: string;
 
   /**
-   * Whether or not the property is required.
-   *
-   * This is determined by the parent schema. It is used for recursion.
-   */
-  required?: boolean;
-
-  /**
    * The properties of the schema object.
    */
   schema: OpenAPIV3.SchemaObject;
@@ -44,47 +44,26 @@ interface JSONSchemaStringEditorProps {
   /**
    * The value used to populate the editor.
    */
-  value: string;
+  value: boolean;
 }
 
-export default function JSONSchemaStringEditor({
+export default function JSONSchemaBooleanEditor({
   disabled,
   name,
   onChange,
   prefix,
   required,
   schema,
-  value = '',
-}: JSONSchemaStringEditorProps): React.ReactElement {
-  let type: React.ComponentPropsWithoutRef<typeof Input>['type'] = 'text';
-
-  if (schema.type === 'integer' || schema.type === 'number') {
-    type = 'number';
-  } else if (schema.format === 'email') {
-    type = 'email';
-  } else if (schema.format === 'password') {
-    type = 'password';
-  } else if (schema.format === 'date') {
-    type = 'date';
-  } else if (schema.format === 'date-time') {
-    type = 'datetime-local';
-  }
-
+  value = false,
+}: JSONSchemaBooleanEditorProps): React.ReactElement {
   return (
-    <Input
+    <Checkbox
       disabled={disabled}
       help={schema.description}
       label={<JSONSchemaLabel name={name} prefix={prefix} schema={schema} />}
-      max={schema.maximum}
-      maxLength={schema.maxLength}
-      min={schema.minimum}
-      minLength={schema.minLength}
       name={name}
       onChange={onChange}
-      placeholder={schema.example}
       required={required}
-      step={schema.multipleOf}
-      type={type}
       value={value}
     />
   );

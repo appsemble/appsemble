@@ -15,6 +15,7 @@ import React from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link, useHistory, useRouteMatch } from 'react-router-dom';
 
+import type { NamedEvent } from '../../types';
 import download from '../../utils/download';
 import { useApp } from '../AppContext';
 import HelmetIntl from '../HelmetIntl';
@@ -78,7 +79,7 @@ export default function ResourceTable(): React.ReactElement {
     }
   }, [appId, deletingResource, intl, push, resourceName, resources, warningDialog]);
 
-  const onChange = React.useCallback((_event: React.ChangeEvent, value: any) => {
+  const onChange = React.useCallback((_event: NamedEvent, value: any) => {
     setEditingResource(value);
   }, []);
 
@@ -299,7 +300,12 @@ export default function ResourceTable(): React.ReactElement {
           )
         }
       >
-        <JSONSchemaEditor onChange={onChange} schema={schema} value={editingResource} />
+        <JSONSchemaEditor
+          name="resource"
+          onChange={onChange}
+          schema={schema}
+          value={editingResource}
+        />
       </Modal>
       <Modal
         footer={

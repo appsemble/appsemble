@@ -1,7 +1,11 @@
+import { Title } from '@appsemble/react-components/src';
 import type { OpenAPIV3 } from 'openapi-types';
+import type { NamedEvent } from 'packages/studio/src/types';
 import * as React from 'react';
 
-import JSONSchemaEditor from '../..';
+import JSONSchemaLabel from '../JSONSchemaLabel';
+import RecursiveJSONSchemaEditor from '../RecursiveJSONSchemaEditor';
+import styles from './index.css';
 
 interface JSONSchemaObjectEditorProps {
   /**
@@ -19,21 +23,24 @@ interface JSONSchemaObjectEditorProps {
   name?: string;
 
   /**
-   * Whether or not the property is required.
-   *
-   * This is determined by the parent schema. It is used for recursion.
+   * Whether or not this is a nested component.
    */
-  required?: boolean;
+  nested?: boolean;
+
+  /**
+   * The handler that is called whenever a value changes.
+   */
+  onChange: (event: NamedEvent, value?: { [key: string]: any }) => void;
+
+  /**
+   * The prefix to remove from labels.
+   */
+  prefix: string;
 
   /**
    * The schema used to render the form elements.
    */
   schema: OpenAPIV3.SchemaObject;
-
-  /**
-   * The handler that is called whenever a value changes.
-   */
-  onChange: (event: React.SyntheticEvent, value?: { [key: string]: any }) => void;
 
   /**
    * The value used to populate the editor.
@@ -45,34 +52,32 @@ export default function JSONSchemaObjectEditor({
   disabled,
   name,
   onChange,
-  required,
+  nested,
+  prefix,
   schema,
   value = {},
 }: JSONSchemaObjectEditorProps): React.ReactElement {
   const onPropertyChange = React.useCallback(
-    (event, val) => {
-      let id = '';
-      if (name) {
-        const splitId = event.currentTarget.name.slice(name.length + 1).split('.')[0];
-        id = splitId;
-      } else {
-        const splitName = event.currentTarget.name.split('.')[0];
-        id = splitName;
-      }
-      onChange(event, { ...value, [id]: val });
+    ({ target }, val) => {
+      const id = target.name.slice(name.length + 1);
+      onChange({ target: { name } }, { ...value, [id]: val });
     },
     [name, onChange, value],
   );
 
   return (
-    <div>
-      {Object.entries(schema.properties).map(([propName, subSchema]) => (
-        <JSONSchemaEditor
+    <div className={nested ? styles.nested : null}>
+      <Title level={5}>
+        <JSONSchemaLabel name={name} prefix={prefix} schema={schema} />
+      </Title>
+      {Object.entries(schema?.properties ?? {}).map(([propName, subSchema]) => (
+        <RecursiveJSONSchemaEditor
           key={propName}
           disabled={disabled}
           name={name ? `${name}.${propName}` : propName}
           onChange={onPropertyChange}
-          required={required || (schema?.required ? schema?.required.includes(propName) : required)}
+          prefix={prefix}
+          required={schema.required?.includes(propName)}
           schema={subSchema as OpenAPIV3.SchemaObject}
           value={value?.[propName]}
         />
