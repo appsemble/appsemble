@@ -30,6 +30,7 @@ beforeEach(() => {
       },
     } as any,
     utils: {
+      remap() {},
       addCleanup() {},
       showMessage() {},
       asset() {

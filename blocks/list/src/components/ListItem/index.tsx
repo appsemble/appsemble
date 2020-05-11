@@ -1,4 +1,3 @@
-/** @jsx h */
 import { Icon } from '@appsemble/preact-components';
 import type { BootstrapParams } from '@appsemble/sdk';
 import { remapData } from '@appsemble/utils';

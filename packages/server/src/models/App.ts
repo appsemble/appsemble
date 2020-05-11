@@ -1,4 +1,11 @@
-import { DataTypes, Model, Sequelize } from 'sequelize';
+import type { AppDefinition } from '@appsemble/types';
+import {
+  DataTypes,
+  HasManyGetAssociationsMixin,
+  HasManyRemoveAssociationMixin,
+  Model,
+  Sequelize,
+} from 'sequelize';
 
 import AppBlockStyle from './AppBlockStyle';
 import AppMember from './AppMember';
@@ -10,6 +17,58 @@ import Resource from './Resource';
 import User from './User';
 
 export default class App extends Model {
+  id: number;
+
+  definition: AppDefinition;
+
+  domain: string;
+
+  icon: Buffer;
+
+  path: string;
+
+  private: boolean;
+
+  template: boolean;
+
+  style: string;
+
+  sharedStyle: string;
+
+  yaml: string;
+
+  vapidPublicKey: string;
+
+  vapidPrivateKey: string;
+
+  updated: Date;
+
+  created: Date;
+
+  OrganizationId: string;
+
+  AppBlockStyles: AppBlockStyle[];
+
+  Organization: Organization;
+
+  AppSubscriptions: AppSubscription[];
+
+  Assets: Asset[];
+
+  Users: User[];
+
+  Resources: Resource[];
+
+  ResourceCount: number;
+
+  getUsers: HasManyGetAssociationsMixin<User>;
+
+  removeUser: HasManyRemoveAssociationMixin<User, number>;
+
+  RatingAverage?: number;
+
+  RatingCount?: number;
+
   static initialize(sequelize: Sequelize): void {
     App.init(
       {

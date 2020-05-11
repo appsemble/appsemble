@@ -147,18 +147,16 @@ function getProgram(blockPath: string): Program {
  *
  * Uses the .appsemblerc file and the type definitions of the block.
  *
- * @param config The content of the .appsemblerc file
- * @param fullPath The path to the .appsemblerc file
+ * @param blockConfig The block configuration
  */
 export default function getBlockConfigFromTypeScript(
   blockConfig: BlockConfig,
-  fullPath: string,
 ): Pick<BlockManifest, 'actions' | 'events' | 'parameters'> {
   if ('actions' in blockConfig && 'events' in blockConfig && 'parameters' in blockConfig) {
     return blockConfig;
   }
-  logger.info(`Extracting data from TypeScript project ${fullPath}`);
-  const program = getProgram(fullPath);
+  logger.info(`Extracting data from TypeScript project ${blockConfig.dir}`);
+  const program = getProgram(blockConfig.dir);
 
   let actionInterface: InterfaceDeclaration;
   let eventEmitterInterface: InterfaceDeclaration;

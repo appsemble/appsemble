@@ -1,8 +1,7 @@
-/** @jsx h */
 import { bootstrap, FormattedMessage } from '@appsemble/preact';
 import classNames from 'classnames';
 import { h } from 'preact';
-import { useCallback, useEffect, useState } from 'preact/hooks';
+import { useCallback, useEffect, useMemo, useState } from 'preact/hooks';
 
 import type { Field, FileField } from '../block';
 import BooleanInput from './components/BooleanInput';
@@ -12,10 +11,6 @@ import GeoCoordinatesInput from './components/GeoCoordinatesInput';
 import NumberInput from './components/NumberInput';
 import StringInput from './components/StringInput';
 import styles from './index.css';
-
-interface Values {
-  [key: string]: any;
-}
 
 type Validator = (field: Field, event: Event, value: any) => boolean;
 
@@ -72,12 +67,19 @@ bootstrap(({ actions, data, events, parameters, ready }) => {
   const [disabled, setDisabled] = useState(true);
   const [validity, setValidity] = useState({
     ...parameters.fields.reduce<{ [name: string]: boolean }>(
-      (acc, { defaultValue, name, required, type }) => {
+      (acc, { defaultValue, name, readOnly, required, type }) => {
         let valid = !required;
         if (required) {
           valid = defaultValue !== undefined;
         }
-        if ((type as any) === 'boolean') {
+        if (readOnly) {
+          if (required) {
+            valid = !!data[name];
+          } else {
+            valid = true;
+          }
+        }
+        if (type === 'boolean') {
           valid = true;
         }
         acc[name] = valid;
@@ -87,18 +89,36 @@ bootstrap(({ actions, data, events, parameters, ready }) => {
     ),
   });
   const [submitting, setSubmitting] = useState(false);
-  const [values, setValues] = useState({
-    ...parameters.fields.reduce<Values>(
-      (acc, { defaultValue, name, repeated, required }: FileField) => {
-        if (defaultValue === undefined && !required) {
-          return acc;
+  const defaultValues = useMemo(
+    () =>
+      parameters.fields.reduce((acc, field) => {
+        if ('defaultValue' in field) {
+          acc[field.name] = field.defaultValue;
+        } else if (field.type === 'string') {
+          acc[field.name] = '';
+        } else if (field.type === 'boolean') {
+          acc[field.name] = false;
+        } else if (
+          field.type === 'enum' ||
+          field.type === 'hidden' ||
+          field.type === 'integer' ||
+          field.type === 'number'
+        ) {
+          acc[field.name] = null;
+        } else if (field.type === 'geocoordinates') {
+          acc[field.name] = {};
+        } else if (field.type === 'file' && field.repeated) {
+          acc[field.name] = [];
+        } else {
+          acc[field.name] = null;
         }
 
-        acc[name] = defaultValue !== undefined ? defaultValue : repeated && [];
         return acc;
-      },
-      {},
-    ),
+      }, {} as { [key: string]: any }),
+    [parameters],
+  );
+  const [values, setValues] = useState({
+    ...defaultValues,
     ...data,
   });
 
@@ -157,10 +177,13 @@ bootstrap(({ actions, data, events, parameters, ready }) => {
     [actions, submitting, values],
   );
 
-  const receiveData = useCallback((d: any) => {
-    setDisabled(false);
-    setValues(d);
-  }, []);
+  const receiveData = useCallback(
+    (d: any) => {
+      setDisabled(false);
+      setValues({ ...defaultValues, ...d });
+    },
+    [defaultValues],
+  );
 
   useEffect(() => {
     // If a listener is present, wait until data has been received

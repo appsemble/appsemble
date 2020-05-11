@@ -1,9 +1,19 @@
-import { DataTypes, Model, Sequelize } from 'sequelize';
+import { DataTypes, HasOneGetAssociationMixin, Model, Sequelize } from 'sequelize';
 
 import Organization from './Organization';
 import User from './User';
 
 export default class OrganizationInvite extends Model {
+  email: string;
+
+  key: string;
+
+  UserId: number;
+
+  OrganizationId: string;
+
+  getUser: HasOneGetAssociationMixin<User>;
+
   static initialize(sequelize: Sequelize): void {
     OrganizationInvite.init(
       {

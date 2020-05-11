@@ -1,16 +1,9 @@
-import type { UserInfo } from '@appsemble/types';
+import type { JwtPayload, TokenResponse, UserInfo } from '@appsemble/types';
 import axios from 'axios';
 import jwtDecode from 'jwt-decode';
 import * as React from 'react';
 
 import { UserContext } from '../../hooks/useUser';
-import type { TokenResponse } from '../../types';
-
-interface JwtPayload {
-  exp: number;
-  scopes: string;
-  sub: string;
-}
 
 interface UserProviderProps {
   children: React.ReactNode;
@@ -23,7 +16,7 @@ const REFRESH_BUFFER = 60e3;
 export default function UserProvider({ children }: UserProviderProps): React.ReactElement {
   const [userInfo, setProfile] = React.useState<UserInfo>();
   const [initialized, setInitialized] = React.useState(false);
-  const [tokenResponse, setTokenResponse] = React.useState<TokenResponse>({
+  const [tokenResponse, setTokenResponse] = React.useState<Partial<TokenResponse>>({
     access_token: localStorage.access_token,
     refresh_token: localStorage.refresh_token,
   });

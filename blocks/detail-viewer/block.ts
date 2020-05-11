@@ -1,25 +1,26 @@
 import type { BlockProps } from '@appsemble/preact';
+import type { Remapper } from '@appsemble/sdk';
 
 interface AbstractField {
-  label?: string;
+  label?: Remapper;
 }
 
 export interface FileField extends AbstractField {
-  name: string;
+  name: Remapper;
   type: 'file';
   repeated?: boolean;
-  repeatedName?: string;
+  repeatedName?: Remapper;
 }
 
 export interface GeoCoordinatesField extends AbstractField {
-  name?: string;
-  latitude?: string;
-  longitude?: string;
+  name?: Remapper;
+  latitude?: Remapper;
+  longitude?: Remapper;
   type: 'geocoordinates';
 }
 
 export interface StringField extends AbstractField {
-  name: string;
+  name: Remapper;
   type?: 'string';
 }
 
