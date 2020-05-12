@@ -13,11 +13,11 @@ This can be used to represent data in a friendly manner with an icon and a label
 
 ## Parameters
 
-| Parameter      | Default | Description                                     |
-| -------------- | ------- | ----------------------------------------------- |
-| fields[].name  |         | The name of the field to render.                |
-| fields[].icon  |         | A font awesome icon used to represent the data. |
-| fields[].label |         | The label used to represent the data.           |
+| Parameter      | Default | Description                                                                   |
+| -------------- | ------- | ----------------------------------------------------------------------------- |
+| fields[].value |         | The name of the field to render. Supports [remappers](/guide/remappers).      |
+| fields[].icon  |         | A font awesome icon used to represent the data.                               |
+| fields[].label |         | The label used to represent the data. Supports [remappers](/guide/remappers). |
 
 ## Events
 
