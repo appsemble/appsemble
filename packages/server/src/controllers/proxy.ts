@@ -1,11 +1,12 @@
-import { logger } from '@appsemble/node-utils/src';
+import { logger } from '@appsemble/node-utils';
 import type { ActionDefinition } from '@appsemble/types';
+import { formatRequestAction } from '@appsemble/utils/src';
 import * as Boom from '@hapi/boom';
-import { http } from 'follow-redirects';
+import axios from 'axios';
 import { get, pick } from 'lodash';
 
 import { App } from '../models';
-import type { KoaContext } from '../types';
+import type { KoaMiddleware } from '../types';
 import readPackageJson from '../utils/readPackageJson';
 
 interface Params {
@@ -14,17 +15,6 @@ interface Params {
 }
 
 const { version } = readPackageJson();
-
-/**
- * These request headers are forwarded when proxying requests.
- */
-const allowRequestHeaders = [
-  'accept',
-  'accept-encoding',
-  'accept-language',
-  'cache-control',
-  'pragma',
-];
 
 /**
  * These response headers are forwarded when proxying requests.
@@ -36,60 +26,60 @@ const allowResponseHeaders = [
   'transfer-encoding',
 ];
 
-async function proxyHandler(ctx: KoaContext<Params>): Promise<void> {
-  const { appId, path } = ctx.params;
+function createProxyHandler(useBody: boolean): KoaMiddleware<Params> {
+  return async (ctx) => {
+    const { appId, path } = ctx.params;
+    let data;
+    if (useBody) {
+      data = ctx.request.body;
+    } else {
+      try {
+        data = JSON.parse(ctx.query.data);
+      } catch (err) {
+        throw Boom.badRequest('data should be a JSON object');
+      }
+    }
 
-  const app = await App.findByPk(appId, { attributes: ['definition'] });
-  if (!app) {
-    throw Boom.notFound('App not found');
-  }
+    const app = await App.findByPk(appId, { attributes: ['definition'] });
+    if (!app) {
+      throw Boom.notFound('App not found');
+    }
 
-  const action = get(app.definition, path) as ActionDefinition;
-  if (action?.type !== 'request') {
-    throw Boom.badRequest('path does not point to a proxyable action');
-  }
+    const action = get(app.definition, path) as ActionDefinition;
+    if (action?.type !== 'request') {
+      throw Boom.badRequest('path does not point to a proxyable action');
+    }
 
-  const method = (action?.method ?? 'GET').toUpperCase();
-  if (method !== ctx.method) {
-    throw Boom.badRequest('Method does match the request action method');
-  }
+    const axiosConfig = formatRequestAction(action, data);
 
-  const url = new URL(action.url);
+    if (axiosConfig.method.toUpperCase() !== ctx.method) {
+      throw Boom.badRequest('Method does match the request action method');
+    }
 
-  if (action.query) {
-    Object.entries(action.query).forEach(([key, value]) => {
-      url.searchParams.append(key, value);
-    });
-  }
+    if (useBody) {
+      axiosConfig.data = data;
+    }
+    axiosConfig.headers['user-agent'] = `AppsembleServer/${version}`;
+    axiosConfig.responseType = 'stream';
+    axiosConfig.validateStatus = () => true;
 
-  await new Promise((resolve, reject) => {
-    const connector = http.request(
-      {
-        host: url.hostname,
-        port: url.port,
-        headers: {
-          'user-agent': `AppsembleServer/${version}`,
-          ...pick(ctx.headers, allowRequestHeaders),
-        },
-        method,
-        path: `${url.pathname}${url.search}`,
-      },
-      (res) => {
-        ctx.status = res.statusCode;
-        ctx.set(pick(res.headers as NodeJS.Dict<string>, allowResponseHeaders));
-        ctx.status = res.statusCode;
-        res.pipe(ctx.res, { end: true }).on('close', resolve);
-      },
-    );
-    ctx.req.pipe(connector, { end: true }).on('error', (error) => {
-      logger.error(error);
-      reject(Boom.badGateway());
-    });
-  });
+    let response;
+    logger.verbose(`Forwarding request to ${axios.getUri(axiosConfig)}`);
+    try {
+      response = await axios(axiosConfig);
+    } catch (err) {
+      logger.error(err);
+      throw Boom.badGateway();
+    }
+
+    ctx.status = response.status;
+    ctx.set(pick(response.headers, allowResponseHeaders));
+    ctx.body = response.data;
+  };
 }
 
-export const proxyDelete = proxyHandler;
-export const proxyGet = proxyHandler;
-export const proxyPatch = proxyHandler;
-export const proxyPost = proxyHandler;
-export const proxyPut = proxyHandler;
+export const proxyDelete = createProxyHandler(false);
+export const proxyGet = createProxyHandler(false);
+export const proxyPatch = createProxyHandler(true);
+export const proxyPost = createProxyHandler(true);
+export const proxyPut = createProxyHandler(true);

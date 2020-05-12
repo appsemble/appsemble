@@ -1,7 +1,7 @@
 import type { OpenAPIV3 } from 'openapi-types';
 
-function proxy(method: string): OpenAPIV3.OperationObject {
-  return {
+function proxy(method: string, body?: boolean): OpenAPIV3.OperationObject {
+  const operation: OpenAPIV3.OperationObject = {
     tags: ['proxy'],
     description: `Proxy a ${method.toUpperCase()} request action`,
     operationId: `proxy${method}`,
@@ -11,6 +11,26 @@ function proxy(method: string): OpenAPIV3.OperationObject {
       },
     },
   };
+  if (body) {
+    operation.requestBody = {
+      description: 'The data that was passed to the action',
+      required: true,
+      content: {
+        'application/json': {},
+      },
+    };
+  } else {
+    operation.parameters = [
+      {
+        in: 'query',
+        name: 'data',
+        description: 'The data that was passed to the action',
+        required: true,
+        schema: { type: 'string' },
+      },
+    ];
+  }
+  return operation;
 }
 
 export default {
@@ -27,8 +47,8 @@ export default {
     ],
     get: proxy('Get'),
     delete: proxy('Delete'),
-    patch: proxy('Get'),
-    post: proxy('Post'),
-    put: proxy('Put'),
+    patch: proxy('Patch', true),
+    post: proxy('Post', true),
+    put: proxy('Put', true),
   },
 };

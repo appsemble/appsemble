@@ -97,7 +97,7 @@ export default async function createServer({
         },
         koasParameters(),
         koasBodyParser({
-          ignore: ['proxyDelete', 'proxyGet', 'proxyPatch', 'proxyPost', 'proxyPut'],
+          // ignore: ['proxyDelete', 'proxyGet', 'proxyPatch', 'proxyPost', 'proxyPut'],
           parsers: {
             '*/*': (body, _mediaTypeObject, ctx) => raw(body, { length: ctx.request.length }),
           },

@@ -33,7 +33,6 @@
     "cli-highlight": "^2.1.4",
     "date-fns": "^2.13.0",
     "file-type": "^14.3.0",
-    "follow-redirects": "^1.11.0",
     "grant": "^5.0.1",
     "is-ip": "^3.1.0",
     "is-svg": "^4.2.1",
