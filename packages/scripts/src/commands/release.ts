@@ -1,5 +1,5 @@
 import { getWorkspaces, logger } from '@appsemble/node-utils';
-import { readFile, readJson, writeFile, writeJson } from 'fs-extra';
+import { readdir, readFile, readJson, writeFile, writeJson } from 'fs-extra';
 import globby from 'globby';
 import * as path from 'path';
 import * as semver from 'semver';
@@ -94,7 +94,12 @@ export async function handler({ increment }: Args): Promise<void> {
   logger.info(`New version: ${version}`);
   const paths = await globby(
     ['apps/*/app.yaml', 'config/charts/*/Chart.yaml', 'docs/*.md', 'docs/**/*.md'],
-    { gitignore: true },
+    { absolute: true, gitignore: true },
+  );
+  const templateDir = 'packages/create-appsemble/templates';
+  const templates = await readdir(templateDir);
+  await Promise.all(
+    templates.map((t) => updatePkg(path.join(process.cwd(), templateDir, t), version)),
   );
   await Promise.all(paths.map((filepath) => replaceFile(filepath, pkg.version, version)));
   await Promise.all(workspaces.map((workspace) => updatePkg(workspace, version)));
