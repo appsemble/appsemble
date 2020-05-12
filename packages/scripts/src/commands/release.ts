@@ -1,5 +1,6 @@
 import { getWorkspaces, logger } from '@appsemble/node-utils';
-import { readJson, writeJson } from 'fs-extra';
+import { readFile, readJson, writeFile, writeJson } from 'fs-extra';
+import globby from 'globby';
 import * as path from 'path';
 import * as semver from 'semver';
 import type { PackageJson } from 'type-fest';
@@ -14,8 +15,15 @@ interface Args {
   increment: 'minor' | 'patch';
 }
 
+/**
+ * Update `package.json` in a directory.
+ *
+ * @param dirname The directory whose `package.json` to update.
+ * @param version The new version to set.
+ */
 async function updatePkg(dirname: string, version: string): Promise<void> {
   const filepath = path.join(dirname, 'package.json');
+  logger.info(`Updating ${filepath}`);
   const pkg: PackageJson = await readJson(filepath);
   if (pkg.name?.startsWith('@types/')) {
     return;
@@ -53,6 +61,24 @@ async function updatePkg(dirname: string, version: string): Promise<void> {
   );
 }
 
+/**
+ * Replace content of a file.
+ *
+ * @param filename The filename of the file to replace.
+ * @param oldVersion The content to replace.
+ * @param newVersion The content to replace the old content with.
+ */
+async function replaceFile(
+  filename: string,
+  oldVersion: string,
+  newVersion: string,
+): Promise<void> {
+  logger.info(`Updating ${filename}`);
+  const content = await readFile(filename, 'utf-8');
+  const updated = content.split(oldVersion).join(newVersion);
+  await writeFile(filename, updated);
+}
+
 export function builder(yargs: Argv): Argv {
   return yargs.positional('increment', {
     description: 'Wether to increment the minor or patch version',
@@ -66,6 +92,11 @@ export async function handler({ increment }: Args): Promise<void> {
   logger.info(`Old version: ${pkg.version}`);
   const version = semver.inc(pkg.version, increment);
   logger.info(`New version: ${version}`);
+  const paths = await globby(
+    ['apps/*/app.yaml', 'config/charts/*/Chart.yaml', 'docs/*.md', 'docs/**/*.md'],
+    { gitignore: true },
+  );
+  await Promise.all(paths.map((filepath) => replaceFile(filepath, pkg.version, version)));
   await Promise.all(workspaces.map((workspace) => updatePkg(workspace, version)));
   await updatePkg(process.cwd(), version);
 }
