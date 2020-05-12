@@ -7,7 +7,7 @@ import type {
 } from '@appsemble/sdk/src/types';
 import type { IconName } from '@fortawesome/fontawesome-common-types';
 import type { OpenAPIV3 } from 'openapi-types';
-import type { JsonObject } from 'type-fest';
+import type { JsonObject, RequireExactlyOne } from 'type-fest';
 
 export type { Theme };
 
@@ -155,6 +155,48 @@ export interface TokenResponse {
   // eslint-disable-next-line camelcase
   token_type: 'bearer';
 }
+
+export interface Remappers {
+  /**
+   * Convert a string to a date using a given format.
+   */
+  'date.parse': string;
+
+  /**
+   * Create a new object given some predefined mapper keys.
+   */
+  'object.from': {
+    [key: string]: Remapper;
+  };
+
+  /**
+   * Get a property from an object.
+   */
+  prop: string;
+
+  /**
+   * Convert an input to lower or upper case.
+   */
+  'string.case': 'lower' | 'upper';
+
+  /**
+   * Format a string using remapped input variables.
+   */
+  'string.format': {
+    /**
+     * The template string to format.
+     */
+    template: string;
+    /**
+     * A set of remappers to convert the input to usable values.
+     */
+    values: {
+      [key: string]: Remapper;
+    };
+  };
+}
+
+export type Remapper = RequireExactlyOne<Remappers>[] | string;
 
 export interface SubscriptionResponseResource {
   create: boolean;
@@ -325,7 +367,7 @@ export interface BaseActionDefinition<T extends Action['type']> {
    * A remapper function. This may be used to remap data before it is passed into the action
    * function.
    */
-  remap?: string;
+  remap?: Remapper;
 }
 
 export interface DialogActionDefinition extends BaseActionDefinition<'dialog'> {
