@@ -89,7 +89,7 @@ export interface UserInfo {
   /**
    * The subject (end-user) identifier. This member is always present in a claims set.
    */
-  sub: number;
+  sub: string;
 
   /**
    * The full name of the end-user, with optional language tag.
@@ -127,7 +127,7 @@ export interface JwtPayload {
   iat: string;
   iss: string;
   scope: string;
-  sub: number;
+  sub: string;
 }
 
 /**
@@ -783,7 +783,7 @@ export interface Rating {
   /**
    * The ID of the user who rated the app.
    */
-  UserId: number;
+  UserId: string;
 
   /**
    * The creation date of the rating.

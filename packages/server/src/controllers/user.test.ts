@@ -40,7 +40,7 @@ describe('getUser', () => {
     expect(response).toMatchObject({
       status: 200,
       data: {
-        id: expect.any(Number),
+        id: expect.any(String),
         name: 'Test User',
         primaryEmail: 'test@example.com',
         emails: [{ email: 'test@example.com', primary: true, verified: true }],

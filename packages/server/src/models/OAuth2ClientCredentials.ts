@@ -15,7 +15,7 @@ export default class OAuth2ClientCredentials extends Model {
 
   created: Date;
 
-  UserId: number;
+  UserId: string;
 
   static initialize(sequelize: Sequelize): void {
     OAuth2ClientCredentials.init(

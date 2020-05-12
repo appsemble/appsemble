@@ -9,7 +9,7 @@ export default class EmailAuthorization extends Model {
 
   key: string;
 
-  UserId: number;
+  UserId: string;
 
   User: User;
 

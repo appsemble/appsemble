@@ -15,7 +15,7 @@ export default class Resource extends Model {
 
   updated: Date;
 
-  UserId: number;
+  UserId: string;
 
   User: User;
 
