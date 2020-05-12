@@ -10,7 +10,7 @@ declare global {
   interface Element {}
 }
 
-export default (): void => {
+function main(): void {
   yargs
     .option('verbose', {
       alias: 'v',
@@ -29,4 +29,8 @@ export default (): void => {
     .help()
     .completion()
     .parse(process.argv.slice(2));
-};
+}
+
+if (require.main === module) {
+  main();
+}
