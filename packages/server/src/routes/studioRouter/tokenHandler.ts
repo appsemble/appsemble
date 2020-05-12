@@ -57,7 +57,7 @@ export default async function tokenHandler(ctx: KoaContext): Promise<void> {
   let aud: string;
   let refreshToken: boolean;
   let scope: string[] | string;
-  let sub: number | string;
+  let sub: string;
 
   try {
     if (!ctx.is('application/x-www-form-urlencoded')) {

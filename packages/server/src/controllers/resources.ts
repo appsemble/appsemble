@@ -214,7 +214,7 @@ async function sendSubscriptionNotifications(
   ctx: KoaContext<Params>,
   app: App,
   notification: NotificationDefinition,
-  resourceUserId: number,
+  resourceUserId: string,
   resourceType: string,
   action: 'create' | 'update' | 'delete',
   resourceId: number,

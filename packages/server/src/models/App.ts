@@ -63,7 +63,7 @@ export default class App extends Model {
 
   getUsers: HasManyGetAssociationsMixin<User>;
 
-  removeUser: HasManyRemoveAssociationMixin<User, number>;
+  removeUser: HasManyRemoveAssociationMixin<User, string>;
 
   RatingAverage?: number;
 

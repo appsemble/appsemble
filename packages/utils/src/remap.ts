@@ -1,44 +1,8 @@
+import type { Remapper, Remappers } from '@appsemble/types';
+import { parse, parseISO } from 'date-fns';
 import IntlMessageFormat from 'intl-messageformat';
-import type { RequireExactlyOne } from 'type-fest';
 
 import mapValues from './mapValues';
-
-export interface Remappers {
-  /**
-   * Create a new object given some predefined mapper keys.
-   */
-  'object.from': {
-    [key: string]: Remapper;
-  };
-
-  /**
-   * Get a property from an object.
-   */
-  prop: string;
-
-  /**
-   * Convert an input to lower or upper case.
-   */
-  'string.case': 'lower' | 'upper';
-
-  /**
-   * Format a string using remapped input variables.
-   */
-  'string.format': {
-    /**
-     * The template string to format.
-     */
-    template: string;
-    /**
-     * A set of remappers to convert the input to usable values.
-     */
-    values: {
-      [key: string]: Remapper;
-    };
-  };
-}
-
-export type Remapper = RequireExactlyOne<Remappers>[] | string;
 
 type MapperImplementations = {
   [F in keyof Remappers]: (args: Remappers[F], input: any) => any;
@@ -56,6 +20,8 @@ const mapperImplementations: MapperImplementations = {
     Object.fromEntries(Object.entries(mappers).map(([key, mapper]) => [key, remap(mapper, input)])),
 
   prop: (prop, obj) => prop.split('.').reduce((acc, p) => acc[p], obj),
+
+  'date.parse': (format, input) => (format ? parse(input, format, new Date()) : parseISO(input)),
 
   'string.case': (stringCase, input) => {
     if (stringCase === 'lower') {

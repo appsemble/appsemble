@@ -1,4 +1,6 @@
-import remap, { Remapper } from './remap';
+import type { Remapper } from '@appsemble/types';
+
+import remap from './remap';
 
 interface TestCase {
   description: string;
@@ -87,6 +89,19 @@ const cases: TestCase[] = [
     mappers: [{ 'string.format': { template: '‘{value}’ is unknown', values: {} } }],
     expected:
       'The intl string context variable "value" was not provided to the string "‘{value}’ is unknown"',
+  },
+  {
+    description: 'format dates it parsed',
+    input: { date: '1970-01-01T00:00:00.000Z' },
+    mappers: [
+      {
+        'string.format': {
+          template: 'Date’s year: {year, date, :: yyyy}',
+          values: { year: [{ prop: 'date' }, { 'date.parse': "yyyy-MM-dd'T'HH:mm:ss.SSSX" }] },
+        },
+      },
+    ],
+    expected: 'Date’s year: 1970',
   },
 ];
 

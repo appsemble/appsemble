@@ -8,7 +8,7 @@ export default class OrganizationInvite extends Model {
 
   key: string;
 
-  UserId: number;
+  UserId: string;
 
   OrganizationId: string;
 
@@ -19,7 +19,7 @@ export default class OrganizationInvite extends Model {
       {
         email: { type: DataTypes.STRING, allowNull: false, primaryKey: true },
         key: { type: DataTypes.STRING, allowNull: false },
-        UserId: { type: DataTypes.INTEGER, unique: 'EmailOrganizationIndex' },
+        UserId: { type: DataTypes.UUID, unique: 'EmailOrganizationIndex' },
         OrganizationId: {
           type: DataTypes.STRING,
           unique: 'EmailOrganizationIndex',
