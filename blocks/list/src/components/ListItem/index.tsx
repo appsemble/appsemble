@@ -1,6 +1,6 @@
 import { Icon } from '@appsemble/preact-components';
-import type { BootstrapParams } from '@appsemble/sdk';
-import { remapData } from '@appsemble/utils';
+import { useBlock } from '@appsemble/preact/src';
+import type { BootstrapParams, Remapper } from '@appsemble/sdk';
 import { h, VNode } from 'preact';
 import { useCallback } from 'preact/hooks';
 
@@ -11,11 +11,15 @@ import styles from './index.css';
 interface ListItemProps {
   actions: BootstrapParams['actions'];
   fields: Field[];
-  header: string;
+  header: Remapper;
   item: Item;
 }
 
 export default function ListItem({ actions, fields, header, item }: ListItemProps): VNode {
+  const {
+    utils: { remap },
+  } = useBlock();
+
   const onItemClick = useCallback(
     (event: Event) => {
       event.preventDefault();
@@ -24,26 +28,28 @@ export default function ListItem({ actions, fields, header, item }: ListItemProp
     [actions, item],
   );
 
+  const headerValue = remap(header, item);
+
   return (
     <ListItemWrapper actions={actions} className={styles.item} item={item} onClick={onItemClick}>
-      {header && <h4>{remapData(header, item)}</h4>}
+      {headerValue && <h4>{headerValue}</h4>}
       {fields.map((field) => {
         let value;
 
-        if (field.name) {
-          value = remapData(field.name, item);
+        if (field.value) {
+          value = remap(field.value, item);
         }
 
         return (
-          <span key={field.name} className={styles.itemField}>
+          <span className={styles.itemField}>
             {field.icon && <Icon icon={field.icon} />}
             {field.label && (
               <span>
                 {field.label}
-                {field.name && ': '}
+                {value && ': '}
               </span>
             )}
-            {field.name && (
+            {value && (
               <strong className="has-text-bold">
                 {typeof value === 'string' ? value : JSON.stringify(value)}
               </strong>
