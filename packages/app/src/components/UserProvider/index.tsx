@@ -10,7 +10,7 @@ import { useAppDefinition } from '../AppDefinitionProvider';
 interface JwtPayload {
   exp: number;
   scopes: string;
-  sub: number;
+  sub: string;
   iss: string;
 }
 

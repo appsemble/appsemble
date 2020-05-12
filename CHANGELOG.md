@@ -13,6 +13,11 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - SDK: Add support for remappers using the `util.remap` function.
 - Server: Add support for using remappers in the notification data definition.
 
+### Changed
+
+- App: The `remap` property of actions now uses the new remapper functionality.
+- Server: Converted user IDs to use UUID instead of auto-incremented integers.
+
 ## [0.12.8] - 2020-04-29
 
 ### Fixed

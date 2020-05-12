@@ -11,7 +11,6 @@ export { default as getAppBlocks } from './getAppBlocks';
 export type { BlockMap } from './getAppBlocks';
 export { default as mapValues } from './mapValues';
 export { default as remap } from './remap';
-export type { Remapper, Remappers } from './remap';
 export {
   default as validateAppDefinition,
   AppsembleValidationError,

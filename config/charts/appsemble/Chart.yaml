@@ -9,6 +9,6 @@ sources:
 appVersion: 0.12.8
 dependencies:
   - name: postgresql
-    version: 8.3.4
-    repository: https://kubernetes-charts.storage.googleapis.com
+    version: 8.9.6
+    repository: https://charts.bitnami.com/bitnami
     condition: postgresql.enabled

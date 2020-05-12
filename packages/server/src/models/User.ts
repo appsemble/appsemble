@@ -16,7 +16,7 @@ import Organization from './Organization';
 import ResetPasswordToken from './ResetPasswordToken';
 
 export default class User extends Model {
-  id: number;
+  id: string;
 
   name: string;
 
@@ -43,7 +43,7 @@ export default class User extends Model {
   static initialize(sequelize: Sequelize): void {
     User.init(
       {
-        id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+        id: { type: DataTypes.UUID, defaultValue: DataTypes.UUIDV4, primaryKey: true },
         name: { type: DataTypes.STRING },
         password: { type: DataTypes.STRING },
       },

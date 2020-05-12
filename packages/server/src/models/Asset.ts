@@ -12,7 +12,7 @@ export default class Asset extends Model {
 
   data: Buffer;
 
-  UserId: number;
+  UserId: string;
 
   static initialize(sequelize: Sequelize): void {
     Asset.init(
