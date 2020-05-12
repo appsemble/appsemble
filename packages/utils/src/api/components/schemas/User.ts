@@ -4,7 +4,7 @@ export default {
   additionalProperties: false,
   properties: {
     id: {
-      type: 'number',
+      type: 'string',
       readOnly: true,
       description: 'The ID of the user.',
     },

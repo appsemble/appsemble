@@ -224,7 +224,7 @@ review:
   script:
     # This is the only way to make sure the review environment can be overwritten
     - helm delete "$CI_ENVIRONMENT_SLUG" || true
-    - helm repo add stable https://kubernetes-charts.storage.googleapis.com
+    - helm repo add bitnami https://charts.bitnami.com/bitnami
     - helm dependency build config/charts/appsemble
     - helm install "$CI_ENVIRONMENT_SLUG" config/charts/appsemble
       --atomic
@@ -241,6 +241,7 @@ review:
       --set "ingress.tls.secretName=$CI_ENVIRONMENT_SLUG-tls"
       --set "migrateTo=next"
       --set "global.postgresql.existingSecret=postgresql-secret"
+      --set "provision.account.id=43376671-1c98-4657-809e-d45292a3f39e"
       --set "provision.account.name=$BOT_ACCOUNT_NAME"
       --set "provision.account.clientCredentials=$APPSEMBLE_CLIENT_CREDENTIALS"
       --set "provision.account.email=$BOT_ACCOUNT_EMAIL"
@@ -315,7 +316,7 @@ staging:
   script:
     # This is the only way to make sure staging can be overwritten
     - helm delete staging || true
-    - helm repo add stable https://kubernetes-charts.storage.googleapis.com
+    - helm repo add bitnami https://charts.bitnami.com/bitnami
     - helm dependency build config/charts/appsemble
     # First, install from the last stable tag.
     - helm install staging config/charts/appsemble
@@ -384,7 +385,7 @@ production:
     name: production/appsemble
     url: https://appsemble.app
   script:
-    - helm repo add stable https://kubernetes-charts.storage.googleapis.com
+    - helm repo add bitnami https://charts.bitnami.com/bitnami
     - helm dependency build config/charts/appsemble
     - helm upgrade appsemble config/charts/appsemble
       --set "app=$CI_ENVIRONMENT_SLUG"

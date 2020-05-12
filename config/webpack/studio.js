@@ -34,7 +34,7 @@ module.exports = (env, argv) => {
     },
     plugins: [
       new EnvironmentPlugin({
-        'process.env.APPSEMBLE_VERSION': studioPkg.version,
+        APPSEMBLE_VERSION: studioPkg.version,
       }),
       new HtmlWebpackPlugin({
         template: path.join(studioEntry, 'index.html'),

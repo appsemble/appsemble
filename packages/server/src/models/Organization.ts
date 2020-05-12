@@ -32,9 +32,9 @@ export default class Organization extends Model {
 
   addUser: HasManyAddAssociationMixin<User, any>;
 
-  hasUser: HasManyHasAssociationMixin<User, number>;
+  hasUser: HasManyHasAssociationMixin<User, string>;
 
-  removeUser: HasManyRemoveAssociationMixin<User, number>;
+  removeUser: HasManyRemoveAssociationMixin<User, string>;
 
   static initialize(sequelize: Sequelize): void {
     Organization.init(

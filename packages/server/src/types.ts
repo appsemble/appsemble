@@ -4,6 +4,7 @@ import type * as compose from 'koa-compose';
 import type { Session } from 'koa-session';
 import type { URL as URL_, URLSearchParams as URLSearchParams_ } from 'url';
 
+import type { User } from './models';
 import type Mailer from './utils/email/Mailer';
 
 declare global {
@@ -68,9 +69,7 @@ export interface AppsembleState {
 
   render: (template: string, params: object) => Promise<string>;
 
-  user: {
-    id: number;
-  };
+  user: Pick<User, 'id'>;
 }
 
 export interface AppsembleContext<P extends {} = {}> {

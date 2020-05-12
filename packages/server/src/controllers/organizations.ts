@@ -17,7 +17,7 @@ import checkRole from '../utils/checkRole';
 interface Params {
   blockId: string;
   blockOrganizationId: string;
-  memberId: number;
+  memberId: string;
   organizationId: string;
   token: string;
 }
@@ -177,7 +177,7 @@ export async function inviteMember(ctx: KoaContext<Params>): Promise<void> {
   const dbEmail = await EmailAuthorization.findByPk(email, { include: [User] });
   const invitedUser = dbEmail ? dbEmail.User : null;
 
-  if (!(await organization.hasUser(Number(user.id)))) {
+  if (!(await organization.hasUser(user.id))) {
     throw Boom.forbidden('Not allowed to invite users to organizations you are not a member of.');
   }
 
@@ -258,7 +258,7 @@ export async function removeMember(ctx: KoaContext<Params>): Promise<void> {
   const { user } = ctx.state;
 
   const organization = await Organization.findByPk(organizationId, { include: [User] });
-  if (!organization.Users.some((u) => u.id === Number(user.id))) {
+  if (!organization.Users.some((u) => u.id === user.id)) {
     throw Boom.notFound('User is not part of this organization.');
   }
 
@@ -268,7 +268,7 @@ export async function removeMember(ctx: KoaContext<Params>): Promise<void> {
 
   await checkRole(ctx, organization.id, permissions.ManageMembers);
 
-  if (Number(memberId) === Number(user.id) && organization.Users.length <= 1) {
+  if (memberId === user.id && organization.Users.length <= 1) {
     throw Boom.notAcceptable(
       'Not allowed to remove yourself from an organization if you’re the only member left.',
     );
@@ -283,7 +283,7 @@ export async function setRole(ctx: KoaContext<Params>): Promise<void> {
   const { user } = ctx.state;
 
   const organization = await Organization.findByPk(organizationId, { include: [User] });
-  if (!organization.Users.some((u) => u.id === Number(user.id))) {
+  if (!organization.Users.some((u) => u.id === user.id)) {
     throw Boom.notFound('User is not part of this organization.');
   }
 
@@ -293,7 +293,7 @@ export async function setRole(ctx: KoaContext<Params>): Promise<void> {
 
   await checkRole(ctx, organization.id, permissions.ManageRoles);
 
-  const member = organization.Users.find((m) => m.id === Number(memberId));
+  const member = organization.Users.find((m) => m.id === memberId);
   if (!member) {
     throw Boom.notFound('This member is not part of this organization.');
   }

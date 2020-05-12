@@ -7,7 +7,7 @@ import checkRole from '../utils/checkRole';
 
 interface Params {
   appId: string;
-  memberId: number;
+  memberId: string;
 }
 
 export async function getAppMembers(ctx: KoaContext<Params>): Promise<void> {

@@ -86,7 +86,7 @@ describe('createOrganization', () => {
         name: 'Foooo',
         members: [
           {
-            id: expect.any(Number),
+            id: expect.any(String),
             name: 'Test User',
             primaryEmail: 'test@example.com',
             role: 'Owner',
@@ -145,7 +145,7 @@ describe('getMembers', () => {
       status: 200,
       data: [
         {
-          id: expect.any(Number),
+          id: expect.any(String),
           name: 'Test User',
           primaryEmail: 'test@example.com',
           role: 'Owner',
@@ -193,7 +193,7 @@ describe('inviteMember', () => {
     expect(response).toMatchObject({
       status: 201,
       data: {
-        id: expect.any(Number),
+        id: expect.any(String),
         name: 'John',
         primaryEmail: 'test2@example.com',
       },
@@ -355,14 +355,11 @@ describe('removeMember', () => {
     const userB = await User.create();
     await Member.create({ UserId: userB.id, OrganizationId: organization.id, role: 'Member' });
 
-    const { status } = await request.delete(
-      `/api/organizations/testorganization/members/${user.id}`,
-      {
-        headers: { authorization },
-      },
-    );
+    const result = await request.delete(`/api/organizations/testorganization/members/${user.id}`, {
+      headers: { authorization },
+    });
 
-    expect(status).toBe(204);
+    expect(result.status).toBe(204);
   });
 
   it('should remove other members from an organization', async () => {
