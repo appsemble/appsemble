@@ -128,11 +128,11 @@ export default function ResourceTable(): React.ReactElement {
         history.push(match.url.replace(`/${mode}/${resourceId}`, ''));
 
         push({
-          body: intl.formatMessage(messages.createSuccess, { id: resourceId }),
+          body: intl.formatMessage(messages.updateSuccess, { id: resourceId }),
           color: 'primary',
         });
       } catch (e) {
-        push(intl.formatMessage(messages.createError));
+        push(intl.formatMessage(messages.updateError));
       }
     },
     [

@@ -15,7 +15,7 @@ export default defineMessages({
   loadError: 'Something went wrong when loading this resource.',
   createSuccess: 'Successfully created resource {id}.',
   deleteSuccess: 'Successfully deleted resource {id}.',
-  updateSuccess: 'Successfully updated resource.',
+  updateSuccess: 'Successfully updated resource {id}.',
   notFound:
     'This resource could not be found in the app definition. Please confirm if this resource exists.',
   notManaged: 'This resource is not managed by Appsemble. You can find this resource at {link}',
