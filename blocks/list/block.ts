@@ -44,6 +44,13 @@ declare module '@appsemble/sdk' {
     header?: Remapper;
 
     /**
+     * The icon that displays in front of the header.
+     *
+     * Will not render if undefined.
+     */
+    icon?: IconName;
+
+    /**
      * An optional name of the field that contains the data.
      *
      * If not defined, received data will be treated as an array.

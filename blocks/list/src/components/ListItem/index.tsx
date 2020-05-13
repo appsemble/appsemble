@@ -1,22 +1,20 @@
 import { Icon } from '@appsemble/preact-components';
 import { useBlock } from '@appsemble/preact/src';
-import type { BootstrapParams, Remapper } from '@appsemble/sdk';
 import { h, VNode } from 'preact';
 import { useCallback } from 'preact/hooks';
 
-import type { Field, Item } from '../../../block';
+import type { Item } from '../../../block';
 import ListItemWrapper from '../ListItemWrapper';
 import styles from './index.css';
 
 interface ListItemProps {
-  actions: BootstrapParams['actions'];
-  fields: Field[];
-  header: Remapper;
   item: Item;
 }
 
-export default function ListItem({ actions, fields, header, item }: ListItemProps): VNode {
+export default function ListItem({ item }: ListItemProps): VNode {
   const {
+    actions,
+    parameters: { fields, header, icon },
     utils: { remap },
   } = useBlock();
 
@@ -32,6 +30,7 @@ export default function ListItem({ actions, fields, header, item }: ListItemProp
 
   return (
     <ListItemWrapper actions={actions} className={styles.item} item={item} onClick={onItemClick}>
+      {icon && <Icon icon={icon} />}
       {headerValue && <h4>{headerValue}</h4>}
       {fields.map((field) => {
         let value;

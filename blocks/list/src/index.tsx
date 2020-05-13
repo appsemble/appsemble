@@ -15,7 +15,7 @@ const messages = {
 export default bootstrap(
   ({
     actions,
-    parameters: { fields = [], header, base },
+    parameters: { fields = [], header, icon, base },
     data: blockData,
     events,
     ready,
@@ -82,7 +82,7 @@ export default bootstrap(
       <ul className={styles.container}>
         {data.map((item, index) => (
           <li key={item.id ?? index}>
-            <ListItem actions={actions} fields={fields} header={header} item={item} />
+            <ListItem item={item} />
           </li>
         ))}
       </ul>
