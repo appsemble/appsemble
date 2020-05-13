@@ -123,7 +123,14 @@ export default function GUIEditor({
         />
       );
     case GuiEditorStep.DELETE:
-      return <GUIEditorDelete />;
+      return (
+        <GUIEditorDelete
+          editLocation={editLocation}
+          monacoEditor={monacoEditor}
+          setEditorStep={(step: GuiEditorStep) => setEditorStep(step)}
+          setRecipe={(value: any) => setRecipe(value)}
+        />
+      );
     case GuiEditorStep.EDIT:
       return (
         <GUIEditorEditBlock
