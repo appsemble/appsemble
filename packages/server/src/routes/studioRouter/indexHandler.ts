@@ -1,4 +1,5 @@
 import crypto from 'crypto';
+import { URL } from 'url';
 
 import type { KoaContext } from '../../types';
 import createSettings from '../../utils/createSettings';

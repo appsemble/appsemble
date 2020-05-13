@@ -2,6 +2,7 @@ import FakeTimers, { InstalledClock } from '@sinonjs/fake-timers';
 import { AxiosTestInstance, createInstance } from 'axios-test-instance';
 import { verify } from 'jsonwebtoken';
 import type Koa from 'koa';
+import { URLSearchParams } from 'url';
 
 import { App, OAuth2AuthorizationCode, OAuth2ClientCredentials, User } from '../../models';
 import createServer from '../../utils/createServer';
