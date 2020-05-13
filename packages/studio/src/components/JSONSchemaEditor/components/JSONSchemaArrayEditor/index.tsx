@@ -3,52 +3,10 @@ import type { OpenAPIV3 } from 'openapi-types';
 import type { NamedEvent } from 'packages/studio/src/types';
 import * as React from 'react';
 
+import type { CommonJSONSchemaEditorProps } from '../../types';
 import JSONSchemaLabel from '../JSONSchemaLabel';
 import RecursiveJSONSchemaEditor from '../RecursiveJSONSchemaEditor';
 import styles from './index.css';
-
-interface JSONSchemaArrayEditorProps {
-  /**
-   * The name of the property thas is being rendered.
-   *
-   * The name is determined by the parent schema. It is used for recursion.
-   */
-  name?: string;
-
-  /**
-   * Whether or not the editor is disabled.
-   *
-   * This value is recursively passed down to all child inputs.
-   */
-  disabled?: boolean;
-
-  /**
-   * The handler that is called whenever a value changes.
-   */
-  onChange: (event: NamedEvent, value?: any[]) => void;
-
-  /**
-   * The prefix to string from labels.
-   */
-  prefix: string;
-
-  /**
-   * Whether or not the property is required.
-   *
-   * This is determined by the parent schema. It is used for recursion.
-   */
-  required?: boolean;
-
-  /**
-   * The schema used to render the form elements.
-   */
-  schema: OpenAPIV3.SchemaObject;
-
-  /**
-   * The value used to populate the editor.
-   */
-  value: any[];
-}
 
 const defaults = {
   array: [] as const,
@@ -67,7 +25,7 @@ export default function JSONSchemaArrayEditor({
   onChange,
   schema,
   value = [],
-}: JSONSchemaArrayEditorProps): React.ReactElement {
+}: CommonJSONSchemaEditorProps<any[], OpenAPIV3.ArraySchemaObject>): React.ReactElement {
   const onPropertyChange = React.useCallback(
     ({ target }: NamedEvent, val) => {
       const index = Number(target.name.slice(name.length + 1));
@@ -118,7 +76,7 @@ export default function JSONSchemaArrayEditor({
             name={`${name}.${index}`}
             onChange={onPropertyChange}
             prefix={prefix}
-            schema={schema.items as OpenAPIV3.SchemaObject}
+            schema={schema.items as OpenAPIV3.ArraySchemaObject}
             value={val}
           />
           <div className="is-pulled-right">

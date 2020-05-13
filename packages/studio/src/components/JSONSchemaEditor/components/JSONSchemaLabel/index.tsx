@@ -1,28 +1,16 @@
 import type { OpenAPIV3 } from 'openapi-types';
 import * as React from 'react';
 
-interface JSONSchemaLabelProps {
-  /**
-   * The name of the property thas is being rendered.
-   */
-  name: string;
-
-  /**
-   * The prefix to remove from the field name.
-   */
-  prefix: string;
-
-  /**
-   * The schema used to render the label.
-   */
-  schema: OpenAPIV3.SchemaObject;
-}
+import type { CommonJSONSchemaEditorProps } from '../../types';
 
 export default function JSONSchemaLabel({
   name,
   prefix,
   schema,
-}: JSONSchemaLabelProps): React.ReactElement {
+}: Pick<
+  CommonJSONSchemaEditorProps<never, OpenAPIV3.BaseSchemaObject>,
+  'name' | 'prefix' | 'schema'
+>): React.ReactElement {
   return (schema?.title ? (
     <>
       {`${schema.title} `}

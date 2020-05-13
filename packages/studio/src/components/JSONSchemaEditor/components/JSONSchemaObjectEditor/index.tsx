@@ -1,52 +1,11 @@
 import { Title } from '@appsemble/react-components/src';
 import type { OpenAPIV3 } from 'openapi-types';
-import type { NamedEvent } from 'packages/studio/src/types';
 import * as React from 'react';
 
+import type { CommonJSONSchemaEditorProps } from '../../types';
 import JSONSchemaLabel from '../JSONSchemaLabel';
 import RecursiveJSONSchemaEditor from '../RecursiveJSONSchemaEditor';
 import styles from './index.css';
-
-interface JSONSchemaObjectEditorProps {
-  /**
-   * Whether or not the editor is disabled.
-   *
-   * This value is recursively passed down to all child inputs.
-   */
-  disabled?: boolean;
-
-  /**
-   * The name of the property thas is being rendered.
-   *
-   * The name is determined by the parent schema. It is used for recursion.
-   */
-  name?: string;
-
-  /**
-   * Whether or not this is a nested component.
-   */
-  nested?: boolean;
-
-  /**
-   * The handler that is called whenever a value changes.
-   */
-  onChange: (event: NamedEvent, value?: { [key: string]: any }) => void;
-
-  /**
-   * The prefix to remove from labels.
-   */
-  prefix: string;
-
-  /**
-   * The schema used to render the form elements.
-   */
-  schema: OpenAPIV3.SchemaObject;
-
-  /**
-   * The value used to populate the editor.
-   */
-  value: { [key: string]: any };
-}
 
 export default function JSONSchemaObjectEditor({
   disabled,
@@ -56,7 +15,7 @@ export default function JSONSchemaObjectEditor({
   prefix,
   schema,
   value = {},
-}: JSONSchemaObjectEditorProps): React.ReactElement {
+}: CommonJSONSchemaEditorProps<{ [key: string]: string }>): React.ReactElement {
   const onPropertyChange = React.useCallback(
     ({ target }, val) => {
       const id = target.name.slice(name.length + 1);

@@ -1,51 +1,8 @@
 import { Input } from '@appsemble/react-components';
-import type { OpenAPIV3 } from 'openapi-types';
 import * as React from 'react';
 
+import type { CommonJSONSchemaEditorProps } from '../../types';
 import JSONSchemaLabel from '../JSONSchemaLabel';
-
-interface JSONSchemaStringEditorProps {
-  /**
-   * Whether or not the editor is disabled.
-   *
-   * This value is recursively passed down to all child inputs.
-   */
-  disabled?: boolean;
-
-  /**
-   * The name of the property thas is being rendered.
-   *
-   * The name is determined by the parent schema. It is used for recursion.
-   */
-  name: string;
-
-  /**
-   * The handler that is called whenever a value changes.
-   */
-  onChange: (name: any, value?: any) => void;
-
-  /**
-   * The prefix to remove from labels.
-   */
-  prefix: string;
-
-  /**
-   * Whether or not the property is required.
-   *
-   * This is determined by the parent schema. It is used for recursion.
-   */
-  required?: boolean;
-
-  /**
-   * The properties of the schema object.
-   */
-  schema: OpenAPIV3.SchemaObject;
-
-  /**
-   * The value used to populate the editor.
-   */
-  value: string;
-}
 
 export default function JSONSchemaStringEditor({
   disabled,
@@ -55,7 +12,7 @@ export default function JSONSchemaStringEditor({
   required,
   schema,
   value = '',
-}: JSONSchemaStringEditorProps): React.ReactElement {
+}: CommonJSONSchemaEditorProps<number | string>): React.ReactElement {
   let type: React.ComponentPropsWithoutRef<typeof Input>['type'] = 'text';
 
   if (schema.type === 'integer' || schema.type === 'number') {
