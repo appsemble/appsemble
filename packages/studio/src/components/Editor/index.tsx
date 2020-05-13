@@ -28,18 +28,12 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { Link, useHistory, useLocation, useParams } from 'react-router-dom';
 
 import { useApp } from '../AppContext';
-import GUIEditor from '../GUIEditor';
+import GUIEditor, { GuiEditorStep } from '../GUIEditor';
 import HelmetIntl from '../HelmetIntl';
 import MonacoEditor, { EditLocation } from '../MonacoEditor';
 import styles from './index.css';
 import messages from './messages';
 
-export enum GuiEditorStep {
-  'YAML',
-  'SELECT',
-  'ADD',
-  'EDIT',
-}
 const openApiDocumentPromise = RefParser.dereference(api({ host: window.location.origin }));
 
 export default function Editor(): React.ReactElement {

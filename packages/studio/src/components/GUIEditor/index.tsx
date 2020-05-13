@@ -8,10 +8,16 @@ import { Range } from 'monaco-editor';
 import type { OpenAPIV3 } from 'openapi-types';
 import React from 'react';
 
-import { GuiEditorStep } from '../Editor';
-import GUIEditorEditBlock from '../GUIEditorEditBlock';
-import GUIEditorToolbox from '../GUIEditorToolbox';
 import type { EditLocation } from '../MonacoEditor';
+import GUIEditorEditBlock from './components/GUIEditorEditBlock';
+import GUIEditorToolbox from './components/GUIEditorToolbox';
+
+export enum GuiEditorStep {
+  'YAML',
+  'SELECT',
+  'ADD',
+  'EDIT',
+}
 
 interface GUIEditorProps {
   editorStep: GuiEditorStep;

@@ -5,10 +5,10 @@ import type { OpenAPIV3 } from 'openapi-types';
 import React from 'react';
 import { useIntl } from 'react-intl';
 
-import { GuiEditorStep } from '../Editor';
-import type { SelectedBlockManifest } from '../GUIEditor';
-import JSONSchemaEditor from '../JSONSchemaEditor';
-import type { EditLocation } from '../MonacoEditor';
+import type { SelectedBlockManifest } from '../..';
+import { GuiEditorStep } from '../..';
+import JSONSchemaEditor from '../../../JSONSchemaEditor';
+import type { EditLocation } from '../../../MonacoEditor';
 import styles from './index.css';
 import messages from './messages';
 

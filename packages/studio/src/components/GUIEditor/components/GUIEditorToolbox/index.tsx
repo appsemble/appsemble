@@ -3,7 +3,7 @@ import type { BlockManifest } from '@appsemble/types';
 import { stripBlockName } from '@appsemble/utils';
 import React from 'react';
 
-import { GuiEditorStep } from '../Editor';
+import { GuiEditorStep } from '../..';
 import GUIEditorToolboxBlock from '../GUIEditorToolboxBlock';
 import styles from './index.css';
 
