@@ -1,6 +1,6 @@
 import { logger } from '@appsemble/node-utils';
 import type { ActionDefinition } from '@appsemble/types';
-import { formatRequestAction } from '@appsemble/utils/src';
+import { formatRequestAction } from '@appsemble/utils';
 import * as Boom from '@hapi/boom';
 import axios from 'axios';
 import { get, pick } from 'lodash';
