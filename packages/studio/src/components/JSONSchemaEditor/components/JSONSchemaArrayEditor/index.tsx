@@ -42,7 +42,7 @@ interface JSONSchemaArrayEditorProps {
   /**
    * The schema used to render the form elements.
    */
-  schema: OpenAPIV3.ArraySchemaObject;
+  schema: OpenAPIV3.SchemaObject;
 
   /**
    * The value used to populate the editor.

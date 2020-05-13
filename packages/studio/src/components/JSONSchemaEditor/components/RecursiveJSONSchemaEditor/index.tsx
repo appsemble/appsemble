@@ -57,90 +57,27 @@ interface RecursiveJSONSchemaEditorProps {
   value: any;
 }
 
-export default function RecursiveJSONSchemaEditor({
-  disabled,
-  name,
-  nested = true,
-  onChange,
-  prefix,
-  required,
-  schema,
-  value,
-}: RecursiveJSONSchemaEditorProps): React.ReactElement {
+export default function RecursiveJSONSchemaEditor(
+  props: RecursiveJSONSchemaEditorProps,
+): React.ReactElement {
+  const { schema } = props;
+
   if (schema.enum) {
-    return (
-      <JSONSchemaEnumEditor
-        disabled={disabled}
-        name={name}
-        onChange={onChange}
-        prefix={prefix}
-        required={required}
-        schema={schema}
-        value={value}
-      />
-    );
+    return <JSONSchemaEnumEditor {...props} />;
   }
 
   switch (schema.type) {
     case 'array':
-      return (
-        <JSONSchemaArrayEditor
-          disabled={disabled}
-          name={name}
-          onChange={onChange}
-          prefix={prefix}
-          required={required}
-          schema={schema}
-          value={value}
-        />
-      );
+      return <JSONSchemaArrayEditor {...props} />;
     case 'boolean':
-      return (
-        <JSONSchemaBooleanEditor
-          disabled={disabled}
-          name={name}
-          onChange={onChange}
-          prefix={prefix}
-          required={required}
-          schema={schema}
-          value={value}
-        />
-      );
+      return <JSONSchemaBooleanEditor {...props} />;
     case 'object':
-      return (
-        <JSONSchemaObjectEditor
-          disabled={disabled}
-          name={name}
-          nested={nested}
-          onChange={onChange}
-          prefix={prefix}
-          schema={schema}
-          value={value}
-        />
-      );
+      return <JSONSchemaObjectEditor {...props} />;
     case 'string':
     case 'integer':
     case 'number':
-      return (
-        <JSONSchemaStringEditor
-          disabled={disabled}
-          name={name}
-          onChange={onChange}
-          prefix={prefix}
-          required={required}
-          schema={schema}
-          value={value}
-        />
-      );
+      return <JSONSchemaStringEditor {...props} />;
     default:
-      return (
-        <JSONSchemaUnknownEditor
-          name={name}
-          prefix={prefix}
-          required={required}
-          schema={schema}
-          value={value}
-        />
-      );
+      return <JSONSchemaUnknownEditor {...props} />;
   }
 }
