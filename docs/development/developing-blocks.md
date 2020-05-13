@@ -31,13 +31,35 @@ A new block can be bootstrapped by running the following command.
 yarn create-appsemble block
 ```
 
-This will prompt some questions about the new block. For now, lets bootstrap a vanilla JavaScript
-block using the block name `test` and organization name `org`. The output should look like this:
+This will prompt some questions about the new block. In the final prompt, you will be prompted to
+select a template. These templates can be used as a starting point when developing blocks.
+
+The following templates are available by default:
+
+- **Preact**: A simple Preact set-up that contains a component that can load data and display it in
+  a table.
+- **Mini JSX**: A basic set-up using [Mini-JSX](https://www.npmjs.com/package/mini-jsx), this can be
+  used for blocks with simple logic while still leveraging the JSX syntax you might be used to from
+  Preact or React.
+- **Vanilla**: The most basic template available, using pure HTML and JavaScript to bootstrap the
+  block. This template can also be used as a starting point for use with other third party libraries
+  or frameworks.
+
+> **Note**: It is possible to use other frameworks. We’ve opted to provide templates for the most
+> lightweight frameworks. Since apps can contain many blocks, we suggest trying to keep the blocks
+> as lightweight as possible. Some frameworks may produce strange behavior due to the way blocks are
+> attached to the Shadow DOM.
+
+For now, lets bootstrap a vanilla JavaScript block using the block name `test` and organization name
+`org`. The output should look like this:
 
 ```
 ? For which organization is the block? org
 ? What should be the name of the block? test
-? What kind of block project should be bootstrapped? vanilla
+? What kind of block project should be bootstrapped?
+   mini-jsx
+   preact
+ > vanilla
 ```
 
 The block will be created in the _blocks/_ directory. Its version will be `0.0.0`.

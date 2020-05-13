@@ -25,7 +25,7 @@ export interface OAuth2ClientCredentials {
 export type Role = 'Owner' | 'Maintainer' | 'AppEditor' | 'Member';
 
 export interface Member {
-  id: number;
+  id: string;
   name?: string;
   primaryEmail?: string;
   role: Role;

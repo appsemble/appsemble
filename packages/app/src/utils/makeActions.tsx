@@ -7,7 +7,7 @@ import type {
   Page,
   RequestLikeActionDefinition,
 } from '@appsemble/types';
-import { remapData } from '@appsemble/utils';
+import { remap } from '@appsemble/utils';
 import type { EventEmitter } from 'events';
 import type { RouteComponentProps } from 'react-router-dom';
 
@@ -95,7 +95,7 @@ function createAction({
       await pageReady;
       return dispatch(
         Object.hasOwnProperty.call(actionDefinition, 'remap')
-          ? remapData(actionDefinition.remap, args)
+          ? remap(actionDefinition.remap, args)
           : args,
       );
     };
