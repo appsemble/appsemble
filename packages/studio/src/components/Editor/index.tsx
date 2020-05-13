@@ -397,14 +397,20 @@ export default function Editor(): React.ReactElement {
                   </Button>
                 </li>
                 <li value="removeblock">
-                  <Button color="danger" icon="trash-alt">
+                  <Button
+                    color="danger"
+                    icon="trash-alt"
+                    onClick={() => setEditorStep(GuiEditorStep.DELETE)}
+                  >
                     <FormattedMessage {...messages.deleteBlock} />
                   </Button>
                 </li>
               </ul>
             )}
           </div>
-          {editorStep === GuiEditorStep.ADD || editorStep === GuiEditorStep.EDIT ? (
+          {editorStep === GuiEditorStep.ADD ||
+          editorStep === GuiEditorStep.EDIT ||
+          editorStep === GuiEditorStep.DELETE ? (
             <GUIEditor
               app={app}
               editLocation={editLocation}

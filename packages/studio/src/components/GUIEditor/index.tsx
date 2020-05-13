@@ -9,6 +9,7 @@ import type { OpenAPIV3 } from 'openapi-types';
 import React from 'react';
 
 import type { EditLocation } from '../MonacoEditor';
+import GUIEditorDelete from './components/GUIEditorDelete';
 import GUIEditorEditBlock from './components/GUIEditorEditBlock';
 import GUIEditorToolbox from './components/GUIEditorToolbox';
 
@@ -17,6 +18,7 @@ export enum GuiEditorStep {
   'SELECT',
   'ADD',
   'EDIT',
+  'DELETE',
 }
 
 interface GUIEditorProps {
@@ -120,6 +122,8 @@ export default function GUIEditor({
           setSelectedBlock={(block: SelectedBlockManifest) => setSelectedBlock(block)}
         />
       );
+    case GuiEditorStep.DELETE:
+      return <GUIEditorDelete />;
     case GuiEditorStep.EDIT:
       return (
         <GUIEditorEditBlock
