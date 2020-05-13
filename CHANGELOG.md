@@ -9,12 +9,14 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
+- App: Allow to proxy requests through the Appsemble API.
 - Block(`detail-viewer`): Implement remappers.
 - SDK: Add support for remappers using the `util.remap` function.
 - Server: Add support for using remappers in the notification data definition.
 
 ### Changed
 
+- App: Proxy requests through the Appsemble API by default.
 - App: The `remap` property of actions now uses the new remapper functionality.
 - Server: Converted user IDs to use UUID instead of auto-incremented integers.
 
