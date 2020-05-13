@@ -135,7 +135,12 @@ export default class MonacoEditor extends React.Component<MonacoEditorProps> {
           model.getLineFirstNonWhitespaceColumn(topParentLine + 1)
         ) {
           topParentLine += 1;
-        } else if (lines[topParentLine].includes('- type') || lines[topParentLine] === '') {
+        } else if (
+          lines[topParentLine].includes('- type') ||
+          lines[topParentLine].includes('- name') ||
+          lines[topParentLine].includes('pages') ||
+          lines[topParentLine].trim() === ''
+        ) {
           isTopParent = true;
         } else {
           topParentLine += 1;
@@ -161,7 +166,7 @@ export default class MonacoEditor extends React.Component<MonacoEditorProps> {
           if (i === topParentLine) {
             while (newIndent !== 1) {
               if (newIndent > model.getLineFirstNonWhitespaceColumn(i - parentCount)) {
-                if (model.getLineContent(i - parentCount) !== '') {
+                if (model.getLineContent(i - parentCount).trim() !== '') {
                   newIndent = model.getLineFirstNonWhitespaceColumn(i - parentCount);
 
                   parents.push({

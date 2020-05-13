@@ -1,8 +1,9 @@
 import { CardFooterButton, Modal } from '@appsemble/react-components';
+import type { App, BasicPage } from '@appsemble/types';
 import type { editor } from 'monaco-editor';
 import { Range } from 'monaco-editor';
 import React from 'react';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 
 import { GuiEditorStep } from '../..';
 import type { EditLocation } from '../../../MonacoEditor';
@@ -13,18 +14,38 @@ interface GUIEditorDeleteProps {
   setRecipe: (value: string) => void;
   monacoEditor: editor.IStandaloneCodeEditor;
   editLocation: EditLocation;
+  app: App;
 }
 
 export default function GUIEditorDelete({
+  app,
   editLocation,
   monacoEditor,
   setEditorStep,
   setRecipe,
 }: GUIEditorDeleteProps): React.ReactElement {
+  const intl = useIntl();
+
+  const deletePage = (): boolean => {
+    const selectedPage = app.definition.pages[
+      app.definition.pages.findIndex((page) => page.name === editLocation.pageName)
+    ] as BasicPage;
+    if (selectedPage.blocks.length === 1) {
+      return true;
+    }
+    return false;
+  };
+
   const remove = (): void => {
-    const blockParent =
-      editLocation.parents[editLocation.parents.findIndex((x) => x.name === 'blocks:')];
-    const range = new Range(blockParent.line + 1, 1, editLocation.topParentLine + 1, 1);
+    let range;
+    const blockParentIndex = editLocation.parents.findIndex((x) => x.name === 'blocks:');
+    if (!deletePage()) {
+      const selectBlockParent = editLocation.parents[blockParentIndex - 1];
+      range = new Range(selectBlockParent.line, 1, editLocation.topParentLine + 1, 1);
+    } else {
+      const selectedPageParent = editLocation.parents[blockParentIndex + 1];
+      range = new Range(selectedPageParent.line, 1, editLocation.topParentLine + 1, 1);
+    }
 
     const text = '';
     const op = {
@@ -59,7 +80,15 @@ export default function GUIEditorDelete({
       onClose={onClose}
       title={<FormattedMessage {...messages.deleteWarningTitle} />}
     >
-      <FormattedMessage {...messages.deleteWarning} />
+      {deletePage()
+        ? intl.formatMessage(messages.deletePageWarning, {
+            blockname: editLocation.blockName,
+            pagename: editLocation.pageName,
+          })
+        : intl.formatMessage(messages.deleteWarning, {
+            blockname: editLocation.blockName,
+            pagename: editLocation.pageName,
+          })}
     </Modal>
   );
 }

@@ -68,9 +68,13 @@ export default function GUIEditor({
   const save = (edittedParams: any, edit: boolean): void => {
     const blockParent =
       editLocation.parents[editLocation.parents.findIndex((x) => x.name === 'blocks:')];
+
+    const selectBlockParent =
+      editLocation.parents[editLocation.parents.findIndex((x) => x.name === 'blocks:') - 1];
+
     let range;
     if (edit) {
-      range = new Range(blockParent.line + 1, 1, editLocation.topParentLine + 1, 1);
+      range = new Range(selectBlockParent.line, 1, editLocation.topParentLine + 1, 1);
     } else {
       range = new Range(blockParent.line + 1, 1, blockParent.line + 1, 1);
     }
@@ -125,6 +129,7 @@ export default function GUIEditor({
     case GuiEditorStep.DELETE:
       return (
         <GUIEditorDelete
+          app={app}
           editLocation={editLocation}
           monacoEditor={monacoEditor}
           setEditorStep={(step: GuiEditorStep) => setEditorStep(step)}
