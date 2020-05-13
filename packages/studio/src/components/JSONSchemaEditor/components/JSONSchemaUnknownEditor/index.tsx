@@ -1,8 +1,10 @@
 import { TextArea } from '@appsemble/react-components';
 import type { OpenAPIV3 } from 'openapi-types';
 import * as React from 'react';
+import { FormattedMessage } from 'react-intl';
 
 import JSONSchemaLabel from '../JSONSchemaLabel';
+import messages from './messages';
 
 interface JSONSchemaUnknownEditorProps {
   /**
@@ -45,6 +47,7 @@ export default function JSONSchemaUnknownEditor({
   return (
     <TextArea
       disabled
+      help={<FormattedMessage {...messages.help} />}
       label={<JSONSchemaLabel name={name} prefix={prefix} schema={schema} />}
       name={name}
       onChange={null}
