@@ -68,8 +68,6 @@ export interface AppsembleState {
   fs: typeof fs;
 
   render: (template: string, params: object) => Promise<string>;
-
-  user: Pick<User, 'id'>;
 }
 
 export interface AppsembleContext<P extends {} = {}> {
@@ -86,6 +84,11 @@ export interface AppsembleContext<P extends {} = {}> {
   params: P;
 
   session: Session;
+
+  /**
+   * The user that is logged in.
+   */
+  user: Pick<User, 'id'>;
 }
 
 export type KoaContext<P extends {} = {}> = ParameterizedContext<

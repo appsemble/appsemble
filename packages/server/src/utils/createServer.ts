@@ -89,12 +89,6 @@ export default async function createServer({
         koasSpecHandler(),
         koasSwaggerUI({ url: '/explorer' }),
         koasSecurity(authentication(argv) as any),
-        () => (ctx, next) => {
-          if (ctx.users) {
-            [ctx.state.user] = Object.values(ctx.users);
-          }
-          return next();
-        },
         koasParameters(),
         koasBodyParser({
           parsers: {
