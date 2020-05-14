@@ -55,7 +55,9 @@ export default function App(): React.ReactElement {
                   <Route exact path="/verify">
                     <VerifyEmail />
                   </Route>
-                  <Route component={OAuth2Connect} exact path="/oauth2/:provider/callback" />
+                  <Route exact path="/oauth2/:provider/callback">
+                    <OAuth2Connect />
+                  </Route>
                   <AnonymousRoute exact path="/login">
                     <Login />
                   </AnonymousRoute>

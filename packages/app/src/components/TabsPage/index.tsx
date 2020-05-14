@@ -34,14 +34,9 @@ export default function TabsPage({
       </div>
       <Switch>
         {subPages.map(({ blocks, name }) => (
-          <Route
-            key={name}
-            exact
-            path={`${match.path}/${normalize(name)}`}
-            render={() => (
-              <BlockList {...blockListProps} blocks={blocks} prefix={`${prefix}.subPages`} />
-            )}
-          />
+          <Route key={name} exact path={`${match.path}/${normalize(name)}`}>
+            <BlockList {...blockListProps} blocks={blocks} prefix={`${prefix}.subPages`} />
+          </Route>
         ))}
 
         <Redirect to={`${match.url}/${normalize(subPages[0].name)}`} />
