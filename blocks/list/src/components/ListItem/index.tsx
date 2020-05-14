@@ -30,8 +30,12 @@ export default function ListItem({ item }: ListItemProps): VNode {
 
   return (
     <ListItemWrapper actions={actions} className={styles.item} item={item} onClick={onItemClick}>
-      {icon && <Icon icon={icon} />}
-      {headerValue && <h4>{headerValue}</h4>}
+      {(icon || headerValue) && (
+        <div className={styles.header}>
+          {icon && <Icon icon={icon} />}
+          {headerValue && <h4>{headerValue}</h4>}
+        </div>
+      )}
       {fields.map((field) => {
         let value;
 
