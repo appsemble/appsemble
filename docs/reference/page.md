@@ -60,7 +60,8 @@ updated.
 **blocks[].roles**: The list of roles that may view or use this block. If the user does not have the
 correct roles, the block will not be visible.
 
-**blocks[].header**: A header to display above the block.
+**blocks[].header**: A header to display above the block. This supports
+[remappers](/guide/remappers).
 
 > Note: This field is not required if `type` is set to `flow`.
 
