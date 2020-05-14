@@ -10,6 +10,14 @@ import Organization from './Organization';
  * the primary key..
  */
 export default class BlockAsset extends Model {
+  id: number;
+
+  content: Buffer;
+
+  filename: string;
+
+  mime: string;
+
   static initialize(sequelize: Sequelize): void {
     BlockAsset.init(
       {

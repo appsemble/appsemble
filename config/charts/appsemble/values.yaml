@@ -53,6 +53,7 @@ global:
 
 postgresql:
   fullnameOverride: appsemble-postgresql
+
   persistence:
     enabled: false
 

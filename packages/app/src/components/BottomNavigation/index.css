@@ -1,8 +1,10 @@
 :global(.bottom-nav) {
   background-color: hsl(0, 0%, 100%);
   bottom: 0;
+  height: 109px;
   margin-bottom: 0;
   position: fixed;
+  white-space: nowrap;
   width: 100%;
 }
 

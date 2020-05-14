@@ -3,6 +3,12 @@ import { DataTypes, Model, Sequelize } from 'sequelize';
 import Organization from './Organization';
 
 export default class OrganizationBlockStyle extends Model {
+  OrganizationId: string;
+
+  block: string;
+
+  style: string;
+
   static initialize(sequelize: Sequelize): void {
     OrganizationBlockStyle.init(
       {

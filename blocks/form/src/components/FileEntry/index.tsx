@@ -1,4 +1,3 @@
-/** @jsx h */
 import { FormattedMessage } from '@appsemble/preact';
 import classNames from 'classnames';
 import { Component, Fragment, h, VNode } from 'preact';

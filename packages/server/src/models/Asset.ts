@@ -4,6 +4,16 @@ import App from './App';
 import User from './User';
 
 export default class Asset extends Model {
+  id: number;
+
+  mime: string;
+
+  filename: string;
+
+  data: Buffer;
+
+  UserId: string;
+
   static initialize(sequelize: Sequelize): void {
     Asset.init(
       {

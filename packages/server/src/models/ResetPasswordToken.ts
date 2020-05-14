@@ -3,6 +3,12 @@ import { DataTypes, Model, Sequelize } from 'sequelize';
 import User from './User';
 
 export default class ResetPasswordToken extends Model {
+  token: string;
+
+  UserId: string;
+
+  User: User;
+
   static initialize(sequelize: Sequelize): void {
     ResetPasswordToken.init(
       {

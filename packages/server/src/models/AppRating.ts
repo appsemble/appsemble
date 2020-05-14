@@ -4,6 +4,20 @@ import App from './App';
 import User from './User';
 
 export default class AppRating extends Model {
+  rating: number;
+
+  description: string;
+
+  AppId: number;
+
+  UserId: string;
+
+  User: User;
+
+  created: Date;
+
+  updated: Date;
+
   static initialize(sequelize: Sequelize): void {
     AppRating.init(
       {
@@ -22,7 +36,7 @@ export default class AppRating extends Model {
         },
         UserId: {
           primaryKey: true,
-          type: DataTypes.INTEGER,
+          type: DataTypes.UUID,
           unique: 'UniqueRatingIndex',
           allowNull: false,
         },

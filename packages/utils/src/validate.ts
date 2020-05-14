@@ -4,6 +4,7 @@ import ZSchema from 'z-schema';
 const validator = new ZSchema({
   breakOnFirstError: false,
   reportPathAsArray: true,
+  ignoreUnknownFormats: true,
 });
 
 export class SchemaValidationError extends Error {

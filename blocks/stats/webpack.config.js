@@ -1,1 +1,1 @@
-export { default } from '../../config/webpack/block';
+module.exports = require('../../config/webpack/block');

@@ -105,7 +105,7 @@ pages:
     roles: []
     blocks:
       - type: data-loader
-        version: 0.12.5
+        version: 0.12.8
         actions:
           onLoad:
             type: resource.query
@@ -114,7 +114,7 @@ pages:
           emit:
             data: data
       - type: table
-        version: 0.12.5
+        version: 0.12.8
         parameters:
           fields:
             - name: firstName
@@ -129,4 +129,54 @@ pages:
         events:
           listen:
             data: data
+```
+
+## Customizing the content of a notification
+
+By default the content of the notifications Appsemble sends looks something like this:
+
+```yaml
+title: person
+content: Updated person 123
+```
+
+This can be customized by defining an object called `data` with the properties `title` and `content`
+in the notification hook object. The values can be either regular strings if they don’t have to be
+dynamic, or a valid [remapper definition](remappers).
+
+For example:
+
+```yaml
+resources:
+  person:
+    schema:
+      type: object
+      properties:
+        firstName:
+          type: string
+        lastName:
+          type: string
+    create:
+      hooks:
+        notification:
+          to:
+            - Admin
+          subscribe: both
+          data:
+            title: A new person has been added
+            content:
+              - string.format:
+                  template: Their name is {first} {last}
+                  values:
+                    first:
+                      - prop: firstName
+                    last:
+                      - prop: lastName
+```
+
+With the above example, when a new person is added the following notification will be sent:
+
+```yaml
+title: A new person has been added
+content: Their name is John Doe
 ```

@@ -1,6 +1,6 @@
 import { ErrorHandler, MessagesProvider } from '@appsemble/react-components';
 import React from 'react';
-import Helmet from 'react-helmet';
+import { Helmet } from 'react-helmet';
 import { IntlProvider } from 'react-intl';
 import { BrowserRouter, Redirect, Route, Switch } from 'react-router-dom';
 
@@ -55,7 +55,9 @@ export default function App(): React.ReactElement {
                   <Route exact path="/verify">
                     <VerifyEmail />
                   </Route>
-                  <Route component={OAuth2Connect} exact path="/oauth2/:provider/callback" />
+                  <Route exact path="/oauth2/:provider/callback">
+                    <OAuth2Connect />
+                  </Route>
                   <AnonymousRoute exact path="/login">
                     <Login />
                   </AnonymousRoute>

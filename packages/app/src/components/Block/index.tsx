@@ -1,6 +1,6 @@
 import { useMessages } from '@appsemble/react-components';
 import type { Block as BlockType } from '@appsemble/types';
-import { baseTheme, normalize, normalizeBlockName } from '@appsemble/utils';
+import { baseTheme, normalize, normalizeBlockName, remap } from '@appsemble/utils';
 import classNames from 'classnames';
 import type { EventEmitter } from 'events';
 import React from 'react';
@@ -160,6 +160,7 @@ export default function Block({
       definition.theme || pageTheme || block.theme ? `${bulmaBase}?${urlParams}` : bulmaBase;
 
     const utils = {
+      remap,
       showMessage: push,
       addCleanup(fn: Function) {
         cleanups.current.push(fn);

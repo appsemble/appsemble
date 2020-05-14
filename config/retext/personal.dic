@@ -56,12 +56,14 @@ OpenAPI
 OpenID
 OpenStreetMap
 Preact
+remapper/mapper
 Redux
 SDK
 SMTP
 SSL
 Stylelint
 util/kitten
+UUID
 Vue
 Webpack
 YAML

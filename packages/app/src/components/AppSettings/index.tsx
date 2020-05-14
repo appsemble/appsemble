@@ -1,5 +1,5 @@
 import { Checkbox, FormComponent, Loader, useMessages } from '@appsemble/react-components';
-import type { ResourceHooks } from '@appsemble/types';
+import type { ResourceHooks, SubscriptionResponse } from '@appsemble/types';
 import axios from 'axios';
 import React from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -21,16 +21,6 @@ interface SubscriptionState {
   create?: ExtendedResourceHooks;
   update?: ExtendedResourceHooks;
   delete?: ExtendedResourceHooks;
-}
-
-interface SubscriptionResponse {
-  [type: string]: SubscriptionResponseResource;
-}
-
-interface SubscriptionResponseResource {
-  create: boolean;
-  update: boolean;
-  delete: boolean;
 }
 
 /**

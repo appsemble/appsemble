@@ -1,6 +1,5 @@
-/** @jsx h */
+import { useBlock } from '@appsemble/preact';
 import { Location } from '@appsemble/preact-components';
-import { remapData } from '@appsemble/utils';
 import { h, VNode } from 'preact';
 
 import iconUrl from '../../../../../themes/amsterdam/core/marker.svg';
@@ -14,22 +13,15 @@ import styles from './index.css';
  */
 export default function GeoCoordinatesRenderer({
   data,
-  field: { label, latitude, longitude },
-  value = {},
+  field,
   theme,
 }: RendererProps<GeoCoordinatesField>): VNode {
-  let lat: number;
-  let lng: number;
+  const { utils } = useBlock();
 
-  if (value) {
-    // Relative to value
-    lat = latitude ? remapData(latitude, value) : value.lat;
-    lng = longitude ? remapData(longitude, value) : value.lng;
-  } else {
-    // Relative to root
-    lat = remapData(latitude, data);
-    lng = remapData(longitude, data);
-  }
+  const label = utils.remap(field.label, data);
+  const value = utils.remap(field.name, data);
+  const lat = field.latitude ? utils.remap(field.latitude, value ?? data) : value.lat;
+  const lng = field.longitude ? utils.remap(field.longitude, value ?? data) : value.lng;
 
   return (
     <div className={styles.root}>

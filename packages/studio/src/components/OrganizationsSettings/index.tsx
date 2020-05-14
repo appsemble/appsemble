@@ -63,8 +63,8 @@ export default function OrganizationsSettings(): React.ReactElement {
   const [loading, setLoading] = React.useState(true);
   const [organizations, setOrganizations] = React.useState<LocalOrganization[]>([]);
   const [selectedOrganization, setSelectedOrganization] = React.useState('');
-  const [submittingRole, setSubmittingRole] = React.useState(0);
-  const [removingMember, setRemovingMember] = React.useState<number>();
+  const [submittingRole, setSubmittingRole] = React.useState<string>();
+  const [removingMember, setRemovingMember] = React.useState<string>();
   const [removingInvite, setRemovingInvite] = React.useState<Invite>();
 
   const onOrganizationChange = React.useCallback(
@@ -165,7 +165,7 @@ export default function OrganizationsSettings(): React.ReactElement {
   );
 
   const onChangeRole = React.useCallback(
-    async (event: React.ChangeEvent<HTMLSelectElement>, userId: number) => {
+    async (event: React.ChangeEvent<HTMLSelectElement>, userId: string) => {
       event.preventDefault();
       const role = event.target.value as Role;
       setSubmittingRole(userId);
@@ -205,7 +205,7 @@ export default function OrganizationsSettings(): React.ReactElement {
     [intl, organizations, push, selectedOrganization],
   );
 
-  const onRemoveMemberClick = React.useCallback(async (memberId: number) => {
+  const onRemoveMemberClick = React.useCallback(async (memberId: string) => {
     setRemovingMember(memberId);
   }, []);
 

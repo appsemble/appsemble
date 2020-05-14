@@ -87,12 +87,13 @@ export default function AppContext(): React.ReactElement {
               <CMS />
             </ProtectedRoute>
             <ProtectedRoute
-              component={Roles}
               exact
               organization={organization}
               path={`${match.path}/roles`}
               permission={permissions.EditApps}
-            />
+            >
+              <Roles />
+            </ProtectedRoute>
             <ProtectedRoute
               exact
               organization={organization}
