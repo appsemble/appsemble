@@ -8,7 +8,7 @@ import type { KoaContext } from '../types';
 import createJWTResponse from '../utils/createJWTResponse';
 
 export async function getUser(ctx: KoaContext): Promise<void> {
-  const { user } = ctx.state;
+  const { user } = ctx;
 
   const dbUser = await User.findOne({
     where: { id: user.id },
@@ -37,7 +37,7 @@ export async function getUser(ctx: KoaContext): Promise<void> {
 }
 
 export async function getUserOrganizations(ctx: KoaContext): Promise<void> {
-  const { user } = ctx.state;
+  const { user } = ctx;
 
   const dbUser = await User.findOne({
     where: { id: user.id },
@@ -57,7 +57,7 @@ export async function getUserOrganizations(ctx: KoaContext): Promise<void> {
 }
 
 export async function updateUser(ctx: KoaContext): Promise<void> {
-  const { user } = ctx.state;
+  const { user } = ctx;
   const { email, name } = ctx.request.body;
 
   const dbUser = await User.findOne({
@@ -94,7 +94,7 @@ export async function updateUser(ctx: KoaContext): Promise<void> {
 }
 
 export async function listEmails(ctx: KoaContext): Promise<void> {
-  const { user } = ctx.state;
+  const { user } = ctx;
 
   ctx.body = await EmailAuthorization.findAll({
     attributes: ['email', 'verified'],
@@ -105,8 +105,7 @@ export async function listEmails(ctx: KoaContext): Promise<void> {
 }
 
 export async function addEmail(ctx: KoaContext): Promise<void> {
-  const { mailer } = ctx;
-  const { user } = ctx.state;
+  const { mailer, user } = ctx;
   const { email } = ctx.request.body;
 
   const dbEmail = await EmailAuthorization.findOne({
@@ -141,7 +140,7 @@ export async function addEmail(ctx: KoaContext): Promise<void> {
 }
 
 export async function removeEmail(ctx: KoaContext): Promise<void> {
-  const { user } = ctx.state;
+  const { user } = ctx;
   const { email } = ctx.request.body;
 
   const dbUser = await User.findOne({
@@ -175,9 +174,9 @@ export async function removeEmail(ctx: KoaContext): Promise<void> {
 }
 
 export async function emailLogin(ctx: KoaContext): Promise<void> {
-  const { argv, state } = ctx;
+  const { argv, user } = ctx;
 
-  ctx.body = createJWTResponse(state.user.id, argv);
+  ctx.body = createJWTResponse(user.id, argv);
 }
 
 export async function refreshToken(ctx: KoaContext): Promise<void> {

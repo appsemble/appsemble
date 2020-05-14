@@ -15,7 +15,7 @@ interface Params {
 
 export async function registerOAuth2ClientCredentials(ctx: KoaContext): Promise<void> {
   const { body } = ctx.request;
-  const { user } = ctx.state;
+  const { user } = ctx;
 
   let expires;
   if (body.expires) {
@@ -48,7 +48,7 @@ export async function registerOAuth2ClientCredentials(ctx: KoaContext): Promise<
 }
 
 export async function listOAuth2ClientCredentials(ctx: KoaContext): Promise<void> {
-  const { user } = ctx.state;
+  const { user } = ctx;
 
   const credentials = await OAuth2ClientCredentials.findAll({
     attributes: ['created', 'description', 'id', 'expires', 'scopes'],
@@ -67,7 +67,7 @@ export async function listOAuth2ClientCredentials(ctx: KoaContext): Promise<void
 
 export async function deleteOAuth2ClientCredentials(ctx: KoaContext<Params>): Promise<void> {
   const { clientId } = ctx.params;
-  const { user } = ctx.state;
+  const { user } = ctx;
 
   const affectedRows = await OAuth2ClientCredentials.destroy({
     where: {
@@ -110,7 +110,7 @@ export async function getPendingOAuth2Profile(ctx: KoaContext): Promise<void> {
 export async function connectPendingOAuth2Profile(ctx: KoaContext): Promise<void> {
   const { argv } = ctx;
   const { code, provider } = ctx.request.body;
-  let { user } = ctx.state;
+  let { user } = ctx;
 
   const authorization = await OAuthAuthorization.findOne({
     where: { code, provider },

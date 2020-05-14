@@ -50,10 +50,9 @@ export async function getAssetById(ctx: KoaContext<Params>): Promise<void> {
 }
 
 export async function createAsset(ctx: KoaContext<Params>): Promise<void> {
-  const { request } = ctx;
+  const { request, user } = ctx;
   const { appId } = ctx.params;
   const { body, type } = request;
-  const { user } = ctx.state;
 
   const app = await App.findByPk(appId);
 

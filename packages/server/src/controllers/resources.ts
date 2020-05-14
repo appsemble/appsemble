@@ -151,7 +151,7 @@ async function verifyAppRole(
     return;
   }
 
-  const { user } = ctx.state;
+  const { user } = ctx;
   let { roles } = app.definition.resources[resourceType][action];
 
   if (!roles || !roles.length) {
@@ -297,7 +297,7 @@ export async function queryResources(ctx: KoaContext<Params>): Promise<void> {
 
   const query = generateQuery(ctx, { updatedHash, createdHash });
   const { appId, resourceType } = ctx.params;
-  const { user } = ctx.state;
+  const { user } = ctx;
 
   const app = await App.findByPk(appId, {
     ...(user && {
@@ -345,7 +345,7 @@ export async function queryResources(ctx: KoaContext<Params>): Promise<void> {
 
 export async function getResourceById(ctx: KoaContext<Params>): Promise<void> {
   const { appId, resourceId, resourceType } = ctx.params;
-  const { user } = ctx.state;
+  const { user } = ctx;
 
   const app = await App.findByPk(appId, {
     ...(user && {
@@ -580,7 +580,7 @@ async function processReferenceHooks(
 
 export async function createResource(ctx: KoaContext<Params>): Promise<void> {
   const { appId, resourceType } = ctx.params;
-  const { user } = ctx.state;
+  const { user } = ctx;
   const action = 'create';
 
   const app = await App.findByPk(appId, {
@@ -637,7 +637,7 @@ export async function createResource(ctx: KoaContext<Params>): Promise<void> {
 
 export async function updateResource(ctx: KoaContext<Params>): Promise<void> {
   const { appId, resourceId, resourceType } = ctx.params;
-  const { user } = ctx.state;
+  const { user } = ctx;
   const action = 'update';
 
   const app = await App.findByPk(appId, {
@@ -702,7 +702,7 @@ export async function updateResource(ctx: KoaContext<Params>): Promise<void> {
 
 export async function deleteResource(ctx: KoaContext<Params>): Promise<void> {
   const { appId, resourceId, resourceType } = ctx.params;
-  const { user } = ctx.state;
+  const { user } = ctx;
   const action = 'delete';
 
   const app = await App.findByPk(appId, {
