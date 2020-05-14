@@ -4,7 +4,7 @@ import axios from 'axios';
 import classNames from 'classnames';
 import * as React from 'react';
 import { FormattedMessage } from 'react-intl';
-import { Link, Redirect, RouteComponentProps, useHistory, useLocation } from 'react-router-dom';
+import { Link, Redirect, useHistory, useLocation, useParams } from 'react-router-dom';
 
 import useUser from '../../hooks/useUser';
 import styles from './index.css';
@@ -24,8 +24,8 @@ interface Profile extends UserInfo {
   profile: string;
 }
 
-export default function OAuth2Connect({ match }: RouteComponentProps<Params>): React.ReactElement {
-  const { provider } = match.params;
+export default function OAuth2Connect(): React.ReactElement {
+  const { provider } = useParams<Params>();
   const history = useHistory();
   const location = useLocation();
   const qs = useQuery();
