@@ -122,7 +122,7 @@ export default async function createServer({
         studioRouter,
         oauth2(argv),
       ]),
-      compose([apiMiddleware, appRouter]),
+      appRouter,
     ),
   );
 
