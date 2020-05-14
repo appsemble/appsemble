@@ -43,7 +43,7 @@ afterEach(async () => {
 it('should log requests', async () => {
   await request.get('/pizza');
   expect(logger.info).toHaveBeenCalledWith(
-    `${chalk.bold('GET')} https://example.com:1337/pizza — ${chalk.white('::ffff:127.0.0.1')}`,
+    `${chalk.bold('GET')} https://example.com:1337/pizza — ${chalk.white('127.0.0.1')}`,
   );
 });
 

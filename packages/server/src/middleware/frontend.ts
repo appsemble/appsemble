@@ -23,9 +23,9 @@ export default async function frontend(webpackConfigs: Configuration[]): Promise
   }
   const { default: koaWebpack } = await import('koa-webpack');
   const { default: webpack } = await import('webpack');
-  // @ts-ignore
+  // @ts-expect-error
   const { default: webpackConfigApp } = await import('../../../../config/webpack/app');
-  // @ts-ignore
+  // @ts-expect-error
   const { default: webpackConfigStudio } = await import('../../../../config/webpack/studio');
   const configApp = webpackConfigApp(null, { mode: 'development' });
   const configStudio = webpackConfigStudio(null, { mode: 'development' });

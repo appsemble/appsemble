@@ -134,8 +134,7 @@ export default function AppSettings(): React.ReactElement {
               <>
                 <FormattedMessage {...messages.pathDescription} />
                 <br />
-                {window.location.protocol}//{inputs.path}.{app.OrganizationId}.
-                {window.location.host}
+                {`${window.location.protocol}//${inputs.path}.${app.OrganizationId}.${window.location.host}`}
               </>
             }
             label={<FormattedMessage {...messages.path} />}

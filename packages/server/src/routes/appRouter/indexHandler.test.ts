@@ -179,6 +179,7 @@ beforeAll(async () => {
   const app = new Koa();
   app.use((ctx: KoaContext, next) => {
     Object.defineProperty(ctx, 'origin', { value: 'http://app.test.host.example' });
+    Object.defineProperty(ctx, 'hostname', { value: 'app.test.host.example' });
     ctx.state.render = async (name, params) => {
       templateName = name;
       templateParams = params;
