@@ -81,7 +81,7 @@ async function replaceFile(
 
 export function builder(yargs: Argv): Argv {
   return yargs.positional('increment', {
-    description: 'Wether to increment the minor or patch version',
+    description: 'Whether to increment the minor or patch version',
     choices: ['minor', 'patch'],
   });
 }
