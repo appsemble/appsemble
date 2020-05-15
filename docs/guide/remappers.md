@@ -52,6 +52,14 @@ Create a new object given some predefined mapper keys.
 
 A key / value pair object keys and remappers.
 
+### `static`
+
+Insert a static value.
+
+### Parameters
+
+The value to use.
+
 ### `prop`
 
 Get a property from an object.

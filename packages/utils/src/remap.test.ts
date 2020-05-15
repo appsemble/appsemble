@@ -103,6 +103,12 @@ const cases: TestCase[] = [
     ],
     expected: 'Date’s year: 1970',
   },
+  {
+    description: 'return a static value',
+    input: null,
+    mappers: [{ static: 'Hello world' }],
+    expected: 'Hello world',
+  },
 ];
 
 const tests = cases.map(
