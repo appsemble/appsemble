@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/scripts",
-  "version": "0.12.8",
+  "version": "0.13.0",
   "private": true,
   "homepage": "https://appsemble.dev",
   "bugs": "https://gitlab.com/appsemble/appsemble/issues",
@@ -12,7 +12,7 @@
   "license": "LGPL-3.0-or-later",
   "author": "Appsemble <info@appsemble.com> (https://appsemble.com)",
   "dependencies": {
-    "@appsemble/node-utils": "0.12.8",
+    "@appsemble/node-utils": "0.13.0",
     "chrome-launcher": "^0.13.2",
     "fs-extra": "^9.0.0",
     "globby": "^11.0.0",

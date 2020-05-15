@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/app",
-  "version": "0.12.8",
+  "version": "0.13.0",
   "private": true,
   "homepage": "https://appsemble.dev",
   "bugs": "https://gitlab.com/appsemble/appsemble/issues",
@@ -12,10 +12,10 @@
   "license": "LGPL-3.0-or-later",
   "author": "Appsemble <info@appsemble.com> (https://appsemble.com)",
   "dependencies": {
-    "@appsemble/react-components": "0.12.8",
-    "@appsemble/sdk": "0.12.8",
-    "@appsemble/types": "0.12.8",
-    "@appsemble/utils": "0.12.8",
+    "@appsemble/react-components": "0.13.0",
+    "@appsemble/sdk": "0.13.0",
+    "@appsemble/types": "0.13.0",
+    "@appsemble/utils": "0.13.0",
     "@browser-logos/chrome": "^1.0.17",
     "@browser-logos/edge": "^2.0.4",
     "@browser-logos/firefox": "^3.0.8",

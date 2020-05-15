@@ -1,6 +1,6 @@
 {
   "name": "create-appsemble",
-  "version": "0.12.8",
+  "version": "0.13.0",
   "private": true,
   "homepage": "https://appsemble.dev",
   "bugs": "https://gitlab.com/appsemble/appsemble/issues",
@@ -20,7 +20,7 @@
     "prepack": "tsc -p tsconfig.build.json"
   },
   "dependencies": {
-    "@appsemble/node-utils": "0.12.8",
+    "@appsemble/node-utils": "0.13.0",
     "fs-extra": "^9.0.0",
     "inquirer": "^7.1.0",
     "type-fest": "^0.13.1",

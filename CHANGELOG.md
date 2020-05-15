@@ -7,6 +7,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.13.0] - 2020-05-15
+
 ### Added
 
 - App: Allow to proxy requests through the Appsemble API.
