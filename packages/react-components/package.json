@@ -21,6 +21,7 @@
     "@sentry/browser": "^5.15.5",
     "bulma-calendar": "^6.0.7",
     "classnames": "^2.2.6",
+    "date-fns": "^2.13.0",
     "leaflet": "~1.5.1",
     "react-intl": "^4.5.3",
     "react-router-dom": "^5.1.2",

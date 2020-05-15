@@ -16,7 +16,7 @@ export default async function checkRole(
   organizationId: string,
   permissions: string | string[],
 ): Promise<true> {
-  const { user } = ctx.state;
+  const { user } = ctx;
   if (!user) {
     throw Boom.unauthorized();
   }

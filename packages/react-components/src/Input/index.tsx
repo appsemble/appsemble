@@ -1,4 +1,5 @@
 import classNames from 'classnames';
+import { format } from 'date-fns';
 import * as React from 'react';
 
 import FormComponent from '../FormComponent';
@@ -37,7 +38,17 @@ type InputProps = Omit<React.ComponentPropsWithoutRef<typeof FormComponent>, 'ch
      *
      * This may be extended if necessary.
      */
-    type?: 'color' | 'email' | 'number' | 'password' | 'search' | 'tel' | 'text' | 'url';
+    type?:
+      | 'color'
+      | 'email'
+      | 'number'
+      | 'password'
+      | 'search'
+      | 'tel'
+      | 'text'
+      | 'url'
+      | 'date'
+      | 'datetime-local';
   };
 
 /**
@@ -65,7 +76,15 @@ export default React.forwardRef<HTMLInputElement, InputProps>(
     const handleChange = React.useCallback(
       (event: React.ChangeEvent<HTMLInputElement>) => {
         const { target } = event;
-        onChange(event, type === 'number' ? target.valueAsNumber : target.value);
+        let newValue: number | string = target.value;
+        if (type === 'number') {
+          newValue = target.valueAsNumber;
+        } else if (type === 'date' || type === 'datetime-local') {
+          newValue = new Date(
+            target.valueAsNumber + new Date().getTimezoneOffset() * 60000,
+          ).toISOString();
+        }
+        onChange(event, newValue);
       },
       [onChange, type],
     );
@@ -88,7 +107,11 @@ export default React.forwardRef<HTMLInputElement, InputProps>(
           onChange={handleChange}
           required={required}
           type={type}
-          value={value}
+          value={
+            type === 'datetime-local'
+              ? format(new Date((value as number) || Date.now()), "yyyy-MM-dd'T'HH:mm:ss.SSS")
+              : value
+          }
         />
         {iconLeft && <Icon className="is-left" icon={iconLeft} />}
         {control && React.cloneElement(control, { className: 'is-right' })}
