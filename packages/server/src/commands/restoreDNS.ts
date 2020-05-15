@@ -1,3 +1,4 @@
+import { URL } from 'url';
 import type { Argv } from 'yargs';
 
 import { initDB } from '../models';
