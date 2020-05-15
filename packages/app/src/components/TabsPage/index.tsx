@@ -1,4 +1,4 @@
-import type { TabsPage as TabsPageType } from '@appsemble/types';
+import type { TabsPageDefinition } from '@appsemble/types';
 import { normalize } from '@appsemble/utils';
 import classNames from 'classnames';
 import React from 'react';
@@ -7,7 +7,7 @@ import { Link, Redirect, Route, Switch, useRouteMatch } from 'react-router-dom';
 import BlockList from '../BlockList';
 
 type TabsPageProps = Omit<React.ComponentPropsWithoutRef<typeof BlockList>, 'blocks'> &
-  Pick<TabsPageType, 'subPages'>;
+  Pick<TabsPageDefinition, 'subPages'>;
 
 export default function TabsPage({
   subPages,

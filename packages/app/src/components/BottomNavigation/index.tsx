@@ -1,5 +1,5 @@
 import { Icon } from '@appsemble/react-components';
-import type { Page } from '@appsemble/types';
+import type { PageDefinition } from '@appsemble/types';
 import { normalize } from '@appsemble/utils';
 import * as React from 'react';
 import { NavLink } from 'react-router-dom';
@@ -7,7 +7,7 @@ import { NavLink } from 'react-router-dom';
 import styles from './index.css';
 
 interface BottomNavigationProps {
-  pages: Page[];
+  pages: PageDefinition[];
 }
 
 /**

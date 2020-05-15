@@ -1,7 +1,7 @@
-import type { ActionDefinition, AppDefinition, Block } from '@appsemble/types';
+import type { ActionDefinition, AppDefinition, BlockDefinition } from '@appsemble/types';
 
 export interface BlockMap {
-  [path: string]: Block;
+  [path: string]: BlockDefinition;
 }
 
 /**
@@ -15,7 +15,7 @@ export default function getAppBlocks(definition: AppDefinition): BlockMap {
   const blocks: BlockMap = {};
 
   definition.pages.forEach((page, pageIndex) => {
-    const parseBlocks = (block: Block, prefix: string): void => {
+    const parseBlocks = (block: BlockDefinition, prefix: string): void => {
       blocks[prefix] = block;
       if (!block.actions) {
         return;

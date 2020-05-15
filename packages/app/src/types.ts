@@ -2,7 +2,7 @@ import type { Action } from '@appsemble/sdk';
 import type {
   ActionDefinition,
   AppDefinition,
-  Block,
+  BlockDefinition,
   BlockManifest,
   UserInfo,
 } from '@appsemble/types';
@@ -55,7 +55,7 @@ declare global {
 
 export interface ShowDialogParams {
   actionCreators: { [key: string]: () => Action };
-  blocks: Block[];
+  blocks: BlockDefinition[];
   closable?: boolean;
   data: any;
   close: () => void;
