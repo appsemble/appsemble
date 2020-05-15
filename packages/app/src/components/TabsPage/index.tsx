@@ -10,6 +10,7 @@ type TabsPageProps = Omit<React.ComponentPropsWithoutRef<typeof BlockList>, 'blo
   Pick<TabsPageDefinition, 'subPages'>;
 
 export default function TabsPage({
+  prefix,
   subPages,
   ...blockListProps
 }: TabsPageProps): React.ReactElement {
@@ -34,7 +35,7 @@ export default function TabsPage({
       <Switch>
         {subPages.map(({ blocks, name }) => (
           <Route key={name} exact path={`${match.path}/${normalize(name)}`}>
-            <BlockList {...blockListProps} blocks={blocks} />
+            <BlockList {...blockListProps} blocks={blocks} prefix={`${prefix}.subPages`} />
           </Route>
         ))}
 

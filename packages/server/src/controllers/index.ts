@@ -9,6 +9,7 @@ export * from './openId';
 export * from './blocks';
 export * from './health';
 export * from './organizations';
+export * from './proxy';
 export * from './resources';
 export * from './templates';
 export * from './user';

@@ -9,7 +9,7 @@ pages:
         version: 0.12.8
         actions:
           onLoad:
-            url: https://cors-anywhere.herokuapp.com/https://date.nager.at/Api/v2/NextPublicHolidays/NL
+            url: https://date.nager.at/Api/v2/NextPublicHolidays/NL
             type: request
         events:
           emit:
@@ -34,7 +34,7 @@ pages:
         version: 0.12.8
         actions:
           onLoad:
-            url: https://cors-anywhere.herokuapp.com/https://date.nager.at/Api/v2/NextPublicHolidays/US
+            url: https://date.nager.at/Api/v2/NextPublicHolidays/US
             type: request
         events:
           emit:
@@ -57,7 +57,7 @@ pages:
         version: 0.12.8
         actions:
           onLoad:
-            url: https://cors-anywhere.herokuapp.com/https://date.nager.at/Api/v2/NextPublicHolidays/DE
+            url: https://date.nager.at/Api/v2/NextPublicHolidays/DE
             type: request
         events:
           emit:
@@ -82,7 +82,7 @@ pages:
         version: 0.12.8
         actions:
           onLoad:
-            url: https://cors-anywhere.herokuapp.com/https://date.nager.at/Api/v2/NextPublicHolidays/ES
+            url: https://date.nager.at/Api/v2/NextPublicHolidays/ES
             type: request
         events:
           emit:

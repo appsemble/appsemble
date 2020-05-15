@@ -9,6 +9,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
+- App: Allow to proxy requests through the Appsemble API.
 - Appsemble: Add support for running `npx appsemble`.
 - Block(`detail-viewer`): Implement remappers.
 - Block(`list`): Add `icon` property. This can be used to display icons next to the header.
@@ -18,6 +19,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Changed
 
+- App: Proxy requests through the Appsemble API by default.
 - App: The `remap` property of actions now uses the new remapper functionality.
 - Block(`list`): Replace `name` with `value`.
 - Block(`list`): Apply remapper to `value` and `label`.

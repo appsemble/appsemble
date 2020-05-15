@@ -5,6 +5,7 @@ import type { MakeActionParameters } from '../../types';
 
 export default function dialog({
   definition,
+  prefix,
   showDialog,
 }: MakeActionParameters<DialogActionDefinition>): BaseAction<'dialog'> {
   return {
@@ -36,6 +37,7 @@ export default function dialog({
             close();
           },
           fullscreen: definition.fullscreen,
+          prefix,
           title: definition.title,
         });
       });

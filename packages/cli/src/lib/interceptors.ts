@@ -42,6 +42,10 @@ export function requestLogger(config: AxiosRequestConfig): AxiosRequestConfig {
  */
 export function responseLogger(response: AxiosResponse): AxiosResponse {
   logger.info(`Success ${response.config.method.toUpperCase()} ${axios.getUri(response.config)}`);
-  logger.silly(`Response body: ${JSON.stringify(response.data)}`);
+  if (response.data instanceof Stream) {
+    logger.silly('Response body: Stream');
+  } else {
+    logger.silly(`Response body: ${JSON.stringify(response.data)}`);
+  }
   return response;
 }
