@@ -93,7 +93,14 @@ export async function handler({ increment }: Args): Promise<void> {
   const version = semver.inc(pkg.version, increment);
   logger.info(`New version: ${version}`);
   const paths = await globby(
-    ['apps/*/app.yaml', 'config/charts/*/Chart.yaml', 'docs/*.md', 'docs/**/*.md'],
+    [
+      'apps/*/app.yaml',
+      'config/charts/*/Chart.yaml',
+      'docs/*.md',
+      'docs/**/*.md',
+      'docs/*.mdx',
+      'docs/**/*.mdx',
+    ],
     { absolute: true, gitignore: true },
   );
   const templateDir = 'packages/create-appsemble/templates';
