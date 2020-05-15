@@ -1,7 +1,7 @@
-import type { Context } from 'koa';
 import sharp from 'sharp';
 
-import getDefaultIcon from '../utils/getDefaultIcon';
+import type { KoaContext } from '../types';
+import readAsset from '../utils/readAsset';
 
 interface ServeIconOptions {
   background?: string;
@@ -12,11 +12,11 @@ interface ServeIconOptions {
 }
 
 export default async function serveIcon(
-  ctx: Context,
+  ctx: KoaContext,
   { background, format, height, icon, width }: ServeIconOptions,
 ): Promise<void> {
   // Allow icon to be null.
-  const finalIcon = icon || getDefaultIcon();
+  const finalIcon = icon || (await readAsset('appsemble.svg'));
   let img = sharp(finalIcon);
   const metadata = await img.metadata();
   // SVG images can be resized with a density much better than its metadata specified.

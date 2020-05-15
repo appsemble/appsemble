@@ -13,23 +13,6 @@ export interface UserEmail {
   verified: boolean;
 }
 
-/**
- * A response for a login token request
- */
-export interface TokenResponse {
-  /**
-   * The bearer access token to use for authenticating requests.
-   */
-  // eslint-disable-next-line camelcase
-  access_token: string;
-
-  /**
-   * A refresh token for getting a new access token.
-   */
-  // eslint-disable-next-line camelcase
-  refresh_token: string;
-}
-
 export interface OAuth2ClientCredentials {
   $created?: string;
   id: string;
@@ -42,7 +25,7 @@ export interface OAuth2ClientCredentials {
 export type Role = 'Owner' | 'Maintainer' | 'AppEditor' | 'Member';
 
 export interface Member {
-  id: number;
+  id: string;
   name?: string;
   primaryEmail?: string;
   role: Role;
@@ -70,4 +53,12 @@ declare global {
       sentryDsn: string;
     };
   }
+}
+
+export interface NamedEventTarget {
+  name?: string;
+}
+
+export interface NamedEvent<T extends NamedEventTarget = NamedEventTarget> {
+  target: T;
 }

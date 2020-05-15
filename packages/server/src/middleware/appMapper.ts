@@ -1,10 +1,11 @@
 import isIp from 'is-ip';
-import type { Middleware } from 'koa';
+
+import type { KoaMiddleware } from '../types';
 
 export default function appMapper(
-  platformMiddleware: Middleware,
-  appMiddleware: Middleware,
-): Middleware {
+  platformMiddleware: KoaMiddleware,
+  appMiddleware: KoaMiddleware,
+): KoaMiddleware {
   return async (ctx, next) => {
     const { argv, hostname } = ctx;
 

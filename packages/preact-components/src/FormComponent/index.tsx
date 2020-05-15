@@ -1,4 +1,3 @@
-/** @jsx h */
 import type { IconName } from '@fortawesome/fontawesome-common-types';
 import classNames from 'classnames';
 import { ComponentChildren, h, VNode } from 'preact';

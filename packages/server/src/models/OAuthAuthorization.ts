@@ -1,8 +1,26 @@
-import { DataTypes, Model, Sequelize } from 'sequelize';
+import { DataTypes, HasOneCreateAssociationMixin, Model, Sequelize } from 'sequelize';
 
 import User from './User';
 
 export default class OAuthAuthorization extends Model {
+  id: string;
+
+  provider: string;
+
+  token: string;
+
+  expiresAt: Date;
+
+  refreshToken: string;
+
+  code: string;
+
+  UserId: string;
+
+  User: string;
+
+  createUser: HasOneCreateAssociationMixin<User>;
+
   static initialize(sequelize: Sequelize): void {
     OAuthAuthorization.init(
       {

@@ -133,4 +133,22 @@ export default {
       },
     },
   },
+  '/blocks/@{organizationId}/{blockId}/versions/{blockVersion}/icon': {
+    parameters: [
+      { $ref: '#/components/parameters/organizationId' },
+      { $ref: '#/components/parameters/blockId' },
+      { $ref: '#/components/parameters/blockVersion' },
+    ],
+    get: {
+      tags: ['block'],
+      description: 'Get the icon of a block version.',
+      operationId: 'getBlockIcon',
+      responses: {
+        200: {
+          description: 'The icon that represents the block.',
+          // $ref: '#/components/responses/blockVersion',
+        },
+      },
+    },
+  },
 };

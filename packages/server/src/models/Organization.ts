@@ -1,4 +1,11 @@
-import { DataTypes, Model, Sequelize } from 'sequelize';
+import {
+  DataTypes,
+  HasManyAddAssociationMixin,
+  HasManyHasAssociationMixin,
+  HasManyRemoveAssociationMixin,
+  Model,
+  Sequelize,
+} from 'sequelize';
 
 import App from './App';
 import Member from './Member';
@@ -7,6 +14,28 @@ import OrganizationInvite from './OrganizationInvite';
 import User from './User';
 
 export default class Organization extends Model {
+  id: string;
+
+  name: string;
+
+  coreStyle: string;
+
+  sharedStyle: string;
+
+  OrganizationBlockStyles: OrganizationBlockStyle[];
+
+  Member: Member;
+
+  Users: User[];
+
+  OrganizationInvites: OrganizationInvite[];
+
+  addUser: HasManyAddAssociationMixin<User, any>;
+
+  hasUser: HasManyHasAssociationMixin<User, string>;
+
+  removeUser: HasManyRemoveAssociationMixin<User, string>;
+
   static initialize(sequelize: Sequelize): void {
     Organization.init(
       {

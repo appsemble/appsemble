@@ -5,6 +5,20 @@ import ResourceSubscription from './ResourceSubscription';
 import User from './User';
 
 export default class Resource extends Model {
+  id: number;
+
+  type: string;
+
+  data: any;
+
+  created: Date;
+
+  updated: Date;
+
+  UserId: string;
+
+  User: User;
+
   static initialize(sequelize: Sequelize): void {
     Resource.init(
       {

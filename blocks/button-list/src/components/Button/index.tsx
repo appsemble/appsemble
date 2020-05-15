@@ -1,4 +1,3 @@
-/** @jsx h */
 import { Icon } from '@appsemble/preact-components';
 import type { Action } from '@appsemble/sdk';
 import classNames from 'classnames';

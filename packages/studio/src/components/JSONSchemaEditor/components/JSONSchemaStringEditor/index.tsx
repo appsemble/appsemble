@@ -1,59 +1,18 @@
 import { Input } from '@appsemble/react-components';
-import type { OpenAPIV3 } from 'openapi-types';
 import * as React from 'react';
 
-interface JSONSchemaStringEditorProps {
-  /**
-   * Whether or not the editor is disabled.
-   *
-   * This value is recursively passed down to all child inputs.
-   */
-  disabled?: boolean;
-
-  /**
-   * The name of the property thas is being rendered.
-   *
-   * The name is determined by the parent schema. It is used for recursion.
-   */
-  name?: string;
-
-  /**
-   * Whether or not the property is required.
-   *
-   * This is determined by the parent schema. It is used for recursion.
-   */
-  required?: boolean;
-
-  /**
-   * The handler that is called whenever a value changes.
-   */
-  onChange: (name: any, value?: any) => void;
-
-  /**
-   * The properties of the schema object.
-   */
-  schema: OpenAPIV3.SchemaObject;
-
-  /**
-   * The label rendered above the input field.
-   */
-  label: string | React.ReactElement;
-
-  /**
-   * The value used to populate the editor
-   */
-  value: string | number | string[];
-}
+import type { CommonJSONSchemaEditorProps } from '../../types';
+import JSONSchemaLabel from '../JSONSchemaLabel';
 
 export default function JSONSchemaStringEditor({
   disabled,
-  label,
   name,
   onChange,
+  prefix,
   required,
   schema,
   value = '',
-}: JSONSchemaStringEditorProps): React.ReactElement {
+}: CommonJSONSchemaEditorProps<number | string>): React.ReactElement {
   let type: React.ComponentPropsWithoutRef<typeof Input>['type'] = 'text';
 
   if (schema.type === 'integer' || schema.type === 'number') {
@@ -72,7 +31,7 @@ export default function JSONSchemaStringEditor({
     <Input
       disabled={disabled}
       help={schema.description}
-      label={label}
+      label={<JSONSchemaLabel name={name} prefix={prefix} schema={schema} />}
       max={schema.maximum}
       maxLength={schema.maxLength}
       min={schema.minimum}

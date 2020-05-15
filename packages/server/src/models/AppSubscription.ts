@@ -5,6 +5,22 @@ import ResourceSubscription from './ResourceSubscription';
 import User from './User';
 
 export default class AppSubscription extends Model {
+  id: number;
+
+  endpoint: string;
+
+  p256dh: string;
+
+  auth: string;
+
+  App: App;
+
+  UserId: string;
+
+  User: User;
+
+  ResourceSubscriptions: ResourceSubscription[];
+
   static initialize(sequelize: Sequelize): void {
     AppSubscription.init(
       {

@@ -1,7 +1,13 @@
 const path = require('path');
 const restricted = require('eslint-restricted-globals');
 
-const configs = [path.join(__dirname, 'config/**'), '*.config.js', '.*rc.js', '**/jest.setup.ts'];
+const configs = [
+  path.join(__dirname, 'config/**'),
+  '*.config.js',
+  '.*rc.js',
+  '**/jest.setup.ts',
+  '**/__mocks__/**',
+];
 const tests = ['**/*.test.{js,ts,tsx}'];
 
 module.exports = {
@@ -66,6 +72,7 @@ module.exports = {
     'react/jsx-no-useless-fragment': 'error',
     'react/jsx-props-no-spreading': 'off',
     'react/jsx-sort-props': 'error',
+    'react/react-in-jsx-scope': 'off',
     'simple-import-sort/sort': 'error',
     'sort-destructure-keys/sort-destructure-keys': 'error',
     'jsx-a11y/label-has-associated-control': 'off',
@@ -76,12 +83,6 @@ module.exports = {
     'react/state-in-constructor': ['error', 'never'],
   },
   overrides: [
-    {
-      files: ['packages/server/src/migrations/**'],
-      rules: {
-        'filenames/match-regex': 'off',
-      },
-    },
     {
       files: ['**/*.ts', '**/*.tsx'],
       plugins: ['@typescript-eslint'],
@@ -109,6 +110,16 @@ module.exports = {
                 message: 'Use ComponentPropsWithoutRef instead',
                 fixWith: 'ComponentPropsWithoutRef',
               },
+              Context: {
+                message:
+                  'The builtin Koa Context type is too loose. Use the custom KoaContext instead.',
+                fixWith: 'KoaContext',
+              },
+              Middleware: {
+                message:
+                  'The builtin Koa Middleware type is too loose. Use the custom KoaMiddleware instead.',
+                fixWith: 'KoaMiddleware',
+              },
             },
           },
         ],
@@ -127,6 +138,12 @@ module.exports = {
         '@typescript-eslint/no-var-requires': 'error',
         '@typescript-eslint/prefer-namespace-keyword': 'error',
         '@typescript-eslint/prefer-optional-chain': 'error',
+      },
+    },
+    {
+      files: ['packages/server/src/migrations/**'],
+      rules: {
+        'filenames/match-regex': 'off',
       },
     },
     {

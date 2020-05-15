@@ -1,5 +1,3 @@
-/** @jsx h */
-
 import type { BulmaColor } from '@appsemble/sdk';
 import classNames from 'classnames';
 import { h, VNode } from 'preact';

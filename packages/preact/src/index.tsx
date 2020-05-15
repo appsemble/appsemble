@@ -1,4 +1,3 @@
-/** @jsx h */
 import { bootstrap as sdkBootstrap, BootstrapParams } from '@appsemble/sdk';
 import IntlMessageFormat from 'intl-messageformat';
 import { ComponentType, createContext, Fragment, h, render, VNode } from 'preact';

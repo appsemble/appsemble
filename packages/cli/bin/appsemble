@@ -1,6 +1,0 @@
-#!/usr/bin/env node
-require('@babel/register')({
-  extensions: ['.js', '.ts'],
-});
-
-require('../src/main').default(process.argv.slice(2));

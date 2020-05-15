@@ -33,7 +33,9 @@ export default function Main(): React.ReactElement {
       defaultPath = path;
     }
     return (
-      <Route key={path} exact path={path} render={(props) => <Page page={page} {...props} />} />
+      <Route key={path} exact path={path}>
+        <Page page={page} />
+      </Route>
     );
   });
 

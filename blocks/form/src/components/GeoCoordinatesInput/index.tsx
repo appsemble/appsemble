@@ -1,4 +1,3 @@
-/** @jsx h */
 import 'leaflet/dist/leaflet.css';
 
 import { BlockProps, withBlock } from '@appsemble/preact';

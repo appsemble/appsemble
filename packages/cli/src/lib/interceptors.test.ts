@@ -2,6 +2,7 @@ import { logger } from '@appsemble/node-utils';
 import axios, { AxiosInstance } from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import FormData from 'form-data';
+import { Readable } from 'stream';
 
 import { formData, requestLogger, responseLogger } from './interceptors';
 
@@ -62,6 +63,15 @@ describe('requestLogger', () => {
     await instance.post('/', {});
     expect(logger.info).toHaveBeenCalledWith('Start POST /');
     expect(logger.silly).toHaveBeenCalledWith('Request body: {}');
+  });
+
+  it('should log streams', async () => {
+    jest.spyOn(logger, 'info');
+    jest.spyOn(logger, 'silly');
+    const stream = new Readable();
+    await instance.post('/', stream);
+    expect(logger.info).toHaveBeenCalledWith('Start POST /');
+    expect(logger.silly).toHaveBeenCalledWith('Request body: Stream');
   });
 });
 

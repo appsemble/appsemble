@@ -1,4 +1,3 @@
-/** @jsx h */
 import type { Action } from '@appsemble/sdk';
 import { ComponentChildren, h, VNode } from 'preact';
 

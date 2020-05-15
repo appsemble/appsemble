@@ -69,6 +69,7 @@ export default function BlockList({
   }, [blocks]);
 
   const blockList = filterBlocks(definition.security, blocks, role);
+
   const list = blockList.map((block, index) => {
     const content = (
       <Block
