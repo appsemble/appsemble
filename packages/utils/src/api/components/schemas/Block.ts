@@ -4,6 +4,7 @@ export default {
   type: 'object',
   description: 'A block that is displayed on a page.',
   required: ['type', 'version'],
+  additionalProperties: true,
   properties: {
     theme: {
       $ref: '#/components/schemas/Theme',
@@ -26,12 +27,23 @@ export default {
       $ref: '#/components/schemas/BlockVersion/properties/version',
       description: 'The block version to use.',
     },
-    header: {
-      type: 'string',
-      minLength: 1,
-      maxLength: 200,
-      description: 'An optional header to render above the block.',
-    },
+    // XXX: Reimplement this and remove additionalProperties once remappers have defined types.
+    // anyOf: [
+    //   {
+    //     header: {
+    //       type: 'string',
+    //       minLength: 1,
+    //       maxLength: 200,
+    //       description: 'An optional header to render above the block.',
+    //     },
+    //   },
+    //   {
+    //     header: {
+    //       type: 'array',
+    //       description: 'An optional header to render above the block.',
+    //     },
+    //   },
+    // ],
     roles: {
       type: 'array',
       description: `The list of roles that are allowed to view this block.

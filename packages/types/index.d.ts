@@ -170,6 +170,11 @@ export interface Remappers {
   };
 
   /**
+   * Use a static value.
+   */
+  static: any;
+
+  /**
    * Get a property from an object.
    */
   prop: string;
