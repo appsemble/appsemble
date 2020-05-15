@@ -4,6 +4,7 @@ import { isPast } from 'date-fns';
 import { verify } from 'jsonwebtoken';
 import querystring from 'querystring';
 import raw from 'raw-body';
+import { URL } from 'url';
 
 import {
   EmailAuthorization,

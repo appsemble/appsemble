@@ -192,7 +192,7 @@ export async function queryApps(ctx: KoaContext): Promise<void> {
 }
 
 export async function queryMyApps(ctx: KoaContext): Promise<void> {
-  const { user } = ctx.state;
+  const { user } = ctx;
 
   const memberships = await Member.findAll({
     attributes: ['OrganizationId'],

@@ -3,7 +3,6 @@ import {
   CardFooterButton,
   Form,
   Icon,
-  Input,
   Loader,
   Modal,
   Table,
@@ -12,14 +11,15 @@ import {
   useToggle,
 } from '@appsemble/react-components';
 import axios from 'axios';
-import type { OpenAPIV3 } from 'openapi-types';
 import React from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link, useHistory, useRouteMatch } from 'react-router-dom';
 
+import type { NamedEvent } from '../../types';
 import download from '../../utils/download';
 import { useApp } from '../AppContext';
 import HelmetIntl from '../HelmetIntl';
+import JSONSchemaEditor from '../JSONSchemaEditor';
 import styles from './index.css';
 import messages from './messages';
 
@@ -79,26 +79,14 @@ export default function ResourceTable(): React.ReactElement {
     }
   }, [appId, deletingResource, intl, push, resourceName, resources, warningDialog]);
 
-  const onChange = React.useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>, value: string) => {
-      const { name } = event.target;
-      if (name === 'id') {
-        return;
-      }
-      const { type } = app.definition.resources[resourceName].schema.properties[
-        name
-      ] as OpenAPIV3.SchemaObject;
-      setEditingResource({
-        ...editingResource,
-        [name]: type === 'object' || type === 'array' ? JSON.parse(value) : value,
-      });
-    },
-    [app, editingResource, resourceName],
-  );
+  const onChange = React.useCallback((_event: NamedEvent, value: any) => {
+    setEditingResource(value);
+  }, []);
 
   const submitCreate = React.useCallback(
     async (event: React.FormEvent) => {
       event.preventDefault();
+
       try {
         const { data } = await axios.post<Resource>(
           `/api/apps/${appId}/resources/${resourceName}`,
@@ -140,11 +128,11 @@ export default function ResourceTable(): React.ReactElement {
         history.push(match.url.replace(`/${mode}/${resourceId}`, ''));
 
         push({
-          body: intl.formatMessage(messages.createSuccess, { id: resourceId }),
+          body: intl.formatMessage(messages.updateSuccess, { id: resourceId }),
           color: 'primary',
         });
       } catch (e) {
-        push(intl.formatMessage(messages.createError));
+        push(intl.formatMessage(messages.updateError));
       }
     },
     [
@@ -312,49 +300,12 @@ export default function ResourceTable(): React.ReactElement {
           )
         }
       >
-        {keys.map((key) => {
-          const prop = (schema?.properties[key] || {}) as OpenAPIV3.SchemaObject;
-          let value = '';
-          let type: React.ComponentPropsWithoutRef<typeof Input>['type'] = 'text';
-
-          if (editingResource?.[key]) {
-            value = editingResource[key];
-            if (typeof value === 'object') {
-              value = JSON.stringify(value);
-            }
-          }
-
-          if (prop.type === 'integer' || prop.type === 'number') {
-            type = 'number';
-          } else if (prop.format === 'email') {
-            type = 'email';
-          } else if (prop.format === 'password') {
-            type = 'password';
-          }
-
-          return (
-            <Input
-              key={key}
-              disabled={prop.readOnly || key === 'id'}
-              label={
-                prop.title ? (
-                  <>
-                    {`${prop.title} `}
-                    <span className="has-text-weight-normal has-text-grey-light">({key})</span>
-                  </>
-                ) : (
-                  key
-                )
-              }
-              name={key}
-              onChange={onChange}
-              placeholder={prop.example}
-              required={schema?.required?.includes(key)}
-              type={type}
-              value={value}
-            />
-          );
-        })}
+        <JSONSchemaEditor
+          name="resource"
+          onChange={onChange}
+          schema={schema}
+          value={editingResource}
+        />
       </Modal>
       <Modal
         footer={

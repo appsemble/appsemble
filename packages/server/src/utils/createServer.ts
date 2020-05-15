@@ -23,6 +23,7 @@ import koasStatusCode from 'koas-status-code';
 import koasSwaggerUI from 'koas-swagger-ui';
 import path from 'path';
 import raw from 'raw-body';
+import { URL } from 'url';
 import type { Configuration } from 'webpack';
 
 import * as operations from '../controllers';
@@ -89,12 +90,6 @@ export default async function createServer({
         koasSpecHandler(),
         koasSwaggerUI({ url: '/explorer' }),
         koasSecurity(authentication(argv) as any),
-        () => (ctx, next) => {
-          if (ctx.users) {
-            [ctx.state.user] = Object.values(ctx.users);
-          }
-          return next();
-        },
         koasParameters(),
         koasBodyParser({
           parsers: {
@@ -128,7 +123,7 @@ export default async function createServer({
         studioRouter,
         oauth2(argv),
       ]),
-      compose([apiMiddleware, appRouter]),
+      appRouter,
     ),
   );
 

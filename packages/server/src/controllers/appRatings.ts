@@ -25,7 +25,7 @@ export async function submitAppRating(ctx: KoaContext<Params>): Promise<void> {
   const { appId: AppId } = ctx.params;
   const {
     user: { id: userId },
-  } = ctx.state;
+  } = ctx;
   const { description, rating } = ctx.request.body;
 
   const app = await App.findByPk(AppId);

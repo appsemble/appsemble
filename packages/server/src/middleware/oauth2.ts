@@ -1,4 +1,5 @@
 import Grant from 'grant';
+import { URL } from 'url';
 
 import type { Argv, KoaMiddleware } from '../types';
 
