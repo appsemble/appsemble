@@ -1,5 +1,6 @@
 import { AxiosTestInstance, createInstance } from 'axios-test-instance';
 import Koa, { ParameterizedContext } from 'koa';
+import { URL } from 'url';
 
 import { App, Organization } from '../models';
 import createServer from '../utils/createServer';
