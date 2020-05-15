@@ -17,6 +17,14 @@
   width: 100%;
 }
 
+.header {
+  margin-bottom: 10px;
+}
+
+.header > * {
+  display: inline;
+}
+
 .itemField {
   display: inline-block;
   margin-right: 5px;
