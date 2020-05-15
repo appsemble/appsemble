@@ -16,7 +16,7 @@ module.exports = (env, argv) => {
     module: {
       rules: [
         {
-          test: /\/messages\.tsx?$/,
+          test: /[\\/]messages\.tsx?$/,
           loader: 'babel-loader',
           options: {
             plugins: ['babel-plugin-react-intl-auto'],

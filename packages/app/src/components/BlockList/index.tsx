@@ -1,5 +1,5 @@
 import { Loader } from '@appsemble/react-components';
-import type { Block as BlockType, Security } from '@appsemble/types';
+import type { BlockDefinition, Security } from '@appsemble/types';
 import { checkAppRole } from '@appsemble/utils';
 import type { EventEmitter } from 'events';
 import React from 'react';
@@ -13,7 +13,7 @@ import { useUser } from '../UserProvider';
 import styles from './index.css';
 
 interface BlockListProps {
-  blocks: BlockType[];
+  blocks: BlockDefinition[];
   data?: any;
   ee: EventEmitter;
   extraCreators?: ActionCreators;
@@ -23,7 +23,11 @@ interface BlockListProps {
   transitions?: boolean;
 }
 
-function filterBlocks(security: Security, blocks: BlockType[], userRole: string): BlockType[] {
+function filterBlocks(
+  security: Security,
+  blocks: BlockDefinition[],
+  userRole: string,
+): BlockDefinition[] {
   return blocks.filter(
     (block) =>
       block.roles === undefined ||
@@ -52,7 +56,7 @@ export default function BlockList({
   const resolvePageReady = React.useRef<Function>();
 
   const ready = React.useCallback(
-    (block: BlockType) => {
+    (block: BlockDefinition) => {
       blockStatus.current[blocks.indexOf(block)] = true;
       if (blockStatus.current.every(Boolean)) {
         setLoading(false);

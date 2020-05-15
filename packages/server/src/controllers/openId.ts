@@ -2,6 +2,7 @@ import Boom from '@hapi/boom';
 import crypto from 'crypto';
 import { addMinutes } from 'date-fns';
 import { Op } from 'sequelize';
+import { URL } from 'url';
 
 import { App, EmailAuthorization, OAuth2AuthorizationCode, User } from '../models';
 import type { KoaContext } from '../types';
@@ -12,7 +13,7 @@ interface Params {
 }
 
 export async function getUserInfo(ctx: KoaContext<Params>): Promise<void> {
-  const { id } = ctx.state.user;
+  const { id } = ctx.user;
 
   const user = await User.findOne({
     attributes: ['primaryEmail', 'name'],
@@ -53,7 +54,7 @@ export async function getUserInfo(ctx: KoaContext<Params>): Promise<void> {
 export async function createAuthorizationCode(ctx: KoaContext<Params>): Promise<void> {
   const { appId, redirectUri } = ctx.request.body;
   const { host } = ctx.argv;
-  const { id } = ctx.state.user;
+  const { id } = ctx.user;
 
   const app = await App.findByPk(appId, { attributes: ['domain', 'path', 'OrganizationId'] });
 

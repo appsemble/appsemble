@@ -1,5 +1,5 @@
 import type { BootstrapParams } from '@appsemble/sdk';
-import type { AppDefinition, FlowPage as FlowPageType } from '@appsemble/types';
+import type { AppDefinition, FlowPageDefinition } from '@appsemble/types';
 import React from 'react';
 import { useHistory } from 'react-router-dom';
 
@@ -10,7 +10,7 @@ import { useServiceWorkerRegistration } from '../ServiceWorkerRegistrationProvid
 
 interface FlowPageProps extends React.ComponentPropsWithoutRef<typeof BlockList> {
   definition: AppDefinition;
-  page: FlowPageType;
+  page: FlowPageDefinition;
 }
 
 export default function FlowPage({

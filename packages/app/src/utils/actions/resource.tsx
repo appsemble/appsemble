@@ -8,8 +8,8 @@ import type {
 } from '@appsemble/sdk';
 import type {
   BlobUploadType,
-  Resource,
   ResourceCreateActionDefinition,
+  ResourceDefinition,
   ResourceDeleteActionDefinition,
   ResourceGetActionDefinition,
   ResourceQueryActionDefinition,
@@ -25,7 +25,7 @@ import type { MakeActionParameters, ServiceWorkerRegistrationContextType } from 
 import settings from '../settings';
 import { requestLikeAction } from './request';
 
-function getBlobs(resource: Resource): BlobUploadType {
+function getBlobs(resource: ResourceDefinition): BlobUploadType {
   const { blobs } = resource;
   const type = blobs?.type || 'upload';
   const method = blobs?.method || 'post';

@@ -1,4 +1,5 @@
 import isIp from 'is-ip';
+import { URL } from 'url';
 
 import type { KoaMiddleware } from '../types';
 

@@ -64,19 +64,17 @@ For now, lets bootstrap a vanilla JavaScript block using the block name `test` a
 
 The block will be created in the _blocks/_ directory. Its version will be `0.0.0`.
 
-Now, the block needs to be built and registered before it can be used. It can be built using this
-command.
-
-```sh
-yarn block test
-```
-
 Make sure the local Appsemble server is running, then run the following to publish the newly created
 block.
 
 ```sh
 yarn appsemble block publish blocks/test
 ```
+
+> **Note**: In order to publish a block for an organization, make sure you are in the same
+> organization as what is stated in the first half of the block name. For example: In order to
+> publish `@appsemble/foo` you need to be a member of the `appsemble` organization with sufficient
+> permissions to publish blocks for the organization.
 
 ## Testing the Block
 

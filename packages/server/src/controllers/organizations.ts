@@ -40,7 +40,7 @@ export async function createOrganization(ctx: KoaContext): Promise<void> {
   const { id, name } = ctx.request.body;
   const {
     user: { id: userId },
-  } = ctx.state;
+  } = ctx;
 
   const user = await User.findOne({
     attributes: ['primaryEmail', 'name'],
@@ -142,7 +142,7 @@ export async function respondInvitation(ctx: KoaContext<Params>): Promise<void> 
   const { response, token } = ctx.request.body;
   const {
     user: { id: userId },
-  } = ctx.state;
+  } = ctx;
 
   const invite = await OrganizationInvite.findOne({ where: { key: token } });
 
@@ -164,10 +164,9 @@ export async function respondInvitation(ctx: KoaContext<Params>): Promise<void> 
 }
 
 export async function inviteMember(ctx: KoaContext<Params>): Promise<void> {
-  const { mailer } = ctx;
+  const { mailer, user } = ctx;
   const { organizationId } = ctx.params;
   const { email } = ctx.request.body;
-  const { user } = ctx.state;
 
   const organization = await Organization.findByPk(organizationId, { include: [User] });
   if (!organization) {
@@ -255,7 +254,7 @@ export async function removeInvite(ctx: KoaContext): Promise<void> {
 
 export async function removeMember(ctx: KoaContext<Params>): Promise<void> {
   const { memberId, organizationId } = ctx.params;
-  const { user } = ctx.state;
+  const { user } = ctx;
 
   const organization = await Organization.findByPk(organizationId, { include: [User] });
   if (!organization.Users.some((u) => u.id === user.id)) {
@@ -280,7 +279,7 @@ export async function removeMember(ctx: KoaContext<Params>): Promise<void> {
 export async function setRole(ctx: KoaContext<Params>): Promise<void> {
   const { memberId, organizationId } = ctx.params;
   const { role } = ctx.request.body;
-  const { user } = ctx.state;
+  const { user } = ctx;
 
   const organization = await Organization.findByPk(organizationId, { include: [User] });
   if (!organization.Users.some((u) => u.id === user.id)) {

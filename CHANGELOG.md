@@ -10,7 +10,9 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ### Added
 
 - App: Allow to proxy requests through the Appsemble API.
+- Appsemble: Add support for running `npx appsemble`.
 - Block(`detail-viewer`): Implement remappers.
+- Block(`list`): Add `icon` property. This can be used to display icons next to the header.
 - Create: Add `mini-jsx` template based on the current stats block.
 - SDK: Add support for remappers using the `util.remap` function.
 - Server: Add support for using remappers in the notification data definition.
@@ -19,9 +21,15 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 - App: Proxy requests through the Appsemble API by default.
 - App: The `remap` property of actions now uses the new remapper functionality.
+- Block(`list`): Replace `name` with `value`.
+- Block(`list`): Apply remapper to `value` and `label`.
 - Block(`stats`): Replace `name` with `value`.
 - Block(`stats`): Apply remapper to `value` and `label`.
 - Server: Converted user IDs to use UUID instead of auto-incremented integers.
+
+### Fixed
+
+- Studio: Fix file upload components not displaying correctly.
 
 ## [0.12.8] - 2020-04-29
 

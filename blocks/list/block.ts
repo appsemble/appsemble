@@ -1,3 +1,4 @@
+import type { Remapper } from '@appsemble/sdk';
 import type { IconName } from '@fortawesome/fontawesome-common-types';
 
 /**
@@ -9,14 +10,14 @@ export interface Field {
    *
    * No value will be rendered if undefined.
    */
-  name?: string;
+  value?: Remapper;
 
   /**
    * The label to display.
    *
    * Will not render if undefined.
    */
-  label?: string;
+  label?: Remapper;
 
   /**
    * The FontAwesome icon to display in front of the label.
@@ -40,7 +41,14 @@ declare module '@appsemble/sdk' {
      *
      * Will not render if undefined.
      */
-    header?: string;
+    header?: Remapper;
+
+    /**
+     * The icon that displays in front of the header.
+     *
+     * Will not render if undefined.
+     */
+    icon?: IconName;
 
     /**
      * An optional name of the field that contains the data.

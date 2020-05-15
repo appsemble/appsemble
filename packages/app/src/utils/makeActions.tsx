@@ -3,8 +3,8 @@ import type {
   ActionDefinition,
   ActionType,
   AppDefinition,
-  Block,
-  Page,
+  BlockDefinition,
+  PageDefinition,
   RequestLikeActionDefinition,
 } from '@appsemble/types';
 import { remap } from '@appsemble/utils';
@@ -17,7 +17,7 @@ import actionCreators, { ActionCreator, ActionCreators } from './actions';
 interface MakeActionsParams {
   actions: { [action: string]: ActionType };
   definition: AppDefinition;
-  context: Block | Page;
+  context: BlockDefinition | PageDefinition;
   history: RouteComponentProps['history'];
   showDialog: ShowDialogAction;
   extraCreators: ActionCreators;

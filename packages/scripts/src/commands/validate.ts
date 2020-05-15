@@ -12,7 +12,7 @@ export const description = 'Validate all workspaces have a proper configuration'
 /**
  * A list of packages that are released without a scoped package name.
  */
-const unscopedPackageNames = ['create-appsemble'];
+const unscopedPackageNames = ['appsemble', 'create-appsemble'];
 
 /**
  * A representation of a yarn workspace.
