@@ -25,6 +25,10 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Block(`stats`): Apply remapper to `value` and `label`.
 - Server: Converted user IDs to use UUID instead of auto-incremented integers.
 
+### Fixed
+
+- Studio: Fix file upload components not displaying correctly.
+
 ## [0.12.8] - 2020-04-29
 
 ### Fixed
