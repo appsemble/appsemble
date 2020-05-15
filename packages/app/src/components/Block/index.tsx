@@ -220,7 +220,9 @@ export default function Block({
   ]);
 
   const header = block.header ? (
-    <h6 className={classNames('title is-6', styles.title)}>{block.header}</h6>
+    <h6 className={classNames('title is-6', styles.title)}>
+      {remap(block.header, { ...data, ...match.params })}
+    </h6>
   ) : null;
 
   switch (manifest.layout) {
