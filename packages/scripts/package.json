@@ -15,6 +15,7 @@
     "@appsemble/node-utils": "0.12.8",
     "chrome-launcher": "^0.13.2",
     "fs-extra": "^9.0.0",
+    "globby": "^11.0.0",
     "lighthouse": "^5.6.0",
     "lodash": "^4.17.15",
     "puppeteer": "^3.0.4",
