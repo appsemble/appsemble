@@ -14,7 +14,7 @@ export type { Theme };
 /**
  * A block that is displayed on a page.
  */
-export interface Block {
+export interface BlockDefinition {
   /**
    * The type of the block.
    *
@@ -289,7 +289,7 @@ interface ResourceReference {
   delete?: ResourceReferenceAction;
 }
 
-export interface Resource {
+export interface ResourceDefinition {
   /**
    * The definition for the `resource.create` action.
    */
@@ -384,7 +384,7 @@ export interface DialogActionDefinition extends BaseActionDefinition<'dialog'> {
   /**
    * Blocks to render on the dialog.
    */
-  blocks: Block[];
+  blocks: BlockDefinition[];
 
   /**
    * The title to show in the dialog.
@@ -615,7 +615,7 @@ export interface BlockManifest {
 /**
  * This describes what a page will look like in the app.
  */
-export interface BasePage {
+export interface BasePageDefinition {
   /**
    * The name of the page.
    *
@@ -665,25 +665,25 @@ export interface BasePage {
 
 interface SubPage {
   name: string;
-  blocks: Block[];
+  blocks: BlockDefinition[];
 }
 
-export interface BasicPage extends BasePage {
+export interface BasicPageDefinition extends BasePageDefinition {
   type?: 'page';
-  blocks: Block[];
+  blocks: BlockDefinition[];
 }
 
-export interface FlowPage extends BasePage {
+export interface FlowPageDefinition extends BasePageDefinition {
   type: 'flow';
   subPages: SubPage[];
 }
 
-export interface TabsPage extends BasePage {
+export interface TabsPageDefinition extends BasePageDefinition {
   type: 'tabs';
   subPages: SubPage[];
 }
 
-export type Page = BasicPage | FlowPage | TabsPage;
+export type PageDefinition = BasicPageDefinition | FlowPageDefinition | TabsPageDefinition;
 
 export interface AppDefinition {
   /**
@@ -732,12 +732,12 @@ export interface AppDefinition {
   /**
    * The pages of the app.
    */
-  pages: Page[];
+  pages: PageDefinition[];
 
   /**
    * Resource definitions that may be used by the app.
    */
-  resources?: { [key: string]: Resource };
+  resources?: { [key: string]: ResourceDefinition };
 
   /**
    * The global theme for the app.

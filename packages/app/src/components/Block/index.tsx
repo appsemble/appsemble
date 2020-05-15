@@ -1,5 +1,5 @@
 import { useMessages } from '@appsemble/react-components';
-import type { Block as BlockType } from '@appsemble/types';
+import type { BlockDefinition } from '@appsemble/types';
 import { baseTheme, normalize, normalizeBlockName, remap } from '@appsemble/utils';
 import classNames from 'classnames';
 import type { EventEmitter } from 'events';
@@ -30,7 +30,7 @@ interface BlockProps {
   /**
    * The block to render.
    */
-  block: BlockType;
+  block: BlockDefinition;
   extraCreators?: ActionCreators;
 
   /**
@@ -39,7 +39,7 @@ interface BlockProps {
   flowActions: any;
 
   showDialog: ShowDialogAction;
-  ready(block: BlockType): void;
+  ready(block: BlockDefinition): void;
   pageReady: Promise<void>;
 }
 
