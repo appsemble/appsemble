@@ -466,13 +466,17 @@ pages:
             data: person
         parameters:
           fields:
-            - name: firstName
+            - name:
+                -prop: firstName
               label: First Name
-            - name: lastName
+            - name:
+                - prop: lastName
               label: Last Name
-            - name: email
+            - name:
+                - prop: email
               label: Email Address
-            - name: description
+            - name:
+                - prop: description
               label: Description
 ```
 
@@ -483,6 +487,7 @@ complex apps require more features than creating and viewing resources. The foll
 continue on the result of the app created in this guide:
 
 - [Resources](resources)
+- [Remappers](remappers)
 - [Security](security)
 - [Notifications](notifications)
 - [Theming](theming)
