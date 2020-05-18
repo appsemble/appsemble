@@ -1,4 +1,4 @@
-import { AppsembleError } from '@appsemble/node-utils';
+import { AppsembleError, logger } from '@appsemble/node-utils';
 import { DataTypes, QueryTypes } from 'sequelize';
 import { v4 } from 'uuid';
 
@@ -29,12 +29,12 @@ export default {
     });
 
     const tables = [
-      { name: 'AppMember', allowNull: true, onDelete: 'set null' },
-      { name: 'AppRating', allowNull: false, onDelete: 'set null' },
+      { name: 'AppMember', allowNull: false, onDelete: 'cascade' },
+      { name: 'AppRating', allowNull: false, onDelete: 'cascade' },
       { name: 'AppSubscription', allowNull: true, onDelete: 'set null' },
       { name: 'Asset', allowNull: true, onDelete: 'set null' },
-      { name: 'EmailAuthorization', allowNull: false, onDelete: 'set null' },
-      { name: 'Member', allowNull: false, onDelete: 'set null' },
+      { name: 'EmailAuthorization', allowNull: false, onDelete: 'cascade' },
+      { name: 'Member', allowNull: false, onDelete: 'cascade' },
       { name: 'OAuth2AuthorizationCode', allowNull: false, onDelete: 'cascade' },
       { name: 'OAuth2ClientCredentials', allowNull: false, onDelete: 'cascade' },
       { name: 'OAuthAuthorization', allowNull: true, onDelete: 'set null' },
@@ -43,42 +43,43 @@ export default {
       { name: 'ResetPasswordToken', allowNull: false, onDelete: 'cascade' },
     ];
 
+    logger.info('Adding column newId');
     await queryInterface.addColumn('User', 'newId', {
       type: DataTypes.UUID,
-      defaultValue: DataTypes.UUIDV4,
       allowNull: true,
     });
 
+    logger.info('Generating IDs');
     const ids = users.map((u) => ({ id: u.id, newId: v4() }));
     await Promise.all(
       ids.map((id) =>
         db.query('UPDATE "User" SET "newId" = ? WHERE id = ?', { replacements: [id.newId, id.id] }),
       ),
     );
-    await Promise.all(
-      tables.map(async (table) => {
-        await queryInterface.removeConstraint(table.name, `${table.name}_UserId_fkey`);
-        await queryInterface.addColumn(table.name, 'NewUserId', {
-          type: DataTypes.UUID,
-        });
-        await Promise.all(
-          ids.map((id) =>
-            db.query(`UPDATE "${table.name}" SET "NewUserId" = ? WHERE "UserId" = ?`, {
-              replacements: [id.newId, id.id],
-              type: QueryTypes.UPDATE,
-            }),
-          ),
-        );
-        await queryInterface.removeColumn(table.name, 'UserId');
-        await queryInterface.renameColumn(table.name, 'NewUserId', 'UserId');
-        await queryInterface.changeColumn(table.name, 'UserId', {
-          type: DataTypes.UUID,
-          defaultValue: DataTypes.UUIDV4,
-          allowNull: table.allowNull,
-        });
-      }),
-    );
 
+    for (const table of tables) {
+      logger.info(`Updating ${table.name}`);
+      await queryInterface.removeConstraint(table.name, `${table.name}_UserId_fkey`);
+      await queryInterface.addColumn(table.name, 'NewUserId', {
+        type: DataTypes.UUID,
+      });
+      await Promise.all(
+        ids.map((id) =>
+          db.query(`UPDATE "${table.name}" SET "NewUserId" = ? WHERE "UserId" = ?`, {
+            replacements: [id.newId, id.id],
+            type: QueryTypes.UPDATE,
+          }),
+        ),
+      );
+      await queryInterface.removeColumn(table.name, 'UserId');
+      await queryInterface.renameColumn(table.name, 'NewUserId', 'UserId');
+      await queryInterface.changeColumn(table.name, 'UserId', {
+        type: DataTypes.UUID,
+        allowNull: table.allowNull,
+      });
+    }
+
+    logger.info('Renaming newId');
     await queryInterface.removeColumn('User', 'id');
     await queryInterface.renameColumn('User', 'newId', 'id');
     await queryInterface.changeColumn('User', 'id', {
@@ -86,20 +87,18 @@ export default {
       defaultValue: DataTypes.UUIDV4,
       allowNull: false,
       primaryKey: true,
-      unique: true,
     });
 
-    await Promise.all(
-      tables.map((table) =>
-        queryInterface.addConstraint(table.name, ['UserId'], {
-          type: 'foreign key',
-          name: `${table.name}_UserId_fkey`,
-          onUpdate: 'cascade',
-          onDelete: table.onDelete,
-          references: { table: 'User', field: 'id' },
-        }),
-      ),
-    );
+    for (const table of tables) {
+      logger.info(`Adding UserId constraint to ${table.name}`);
+      await queryInterface.addConstraint(table.name, ['UserId'], {
+        type: 'foreign key',
+        name: `${table.name}_UserId_fkey`,
+        onUpdate: 'cascade',
+        onDelete: table.onDelete,
+        references: { table: 'User', field: 'id' },
+      });
+    }
   },
 
   async down() {
