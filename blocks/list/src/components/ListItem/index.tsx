@@ -36,30 +36,31 @@ export default function ListItem({ item }: ListItemProps): VNode {
           {headerValue && <h4>{headerValue}</h4>}
         </div>
       )}
-      {fields.map((field) => {
-        let value;
+      {fields?.length &&
+        fields.map((field) => {
+          let value;
 
-        if (field.value) {
-          value = remap(field.value, item);
-        }
+          if (field.value) {
+            value = remap(field.value, item);
+          }
 
-        return (
-          <span className={styles.itemField}>
-            {field.icon && <Icon icon={field.icon} />}
-            {field.label && (
-              <span>
-                {field.label}
-                {value && ': '}
-              </span>
-            )}
-            {value && (
-              <strong className="has-text-bold">
-                {typeof value === 'string' ? value : JSON.stringify(value)}
-              </strong>
-            )}
-          </span>
-        );
-      })}
+          return (
+            <span className={styles.itemField}>
+              {field.icon && <Icon icon={field.icon} />}
+              {field.label && (
+                <span>
+                  {field.label}
+                  {value && ': '}
+                </span>
+              )}
+              {value && (
+                <strong className="has-text-bold">
+                  {typeof value === 'string' ? value : JSON.stringify(value)}
+                </strong>
+              )}
+            </span>
+          );
+        })}
       {actions.onClick.type !== 'noop' && (
         <Icon className={styles.button} icon="angle-right" size="large" />
       )}
