@@ -110,6 +110,7 @@ export default function GUIEditorEditBlock({
       <div className={styles.main}>
         {selectedBlock?.parameters ? (
           <JSONSchemaEditor
+            name={stripBlockName(selectedBlock.name)}
             onChange={onChange}
             schema={selectedBlock?.parameters as OpenAPIV3.SchemaObject}
             value={editingResource}

@@ -69,15 +69,15 @@ export default function GUIEditor({
     const blockParent =
       editLocation.parents[editLocation.parents.findIndex((x) => x.name === 'blocks:')];
 
-    const selectBlockParent =
-      editLocation.parents[editLocation.parents.findIndex((x) => x.name === 'blocks:') - 1];
-
-    let range;
-    if (edit) {
-      range = new Range(selectBlockParent.line, 1, editLocation.topParentLine + 1, 1);
-    } else {
-      range = new Range(blockParent.line + 1, 1, blockParent.line + 1, 1);
-    }
+    // const selectBlockParent =
+    //   editLocation.parents[editLocation.parents.findIndex((x) => x.name === 'blocks:') - 1];
+    //
+    // let range;
+    // if (edit) {
+    //   range = new Range(selectBlockParent.line, 1, editLocation.editRange.endLineNumber, 1);
+    // } else {
+    //   range = new Range(blockParent.line + 1, 1, blockParent.line + 1, 1);
+    // }
 
     const text = indentString(
       yaml.safeDump([
@@ -91,7 +91,7 @@ export default function GUIEditor({
     );
     const op = {
       identifier: { major: 1, minor: 1 },
-      range,
+      range: editLocation.editRange,
       text,
       forceMoveMarkers: true,
     };

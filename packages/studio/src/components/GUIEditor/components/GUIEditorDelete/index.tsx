@@ -1,7 +1,7 @@
 import { CardFooterButton, Modal } from '@appsemble/react-components';
-import type { App, BasicPage } from '@appsemble/types';
+import type { App } from '@appsemble/types';
+import { getAppBlocks } from '@appsemble/utils';
 import type { editor } from 'monaco-editor';
-import { Range } from 'monaco-editor';
 import React from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
@@ -17,6 +17,12 @@ interface GUIEditorDeleteProps {
   app: App;
 }
 
+enum deleteWarnings {
+  'DELETEPAGE',
+  'DELETESUBBLOCKS',
+  'DELETEBLOCK',
+}
+
 export default function GUIEditorDelete({
   app,
   editLocation,
@@ -26,31 +32,40 @@ export default function GUIEditorDelete({
 }: GUIEditorDeleteProps): React.ReactElement {
   const intl = useIntl();
 
-  const deletePage = (): boolean => {
-    const selectedPage = app.definition.pages[
-      app.definition.pages.findIndex((page) => page.name === editLocation.pageName)
-    ] as BasicPage;
-    if (selectedPage.blocks.length === 1) {
-      return true;
+  const getDeleteWarningType = React.useCallback((): deleteWarnings => {
+    const blocks = getAppBlocks(app.definition);
+    let blocksInPage = 0;
+    let hasSubblocks = false;
+    const selectedPageId = app.definition.pages
+      .findIndex((page) => page.name === editLocation.pageName)
+      .toString();
+
+    Object.keys(blocks).map((key) => {
+      const splitKey = key.split('.');
+      const pageId = splitKey[1];
+      if (selectedPageId === pageId) {
+        blocksInPage += 1;
+        if (splitKey.indexOf('blocks') !== splitKey.lastIndexOf('blocks')) {
+          hasSubblocks = true;
+        }
+      }
+      return pageId;
+    });
+
+    if (hasSubblocks) {
+      return deleteWarnings.DELETESUBBLOCKS;
     }
-    return false;
-  };
+    if (blocksInPage === 1) {
+      return deleteWarnings.DELETEPAGE;
+    }
+    return deleteWarnings.DELETEBLOCK;
+  }, [app, editLocation]);
 
   const remove = (): void => {
-    let range;
-    const blockParentIndex = editLocation.parents.findIndex((x) => x.name === 'blocks:');
-    if (!deletePage()) {
-      const selectBlockParent = editLocation.parents[blockParentIndex - 1];
-      range = new Range(selectBlockParent.line, 1, editLocation.topParentLine + 1, 1);
-    } else {
-      const selectedPageParent = editLocation.parents[blockParentIndex + 1];
-      range = new Range(selectedPageParent.line, 1, editLocation.topParentLine + 1, 1);
-    }
-
     const text = '';
     const op = {
       identifier: { major: 1, minor: 1 },
-      range,
+      range: editLocation.editRange,
       text,
       forceMoveMarkers: true,
     };
@@ -80,15 +95,23 @@ export default function GUIEditorDelete({
       onClose={onClose}
       title={<FormattedMessage {...messages.deleteWarningTitle} />}
     >
-      {deletePage()
+      {getDeleteWarningType() === deleteWarnings.DELETESUBBLOCKS
+        ? intl.formatMessage(messages.deleteSubBlockWarning, {
+            blockname: editLocation.blockName,
+          })
+        : ''}
+      {getDeleteWarningType() === deleteWarnings.DELETEPAGE
         ? intl.formatMessage(messages.deletePageWarning, {
             blockname: editLocation.blockName,
             pagename: editLocation.pageName,
           })
-        : intl.formatMessage(messages.deleteWarning, {
+        : ''}
+      {getDeleteWarningType() === deleteWarnings.DELETEBLOCK
+        ? intl.formatMessage(messages.deleteWarning, {
             blockname: editLocation.blockName,
             pagename: editLocation.pageName,
-          })}
+          })
+        : ''}
     </Modal>
   );
 }

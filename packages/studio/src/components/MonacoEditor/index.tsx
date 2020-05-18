@@ -1,4 +1,4 @@
-import { editor, IDisposable, KeyCode, KeyMod } from 'monaco-editor';
+import { editor, IDisposable, KeyCode, KeyMod, Range } from 'monaco-editor';
 import * as React from 'react';
 import ResizeObserver from 'resize-observer-polyfill';
 
@@ -13,15 +13,15 @@ interface MonacoEditorProps {
   options: editor.IEditorOptions;
   editLocation?: any;
   setEditor?: (value: editor.IStandaloneCodeEditor) => void;
-  setAllowAdd: (allow: boolean) => void;
   setAllowEdit: (allow: boolean) => void;
+  setAllowAdd: (allow: boolean) => void;
 }
 
 export interface EditLocation {
   blockName: string;
   pageName: string;
   parents?: [{ name: string; line: number; indent: number }];
-  topParentLine?: number;
+  editRange?: Range;
 }
 
 export default class MonacoEditor extends React.Component<MonacoEditorProps> {
@@ -101,19 +101,25 @@ export default class MonacoEditor extends React.Component<MonacoEditorProps> {
     this.props.onValueChange(this.editor.getModel().getValue());
   };
 
-  containsBlockParent = (parents: EditLocation['parents']): string => {
+  containsBlockParent = (parents: EditLocation['parents'], position: any): string => {
     let blockName: string;
 
     if (parents !== undefined) {
       parents.some((parent: any): string => {
-        if (parent.name.includes('- type:')) {
-          const block = parent.name.split(' ');
-          blockName = block[block.length - 1];
+        if (parent.name.includes('- type:') && position.lineNumber >= parent.line) {
+          // number 8 matches "- type: " length
+          blockName = parent.name.slice(8);
+          if (blockName?.includes("'")) {
+            blockName = blockName.replace(/'/g, '');
+          }
           this.props.setAllowEdit(true);
           this.props.setAllowAdd(true);
-        }
-        if (parent.name.includes('blocks:')) {
+        } else if (parent.name.includes('blocks:') && position.lineNumber === parent.line) {
+          this.props.setAllowEdit(false);
           this.props.setAllowAdd(true);
+        } else if (parent.name.includes('blocks:') && position.lineNumber <= parent.line) {
+          this.props.setAllowEdit(false);
+          this.props.setAllowAdd(false);
         }
         return blockName;
       });
@@ -137,9 +143,11 @@ export default class MonacoEditor extends React.Component<MonacoEditorProps> {
           topParentLine += 1;
         } else if (
           lines[topParentLine].includes('- type') ||
-          lines[topParentLine].includes('- name') ||
-          lines[topParentLine].includes('pages') ||
-          lines[topParentLine].trim() === ''
+          lines[topParentLine].includes('pages:') ||
+          (lines[topParentLine].includes('- name:') &&
+            lines[topParentLine + 1].includes('blocks:')) ||
+          lines[topParentLine].trim() === '' ||
+          model.getLineFirstNonWhitespaceColumn(topParentLine + 1) <= 3
         ) {
           isTopParent = true;
         } else {
@@ -178,26 +186,32 @@ export default class MonacoEditor extends React.Component<MonacoEditorProps> {
               }
               parentCount += 1;
             }
-            const blockName = this.containsBlockParent(parents);
             const pageParent = parents[parents.findIndex((x) => x.name.includes('pages:')) - 1];
             if (pageParent) {
+              const blockName = this.containsBlockParent(parents, position);
+              const blockParentIndex = parents.findIndex((x) => x.name.includes(blockName));
+              let editRange = new Range(topParentLine + 1, 1, topParentLine + 1, 1);
+              if (blockParentIndex !== -1) {
+                editRange = new Range(parents[blockParentIndex].line, 1, topParentLine + 1, 1);
+              }
+              // number 8 matches "- name: " length
               const pageName = pageParent.name.slice(8);
               editLocation = {
                 pageName,
                 blockName,
                 parents,
-                topParentLine,
+                editRange,
               };
             }
           }
         }
       }
     }
+
     if (editLocation) {
       this.props.editLocation(editLocation);
     } else {
       this.props.setAllowEdit(false);
-      this.props.setAllowAdd(false);
     }
   };
 
