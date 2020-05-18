@@ -1,5 +1,6 @@
 import { useBlock } from '@appsemble/preact';
 import { Icon } from '@appsemble/preact-components';
+import classNames from 'classnames';
 import { h, VNode } from 'preact';
 import { useCallback } from 'preact/hooks';
 
@@ -31,7 +32,7 @@ export default function ListItem({ item }: ListItemProps): VNode {
   return (
     <ListItemWrapper actions={actions} className={styles.item} item={item} onClick={onItemClick}>
       {(icon || headerValue) && (
-        <div className={styles.header}>
+        <div className={classNames({ [styles.header]: fields?.length })}>
           {icon && <Icon icon={icon} />}
           {headerValue && <h4>{headerValue}</h4>}
         </div>
