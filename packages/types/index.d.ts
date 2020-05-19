@@ -144,7 +144,14 @@ export interface TokenResponse {
    * How long until the access token expires in seconds from now.
    */
   // eslint-disable-next-line camelcase
-  expires_in: number;
+  expires_in?: number;
+
+  /**
+   * The OpenID ID token as a JWT.
+   *
+   * This field is only present on OpenID connect providers.
+   */
+  id_token?: string;
 
   /**
    * A refresh token for getting a new access token.

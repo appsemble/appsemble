@@ -74,38 +74,37 @@ export default {
       security: [{ studio: [] }],
     },
   },
-  '/oauth2/connect/pending': {
-    get: {
-      parameters: [
-        {
-          name: 'provider',
-          required: true,
-          in: 'query',
-          schema: { type: 'string' },
-        },
-        {
-          name: 'code',
-          required: true,
-          in: 'query',
-          schema: { type: 'string' },
-        },
-      ],
-      description: 'Get an OAuth2 profile which is pending connection to an Appsemble account',
-      tags: ['oauth2'],
-      operationId: 'getPendingOAuth2Profile',
-      responses: {
-        200: {
-          description: 'The profile which is pending connection.',
-          content: {
-            'application/json': {
-              schema: {
-                type: 'object',
+  '/oauth2/connect/register': {
+    post: {
+      operationId: 'registerOAuth2Connection',
+      description: 'asd',
+      requestBody: {
+        required: true,
+        content: {
+          'application/json': {
+            schema: {
+              type: 'object',
+              required: ['authorizationUrl', 'code'],
+              properties: {
+                authorizationUrl: {
+                  type: 'string',
+                },
+                code: {
+                  type: 'string',
+                },
               },
             },
           },
         },
       },
+      responses: {
+        200: {
+          description: '',
+        },
+      },
     },
+  },
+  '/oauth2/connect/pending': {
     post: {
       description: 'Create an account using an OAuth2 authorization.',
       tags: ['oauth2'],
@@ -117,12 +116,12 @@ export default {
           'application/json': {
             schema: {
               type: 'object',
-              required: ['code', 'provider'],
+              required: ['code', 'authorizationUrl'],
               properties: {
                 code: {
                   type: 'string',
                 },
-                provider: {
+                authorizationUrl: {
                   type: 'string',
                 },
               },
@@ -143,86 +142,6 @@ export default {
         },
       },
       security: [{ studio: [] }, {}],
-    },
-  },
-  '/oauth/register': {
-    post: {
-      description: 'Register a new account using OAuth2 credentials',
-      operationId: 'registerOAuth',
-      requestBody: {
-        description: 'OAuth credentials',
-        required: true,
-        content: {
-          'application/json': {
-            schema: {
-              type: 'object',
-              required: ['id', 'accessToken', 'refreshToken', 'provider'],
-              properties: {
-                id: {
-                  type: 'string',
-                },
-                accessToken: {
-                  type: 'string',
-                },
-                refreshToken: {
-                  type: 'string',
-                },
-                provider: {
-                  type: 'string',
-                },
-                organization: {
-                  type: 'string',
-                },
-              },
-            },
-          },
-        },
-      },
-      responses: {
-        201: {
-          description: 'The created account.',
-        },
-      },
-    },
-  },
-  '/oauth/connect': {
-    post: {
-      description: 'Connect an existing account with new OAuth2 credentials',
-      operationId: 'connectOAuth',
-      requestBody: {
-        description: 'OAuth2 credentials',
-        required: true,
-        content: {
-          'application/json': {
-            schema: {
-              type: 'object',
-              required: ['id', 'accessToken', 'refreshToken', 'provider', 'userId'],
-              properties: {
-                id: {
-                  type: 'string',
-                },
-                userId: {
-                  type: 'number',
-                },
-                accessToken: {
-                  type: 'string',
-                },
-                refreshToken: {
-                  type: 'string',
-                },
-                provider: {
-                  type: 'string',
-                },
-              },
-            },
-          },
-        },
-      },
-      responses: {
-        200: {
-          description: 'Credentials have been successfully connected.',
-        },
-      },
     },
   },
   '/oauth2/authorization-code': {

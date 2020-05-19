@@ -62,37 +62,6 @@ export async function registerEmail(ctx: KoaContext): Promise<void> {
   ctx.body = createJWTResponse(user.id, argv);
 }
 
-export async function registerOAuth(ctx: KoaContext): Promise<void> {
-  await mayRegister(ctx);
-  const {
-    body: { accessToken, id, provider },
-  } = ctx.request;
-  const auth = await OAuthAuthorization.findOne({ where: { provider, id, token: accessToken } });
-  if (!auth) {
-    throw Boom.notFound('Could not find any matching credentials.');
-  }
-
-  await auth.createUser();
-  ctx.status = 201;
-}
-
-export async function connectOAuth(ctx: KoaContext): Promise<void> {
-  const {
-    body: { accessToken, id, provider, userId },
-  } = ctx.request;
-
-  const auth = await OAuthAuthorization.findOne({ where: { provider, id, token: accessToken } });
-  const user = await User.findByPk(userId);
-
-  if (!auth || !user) {
-    throw Boom.notFound("User or credential doesn't exist.");
-  }
-
-  await user.addOAuthAuthorization(auth);
-
-  ctx.status = 200;
-}
-
 export async function verifyEmail(ctx: KoaContext): Promise<void> {
   const {
     body: { token },

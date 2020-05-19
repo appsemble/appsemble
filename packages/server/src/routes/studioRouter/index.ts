@@ -4,7 +4,6 @@ import tinyRouter from '../../middleware/tinyRouter';
 import faviconHandler from './faviconHandler';
 import iconHandler from './iconHandler';
 import indexHandler from './indexHandler';
-import oauth2CallbackHandler from './oauth2CallbackHandler';
 import tokenHandler from './tokenHandler';
 
 export default tinyRouter([
@@ -19,15 +18,6 @@ export default tinyRouter([
   {
     route: /^\/icon-(?<width>\d+)(x(?<height>\d+))?\.(?<format>png|jpg|tiff|webp)$/,
     get: iconHandler,
-  },
-  {
-    route: /^\/oauth2\/(?<provider>[a-z]+)$/,
-    // By calling next, this handler delegates the request to grant instead of the index handler.
-    get: (_ctx, next) => next(),
-  },
-  {
-    route: /^\/oauth2\/(?<provider>[a-z]+)\/callback$/,
-    get: oauth2CallbackHandler,
   },
   {
     route: new RegExp(`^(/${partialNormalized.source})*`),
