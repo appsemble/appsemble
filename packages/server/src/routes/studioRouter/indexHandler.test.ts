@@ -5,7 +5,6 @@ import type { KoaContext } from '../../types';
 import studioRouter from '.';
 
 let app: Koa;
-
 let templateName: string;
 let templateData: object;
 

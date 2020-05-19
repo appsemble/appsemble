@@ -7,7 +7,6 @@ import { closeTestSchema, createTestSchema, truncate } from '../utils/test/testS
 import testToken from '../utils/test/testToken';
 
 let authorization: string;
-
 let templates: App[];
 let user: User;
 let clock: FakeTimers.InstalledClock;

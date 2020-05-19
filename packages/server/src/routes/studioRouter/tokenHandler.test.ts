@@ -10,7 +10,6 @@ import { closeTestSchema, createTestSchema, truncate } from '../../utils/test/te
 import testToken from '../../utils/test/testToken';
 
 let clock: InstalledClock;
-
 let server: Koa;
 let user: User;
 let refreshToken: string;

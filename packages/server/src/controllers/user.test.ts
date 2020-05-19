@@ -6,7 +6,6 @@ import { closeTestSchema, createTestSchema, truncate } from '../utils/test/testS
 import testToken from '../utils/test/testToken';
 
 let user: User;
-
 let authorization: string;
 
 beforeAll(createTestSchema('user'));
