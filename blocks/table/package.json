@@ -16,6 +16,6 @@
     "@appsemble/preact": "0.13.0",
     "@appsemble/preact-components": "0.13.0",
     "@appsemble/utils": "0.13.0",
-    "preact": "^10.4.1"
+    "preact": "^10.4.4"
   }
 }

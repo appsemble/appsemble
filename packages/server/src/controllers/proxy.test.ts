@@ -1,4 +1,4 @@
-import { AxiosTestInstance, createInstance } from 'axios-test-instance';
+import { AxiosTestInstance, createInstance, request, setTestApp } from 'axios-test-instance';
 import Koa, { ParameterizedContext } from 'koa';
 import { URL } from 'url';
 
@@ -8,7 +8,7 @@ import readPackageJson from '../utils/readPackageJson';
 import { closeTestSchema, createTestSchema, truncate } from '../utils/test/testSchema';
 
 const { version } = readPackageJson();
-let request: AxiosTestInstance;
+
 let proxiedApp: Koa;
 let proxiedContext: ParameterizedContext;
 let proxiedRequest: AxiosTestInstance;
@@ -17,7 +17,7 @@ beforeAll(createTestSchema('apps'));
 
 beforeAll(async () => {
   const server = await createServer({ argv: { host: 'http://localhost', secret: 'test' } });
-  request = await createInstance(server);
+  await setTestApp(server);
 });
 
 beforeEach(async () => {
@@ -86,10 +86,6 @@ beforeEach(async () => {
 
 afterEach(async () => {
   await proxiedRequest.close();
-});
-
-afterAll(async () => {
-  await request.close();
 });
 
 afterEach(truncate);

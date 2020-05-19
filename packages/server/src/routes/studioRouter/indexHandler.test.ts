@@ -1,11 +1,11 @@
-import { AxiosTestInstance, createInstance } from 'axios-test-instance';
+import { request, setTestApp } from 'axios-test-instance';
 import Koa from 'koa';
 
 import type { KoaContext } from '../../types';
 import studioRouter from '.';
 
 let app: Koa;
-let request: AxiosTestInstance;
+
 let templateName: string;
 let templateData: object;
 
@@ -23,11 +23,7 @@ beforeAll(async () => {
     return next();
   });
   app.use(studioRouter);
-  request = await createInstance(app);
-});
-
-afterAll(async () => {
-  await request.close();
+  await setTestApp(app);
 });
 
 it('should serve the studio index page with correct headers', async () => {

@@ -1,5 +1,5 @@
 import FakeTimers from '@sinonjs/fake-timers';
-import { AxiosTestInstance, createInstance } from 'axios-test-instance';
+import { request, setTestApp } from 'axios-test-instance';
 import chalk from 'chalk';
 import Koa from 'koa';
 
@@ -10,7 +10,6 @@ class TestError extends Error {}
 
 let app: Koa;
 let clock: FakeTimers.InstalledClock;
-let request: AxiosTestInstance;
 
 beforeEach(async () => {
   jest.spyOn(logger, 'info').mockImplementation(() => logger);
@@ -32,11 +31,11 @@ beforeEach(async () => {
   });
   app.use(loggerMiddleware());
   app.silent = true;
-  request = await createInstance(app, { maxRedirects: 0 });
+  request.defaults.maxRedirects = 0;
+  await setTestApp(app);
 });
 
 afterEach(async () => {
-  await request.close();
   clock.uninstall();
 });
 
