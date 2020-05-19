@@ -1,0 +1,9 @@
+.description {
+  margin-bottom: 10px;
+}
+
+.footer {
+  bottom: 0;
+  position: absolute;
+  width: 100%;
+}

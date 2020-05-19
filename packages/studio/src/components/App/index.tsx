@@ -8,6 +8,7 @@ import settings from '../../utils/settings';
 import AnonymousRoute from '../AnonymousRoute';
 import AppContext from '../AppContext';
 import AppList from '../AppList';
+import BlockList from '../BlockList';
 import EditPassword from '../EditPassword';
 import ErrorFallback from '../ErrorFallback';
 import Login from '../Login';
@@ -19,6 +20,7 @@ import ProtectedRoute from '../ProtectedRoute';
 import Register from '../Register';
 import ResetPassword from '../ResetPassword';
 import Settings from '../Settings';
+import Tabs from '../Tabs';
 import Toolbar from '../Toolbar';
 import UserProvider from '../UserProvider';
 import VerifyEmail from '../VerifyEmail';
@@ -35,7 +37,12 @@ export default function App(): React.ReactElement {
                 <Toolbar />
                 <Switch>
                   <Route exact path="/apps">
+                    <Tabs />
                     <AppList />
+                  </Route>
+                  <Route exact path="/blocks">
+                    <Tabs />
+                    <BlockList />
                   </Route>
                   <ProtectedRoute path="/settings">
                     <Settings />
