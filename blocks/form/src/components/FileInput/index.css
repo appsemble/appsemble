@@ -5,7 +5,10 @@
   display: flex;
   flex-flow: row;
   height: 7.5em;
-  margin-top: 2em;
   overflow-x: auto;
   padding: 6px 0;
+}
+
+.noLabel {
+  margin-top: 2em;
 }

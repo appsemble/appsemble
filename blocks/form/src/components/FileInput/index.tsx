@@ -1,3 +1,5 @@
+import { FormComponent } from '@appsemble/preact-components';
+import classNames from 'classnames';
 import { Component, h, VNode } from 'preact';
 
 import type { FileField, InputProps } from '../../../block';
@@ -27,27 +29,31 @@ export default class FileInput extends Component<FileInputProps> {
   render(): VNode {
     const { disabled, field, onInput, value } = this.props;
 
-    return field.repeated ? (
-      <div className={styles.repeatedContainer}>
-        <FileEntry
-          disabled={disabled}
-          field={field}
-          name={`${field.name}.${(value as string[]).length}`}
-          onInput={this.onInput}
-        />
-        {(value as string[]).map((val, index) => (
-          <FileEntry
-            // eslint-disable-next-line react/no-array-index-key
-            key={index}
-            field={field}
-            name={`${field.name}.${index}`}
-            onInput={this.onInput}
-            value={val}
-          />
-        ))}
-      </div>
-    ) : (
-      <FileEntry field={field} name={field.name} onInput={onInput} value={value as string} />
+    return (
+      <FormComponent iconLeft={field.icon} label={field.label} required={field.required}>
+        {field.repeated ? (
+          <div className={classNames(styles.repeatedContainer, { [styles.noLabel]: !field.label })}>
+            <FileEntry
+              disabled={disabled}
+              field={field}
+              name={`${field.name}.${(value as string[]).length}`}
+              onInput={this.onInput}
+            />
+            {(value as string[]).map((val, index) => (
+              <FileEntry
+                // eslint-disable-next-line react/no-array-index-key
+                key={index}
+                field={field}
+                name={`${field.name}.${index}`}
+                onInput={this.onInput}
+                value={val}
+              />
+            ))}
+          </div>
+        ) : (
+          <FileEntry field={field} name={field.name} onInput={onInput} value={value as string} />
+        )}
+      </FormComponent>
     );
   }
 }
