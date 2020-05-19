@@ -1,4 +1,4 @@
-import { FormComponent } from '@appsemble/preact-components/src';
+import { FormComponent } from '@appsemble/preact-components';
 import classNames from 'classnames';
 import { Component, h, VNode } from 'preact';
 
