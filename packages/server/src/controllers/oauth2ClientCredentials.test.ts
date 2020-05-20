@@ -11,7 +11,7 @@ let clock: FakeTimers.InstalledClock;
 
 let user: User;
 
-beforeAll(createTestSchema('oauth'));
+beforeAll(createTestSchema('oauth2clientcredentials'));
 
 beforeAll(async () => {
   const server = await createServer({ argv: { host: 'http://localhost', secret: 'test' } });
