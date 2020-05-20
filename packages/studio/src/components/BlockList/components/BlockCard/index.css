@@ -2,8 +2,8 @@
   margin-bottom: 10px;
 }
 
-.footer {
-  bottom: 0;
+.version {
   position: absolute;
-  width: 100%;
+  right: 0.5rem;
+  top: 0.5rem;
 }

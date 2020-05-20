@@ -16,18 +16,33 @@ export default function BlockCard({ block }: BlockCardProps): React.ReactElement
 
   return (
     <div key={block.name} className="card">
-      <div className="card-content">
-        <div className="media-content">
-          <p className="title is-4">{name}</p>
-          <p className="subtitle is-6">{org}</p>
+      <header className="card-header">
+        <p className="card-header-title">
+          <div className="media-content">
+            <p className="title is-4">{name}</p>
+            <p className="subtitle is-6">{org}</p>
+          </div>
+          <div className={`media-right ${styles.version}`}>
+            <span className="subtitle is-6 has-text-grey">{block.version}</span>
+          </div>
+        </p>
+      </header>
+      <div className={styles.cardBody}>
+        <div className="card-content">
+          <div className={`content ${styles.description}`}>
+            {block.description ?? (
+              <span className="has-text-grey-light">
+                <FormattedMessage {...messages.noDescription} />
+              </span>
+            )}
+          </div>
         </div>
-        <div className={`content ${styles.description}`}>{block.description}</div>
+        <footer className={`card-footer ${styles.footer}`}>
+          <Link className="card-footer-item" to={`${match.url}/${block.name}`}>
+            <FormattedMessage {...messages.buttonDetails} />
+          </Link>
+        </footer>
       </div>
-      <footer className={`card-footer ${styles.footer}`}>
-        <Link className="card-footer-item" to={`${match.url}/${block.name}`}>
-          <FormattedMessage {...messages.buttonDetails} />
-        </Link>
-      </footer>
     </div>
   );
 }
