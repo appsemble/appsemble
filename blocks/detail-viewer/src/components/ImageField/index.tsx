@@ -18,7 +18,7 @@ export default function ImageField({ label, name, src }: ImageFieldProps): VNode
   const obj =
     typeof src === 'string' && parameters?.fileBase
       ? src
-      : `${new URL(utils.asset(src as string), window.location.origin)}`;
+      : utils.asset(src as string);
   const url = useObjectURL(obj);
 
   const alt = utils.remap(label, src) || name;
