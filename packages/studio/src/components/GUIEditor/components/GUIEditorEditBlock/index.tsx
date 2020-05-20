@@ -54,7 +54,10 @@ export default function GUIEditorEditBlock({
   );
 
   const save = (editedParams: Resource): void => {
-    const blockParent = editLocation.parents.find((x) => x.name === 'blocks:');
+    const blockParent = editLocation.parents
+      .slice()
+      .reverse()
+      .find((x) => x.name === 'blocks:');
 
     const range = editExistingBlock
       ? editLocation.editRange

@@ -15,6 +15,7 @@ interface GUIEditorDeleteProps {
   editLocation: EditLocation;
   monacoEditor: editor.IStandaloneCodeEditor;
   setApp: (app: App) => void;
+  setAllowAdd: (allow: boolean) => void;
   setEditorStep: (step: GuiEditorStep) => void;
   setRecipe: (value: string) => void;
 }
@@ -29,6 +30,7 @@ export default function GUIEditorDelete({
   app,
   editLocation,
   monacoEditor,
+  setAllowAdd,
   setApp,
   setEditorStep,
   setRecipe,
@@ -102,8 +104,18 @@ export default function GUIEditorDelete({
     const definition = safeLoad(monacoEditor.getValue());
     setApp({ ...app, yaml: monacoEditor.getValue(), definition });
     setRecipe(monacoEditor.getValue());
+    setAllowAdd(false);
     setEditorStep(GuiEditorStep.SELECT);
-  }, [app, monacoEditor, editLocation, getDeleteWarningType, setApp, setEditorStep, setRecipe]);
+  }, [
+    app,
+    monacoEditor,
+    editLocation,
+    getDeleteWarningType,
+    setApp,
+    setEditorStep,
+    setRecipe,
+    setAllowAdd,
+  ]);
 
   const onClose = React.useCallback(() => {
     setEditorStep(GuiEditorStep.SELECT);
@@ -129,19 +141,19 @@ export default function GUIEditorDelete({
         ? intl.formatMessage(messages.deleteSubBlockWarning, {
             blockname: editLocation.blockName,
           })
-        : ''}
+        : null}
       {getDeleteWarningType() === deleteWarnings.DELETEPAGE
         ? intl.formatMessage(messages.deletePageWarning, {
             blockname: editLocation.blockName,
             pagename: editLocation.pageName,
           })
-        : ''}
+        : null}
       {getDeleteWarningType() === deleteWarnings.DELETEBLOCK
         ? intl.formatMessage(messages.deleteWarning, {
             blockname: editLocation.blockName,
             pagename: editLocation.pageName,
           })
-        : ''}
+        : null}
     </Modal>
   );
 }

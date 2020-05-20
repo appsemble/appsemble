@@ -92,6 +92,7 @@ export default function GUIEditor({
           app={appClone}
           editLocation={editLocation}
           monacoEditor={monacoEditor}
+          setAllowAdd={setAllowAdd}
           setApp={setAppClone}
           setEditorStep={setEditorStep}
           setRecipe={setRecipe}
