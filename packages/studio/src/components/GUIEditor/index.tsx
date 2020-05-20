@@ -3,14 +3,13 @@ import { stripBlockName } from '@appsemble/utils';
 import axios from 'axios';
 import indentString from 'indent-string';
 import yaml from 'js-yaml';
-import type { editor } from 'monaco-editor';
-import { Range } from 'monaco-editor';
+import { editor, Range } from 'monaco-editor';
 import type { OpenAPIV3 } from 'openapi-types';
 import React from 'react';
 
-import type { EditLocation } from '../MonacoEditor';
 import GUIEditorDelete from './components/GUIEditorDelete';
 import GUIEditorEditBlock from './components/GUIEditorEditBlock';
+import GUIEditorSelect from './components/GUIEditorSelect';
 import GUIEditorToolbox from './components/GUIEditorToolbox';
 
 export enum GuiEditorStep {
@@ -21,14 +20,25 @@ export enum GuiEditorStep {
   'DELETE',
 }
 
+export interface EditLocation {
+  blockName: string;
+  pageName: string;
+  parents?: [{ name: string; line: number; indent: number }];
+  editRange?: Range;
+}
+
 interface GUIEditorProps {
   editorStep: GuiEditorStep;
-  monacoEditor: editor.IStandaloneCodeEditor;
   save: (edittedParams: any) => void;
   editLocation: EditLocation;
   setRecipe: (value: string) => void;
   app: App;
   setEditorStep: (step: GuiEditorStep) => void;
+  setEditor?: (value: editor.IStandaloneCodeEditor) => void;
+  setAllowEdit: (allow: boolean) => void;
+  setAllowAdd: (allow: boolean) => void;
+  setEditLocation: (value: EditLocation) => void;
+  value?: string;
 }
 
 export interface SelectedBlockManifest extends BlockManifest {
@@ -50,12 +60,16 @@ export default function GUIEditor({
   app,
   editLocation,
   editorStep,
-  monacoEditor,
+  setAllowAdd,
+  setAllowEdit,
+  setEditLocation,
   setEditorStep,
   setRecipe,
 }: GUIEditorProps): React.ReactElement {
   const [selectedBlock, setSelectedBlock] = React.useState<SelectedBlockManifest>(undefined);
   const [blocks, setBlocks] = React.useState<SelectedBlockManifest[]>(undefined);
+  const [monacoEditor, setMonacoEditor] = React.useState<editor.IStandaloneCodeEditor>();
+  const [appClone, setAppClone] = React.useState<App>(app);
 
   React.useEffect(() => {
     const getBlocks = async (): Promise<void> => {
@@ -69,15 +83,12 @@ export default function GUIEditor({
     const blockParent =
       editLocation.parents[editLocation.parents.findIndex((x) => x.name === 'blocks:')];
 
-    // const selectBlockParent =
-    //   editLocation.parents[editLocation.parents.findIndex((x) => x.name === 'blocks:') - 1];
-    //
-    // let range;
-    // if (edit) {
-    //   range = new Range(selectBlockParent.line, 1, editLocation.editRange.endLineNumber, 1);
-    // } else {
-    //   range = new Range(blockParent.line + 1, 1, blockParent.line + 1, 1);
-    // }
+    let range;
+    if (edit) {
+      range = editLocation.editRange;
+    } else {
+      range = new Range(blockParent.line + 2, 1, blockParent.line + 2, 1);
+    }
 
     const text = indentString(
       yaml.safeDump([
@@ -89,16 +100,19 @@ export default function GUIEditor({
       ]),
       blockParent.indent + 1,
     );
-    const op = {
+    const options = {
       identifier: { major: 1, minor: 1 },
-      range: editLocation.editRange,
+      range,
       text,
       forceMoveMarkers: true,
     };
-
-    monacoEditor.executeEdits('GUIEditor-saveBlock', [op]);
-    setRecipe(monacoEditor.getValue());
+    monacoEditor.updateOptions({ readOnly: false });
+    monacoEditor.executeEdits('GUIEditor-saveBlock', [options]);
+    monacoEditor.updateOptions({ readOnly: true });
+    const newRecipe = monacoEditor.getValue();
+    setRecipe(newRecipe);
     setEditorStep(GuiEditorStep.SELECT);
+    setAppClone({ ...appClone, yaml: newRecipe });
   };
 
   const getSelectedBlock = React.useCallback((): SelectedBlockManifest => {
@@ -113,11 +127,22 @@ export default function GUIEditor({
       });
     }
     return block;
-  }, [blocks, editLocation.blockName, setSelectedBlock]);
+  }, [blocks, editLocation, setSelectedBlock]);
 
   switch (editorStep) {
-    case GuiEditorStep.ADD:
+    case GuiEditorStep.SELECT:
     default:
+      return (
+        <GUIEditorSelect
+          language="yaml"
+          setAllowAdd={setAllowAdd}
+          setAllowEdit={setAllowEdit}
+          setEditLocation={setEditLocation}
+          setEditor={(value: editor.IStandaloneCodeEditor) => setMonacoEditor(value)}
+          value={appClone.yaml}
+        />
+      );
+    case GuiEditorStep.ADD:
       return (
         <GUIEditorToolbox
           blocks={blocks}
@@ -129,17 +154,17 @@ export default function GUIEditor({
     case GuiEditorStep.DELETE:
       return (
         <GUIEditorDelete
-          app={app}
+          app={appClone}
           editLocation={editLocation}
           monacoEditor={monacoEditor}
+          setApp={(value: App) => setAppClone(value)}
           setEditorStep={(step: GuiEditorStep) => setEditorStep(step)}
-          setRecipe={(value: any) => setRecipe(value)}
         />
       );
     case GuiEditorStep.EDIT:
       return (
         <GUIEditorEditBlock
-          app={app}
+          app={appClone}
           editLocation={editLocation}
           save={save}
           selectedBlock={selectedBlock || getSelectedBlock()}

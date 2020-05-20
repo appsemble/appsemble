@@ -21,16 +21,15 @@ import axios from 'axios';
 import classNames from 'classnames';
 import { safeDump, safeLoad } from 'js-yaml';
 import { isEqual } from 'lodash';
-import type { editor } from 'monaco-editor';
 import type { OpenAPIV3 } from 'openapi-types';
 import React from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link, useHistory, useLocation, useParams } from 'react-router-dom';
 
 import { useApp } from '../AppContext';
-import GUIEditor, { GuiEditorStep } from '../GUIEditor';
+import GUIEditor, { EditLocation, GuiEditorStep } from '../GUIEditor';
 import HelmetIntl from '../HelmetIntl';
-import MonacoEditor, { EditLocation } from '../MonacoEditor';
+import MonacoEditor from '../MonacoEditor';
 import styles from './index.css';
 import messages from './messages';
 
@@ -51,10 +50,9 @@ export default function Editor(): React.ReactElement {
   const [openApiDocument, setOpenApiDocument] = React.useState<OpenAPIV3.Document>();
 
   const [editorStep, setEditorStep] = React.useState<GuiEditorStep>(GuiEditorStep.SELECT);
-  const [editLocation, setEditLocation] = React.useState<EditLocation>();
-  const [monacoEditor, setMonacoEditor] = React.useState<editor.IStandaloneCodeEditor>();
   const [allowEdit, setAllowEdit] = React.useState(false);
   const [allowAdd, setAllowAdd] = React.useState(false);
+  const [editLocation, setEditLocation] = React.useState<EditLocation>(undefined);
 
   const frame = React.useRef<HTMLIFrameElement>();
   const history = useHistory();
@@ -325,7 +323,11 @@ export default function Editor(): React.ReactElement {
                     }
                   }}
                 >
-                  <FormattedMessage {...messages.switchGUI} />
+                  {editorStep === GuiEditorStep.YAML ? (
+                    <FormattedMessage {...messages.switchManual} />
+                  ) : (
+                    <FormattedMessage {...messages.switchGUI} />
+                  )}
                 </Button>
               </span>
             </div>
@@ -413,27 +415,23 @@ export default function Editor(): React.ReactElement {
               </ul>
             )}
           </div>
-          {editorStep === GuiEditorStep.ADD ||
-          editorStep === GuiEditorStep.EDIT ||
-          editorStep === GuiEditorStep.DELETE ? (
+          {editorStep !== GuiEditorStep.YAML ? (
             <GUIEditor
               app={app}
               editLocation={editLocation}
               editorStep={editorStep}
-              monacoEditor={monacoEditor}
               save={onSave}
+              setAllowAdd={(allow: boolean) => setAllowAdd(allow)}
+              setAllowEdit={(allow: boolean) => setAllowEdit(allow)}
+              setEditLocation={setEditLocation}
               setEditorStep={(step: GuiEditorStep) => setEditorStep(step)}
               setRecipe={setRecipe}
             />
           ) : (
             <MonacoEditor
-              editLocation={setEditLocation}
               language={language}
               onSave={onSave}
               onValueChange={onValueChange}
-              setAllowAdd={(allow: boolean) => setAllowAdd(allow)}
-              setAllowEdit={(allow: boolean) => setAllowEdit(allow)}
-              setEditor={setMonacoEditor}
               value={value}
             />
           )}

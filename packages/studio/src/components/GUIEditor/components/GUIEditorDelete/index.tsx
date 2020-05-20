@@ -1,17 +1,18 @@
 import { CardFooterButton, Modal } from '@appsemble/react-components';
 import type { App } from '@appsemble/types';
 import { getAppBlocks } from '@appsemble/utils';
-import type { editor } from 'monaco-editor';
+import { safeLoad } from 'js-yaml';
+import { editor, Range } from 'monaco-editor';
 import React from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
+import type { EditLocation } from '../..';
 import { GuiEditorStep } from '../..';
-import type { EditLocation } from '../../../MonacoEditor';
 import messages from './messages';
 
 interface GUIEditorDeleteProps {
   setEditorStep: (step: GuiEditorStep) => void;
-  setRecipe: (value: string) => void;
+  setApp: (app: App) => void;
   monacoEditor: editor.IStandaloneCodeEditor;
   editLocation: EditLocation;
   app: App;
@@ -27,15 +28,15 @@ export default function GUIEditorDelete({
   app,
   editLocation,
   monacoEditor,
+  setApp,
   setEditorStep,
-  setRecipe,
 }: GUIEditorDeleteProps): React.ReactElement {
   const intl = useIntl();
 
   const getDeleteWarningType = React.useCallback((): deleteWarnings => {
     const blocks = getAppBlocks(app.definition);
     let blocksInPage = 0;
-    let hasSubblocks = false;
+    let subBlockSelected = false;
     const selectedPageId = app.definition.pages
       .findIndex((page) => page.name === editLocation.pageName)
       .toString();
@@ -46,32 +47,59 @@ export default function GUIEditorDelete({
       if (selectedPageId === pageId) {
         blocksInPage += 1;
         if (splitKey.indexOf('blocks') !== splitKey.lastIndexOf('blocks')) {
-          hasSubblocks = true;
+          blocksInPage -= 1;
+          if (blocks[key].type === editLocation.blockName) {
+            subBlockSelected = true;
+          }
         }
       }
       return pageId;
     });
 
-    if (hasSubblocks) {
-      return deleteWarnings.DELETESUBBLOCKS;
-    }
-    if (blocksInPage === 1) {
+    if (blocksInPage === 1 && subBlockSelected === false) {
       return deleteWarnings.DELETEPAGE;
+    }
+    if (subBlockSelected) {
+      return deleteWarnings.DELETESUBBLOCKS;
     }
     return deleteWarnings.DELETEBLOCK;
   }, [app, editLocation]);
 
   const remove = (): void => {
+    const warningType = getDeleteWarningType();
     const text = '';
-    const op = {
+    let range: Range;
+    if (warningType === deleteWarnings.DELETEPAGE) {
+      range = new Range(
+        editLocation.parents[editLocation.parents.length - 2].line,
+        1,
+        editLocation.editRange.endLineNumber,
+        1,
+      );
+    } else if (warningType === deleteWarnings.DELETESUBBLOCKS) {
+      range = new Range(
+        editLocation.editRange.startLineNumber - 1,
+        1,
+        editLocation.editRange.endLineNumber,
+        1,
+      );
+    } else {
+      range = editLocation.editRange;
+    }
+
+    const options = {
       identifier: { major: 1, minor: 1 },
-      range: editLocation.editRange,
+      range,
       text,
       forceMoveMarkers: true,
     };
 
-    monacoEditor.executeEdits('GUIEditor-saveBlock', [op]);
-    setRecipe(monacoEditor.getValue());
+    monacoEditor.updateOptions({ readOnly: false });
+    monacoEditor.executeEdits('GUIEditor-saveBlock', [options]);
+    monacoEditor.updateOptions({ readOnly: true });
+
+    const definition = safeLoad(monacoEditor.getValue());
+    setApp({ ...app, yaml: monacoEditor.getValue(), definition });
     setEditorStep(GuiEditorStep.SELECT);
   };
 
