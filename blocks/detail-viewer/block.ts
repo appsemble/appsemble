@@ -33,10 +33,8 @@ export interface RendererProps<F extends Field> extends Partial<BlockProps> {
   field: F;
 
   /**
-   * The current value.
+   * The data that is passed through.
    */
-  value: any;
-
   data: any;
 }
 
