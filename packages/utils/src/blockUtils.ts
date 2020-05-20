@@ -2,6 +2,8 @@ import type { Block } from '@appsemble/types';
 
 export type IdentifiableBlock = Pick<Block, 'type' | 'version'>;
 
+const prefix = '@appsemble/';
+
 /**
  * Normalize a block name by prefixing it with `@appsemble` if necessary.
  *
@@ -12,7 +14,7 @@ export function normalizeBlockName(name: string): string {
   if (name.startsWith('@')) {
     return name;
   }
-  return `@appsemble/${name}`;
+  return `${prefix + name}`;
 }
 
 /**
@@ -22,7 +24,7 @@ export function normalizeBlockName(name: string): string {
  * @returns The prettified block name.
  */
 export function stripBlockName(name: string): string {
-  if (name.startsWith('@')) {
+  if (name.startsWith(prefix)) {
     if (name.split.length > 1) {
       return name.split('/')[1];
     }

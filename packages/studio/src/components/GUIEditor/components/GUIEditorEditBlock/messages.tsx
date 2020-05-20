@@ -4,4 +4,5 @@ export default defineMessages({
   errorRequiredParams: 'Please fill in the field: ',
   back: 'Back',
   save: 'Save',
+  noParameters: '{name} has no editable parameters',
 });

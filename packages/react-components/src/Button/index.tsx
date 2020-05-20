@@ -8,6 +8,7 @@ import Icon from '../Icon';
 interface ButtonProps extends React.ComponentPropsWithoutRef<'button'> {
   color?: BulmaColor;
   icon?: IconName;
+  rightIcon?: IconName;
   inverted?: boolean;
   loading?: boolean;
 }
@@ -19,6 +20,7 @@ export default function Button({
   icon,
   inverted,
   loading,
+  rightIcon,
   type = 'button',
   ...props
 }: ButtonProps): React.ReactElement {
@@ -33,10 +35,11 @@ export default function Button({
       type={type}
       {...props}
     >
-      {icon ? (
+      {icon || rightIcon ? (
         <>
-          <Icon icon={icon} />
+          {icon ? <Icon icon={icon} /> : null}
           {children && <span>{children}</span>}
+          {rightIcon ? <Icon icon={rightIcon} /> : null}
         </>
       ) : (
         children

@@ -1,76 +1,72 @@
-import { Button } from '@appsemble/react-components';
-import type { BlockManifest } from '@appsemble/types';
+import { Loader, Title } from '@appsemble/react-components';
 import { stripBlockName } from '@appsemble/utils';
+import axios from 'axios';
 import React from 'react';
+import { FormattedMessage } from 'react-intl';
 
-import { GuiEditorStep } from '../..';
+import { GuiEditorStep, SelectedBlockManifest } from '../..';
 import GUIEditorToolboxBlock from '../GUIEditorToolboxBlock';
+import Stepper from '../Stepper';
 import styles from './index.css';
+import messages from './messages';
 
 interface GUIEditorToolboxProps {
   setEditorStep: (step: GuiEditorStep) => void;
-  setSelectedBlock: (block: BlockManifest) => void;
-  blocks: BlockManifest[];
-  selectedBlock: BlockManifest;
+  setSelectedBlock: (block: SelectedBlockManifest) => void;
+  selectedBlock: SelectedBlockManifest;
 }
 
 export default function GUIEditorToolbox({
-  blocks,
   selectedBlock,
   setEditorStep,
   setSelectedBlock,
 }: GUIEditorToolboxProps): React.ReactElement {
+  const [blocks, setBlocks] = React.useState<SelectedBlockManifest[]>(undefined);
+
+  React.useEffect(() => {
+    const getBlocks = async (): Promise<void> => {
+      const { data } = await axios.get('/api/blocks');
+      setBlocks(data);
+    };
+    getBlocks();
+  }, []);
+
+  if (blocks === undefined) {
+    return <Loader />;
+  }
+
   return (
     <div className={styles.flexContainer}>
-      <h1 className="title">Add block</h1>
+      <Title>
+        <FormattedMessage {...messages.title} />
+      </Title>
       <div className={styles.maxHeight}>
         <GUIEditorToolboxBlock
           blocks={blocks}
-          selectBlock={(block: BlockManifest) => setSelectedBlock(block)}
+          selectedBlock={selectedBlock}
+          setSelectedBlock={setSelectedBlock}
         />
       </div>
-      {selectedBlock !== undefined ? (
+      {selectedBlock && (
         <div className={styles.marginBottom}>
-          <h1 className="subtitle" style={{ textTransform: 'capitalize' }}>
-            <strong>{stripBlockName(selectedBlock.name)}</strong>
-          </h1>
+          <Title level={4}>{stripBlockName(selectedBlock.name)}</Title>
           {selectedBlock.description}
           <a
-            href={`https://appsemble.dev/blocks/${selectedBlock.name.split('/')[1]}`}
+            href={`https://appsemble.dev/blocks/${stripBlockName(selectedBlock.name)}`}
             rel="noopener noreferrer"
             target="_blank"
           >
-            {' '}
-            More info
+            <FormattedMessage {...messages.moreInfo} />
           </a>
         </div>
-      ) : (
-        ''
       )}
-      <div className={styles.footer}>
-        <Button
-          className="button is-warning"
-          icon="angle-left"
-          onClick={() => {
-            setEditorStep(GuiEditorStep.SELECT);
-          }}
-          style={{ alignContent: 'flex-start' }}
-        >
-          Back
-        </Button>
-
-        <Button
-          className="button is-success"
-          disabled={!selectedBlock}
-          icon="angle-right"
-          onClick={() => {
-            setEditorStep(GuiEditorStep.EDIT);
-          }}
-          style={{ alignContent: 'flex-end' }}
-        >
-          Next
-        </Button>
-      </div>
+      <Stepper
+        leftOnClick={() => setEditorStep(GuiEditorStep.SELECT)}
+        rightDisabled={!selectedBlock}
+        rightOnClick={() => {
+          setEditorStep(GuiEditorStep.EDIT);
+        }}
+      />
     </div>
   );
 }

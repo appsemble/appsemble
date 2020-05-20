@@ -9,23 +9,14 @@
   overflow: hidden !important;
   text-overflow: ellipsis;
   width: 120px;
-}
 
-.blockFrame:hover {
-  cursor: pointer;
-}
+  &.selected {
+    background: hsl(204, 86%, 53%);
+  }
 
-.blockFrameSelected {
-  align-items: center;
-  background: hsl(204, 86%, 53%);
-  display: flex;
-  flex-direction: column;
-  float: left;
-  margin-bottom: 12px;
-  margin-left: 12px;
-  overflow: hidden !important;
-  text-overflow: ellipsis;
-  width: 120px;
+  &:hover {
+    cursor: pointer;
+  }
 }
 
 .subtext {

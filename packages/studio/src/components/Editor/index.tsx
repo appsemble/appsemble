@@ -286,7 +286,13 @@ export default function Editor(): React.ReactElement {
       <HelmetIntl title={messages.title} titleValues={{ name: appName }} />
       <div className={styles.leftPanel}>
         <Form className={styles.editorForm} onSubmit={onSave}>
-          <nav className="navbar">
+          <nav
+            className={
+              editorStep === GuiEditorStep.YAML || editorStep === GuiEditorStep.SELECT
+                ? 'navbar'
+                : 'is-hidden'
+            }
+          >
             <div className="navbar-brand">
               <span className="navbar-item">
                 <Button disabled={!dirty} icon="vial" type="submit">
@@ -324,9 +330,9 @@ export default function Editor(): React.ReactElement {
                   }}
                 >
                   {editorStep === GuiEditorStep.YAML ? (
-                    <FormattedMessage {...messages.switchManual} />
-                  ) : (
                     <FormattedMessage {...messages.switchGUI} />
+                  ) : (
+                    <FormattedMessage {...messages.switchManual} />
                   )}
                 </Button>
               </span>
@@ -334,7 +340,9 @@ export default function Editor(): React.ReactElement {
           </nav>
           <div
             className={
-              editorStep === GuiEditorStep.ADD ? 'is-hidden' : `tabs is-boxed ${styles.editorTabs}`
+              editorStep === GuiEditorStep.YAML || editorStep === GuiEditorStep.SELECT
+                ? `tabs is-boxed ${styles.editorTabs}`
+                : 'is-hidden'
             }
           >
             {editorStep === GuiEditorStep.YAML ? (
@@ -420,11 +428,10 @@ export default function Editor(): React.ReactElement {
               app={app}
               editLocation={editLocation}
               editorStep={editorStep}
-              save={onSave}
-              setAllowAdd={(allow: boolean) => setAllowAdd(allow)}
-              setAllowEdit={(allow: boolean) => setAllowEdit(allow)}
+              setAllowAdd={setAllowAdd}
+              setAllowEdit={setAllowEdit}
               setEditLocation={setEditLocation}
-              setEditorStep={(step: GuiEditorStep) => setEditorStep(step)}
+              setEditorStep={setEditorStep}
               setRecipe={setRecipe}
             />
           ) : (

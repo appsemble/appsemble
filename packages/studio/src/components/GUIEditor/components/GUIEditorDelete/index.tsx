@@ -11,11 +11,12 @@ import { GuiEditorStep } from '../..';
 import messages from './messages';
 
 interface GUIEditorDeleteProps {
-  setEditorStep: (step: GuiEditorStep) => void;
-  setApp: (app: App) => void;
-  monacoEditor: editor.IStandaloneCodeEditor;
-  editLocation: EditLocation;
   app: App;
+  editLocation: EditLocation;
+  monacoEditor: editor.IStandaloneCodeEditor;
+  setApp: (app: App) => void;
+  setEditorStep: (step: GuiEditorStep) => void;
+  setRecipe: (value: string) => void;
 }
 
 enum deleteWarnings {
@@ -30,6 +31,7 @@ export default function GUIEditorDelete({
   monacoEditor,
   setApp,
   setEditorStep,
+  setRecipe,
 }: GUIEditorDeleteProps): React.ReactElement {
   const intl = useIntl();
 
@@ -65,7 +67,7 @@ export default function GUIEditorDelete({
     return deleteWarnings.DELETEBLOCK;
   }, [app, editLocation]);
 
-  const remove = (): void => {
+  const remove = React.useCallback((): void => {
     const warningType = getDeleteWarningType();
     const text = '';
     let range: Range;
@@ -87,21 +89,21 @@ export default function GUIEditorDelete({
       range = editLocation.editRange;
     }
 
-    const options = {
-      identifier: { major: 1, minor: 1 },
-      range,
-      text,
-      forceMoveMarkers: true,
-    };
-
     monacoEditor.updateOptions({ readOnly: false });
-    monacoEditor.executeEdits('GUIEditor-saveBlock', [options]);
+    monacoEditor.executeEdits('GUIEditor-saveBlock', [
+      {
+        range,
+        text,
+        forceMoveMarkers: true,
+      },
+    ]);
     monacoEditor.updateOptions({ readOnly: true });
 
     const definition = safeLoad(monacoEditor.getValue());
     setApp({ ...app, yaml: monacoEditor.getValue(), definition });
+    setRecipe(monacoEditor.getValue());
     setEditorStep(GuiEditorStep.SELECT);
-  };
+  }, [app, monacoEditor, editLocation, getDeleteWarningType, setApp, setEditorStep, setRecipe]);
 
   const onClose = React.useCallback(() => {
     setEditorStep(GuiEditorStep.SELECT);

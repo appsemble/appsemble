@@ -1,42 +1,43 @@
-import { Icon, Loader } from '@appsemble/react-components';
-import type { BlockManifest } from '@appsemble/types';
+import { Icon } from '@appsemble/react-components';
+import classNames from 'classnames';
 import React from 'react';
 
+import type { SelectedBlockManifest } from '../..';
 import styles from './index.css';
 
 interface GUIEditorToolboxBlockProps {
-  blocks: BlockManifest[];
-  selectBlock: (block: BlockManifest) => void;
+  blocks: SelectedBlockManifest[];
+  setSelectedBlock: (block: SelectedBlockManifest) => void;
+  selectedBlock: SelectedBlockManifest;
 }
 export default function GUIEditorToolboxBlock({
   blocks,
-  selectBlock,
+  selectedBlock,
+  setSelectedBlock,
 }: GUIEditorToolboxBlockProps): React.ReactElement {
-  const [selectedBlock, setSelectedBlock] = React.useState<BlockManifest>();
-
   const onKeyDown = (event: React.KeyboardEvent): void => {
     if (event.key === 'Escape') {
       setSelectedBlock(undefined);
     }
+    if (event.key === 'Tab') {
+      const nextBlockIndex = blocks.findIndex((x) => x.name === selectedBlock.name) + 1;
+      setSelectedBlock(blocks[nextBlockIndex]);
+    }
   };
-
-  if (blocks === [] || blocks === undefined) {
-    return <Loader />;
-  }
 
   return (
     <div className={styles.main}>
-      {blocks.map((block: BlockManifest) => (
+      {blocks.map((block: SelectedBlockManifest) => (
         <div
           key={block.name}
-          className={selectedBlock === block ? styles.blockFrameSelected : styles.blockFrame}
-          onClick={() => [setSelectedBlock(block), selectBlock(block)]}
-          onKeyDown={() => onKeyDown}
+          className={classNames(styles.blockFrame, { [styles.selected]: selectedBlock === block })}
+          onClick={() => setSelectedBlock(block)}
+          onKeyDown={onKeyDown}
           role="button"
           tabIndex={0}
         >
           <Icon icon="box" size="large" />
-          <h2 className={styles.subtext}>{block.name.split('/')[1]}</h2>
+          <span className={styles.subtext}>{block.name.split('/')[1]}</span>
         </div>
       ))}
     </div>
