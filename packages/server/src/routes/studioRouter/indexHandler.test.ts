@@ -69,7 +69,7 @@ it('should pass login options from argv to the studio', async () => {
         '; frame-src *.localhost:9999 http://localhost:9999' +
         '; img-src * blob: data:' +
         '; report-uri https://sentry.io/api/path/security/?sentry_key=secret' +
-        "; script-src 'nonce-AAAAAAAAAAAAAAAAAAAAAA==' 'self' 'sha256-u7Lwg39nDVoG/C+KUi2A+femGRBoDntSTyJiVRgbfqc=' 'unsafe-eval'" +
+        "; script-src 'nonce-AAAAAAAAAAAAAAAAAAAAAA==' 'self' 'sha256-55BH1zlzYBdLKuc8rxGYlA+gttOW/TiZC2YsrbcbG8Q=' 'unsafe-eval'" +
         "; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
       'content-type': 'text/html; charset=utf-8',
     }),
@@ -78,7 +78,25 @@ it('should pass login options from argv to the studio', async () => {
   expect(templateName).toBe('studio.html');
   expect(templateData).toStrictEqual({
     nonce: 'AAAAAAAAAAAAAAAAAAAAAA==',
-    settings:
-      '<script>window.settings={"enableRegistration":false,"logins":["gitlab","google"],"sentryDsn":"https://secret@sentry.io/path"}</script>',
+    settings: `<script>window.settings=${JSON.stringify({
+      enableRegistration: false,
+      logins: [
+        {
+          authorizationUrl: 'https://gitlab.com/oauth/authorize',
+          clientId: 'GitLab secret',
+          icon: 'gitlab',
+          name: 'GitLab',
+          scope: 'email openid profile',
+        },
+        {
+          authorizationUrl: 'https://accounts.google.com/o/oauth2/auth',
+          clientId: 'Google secret',
+          icon: 'google',
+          name: 'Google',
+          scope: 'email openid profile',
+        },
+      ],
+      sentryDsn: 'https://secret@sentry.io/path',
+    })}</script>`,
   });
 });

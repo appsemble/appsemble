@@ -1,18 +1,23 @@
 import type { TokenResponse } from '@appsemble/types';
 import Boom from '@hapi/boom';
 import axios from 'axios';
-import jsonwebtoken from 'jsonwebtoken';
 import { URL, URLSearchParams } from 'url';
 
 import { EmailAuthorization, OAuthAuthorization, transactional, User } from '../models';
 import type { KoaContext } from '../types';
 import createJWTResponse from '../utils/createJWTResponse';
+import getUserInfo from '../utils/getUserInfo';
 import { gitlabPreset, googlePreset, presets } from '../utils/OAuth2Presets';
 
 export async function registerOAuth2Connection(ctx: KoaContext): Promise<void> {
   const { argv } = ctx;
   const { authorizationUrl, code } = ctx.request.body;
-  const referer = new URL(ctx.request.headers.referer);
+  let referer: URL;
+  try {
+    referer = new URL(ctx.request.headers.referer);
+  } catch (err) {
+    throw Boom.badRequest('The referer header is invalid');
+  }
 
   const preset = presets.find((p) => p.authorizationUrl === authorizationUrl);
   let clientId: string;
@@ -31,45 +36,32 @@ export async function registerOAuth2Connection(ctx: KoaContext): Promise<void> {
   }
 
   // Exchange the authorization code for an access token and refresh token.
-  const {
-    data: { access_token: accessToken, id_token: idToken, refresh_token: refreshToken },
-  } = await axios.post<TokenResponse>(
+  const { data: tokenResponse } = await axios.post<TokenResponse>(
     preset.tokenUrl,
     new URLSearchParams({
       grant_type: 'authorization_code',
       code,
       redirect_uri: `${referer.origin}${referer.pathname}`,
     }),
-    { auth: { username: clientId, password: clientSecret } },
+    { headers: { authorization: `Basic ${clientId}:${clientSecret}` } },
   );
 
-  // Extract the subject from the id token, with a fallback to access token.
-  const { sub } = jsonwebtoken.decode(idToken ?? accessToken);
-  // Fetch the user info from the OpenID userinfo endpoint.
-  const { data: userInfo } = await axios.get(preset.userInfoUrl, {
-    headers: { authorization: `Bearer ${accessToken}` },
-  });
+  const { access_token: accessToken, refresh_token: refreshToken } = tokenResponse;
+  const { sub, ...userInfo } = await getUserInfo(preset, tokenResponse);
 
   const authorization = await OAuthAuthorization.findOne({
     where: { authorizationUrl, sub },
-    attributes: ['UserId'],
   });
   if (authorization?.UserId) {
     // If the combination of authorization url and sub exists, update the entry and allow the user
     // to login to Appsemble.
-    await OAuthAuthorization.update(
-      { accessToken, refreshToken },
-      { where: { authorizationUrl, sub } },
-    );
+    await authorization.update({ accessToken, refreshToken }, { where: { authorizationUrl, sub } });
     ctx.body = createJWTResponse(authorization.UserId, argv);
   } else {
     // Otherwise, register an authorization object and ask the user if this is the account they want
     // to use.
     if (authorization) {
-      await OAuthAuthorization.update(
-        { accessToken, code, refreshToken },
-        { where: { sub, authorizationUrl: preset.authorizationUrl } },
-      );
+      await authorization.update({ accessToken, code, refreshToken });
     } else {
       await OAuthAuthorization.create({
         accessToken,
@@ -79,12 +71,7 @@ export async function registerOAuth2Connection(ctx: KoaContext): Promise<void> {
         sub,
       });
     }
-    ctx.body = {
-      name: userInfo.name,
-      email: userInfo.email,
-      profile: userInfo.profile,
-      picture: userInfo.picture,
-    };
+    ctx.body = userInfo;
   }
 }
 
@@ -98,10 +85,7 @@ export async function connectPendingOAuth2Profile(ctx: KoaContext): Promise<void
     throw Boom.notImplemented('Unknown authorization URL');
   }
 
-  const authorization = await OAuthAuthorization.findOne({
-    where: { code, authorizationUrl },
-    attributes: ['authorizationUrl', 'accessToken', 'sub', 'UserId'],
-  });
+  const authorization = await OAuthAuthorization.findOne({ where: { code, authorizationUrl } });
 
   if (!authorization) {
     throw Boom.notFound('No pending OAuth2 authorization found for given state');
@@ -126,28 +110,32 @@ export async function connectPendingOAuth2Profile(ctx: KoaContext): Promise<void
     const { data: userInfo } = await axios.get(preset.userInfoUrl, {
       headers: { authorization: `Bearer ${authorization.accessToken}` },
     });
-    try {
-      await transactional(async (transaction) => {
-        user = await User.create(
-          { name: userInfo.name, primaryEmail: userInfo.email },
-          { transaction },
-        );
-        await OAuthAuthorization.update(
-          { UserId: user.id },
-          { transaction, where: { code, authorizationUrl } },
-        );
-        if (userInfo.email) {
-          // We’ll try to link this email address to the new user, even though no password has been
-          // set.
+    await transactional(async (transaction) => {
+      user = await User.create(
+        { name: userInfo.name, primaryEmail: userInfo.email },
+        { transaction },
+      );
+      await authorization.update({ UserId: user.id }, { transaction });
+      if (userInfo.email) {
+        // We’ll try to link this email address to the new user, even though no password has been
+        // set.
+        const emailAuthorization = await EmailAuthorization.findOne({
+          where: { email: userInfo.email },
+        });
+        if (emailAuthorization) {
+          if (emailAuthorization.UserId !== user.id) {
+            throw Boom.conflict(
+              'This email address has already been linked to an existing account.',
+            );
+          }
+        } else {
           await EmailAuthorization.create(
             { UserId: user.id, email: userInfo.email, verified: userInfo.email_verified },
             { transaction },
           );
         }
-      });
-    } catch (err) {
-      throw Boom.conflict('This email address has already been linked to an existing account.');
-    }
+      }
+    });
   }
   ctx.body = createJWTResponse(user.id, argv);
 }

@@ -4,13 +4,7 @@ import bcrypt from 'bcrypt';
 import crypto from 'crypto';
 import { DatabaseError, UniqueConstraintError } from 'sequelize';
 
-import {
-  EmailAuthorization,
-  OAuthAuthorization,
-  ResetPasswordToken,
-  transactional,
-  User,
-} from '../models';
+import { EmailAuthorization, ResetPasswordToken, transactional, User } from '../models';
 import type { KoaContext } from '../types';
 import createJWTResponse from '../utils/createJWTResponse';
 

@@ -151,6 +151,7 @@ export interface TokenResponse {
    *
    * This field is only present on OpenID connect providers.
    */
+  // eslint-disable-next-line camelcase
   id_token?: string;
 
   /**
