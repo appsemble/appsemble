@@ -8,6 +8,7 @@ import settings from '../../utils/settings';
 import AnonymousRoute from '../AnonymousRoute';
 import AppContext from '../AppContext';
 import AppList from '../AppList';
+import BlockDetails from '../BlockDetails';
 import BlockList from '../BlockList';
 import EditPassword from '../EditPassword';
 import ErrorFallback from '../ErrorFallback';
@@ -40,6 +41,9 @@ export default function App(): React.ReactElement {
                   </Route>
                   <Route exact path="/blocks">
                     <BlockList />
+                  </Route>
+                  <Route exact path="/blocks/@:organization/:blockName">
+                    <BlockDetails />
                   </Route>
                   <ProtectedRoute path="/settings">
                     <Settings />

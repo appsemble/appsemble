@@ -3,7 +3,6 @@ import type { BlockManifest } from '@appsemble/types';
 import axios from 'axios';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
-import { Link, useRouteMatch } from 'react-router-dom';
 
 import HelmetIntl from '../HelmetIntl';
 import BlockCard from './components/BlockCard';
@@ -14,8 +13,6 @@ export default function BlockList(): React.ReactElement {
   const [blocks, setBlocks] = React.useState<BlockManifest[]>();
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState(false);
-
-  const match = useRouteMatch();
 
   React.useEffect(() => {
     try {
