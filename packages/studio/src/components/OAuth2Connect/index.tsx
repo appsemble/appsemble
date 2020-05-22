@@ -1,4 +1,4 @@
-import { Button, Loader, Title, useQuery } from '@appsemble/react-components';
+import { Button, Loader, Message, Title, useQuery } from '@appsemble/react-components';
 import type { TokenResponse, UserInfo } from '@appsemble/types';
 import axios from 'axios';
 import classNames from 'classnames';
@@ -103,7 +103,11 @@ export default function OAuth2Connect(): React.ReactElement {
   }
 
   if (error) {
-    return <FormattedMessage {...error} />;
+    return (
+      <Message color="danger">
+        <FormattedMessage {...error} />
+      </Message>
+    );
   }
 
   return (
