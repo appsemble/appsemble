@@ -1,4 +1,4 @@
-import { Loader } from '@appsemble/react-components';
+import { Loader, Message } from '@appsemble/react-components';
 import type { App } from '@appsemble/types';
 import { permissions } from '@appsemble/utils';
 import axios, { AxiosError } from 'axios';
@@ -61,7 +61,11 @@ export default function AppContext(): React.ReactElement {
   }, [match]);
 
   if (error) {
-    return <FormattedMessage {...error} />;
+    return (
+      <Message color="danger">
+        <FormattedMessage {...error} />
+      </Message>
+    );
   }
 
   if (!organizations || !app) {
