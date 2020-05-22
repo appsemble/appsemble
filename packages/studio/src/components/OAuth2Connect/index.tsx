@@ -12,7 +12,7 @@ import styles from './index.css';
 import messages from './messages';
 
 /**
- * This component handles the callback URl redirect of the user in the OAuth2 login flow.
+ * This component handles the callback URL redirect of the user in the OAuth2 login flow.
  *
  * - If the user has logged in using a known account, they are logged in to Appsemble.
  * - If the user is already logged in, they are prompted to link the OAuth2 account to their
