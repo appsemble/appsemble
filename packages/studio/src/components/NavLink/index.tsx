@@ -3,7 +3,7 @@ import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 
 interface NavLinkProps {
-  className: string;
+  className?: string;
   children: React.ReactChild[] | React.ReactChild;
   exact?: boolean;
   to: string;
