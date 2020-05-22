@@ -55,7 +55,7 @@ export interface OAuth2Provider {
   authorizationUrl: string;
 
   /**
-   * The public client id which identies Appsemble to the authorization server.
+   * The public client id which identifies Appsemble to the authorization server.
    */
   clientId: string;
 
