@@ -106,7 +106,7 @@ test:
   script:
     - yarn --frozen-lockfile
     - yarn jest --coverage --reporters default --reporters jest-junit
-    - bash <(curl -s https://codecov.io/bash)
+    - yarn codecov
   artifacts:
     reports:
       junit: junit.xml
