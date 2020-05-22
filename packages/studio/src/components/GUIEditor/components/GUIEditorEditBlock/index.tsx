@@ -12,6 +12,7 @@ import { FormattedMessage } from 'react-intl';
 import type { EditLocation, SelectedBlockManifest } from '../..';
 import { GuiEditorStep } from '../..';
 import JSONSchemaEditor from '../../../JSONSchemaEditor';
+import ActionEditor from '../ActionEditor';
 import Stepper from '../Stepper';
 import styles from './index.css';
 import messages from './messages';
@@ -53,7 +54,14 @@ export default function GUIEditorEditBlock({
     [editingResource],
   );
 
-  const save = (editedParams: Resource): void => {
+  const onChangeAction = React.useCallback(
+    (_event: any, value: any) => {
+      setEditingResource({ ...editingResource, actions: { ...value } });
+    },
+    [editingResource],
+  );
+
+  const save = React.useCallback((): void => {
     const blockParent = editLocation.parents
       .slice()
       .reverse()
@@ -69,9 +77,9 @@ export default function GUIEditorEditBlock({
           {
             type: stripBlockName(selectedBlock.name),
             version: selectedBlock.version,
-            parameters: editedParams.parameters,
-            actions: editedParams.actions,
-            events: editedParams.events,
+            parameters: editingResource.parameters,
+            actions: editingResource.actions,
+            events: editingResource.events,
           },
         ],
         { skipInvalid: true },
@@ -93,7 +101,17 @@ export default function GUIEditorEditBlock({
     setEditorStep(GuiEditorStep.SELECT);
     const definition = safeLoad(monacoEditor.getValue());
     setApp({ ...app, yaml: recipe, definition });
-  };
+  }, [
+    app,
+    editExistingBlock,
+    editLocation,
+    selectedBlock,
+    setRecipe,
+    setEditorStep,
+    setApp,
+    editingResource,
+    monacoEditor,
+  ]);
 
   React.useEffect(() => {
     const getBlockParams = (): void => {
@@ -148,12 +166,17 @@ export default function GUIEditorEditBlock({
       <Title level={2}>{stripBlockName(selectedBlock.name)}</Title>
       <div className={styles.main}>
         {selectedBlock?.parameters ? (
-          <JSONSchemaEditor
-            name={stripBlockName(selectedBlock.name)}
-            onChange={onChange}
-            schema={selectedBlock?.parameters as OpenAPIV3.SchemaObject}
-            value={editingResource?.parameters}
-          />
+          <>
+            <Title level={3}>
+              <FormattedMessage {...messages.parameters} />
+            </Title>
+            <JSONSchemaEditor
+              name={stripBlockName(selectedBlock.name)}
+              onChange={onChange}
+              schema={selectedBlock?.parameters as OpenAPIV3.SchemaObject}
+              value={editingResource?.parameters}
+            />
+          </>
         ) : (
           <div>
             <FormattedMessage
@@ -161,6 +184,19 @@ export default function GUIEditorEditBlock({
               values={{ name: stripBlockName(selectedBlock.name) }}
             />
           </div>
+        )}
+        {selectedBlock?.actions && (
+          <>
+            <Title className={styles.marginTop} level={3}>
+              <FormattedMessage {...messages.actions} />
+            </Title>
+            <ActionEditor
+              actions={selectedBlock?.actions}
+              app={app}
+              onChange={onChangeAction}
+              value={editingResource?.actions}
+            />
+          </>
         )}
       </div>
       <Stepper
@@ -178,7 +214,7 @@ export default function GUIEditorEditBlock({
         rightDisabled={!selectedBlock}
         rightMessage={<FormattedMessage {...messages.save} />}
         rightOnClick={() => {
-          save(editingResource);
+          save();
           setSelectedBlock(undefined);
         }}
       />

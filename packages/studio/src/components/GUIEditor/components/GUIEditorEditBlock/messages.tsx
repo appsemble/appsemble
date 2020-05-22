@@ -5,4 +5,8 @@ export default defineMessages({
   back: 'Back',
   save: 'Save',
   noParameters: '{name} has no editable parameters',
+  noActions: '{name} has no linkable actions',
+  parameters: 'Parameters',
+  actions: 'Actions',
+  events: 'Events',
 });
