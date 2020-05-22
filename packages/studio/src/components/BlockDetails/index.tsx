@@ -1,4 +1,4 @@
-import RefParser from '@apidevtools/json-schema-ref-parser';
+import RefParser, { resolve } from '@apidevtools/json-schema-ref-parser';
 import { Content, Loader, Message, Select, Table, Title } from '@appsemble/react-components';
 import type { BlockManifest } from '@appsemble/types';
 import axios from 'axios';
@@ -7,6 +7,9 @@ import { FormattedMessage } from 'react-intl';
 import { useRouteMatch } from 'react-router-dom';
 
 import HelmetIntl from '../HelmetIntl';
+import ActionTable from './components/ActionTable';
+import EventTable from './components/EventTable';
+import ParameterTable from './components/ParameterTable';
 import styles from './index.css';
 import messages from './messages';
 
@@ -67,12 +70,14 @@ export default function BlockDetails(): React.ReactElement {
     return <Loader />;
   }
 
+  console.log(resolvedBlockManifest);
+
   return (
     <>
       <HelmetIntl title={messages.title} titleValues={{ name: `@${organization}/${blockName}` }} />
       <Content className={`content ${styles.content}`}>
-        <Title level={3}>{blockName}</Title>
-        <Title className="subtitle" level={4}>
+        <Title level={2}>{blockName}</Title>
+        <Title className="subtitle" level={3}>
           @{organization}
         </Title>
         <Select
@@ -90,85 +95,33 @@ export default function BlockDetails(): React.ReactElement {
           ))}
         </Select>
 
-        <Title level={5}>
+        <Title level={4}>
           <FormattedMessage {...messages.description} />
         </Title>
         <p>{resolvedBlockManifest.description}</p>
 
-        <Title level={5}>
-          <FormattedMessage {...messages.parameters} />
-        </Title>
-        <Table>
-          <thead>
-            <tr>
-              <th>
-                <FormattedMessage {...messages.name} />
-              </th>
-              <th>
-                <FormattedMessage {...messages.required} />
-              </th>
-              <th>
-                <FormattedMessage {...messages.type} />
-              </th>
-              <th>
-                <FormattedMessage {...messages.description} />
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {Object.entries((resolvedBlockManifest.parameters as any).properties).map(
-              ([key, value]) => (
-                <tr>
-                  <td>{key}</td>
-                  <td>
-                    {(resolvedBlockManifest.parameters as any).required?.includes(key) ? (
-                      <FormattedMessage {...messages.true} />
-                    ) : (
-                      <FormattedMessage {...messages.false} />
-                    )}
-                  </td>
-                  <td>{(value as any).type}</td>
-                  <td>{(value as any).description}</td>
-                </tr>
-              ),
-            )}
-          </tbody>
-        </Table>
-        {Object.keys(resolvedBlockManifest.actions).length && (
+        {Object.keys(resolvedBlockManifest.parameters || {}).length > 0 && (
           <>
             <Title level={5}>
+              <FormattedMessage {...messages.parameters} />
+            </Title>
+            <ParameterTable manifest={resolvedBlockManifest} />
+          </>
+        )}
+        {Object.keys(resolvedBlockManifest.actions || {}).length > 0 && (
+          <>
+            <Title level={4}>
               <FormattedMessage {...messages.actions} />
             </Title>
-            <Table>
-              <thead>
-                <tr>
-                  <th>
-                    <FormattedMessage {...messages.name} />
-                  </th>
-                  <th>
-                    <FormattedMessage {...messages.required} />
-                  </th>
-                  <th>
-                    <FormattedMessage {...messages.description} />
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {Object.entries(resolvedBlockManifest.actions).map(([key, value]) => (
-                  <tr>
-                    <td>{key}</td>
-                    <td>
-                      {value.required ? (
-                        <FormattedMessage {...messages.true} />
-                      ) : (
-                        <FormattedMessage {...messages.false} />
-                      )}
-                    </td>
-                    <td>{(value as any).description}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </Table>
+            <ActionTable manifest={resolvedBlockManifest} />
+          </>
+        )}
+        {(resolvedBlockManifest.events?.emit || resolvedBlockManifest.events?.listen) && (
+          <>
+            <Title level={4}>
+              <FormattedMessage {...messages.events} />
+            </Title>
+            <EventTable manifest={resolvedBlockManifest} />
           </>
         )}
       </Content>

@@ -45,10 +45,10 @@ export default function BlockList(): React.ReactElement {
       <HelmetIntl title={messages.title} />
       <div className={styles.blockList}>
         {appsembleBlocks.map((block) => (
-          <BlockCard block={block} />
+          <BlockCard key={block.name} block={block} />
         ))}
         {thirdPartyBlocks.map((block) => (
-          <BlockCard block={block} />
+          <BlockCard key={block.name} block={block} />
         ))}
       </div>
     </>

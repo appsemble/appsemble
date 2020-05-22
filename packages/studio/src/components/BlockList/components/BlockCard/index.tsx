@@ -17,7 +17,7 @@ export default function BlockCard({ block }: BlockCardProps): React.ReactElement
   return (
     <div key={block.name} className="card">
       <header className="card-header">
-        <p className="card-header-title">
+        <div className="card-header-title">
           <div className="media-content">
             <p className="title is-4">{name}</p>
             <p className="subtitle is-6">{org}</p>
@@ -25,7 +25,7 @@ export default function BlockCard({ block }: BlockCardProps): React.ReactElement
           <div className={`media-right ${styles.version}`}>
             <span className="subtitle is-6 has-text-grey">{block.version}</span>
           </div>
-        </p>
+        </div>
       </header>
       <div className={styles.cardBody}>
         <div className="card-content">
@@ -37,7 +37,7 @@ export default function BlockCard({ block }: BlockCardProps): React.ReactElement
             )}
           </div>
         </div>
-        <footer className={`card-footer ${styles.footer}`}>
+        <footer className="card-footer">
           <Link className="card-footer-item" to={`${match.url}/${block.name}`}>
             <FormattedMessage {...messages.buttonDetails} />
           </Link>
