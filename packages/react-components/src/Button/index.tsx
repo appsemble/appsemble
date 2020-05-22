@@ -1,5 +1,5 @@
 import type { BulmaColor } from '@appsemble/sdk';
-import type { IconName } from '@fortawesome/fontawesome-common-types';
+import type { IconName, IconPrefix } from '@fortawesome/fontawesome-common-types';
 import classNames from 'classnames';
 import * as React from 'react';
 
@@ -8,6 +8,7 @@ import Icon from '../Icon';
 interface ButtonProps extends React.ComponentPropsWithoutRef<'button'> {
   color?: BulmaColor;
   icon?: IconName;
+  iconPrefix?: IconPrefix;
   inverted?: boolean;
   loading?: boolean;
 }
@@ -17,6 +18,7 @@ export default function Button({
   className,
   color,
   icon,
+  iconPrefix,
   inverted,
   loading,
   type = 'button',
@@ -35,7 +37,7 @@ export default function Button({
     >
       {icon ? (
         <>
-          <Icon icon={icon} />
+          <Icon icon={icon} prefix={iconPrefix} />
           {children && <span>{children}</span>}
         </>
       ) : (

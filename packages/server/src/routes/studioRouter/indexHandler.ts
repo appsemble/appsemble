@@ -4,6 +4,7 @@ import { URL } from 'url';
 import type { KoaContext } from '../../types';
 import createSettings from '../../utils/createSettings';
 import makeCSP from '../../utils/makeCSP';
+import { gitlabPreset, googlePreset } from '../../utils/OAuth2Presets';
 import sentryDsnToReportUri from '../../utils/sentryDsnToReportUri';
 
 /**
@@ -15,10 +16,22 @@ export default async function indexHandler(ctx: KoaContext): Promise<void> {
   const { disableRegistration, host, sentryDsn } = argv;
   const logins = [];
   if (argv.oauthGitlabKey) {
-    logins.push('gitlab');
+    logins.push({
+      authorizationUrl: gitlabPreset.authorizationUrl,
+      clientId: argv.oauthGitlabKey,
+      icon: gitlabPreset.icon,
+      name: gitlabPreset.name,
+      scope: gitlabPreset.scope,
+    });
   }
   if (argv.oauthGoogleKey) {
-    logins.push('google');
+    logins.push({
+      authorizationUrl: googlePreset.authorizationUrl,
+      clientId: argv.oauthGoogleKey,
+      icon: googlePreset.icon,
+      name: googlePreset.name,
+      scope: googlePreset.scope,
+    });
   }
   const nonce = crypto.randomBytes(16).toString('base64');
   const reportUri = sentryDsnToReportUri(sentryDsn);
