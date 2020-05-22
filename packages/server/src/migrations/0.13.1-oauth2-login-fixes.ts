@@ -1,7 +1,3 @@
-import { AppsembleError } from '@appsemble/node-utils';
-import { DataTypes, QueryTypes } from 'sequelize';
-import { v4 } from 'uuid';
-
 import type { Migration } from '../utils/migrate';
 
 export default {
