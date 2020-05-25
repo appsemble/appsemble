@@ -19,10 +19,18 @@ interface BlockDetailsRoutesMatch {
   version: string;
 }
 
+export type ExtendedBlockManifest = BlockManifest & {
+  parameters: ExtendedParameters;
+};
+
+export type ExtendedParameters = OpenAPIV3.SchemaObject & {
+  definitions: { [key: string]: Partial<OpenAPIV3.SchemaObject> };
+};
+
 export default function BlockDetails(): React.ReactElement {
-  const [blockVersions, setBlockVersions] = React.useState<BlockManifest[]>();
+  const [blockVersions, setBlockVersions] = React.useState<ExtendedBlockManifest[]>();
   const [selectedVersion, setSelectedVersion] = React.useState<string>();
-  const [resolvedBlockManifest, setSelectedBlockManifest] = React.useState<BlockManifest>();
+  const [selectedBlockManifest, setSelectedBlockManifest] = React.useState<ExtendedBlockManifest>();
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState(false);
 
@@ -33,7 +41,7 @@ export default function BlockDetails(): React.ReactElement {
   React.useEffect(() => {
     try {
       axios
-        .get<BlockManifest[]>(`/api/blocks/@${organization}/${blockName}/versions`)
+        .get<ExtendedBlockManifest[]>(`/api/blocks/@${organization}/${blockName}/versions`)
         .then(async (result) => {
           const data = result.data.slice().reverse();
           setBlockVersions(data);
@@ -102,46 +110,55 @@ export default function BlockDetails(): React.ReactElement {
         <Title level={4}>
           <FormattedMessage {...messages.description} />
         </Title>
-        <p>{resolvedBlockManifest.description}</p>
+        <p>{selectedBlockManifest.description}</p>
 
-        {Object.keys(resolvedBlockManifest.parameters || {}).length > 0 && (
+        {Object.keys(selectedBlockManifest.parameters || {}).length > 0 && (
           <>
             <Title level={5}>
               <FormattedMessage {...messages.parameters} />
             </Title>
-            <ParameterTable manifest={resolvedBlockManifest} />
+            <ParameterTable parameters={selectedBlockManifest.parameters} />
           </>
         )}
-        {Object.keys(resolvedBlockManifest.actions || {}).length > 0 && (
+        {Object.keys(selectedBlockManifest.actions || {}).length > 0 && (
           <>
             <Title level={4}>
               <FormattedMessage {...messages.actions} />
             </Title>
-            <ActionTable manifest={resolvedBlockManifest} />
+            <ActionTable manifest={selectedBlockManifest} />
           </>
         )}
-        {(resolvedBlockManifest.events?.emit || resolvedBlockManifest.events?.listen) && (
+        {(selectedBlockManifest.events?.emit || selectedBlockManifest.events?.listen) && (
           <>
             <Title level={4}>
               <FormattedMessage {...messages.events} />
             </Title>
-            <EventTable manifest={resolvedBlockManifest} />
+            <EventTable manifest={selectedBlockManifest} />
           </>
         )}
 
-        {(resolvedBlockManifest.parameters as any).definitions && (
+        {selectedBlockManifest.parameters.definitions && (
           <>
             <Title level={4}>
               <FormattedMessage {...messages.definitions} />
             </Title>
             {Object.entries(
-              (resolvedBlockManifest.parameters as any).definitions as {
+              (selectedBlockManifest.parameters as any).definitions as {
                 [key: string]: OpenAPIV3.SchemaObject;
               },
             ).map(([key, definition]) => (
-              <Title key={key} level={5}>
-                {key}
-              </Title>
+              <React.Fragment key={key}>
+                <Title key={key} level={5}>
+                  <a href={`${match.url}#${key}`} id={key}>
+                    {key}
+                  </a>
+                </Title>
+                {definition.type === 'object' || definition.type === 'array' ? (
+                  <ParameterTable parameters={definition as ExtendedParameters} />
+                ) : (
+                  <pre>{JSON.stringify(definition, null, 2)}</pre>
+                )}
+              </React.Fragment>
             ))}
           </>
         )}

@@ -1,50 +1,17 @@
-import { Icon, Table } from '@appsemble/react-components';
-import type { BlockManifest } from '@appsemble/types';
+import { Table } from '@appsemble/react-components';
+import type { OpenAPIV3 } from 'openapi-types';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 
+import type { ExtendedBlockManifest } from '../..';
+import ParameterRow from '../ParameterRow';
 import messages from './messages';
 
 interface ParameterTableProps {
-  manifest: BlockManifest;
+  parameters: ExtendedBlockManifest['parameters'];
 }
 
-export default function ParameterTable({ manifest }: ParameterTableProps): React.ReactElement {
-  const generateRow = React.useCallback(
-    (key: string, value: any, recurse: boolean): React.ReactNode | React.ReactNode[] => {
-      console.log({ key, value, recurse });
-      if (value.type === 'array' && recurse) {
-        const result = [];
-        result.push(generateRow(`${key}[]`, value, false));
-        if (value.items.anyOf) {
-          result.push(
-            ...value.items.anyOf.map((anyOf: any) =>
-              Object.entries(anyOf.properties).map(([k, v], index) => {
-                console.log({ k, v, index });
-                return generateRow(`${key}[].${k}`, v, true);
-              }),
-            ),
-          );
-        }
-
-        return result;
-      }
-
-      return (
-        <tr key={key}>
-          <td>{key}</td>
-          <td>
-            {(manifest.parameters as any).required?.includes(key) && (
-              <Icon className="has-text-success" icon="check" />
-            )}
-          </td>
-          <td>{(value as any).type}</td>
-          <td>{(value as any).description}</td>
-        </tr>
-      );
-    },
-    [manifest],
-  );
+export default function ParameterTable({ parameters }: ParameterTableProps): React.ReactElement {
   return (
     <Table>
       <thead>
@@ -64,9 +31,16 @@ export default function ParameterTable({ manifest }: ParameterTableProps): React
         </tr>
       </thead>
       <tbody>
-        {Object.entries((manifest.parameters as any).properties).map(([key, value]) =>
-          generateRow(key, value, true),
-        )}
+        {Object.entries(parameters.properties).map(([key, value]) => (
+          <ParameterRow
+            key={key}
+            name={key}
+            parameters={parameters}
+            parent={value as OpenAPIV3.SchemaObject}
+            recurse
+            value={value as OpenAPIV3.SchemaObject}
+          />
+        ))}
       </tbody>
     </Table>
   );
