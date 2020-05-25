@@ -11,7 +11,7 @@ interface UnknownTypeEditorProps {
 
 export default function UnknownTypeEditor({
   name,
-  value = {},
+  value = '',
 }: UnknownTypeEditorProps): React.ReactElement {
   return (
     <TextArea

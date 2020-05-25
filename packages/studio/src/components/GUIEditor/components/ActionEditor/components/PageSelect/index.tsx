@@ -11,6 +11,7 @@ interface PageSelectProps {
   name: string;
   onChange: (event: NamedEvent, value?: any) => void;
   value: any;
+  required: boolean;
 }
 
 export default function PageSelect({
@@ -18,11 +19,12 @@ export default function PageSelect({
   name,
   onChange,
   value = {},
+  required,
 }: PageSelectProps): React.ReactElement {
   const pages = Object.values(app.definition.pages);
 
   return (
-    <Select label={name} name={name} onChange={onChange} value={value}>
+    <Select label={name} name={name} onChange={onChange} required={required} value={value}>
       <option disabled hidden>
         <FormattedMessage {...messages.empty} />
       </option>

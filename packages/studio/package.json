@@ -13,6 +13,7 @@
   "author": "Appsemble <info@appsemble.com> (https://appsemble.com)",
   "dependencies": {
     "@apidevtools/json-schema-ref-parser": "^9.0.1",
+    "@appsemble/app": "0.12.8",
     "@appsemble/react-components": "0.12.8",
     "@appsemble/sdk": "0.12.8",
     "@appsemble/types": "0.12.8",

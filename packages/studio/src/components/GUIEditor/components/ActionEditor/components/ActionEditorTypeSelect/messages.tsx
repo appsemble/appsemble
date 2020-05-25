@@ -1,5 +1,6 @@
 import { defineMessages } from 'react-intl';
 
 export default defineMessages({
-  empty: 'Choose an action',
+  empty: 'No "{actionName}" action',
+  actionType: 'Action Type',
 });

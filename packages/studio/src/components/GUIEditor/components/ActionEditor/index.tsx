@@ -1,6 +1,5 @@
 import { Title } from '@appsemble/react-components/src';
-import type { Action } from '@appsemble/sdk';
-import type { ActionType, App } from '@appsemble/types';
+import type { ActionDefinition, ActionType, App } from '@appsemble/types';
 import React from 'react';
 
 import type { NamedEvent } from '../../../../types';
@@ -22,7 +21,7 @@ export default function ActionEditor({
   value = {},
 }: ActionEditorProps): React.ReactElement {
   const [selectedActionType, setSelectedActionType] = React.useState<{
-    [actionName: string]: Action['type'];
+    [actionName: string]: ActionDefinition['type'];
   }>({});
 
   const handleChange = React.useCallback(
@@ -52,14 +51,18 @@ export default function ActionEditor({
           <Title className={styles.marginTop} level={5}>
             {key}
           </Title>
-
           {!selectedActionType[key] ? (
-            <ActionEditorTypeSelect name={key} setSelectedActionType={setSelectedActionType} />
+            <ActionEditorTypeSelect
+              name={key}
+              setSelectedActionType={setSelectedActionType}
+              value={key}
+            />
           ) : (
             <>
               <ActionEditorTypeSelect
-                name={selectedActionType[key]}
+                name={key}
                 setSelectedActionType={setSelectedActionType}
+                value={selectedActionType[key]}
               />
 
               <ActionEditorTypeEditor

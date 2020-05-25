@@ -1,4 +1,4 @@
-import type { App } from '@appsemble/types';
+import type { App, LinkActionDefinition } from '@appsemble/types';
 import React from 'react';
 
 import type { NamedEvent } from '../../../../../../types';
@@ -16,17 +16,41 @@ export default function LinkActionEditor({
   onChange,
   value = {},
 }: LinkActionEditorProps): React.ReactElement {
+  const linkActionDefinition: (keyof LinkActionDefinition)[] = [
+    'to',
+    'parameters',
+    'base',
+    'type',
+    'remap',
+  ];
+
   const handleChange = React.useCallback(
     (event, val) => {
-      onChange(event, { [event.target.name]: val });
+      onChange(event, { ...value, [event.target.name]: val });
     },
-    [onChange],
+    [onChange, value],
   );
 
   return (
     <div>
-      <PageSelect app={app} name="to" onChange={handleChange} value={value.to} />
-      <UnknownTypeEditor name="parameters" value={value.parameters} />
+      {linkActionDefinition.map((key: keyof LinkActionDefinition) => {
+        if (key === 'to') {
+          return (
+            <PageSelect
+              key={key}
+              app={app}
+              name="to"
+              onChange={handleChange}
+              required
+              value={value.to}
+            />
+          );
+        }
+        if (key === 'parameters') {
+          return <UnknownTypeEditor key={key} name="parameters" value={value.parameters} />;
+        }
+        return null;
+      })}
     </div>
   );
 }

@@ -180,6 +180,12 @@ export default function Editor(): React.ReactElement {
     [appUrl, intl, openApiDocument, push, recipe, sharedStyle, style],
   );
 
+  React.useEffect(() => {
+    if (editorStep !== GuiEditorStep.YAML && openApiDocument) {
+      onSave();
+    }
+  }, [recipe, editorStep, onSave, openApiDocument]);
+
   const uploadApp = React.useCallback(async () => {
     if (!valid) {
       return;
@@ -294,7 +300,7 @@ export default function Editor(): React.ReactElement {
             }
           >
             <div className="navbar-brand">
-              <span className="navbar-item">
+              <span className={editorStep !== GuiEditorStep.YAML ? 'is-hidden' : 'navbar-item'}>
                 <Button disabled={!dirty} icon="vial" type="submit">
                   <FormattedMessage {...messages.preview} />
                 </Button>
