@@ -42,7 +42,7 @@ export default function App(): React.ReactElement {
                   <Route exact path="/blocks">
                     <BlockList />
                   </Route>
-                  <Route exact path="/blocks/@:organization/:blockName">
+                  <Route exact path="/blocks/@:organization/:blockName/:version?">
                     <BlockDetails />
                   </Route>
                   <ProtectedRoute path="/settings">

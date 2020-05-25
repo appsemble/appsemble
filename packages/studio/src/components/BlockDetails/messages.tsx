@@ -8,4 +8,5 @@ export default defineMessages({
   actions: 'Actions',
   events: 'Events',
   parameters: 'Parameters',
+  definitions: 'Definitions',
 });

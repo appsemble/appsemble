@@ -1,10 +1,10 @@
-import RefParser, { resolve } from '@apidevtools/json-schema-ref-parser';
-import { Content, Loader, Message, Select, Table, Title } from '@appsemble/react-components';
+import { Content, Loader, Message, Select, Title } from '@appsemble/react-components';
 import type { BlockManifest } from '@appsemble/types';
 import axios from 'axios';
+import type { OpenAPIV3 } from 'openapi-types';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
-import { useRouteMatch } from 'react-router-dom';
+import { useHistory, useRouteMatch } from 'react-router-dom';
 
 import HelmetIntl from '../HelmetIntl';
 import ActionTable from './components/ActionTable';
@@ -16,17 +16,19 @@ import messages from './messages';
 interface BlockDetailsRoutesMatch {
   organization: string;
   blockName: string;
+  version: string;
 }
 
 export default function BlockDetails(): React.ReactElement {
   const [blockVersions, setBlockVersions] = React.useState<BlockManifest[]>();
   const [selectedVersion, setSelectedVersion] = React.useState<string>();
-  const [resolvedBlockManifest, setResolvedBlockManifest] = React.useState<BlockManifest>();
+  const [resolvedBlockManifest, setSelectedBlockManifest] = React.useState<BlockManifest>();
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState(false);
 
   const match = useRouteMatch<BlockDetailsRoutesMatch>();
-  const { blockName, organization } = match.params;
+  const history = useHistory();
+  const { blockName, organization, version: urlVersion } = match.params;
 
   React.useEffect(() => {
     try {
@@ -35,27 +37,29 @@ export default function BlockDetails(): React.ReactElement {
         .then(async (result) => {
           const data = result.data.slice().reverse();
           setBlockVersions(data);
-          setSelectedVersion(data[0].version);
-          const resolvedParameters = await RefParser.dereference(data[0].parameters);
-          setResolvedBlockManifest({ ...data[0], parameters: resolvedParameters } as BlockManifest);
+          const versionBlock = urlVersion && data.find((d) => d.version === urlVersion);
+          setSelectedVersion(versionBlock?.version ?? data[0].version);
+          setSelectedBlockManifest(versionBlock ?? data[0]);
+
+          if (!versionBlock) {
+            history.replace(`${match.url}/${data[0].version}`);
+          }
+
           setLoading(false);
         });
     } catch (e) {
       setError(true);
     }
-  }, [blockName, organization]);
+  }, [blockName, history, match.url, organization, urlVersion]);
 
   const onSelectedVersionChange = React.useCallback(
-    async (event: React.ChangeEvent<HTMLSelectElement>) => {
-      setSelectedVersion(event.target.value);
-      const selectedBlock = blockVersions.find((b) => b.version === event.target.value);
-      const resolvedParameters = await RefParser.dereference(selectedBlock.parameters);
-      setResolvedBlockManifest({
-        ...selectedBlock,
-        parameters: resolvedParameters,
-      } as BlockManifest);
+    async (_: React.ChangeEvent<HTMLSelectElement>, value: string) => {
+      const block = blockVersions.find((b) => b.version === value);
+      setSelectedBlockManifest(block);
+      history.push(match.url.replace(selectedVersion, value));
+      setSelectedVersion(value);
     },
-    [blockVersions],
+    [blockVersions, history, match.url, selectedVersion],
   );
 
   if (error) {
@@ -122,6 +126,23 @@ export default function BlockDetails(): React.ReactElement {
               <FormattedMessage {...messages.events} />
             </Title>
             <EventTable manifest={resolvedBlockManifest} />
+          </>
+        )}
+
+        {(resolvedBlockManifest.parameters as any).definitions && (
+          <>
+            <Title level={4}>
+              <FormattedMessage {...messages.definitions} />
+            </Title>
+            {Object.entries(
+              (resolvedBlockManifest.parameters as any).definitions as {
+                [key: string]: OpenAPIV3.SchemaObject;
+              },
+            ).map(([key, definition]) => (
+              <Title key={key} level={5}>
+                {key}
+              </Title>
+            ))}
           </>
         )}
       </Content>
