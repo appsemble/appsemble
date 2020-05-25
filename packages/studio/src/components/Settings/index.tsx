@@ -4,6 +4,8 @@ import { FormattedMessage } from 'react-intl';
 import { Redirect, Route, Switch, useRouteMatch } from 'react-router-dom';
 
 import ClientCredentials from '../ClientCredentials';
+import NavLink from '../NavLink';
+import OAuthSettings from '../OAuthSettings';
 import OrganizationsSettings from '../OrganizationsSettings';
 import SideMenu from '../SideMenu';
 import SideNavLink from '../SideNavLink';
@@ -22,7 +24,11 @@ export default function Settings(): React.ReactElement {
           icon="user"
           label={<FormattedMessage {...messages.user} />}
           to={`${match.url}/user`}
-        />
+        >
+          <NavLink to={`${match.url}/social`}>
+            <FormattedMessage {...messages.socialLogin} />
+          </NavLink>
+        </SideNavLink>
         <SideNavLink
           icon="briefcase"
           label={<FormattedMessage {...messages.organizations} />}
@@ -38,6 +44,9 @@ export default function Settings(): React.ReactElement {
         <Switch>
           <Route exact path={`${match.path}/user`}>
             <UserSettings />
+          </Route>
+          <Route exact path={`${match.path}/social`}>
+            <OAuthSettings />
           </Route>
           <Route exact path={`${match.path}/organizations`}>
             <OrganizationsSettings />

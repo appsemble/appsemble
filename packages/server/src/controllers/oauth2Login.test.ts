@@ -366,3 +366,89 @@ describe('connectPendingOAuth2Profile', () => {
     expect(emailAuthorization.UserId).toBe(oauthAuthorization.UserId);
   });
 });
+
+describe('getConnectedAccounts', () => {
+  let authorization: string;
+  let user: User;
+
+  beforeEach(async () => {
+    ({ authorization, user } = await testToken());
+  });
+
+  it('should return the linked accounts of the logged in user', async () => {
+    await OAuthAuthorization.create({
+      UserId: user.id,
+      accessToken: '',
+      authorizationUrl: 'https://a.example',
+      sub: 'aubA',
+    });
+
+    const userB = await User.create();
+    await OAuthAuthorization.create({
+      UserId: userB.id,
+      accessToken: '',
+      authorizationUrl: 'https://b.example',
+      sub: 'aubB',
+    });
+
+    const response = await request.get('/api/oauth2/connected', { headers: { authorization } });
+    expect(response).toMatchObject({
+      status: 200,
+      data: [{ authorizationUrl: 'https://a.example' }],
+    });
+  });
+});
+
+describe('unlinkConnectedAccount', () => {
+  let authorization: string;
+  let user: User;
+
+  beforeEach(async () => {
+    ({ authorization, user } = await testToken());
+  });
+
+  it('should delete a linked account', async () => {
+    const oauthAuthorization = await OAuthAuthorization.create({
+      UserId: user.id,
+      accessToken: '',
+      authorizationUrl: 'https://a.example',
+      sub: 'aubA',
+    });
+
+    const response = await request.delete('/api/oauth2/connected', {
+      headers: { authorization },
+      params: { authorizationUrl: 'https://a.example' },
+    });
+    expect(response).toMatchObject({
+      status: 204,
+      data: '',
+    });
+
+    await expect(oauthAuthorization.reload()).rejects.toThrow(
+      'Instance could not be reloaded because it does not exist anymore (find call returned null)',
+    );
+  });
+
+  it('should not delete a linked account for another user', async () => {
+    const userB = await User.create();
+    await OAuthAuthorization.create({
+      UserId: userB.id,
+      accessToken: '',
+      authorizationUrl: 'https://b.example',
+      sub: 'aubB',
+    });
+
+    const response = await request.delete('/api/oauth2/connected', {
+      headers: { authorization },
+      params: { authorizationUrl: 'https://b.example' },
+    });
+    expect(response).toMatchObject({
+      status: 404,
+      data: {
+        error: 'Not Found',
+        message: 'OAuth2 account to unlink not found',
+        statusCode: 404,
+      },
+    });
+  });
+});
