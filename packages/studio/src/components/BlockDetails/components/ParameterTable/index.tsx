@@ -1,4 +1,4 @@
-import { Table } from '@appsemble/react-components';
+import { Icon, Table } from '@appsemble/react-components';
 import type { BlockManifest } from '@appsemble/types';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
@@ -34,10 +34,8 @@ export default function ParameterTable({ manifest }: ParameterTableProps): React
         <tr key={key}>
           <td>{key}</td>
           <td>
-            {(manifest.parameters as any).required?.includes(key) ? (
-              <FormattedMessage {...messages.true} />
-            ) : (
-              <FormattedMessage {...messages.false} />
+            {(manifest.parameters as any).required?.includes(key) && (
+              <Icon className="has-text-success" icon="check" />
             )}
           </td>
           <td>{(value as any).type}</td>

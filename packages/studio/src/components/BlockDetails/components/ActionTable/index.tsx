@@ -1,4 +1,4 @@
-import { Table } from '@appsemble/react-components';
+import { Icon, Table } from '@appsemble/react-components';
 import type { BlockManifest } from '@appsemble/types';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
@@ -29,13 +29,7 @@ export default function ActionTable({ manifest }: ActionTableProps): React.React
         {Object.entries(manifest.actions).map(([key, value]) => (
           <tr key={key}>
             <td>{key === '$any' ? <FormattedMessage {...messages.anyAction} /> : key}</td>
-            <td>
-              {value.required ? (
-                <FormattedMessage {...messages.true} />
-              ) : (
-                <FormattedMessage {...messages.false} />
-              )}
-            </td>
+            <td>{value.required && <Icon className="has-text-success" icon="check" />}</td>
             <td>{(value as any).description}</td>
           </tr>
         ))}
