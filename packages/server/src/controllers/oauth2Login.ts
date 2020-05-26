@@ -152,3 +152,23 @@ export async function connectPendingOAuth2Profile(ctx: KoaContext): Promise<void
   }
   ctx.body = createJWTResponse(user.id, argv);
 }
+
+export async function getConnectedAccounts(ctx: KoaContext): Promise<void> {
+  const { user } = ctx;
+
+  ctx.body = await OAuthAuthorization.findAll({
+    attributes: ['authorizationUrl'],
+    where: { UserId: user.id },
+  });
+}
+
+export async function unlinkConnectedAccount(ctx: KoaContext): Promise<void> {
+  const { user } = ctx;
+  const { authorizationUrl } = ctx.query;
+
+  const rows = await OAuthAuthorization.destroy({ where: { UserId: user.id, authorizationUrl } });
+
+  if (!rows) {
+    throw Boom.notFound('OAuth2 account to unlink not found');
+  }
+}

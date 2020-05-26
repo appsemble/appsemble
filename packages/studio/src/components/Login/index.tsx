@@ -87,6 +87,7 @@ export default function Login(): React.ReactElement {
         {settings.logins.map((provider) => (
           <SocialLoginButton
             key={`${provider.authorizationUrl} ${provider.clientId}`}
+            label={messages.loginWith}
             provider={provider}
           />
         ))}

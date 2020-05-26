@@ -1,10 +1,16 @@
 import { Button } from '@appsemble/react-components';
 import * as React from 'react';
+import { FormattedMessage, MessageDescriptor } from 'react-intl';
 
 import type { OAuth2Provider } from '../../types';
 import randomString from '../../utils/randomString';
 
 interface SocialLoginButtonProps extends React.ComponentPropsWithoutRef<typeof Button> {
+  /**
+   * A message descriptor to format with the provider name.
+   */
+  label: MessageDescriptor;
+
   /**
    * The OAuth2 provider configuration for which to render a button.
    */
@@ -18,7 +24,9 @@ interface SocialLoginButtonProps extends React.ComponentPropsWithoutRef<typeof B
  * authorization url will be stored in `sessionStorage`, so {@link OAuth2Connect} can load this.
  */
 export default function SocialLoginButton({
+  label,
   provider,
+  ...props
 }: SocialLoginButtonProps): React.ReactElement {
   const onClick = React.useCallback(() => {
     const url = new URL(provider.authorizationUrl);
@@ -36,8 +44,8 @@ export default function SocialLoginButton({
   }, [provider]);
 
   return (
-    <Button icon={provider.icon} iconPrefix="fab" onClick={onClick}>
-      {provider.name}
+    <Button {...props} icon={provider.icon} iconPrefix="fab" onClick={onClick}>
+      <FormattedMessage {...label} values={{ name: provider.name }} />
     </Button>
   );
 }
