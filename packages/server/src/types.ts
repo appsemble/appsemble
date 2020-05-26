@@ -39,6 +39,8 @@ export interface Argv {
   smtpPort?: number;
   smtpSecure?: boolean;
   smtpUser?: string;
+  oauthGithubKey?: string;
+  oauthGithubSecret?: string;
   oauthGitlabKey?: string;
   oauthGitlabSecret?: string;
   oauthGoogleKey?: string;

@@ -4,7 +4,7 @@ import { URL } from 'url';
 import type { KoaContext } from '../../types';
 import createSettings from '../../utils/createSettings';
 import makeCSP from '../../utils/makeCSP';
-import { gitlabPreset, googlePreset } from '../../utils/OAuth2Presets';
+import { githubPreset, gitlabPreset, googlePreset } from '../../utils/OAuth2Presets';
 import sentryDsnToReportUri from '../../utils/sentryDsnToReportUri';
 
 /**
@@ -15,6 +15,15 @@ export default async function indexHandler(ctx: KoaContext): Promise<void> {
   const { argv } = ctx;
   const { disableRegistration, host, sentryDsn } = argv;
   const logins = [];
+  if (argv.oauthGithubKey) {
+    logins.push({
+      authorizationUrl: githubPreset.authorizationUrl,
+      clientId: argv.oauthGithubKey,
+      icon: githubPreset.icon,
+      name: githubPreset.name,
+      scope: githubPreset.scope,
+    });
+  }
   if (argv.oauthGitlabKey) {
     logins.push({
       authorizationUrl: gitlabPreset.authorizationUrl,

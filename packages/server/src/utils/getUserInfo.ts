@@ -1,5 +1,6 @@
 import { AppsembleError } from '@appsemble/node-utils';
 import type { TokenResponse, UserInfo } from '@appsemble/types';
+import { remap } from '@appsemble/utils';
 import axios from 'axios';
 import { decode } from 'jsonwebtoken';
 
@@ -30,7 +31,8 @@ export default async function getUserInfo(
     name = name ?? info.name;
     profile = profile ?? info.profile;
     picture = picture ?? info.picture;
-    sub = sub ?? info.sub;
+    // The returned subject may be a number for non OpenID compliant services, e.g. GitHub.
+    sub = sub ?? (typeof info.sub === 'number' ? String(info.sub) : info.sub);
   }
 
   function shouldTryNext(): boolean {
@@ -56,8 +58,10 @@ export default async function getUserInfo(
   }
 
   if (shouldTryNext() && provider.userInfoUrl) {
-    const { data } = await axios.get(provider.userInfoUrl);
-    assign(data);
+    const { data } = await axios.get(provider.userInfoUrl, {
+      headers: { authorization: `Bearer ${response.access_token}` },
+    });
+    assign(provider.remapper ? remap(provider.remapper, data) : data);
   }
 
   // Sub is very important. All other information is optional.

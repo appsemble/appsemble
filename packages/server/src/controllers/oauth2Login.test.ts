@@ -107,7 +107,8 @@ describe('registerOAuth2Connection', () => {
     expect(tokenRequest).toMatchObject({
       url: 'https://gitlab.com/oauth/token',
       headers: { authorization: 'Basic gitlab_client_id:gitlab_client_secret' },
-      data: 'grant_type=authorization_code&code=456&redirect_uri=http%3A%2F%2Flocalhost%2Ffoo',
+      data:
+        'grant_type=authorization_code&client_id=gitlab_client_id&client_secret=gitlab_client_secret&code=456&redirect_uri=http%3A%2F%2Flocalhost%2Ffoo',
     });
     expect(response).toMatchObject({
       status: 200,
@@ -170,7 +171,8 @@ describe('registerOAuth2Connection', () => {
     expect(tokenRequest).toMatchObject({
       url: 'https://gitlab.com/oauth/token',
       headers: { authorization: 'Basic gitlab_client_id:gitlab_client_secret' },
-      data: 'grant_type=authorization_code&code=456&redirect_uri=http%3A%2F%2Flocalhost%2Ffoo',
+      data:
+        'grant_type=authorization_code&client_id=gitlab_client_id&client_secret=gitlab_client_secret&code=456&redirect_uri=http%3A%2F%2Flocalhost%2Ffoo',
     });
     expect(response).toMatchObject({
       status: 200,

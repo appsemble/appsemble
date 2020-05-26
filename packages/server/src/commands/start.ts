@@ -62,6 +62,14 @@ export function builder(yargs: Argv): Argv {
       desc: 'The secret key to be used for Google OAuth2.',
       implies: ['oauth-google-key'],
     })
+    .option('oauth-github-key', {
+      desc: 'The application key to be used for GitHub OAuth2.',
+      implies: 'oauth-github-secret',
+    })
+    .option('oauth-github-secret', {
+      desc: 'The secret key to be used for GitHub OAuth2.',
+      implies: 'oauth-github-key',
+    })
     .option('oauth-gitlab-key', {
       desc: 'The application key to be used for GitLab OAuth2.',
       implies: ['oauth-gitlab-secret'],

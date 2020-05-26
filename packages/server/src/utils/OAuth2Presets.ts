@@ -1,3 +1,4 @@
+import type { Remapper } from '@appsemble/types';
 import type { IconName } from '@fortawesome/fontawesome-common-types';
 
 export interface OAuth2Preset {
@@ -30,7 +31,36 @@ export interface OAuth2Preset {
    * The URL from which user information can be retrieved following the OpenID Connect standard.
    */
   userInfoUrl?: string;
+
+  /**
+   * In case an OAuth2 provider doesn’t support a userinfo endpoint, this remapper may be used to
+   * convert an alternative user information format to a userinfo object.
+   */
+  remapper?: Remapper;
 }
+
+/**
+ * An OAuth2 preset for loggin in with GitHub.
+ */
+export const githubPreset: OAuth2Preset = {
+  authorizationUrl: 'https://github.com/login/oauth/authorize',
+  icon: 'github',
+  name: 'GitHub',
+  scope: 'read:user user:email',
+  tokenUrl: 'https://github.com/login/oauth/access_token',
+  userInfoUrl: 'https://api.github.com/user',
+  remapper: [
+    {
+      'object.from': {
+        email: [{ prop: 'email' }],
+        name: [{ prop: 'name' }],
+        profile: [{ prop: 'html_url' }],
+        picture: [{ prop: 'avatar_url' }],
+        sub: [{ prop: 'id' }],
+      },
+    },
+  ],
+};
 
 /**
  * An OAuth2 preset for loggin in with GitLab.
@@ -56,4 +86,4 @@ export const googlePreset: OAuth2Preset = {
   userInfoUrl: 'https://openidconnect.googleapis.com/v1/userinfo',
 };
 
-export const presets = [gitlabPreset, googlePreset];
+export const presets = [githubPreset, gitlabPreset, googlePreset];

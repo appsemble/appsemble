@@ -7,7 +7,7 @@ import { EmailAuthorization, OAuthAuthorization, transactional, User } from '../
 import type { KoaContext } from '../types';
 import createJWTResponse from '../utils/createJWTResponse';
 import getUserInfo from '../utils/getUserInfo';
-import { gitlabPreset, googlePreset, presets } from '../utils/OAuth2Presets';
+import { githubPreset, gitlabPreset, googlePreset, presets } from '../utils/OAuth2Presets';
 
 export async function registerOAuth2Connection(ctx: KoaContext): Promise<void> {
   const { argv } = ctx;
@@ -29,6 +29,9 @@ export async function registerOAuth2Connection(ctx: KoaContext): Promise<void> {
   } else if (preset === gitlabPreset) {
     clientId = argv.oauthGitlabKey;
     clientSecret = argv.oauthGitlabSecret;
+  } else if (preset === githubPreset) {
+    clientId = argv.oauthGithubKey;
+    clientSecret = argv.oauthGithubSecret;
   }
 
   if (!clientId || !clientSecret) {
@@ -40,10 +43,20 @@ export async function registerOAuth2Connection(ctx: KoaContext): Promise<void> {
     preset.tokenUrl,
     new URLSearchParams({
       grant_type: 'authorization_code',
+      // Some providers only support client credentials in the request body,
+      client_id: clientId,
+      client_secret: clientSecret,
       code,
       redirect_uri: `${referer.origin}${referer.pathname}`,
     }),
-    { headers: { authorization: `Basic ${clientId}:${clientSecret}` } },
+    {
+      headers: {
+        // Explicitly request JSON. Otherwise, some services, e.g. GitHub, give a bad response.
+        accept: 'application/json',
+        // Some providers only support basic auth,
+        authorization: `Basic ${clientId}:${clientSecret}`,
+      },
+    },
   );
 
   const { access_token: accessToken, refresh_token: refreshToken } = tokenResponse;

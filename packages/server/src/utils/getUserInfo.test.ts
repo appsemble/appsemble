@@ -101,6 +101,52 @@ it('should fall back to user info endpoint', async () => {
   });
 });
 
+it('should support a remapper for the user info endpoint', async () => {
+  mock.onGet('/user').reply(() => [
+    200,
+    {
+      emailAddress: 'user@example.com',
+      fullName: 'User',
+      profileUrl: 'https://example.com/user',
+      avatarUrl: 'https://example.com/user.png',
+      userId: 1337,
+    },
+  ]);
+  const userInfo = await getUserInfo(
+    {
+      authorizationUrl: '',
+      icon: 'pizza',
+      name: '',
+      scope: '',
+      tokenUrl: '',
+      userInfoUrl: '/user',
+      remapper: [
+        {
+          'object.from': {
+            email: [{ prop: 'emailAddress' }],
+            name: [{ prop: 'fullName' }],
+            profile: [{ prop: 'profileUrl' }],
+            picture: [{ prop: 'avatarUrl' }],
+            sub: [{ prop: 'userId' }],
+          },
+        },
+      ],
+    },
+    {
+      access_token: '',
+      refresh_token: '',
+      token_type: 'bearer',
+    },
+  );
+  expect(userInfo).toStrictEqual({
+    email: 'user@example.com',
+    name: 'User',
+    profile: 'https://example.com/user',
+    picture: 'https://example.com/user.png',
+    sub: '1337',
+  });
+});
+
 it('should throw if no subject could be found', async () => {
   await expect(
     getUserInfo(
