@@ -1,4 +1,4 @@
-import { ErrorHandler, MessagesProvider } from '@appsemble/react-components';
+import { Confirmation, ErrorHandler, MessagesProvider } from '@appsemble/react-components';
 import React from 'react';
 import { Helmet } from 'react-helmet';
 import { IntlProvider } from 'react-intl';
@@ -30,54 +30,56 @@ export default function App(): React.ReactElement {
         <UserProvider>
           <OrganizationProvider>
             <ErrorHandler fallback={ErrorFallback}>
-              <MessagesProvider>
-                <Helmet defaultTitle="Appsemble" titleTemplate="Appsemble · %s" />
-                <Toolbar />
-                <Switch>
-                  <Route exact path="/apps">
-                    <AppList />
-                  </Route>
-                  <ProtectedRoute path="/settings">
-                    <Settings />
-                  </ProtectedRoute>
-                  <ProtectedRoute exact path="/connect/authorize">
-                    <OpenIDLogin />
-                  </ProtectedRoute>
-                  <Route path="/apps/:id(\d+)">
-                    <AppContext />
-                  </Route>
-                  <AnonymousRoute exact path="/edit-password">
-                    <EditPassword />
-                  </AnonymousRoute>
-                  <ProtectedRoute exact path="/organization-invite">
-                    <OrganizationInvite />
-                  </ProtectedRoute>
-                  <Route exact path="/verify">
-                    <VerifyEmail />
-                  </Route>
-                  <Route exact path="/callback">
-                    <OAuth2Connect />
-                  </Route>
-                  <AnonymousRoute exact path="/login">
-                    <Login />
-                  </AnonymousRoute>
-                  {settings.enableRegistration && (
-                    <AnonymousRoute exact path="/register">
-                      <Register />
+              <Confirmation>
+                <MessagesProvider>
+                  <Helmet defaultTitle="Appsemble" titleTemplate="Appsemble · %s" />
+                  <Toolbar />
+                  <Switch>
+                    <Route exact path="/apps">
+                      <AppList />
+                    </Route>
+                    <ProtectedRoute path="/settings">
+                      <Settings />
+                    </ProtectedRoute>
+                    <ProtectedRoute exact path="/connect/authorize">
+                      <OpenIDLogin />
+                    </ProtectedRoute>
+                    <Route path="/apps/:id(\d+)">
+                      <AppContext />
+                    </Route>
+                    <AnonymousRoute exact path="/edit-password">
+                      <EditPassword />
                     </AnonymousRoute>
-                  )}
-                  <Route exact path="/reset-password">
-                    <ResetPassword />
-                  </Route>
-                  <Route exact path="/edit-password">
-                    <EditPassword />
-                  </Route>
-                  <Route exact path="/verify">
-                    <VerifyEmail />
-                  </Route>
-                  <Redirect to="/apps" />
-                </Switch>
-              </MessagesProvider>
+                    <ProtectedRoute exact path="/organization-invite">
+                      <OrganizationInvite />
+                    </ProtectedRoute>
+                    <Route exact path="/verify">
+                      <VerifyEmail />
+                    </Route>
+                    <Route exact path="/callback">
+                      <OAuth2Connect />
+                    </Route>
+                    <AnonymousRoute exact path="/login">
+                      <Login />
+                    </AnonymousRoute>
+                    {settings.enableRegistration && (
+                      <AnonymousRoute exact path="/register">
+                        <Register />
+                      </AnonymousRoute>
+                    )}
+                    <Route exact path="/reset-password">
+                      <ResetPassword />
+                    </Route>
+                    <Route exact path="/edit-password">
+                      <EditPassword />
+                    </Route>
+                    <Route exact path="/verify">
+                      <VerifyEmail />
+                    </Route>
+                    <Redirect to="/apps" />
+                  </Switch>
+                </MessagesProvider>
+              </Confirmation>
             </ErrorHandler>
           </OrganizationProvider>
         </UserProvider>
