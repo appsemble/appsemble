@@ -36,7 +36,7 @@ export default function ParameterTable({ parameters }: ParameterTableProps): Rea
             key={key}
             name={key}
             parameters={parameters}
-            parent={value as OpenAPIV3.SchemaObject}
+            parent={parameters as OpenAPIV3.SchemaObject}
             recurse
             value={value as OpenAPIV3.SchemaObject}
           />

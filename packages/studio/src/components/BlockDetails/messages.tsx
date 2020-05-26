@@ -9,4 +9,7 @@ export default defineMessages({
   events: 'Events',
   parameters: 'Parameters',
   definitions: 'Definitions',
+  type: 'Type',
+  format: 'Format',
+  enum: 'Options',
 });

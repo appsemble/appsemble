@@ -1,4 +1,4 @@
-import { Content, Loader, Message, Select, Title } from '@appsemble/react-components';
+import { Content, Form, Loader, Message, Select, Table, Title } from '@appsemble/react-components';
 import type { BlockManifest } from '@appsemble/types';
 import axios from 'axios';
 import type { OpenAPIV3 } from 'openapi-types';
@@ -82,8 +82,6 @@ export default function BlockDetails(): React.ReactElement {
     return <Loader />;
   }
 
-  console.log(resolvedBlockManifest);
-
   return (
     <>
       <HelmetIntl title={messages.title} titleValues={{ name: `@${organization}/${blockName}` }} />
@@ -156,7 +154,28 @@ export default function BlockDetails(): React.ReactElement {
                 {definition.type === 'object' || definition.type === 'array' ? (
                   <ParameterTable parameters={definition as ExtendedParameters} />
                 ) : (
-                  <pre>{JSON.stringify(definition, null, 2)}</pre>
+                  <Table>
+                    <thead>
+                      <tr>
+                        <th>
+                          <FormattedMessage {...messages.type} />
+                        </th>
+                        <th>
+                          <FormattedMessage {...messages.format} />
+                        </th>
+                        <th>
+                          <FormattedMessage {...messages.enum} />
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>{definition.type}</td>
+                        <td>{definition.format}</td>
+                        <td>{(definition.enum || []).map((e) => `“${e}”`).join(' / ')}</td>
+                      </tr>
+                    </tbody>
+                  </Table>
                 )}
               </React.Fragment>
             ))}
