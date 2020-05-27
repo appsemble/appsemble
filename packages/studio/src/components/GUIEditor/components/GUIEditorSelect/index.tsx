@@ -145,57 +145,60 @@ export default class GUIEditorSelect extends React.Component<MonacoEditorProps> 
       }
     }
 
-    for (let i = 1; i <= lines.length; i += 1) {
-      if (i !== 1) {
-        if (model.getLineFirstNonWhitespaceColumn(i) > 1) {
-          let newIndent = model.getLineFirstNonWhitespaceColumn(i);
-          const parents: EditLocation['parents'] = [
-            {
-              name: model.getLineContent(i).trim(),
-              line: i,
-              indent: model.getLineFirstNonWhitespaceColumn(i),
-            },
-          ];
-          let parentCount = 1;
-
-          if (i === topParentLine) {
-            while (newIndent !== 1) {
-              if (newIndent > model.getLineFirstNonWhitespaceColumn(i - parentCount)) {
-                if (model.getLineContent(i - parentCount).trim() !== '') {
-                  newIndent = model.getLineFirstNonWhitespaceColumn(i - parentCount);
-
-                  parents.push({
-                    name: model.getLineContent(i - parentCount).trim(),
-                    line: i - parentCount,
-                    indent: newIndent,
-                  });
-                }
-              }
-              parentCount += 1;
-            }
-            const pageParent = parents[parents.findIndex((x) => x.name.includes('pages:')) - 1];
-            if (pageParent) {
-              const blockName = this.getBlockName(parents, position);
-              const blockParentIndex = parents.findIndex((x) => x.name.includes(blockName));
-              let editRange = new Range(topParentLine + 1, 1, topParentLine + 1, 1);
-              if (blockParentIndex !== -1) {
-                editRange = new Range(parents[blockParentIndex].line, 1, topParentLine + 1, 1);
-              } else {
-                editRange = new Range(position.lineNumber, 0, position.lineNumber, 0);
-              }
-              // number 8 matches "- name: " length
-              const pageName = pageParent.name.slice(8);
-              editLocation = {
-                pageName,
-                blockName,
-                parents,
-                editRange,
-              };
-            }
-          }
-        }
+    lines.forEach((_line, i) => {
+      if (i === 0) {
+        return;
       }
-    }
+      if (model.getLineFirstNonWhitespaceColumn(i) <= 1) {
+        return;
+      }
+      let newIndent = model.getLineFirstNonWhitespaceColumn(i);
+      const parents: EditLocation['parents'] = [
+        {
+          name: model.getLineContent(i).trim(),
+          line: i,
+          indent: model.getLineFirstNonWhitespaceColumn(i),
+        },
+      ];
+      let parentCount = 1;
+      if (i !== topParentLine) {
+        return;
+      }
+
+      while (newIndent !== 1) {
+        if (
+          newIndent > model.getLineFirstNonWhitespaceColumn(i - parentCount) &&
+          model.getLineContent(i - parentCount).trim() !== ''
+        ) {
+          newIndent = model.getLineFirstNonWhitespaceColumn(i - parentCount);
+
+          parents.push({
+            name: model.getLineContent(i - parentCount).trim(),
+            line: i - parentCount,
+            indent: newIndent,
+          });
+        }
+        parentCount += 1;
+      }
+
+      const blockName = this.getBlockName(parents, position);
+      const blockParentIndex = parents.findIndex((x) => x.name.includes(blockName));
+      const editRange =
+        blockParentIndex !== -1
+          ? new Range(parents[blockParentIndex].line, 1, topParentLine + 1, 1)
+          : new Range(position.lineNumber, 0, position.lineNumber, 0);
+
+      const pageParent = parents[parents.findIndex((x) => x.name.includes('pages:')) - 1];
+      if (pageParent) {
+        const pageName = pageParent.name.slice(8);
+        editLocation = {
+          pageName,
+          blockName,
+          parents,
+          editRange,
+        };
+      }
+    });
 
     if (editLocation) {
       this.setEditorDecorators(editLocation.editRange, {
