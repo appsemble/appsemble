@@ -27,7 +27,7 @@ type TextAreaProps = Omit<React.ComponentPropsWithoutRef<typeof FormComponent>, 
     /**
      * This is fired when the input value has changed.
      */
-    onChange: (event: React.ChangeEvent<HTMLTextAreaElement>, value: number | string) => void;
+    onChange: (event: React.ChangeEvent<HTMLTextAreaElement>, value: string) => void;
   };
 
 /**
