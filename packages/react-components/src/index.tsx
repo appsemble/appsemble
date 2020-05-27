@@ -3,6 +3,7 @@ export { default as Calendar } from './Calendar';
 export { default as CardFooterButton } from './CardFooterButton';
 export { default as Checkbox } from './Checkbox';
 export { default as Content } from './Content';
+export { default as Confirmation, useConfirmation } from './Confirmation';
 export { default as Dropdown } from './Dropdown';
 export { default as ErrorHandler } from './ErrorHandler';
 export { default as FileUpload } from './FileUpload';
