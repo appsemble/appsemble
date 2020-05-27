@@ -6,8 +6,8 @@ Markers can be loaded from external sources or from Appsemble’s resource API.
 Markers that are too close to each other to be visually distinguishable will be clustered by
 default.
 
-## Images
+### Images
 
 <span class="screenshot"></span>
 
-![Map screenshot](../images/map.png)
+![Map screenshot](https://gitlab.com/appsemble/appsemble/-/raw/master/docs/images/map.png)

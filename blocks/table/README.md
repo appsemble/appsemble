@@ -1,7 +1,7 @@
 A block that can be used to display larger sets of data.
 
-## Images
+### Images
 
 <span class="screenshot"></span>
 
-![Table screenshot](../images/table.png)
+![Table screenshot](https://gitlab.com/appsemble/appsemble/-/raw/master/docs/images/table.png)

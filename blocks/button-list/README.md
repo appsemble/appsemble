@@ -4,8 +4,8 @@ It can be used on any page that requires multiple interactive buttons next to ea
 the modifiers supported by [Bulma’s buttons](https://bulma.io/documentation/elements/button) are
 supported and can be combined.
 
-## Images
+### Images
 
 <span class="screenshot"></span>
 
-![Action button screenshot](../images/button-list.png)
+![Action button screenshot](https://gitlab.com/appsemble/appsemble/-/raw/master/docs/images/button-list.png)

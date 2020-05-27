@@ -25,10 +25,10 @@ parameters:
     | example 3     | column 2      |    23 |
 ```
 
-## Images
+### Images
 
 <span class="screenshot"></span>
 
-![Markdown screenshot](../images/markdown.png)
+![Markdown screenshot](https://gitlab.com/appsemble/appsemble/-/raw/master/docs/images/markdown.png)
 
 [markdown]: https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet
