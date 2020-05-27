@@ -2,6 +2,7 @@
   "name": "@appsemble/types",
   "version": "0.13.0",
   "private": true,
+  "description": "TypeScript definitions reused within Appsemble internally",
   "homepage": "https://appsemble.dev",
   "bugs": "https://gitlab.com/appsemble/appsemble/issues",
   "repository": {
@@ -11,6 +12,7 @@
   },
   "license": "LGPL-3.0-or-later",
   "author": "Appsemble <info@appsemble.com> (https://appsemble.com)",
+  "sideEffects": false,
   "dependencies": {
     "@appsemble/sdk": "0.13.0",
     "@fortawesome/fontawesome-common-types": "^0.2.28",

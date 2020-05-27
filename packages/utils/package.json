@@ -2,6 +2,7 @@
   "name": "@appsemble/utils",
   "version": "0.13.0",
   "private": true,
+  "description": "Utility functions used in Appsemble internally",
   "homepage": "https://appsemble.dev",
   "bugs": "https://gitlab.com/appsemble/appsemble/issues",
   "repository": {
