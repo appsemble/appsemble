@@ -2,6 +2,7 @@
   "name": "@appsemble/react",
   "version": "0.13.0",
   "private": true,
+  "description": "The Appsemble React SDK",
   "homepage": "https://appsemble.dev",
   "bugs": "https://gitlab.com/appsemble/appsemble/issues",
   "repository": {

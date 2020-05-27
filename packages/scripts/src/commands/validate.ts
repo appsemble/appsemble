@@ -88,6 +88,7 @@ async function validate(
     'package.json',
     `Version should match latest version "${latestVersion}"`,
   );
+  assert(typeof pkg.description === 'string', 'package.json', 'Description should be valid');
   assert(
     pkg.homepage === 'https://appsemble.dev',
     'package.json',
@@ -122,6 +123,11 @@ async function validate(
     pkg.author === 'Appsemble <info@appsemble.com> (https://appsemble.com)',
     'package.json',
     'Author should be "Appsemble <info@appsemble.com> (https://appsemble.com)"',
+  );
+  assert(
+    pkg.sideEffects === false,
+    'package.json',
+    'Side effects should be set to true for better tree shaking',
   );
   Object.entries({ ...pkg.dependencies, ...pkg.devDependencies })
     .filter(([dep]) => dep.startsWith('@appsemble/'))

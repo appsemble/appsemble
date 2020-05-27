@@ -2,6 +2,7 @@
   "name": "@appsemble/react-components",
   "version": "0.13.0",
   "private": true,
+  "description": "Reusable React components for internal use",
   "homepage": "https://appsemble.dev",
   "bugs": "https://gitlab.com/appsemble/appsemble/issues",
   "repository": {
