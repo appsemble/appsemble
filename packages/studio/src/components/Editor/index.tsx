@@ -20,6 +20,7 @@ import axios from 'axios';
 import classNames from 'classnames';
 import { safeDump, safeLoad } from 'js-yaml';
 import { isEqual } from 'lodash';
+import type { editor } from 'monaco-editor';
 import type { OpenAPIV3 } from 'openapi-types';
 import React from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -234,7 +235,7 @@ export default function Editor(): React.ReactElement {
   }, [initialRecipe, promptUpdateApp, recipe, uploadApp, valid]);
 
   const onMonacoChange = React.useCallback(
-    (value) => {
+    (_event: editor.IModelContentChangedEvent, value: string) => {
       switch (location.hash) {
         case '#editor':
           setRecipe(value);
@@ -342,8 +343,8 @@ export default function Editor(): React.ReactElement {
           </div>
           <MonacoEditor
             language={language}
+            onChange={onValueChange}
             onSave={onSave}
-            onValueChange={onValueChange}
             value={value}
           />
         </Form>
