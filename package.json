@@ -35,6 +35,7 @@
   "devDependencies": {
     "@babel/core": "^7.9.6",
     "@babel/plugin-transform-modules-commonjs": "^7.9.6",
+    "@lhci/cli": "^0.4.0",
     "@types/autoprefixer": "^9.7.2",
     "@types/bcrypt": "^3.0.0",
     "@types/bluebird": "^3.5.31",
@@ -71,7 +72,6 @@
     "@types/postcss-import": "^12.0.0",
     "@types/postcss-load-config": "^2.0.1",
     "@types/postcss-url": "^8.0.1",
-    "@types/puppeteer": "^2.1.0",
     "@types/react": "^16.9.34",
     "@types/react-dom": "^16.9.8",
     "@types/react-helmet": "^6.0.0",

@@ -4,4 +4,4 @@
 coverage/
 /dist/
 /public/
-/reports/
+/.lighthouseci/
