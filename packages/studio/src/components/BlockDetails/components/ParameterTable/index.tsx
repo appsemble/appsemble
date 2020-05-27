@@ -3,12 +3,12 @@ import type { OpenAPIV3 } from 'openapi-types';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import type { ExtendedBlockManifest } from '../..';
+import type { ExtendedParameters } from '../..';
 import ParameterRow from '../ParameterRow';
 import messages from './messages';
 
 interface ParameterTableProps {
-  parameters: ExtendedBlockManifest['parameters'];
+  parameters: ExtendedParameters;
 }
 
 export default function ParameterTable({ parameters }: ParameterTableProps): React.ReactElement {
@@ -35,7 +35,6 @@ export default function ParameterTable({ parameters }: ParameterTableProps): Rea
           <ParameterRow
             key={key}
             name={key}
-            parameters={parameters}
             parent={parameters as OpenAPIV3.SchemaObject}
             recurse
             value={value as OpenAPIV3.SchemaObject}

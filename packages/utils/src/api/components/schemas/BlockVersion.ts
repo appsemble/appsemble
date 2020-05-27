@@ -22,6 +22,10 @@ export default {
       type: 'string',
       description: 'The description of the block.',
     },
+    longDescription: {
+      type: 'string',
+      description: 'The long description of the block.',
+    },
     icon: {
       type: 'string',
       format: 'binary',

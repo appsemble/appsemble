@@ -580,6 +580,13 @@ export interface BlockManifest {
   description?: string;
 
   /**
+   * The long description of the block.
+   *
+   * This is displayed when rendering block documentation and supports Markdown.
+   */
+  longDescription?: string;
+
+  /**
    * A [semver](https://semver.org) representation of the block version.
    *
    * Pattern:

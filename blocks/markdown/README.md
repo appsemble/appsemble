@@ -1,22 +1,7 @@
----
-menu: Blocks
-route: /blocks/markdown
----
-
-# Markdown
-
-## Introduction
-
 A simple block that can display content based on [Markdown] input.
 
 It can be used to provide content to pages, for example a list of external links or to further
 explain the other blocks found on a page.
-
-## Parameters
-
-| Parameter | Default | Description                                          |
-| --------- | ------- | ---------------------------------------------------- |
-| content   |         | A string containing the markdown content to display. |
 
 ## Example
 

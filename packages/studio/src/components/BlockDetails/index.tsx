@@ -120,7 +120,9 @@ export default function BlockDetails(): React.ReactElement {
         <Title level={4}>
           <FormattedMessage {...messages.description} />
         </Title>
-        <MarkdownContent content={selectedBlockManifest.description} />
+        <MarkdownContent
+          content={selectedBlockManifest.longDescription || selectedBlockManifest.description}
+        />
 
         {Object.keys(selectedBlockManifest.parameters || {}).length > 0 && (
           <>

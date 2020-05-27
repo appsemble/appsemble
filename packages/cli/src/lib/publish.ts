@@ -13,6 +13,7 @@ import makePayload from './makePayload';
 export default async function publish(config: BlockConfig, ignoreConflict: boolean): Promise<void> {
   logger.info(`Publishing ${config.name}@${config.version}…`);
   const form = await makePayload(config);
+
   try {
     await axios.post('/api/blocks', form);
     logger.info(`Successfully published ${config.name}@${config.version} 🎉`);
