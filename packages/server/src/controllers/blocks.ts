@@ -73,7 +73,7 @@ export async function queryBlocks(ctx: KoaContext<Params>): Promise<void> {
   // The alternative is to query everything and filter manually
   // See: https://github.com/sequelize/sequelize/issues/9509
   const [blockVersions] = await getDB().query(
-    'SELECT "OrganizationId", name, description, version, actions, events, layout, parameters, resources FROM "BlockVersion" WHERE created IN (SELECT MAX(created) FROM "BlockVersion" GROUP BY "OrganizationId", name)',
+    'SELECT "OrganizationId", name, description, "longDescription", version, actions, events, layout, parameters, resources FROM "BlockVersion" WHERE created IN (SELECT MAX(created) FROM "BlockVersion" GROUP BY "OrganizationId", name)',
   );
 
   ctx.body = blockVersions.map(
@@ -83,6 +83,7 @@ export async function queryBlocks(ctx: KoaContext<Params>): Promise<void> {
       description,
       events,
       layout,
+      longDescription,
       name,
       parameters,
       resources,
@@ -90,6 +91,7 @@ export async function queryBlocks(ctx: KoaContext<Params>): Promise<void> {
     }) => ({
       name: `@${OrganizationId}/${name}`,
       description,
+      longDescription,
       version,
       actions,
       events,
