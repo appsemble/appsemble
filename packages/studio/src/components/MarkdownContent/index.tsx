@@ -13,11 +13,11 @@ export default function MarkdownContent({
   content,
   sanitize = true,
 }: MarkdownContentProps): React.ReactElement {
-  return (
+  return content ? (
     <div
       className={classNames('content', className)}
       // eslint-disable-next-line react/no-danger
       dangerouslySetInnerHTML={{ __html: marked(content, { sanitize }) }}
     />
-  );
+  ) : null;
 }
