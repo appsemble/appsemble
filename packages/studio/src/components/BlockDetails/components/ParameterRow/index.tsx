@@ -3,16 +3,12 @@ import type { OpenAPIV3 } from 'openapi-types';
 import React from 'react';
 import { useRouteMatch } from 'react-router-dom';
 
-import type { ExtendedParameters } from '../..';
-
 export default function ParameterRow({
   name,
-  parameters,
   parent,
   recurse,
   value,
 }: {
-  parameters: ExtendedParameters;
   parent: OpenAPIV3.SchemaObject;
   name: string;
   value: OpenAPIV3.SchemaObject;
@@ -22,13 +18,39 @@ export default function ParameterRow({
 
   if (value.type === 'array' && recurse) {
     return (
-      <ParameterRow
-        name={`${name}[]`}
-        parameters={parameters}
-        parent={parent}
-        recurse={false}
-        value={value}
-      />
+      <>
+        <ParameterRow name={`${name}[]`} parent={parent} recurse={false} value={value} />
+        {Object.entries(value.items)
+          .filter(([childName, child]) => typeof child === 'object' && childName !== 'anyOf')
+          .map(([childName, child]) => (
+            <ParameterRow
+              key={childName}
+              name={`${name}[].${childName}`}
+              parent={value}
+              recurse
+              value={child}
+            />
+          ))}
+      </>
+    );
+  }
+
+  if (value.type === 'object' && recurse) {
+    return (
+      <>
+        <ParameterRow name={name} parent={parent} recurse={false} value={value} />
+        {Object.entries(value.properties)
+          .filter(([childName, child]) => typeof child === 'object' && childName !== 'anyOf')
+          .map(([childName, child]) => (
+            <ParameterRow
+              key={childName}
+              name={`${name}.${childName}`}
+              parent={value}
+              recurse
+              value={child as OpenAPIV3.SchemaObject}
+            />
+          ))}
+      </>
     );
   }
 
@@ -53,8 +75,13 @@ export default function ParameterRow({
   } else if (value.anyOf && value.format !== 'remapper') {
     ref = (
       <Join separator=" | ">
-        {value.anyOf.map((any: any) => {
+        {value.anyOf.map((any: any, index) => {
           const refName = any.$ref?.split('/').pop();
+
+          if (!refName) {
+            // eslint-disable-next-line react/no-array-index-key
+            return <span key={index}>{any.type}</span>;
+          }
           return (
             <a key={refName} href={`${match.url}#${refName}`}>
               {refName}
@@ -74,28 +101,47 @@ export default function ParameterRow({
         )}
       </td>
       <td>
-        <span>
-          {value.format === 'remapper' ? (
-            <a
-              href="https://appsemble.dev/guide/remappers"
-              rel="noopener noreferrer"
-              target="_blank"
-            >
-              Remapper
-            </a>
-          ) : (
-            value.enum?.length && <Join separator=" | ">{value.enum.map((e) => `“${e}”`)}</Join>
-          )}
-        </span>
-        {ref && value.type === 'array' && (
+        {value.format === 'remapper' ? (
+          <a href="https://appsemble.dev/guide/remappers" rel="noopener noreferrer" target="_blank">
+            Remapper
+          </a>
+        ) : (
+          value.enum?.length && (
+            <Join separator=" | ">
+              {value.enum.map((e) => (
+                <span key={e}>{`“${e}”`}</span>
+              ))}
+            </Join>
+          )
+        )}
+        {value.type === 'array' && (
           <div>
             {'Array<'}
-            <Join separator=" | ">{ref}</Join>
+            <Join separator=" | ">
+              {[
+                ...((Object.hasOwnProperty.call(value.items, 'type') && [
+                  ...[]
+                    .concat((value.items as OpenAPIV3.SchemaObject).type)
+                    .map((t) => <span key={t}>{t}</span>),
+                ]) ||
+                  []),
+                ...Object.values(value.items)
+                  .filter((i) => i.type && i.type !== 'object' && i.type !== 'array')
+                  .map((i) => i.type),
+                ...((ref && [ref]) || []),
+              ]}
+            </Join>
             {'>'}
           </div>
         )}
         {ref && value.type !== 'array' && ref}
-        {!ref && !value?.enum?.length && type}
+        {!ref && !value?.enum?.length && type !== 'array' && (
+          <Join separator=" | ">
+            {[].concat(type).map((t) => (
+              <span key={t}>{t}</span>
+            ))}
+          </Join>
+        )}
       </td>
       <td>{value.description}</td>
     </tr>
