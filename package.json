@@ -178,12 +178,12 @@
     "database-name": "appsemble",
     "database-user": "admin",
     "database-password": "password",
+    "github-client-id": "e526099c0f82f180b06a",
+    "github-client-secret": "52b46994b2cba62163a0719a0969043109d8953e",
+    "gitlab-client-id": "9739ffe4a5007fb7ac0bac53e2d70f7286add09190b73f40eeac33259cb81f15",
+    "gitlab-client-secret": "8f83b39e5731f0c771fe39bff54ae326877f9434d431feeea6d79f00f292cdb0",
     "host": "http://localhost:9999",
     "migrate-to": "next",
-    "oauth-github-key": "e526099c0f82f180b06a",
-    "oauth-github-secret": "52b46994b2cba62163a0719a0969043109d8953e",
-    "oauth-gitlab-key": "9739ffe4a5007fb7ac0bac53e2d70f7286add09190b73f40eeac33259cb81f15",
-    "oauth-gitlab-secret": "8f83b39e5731f0c771fe39bff54ae326877f9434d431feeea6d79f00f292cdb0",
     "secret": "Local Appsemble development secret"
   }
 }

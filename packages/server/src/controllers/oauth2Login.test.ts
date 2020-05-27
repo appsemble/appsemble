@@ -76,8 +76,8 @@ describe('registerOAuth2Connection', () => {
   });
 
   it('should return the user info if the returned authorization response is unknown', async () => {
-    argv.oauthGitlabKey = 'gitlab_client_id';
-    argv.oauthGitlabSecret = 'gitlab_client_secret';
+    argv.gitlabClientId = 'gitlab_client_id';
+    argv.gitlabClientSecret = 'gitlab_client_secret';
     let tokenRequest: AxiosRequestConfig;
     mock.onPost('https://gitlab.com/oauth/token').reply((config) => {
       tokenRequest = config;
@@ -134,8 +134,8 @@ describe('registerOAuth2Connection', () => {
 
   it('should log in the user if the returned authorization response is known', async () => {
     const { authorization, user } = await testToken();
-    argv.oauthGitlabKey = 'gitlab_client_id';
-    argv.oauthGitlabSecret = 'gitlab_client_secret';
+    argv.gitlabClientId = 'gitlab_client_id';
+    argv.gitlabClientSecret = 'gitlab_client_secret';
     let tokenRequest: AxiosRequestConfig;
     mock.onPost('https://gitlab.com/oauth/token').reply((config) => {
       tokenRequest = config;

@@ -24,14 +24,14 @@ export async function registerOAuth2Connection(ctx: KoaContext): Promise<void> {
   let clientSecret: string;
 
   if (preset === googlePreset) {
-    clientId = argv.oauthGoogleKey;
-    clientSecret = argv.oauthGoogleSecret;
+    clientId = argv.googleClientId;
+    clientSecret = argv.googleClientSecret;
   } else if (preset === gitlabPreset) {
-    clientId = argv.oauthGitlabKey;
-    clientSecret = argv.oauthGitlabSecret;
+    clientId = argv.gitlabClientId;
+    clientSecret = argv.gitlabClientSecret;
   } else if (preset === githubPreset) {
-    clientId = argv.oauthGithubKey;
-    clientSecret = argv.oauthGithubSecret;
+    clientId = argv.githubClientId;
+    clientSecret = argv.githubClientSecret;
   }
 
   if (!clientId || !clientSecret) {
