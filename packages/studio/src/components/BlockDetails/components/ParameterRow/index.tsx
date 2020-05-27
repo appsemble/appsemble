@@ -3,6 +3,8 @@ import type { OpenAPIV3 } from 'openapi-types';
 import React from 'react';
 import { useRouteMatch } from 'react-router-dom';
 
+import MarkdownContent from '../../../MarkdownContent';
+
 export default function ParameterRow({
   name,
   parent,
@@ -143,7 +145,9 @@ export default function ParameterRow({
           </Join>
         )}
       </td>
-      <td>{value.description}</td>
+      <td>
+        <MarkdownContent content={value.description} />
+      </td>
     </tr>
   );
 }

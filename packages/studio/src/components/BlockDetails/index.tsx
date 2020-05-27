@@ -7,6 +7,7 @@ import { FormattedMessage } from 'react-intl';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 
 import HelmetIntl from '../HelmetIntl';
+import MarkdownContent from '../MarkdownContent';
 import ActionTable from './components/ActionTable';
 import EventTable from './components/EventTable';
 import ParameterTable from './components/ParameterTable';
@@ -109,7 +110,7 @@ export default function BlockDetails(): React.ReactElement {
         <Title level={4}>
           <FormattedMessage {...messages.description} />
         </Title>
-        <p>{selectedBlockManifest.description}</p>
+        <MarkdownContent content={selectedBlockManifest.description} />
 
         {Object.keys(selectedBlockManifest.parameters || {}).length > 0 && (
           <>
