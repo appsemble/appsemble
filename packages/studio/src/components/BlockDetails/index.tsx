@@ -136,7 +136,7 @@ export default function BlockDetails(): React.ReactElement {
           </>
         )}
 
-        {selectedBlockManifest.parameters.definitions && (
+        {selectedBlockManifest.parameters?.definitions && (
           <>
             <Title level={4}>
               <FormattedMessage {...messages.definitions} />
