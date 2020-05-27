@@ -1,4 +1,4 @@
-import { Content, Form, Loader, Message, Select, Table, Title } from '@appsemble/react-components';
+import { Content, Loader, Message, Select, Title } from '@appsemble/react-components';
 import type { BlockManifest } from '@appsemble/types';
 import axios from 'axios';
 import type { OpenAPIV3 } from 'openapi-types';
@@ -10,6 +10,7 @@ import HelmetIntl from '../HelmetIntl';
 import ActionTable from './components/ActionTable';
 import EventTable from './components/EventTable';
 import ParameterTable from './components/ParameterTable';
+import TypeTable from './components/TypeTable';
 import styles from './index.css';
 import messages from './messages';
 
@@ -154,28 +155,7 @@ export default function BlockDetails(): React.ReactElement {
                 {definition.type === 'object' || definition.type === 'array' ? (
                   <ParameterTable parameters={definition as ExtendedParameters} />
                 ) : (
-                  <Table>
-                    <thead>
-                      <tr>
-                        <th>
-                          <FormattedMessage {...messages.type} />
-                        </th>
-                        <th>
-                          <FormattedMessage {...messages.format} />
-                        </th>
-                        <th>
-                          <FormattedMessage {...messages.enum} />
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr>
-                        <td>{definition.type}</td>
-                        <td>{definition.format}</td>
-                        <td>{(definition.enum || []).map((e) => `“${e}”`).join(' / ')}</td>
-                      </tr>
-                    </tbody>
-                  </Table>
+                  <TypeTable definition={definition} />
                 )}
               </React.Fragment>
             ))}
