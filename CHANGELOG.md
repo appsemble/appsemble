@@ -7,6 +7,18 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- Studio: Add support for login with GitHub.
+
+### Changed
+
+- Server: Rename CLI arguments to be consistent with terminology used in OAuth2.
+
+### Fixed
+
+- Studio: Fix login with OAuth2.
+
 ## [0.13.0] - 2020-05-15
 
 ### Added

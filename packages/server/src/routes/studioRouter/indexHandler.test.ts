@@ -55,8 +55,8 @@ it('should pass login options from argv to the studio', async () => {
   app.context.argv = {
     disableRegistration: true,
     host: 'http://localhost:9999',
-    oauthGitlabKey: 'GitLab secret',
-    oauthGoogleKey: 'Google secret',
+    gitlabClientId: 'GitLab secret',
+    googleClientId: 'Google secret',
     sentryDsn: 'https://secret@sentry.io/path',
   };
   const response = await request.get('/');

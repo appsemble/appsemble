@@ -15,28 +15,28 @@ export default async function indexHandler(ctx: KoaContext): Promise<void> {
   const { argv } = ctx;
   const { disableRegistration, host, sentryDsn } = argv;
   const logins = [];
-  if (argv.oauthGithubKey) {
+  if (argv.githubClientId) {
     logins.push({
       authorizationUrl: githubPreset.authorizationUrl,
-      clientId: argv.oauthGithubKey,
+      clientId: argv.githubClientId,
       icon: githubPreset.icon,
       name: githubPreset.name,
       scope: githubPreset.scope,
     });
   }
-  if (argv.oauthGitlabKey) {
+  if (argv.gitlabClientId) {
     logins.push({
       authorizationUrl: gitlabPreset.authorizationUrl,
-      clientId: argv.oauthGitlabKey,
+      clientId: argv.gitlabClientId,
       icon: gitlabPreset.icon,
       name: gitlabPreset.name,
       scope: gitlabPreset.scope,
     });
   }
-  if (argv.oauthGoogleKey) {
+  if (argv.googleClientId) {
     logins.push({
       authorizationUrl: googlePreset.authorizationUrl,
-      clientId: argv.oauthGoogleKey,
+      clientId: argv.googleClientId,
       icon: googlePreset.icon,
       name: googlePreset.name,
       scope: googlePreset.scope,
