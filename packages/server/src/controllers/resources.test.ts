@@ -1,5 +1,5 @@
 import FakeTimers from '@sinonjs/fake-timers';
-import { AxiosTestInstance, createInstance } from 'axios-test-instance';
+import { request, setTestApp } from 'axios-test-instance';
 import webpush from 'web-push';
 
 import { App, AppMember, AppSubscription, Member, Organization, Resource, User } from '../models';
@@ -8,7 +8,6 @@ import createWaitableMock, { EnhancedMock } from '../utils/test/createWaitableMo
 import { closeTestSchema, createTestSchema, truncate } from '../utils/test/testSchema';
 import testToken from '../utils/test/testToken';
 
-let request: AxiosTestInstance;
 let authorization: string;
 let organizationId: string;
 let clock: FakeTimers.InstalledClock;
@@ -101,7 +100,7 @@ beforeAll(createTestSchema('resources'));
 
 beforeAll(async () => {
   const server = await createServer({ argv: { host: 'http://localhost', secret: 'test' } });
-  request = await createInstance(server);
+  await setTestApp(server);
   originalSendNotification = webpush.sendNotification;
 });
 
@@ -122,7 +121,6 @@ afterEach(() => {
 });
 
 afterAll(async () => {
-  await request.close();
   webpush.sendNotification = originalSendNotification;
 });
 

@@ -48,4 +48,42 @@ export default {
       },
     },
   },
+  '/oauth2/authorization-code': {
+    post: {
+      description: 'XXX',
+      tags: ['oauth2'],
+      operationId: 'createAuthorizationCode',
+      requestBody: {
+        description: 'The OAuth2 client credentials',
+        required: true,
+        content: {
+          'application/json': {
+            schema: {
+              type: 'object',
+              properties: {
+                appId: { type: 'number' },
+                redirectUri: { type: 'string', format: 'uri' },
+              },
+            },
+          },
+        },
+      },
+      responses: {
+        201: {
+          description: 'The newly created client credentials',
+          content: {
+            'application/json': {
+              schema: {
+                type: 'object',
+                properties: {
+                  code: { type: 'string' },
+                },
+              },
+            },
+          },
+        },
+      },
+      security: [{ studio: [] }],
+    },
+  },
 };

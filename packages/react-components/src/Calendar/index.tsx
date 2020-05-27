@@ -1,4 +1,4 @@
-import BulmaCalendar, { BulmaCalendarOptions } from 'bulma-calendar';
+import BulmaCalendar, { Options } from 'bulma-calendar';
 import classNames from 'classnames';
 import * as React from 'react';
 
@@ -9,7 +9,7 @@ type CalendarProps = Omit<React.ComponentPropsWithoutRef<typeof FormComponent>, 
   Omit<React.ComponentPropsWithoutRef<'input'>, 'label' | 'onChange'> & {
     control?: React.ReactElement;
 
-    displayMode?: BulmaCalendarOptions['displayMode'];
+    displayMode?: Options['displayMode'];
 
     /**
      * An error message to render.

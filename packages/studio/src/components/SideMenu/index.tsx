@@ -12,6 +12,8 @@ interface SideMenuProps {
   toggleCollapse: () => void;
 }
 
+const Context = React.createContext<boolean>(false);
+
 export default function SideMenu({
   children = [],
   isCollapsed,
@@ -21,10 +23,12 @@ export default function SideMenu({
     <div className={classNames({ [styles.collapsed]: isCollapsed }, styles.sideMenuContainer)}>
       <aside className={classNames('menu', styles.sideMenu)}>
         <ul className="menu-list">
-          {React.Children.map(children, (item, index) => (
-            // eslint-disable-next-line react/no-array-index-key
-            <li key={index}>{item}</li>
-          ))}
+          <Context.Provider value={isCollapsed}>
+            {React.Children.map(children, (item, index) => (
+              // eslint-disable-next-line react/no-array-index-key
+              <li key={index}>{item}</li>
+            ))}
+          </Context.Provider>
         </ul>
         <Button
           className={styles.collapseButton}
@@ -38,4 +42,8 @@ export default function SideMenu({
       </aside>
     </div>
   );
+}
+
+export function useSideMenu(): boolean {
+  return React.useContext(Context);
 }

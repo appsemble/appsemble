@@ -12,11 +12,12 @@
   },
   "license": "LGPL-3.0-or-later",
   "author": "Appsemble <info@appsemble.com> (https://appsemble.com)",
+  "sideEffects": false,
   "dependencies": {
     "@appsemble/preact": "0.13.0",
     "@appsemble/preact-components": "0.13.0",
     "@appsemble/sdk": "0.13.0",
     "@appsemble/utils": "0.13.0",
-    "preact": "^10.4.1"
+    "preact": "^10.4.4"
   }
 }

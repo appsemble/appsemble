@@ -54,21 +54,29 @@ export function builder(yargs: Argv): Argv {
       desc: 'The address to use when sending emails.',
       implies: ['smtp-user', 'smtp-pass'],
     })
-    .option('oauth-google-key', {
+    .option('google-client-id', {
       desc: 'The application key to be used for Google OAuth2.',
-      implies: ['oauth-google-secret'],
+      implies: ['google-client-secret'],
     })
-    .option('oauth-google-secret', {
+    .option('google-client-secret', {
       desc: 'The secret key to be used for Google OAuth2.',
-      implies: ['oauth-google-key'],
+      implies: ['google-client-id'],
     })
-    .option('oauth-gitlab-key', {
+    .option('github-client-id', {
+      desc: 'The application key to be used for GitHub OAuth2.',
+      implies: 'github-client-secret',
+    })
+    .option('github-client-secret', {
+      desc: 'The secret key to be used for GitHub OAuth2.',
+      implies: 'github-client-id',
+    })
+    .option('gitlab-client-id', {
       desc: 'The application key to be used for GitLab OAuth2.',
-      implies: ['oauth-gitlab-secret'],
+      implies: ['gitlab-client-secret'],
     })
-    .option('oauth-gitlab-secret', {
+    .option('gitlab-client-secret', {
       desc: 'The secret key to be used for GitLab OAuth2.',
-      implies: ['oauth-gitlab-key'],
+      implies: ['gitlab-client-id'],
     })
     .option('secret', {
       desc: 'Secret key used to sign JWTs and cookies',

@@ -24,8 +24,6 @@ interface LoginFormValues {
   password: string;
 }
 
-const loginMethods = new Set(settings.logins);
-
 export default function Login(): React.ReactElement {
   const location = useLocation();
   const { login } = useUser();
@@ -86,16 +84,13 @@ export default function Login(): React.ReactElement {
         </FormButtons>
       </SimpleForm>
       <div className={styles.socialLogins}>
-        {loginMethods.has('google') && (
-          <SocialLoginButton iconClass="google" providerUri="/connect/google">
-            <FormattedMessage {...messages.login} values={{ provider: 'Google' }} />
-          </SocialLoginButton>
-        )}
-        {loginMethods.has('gitlab') && (
-          <SocialLoginButton iconClass="gitlab" providerUri="/connect/gitlab">
-            <FormattedMessage {...messages.login} values={{ provider: 'GitLab' }} />
-          </SocialLoginButton>
-        )}
+        {settings.logins.map((provider) => (
+          <SocialLoginButton
+            key={`${provider.authorizationUrl} ${provider.clientId}`}
+            label={messages.loginWith}
+            provider={provider}
+          />
+        ))}
       </div>
     </Content>
   );

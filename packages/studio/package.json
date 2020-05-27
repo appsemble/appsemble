@@ -2,6 +2,7 @@
   "name": "@appsemble/studio",
   "version": "0.13.0",
   "private": true,
+  "description": "The frontend for managing Appsemble apps and organizations",
   "homepage": "https://appsemble.dev",
   "bugs": "https://gitlab.com/appsemble/appsemble/issues",
   "repository": {
@@ -11,6 +12,7 @@
   },
   "license": "LGPL-3.0-or-later",
   "author": "Appsemble <info@appsemble.com> (https://appsemble.com)",
+  "sideEffects": false,
   "dependencies": {
     "@apidevtools/json-schema-ref-parser": "^9.0.1",
     "@appsemble/react-components": "0.13.0",
@@ -36,8 +38,8 @@
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-helmet": "^6.0.0",
-    "react-intl": "^4.5.3",
-    "react-router-dom": "^5.1.2",
+    "react-intl": "^4.5.5",
+    "react-router-dom": "^5.2.0",
     "resize-observer-polyfill": "^1.5.1"
   },
   "devDependencies": {

@@ -1,28 +1,24 @@
-import { TextArea } from '@appsemble/react-components';
+import { JSONInput } from '@appsemble/react-components';
 import * as React from 'react';
-import { FormattedMessage } from 'react-intl';
 
 import type { CommonJSONSchemaEditorProps } from '../../types';
 import JSONSchemaLabel from '../JSONSchemaLabel';
-import messages from './messages';
 
 export default function JSONSchemaUnknownEditor({
   name,
+  onChange,
   prefix,
   required,
   schema,
-  value = '',
+  value = null,
 }: CommonJSONSchemaEditorProps<any>): React.ReactElement {
   return (
-    <TextArea
-      disabled
-      help={<FormattedMessage {...messages.help} />}
+    <JSONInput
       label={<JSONSchemaLabel name={name} prefix={prefix} schema={schema} />}
       name={name}
-      onChange={null}
-      readOnly
+      onChange={onChange}
       required={required}
-      value={JSON.stringify(value, undefined, 2)}
+      value={value}
     />
   );
 }

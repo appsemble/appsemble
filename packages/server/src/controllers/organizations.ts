@@ -64,7 +64,7 @@ export async function createOrganization(ctx: KoaContext): Promise<void> {
   try {
     const organization = await Organization.create({ id, name }, { include: [User] });
 
-    // @ts-ignore
+    // @ts-expect-error
     await organization.addUser(userId, { through: { role: 'Owner' } });
     await organization.reload();
 

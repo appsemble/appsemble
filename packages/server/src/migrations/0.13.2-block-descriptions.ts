@@ -7,7 +7,7 @@ import type { Migration } from '../utils/migrate';
  * - Add `longDescription` column to `BlockVersion`.
  */
 export default {
-  key: '0.13.1',
+  key: '0.13.2',
 
   async up(db) {
     const queryInterface = db.getQueryInterface();

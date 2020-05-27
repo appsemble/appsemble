@@ -1,51 +1,52 @@
-import { Content, Icon } from '@appsemble/react-components';
-import classNames from 'classnames';
+import { Content, useToggle } from '@appsemble/react-components';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Redirect, Route, Switch, useRouteMatch } from 'react-router-dom';
 
 import ClientCredentials from '../ClientCredentials';
 import NavLink from '../NavLink';
+import OAuthSettings from '../OAuthSettings';
 import OrganizationsSettings from '../OrganizationsSettings';
 import SideMenu from '../SideMenu';
+import SideNavLink from '../SideNavLink';
 import UserSettings from '../UserSettings';
 import styles from './index.css';
 import messages from './messages';
 
 export default function Settings(): React.ReactElement {
-  const [isCollapsed, setCollapsed] = React.useState(false);
+  const collapsed = useToggle();
   const match = useRouteMatch();
-
-  const toggle = React.useCallback(() => {
-    setCollapsed(!isCollapsed);
-  }, [isCollapsed]);
 
   return (
     <div className={styles.container}>
-      <SideMenu isCollapsed={isCollapsed} toggleCollapse={toggle}>
-        <NavLink className={styles.menuItem} exact to={`${match.url}/user`}>
-          <Icon icon="user" size="medium" />
-          <span className={classNames({ 'is-hidden': isCollapsed })}>
-            <FormattedMessage {...messages.user} />
-          </span>
-        </NavLink>
-        <NavLink className={styles.menuItem} exact to={`${match.url}/organizations`}>
-          <Icon icon="briefcase" size="medium" />
-          <span className={classNames({ 'is-hidden': isCollapsed })}>
-            <FormattedMessage {...messages.organizations} />
-          </span>
-        </NavLink>
-        <NavLink className={styles.menuItem} exact to={`${match.url}/client-credentials`}>
-          <Icon icon="key" size="medium" />
-          <span className={classNames({ 'is-hidden': isCollapsed })}>
-            <FormattedMessage {...messages.clientCredentials} />
-          </span>
-        </NavLink>
+      <SideMenu isCollapsed={collapsed.enabled} toggleCollapse={collapsed.toggle}>
+        <SideNavLink
+          icon="user"
+          label={<FormattedMessage {...messages.user} />}
+          to={`${match.url}/user`}
+        >
+          <NavLink to={`${match.url}/social`}>
+            <FormattedMessage {...messages.socialLogin} />
+          </NavLink>
+        </SideNavLink>
+        <SideNavLink
+          icon="briefcase"
+          label={<FormattedMessage {...messages.organizations} />}
+          to={`${match.url}/organizations`}
+        />
+        <SideNavLink
+          icon="key"
+          label={<FormattedMessage {...messages.clientCredentials} />}
+          to={`${match.url}/client-credentials`}
+        />
       </SideMenu>
       <Content className={styles.content} fullwidth padding>
         <Switch>
           <Route exact path={`${match.path}/user`}>
             <UserSettings />
+          </Route>
+          <Route exact path={`${match.path}/social`}>
+            <OAuthSettings />
           </Route>
           <Route exact path={`${match.path}/organizations`}>
             <OrganizationsSettings />

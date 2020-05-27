@@ -9,7 +9,7 @@ export default defineMessages({
   passwordLabel: 'Password',
   passwordRequired: 'A password is required',
   loginButton: 'Login',
-  login: 'Login with {provider}',
+  loginWith: 'Login with {name}',
   registerLink: 'Register a new account',
   forgotPasswordLink: 'Forgot your password?',
 });

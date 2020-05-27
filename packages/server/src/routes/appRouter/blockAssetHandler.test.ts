@@ -1,4 +1,4 @@
-import { AxiosTestInstance, createInstance } from 'axios-test-instance';
+import { request, setTestApp } from 'axios-test-instance';
 import * as fs from 'fs';
 import Koa from 'koa';
 import * as path from 'path';
@@ -8,19 +8,13 @@ import { BlockAsset, Organization } from '../../models';
 import { closeTestSchema, createTestSchema, truncate } from '../../utils/test/testSchema';
 import appRouter from '.';
 
-let request: AxiosTestInstance;
-
 beforeAll(createTestSchema('blockassethandler'));
 
 beforeAll(async () => {
-  request = await createInstance(new Koa().use(boomMiddleware()).use(appRouter));
+  await setTestApp(new Koa().use(boomMiddleware()).use(appRouter));
 });
 
 afterEach(truncate);
-
-afterAll(async () => {
-  await request.close();
-});
 
 afterAll(closeTestSchema);
 
