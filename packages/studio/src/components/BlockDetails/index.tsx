@@ -88,10 +88,20 @@ export default function BlockDetails(): React.ReactElement {
     <>
       <HelmetIntl title={messages.title} titleValues={{ name: `@${organization}/${blockName}` }} />
       <Content className={`content ${styles.content}`}>
-        <Title level={2}>{blockName}</Title>
-        <Title className="subtitle" level={3}>
-          @{organization}
-        </Title>
+        <div>
+          <figure className={`image is-inline-block is-marginless is-64x64 ${styles.logo}`}>
+            <img
+              alt="Block Icon"
+              src={`/api/blocks/@${organization}/${blockName}/versions/${selectedVersion}/icon`}
+            />
+          </figure>
+          <div className="is-inline-block">
+            <Title level={2}>{blockName}</Title>
+            <Title className="subtitle" level={3}>
+              @{organization}
+            </Title>
+          </div>
+        </div>
         <Select
           disabled={blockVersions.length === 1}
           label={<FormattedMessage {...messages.selectedVersion} />}

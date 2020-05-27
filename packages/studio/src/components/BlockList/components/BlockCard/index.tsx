@@ -18,13 +18,23 @@ export default function BlockCard({ block }: BlockCardProps): React.ReactElement
     <div key={block.name} className="card">
       <header className="card-header">
         <div className="card-header-title">
-          <div className="media-content">
-            <p className="title is-4">{name}</p>
-            <p className="subtitle is-6">{org}</p>
-          </div>
-          <div className={`media-right ${styles.version}`}>
-            <span className="subtitle is-6 has-text-grey">{block.version}</span>
-          </div>
+          <article className="media">
+            <figure className="media-left">
+              <p className="image is-64x64">
+                <img
+                  alt={`@${org}${name} Logo`}
+                  src={`/api/blocks/${org}/${name}/versions/${block.version}/icon`}
+                />
+              </p>
+            </figure>
+            <div className="media-content">
+              <p className="title is-4">{name}</p>
+              <p className="subtitle is-6">{org}</p>
+            </div>
+            <div className={`media-right ${styles.version}`}>
+              <span className="subtitle is-6 has-text-grey">{block.version}</span>
+            </div>
+          </article>
         </div>
       </header>
       <div className={styles.cardBody}>
