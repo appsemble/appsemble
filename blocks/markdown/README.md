@@ -27,8 +27,6 @@ parameters:
 
 ### Images
 
-<span class="screenshot"></span>
-
-![Markdown screenshot](https://gitlab.com/appsemble/appsemble/-/raw/master/docs/images/markdown.png)
+![Markdown screenshot](https://gitlab.com/appsemble/appsemble/-/raw/0.13.0/docs/images/markdown.png)
 
 [markdown]: https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet

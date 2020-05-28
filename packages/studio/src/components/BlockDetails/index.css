@@ -6,3 +6,7 @@
 .logo {
   margin-right: 15px !important;
 }
+
+.description img {
+  width: 300px;
+}

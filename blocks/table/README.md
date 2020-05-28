@@ -2,6 +2,4 @@ A block that can be used to display larger sets of data.
 
 ### Images
 
-<span class="screenshot"></span>
-
-![Table screenshot](https://gitlab.com/appsemble/appsemble/-/raw/master/docs/images/table.png)
+![Table screenshot](https://gitlab.com/appsemble/appsemble/-/raw/0.13.0/docs/images/table.png)

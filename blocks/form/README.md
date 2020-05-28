@@ -2,9 +2,7 @@ A block used for inputting and submitting sets of data.
 
 ### Images
 
-<span class="screenshot"></span>
-
-![Form screenshot](https://gitlab.com/appsemble/appsemble/-/raw/master/docs/images/form.png)
+![Form screenshot](https://gitlab.com/appsemble/appsemble/-/raw/0.13.0/docs/images/form.png)
 
 ### Notes
 

@@ -121,6 +121,7 @@ export default function BlockDetails(): React.ReactElement {
           <FormattedMessage {...messages.description} />
         </Title>
         <MarkdownContent
+          className={styles.description}
           content={selectedBlockManifest.longDescription || selectedBlockManifest.description}
         />
 
