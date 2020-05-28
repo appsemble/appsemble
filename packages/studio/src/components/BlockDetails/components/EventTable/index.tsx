@@ -1,4 +1,4 @@
-import { Table } from '@appsemble/react-components';
+import { Table, Title } from '@appsemble/react-components';
 import type { BlockManifest } from '@appsemble/types';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
@@ -13,40 +13,50 @@ export default function EventTable({ manifest }: EventTableProps): React.ReactEl
   return (
     <>
       {manifest.events.emit && (
-        <Table>
-          <thead>
-            <tr>
-              <th>
-                <FormattedMessage {...messages.name} />
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {manifest.events.emit.map((event) => (
-              <tr key={`emit ${event}`}>
-                <td>{event}</td>
+        <>
+          <Title level={5}>
+            <FormattedMessage {...messages.emitEvents} />
+          </Title>
+          <Table>
+            <thead>
+              <tr>
+                <th>
+                  <FormattedMessage {...messages.name} />
+                </th>
               </tr>
-            ))}
-          </tbody>
-        </Table>
+            </thead>
+            <tbody>
+              {manifest.events.emit.map((event) => (
+                <tr key={event}>
+                  <td>{event}</td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
+        </>
       )}
       {manifest.events.listen && (
-        <Table>
-          <thead>
-            <tr>
-              <th>
-                <FormattedMessage {...messages.name} />
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {manifest.events.listen.map((event) => (
-              <tr key={`listen ${event}`}>
-                <td>{event}</td>
+        <>
+          <Title level={5}>
+            <FormattedMessage {...messages.listenEvents} />
+          </Title>
+          <Table>
+            <thead>
+              <tr>
+                <th>
+                  <FormattedMessage {...messages.name} />
+                </th>
               </tr>
-            ))}
-          </tbody>
-        </Table>
+            </thead>
+            <tbody>
+              {manifest.events.listen.map((event) => (
+                <tr key={event}>
+                  <td>{event}</td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
+        </>
       )}
     </>
   );

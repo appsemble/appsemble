@@ -59,7 +59,7 @@ export default function ParameterRow({
   const { type } = value;
   let ref;
 
-  if (Object.hasOwnProperty.call(value, '$ref')) {
+  if ('$ref' in value) {
     const refName = (value as any).$ref?.split('/').pop();
     ref = <a href={`${match.url}#${refName}`}>{refName}</a>;
   } else if (value.type === 'array' && (value.items as any).$ref) {
@@ -111,7 +111,7 @@ export default function ParameterRow({
           value.enum?.length && (
             <Join separator=" | ">
               {value.enum.map((e) => (
-                <span key={e}>{`“${e}”`}</span>
+                <code key={JSON.stringify(e)}>{JSON.stringify(e)}</code>
               ))}
             </Join>
           )

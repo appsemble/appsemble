@@ -15,14 +15,11 @@ export default function BlockList(): React.ReactElement {
   const [error, setError] = React.useState(false);
 
   React.useEffect(() => {
-    try {
-      axios.get<BlockManifest[]>('/api/blocks').then((result) => {
-        setBlocks(result.data.sort((a, b) => a.name.localeCompare(b.name)));
-        setLoading(false);
-      });
-    } catch (e) {
-      setError(true);
-    }
+    axios
+      .get<BlockManifest[]>('/api/blocks')
+      .then((result) => setBlocks(result.data.sort((a, b) => a.name.localeCompare(b.name))))
+      .catch(() => setError(true))
+      .finally(() => setLoading(false));
   }, []);
 
   if (error) {

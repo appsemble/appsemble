@@ -30,7 +30,11 @@ export default function TypeTable({ definition }: TypeTableProps): React.ReactEl
           <td>{definition.type}</td>
           <td>{definition.format}</td>
           <td>
-            <Join separator=" | ">{(definition.enum || []).map((e) => `“${e}”`)}</Join>
+            <Join separator=" | ">
+              {(definition.enum || []).map((e) => (
+                <code key={JSON.stringify(e)}>{JSON.stringify(e)}</code>
+              ))}
+            </Join>
           </td>
         </tr>
       </tbody>

@@ -3,8 +3,8 @@ import type { BlockManifest } from '@appsemble/types';
 import axios from 'axios';
 import type { OpenAPIV3 } from 'openapi-types';
 import React from 'react';
-import { FormattedMessage } from 'react-intl';
-import { useHistory, useRouteMatch } from 'react-router-dom';
+import { FormattedMessage, useIntl } from 'react-intl';
+import { Redirect, useHistory, useRouteMatch } from 'react-router-dom';
 
 import HelmetIntl from '../HelmetIntl';
 import MarkdownContent from '../MarkdownContent';
@@ -21,9 +21,9 @@ interface BlockDetailsRoutesMatch {
   version: string;
 }
 
-export type ExtendedBlockManifest = BlockManifest & {
+export interface ExtendedBlockManifest extends BlockManifest {
   parameters: ExtendedParameters;
-};
+}
 
 export type ExtendedParameters = OpenAPIV3.SchemaObject & {
   definitions: { [key: string]: Partial<OpenAPIV3.SchemaObject> };
@@ -31,45 +31,37 @@ export type ExtendedParameters = OpenAPIV3.SchemaObject & {
 
 export default function BlockDetails(): React.ReactElement {
   const [blockVersions, setBlockVersions] = React.useState<ExtendedBlockManifest[]>();
-  const [selectedVersion, setSelectedVersion] = React.useState<string>();
-  const [selectedBlockManifest, setSelectedBlockManifest] = React.useState<ExtendedBlockManifest>();
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState(false);
 
+  const intl = useIntl();
   const match = useRouteMatch<BlockDetailsRoutesMatch>();
   const history = useHistory();
   const { blockName, organization, version: urlVersion } = match.params;
 
   React.useEffect(() => {
-    try {
-      axios
-        .get<ExtendedBlockManifest[]>(`/api/blocks/@${organization}/${blockName}/versions`)
-        .then(async (result) => {
-          const data = result.data.slice().reverse();
-          setBlockVersions(data);
-          const versionBlock = urlVersion && data.find((d) => d.version === urlVersion);
-          setSelectedVersion(versionBlock?.version ?? data[0].version);
-          setSelectedBlockManifest(versionBlock ?? data[0]);
+    axios
+      .get<ExtendedBlockManifest[]>(`/api/blocks/@${organization}/${blockName}/versions`)
+      .then(async (result) => {
+        const data = result.data.slice().reverse();
+        setBlockVersions(data);
+        const versionBlock = urlVersion && data.find((d) => d.version === urlVersion);
 
-          if (!versionBlock) {
-            history.replace(`${match.url}/${data[0].version}`);
-          }
+        if (!versionBlock) {
+          history.replace(`${match.url}/${data[0].version}`);
+        }
 
-          setLoading(false);
-        });
-    } catch (e) {
-      setError(true);
-    }
+        setLoading(false);
+      })
+      .catch(() => setError(true))
+      .finally(() => setLoading(false));
   }, [blockName, history, match.url, organization, urlVersion]);
 
   const onSelectedVersionChange = React.useCallback(
     async (_: React.ChangeEvent<HTMLSelectElement>, value: string) => {
-      const block = blockVersions.find((b) => b.version === value);
-      setSelectedBlockManifest(block);
-      history.push(match.url.replace(selectedVersion, value));
-      setSelectedVersion(value);
+      history.push(match.url.replace(urlVersion, value));
     },
-    [blockVersions, history, match.url, selectedVersion],
+    [history, match.url, urlVersion],
   );
 
   if (error) {
@@ -84,6 +76,12 @@ export default function BlockDetails(): React.ReactElement {
     return <Loader />;
   }
 
+  const selectedBlockManifest = blockVersions.find((block) => block.version === urlVersion);
+
+  if (!selectedBlockManifest) {
+    return <Redirect to={`${match.url}/${blockVersions[blockVersions.length - 1].version}`} />;
+  }
+
   return (
     <>
       <HelmetIntl title={messages.title} titleValues={{ name: `@${organization}/${blockName}` }} />
@@ -91,16 +89,16 @@ export default function BlockDetails(): React.ReactElement {
         <div>
           <figure className={`image is-inline-block is-marginless is-64x64 ${styles.logo}`}>
             <img
-              alt="Block Icon"
-              src={`/api/blocks/@${organization}/${blockName}/versions/${selectedVersion}/icon`}
+              alt={intl.formatMessage(messages.blockIcon)}
+              src={`/api/blocks/@${organization}/${blockName}/versions/${urlVersion}/icon`}
             />
           </figure>
-          <div className="is-inline-block">
+          <header className="is-inline-block">
             <Title level={2}>{blockName}</Title>
             <Title className="subtitle" level={3}>
               @{organization}
             </Title>
-          </div>
+          </header>
         </div>
         <Select
           disabled={blockVersions.length === 1}
@@ -108,7 +106,7 @@ export default function BlockDetails(): React.ReactElement {
           name="selectedVersion"
           onChange={onSelectedVersionChange}
           required
-          value={selectedVersion}
+          value={urlVersion}
         >
           {blockVersions.map(({ version }) => (
             <option key={version} value={version}>
@@ -120,10 +118,15 @@ export default function BlockDetails(): React.ReactElement {
         <Title level={4}>
           <FormattedMessage {...messages.description} />
         </Title>
-        <MarkdownContent
-          className={styles.description}
-          content={selectedBlockManifest.longDescription || selectedBlockManifest.description}
-        />
+        {selectedBlockManifest.description && (
+          <Message>{selectedBlockManifest.description}</Message>
+        )}
+        {selectedBlockManifest.longDescription && (
+          <MarkdownContent
+            className={styles.description}
+            content={selectedBlockManifest.longDescription}
+          />
+        )}
 
         {Object.keys(selectedBlockManifest.parameters || {}).length > 0 && (
           <>
@@ -161,7 +164,7 @@ export default function BlockDetails(): React.ReactElement {
               },
             ).map(([key, definition]) => (
               <React.Fragment key={key}>
-                <Title key={key} level={5}>
+                <Title level={5}>
                   <a href={`${match.url}#${key}`} id={key}>
                     {key}
                   </a>

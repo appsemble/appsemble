@@ -1,6 +1,7 @@
+import { Title } from '@appsemble/react-components/src';
 import type { BlockManifest } from '@appsemble/types';
 import React from 'react';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { Link, useRouteMatch } from 'react-router-dom';
 
 import styles from './index.css';
@@ -12,6 +13,7 @@ interface BlockCardProps {
 
 export default function BlockCard({ block }: BlockCardProps): React.ReactElement {
   const match = useRouteMatch();
+  const intl = useIntl();
   const [org, ...name] = block.name.split('/');
 
   return (
@@ -22,14 +24,18 @@ export default function BlockCard({ block }: BlockCardProps): React.ReactElement
             <figure className="media-left">
               <p className="image is-64x64">
                 <img
-                  alt={`@${org}${name} Logo`}
+                  alt={intl.formatMessage(messages.blockLogo, { name: `@${org}${name}` })}
                   src={`/api/blocks/${org}/${name}/versions/${block.version}/icon`}
                 />
               </p>
             </figure>
             <div className="media-content">
-              <p className="title is-4">{name}</p>
-              <p className="subtitle is-6">{org}</p>
+              <Title className="title is-4" level={4}>
+                {name}
+              </Title>
+              <Title className="subtitle is-6" level={6}>
+                {org}
+              </Title>
             </div>
             <div className={`media-right ${styles.version}`}>
               <span className="subtitle is-6 has-text-grey">{block.version}</span>

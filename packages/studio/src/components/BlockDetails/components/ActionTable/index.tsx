@@ -30,7 +30,7 @@ export default function ActionTable({ manifest }: ActionTableProps): React.React
           <tr key={key}>
             <td>{key === '$any' ? <FormattedMessage {...messages.anyAction} /> : key}</td>
             <td>{value.required && <Icon className="has-text-success" icon="check" />}</td>
-            <td>{(value as any).description}</td>
+            <td>{value.description}</td>
           </tr>
         ))}
       </tbody>

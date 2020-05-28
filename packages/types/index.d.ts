@@ -572,6 +572,11 @@ export interface ActionType {
    * Whether or not app creators are required to define this action.
    */
   required?: boolean;
+
+  /**
+   * The description of the action.
+   */
+  description?: string;
 }
 
 export interface BlockManifest {
