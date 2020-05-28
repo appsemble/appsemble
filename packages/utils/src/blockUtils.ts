@@ -14,7 +14,7 @@ export function normalizeBlockName(name: string): string {
   if (name.startsWith('@')) {
     return name;
   }
-  return `${prefix + name}`;
+  return `${prefix}${name}`;
 }
 
 /**
@@ -25,9 +25,7 @@ export function normalizeBlockName(name: string): string {
  */
 export function stripBlockName(name: string): string {
   if (name.startsWith(prefix)) {
-    if (name.split.length > 1) {
-      return name.split('/')[1];
-    }
+    return name.substr(prefix.length);
   }
   return name;
 }

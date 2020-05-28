@@ -607,11 +607,14 @@ export interface BlockManifest {
   parameters?: OpenAPIV3.SchemaObject;
 
   /**
+   * A block icon url
+   */
+  iconUrl?: string;
+
+  /**
    * @deprecated
    */
   resources?: null;
-
-  iconUrl?: string;
 }
 
 /**
