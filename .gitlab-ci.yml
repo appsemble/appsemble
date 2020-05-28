@@ -491,13 +491,12 @@ lighthouse:
   script:
     - yarn --frozen-lockfile
     - yarn install-chrome-dependencies
-    - yarn scripts lighthouse -v
+    - yarn lhci collect
+    - yarn lhci assert
   artifacts:
     expose_as: Lighthouse reports
     paths:
-      - reports
-    reports:
-      metrics: reports/metrics.txt
+      - .lighthouseci
     expire_in: 7 days
 
 # Test 10 Second Dance in the staging environment.
