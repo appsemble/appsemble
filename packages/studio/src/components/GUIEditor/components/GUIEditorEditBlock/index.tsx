@@ -1,5 +1,5 @@
 import { Loader, Title } from '@appsemble/react-components';
-import type { App, BasicPage, Block } from '@appsemble/types';
+import type { App, BasicPage, Block, BlockManifest } from '@appsemble/types';
 import { normalizeBlockName, stripBlockName } from '@appsemble/utils';
 import axios from 'axios';
 import indentString from 'indent-string';
@@ -9,25 +9,19 @@ import type { OpenAPIV3 } from 'openapi-types';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import type { EditLocation, SelectedBlockManifest } from '../..';
-import { GuiEditorStep } from '../..';
 import JSONSchemaEditor from '../../../JSONSchemaEditor';
+import type { EditLocation } from '../../types';
+import { GuiEditorStep } from '../../types';
 import Stepper from '../Stepper';
 import styles from './index.css';
 import messages from './messages';
 
-interface Resource {
-  parameters: { [key: string]: any };
-  actions: { [key: string]: any };
-  events: { [key: string]: any };
-}
-
 interface GUIEditorEditBlockProps {
-  selectedBlock: SelectedBlockManifest;
+  selectedBlock: BlockManifest;
   setEditorStep: (value: GuiEditorStep) => void;
   app: App;
   editLocation: EditLocation;
-  setSelectedBlock: (value: SelectedBlockManifest) => void;
+  setSelectedBlock: (value: BlockManifest) => void;
   monacoEditor: editor.IStandaloneCodeEditor;
   setApp: (app: App) => void;
   setRecipe: (value: string) => void;
@@ -43,7 +37,7 @@ export default function GUIEditorEditBlock({
   setRecipe,
   setSelectedBlock,
 }: GUIEditorEditBlockProps): React.ReactElement {
-  const [editingResource, setEditingResource] = React.useState<Resource>(undefined);
+  const [editingResource, setEditingResource] = React.useState<Block>(undefined);
   const [editExistingBlock, setEditExistingBlock] = React.useState(false);
 
   const onChange = React.useCallback(
@@ -53,7 +47,7 @@ export default function GUIEditorEditBlock({
     [editingResource],
   );
 
-  const save = (editedParams: Resource): void => {
+  const save = (editedParams: Block): void => {
     const blockParent = editLocation.parents
       .slice()
       .reverse()
@@ -105,7 +99,7 @@ export default function GUIEditorEditBlock({
           if (!block.type.includes(editLocation.blockName) || editingResource) {
             return;
           }
-          let blockValues: Resource;
+          let blockValues: Block;
 
           if (block.events) {
             blockValues = { ...blockValues, events: block.events };

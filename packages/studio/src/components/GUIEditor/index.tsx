@@ -1,27 +1,12 @@
 import type { App, BlockManifest } from '@appsemble/types';
-import type { editor, Range } from 'monaco-editor';
-import type { OpenAPIV3 } from 'openapi-types';
+import type { editor } from 'monaco-editor';
 import React from 'react';
 
 import GUIEditorDelete from './components/GUIEditorDelete';
 import GUIEditorEditBlock from './components/GUIEditorEditBlock';
 import GUIEditorSelect from './components/GUIEditorSelect';
 import GUIEditorToolbox from './components/GUIEditorToolbox';
-
-export enum GuiEditorStep {
-  'YAML',
-  'SELECT',
-  'ADD',
-  'EDIT',
-  'DELETE',
-}
-
-export interface EditLocation {
-  blockName: string;
-  pageName: string;
-  parents?: [{ name: string; line: number; indent: number }];
-  editRange?: Range;
-}
+import { EditLocation, GuiEditorStep } from './types';
 
 interface GUIEditorProps {
   app: App;
@@ -36,21 +21,6 @@ interface GUIEditorProps {
   value?: string;
 }
 
-export interface SelectedBlockManifest extends BlockManifest {
-  /**
-   * A JSON schema to validate block parameters.
-   *
-   * Since multiple JSON schema typings exist and not all of them play nice
-   * with each other, this type is normally set to `object`. To improve typings
-   * this is an extension of the existing BlockManifest.
-   */
-  parameters: {
-    properties: OpenAPIV3.BaseSchemaObject;
-    required?: string[];
-    definitions?: OpenAPIV3.SchemaObject[];
-  };
-}
-
 export default function GUIEditor({
   app,
   editLocation,
@@ -61,7 +31,7 @@ export default function GUIEditor({
   setEditorStep,
   setRecipe,
 }: GUIEditorProps): React.ReactElement {
-  const [selectedBlock, setSelectedBlock] = React.useState<SelectedBlockManifest>(undefined);
+  const [selectedBlock, setSelectedBlock] = React.useState<BlockManifest>(undefined);
   const [monacoEditor, setMonacoEditor] = React.useState<editor.IStandaloneCodeEditor>();
   const [appClone, setAppClone] = React.useState<App>(app);
 

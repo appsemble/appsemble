@@ -27,7 +27,8 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { Link, useHistory, useLocation, useParams } from 'react-router-dom';
 
 import { useApp } from '../AppContext';
-import GUIEditor, { EditLocation, GuiEditorStep } from '../GUIEditor';
+import GUIEditor from '../GUIEditor';
+import { EditLocation, GuiEditorStep } from '../GUIEditor/types';
 import HelmetIntl from '../HelmetIntl';
 import MonacoEditor from '../MonacoEditor';
 import styles from './index.css';

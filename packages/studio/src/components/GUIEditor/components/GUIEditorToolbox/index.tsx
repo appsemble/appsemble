@@ -1,10 +1,11 @@
 import { Loader, Title } from '@appsemble/react-components';
+import type { BlockManifest } from '@appsemble/types';
 import { stripBlockName } from '@appsemble/utils';
 import axios from 'axios';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import { GuiEditorStep, SelectedBlockManifest } from '../..';
+import { GuiEditorStep } from '../../types';
 import GUIEditorToolboxBlock from '../GUIEditorToolboxBlock';
 import Stepper from '../Stepper';
 import styles from './index.css';
@@ -12,8 +13,8 @@ import messages from './messages';
 
 interface GUIEditorToolboxProps {
   setEditorStep: (step: GuiEditorStep) => void;
-  setSelectedBlock: (block: SelectedBlockManifest) => void;
-  selectedBlock: SelectedBlockManifest;
+  setSelectedBlock: (block: BlockManifest) => void;
+  selectedBlock: BlockManifest;
 }
 
 export default function GUIEditorToolbox({
@@ -21,7 +22,7 @@ export default function GUIEditorToolbox({
   setEditorStep,
   setSelectedBlock,
 }: GUIEditorToolboxProps): React.ReactElement {
-  const [blocks, setBlocks] = React.useState<SelectedBlockManifest[]>(undefined);
+  const [blocks, setBlocks] = React.useState<BlockManifest[]>(undefined);
 
   React.useEffect(() => {
     const getBlocks = async (): Promise<void> => {

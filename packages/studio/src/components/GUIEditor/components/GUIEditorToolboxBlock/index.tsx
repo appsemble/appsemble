@@ -1,14 +1,15 @@
 import { Icon } from '@appsemble/react-components';
+import type { BlockManifest } from '@appsemble/types';
+import { stripBlockName } from '@appsemble/utils';
 import classNames from 'classnames';
 import React from 'react';
 
-import type { SelectedBlockManifest } from '../..';
 import styles from './index.css';
 
 interface GUIEditorToolboxBlockProps {
-  blocks: SelectedBlockManifest[];
-  setSelectedBlock: (block: SelectedBlockManifest) => void;
-  selectedBlock: SelectedBlockManifest;
+  blocks: BlockManifest[];
+  setSelectedBlock: (block: BlockManifest) => void;
+  selectedBlock: BlockManifest;
 }
 export default function GUIEditorToolboxBlock({
   blocks,
@@ -27,7 +28,7 @@ export default function GUIEditorToolboxBlock({
 
   return (
     <div className={styles.main}>
-      {blocks.map((block: SelectedBlockManifest) => (
+      {blocks.map((block: BlockManifest) => (
         <div
           key={block.name}
           className={classNames(styles.blockFrame, { [styles.selected]: selectedBlock === block })}
@@ -36,8 +37,12 @@ export default function GUIEditorToolboxBlock({
           role="button"
           tabIndex={0}
         >
-          <Icon icon="box" size="large" />
-          <span className={styles.subtext}>{block.name.split('/')[1]}</span>
+          {block.iconUrl ? (
+            <img alt={stripBlockName(block.name)} src={block.iconUrl} />
+          ) : (
+            <Icon icon="box" size="large" />
+          )}
+          <span className={styles.subtext}>{stripBlockName(block.name)}</span>
         </div>
       ))}
     </div>

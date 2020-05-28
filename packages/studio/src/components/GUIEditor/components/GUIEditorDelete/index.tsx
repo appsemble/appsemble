@@ -6,8 +6,7 @@ import { editor, Range } from 'monaco-editor';
 import React from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
-import type { EditLocation } from '../..';
-import { GuiEditorStep } from '../..';
+import { EditLocation, GuiEditorStep } from '../../types';
 import messages from './messages';
 
 interface GUIEditorDeleteProps {
