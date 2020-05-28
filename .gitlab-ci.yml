@@ -342,6 +342,7 @@ staging:
       --set "ingress.host=staging.appsemble.review"
       --set "ingress.tls.secretName=staging-tls"
       --set "migrateTo=next"
+      --set "oauthSecret=oauth2"
       --set "postgresql.fullnameOverride=staging-postgresql"
       --set "provision.account.clientCredentials=$APPSEMBLE_CLIENT_CREDENTIALS"
       --set "provision.account.id=43376671-1c98-4657-809e-d45292a3f39e"

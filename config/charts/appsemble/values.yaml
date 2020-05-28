@@ -40,6 +40,8 @@ smtpSecret: smtp
 
 sentrySecret: {}
 
+oauthSecret: null
+
 secretSecret: appsemble
 
 migrateTo: {}
