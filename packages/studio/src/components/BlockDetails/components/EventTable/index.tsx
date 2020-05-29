@@ -6,6 +6,9 @@ import { FormattedMessage } from 'react-intl';
 import messages from './messages';
 
 interface EventTableProps {
+  /**
+   * The block manifest to use for displaying the available events.
+   */
   manifest: BlockManifest;
 }
 

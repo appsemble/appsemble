@@ -6,6 +6,9 @@ import { FormattedMessage } from 'react-intl';
 import messages from './messages';
 
 interface ActionTableProps {
+  /**
+   * The block manifest to use for displaying the available actions.
+   */
   manifest: BlockManifest;
 }
 

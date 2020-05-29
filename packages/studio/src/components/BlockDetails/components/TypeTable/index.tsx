@@ -6,6 +6,9 @@ import { FormattedMessage } from 'react-intl';
 import messages from './messages';
 
 interface TypeTableProps {
+  /**
+   * The definition of the type to render.
+   */
   definition: OpenAPIV3.SchemaObject;
 }
 

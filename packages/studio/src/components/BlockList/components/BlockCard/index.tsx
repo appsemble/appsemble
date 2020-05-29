@@ -8,6 +8,9 @@ import styles from './index.css';
 import messages from './messages';
 
 interface BlockCardProps {
+  /**
+   * The block to display.
+   */
   block: BlockManifest;
 }
 

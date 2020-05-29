@@ -17,15 +17,34 @@ import styles from './index.css';
 import messages from './messages';
 
 interface BlockDetailsRoutesMatch {
+  /**
+   * The organization of the block.
+   */
   organization: string;
+
+  /**
+   * The name of the block.
+   */
   blockName: string;
+
+  /**
+   * The version of the block.
+   */
   version: string;
 }
 
+/**
+ * An extended version of block manifest that
+ * further defines the definitions property in parameters.
+ */
 export interface ExtendedBlockManifest extends BlockManifest {
   parameters: ExtendedParameters;
 }
 
+/**
+ * An extended version of SchemaObject
+ * that adds a definition property for referenced types.
+ */
 export type ExtendedParameters = OpenAPIV3.SchemaObject & {
   definitions: { [key: string]: Definition };
 };

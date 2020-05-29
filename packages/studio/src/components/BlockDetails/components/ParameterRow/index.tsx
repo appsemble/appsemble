@@ -5,17 +5,36 @@ import { useRouteMatch } from 'react-router-dom';
 
 import MarkdownContent from '../../../MarkdownContent';
 
+interface ParameterRowProps {
+  /**
+   * The parent of value.
+   *
+   * This is used to determine whether or not a property is required.
+   */
+  parent: OpenAPIV3.SchemaObject;
+
+  /**
+   * The name of the property to render.
+   */
+  name: string;
+
+  /**
+   * The schema to render.
+   */
+  value: OpenAPIV3.SchemaObject;
+
+  /**
+   * Whether recursion should be applied to further render children properties.
+   */
+  recurse: boolean;
+}
+
 export default function ParameterRow({
   name,
   parent,
   recurse,
   value,
-}: {
-  parent: OpenAPIV3.SchemaObject;
-  name: string;
-  value: OpenAPIV3.SchemaObject;
-  recurse: boolean;
-}): React.ReactElement {
+}: ParameterRowProps): React.ReactElement {
   const match = useRouteMatch();
 
   if (value.type === 'array' && recurse) {
