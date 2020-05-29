@@ -1,94 +1,115 @@
-import { editor, IDisposable, KeyCode, KeyMod } from 'monaco-editor';
+import { editor, KeyCode, KeyMod } from 'monaco-editor';
 import * as React from 'react';
 import ResizeObserver from 'resize-observer-polyfill';
 
 import styles from './index.css';
 
+type Options = editor.IEditorOptions & editor.IGlobalEditorOptions;
+
 interface MonacoEditorProps {
+  /**
+   * The current value of the editor.
+   */
   value?: string;
+
+  /**
+   * The language of the editor.
+   */
   language: string;
+
+  /**
+   * The global monaco theme.
+   */
   theme?: string;
-  onValueChange: (value: string) => void;
-  onSave: () => void;
-  options: editor.IEditorOptions;
+
+  /**
+   * This is called whenever the value of the editor changes.
+   *
+   * @param event The monaco change event.
+   * @param value The new value.
+   */
+  onChange?: (event: editor.IModelContentChangedEvent, value: string) => void;
+
+  /**
+   * Called when Ctrl-S is pressed.
+   */
+  onSave?: () => void;
+
+  /**
+   * Editor options to set.
+   */
+  options?: Options;
 }
 
-export default class MonacoEditor extends React.Component<MonacoEditorProps> {
-  node = React.createRef<HTMLDivElement>();
+const defaultOptions: Options = {
+  insertSpaces: true,
+  tabSize: 2,
+  minimap: { enabled: false },
+};
 
-  observer: ResizeObserver = null;
+export default function MonacoEditor({
+  language,
+  onChange,
+  onSave,
+  options = defaultOptions,
+  theme = 'vs',
+  value = '',
+}: MonacoEditorProps): React.ReactElement {
+  const ref = React.useRef<HTMLDivElement>();
+  const [monaco, setMonaco] = React.useState<editor.IStandaloneCodeEditor>();
 
-  editor: editor.IStandaloneCodeEditor;
+  const saveRef = React.useRef(onSave);
+  saveRef.current = onSave;
 
-  subscription: IDisposable;
-
-  static defaultProps = {
-    value: '',
-    theme: 'vs',
-    options: { insertSpaces: true, tabSize: 2, minimap: { enabled: false } },
-  };
-
-  componentDidMount(): void {
-    const { language, options, value } = this.props;
-    const model = editor.createModel(value, language);
-
-    this.editor = editor.create(this.node.current, options);
-    this.editor.setModel(model);
-
+  React.useEffect(() => {
+    const node = ref.current;
+    const ed = editor.create(node, options);
     // eslint-disable-next-line no-bitwise
-    this.editor.addCommand(KeyMod.CtrlCmd | KeyCode.KEY_S, this.onMonacoSave);
+    ed.addCommand(KeyMod.CtrlCmd | KeyCode.KEY_S, () => saveRef.current?.());
 
-    this.subscription = model.onDidChangeContent(this.onMonacoValueChange);
+    const observer = new ResizeObserver(() => ed.layout());
+    observer.observe(node);
 
-    this.observer = new ResizeObserver(() => {
-      this.editor.layout();
-    });
+    setMonaco(ed);
 
-    this.observer.observe(this.node.current);
-  }
+    return () => {
+      ed.dispose();
+      observer.unobserve(node);
+    };
+    // This is triggered by the lack of options in the dependency array. This is left out on
+    // purpose. Instead, this is handled using monaco.updateOptions() below.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-  componentDidUpdate(prevProps: MonacoEditorProps): void {
-    const { language, options, theme, value } = this.props;
-
-    this.editor.updateOptions(options);
-    const model = this.editor.getModel();
-
-    if (prevProps.theme !== theme) {
-      editor.setTheme(theme);
+  React.useEffect(() => {
+    if (monaco) {
+      monaco.updateOptions(options);
     }
+  }, [monaco, options]);
 
-    if (prevProps.language !== language) {
-      editor.setModelLanguage(model, language);
+  React.useEffect(() => editor.setTheme(theme), [theme]);
+
+  React.useEffect(() => {
+    if (monaco) {
+      editor.setModelLanguage(monaco.getModel(), language);
     }
+  }, [language, monaco]);
 
-    if (value !== model.getValue()) {
-      model.setValue(value);
+  React.useEffect(() => {
+    if (monaco) {
+      monaco.getModel().setValue(value);
     }
-  }
+  }, [monaco, value]);
 
-  componentWillUnmount(): void {
-    if (this.editor) {
-      this.editor.dispose();
+  React.useEffect(() => {
+    if (!monaco) {
+      return undefined;
     }
+    const model = monaco.getModel();
+    const subscription = model.onDidChangeContent((event) => onChange(event, model.getValue()));
 
-    if (this.subscription) {
-      this.subscription.dispose();
-    }
+    return () => subscription.dispose();
+  }, [monaco, onChange]);
 
-    if (this.observer) {
-      this.observer.unobserve(this.node.current);
-    }
-  }
-
-  onMonacoSave = (): void => {
-    this.props.onSave();
-  };
-
-  onMonacoValueChange = (): void => {
-    this.props.onValueChange(this.editor.getModel().getValue());
-  };
-
-  render(): React.ReactElement {
-    return <div ref={this.node} className={styles.editor} />;
-  }
+  return <div ref={ref} className={styles.editor} />;
 }
