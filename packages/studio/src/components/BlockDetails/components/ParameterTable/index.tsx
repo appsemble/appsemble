@@ -8,9 +8,15 @@ import ParameterRow from '../ParameterRow';
 import messages from './messages';
 
 interface ParameterTableProps {
+  /**
+   * The parameters that should be rendered.
+   */
   parameters: ExtendedParameters;
 }
 
+/**
+ * Renders out the parameters of a block in a table.
+ */
 export default function ParameterTable({ parameters }: ParameterTableProps): React.ReactElement {
   return (
     <Table>

@@ -49,6 +49,9 @@ export type ExtendedParameters = OpenAPIV3.SchemaObject & {
   definitions: { [key: string]: Definition };
 };
 
+/**
+ * Renders out documentation for blocks.
+ */
 export default function BlockDetails(): React.ReactElement {
   const [blockVersions, setBlockVersions] = React.useState<ExtendedBlockManifest[]>();
   const [loading, setLoading] = React.useState(true);

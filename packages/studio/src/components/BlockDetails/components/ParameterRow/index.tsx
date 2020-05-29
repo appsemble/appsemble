@@ -29,6 +29,12 @@ interface ParameterRowProps {
   recurse: boolean;
 }
 
+/**
+ * Renders one or multiple rows for a parameter.
+ *
+ * Multiple rows are returned if `recurse` is set to true
+ * and if the parameter is an object or an array.
+ */
 export default function ParameterRow({
   name,
   parent,

@@ -12,6 +12,9 @@ interface ActionTableProps {
   manifest: BlockManifest;
 }
 
+/**
+ * Renders a table of all available actions for a block.
+ */
 export default function ActionTable({ manifest }: ActionTableProps): React.ReactElement {
   return (
     <Table>

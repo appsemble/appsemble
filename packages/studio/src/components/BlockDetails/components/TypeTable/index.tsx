@@ -12,6 +12,9 @@ interface TypeTableProps {
   definition: OpenAPIV3.SchemaObject;
 }
 
+/**
+ * Renders a table describing the types definitions that are passed through.
+ */
 export default function TypeTable({ definition }: TypeTableProps): React.ReactElement {
   return (
     <Table>
