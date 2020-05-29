@@ -82,7 +82,7 @@ export default function ParameterRow({
 
           if (!refName) {
             // eslint-disable-next-line react/no-array-index-key
-            return <span key={index}>{any.type}</span>;
+            return <React.Fragment key={index}>{any.type}</React.Fragment>;
           }
           return (
             <a key={refName} href={`${match.url}#${refName}`}>
@@ -120,18 +120,15 @@ export default function ParameterRow({
           <div>
             {'Array<'}
             <Join separator=" | ">
-              {[
-                ...((Object.hasOwnProperty.call(value.items, 'type') && [
-                  ...[]
-                    .concat((value.items as OpenAPIV3.SchemaObject).type)
-                    .map((t) => <span key={t}>{t}</span>),
-                ]) ||
-                  []),
-                ...Object.values(value.items)
-                  .filter((i) => i.type && i.type !== 'object' && i.type !== 'array')
-                  .map((i) => i.type),
-                ...((ref && [ref]) || []),
-              ]}
+              {'type' in value.items && value.items.type}
+              {Object.values(value.items)
+                .map(({ type: t }) => t)
+                .filter(Boolean)
+                .filter((t) => t !== 'object' && t !== 'array')
+                .map((t) => (
+                  <React.Fragment key={t}>{t}</React.Fragment>
+                ))}
+              {ref}
             </Join>
             {'>'}
           </div>
@@ -140,7 +137,7 @@ export default function ParameterRow({
         {!ref && !value?.enum?.length && type !== 'array' && (
           <Join separator=" | ">
             {[].concat(type).map((t) => (
-              <span key={t}>{t}</span>
+              <React.Fragment key={t}>{t}</React.Fragment>
             ))}
           </Join>
         )}
