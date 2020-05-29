@@ -128,7 +128,7 @@ export default function BlockDetails(): React.ReactElement {
 
         {Object.keys(selectedBlockManifest.parameters || {}).length > 0 && (
           <>
-            <Title level={5}>
+            <Title level={4}>
               <FormattedMessage {...messages.parameters} />
             </Title>
             <ParameterTable parameters={selectedBlockManifest.parameters} />
