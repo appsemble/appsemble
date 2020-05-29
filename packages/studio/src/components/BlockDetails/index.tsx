@@ -180,6 +180,11 @@ export default function BlockDetails(): React.ReactElement {
                     {key}
                   </a>
                 </Title>
+                {definition.description && (
+                  <Title level={6}>
+                    <MarkdownContent content={definition.description} />
+                  </Title>
+                )}
                 {definition.type === 'object' || definition.type === 'array' ? (
                   <ParameterTable parameters={definition as ExtendedParameters} />
                 ) : (

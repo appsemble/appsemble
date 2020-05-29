@@ -8,7 +8,7 @@ interface AbstractMarkerIcon {
    * be desirable to customize this. For example, for a symmetric pin which has a width of 10, and a
    * height of 16, you’ll probably want to set this to `[5, 16]`
    *
-   * The following special cases for Font Awesome icons are treated in a special way, since they are
+   * The following special cases for [Font Awesome icon](https://fontawesome.com/icons?d=gallery&m=free) are treated in a special way, since they are
    * often used to represent a location:
    *
    * - `map-marker`
@@ -37,13 +37,19 @@ interface AbstractMarkerIcon {
   activeRatio?: number;
 }
 
+/**
+ * A marker based on a [Font Awesome icon](https://fontawesome.com/icons?d=gallery&m=free).
+ */
 interface FontAwesomeMarkerIcon extends AbstractMarkerIcon {
   /**
-   * A Font Awesome icon name to use.
+   * A [Font Awesome icon](https://fontawesome.com/icons?d=gallery&m=free) name to use.
    */
   icon?: IconName;
 }
 
+/**
+ * A marker based on an existing asset.
+ */
 interface AssetMarkerIcon extends AbstractMarkerIcon {
   /**
    * The id of an asset to use.
@@ -53,8 +59,21 @@ interface AssetMarkerIcon extends AbstractMarkerIcon {
 
 declare module '@appsemble/sdk' {
   interface Parameters {
+    /**
+     * The name of the field used to retrieve the longitude
+     */
     latitude: string;
+
+    /**
+     * The name of the field used to retrieve the latitude
+     */
     longitude: string;
+
+    /**
+     * Whether clustering should be disabled.
+     *
+     * By default markers are clustered if they are too close to each other.
+     */
     disableClustering?: boolean;
 
     /**
@@ -75,14 +94,26 @@ declare module '@appsemble/sdk' {
   }
 
   interface Actions {
+    /**
+     * Action that gets dispatched when a marker is clicked.
+     */
     onMarkerClick: {};
   }
 
   interface EventListeners {
+    /**
+     * The event that is triggered when data is received.
+     * Compatible data that is received will be displayed. Must be a set of data.
+     */
     data: {};
   }
 
   interface EventEmitters {
+    /**
+     * Event that gets emitted when moving the map around.
+     * Will apply [OData filters](https://www.odata.org) to limit the range of items fetched.
+     * This will be skipped if the move emit event is not defined.
+     */
     move: {};
   }
 }
