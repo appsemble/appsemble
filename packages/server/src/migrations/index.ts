@@ -8,8 +8,7 @@ import nonNullableAssetAppId from './0.11.3-non-nullable-asset-app-id';
 import removeBlockDefinition from './0.12.4-remove-block-definition';
 import blockIcon from './0.12.6-block-icon';
 import userUuid from './0.13.0-user-uuid';
-import oauth2LoginFixes from './0.13.1-oauth2-login-fixes';
-import blockDescriptions from './0.13.2-block-descriptions';
+import oauth2LoginFixesBlockDescriptions from './0.13.1-oauth2-login-fixes-block-descriptions';
 
 export default [
   postgresql,
@@ -21,6 +20,5 @@ export default [
   removeBlockDefinition,
   blockIcon,
   userUuid,
-  oauth2LoginFixes,
-  blockDescriptions,
+  oauth2LoginFixesBlockDescriptions,
 ] as Migration[];
