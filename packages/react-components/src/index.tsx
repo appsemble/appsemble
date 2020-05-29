@@ -29,6 +29,7 @@ export { default as SimpleSubmit } from './SimpleSubmit';
 export { default as Table } from './Table';
 export { default as TextArea } from './Textarea';
 export { default as Title } from './Title';
+export { default as Subtitle } from './Subtitle';
 export { default as useClickOutside } from './hooks/useClickOutside';
 export { default as useMessages } from './hooks/useMessages';
 export { default as useObjectURL } from './hooks/useObjectURL';

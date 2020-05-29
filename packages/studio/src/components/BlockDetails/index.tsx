@@ -1,4 +1,4 @@
-import { Content, Loader, Message, Select, Title } from '@appsemble/react-components';
+import { Content, Loader, Message, Select, Subtitle, Title } from '@appsemble/react-components';
 import type { BlockManifest } from '@appsemble/types';
 import axios from 'axios';
 import type { OpenAPIV3 } from 'openapi-types';
@@ -95,9 +95,7 @@ export default function BlockDetails(): React.ReactElement {
           </figure>
           <header className="is-inline-block">
             <Title level={2}>{blockName}</Title>
-            <Title className="subtitle" level={3}>
-              @{organization}
-            </Title>
+            <Subtitle level={4}>@{organization}</Subtitle>
           </header>
         </div>
         <Select

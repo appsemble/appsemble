@@ -1,4 +1,4 @@
-import { Title } from '@appsemble/react-components/src';
+import { Subtitle, Title } from '@appsemble/react-components/src';
 import type { BlockManifest } from '@appsemble/types';
 import React from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -30,12 +30,8 @@ export default function BlockCard({ block }: BlockCardProps): React.ReactElement
               </p>
             </figure>
             <div className="media-content">
-              <Title className="title is-4" level={4}>
-                {name}
-              </Title>
-              <Title className="subtitle is-6" level={6}>
-                {org}
-              </Title>
+              <Title level={4}>{name}</Title>
+              <Subtitle level={6}>{org}</Subtitle>
             </div>
             <div className={`media-right ${styles.version}`}>
               <span className="subtitle is-6 has-text-grey">{block.version}</span>
