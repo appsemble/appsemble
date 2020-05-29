@@ -66,7 +66,7 @@ export default function ParameterRow({
     const refName = (value.items as any).$ref.split('/').pop();
     ref = <a href={`${match.url}#${refName}`}>{refName}</a>;
   } else if (value.type === 'array' && (value.items as any).anyOf) {
-    ref = (value.items as any).anyOf.map((any: any) => {
+    ref = (value.items as any).anyOf.map((any: OpenAPIV3.ReferenceObject) => {
       const refName = any.$ref.split('/').pop();
       return (
         <a key={refName} href={`${match.url}#${refName}`}>
@@ -77,12 +77,12 @@ export default function ParameterRow({
   } else if (value.anyOf && value.format !== 'remapper') {
     ref = (
       <Join separator=" | ">
-        {value.anyOf.map((any: any, index) => {
+        {value.anyOf.map((any: OpenAPIV3.ReferenceObject, index) => {
           const refName = any.$ref?.split('/').pop();
 
           if (!refName) {
             // eslint-disable-next-line react/no-array-index-key
-            return <React.Fragment key={index}>{any.type}</React.Fragment>;
+            return <React.Fragment key={index}>{(any as any).type}</React.Fragment>;
           }
           return (
             <a key={refName} href={`${match.url}#${refName}`}>

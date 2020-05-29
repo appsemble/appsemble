@@ -5,6 +5,7 @@ import type { OpenAPIV3 } from 'openapi-types';
 import React from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Redirect, useHistory, useRouteMatch } from 'react-router-dom';
+import type { Definition } from 'typescript-json-schema';
 
 import HelmetIntl from '../HelmetIntl';
 import MarkdownContent from '../MarkdownContent';
@@ -26,7 +27,7 @@ export interface ExtendedBlockManifest extends BlockManifest {
 }
 
 export type ExtendedParameters = OpenAPIV3.SchemaObject & {
-  definitions: { [key: string]: Partial<OpenAPIV3.SchemaObject> };
+  definitions: { [key: string]: Definition };
 };
 
 export default function BlockDetails(): React.ReactElement {
@@ -45,13 +46,6 @@ export default function BlockDetails(): React.ReactElement {
       .then(async (result) => {
         const data = result.data.slice().reverse();
         setBlockVersions(data);
-        const versionBlock = urlVersion && data.find((d) => d.version === urlVersion);
-
-        if (!versionBlock) {
-          history.replace(`${match.url}/${data[0].version}`);
-        }
-
-        setLoading(false);
       })
       .catch(() => setError(true))
       .finally(() => setLoading(false));
@@ -79,7 +73,7 @@ export default function BlockDetails(): React.ReactElement {
   const selectedBlockManifest = blockVersions.find((block) => block.version === urlVersion);
 
   if (!selectedBlockManifest) {
-    return <Redirect to={`${match.url}/${blockVersions[blockVersions.length - 1].version}`} />;
+    return <Redirect to={`${match.url}/${blockVersions[0].version}`} />;
   }
 
   return (
