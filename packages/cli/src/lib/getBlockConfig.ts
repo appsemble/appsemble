@@ -29,8 +29,14 @@ export default async function getBlockConfig(dir: string): Promise<BlockConfig> 
       )}: ${chalk.cyan('true')}” in package.json`,
     );
   }
+  let longDescription: string;
+  if (await fs.pathExists(path.join(dir, 'README.md'))) {
+    longDescription = await fs.readFile(path.join(dir, 'README.md'), 'utf8');
+  }
+
   const result = {
     description: pkg.description,
+    longDescription,
     name: pkg.name,
     version: pkg.version,
     webpack: 'webpack.config',

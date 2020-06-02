@@ -1,22 +1,7 @@
----
-menu: Blocks
-route: /blocks/markdown
----
-
-# Markdown
-
-## Introduction
-
 A simple block that can display content based on [Markdown] input.
 
 It can be used to provide content to pages, for example a list of external links or to further
 explain the other blocks found on a page.
-
-## Parameters
-
-| Parameter | Default | Description                                          |
-| --------- | ------- | ---------------------------------------------------- |
-| content   |         | A string containing the markdown content to display. |
 
 ## Example
 
@@ -40,10 +25,8 @@ parameters:
     | example 3     | column 2      |    23 |
 ```
 
-## Images
+### Images
 
-<span class="screenshot"></span>
-
-![Markdown screenshot](../images/markdown.png)
+![Markdown screenshot](https://gitlab.com/appsemble/appsemble/-/raw/0.13.0/docs/images/markdown.png)
 
 [markdown]: https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet

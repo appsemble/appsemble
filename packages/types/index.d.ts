@@ -8,6 +8,7 @@ import type {
 import type { IconName } from '@fortawesome/fontawesome-common-types';
 import type { OpenAPIV3 } from 'openapi-types';
 import type { JsonObject, RequireExactlyOne } from 'type-fest';
+import type { Definition } from 'typescript-json-schema';
 
 export type { Theme };
 
@@ -572,6 +573,11 @@ export interface ActionType {
    * Whether or not app creators are required to define this action.
    */
   required?: boolean;
+
+  /**
+   * The description of the action.
+   */
+  description?: string;
 }
 
 export interface BlockManifest {
@@ -586,6 +592,13 @@ export interface BlockManifest {
    * The description of the block.
    */
   description?: string;
+
+  /**
+   * The long description of the block.
+   *
+   * This is displayed when rendering block documentation and supports Markdown.
+   */
+  longDescription?: string;
 
   /**
    * A [semver](https://semver.org) representation of the block version.
@@ -624,7 +637,7 @@ export interface BlockManifest {
    * Since multiple JSON schema typings exist and not all of them play nice with each other, this
    * type is set to `object`.
    */
-  parameters?: object;
+  parameters?: Definition;
 
   /**
    * @deprecated

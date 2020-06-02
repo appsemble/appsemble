@@ -1,0 +1,12 @@
+.content {
+  max-width: 960px;
+  padding: 10px;
+}
+
+.logo {
+  margin-right: 15px !important;
+}
+
+.description img {
+  width: 300px;
+}

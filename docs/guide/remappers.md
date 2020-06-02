@@ -1,5 +1,5 @@
 ---
-name: Remappers
+menu: Remappers
 route: /guide/remappers
 ---
 

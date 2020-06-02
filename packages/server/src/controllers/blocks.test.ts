@@ -133,6 +133,7 @@ describe('publishBlock', () => {
       parameters: null,
       version: '1.32.9',
       description: null,
+      longDescription: null,
     });
 
     expect(status).toBe(201);
@@ -302,6 +303,7 @@ describe('getBlockVersions', () => {
       {
         name: '@xkcd/standing',
         description: 'Version 1.32.9!',
+        longDescription: null,
         actions: null,
         events: null,
         iconUrl: '/api/blocks/@xkcd/standing/versions/1.32.9/icon',

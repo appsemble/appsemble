@@ -4,7 +4,7 @@ import * as React from 'react';
 import FormComponent from '../FormComponent';
 
 type SelectProps = React.ComponentPropsWithoutRef<typeof FormComponent> &
-  React.ComponentPropsWithoutRef<'select'> & {
+  Omit<React.ComponentPropsWithoutRef<'select'>, 'onChange'> & {
     /**
      * The name of the HTML element.
      */

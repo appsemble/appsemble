@@ -100,6 +100,7 @@ export async function handler({ increment }: Args): Promise<void> {
       'docs/**/*.md',
       'docs/*.mdx',
       'docs/**/*.mdx',
+      'blocks/**/*.md',
     ],
     { absolute: true, gitignore: true },
   );

@@ -144,7 +144,7 @@ export default function Assets(): React.ReactElement {
   if (error) {
     return (
       <Message color="danger">
-        <FormattedMessage {...error} />
+        <FormattedMessage {...messages.error} />
       </Message>
     );
   }

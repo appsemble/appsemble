@@ -17,6 +17,8 @@ export default class BlockVersion extends Model implements Omit<BlockManifest, '
 
   description: string;
 
+  longDescription: string;
+
   parameters: object;
 
   resources: any;
@@ -42,6 +44,7 @@ export default class BlockVersion extends Model implements Omit<BlockManifest, '
         name: { type: DataTypes.STRING, primaryKey: true, unique: 'blockVersionComposite' },
         version: { type: DataTypes.STRING, primaryKey: true, unique: 'blockVersionComposite' },
         description: { type: DataTypes.TEXT },
+        longDescription: { type: DataTypes.TEXT },
         icon: { type: DataTypes.BLOB },
         layout: { type: DataTypes.STRING },
         actions: { type: DataTypes.JSON },
