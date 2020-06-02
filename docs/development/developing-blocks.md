@@ -114,6 +114,12 @@ contains two pages that link to each other by clicking the button created by the
 
 ## Modifying the Block
 
+> **Note**: Any block that can be found within the list of workspaces listed in `package.json` will
+> be hot-reloaded after having published it. This means that when developing blocks, it is not
+> necessary to keep publishing new versions of blocks to test changes. By default, the `blocks`
+> directory is checked for this, but other directories such as `../amsterdam/blocks`, assuming this
+> directory exists and has blocks, will be hot-reloaded as well.
+
 Now lets make the text of the button configurable using the app definition.
 
 ```diff

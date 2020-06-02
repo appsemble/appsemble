@@ -63,6 +63,10 @@ To publish a new block version, the following command can be used.
 yarn appsemble block publish blocks/*
 ```
 
+Any block that is found within the workspaces listed in `package.json` will be hot-reloaded. More
+information about block development and hot-reloading can be found
+[here](https://appsemble.dev/development/developing-blocks).
+
 ### App templates
 
 In order for users to create apps from within the Appsemble Studio, existing apps that can be used
