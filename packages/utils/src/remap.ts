@@ -22,11 +22,9 @@ const mapperImplementations: MapperImplementations = {
   static: (input) => input,
 
   prop: (prop, obj) =>
-    prop == null
-      ? null
-      : String(prop)
-          .split('.')
-          .reduce((acc, p) => acc[p], obj),
+    String(prop)
+      .split('.')
+      .reduce((acc, p) => acc?.[p] ?? null, obj),
 
   'date.parse': (format, input) => (format ? parse(input, format, new Date()) : parseISO(input)),
 

@@ -53,6 +53,18 @@ const cases: TestCase[] = [
     mappers: [{ prop: null }],
     expected: null,
   },
+  {
+    description: 'handle properties named null',
+    input: { null: 'Spongebob' },
+    mappers: [{ prop: null }],
+    expected: 'Spongebob',
+  },
+  {
+    description: 'handle null values',
+    input: {},
+    mappers: [{ prop: 'foo.bar' }],
+    expected: null,
+  },
 
   // Mapper string.case
   {
