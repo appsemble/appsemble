@@ -2,7 +2,7 @@ import { editor, IDisposable, Position, Range } from 'monaco-editor';
 import * as React from 'react';
 import ResizeObserver from 'resize-observer-polyfill';
 
-import type { EditLocation } from '../..';
+import type { EditLocation } from '../../types';
 import styles from './index.css';
 
 interface MonacoEditorProps {

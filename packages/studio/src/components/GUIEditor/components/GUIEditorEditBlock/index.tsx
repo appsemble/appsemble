@@ -1,5 +1,5 @@
 import { Loader, Title } from '@appsemble/react-components';
-import type { App, BasicPage, Block, BlockManifest } from '@appsemble/types';
+import type { App, BasicPageDefinition, BlockDefinition, BlockManifest } from '@appsemble/types';
 import { normalizeBlockName, stripBlockName } from '@appsemble/utils';
 import axios from 'axios';
 import indentString from 'indent-string';
@@ -37,7 +37,7 @@ export default function GUIEditorEditBlock({
   setRecipe,
   setSelectedBlock,
 }: GUIEditorEditBlockProps): React.ReactElement {
-  const [editingResource, setEditingResource] = React.useState<Block>(undefined);
+  const [editingResource, setEditingResource] = React.useState<BlockDefinition>(undefined);
   const [editExistingBlock, setEditExistingBlock] = React.useState(false);
 
   const onChange = React.useCallback(
@@ -47,7 +47,7 @@ export default function GUIEditorEditBlock({
     [editingResource],
   );
 
-  const save = (editedParams: Block): void => {
+  const save = (editedParams: BlockDefinition): void => {
     const blockParent = editLocation.parents
       .slice()
       .reverse()
@@ -91,15 +91,15 @@ export default function GUIEditorEditBlock({
 
   React.useEffect(() => {
     const getBlockParams = (): void => {
-      app.definition.pages.forEach((page: BasicPage) => {
+      app.definition.pages.forEach((page: BasicPageDefinition) => {
         if (!page.name.includes(editLocation.pageName)) {
           return;
         }
-        page.blocks.forEach((block: Block) => {
+        page.blocks.forEach((block: BlockDefinition) => {
           if (!block.type.includes(editLocation.blockName) || editingResource) {
             return;
           }
-          let blockValues: Block;
+          let blockValues: BlockDefinition;
 
           if (block.events) {
             blockValues = { ...blockValues, events: block.events };
