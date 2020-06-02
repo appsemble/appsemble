@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/preact",
-  "version": "0.13.0",
+  "version": "0.13.1",
   "description": "Build your own blocks using Preact",
   "homepage": "https://appsemble.dev",
   "bugs": "https://gitlab.com/appsemble/appsemble/issues",
@@ -24,7 +24,7 @@
     "intl-messageformat": "^8.3.11"
   },
   "peerDependencies": {
-    "@appsemble/sdk": "0.13.0",
+    "@appsemble/sdk": "0.13.1",
     "preact": "^10.0.4"
   }
 }

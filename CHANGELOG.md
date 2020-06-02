@@ -7,13 +7,18 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.13.1] - 2020-06-02
+
 ### Added
 
 - Studio: Add support for login with GitHub.
+- Studio: Add automated documentation rendering for blocks. This can be found at `/blocks`.
 
 ### Changed
 
 - Server: Rename CLI arguments to be consistent with terminology used in OAuth2.
+- Studio: Replace login button when not logged in with a dropdown. This allows access to
+  documentation and other related links without having to log in beforehand.
 
 ### Fixed
 
