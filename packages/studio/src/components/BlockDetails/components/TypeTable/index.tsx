@@ -1,7 +1,7 @@
 import { Join, Table } from '@appsemble/react-components';
-import type { OpenAPIV3 } from 'openapi-types';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
+import type { Definition } from 'typescript-json-schema';
 
 import messages from './messages';
 
@@ -9,11 +9,11 @@ interface TypeTableProps {
   /**
    * The definition of the type to render.
    */
-  definition: OpenAPIV3.SchemaObject;
+  definition: Definition;
 }
 
 /**
- * Renders a table describing the types definitions that are passed through.
+ * Render a table describing the types definitions that are passed through.
  */
 export default function TypeTable({ definition }: TypeTableProps): React.ReactElement {
   return (

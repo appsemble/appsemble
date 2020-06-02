@@ -44,6 +44,7 @@ declare module '@appsemble/sdk' {
 
     /**
      * The base URL used to display pictures.
+     *
      * If not defined, the Asset API will be used instead.
      */
     pictureBase?: string;
@@ -101,6 +102,7 @@ declare module '@appsemble/sdk' {
 
     /**
      * Action that gets dispatched when the button is clicked.
+     *
      * The button won't display if this is not defined.
      */
     onButtonClick: any;
@@ -119,6 +121,7 @@ declare module '@appsemble/sdk' {
   interface EventListeners {
     /**
      * The event that is triggered when data is received.
+     *
      * Compatible data that is received will be displayed.
      */
     data: {};

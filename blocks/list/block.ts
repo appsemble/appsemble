@@ -20,7 +20,7 @@ export interface Field {
   label?: Remapper;
 
   /**
-   * The [Font Awesome icon](https://fontawesome.com/icons?d=gallery&m=free) to display in front of the label.
+   * The [Font Awesome icon](https://fontawesome.com/icons?m=free) to display in front of the label.
    *
    * Will not render if undefined.
    */
@@ -75,6 +75,7 @@ declare module '@appsemble/sdk' {
   interface EventListeners {
     /**
      * The event that is triggered when data is received.
+     *
      * Compatible data that is received will be displayed. Must be a set of data.
      */
     data: {};

@@ -1,9 +1,8 @@
 import { Table } from '@appsemble/react-components';
-import type { OpenAPIV3 } from 'openapi-types';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
+import type { Definition } from 'typescript-json-schema';
 
-import type { ExtendedParameters } from '../..';
 import ParameterRow from '../ParameterRow';
 import messages from './messages';
 
@@ -11,11 +10,11 @@ interface ParameterTableProps {
   /**
    * The parameters that should be rendered.
    */
-  parameters: ExtendedParameters;
+  parameters: Definition;
 }
 
 /**
- * Renders out the parameters of a block in a table.
+ * Render out the parameters of a block in a table.
  */
 export default function ParameterTable({ parameters }: ParameterTableProps): React.ReactElement {
   return (
@@ -41,9 +40,9 @@ export default function ParameterTable({ parameters }: ParameterTableProps): Rea
           <ParameterRow
             key={key}
             name={key}
-            parent={parameters as OpenAPIV3.SchemaObject}
+            parent={parameters}
             recurse
-            value={value as OpenAPIV3.SchemaObject}
+            value={value as Definition}
           />
         ))}
       </tbody>

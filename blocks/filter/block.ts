@@ -12,7 +12,8 @@ export interface Enum {
   label?: string;
 
   /**
-   * Name of the [Font Awesome icon](https://fontawesome.com/icons?d=gallery&m=free) to be displayed next to the label.
+   * Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to
+   * the label.
    */
   icon?: IconName;
 }
@@ -25,6 +26,7 @@ export interface FilterField {
 
   /**
    * The default value used for the field.
+   *
    * If not set, an empty filter option is added to allow for not filtering on this field at all.
    */
   defaultValue?: string | number;
@@ -40,7 +42,8 @@ export interface FilterField {
   enum?: Enum[];
 
   /**
-   * Name of the [Font Awesome icon](https://fontawesome.com/icons?d=gallery&m=free) to be displayed next to the label.
+   * Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to
+   * the label.
    */
   icon?: IconName;
 
@@ -83,6 +86,7 @@ declare module '@appsemble/sdk' {
 
     /**
      * The field to highlight outside of the filter dialog.
+     *
      * If set, changing the highlighted value will immediately apply a new filter
      */
     highlight: string;
@@ -98,6 +102,7 @@ declare module '@appsemble/sdk' {
   interface Actions {
     /**
      * Action that gets dispatched when a new filter gets applied.
+     *
      * This also gets called during the initial load.
      */
     onLoad: {};

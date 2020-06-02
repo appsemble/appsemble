@@ -11,7 +11,7 @@ export interface Field {
   value: Remapper;
 
   /**
-   * The [Font Awesome icon](https://fontawesome.com/icons?d=gallery&m=free) to render.
+   * The [Font Awesome icon](https://fontawesome.com/icons?m=free) to render.
    */
   icon: IconName;
 

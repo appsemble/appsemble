@@ -1,7 +1,6 @@
 import { Content, Loader, Message, Select, Subtitle, Title } from '@appsemble/react-components';
 import type { BlockManifest } from '@appsemble/types';
 import axios from 'axios';
-import type { OpenAPIV3 } from 'openapi-types';
 import React from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Redirect, useHistory, useRouteMatch } from 'react-router-dom';
@@ -34,26 +33,10 @@ interface BlockDetailsRoutesMatch {
 }
 
 /**
- * An extended version of block manifest that
- * further defines the definitions property in parameters.
- */
-export interface ExtendedBlockManifest extends BlockManifest {
-  parameters: ExtendedParameters;
-}
-
-/**
- * An extended version of SchemaObject
- * that adds a definition property for referenced types.
- */
-export type ExtendedParameters = OpenAPIV3.SchemaObject & {
-  definitions: { [key: string]: Definition };
-};
-
-/**
- * Renders out documentation for blocks.
+ * Render documentation for blocks.
  */
 export default function BlockDetails(): React.ReactElement {
-  const [blockVersions, setBlockVersions] = React.useState<ExtendedBlockManifest[]>();
+  const [blockVersions, setBlockVersions] = React.useState<BlockManifest[]>();
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState(false);
 
@@ -64,7 +47,7 @@ export default function BlockDetails(): React.ReactElement {
 
   React.useEffect(() => {
     axios
-      .get<ExtendedBlockManifest[]>(`/api/blocks/@${organization}/${blockName}/versions`)
+      .get<BlockManifest[]>(`/api/blocks/@${organization}/${blockName}/versions`)
       .then(async (result) => {
         const data = result.data.slice().reverse();
         setBlockVersions(data);
@@ -172,29 +155,27 @@ export default function BlockDetails(): React.ReactElement {
             <Title level={4}>
               <FormattedMessage {...messages.definitions} />
             </Title>
-            {Object.entries(
-              (selectedBlockManifest.parameters as any).definitions as {
-                [key: string]: OpenAPIV3.SchemaObject;
-              },
-            ).map(([key, definition]) => (
-              <React.Fragment key={key}>
-                <Title level={5}>
-                  <a href={`${match.url}#${key}`} id={key}>
-                    {key}
-                  </a>
-                </Title>
-                {definition.description && (
-                  <Title level={6}>
-                    <MarkdownContent content={definition.description} />
+            {Object.entries((selectedBlockManifest.parameters as any).definitions).map(
+              ([key, definition]: [string, Definition]) => (
+                <React.Fragment key={key}>
+                  <Title level={5}>
+                    <a href={`${match.url}#${key}`} id={key}>
+                      {key}
+                    </a>
                   </Title>
-                )}
-                {definition.type === 'object' || definition.type === 'array' ? (
-                  <ParameterTable parameters={definition as ExtendedParameters} />
-                ) : (
-                  <TypeTable definition={definition} />
-                )}
-              </React.Fragment>
-            ))}
+                  {definition.description && (
+                    <Title level={6}>
+                      <MarkdownContent content={definition.description} />
+                    </Title>
+                  )}
+                  {definition.type === 'object' || definition.type === 'array' ? (
+                    <ParameterTable parameters={definition} />
+                  ) : (
+                    <TypeTable definition={definition} />
+                  )}
+                </React.Fragment>
+              ),
+            )}
           </>
         )}
       </Content>

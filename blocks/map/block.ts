@@ -8,8 +8,8 @@ interface AbstractMarkerIcon {
    * be desirable to customize this. For example, for a symmetric pin which has a width of 10, and a
    * height of 16, you’ll probably want to set this to `[5, 16]`
    *
-   * The following special cases for [Font Awesome icon](https://fontawesome.com/icons?d=gallery&m=free) are treated in a special way, since they are
-   * often used to represent a location:
+   * The following special cases for [Font Awesome icon](https://fontawesome.com/icons?m=free) are
+   * treated in a special way, since they are often used to represent a location:
    *
    * - `map-marker`
    * - `map-marker-alt`
@@ -38,11 +38,11 @@ interface AbstractMarkerIcon {
 }
 
 /**
- * A marker based on a [Font Awesome icon](https://fontawesome.com/icons?d=gallery&m=free).
+ * A marker based on a [Font Awesome icon](https://fontawesome.com/icons?m=free).
  */
 interface FontAwesomeMarkerIcon extends AbstractMarkerIcon {
   /**
-   * A [Font Awesome icon](https://fontawesome.com/icons?d=gallery&m=free) name to use.
+   * A [Font Awesome icon](https://fontawesome.com/icons?m=free) name to use.
    */
   icon?: IconName;
 }
@@ -82,11 +82,12 @@ declare module '@appsemble/sdk' {
     icons?: FontAwesomeMarkerIcon | AssetMarkerIcon;
 
     /**
-     * The maximum radius that a cluster will cover from the central marker (in pixels). Default 80.
-     * Decreasing will make more, smaller clusters.
-     * You can also use a function that accepts the current map zoom
-     * and returns the maximum cluster radius in pixels.
+     * The maximum radius that a cluster will cover from the central marker (in pixels).
      *
+     * Decreasing will make more, smaller clusters. One can also use a function that accepts the
+     * current map zoom and returns the maximum cluster radius in pixels.
+     *
+     * @default 80
      * @minimum 1
      * @TJS-type integer
      */
@@ -103,6 +104,7 @@ declare module '@appsemble/sdk' {
   interface EventListeners {
     /**
      * The event that is triggered when data is received.
+     *
      * Compatible data that is received will be displayed. Must be a set of data.
      */
     data: {};
@@ -111,8 +113,9 @@ declare module '@appsemble/sdk' {
   interface EventEmitters {
     /**
      * Event that gets emitted when moving the map around.
-     * Will apply [OData filters](https://www.odata.org) to limit the range of items fetched.
-     * This will be skipped if the move emit event is not defined.
+     *
+     * Will apply [OData filters](https://www.odata.org) to limit the range of items fetched. This
+     * will be skipped if the move emit event is not defined.
      */
     move: {};
   }

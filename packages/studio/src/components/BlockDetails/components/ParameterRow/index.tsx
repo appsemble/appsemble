@@ -2,6 +2,7 @@ import { Icon, Join } from '@appsemble/react-components';
 import type { OpenAPIV3 } from 'openapi-types';
 import React from 'react';
 import { useRouteMatch } from 'react-router-dom';
+import type { Definition } from 'typescript-json-schema';
 
 import MarkdownContent from '../../../MarkdownContent';
 
@@ -11,7 +12,7 @@ interface ParameterRowProps {
    *
    * This is used to determine whether or not a property is required.
    */
-  parent: OpenAPIV3.SchemaObject;
+  parent: Definition;
 
   /**
    * The name of the property to render.
@@ -21,7 +22,7 @@ interface ParameterRowProps {
   /**
    * The schema to render.
    */
-  value: OpenAPIV3.SchemaObject;
+  value: Definition;
 
   /**
    * Whether recursion should be applied to further render children properties.
@@ -30,10 +31,10 @@ interface ParameterRowProps {
 }
 
 /**
- * Renders one or multiple rows for a parameter.
+ * Render one or multiple rows for a parameter.
  *
- * Multiple rows are returned if `recurse` is set to true
- * and if the parameter is an object or an array.
+ * Multiple rows are returned if `recurse` is set to true and if the parameter is an object or an
+ * array.
  */
 export default function ParameterRow({
   name,
@@ -74,7 +75,7 @@ export default function ParameterRow({
               name={`${name}.${childName}`}
               parent={value}
               recurse
-              value={child as OpenAPIV3.SchemaObject}
+              value={child as Definition}
             />
           ))}
       </>
@@ -145,7 +146,7 @@ export default function ParameterRow({
           <div>
             {'Array<'}
             <Join separator=" | ">
-              {'type' in value.items && value.items.type}
+              {'type' in (value.items as Definition) && (value.items as Definition).type}
               {Object.values(value.items)
                 .map(({ type: t }) => t)
                 .filter(Boolean)

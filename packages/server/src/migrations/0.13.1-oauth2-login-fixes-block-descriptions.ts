@@ -12,8 +12,8 @@ export default {
    * - Rename provider to authorizationUrl
    * - Add `longDescription` column to `BlockVersion`.
    *
-   * Data hasn’t been migrated, because there is no data in this table in production.
-   * The table is wiped, just to be sure.
+   * Data hasn’t been migrated, because there is no data in this table in production. The table is
+   * wiped, just to be sure.
    */
   async up(db) {
     const queryInterface = db.getQueryInterface();

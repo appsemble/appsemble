@@ -17,7 +17,8 @@ interface Choice {
 
 interface AbstractField {
   /**
-   * Name of the [Font Awesome icon](https://fontawesome.com/icons?d=gallery&m=free) to be displayed next to the label.
+   * Name of the [Font Awesome icon](https://fontawesome.com/icons?m=free) to be displayed next to
+   * the label.
    */
   icon?: IconName;
 
@@ -252,8 +253,9 @@ declare module '@appsemble/sdk' {
   interface EventListeners {
     /**
      * The event that is triggered when data is received.
-     * Compatible data that is received will be displayed
-     * and mapped to the fields as defined in the `fields` parameter.
+     *
+     * Compatible data that is received will be displayed and mapped to the fields as defined in the
+     * `fields` parameter.
      */
     data: {};
   }

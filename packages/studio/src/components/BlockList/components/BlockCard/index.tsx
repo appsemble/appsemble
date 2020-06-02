@@ -15,7 +15,7 @@ interface BlockCardProps {
 }
 
 /**
- * Displays a card that contains basic information of a block and a link to further documentation.
+ * Display a card that contains basic information of a block and a link to further documentation.
  */
 export default function BlockCard({ block }: BlockCardProps): React.ReactElement {
   const match = useRouteMatch();

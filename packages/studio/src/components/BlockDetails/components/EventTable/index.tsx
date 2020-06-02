@@ -13,7 +13,7 @@ interface EventTableProps {
 }
 
 /**
- * Renders a table listing the events that can be used for a block.
+ * Render a table listing the events that can be used for a block.
  */
 export default function EventTable({ manifest }: EventTableProps): React.ReactElement {
   return (

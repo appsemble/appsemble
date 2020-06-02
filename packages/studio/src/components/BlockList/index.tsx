@@ -10,7 +10,7 @@ import styles from './index.css';
 import messages from './messages';
 
 /**
- * Displays a list of cards representing the available blocks.
+ * Display a list of cards representing the available blocks.
  */
 export default function BlockList(): React.ReactElement {
   const [blocks, setBlocks] = React.useState<BlockManifest[]>();

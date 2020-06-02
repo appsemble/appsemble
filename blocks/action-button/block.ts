@@ -10,7 +10,7 @@ declare module '@appsemble/sdk' {
 
   interface Parameters {
     /**
-     * A [Font Awesome icon](https://fontawesome.com/icons?d=gallery&m=free) name to render on the button.
+     * A [Font Awesome icon](https://fontawesome.com/icons?m=free) name to render on the button.
      */
     icon: IconName;
   }

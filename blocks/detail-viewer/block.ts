@@ -26,6 +26,7 @@ export interface FileField extends AbstractField {
 
   /**
    * The name of the property of the data to fetch from within each item.
+   *
    * If not set, the item itself is used as the url.
    */
   repeatedName?: Remapper;
@@ -34,22 +35,25 @@ export interface FileField extends AbstractField {
 export interface GeoCoordinatesField extends AbstractField {
   /**
    * The path to base the longitude and latitude fields from.
-   * If `fields[].latitude` and `fields[].longitude` are not set
-   * it defaults to `fields[].name.lat` and `fields[].name.lng`.
+   *
+   * If `fields[].latitude` and `fields[].longitude` are not set it defaults to `fields[].name.lat`
+   * and `fields[].name.lng`.
    */
   name?: Remapper;
 
   /**
    * The name of the field used to access the longitude value.
-   * If `fields[].name` is set it is retrieved relatively,
-   * otherwise it is fetched from the root of the data.
+   *
+   * If `fields[].name` is set it is retrieved relatively, otherwise it is fetched from the root of
+   * the data.
    */
   latitude?: Remapper;
 
   /**
    * The name of the field used to access the latitude value.
-   * If `fields[].name` is set it is retrieved relatively,
-   * otherwise it is fetched from the root of the data.
+   *
+   * If `fields[].name` is set it is retrieved relatively, otherwise it is fetched from the root of
+   * the data.
    */
   longitude?: Remapper;
 
@@ -67,6 +71,7 @@ export interface StringField extends AbstractField {
 
   /**
    * Displays the content as regular text.
+   *
    * If the content is an object it will be converted using `JSON.stringify()`.
    */
   type?: 'string';
@@ -104,6 +109,7 @@ declare module '@appsemble/sdk' {
   interface EventListeners {
     /**
      * The event that is triggered when data is received.
+     *
      * Compatible data that is received will be displayed.
      */
     data: {};
