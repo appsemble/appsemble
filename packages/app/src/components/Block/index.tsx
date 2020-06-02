@@ -94,7 +94,7 @@ export default function Block({
 
     const events = {
       emit: Object.fromEntries(
-        (manifest.events?.emit ?? []).map((key) => [
+        Object.keys(manifest.events?.emit || {}).map((key) => [
           key,
           (d: any, error?: string) =>
             pageReady.then(
@@ -108,7 +108,7 @@ export default function Block({
         ]),
       ),
       on: Object.fromEntries(
-        (manifest.events?.listen ?? []).map((key) => [
+        Object.keys(manifest.events?.listen || {}).map((key) => [
           key,
           block.events?.listen?.[key]
             ? (callback: (data: any, error?: string) => void) => {
@@ -119,7 +119,7 @@ export default function Block({
         ]),
       ),
       off: Object.fromEntries(
-        (manifest.events?.listen ?? []).map((key) => [
+        Object.keys(manifest.events?.listen || {}).map((key) => [
           key,
           block.events?.listen?.[key]
             ? (callback: (data: any, error?: string) => void) => {

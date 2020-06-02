@@ -580,6 +580,13 @@ export interface ActionType {
   description?: string;
 }
 
+export interface EventType {
+  /**
+   * The description of the action.
+   */
+  description?: string;
+}
+
 export interface BlockManifest {
   /**
    * A block manifest as it is available to the app and in the SDK.
@@ -627,8 +634,8 @@ export interface BlockManifest {
    * The events that are supported by a block.
    */
   events?: {
-    listen?: string[];
-    emit?: string[];
+    listen?: { [key: string]: EventType };
+    emit?: { [key: string]: EventType };
   };
 
   /**
