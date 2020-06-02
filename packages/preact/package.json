@@ -21,7 +21,7 @@
     "prepack": "tsc -p tsconfig.build.json"
   },
   "dependencies": {
-    "intl-messageformat": "^8.3.11"
+    "intl-messageformat": "^8.3.18"
   },
   "peerDependencies": {
     "@appsemble/sdk": "0.13.1",
