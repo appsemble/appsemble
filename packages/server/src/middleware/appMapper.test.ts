@@ -1,4 +1,4 @@
-import { AxiosTestInstance, createInstance } from 'axios-test-instance';
+import { request, setTestApp } from 'axios-test-instance';
 import Koa from 'koa';
 
 import type { KoaContext, KoaMiddleware } from '../types';
@@ -9,7 +9,6 @@ let appMiddleware: KoaMiddleware;
 let fakeHostname: string;
 let app: Koa;
 let context: KoaContext;
-let request: AxiosTestInstance;
 
 beforeEach(async () => {
   platformMiddleware = jest.fn();
@@ -23,11 +22,7 @@ beforeEach(async () => {
     return next();
   });
   app.use(appMapper(platformMiddleware, appMiddleware));
-  request = await createInstance(app);
-});
-
-afterEach(async () => {
-  await request.close();
+  await setTestApp(app);
 });
 
 it('should call platform middleware if the request matches the host', async () => {

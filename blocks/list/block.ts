@@ -1,3 +1,4 @@
+import type { Remapper } from '@appsemble/sdk';
 import type { IconName } from '@fortawesome/fontawesome-common-types';
 
 /**
@@ -9,17 +10,17 @@ export interface Field {
    *
    * No value will be rendered if undefined.
    */
-  name?: string;
+  value?: Remapper;
 
   /**
    * The label to display.
    *
    * Will not render if undefined.
    */
-  label?: string;
+  label?: Remapper;
 
   /**
-   * The FontAwesome icon to display in front of the label.
+   * The [Font Awesome icon](https://fontawesome.com/icons?m=free) to display in front of the label.
    *
    * Will not render if undefined.
    */
@@ -40,7 +41,14 @@ declare module '@appsemble/sdk' {
      *
      * Will not render if undefined.
      */
-    header?: string;
+    header?: Remapper;
+
+    /**
+     * The icon that displays in front of the header.
+     *
+     * Will not render if undefined.
+     */
+    icon?: IconName;
 
     /**
      * An optional name of the field that contains the data.
@@ -48,6 +56,10 @@ declare module '@appsemble/sdk' {
      * If not defined, received data will be treated as an array.
      */
     base?: string;
+
+    /**
+     * A list of fields to display.
+     */
     fields?: Field[];
   }
 
@@ -61,6 +73,11 @@ declare module '@appsemble/sdk' {
   }
 
   interface EventListeners {
+    /**
+     * The event that is triggered when data is received.
+     *
+     * Compatible data that is received will be displayed. Must be a set of data.
+     */
     data: {};
   }
 }

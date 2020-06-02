@@ -1,7 +1,8 @@
 import FakeTimers, { InstalledClock } from '@sinonjs/fake-timers';
-import { AxiosTestInstance, createInstance } from 'axios-test-instance';
+import { request, setTestApp } from 'axios-test-instance';
 import { verify } from 'jsonwebtoken';
 import type Koa from 'koa';
+import { URLSearchParams } from 'url';
 
 import { App, OAuth2AuthorizationCode, OAuth2ClientCredentials, User } from '../../models';
 import createServer from '../../utils/createServer';
@@ -9,7 +10,6 @@ import { closeTestSchema, createTestSchema, truncate } from '../../utils/test/te
 import testToken from '../../utils/test/testToken';
 
 let clock: InstalledClock;
-let request: AxiosTestInstance;
 let server: Koa;
 let user: User;
 let refreshToken: string;
@@ -18,7 +18,7 @@ beforeAll(createTestSchema('tokenhandler'));
 
 beforeAll(async () => {
   server = await createServer({ argv: { host: 'http://localhost', secret: 'test' } });
-  request = await createInstance(server);
+  await setTestApp(server);
 });
 
 beforeEach(async () => {
@@ -32,10 +32,6 @@ afterEach(truncate);
 
 afterEach(async () => {
   clock.uninstall();
-});
-
-afterAll(async () => {
-  await request.close();
 });
 
 afterAll(closeTestSchema);

@@ -1,11 +1,10 @@
 import RefParser from '@apidevtools/json-schema-ref-parser';
 import {
   Button,
-  CardFooterButton,
   Form,
   Icon,
   Loader,
-  Modal,
+  useConfirmation,
   useMessages,
 } from '@appsemble/react-components';
 import type { AppDefinition, BlockManifest } from '@appsemble/types';
@@ -21,6 +20,7 @@ import axios from 'axios';
 import classNames from 'classnames';
 import { safeDump, safeLoad } from 'js-yaml';
 import { isEqual } from 'lodash';
+import type { editor } from 'monaco-editor';
 import type { OpenAPIV3 } from 'openapi-types';
 import React from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -47,7 +47,6 @@ export default function Editor(): React.ReactElement {
   const [path, setPath] = React.useState('');
   const [valid, setValid] = React.useState(false);
   const [dirty, setDirty] = React.useState(true);
-  const [warningDialog, setWarningDialog] = React.useState(false);
   const [openApiDocument, setOpenApiDocument] = React.useState<OpenAPIV3.Document>();
 
   const [editorStep, setEditorStep] = React.useState<GuiEditorStep>(GuiEditorStep.SELECT);
@@ -216,9 +215,17 @@ export default function Editor(): React.ReactElement {
 
     setAppName(definition.name);
     setDirty(true);
-    setWarningDialog(false);
     setInitialRecipe(recipe);
   }, [intl, params, push, recipe, sharedStyle, style, setApp, valid]);
+
+  const promptUpdateApp = useConfirmation({
+    title: <FormattedMessage {...messages.resourceWarningTitle} />,
+    body: <FormattedMessage {...messages.resourceWarning} />,
+    cancelLabel: <FormattedMessage {...messages.cancel} />,
+    confirmLabel: <FormattedMessage {...messages.publish} />,
+    action: uploadApp,
+    color: 'warning',
+  });
 
   const onUpload = React.useCallback(async () => {
     if (valid) {
@@ -226,16 +233,16 @@ export default function Editor(): React.ReactElement {
       const originalApp = safeLoad(initialRecipe);
 
       if (!isEqual(newApp.resources, originalApp.resources)) {
-        setWarningDialog(true);
+        promptUpdateApp();
         return;
       }
 
       await uploadApp();
     }
-  }, [initialRecipe, recipe, uploadApp, valid]);
+  }, [initialRecipe, promptUpdateApp, recipe, uploadApp, valid]);
 
   const onMonacoChange = React.useCallback(
-    (value) => {
+    (_event: editor.IModelContentChangedEvent, value: string) => {
       switch (location.hash) {
         case '#editor':
           setRecipe(value);
@@ -254,10 +261,6 @@ export default function Editor(): React.ReactElement {
     },
     [location.hash],
   );
-
-  const onClose = React.useCallback(() => {
-    setWarningDialog(false);
-  }, []);
 
   if (recipe == null) {
     return <Loader />;
@@ -438,28 +441,11 @@ export default function Editor(): React.ReactElement {
           ) : (
             <MonacoEditor
               language={language}
+              onChange={onValueChange}
               onSave={onSave}
-              onValueChange={onValueChange}
               value={value}
             />
           )}
-          <Modal
-            footer={
-              <>
-                <CardFooterButton onClick={onClose}>
-                  <FormattedMessage {...messages.cancel} />
-                </CardFooterButton>
-                <CardFooterButton color="warning" onClick={uploadApp}>
-                  <FormattedMessage {...messages.publish} />
-                </CardFooterButton>
-              </>
-            }
-            isActive={warningDialog}
-            onClose={onClose}
-            title={<FormattedMessage {...messages.resourceWarningTitle} />}
-          >
-            <FormattedMessage {...messages.resourceWarning} />
-          </Modal>
         </Form>
       </div>
 

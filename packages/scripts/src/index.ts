@@ -1,6 +1,6 @@
 import { configureLogger, handleError } from '@appsemble/node-utils';
 import path from 'path';
-import * as yargs from 'yargs';
+import yargs from 'yargs';
 
 declare global {
   /**

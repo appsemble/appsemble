@@ -1,5 +1,5 @@
 import FakeTimers from '@sinonjs/fake-timers';
-import { AxiosTestInstance, createInstance } from 'axios-test-instance';
+import { request, setTestApp } from 'axios-test-instance';
 
 import {
   App,
@@ -14,7 +14,6 @@ import createServer from '../utils/createServer';
 import { closeTestSchema, createTestSchema, truncate } from '../utils/test/testSchema';
 import testToken from '../utils/test/testToken';
 
-let request: AxiosTestInstance;
 let authorization: string;
 let organizationId: string;
 let clock: FakeTimers.InstalledClock;
@@ -67,7 +66,7 @@ beforeAll(createTestSchema('appnotifications'));
 
 beforeAll(async () => {
   const server = await createServer({ argv: { host: 'http://localhost', secret: 'test' } });
-  request = await createInstance(server);
+  await setTestApp(server);
 });
 
 afterEach(truncate);
@@ -85,10 +84,6 @@ beforeEach(async () => {
 
 afterEach(() => {
   clock.uninstall();
-});
-
-afterAll(async () => {
-  await request.close();
 });
 
 afterAll(closeTestSchema);

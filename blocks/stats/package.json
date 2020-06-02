@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/stats",
-  "version": "0.12.8",
+  "version": "0.13.1",
   "private": true,
   "description": "A block that renders some simple statistics in a friendly manner.",
   "homepage": "https://appsemble.dev",
@@ -12,8 +12,9 @@
   },
   "license": "LGPL-3.0-or-later",
   "author": "Appsemble <info@appsemble.com> (https://appsemble.com)",
+  "sideEffects": false,
   "dependencies": {
-    "@appsemble/sdk": "0.12.8",
+    "@appsemble/sdk": "0.13.1",
     "@fortawesome/fontawesome-common-types": "^0.2.28",
     "mini-jsx": "^2.0.0"
   }

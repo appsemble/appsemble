@@ -64,19 +64,17 @@ For now, lets bootstrap a vanilla JavaScript block using the block name `test` a
 
 The block will be created in the _blocks/_ directory. Its version will be `0.0.0`.
 
-Now, the block needs to be built and registered before it can be used. It can be built using this
-command.
-
-```sh
-yarn block test
-```
-
 Make sure the local Appsemble server is running, then run the following to publish the newly created
 block.
 
 ```sh
 yarn appsemble block publish blocks/test
 ```
+
+> **Note**: In order to publish a block for an organization, make sure you are in the same
+> organization as what is stated in the first half of the block name. For example: In order to
+> publish `@appsemble/foo` you need to be a member of the `appsemble` organization with sufficient
+> permissions to publish blocks for the organization.
 
 ## Testing the Block
 
@@ -115,6 +113,12 @@ contains two pages that link to each other by clicking the button created by the
 > block. This allows app builders and organizations to add custom styling when they use your block.
 
 ## Modifying the Block
+
+> **Note**: Any block that can be found within the list of workspaces listed in `package.json` will
+> be hot-reloaded after having published it. This means that when developing blocks, it is not
+> necessary to keep publishing new versions of blocks to test changes. By default, the `blocks`
+> directory is checked for this, but other directories such as `../amsterdam/blocks`, assuming this
+> directory exists and has blocks, will be hot-reloaded as well.
 
 Now lets make the text of the button configurable using the app definition.
 

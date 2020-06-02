@@ -9,6 +9,7 @@ import {
   Modal,
   Table,
   Title,
+  useConfirmation,
   useMessages,
 } from '@appsemble/react-components';
 import axios from 'axios';
@@ -38,7 +39,7 @@ export default function Assets(): React.ReactElement {
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState(false);
   const [selectedAssets, setSelectedAssets] = React.useState<string[]>([]);
-  const [dialog, setDialog] = React.useState<'upload' | 'preview' | 'delete'>(null);
+  const [dialog, setDialog] = React.useState<'upload' | 'preview'>(null);
   const [previewedAsset, setPreviewedAsset] = React.useState<Asset>(null);
   const [file, setFile] = React.useState<File>();
 
@@ -69,25 +70,33 @@ export default function Assets(): React.ReactElement {
     setFile(e.target.files[0]);
   }, []);
 
-  const onDeleteAssetsClick = React.useCallback(() => {
-    setDialog('delete');
-  }, []);
+  const onDelete = useConfirmation({
+    title: (
+      <FormattedMessage
+        {...messages.deleteWarningTitle}
+        values={{ amount: selectedAssets.length }}
+      />
+    ),
+    body: (
+      <FormattedMessage values={{ amount: selectedAssets.length }} {...messages.deleteWarning} />
+    ),
+    cancelLabel: <FormattedMessage {...messages.cancel} />,
+    confirmLabel: <FormattedMessage {...messages.delete} />,
+    async action() {
+      await Promise.all(
+        selectedAssets.map((asset) => axios.delete(`/api/apps/${app.id}/assets/${asset}`)),
+      );
 
-  const onDelete = React.useCallback(async () => {
-    await Promise.all(
-      selectedAssets.map((asset) => axios.delete(`/api/apps/${app.id}/assets/${asset}`)),
-    );
-
-    push(
-      intl.formatMessage(messages.deleteSuccess, {
-        amount: selectedAssets.length,
-        assets: selectedAssets.sort().join(', '),
-      }),
-    );
-    onClose();
-    setAssets(assets.filter((asset) => !selectedAssets.includes(`${asset.id}`)));
-    setSelectedAssets([]);
-  }, [app, assets, intl, onClose, push, selectedAssets]);
+      push(
+        intl.formatMessage(messages.deleteSuccess, {
+          amount: selectedAssets.length,
+          assets: selectedAssets.sort().join(', '),
+        }),
+      );
+      setAssets(assets.filter((asset) => !selectedAssets.includes(`${asset.id}`)));
+      setSelectedAssets([]);
+    },
+  });
 
   const onPreviewClick = React.useCallback((asset: Asset) => {
     setPreviewedAsset(asset);
@@ -135,7 +144,7 @@ export default function Assets(): React.ReactElement {
   if (error) {
     return (
       <Message color="danger">
-        <FormattedMessage {...error} />
+        <FormattedMessage {...messages.error} />
       </Message>
     );
   }
@@ -158,7 +167,7 @@ export default function Assets(): React.ReactElement {
           color="danger"
           disabled={selectedAssets.length === 0}
           icon="trash-alt"
-          onClick={onDeleteAssetsClick}
+          onClick={onDelete}
         >
           <FormattedMessage {...messages.deleteButton} values={{ amount: selectedAssets.length }} />
         </Button>
@@ -207,28 +216,6 @@ export default function Assets(): React.ReactElement {
           ))}
         </tbody>
       </Table>
-      <Modal
-        footer={
-          <>
-            <CardFooterButton onClick={onClose}>
-              <FormattedMessage {...messages.cancel} />
-            </CardFooterButton>
-            <CardFooterButton color="danger" onClick={onDelete}>
-              <FormattedMessage {...messages.delete} />
-            </CardFooterButton>
-          </>
-        }
-        isActive={dialog === 'delete'}
-        onClose={onClose}
-        title={
-          <FormattedMessage
-            {...messages.deleteWarningTitle}
-            values={{ amount: selectedAssets.length }}
-          />
-        }
-      >
-        <FormattedMessage values={{ amount: selectedAssets.length }} {...messages.deleteWarning} />
-      </Modal>
       <Modal
         footer={
           <>

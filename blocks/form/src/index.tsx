@@ -200,12 +200,15 @@ bootstrap(({ actions, data, events, parameters, ready }) => {
         return (
           <Comp
             key={field.name}
+            // @ts-expect-error
             disabled={disabled}
+            // @ts-expect-error
             error={errors[field.name]}
-            // @ts-ignore
+            // @ts-expect-error
             field={field}
+            // @ts-expect-error
             onInput={onChange}
-            // @ts-ignore
+            // @ts-expect-error
             value={values[field.name]}
           />
         );

@@ -3,6 +3,7 @@ import axios from 'axios';
 import FormData from 'form-data';
 import fs from 'fs-extra';
 import yaml from 'js-yaml';
+import { URL } from 'url';
 
 import type { UpdateAppArguments } from '../types';
 import traverseAppDirectory from './traverseAppDirectory';

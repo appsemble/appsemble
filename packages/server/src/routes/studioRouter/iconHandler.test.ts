@@ -1,16 +1,11 @@
-import { AxiosTestInstance, createInstance } from 'axios-test-instance';
+import { request, setTestApp } from 'axios-test-instance';
 import Koa from 'koa';
 
 import studioRouter from '.';
 
-let request: AxiosTestInstance;
-
 beforeEach(async () => {
-  request = await createInstance(new Koa().use(studioRouter), { responseType: 'arraybuffer' });
-});
-
-afterEach(async () => {
-  await request.close();
+  request.defaults.responseType = 'arraybuffer';
+  await setTestApp(new Koa().use(studioRouter));
 });
 
 it('should serve the Appsemble icon', async () => {

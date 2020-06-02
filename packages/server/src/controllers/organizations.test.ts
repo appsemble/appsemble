@@ -1,4 +1,4 @@
-import { AxiosTestInstance, createInstance } from 'axios-test-instance';
+import { request, setTestApp } from 'axios-test-instance';
 import FormData from 'form-data';
 
 import {
@@ -14,7 +14,6 @@ import createServer from '../utils/createServer';
 import { closeTestSchema, createTestSchema, truncate } from '../utils/test/testSchema';
 import testToken from '../utils/test/testToken';
 
-let request: AxiosTestInstance;
 let authorization: string;
 let clientToken: string;
 let organization: Organization;
@@ -24,7 +23,7 @@ beforeAll(createTestSchema('organizations'));
 
 beforeAll(async () => {
   const server = await createServer({ argv: { host: 'http://localhost', secret: 'test' } });
-  request = await createInstance(server);
+  await setTestApp(server);
 });
 
 beforeEach(async () => {
@@ -39,10 +38,6 @@ beforeEach(async () => {
 });
 
 afterEach(truncate);
-
-afterAll(async () => {
-  await request.close();
-});
 
 afterAll(closeTestSchema);
 

@@ -1,4 +1,4 @@
-import { AxiosTestInstance, createInstance } from 'axios-test-instance';
+import { request, setTestApp } from 'axios-test-instance';
 import fs from 'fs';
 import Koa from 'koa';
 import path from 'path';
@@ -7,18 +7,13 @@ import type { App } from '../../models';
 import * as getApp from '../../utils/getApp';
 import appRouter from '.';
 
-let request: AxiosTestInstance;
-
 function readIcon(): Promise<Buffer> {
   return fs.promises.readFile(path.join(__dirname, '__fixtures__', 'tux.png'));
 }
 
 beforeAll(async () => {
-  request = await createInstance(new Koa().use(appRouter), { responseType: 'arraybuffer' });
-});
-
-afterAll(async () => {
-  await request.close();
+  request.defaults.responseType = 'arraybuffer';
+  await setTestApp(new Koa().use(appRouter));
 });
 
 it('should scale and serve the app icon', async () => {

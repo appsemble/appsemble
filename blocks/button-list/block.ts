@@ -10,14 +10,14 @@ export interface Button {
   label?: string;
 
   /**
-   * The FontAwesome icon to display in front of the label.
+   * A [Font Awesome icon](https://fontawesome.com/icons?m=free) name to render on the button.
    *
    * Will not render if undefined.
    */
   icon?: IconName;
 
   /**
-   * The name of the action to trigger when clicked.
+   * The name of the action to trigger when the button is clicked.
    *
    * @format action
    */
@@ -63,24 +63,31 @@ export interface Button {
 
 declare module '@appsemble/sdk' {
   interface Parameters {
+    /**
+     * The list of buttons.
+     */
     buttons: Button[];
   }
 
   interface Actions {
     /**
-     * Generic action that is assigned to buttons by default
+     * Action that gets dispatched when a button is clicked that doesn’t specify its own click
+     * action.
      */
     onClick: {};
 
     /**
-     * Custom button mapping
+     * A custom action that gets dispatched when a button is clicked that has the same click action
+     * specified as the name of this action.
      */
     [key: string]: {};
   }
 
   interface EventListeners {
     /**
-     * Optional data listener.
+     * The event that is triggered when data is received.
+     *
+     * This data can be used with remap to display labels dynamically based on the received data.
      */
     data: {};
   }

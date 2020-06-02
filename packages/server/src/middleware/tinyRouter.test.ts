@@ -1,5 +1,5 @@
 import type { Boom } from '@hapi/boom';
-import { AxiosTestInstance, createInstance } from 'axios-test-instance';
+import { request, setTestApp } from 'axios-test-instance';
 import Koa from 'koa';
 
 import type { KoaContext } from '../types';
@@ -7,7 +7,6 @@ import tinyRouter from './tinyRouter';
 
 let app: Koa;
 let context: KoaContext;
-let request: AxiosTestInstance;
 
 beforeEach(async () => {
   app = new Koa();
@@ -16,11 +15,7 @@ beforeEach(async () => {
     context = ctx;
     return next();
   });
-  request = await createInstance(app);
-});
-
-afterEach(async () => {
-  await request.close();
+  await setTestApp(app);
 });
 
 it('should assign the match group to params', async () => {

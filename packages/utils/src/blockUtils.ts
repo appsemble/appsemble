@@ -1,6 +1,6 @@
-import type { Block } from '@appsemble/types';
+import type { BlockDefinition } from '@appsemble/types';
 
-export type IdentifiableBlock = Pick<Block, 'type' | 'version'>;
+export type IdentifiableBlock = Pick<BlockDefinition, 'type' | 'version'>;
 
 const prefix = '@appsemble/';
 

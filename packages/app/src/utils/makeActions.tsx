@@ -3,8 +3,8 @@ import type {
   ActionDefinition,
   ActionType,
   AppDefinition,
-  Block,
-  Page,
+  BlockDefinition,
+  PageDefinition,
   RequestLikeActionDefinition,
 } from '@appsemble/types';
 import { remap } from '@appsemble/utils';
@@ -17,13 +17,14 @@ import actionCreators, { ActionCreator, ActionCreators } from './actions';
 interface MakeActionsParams {
   actions: { [action: string]: ActionType };
   definition: AppDefinition;
-  context: Block | Page;
+  context: BlockDefinition | PageDefinition;
   history: RouteComponentProps['history'];
   showDialog: ShowDialogAction;
   extraCreators: ActionCreators;
   flowActions: FlowActions;
   pushNotifications: ServiceWorkerRegistrationContextType;
   pageReady: Promise<void>;
+  prefix: string;
   ee: EventEmitter;
 }
 
@@ -35,6 +36,7 @@ interface CreateActionParams {
   flowActions: FlowActions;
   history: RouteComponentProps['history'];
   pageReady: Promise<void>;
+  prefix: string;
   pushNotifications: ServiceWorkerRegistrationContextType;
   showDialog: ShowDialogAction;
   type: Action['type'];
@@ -48,6 +50,7 @@ function createAction({
   flowActions,
   history,
   pageReady,
+  prefix,
   pushNotifications,
   showDialog,
   type,
@@ -59,6 +62,7 @@ function createAction({
     history,
     showDialog,
     flowActions,
+    prefix,
     ee,
     onSuccess:
       (type === 'request' || type.startsWith('resource.')) &&
@@ -70,6 +74,7 @@ function createAction({
         history,
         showDialog,
         flowActions,
+        prefix,
         pushNotifications,
         ee,
       }),
@@ -84,6 +89,7 @@ function createAction({
         showDialog,
         ee,
         flowActions,
+        prefix,
         pushNotifications,
       }),
     pushNotifications,
@@ -113,6 +119,7 @@ export default function makeActions({
   flowActions,
   history,
   pageReady,
+  prefix,
   pushNotifications,
   showDialog,
 }: MakeActionsParams): { [key: string]: Action } {
@@ -138,6 +145,7 @@ export default function makeActions({
         extraCreators,
         history,
         type,
+        prefix: `${prefix}.actions.${on}`,
         pushNotifications,
         flowActions,
         showDialog,
@@ -148,7 +156,9 @@ export default function makeActions({
       return acc;
     }, {});
 
-  let anyActions: object;
+  let anyActions: {
+    [key: string]: Action;
+  };
   if (actions?.$any) {
     anyActions = Object.keys(context.actions || {})
       .filter((key) => !actionMap[key])
@@ -163,6 +173,7 @@ export default function makeActions({
           extraCreators,
           history,
           type,
+          prefix: `${prefix}.actions.${on}`,
           pushNotifications,
           flowActions,
           showDialog,

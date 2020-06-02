@@ -1,5 +1,6 @@
 import Boom from '@hapi/boom';
 import type { FindOptions } from 'sequelize';
+import { URL } from 'url';
 
 import { App } from '../models';
 import type { KoaContext } from '../types';

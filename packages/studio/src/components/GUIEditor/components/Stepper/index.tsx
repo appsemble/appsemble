@@ -26,8 +26,10 @@ export default function Stepper({
       <Button
         className="button is-success"
         disabled={rightDisabled}
+        icon="angle-right"
+        iconPrefix="fas"
+        iconRight
         onClick={rightOnClick}
-        rightIcon="angle-right"
       >
         {rightMessage || <FormattedMessage {...messages.next} />}
       </Button>

@@ -8,8 +8,8 @@ import type {
 } from '@appsemble/sdk';
 import type {
   BlobUploadType,
-  Resource,
   ResourceCreateActionDefinition,
+  ResourceDefinition,
   ResourceDeleteActionDefinition,
   ResourceGetActionDefinition,
   ResourceQueryActionDefinition,
@@ -25,7 +25,7 @@ import type { MakeActionParameters, ServiceWorkerRegistrationContextType } from 
 import settings from '../settings';
 import { requestLikeAction } from './request';
 
-function getBlobs(resource: Resource): BlobUploadType {
+function getBlobs(resource: ResourceDefinition): BlobUploadType {
   const { blobs } = resource;
   const type = blobs?.type || 'upload';
   const method = blobs?.method || 'post';
@@ -52,6 +52,7 @@ function get(args: MakeActionParameters<ResourceGetActionDefinition>): ResourceG
         query: { ...resource?.query?.query, ...definition.query },
         blobs: getBlobs(resource),
         method,
+        proxy: false,
         url: url.includes(`{${id}}`) ? url : `${url}${url.endsWith('/') ? '' : '/'}{${id}}`,
         schema: resource.schema,
       },
@@ -77,6 +78,7 @@ function query(args: MakeActionParameters<ResourceQueryActionDefinition>): Resou
         query: { ...resource?.query?.query, ...definition.query },
         blobs: getBlobs(resource),
         method,
+        proxy: false,
         url,
         schema: resource.schema,
       },
@@ -102,6 +104,7 @@ function create(args: MakeActionParameters<ResourceCreateActionDefinition>): Res
         query: { ...resource?.query?.query, ...definition.query },
         blobs: getBlobs(resource),
         method,
+        proxy: false,
         url,
         schema: resource.schema,
       },
@@ -128,6 +131,7 @@ function update(args: MakeActionParameters<ResourceUpdateActionDefinition>): Res
         query: { ...resource?.query?.query, ...definition.query },
         blobs: getBlobs(resource),
         method,
+        proxy: false,
         url: `${url}${url.endsWith('/') ? '' : '/'}{${id}}`,
         schema: resource.schema,
       },
@@ -155,6 +159,7 @@ function remove(args: MakeActionParameters<ResourceDeleteActionDefinition>): Res
         type: 'resource.delete',
         blobs: getBlobs(resource),
         method,
+        proxy: false,
         url: `${url}${url.endsWith('/') ? '' : '/'}{${id}}`,
         schema: resource.schema,
       },

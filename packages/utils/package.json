@@ -1,7 +1,8 @@
 {
   "name": "@appsemble/utils",
-  "version": "0.12.8",
+  "version": "0.13.1",
   "private": true,
+  "description": "Utility functions used in Appsemble internally",
   "homepage": "https://appsemble.dev",
   "bugs": "https://gitlab.com/appsemble/appsemble/issues",
   "repository": {
@@ -17,12 +18,12 @@
     "prepack": "tsc -p tsconfig.build.json"
   },
   "dependencies": {
-    "@appsemble/types": "0.12.8",
+    "@appsemble/types": "0.13.1",
     "ajv": "^6.12.2",
-    "date-fns": "^2.13.0",
-    "intl-messageformat": "^8.3.10",
+    "date-fns": "^2.14.0",
+    "intl-messageformat": "^8.3.11",
     "openapi-types": "^1.3.5",
-    "postcss": "^7.0.29",
+    "postcss": "^7.0.30",
     "type-fest": "^0.13.1",
     "z-schema": "^4.2.3"
   },

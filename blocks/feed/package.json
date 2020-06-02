@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/feed",
-  "version": "0.12.8",
+  "version": "0.13.1",
   "private": true,
   "description": "A block that displays a feed of cards.",
   "homepage": "https://appsemble.dev",
@@ -12,11 +12,12 @@
   },
   "license": "LGPL-3.0-or-later",
   "author": "Appsemble <info@appsemble.com> (https://appsemble.com)",
+  "sideEffects": false,
   "dependencies": {
-    "@appsemble/preact": "0.12.8",
-    "@appsemble/preact-components": "0.12.8",
-    "@appsemble/sdk": "0.12.8",
-    "@appsemble/utils": "0.12.8",
-    "preact": "^10.4.1"
+    "@appsemble/preact": "0.13.1",
+    "@appsemble/preact-components": "0.13.1",
+    "@appsemble/sdk": "0.13.1",
+    "@appsemble/utils": "0.13.1",
+    "preact": "^10.4.4"
   }
 }

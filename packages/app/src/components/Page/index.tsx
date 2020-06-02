@@ -1,5 +1,10 @@
 import { useMessages } from '@appsemble/react-components';
-import type { AppDefinition, BasicPage, Block, Page as PageType } from '@appsemble/types';
+import type {
+  AppDefinition,
+  BasicPageDefinition,
+  BlockDefinition,
+  PageDefinition,
+} from '@appsemble/types';
 import { checkAppRole, normalize } from '@appsemble/utils';
 import { EventEmitter } from 'events';
 import React from 'react';
@@ -17,10 +22,11 @@ import { useUser } from '../UserProvider';
 import messages from './messages';
 
 interface PageProps {
-  page: PageType;
+  page: PageDefinition;
+  prefix: string;
 }
 
-export default function Page({ page }: PageProps): React.ReactElement {
+export default function Page({ page, prefix }: PageProps): React.ReactElement {
   const { definition } = useAppDefinition();
   const history = useHistory();
   const intl = useIntl();
@@ -29,7 +35,7 @@ export default function Page({ page }: PageProps): React.ReactElement {
   const { isLoggedIn, logout, role } = useUser();
 
   const [dialog, setDialog] = React.useState<ShowDialogParams>();
-  const [blocks, setBlocks] = React.useState<Block[]>([]);
+  const [blocks, setBlocks] = React.useState<BlockDefinition[]>([]);
 
   const ee = React.useRef<EventEmitter>();
   if (!ee.current) {
@@ -45,7 +51,7 @@ export default function Page({ page }: PageProps): React.ReactElement {
   }, [definition, page.theme]);
 
   const applyBulmaThemes = React.useCallback(
-    (d: AppDefinition, p: PageType) => {
+    (d: AppDefinition, p: PageDefinition) => {
       const bulmaStyle = document.getElementById('bulma-style-app') as HTMLLinkElement;
       const [bulmaUrl] = bulmaStyle.href.split('?');
       bulmaStyle.href = d.theme || p.theme ? `${bulmaUrl}?${createBulmaQueryString()}` : bulmaUrl;
@@ -54,7 +60,7 @@ export default function Page({ page }: PageProps): React.ReactElement {
   );
 
   const checkPagePermissions = React.useCallback(
-    (p: PageType): boolean => {
+    (p: PageDefinition): boolean => {
       const roles = p.roles || definition.roles || [];
       return roles.length === 0 || roles.some((r) => checkAppRole(definition.security, r, role));
     },
@@ -102,7 +108,7 @@ export default function Page({ page }: PageProps): React.ReactElement {
       ...(page.type === 'tabs' || page.type === 'flow'
         ? page.subPages.map((f) => f.blocks).flat()
         : []),
-      ...(!page.type || page.type === 'page' ? (page as BasicPage).blocks : []),
+      ...(!page.type || page.type === 'page' ? (page as BasicPageDefinition).blocks : []),
     ]);
   }, [page]);
 
@@ -141,15 +147,30 @@ export default function Page({ page }: PageProps): React.ReactElement {
           definition={definition}
           ee={ee.current}
           page={page}
+          prefix={prefix}
           showDialog={showDialog}
         />
       );
       break;
     case 'tabs':
-      component = <TabsPage ee={ee.current} showDialog={showDialog} subPages={page.subPages} />;
+      component = (
+        <TabsPage
+          ee={ee.current}
+          prefix={prefix}
+          showDialog={showDialog}
+          subPages={page.subPages}
+        />
+      );
       break;
     default:
-      component = <BlockList blocks={page.blocks} ee={ee.current} showDialog={showDialog} />;
+      component = (
+        <BlockList
+          blocks={page.blocks}
+          ee={ee.current}
+          prefix={`${prefix}.blocks`}
+          showDialog={showDialog}
+        />
+      );
   }
 
   return (

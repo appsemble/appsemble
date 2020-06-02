@@ -7,8 +7,8 @@ import {
   Modal,
   Table,
   Title,
+  useConfirmation,
   useMessages,
-  useToggle,
 } from '@appsemble/react-components';
 import axios from 'axios';
 import React from 'react';
@@ -44,40 +44,34 @@ export default function ResourceTable(): React.ReactElement {
   const push = useMessages();
 
   const [resources, setResources] = React.useState<Resource[]>();
-  const [deletingResource, setDeletingResource] = React.useState<Resource>();
   const [editingResource, setEditingResource] = React.useState<Resource>();
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState(false);
-  const warningDialog = useToggle();
 
   const { id: appId, mode, resourceId, resourceName } = match.params;
-
-  const promptDeleteResource = React.useCallback(
-    (resource: Resource) => {
-      setDeletingResource(resource);
-      warningDialog.enable();
-    },
-    [warningDialog],
-  );
 
   const closeModal = React.useCallback(() => {
     history.push(match.url.replace(`/${mode}${mode === 'edit' ? `/${resourceId}` : ''}`, ''));
   }, [history, match.url, mode, resourceId]);
 
-  const deleteResource = React.useCallback(async () => {
-    try {
-      await axios.delete(`/api/apps/${appId}/resources/${resourceName}/${deletingResource.id}`);
-      push({
-        body: intl.formatMessage(messages.deleteSuccess, { id: deletingResource.id }),
-        color: 'primary',
-      });
-      setResources(resources.filter((resource) => resource.id !== deletingResource.id));
-      setDeletingResource(undefined);
-      warningDialog.disable();
-    } catch (e) {
-      push(intl.formatMessage(messages.deleteError));
-    }
-  }, [appId, deletingResource, intl, push, resourceName, resources, warningDialog]);
+  const deleteResource = useConfirmation({
+    title: <FormattedMessage {...messages.resourceWarningTitle} />,
+    body: <FormattedMessage {...messages.resourceWarning} />,
+    cancelLabel: <FormattedMessage {...messages.cancelButton} />,
+    confirmLabel: <FormattedMessage {...messages.deleteButton} />,
+    async action(deletingResource: Resource) {
+      try {
+        await axios.delete(`/api/apps/${appId}/resources/${resourceName}/${deletingResource.id}`);
+        push({
+          body: intl.formatMessage(messages.deleteSuccess, { id: deletingResource.id }),
+          color: 'primary',
+        });
+        setResources(resources.filter((resource) => resource.id !== deletingResource.id));
+      } catch (e) {
+        push(intl.formatMessage(messages.deleteError));
+      }
+    },
+  });
 
   const onChange = React.useCallback((_event: NamedEvent, value: any) => {
     setEditingResource(value);
@@ -256,7 +250,7 @@ export default function ResourceTable(): React.ReactElement {
                   color="danger"
                   icon="trash"
                   inverted
-                  onClick={() => promptDeleteResource(resource)}
+                  onClick={() => deleteResource(resource)}
                 />
               </td>
               {keys.map((key) => (
@@ -306,23 +300,6 @@ export default function ResourceTable(): React.ReactElement {
           schema={schema}
           value={editingResource}
         />
-      </Modal>
-      <Modal
-        footer={
-          <>
-            <CardFooterButton onClick={warningDialog.disable}>
-              <FormattedMessage {...messages.cancelButton} />
-            </CardFooterButton>
-            <CardFooterButton color="danger" onClick={deleteResource}>
-              <FormattedMessage {...messages.deleteButton} />
-            </CardFooterButton>
-          </>
-        }
-        isActive={warningDialog.enabled}
-        onClose={warningDialog.disable}
-        title={<FormattedMessage {...messages.resourceWarningTitle} />}
-      >
-        <FormattedMessage {...messages.resourceWarning} />
       </Modal>
     </>
   );

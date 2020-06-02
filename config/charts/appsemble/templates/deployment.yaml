@@ -112,6 +112,44 @@ spec:
                   name: {{ . | quote }}
                   key: from
             {{- end }}
+            {{- with .Values.oauthSecret }}
+            - name: GITHUB_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: {{ . | quote }}
+                  key: github-client-id
+                  optional: true
+            - name: GITHUB_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ . | quote }}
+                  key: github-client-secret
+                  optional: true
+            - name: GITLAB_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: {{ . | quote }}
+                  key: gitlab-client-id
+                  optional: true
+            - name: GITLAB_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ . | quote }}
+                  key: gitlab-client-secret
+                  optional: true
+            - name: GOOGLE_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: {{ . | quote }}
+                  key: google-client-id
+                  optional: true
+            - name: GOOGLE_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ . | quote }}
+                  key: google-client-secret
+                  optional: true
+            {{- end }}
             {{- with .Values.sentrySecret }}
             - name: SENTRY_DSN
               valueFrom:

@@ -7,10 +7,11 @@ import ImageField from '../ImageField';
 import styles from './index.css';
 
 /**
- * Render a string as is.
+ * Renders a file as an image.
  */
-export default function FileRenderer({ field, value }: RendererProps<FileField>): VNode {
+export default function FileRenderer({ data, field }: RendererProps<FileField>): VNode {
   const { utils } = useBlock();
+  const value = utils.remap(field.name, data);
 
   return (
     <Fragment>

@@ -1,8 +1,9 @@
-import { Loader } from '@appsemble/react-components';
+import { Loader, Message } from '@appsemble/react-components';
 import type { App } from '@appsemble/types';
 import { permissions } from '@appsemble/utils';
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 import React from 'react';
+import { FormattedMessage, MessageDescriptor } from 'react-intl';
 import { Redirect, Route, Switch, useRouteMatch } from 'react-router-dom';
 
 import useOrganizations from '../../hooks/useOrganizations';
@@ -16,6 +17,7 @@ import Notifications from '../Notifications';
 import ProtectedRoute from '../ProtectedRoute';
 import Roles from '../Roles';
 import styles from './index.css';
+import messages from './messages';
 
 /**
  * A wrapper which fetches the app definition and makes sure it is available to its children.
@@ -38,18 +40,35 @@ export default function AppContext(): React.ReactElement {
   const match = useRouteMatch<{ id: string }>();
   const organizations = useOrganizations();
   const [app, setApp] = React.useState<App>();
+  const [error, setError] = React.useState<MessageDescriptor>();
   const value = React.useMemo(() => ({ app, setApp }), [app]);
 
   React.useEffect(() => {
     const getApp = async (): Promise<void> => {
       setApp(undefined);
-      const { data } = await axios.get<App>(`/api/apps/${match.params.id}`);
-      setApp(data);
+      try {
+        const { data } = await axios.get<App>(`/api/apps/${match.params.id}`);
+        setApp(data);
+      } catch (err) {
+        setError(
+          (err as AxiosError)?.response?.status === 404
+            ? messages.notFound
+            : messages.uncaughtError,
+        );
+      }
     };
     getApp();
   }, [match]);
 
-  if (organizations === undefined || app === undefined) {
+  if (error) {
+    return (
+      <Message color="danger">
+        <FormattedMessage {...error} />
+      </Message>
+    );
+  }
+
+  if (!organizations || !app) {
     return <Loader />;
   }
 

@@ -3,6 +3,7 @@ import axios, { AxiosInstance } from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import FormData from 'form-data';
 import { Readable } from 'stream';
+import { URLSearchParams } from 'url';
 
 import { formData, requestLogger, responseLogger } from './interceptors';
 
@@ -63,6 +64,14 @@ describe('requestLogger', () => {
     await instance.post('/', {});
     expect(logger.info).toHaveBeenCalledWith('Start POST /');
     expect(logger.silly).toHaveBeenCalledWith('Request body: {}');
+  });
+
+  it('should url search params', async () => {
+    jest.spyOn(logger, 'info');
+    jest.spyOn(logger, 'silly');
+    await instance.post('/', new URLSearchParams({ foo: 'bar' }));
+    expect(logger.info).toHaveBeenCalledWith('Start POST /');
+    expect(logger.silly).toHaveBeenCalledWith('Request body: foo=bar');
   });
 
   it('should log streams', async () => {

@@ -8,13 +8,14 @@ import type {
 import type { IconName } from '@fortawesome/fontawesome-common-types';
 import type { OpenAPIV3 } from 'openapi-types';
 import type { JsonObject, RequireExactlyOne } from 'type-fest';
+import type { Definition } from 'typescript-json-schema';
 
 export type { Theme };
 
 /**
  * A block that is displayed on a page.
  */
-export interface Block {
+export interface BlockDefinition {
   /**
    * The type of the block.
    *
@@ -144,7 +145,15 @@ export interface TokenResponse {
    * How long until the access token expires in seconds from now.
    */
   // eslint-disable-next-line camelcase
-  expires_in: number;
+  expires_in?: number;
+
+  /**
+   * The OpenID ID token as a JWT.
+   *
+   * This field is only present on OpenID connect providers.
+   */
+  // eslint-disable-next-line camelcase
+  id_token?: string;
 
   /**
    * A refresh token for getting a new access token.
@@ -168,6 +177,11 @@ export interface Remappers {
   'object.from': {
     [key: string]: Remapper;
   };
+
+  /**
+   * Use a static value.
+   */
+  static: any;
 
   /**
    * Get a property from an object.
@@ -289,7 +303,7 @@ interface ResourceReference {
   delete?: ResourceReferenceAction;
 }
 
-export interface Resource {
+export interface ResourceDefinition {
   /**
    * The definition for the `resource.create` action.
    */
@@ -384,7 +398,7 @@ export interface DialogActionDefinition extends BaseActionDefinition<'dialog'> {
   /**
    * Blocks to render on the dialog.
    */
-  blocks: Block[];
+  blocks: BlockDefinition[];
 
   /**
    * The title to show in the dialog.
@@ -432,6 +446,13 @@ export interface RequestLikeActionDefinition<
    * The HTTP method to use for making a request.
    */
   method?: HTTPMethods;
+
+  /**
+   * Whether or not to proxy the request through the Appsemble proxy endpoint.
+   *
+   * @default true
+   */
+  proxy?: boolean;
 
   /**
    * A JSON schema against which to validate data before uploading.
@@ -552,6 +573,11 @@ export interface ActionType {
    * Whether or not app creators are required to define this action.
    */
   required?: boolean;
+
+  /**
+   * The description of the action.
+   */
+  description?: string;
 }
 
 export interface BlockManifest {
@@ -566,6 +592,13 @@ export interface BlockManifest {
    * The description of the block.
    */
   description?: string;
+
+  /**
+   * The long description of the block.
+   *
+   * This is displayed when rendering block documentation and supports Markdown.
+   */
+  longDescription?: string;
 
   /**
    * A [semver](https://semver.org) representation of the block version.
@@ -604,12 +637,12 @@ export interface BlockManifest {
    * Since multiple JSON schema typings exist and not all of them play nice with each other, this
    * type is set to `OpenAPIV3.SchemaObject`.
    */
-  parameters?: OpenAPIV3.SchemaObject;
 
   /**
    * A block icon url
    */
   iconUrl?: string;
+  parameters?: Definition;
 
   /**
    * @deprecated
@@ -620,7 +653,7 @@ export interface BlockManifest {
 /**
  * This describes what a page will look like in the app.
  */
-export interface BasePage {
+export interface BasePageDefinition {
   /**
    * The name of the page.
    *
@@ -670,25 +703,25 @@ export interface BasePage {
 
 interface SubPage {
   name: string;
-  blocks: Block[];
+  blocks: BlockDefinition[];
 }
 
-export interface BasicPage extends BasePage {
+export interface BasicPageDefinition extends BasePageDefinition {
   type?: 'page';
-  blocks: Block[];
+  blocks: BlockDefinition[];
 }
 
-export interface FlowPage extends BasePage {
+export interface FlowPageDefinition extends BasePageDefinition {
   type: 'flow';
   subPages: SubPage[];
 }
 
-export interface TabsPage extends BasePage {
+export interface TabsPageDefinition extends BasePageDefinition {
   type: 'tabs';
   subPages: SubPage[];
 }
 
-export type Page = BasicPage | FlowPage | TabsPage;
+export type PageDefinition = BasicPageDefinition | FlowPageDefinition | TabsPageDefinition;
 
 export interface AppDefinition {
   /**
@@ -737,12 +770,12 @@ export interface AppDefinition {
   /**
    * The pages of the app.
    */
-  pages: Page[];
+  pages: PageDefinition[];
 
   /**
    * Resource definitions that may be used by the app.
    */
-  resources?: { [key: string]: Resource };
+  resources?: { [key: string]: ResourceDefinition };
 
   /**
    * The global theme for the app.

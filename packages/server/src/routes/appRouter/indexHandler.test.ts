@@ -1,4 +1,4 @@
-import { AxiosTestInstance, createInstance } from 'axios-test-instance';
+import { request, setTestApp } from 'axios-test-instance';
 import Koa from 'koa';
 
 import { App, BlockAsset, BlockVersion, Organization } from '../../models';
@@ -6,7 +6,6 @@ import type { KoaContext } from '../../types';
 import createServer from '../../utils/createServer';
 import { closeTestSchema, createTestSchema, truncate } from '../../utils/test/testSchema';
 
-let request: AxiosTestInstance;
 let templateName: string;
 let templateParams: any;
 
@@ -179,6 +178,7 @@ beforeAll(async () => {
   const app = new Koa();
   app.use((ctx: KoaContext, next) => {
     Object.defineProperty(ctx, 'origin', { value: 'http://app.test.host.example' });
+    Object.defineProperty(ctx, 'hostname', { value: 'app.test.host.example' });
     ctx.state.render = async (name, params) => {
       templateName = name;
       templateParams = params;
@@ -187,7 +187,7 @@ beforeAll(async () => {
     return next();
   });
   const server = await createServer({ app, argv: { host: 'http://host.example', secret: 'test' } });
-  request = await createInstance(server);
+  await setTestApp(server);
 });
 
 afterEach(() => {
@@ -196,10 +196,6 @@ afterEach(() => {
 });
 
 afterEach(truncate);
-
-afterAll(async () => {
-  await request.close();
-});
 
 afterAll(closeTestSchema);
 

@@ -4,4 +4,4 @@ dist/
 /public/
 node_modules/
 /.docz/
-/reports/
+/.lighthouseci/

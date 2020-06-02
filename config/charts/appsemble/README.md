@@ -35,6 +35,17 @@ kubectl create secret generic smtp \
 
 **Optional**
 
+Appsemble supports login with various OAuth2 providers. If desired, create an OAuth2 secret
+containing the client ids and client secrets for each provider.
+
+```sh
+kubectl create secret generic oauth2 \
+  --from-literal "github-client-id=my-github-client-id" \
+  --from-literal "github-client-secret=my-github-client-secret" \
+  --from-literal "gitlab-client-id=my-gitlab-client-id" \
+  --from-literal "gitlab-client-secret=my-gitlab-client-secret"
+```
+
 Appsemble integrates with [Sentry] for error reporting. This requires to configure a Sentry DSN.
 This is read from a secret.
 
@@ -81,6 +92,7 @@ helm upgrade my-release config/charts/appsemble --set 'global.postgresql.existin
 | `tolerations`                          | `[]`                          |                                                                                                                                           |
 | `affinity`                             | `{}`                          |                                                                                                                                           |
 | `smtpSecret`                           | `smtp`                        | The secret to use for configuring SMTP. The secret should contain the following values: `host`, `port`, `secure`, `user`, `pass`, `from`. |
+| `oauthSecret`                          | `nil`                         | The secret which holds client ids and client secrets for OAuth2 providers.                                                                |
 | `sentrySecret`                         | `nil`                         | The secret from which to read the [Sentry] DSN.                                                                                           |
 | `secretSecret`                         | `appsemble`                   | The Kubernetes secret which holds the `SECRET` environment variable.                                                                      |
 | `migrateTo`                            | `nil`                         | If specified, the database will be migrated to this specific version. To upgrade to the latest version, specify `next`.                   |

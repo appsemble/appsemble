@@ -7,6 +7,7 @@ export { default as validate, SchemaValidationError } from './validate';
 export { default as validateStyle, StyleValidationError } from './validateStyle';
 export { default as prefix } from './prefix';
 export { default as checkAppRole } from './checkAppRole';
+export { default as formatRequestAction } from './formatRequestAction';
 export { default as getAppBlocks } from './getAppBlocks';
 export type { BlockMap } from './getAppBlocks';
 export { default as mapValues } from './mapValues';

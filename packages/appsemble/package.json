@@ -1,0 +1,25 @@
+{
+  "name": "appsemble",
+  "version": "0.13.1",
+  "description": "A simple wrapper for @appsemble/cli",
+  "homepage": "https://appsemble.dev",
+  "bugs": "https://gitlab.com/appsemble/appsemble/issues",
+  "repository": {
+    "type": "git",
+    "url": "https://gitlab.com/appsemble/appsemble.git",
+    "directory": "packages/appsemble"
+  },
+  "license": "LGPL-3.0-or-later",
+  "author": "Appsemble <info@appsemble.com> (https://appsemble.com)",
+  "sideEffects": false,
+  "bin": "dist/index.js",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "prepack": "tsc -p tsconfig.build.json"
+  },
+  "dependencies": {
+    "@appsemble/cli": "0.13.1"
+  }
+}

@@ -1,7 +1,8 @@
 {
   "name": "@appsemble/react",
-  "version": "0.12.8",
+  "version": "0.13.1",
   "private": true,
+  "description": "The Appsemble React SDK",
   "homepage": "https://appsemble.dev",
   "bugs": "https://gitlab.com/appsemble/appsemble/issues",
   "repository": {
@@ -21,8 +22,8 @@
     "enzyme-adapter-react-16": "^1.15.2"
   },
   "peerDependencies": {
-    "@appsemble/sdk": "^0.12.8",
-    "@appsemble/types": "^0.12.8",
+    "@appsemble/sdk": "0.13.1",
+    "@appsemble/types": "0.13.1",
     "react": "^16.11.0",
     "react-dom": "^16.11.0",
     "react-intl": "^3.4.0"

@@ -6,9 +6,11 @@ import blocks from './blocks';
 import emails from './emails';
 import health from './health';
 import invite from './invite';
-import oauth from './oauth';
-import openid from './openid';
+import oauth2ClientCredentials from './oauth2ClientCredentials';
+import oauth2Login from './oauth2Login';
+import oauth2Provider from './oauth2Provider';
 import organizations from './organizations';
+import proxy from './proxy';
 import resources from './resources';
 import templates from './templates';
 import user from './user';
@@ -20,9 +22,11 @@ export default {
   ...emails,
   ...health,
   ...invite,
-  ...openid,
-  ...oauth,
+  ...oauth2ClientCredentials,
+  ...oauth2Login,
+  ...oauth2Provider,
   ...organizations,
+  ...proxy,
   ...resources,
   ...templates,
   ...user,

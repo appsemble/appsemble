@@ -34,11 +34,7 @@ workflow:
 
 # A preconfigured environment for using Helm.
 .helm:
-  image:
-    # This is the most official Helm image at the moment.
-    # https://github.com/helm/helm/issues/5682#issuecomment-490084864
-    name: lachlanevenson/k8s-helm:v3.1.0
-    entrypoint: [/bin/sh, -c]
+  image: dtzar/helm-kubectl:3.2.1
   dependencies: []
 
 # A job preset for deleting Helm Charts.
@@ -106,6 +102,7 @@ test:
   script:
     - yarn --frozen-lockfile
     - yarn jest --coverage --reporters default --reporters jest-junit
+    - yarn codecov
   artifacts:
     reports:
       junit: junit.xml
@@ -157,6 +154,7 @@ pack:
     - yarn workspace @appsemble/preact pack
     - yarn workspace @appsemble/node-utils pack
     - yarn workspace @appsemble/cli pack
+    - yarn workspace appsemble pack
     - mkdir build/
     - find packages -name '*.tgz' -exec mv {} ./build/ \;
   artifacts:
@@ -206,6 +204,17 @@ publish npm:
 ###################################################################################################
 #  Deploy Stage                                                                                   #
 ###################################################################################################
+
+# Delete all succesful jobs for review environments nightly
+cleanup:
+  extends: .helm
+  stage: deploy
+  rules:
+    - if: $CI_PIPELINE_SOURCE == 'schedule'
+  environment:
+    name: review/cleanup
+  script:
+    - kubectl delete job $(kubectl get job -o=jsonpath='{.items[?(@.status.succeeded==1)].metadata.name}')
 
 # Deploy the Docker image for a branch to a review environment.
 review:
@@ -333,6 +342,7 @@ staging:
       --set "ingress.host=staging.appsemble.review"
       --set "ingress.tls.secretName=staging-tls"
       --set "migrateTo=next"
+      --set "oauthSecret=oauth2"
       --set "postgresql.fullnameOverride=staging-postgresql"
       --set "provision.account.clientCredentials=$APPSEMBLE_CLIENT_CREDENTIALS"
       --set "provision.account.id=43376671-1c98-4657-809e-d45292a3f39e"
@@ -482,13 +492,12 @@ lighthouse:
   script:
     - yarn --frozen-lockfile
     - yarn install-chrome-dependencies
-    - yarn scripts lighthouse -v
+    - yarn lhci collect
+    - yarn lhci assert
   artifacts:
     expose_as: Lighthouse reports
     paths:
-      - reports
-    reports:
-      metrics: reports/metrics.txt
+      - .lighthouseci
     expire_in: 7 days
 
 # Test 10 Second Dance in the staging environment.

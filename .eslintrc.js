@@ -199,7 +199,6 @@ module.exports = {
         'jest/no-jest-import': 'error',
         'jest/no-test-callback': 'error',
         'jest/no-test-return-statement': 'error',
-        'jest/no-truthy-falsy': 'error',
         'jest/no-try-expect': 'error',
         'jest/prefer-to-be-null': 'error',
         'jest/prefer-to-be-undefined': 'error',

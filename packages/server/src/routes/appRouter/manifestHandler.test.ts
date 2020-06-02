@@ -1,18 +1,12 @@
-import { AxiosTestInstance, createInstance } from 'axios-test-instance';
+import { request, setTestApp } from 'axios-test-instance';
 import Koa from 'koa';
 
 import type { App } from '../../models';
 import * as getApp from '../../utils/getApp';
 import appRouter from '.';
 
-let request: AxiosTestInstance;
-
 beforeAll(async () => {
-  request = await createInstance(new Koa().use(appRouter));
-});
-
-afterAll(async () => {
-  await request.close();
+  await setTestApp(new Koa().use(appRouter));
 });
 
 it('should serve a PWA manifest', async () => {

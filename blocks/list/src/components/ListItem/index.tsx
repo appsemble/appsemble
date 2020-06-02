@@ -1,21 +1,24 @@
+import { useBlock } from '@appsemble/preact';
 import { Icon } from '@appsemble/preact-components';
-import type { BootstrapParams } from '@appsemble/sdk';
-import { remapData } from '@appsemble/utils';
+import classNames from 'classnames';
 import { h, VNode } from 'preact';
 import { useCallback } from 'preact/hooks';
 
-import type { Field, Item } from '../../../block';
+import type { Item } from '../../../block';
 import ListItemWrapper from '../ListItemWrapper';
 import styles from './index.css';
 
 interface ListItemProps {
-  actions: BootstrapParams['actions'];
-  fields: Field[];
-  header: string;
   item: Item;
 }
 
-export default function ListItem({ actions, fields, header, item }: ListItemProps): VNode {
+export default function ListItem({ item }: ListItemProps): VNode {
+  const {
+    actions,
+    parameters: { fields, header, icon },
+    utils: { remap },
+  } = useBlock();
+
   const onItemClick = useCallback(
     (event: Event) => {
       event.preventDefault();
@@ -24,26 +27,33 @@ export default function ListItem({ actions, fields, header, item }: ListItemProp
     [actions, item],
   );
 
+  const headerValue = remap(header, item);
+
   return (
     <ListItemWrapper actions={actions} className={styles.item} item={item} onClick={onItemClick}>
-      {header && <h4>{remapData(header, item)}</h4>}
-      {fields.map((field) => {
+      {(icon || headerValue) && (
+        <div className={classNames({ [styles.header]: fields?.length })}>
+          {icon && <Icon icon={icon} />}
+          {headerValue && <h4>{headerValue}</h4>}
+        </div>
+      )}
+      {fields?.map((field) => {
         let value;
 
-        if (field.name) {
-          value = remapData(field.name, item);
+        if (field.value) {
+          value = remap(field.value, item);
         }
 
         return (
-          <span key={field.name} className={styles.itemField}>
+          <span className={styles.itemField}>
             {field.icon && <Icon icon={field.icon} />}
             {field.label && (
               <span>
                 {field.label}
-                {field.name && ': '}
+                {value && ': '}
               </span>
             )}
-            {field.name && (
+            {value && (
               <strong className="has-text-bold">
                 {typeof value === 'string' ? value : JSON.stringify(value)}
               </strong>

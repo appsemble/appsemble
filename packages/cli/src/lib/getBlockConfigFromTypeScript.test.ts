@@ -1,6 +1,6 @@
 import { AppsembleError } from '@appsemble/node-utils';
 import path from 'path';
-import * as ts from 'typescript';
+import ts from 'typescript';
 
 import getBlockConfigFromTypeScript from './getBlockConfigFromTypeScript';
 

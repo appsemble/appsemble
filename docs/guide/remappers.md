@@ -1,5 +1,5 @@
 ---
-name: Remappers
+menu: Remappers
 route: /guide/remappers
 ---
 
@@ -51,6 +51,14 @@ Create a new object given some predefined mapper keys.
 #### Parameters
 
 A key / value pair object keys and remappers.
+
+### `static`
+
+Insert a static value.
+
+### Parameters
+
+The value to use.
 
 ### `prop`
 

@@ -1,5 +1,5 @@
 import { useMessages } from '@appsemble/react-components';
-import type { Block as BlockType } from '@appsemble/types';
+import type { BlockDefinition } from '@appsemble/types';
 import { baseTheme, normalize, normalizeBlockName, remap } from '@appsemble/utils';
 import classNames from 'classnames';
 import type { EventEmitter } from 'events';
@@ -30,7 +30,7 @@ interface BlockProps {
   /**
    * The block to render.
    */
-  block: BlockType;
+  block: BlockDefinition;
   extraCreators?: ActionCreators;
 
   /**
@@ -39,8 +39,9 @@ interface BlockProps {
   flowActions: any;
 
   showDialog: ShowDialogAction;
-  ready(block: BlockType): void;
+  ready(block: BlockDefinition): void;
   pageReady: Promise<void>;
+  prefix: string;
 }
 
 /**
@@ -57,6 +58,7 @@ export default function Block({
   extraCreators,
   flowActions,
   pageReady,
+  prefix,
   ready,
   showDialog,
 }: BlockProps): React.ReactElement {
@@ -139,6 +141,7 @@ export default function Block({
       flowActions,
       pushNotifications,
       pageReady,
+      prefix,
       ee,
     });
     const { theme: pageTheme } = definition.pages.find(
@@ -213,6 +216,7 @@ export default function Block({
     manifest,
     match,
     pageReady,
+    prefix,
     push,
     pushNotifications,
     ready,
@@ -220,7 +224,9 @@ export default function Block({
   ]);
 
   const header = block.header ? (
-    <h6 className={classNames('title is-6', styles.title)}>{block.header}</h6>
+    <h6 className={classNames('title is-6', styles.title)}>
+      {remap(block.header, { ...data, ...match.params })}
+    </h6>
   ) : null;
 
   switch (manifest.layout) {
