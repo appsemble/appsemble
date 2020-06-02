@@ -6,6 +6,7 @@ import path from 'path';
 import yargs from 'yargs';
 
 import { CREDENTIALS_ENV_VAR } from './lib/authentication';
+import coerceRemote from './lib/coerceRemote';
 import initAxios from './lib/initAxios';
 
 export default async function main(argv: string[]): Promise<void> {
@@ -26,6 +27,7 @@ export default async function main(argv: string[]): Promise<void> {
     .option('remote', {
       description: 'The Appsemble host that should be used.',
       default: 'http://localhost:9999',
+      coerce: coerceRemote,
     })
     .option('client-credentials', {
       description: `OAuth2 client credentials formatted as "client_id:client_secret". This may also be defined in the ${CREDENTIALS_ENV_VAR} environment variable.`,
