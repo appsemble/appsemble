@@ -7,6 +7,10 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- CLI: Normalize the `--remote` argument.
+
 ## [0.13.1] - 2020-06-02
 
 ### Added
