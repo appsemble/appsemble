@@ -3,6 +3,7 @@ import type { BlockManifest } from '@appsemble/types';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 
+import MarkdownContent from '../../../MarkdownContent';
 import messages from './messages';
 
 interface EventTableProps {
@@ -29,12 +30,18 @@ export default function EventTable({ manifest }: EventTableProps): React.ReactEl
                 <th>
                   <FormattedMessage {...messages.name} />
                 </th>
+                <th>
+                  <FormattedMessage {...messages.description} />
+                </th>
               </tr>
             </thead>
             <tbody>
-              {manifest.events.emit.map((event) => (
-                <tr key={event}>
-                  <td>{event}</td>
+              {Object.entries(manifest.events.emit).map(([key, event]) => (
+                <tr key={key}>
+                  <td>{key}</td>
+                  <td>
+                    <MarkdownContent content={event.description} />
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -52,12 +59,18 @@ export default function EventTable({ manifest }: EventTableProps): React.ReactEl
                 <th>
                   <FormattedMessage {...messages.name} />
                 </th>
+                <th>
+                  <FormattedMessage {...messages.description} />
+                </th>
               </tr>
             </thead>
             <tbody>
-              {manifest.events.listen.map((event) => (
-                <tr key={event}>
-                  <td>{event}</td>
+              {Object.entries(manifest.events.emit).map(([key, event]) => (
+                <tr key={key}>
+                  <td>{key}</td>
+                  <td>
+                    <MarkdownContent content={event.description} />
+                  </td>
                 </tr>
               ))}
             </tbody>
