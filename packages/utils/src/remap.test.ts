@@ -41,6 +41,30 @@ const cases: TestCase[] = [
     mappers: [{ prop: 'address.town' }],
     expected: 'Bikini Bottom',
   },
+  {
+    description: 'handle numbers',
+    input: { names: ['foo', 'bar'] },
+    mappers: [{ prop: 'names' }, { prop: (0 as unknown) as string }],
+    expected: 'foo',
+  },
+  {
+    description: 'handle null',
+    input: { name: 'Spongebob' },
+    mappers: [{ prop: null }],
+    expected: null,
+  },
+  {
+    description: 'handle properties named null',
+    input: { null: 'Spongebob' },
+    mappers: [{ prop: null }],
+    expected: 'Spongebob',
+  },
+  {
+    description: 'handle null values',
+    input: {},
+    mappers: [{ prop: 'foo.bar' }],
+    expected: null,
+  },
 
   // Mapper string.case
   {
