@@ -12,7 +12,7 @@ it('should create a form-data payload', async () => {
     dir: path.join(__dirname, '__fixtures__', 'makePayload', 'no-icon'),
     parameters: { type: 'object' },
     actions: { onClick: {} },
-    events: { listen: [] },
+    events: { listen: { test: {} } },
   });
   const boundary = payload.getBoundary();
   const buffer = await new Promise((resolve) => {
@@ -25,7 +25,7 @@ Content-Disposition: form-data; name="actions"\r
 --${boundary}\r
 Content-Disposition: form-data; name="events"\r
 \r
-{"listen":[]}\r
+{"listen":{"test":{}}}\r
 --${boundary}\r
 Content-Disposition: form-data; name="name"\r
 \r

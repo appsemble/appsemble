@@ -1,4 +1,4 @@
-import type { ActionType, BlockManifest } from '@appsemble/types';
+import type { ActionType, BlockManifest, EventType } from '@appsemble/types';
 import { DataTypes, Model, Sequelize } from 'sequelize';
 
 import BlockAsset from './BlockAsset';
@@ -26,8 +26,8 @@ export default class BlockVersion extends Model implements Omit<BlockManifest, '
   actions?: { [key: string]: ActionType };
 
   events: {
-    listen?: string[];
-    emit?: string[];
+    listen?: { [key: string]: EventType };
+    emit?: { [key: string]: EventType };
   };
 
   BlockAssets?: BlockAsset[];

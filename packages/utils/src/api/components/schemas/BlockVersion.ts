@@ -77,12 +77,12 @@ export default {
       description: 'An object describing the names of the events the block can listen and emit to.',
       properties: {
         listen: {
-          type: 'array',
-          items: { type: 'string' },
+          type: 'object',
+          additionalProperties: { type: 'object', properties: { description: { type: 'string' } } },
         },
         emit: {
-          type: 'array',
-          items: { type: 'string' },
+          type: 'object',
+          additionalProperties: { type: 'object', properties: { description: { type: 'string' } } },
         },
       },
     },

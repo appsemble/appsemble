@@ -19,21 +19,58 @@ import {
   readConfigFile,
   SourceFile,
   sys,
+  TypeChecker,
+  TypeElement,
 } from 'typescript';
 import { buildGenerator, Definition } from 'typescript-json-schema';
 
 import type { BlockConfig } from '../types';
 
-// XXX specify any
-function processActions(iface: InterfaceDeclaration): BlockManifest['actions'] {
+/**
+ * Get the tsdoc comment for a TypeScript node.
+ *
+ * @param checker The type checker instance to use.
+ * @param node The node for which to get the tsdoc.
+ * @returns The tsdoc comment as a string, if present.
+ */
+function getNodeComments(checker: TypeChecker, node: TypeElement): string {
+  const symbol = checker.getSymbolAtLocation(node.name);
+  if (!symbol) {
+    return null;
+  }
+
+  const comments = symbol.getDocumentationComment(checker);
+  if (comments.length) {
+    return comments
+      .map((comment) =>
+        comment.kind === 'lineBreak' ? comment.text : comment.text.trim().replace(/\r\n/g, '\n'),
+      )
+      .join('');
+  }
+
+  return null;
+}
+
+/**
+ * Get an axtions object based on a TypeScript interface node.
+ *
+ * @param iface The node to base the actions on.
+ * @param checker The TypeScript type checker.
+ * @returns The action manifest to upload.
+ */
+function processActions(
+  iface: InterfaceDeclaration,
+  checker: TypeChecker,
+): BlockManifest['actions'] {
   if (!iface || !iface.members.length) {
     return undefined;
   }
 
   return Object.fromEntries(
     iface.members.map((member) => {
+      const description = getNodeComments(checker, member);
       if (isIndexSignatureDeclaration(member)) {
-        return ['$any', {}];
+        return ['$any', { description }];
       }
 
       if ((member.name as Identifier).escapedText === '$any') {
@@ -42,32 +79,55 @@ function processActions(iface: InterfaceDeclaration): BlockManifest['actions'] {
         );
       }
 
-      return [(member.name as Identifier).escapedText, {}];
+      return [(member.name as Identifier).escapedText, { description }];
     }),
   );
 }
 
-// XXX specify any
-function mergeInterfacesKeys(iface: InterfaceDeclaration): string[] {
-  if (!iface || !iface.members.length) {
-    return undefined;
-  }
-  return iface.members.map((member) => (member.name as Identifier).escapedText as string);
-}
-
-// XXX specify any
+/**
+ * Get an events object based on TypeScript interface nodes.
+ *
+ * @param eventListenernterface The node to base the event listeners on.
+ * @param eventEmitterInterface The node to base the event emitters on.
+ * @param checker The TypeScript type checker.
+ * @returns The events manifest to upload.
+ */
 function processEvents(
   eventListenerInterface: InterfaceDeclaration,
   eventEmitterInterface: InterfaceDeclaration,
+  checker: TypeChecker,
 ): BlockManifest['events'] {
-  const listen = mergeInterfacesKeys(eventListenerInterface);
-  const emit = mergeInterfacesKeys(eventEmitterInterface);
-  if (!listen && !emit) {
+  if (!eventListenerInterface?.members.length && !eventEmitterInterface?.members.length) {
     return undefined;
   }
+
+  const listen =
+    eventListenerInterface?.members.length &&
+    Object.fromEntries(
+      eventListenerInterface.members.map((member) => [
+        (member.name as Identifier).escapedText,
+        { description: getNodeComments(checker, member) },
+      ]),
+    );
+  const emit =
+    eventEmitterInterface?.members.length &&
+    Object.fromEntries(
+      eventEmitterInterface.members.map((member) => [
+        (member.name as Identifier).escapedText,
+        { description: getNodeComments(checker, member) },
+      ]),
+    );
+
   return { emit, listen };
 }
 
+/**
+ * Get the JSON schema for parameters based on a TypeScript program.
+ *
+ * @param program The TypeScript program from which to extract parameters.
+ * @param sourceFile The source file from which to extract parameters.
+ * @returns The JSON schema for the block parameters.
+ */
 function processParameters(program: Program, sourceFile: SourceFile): Definition {
   if (!sourceFile) {
     return undefined;
@@ -157,6 +217,7 @@ export default function getBlockConfigFromTypeScript(
   }
   logger.info(`Extracting data from TypeScript project ${blockConfig.dir}`);
   const program = getProgram(blockConfig.dir);
+  const checker = program.getTypeChecker();
 
   let actionInterface: InterfaceDeclaration;
   let eventEmitterInterface: InterfaceDeclaration;
@@ -226,11 +287,12 @@ export default function getBlockConfigFromTypeScript(
   });
 
   return {
-    actions: 'actions' in blockConfig ? blockConfig.actions : processActions(actionInterface),
+    actions:
+      'actions' in blockConfig ? blockConfig.actions : processActions(actionInterface, checker),
     events:
       'events' in blockConfig
         ? blockConfig.events
-        : processEvents(eventListenerInterface, eventEmitterInterface),
+        : processEvents(eventListenerInterface, eventEmitterInterface, checker),
     parameters:
       'parameters' in blockConfig
         ? blockConfig.parameters
