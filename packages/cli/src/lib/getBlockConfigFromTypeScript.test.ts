@@ -218,4 +218,56 @@ describe('getBlockConfigFromTypeScript', () => {
     expect(fn).toThrow(AppsembleError);
     expect(fn).toThrow(/'unused' is declared but its value is never read/);
   });
+
+  it('should extract comments', () => {
+    const result = getBlockConfigFromTypeScript({
+      name: '',
+      layout: 'float',
+      version: '1.33.7',
+      webpack: '',
+      output: '',
+      dir: fixture('comments'),
+    });
+
+    expect(result).toStrictEqual({
+      actions: {
+        comment: {
+          description: 'Valid action comment',
+        },
+        duplicate: {
+          description: 'Expected comment',
+        },
+        line: {
+          description: null,
+        },
+      },
+      events: {
+        emit: {
+          testEmit: {
+            description: 'Test event emitter.',
+          },
+        },
+        listen: {
+          testListener: {
+            description: 'Test event listener.',
+          },
+        },
+      },
+      parameters: {
+        $schema: 'http://json-schema.org/draft-07/schema#',
+        additionalProperties: false,
+        definitions: {
+          IconName: {
+            format: 'fontawesome',
+            type: 'string',
+          },
+        },
+        properties: {
+          param: {},
+        },
+        required: ['param'],
+        type: 'object',
+      },
+    });
+  });
 });
