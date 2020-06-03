@@ -1,6 +1,6 @@
 {
   "name": "appsemble",
-  "version": "0.13.1",
+  "version": "0.13.2",
   "description": "A simple wrapper for @appsemble/cli",
   "homepage": "https://appsemble.dev",
   "bugs": "https://gitlab.com/appsemble/appsemble/issues",
@@ -19,6 +19,6 @@
     "prepack": "tsc -p tsconfig.build.json"
   },
   "dependencies": {
-    "@appsemble/cli": "0.13.1"
+    "@appsemble/cli": "0.13.2"
   }
 }

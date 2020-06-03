@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/scripts",
-  "version": "0.13.1",
+  "version": "0.13.2",
   "private": true,
   "description": "Internal scripts for managing the Appsemble repository",
   "homepage": "https://appsemble.dev",
@@ -13,7 +13,7 @@
   "license": "LGPL-3.0-or-later",
   "author": "Appsemble <info@appsemble.com> (https://appsemble.com)",
   "dependencies": {
-    "@appsemble/node-utils": "0.13.1",
+    "@appsemble/node-utils": "0.13.2",
     "fs-extra": "^9.0.0",
     "globby": "^11.0.1",
     "lodash": "^4.17.15",
