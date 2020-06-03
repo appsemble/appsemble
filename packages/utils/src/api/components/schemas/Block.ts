@@ -73,11 +73,11 @@ export default {
       properties: {
         listen: {
           type: 'object',
-          additionalProperties: { type: 'object', properties: { description: { type: 'string' } } },
+          additionalProperties: { type: 'string' },
         },
         emit: {
           type: 'object',
-          additionalProperties: { type: 'object', properties: { description: { type: 'string' } } },
+          additionalProperties: { type: 'string' },
         },
       },
     },
