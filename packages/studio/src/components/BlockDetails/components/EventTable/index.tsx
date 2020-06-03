@@ -65,7 +65,7 @@ export default function EventTable({ manifest }: EventTableProps): React.ReactEl
               </tr>
             </thead>
             <tbody>
-              {Object.entries(manifest.events.emit).map(([key, event]) => (
+              {Object.entries(manifest.events.listen).map(([key, event]) => (
                 <tr key={key}>
                   <td>{key}</td>
                   <td>
