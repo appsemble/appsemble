@@ -325,23 +325,23 @@ describe('getBlockVersions', () => {
   });
 
   it('should order block versions by most recent first', async () => {
-    const formData = new FormData();
-    formData.append('name', '@xkcd/standing');
-    formData.append('description', 'Version 1.32.9!');
-    formData.append('version', '1.32.9');
-    formData.append(
+    const formDataA = new FormData();
+    formDataA.append('name', '@xkcd/standing');
+    formDataA.append('description', 'Version 1.4.0!');
+    formDataA.append('version', '1.4.0');
+    formDataA.append(
       'files',
       fs.createReadStream(path.join(__dirname, '__fixtures__/standing.png')),
       { filepath: 'testblock.js' },
     );
-    await request.post('/api/blocks', formData, {
-      headers: { authorization, ...formData.getHeaders() },
+    await request.post('/api/blocks', formDataA, {
+      headers: { authorization, ...formDataA.getHeaders() },
     });
 
     const formDataB = new FormData();
     formDataB.append('name', '@xkcd/standing');
-    formDataB.append('description', 'Version 1.32.10!');
-    formDataB.append('version', '1.32.10');
+    formDataB.append('description', 'Version 1.32.9!');
+    formDataB.append('version', '1.32.9');
     formDataB.append(
       'files',
       fs.createReadStream(path.join(__dirname, '__fixtures__/standing.png')),
@@ -355,7 +355,7 @@ describe('getBlockVersions', () => {
     expect(data).toStrictEqual([
       {
         name: '@xkcd/standing',
-        description: 'Version 1.32.10!',
+        description: 'Version 1.32.9!',
         longDescription: null,
         actions: null,
         events: null,
@@ -367,15 +367,15 @@ describe('getBlockVersions', () => {
       },
       {
         name: '@xkcd/standing',
-        description: 'Version 1.32.9!',
+        description: 'Version 1.4.0!',
         longDescription: null,
         actions: null,
         events: null,
-        iconUrl: '/api/blocks/@xkcd/standing/versions/1.32.9/icon',
+        iconUrl: '/api/blocks/@xkcd/standing/versions/1.4.0/icon',
         layout: null,
         parameters: null,
         resources: null,
-        version: '1.32.9',
+        version: '1.4.0',
       },
     ]);
   });
