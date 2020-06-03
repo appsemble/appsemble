@@ -21,6 +21,6 @@
     "prepack": "tsc -p tsconfig.build.json"
   },
   "dependencies": {
-    "type-fest": "^0.13.1"
+    "type-fest": "^0.15.0"
   }
 }

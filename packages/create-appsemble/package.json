@@ -25,7 +25,7 @@
     "@appsemble/node-utils": "0.13.1",
     "fs-extra": "^9.0.0",
     "inquirer": "^7.1.0",
-    "type-fest": "^0.13.1",
+    "type-fest": "^0.15.0",
     "yargs": "^15.3.1"
   }
 }

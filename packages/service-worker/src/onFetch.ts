@@ -57,7 +57,6 @@ export default function onFetch(event: FetchEvent): void {
   // consists of the client URL path. E.g. '/', '/home', '/my-page''
   const match = pathname.match(`^/${partialNormalized.source}?`);
   if (match) {
-    // eslint-disable-next-line compat/compat
     event.respondWith(requestFirst(new Request(`${origin}${match[0]}`)));
   }
 
