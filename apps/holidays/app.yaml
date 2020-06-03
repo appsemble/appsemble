@@ -6,7 +6,7 @@ pages:
   - name: Holidays in NL
     blocks:
       - type: data-loader
-        version: 0.13.1
+        version: 0.13.2
         actions:
           onLoad:
             url: https://date.nager.at/Api/v2/NextPublicHolidays/NL
@@ -15,7 +15,7 @@ pages:
           emit:
             data: holidays
       - type: table
-        version: 0.13.1
+        version: 0.13.2
         parameters:
           fields:
             - name: date
@@ -31,7 +31,7 @@ pages:
   - name: Holidays in US
     blocks:
       - type: data-loader
-        version: 0.13.1
+        version: 0.13.2
         actions:
           onLoad:
             url: https://date.nager.at/Api/v2/NextPublicHolidays/US
@@ -40,7 +40,7 @@ pages:
           emit:
             data: holidays
       - type: table
-        version: 0.13.1
+        version: 0.13.2
         parameters:
           fields:
             - name: date
@@ -54,7 +54,7 @@ pages:
   - name: Holidays in DE
     blocks:
       - type: data-loader
-        version: 0.13.1
+        version: 0.13.2
         actions:
           onLoad:
             url: https://date.nager.at/Api/v2/NextPublicHolidays/DE
@@ -63,7 +63,7 @@ pages:
           emit:
             data: holidays
       - type: table
-        version: 0.13.1
+        version: 0.13.2
         parameters:
           fields:
             - name: date
@@ -79,7 +79,7 @@ pages:
   - name: Holidays in ES
     blocks:
       - type: data-loader
-        version: 0.13.1
+        version: 0.13.2
         actions:
           onLoad:
             url: https://date.nager.at/Api/v2/NextPublicHolidays/ES
@@ -88,7 +88,7 @@ pages:
           emit:
             data: holidays
       - type: table
-        version: 0.13.1
+        version: 0.13.2
         parameters:
           fields:
             - name: date

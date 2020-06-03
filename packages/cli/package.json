@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/cli",
-  "version": "0.13.1",
+  "version": "0.13.2",
   "description": "The CLI for developing with Appsemble apps and blocks",
   "homepage": "https://appsemble.dev",
   "bugs": "https://gitlab.com/appsemble/appsemble/issues",
@@ -23,7 +23,7 @@
     "prepack": "tsc -p tsconfig.build.json"
   },
   "dependencies": {
-    "@appsemble/node-utils": "0.13.1",
+    "@appsemble/node-utils": "0.13.2",
     "axios": "^0.19.2",
     "chalk": "^4.0.0",
     "cosmiconfig": "^6.0.0",
@@ -44,7 +44,7 @@
     "yargs": "^15.3.1"
   },
   "devDependencies": {
-    "@appsemble/types": "0.13.1",
+    "@appsemble/types": "0.13.2",
     "axios-mock-adapter": "^1.18.1",
     "concat-stream": "^2.0.0"
   },

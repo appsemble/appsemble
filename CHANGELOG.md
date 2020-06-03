@@ -7,9 +7,14 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.13.2] - 2020-06-03
+
 ### Added
 
+- CLI: Extract descriptions from TSDoc.
 - CLI: Normalize the `--remote` argument.
+- Server: Add event descriptions.
+- Studio: Add event descriptions.
 
 ## [0.13.1] - 2020-06-02
 
