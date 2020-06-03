@@ -28,8 +28,11 @@ describe('getBlockConfigFromTypeScript', () => {
       dir: fixture('valid'),
     });
     expect(result).toStrictEqual({
-      actions: { testAction: {} },
-      events: { emit: ['testEmit'], listen: ['testListener'] },
+      actions: { testAction: { description: null } },
+      events: {
+        emit: { testEmit: { description: null } },
+        listen: { testListener: { description: null } },
+      },
       parameters: {
         $schema: 'http://json-schema.org/draft-07/schema#',
         additionalProperties: false,
@@ -61,7 +64,7 @@ describe('getBlockConfigFromTypeScript', () => {
     jest.spyOn(ts, 'createProgram');
     const input = {
       actions: {},
-      events: { emit: [] as string[], listen: [] as string[] },
+      events: { emit: { foo: {} }, listen: { bar: {} } },
       layout: 'float',
       parameters: { type: 'object' },
       version: '1.33.7',
@@ -91,7 +94,7 @@ describe('getBlockConfigFromTypeScript', () => {
 
   it('should prefer events overrides over TypeScript events', () => {
     const result = getBlockConfigFromTypeScript({
-      events: { emit: ['onSuccess'] },
+      events: { emit: { onSuccess: {} } },
       version: '1.33.7',
       webpack: '',
       output: '',
@@ -99,7 +102,7 @@ describe('getBlockConfigFromTypeScript', () => {
       name: '',
     });
 
-    expect(result.events).toStrictEqual({ emit: ['onSuccess'] });
+    expect(result.events).toStrictEqual({ emit: { onSuccess: {} } });
   });
 
   it('should prefer parameters overrides over TypeScript parameters', () => {
