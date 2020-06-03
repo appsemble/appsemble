@@ -49,8 +49,7 @@ export default function BlockDetails(): React.ReactElement {
     axios
       .get<BlockManifest[]>(`/api/blocks/@${organization}/${blockName}/versions`)
       .then(async (result) => {
-        const data = result.data.slice().reverse();
-        setBlockVersions(data);
+        setBlockVersions(result.data);
       })
       .catch(() => setError(true))
       .finally(() => setLoading(false));
