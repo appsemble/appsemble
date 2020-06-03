@@ -1,11 +1,13 @@
 import type { TokenResponse } from '@appsemble/types';
 import Boom from '@hapi/boom';
 import axios from 'axios';
+import crypto from 'crypto';
 import { URL, URLSearchParams } from 'url';
 
 import { EmailAuthorization, OAuthAuthorization, transactional, User } from '../models';
 import type { KoaContext } from '../types';
 import createJWTResponse from '../utils/createJWTResponse';
+import type { Recipient } from '../utils/email/Mailer';
 import getUserInfo from '../utils/getUserInfo';
 import { githubPreset, gitlabPreset, googlePreset, presets } from '../utils/OAuth2Presets';
 
@@ -89,7 +91,7 @@ export async function registerOAuth2Connection(ctx: KoaContext): Promise<void> {
 }
 
 export async function connectPendingOAuth2Profile(ctx: KoaContext): Promise<void> {
-  const { argv } = ctx;
+  const { argv, mailer } = ctx;
   const { authorizationUrl, code } = ctx.request.body;
   let { user } = ctx;
   const preset = presets.find((p) => p.authorizationUrl === authorizationUrl);
@@ -120,9 +122,7 @@ export async function connectPendingOAuth2Profile(ctx: KoaContext): Promise<void
   // The user is not yet logged in, so they are trying to register a new account using this OAuth2
   // provider.
   else {
-    const { data: userInfo } = await axios.get(preset.userInfoUrl, {
-      headers: { authorization: `Bearer ${authorization.accessToken}` },
-    });
+    const userInfo = await getUserInfo(preset, { access_token: authorization.accessToken });
     await transactional(async (transaction) => {
       user = await User.create(
         { name: userInfo.name, primaryEmail: userInfo.email },
@@ -142,10 +142,17 @@ export async function connectPendingOAuth2Profile(ctx: KoaContext): Promise<void
             );
           }
         } else {
+          const verified = Boolean(userInfo.email_verified);
+          const key = verified ? null : crypto.randomBytes(40).toString('hex');
           await EmailAuthorization.create(
-            { UserId: user.id, email: userInfo.email, verified: userInfo.email_verified },
+            { UserId: user.id, email: userInfo.email, key, verified },
             { transaction },
           );
+          if (!verified) {
+            await mailer.sendEmail(userInfo as Recipient, 'resend', {
+              url: `${ctx.origin}/verify?token=${key}`,
+            });
+          }
         }
       }
     });

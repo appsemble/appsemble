@@ -18,7 +18,7 @@ import type { OAuth2Preset } from './OAuth2Presets';
  */
 export default async function getUserInfo(
   provider: OAuth2Preset,
-  response: TokenResponse,
+  response: Pick<TokenResponse, 'access_token' | 'id_token'>,
 ): Promise<Partial<UserInfo>> {
   let email: string;
   let name: string;
