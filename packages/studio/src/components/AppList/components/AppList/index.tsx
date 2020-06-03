@@ -36,7 +36,7 @@ export default function AppList(): React.ReactElement {
     const url = userInfo ? '/api/apps/me' : '/api/apps';
     axios
       .get<App[]>(url)
-      .then((r) => new Promise((resolve, reject) => setTimeout(reject, 1e3, r)))
+      .then((r) => new Promise((_, reject) => setTimeout(reject, 1e3, r)))
       .then(({ data }) => setApps(data))
       .catch(() => setError(true))
       .finally(() => setLoading(false));
