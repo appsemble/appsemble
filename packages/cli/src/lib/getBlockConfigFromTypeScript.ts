@@ -26,6 +26,13 @@ import { buildGenerator, Definition } from 'typescript-json-schema';
 
 import type { BlockConfig } from '../types';
 
+/**
+ * Get the tsdoc comment for a TypeScript node.
+ *
+ * @param checker The type checker instance to use.
+ * @param node The node for which to get the tsdoc.
+ * @returns The tsdoc comment as a string, if present.
+ */
 function getNodeComments(checker: TypeChecker, node: TypeElement): string {
   const symbol = checker.getSymbolAtLocation(node.name);
   if (!symbol) {
@@ -44,7 +51,13 @@ function getNodeComments(checker: TypeChecker, node: TypeElement): string {
   return null;
 }
 
-// XXX specify any
+/**
+ * Get an axtions object based on a TypeScript interface node.
+ *
+ * @param iface The node to base the actions on.
+ * @param checker The TypeScript type checker.
+ * @returns The action manifest to upload.
+ */
 function processActions(
   iface: InterfaceDeclaration,
   checker: TypeChecker,
@@ -71,7 +84,14 @@ function processActions(
   );
 }
 
-// XXX specify any
+/**
+ * Get an events object based on TypeScript interface nodes.
+ *
+ * @param eventListenernterface The node to base the event listeners on.
+ * @param eventEmitterInterface The node to base the event emitters on.
+ * @param checker The TypeScript type checker.
+ * @returns The events manifest to upload.
+ */
 function processEvents(
   eventListenerInterface: InterfaceDeclaration,
   eventEmitterInterface: InterfaceDeclaration,
@@ -101,6 +121,13 @@ function processEvents(
   return { emit, listen };
 }
 
+/**
+ * Get the JSON schema for parameters based on a TypeScript program.
+ *
+ * @param program The TypeScript program from which to extract parameters.
+ * @param sourceFile The source file from which to extract parameters.
+ * @returns The JSON schema for the block parameters.
+ */
 function processParameters(program: Program, sourceFile: SourceFile): Definition {
   if (!sourceFile) {
     return undefined;
