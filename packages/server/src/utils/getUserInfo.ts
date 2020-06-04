@@ -1,5 +1,5 @@
 import { AppsembleError } from '@appsemble/node-utils';
-import type { TokenResponse, UserInfo } from '@appsemble/types';
+import type { UserInfo } from '@appsemble/types';
 import { remap } from '@appsemble/utils';
 import axios from 'axios';
 import { decode } from 'jsonwebtoken';
@@ -14,13 +14,17 @@ import type { OAuth2Preset } from './OAuth2Presets';
  * 3. If the information is still incomplete, fetch information from the userinfo endpoint.
  *
  * @param provider The provider which defines the userinfo endpoint.
- * @param response The response from which to extract user data.
+ * @param accessToken The access token from which to extract user data. or to request user info
+ *                    with.
+ * @param idToken The ID token from which to extract user data.
  */
 export default async function getUserInfo(
   provider: OAuth2Preset,
-  response: TokenResponse,
+  accessToken: string,
+  idToken?: string,
 ): Promise<Partial<UserInfo>> {
   let email: string;
+  let emailVerified: boolean;
   let name: string;
   let profile: string;
   let picture: string;
@@ -28,6 +32,7 @@ export default async function getUserInfo(
 
   function assign(info: UserInfo): void {
     email = email ?? info.email;
+    emailVerified = emailVerified ?? info.email_verified;
     name = name ?? info.name;
     profile = profile ?? info.profile;
     picture = picture ?? info.picture;
@@ -39,9 +44,9 @@ export default async function getUserInfo(
     return !name || !email || !profile || !picture || !sub;
   }
 
-  if (response.id_token) {
+  if (idToken) {
     try {
-      assign(decode(response.id_token) as UserInfo);
+      assign(decode(idToken) as UserInfo);
     } catch (err) {
       // No ID token was provided, or it was invalid.
       // Fall back to using the access token instead.
@@ -50,7 +55,7 @@ export default async function getUserInfo(
 
   if (shouldTryNext()) {
     try {
-      assign(decode(response.access_token) as UserInfo);
+      assign(decode(accessToken) as UserInfo);
     } catch (err) {
       // No ID token was provided, or it was invalid.
       // Fall back to requesting user info instead.
@@ -59,7 +64,7 @@ export default async function getUserInfo(
 
   if (shouldTryNext() && provider.userInfoUrl) {
     const { data } = await axios.get(provider.userInfoUrl, {
-      headers: { authorization: `Bearer ${response.access_token}` },
+      headers: { authorization: `Bearer ${accessToken}` },
     });
     assign(provider.remapper ? remap(provider.remapper, data) : data);
   }
@@ -69,5 +74,5 @@ export default async function getUserInfo(
     throw new AppsembleError('No subject could be found while logging in using OAuth2');
   }
 
-  return { email, name, picture, profile, sub };
+  return { email, email_verified: !!emailVerified, name, picture, profile, sub };
 }
