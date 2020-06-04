@@ -286,11 +286,17 @@ describe('connectPendingOAuth2Profile', () => {
   });
 
   it('should create a new user if the user isn’t logged in', async () => {
-    mock
-      .onGet('https://gitlab.com/oauth/userinfo')
-      .reply(() => [200, { name: 'Me', email: 'me@example.com' }]);
     const oauthAuthorization = await OAuthAuthorization.create({
-      accessToken: '',
+      accessToken: sign(
+        {
+          email: 'me@example.com',
+          name: 'Me',
+          picture: 'https://example.com/me.jpg',
+          profile: 'https://example.com/me',
+          sub: '42',
+        },
+        'secret',
+      ),
       authorizationUrl: 'https://gitlab.com/oauth/authorize',
       code: '789',
       sub: '42',
@@ -313,13 +319,19 @@ describe('connectPendingOAuth2Profile', () => {
   });
 
   it('should throw a conflict if the email address conflicts with another user', async () => {
-    mock
-      .onGet('https://gitlab.com/oauth/userinfo')
-      .reply(() => [200, { name: 'Me', email: 'me@example.com' }]);
     const userB = await User.create({ primaryEmail: 'me@example.com' });
     await EmailAuthorization.create({ UserId: userB.id, email: 'me@example.com' });
     await OAuthAuthorization.create({
-      accessToken: '',
+      accessToken: sign(
+        {
+          email: 'me@example.com',
+          name: 'Me',
+          picture: 'https://example.com/me.jpg',
+          profile: 'https://example.com/me',
+          sub: '42',
+        },
+        'secret',
+      ),
       authorizationUrl: 'https://gitlab.com/oauth/authorize',
       code: '789',
       sub: '42',
@@ -339,11 +351,17 @@ describe('connectPendingOAuth2Profile', () => {
   });
 
   it('should create an email authorization if a new email address is registered', async () => {
-    mock
-      .onGet('https://gitlab.com/oauth/userinfo')
-      .reply(() => [200, { name: 'Me', email: 'me@example.com' }]);
     const oauthAuthorization = await OAuthAuthorization.create({
-      accessToken: '',
+      accessToken: sign(
+        {
+          email: 'me@example.com',
+          name: 'Me',
+          picture: 'https://example.com/me.jpg',
+          profile: 'https://example.com/me',
+          sub: '42',
+        },
+        'secret',
+      ),
       authorizationUrl: 'https://gitlab.com/oauth/authorize',
       code: '789',
       sub: '42',

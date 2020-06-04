@@ -41,7 +41,9 @@ export async function registerOAuth2Connection(ctx: KoaContext): Promise<void> {
   }
 
   // Exchange the authorization code for an access token and refresh token.
-  const { data: tokenResponse } = await axios.post<TokenResponse>(
+  const {
+    data: { access_token: accessToken, id_token: idToken, refresh_token: refreshToken },
+  } = await axios.post<TokenResponse>(
     preset.tokenUrl,
     new URLSearchParams({
       grant_type: 'authorization_code',
@@ -61,8 +63,7 @@ export async function registerOAuth2Connection(ctx: KoaContext): Promise<void> {
     },
   );
 
-  const { access_token: accessToken, refresh_token: refreshToken } = tokenResponse;
-  const { sub, ...userInfo } = await getUserInfo(preset, tokenResponse);
+  const { sub, ...userInfo } = await getUserInfo(preset, accessToken, idToken);
 
   const authorization = await OAuthAuthorization.findOne({
     where: { authorizationUrl, sub },
@@ -122,7 +123,7 @@ export async function connectPendingOAuth2Profile(ctx: KoaContext): Promise<void
   // The user is not yet logged in, so they are trying to register a new account using this OAuth2
   // provider.
   else {
-    const userInfo = await getUserInfo(preset, { access_token: authorization.accessToken });
+    const userInfo = await getUserInfo(preset, authorization.accessToken);
     await transactional(async (transaction) => {
       user = await User.create(
         { name: userInfo.name, primaryEmail: userInfo.email },
