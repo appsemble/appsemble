@@ -323,6 +323,62 @@ describe('getBlockVersions', () => {
       message: 'Block not found.',
     });
   });
+
+  it('should order block versions by most recent first', async () => {
+    const formDataA = new FormData();
+    formDataA.append('name', '@xkcd/standing');
+    formDataA.append('description', 'Version 1.4.0!');
+    formDataA.append('version', '1.4.0');
+    formDataA.append(
+      'files',
+      fs.createReadStream(path.join(__dirname, '__fixtures__/standing.png')),
+      { filepath: 'testblock.js' },
+    );
+    await request.post('/api/blocks', formDataA, {
+      headers: { authorization, ...formDataA.getHeaders() },
+    });
+
+    const formDataB = new FormData();
+    formDataB.append('name', '@xkcd/standing');
+    formDataB.append('description', 'Version 1.32.9!');
+    formDataB.append('version', '1.32.9');
+    formDataB.append(
+      'files',
+      fs.createReadStream(path.join(__dirname, '__fixtures__/standing.png')),
+      { filepath: 'testblock.js' },
+    );
+    await request.post('/api/blocks', formDataB, {
+      headers: { authorization, ...formDataB.getHeaders() },
+    });
+
+    const { data } = await request.get('/api/blocks/@xkcd/standing/versions');
+    expect(data).toStrictEqual([
+      {
+        name: '@xkcd/standing',
+        description: 'Version 1.32.9!',
+        longDescription: null,
+        actions: null,
+        events: null,
+        iconUrl: '/api/blocks/@xkcd/standing/versions/1.32.9/icon',
+        layout: null,
+        parameters: null,
+        resources: null,
+        version: '1.32.9',
+      },
+      {
+        name: '@xkcd/standing',
+        description: 'Version 1.4.0!',
+        longDescription: null,
+        actions: null,
+        events: null,
+        iconUrl: '/api/blocks/@xkcd/standing/versions/1.4.0/icon',
+        layout: null,
+        parameters: null,
+        resources: null,
+        version: '1.4.0',
+      },
+    ]);
+  });
 });
 
 describe('getBlockIcon', () => {

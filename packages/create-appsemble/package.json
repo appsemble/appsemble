@@ -1,6 +1,6 @@
 {
   "name": "create-appsemble",
-  "version": "0.13.1",
+  "version": "0.13.2",
   "private": true,
   "description": "Bootstrap an Appsemble project",
   "homepage": "https://appsemble.dev",
@@ -21,7 +21,7 @@
     "prepack": "tsc -p tsconfig.build.json"
   },
   "dependencies": {
-    "@appsemble/node-utils": "0.13.1",
+    "@appsemble/node-utils": "0.13.2",
     "fs-extra": "^9.0.0",
     "inquirer": "^7.1.0",
     "type-fest": "^0.15.0",

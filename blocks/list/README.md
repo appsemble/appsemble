@@ -2,4 +2,4 @@ A block that can be used to display a vertically oriented list of data.
 
 ### Images
 
-![Table screenshot](https://gitlab.com/appsemble/appsemble/-/raw/0.13.1/docs/images/list.png)
+![Table screenshot](https://gitlab.com/appsemble/appsemble/-/raw/0.13.2/docs/images/list.png)

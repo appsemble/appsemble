@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/utils",
-  "version": "0.13.1",
+  "version": "0.13.2",
   "private": true,
   "description": "Utility functions used in Appsemble internally",
   "homepage": "https://appsemble.dev",
@@ -18,7 +18,7 @@
     "prepack": "tsc -p tsconfig.build.json"
   },
   "dependencies": {
-    "@appsemble/types": "0.13.1",
+    "@appsemble/types": "0.13.2",
     "ajv": "^6.12.2",
     "date-fns": "^2.14.0",
     "intl-messageformat": "^8.3.18",

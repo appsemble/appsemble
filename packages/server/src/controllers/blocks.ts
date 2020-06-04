@@ -247,6 +247,7 @@ export async function getBlockVersions(ctx: KoaContext<Params>): Promise<void> {
     ],
     raw: true,
     where: { name: blockId, OrganizationId: organizationId },
+    order: [['created', 'DESC']],
   });
 
   if (blockVersions.length === 0) {
