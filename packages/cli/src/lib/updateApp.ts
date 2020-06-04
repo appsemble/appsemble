@@ -45,7 +45,7 @@ export default async function updateApp({
     const { host, protocol } = new URL(remote);
     logger.info(`Successfully updated app ${data.definition.name}! 🙌`);
     logger.info(`View app: ${protocol}//${data.path}.${data.OrganizationId}.${host}`);
-    logger.info(`Edit app: ${remote}/apps/${data.id}/edit`);
+    logger.info(`Edit app: ${remote}apps/${data.id}/edit`);
   } catch (error) {
     if (error instanceof yaml.YAMLException) {
       logger.error(`The YAML in ${path} is invalid.`);
