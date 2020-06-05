@@ -1,48 +1,55 @@
-import { DataTypes, Model, Sequelize } from 'sequelize';
+import {
+  AllowNull,
+  BelongsTo,
+  Column,
+  CreatedAt,
+  DataType,
+  DeletedAt,
+  ForeignKey,
+  Model,
+  PrimaryKey,
+  Table,
+  UpdatedAt,
+} from 'sequelize-typescript';
 
+import App from './App';
 import Organization from './Organization';
 
-export default class OrganizationBlockStyle extends Model {
+@Table({ tableName: 'OrganizationBlockStyle', paranoid: true })
+export default class OrganizationBlockStyle extends Model<OrganizationBlockStyle> {
+  @PrimaryKey
+  @ForeignKey(() => Organization)
+  @AllowNull(false)
+  @Column
   OrganizationId: string;
 
+  /**
+   * This refers to the organization and name of a block
+   * it is agnostic of the version of the block.
+   *
+   * Format: @organizationName/blockName
+   */
+  @PrimaryKey
+  @AllowNull(false)
+  @Column
   block: string;
 
+  @Column(DataType.TEXT)
   style: string;
 
-  static initialize(sequelize: Sequelize): void {
-    OrganizationBlockStyle.init(
-      {
-        OrganizationId: {
-          type: DataTypes.STRING,
-          primaryKey: true,
-          allowNull: false,
-          references: { model: 'Organization' },
-        },
-        /**
-         * This refers to the organization and name of a block
-         * it is agnostic of the version of the block.
-         *
-         * Format: @organizationName/blockName
-         */
-        block: {
-          type: DataTypes.STRING,
-          primaryKey: true,
-          allowNull: false,
-        },
-        style: { type: DataTypes.TEXT },
-      },
-      {
-        sequelize,
-        tableName: 'OrganizationBlockStyle',
-        paranoid: true,
-        createdAt: 'created',
-        updatedAt: 'updated',
-        deletedAt: 'deleted',
-      },
-    );
-  }
+  @ForeignKey(() => App)
+  @Column
+  AppId: number;
 
-  static associate(): void {
-    OrganizationBlockStyle.belongsTo(Organization, { foreignKey: 'OrganizationId' });
-  }
+  @BelongsTo(() => App)
+  App: App;
+
+  @CreatedAt
+  created: Date;
+
+  @UpdatedAt
+  updated: Date;
+
+  @DeletedAt
+  deleted: Date;
 }

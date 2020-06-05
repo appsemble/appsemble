@@ -1,40 +1,58 @@
-import { DataTypes, Model, Sequelize } from 'sequelize';
+import {
+  AllowNull,
+  AutoIncrement,
+  BelongsTo,
+  Column,
+  CreatedAt,
+  DataType,
+  DeletedAt,
+  ForeignKey,
+  Model,
+  PrimaryKey,
+  Table,
+  UpdatedAt,
+} from 'sequelize-typescript';
 
 import App from './App';
 import User from './User';
 
-export default class Asset extends Model {
+@Table({ tableName: 'Asset', paranoid: true })
+export default class Asset extends Model<Asset> {
+  @PrimaryKey
+  @AutoIncrement
+  @Column
   id: number;
 
+  @Column
   mime: string;
 
+  @Column
   filename: string;
 
+  @AllowNull(false)
+  @Column
   data: Buffer;
 
+  @CreatedAt
+  created: Date;
+
+  @UpdatedAt
+  updated: Date;
+
+  @DeletedAt
+  deleted: Date;
+
+  @ForeignKey(() => App)
+  @Column
+  AppId: number;
+
+  @BelongsTo(() => App)
+  App: App;
+
+  @ForeignKey(() => User)
+  @Column(DataType.UUID)
   UserId: string;
 
-  static initialize(sequelize: Sequelize): void {
-    Asset.init(
-      {
-        id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-        mime: { type: DataTypes.STRING, allowNull: true },
-        filename: { type: DataTypes.STRING, allowNull: true },
-        data: { type: DataTypes.BLOB, allowNull: false },
-      },
-      {
-        sequelize,
-        tableName: 'Asset',
-        paranoid: true,
-        createdAt: 'created',
-        updatedAt: 'updated',
-        deletedAt: 'deleted',
-      },
-    );
-  }
-
-  static associate(): void {
-    Asset.belongsTo(User, { foreignKey: { allowNull: true } });
-    Asset.belongsTo(App);
-  }
+  @BelongsTo(() => User)
+  User: User;
 }

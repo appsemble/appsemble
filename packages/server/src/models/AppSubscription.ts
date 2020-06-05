@@ -1,47 +1,61 @@
-import { DataTypes, Model, Sequelize } from 'sequelize';
+import {
+  AllowNull,
+  AutoIncrement,
+  BelongsTo,
+  Column,
+  CreatedAt,
+  DataType,
+  ForeignKey,
+  HasMany,
+  Model,
+  PrimaryKey,
+  Table,
+  UpdatedAt,
+} from 'sequelize-typescript';
 
 import App from './App';
 import ResourceSubscription from './ResourceSubscription';
 import User from './User';
 
-export default class AppSubscription extends Model {
+@Table({ tableName: 'AppSubscription' })
+export default class AppSubscription extends Model<AppSubscription> {
+  @PrimaryKey
+  @AutoIncrement
+  @Column
   id: number;
 
+  @AllowNull(false)
+  @Column
   endpoint: string;
 
+  @AllowNull(false)
+  @Column
   p256dh: string;
 
+  @AllowNull(false)
+  @Column
   auth: string;
 
+  @ForeignKey(() => App)
+  @Column
+  AppId: number;
+
+  @BelongsTo(() => App)
   App: App;
 
+  @ForeignKey(() => User)
+  @Column(DataType.UUID)
   UserId: string;
 
+  @CreatedAt
+  created: Date;
+
+  @UpdatedAt
+  updated: Date;
+
+  @BelongsTo(() => User)
   User: User;
 
+  @HasMany(() => ResourceSubscription, { onDelete: 'CASCADE' })
   ResourceSubscriptions: ResourceSubscription[];
-
-  static initialize(sequelize: Sequelize): void {
-    AppSubscription.init(
-      {
-        id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-        endpoint: { type: DataTypes.STRING, allowNull: false },
-        p256dh: { type: DataTypes.STRING, allowNull: false },
-        auth: { type: DataTypes.STRING, allowNull: false },
-      },
-      {
-        sequelize,
-        tableName: 'AppSubscription',
-        paranoid: false,
-        createdAt: 'created',
-        updatedAt: 'updated',
-      },
-    );
-  }
-
-  static associate(): void {
-    AppSubscription.belongsTo(App, { foreignKey: { allowNull: false } });
-    AppSubscription.belongsTo(User, { foreignKey: { allowNull: true } });
-    AppSubscription.hasMany(ResourceSubscription, { onDelete: 'CASCADE' });
-  }
 }

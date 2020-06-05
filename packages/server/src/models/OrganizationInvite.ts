@@ -1,42 +1,51 @@
-import { DataTypes, HasOneGetAssociationMixin, Model, Sequelize } from 'sequelize';
+import {
+  AllowNull,
+  BelongsTo,
+  Column,
+  CreatedAt,
+  DataType,
+  ForeignKey,
+  Model,
+  PrimaryKey,
+  Table,
+  Unique,
+  UpdatedAt,
+} from 'sequelize-typescript';
 
 import Organization from './Organization';
 import User from './User';
 
-export default class OrganizationInvite extends Model {
+@Table({ tableName: 'OrganizationInvite' })
+export default class OrganizationInvite extends Model<OrganizationInvite> {
+  @PrimaryKey
+  @AllowNull(false)
+  @Column
   email: string;
 
+  @AllowNull(false)
+  @Column
   key: string;
 
+  @ForeignKey(() => User)
+  @Unique('EmailOrganizationIndex')
+  @Column(DataType.UUID)
   UserId: string;
 
+  @BelongsTo(() => User)
+  User: User;
+
+  @PrimaryKey
+  @ForeignKey(() => Organization)
+  @Unique('EmailOrganizationIndex')
+  @Column
   OrganizationId: string;
 
-  getUser: HasOneGetAssociationMixin<User>;
+  @BelongsTo(() => Organization)
+  organization: Organization;
 
-  static initialize(sequelize: Sequelize): void {
-    OrganizationInvite.init(
-      {
-        email: { type: DataTypes.STRING, allowNull: false, primaryKey: true },
-        key: { type: DataTypes.STRING, allowNull: false },
-        UserId: { type: DataTypes.UUID, unique: 'EmailOrganizationIndex' },
-        OrganizationId: {
-          type: DataTypes.STRING,
-          unique: 'EmailOrganizationIndex',
-          primaryKey: true,
-        },
-      },
-      {
-        sequelize,
-        tableName: 'OrganizationInvite',
-        createdAt: 'created',
-        updatedAt: 'updated',
-      },
-    );
-  }
+  @CreatedAt
+  created: Date;
 
-  static associate(): void {
-    OrganizationInvite.belongsTo(Organization);
-    OrganizationInvite.belongsTo(User);
-  }
+  @UpdatedAt
+  updated: Date;
 }

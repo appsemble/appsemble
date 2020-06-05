@@ -1,75 +1,78 @@
 import {
-  DataTypes,
-  HasManyAddAssociationMixin,
-  HasManyCreateAssociationMixin,
-  HasManyRemoveAssociationMixin,
+  BelongsToMany,
+  Column,
+  CreatedAt,
+  DataType,
+  Default,
+  DeletedAt,
+  ForeignKey,
+  HasMany,
+  IsUUID,
   Model,
-  Sequelize,
-} from 'sequelize';
+  PrimaryKey,
+  Table,
+  UpdatedAt,
+} from 'sequelize-typescript';
 
 import App from './App';
 import AppMember from './AppMember';
+import Asset from './Asset';
 import EmailAuthorization from './EmailAuthorization';
 import Member from './Member';
+import OAuth2AuthorizationCode from './OAuth2AuthorizationCode';
 import OAuthAuthorization from './OAuthAuthorization';
 import Organization from './Organization';
 import ResetPasswordToken from './ResetPasswordToken';
 
-export default class User extends Model {
+@Table({ tableName: 'User', paranoid: true })
+export default class User extends Model<User> {
+  @PrimaryKey
+  @IsUUID(4)
+  @Default(DataType.UUIDV4)
+  @Column(DataType.UUID)
   id: string;
 
+  @Column
   name: string;
 
+  @ForeignKey(() => EmailAuthorization)
+  @Column
   primaryEmail: string;
 
+  @Column
   password: string;
 
   AppMember: AppMember;
 
   Member: Member;
 
+  @BelongsToMany(() => Organization, () => Member)
   Organizations: Organization[];
 
+  @HasMany(() => EmailAuthorization)
   EmailAuthorizations: EmailAuthorization[];
 
+  @HasMany(() => OAuth2AuthorizationCode)
+  OAuth2AuthorizationCodes: OAuth2AuthorizationCode[];
+
+  @HasMany(() => OAuthAuthorization)
   OAuthAuthorizations: OAuthAuthorization[];
 
-  createOrganization: HasManyCreateAssociationMixin<Organization>;
+  @HasMany(() => ResetPasswordToken, { onDelete: 'CASCADE' })
+  ResetPasswordTokens: ResetPasswordToken[];
 
-  addOAuthAuthorization: HasManyAddAssociationMixin<OAuthAuthorization, number>;
+  @HasMany(() => Asset)
+  Asset: Asset[];
 
-  removeEmailAuthorizations: HasManyRemoveAssociationMixin<EmailAuthorization, number>;
+  @BelongsToMany(() => App, () => AppMember)
+  Apps: App[];
 
-  static initialize(sequelize: Sequelize): void {
-    User.init(
-      {
-        id: { type: DataTypes.UUID, defaultValue: DataTypes.UUIDV4, primaryKey: true },
-        name: { type: DataTypes.STRING },
-        password: { type: DataTypes.STRING },
-      },
-      {
-        sequelize,
-        tableName: 'User',
-        paranoid: true,
-        createdAt: 'created',
-        updatedAt: 'updated',
-        deletedAt: 'deleted',
-      },
-    );
-  }
+  @CreatedAt
+  created: Date;
 
-  static associate(): void {
-    User.belongsToMany(Organization, { through: Member });
-    User.belongsToMany(App, { through: AppMember });
-    User.hasMany(OAuthAuthorization);
-    User.hasMany(EmailAuthorization);
-    User.hasMany(ResetPasswordToken, {
-      foreignKey: { allowNull: false },
-      onDelete: 'CASCADE',
-    });
-    User.belongsTo(EmailAuthorization, {
-      foreignKey: 'primaryEmail',
-      constraints: false,
-    });
-  }
+  @UpdatedAt
+  updated: Date;
+
+  @DeletedAt
+  deleted: Date;
 }

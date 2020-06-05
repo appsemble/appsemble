@@ -53,7 +53,7 @@ describe('getUser', () => {
 describe('getUserOrganizations', () => {
   it('should fetch all user organizations', async () => {
     const organizationB = await Organization.create({ id: 'testorganizationb' });
-    await organizationB.addUser(user.id);
+    await Member.create({ OrganizationId: organizationB.id, UserId: user.id });
 
     const response = await request.get('/api/user/organizations', {
       headers: { authorization },

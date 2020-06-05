@@ -153,7 +153,7 @@ describe('getMembers', () => {
 describe('getInvites', () => {
   it('should fetch organization invites', async () => {
     const userB = await EmailAuthorization.create({ email: 'test2@example.com', verified: true });
-    await userB.createUser({ primaryEmail: 'test2@example.com', name: 'John' });
+    await userB.$create('User', { primaryEmail: 'test2@example.com', name: 'John' });
     await OrganizationInvite.create({
       email: 'test2@example.com',
       key: 'abcde',
@@ -178,7 +178,7 @@ describe('getInvites', () => {
 describe('inviteMember', () => {
   it('should send an invite to an organization', async () => {
     const userB = await EmailAuthorization.create({ email: 'test2@example.com', verified: true });
-    await userB.createUser({ primaryEmail: 'test2@example.com', name: 'John' });
+    await userB.$create('User', { primaryEmail: 'test2@example.com', name: 'John' });
     const response = await request.post(
       '/api/organizations/testorganization/invites',
       { email: 'test2@example.com' },
@@ -208,7 +208,7 @@ describe('inviteMember', () => {
   it('should not send an invite to an organization you are not a member of', async () => {
     await Organization.create({ id: 'org' });
     const userB = await EmailAuthorization.create({ email: 'test2@example.com', verified: true });
-    await userB.createUser({ primaryEmail: 'test2@example.com', name: 'John' });
+    await userB.$create('User', { primaryEmail: 'test2@example.com', name: 'John' });
     const response = await request.post(
       '/api/organizations/org/invites',
       { email: 'test2@example.com' },
@@ -223,8 +223,8 @@ describe('inviteMember', () => {
 
   it('should not send an invite to members of an organization', async () => {
     const userB = await EmailAuthorization.create({ email: 'test2@example.com', verified: true });
-    const { id } = await userB.createUser({ primaryEmail: 'test2@example.com', name: 'John' });
-    await organization.addUser(id);
+    const { id } = await userB.$create('User', { primaryEmail: 'test2@example.com', name: 'John' });
+    await organization.$add('User', id);
 
     const response = await request.post(
       '/api/organizations/testorganization/invites',
@@ -242,7 +242,7 @@ describe('inviteMember', () => {
 describe('resendInvitation', () => {
   it('should resend an invitation', async () => {
     const userB = await EmailAuthorization.create({ email: 'test2@example.com', verified: true });
-    await userB.createUser({ primaryEmail: 'test2@example.com', name: 'John' });
+    await userB.$create('User', { primaryEmail: 'test2@example.com', name: 'John' });
 
     await request.post(
       '/api/organizations/testorganization/invites',
@@ -261,7 +261,7 @@ describe('resendInvitation', () => {
 
   it('should not resend an invitation to a member who has not been invited', async () => {
     const userB = await EmailAuthorization.create({ email: 'test2@example.com', verified: true });
-    await userB.createUser({ primaryEmail: 'test2@example.com', name: 'John' });
+    await userB.$create('User', { primaryEmail: 'test2@example.com', name: 'John' });
 
     const response = await request.post(
       '/api/organizations/testorganization/invites/resend',
@@ -325,7 +325,7 @@ describe('removeInvite', () => {
   it('should not revoke an invite for an organization you are not a member of', async () => {
     await Organization.create({ id: 'org' });
     const userB = await EmailAuthorization.create({ email: 'test2@example.com', verified: true });
-    await userB.createUser({ primaryEmail: 'test2@example.com', name: 'John' });
+    await userB.$create('User', { primaryEmail: 'test2@example.com', name: 'John' });
     await OrganizationInvite.create({
       email: 'test2@example.com',
       key: 'abcde',

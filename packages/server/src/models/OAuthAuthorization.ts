@@ -1,68 +1,75 @@
-import { DataTypes, Model, Sequelize } from 'sequelize';
+import {
+  AllowNull,
+  BelongsTo,
+  Column,
+  CreatedAt,
+  DataType,
+  ForeignKey,
+  Model,
+  PrimaryKey,
+  Table,
+  UpdatedAt,
+} from 'sequelize-typescript';
 
 import User from './User';
 
-export default class OAuthAuthorization extends Model {
+@Table({ tableName: 'OAuthAuthorization' })
+export default class OAuthAuthorization extends Model<OAuthAuthorization> {
   /**
    * The subject id of the user on the remote authorization server.
    */
+  @PrimaryKey
+  @Column
   sub: string;
 
   /**
    * The authorization URL where the user needs to approve Appsemble to access their account.
    */
+  @PrimaryKey
+  @Column
   authorizationUrl: string;
 
   /**
    * The access token assigned to Appsemble linked to the subject.
    */
+  @AllowNull(false)
+  @Column(DataType.TEXT)
   accessToken: string;
 
   /**
    * The expiration date of the access token.
    */
+  @Column
   expiresAt: Date;
 
   /**
    * The refresh token that may be used to refresh the access token.
    */
+  @Column(DataType.TEXT)
   refreshToken: string;
 
   /**
    * A short lived authorization code that’s used during the login process.
    */
+  @Column(DataType.TEXT)
   code: string;
+
+  @CreatedAt
+  created: Date;
+
+  @UpdatedAt
+  updated: Date;
 
   /**
    * The id of the linked Appsemble user.
    */
+  @ForeignKey(() => User)
+  @Column(DataType.UUID)
   UserId: string;
 
   /**
    * The Appsemble user.
    */
-  User: string;
-
-  static initialize(sequelize: Sequelize): void {
-    OAuthAuthorization.init(
-      {
-        sub: { type: DataTypes.STRING, primaryKey: true },
-        authorizationUrl: { type: DataTypes.STRING, primaryKey: true },
-        accessToken: { type: DataTypes.TEXT, allowNull: false },
-        expiresAt: { type: DataTypes.DATE, allowNull: true },
-        refreshToken: { type: DataTypes.TEXT, allowNull: true },
-        code: { type: DataTypes.TEXT, allowNull: true },
-      },
-      {
-        sequelize,
-        tableName: 'OAuthAuthorization',
-        createdAt: 'created',
-        updatedAt: 'updated',
-      },
-    );
-  }
-
-  static associate(): void {
-    OAuthAuthorization.belongsTo(User);
-  }
+  @BelongsTo(() => User)
+  User: User;
 }

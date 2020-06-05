@@ -1,59 +1,52 @@
-import { DataTypes, Model, Sequelize } from 'sequelize';
+import {
+  AllowNull,
+  BelongsTo,
+  Column,
+  CreatedAt,
+  DataType,
+  ForeignKey,
+  Model,
+  PrimaryKey,
+  Table,
+  Unique,
+  UpdatedAt,
+} from 'sequelize-typescript';
 
 import App from './App';
 import User from './User';
 
-export default class AppRating extends Model {
+@Table({ tableName: 'AppRating' })
+export default class AppRating extends Model<AppRating> {
+  @AllowNull(false)
+  @Column
   rating: number;
 
+  @Column(DataType.TEXT)
   description: string;
 
+  @PrimaryKey
+  @AllowNull(false)
+  @Unique('UniqueRatingIndex')
+  @ForeignKey(() => App)
+  @Column
   AppId: number;
 
+  @BelongsTo(() => App)
+  App: App;
+
+  @PrimaryKey
+  @AllowNull(false)
+  @Unique('UniqueRatingIndex')
+  @ForeignKey(() => User)
+  @Column(DataType.UUID)
   UserId: string;
 
+  @BelongsTo(() => User)
   User: User;
 
+  @CreatedAt
   created: Date;
 
+  @UpdatedAt
   updated: Date;
-
-  static initialize(sequelize: Sequelize): void {
-    AppRating.init(
-      {
-        rating: {
-          type: DataTypes.INTEGER,
-          allowNull: false,
-        },
-        description: {
-          type: DataTypes.TEXT,
-        },
-        AppId: {
-          primaryKey: true,
-          type: DataTypes.INTEGER,
-          unique: 'UniqueRatingIndex',
-          allowNull: false,
-        },
-        UserId: {
-          primaryKey: true,
-          type: DataTypes.UUID,
-          unique: 'UniqueRatingIndex',
-          allowNull: false,
-        },
-      },
-      {
-        sequelize,
-        tableName: 'AppRating',
-        paranoid: false,
-        createdAt: 'created',
-        updatedAt: 'updated',
-      },
-    );
-  }
-
-  static associate(): void {
-    App.hasMany(AppRating);
-    AppRating.belongsTo(App);
-    AppRating.belongsTo(User);
-  }
 }

@@ -1,36 +1,41 @@
-import { DataTypes, Model, Sequelize } from 'sequelize';
+import {
+  BelongsTo,
+  Column,
+  CreatedAt,
+  ForeignKey,
+  Model,
+  Table,
+  UpdatedAt,
+} from 'sequelize-typescript';
 
 import AppSubscription from './AppSubscription';
 import Resource from './Resource';
 
-export default class ResourceSubscription extends Model {
+@Table({ tableName: 'ResourceSubscription' })
+export default class ResourceSubscription extends Model<ResourceSubscription> {
+  @ForeignKey(() => Resource)
+  @Column
   ResourceId: number;
 
+  @Column
   action: 'delete' | 'update' | 'create';
 
+  @Column
   type: string;
 
-  static initialize(sequelize: Sequelize): void {
-    ResourceSubscription.init(
-      {
-        type: {
-          type: DataTypes.STRING,
-        },
-        action: {
-          type: DataTypes.STRING,
-        },
-      },
-      {
-        sequelize,
-        tableName: 'ResourceSubscription',
-        createdAt: 'created',
-        updatedAt: 'updated',
-      },
-    );
-  }
+  @ForeignKey(() => AppSubscription)
+  @Column
+  AppSubscriptionId: number;
 
-  static associate(): void {
-    ResourceSubscription.belongsTo(AppSubscription);
-    ResourceSubscription.belongsTo(Resource);
-  }
+  @BelongsTo(() => AppSubscription)
+  AppSubscription: AppSubscription;
+
+  @BelongsTo(() => Resource)
+  Resource: Resource;
+
+  @CreatedAt
+  created: Date;
+
+  @UpdatedAt
+  updated: Date;
 }
