@@ -200,7 +200,7 @@ async function verifyAppRole(
   }
 
   if (!filteredRoles.some((r) => checkAppRole(app.definition.security, r, role))) {
-    throw Boom.forbidden('User does not have sufficient Permission.');
+    throw Boom.forbidden('User does not have sufficient permissions.');
   }
 }
 
