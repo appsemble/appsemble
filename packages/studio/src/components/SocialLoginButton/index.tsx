@@ -1,9 +1,9 @@
 import { Button } from '@appsemble/react-components';
+import { randomString } from '@appsemble/web-utils';
 import * as React from 'react';
 import { FormattedMessage, MessageDescriptor } from 'react-intl';
 
 import type { OAuth2Provider } from '../../types';
-import randomString from '../../utils/randomString';
 
 interface SocialLoginButtonProps extends React.ComponentPropsWithoutRef<typeof Button> {
   /**
