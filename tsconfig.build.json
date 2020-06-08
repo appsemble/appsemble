@@ -12,6 +12,7 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "resolveJsonModule": true,
+    "sourceMap": true,
     "strict": true,
     "strictFunctionTypes": false,
     "strictNullChecks": false,
