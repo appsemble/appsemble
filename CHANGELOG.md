@@ -7,6 +7,10 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Changed
+
+- Block(`button-list`): Change `label` property type from `string` to `Remapper`.
+
 ## [0.13.2] - 2020-06-03
 
 ### Added
