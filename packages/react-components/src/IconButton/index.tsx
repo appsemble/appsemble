@@ -4,21 +4,31 @@ import * as React from 'react';
 
 import styles from './index.css';
 
-interface IconButtonProps {
-  className?: string;
+interface IconButtonProps extends React.ComponentPropsWithoutRef<'button'> {
+  /**
+   * The Fontawesome icon to render.
+   */
   icon: IconName;
-  onClick: React.EventHandler<React.MouseEvent<HTMLButtonElement>>;
+
+  /**
+   * The Fontawesome prefix.
+   */
   prefix?: IconPrefix;
 }
 
+/**
+ * Render an button which looks like an icon, but with button behaviour.
+ *
+ * The button type is set to `button` by default.
+ */
 export default function IconButton({
   className,
   icon,
-  onClick,
   prefix = 'fas',
+  ...props
 }: IconButtonProps): React.ReactElement {
   return (
-    <button className={classNames('icon', styles.root, className)} onClick={onClick} type="button">
+    <button className={classNames('icon', styles.root, className)} type="button" {...props}>
       <i className={`${prefix} fa-${icon}`} />
     </button>
   );
