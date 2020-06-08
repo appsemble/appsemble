@@ -44,9 +44,6 @@ export default class BlockAsset extends Model<BlockAsset> {
   @Column
   version: string;
 
-  // @BelongsTo(() => BlockVersion)
-  // BlockVersions: BlockVersion;
-
   @CreatedAt
   created: Date;
 
