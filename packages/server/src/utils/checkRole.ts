@@ -1,4 +1,4 @@
-import { roles } from '@appsemble/utils';
+import { Permission, roles } from '@appsemble/utils';
 import Boom from '@hapi/boom';
 
 import { Member } from '../models';
@@ -14,7 +14,7 @@ import type { KoaContext } from '../types';
 export default async function checkRole(
   ctx: KoaContext,
   organizationId: string,
-  permissions: string | string[],
+  permissions: Permission | Permission[],
 ): Promise<true> {
   const { user } = ctx;
   if (!user) {

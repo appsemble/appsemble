@@ -1,11 +1,5 @@
 import type { NotificationDefinition } from '@appsemble/types';
-import {
-  checkAppRole,
-  permissions,
-  remap,
-  SchemaValidationError,
-  validate,
-} from '@appsemble/utils';
+import { checkAppRole, Permission, remap, SchemaValidationError, validate } from '@appsemble/utils';
 import Boom from '@hapi/boom';
 import parseOData from '@wesselkuipers/odata-sequelize';
 import crypto from 'crypto';
@@ -720,7 +714,7 @@ export async function deleteResource(ctx: KoaContext<Params>): Promise<void> {
     }),
   });
 
-  await checkRole(ctx, app.OrganizationId, permissions.ManageResources);
+  await checkRole(ctx, app.OrganizationId, Permission.ManageResources);
 
   verifyResourceDefinition(app, resourceType);
   const resource = await Resource.findOne({

@@ -1,4 +1,4 @@
-import { normalize, permissions } from '@appsemble/utils';
+import { normalize, Permission } from '@appsemble/utils';
 import Boom from '@hapi/boom';
 import crypto from 'crypto';
 import { col, fn, UniqueConstraintError } from 'sequelize';
@@ -42,14 +42,14 @@ export async function createTemplateApp(ctx: KoaContext): Promise<void> {
     include: [Resource],
   });
 
-  await checkRole(ctx, organizationId, permissions.CreateApps);
+  await checkRole(ctx, organizationId, Permission.CreateApps);
 
   if (!template) {
     throw Boom.notFound(`Template with ID ${templateId} does not exist.`);
   }
 
   if (!template.template && template.private) {
-    await checkRole(ctx, template.OrganizationId, permissions.ViewApps);
+    await checkRole(ctx, template.OrganizationId, Permission.ViewApps);
   }
 
   const path = name ? normalize(name) : normalize(template.definition.name);

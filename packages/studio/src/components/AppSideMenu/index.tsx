@@ -1,5 +1,5 @@
 import { useToggle } from '@appsemble/react-components/src';
-import { permissions } from '@appsemble/utils';
+import { Permission } from '@appsemble/utils';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 import { useRouteMatch } from 'react-router-dom';
@@ -24,9 +24,9 @@ export default function AppSideMenu(): React.ReactElement {
   const organization = organizations?.find((org) => org.id === app.OrganizationId);
   const match = useRouteMatch();
 
-  const editPermission = organization && checkRole(organization.role, permissions.EditApps);
+  const editPermission = organization && checkRole(organization.role, Permission.EditApps);
   const pushNotificationPermission =
-    organization && checkRole(organization.role, permissions.PushNotifications);
+    organization && checkRole(organization.role, Permission.PushNotifications);
 
   return (
     <SideMenu isCollapsed={collapsed.enabled} toggleCollapse={collapsed.toggle}>

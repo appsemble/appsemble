@@ -1,6 +1,6 @@
 import { logger } from '@appsemble/node-utils';
 import type { BlockManifest } from '@appsemble/types';
-import { permissions } from '@appsemble/utils';
+import { Permission } from '@appsemble/utils';
 import Boom from '@hapi/boom';
 import * as fileType from 'file-type';
 import isSvg from 'is-svg';
@@ -124,7 +124,7 @@ export async function publishBlock(ctx: KoaContext<Params>): Promise<void> {
     });
   }
 
-  await checkRole(ctx, OrganizationId, permissions.PublishBlocks);
+  await checkRole(ctx, OrganizationId, Permission.PublishBlocks);
 
   const blockVersion = await BlockVersion.findOne({
     where: { name: blockId, OrganizationId },

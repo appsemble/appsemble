@@ -1,6 +1,6 @@
 import { Icon, Loader, Message } from '@appsemble/react-components';
 import type { App } from '@appsemble/types';
-import { permissions } from '@appsemble/utils';
+import { Permission } from '@appsemble/utils';
 import axios from 'axios';
 import React from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -58,7 +58,7 @@ export default function AppList(): React.ReactElement {
   );
 
   const createOrganizations = organizations.filter((org) =>
-    checkRole(org.role, permissions.CreateApps),
+    checkRole(org.role, Permission.CreateApps),
   );
 
   return (

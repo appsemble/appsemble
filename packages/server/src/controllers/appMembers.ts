@@ -1,4 +1,4 @@
-import { permissions } from '@appsemble/utils';
+import { Permission } from '@appsemble/utils';
 import Boom from '@hapi/boom';
 
 import { App, AppMember, Organization, User } from '../models';
@@ -86,7 +86,7 @@ export async function setAppMember(ctx: KoaContext<Params>): Promise<void> {
     throw Boom.notFound('App not found');
   }
 
-  await checkRole(ctx, app.OrganizationId, permissions.EditApps);
+  await checkRole(ctx, app.OrganizationId, Permission.EditApps);
 
   const user = await User.findByPk(memberId);
   if (!user) {
