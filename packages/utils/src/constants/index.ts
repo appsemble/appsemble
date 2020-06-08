@@ -4,5 +4,4 @@ export { default as scopes } from './scopes';
 export * from './patterns';
 export { roles } from './roles';
 export type { Role } from './roles';
-export { permissions } from './permissions';
-export type { Permission } from './permissions';
+export { default as Permission } from './Permission';

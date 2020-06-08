@@ -1,6 +1,6 @@
 import { Loader, Message } from '@appsemble/react-components';
 import type { App } from '@appsemble/types';
-import { permissions } from '@appsemble/utils';
+import { Permission } from '@appsemble/utils';
 import axios, { AxiosError } from 'axios';
 import React from 'react';
 import { FormattedMessage, MessageDescriptor } from 'react-intl';
@@ -87,21 +87,21 @@ export default function AppContext(): React.ReactElement {
               exact
               organization={organization}
               path={`${match.path}/edit`}
-              permission={permissions.EditApps}
+              permission={Permission.EditApps}
             >
               <Editor />
             </ProtectedRoute>
             <ProtectedRoute
               organization={organization}
               path={`${match.path}/assets`}
-              permission={permissions.EditApps}
+              permission={Permission.EditApps}
             >
               <Assets />
             </ProtectedRoute>
             <ProtectedRoute
               organization={organization}
               path={`${match.path}/resources`}
-              permission={permissions.EditApps}
+              permission={Permission.EditApps}
             >
               <CMS />
             </ProtectedRoute>
@@ -109,7 +109,7 @@ export default function AppContext(): React.ReactElement {
               exact
               organization={organization}
               path={`${match.path}/roles`}
-              permission={permissions.EditApps}
+              permission={Permission.EditApps}
             >
               <Roles />
             </ProtectedRoute>
@@ -117,7 +117,7 @@ export default function AppContext(): React.ReactElement {
               exact
               organization={organization}
               path={`${match.path}/settings`}
-              permission={permissions.EditAppSettings}
+              permission={Permission.EditAppSettings}
             >
               <AppSettings />
             </ProtectedRoute>
@@ -125,7 +125,7 @@ export default function AppContext(): React.ReactElement {
               exact
               organization={organization}
               path={`${match.path}/notifications`}
-              permission={permissions.PushNotifications}
+              permission={Permission.PushNotifications}
             >
               <Notifications />
             </ProtectedRoute>

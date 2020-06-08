@@ -1,4 +1,4 @@
-import { permissions } from '@appsemble/utils';
+import { Permission } from '@appsemble/utils';
 import Boom from '@hapi/boom';
 
 import { App, Asset } from '../models';
@@ -87,6 +87,6 @@ export async function deleteAsset(ctx: KoaContext<Params>): Promise<void> {
     throw Boom.notFound('Asset not found');
   }
 
-  await checkRole(ctx, app.OrganizationId, permissions.ManageResources);
+  await checkRole(ctx, app.OrganizationId, Permission.ManageResources);
   await asset.destroy();
 }

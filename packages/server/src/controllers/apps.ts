@@ -4,7 +4,7 @@ import {
   BlockMap,
   blockNamePattern,
   normalize,
-  permissions,
+  Permission,
   StyleValidationError,
   validateAppDefinition,
   validateStyle,
@@ -126,7 +126,7 @@ export async function createApp(ctx: KoaContext): Promise<void> {
       }
     }
 
-    await checkRole(ctx, OrganizationId, permissions.CreateApps);
+    await checkRole(ctx, OrganizationId, Permission.CreateApps);
     await validateAppDefinition(definition, getBlockVersions);
 
     for (let i = 1; i < 11; i += 1) {
@@ -256,7 +256,7 @@ export async function updateApp(ctx: KoaContext<Params>): Promise<void> {
       throw Boom.notFound('App not found');
     }
 
-    await checkRole(ctx, dbApp.OrganizationId, [permissions.EditApps, permissions.EditAppSettings]);
+    await checkRole(ctx, dbApp.OrganizationId, [Permission.EditApps, Permission.EditAppSettings]);
     await dbApp.update(result, { where: { id: appId } });
 
     ctx.body = getAppFromRecord(dbApp);
@@ -342,7 +342,7 @@ export async function patchApp(ctx: KoaContext<Params>): Promise<void> {
       throw Boom.notFound('App not found');
     }
 
-    const checkPermissions = [];
+    const checkPermissions: Permission[] = [];
 
     if (
       domain !== undefined ||
@@ -350,11 +350,11 @@ export async function patchApp(ctx: KoaContext<Params>): Promise<void> {
       isPrivate !== undefined ||
       template !== undefined
     ) {
-      checkPermissions.push(permissions.EditAppSettings);
+      checkPermissions.push(Permission.EditAppSettings);
     }
 
     if (yaml || definition) {
-      checkPermissions.push(permissions.EditApps);
+      checkPermissions.push(Permission.EditApps);
     }
 
     await checkRole(ctx, dbApp.OrganizationId, checkPermissions);
@@ -376,7 +376,7 @@ export async function deleteApp(ctx: KoaContext<Params>): Promise<void> {
     throw Boom.notFound('App not found');
   }
 
-  await checkRole(ctx, app.OrganizationId, permissions.DeleteApps);
+  await checkRole(ctx, app.OrganizationId, Permission.DeleteApps);
 
   await app.update({ path: null });
   await app.destroy();
@@ -461,7 +461,7 @@ export async function setAppBlockStyle(ctx: KoaContext<Params>): Promise<void> {
       throw Boom.notFound('Block not found.');
     }
 
-    await checkRole(ctx, app.OrganizationId, permissions.EditApps);
+    await checkRole(ctx, app.OrganizationId, Permission.EditApps);
 
     if (css.length) {
       await AppBlockStyle.upsert({
