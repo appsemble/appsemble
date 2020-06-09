@@ -1,2 +1,2 @@
-// eslint-disable-next-line import/prefer-default-export
+export * from './oauth2Login';
 export { default as randomString } from './randomString';

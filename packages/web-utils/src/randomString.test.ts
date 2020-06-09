@@ -2,10 +2,12 @@ import randomString from './randomString';
 
 it('should generate a random string', () => {
   const result = randomString();
-  expect(result).toMatch(/^[a-z0-9]{30}$/i);
+  expect(result).toBe('ABCDEFGHIJKLMNOPQRSTUVWXYZabcd');
 });
 
 it('should accept a length', () => {
-  const result = randomString(42);
-  expect(result).toMatch(/^[a-z0-9]{42}$/i);
+  const result = randomString(100);
+  expect(result).toBe(
+    'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijkl',
+  );
 });

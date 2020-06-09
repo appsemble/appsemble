@@ -2,14 +2,15 @@
 Object.defineProperty(globalThis, 'crypto', {
   value: {
     /**
-     * A cryptographically unsecure polyfill for `crypto.getRandomVlaues()`.
+     * A predictable polyfill for `crypto.getRandomVlaues()`.
      *
-     * Node crypto is unused, because node types shouldn’t be included in this module.
+     * The generated values are incremental with a modulus of 2⁸. This value fits within realistic
+     * values of Uint8Array.
      */
     getRandomValues(arr: Uint8Array) {
       for (let i = 0; i < arr.length; i += 1) {
         // eslint-disable-next-line no-param-reassign
-        arr[i] = Math.floor(Math.random() * 2 ** 8);
+        arr[i] = i % 2 ** 8;
       }
     },
   },

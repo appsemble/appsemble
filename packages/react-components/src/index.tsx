@@ -20,6 +20,7 @@ export { default as Location } from './Location';
 export { default as Message } from './Message';
 export { default as MessagesProvider } from './MessagesProvider';
 export { default as Modal } from './Modal';
+export { default as OAuth2LoginButton } from './OAuth2LoginButton';
 export { default as PasswordInput } from './PasswordInput';
 export { default as Select } from './Select';
 export { default as SimpleForm } from './SimpleForm';
