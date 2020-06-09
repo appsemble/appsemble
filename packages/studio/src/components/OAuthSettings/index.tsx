@@ -6,11 +6,11 @@ import {
   Title,
   useMessages,
 } from '@appsemble/react-components';
+import type { OAuth2Provider } from '@appsemble/types';
 import axios from 'axios';
 import React from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
-import type { OAuth2Provider } from '../../types';
 import settings from '../../utils/settings';
 import AsyncButton from '../AsyncButton';
 import HelmetIntl from '../HelmetIntl';

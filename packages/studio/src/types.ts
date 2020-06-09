@@ -1,4 +1,4 @@
-import type { IconName } from '@fortawesome/fontawesome-common-types';
+import type { OAuth2Provider } from '@appsemble/types';
 
 /**
  * A user email registration.
@@ -37,44 +37,6 @@ export interface Organization {
   id: string;
   name: string;
   role: Role;
-}
-
-/**
- * A representation of an OAuth2 provider in studio.
- *
- * This interface holds the properties needed to render a redirect button on the login or profile
- * screen.
- */
-export interface OAuth2Provider {
-  /**
-   * The OAuth2 redirect URL.
-   *
-   * The user will be redirected here. On this page the user will have to grant access to Appsemble
-   * to log them in.
-   */
-  authorizationUrl: string;
-
-  /**
-   * The public client id which identifies Appsemble to the authorization server.
-   */
-  clientId: string;
-
-  /**
-   * A Font Awesome icon which represents the OAuth2 provider.
-   */
-  icon: IconName;
-
-  /**
-   * A display name which represents the OAuth2 provider.
-   *
-   * I.e. `Facebook`, `GitLab`, or `Google`.
-   */
-  name: string;
-
-  /**
-   * The login scope that will be requested from the authorization server.
-   */
-  scope: string;
 }
 
 declare global {
