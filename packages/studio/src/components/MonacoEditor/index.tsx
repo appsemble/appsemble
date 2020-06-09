@@ -4,6 +4,8 @@ import ResizeObserver from 'resize-observer-polyfill';
 
 import styles from './index.css';
 
+editor.setTheme('vs');
+
 type Options = editor.IEditorOptions & editor.IGlobalEditorOptions;
 
 interface MonacoEditorProps {
@@ -16,11 +18,6 @@ interface MonacoEditorProps {
    * The language of the editor.
    */
   language: string;
-
-  /**
-   * The global monaco theme.
-   */
-  theme?: string;
 
   /**
    * This is called whenever the value of the editor changes.
@@ -52,7 +49,6 @@ export default function MonacoEditor({
   onChange,
   onSave,
   options = defaultOptions,
-  theme = 'vs',
   value = '',
 }: MonacoEditorProps): React.ReactElement {
   const ref = React.useRef<HTMLDivElement>();
@@ -86,8 +82,6 @@ export default function MonacoEditor({
       monaco.updateOptions(options);
     }
   }, [monaco, options]);
-
-  React.useEffect(() => editor.setTheme(theme), [theme]);
 
   React.useEffect(() => {
     if (monaco) {
