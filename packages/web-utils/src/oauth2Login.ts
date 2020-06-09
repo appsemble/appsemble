@@ -1,3 +1,5 @@
+import type { OAuth2Provider } from '@appsemble/types';
+
 import randomString from './randomString';
 
 /**
@@ -20,26 +22,12 @@ export interface OAuth2State {
 /**
  * The options required to initiate a login using the authorization code grant type.
  */
-export interface OAuth2LoginOptions {
-  /**
-   * The URL to which the user will be redirected to approve the login.
-   */
-
-  authorizationUrl: string;
-  /**
-   * The OAuth2 client ID to login with.
-   */
-
-  clientId: string;
+export interface OAuth2LoginOptions
+  extends Pick<OAuth2Provider, 'authorizationUrl' | 'clientId' | 'scope'> {
   /**
    * Where the user should be redirected upon approval. This may be a relative URL.
    */
-
   redirectUrl: string;
-  /**
-   * The scope to request as a space separated string.
-   */
-  scope: string;
 }
 
 /**
