@@ -124,10 +124,10 @@ export default {
       { $ref: '#/components/parameters/appId' },
       { $ref: '#/components/parameters/resourceType' },
       { $ref: '#/components/parameters/resourceId' },
+      { $ref: '#/components/parameters/endpoint' },
     ],
     get: {
       tags: ['resource'],
-      parameters: [{ $ref: '#/components/parameters/endpoint' }],
       description: 'Get the subscription status of a resource.',
       operationId: 'getResourceSubscription',
       responses: {

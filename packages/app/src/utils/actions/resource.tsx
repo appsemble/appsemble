@@ -285,7 +285,7 @@ function subscriptionStatus({
       const { endpoint } = await getSubscription(pushNotifications);
       const { data } = await axios.get(
         d?.[id]
-          ? `${settings.apiUrl}/api/apps/${settings.id}/resources/${d[id]}/${definition.resource}/subscriptions`
+          ? `${settings.apiUrl}/api/apps/${settings.id}/resources/${definition.resource}/${d[id]}/subscriptions`
           : `${settings.apiUrl}/api/apps/${settings.id}/resources/${definition.resource}/subscriptions`,
         {
           params: { endpoint },
