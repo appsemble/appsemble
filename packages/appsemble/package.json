@@ -16,7 +16,8 @@
     "dist"
   ],
   "scripts": {
-    "prepack": "tsc -p tsconfig.build.json"
+    "prepack": "tsc -p tsconfig.build.json",
+    "test": "jest"
   },
   "dependencies": {
     "@appsemble/cli": "0.13.2"

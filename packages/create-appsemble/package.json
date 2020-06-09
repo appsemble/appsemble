@@ -18,7 +18,8 @@
     "templates"
   ],
   "scripts": {
-    "prepack": "tsc -p tsconfig.build.json"
+    "prepack": "tsc -p tsconfig.build.json",
+    "test": "jest"
   },
   "dependencies": {
     "@appsemble/node-utils": "0.13.2",

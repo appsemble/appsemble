@@ -15,7 +15,8 @@
   "sideEffects": false,
   "types": "src",
   "scripts": {
-    "prepack": "tsc -p tsconfig.build.json"
+    "prepack": "tsc -p tsconfig.build.json",
+    "test": "jest"
   },
   "dependencies": {
     "@appsemble/types": "0.13.2",
