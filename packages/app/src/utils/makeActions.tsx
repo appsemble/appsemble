@@ -1,3 +1,4 @@
+import type { MessagesContext } from '@appsemble/react-components/src';
 import type { Action } from '@appsemble/sdk';
 import type {
   ActionDefinition,
@@ -25,6 +26,7 @@ interface MakeActionsParams {
   pageReady: Promise<void>;
   prefix: string;
   ee: EventEmitter;
+  showMessage: MessagesContext;
 }
 
 interface CreateActionParams {
@@ -39,6 +41,7 @@ interface CreateActionParams {
   pushNotifications: ServiceWorkerRegistrationContextType;
   showDialog: ShowDialogAction;
   type: Action['type'];
+  showMessage: MessagesContext;
 }
 
 function createAction({
@@ -52,6 +55,7 @@ function createAction({
   prefix,
   pushNotifications,
   showDialog,
+  showMessage,
   type,
 }: CreateActionParams): Action {
   const actionCreator: ActionCreator = actionCreators[type] || extraCreators[type];
@@ -65,6 +69,7 @@ function createAction({
     prefix,
     ee,
     pushNotifications,
+    showMessage,
   });
 
   const onSuccess =
@@ -81,6 +86,7 @@ function createAction({
       pushNotifications,
       showDialog,
       type: actionDefinition.onSuccess.type,
+      showMessage,
     });
   const onError =
     actionDefinition.onError &&
@@ -96,6 +102,7 @@ function createAction({
       pushNotifications,
       showDialog,
       type: actionDefinition.onError.type,
+      showMessage,
     });
 
   const { dispatch } = action;
@@ -141,6 +148,7 @@ export default function makeActions({
   prefix,
   pushNotifications,
   showDialog,
+  showMessage,
 }: MakeActionsParams): { [key: string]: Action } {
   const actionMap = Object.entries(actions || {})
     .filter(([key]) => key !== '$any')
@@ -169,6 +177,7 @@ export default function makeActions({
         flowActions,
         showDialog,
         pageReady,
+        showMessage,
       });
 
       acc[on] = action;
@@ -197,6 +206,7 @@ export default function makeActions({
           flowActions,
           showDialog,
           pageReady,
+          showMessage,
         });
 
         acc[on] = action;

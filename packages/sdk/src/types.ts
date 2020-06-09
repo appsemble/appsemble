@@ -96,7 +96,8 @@ export type Action =
   | BaseAction<'resource.subscription.subscribe'>
   | BaseAction<'resource.subscription.unsubscribe'>
   | BaseAction<'resource.subscription.toggle'>
-  | BaseAction<'resource.subscription.status'>;
+  | BaseAction<'resource.subscription.status'>
+  | BaseAction<'message'>;
 
 /**
  * A color known to Bulma.

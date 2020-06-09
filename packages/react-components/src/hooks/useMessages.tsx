@@ -9,21 +9,27 @@ export interface Message {
 
   /**
    * The color to use for the message.
+   *
+   * Defaults to `danger`.
    */
   color?: BulmaColor;
 
   /**
    * The timeout period for this message (in milliseconds).
+   *
+   * Defaults to 5 seconds.
    */
   timeout?: number;
 
   /**
    * Whether or not to show the dismiss button.
+   *
+   * Defaults to `true`
    */
   dismissable?: boolean;
 }
 
-type MessagesContext = (message: Message | string) => void;
+export type MessagesContext = (message: Message | string) => void;
 
 export const MessagesContext = createContext<MessagesContext>(null);
 

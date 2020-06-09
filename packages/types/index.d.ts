@@ -1,3 +1,4 @@
+import type { Message } from '@appsemble/sdk';
 import type {
   Action,
   HTTPMethods,
@@ -544,6 +545,8 @@ export interface StaticActionDefinition extends BaseActionDefinition<'static'> {
   value: any;
 }
 
+export type MessageActionDefinition = BaseActionDefinition<'message'> & Message;
+
 export type ActionDefinition =
   | BaseActionDefinition<'flow.back'>
   | BaseActionDefinition<'flow.cancel'>
@@ -565,6 +568,7 @@ export type ActionDefinition =
   | ResourceSubscriptionToggleActionDefinition
   | ResourceSubscriptionStatusActionDefinition
   | StaticActionDefinition
+  | MessageActionDefinition
 
   // XXX This shouldn’t be here, but TypeScript won’t shut up without it.
   | RequestLikeActionDefinition;

@@ -31,7 +31,7 @@ export { default as TextArea } from './Textarea';
 export { default as Title } from './Title';
 export { default as Subtitle } from './Subtitle';
 export { default as useClickOutside } from './hooks/useClickOutside';
-export { default as useMessages } from './hooks/useMessages';
+export { default as useMessages, MessagesContext } from './hooks/useMessages';
 export { default as useObjectURL } from './hooks/useObjectURL';
 export { default as useQuery } from './hooks/useQuery';
 export { default as useToggle } from './hooks/useToggle';

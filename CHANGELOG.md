@@ -12,6 +12,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - App: Add `onSuccess` and `onError` properties to actions. This allows for chaining actions
   together by defining additional actions that are dispatched depending on whether the parent action
   ran successfully or produced an error.
+- App: Add `message` action. This action can be used to display messages to the user.
 
 ### Changed
 

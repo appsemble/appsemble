@@ -59,6 +59,18 @@ to: https://example.com
 Outputs the result of the action into the console. This is mostly useful for debugging blocks during
 development.
 
+## `message`
+
+Displays a message to the user. This is useful in combination with action chaining to notify users
+they have performed a certain action.
+
+| Parameter   | Required | Description                                                                                                                                               |
+| ----------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| body        | true     | The body of the message. Supports [Remappers](/guide/remappers).                                                                                          |
+| color       |          | The Bulma color to apply to the message. Supported values are: `dark`, `primary`, `link`, `success`, `info`, `warning`, and `danger`. Defaults to `info`. |
+| dismissable |          | Boolean value indicating whether the user is able to dismiss the message manually. Defaults to `false`.                                                   |
+| timeout     |          | The time in milliseconds how long the message should be visible. Defaults to 5000 milliseconds.                                                           |
+
 ## `noop`
 
 Do nothing when this action is triggered. This is the default action for block actions that are not
