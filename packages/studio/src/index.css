@@ -6,10 +6,6 @@ body {
   height: 100vh;
 }
 
-:global(.monaco-editor) {
-  display: flex !important;
-}
-
 :global(#app) {
   height: 100%;
 
