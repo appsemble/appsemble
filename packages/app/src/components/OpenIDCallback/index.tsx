@@ -1,10 +1,10 @@
-import { Button, Loader, Message, useQuery } from '@appsemble/react-components';
+import { Loader, Message, OAuth2LoginButton, useQuery } from '@appsemble/react-components';
 import { normalize } from '@appsemble/utils';
 import * as React from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Redirect } from 'react-router-dom';
 
-import redirectOAuth2 from '../../utils/redirectOAuth2';
+import settings from '../../utils/settings';
 import { useAppDefinition } from '../AppDefinitionProvider';
 import { useUser } from '../UserProvider';
 import styles from './index.css';
@@ -19,15 +19,12 @@ export default function OpenIDCallback(): React.ReactElement {
 
   const [error, setError] = React.useState(false);
 
-  const retry = React.useCallback(() => {
-    redirectOAuth2(redirect);
-  }, [redirect]);
-
   React.useEffect(() => {
     if (code) {
-      const url = new URL(`${window.location}`);
-      url.searchParams.delete('code');
-      authorizationCodeLogin({ code, redirect_uri: `${url}` }).catch(() => {
+      authorizationCodeLogin({
+        code,
+        redirect_uri: `${window.location.origin}${window.location.pathname}`,
+      }).catch(() => {
         setError(true);
       });
     }
@@ -47,9 +44,15 @@ export default function OpenIDCallback(): React.ReactElement {
         <Message color="danger">
           <FormattedMessage {...messages.error} />
         </Message>
-        <Button color="primary" onClick={retry}>
+        <OAuth2LoginButton
+          authorizationUrl={String(new URL('/connect/authorize', settings.apiUrl))}
+          clientId={`app:${settings.id}`}
+          icon="user"
+          redirectUrl="/Callback"
+          scope="openid"
+        >
           <FormattedMessage {...messages.retry} />
-        </Button>
+        </OAuth2LoginButton>
       </div>
     );
   }

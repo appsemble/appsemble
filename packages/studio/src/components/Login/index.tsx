@@ -1,6 +1,7 @@
 import {
   Content,
   FormButtons,
+  OAuth2LoginButton,
   PasswordInput,
   SimpleForm,
   SimpleFormError,
@@ -15,7 +16,6 @@ import { Link, useLocation } from 'react-router-dom';
 import useUser from '../../hooks/useUser';
 import settings from '../../utils/settings';
 import HelmetIntl from '../HelmetIntl';
-import SocialLoginButton from '../SocialLoginButton';
 import styles from './index.css';
 import messages from './messages';
 
@@ -85,11 +85,18 @@ export default function Login(): React.ReactElement {
       </SimpleForm>
       <div className={styles.socialLogins}>
         {settings.logins.map((provider) => (
-          <SocialLoginButton
-            key={`${provider.authorizationUrl} ${provider.clientId}`}
-            label={messages.loginWith}
-            provider={provider}
-          />
+          <OAuth2LoginButton
+            key={provider.authorizationUrl}
+            authorizationUrl={provider.authorizationUrl}
+            className={styles.button}
+            clientId={provider.clientId}
+            icon={provider.icon}
+            iconPrefix="fab"
+            redirectUrl="/callback"
+            scope={provider.scope}
+          >
+            <FormattedMessage {...messages.loginWith} values={{ name: provider.name }} />
+          </OAuth2LoginButton>
         ))}
       </div>
     </Content>
