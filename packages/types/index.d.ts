@@ -637,7 +637,7 @@ export interface BlockManifest {
    * Since multiple JSON schema typings exist and not all of them play nice with each other, this
    * type is set to `OpenAPIV3.SchemaObject`.
    */
-  parameters?: Definition | OpenAPIV3.SchemaObject;
+  parameters?: Definition;
 
   /**
    * A block icon url

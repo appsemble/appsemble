@@ -5,7 +5,6 @@ import axios from 'axios';
 import indentString from 'indent-string';
 import yaml, { safeLoad } from 'js-yaml';
 import { editor, Range } from 'monaco-editor';
-import type { OpenAPIV3 } from 'openapi-types';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 
@@ -145,7 +144,7 @@ export default function GUIEditorEditBlock({
           <JSONSchemaEditor
             name={stripBlockName(selectedBlock.name)}
             onChange={onChange}
-            schema={selectedBlock?.parameters as OpenAPIV3.SchemaObject}
+            schema={selectedBlock?.parameters}
             value={editingResource?.parameters}
           />
         ) : (

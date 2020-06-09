@@ -1,12 +1,5 @@
 import RefParser from '@apidevtools/json-schema-ref-parser';
-import {
-  Button,
-  Form,
-  Icon,
-  Loader,
-  useConfirmation,
-  useMessages,
-} from '@appsemble/react-components';
+import { Form, Loader, useConfirmation, useMessages } from '@appsemble/react-components';
 import type { AppDefinition, BlockManifest } from '@appsemble/types';
 import {
   api,
@@ -17,20 +10,20 @@ import {
   validateStyle,
 } from '@appsemble/utils';
 import axios from 'axios';
-import classNames from 'classnames';
 import { safeDump, safeLoad } from 'js-yaml';
 import { isEqual } from 'lodash';
 import type { editor } from 'monaco-editor';
 import type { OpenAPIV3 } from 'openapi-types';
 import React from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { Link, useHistory, useLocation, useParams } from 'react-router-dom';
+import { useHistory, useLocation, useParams } from 'react-router-dom';
 
 import { useApp } from '../AppContext';
 import GUIEditor from '../GUIEditor';
 import { EditLocation, GuiEditorStep } from '../GUIEditor/types';
 import HelmetIntl from '../HelmetIntl';
 import MonacoEditor from '../MonacoEditor';
+import EditorNavBar from './components/EditorNavBar';
 import styles from './index.css';
 import messages from './messages';
 
@@ -290,143 +283,17 @@ export default function Editor(): React.ReactElement {
       <HelmetIntl title={messages.title} titleValues={{ name: appName }} />
       <div className={styles.leftPanel}>
         <Form className={styles.editorForm} onSubmit={onSave}>
-          <nav
-            className={
-              editorStep === GuiEditorStep.YAML || editorStep === GuiEditorStep.SELECT
-                ? 'navbar'
-                : 'is-hidden'
-            }
-          >
-            <div className="navbar-brand">
-              <span className="navbar-item">
-                <Button disabled={!dirty} icon="vial" type="submit">
-                  <FormattedMessage {...messages.preview} />
-                </Button>
-              </span>
-              <span className="navbar-item">
-                <Button
-                  className="button"
-                  disabled={!valid || dirty}
-                  icon="save"
-                  onClick={onUpload}
-                >
-                  <FormattedMessage {...messages.publish} />
-                </Button>
-              </span>
-              <span className="navbar-item">
-                <a className="button" href={appUrl} rel="noopener noreferrer" target="_blank">
-                  <Icon icon="share-square" />
-                  <span>
-                    <FormattedMessage {...messages.viewLive} />
-                  </span>
-                </a>
-              </span>
-              <span className="navbar-item">
-                <Button
-                  color="primary"
-                  icon="random"
-                  onClick={() => {
-                    if (editorStep !== GuiEditorStep.YAML) {
-                      setEditorStep(GuiEditorStep.YAML);
-                    } else {
-                      setEditorStep(GuiEditorStep.SELECT);
-                    }
-                  }}
-                >
-                  {editorStep === GuiEditorStep.YAML ? (
-                    <FormattedMessage {...messages.switchGUI} />
-                  ) : (
-                    <FormattedMessage {...messages.switchManual} />
-                  )}
-                </Button>
-              </span>
-            </div>
-          </nav>
-          <div
-            className={
-              editorStep === GuiEditorStep.YAML || editorStep === GuiEditorStep.SELECT
-                ? `tabs is-boxed ${styles.editorTabs}`
-                : 'is-hidden'
-            }
-          >
-            {editorStep === GuiEditorStep.YAML ? (
-              <ul>
-                <li
-                  className={classNames({ 'is-active': location.hash === '#editor' })}
-                  value="editor"
-                >
-                  <Link to="#editor">
-                    <Icon icon="file-code" />
-                    <FormattedMessage {...messages.recipe} />
-                  </Link>
-                </li>
-                <li
-                  className={classNames({ 'is-active': location.hash === '#style-core' })}
-                  value="style-core"
-                >
-                  <Link to="#style-core">
-                    <Icon icon="brush" />
-                    <FormattedMessage {...messages.coreStyle} />
-                  </Link>
-                </li>
-                <li
-                  className={classNames({ 'is-active': location.hash === '#style-shared' })}
-                  value="style-shared"
-                >
-                  <Link to="#style-shared">
-                    <Icon icon="brush" />
-                    <FormattedMessage {...messages.sharedStyle} />
-                  </Link>
-                </li>
-              </ul>
-            ) : (
-              <ul>
-                <li
-                  className={classNames({ 'is-active': location.hash === '#editor' })}
-                  value="editor"
-                >
-                  <Link to="#editor">
-                    <Icon icon="file-code" />
-                    <FormattedMessage {...messages.recipe} />
-                  </Link>
-                </li>
-                <li value="addblock">
-                  <Button
-                    color="success"
-                    disabled={!allowAdd}
-                    icon="plus"
-                    onClick={() => setEditorStep(GuiEditorStep.ADD)}
-                  >
-                    <FormattedMessage {...messages.addBlock} />
-                  </Button>
-                </li>
-                <li value="editblock">
-                  <Button
-                    className={styles.guiEditorButton}
-                    color="warning"
-                    disabled={!allowEdit}
-                    icon="edit"
-                    onClick={() => setEditorStep(GuiEditorStep.EDIT)}
-                  >
-                    <FormattedMessage {...messages.editBlock} />
-                    {editLocation?.blockName ? editLocation.blockName : ''}
-                  </Button>
-                </li>
-                <li value="removeblock">
-                  <Button
-                    className={styles.guiEditorButton}
-                    color="danger"
-                    disabled={!allowEdit}
-                    icon="trash-alt"
-                    onClick={() => setEditorStep(GuiEditorStep.DELETE)}
-                  >
-                    <FormattedMessage {...messages.deleteBlock} />
-                    {editLocation?.blockName ? editLocation.blockName : ''}
-                  </Button>
-                </li>
-              </ul>
-            )}
-          </div>
+          <EditorNavBar
+            allowAdd={allowAdd}
+            allowEdit={allowEdit}
+            appUrl={appUrl}
+            dirty={dirty}
+            editLocation={editLocation}
+            editorStep={editorStep}
+            onUpload={onUpload}
+            setEditorStep={setEditorStep}
+            valid={valid}
+          />
           {editorStep !== GuiEditorStep.YAML ? (
             <GUIEditor
               app={app}
