@@ -157,7 +157,7 @@ export async function respondInvitation(ctx: KoaContext<Params>): Promise<void> 
   }
 
   if (response) {
-    await organization.addUser(userId);
+    await organization.$add('User', userId);
   }
 
   await invite.destroy();
@@ -176,13 +176,13 @@ export async function inviteMember(ctx: KoaContext<Params>): Promise<void> {
   const dbEmail = await EmailAuthorization.findByPk(email, { include: [User] });
   const invitedUser = dbEmail ? dbEmail.User : null;
 
-  if (!(await organization.hasUser(user.id))) {
+  if (!(await organization.$has('User', user.id))) {
     throw Boom.forbidden('Not allowed to invite users to organizations you are not a member of.');
   }
 
   await checkRole(ctx, organization.id, Permission.ManageMembers);
 
-  if (invitedUser && (await organization.hasUser(invitedUser))) {
+  if (invitedUser && (await organization.$has('User', invitedUser))) {
     throw Boom.conflict('User is already in this organization or has already been invited.');
   }
 
@@ -229,7 +229,7 @@ export async function resendInvitation(ctx: KoaContext<Params>): Promise<void> {
     throw Boom.notFound('This person was not invited previously.');
   }
 
-  const user = await invite.getUser();
+  const user = await User.findByPk(invite.UserId);
 
   await mailer.sendEmail({ email, ...(user && { name: user.name }) }, 'organizationInvite', {
     organization: organization.id,
@@ -273,7 +273,7 @@ export async function removeMember(ctx: KoaContext<Params>): Promise<void> {
     );
   }
 
-  await organization.removeUser(memberId);
+  await organization.$remove('User', memberId);
 }
 
 export async function setRole(ctx: KoaContext<Params>): Promise<void> {

@@ -1,38 +1,43 @@
-import { DataTypes, HasOneCreateAssociationMixin, Model, Sequelize } from 'sequelize';
+import {
+  AllowNull,
+  BelongsTo,
+  Column,
+  CreatedAt,
+  DataType,
+  Default,
+  ForeignKey,
+  Model,
+  PrimaryKey,
+  Table,
+  UpdatedAt,
+} from 'sequelize-typescript';
 
 import User from './User';
 
-export default class EmailAuthorization extends Model {
+@Table({ tableName: 'EmailAuthorization' })
+export default class EmailAuthorization extends Model<EmailAuthorization> {
+  @PrimaryKey
+  @Column
   email: string;
 
+  @Default(false)
+  @AllowNull(false)
+  @Column
   verified: boolean;
 
+  @Column
   key: string;
 
+  @CreatedAt
+  created: Date;
+
+  @UpdatedAt
+  updated: Date;
+
+  @ForeignKey(() => User)
+  @Column(DataType.UUID)
   UserId: string;
 
+  @BelongsTo(() => User)
   User: User;
-
-  createUser: HasOneCreateAssociationMixin<User>;
-
-  static initialize(sequelize: Sequelize): void {
-    EmailAuthorization.init(
-      {
-        email: { type: DataTypes.STRING, primaryKey: true },
-        verified: { type: DataTypes.BOOLEAN, defaultValue: false, allowNull: false },
-        key: DataTypes.STRING,
-      },
-      {
-        sequelize,
-        tableName: 'EmailAuthorization',
-        paranoid: false,
-        createdAt: 'created',
-        updatedAt: 'updated',
-      },
-    );
-  }
-
-  static associate(): void {
-    EmailAuthorization.belongsTo(User);
-  }
 }

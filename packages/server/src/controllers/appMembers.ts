@@ -56,7 +56,7 @@ export async function getAppMember(ctx: KoaContext<Params>): Promise<void> {
   }
 
   if (!member && policy === 'organization') {
-    const isOrganizationMember = await app.Organization.hasUser(memberId);
+    const isOrganizationMember = await app.Organization.$has('User', memberId);
 
     if (!isOrganizationMember) {
       throw Boom.notFound('User is not a member of the organization.');
@@ -97,14 +97,14 @@ export async function setAppMember(ctx: KoaContext<Params>): Promise<void> {
     throw Boom.badRequest(`Role ‘${role}’ is not defined.`);
   }
 
-  const [member] = await app.getUsers({ where: { id: memberId } });
+  const [member] = await app.$get('Users', { where: { id: memberId } });
 
   if (member) {
     if (
       role === app.definition.security.default.role &&
       app.definition.security.default.policy !== 'invite'
     ) {
-      await app.removeUser(member);
+      await app.$remove('User', member);
     } else {
       await member.AppMember.update({ role });
     }

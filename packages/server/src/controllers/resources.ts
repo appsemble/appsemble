@@ -184,7 +184,7 @@ async function verifyAppRole(
         break;
 
       case 'organization':
-        if (!(await app.Organization.hasUser(user.id))) {
+        if (!(await app.Organization.$has('User', user.id))) {
           throw Boom.forbidden('User is not a member of the organization.');
         }
 

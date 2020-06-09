@@ -167,7 +167,6 @@ export async function removeEmail(ctx: KoaContext): Promise<void> {
     );
   }
 
-  await dbUser.removeEmailAuthorizations(dbEmail);
   await dbEmail.destroy();
 
   ctx.status = 204;
