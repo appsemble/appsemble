@@ -483,15 +483,6 @@ export interface RequestLikeActionDefinition<
    * How to serialize the request body.
    */
   serialize?: 'formdata';
-
-  /**
-   * An additional action to execute after the request has succeeded.
-   */
-  onSuccess?: ActionDefinition;
-  /**
-   * An additional action to execute after the request has resulted in an error.
-   */
-  onError?: ActionDefinition;
 }
 
 export interface ResourceActionDefinition<T extends RequestLikeActionTypes>

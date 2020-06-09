@@ -56,9 +56,10 @@ export default function link({
 
       if (urlRegex.test(target)) {
         window.open(target, '_blank', 'noopener,noreferrer');
+      } else {
+        history.push(target, data);
       }
 
-      history.push(target, data);
       return data;
     },
     href(args: any = {}) {

@@ -19,7 +19,6 @@ export default function dialog({
               async dispatch(error) {
                 reject(error);
                 close();
-                return error;
               },
             }),
             'dialog.ok': () => ({
@@ -27,7 +26,6 @@ export default function dialog({
               async dispatch(result) {
                 resolve(result);
                 close();
-                return result;
               },
             }),
           },
