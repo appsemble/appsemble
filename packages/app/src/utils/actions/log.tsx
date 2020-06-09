@@ -11,6 +11,7 @@ export default function log({ definition }: MakeActionParameters<LogActionDefini
     async dispatch(data) {
       // eslint-disable-next-line no-console
       console[level](data);
+      return data;
     },
     level,
   };
