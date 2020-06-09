@@ -7,6 +7,12 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- App: Add `onSuccess` and `onError` properties to actions. This allows for chaining actions
+  together by defining additional actions that are dispatched depending on whether the parent action
+  ran successfully or produced an error.
+
 ### Changed
 
 - Block(`button-list`): Change `label` property type from `string` to `Remapper`.
