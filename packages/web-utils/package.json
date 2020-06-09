@@ -13,5 +13,8 @@
   "license": "LGPL-3.0-or-later",
   "author": "Appsemble <info@appsemble.com> (https://appsemble.com)",
   "sideEffects": false,
-  "main": "src"
+  "main": "src",
+  "scripts": {
+    "test": "jest"
+  }
 }

@@ -19,7 +19,8 @@
     "index.js"
   ],
   "scripts": {
-    "prepack": "tsc -p tsconfig.build.json"
+    "prepack": "tsc -p tsconfig.build.json",
+    "test": "jest"
   },
   "dependencies": {
     "axios": "^0.19.2",

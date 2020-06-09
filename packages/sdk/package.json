@@ -18,7 +18,8 @@
     "dist"
   ],
   "scripts": {
-    "prepack": "tsc -p tsconfig.build.json"
+    "prepack": "tsc -p tsconfig.build.json",
+    "test": "jest"
   },
   "dependencies": {
     "type-fest": "^0.15.0"

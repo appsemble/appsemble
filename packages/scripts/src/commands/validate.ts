@@ -124,6 +124,7 @@ async function validate(
     'package.json',
     'Author should be "Appsemble <info@appsemble.com> (https://appsemble.com)"',
   );
+  assert(pkg.scripts?.test === 'jest', 'package.json', 'Test script should be "jest"');
   Object.entries({ ...pkg.dependencies, ...pkg.devDependencies })
     .filter(([dep]) => dep.startsWith('@appsemble/'))
     .forEach(([, version]) => {
