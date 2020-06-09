@@ -483,11 +483,7 @@ export async function getResourceSubscription(ctx: KoaContext<Params>): Promise<
     throw Boom.notFound('Resource not found.');
   }
 
-  if (!app.AppSubscriptions.length) {
-    throw Boom.notFound('User is not subscribed to this app.');
-  }
-
-  const subscriptions = app.AppSubscriptions[0].ResourceSubscriptions;
+  const subscriptions = app.AppSubscriptions?.[0]?.ResourceSubscriptions ?? [];
   const result = { id: resourceId, update: false, delete: false } as any;
 
   subscriptions.forEach(({ action }) => {
