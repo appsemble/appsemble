@@ -382,6 +382,16 @@ export interface BaseActionDefinition<T extends Action['type']> {
    * function.
    */
   remap?: Remapper;
+
+  /**
+   * Another action that is dispatched when the action has been dispatched successfully.
+   */
+  onSuccess?: ActionDefinition;
+
+  /**
+   * Another action that is dispatched when the action has failed to dispatch successfully.
+   */
+  onError?: ActionDefinition;
 }
 
 export interface DialogActionDefinition extends BaseActionDefinition<'dialog'> {
