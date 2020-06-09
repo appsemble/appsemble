@@ -96,7 +96,7 @@ export default function MonacoEditor({
   }, [language, monaco]);
 
   React.useEffect(() => {
-    if (monaco) {
+    if (monaco && monaco.getModel().getValue() !== value) {
       monaco.getModel().setValue(value);
     }
   }, [monaco, value]);
