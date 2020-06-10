@@ -73,7 +73,7 @@ function createAction({
   });
 
   const onSuccess =
-    actionDefinition.onSuccess &&
+    actionDefinition?.onSuccess &&
     createAction({
       actionDefinition: actionDefinition.onSuccess,
       app,
@@ -89,7 +89,7 @@ function createAction({
       showMessage,
     });
   const onError =
-    actionDefinition.onError &&
+    actionDefinition?.onError &&
     createAction({
       actionDefinition: actionDefinition.onError,
       app,
