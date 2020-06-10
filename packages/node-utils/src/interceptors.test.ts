@@ -2,10 +2,11 @@ import { logger } from '@appsemble/node-utils';
 import axios, { AxiosInstance } from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import FormData from 'form-data';
+import os from 'os';
 import { Readable } from 'stream';
 import { URLSearchParams } from 'url';
 
-import { formData, requestLogger, responseLogger } from './interceptors';
+import { configureAxios, formData, requestLogger, responseLogger } from './interceptors';
 
 let instance: AxiosInstance;
 let mock: MockAdapter;
@@ -98,5 +99,27 @@ describe('responseLogger', () => {
     await instance.get('/');
     expect(logger.info).toHaveBeenCalledWith('Success GET /');
     expect(logger.silly).toHaveBeenCalledWith('Response body: {}');
+  });
+});
+
+describe('configureAxios', () => {
+  beforeEach(() => {
+    jest.spyOn(axios.interceptors.request, 'use').mockImplementation();
+    jest.spyOn(axios.interceptors.response, 'use').mockImplementation();
+    jest.spyOn(os, 'type').mockReturnValue('Linux');
+    jest.spyOn(os, 'arch').mockReturnValue('x64');
+  });
+
+  it('should set the correct user agent', () => {
+    configureAxios('TestClient', '1.2.3');
+    expect(axios.defaults.headers.common['user-agent']).toBe(
+      `TestClient/1.2.3 (Linux x64; Node ${process.version})`,
+    );
+  });
+
+  it('should apply all interceptors', () => {
+    expect(axios.interceptors.request.use).toHaveBeenCalledWith(formData);
+    expect(axios.interceptors.request.use).toHaveBeenCalledWith(requestLogger);
+    expect(axios.interceptors.response.use).toHaveBeenCalledWith(responseLogger);
   });
 });

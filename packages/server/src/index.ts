@@ -1,11 +1,12 @@
 #!/usr/bin/env node
-import { configureLogger, handleError } from '@appsemble/node-utils';
+import { configureAxios, configureLogger, handleError } from '@appsemble/node-utils';
 import yargs, { CommandModule } from 'yargs';
 
 import * as health from './commands/health';
 import * as migrate from './commands/migrate';
 import * as restoreDNS from './commands/restoreDNS';
 import * as start from './commands/start';
+import readPackageJson from './utils/readPackageJson';
 
 /**
  * These are exported, so @appsemble/cli can wrap them.
@@ -20,6 +21,9 @@ export { startHandler as start, migrateHandler as migrate };
  * @param argv The argument vector passed in from the command line.
  */
 function main(argv: string[]): void {
+  const { version } = readPackageJson();
+  configureAxios('AppsembleServer', version);
+
   yargs
     .usage('Usage:\n  $0 [command]')
     .scriptName(`docker run -p ${start.PORT} -ti appsemble/appsemble`)
