@@ -10,7 +10,7 @@ export interface Message {
   /**
    * The color to use for the message.
    *
-   * Defaults to `danger`.
+   * @default 'danger'
    */
   color?: BulmaColor;
 
@@ -24,7 +24,7 @@ export interface Message {
   /**
    * Whether or not to show the dismiss button.
    *
-   * Defaults to `true`
+   * @default true
    */
   dismissable?: boolean;
 }
