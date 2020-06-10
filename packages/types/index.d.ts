@@ -1,8 +1,8 @@
-import type { Message } from '@appsemble/sdk';
 import type {
   Action,
   HTTPMethods,
   LogAction,
+  Message,
   RequestLikeActionTypes,
   Theme,
 } from '@appsemble/sdk/src/types';

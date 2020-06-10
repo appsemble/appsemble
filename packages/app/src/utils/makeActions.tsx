@@ -1,4 +1,4 @@
-import type { MessagesContext } from '@appsemble/react-components/src';
+import type { MessagesContext } from '@appsemble/react-components';
 import type { Action } from '@appsemble/sdk';
 import type {
   ActionDefinition,
