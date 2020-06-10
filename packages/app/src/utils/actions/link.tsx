@@ -56,10 +56,11 @@ export default function link({
 
       if (urlRegex.test(target)) {
         window.open(target, '_blank', 'noopener,noreferrer');
-        return;
+      } else {
+        history.push(target, data);
       }
 
-      history.push(target, data);
+      return data;
     },
     href(args: any = {}) {
       return href(remapData(remap, args));

@@ -78,8 +78,6 @@ export interface MakeActionParameters<D extends ActionDefinition> {
   definition: D;
   flowActions: FlowActions;
   history: RouteComponentProps['history'];
-  onSuccess?: Action;
-  onError?: Action;
   showDialog: ShowDialogAction;
   prefix: string;
   pushNotifications: ServiceWorkerRegistrationContextType;

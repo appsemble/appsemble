@@ -13,6 +13,7 @@ export default function event({
     type: 'event',
     async dispatch(data) {
       ee.emit(eventName, data);
+      return data;
     },
   };
 }

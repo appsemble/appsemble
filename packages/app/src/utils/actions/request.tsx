@@ -10,8 +10,6 @@ import xmlToJson from '../xmlToJson';
 
 export function requestLikeAction<T extends RequestLikeActionTypes>({
   definition,
-  onError,
-  onSuccess,
   prefix,
 }: MakeActionParameters<RequestLikeActionDefinition<T>>): RequestLikeAction<'request'> {
   const { base, blobs = {}, method = 'GET', proxy = true, schema, url, serialize } = definition;
@@ -74,29 +72,17 @@ export function requestLikeAction<T extends RequestLikeActionTypes>({
         req.params = { data: JSON.stringify(data) };
       }
 
-      try {
-        const response = await axios(req);
-        let responseBody = response.data;
-        if (/^(application|text)\/(.+\+)?xml;/.test(response.headers['content-type'])) {
-          responseBody = xmlToJson(responseBody, schema);
-        }
-
-        if (base) {
-          responseBody = remapData(base, responseBody);
-        }
-
-        if (onSuccess) {
-          return onSuccess.dispatch(responseBody);
-        }
-
-        return responseBody;
-      } catch (exception) {
-        if (onError) {
-          return onError.dispatch(exception);
-        }
-
-        throw exception;
+      const response = await axios(req);
+      let responseBody = response.data;
+      if (/^(application|text)\/(.+\+)?xml;/.test(response.headers['content-type'])) {
+        responseBody = xmlToJson(responseBody, schema);
       }
+
+      if (base) {
+        responseBody = remapData(base, responseBody);
+      }
+
+      return responseBody;
     },
     method,
     url,
