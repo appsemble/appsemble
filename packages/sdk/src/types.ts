@@ -114,26 +114,35 @@ export type BulmaColor =
 
 export type BulmaSize = 'small' | 'normal' | 'medium' | 'large';
 
-export interface Message {
-  /**
-   * The content of the message to display.
-   */
-  body: string;
-
+export interface BaseMessage {
   /**
    * The color to use for the message.
+   *
+   * @default 'info'
    */
   color?: BulmaColor;
 
   /**
    * The timeout period for this message (in milliseconds).
+   *
+   * @default 5000
    */
   timeout?: number;
 
   /**
-   * Whether or not to show the dismiss button.
-   */
+    * Whether or not to show the dismiss button.
+    *
+    * @default false
+
+    */
   dismissable?: boolean;
+}
+
+export interface Message extends BaseMessage {
+  /**
+   * The content of the message to display.
+   */
+  body: string;
 }
 
 export interface Theme {

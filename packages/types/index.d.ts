@@ -1,5 +1,6 @@
 import type {
   Action,
+  BaseMessage,
   HTTPMethods,
   LogAction,
   Message,
@@ -545,7 +546,13 @@ export interface StaticActionDefinition extends BaseActionDefinition<'static'> {
   value: any;
 }
 
-export type MessageActionDefinition = BaseActionDefinition<'message'> & Message;
+export type MessageActionDefinition = BaseActionDefinition<'message'> &
+  BaseMessage & {
+    /**
+     * The content of the message to display.
+     */
+    body: Remapper;
+  };
 
 export type ActionDefinition =
   | BaseActionDefinition<'flow.back'>
