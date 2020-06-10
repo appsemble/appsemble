@@ -17,7 +17,7 @@ export interface Message {
   /**
    * The timeout period for this message (in milliseconds).
    *
-   * Defaults to 5 seconds.
+   * @default 5000
    */
   timeout?: number;
 
