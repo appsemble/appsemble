@@ -10,7 +10,7 @@ export interface Message {
   /**
    * The color to use for the message.
    *
-   * Defaults to `danger`.
+   * @default 'danger'
    */
   color?: BulmaColor;
 
