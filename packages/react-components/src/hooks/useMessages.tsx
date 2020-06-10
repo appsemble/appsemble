@@ -24,7 +24,7 @@ export interface Message {
   /**
    * Whether or not to show the dismiss button.
    *
-   * Defaults to `true`
+   * @default true
    */
   dismissable?: boolean;
 }
