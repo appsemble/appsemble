@@ -58,7 +58,7 @@ export async function registerOAuth2Connection(ctx: KoaContext): Promise<void> {
         // Explicitly request JSON. Otherwise, some services, e.g. GitHub, give a bad response.
         accept: 'application/json',
         // Some providers only support basic auth,
-        authorization: `Basic ${clientId}:${clientSecret}`,
+        authorization: `Basic ${Buffer.from(`${clientId}:${clientSecret}`).toString('base64')}`,
       },
     },
   );
