@@ -13,6 +13,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   together by defining additional actions that are dispatched depending on whether the parent action
   ran successfully or produced an error.
 - App: Add `message` action. This action can be used to display messages to the user.
+- Block(`form`): Add `submitLabel` property for customizing the label on the submit button.
 
 ### Changed
 

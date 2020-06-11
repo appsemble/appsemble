@@ -265,5 +265,10 @@ declare module '@appsemble/sdk' {
      * A list of objects describing each field that can be entered in the form.
      */
     fields: Field[];
+
+    /**
+     * The text that is shown in the submit button.
+     */
+    submitLabel?: string;
   }
 }
