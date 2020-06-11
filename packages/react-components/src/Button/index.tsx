@@ -27,13 +27,13 @@ export default function Button({
   ...props
 }: ButtonProps): React.ReactElement {
   return (
-    // eslint-disable-next-line react/button-has-type
     <button
       className={classNames('button', className, {
         [`is-${color}`]: color,
         'is-inverted': inverted,
         'is-loading': loading,
       })}
+      // eslint-disable-next-line react/button-has-type
       type={type}
       {...props}
     >
