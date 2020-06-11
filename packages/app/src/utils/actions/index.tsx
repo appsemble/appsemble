@@ -7,6 +7,7 @@ import event from './event';
 import flow from './flow';
 import link from './link';
 import log from './log';
+import message from './message';
 import noop from './noop';
 import request from './request';
 import resource from './resource';
@@ -22,6 +23,7 @@ export type ActionCreators = {
 export default {
   link,
   log,
+  message,
   noop,
   request,
   dialog,

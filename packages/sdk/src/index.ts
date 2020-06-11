@@ -1,6 +1,6 @@
 import type { Promisable } from 'type-fest';
 
-import type { Action, BulmaColor, Theme } from './types';
+import type { Action, Message, Theme } from './types';
 
 export * from './types';
 
@@ -78,28 +78,6 @@ export interface Parameters {}
  * @format remapper
  */
 export type Remapper = string | object[];
-
-export interface Message {
-  /**
-   * The content of the message to display.
-   */
-  body: string;
-
-  /**
-   * The color to use for the message.
-   */
-  color?: BulmaColor;
-
-  /**
-   * The timeout period for this message (in milliseconds).
-   */
-  timeout?: number;
-
-  /**
-   * Whether or not to show the dismiss button.
-   */
-  dismissable?: boolean;
-}
 
 export interface PageParameters {
   [parameter: string]: string;

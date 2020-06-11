@@ -143,6 +143,7 @@ export default function Block({
       pageReady,
       prefix,
       ee,
+      showMessage: push,
     });
     const { theme: pageTheme } = definition.pages.find(
       (page) => normalize(page.name) === match.path.slice(1).split('/')[0],
