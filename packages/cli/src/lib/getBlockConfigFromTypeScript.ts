@@ -48,7 +48,7 @@ function getNodeComments(checker: TypeChecker, node: TypeElement): string {
       .join('');
   }
 
-  return null;
+  return undefined;
 }
 
 /**

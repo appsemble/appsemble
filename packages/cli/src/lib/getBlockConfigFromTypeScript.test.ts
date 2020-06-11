@@ -28,10 +28,10 @@ describe('getBlockConfigFromTypeScript', () => {
       dir: fixture('valid'),
     });
     expect(result).toStrictEqual({
-      actions: { testAction: { description: null } },
+      actions: { testAction: { description: undefined } },
       events: {
-        emit: { testEmit: { description: null } },
-        listen: { testListener: { description: null } },
+        emit: { testEmit: { description: undefined } },
+        listen: { testListener: { description: undefined } },
       },
       parameters: {
         $schema: 'http://json-schema.org/draft-07/schema#',
@@ -238,7 +238,7 @@ describe('getBlockConfigFromTypeScript', () => {
           description: 'Expected comment',
         },
         line: {
-          description: null,
+          description: undefined,
         },
       },
       events: {
