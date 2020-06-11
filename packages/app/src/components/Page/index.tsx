@@ -9,7 +9,7 @@ import { checkAppRole, normalize } from '@appsemble/utils';
 import { EventEmitter } from 'events';
 import React from 'react';
 import { useIntl } from 'react-intl';
-import { Redirect, useHistory, useLocation } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 
 import type { ShowDialogParams } from '../../types';
 import { useAppDefinition } from '../AppDefinitionProvider';
@@ -70,6 +70,14 @@ export default function Page({ page, prefix }: PageProps): React.ReactElement {
   const handlePagePermissions = React.useCallback(() => {
     const permission = checkPagePermissions(page);
     if (!permission) {
+      if (!isLoggedIn) {
+        const redirect = `${location.pathname}${location.search}${location.hash}`;
+        history.replace(`/Login?${new URLSearchParams({ redirect })}`);
+        return;
+      }
+
+      // User is logged in but doesn’t have the right permissions
+      // Attempt to find a default page to redirect to
       const defaultPagePermission = checkPagePermissions(
         definition.pages.find((p) => p.name === definition.defaultPage),
       );
@@ -77,10 +85,12 @@ export default function Page({ page, prefix }: PageProps): React.ReactElement {
       if (defaultPagePermission) {
         history.replace('/');
       } else {
+        // Redirect to the first page that doesn’t have parameters.
         const redirectPage = definition.pages.find(
           (p) => p.parameters === undefined && checkPagePermissions(p),
         );
 
+        // Show message that explains the app is inaccessible with the current permissions.
         if (!redirectPage) {
           push({
             body: intl.formatMessage(messages.permissionLogout),
@@ -88,13 +98,24 @@ export default function Page({ page, prefix }: PageProps): React.ReactElement {
             dismissable: true,
           });
           logout();
-          return;
+        } else {
+          history.replace(`/${normalize(redirectPage.name)}`);
         }
-
-        history.replace(`/${normalize(redirectPage.name)}`);
       }
     }
-  }, [checkPagePermissions, definition, history, intl, logout, page, push]);
+  }, [
+    checkPagePermissions,
+    definition,
+    history,
+    intl,
+    isLoggedIn,
+    location.hash,
+    location.pathname,
+    location.search,
+    logout,
+    page,
+    push,
+  ]);
 
   const showDialog = React.useCallback((d: ShowDialogParams) => {
     setDialog(d);
@@ -129,12 +150,7 @@ export default function Page({ page, prefix }: PageProps): React.ReactElement {
     };
   }, [applyBulmaThemes, definition, page]);
 
-  if (definition.security && !(page.roles && page.roles.length === 0)) {
-    if (!isLoggedIn) {
-      const redirect = `${location.pathname}${location.search}${location.hash}`;
-      return <Redirect to={`/Login?${new URLSearchParams({ redirect })}`} />;
-    }
-
+  if (definition.security) {
     handlePagePermissions();
   }
 

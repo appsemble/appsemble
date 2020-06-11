@@ -4,6 +4,7 @@ import { checkAppRole, normalizeBlockName } from '@appsemble/utils';
 import classNames from 'classnames';
 import type { EventEmitter } from 'events';
 import React from 'react';
+import { Redirect, useLocation } from 'react-router-dom';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 
 import type { ShowDialogAction } from '../../types';
@@ -48,7 +49,9 @@ export default function BlockList({
   transitions,
 }: BlockListProps): React.ReactElement {
   const { blockManifests, definition, revision } = useAppDefinition();
-  const { role } = useUser();
+  const { isLoggedIn, role } = useUser();
+  const location = useLocation();
+
   const blockList = React.useMemo(() => filterBlocks(definition.security, blocks, role), [
     blocks,
     definition,
@@ -79,6 +82,15 @@ export default function BlockList({
       }),
     );
   }, [blockList]);
+
+  if (!blockList.length) {
+    if (!isLoggedIn) {
+      const redirect = `${location.pathname}${location.search}${location.hash}`;
+      return <Redirect to={`/Login?${new URLSearchParams({ redirect })}`} />;
+    }
+
+    return <Redirect to="/" />;
+  }
 
   const list = blockList.map((block, index) => {
     const manifest = blockManifests.find(
