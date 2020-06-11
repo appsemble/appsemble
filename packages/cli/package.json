@@ -46,7 +46,6 @@
   },
   "devDependencies": {
     "@appsemble/types": "0.13.2",
-    "axios-mock-adapter": "^1.18.1",
     "concat-stream": "^2.0.0"
   },
   "peerDependencies": {
