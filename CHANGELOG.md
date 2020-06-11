@@ -7,6 +7,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+## [0.13.3] - 2020-06-11
+
 ### Added
 
 - App: Add `onSuccess` and `onError` properties to actions. This allows for chaining actions
@@ -16,6 +18,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Changed
 
+- App: Redirect the user to a login page inside the app when logging in instead of linking to
+  Appsemble Studio directly.
 - Block(`button-list`): Change `label` property type from `string` to `Remapper`.
 
 ## [0.13.2] - 2020-06-03
