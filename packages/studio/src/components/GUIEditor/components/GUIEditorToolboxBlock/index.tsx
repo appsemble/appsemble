@@ -16,35 +16,36 @@ export default function GUIEditorToolboxBlock({
   selectedBlock,
   setSelectedBlock,
 }: GUIEditorToolboxBlockProps): React.ReactElement {
-  const onKeyDown = (event: React.KeyboardEvent): void => {
-    if (event.key === 'Escape') {
-      setSelectedBlock(undefined);
-    }
-    if (event.key === 'Tab') {
-      const nextBlockIndex = blocks.findIndex((x) => x.name === selectedBlock.name) + 1;
-      setSelectedBlock(blocks[nextBlockIndex]);
-    }
-  };
+  const onChange = React.useCallback(
+    (_event: React.ChangeEvent, block: BlockManifest): void => {
+      setSelectedBlock(block);
+    },
+    [setSelectedBlock],
+  );
 
   return (
     <div className={styles.main}>
-      {blocks.map((block: BlockManifest) => (
-        <div
-          key={block.name}
-          className={classNames(styles.blockFrame, { [styles.selected]: selectedBlock === block })}
-          onClick={() => setSelectedBlock(block)}
-          onKeyDown={onKeyDown}
-          role="button"
-          tabIndex={0}
-        >
-          {block.iconUrl ? (
-            <img alt={stripBlockName(block.name)} src={block.iconUrl} />
-          ) : (
+      {blocks.map(
+        (block: BlockManifest): React.ReactElement => (
+          <label
+            key={block.name}
+            className={classNames(styles.blockFrame, {
+              [styles.selected]: selectedBlock === block,
+            })}
+          >
             <Icon icon="box" size="large" />
-          )}
-          <span className={styles.subtext}>{stripBlockName(block.name)}</span>
-        </div>
-      ))}
+            <span className={styles.subtext}>{stripBlockName(block.name)}</span>
+            <input
+              checked={selectedBlock ? selectedBlock.name === block.name : false}
+              hidden
+              name={block.name}
+              onChange={(event) => onChange(event, block)}
+              type="radio"
+              value={block.name}
+            />
+          </label>
+        ),
+      )}
     </div>
   );
 }
