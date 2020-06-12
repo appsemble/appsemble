@@ -10,6 +10,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ### Added
 
 - Block(`form`): Add `submitLabel` property for customizing the label on the submit button.
+- Block(`form`): Add support for `radio` type fields.
 
 ## [0.13.3] - 2020-06-11
 

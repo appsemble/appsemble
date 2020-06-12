@@ -9,6 +9,7 @@ import EnumInput from './components/EnumInput';
 import FileInput from './components/FileInput';
 import GeoCoordinatesInput from './components/GeoCoordinatesInput';
 import NumberInput from './components/NumberInput';
+import RadioInput from './components/RadioInput';
 import StringInput from './components/StringInput';
 import styles from './index.css';
 
@@ -23,6 +24,7 @@ const inputs = {
   number: NumberInput,
   integer: NumberInput,
   boolean: BooleanInput,
+  radio: RadioInput,
 };
 
 const validateInput: Validator = (_field, event) =>
