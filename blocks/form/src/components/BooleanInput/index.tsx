@@ -26,22 +26,20 @@ export default function BooleanInput({
       <div className="field-body">
         <div className="field">
           <div className="control">
-            <label className="checkbox">
-              <input
-                checked={!!value}
-                className={classNames({ 'is-danger': error })}
-                disabled={disabled}
-                id={field.name}
-                name={field.name}
-                onInput={(event) => {
-                  onInput(event, (event.target as HTMLInputElement).checked);
-                }}
-                readOnly={field.readOnly}
-                required={field.required}
-                type="checkbox"
-              />
-              {field.labelText ?? field.label ?? null}
-            </label>
+            <input
+              checked={!!value}
+              className={classNames('is-checkradio', { 'is-danger': error })}
+              disabled={disabled}
+              id={field.name}
+              name={field.name}
+              onInput={(event) => {
+                onInput(event, (event.target as HTMLInputElement).checked);
+              }}
+              readOnly={field.readOnly}
+              required={field.required}
+              type="checkbox"
+            />
+            <label for={field.name}>{field.labelText ?? field.label ?? null}</label>
             {error && (
               <p className={classNames('help', { 'is-danger': error })}>
                 <FormattedMessage id="invalid" />
