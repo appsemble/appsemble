@@ -28,8 +28,11 @@ describe('getBlockConfigFromTypeScript', () => {
       dir: fixture('valid'),
     });
     expect(result).toStrictEqual({
-      actions: { testAction: {} },
-      events: { emit: ['testEmit'], listen: ['testListener'] },
+      actions: { testAction: { description: undefined } },
+      events: {
+        emit: { testEmit: { description: undefined } },
+        listen: { testListener: { description: undefined } },
+      },
       parameters: {
         $schema: 'http://json-schema.org/draft-07/schema#',
         additionalProperties: false,
@@ -61,7 +64,7 @@ describe('getBlockConfigFromTypeScript', () => {
     jest.spyOn(ts, 'createProgram');
     const input = {
       actions: {},
-      events: { emit: [] as string[], listen: [] as string[] },
+      events: { emit: { foo: {} }, listen: { bar: {} } },
       layout: 'float',
       parameters: { type: 'object' },
       version: '1.33.7',
@@ -91,7 +94,7 @@ describe('getBlockConfigFromTypeScript', () => {
 
   it('should prefer events overrides over TypeScript events', () => {
     const result = getBlockConfigFromTypeScript({
-      events: { emit: ['onSuccess'] },
+      events: { emit: { onSuccess: {} } },
       version: '1.33.7',
       webpack: '',
       output: '',
@@ -99,7 +102,7 @@ describe('getBlockConfigFromTypeScript', () => {
       name: '',
     });
 
-    expect(result.events).toStrictEqual({ emit: ['onSuccess'] });
+    expect(result.events).toStrictEqual({ emit: { onSuccess: {} } });
   });
 
   it('should prefer parameters overrides over TypeScript parameters', () => {
@@ -214,5 +217,57 @@ describe('getBlockConfigFromTypeScript', () => {
     }
     expect(fn).toThrow(AppsembleError);
     expect(fn).toThrow(/'unused' is declared but its value is never read/);
+  });
+
+  it('should extract comments', () => {
+    const result = getBlockConfigFromTypeScript({
+      name: '',
+      layout: 'float',
+      version: '1.33.7',
+      webpack: '',
+      output: '',
+      dir: fixture('comments'),
+    });
+
+    expect(result).toStrictEqual({
+      actions: {
+        comment: {
+          description: 'Valid action comment',
+        },
+        duplicate: {
+          description: 'Expected comment',
+        },
+        line: {
+          description: undefined,
+        },
+      },
+      events: {
+        emit: {
+          testEmit: {
+            description: 'Test event emitter.',
+          },
+        },
+        listen: {
+          testListener: {
+            description: 'Test event listener.',
+          },
+        },
+      },
+      parameters: {
+        $schema: 'http://json-schema.org/draft-07/schema#',
+        additionalProperties: false,
+        definitions: {
+          IconName: {
+            format: 'fontawesome',
+            type: 'string',
+          },
+        },
+        properties: {
+          param: {},
+        },
+        required: ['param'],
+        type: 'object',
+      },
+    });
   });
 });

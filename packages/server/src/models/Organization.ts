@@ -1,11 +1,17 @@
 import {
-  DataTypes,
-  HasManyAddAssociationMixin,
-  HasManyHasAssociationMixin,
-  HasManyRemoveAssociationMixin,
+  BelongsToMany,
+  Column,
+  CreatedAt,
+  DataType,
+  DeletedAt,
+  ForeignKey,
+  HasMany,
+  HasOne,
   Model,
-  Sequelize,
-} from 'sequelize';
+  PrimaryKey,
+  Table,
+  UpdatedAt,
+} from 'sequelize-typescript';
 
 import App from './App';
 import Member from './Member';
@@ -13,53 +19,51 @@ import OrganizationBlockStyle from './OrganizationBlockStyle';
 import OrganizationInvite from './OrganizationInvite';
 import User from './User';
 
-export default class Organization extends Model {
+@Table({ tableName: 'Organization', paranoid: true })
+export default class Organization extends Model<Organization> {
+  @PrimaryKey
+  @Column
   id: string;
 
+  @Column
   name: string;
 
+  @Column(DataType.TEXT)
   coreStyle: string;
 
+  @Column(DataType.TEXT)
   sharedStyle: string;
 
+  @HasMany(() => OrganizationBlockStyle)
   OrganizationBlockStyles: OrganizationBlockStyle[];
 
   Member: Member;
 
+  @BelongsToMany(() => User, () => Member)
   Users: User[];
 
+  @HasMany(() => Organization)
+  Organizations: Organization[];
+
+  @HasMany(() => OrganizationInvite)
   OrganizationInvites: OrganizationInvite[];
 
-  addUser: HasManyAddAssociationMixin<User, any>;
+  @ForeignKey(() => Organization)
+  @Column
+  OrganizationId: string;
 
-  hasUser: HasManyHasAssociationMixin<User, string>;
+  @HasOne(() => Organization)
+  Organization: Organization;
 
-  removeUser: HasManyRemoveAssociationMixin<User, string>;
+  @HasMany(() => App)
+  Apps: App[];
 
-  static initialize(sequelize: Sequelize): void {
-    Organization.init(
-      {
-        id: { type: DataTypes.STRING, primaryKey: true },
-        name: { type: DataTypes.STRING },
-        coreStyle: { type: DataTypes.TEXT },
-        sharedStyle: { type: DataTypes.TEXT },
-      },
-      {
-        sequelize,
-        tableName: 'Organization',
-        paranoid: true,
-        createdAt: 'created',
-        updatedAt: 'updated',
-        deletedAt: 'deleted',
-      },
-    );
-  }
+  @CreatedAt
+  created: Date;
 
-  static associate(): void {
-    Organization.hasMany(OrganizationInvite);
-    Organization.hasOne(Organization);
-    Organization.hasMany(App);
-    Organization.belongsToMany(User, { through: Member });
-    Organization.hasMany(OrganizationBlockStyle);
-  }
+  @UpdatedAt
+  updated: Date;
+
+  @DeletedAt
+  deleted: Date;
 }

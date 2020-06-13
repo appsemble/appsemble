@@ -15,6 +15,11 @@ The behavior of an action can be defined within the `actions` object in a block 
 always requires the property `type`, which is what is used to determine which action should be used
 whenever its associated trigger occurs.
 
+The `onSuccess` and `onError` properties can be used to define additional actions that should be
+called depending on whether the action that was initially dispatched ran successfully or not. This
+can be useful for triggering multiple actions in a row, such as calling the `log` action before
+proceeding with a `link` action.
+
 Below is an overview of each action that Appsemble supports. Depending on the type of action,
 additional parameters can be defined to alter its behavior. The name of the action is what should be
 used as the `type`.
@@ -53,6 +58,18 @@ to: https://example.com
 
 Outputs the result of the action into the console. This is mostly useful for debugging blocks during
 development.
+
+## `message`
+
+Displays a message to the user. This is useful in combination with action chaining to notify users
+they have performed a certain action.
+
+| Parameter   | Required | Description                                                                                                                                               |
+| ----------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| body        | true     | The body of the message. Supports [Remappers](/guide/remappers).                                                                                          |
+| color       |          | The Bulma color to apply to the message. Supported values are: `dark`, `primary`, `link`, `success`, `info`, `warning`, and `danger`. Defaults to `info`. |
+| dismissable |          | Boolean value indicating whether the user is able to dismiss the message manually. Defaults to `false`.                                                   |
+| timeout     |          | The time in milliseconds how long the message should be visible. Defaults to 5000 milliseconds.                                                           |
 
 ## `noop`
 

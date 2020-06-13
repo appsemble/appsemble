@@ -1,7 +1,9 @@
 import type {
   Action,
+  BaseMessage,
   HTTPMethods,
   LogAction,
+  Message,
   RequestLikeActionTypes,
   Theme,
 } from '@appsemble/sdk/src/types';
@@ -382,6 +384,16 @@ export interface BaseActionDefinition<T extends Action['type']> {
    * function.
    */
   remap?: Remapper;
+
+  /**
+   * Another action that is dispatched when the action has been dispatched successfully.
+   */
+  onSuccess?: ActionDefinition;
+
+  /**
+   * Another action that is dispatched when the action has failed to dispatch successfully.
+   */
+  onError?: ActionDefinition;
 }
 
 export interface DialogActionDefinition extends BaseActionDefinition<'dialog'> {
@@ -473,15 +485,6 @@ export interface RequestLikeActionDefinition<
    * How to serialize the request body.
    */
   serialize?: 'formdata';
-
-  /**
-   * An additional action to execute after the request has succeeded.
-   */
-  onSuccess?: ActionDefinition;
-  /**
-   * An additional action to execute after the request has resulted in an error.
-   */
-  onError?: ActionDefinition;
 }
 
 export interface ResourceActionDefinition<T extends RequestLikeActionTypes>
@@ -543,6 +546,14 @@ export interface StaticActionDefinition extends BaseActionDefinition<'static'> {
   value: any;
 }
 
+export type MessageActionDefinition = BaseActionDefinition<'message'> &
+  BaseMessage & {
+    /**
+     * The content of the message to display.
+     */
+    body: Remapper;
+  };
+
 export type ActionDefinition =
   | BaseActionDefinition<'flow.back'>
   | BaseActionDefinition<'flow.cancel'>
@@ -564,6 +575,7 @@ export type ActionDefinition =
   | ResourceSubscriptionToggleActionDefinition
   | ResourceSubscriptionStatusActionDefinition
   | StaticActionDefinition
+  | MessageActionDefinition
 
   // XXX This shouldn’t be here, but TypeScript won’t shut up without it.
   | RequestLikeActionDefinition;
@@ -574,6 +586,13 @@ export interface ActionType {
    */
   required?: boolean;
 
+  /**
+   * The description of the action.
+   */
+  description?: string;
+}
+
+export interface EventType {
   /**
    * The description of the action.
    */
@@ -627,8 +646,8 @@ export interface BlockManifest {
    * The events that are supported by a block.
    */
   events?: {
-    listen?: string[];
-    emit?: string[];
+    listen?: { [key: string]: EventType };
+    emit?: { [key: string]: EventType };
   };
 
   /**
@@ -901,4 +920,44 @@ export interface AppMember {
   name: string;
   primaryEmail: string;
   role: string;
+}
+
+/**
+ * A representation of an OAuth2 provider in Appsemble.
+ *
+ * This interface holds the properties needed to render a redirect button on the login or profile
+ * screen.
+ */
+export interface OAuth2Provider {
+  /**
+   * The OAuth2 redirect URL.
+   *
+   * The user will be redirected here. On this page the user will have to grant access to Appsemble
+   * to log them in.
+   */
+  authorizationUrl: string;
+
+  /**
+   * The public client id which identifies Appsemble to the authorization server.
+   */
+  clientId: string;
+
+  /**
+   * A Font Awesome icon which represents the OAuth2 provider.
+   */
+  icon: IconName;
+
+  /**
+   * A display name which represents the OAuth2 provider.
+   *
+   * I.e. `Facebook`, `GitLab`, or `Google`.
+   */
+  name: string;
+
+  /**
+   * The login scope that will be requested from the authorization server.
+   *
+   * This is represented as a space separated list of scopes.
+   */
+  scope: string;
 }

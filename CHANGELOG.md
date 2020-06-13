@@ -7,6 +7,34 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Added
+
+- Block(`form`): Add `submitLabel` property for customizing the label on the submit button.
+
+## [0.13.3] - 2020-06-11
+
+### Added
+
+- App: Add `onSuccess` and `onError` properties to actions. This allows for chaining actions
+  together by defining additional actions that are dispatched depending on whether the parent action
+  ran successfully or produced an error.
+- App: Add `message` action. This action can be used to display messages to the user.
+
+### Changed
+
+- App: Redirect the user to a login page inside the app when logging in instead of linking to
+  Appsemble Studio directly.
+- Block(`button-list`): Change `label` property type from `string` to `Remapper`.
+
+## [0.13.2] - 2020-06-03
+
+### Added
+
+- CLI: Extract descriptions from TSDoc.
+- CLI: Normalize the `--remote` argument.
+- Server: Add event descriptions.
+- Studio: Add event descriptions.
+
 ## [0.13.1] - 2020-06-02
 
 ### Added

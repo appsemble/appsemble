@@ -1,5 +1,6 @@
 import { Button, Loader, Message, Title, useQuery } from '@appsemble/react-components';
 import type { TokenResponse, UserInfo } from '@appsemble/types';
+import { appendOAuth2State, clearOAuth2State, loadOAuth2State } from '@appsemble/web-utils';
 import axios from 'axios';
 import classNames from 'classnames';
 import * as React from 'react';
@@ -10,6 +11,10 @@ import useUser from '../../hooks/useUser';
 import settings from '../../utils/settings';
 import styles from './index.css';
 import messages from './messages';
+
+interface ExtendedOAuth2State {
+  userinfo?: UserInfo;
+}
 
 /**
  * This component handles the callback URL redirect of the user in the OAuth2 login flow.
@@ -28,10 +33,10 @@ export default function OAuth2Connect(): React.ReactElement {
 
   const code = qs.get('code');
   const state = qs.get('state');
-  const session = React.useMemo(() => JSON.parse(sessionStorage.getItem('oauth2Connecting')), []);
+  const session = React.useMemo(() => loadOAuth2State<ExtendedOAuth2State>(), []);
   const provider = settings.logins.find((p) => p.authorizationUrl === session?.authorizationUrl);
 
-  const [profile, setProfile] = React.useState<UserInfo>(session?.userinfo);
+  const [profile, setProfile] = React.useState(session?.userinfo);
   const [isLoading, setLoading] = React.useState(true);
   const [linkError, setLinkError] = React.useState(false);
   const [error, setError] = React.useState<MessageDescriptor>();
@@ -49,17 +54,12 @@ export default function OAuth2Connect(): React.ReactElement {
         );
         if ('access_token' in data) {
           login(data);
+          clearOAuth2State();
           history.replace('/');
           return;
         }
         // Prevent the user from calling the oauth2 registration API twice.
-        sessionStorage.setItem(
-          'oauth2Connecting',
-          JSON.stringify({
-            ...session,
-            userinfo: data,
-          }),
-        );
+        appendOAuth2State({ userinfo: data });
         setProfile(data);
         setLoading(false);
       } catch (err) {
@@ -86,6 +86,7 @@ export default function OAuth2Connect(): React.ReactElement {
         authorizationUrl: session.authorizationUrl,
       });
       login(data);
+      clearOAuth2State();
       history.replace('/');
     } catch (err) {
       if (err?.response?.status === 409) {

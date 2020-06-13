@@ -5,7 +5,7 @@ import type { Options } from 'nodemailer/lib/smtp-connection';
 import type { Argv } from '../../types';
 import renderEmail from './renderEmail';
 
-interface Recipient {
+export interface Recipient {
   /**
    * The email address of the recipient.
    */

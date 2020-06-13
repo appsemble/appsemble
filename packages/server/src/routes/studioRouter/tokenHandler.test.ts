@@ -147,7 +147,7 @@ describe('authorization_code', () => {
   });
 
   it('should not allow expired authorization codes', async () => {
-    await user.createOrganization({ id: 'org' });
+    await user.$create('Organization', { id: 'org' });
     const app = await App.create({
       OrganizationId: 'org',
       definition: '',
@@ -185,7 +185,7 @@ describe('authorization_code', () => {
   });
 
   it('should return an access token response if the authorization code is valid', async () => {
-    await user.createOrganization({ id: 'org' });
+    await user.$create('Organization', { id: 'org' });
     const app = await App.create({
       OrganizationId: 'org',
       definition: '',

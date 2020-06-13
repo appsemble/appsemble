@@ -14,7 +14,7 @@ bootstrap(({ actions, data: defaultData, events, parameters: { buttons }, ready,
   useEffect(() => {
     events.on.data(loadData);
     ready();
-  }, [events, loadData, ready, utils]);
+  }, [events, loadData, ready]);
 
   return (
     <div className="buttons is-centered">
@@ -23,6 +23,7 @@ bootstrap(({ actions, data: defaultData, events, parameters: { buttons }, ready,
           action={button.onClick ? actions[button.onClick] : actions.onClick}
           button={button}
           data={data}
+          utils={utils}
         />
       ))}
     </div>

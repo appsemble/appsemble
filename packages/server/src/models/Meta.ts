@@ -1,26 +1,16 @@
-import { DataTypes, Model, Sequelize } from 'sequelize';
+import { Column, DataType, Model, PrimaryKey, Table } from 'sequelize-typescript';
 
 /**
  * Define database metadata.
  */
-export default class Meta extends Model {
+@Table({ tableName: 'Meta', createdAt: false, updatedAt: false })
+export default class Meta extends Model<Meta> {
+  /**
+   * The current version of the database.
+   *
+   * This field _**must**_ stay consistent across versions!
+   */
+  @PrimaryKey
+  @Column(DataType.STRING(11))
   version: string;
-
-  static initialize(sequelize: Sequelize): void {
-    Meta.init(
-      {
-        /**
-         * The current version of the database.
-         *
-         * This field _**must**_ stay consistent across versions!
-         */
-        version: { type: DataTypes.STRING(11), primaryKey: true },
-      },
-      {
-        sequelize,
-        tableName: 'Meta',
-        timestamps: false,
-      },
-    );
-  }
 }

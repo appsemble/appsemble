@@ -981,7 +981,7 @@ describe('getResourceSubscription', () => {
     expect(response).toMatchObject({ status: 404, data: { message: 'Resource not found.' } });
   });
 
-  it('should 404 if user is not subscribed', async () => {
+  it('should return 200 if user is not subscribed', async () => {
     const app = await exampleApp(organizationId);
     const resource = await Resource.create({
       type: 'testResource',
@@ -994,8 +994,8 @@ describe('getResourceSubscription', () => {
     );
 
     expect(response).toMatchObject({
-      status: 404,
-      data: { message: 'User is not subscribed to this app.' },
+      status: 200,
+      data: { id: app.id, update: false, delete: false },
     });
   });
 });

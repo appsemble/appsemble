@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/preact",
-  "version": "0.13.1",
+  "version": "0.13.3",
   "description": "Build your own blocks using Preact",
   "homepage": "https://appsemble.dev",
   "bugs": "https://gitlab.com/appsemble/appsemble/issues",
@@ -18,13 +18,14 @@
     "dist"
   ],
   "scripts": {
-    "prepack": "tsc -p tsconfig.build.json"
+    "prepack": "tsc -p tsconfig.build.json",
+    "test": "jest"
   },
   "dependencies": {
-    "intl-messageformat": "^8.3.11"
+    "intl-messageformat": "^8.3.18"
   },
   "peerDependencies": {
-    "@appsemble/sdk": "0.13.1",
+    "@appsemble/sdk": "0.13.3",
     "preact": "^10.0.4"
   }
 }

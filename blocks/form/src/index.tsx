@@ -219,7 +219,7 @@ bootstrap(({ actions, data, events, parameters, ready }) => {
           disabled={!Object.values(validity).every((v) => v) || submitting || disabled}
           type="submit"
         >
-          <FormattedMessage id="submit" />
+          {parameters.submitLabel || <FormattedMessage id="submit" />}
         </button>
       </div>
     </form>

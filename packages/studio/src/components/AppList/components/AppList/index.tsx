@@ -1,13 +1,13 @@
-import { Icon, Loader } from '@appsemble/react-components';
+import { Icon, Loader, Message } from '@appsemble/react-components';
 import type { App } from '@appsemble/types';
-import { permissions } from '@appsemble/utils';
+import { Permission } from '@appsemble/utils';
 import axios from 'axios';
 import React from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link } from 'react-router-dom';
 
+import useOrganizations from '../../../../hooks/useOrganizations';
 import useUser from '../../../../hooks/useUser';
-import type { Organization } from '../../../../types';
 import checkRole from '../../../../utils/checkRole';
 import HelmetIntl from '../../../HelmetIntl';
 import AppCard from '../AppCard';
@@ -17,7 +17,9 @@ import messages from './messages';
 
 export default function AppList(): React.ReactElement {
   const [filter, setFilter] = React.useState('');
-  const [organizations, setOrganizations] = React.useState<Organization[]>([]);
+  const organizations = useOrganizations();
+  const [isLoading, setLoading] = React.useState(true);
+  const [hasError, setError] = React.useState(false);
   const [apps, setApps] = React.useState<App[]>(null);
 
   const intl = useIntl();
@@ -28,28 +30,27 @@ export default function AppList(): React.ReactElement {
   }, []);
 
   React.useEffect(() => {
+    setLoading(true);
+    setError(false);
     setApps(null);
-    if (userInfo) {
-      axios.get<App[]>('/api/apps/me').then(({ data }) => {
-        setApps(data);
-      });
-    } else {
-      axios.get<App[]>('/api/apps').then(({ data }) => {
-        setApps(data);
-      });
-    }
+    const url = userInfo ? '/api/apps/me' : '/api/apps';
+    axios
+      .get<App[]>(url)
+      .then(({ data }) => setApps(data))
+      .catch(() => setError(true))
+      .finally(() => setLoading(false));
   }, [userInfo]);
 
-  React.useEffect(() => {
-    if (userInfo) {
-      axios
-        .get<Organization[]>('/api/user/organizations')
-        .then(({ data }) => setOrganizations(data));
-    }
-  }, [userInfo]);
-
-  if (!apps) {
+  if (isLoading) {
     return <Loader />;
+  }
+
+  if (hasError) {
+    return (
+      <Message color="danger">
+        <FormattedMessage {...messages.error} />
+      </Message>
+    );
   }
 
   const filteredApps = apps.filter((app) =>
@@ -57,7 +58,7 @@ export default function AppList(): React.ReactElement {
   );
 
   const createOrganizations = organizations.filter((org) =>
-    checkRole(org.role, permissions.CreateApps),
+    checkRole(org.role, Permission.CreateApps),
   );
 
   return (

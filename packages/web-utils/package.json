@@ -1,0 +1,20 @@
+{
+  "name": "@appsemble/web-utils",
+  "version": "0.13.3",
+  "private": true,
+  "description": "Browser specific utility functions used in Appsemble internally",
+  "homepage": "https://appsemble.dev",
+  "bugs": "https://gitlab.com/appsemble/appsemble/issues",
+  "repository": {
+    "type": "git",
+    "url": "https://gitlab.com/appsemble/appsemble.git",
+    "directory": "packages/web-utils"
+  },
+  "license": "LGPL-3.0-or-later",
+  "author": "Appsemble <info@appsemble.com> (https://appsemble.com)",
+  "sideEffects": false,
+  "main": "src",
+  "scripts": {
+    "test": "jest"
+  }
+}

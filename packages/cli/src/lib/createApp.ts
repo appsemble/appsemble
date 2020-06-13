@@ -78,5 +78,5 @@ export default async function createApp({
   logger.info(`Successfully created app ${data.definition.name}! 🙌`);
   const { host, protocol } = new URL(remote);
   logger.info(`View app: ${protocol}//${data.path}.${organizationId}.${host}`);
-  logger.info(`Edit app: ${remote}/apps/${data.id}/edit`);
+  logger.info(`Edit app: ${remote}apps/${data.id}/edit`);
 }

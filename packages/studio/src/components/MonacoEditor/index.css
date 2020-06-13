@@ -1,3 +1,7 @@
 .editor {
   height: 100%;
+
+  &:global(.monaco-editor) {
+    display: flex;
+  }
 }

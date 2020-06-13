@@ -1,4 +1,4 @@
-import type { BulmaColor, BulmaSize } from '@appsemble/sdk';
+import type { BulmaColor, BulmaSize, Remapper } from '@appsemble/sdk';
 import type { IconName } from '@fortawesome/fontawesome-common-types';
 
 export interface Button {
@@ -7,7 +7,7 @@ export interface Button {
    *
    * Will not render if undefined.
    */
-  label?: string;
+  label?: Remapper;
 
   /**
    * A [Font Awesome icon](https://fontawesome.com/icons?m=free) name to render on the button.

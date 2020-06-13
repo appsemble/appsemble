@@ -11,7 +11,7 @@ import {
   useMessages,
 } from '@appsemble/react-components';
 import type { Organization, Rating } from '@appsemble/types';
-import { permissions } from '@appsemble/utils';
+import { Permission } from '@appsemble/utils';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -89,7 +89,7 @@ export default function AppDetails(): React.ReactElement {
   }
 
   const createOrganizations =
-    organizations?.filter((org) => checkRole(org.role, permissions.CreateApps)) || [];
+    organizations?.filter((org) => checkRole(org.role, Permission.CreateApps)) || [];
 
   return (
     <>

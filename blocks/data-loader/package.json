@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/data-loader",
-  "version": "0.13.1",
+  "version": "0.13.3",
   "private": true,
   "description": "A block that fetches data and emits it using the events API.",
   "homepage": "https://appsemble.dev",
@@ -12,8 +12,10 @@
   },
   "license": "LGPL-3.0-or-later",
   "author": "Appsemble <info@appsemble.com> (https://appsemble.com)",
-  "sideEffects": false,
+  "scripts": {
+    "test": "jest"
+  },
   "dependencies": {
-    "@appsemble/sdk": "0.13.1"
+    "@appsemble/sdk": "0.13.3"
   }
 }

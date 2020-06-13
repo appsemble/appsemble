@@ -1,4 +1,4 @@
-import type { AxiosError } from 'axios';
+import axios, { AxiosError } from 'axios';
 import chalk from 'chalk';
 import highlight from 'cli-highlight';
 import type { TransformableInfo } from 'logform';
@@ -20,12 +20,12 @@ function headerCase(header: string): string {
 }
 
 function httpErrorToString(error: AxiosError): string {
-  const { request, response } = error;
+  const { config, request, response } = error;
   return [
     chalk.blue.bold('Request:'),
     highlight(
       [
-        `${request.method} ${request.path} HTTP/${request.res.httpVersion}`,
+        `${request.method} ${axios.getUri(config)} HTTP/${request.res.httpVersion}`,
         ...Object.entries(request.getHeaders())
           .map(([key, value]) => [headerCase(key), value])
           .map(([key, value]) => `${key}: ${key === 'Authorization' ? 'xxxxxxxxxx' : value}`)

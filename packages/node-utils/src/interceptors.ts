@@ -1,8 +1,10 @@
-import { logger } from '@appsemble/node-utils';
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 import FormData from 'form-data';
+import os from 'os';
 import { Stream } from 'stream';
 import { URLSearchParams } from 'url';
+
+import { logger } from './logger';
 
 /**
  * An {@link axios} request interceptor to add support for {@link form-data}.
@@ -51,4 +53,21 @@ export function responseLogger(response: AxiosResponse): AxiosResponse {
     logger.silly(`Response body: ${JSON.stringify(response.data)}`);
   }
   return response;
+}
+
+/**
+ * Configure the default Axios instance.
+ *
+ * This applies the interceptors in this modules and sets the appropriate user agent string.
+ *
+ * @param name A PascalCase representation of the client.
+ * @param version The version of the client to represent.
+ */
+export function configureAxios(name: string, version: string): void {
+  const ua = `${name}/${version} (${os.type()} ${os.arch()}; Node ${process.version})`;
+  axios.defaults.headers.common['user-agent'] = ua;
+
+  axios.interceptors.request.use(formData);
+  axios.interceptors.request.use(requestLogger);
+  axios.interceptors.response.use(responseLogger);
 }

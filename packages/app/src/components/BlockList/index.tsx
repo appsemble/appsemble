@@ -48,8 +48,13 @@ export default function BlockList({
 }: BlockListProps): React.ReactElement {
   const { definition, revision } = useAppDefinition();
   const { role } = useUser();
+  const blockList = React.useMemo(() => filterBlocks(definition.security, blocks, role), [
+    blocks,
+    definition,
+    role,
+  ]);
 
-  const blockStatus = React.useRef(blocks.map(() => false));
+  const blockStatus = React.useRef(blockList.map(() => false));
   const [pageReady, setPageReady] = React.useState<Promise<void>>();
 
   const [isLoading, setLoading] = React.useState(true);
@@ -57,13 +62,13 @@ export default function BlockList({
 
   const ready = React.useCallback(
     (block: BlockDefinition) => {
-      blockStatus.current[blocks.indexOf(block)] = true;
+      blockStatus.current[blockList.indexOf(block)] = true;
       if (blockStatus.current.every(Boolean)) {
         setLoading(false);
         resolvePageReady.current();
       }
     },
-    [blocks],
+    [blockList],
   );
 
   React.useEffect(() => {
@@ -72,9 +77,7 @@ export default function BlockList({
         resolvePageReady.current = resolve;
       }),
     );
-  }, [blocks]);
-
-  const blockList = filterBlocks(definition.security, blocks, role);
+  }, [blockList]);
 
   const list = blockList.map((block, index) => {
     const content = (

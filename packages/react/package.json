@@ -1,6 +1,6 @@
 {
   "name": "@appsemble/react",
-  "version": "0.13.1",
+  "version": "0.13.3",
   "private": true,
   "description": "The Appsemble React SDK",
   "homepage": "https://appsemble.dev",
@@ -14,6 +14,9 @@
   "author": "Appsemble <info@appsemble.com> (https://appsemble.com)",
   "sideEffects": false,
   "main": "src",
+  "scripts": {
+    "test": "jest"
+  },
   "dependencies": {
     "react-shadow-dom-retarget-events": "^1.0.11"
   },
@@ -22,8 +25,8 @@
     "enzyme-adapter-react-16": "^1.15.2"
   },
   "peerDependencies": {
-    "@appsemble/sdk": "0.13.1",
-    "@appsemble/types": "0.13.1",
+    "@appsemble/sdk": "0.13.3",
+    "@appsemble/types": "0.13.3",
     "react": "^16.11.0",
     "react-dom": "^16.11.0",
     "react-intl": "^3.4.0"

@@ -1,3 +1,4 @@
+import { useMessages } from '@appsemble/react-components/src';
 import type { BootstrapParams } from '@appsemble/sdk';
 import type { AppDefinition, FlowPageDefinition } from '@appsemble/types';
 import React from 'react';
@@ -25,6 +26,7 @@ export default function FlowPage({
   const [currentPage, setCurrentPage] = React.useState(0);
   const [data, setData] = React.useState(inputData);
   const pushNotifications = useServiceWorkerRegistration();
+  const showMessage = useMessages();
 
   let actions: BootstrapParams['actions'];
 
@@ -100,8 +102,19 @@ export default function FlowPage({
         pushNotifications,
         ee,
         pageReady: null,
+        showMessage,
       }),
-    [definition, ee, flowActions, history, page, prefix, pushNotifications, showDialog],
+    [
+      definition,
+      ee,
+      flowActions,
+      history,
+      page,
+      prefix,
+      pushNotifications,
+      showDialog,
+      showMessage,
+    ],
   );
 
   return (

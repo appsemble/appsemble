@@ -1,8 +1,8 @@
 import { Icon } from '@appsemble/preact-components';
-import type { Action } from '@appsemble/sdk';
+import type { Action, Utils } from '@appsemble/sdk';
 import classNames from 'classnames';
 import { h, VNode } from 'preact';
-import { useCallback } from 'preact/hooks';
+import { useCallback, useMemo } from 'preact/hooks';
 
 import type { Button as ButtonType } from '../../../block';
 import ButtonWrapper from '../ButtonWrapper';
@@ -11,9 +11,10 @@ interface ButtonProps {
   action: Action;
   button: ButtonType;
   data: any;
+  utils: Utils;
 }
 
-export default function Button({ action, button, data }: ButtonProps): VNode {
+export default function Button({ action, button, data, utils }: ButtonProps): VNode {
   const onButtonClick = useCallback(
     (event: Event) => {
       event.preventDefault();
@@ -21,6 +22,8 @@ export default function Button({ action, button, data }: ButtonProps): VNode {
     },
     [action, data],
   );
+
+  const label = useMemo(() => utils.remap(button.label, data), [button, data, utils]);
 
   return (
     <ButtonWrapper
@@ -36,7 +39,7 @@ export default function Button({ action, button, data }: ButtonProps): VNode {
       onClick={onButtonClick}
     >
       {button.icon && <Icon icon={button.icon} />}
-      {button.label && <span>{button.label}</span>}
+      {label && <span>{label}</span>}
     </ButtonWrapper>
   );
 }

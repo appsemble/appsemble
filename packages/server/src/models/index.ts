@@ -1,4 +1,5 @@
-import { Options, Sequelize, Transaction } from 'sequelize';
+import type { Options, Transaction } from 'sequelize';
+import { Sequelize } from 'sequelize-typescript';
 
 import { logSQL } from '../utils/sqlUtils';
 import App from './App';
@@ -34,30 +35,6 @@ export interface InitDBParams {
   uri?: string;
   ssl?: boolean;
 }
-
-const models = [
-  App,
-  AppBlockStyle,
-  AppMember,
-  AppRating,
-  AppSubscription,
-  Asset,
-  BlockAsset,
-  BlockVersion,
-  EmailAuthorization,
-  Member,
-  Meta,
-  OAuth2AuthorizationCode,
-  OAuth2ClientCredentials,
-  OAuthAuthorization,
-  Organization,
-  OrganizationBlockStyle,
-  OrganizationInvite,
-  ResetPasswordToken,
-  Resource,
-  ResourceSubscription,
-  User,
-];
 
 export {
   App,
@@ -95,9 +72,33 @@ export function initDB({
   if (db) {
     throw new Error('initDB() was called multiple times within the same context.');
   }
-  const options: Options = {
+
+  const options = {
     logging: logSQL,
     retry: { max: 3 },
+    models: [
+      App,
+      AppBlockStyle,
+      AppMember,
+      AppRating,
+      AppSubscription,
+      Asset,
+      BlockAsset,
+      BlockVersion,
+      EmailAuthorization,
+      Member,
+      Meta,
+      OAuth2AuthorizationCode,
+      OAuth2ClientCredentials,
+      OAuthAuthorization,
+      Organization,
+      OrganizationBlockStyle,
+      OrganizationInvite,
+      ResetPasswordToken,
+      Resource,
+      ResourceSubscription,
+      User,
+    ],
   };
   let args: [Options] | [string, Options];
   if (uri) {
@@ -105,7 +106,7 @@ export function initDB({
   } else {
     args = [
       Object.assign(options, {
-        dialect: 'postgres',
+        dialect: 'postgres' as const,
         host,
         port,
         username,
@@ -118,9 +119,6 @@ export function initDB({
     ];
   }
   db = new Sequelize(...(args as [Options]));
-
-  models.forEach((model) => model.initialize(db));
-  models.forEach((model) => model.associate && model.associate());
 
   return db;
 }

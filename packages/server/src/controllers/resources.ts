@@ -1,11 +1,5 @@
 import type { NotificationDefinition } from '@appsemble/types';
-import {
-  checkAppRole,
-  permissions,
-  remap,
-  SchemaValidationError,
-  validate,
-} from '@appsemble/utils';
+import { checkAppRole, Permission, remap, SchemaValidationError, validate } from '@appsemble/utils';
 import Boom from '@hapi/boom';
 import parseOData from '@wesselkuipers/odata-sequelize';
 import crypto from 'crypto';
@@ -190,7 +184,7 @@ async function verifyAppRole(
         break;
 
       case 'organization':
-        if (!(await app.Organization.hasUser(user.id))) {
+        if (!(await app.Organization.$has('User', user.id))) {
           throw Boom.forbidden('User is not a member of the organization.');
         }
 
@@ -489,11 +483,7 @@ export async function getResourceSubscription(ctx: KoaContext<Params>): Promise<
     throw Boom.notFound('Resource not found.');
   }
 
-  if (!app.AppSubscriptions.length) {
-    throw Boom.notFound('User is not subscribed to this app.');
-  }
-
-  const subscriptions = app.AppSubscriptions[0].ResourceSubscriptions;
+  const subscriptions = app.AppSubscriptions?.[0]?.ResourceSubscriptions ?? [];
   const result = { id: resourceId, update: false, delete: false } as any;
 
   subscriptions.forEach(({ action }) => {
@@ -720,7 +710,7 @@ export async function deleteResource(ctx: KoaContext<Params>): Promise<void> {
     }),
   });
 
-  await checkRole(ctx, app.OrganizationId, permissions.ManageResources);
+  await checkRole(ctx, app.OrganizationId, Permission.ManageResources);
 
   verifyResourceDefinition(app, resourceType);
   const resource = await Resource.findOne({
