@@ -41,7 +41,7 @@ type CheckboxProps = Omit<typeof FormComponent, 'children'> &
     /**
      * Whether the label should be displayed to the right of the checkbox or to the left.
      *
-     * By default (false), the label will be rendered after the checkbox.
+     * @default false
      */
     rtl?: boolean;
 
