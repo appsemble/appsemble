@@ -1,5 +1,5 @@
 import { FormattedMessage } from '@appsemble/preact';
-import { FormComponent, RadioButton } from '@appsemble/preact-components/src';
+import { FormComponent, RadioButton } from '@appsemble/preact-components';
 import classNames from 'classnames';
 import { h, VNode } from 'preact';
 
@@ -24,7 +24,7 @@ export default function RadioInput({
         <RadioButton
           checked={value === option.value}
           disabled={disabled}
-          help={option.labelText ?? option.value}
+          help={option.label ?? option.value}
           id={`${field.name}${index}`}
           name={`${field.name}`}
           onChange={(event, v) => {

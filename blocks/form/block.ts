@@ -4,7 +4,6 @@ import type { IconName } from '@fortawesome/fontawesome-common-types';
  * An option that is displayed in a dropdown menu or radio button field.
  */
 interface Choice {
-  labelText: any;
   /**
    * The label used to display the option.
    */
