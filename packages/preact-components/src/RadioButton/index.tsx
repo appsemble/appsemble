@@ -23,7 +23,7 @@ type RadioButtonProps = Omit<h.JSX.HTMLAttributes<HTMLInputElement>, 'label' | '
   /**
    * Whether the label should be displayed to the right of the radio button or to the left.
    *
-   * By default (false), the label will be rendered after the radio button.
+   * @default false
    */
   rtl?: boolean;
 
