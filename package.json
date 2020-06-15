@@ -47,6 +47,7 @@
     "@types/enzyme-adapter-react-16": "^1.0.6",
     "@types/events": "^3.0.0",
     "@types/fs-extra": "^9.0.1",
+    "@types/hast": "^2.3.1",
     "@types/inquirer": "^6.5.0",
     "@types/jest": "^26.0.0",
     "@types/jest-image-snapshot": "^3.1.0",
