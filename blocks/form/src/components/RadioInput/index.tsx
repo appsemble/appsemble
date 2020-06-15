@@ -1,9 +1,10 @@
 import { FormattedMessage } from '@appsemble/preact';
 import { FormComponent } from '@appsemble/preact-components/src';
 import classNames from 'classnames';
-import { Fragment, h, VNode } from 'preact';
+import { h, VNode } from 'preact';
 
 import type { InputProps, RadioField } from '../../../block';
+import styles from './index.css';
 
 type RadioInputProps = InputProps<any, RadioField>;
 
@@ -20,7 +21,7 @@ export default function RadioInput({
   return (
     <FormComponent label={field.label} required={field.required}>
       {field.options.map((option, index) => (
-        <Fragment>
+        <div className={styles.choice}>
           <input
             checked={value === option.value}
             className={classNames('is-checkradio', { 'is-danger': error })}
@@ -36,7 +37,7 @@ export default function RadioInput({
             value={option.value}
           />
           <label for={`${field.name}${index}`}>{option.labelText ?? option.value}</label>
-        </Fragment>
+        </div>
       ))}
       {error && (
         <p className={classNames('help', { 'is-danger': error })}>
