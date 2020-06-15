@@ -17,7 +17,7 @@ In order to run the Appsemble project in development mode, the following must be
 
 - [Docker][]
 - [Docker Compose][]
-- [NodeJS 12][nodejs]
+- [NodeJS 14][nodejs]
 - [Yarn][]
 
 ### Getting started

@@ -16,7 +16,7 @@
     "test": "jest"
   },
   "dependencies": {
-    "type-fest": "^0.15.0"
+    "type-fest": "^0.15.1"
   },
   "devDependencies": {
     "service-worker-mock": "^2.0.5"
