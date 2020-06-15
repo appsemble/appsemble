@@ -201,6 +201,7 @@ bootstrap(({ actions, data, events, parameters, ready }) => {
         const Comp = inputs[field.type];
         return (
           <Comp
+            // @ts-expect-error
             key={field.name}
             // @ts-expect-error
             disabled={disabled}
