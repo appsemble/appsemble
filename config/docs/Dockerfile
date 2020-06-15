@@ -1,4 +1,4 @@
-FROM node:12-slim as build
+FROM node:14-slim as build
 ARG CI_COMMIT_REF_NAME=dev
 ENV CI_COMMIT_REF_NAME $CI_COMMIT_REF_NAME
 WORKDIR /build
