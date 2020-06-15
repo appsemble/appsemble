@@ -1,5 +1,5 @@
 import { FormattedMessage } from '@appsemble/preact';
-import { FormComponent } from '@appsemble/preact-components/src';
+import { Checkbox } from '@appsemble/preact-components/src';
 import classNames from 'classnames';
 import { h, VNode } from 'preact';
 
@@ -18,26 +18,20 @@ export default function BooleanInput({
   value = false,
 }: BooleanInputProps): VNode {
   return (
-    <FormComponent label={field.label} required={field.required}>
-      <input
-        checked={!!value}
-        className={classNames('is-checkradio', { 'is-danger': error })}
-        disabled={disabled}
-        id={field.name}
-        name={field.name}
-        onInput={(event) => {
-          onInput(event, (event.target as HTMLInputElement).checked);
-        }}
-        readOnly={field.readOnly}
-        required={field.required}
-        type="checkbox"
-      />
-      <label for={field.name}>{field.labelText ?? field.label ?? null}</label>
-      {error && (
-        <p className={classNames('help', { 'is-danger': error })}>
-          <FormattedMessage id="invalid" />
-        </p>
-      )}
-    </FormComponent>
+    <Checkbox
+      checked={!!value}
+      className={classNames({ 'is-danger': error })}
+      disabled={disabled}
+      error={error && <FormattedMessage id="invalid" />}
+      help={field.labelText ?? field.label ?? null}
+      id={field.name}
+      label={field.label}
+      name={field.name}
+      onChange={(event) => {
+        onInput(event, (event.target as HTMLInputElement).checked);
+      }}
+      readOnly={field.readOnly}
+      required={field.required}
+    />
   );
 }

@@ -9,6 +9,11 @@ export interface FormComponentProps {
   children: ComponentChildren;
 
   /**
+   * A class name to pass to the field element.
+   */
+  className?: string;
+
+  /**
    * An optional id for the HTML element. If not set, this will fall back to `name`.
    */
   id?: string;
@@ -34,13 +39,14 @@ export interface FormComponentProps {
  */
 export default function FormComponent({
   children,
+  className,
   iconLeft,
   id,
   label,
   required,
 }: FormComponentProps): VNode {
   return (
-    <div className="field">
+    <div className={classNames('field', className)}>
       {label && (
         <label className={`label ${styles.label}`} htmlFor={id}>
           <span className={styles.labelContent}>{label}</span>
