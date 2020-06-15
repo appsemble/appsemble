@@ -1,18 +1,23 @@
 import { shallow } from 'enzyme';
 import React from 'react';
-import { createIntl, IntlShape } from 'react-intl';
 
-import { Modal } from './index';
+import Modal from '.';
 
-let intl: IntlShape;
+jest.mock('react-intl', () => {
+  const reactIntl = jest.requireActual('react-intl');
+  const intl = reactIntl.createIntl({
+    locale: 'en',
+  });
 
-beforeEach(() => {
-  intl = createIntl({ locale: 'en' });
+  return {
+    ...reactIntl,
+    useIntl: () => intl,
+  };
 });
 
 it('should not render a bulma modal when it is inactive', () => {
   const wrapper = shallow(
-    <Modal intl={intl} isActive={false} onClose={() => {}}>
+    <Modal isActive={false} onClose={() => {}}>
       test
     </Modal>,
   );
@@ -21,7 +26,7 @@ it('should not render a bulma modal when it is inactive', () => {
 
 it('should render a bulma modal when it is active', () => {
   const wrapper = shallow(
-    <Modal intl={intl} isActive onClose={() => {}}>
+    <Modal isActive onClose={() => {}}>
       test
     </Modal>,
   );
@@ -31,7 +36,7 @@ it('should render a bulma modal when it is active', () => {
 it('should close the modal when the close button is clicked', () => {
   const onClose = jest.fn();
   const wrapper = shallow(
-    <Modal intl={intl} isActive onClose={onClose}>
+    <Modal isActive onClose={onClose}>
       test
     </Modal>,
   );
@@ -42,7 +47,7 @@ it('should close the modal when the close button is clicked', () => {
 it('should close the modal when the background is clicked', () => {
   const onClose = jest.fn();
   const wrapper = shallow(
-    <Modal intl={intl} isActive onClose={onClose}>
+    <Modal isActive onClose={onClose}>
       test
     </Modal>,
   );
@@ -53,7 +58,7 @@ it('should close the modal when the background is clicked', () => {
 it('should close the modal escape is pressed on the background', () => {
   const onClose = jest.fn();
   const wrapper = shallow(
-    <Modal intl={intl} isActive onClose={onClose}>
+    <Modal isActive onClose={onClose}>
       test
     </Modal>,
   );
@@ -64,7 +69,7 @@ it('should close the modal escape is pressed on the background', () => {
 it('should not close the modal another key is pressed on the background', () => {
   const onClose = jest.fn();
   const wrapper = shallow(
-    <Modal intl={intl} isActive onClose={onClose}>
+    <Modal isActive onClose={onClose}>
       test
     </Modal>,
   );

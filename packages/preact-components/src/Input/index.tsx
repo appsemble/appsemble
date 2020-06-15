@@ -1,5 +1,6 @@
 import classNames from 'classnames';
-import { Component, ComponentChild, h, VNode } from 'preact';
+import { ComponentChild, h, VNode } from 'preact';
+import { useCallback } from 'preact/hooks';
 
 import FormComponent, { FormComponentProps } from '../FormComponent';
 import Icon from '../Icon';
@@ -99,56 +100,53 @@ export type InputProps = BooleanInputProps | NumberInputProps | StringInputProps
 /**
  * A Bulma styled form input element.
  */
-export default class Input extends Component<InputProps> {
-  onInput = (event: Event): void => {
-    const { onInput, type } = this.props;
+export default function Input({
+  disabled,
+  error,
+  iconLeft,
+  help,
+  label,
+  name,
+  onInput,
+  required,
+  type,
+  value,
+  id = name,
+  ...props
+}: InputProps): VNode {
+  const handleInput = useCallback(
+    (event: Event): void => {
+      const target = event.target as HTMLInputElement;
+      if (type === 'number') {
+        (onInput as InputEventHandler<number>)(event, target.valueAsNumber);
+      } else if (type === 'checkbox') {
+        (onInput as InputEventHandler<boolean>)(event, target.checked);
+      } else {
+        (onInput as InputEventHandler<string>)(event, target.value);
+      }
+    },
+    [onInput, type],
+  );
 
-    const target = event.target as HTMLInputElement;
-    if (type === 'number') {
-      (onInput as InputEventHandler<number>)(event, target.valueAsNumber);
-    } else if (type === 'checkbox') {
-      (onInput as InputEventHandler<boolean>)(event, target.checked);
-    } else {
-      (onInput as InputEventHandler<string>)(event, target.value);
-    }
-  };
+  const Comp = type === 'textarea' ? 'textarea' : 'input';
 
-  render(): VNode {
-    const {
-      disabled,
-      error,
-      iconLeft,
-      help,
-      label,
-      name,
-      onInput,
-      required,
-      type,
-      value,
-      id = name,
-      ...props
-    } = this.props;
-
-    const Comp = type === 'textarea' ? 'textarea' : 'input';
-
-    return (
-      <FormComponent iconLeft={iconLeft} id={id} label={label} required={required}>
-        <Comp
-          checked={type === 'checkbox' ? (value as boolean) : undefined}
-          className={classNames(type === 'textarea' ? 'textarea' : 'input', { 'is-danger': error })}
-          disabled={disabled}
-          id={id}
-          name={name}
-          onInput={this.onInput}
-          required={required}
-          type={type !== 'textarea' ? type : undefined}
-          value={`${value}`}
-          {...props}
-        />
-        {iconLeft && <Icon className="is-left" icon={iconLeft} />}
-        {help && <p className="help">{help}</p>}
-        {error && <p className="help is-danger">{error}</p>}
-      </FormComponent>
-    );
-  }
+  return (
+    <FormComponent iconLeft={iconLeft} id={id} label={label} required={required}>
+      <Comp
+        checked={type === 'checkbox' ? (value as boolean) : undefined}
+        className={classNames(type === 'textarea' ? 'textarea' : 'input', { 'is-danger': error })}
+        disabled={disabled}
+        id={id}
+        name={name}
+        onInput={handleInput}
+        required={required}
+        type={type !== 'textarea' ? type : undefined}
+        value={`${value}`}
+        {...props}
+      />
+      {iconLeft && <Icon className="is-left" icon={iconLeft} />}
+      {help && <p className="help">{help}</p>}
+      {error && <p className="help is-danger">{error}</p>}
+    </FormComponent>
+  );
 }
