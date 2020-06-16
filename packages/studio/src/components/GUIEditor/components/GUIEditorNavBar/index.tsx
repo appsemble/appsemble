@@ -68,20 +68,14 @@ export default function GUIEditorNavBar({
           </Button>
         </li>
         <li value="removeblock">
-          {editLocation?.blockName ? (
-            <GUIEditorDelete
-              app={app}
-              editLocation={editLocation}
-              monacoEditor={monacoEditor}
-              setApp={setApp}
-              setEditorStep={setEditorStep}
-              setRecipe={setRecipe}
-            />
-          ) : (
-            <Button color="danger" disabled icon="trash-alt">
-              <FormattedMessage {...messages.deleteBlock} />
-            </Button>
-          )}
+          <GUIEditorDelete
+            app={app}
+            disabled={editLocation?.blockName === undefined}
+            editLocation={editLocation}
+            monacoEditor={monacoEditor}
+            setApp={setApp}
+            setRecipe={setRecipe}
+          />
         </li>
       </ul>
     </div>

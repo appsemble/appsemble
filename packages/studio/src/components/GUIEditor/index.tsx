@@ -43,7 +43,6 @@ export default function GUIEditor({
             setRecipe={setRecipe}
           />
           <GUIEditorSelect
-            language="yaml"
             setEditLocation={setEditLocation}
             setEditor={setMonacoEditor}
             value={appClone.yaml}

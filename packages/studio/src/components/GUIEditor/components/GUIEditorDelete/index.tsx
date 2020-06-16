@@ -6,7 +6,7 @@ import { editor, Range } from 'monaco-editor';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import { EditLocation, GuiEditorStep } from '../../types';
+import type { EditLocation } from '../../types';
 import messages from './messages';
 
 interface GUIEditorDeleteProps {
@@ -14,8 +14,8 @@ interface GUIEditorDeleteProps {
   editLocation: EditLocation;
   monacoEditor: editor.IStandaloneCodeEditor;
   setApp: (app: App) => void;
-  setEditorStep: (step: GuiEditorStep) => void;
   setRecipe: (value: string) => void;
+  disabled: boolean;
 }
 
 enum deleteWarnings {
@@ -26,14 +26,19 @@ enum deleteWarnings {
 
 export default function GUIEditorDelete({
   app,
+  disabled,
   editLocation,
   monacoEditor,
   setApp,
-  setEditorStep,
   setRecipe,
 }: GUIEditorDeleteProps): React.ReactElement {
   const getDeleteWarningType = React.useCallback((): deleteWarnings => {
+    if (app.definition.pages.length === 0) {
+      return null;
+    }
+
     const blocks = getAppBlocks(app.definition);
+
     let blocksInPage = 0;
     let subBlockSelected = false;
     const selectedPageId = app.definition.pages
@@ -86,10 +91,10 @@ export default function GUIEditorDelete({
     }
 
     monacoEditor.updateOptions({ readOnly: false });
-    monacoEditor.executeEdits('GUIEditor-saveBlock', [
+    monacoEditor.executeEdits('GUIEditor', [
       {
         range,
-        text: '',
+        text: null,
         forceMoveMarkers: true,
       },
     ]);
@@ -98,9 +103,7 @@ export default function GUIEditorDelete({
     const definition = safeLoad(monacoEditor.getValue());
     setApp({ ...app, yaml: monacoEditor.getValue(), definition });
     setRecipe(monacoEditor.getValue());
-
-    setEditorStep(GuiEditorStep.SELECT);
-  }, [app, monacoEditor, editLocation, getDeleteWarningType, setApp, setEditorStep, setRecipe]);
+  }, [app, monacoEditor, editLocation, getDeleteWarningType, setApp, setRecipe]);
 
   const messageBody = React.useCallback((): React.ReactElement => {
     switch (getDeleteWarningType()) {
@@ -130,15 +133,25 @@ export default function GUIEditorDelete({
 
   const onClick = useConfirmation({
     title: <FormattedMessage {...messages.deleteWarningTitle} />,
-    body: messageBody(),
+    body: editLocation?.blockName && editLocation?.pageName ? messageBody() : 'error',
     cancelLabel: <FormattedMessage {...messages.cancel} />,
-    confirmLabel: <FormattedMessage {...messages.delete} />,
+    confirmLabel: (
+      <FormattedMessage {...messages.deleteBlock} values={{ name: editLocation?.blockName }} />
+    ),
     action: remove,
   });
 
+  if (editLocation?.blockName === undefined || editLocation?.pageName === undefined) {
+    return (
+      <Button color="danger" disabled={disabled} icon="trash-alt">
+        <FormattedMessage {...messages.delete} />
+      </Button>
+    );
+  }
+
   return (
-    <Button color="danger" icon="trash-alt" onClick={onClick}>
-      <FormattedMessage {...messages.delete} values={{ name: editLocation.blockName }} />
+    <Button color="danger" disabled={disabled} icon="trash-alt" onClick={onClick}>
+      <FormattedMessage {...messages.deleteBlock} values={{ name: editLocation.blockName }} />
     </Button>
   );
 }

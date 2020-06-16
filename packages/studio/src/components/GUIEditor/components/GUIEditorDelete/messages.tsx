@@ -6,6 +6,7 @@ export default defineMessages({
   deleteSubBlockWarning: 'Are you sure you want to delete subblock {blockname}?',
   deletePageWarning:
     '"{blockname}" is the final block in page: "{pagename}". Deleting this block will also delete the page to avoid errors.',
+  deleteBlock: 'Delete {name}',
   delete: 'Delete',
   deletePage: 'Delete Page',
   cancel: 'Cancel',
