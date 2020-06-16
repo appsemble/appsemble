@@ -1,13 +1,18 @@
-import { Button, Loader, Message, useQuery } from '@appsemble/react-components';
+import { Button, Content, Loader, Message, useQuery } from '@appsemble/react-components';
 import type { App } from '@appsemble/types';
 import axios from 'axios';
 import * as React from 'react';
 import { FormattedMessage } from 'react-intl';
+import { Link } from 'react-router-dom';
 
+import { oauth2Redirect, verifyOAuth2LoginRequest } from '../../utils/oauth2Utils';
 import HelmetIntl from '../HelmetIntl';
 import styles from './index.css';
 import messages from './messages';
 
+/**
+ * Handle login to apps using OAuth2.
+ */
 export default function OpenIDLogin(): React.ReactElement {
   const qs = useQuery();
 
@@ -18,57 +23,35 @@ export default function OpenIDLogin(): React.ReactElement {
   );
   const [generating, setGenerating] = React.useState(false);
 
-  const responseType = qs.get('response_type');
-  const scope = qs.get('scope');
-  const clientId = qs.get('client_id');
-  const state = qs.get('state');
-  const redirectUri = qs.get('redirect_uri');
+  const scopes = React.useMemo(() => qs.get('scope')?.split(' '), [qs]);
 
-  const fetchCode = React.useCallback(async () => {
+  const onAccept = React.useCallback(() => {
     setGenerating(true);
-    const { data } = await axios.post('/api/oauth2/authorization-code', {
-      appId: app.id,
-      redirectUri,
-    });
-    const redirect = new URL(redirectUri);
-    redirect.searchParams.set('code', data.code);
-    if (state) {
-      redirect.searchParams.set('state', state);
-    }
-    window.location.assign(`${redirect}`);
-  }, [app, redirectUri, state]);
+    axios
+      .post('/api/oauth2/authorization-code', {
+        appId: app.id,
+        redirectUri: qs.get('redirect_uri'),
+        scope: Array.from(new Set(scopes)).join(' '),
+      })
+      .then(({ data }) => oauth2Redirect(qs, { code: data.code }))
+      .catch(() => oauth2Redirect(qs, { error: 'server_error' }));
+  }, [app, qs, scopes]);
+
+  const onDeny = React.useCallback(() => {
+    oauth2Redirect(qs, { error: 'access_denied' });
+  }, [qs]);
 
   React.useEffect(() => {
-    if (!responseType) {
-      setError(messages.missingResponseType);
-      return;
-    }
-
-    if (!scope) {
-      setError(messages.missingScope);
-      return;
-    }
-
-    if (!clientId) {
-      setError(messages.missingClientId);
-      return;
-    }
-
-    if (!redirectUri) {
+    try {
+      if (!verifyOAuth2LoginRequest(qs, ['email', 'openid', 'profile', 'resources:manage'])) {
+        return;
+      }
+    } catch (err) {
       setError(messages.missingRedirectUri);
       return;
     }
 
-    if (responseType !== 'code') {
-      setError({ ...messages.invalidResponseType, values: { responseType } });
-      return;
-    }
-
-    if (scope !== 'openid') {
-      setError({ ...messages.invalidScope, values: { scope } });
-      return;
-    }
-
+    const clientId = qs.get('client_id');
     const appIdMatch = clientId.match(/^app:(\d+)$/);
     if (!appIdMatch) {
       setError({ ...messages.invalidClientId, values: { clientId } });
@@ -77,57 +60,59 @@ export default function OpenIDLogin(): React.ReactElement {
 
     axios
       .get<App>(`/api/apps/${appIdMatch[1]}`)
-      .then(({ data }) => {
-        setApp(data);
-        setAppLoading(false);
-      })
-      .catch(() => {
-        setError(messages.unknownError);
-        setAppLoading(false);
-      });
-  }, [clientId, redirectUri, responseType, scope]);
+      .then(({ data }) => setApp(data))
+      .catch(() => setError(messages.unknownError))
+      .finally(() => setAppLoading(false));
+  }, [qs]);
+
+  if (error) {
+    return (
+      <Content padding>
+        <Message color="danger">
+          <FormattedMessage {...error} />
+        </Message>
+      </Content>
+    );
+  }
 
   if (appLoading) {
     return <Loader />;
   }
 
-  if (error) {
-    return (
-      <Message color="danger">
-        <FormattedMessage {...error} />
-      </Message>
-    );
-  }
-
   return (
-    <div className={styles.root}>
+    <Content padding>
       <HelmetIntl title={messages.title} titleValues={{ app: app.definition.name }} />
       <div className="content">
         <p>
           <FormattedMessage
             {...messages.prompt}
             values={{
-              app: <span className="has-text-weight-bold is-italic">{app.definition.name}</span>,
+              app: (
+                <Link className="has-text-weight-bold is-italic" to={`/appa/${app.id}`}>
+                  {app.definition.name}
+                </Link>
+              ),
             }}
           />
         </p>
         <ul>
-          <li>
-            <FormattedMessage {...messages.readProfile} />
-          </li>
-          {app.definition.resources
-            ? Object.keys(app.definition.resources)
-                .sort()
-                .map((resource) => (
-                  <li key={resource}>
-                    <FormattedMessage {...messages.manageResource} values={{ resource }} />
-                  </li>
-                ))
-            : null}
+          {/* XXX We don’t make a distinction between these in our userinfo endpoint yet. */}
+          {(scopes.includes('email') ||
+            scopes.includes('openid') ||
+            scopes.includes('profile')) && (
+            <li>
+              <FormattedMessage {...messages.readProfile} />
+            </li>
+          )}
+          {scopes.includes('resources:manage') && (
+            <li>
+              <FormattedMessage {...messages.manageResource} />
+            </li>
+          )}
         </ul>
       </div>
       <div className={styles.buttonWrapper}>
-        <Button className={styles.button} disabled={generating}>
+        <Button className={styles.button} disabled={generating} onClick={onDeny}>
           <FormattedMessage {...messages.deny} />
         </Button>
         <Button
@@ -135,11 +120,11 @@ export default function OpenIDLogin(): React.ReactElement {
           color="primary"
           disabled={generating}
           loading={generating}
-          onClick={fetchCode}
+          onClick={onAccept}
         >
           <FormattedMessage {...messages.allow} />
         </Button>
       </div>
-    </div>
+    </Content>
   );
 }

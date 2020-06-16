@@ -14,7 +14,7 @@ export default function OpenIDLogin(): React.ReactElement {
         clientId={`app:${settings.id}`}
         icon="user"
         redirectUrl="/Callback"
-        scope="openid"
+        scope="email openid profile resources:manage"
       >
         <FormattedMessage {...messages.loginWith} values={{ name: 'Appsemble' }} />
       </OAuth2LoginButton>
