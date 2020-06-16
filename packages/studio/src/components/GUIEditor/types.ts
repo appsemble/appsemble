@@ -30,5 +30,4 @@ export enum GuiEditorStep {
   'SELECT',
   'ADD',
   'EDIT',
-  'DELETE',
 }

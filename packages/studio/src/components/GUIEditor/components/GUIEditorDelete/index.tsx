@@ -1,10 +1,10 @@
-import { CardFooterButton, Modal } from '@appsemble/react-components';
+import { Button, useConfirmation } from '@appsemble/react-components';
 import type { App } from '@appsemble/types';
 import { getAppBlocks } from '@appsemble/utils';
 import { safeLoad } from 'js-yaml';
 import { editor, Range } from 'monaco-editor';
 import React from 'react';
-import { FormattedMessage, useIntl } from 'react-intl';
+import { FormattedMessage } from 'react-intl';
 
 import { EditLocation, GuiEditorStep } from '../../types';
 import messages from './messages';
@@ -14,7 +14,6 @@ interface GUIEditorDeleteProps {
   editLocation: EditLocation;
   monacoEditor: editor.IStandaloneCodeEditor;
   setApp: (app: App) => void;
-  setAllowAdd: (allow: boolean) => void;
   setEditorStep: (step: GuiEditorStep) => void;
   setRecipe: (value: string) => void;
 }
@@ -29,13 +28,10 @@ export default function GUIEditorDelete({
   app,
   editLocation,
   monacoEditor,
-  setAllowAdd,
   setApp,
   setEditorStep,
   setRecipe,
 }: GUIEditorDeleteProps): React.ReactElement {
-  const intl = useIntl();
-
   const getDeleteWarningType = React.useCallback((): deleteWarnings => {
     const blocks = getAppBlocks(app.definition);
     let blocksInPage = 0;
@@ -70,7 +66,6 @@ export default function GUIEditorDelete({
 
   const remove = React.useCallback((): void => {
     const warningType = getDeleteWarningType();
-    const text = '';
     let range: Range;
     if (warningType === deleteWarnings.DELETEPAGE) {
       range = new Range(
@@ -94,7 +89,7 @@ export default function GUIEditorDelete({
     monacoEditor.executeEdits('GUIEditor-saveBlock', [
       {
         range,
-        text,
+        text: '',
         forceMoveMarkers: true,
       },
     ]);
@@ -103,56 +98,47 @@ export default function GUIEditorDelete({
     const definition = safeLoad(monacoEditor.getValue());
     setApp({ ...app, yaml: monacoEditor.getValue(), definition });
     setRecipe(monacoEditor.getValue());
-    setAllowAdd(false);
-    setEditorStep(GuiEditorStep.SELECT);
-  }, [
-    app,
-    monacoEditor,
-    editLocation,
-    getDeleteWarningType,
-    setApp,
-    setEditorStep,
-    setRecipe,
-    setAllowAdd,
-  ]);
 
-  const onClose = React.useCallback(() => {
     setEditorStep(GuiEditorStep.SELECT);
-  }, [setEditorStep]);
+  }, [app, monacoEditor, editLocation, getDeleteWarningType, setApp, setEditorStep, setRecipe]);
+
+  const messageBody = React.useCallback((): React.ReactElement => {
+    switch (getDeleteWarningType()) {
+      case deleteWarnings.DELETESUBBLOCKS:
+        return (
+          <FormattedMessage
+            {...messages.deleteSubBlockWarning}
+            values={{ blockname: editLocation.blockName }}
+          />
+        );
+      case deleteWarnings.DELETEPAGE:
+        return (
+          <FormattedMessage
+            {...messages.deletePageWarning}
+            values={{ blockname: editLocation.blockName, pagename: editLocation.pageName }}
+          />
+        );
+      default:
+        return (
+          <FormattedMessage
+            {...messages.deleteWarning}
+            values={{ blockname: editLocation.blockName, pagename: editLocation.pageName }}
+          />
+        );
+    }
+  }, [editLocation, getDeleteWarningType]);
+
+  const onClick = useConfirmation({
+    title: <FormattedMessage {...messages.deleteWarningTitle} />,
+    body: messageBody(),
+    cancelLabel: <FormattedMessage {...messages.cancel} />,
+    confirmLabel: <FormattedMessage {...messages.delete} />,
+    action: remove,
+  });
 
   return (
-    <Modal
-      footer={
-        <>
-          <CardFooterButton onClick={onClose}>
-            <FormattedMessage {...messages.cancel} />
-          </CardFooterButton>
-          <CardFooterButton color="danger" onClick={remove}>
-            <FormattedMessage {...messages.delete} />
-          </CardFooterButton>
-        </>
-      }
-      isActive
-      onClose={onClose}
-      title={<FormattedMessage {...messages.deleteWarningTitle} />}
-    >
-      {getDeleteWarningType() === deleteWarnings.DELETESUBBLOCKS
-        ? intl.formatMessage(messages.deleteSubBlockWarning, {
-            blockname: editLocation.blockName,
-          })
-        : null}
-      {getDeleteWarningType() === deleteWarnings.DELETEPAGE
-        ? intl.formatMessage(messages.deletePageWarning, {
-            blockname: editLocation.blockName,
-            pagename: editLocation.pageName,
-          })
-        : null}
-      {getDeleteWarningType() === deleteWarnings.DELETEBLOCK
-        ? intl.formatMessage(messages.deleteWarning, {
-            blockname: editLocation.blockName,
-            pagename: editLocation.pageName,
-          })
-        : null}
-    </Modal>
+    <Button color="danger" icon="trash-alt" onClick={onClick}>
+      <FormattedMessage {...messages.delete} values={{ name: editLocation.blockName }} />
+    </Button>
   );
 }

@@ -20,7 +20,7 @@ import { useHistory, useLocation, useParams } from 'react-router-dom';
 
 import { useApp } from '../AppContext';
 import GUIEditor from '../GUIEditor';
-import { EditLocation, GuiEditorStep } from '../GUIEditor/types';
+import { GuiEditorStep } from '../GUIEditor/types';
 import HelmetIntl from '../HelmetIntl';
 import MonacoEditor from '../MonacoEditor';
 import EditorNavBar from './components/EditorNavBar';
@@ -43,9 +43,6 @@ export default function Editor(): React.ReactElement {
   const [openApiDocument, setOpenApiDocument] = React.useState<OpenAPIV3.Document>();
 
   const [editorStep, setEditorStep] = React.useState<GuiEditorStep>(GuiEditorStep.SELECT);
-  const [allowEdit, setAllowEdit] = React.useState(false);
-  const [allowAdd, setAllowAdd] = React.useState(false);
-  const [editLocation, setEditLocation] = React.useState<EditLocation>(undefined);
 
   const frame = React.useRef<HTMLIFrameElement>();
   const history = useHistory();
@@ -284,11 +281,8 @@ export default function Editor(): React.ReactElement {
       <div className={styles.leftPanel}>
         <Form className={styles.editorForm} onSubmit={onSave}>
           <EditorNavBar
-            allowAdd={allowAdd}
-            allowEdit={allowEdit}
             appUrl={appUrl}
             dirty={dirty}
-            editLocation={editLocation}
             editorStep={editorStep}
             onUpload={onUpload}
             setEditorStep={setEditorStep}
@@ -297,11 +291,7 @@ export default function Editor(): React.ReactElement {
           {editorStep !== GuiEditorStep.YAML ? (
             <GUIEditor
               app={app}
-              editLocation={editLocation}
               editorStep={editorStep}
-              setAllowAdd={setAllowAdd}
-              setAllowEdit={setAllowEdit}
-              setEditLocation={setEditLocation}
               setEditorStep={setEditorStep}
               setRecipe={setRecipe}
             />

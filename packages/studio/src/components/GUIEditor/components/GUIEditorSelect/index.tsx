@@ -12,8 +12,6 @@ interface MonacoEditorProps {
   options: editor.IEditorOptions;
   setEditLocation: (value: EditLocation) => void;
   setEditor?: (value: editor.IStandaloneCodeEditor) => void;
-  setAllowEdit: (allow: boolean) => void;
-  setAllowAdd: (allow: boolean) => void;
 }
 
 export default class GUIEditorSelect extends React.Component<MonacoEditorProps> {
@@ -90,14 +88,6 @@ export default class GUIEditorSelect extends React.Component<MonacoEditorProps> 
           if (blockName?.includes("'")) {
             blockName = blockName.replace(/'/g, '');
           }
-          this.props.setAllowEdit(true);
-          this.props.setAllowAdd(true);
-        } else if (parent.name.includes('blocks:') && position.lineNumber === parent.line) {
-          this.props.setAllowEdit(false);
-          this.props.setAllowAdd(true);
-        } else if (parent.name.includes('blocks:') && position.lineNumber <= parent.line) {
-          this.props.setAllowEdit(false);
-          this.props.setAllowAdd(false);
         }
         return blockName;
       });
@@ -205,8 +195,6 @@ export default class GUIEditorSelect extends React.Component<MonacoEditorProps> 
         className: styles.selectionDecoration,
       });
       this.props.setEditLocation(editLocation);
-    } else {
-      this.props.setAllowEdit(false);
     }
   };
 

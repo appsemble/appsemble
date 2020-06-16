@@ -4,27 +4,22 @@ import React from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Link, useLocation } from 'react-router-dom';
 
-import { EditLocation, GuiEditorStep } from '../../../GUIEditor/types';
+import { GuiEditorStep } from '../../../GUIEditor/types';
 import styles from './index.css';
 import messages from './messages';
 
 interface EditorNavBarProps {
   dirty: boolean;
-  allowAdd: boolean;
-  allowEdit: boolean;
   editorStep: GuiEditorStep;
   setEditorStep: (value: GuiEditorStep) => void;
   appUrl: string;
-  editLocation: EditLocation;
   onUpload: () => void;
   valid: boolean;
 }
+
 export default function EditorNavBar({
-  allowAdd,
-  allowEdit,
   appUrl,
   dirty,
-  editLocation,
   editorStep,
   onUpload,
   setEditorStep,
@@ -39,6 +34,7 @@ export default function EditorNavBar({
       setEditorStep(GuiEditorStep.SELECT);
     }
   }, [setEditorStep, editorStep]);
+
   return (
     <>
       <nav
@@ -78,14 +74,8 @@ export default function EditorNavBar({
           </span>
         </div>
       </nav>
-      <div
-        className={
-          editorStep === GuiEditorStep.YAML || editorStep === GuiEditorStep.SELECT
-            ? `tabs is-boxed ${styles.editorTabs}`
-            : 'is-hidden'
-        }
-      >
-        {editorStep === GuiEditorStep.YAML ? (
+      {editorStep === GuiEditorStep.YAML ? (
+        <div className={`tabs is-boxed ${styles.editorTabs}`}>
           <ul>
             <li className={classNames({ 'is-active': location.hash === '#editor' })} value="editor">
               <Link to="#editor">
@@ -112,51 +102,8 @@ export default function EditorNavBar({
               </Link>
             </li>
           </ul>
-        ) : (
-          <ul>
-            <li className={classNames({ 'is-active': location.hash === '#editor' })} value="editor">
-              <Link to="#editor">
-                <Icon icon="file-code" />
-                <FormattedMessage {...messages.recipe} />
-              </Link>
-            </li>
-            <li value="addblock">
-              <Button
-                color="success"
-                disabled={!allowAdd}
-                icon="plus"
-                onClick={() => setEditorStep(GuiEditorStep.ADD)}
-              >
-                <FormattedMessage {...messages.addBlock} />
-              </Button>
-            </li>
-            <li value="editblock">
-              <Button
-                className={styles.guiEditorButton}
-                color="warning"
-                disabled={!allowEdit}
-                icon="edit"
-                onClick={() => setEditorStep(GuiEditorStep.EDIT)}
-              >
-                <FormattedMessage {...messages.editBlock} />
-                {editLocation?.blockName ? editLocation.blockName : ''}
-              </Button>
-            </li>
-            <li value="removeblock">
-              <Button
-                className={styles.guiEditorButton}
-                color="danger"
-                disabled={!allowEdit}
-                icon="trash-alt"
-                onClick={() => setEditorStep(GuiEditorStep.DELETE)}
-              >
-                <FormattedMessage {...messages.deleteBlock} />
-                {editLocation?.blockName ? editLocation.blockName : ''}
-              </Button>
-            </li>
-          </ul>
-        )}
-      </div>
+        </div>
+      ) : null}
     </>
   );
 }

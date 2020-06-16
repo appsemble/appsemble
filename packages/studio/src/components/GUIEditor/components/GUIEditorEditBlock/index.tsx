@@ -88,37 +88,35 @@ export default function GUIEditorEditBlock({
     setApp({ ...app, yaml: recipe, definition });
   };
 
-  React.useEffect(() => {
-    const getBlockParams = (): void => {
-      app.definition.pages.forEach((page: BasicPageDefinition) => {
-        if (!page.name.includes(editLocation.pageName)) {
+  const initBlockParameters = React.useCallback(() => {
+    if (selectedBlock) {
+      return;
+    }
+    app.definition.pages.forEach((page: BasicPageDefinition) => {
+      if (!page.name.includes(editLocation.pageName)) {
+        return;
+      }
+      page.blocks.forEach((block: BlockDefinition) => {
+        if (!block.type.includes(editLocation.blockName) || editingResource) {
           return;
         }
-        page.blocks.forEach((block: BlockDefinition) => {
-          if (!block.type.includes(editLocation.blockName) || editingResource) {
-            return;
-          }
-          let blockValues: BlockDefinition;
+        let blockValues: BlockDefinition;
 
-          if (block.events) {
-            blockValues = { ...blockValues, events: block.events };
-          }
-          if (block.actions) {
-            blockValues = { ...blockValues, actions: block.actions };
-          }
-          if (block.parameters) {
-            blockValues = { ...blockValues, parameters: block.parameters };
-          }
+        if (block.events) {
+          blockValues = { ...blockValues, events: block.events };
+        }
+        if (block.actions) {
+          blockValues = { ...blockValues, actions: block.actions };
+        }
+        if (block.parameters) {
+          blockValues = { ...blockValues, parameters: block.parameters };
+        }
 
-          setEditingResource(blockValues);
-        });
+        setEditingResource(blockValues);
+        setEditExistingBlock(true);
       });
-    };
-
-    if (editExistingBlock === true) {
-      getBlockParams();
-    }
-  }, [editExistingBlock, editingResource, editLocation.pageName, editLocation.blockName, app]);
+    });
+  }, [selectedBlock, editingResource, editLocation, app]);
 
   React.useEffect(() => {
     const getBlocks = async (): Promise<void> => {
@@ -133,6 +131,7 @@ export default function GUIEditorEditBlock({
   }, [setEditExistingBlock, editLocation, selectedBlock, setSelectedBlock]);
 
   if (selectedBlock === undefined) {
+    initBlockParameters();
     return <Loader />;
   }
 
