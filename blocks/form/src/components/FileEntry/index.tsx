@@ -31,9 +31,13 @@ export default function FileEntry({ field, name, onInput, value }: FileEntryProp
     [field, onInput],
   );
 
-  const onRemove = useCallback(() => {
-    onInput(({ target: { name } } as any) as Event, null);
-  }, [name, onInput]);
+  const onRemove = useCallback(
+    (event: Event) => {
+      event.preventDefault();
+      onInput(({ target: { name } } as any) as Event, null);
+    },
+    [name, onInput],
+  );
 
   const title = field.label ?? field.name;
 
