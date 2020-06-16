@@ -13,6 +13,7 @@ enum Permission {
   DeleteApps,
   PushNotifications,
   ManageResources,
+  InviteMember,
 }
 
 export default Permission;
