@@ -1,4 +1,4 @@
-import { useMessages } from '@appsemble/react-components';
+import { useLocationString, useMessages } from '@appsemble/react-components';
 import type {
   AppDefinition,
   BasicPageDefinition,
@@ -9,7 +9,7 @@ import { checkAppRole, normalize } from '@appsemble/utils';
 import { EventEmitter } from 'events';
 import React from 'react';
 import { useIntl } from 'react-intl';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 
 import type { ShowDialogParams } from '../../types';
 import { useAppDefinition } from '../AppDefinitionProvider';
@@ -31,7 +31,7 @@ export default function Page({ page, prefix }: PageProps): React.ReactElement {
   const history = useHistory();
   const intl = useIntl();
   const push = useMessages();
-  const location = useLocation();
+  const redirect = useLocationString();
   const { isLoggedIn, logout, role } = useUser();
 
   const [dialog, setDialog] = React.useState<ShowDialogParams>();
@@ -71,7 +71,6 @@ export default function Page({ page, prefix }: PageProps): React.ReactElement {
     const permission = checkPagePermissions(page);
     if (!permission) {
       if (!isLoggedIn) {
-        const redirect = `${location.pathname}${location.search}${location.hash}`;
         history.replace(`/Login?${new URLSearchParams({ redirect })}`);
         return;
       }
@@ -103,19 +102,7 @@ export default function Page({ page, prefix }: PageProps): React.ReactElement {
         }
       }
     }
-  }, [
-    checkPagePermissions,
-    definition,
-    history,
-    intl,
-    isLoggedIn,
-    location.hash,
-    location.pathname,
-    location.search,
-    logout,
-    page,
-    push,
-  ]);
+  }, [checkPagePermissions, definition, history, intl, isLoggedIn, logout, page, push, redirect]);
 
   const showDialog = React.useCallback((d: ShowDialogParams) => {
     setDialog(d);

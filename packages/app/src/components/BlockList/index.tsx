@@ -1,9 +1,9 @@
-import { Loader } from '@appsemble/react-components';
+import { Loader, useLocationString } from '@appsemble/react-components';
 import type { BlockDefinition, Security } from '@appsemble/types';
 import { checkAppRole } from '@appsemble/utils';
 import type { EventEmitter } from 'events';
 import React from 'react';
-import { Redirect, useLocation } from 'react-router-dom';
+import { Redirect } from 'react-router-dom';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 
 import type { ShowDialogAction } from '../../types';
@@ -49,7 +49,7 @@ export default function BlockList({
 }: BlockListProps): React.ReactElement {
   const { definition, revision } = useAppDefinition();
   const { isLoggedIn, role } = useUser();
-  const location = useLocation();
+  const redirect = useLocationString();
 
   const blockList = React.useMemo(() => filterBlocks(definition.security, blocks, role), [
     blocks,
@@ -84,7 +84,6 @@ export default function BlockList({
 
   if (!blockList.length) {
     if (!isLoggedIn) {
-      const redirect = `${location.pathname}${location.search}${location.hash}`;
       return <Redirect to={`/Login?${new URLSearchParams({ redirect })}`} />;
     }
 
