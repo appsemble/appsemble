@@ -1,4 +1,3 @@
-import * as React from 'react';
 import { useLocation } from 'react-router-dom';
 
 /**
@@ -9,6 +8,7 @@ import { useLocation } from 'react-router-dom';
  * @returns The string representing the current location.
  */
 export default function useLocationString(): string {
-  const { hash, pathname, search } = useLocation();
-  return React.useMemo(() => `${pathname}${search}${hash}`, [hash, pathname, search]);
+  const location = useLocation();
+
+  return `${location.pathname}${location.search}${location.hash}`;
 }
