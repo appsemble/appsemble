@@ -1,4 +1,55 @@
+import type { Remapper } from '@appsemble/sdk';
 import type { IconName } from '@fortawesome/fontawesome-common-types';
+
+/**
+ * Properties that are shared between all requirements.
+ */
+interface BaseRequirement {
+  errorMessage: Remapper;
+}
+
+/**
+ * Requirement that matches using a given regex.
+ */
+interface RegexRequirement extends BaseRequirement {
+  /**
+   * The regex to match with. Must be a valid JavaScript regex.
+   */
+  regex: RegExp;
+
+  /**
+   * The flags to use for the regex.
+   *
+   * Supported values: `g`, `m`, `i`, `y`, `u`, `s`
+   *
+   * @default 'g'
+   */
+  flags?: string;
+}
+
+/**
+ * A requirement used to enforce
+ */
+interface LengthRequirement extends BaseRequirement {
+  /**
+   * The minimum length.
+   */
+  minLength?: number;
+
+  /**
+   * The maximum length.
+   */
+  maxLength?: number;
+
+  /**
+   * Whether the requirement should be inclusive or exclusive.
+   *
+   * @default true
+   */
+  inclusive?: boolean;
+}
+
+type Requirement = RegexRequirement | LengthRequirement;
 
 /**
  * An option that is displayed in a dropdown menu.
@@ -194,13 +245,29 @@ export interface StringField extends AbstractField {
    * The default value of the field.
    */
   defaultValue?: string;
+
+  /**
+   * The format to use for validation.
+   */
   format?: 'email' | 'url';
-  maxLength?: number;
+
+  /**
+   * Whether the string field should be multiline or not.
+   *
+   * @default false
+   */
   multiline?: boolean;
   /**
    * The type of the field.
    */
   type: 'string';
+
+  /**
+   * The requirements that are used to validate the field with.
+   *
+   * These are ordered in the order they are defined in.
+   */
+  requirements?: Requirement[];
 }
 
 export type Field =

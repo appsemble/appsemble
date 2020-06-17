@@ -3,7 +3,7 @@ import classNames from 'classnames';
 import { h } from 'preact';
 import { useCallback, useEffect, useMemo, useState } from 'preact/hooks';
 
-import type { Field, FileField } from '../block';
+import type { Field, FileField, StringField } from '../block';
 import BooleanInput from './components/BooleanInput';
 import EnumInput from './components/EnumInput';
 import FileInput from './components/FileInput';
@@ -23,6 +23,39 @@ const inputs = {
   number: NumberInput,
   integer: NumberInput,
   boolean: BooleanInput,
+};
+
+const validateString: Validator = (field: StringField, event, value: string) => {
+  const inputValid = (event.target as HTMLInputElement).validity.valid;
+
+  if (!inputValid) {
+    return false;
+  }
+
+  field.requirements.some((requirement) => {
+    if ('regex' in requirement) {
+      const regex = new RegExp(requirement.regex, requirement.flags || 'g');
+      return value.match(regex);
+    }
+
+    if ('maxLength' in requirement || 'minLength' in requirement) {
+      const maxValid =
+        (requirement?.maxLength && requirement.inclusive
+          ? value.length >= requirement.maxLength
+          : value.length > requirement.maxLength) ?? true;
+      const minValid =
+        (requirement?.minLength && requirement.inclusive
+          ? value.length <= requirement.minLength
+          : value.length < requirement.minLength) ?? true;
+
+      return maxValid && minValid;
+    }
+
+    // Unknown validator?
+    return true;
+  });
+
+  return inputValid;
 };
 
 const validateInput: Validator = (_field, event) =>
@@ -53,7 +86,7 @@ const validators: { [name: string]: Validator } = {
   geocoordinates: (_, _event, value: { longitude: number; latitude: number }) =>
     !!(value.latitude && value.longitude),
   hidden: (): boolean => true,
-  string: validateInput,
+  string: validateString,
   number: validateInput,
   integer: validateInput,
   boolean: () => true,
