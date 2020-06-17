@@ -1,11 +1,18 @@
-import { Button, Loader, Message, Title, useQuery } from '@appsemble/react-components';
+import {
+  Button,
+  Loader,
+  Message,
+  Title,
+  useLocationString,
+  useQuery,
+} from '@appsemble/react-components';
 import type { TokenResponse, UserInfo } from '@appsemble/types';
 import { appendOAuth2State, clearOAuth2State, loadOAuth2State } from '@appsemble/web-utils';
 import axios from 'axios';
 import classNames from 'classnames';
 import * as React from 'react';
 import { FormattedMessage, MessageDescriptor } from 'react-intl';
-import { Link, useHistory, useLocation } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 
 import useUser from '../../hooks/useUser';
 import settings from '../../utils/settings';
@@ -27,7 +34,7 @@ interface ExtendedOAuth2State {
  */
 export default function OAuth2Connect(): React.ReactElement {
   const history = useHistory();
-  const location = useLocation();
+  const redirect = useLocationString();
   const qs = useQuery();
   const { login, userInfo } = useUser();
 
@@ -184,9 +191,7 @@ export default function OAuth2Connect(): React.ReactElement {
                     <Link
                       to={{
                         pathname: '/login',
-                        search: `?${new URLSearchParams({
-                          redirect: `${location.pathname}${location.search}${location.hash}`,
-                        })}`,
+                        search: `?${new URLSearchParams({ redirect })}`,
                       }}
                     >
                       {text}
