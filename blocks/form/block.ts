@@ -114,6 +114,8 @@ export interface FileField extends AbstractField {
 
   /**
    * Boolean value representing whether to accept one file or multiple files.
+   *
+   * @default false
    */
   repeated?: boolean;
 
