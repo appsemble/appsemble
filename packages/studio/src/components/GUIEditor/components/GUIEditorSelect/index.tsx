@@ -48,67 +48,13 @@ export default function GUIEditorSelect({
   const [decorators, setDecorators] = React.useState<any>();
   const [decorator, setDecorator] = React.useState<string[]>();
 
-  React.useEffect(() => {
-    const node = ref.current;
-    const ed = editor.create(node, options);
-
-    const observer = new ResizeObserver(() => ed.layout());
-    observer.observe(node);
-
-    setEditor(ed);
-    setMonaco(ed);
-
-    return () => {
-      ed.dispose();
-      observer.unobserve(node);
-    };
-    // This is triggered by the lack of options in the dependency array. This is left out on
-    // purpose. Instead, this is handled using monaco.updateOptions() below.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  React.useEffect(() => {
-    if (monaco && monaco.getModel().getValue() !== value) {
-      monaco.getModel().setValue(value);
-    }
-  }, [monaco, value]);
-
-  React.useEffect(() => {
-    if (monaco) {
-      editor.setModelLanguage(monaco.getModel(), 'yaml');
-
-      monaco.onDidChangeCursorSelection(() => {
-        // eslint-disable-next-line @typescript-eslint/no-use-before-define
-        getEditLocation(monaco.getModel(), monaco.getPosition());
-      });
-
-      setDecorator(
-        monaco.deltaDecorations(
-          [],
-          [
-            {
-              range: new Range(0, 0, 0, 0),
-              options: { isWholeLine: false },
-            },
-          ],
-        ),
-      );
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [monaco]);
-
-  React.useEffect(() => {
-    if (monaco && decorators !== undefined && decorator !== undefined) {
-      monaco.deltaDecorations(decorator, decorators);
-    }
-  }, [monaco, decorators, decorator]);
-
   const setEditorDecorators = React.useCallback(
-    (range: Range, decoratorOptions: editor.IModelDecorationOptions): void => {
+    // eslint-disable-next-line no-shadow
+    (range: Range, options: editor.IModelDecorationOptions): void => {
       setDecorators([
         {
           range,
-          decoratorOptions,
+          options,
         },
       ]);
     },
@@ -236,6 +182,58 @@ export default function GUIEditorSelect({
     },
     [getBlockName, setEditLocation, setEditorDecorators],
   );
+
+  React.useEffect(() => {
+    const node = ref.current;
+    const ed = editor.create(node, options);
+
+    const observer = new ResizeObserver(() => ed.layout());
+    observer.observe(node);
+
+    setEditor(ed);
+    setMonaco(ed);
+
+    return () => {
+      observer.unobserve(node);
+    };
+    // This is triggered by the lack of options in the dependency array. This is left out on
+    // purpose. Instead, this is handled using monaco.updateOptions() below.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  React.useEffect(() => {
+    if (monaco && monaco.getModel().getValue() !== value) {
+      monaco.getModel().setValue(value);
+    }
+  }, [monaco, value]);
+
+  React.useEffect(() => {
+    if (monaco) {
+      editor.setModelLanguage(monaco.getModel(), 'yaml');
+
+      monaco.onDidChangeCursorSelection(() => {
+        getEditLocation(monaco.getModel(), monaco.getPosition());
+      });
+
+      setDecorator(
+        monaco.deltaDecorations(
+          [],
+          [
+            {
+              range: new Range(0, 0, 0, 0),
+              options: { isWholeLine: false },
+            },
+          ],
+        ),
+      );
+    }
+  }, [monaco, getEditLocation]);
+
+  React.useEffect(() => {
+    if (monaco && decorators !== undefined && decorator !== undefined) {
+      monaco.deltaDecorations(decorator, decorators);
+    }
+  }, [monaco, decorators, decorator]);
 
   return <div ref={ref} className={styles.editor} />;
 }

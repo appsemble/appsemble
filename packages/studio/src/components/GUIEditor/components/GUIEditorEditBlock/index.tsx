@@ -2,90 +2,37 @@ import { Loader, Title } from '@appsemble/react-components';
 import type { App, BasicPageDefinition, BlockDefinition, BlockManifest } from '@appsemble/types';
 import { normalizeBlockName, stripBlockName } from '@appsemble/utils';
 import axios from 'axios';
-import indentString from 'indent-string';
-import yaml, { safeLoad } from 'js-yaml';
-import { editor, Range } from 'monaco-editor';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import JSONSchemaEditor from '../../../JSONSchemaEditor';
 import type { EditLocation } from '../../types';
-import { GuiEditorStep } from '../../types';
 import styles from './index.css';
 import messages from './messages';
 
 interface GUIEditorEditBlockProps {
   selectedBlock: BlockManifest;
-  setEditorStep: (value: GuiEditorStep) => void;
   app: App;
   editLocation: EditLocation;
   setSelectedBlock: (value: BlockManifest) => void;
-  monacoEditor: editor.IStandaloneCodeEditor;
-  setApp: (app: App) => void;
-  setRecipe: (value: string) => void;
+  setBlockValue: (value: BlockDefinition) => void;
+  blockValue: BlockDefinition;
 }
 
 export default function GUIEditorEditBlock({
   app,
+  blockValue,
   editLocation,
-  monacoEditor,
   selectedBlock,
-  setApp,
-  setEditorStep,
-  setRecipe,
+  setBlockValue,
   setSelectedBlock,
 }: GUIEditorEditBlockProps): React.ReactElement {
-  const [editingResource, setEditingResource] = React.useState<BlockDefinition>(undefined);
-  const [editExistingBlock, setEditExistingBlock] = React.useState(false);
-
   const onChange = React.useCallback(
     (_event: any, value: any) => {
-      setEditingResource({ ...editingResource, parameters: { ...value } });
+      setBlockValue({ ...blockValue, parameters: { ...value } });
     },
-    [editingResource],
+    [blockValue, setBlockValue],
   );
-
-  const save = (editedParams: BlockDefinition): void => {
-    const blockParent = editLocation.parents
-      .slice()
-      .reverse()
-      .find((x) => x.name === 'blocks:');
-
-    const range = editExistingBlock
-      ? editLocation.editRange
-      : new Range(blockParent.line + 1, 1, blockParent.line + 1, 1);
-
-    const text = indentString(
-      yaml.safeDump(
-        [
-          {
-            type: stripBlockName(selectedBlock.name),
-            version: selectedBlock.version,
-            parameters: editedParams.parameters,
-            actions: editedParams.actions,
-            events: editedParams.events,
-          },
-        ],
-        { skipInvalid: true },
-      ),
-      blockParent.indent + 1,
-    );
-
-    monacoEditor.updateOptions({ readOnly: false });
-    monacoEditor.executeEdits('GUIEditor-saveBlock', [
-      {
-        range,
-        text,
-        forceMoveMarkers: true,
-      },
-    ]);
-    monacoEditor.updateOptions({ readOnly: true });
-    const recipe = monacoEditor.getValue();
-    setRecipe(recipe);
-    setEditorStep(GuiEditorStep.SELECT);
-    const definition = safeLoad(monacoEditor.getValue());
-    setApp({ ...app, yaml: recipe, definition });
-  };
 
   const initBlockParameters = React.useCallback(() => {
     if (selectedBlock) {
@@ -96,7 +43,7 @@ export default function GUIEditorEditBlock({
         return;
       }
       page.blocks.forEach((block: BlockDefinition) => {
-        if (!block.type.includes(editLocation.blockName) || editingResource) {
+        if (!block.type.includes(editLocation.blockName) || blockValue) {
           return;
         }
         let blockValues: BlockDefinition;
@@ -111,23 +58,21 @@ export default function GUIEditorEditBlock({
           blockValues = { ...blockValues, parameters: block.parameters };
         }
 
-        setEditingResource(blockValues);
-        setEditExistingBlock(true);
+        setBlockValue(blockValues);
       });
     });
-  }, [selectedBlock, editingResource, editLocation, app]);
+  }, [selectedBlock, setBlockValue, blockValue, editLocation, app]);
 
   React.useEffect(() => {
     const getBlocks = async (): Promise<void> => {
       const normalizedBlockName = normalizeBlockName(editLocation.blockName);
       const { data } = await axios.get(`/api/blocks/${normalizedBlockName}`);
       setSelectedBlock(data);
-      setEditExistingBlock(true);
     };
     if (selectedBlock === undefined) {
       getBlocks();
     }
-  }, [setEditExistingBlock, editLocation, selectedBlock, setSelectedBlock]);
+  }, [editLocation, selectedBlock, setSelectedBlock]);
 
   if (selectedBlock === undefined) {
     initBlockParameters();
@@ -143,7 +88,7 @@ export default function GUIEditorEditBlock({
             name={stripBlockName(selectedBlock.name)}
             onChange={onChange}
             schema={selectedBlock?.parameters}
-            value={editingResource?.parameters}
+            value={blockValue?.parameters}
           />
         ) : (
           <div>

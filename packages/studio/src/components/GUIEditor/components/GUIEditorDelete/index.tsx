@@ -33,7 +33,11 @@ export default function GUIEditorDelete({
   setRecipe,
 }: GUIEditorDeleteProps): React.ReactElement {
   const getDeleteWarningType = React.useCallback((): deleteWarnings => {
-    if (app.definition.pages === null || app.definition?.pages?.length === 0) {
+    if (
+      app.definition === undefined ||
+      app.definition?.pages === null ||
+      app.definition?.pages?.length === 0
+    ) {
       return null;
     }
 

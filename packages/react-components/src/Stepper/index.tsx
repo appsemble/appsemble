@@ -7,7 +7,7 @@ import messages from './messages';
 const Context = React.createContext<StepperProps>(null);
 
 interface StepperProps {
-  children: React.ReactElement[];
+  children: React.ReactElement | React.ReactElement[];
   onFinish: () => void;
   onCancel: () => void;
 }
@@ -18,8 +18,8 @@ export default function Stepper({
   onFinish,
 }: StepperProps): React.ReactElement {
   const [step, setStep] = React.useState(0);
-  const [value, setValue] = React.useState({});
   const childArray = React.Children.toArray(children);
+  const childIsArray = Array.isArray(children);
 
   const back = React.useCallback(() => {
     if (step === 0) {
@@ -30,15 +30,18 @@ export default function Stepper({
   }, [step, onCancel]);
 
   const next = React.useCallback(() => {
-    if (step >= children.length - 1) {
-      onFinish();
+    if (childIsArray) {
+      if (step >= (children as React.ReactElement[]).length - 1) {
+        onFinish();
+      } else {
+        setStep(step + 1);
+      }
     } else {
-      setStep(step + 1);
+      onFinish();
     }
-  }, [children, step, onFinish]);
+  }, [children, step, onFinish, childIsArray]);
 
-  const context = React.useMemo(() => ({ children, value, onFinish, onCancel }), [
-    value,
+  const context = React.useMemo(() => ({ children, onFinish, onCancel }), [
     onFinish,
     onCancel,
     children,
@@ -56,7 +59,7 @@ export default function Stepper({
           )}
         </Button>
         <Button type="submit">
-          {step === children.length - 1 ? (
+          {step === (children as React.ReactElement[]).length - 1 || !childIsArray ? (
             <FormattedMessage {...messages.finish} />
           ) : (
             <FormattedMessage {...messages.next} />
