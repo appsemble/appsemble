@@ -42,6 +42,15 @@ export default function OAuth2Connect(): React.ReactElement {
   const [error, setError] = React.useState<MessageDescriptor>();
   const [isSubmitting, setSubmitting] = React.useState(false);
 
+  const finalizeLogin = React.useCallback(
+    (response: TokenResponse) => {
+      login(response);
+      clearOAuth2State();
+      history.replace(session.redirect || '/');
+    },
+    [history, login, session],
+  );
+
   React.useEffect(() => {
     async function connect(): Promise<void> {
       try {
@@ -53,9 +62,7 @@ export default function OAuth2Connect(): React.ReactElement {
           },
         );
         if ('access_token' in data) {
-          login(data);
-          clearOAuth2State();
-          history.replace('/');
+          finalizeLogin(data);
           return;
         }
         // Prevent the user from calling the oauth2 registration API twice.
@@ -76,7 +83,7 @@ export default function OAuth2Connect(): React.ReactElement {
       // The user refreshed the page.
       setLoading(false);
     }
-  }, [code, history, login, profile, qs, session, state]);
+  }, [code, finalizeLogin, profile, session, state]);
 
   const submit = React.useCallback(async () => {
     setSubmitting(true);
@@ -85,9 +92,7 @@ export default function OAuth2Connect(): React.ReactElement {
         code,
         authorizationUrl: session.authorizationUrl,
       });
-      login(data);
-      clearOAuth2State();
-      history.replace('/');
+      finalizeLogin(data);
     } catch (err) {
       if (err?.response?.status === 409) {
         setLinkError(true);
@@ -97,7 +102,7 @@ export default function OAuth2Connect(): React.ReactElement {
     } finally {
       setSubmitting(false);
     }
-  }, [code, history, login, session]);
+  }, [code, finalizeLogin, session]);
 
   if (isLoading) {
     return <Loader />;
