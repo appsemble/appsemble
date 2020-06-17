@@ -103,45 +103,41 @@ export default function ResourceTable(): React.ReactElement {
     [appId, editingResource, history, intl, match.url, mode, push, resourceName, resources],
   );
 
-  const submitEdit = React.useCallback(
-    async (event: React.FormEvent) => {
-      event.preventDefault();
-      try {
-        await axios.put<Resource>(
-          `/api/apps/${appId}/resources/${resourceName}/${resourceId}`,
-          editingResource,
-        );
+  const submitEdit = React.useCallback(async () => {
+    try {
+      await axios.put<Resource>(
+        `/api/apps/${appId}/resources/${resourceName}/${resourceId}`,
+        editingResource,
+      );
 
-        setResources(
-          resources.map((resource) =>
-            resource.id === editingResource.id ? editingResource : resource,
-          ),
-        );
-        setEditingResource(null);
+      setResources(
+        resources.map((resource) =>
+          resource.id === editingResource.id ? editingResource : resource,
+        ),
+      );
+      setEditingResource(null);
 
-        history.push(match.url.replace(`/${mode}/${resourceId}`, ''));
+      history.push(match.url.replace(`/${mode}/${resourceId}`, ''));
 
-        push({
-          body: intl.formatMessage(messages.updateSuccess, { id: resourceId }),
-          color: 'primary',
-        });
-      } catch (e) {
-        push(intl.formatMessage(messages.updateError));
-      }
-    },
-    [
-      appId,
-      editingResource,
-      history,
-      intl,
-      match.url,
-      mode,
-      push,
-      resourceId,
-      resourceName,
-      resources,
-    ],
-  );
+      push({
+        body: intl.formatMessage(messages.updateSuccess, { id: resourceId }),
+        color: 'primary',
+      });
+    } catch (e) {
+      push(intl.formatMessage(messages.updateError));
+    }
+  }, [
+    appId,
+    editingResource,
+    history,
+    intl,
+    match.url,
+    mode,
+    push,
+    resourceId,
+    resourceName,
+    resources,
+  ]);
 
   const downloadCsv = React.useCallback(async () => {
     await download(
