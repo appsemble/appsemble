@@ -67,6 +67,14 @@ const exampleApp = (orgId: string, path = 'test-app'): Promise<App> =>
             },
           },
         },
+        testResourceAuthorOnly: {
+          schema: {
+            type: 'object',
+            required: ['foo'],
+            properties: { foo: { type: 'string' } },
+          },
+          query: { roles: ['$author'] },
+        },
         secured: {
           schema: { type: 'object' },
           create: {
@@ -216,6 +224,7 @@ describe('getResourceById', () => {
     });
   });
 });
+
 describe('queryResources', () => {
   it('should be able to fetch all resources of a type', async () => {
     const app = await exampleApp(organizationId);
@@ -246,6 +255,43 @@ describe('queryResources', () => {
         {
           id: resourceB.id,
           foo: 'baz',
+          $created: new Date(0).toJSON(),
+          $updated: new Date(0).toJSON(),
+        },
+      ],
+    });
+  });
+
+  it('should be possible to query resources as author', async () => {
+    const app = await exampleApp(organizationId);
+    await AppMember.create({ AppId: app.id, UserId: user.id, role: 'Admin' });
+    const userB = await User.create();
+    await AppMember.create({ AppId: app.id, UserId: userB.id, role: 'Admin' });
+
+    const resourceA = await Resource.create({
+      AppId: app.id,
+      UserId: user.id,
+      type: 'testResourceAuthorOnly',
+      data: { foo: 'bar' },
+    });
+    await Resource.create({
+      AppId: app.id,
+      UserId: userB.id,
+      type: 'testResourceAuthorOnly',
+      data: { foo: 'baz' },
+    });
+    await Resource.create({ AppId: app.id, type: 'testResourceB', data: { bar: 'baz' } });
+
+    const response = await request.get(`/api/apps/${app.id}/resources/testResourceAuthorOnly`, {
+      headers: { authorization },
+    });
+
+    expect(response).toMatchObject({
+      status: 200,
+      data: [
+        {
+          id: resourceA.id,
+          foo: 'bar',
           $created: new Date(0).toJSON(),
           $updated: new Date(0).toJSON(),
         },

@@ -114,8 +114,10 @@ export interface FileField extends AbstractField {
 
   /**
    * Boolean value representing whether to accept one file or multiple files.
+   *
+   * @default false
    */
-  repeated?: true;
+  repeated?: boolean;
 
   /**
    * The quality modifier to use when uploading images, in percentages.

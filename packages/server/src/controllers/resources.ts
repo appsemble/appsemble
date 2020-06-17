@@ -4,7 +4,7 @@ import Boom from '@hapi/boom';
 import parseOData from '@wesselkuipers/odata-sequelize';
 import crypto from 'crypto';
 import type { OpenAPIV3 } from 'openapi-types';
-import { FindOptions, Op, QueryOptions } from 'sequelize';
+import { FindOptions, Op, QueryOptions, WhereOptions } from 'sequelize';
 
 import {
   App,
@@ -140,9 +140,9 @@ async function verifyAppRole(
   resource: Resource,
   resourceType: string,
   action: 'create' | 'delete' | 'get' | 'query' | 'update',
-): Promise<void> {
+): Promise<WhereOptions> {
   if (!app.definition.resources[resourceType] || !app.definition.resources[resourceType][action]) {
-    return;
+    return undefined;
   }
 
   const { user } = ctx;
@@ -152,7 +152,7 @@ async function verifyAppRole(
     if (app.definition.roles && app.definition.roles.length) {
       roles = app.definition.roles;
     } else {
-      return;
+      return undefined;
     }
   }
 
@@ -160,15 +160,19 @@ async function verifyAppRole(
   const filteredRoles = roles.filter((r) => r !== '$author');
 
   if (!author && !filteredRoles.length) {
-    return;
+    return undefined;
   }
 
   if (!user && (filteredRoles.length || author)) {
     throw Boom.unauthorized('User is not logged in');
   }
 
+  if (author && user && action === 'query') {
+    return { UserId: user.id };
+  }
+
   if (author && user && resource && user.id === resource.UserId) {
-    return;
+    return undefined;
   }
 
   const member = app.Users.find((u) => u.id === user.id);
@@ -202,6 +206,7 @@ async function verifyAppRole(
   if (!filteredRoles.some((r) => checkAppRole(app.definition.security, r, role))) {
     throw Boom.forbidden('User does not have sufficient permissions.');
   }
+  return undefined;
 }
 
 async function sendSubscriptionNotifications(
@@ -308,7 +313,7 @@ export async function queryResources(ctx: KoaContext<Params>): Promise<void> {
     }),
   });
   const { properties } = verifyResourceDefinition(app, resourceType);
-  await verifyAppRole(ctx, app, null, resourceType, 'query');
+  const userQuery = await verifyAppRole(ctx, app, null, resourceType, 'query');
 
   const keys = Object.keys(properties);
   // the data is stored in the ´data´ column as json
@@ -317,7 +322,7 @@ export async function queryResources(ctx: KoaContext<Params>): Promise<void> {
   try {
     const resources = await Resource.findAll({
       ...renamedQuery,
-      where: { ...renamedQuery.where, type: resourceType, AppId: appId },
+      where: { ...renamedQuery.where, type: resourceType, AppId: appId, ...userQuery },
       include: [{ model: User, attributes: ['id', 'name'], required: false }],
     });
 
