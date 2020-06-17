@@ -14,6 +14,7 @@ export default function JSONSchemaUnknownEditor({
 }: CommonJSONSchemaEditorProps<any>): React.ReactElement {
   return (
     <JSONInput
+      help={schema.description}
       label={<JSONSchemaLabel name={name} prefix={prefix} schema={schema} />}
       name={name}
       onChange={onChange}

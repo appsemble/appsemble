@@ -1,9 +1,8 @@
-import { Table, Title } from '@appsemble/react-components';
+import { MarkdownContent, Table, Title } from '@appsemble/react-components';
 import type { BlockManifest } from '@appsemble/types';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import MarkdownContent from '../../../MarkdownContent';
 import messages from './messages';
 
 interface EventTableProps {

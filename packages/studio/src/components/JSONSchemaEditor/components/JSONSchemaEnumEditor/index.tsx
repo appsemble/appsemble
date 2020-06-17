@@ -18,6 +18,7 @@ export default function JSONSchemaEnumEditor({
   return (
     <Select
       disabled={disabled}
+      help={schema.description}
       label={<JSONSchemaLabel name={name} prefix={prefix} schema={schema} />}
       name={name}
       onChange={onChange}

@@ -4,6 +4,7 @@ import * as React from 'react';
 
 import FormComponent from '../FormComponent';
 import Icon from '../Icon';
+import MarkdownContent from '../MarkdownContent';
 import styles from './index.css';
 
 type InputProps = Omit<React.ComponentPropsWithoutRef<typeof FormComponent>, 'children'> &
@@ -18,7 +19,7 @@ type InputProps = Omit<React.ComponentPropsWithoutRef<typeof FormComponent>, 'ch
     /**
      * A help message to render.
      */
-    help?: React.ReactNode;
+    help?: string;
 
     /**
      * The name of the HTML element.
@@ -117,7 +118,7 @@ export default React.forwardRef<HTMLInputElement, InputProps>(
         {control && React.cloneElement(control, { className: 'is-right' })}
         <div className={styles.help}>
           <p className={classNames('help', { 'is-danger': error })}>
-            {React.isValidElement(error) ? error : help}
+            {React.isValidElement(error) ? error : <MarkdownContent content={help} />}
           </p>
           {maxLength ? (
             <span className={`help ${styles.counter}`}>

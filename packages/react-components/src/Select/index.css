@@ -1,0 +1,5 @@
+.help {
+  display: flex;
+  justify-content: space-between;
+  min-height: 1em;
+}
