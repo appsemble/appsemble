@@ -5,4 +5,5 @@ export default defineMessages({
   required: 'Required',
   type: 'Type',
   description: 'Description',
+  default: 'Default',
 });

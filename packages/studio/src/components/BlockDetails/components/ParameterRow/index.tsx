@@ -168,6 +168,7 @@ export default function ParameterRow({
           </Join>
         )}
       </td>
+      <td>{value.default && <code>{JSON.stringify(value.default)}</code>}</td>
       <td>
         <MarkdownContent content={value.description} />
       </td>
