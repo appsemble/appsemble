@@ -100,78 +100,71 @@ export default function Editor(): React.ReactElement {
     setPath(p);
   }, [app, history, intl, location.hash, params, push]);
 
-  const onSave = React.useCallback(
-    async (event?: React.FormEvent) => {
-      if (event) {
-        event.preventDefault();
-      }
-
-      let definition: AppDefinition;
-      // Attempt to parse the YAML into a JSON object
-      try {
-        definition = safeLoad(recipe);
-      } catch (error) {
-        push(intl.formatMessage(messages.invalidYaml));
-        setValid(false);
-        setDirty(false);
-        return;
-      }
-
-      try {
-        validateStyle(style);
-        validateStyle(sharedStyle);
-      } catch (error) {
-        push(intl.formatMessage(messages.invalidStyle));
-        setValid(false);
-        setDirty(false);
-        return;
-      }
-
-      try {
-        await validate(
-          (openApiDocument.components.schemas.App as OpenAPIV3.SchemaObject).properties
-            .definition as OpenAPIV3.SchemaObject,
-          definition,
-        );
-        const blockManifests: Omit<BlockManifest, 'parameters'>[] = await Promise.all(
-          filterBlocks(Object.values(getAppBlocks(definition))).map(async (block) => {
-            const { data } = await axios.get<BlockManifest>(
-              `/api/blocks/${block.type}/versions/${block.version}`,
-            );
-            return {
-              name: data.name,
-              version: data.version,
-              layout: data.layout,
-              files: data.files,
-              actions: data.actions,
-            };
-          }),
-        );
-        setValid(true);
-
-        // YAML and schema appear to be valid, send it to the app preview iframe
-        frame.current.contentWindow.postMessage(
-          { type: 'editor/EDIT_SUCCESS', definition, blockManifests, style, sharedStyle },
-          appUrl,
-        );
-      } catch (error) {
-        if (error instanceof SchemaValidationError) {
-          const errors = error.data;
-          push({
-            body: intl.formatMessage(messages.schemaValidationFailed, {
-              properties: Object.keys(errors).join(', '),
-            }),
-          });
-        } else {
-          push(intl.formatMessage(messages.unexpected));
-        }
-
-        setValid(false);
-      }
+  const onSave = React.useCallback(async () => {
+    let definition: AppDefinition;
+    // Attempt to parse the YAML into a JSON object
+    try {
+      definition = safeLoad(recipe);
+    } catch (error) {
+      push(intl.formatMessage(messages.invalidYaml));
+      setValid(false);
       setDirty(false);
-    },
-    [appUrl, intl, openApiDocument, push, recipe, sharedStyle, style],
-  );
+      return;
+    }
+
+    try {
+      validateStyle(style);
+      validateStyle(sharedStyle);
+    } catch (error) {
+      push(intl.formatMessage(messages.invalidStyle));
+      setValid(false);
+      setDirty(false);
+      return;
+    }
+
+    try {
+      await validate(
+        (openApiDocument.components.schemas.App as OpenAPIV3.SchemaObject).properties
+          .definition as OpenAPIV3.SchemaObject,
+        definition,
+      );
+      const blockManifests: Omit<BlockManifest, 'parameters'>[] = await Promise.all(
+        filterBlocks(Object.values(getAppBlocks(definition))).map(async (block) => {
+          const { data } = await axios.get<BlockManifest>(
+            `/api/blocks/${block.type}/versions/${block.version}`,
+          );
+          return {
+            name: data.name,
+            version: data.version,
+            layout: data.layout,
+            files: data.files,
+            actions: data.actions,
+          };
+        }),
+      );
+      setValid(true);
+
+      // YAML and schema appear to be valid, send it to the app preview iframe
+      frame.current.contentWindow.postMessage(
+        { type: 'editor/EDIT_SUCCESS', definition, blockManifests, style, sharedStyle },
+        appUrl,
+      );
+    } catch (error) {
+      if (error instanceof SchemaValidationError) {
+        const errors = error.data;
+        push({
+          body: intl.formatMessage(messages.schemaValidationFailed, {
+            properties: Object.keys(errors).join(', '),
+          }),
+        });
+      } else {
+        push(intl.formatMessage(messages.unexpected));
+      }
+
+      setValid(false);
+    }
+    setDirty(false);
+  }, [appUrl, intl, openApiDocument, push, recipe, sharedStyle, style]);
 
   const uploadApp = React.useCallback(async () => {
     if (!valid) {

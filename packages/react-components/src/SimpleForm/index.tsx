@@ -51,26 +51,22 @@ export default function SimpleForm<T extends {}>({
     setPristine(true);
   }, [defaultValues]);
 
-  const doSubmit = React.useCallback(
-    async (event: React.FormEvent<HTMLFormElement>) => {
-      event.preventDefault();
-      setSubmitError(null);
-      setSubmitting(true);
-      try {
-        await onSubmit(values);
-      } catch (err) {
-        setSubmitError(err);
-        return;
-      } finally {
-        setSubmitting(false);
-      }
-      setSubmitError(null);
-      if (resetOnSuccess) {
-        reset();
-      }
-    },
-    [onSubmit, reset, resetOnSuccess, values],
-  );
+  const doSubmit = React.useCallback(async () => {
+    setSubmitError(null);
+    setSubmitting(true);
+    try {
+      await onSubmit(values);
+    } catch (err) {
+      setSubmitError(err);
+      return;
+    } finally {
+      setSubmitting(false);
+    }
+    setSubmitError(null);
+    if (resetOnSuccess) {
+      reset();
+    }
+  }, [onSubmit, reset, resetOnSuccess, values]);
 
   const setFormError = React.useCallback(
     (name: string, errorMessage?: React.ReactNode) => {
