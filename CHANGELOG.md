@@ -10,6 +10,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ### Added
 
 - Block(`form`): Add `submitLabel` property for customizing the label on the submit button.
+- Studio: Add new `InviteMember` permission to the maintainer role within an organization. They are
+  allowed to invite members, resend invitations and delete pending invitations.
 - Studio: Add `Default` column to block documentation.
 
 ## [0.13.3] - 2020-06-11
