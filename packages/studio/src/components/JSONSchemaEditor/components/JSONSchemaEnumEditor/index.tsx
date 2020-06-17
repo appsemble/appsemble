@@ -1,4 +1,4 @@
-import { Select } from '@appsemble/react-components';
+import { MarkdownContent, Select } from '@appsemble/react-components';
 import * as React from 'react';
 import { FormattedMessage } from 'react-intl';
 
@@ -18,7 +18,7 @@ export default function JSONSchemaEnumEditor({
   return (
     <Select
       disabled={disabled}
-      help={schema.description}
+      help={<MarkdownContent content={schema.description} />}
       label={<JSONSchemaLabel name={name} prefix={prefix} schema={schema} />}
       name={name}
       onChange={onChange}

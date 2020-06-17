@@ -2,7 +2,6 @@ import classNames from 'classnames';
 import * as React from 'react';
 
 import FormComponent from '../FormComponent';
-import MarkdownContent from '../MarkdownContent';
 
 type CheckboxProps = Omit<React.ComponentPropsWithoutRef<typeof FormComponent>, 'children'> &
   Omit<React.ComponentPropsWithoutRef<'input'>, 'value' | 'label' | 'onChange'> & {
@@ -16,7 +15,7 @@ type CheckboxProps = Omit<React.ComponentPropsWithoutRef<typeof FormComponent>, 
     /**
      * A help message to render next to the checkbox.
      */
-    help?: string;
+    help?: React.ReactNode;
 
     /**
      * This is fired when the input value has changed.
@@ -91,7 +90,7 @@ export default React.forwardRef<HTMLInputElement, CheckboxProps>(
           type="checkbox"
         />
         <label className={classNames({ 'is-danger': error })} htmlFor={id}>
-          <MarkdownContent content={help} />
+          {help}
         </label>
       </FormComponent>
     );

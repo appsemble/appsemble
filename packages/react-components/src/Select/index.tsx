@@ -2,7 +2,6 @@ import classNames from 'classnames';
 import * as React from 'react';
 
 import FormComponent from '../FormComponent';
-import MarkdownContent from '../MarkdownContent';
 
 type SelectProps = React.ComponentPropsWithoutRef<typeof FormComponent> &
   Omit<React.ComponentPropsWithoutRef<'select'>, 'onChange'> & {
@@ -29,7 +28,7 @@ type SelectProps = React.ComponentPropsWithoutRef<typeof FormComponent> &
     /**
      * A help message to render.
      */
-    help?: string;
+    help?: React.ReactNode;
   };
 
 /**
@@ -71,7 +70,7 @@ export default React.forwardRef<HTMLSelectElement, SelectProps>(
             required={required}
           />
         </div>
-        <MarkdownContent className="help" content={help} />
+        {help}
       </FormComponent>
     );
   },
