@@ -11,6 +11,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 - Block(`form`): Add `submitLabel` property for customizing the label on the submit button.
 - Studio: Add `Default` column to block documentation.
+- Server: Support optional display name upon registration.
+- Studio: Support optional display name upon registration.
 
 ## [0.13.3] - 2020-06-11
 

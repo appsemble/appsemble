@@ -17,7 +17,7 @@ async function mayRegister({ argv }: KoaContext): Promise<void> {
 export async function registerEmail(ctx: KoaContext): Promise<void> {
   await mayRegister(ctx);
   const { argv, mailer } = ctx;
-  const { email, password } = ctx.request.body;
+  const { email, name, password } = ctx.request.body;
 
   const hashedPassword = await bcrypt.hash(password, 10);
   const key = crypto.randomBytes(40).toString('hex');
@@ -25,7 +25,10 @@ export async function registerEmail(ctx: KoaContext): Promise<void> {
 
   try {
     await transactional(async (transaction) => {
-      user = await User.create({ password: hashedPassword, primaryEmail: email }, { transaction });
+      user = await User.create(
+        { name, password: hashedPassword, primaryEmail: email },
+        { transaction },
+      );
       await EmailAuthorization.create({ UserId: user.id, email, key }, { transaction });
     });
   } catch (e) {
@@ -46,7 +49,7 @@ export async function registerEmail(ctx: KoaContext): Promise<void> {
   // will still be logged in, but will have to request a new verification email in order to verify
   // their account.
   mailer
-    .sendEmail({ email }, 'welcome', {
+    .sendEmail({ email, name }, 'welcome', {
       url: `${ctx.origin}/verify?token=${key}`,
     })
     .catch((error) => {
