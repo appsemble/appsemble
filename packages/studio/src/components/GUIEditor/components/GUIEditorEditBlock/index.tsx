@@ -11,7 +11,6 @@ import { FormattedMessage } from 'react-intl';
 import JSONSchemaEditor from '../../../JSONSchemaEditor';
 import type { EditLocation } from '../../types';
 import { GuiEditorStep } from '../../types';
-import Stepper from '../Stepper';
 import styles from './index.css';
 import messages from './messages';
 
@@ -155,25 +154,6 @@ export default function GUIEditorEditBlock({
           </div>
         )}
       </div>
-      <Stepper
-        leftOnClick={
-          editExistingBlock
-            ? () => {
-                setEditorStep(GuiEditorStep.SELECT);
-                setSelectedBlock(undefined);
-              }
-            : () => {
-                setEditorStep(GuiEditorStep.ADD);
-                setSelectedBlock(undefined);
-              }
-        }
-        rightDisabled={!selectedBlock}
-        rightMessage={<FormattedMessage {...messages.save} />}
-        rightOnClick={() => {
-          save(editingResource);
-          setSelectedBlock(undefined);
-        }}
-      />
     </div>
   );
 }

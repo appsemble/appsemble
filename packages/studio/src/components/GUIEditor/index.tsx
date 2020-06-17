@@ -6,6 +6,7 @@ import GUIEditorEditBlock from './components/GUIEditorEditBlock';
 import GUIEditorNavBar from './components/GUIEditorNavBar';
 import GUIEditorSelect from './components/GUIEditorSelect';
 import GUIEditorToolbox from './components/GUIEditorToolbox';
+import Stepper from './components/Stepper';
 import { EditLocation, GuiEditorStep } from './types';
 
 interface GUIEditorProps {
@@ -49,26 +50,23 @@ export default function GUIEditor({
           />
         </>
       );
+
     case GuiEditorStep.ADD:
-      return (
-        <GUIEditorToolbox
-          selectedBlock={selectedBlock}
-          setEditorStep={setEditorStep}
-          setSelectedBlock={setSelectedBlock}
-        />
-      );
     case GuiEditorStep.EDIT:
       return (
-        <GUIEditorEditBlock
-          app={appClone}
-          editLocation={editLocation}
-          monacoEditor={monacoEditor}
-          selectedBlock={selectedBlock}
-          setApp={setAppClone}
-          setEditorStep={setEditorStep}
-          setRecipe={setRecipe}
-          setSelectedBlock={setSelectedBlock}
-        />
+        <Stepper onCancel={() => setEditorStep(GuiEditorStep.SELECT)} onFinish={null}>
+          <GUIEditorToolbox selectedBlock={selectedBlock} setSelectedBlock={setSelectedBlock} />
+          <GUIEditorEditBlock
+            app={appClone}
+            editLocation={editLocation}
+            monacoEditor={monacoEditor}
+            selectedBlock={selectedBlock}
+            setApp={setAppClone}
+            setEditorStep={setEditorStep}
+            setRecipe={setRecipe}
+            setSelectedBlock={setSelectedBlock}
+          />
+        </Stepper>
       );
   }
 }

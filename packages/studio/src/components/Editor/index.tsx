@@ -279,31 +279,43 @@ export default function Editor(): React.ReactElement {
     <div className={styles.root}>
       <HelmetIntl title={messages.title} titleValues={{ name: appName }} />
       <div className={styles.leftPanel}>
-        <Form className={styles.editorForm} onSubmit={onSave}>
-          <EditorNavBar
-            appUrl={appUrl}
-            dirty={dirty}
-            editorStep={editorStep}
-            onUpload={onUpload}
-            setEditorStep={setEditorStep}
-            valid={valid}
-          />
-          {editorStep !== GuiEditorStep.YAML ? (
-            <GUIEditor
-              app={app}
+        {editorStep === GuiEditorStep.YAML ? (
+          <Form className={styles.editorForm} onSubmit={onSave}>
+            <EditorNavBar
+              appUrl={appUrl}
+              dirty={dirty}
               editorStep={editorStep}
+              onUpload={onUpload}
               setEditorStep={setEditorStep}
-              setRecipe={setRecipe}
+              valid={valid}
             />
-          ) : (
             <MonacoEditor
               language={language}
               onChange={onValueChange}
               onSave={onSave}
               value={value}
             />
-          )}
-        </Form>
+          </Form>
+        ) : (
+          <div className={styles.editorForm}>
+            <Form onSubmit={onSave}>
+              <EditorNavBar
+                appUrl={appUrl}
+                dirty={dirty}
+                editorStep={editorStep}
+                onUpload={onUpload}
+                setEditorStep={setEditorStep}
+                valid={valid}
+              />
+            </Form>
+            <GUIEditor
+              app={app}
+              editorStep={editorStep}
+              setEditorStep={setEditorStep}
+              setRecipe={setRecipe}
+            />
+          </div>
+        )}
       </div>
 
       <div className={styles.rightPanel}>

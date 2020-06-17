@@ -5,21 +5,17 @@ import axios from 'axios';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 
-import { GuiEditorStep } from '../../types';
 import GUIEditorToolboxBlock from '../GUIEditorToolboxBlock';
-import Stepper from '../Stepper';
 import styles from './index.css';
 import messages from './messages';
 
 interface GUIEditorToolboxProps {
-  setEditorStep: (step: GuiEditorStep) => void;
   setSelectedBlock: (block: BlockManifest) => void;
   selectedBlock: BlockManifest;
 }
 
 export default function GUIEditorToolbox({
   selectedBlock,
-  setEditorStep,
   setSelectedBlock,
 }: GUIEditorToolboxProps): React.ReactElement {
   const [blocks, setBlocks] = React.useState<BlockManifest[]>(undefined);
@@ -61,13 +57,6 @@ export default function GUIEditorToolbox({
           </a>
         </div>
       )}
-      <Stepper
-        leftOnClick={() => setEditorStep(GuiEditorStep.SELECT)}
-        rightDisabled={!selectedBlock}
-        rightOnClick={() => {
-          setEditorStep(GuiEditorStep.EDIT);
-        }}
-      />
     </div>
   );
 }
