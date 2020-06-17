@@ -169,6 +169,13 @@ export default function ParameterRow({
         )}
       </td>
       <td>
+        {value.default !== undefined && (
+          <code>
+            {typeof value.default === 'string' ? value.default : JSON.stringify(value.default)}
+          </code>
+        )}
+      </td>
+      <td>
         <MarkdownContent content={value.description} />
       </td>
     </tr>
