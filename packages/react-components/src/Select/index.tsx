@@ -29,38 +29,32 @@ type SelectProps = React.ComponentPropsWithoutRef<typeof FormComponent> &
 /**
  * A Bulma styled form select element.
  */
-export default class Select extends React.Component<SelectProps> {
-  onChange = (event: React.ChangeEvent<HTMLSelectElement>): void => {
-    const { onChange } = this.props;
-
-    onChange(event, event.target.value);
-  };
-
-  render(): React.ReactElement {
-    const {
-      fullwidth = true,
-      className,
-      label,
-      loading,
-      name,
-      required,
-      id = name,
-      ...props
-    } = this.props;
+export default React.forwardRef<HTMLSelectElement, SelectProps>(
+  (
+    { fullwidth = true, className, label, loading, name, onChange, required, id = name, ...props },
+    ref,
+  ): React.ReactElement => {
+    const handleChange = React.useCallback(
+      (event: React.ChangeEvent<HTMLSelectElement>) => {
+        onChange(event, event.target.value);
+      },
+      [onChange],
+    );
 
     return (
       <FormComponent className={className} id={id} label={label} required={required}>
         <div className={classNames('select', { 'is-fullwidth': fullwidth, 'is-loading': loading })}>
           <select
             {...props}
+            ref={ref}
             className={classNames({ 'is-fullwidth': fullwidth })}
             id={id}
             name={name}
-            onChange={this.onChange}
+            onChange={handleChange}
             required={required}
           />
         </div>
       </FormComponent>
     );
-  }
-}
+  },
+);

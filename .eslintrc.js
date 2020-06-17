@@ -84,7 +84,7 @@ module.exports = {
   },
   overrides: [
     {
-      files: ['**/*.ts', '**/*.tsx'],
+      files: ['*.ts', '*.tsx'],
       plugins: ['@typescript-eslint'],
       parser: '@typescript-eslint/parser',
       rules: {
@@ -147,7 +147,7 @@ module.exports = {
       },
     },
     {
-      files: ['**/*.d.ts'],
+      files: ['*.d.ts'],
       rules: {
         'filenames/match-regex': 'off',
         'max-classes-per-file': 'off',

@@ -5,13 +5,6 @@ import type * as compose from 'koa-compose';
 import type { User } from './models';
 import type Mailer from './utils/email/Mailer';
 
-declare module 'sequelize' {
-  // eslint-disable-next-line @typescript-eslint/no-namespace
-  namespace Model {
-    export function associate(): void;
-  }
-}
-
 export interface Argv {
   appDomainStrategy?: string;
   databaseHost?: string;

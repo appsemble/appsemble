@@ -1,5 +1,5 @@
 # Build production files
-FROM node:12-slim AS build
+FROM node:14-slim AS build
 WORKDIR /app
 COPY . .
 RUN yarn --frozen-lockfile \
@@ -10,7 +10,7 @@ RUN yarn --frozen-lockfile \
  && yarn workspace @appsemble/server prepack
 
 # Install production dependencies
-FROM node:12-slim AS prod
+FROM node:14-slim AS prod
 WORKDIR /app
 COPY --from=build /app/packages/node-utils packages/node-utils
 COPY --from=build /app/packages/sdk packages/sdk
@@ -24,7 +24,7 @@ RUN yarn --frozen-lockfile --production \
  && rm -r yarn.lock
 
 # Setup the production docker image.
-FROM node:12-slim
+FROM node:14-slim
 COPY --from=prod /app /app
 COPY --from=build /app/dist /app/dist
 WORKDIR /app
