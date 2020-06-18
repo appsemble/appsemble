@@ -6,3 +6,6 @@ export { default as Location } from './Location';
 export { default as Message } from './Message';
 export { default as Select } from './Select';
 export { default as useObjectURL } from './useObjectURL';
+export { default as Checkbox } from './Checkbox';
+export { default as RadioButton } from './RadioButton';
+export { default as RadioGroup } from './RadioGroup';
