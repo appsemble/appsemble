@@ -1,3 +1,4 @@
+import { applyRefs } from '@appsemble/react-components';
 import { editor, KeyCode, KeyMod } from 'monaco-editor';
 import * as React from 'react';
 import ResizeObserver from 'resize-observer-polyfill';
@@ -44,66 +45,66 @@ const defaultOptions: Options = {
   minimap: { enabled: false },
 };
 
-export default function MonacoEditor({
-  language,
-  onChange,
-  onSave,
-  options = defaultOptions,
-  value = '',
-}: MonacoEditorProps): React.ReactElement {
-  const ref = React.useRef<HTMLDivElement>();
-  const [monaco, setMonaco] = React.useState<editor.IStandaloneCodeEditor>();
+/**
+ * Render a Monaco standalone editor instance.
+ *
+ * The forwarded ref might not trigger a rerender of the parent component. Instead of passing a ref
+ * object, it is recommended to use a state setter function.
+ */
+export default React.forwardRef<editor.IStandaloneCodeEditor, MonacoEditorProps>(
+  ({ language, onChange, onSave, options = defaultOptions, value = '' }, ref) => {
+    const [monaco, setMonaco] = React.useState<editor.IStandaloneCodeEditor>();
 
-  const saveRef = React.useRef(onSave);
-  saveRef.current = onSave;
+    const saveRef = React.useRef(onSave);
+    saveRef.current = onSave;
 
-  React.useEffect(() => {
-    const node = ref.current;
-    const ed = editor.create(node, options);
-    // eslint-disable-next-line no-bitwise
-    ed.addCommand(KeyMod.CtrlCmd | KeyCode.KEY_S, () => saveRef.current?.());
+    const nodeRef = React.useCallback((node: HTMLDivElement) => {
+      const ed = editor.create(node, options);
+      // eslint-disable-next-line no-bitwise
+      ed.addCommand(KeyMod.CtrlCmd | KeyCode.KEY_S, () => saveRef.current?.());
 
-    const observer = new ResizeObserver(() => ed.layout());
-    observer.observe(node);
+      const observer = new ResizeObserver(() => ed.layout());
+      observer.observe(node);
 
-    setMonaco(ed);
+      applyRefs(ed, setMonaco, ref);
 
-    return () => {
-      ed.dispose();
-      observer.unobserve(node);
-    };
-    // This is triggered by the lack of options in the dependency array. This is left out on
-    // purpose. Instead, this is handled using monaco.updateOptions() below.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+      return () => {
+        ed.dispose();
+        observer.unobserve(node);
+      };
+      // This is triggered by the lack of options in the dependency array. This is left out on
+      // purpose. Instead, this is handled using monaco.updateOptions() below.
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
-  React.useEffect(() => {
-    if (monaco) {
-      monaco.updateOptions(options);
-    }
-  }, [monaco, options]);
+    React.useEffect(() => {
+      if (monaco) {
+        monaco.updateOptions(options);
+      }
+    }, [monaco, options]);
 
-  React.useEffect(() => {
-    if (monaco) {
-      editor.setModelLanguage(monaco.getModel(), language);
-    }
-  }, [language, monaco]);
+    React.useEffect(() => {
+      if (monaco) {
+        editor.setModelLanguage(monaco.getModel(), language);
+      }
+    }, [language, monaco]);
 
-  React.useEffect(() => {
-    if (monaco && monaco.getModel().getValue() !== value) {
-      monaco.getModel().setValue(value);
-    }
-  }, [monaco, value]);
+    React.useEffect(() => {
+      if (monaco && monaco.getModel().getValue() !== value) {
+        monaco.getModel().setValue(value);
+      }
+    }, [monaco, value]);
 
-  React.useEffect(() => {
-    if (!monaco) {
-      return undefined;
-    }
-    const model = monaco.getModel();
-    const subscription = model.onDidChangeContent((event) => onChange(event, model.getValue()));
+    React.useEffect(() => {
+      if (!monaco) {
+        return undefined;
+      }
+      const model = monaco.getModel();
+      const subscription = model.onDidChangeContent((event) => onChange(event, model.getValue()));
 
-    return () => subscription.dispose();
-  }, [monaco, onChange]);
+      return () => subscription.dispose();
+    }, [monaco, onChange]);
 
-  return <div ref={ref} className={styles.editor} />;
-}
+    return <div ref={nodeRef} className={styles.editor} />;
+  },
+);
