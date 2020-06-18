@@ -14,6 +14,16 @@ export interface OAuth2State {
   authorizationUrl: string;
 
   /**
+   * Where to redirect the user to after they have logged in.
+   *
+   * This is a counterpart of the `redirect` query parameter. This exists because the OAuth2 flow
+   * removes any query parameters on the callback.
+   *
+   * **Note**: Not to be confused with the OAuth2 `redirect_uri`.
+   */
+  redirect: string;
+
+  /**
    * The state that was generated in the login process.
    */
   state: string;
@@ -28,6 +38,8 @@ export interface OAuth2LoginOptions
    * Where the user should be redirected upon approval. This may be a relative URL.
    */
   redirectUrl: string;
+
+  redirect: string;
 }
 
 /**
@@ -38,6 +50,7 @@ export interface OAuth2LoginOptions
 export function startOAuth2Login({
   authorizationUrl,
   clientId,
+  redirect,
   redirectUrl,
   scope,
 }: OAuth2LoginOptions): void {
@@ -48,7 +61,10 @@ export function startOAuth2Login({
   url.searchParams.set('response_type', 'code');
   url.searchParams.set('scope', scope);
   url.searchParams.set('state', state);
-  sessionStorage.setItem(storageKey, JSON.stringify({ state, authorizationUrl } as OAuth2State));
+  sessionStorage.setItem(
+    storageKey,
+    JSON.stringify({ state, redirect, authorizationUrl } as OAuth2State),
+  );
   window.location.href = String(url);
 }
 

@@ -24,6 +24,7 @@ describe('startOAuth2Login', () => {
     startOAuth2Login({
       authorizationUrl: 'https://example.com/authorize',
       clientId: 'test-client-id',
+      redirect: '/blocks',
       redirectUrl: '/callback',
       scope: 'email openid profile',
     });
@@ -36,11 +37,13 @@ describe('startOAuth2Login', () => {
     startOAuth2Login({
       authorizationUrl: 'https://example.com/authorize',
       clientId: 'test-client-id',
+      redirect: '/blocks',
       redirectUrl: '/callback',
       scope: 'email openid profile',
     });
     expect(loadOAuth2State()).toStrictEqual({
       authorizationUrl: 'https://example.com/authorize',
+      redirect: '/blocks',
       state: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcd',
     });
   });

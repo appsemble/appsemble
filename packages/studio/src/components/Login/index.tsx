@@ -7,6 +7,7 @@ import {
   SimpleFormError,
   SimpleInput,
   SimpleSubmit,
+  useQuery,
 } from '@appsemble/react-components';
 import axios from 'axios';
 import React from 'react';
@@ -27,6 +28,8 @@ interface LoginFormValues {
 export default function Login(): React.ReactElement {
   const location = useLocation();
   const { login } = useUser();
+  const qs = useQuery();
+
   const onPasswordLogin = React.useCallback(
     async ({ email, password }: LoginFormValues) => {
       const { data } = await axios.post('/api/login', undefined, {
@@ -92,6 +95,7 @@ export default function Login(): React.ReactElement {
             clientId={provider.clientId}
             icon={provider.icon}
             iconPrefix="fab"
+            redirect={qs.get('redirect')}
             redirectUrl="/callback"
             scope={provider.scope}
           >

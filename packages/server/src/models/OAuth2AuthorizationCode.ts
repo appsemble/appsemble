@@ -25,6 +25,10 @@ export default class OAuth2AuthorizationCode extends Model<OAuth2AuthorizationCo
 
   @AllowNull(false)
   @Column
+  scope: string;
+
+  @AllowNull(false)
+  @Column
   expires: Date;
 
   @AllowNull(false)
