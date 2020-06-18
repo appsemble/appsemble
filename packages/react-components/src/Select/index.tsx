@@ -24,6 +24,11 @@ type SelectProps = React.ComponentPropsWithoutRef<typeof FormComponent> &
      * Wether or not the element should take as much space it can.
      */
     fullwidth?: boolean;
+
+    /**
+     * A help message to render.
+     */
+    help?: React.ReactNode;
   };
 
 /**
@@ -31,7 +36,18 @@ type SelectProps = React.ComponentPropsWithoutRef<typeof FormComponent> &
  */
 export default React.forwardRef<HTMLSelectElement, SelectProps>(
   (
-    { fullwidth = true, className, label, loading, name, onChange, required, id = name, ...props },
+    {
+      fullwidth = true,
+      className,
+      help,
+      label,
+      loading,
+      name,
+      onChange,
+      required,
+      id = name,
+      ...props
+    },
     ref,
   ): React.ReactElement => {
     const handleChange = React.useCallback(
@@ -54,6 +70,7 @@ export default React.forwardRef<HTMLSelectElement, SelectProps>(
             required={required}
           />
         </div>
+        {help && <div className="help">{help}</div>}
       </FormComponent>
     );
   },
