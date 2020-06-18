@@ -40,13 +40,6 @@ interface LengthRequirement extends BaseRequirement {
    * The maximum length.
    */
   maxLength?: number;
-
-  /**
-   * Whether the requirement should be inclusive or exclusive.
-   *
-   * @default true
-   */
-  inclusive?: boolean;
 }
 
 type Requirement = RegexRequirement | LengthRequirement;

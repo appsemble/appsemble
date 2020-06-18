@@ -48,20 +48,8 @@ const validateString: Validator = (field: StringField, event, value: string, rem
     }
 
     if ('maxLength' in requirement || 'minLength' in requirement) {
-      let maxValid = true;
-      let minValid = true;
-      const inclusive = requirement.inclusive ?? true;
-
-      if (requirement.maxLength != null) {
-        maxValid = inclusive
-          ? value.length >= requirement.maxLength
-          : value.length > requirement.maxLength;
-      }
-      if (requirement.minLength != null) {
-        minValid = inclusive
-          ? value.length <= requirement.minLength
-          : value.length < requirement.minLength;
-      }
+      const maxValid = requirement.maxLength != null ? value.length >= requirement.maxLength : true;
+      const minValid = requirement.minLength != null ? value.length <= requirement.minLength : true;
 
       valid = maxValid && minValid;
     }
