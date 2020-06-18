@@ -13,13 +13,13 @@ export default function Toolbar(): React.ReactElement {
     <nav className={`navbar is-fixed-top is-dark ${styles.root}`}>
       <div className="navbar-brand">
         <Link to="/">
-          <header className="navbar-item title">
+          <header className="navbar-item">
             <img
               alt={intl.formatMessage(messages.iconAlt)}
               className={styles.icon}
               src="/icon-64.png"
             />
-            <h1 className="has-text-white title">Appsemble</h1>
+            <h4 className="has-text-white title">Appsemble</h4>
           </header>
         </Link>
         <a
