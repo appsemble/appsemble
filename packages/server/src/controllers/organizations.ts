@@ -180,7 +180,7 @@ export async function inviteMember(ctx: KoaContext<Params>): Promise<void> {
     throw Boom.forbidden('Not allowed to invite users to organizations you are not a member of.');
   }
 
-  await checkRole(ctx, organization.id, Permission.ManageMembers);
+  await checkRole(ctx, organization.id, Permission.InviteMember);
 
   if (invitedUser && (await organization.$has('User', invitedUser))) {
     throw Boom.conflict('User is already in this organization or has already been invited.');
@@ -222,7 +222,7 @@ export async function resendInvitation(ctx: KoaContext<Params>): Promise<void> {
     throw Boom.notFound('Organization not found.');
   }
 
-  await checkRole(ctx, organization.id, Permission.ManageMembers);
+  await checkRole(ctx, organization.id, Permission.InviteMember);
 
   const invite = await organization.OrganizationInvites.find((i) => i.email === email);
   if (!invite) {
@@ -247,7 +247,7 @@ export async function removeInvite(ctx: KoaContext): Promise<void> {
     throw Boom.notFound('This invite does not exist.');
   }
 
-  await checkRole(ctx, invite.OrganizationId, Permission.ManageMembers);
+  await checkRole(ctx, invite.OrganizationId, Permission.InviteMember);
 
   await invite.destroy();
 }
