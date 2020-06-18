@@ -16,16 +16,3 @@
 .title > figure {
   margin-right: 1em !important;
 }
-
-.ratingButton,
-.rating {
-  margin-bottom: 1em;
-}
-
-.tag {
-  margin-left: 0.5rem;
-}
-
-.description {
-  white-space: pre;
-}

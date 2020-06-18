@@ -2,6 +2,8 @@ import {
   Button,
   Content,
   FormButtons,
+  Loader,
+  Message,
   SimpleForm,
   SimpleFormError,
   SimpleInput,
@@ -9,6 +11,7 @@ import {
   Table,
   Title,
   useConfirmation,
+  useData,
   useMessages,
 } from '@appsemble/react-components';
 import axios, { AxiosError } from 'axios';
@@ -26,7 +29,9 @@ export default function UserSettings(): React.ReactElement {
   const intl = useIntl();
   const push = useMessages();
   const { refreshUserInfo, userInfo } = useUser();
-  const [emails, setEmails] = React.useState<UserEmail[]>([]);
+  const { data: emails, error, loading, setData: setEmails } = useData<UserEmail[]>(
+    '/api/user/email',
+  );
 
   const onSaveProfile = React.useCallback(
     async (values) => {
@@ -50,7 +55,7 @@ export default function UserSettings(): React.ReactElement {
           .sort(({ email: a }, { email: b }) => a.localeCompare(b)),
       );
     },
-    [emails, intl, push],
+    [emails, intl, push, setEmails],
   );
 
   const setPrimaryEmail = React.useCallback(
@@ -89,19 +94,19 @@ export default function UserSettings(): React.ReactElement {
     },
   });
 
-  React.useEffect(() => {
-    axios.get('/api/user/email').then(
-      ({ data }) => {
-        setEmails(data);
-      },
-      () => {
-        push({
-          body: intl.formatMessage(messages.loadEmailError),
-          color: 'danger',
-        });
-      },
+  if (loading) {
+    return <Loader />;
+  }
+
+  if (error) {
+    return (
+      <Content padding>
+        <Message color="danger">
+          <FormattedMessage {...messages.loadEmailError} />
+        </Message>
+      </Content>
     );
-  }, [intl, push]);
+  }
 
   return (
     <>
@@ -133,8 +138,8 @@ export default function UserSettings(): React.ReactElement {
         </Title>
         <SimpleForm defaultValues={{ email: '' }} onSubmit={onAddNewEmail} resetOnSuccess>
           <SimpleFormError>
-            {({ error }) =>
-              (error as AxiosError)?.response?.status === 409 ? (
+            {({ error: submitError }) =>
+              (submitError as AxiosError)?.response?.status === 409 ? (
                 <FormattedMessage {...messages.addEmailConflict} />
               ) : (
                 <FormattedMessage {...messages.addEmailError} />

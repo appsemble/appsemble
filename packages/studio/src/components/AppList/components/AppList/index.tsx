@@ -1,7 +1,6 @@
-import { Icon, Loader, Message } from '@appsemble/react-components';
+import { Icon, Loader, Message, useData } from '@appsemble/react-components';
 import type { App } from '@appsemble/types';
 import { Permission } from '@appsemble/utils';
-import axios from 'axios';
 import React from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link } from 'react-router-dom';
@@ -18,34 +17,19 @@ import messages from './messages';
 export default function AppList(): React.ReactElement {
   const [filter, setFilter] = React.useState('');
   const organizations = useOrganizations();
-  const [isLoading, setLoading] = React.useState(true);
-  const [hasError, setError] = React.useState(false);
-  const [apps, setApps] = React.useState<App[]>(null);
-
   const intl = useIntl();
   const { userInfo } = useUser();
+  const { data: apps, error, loading } = useData<App[]>(userInfo ? '/api/apps/me' : '/api/apps');
 
   const onFilterChange = React.useCallback((event) => {
     setFilter(event.target.value);
   }, []);
 
-  React.useEffect(() => {
-    setLoading(true);
-    setError(false);
-    setApps(null);
-    const url = userInfo ? '/api/apps/me' : '/api/apps';
-    axios
-      .get<App[]>(url)
-      .then(({ data }) => setApps(data))
-      .catch(() => setError(true))
-      .finally(() => setLoading(false));
-  }, [userInfo]);
-
-  if (isLoading) {
+  if (loading) {
     return <Loader />;
   }
 
-  if (hasError) {
+  if (error) {
     return (
       <Message color="danger">
         <FormattedMessage {...messages.error} />
