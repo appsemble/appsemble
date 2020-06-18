@@ -1,15 +1,14 @@
 import {
   Button,
-  CardFooterButton,
   Content,
   FormButtons,
-  Modal,
   SimpleForm,
   SimpleFormError,
   SimpleInput,
   SimpleSubmit,
   Table,
   Title,
+  useConfirmation,
   useMessages,
 } from '@appsemble/react-components';
 import axios, { AxiosError } from 'axios';
@@ -18,6 +17,7 @@ import { FormattedMessage, useIntl } from 'react-intl';
 
 import useUser from '../../hooks/useUser';
 import type { UserEmail } from '../../types';
+import AsyncButton from '../AsyncButton';
 import HelmetIntl from '../HelmetIntl';
 import styles from './index.css';
 import messages from './messages';
@@ -27,7 +27,6 @@ export default function UserSettings(): React.ReactElement {
   const push = useMessages();
   const { refreshUserInfo, userInfo } = useUser();
   const [emails, setEmails] = React.useState<UserEmail[]>([]);
-  const [deleting, setDeleting] = React.useState<string>(null);
 
   const onSaveProfile = React.useCallback(
     async (values) => {
@@ -77,21 +76,18 @@ export default function UserSettings(): React.ReactElement {
     [intl, push],
   );
 
-  const onDeleteEmailClick = React.useCallback((email: string) => {
-    setDeleting(email);
-  }, []);
-
-  const onCloseDeleteDialog = React.useCallback(() => {
-    setDeleting(null);
-  }, []);
-
-  const deleteEmail = React.useCallback(async () => {
-    await axios.delete('/api/user/email', { data: { email: deleting } });
-
-    setEmails(emails.filter(({ email }) => email !== deleting));
-    setDeleting(null);
-    push({ body: intl.formatMessage(messages.deleteEmailSuccess), color: 'info' });
-  }, [deleting, emails, intl, push]);
+  const deleteEmail = useConfirmation({
+    title: <FormattedMessage {...messages.emailWarningTitle} />,
+    body: <FormattedMessage {...messages.emailWarning} />,
+    cancelLabel: <FormattedMessage {...messages.cancel} />,
+    confirmLabel: <FormattedMessage {...messages.deleteEmail} />,
+    color: 'danger',
+    async action(deleting: string) {
+      await axios.delete('/api/user/email', { data: { email: deleting } });
+      setEmails(emails.filter(({ email }) => email !== deleting));
+      push({ body: intl.formatMessage(messages.deleteEmailSuccess), color: 'info' });
+    },
+  });
 
   React.useEffect(() => {
     axios.get('/api/user/email').then(
@@ -206,11 +202,11 @@ export default function UserSettings(): React.ReactElement {
                   </Button>
                 )}
                 {email !== userInfo.email && (
-                  <Button
+                  <AsyncButton
                     className="control"
                     color="danger"
                     icon="trash-alt"
-                    onClick={() => onDeleteEmailClick(email)}
+                    onClick={() => deleteEmail(email)}
                   />
                 )}
               </td>
@@ -218,24 +214,6 @@ export default function UserSettings(): React.ReactElement {
           ))}
         </tbody>
       </Table>
-
-      <Modal
-        footer={
-          <>
-            <CardFooterButton onClick={onCloseDeleteDialog}>
-              <FormattedMessage {...messages.cancel} />
-            </CardFooterButton>
-            <CardFooterButton color="danger" onClick={deleteEmail}>
-              <FormattedMessage {...messages.deleteEmail} />
-            </CardFooterButton>
-          </>
-        }
-        isActive={!!deleting}
-        onClose={onCloseDeleteDialog}
-        title={<FormattedMessage {...messages.emailWarningTitle} />}
-      >
-        <FormattedMessage {...messages.emailWarning} />
-      </Modal>
     </>
   );
 }
