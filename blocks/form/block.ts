@@ -5,7 +5,7 @@ import type { IconName } from '@fortawesome/fontawesome-common-types';
  * Properties that are shared between all requirements.
  */
 interface BaseRequirement {
-  errorMessage: Remapper;
+  errorMessage?: Remapper;
 }
 
 /**
@@ -15,7 +15,7 @@ interface RegexRequirement extends BaseRequirement {
   /**
    * The regex to match with. Must be a valid JavaScript regex.
    */
-  regex: RegExp;
+  regex: string;
 
   /**
    * The flags to use for the regex.
@@ -265,7 +265,7 @@ export interface StringField extends AbstractField {
   /**
    * The requirements that are used to validate the field with.
    *
-   * These are ordered in the order they are defined in.
+   * These are evaluated in the order they are defined in.
    */
   requirements?: Requirement[];
 }

@@ -1,4 +1,3 @@
-import { FormattedMessage } from '@appsemble/preact';
 import { Input } from '@appsemble/preact-components';
 import { h, VNode } from 'preact';
 
@@ -17,30 +16,32 @@ export default function StringInput({
   value = '',
 }: StringInputProps): VNode {
   const requirementAttributes: { minLength?: number; maxLength?: number } = {};
-  const maxLength = Math.max(
-    ...requirements
-      .map((requirement) => 'maxLength' in requirement && requirement.maxLength)
-      .filter(Number.isFinite),
-  );
+  if (requirements?.length) {
+    const maxLength = Math.max(
+      ...requirements
+        .map((requirement) => 'maxLength' in requirement && requirement.maxLength)
+        .filter(Number.isFinite),
+    );
 
-  const minLength = Math.min(
-    ...requirements
-      .map((requirement) => 'minLength' in requirement && requirement.minLength)
-      .filter(Number.isFinite),
-  );
+    const minLength = Math.min(
+      ...requirements
+        .map((requirement) => 'minLength' in requirement && requirement.minLength)
+        .filter(Number.isFinite),
+    );
 
-  if (Number.isFinite(maxLength)) {
-    requirementAttributes.maxLength = maxLength;
-  }
+    if (Number.isFinite(maxLength)) {
+      requirementAttributes.maxLength = maxLength;
+    }
 
-  if (Number.isFinite(minLength)) {
-    requirementAttributes.minLength = minLength;
+    if (Number.isFinite(minLength)) {
+      requirementAttributes.minLength = minLength;
+    }
   }
 
   return (
     <Input
       disabled={disabled}
-      error={error && <FormattedMessage id="invalid" />}
+      error={error}
       iconLeft={icon}
       id={name}
       label={label}

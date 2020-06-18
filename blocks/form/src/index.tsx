@@ -1,4 +1,5 @@
 import { bootstrap, FormattedMessage } from '@appsemble/preact';
+import type { Remapper } from '@appsemble/sdk';
 import classNames from 'classnames';
 import { h } from 'preact';
 import { useCallback, useEffect, useMemo, useState } from 'preact/hooks';
@@ -11,8 +12,14 @@ import GeoCoordinatesInput from './components/GeoCoordinatesInput';
 import NumberInput from './components/NumberInput';
 import StringInput from './components/StringInput';
 import styles from './index.css';
+import ValidationError from './utils/ValidationError';
 
-type Validator = (field: Field, event: Event, value: any) => boolean;
+type Validator = (
+  field: Field,
+  event: Event,
+  value: any,
+  remap: (remapper: Remapper, data: any) => any,
+) => boolean;
 
 const inputs = {
   enum: EnumInput,
@@ -25,34 +32,44 @@ const inputs = {
   boolean: BooleanInput,
 };
 
-const validateString: Validator = (field: StringField, event, value: string) => {
+const validateString: Validator = (field: StringField, event, value: string, remap) => {
   const inputValid = (event.target as HTMLInputElement).validity.valid;
 
   if (!inputValid) {
     return false;
   }
 
-  field.requirements.some((requirement) => {
+  field.requirements?.forEach((requirement) => {
+    let valid = true;
+
     if ('regex' in requirement) {
       const regex = new RegExp(requirement.regex, requirement.flags || 'g');
-      return value.match(regex);
+      valid = regex.test(value);
     }
 
     if ('maxLength' in requirement || 'minLength' in requirement) {
-      const maxValid =
-        (requirement?.maxLength && requirement.inclusive
-          ? value.length >= requirement.maxLength
-          : value.length > requirement.maxLength) ?? true;
-      const minValid =
-        (requirement?.minLength && requirement.inclusive
-          ? value.length <= requirement.minLength
-          : value.length < requirement.minLength) ?? true;
+      let maxValid = true;
+      let minValid = true;
+      const inclusive = requirement.inclusive ?? true;
 
-      return maxValid && minValid;
+      if (requirement.maxLength != null) {
+        maxValid = inclusive
+          ? value.length >= requirement.maxLength
+          : value.length > requirement.maxLength;
+      }
+      if (requirement.minLength != null) {
+        minValid = inclusive
+          ? value.length <= requirement.minLength
+          : value.length < requirement.minLength;
+      }
+
+      valid = maxValid && minValid;
     }
 
-    // Unknown validator?
-    return true;
+    if (!valid) {
+      const error = remap(requirement.errorMessage, value);
+      throw new ValidationError(error);
+    }
   });
 
   return inputValid;
@@ -99,7 +116,7 @@ const messages = {
   unsupported: 'This file type is not supported',
 };
 
-bootstrap(({ actions, data, events, parameters, ready }) => {
+bootstrap(({ actions, data, events, parameters, ready, utils: { remap } }) => {
   const [errors, setErrors] = useState<{ [name: string]: string }>({});
   const [disabled, setDisabled] = useState(true);
   const [validity, setValidity] = useState({
@@ -166,19 +183,34 @@ bootstrap(({ actions, data, events, parameters, ready }) => {
       const field = fields.find((f) => f.name === name);
 
       if (Object.prototype.hasOwnProperty.call(validators, field.type)) {
-        return validators[field.type](field, event, value);
+        return validators[field.type](field, event, value, remap);
       }
       return true;
     },
-    [parameters],
+    [parameters, remap],
   );
 
   const onChange = useCallback(
     (event: Event, value: any): void => {
       const { name } = event.target as HTMLInputElement;
-      const valid = validateField(event, value);
+      let valid: boolean;
+      let error: string;
 
-      setErrors({ ...errors, [name]: valid ? null : 'Invalid' });
+      try {
+        valid = validateField(event, value);
+        if (!valid) {
+          error = messages.invalid;
+        }
+      } catch (e) {
+        if (!(e instanceof ValidationError)) {
+          throw e;
+        }
+
+        valid = false;
+        error = e.message || messages.invalid;
+      }
+
+      setErrors({ ...errors, [name]: error });
       setValidity({ ...validity, [name]: valid });
       setValues({
         ...values,
