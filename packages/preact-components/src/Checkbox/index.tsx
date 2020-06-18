@@ -89,7 +89,7 @@ export default function Checkbox({
       <label className={classNames({ 'is-danger': error })} htmlFor={id}>
         {help}
       </label>
-      {error && <p className={classNames('help', { 'is-danger': error })}>{error}</p>}
+      {error && <p className="help is-danger">{error}</p>}
     </FormComponent>
   );
 }

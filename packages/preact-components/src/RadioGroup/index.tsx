@@ -8,6 +8,11 @@ interface RadioGroupProps
   children: VNode<h.JSX.HTMLAttributes<HTMLInputElement>>[];
 
   /**
+   * An error message to render.
+   */
+  error?: VNode;
+
+  /**
    * The label to display above the checkbox.
    */
   label?: ComponentChild;
@@ -26,6 +31,7 @@ interface RadioGroupProps
 export default function RadioGroup({
   children,
   disabled,
+  error,
   label,
   name,
   onChange,
@@ -53,6 +59,7 @@ export default function RadioGroup({
           value: child.props.value,
         }),
       )}
+      {error && <p className="help is-danger">{error}</p>}
     </FormComponent>
   );
 }
