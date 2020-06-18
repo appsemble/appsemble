@@ -70,11 +70,7 @@ export default React.forwardRef<HTMLSelectElement, SelectProps>(
             required={required}
           />
         </div>
-        {help && (
-          <div className="help">
-            {help}
-          </div>
-        )}
+        {help && <div className="help">{help}</div>}
       </FormComponent>
     );
   },
