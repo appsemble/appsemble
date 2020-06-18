@@ -10,6 +10,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ### Added
 
 - Block(`form`): Add `submitLabel` property for customizing the label on the submit button.
+- Block(`form`): Add support for `requirements` in string fields. Please consult the block
+  documentation for further details.
 - Studio: Add `Default` column to block documentation.
 
 ## [0.13.3] - 2020-06-11
