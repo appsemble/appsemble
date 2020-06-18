@@ -1,4 +1,12 @@
-import { Content, Loader, Message, Select, Subtitle, Title } from '@appsemble/react-components';
+import {
+  Content,
+  Loader,
+  MarkdownContent,
+  Message,
+  Select,
+  Subtitle,
+  Title,
+} from '@appsemble/react-components';
 import type { BlockManifest } from '@appsemble/types';
 import axios from 'axios';
 import React from 'react';
@@ -7,7 +15,6 @@ import { Redirect, useHistory, useRouteMatch } from 'react-router-dom';
 import type { Definition } from 'typescript-json-schema';
 
 import HelmetIntl from '../HelmetIntl';
-import MarkdownContent from '../MarkdownContent';
 import ActionTable from './components/ActionTable';
 import EventTable from './components/EventTable';
 import ParameterTable from './components/ParameterTable';
