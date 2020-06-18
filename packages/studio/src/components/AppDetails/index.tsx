@@ -7,6 +7,7 @@ import {
   Select,
   SimpleForm,
   SimpleInput,
+  Subtitle,
   Title,
   useMessages,
 } from '@appsemble/react-components';
@@ -95,15 +96,19 @@ export default function AppDetails(): React.ReactElement {
     <>
       <div className="content">
         <div className={styles.titleContainer}>
-          <div className={styles.title}>
-            <figure className="image is-64x64 is-marginless">
+          <header className={styles.title}>
+            <figure className="image is-96x96 is-marginless">
               <img alt={intl.formatMessage(messages.appLogo)} src={`/api/apps/${app.id}/icon`} />
             </figure>
-            <div className="is-block">
-              <h1 className="is-marginless">{app.definition.name}</h1>
-              <h3 className="is-marginless">{organization.name}</h3>
+            <div>
+              <Title className="is-marginless" level={1}>
+                {app.definition.name}
+              </Title>
+              <Subtitle className="is-marginless" level={3}>
+                {organization.name}
+              </Subtitle>
             </div>
-          </div>
+          </header>
           <div>
             {createOrganizations.length ? (
               <Button className={`${styles.cloneButton}`} onClick={showDialog}>

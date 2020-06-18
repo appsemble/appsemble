@@ -1,10 +1,8 @@
-import { Icon, Join } from '@appsemble/react-components';
+import { Icon, Join, MarkdownContent } from '@appsemble/react-components';
 import type { OpenAPIV3 } from 'openapi-types';
 import React from 'react';
 import { useRouteMatch } from 'react-router-dom';
 import type { Definition } from 'typescript-json-schema';
-
-import MarkdownContent from '../../../MarkdownContent';
 
 interface ParameterRowProps {
   /**

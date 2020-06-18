@@ -14,6 +14,7 @@ const Maintainer = [
   Permission.CreateApps,
   Permission.EditAppSettings,
   Permission.DeleteApps,
+  Permission.InviteMember,
 ];
 const Owner = [...Maintainer, Permission.ManageMembers, Permission.ManageRoles];
 

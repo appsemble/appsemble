@@ -85,7 +85,7 @@ describe('createAuthorizationCode', () => {
     });
     const response = await request.post(
       '/api/oauth2/authorization-code',
-      { appId: app.id, redirectUri: 'http://app.org.localhost:9999' },
+      { appId: app.id, redirectUri: 'http://app.org.localhost:9999', scope: 'openid' },
       { headers: { authorization } },
     );
     expect(response).toMatchObject({
@@ -102,6 +102,7 @@ describe('createAuthorizationCode', () => {
       code,
       expires: new Date('2000-01-01T00:10:00.000Z'),
       redirectUri: 'http://app.org.localhost:9999',
+      scope: 'openid',
       UserId: user.id,
     });
   });
@@ -117,7 +118,7 @@ describe('createAuthorizationCode', () => {
     });
     const response = await request.post(
       '/api/oauth2/authorization-code',
-      { appId: app.id, redirectUri: 'http://app.example:9999' },
+      { appId: app.id, redirectUri: 'http://app.example:9999', scope: 'email' },
       { headers: { authorization } },
     );
     expect(response).toMatchObject({
@@ -134,6 +135,7 @@ describe('createAuthorizationCode', () => {
       code,
       expires: new Date('2000-01-01T00:10:00.000Z'),
       redirectUri: 'http://app.example:9999',
+      scope: 'email',
       UserId: user.id,
     });
   });
