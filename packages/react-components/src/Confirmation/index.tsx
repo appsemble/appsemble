@@ -95,7 +95,7 @@ export default function Confirmation({ children }: ConfirmationProps): React.Rea
  */
 export function useConfirmation<T, A extends any[]>(
   options: ConfirmationOptions<T, A>,
-): (...args: A) => Promise<T> {
+): (...args: A) => T extends PromiseLike<void> ? T : Promise<T> {
   const confirm = React.useContext(Context);
 
   return React.useCallback((...args: A) => confirm(options, args), [confirm, options]);
