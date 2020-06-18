@@ -71,6 +71,7 @@ export default React.forwardRef<editor.IStandaloneCodeEditor, MonacoEditorProps>
       return () => {
         ed.dispose();
         observer.unobserve(node);
+        applyRefs(null, ref);
       };
       // This is triggered by the lack of options in the dependency array. This is left out on
       // purpose. Instead, this is handled using monaco.updateOptions() below.
