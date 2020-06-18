@@ -19,7 +19,7 @@ export default function RadioButton({
 }: RadioButtonProps): VNode {
   const { id } = props;
   return (
-    <div className={wrapperClassName} required>
+    <div className={wrapperClassName}>
       <input {...props} className="is-checkradio" type="radio" />
       <label htmlFor={id}>{children}</label>
     </div>
