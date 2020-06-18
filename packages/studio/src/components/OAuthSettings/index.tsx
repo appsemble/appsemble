@@ -4,6 +4,7 @@ import {
   Message,
   OAuth2LoginButton,
   Title,
+  useLocationString,
   useMessages,
 } from '@appsemble/react-components';
 import type { OAuth2Provider } from '@appsemble/types';
@@ -31,6 +32,7 @@ interface ConnectedAccount {
 export default function OAuthSettings(): React.ReactElement {
   const intl = useIntl();
   const push = useMessages();
+  const location = useLocationString();
 
   const [isLoading, setLoading] = React.useState(true);
   const [error, setError] = React.useState(false);
@@ -108,6 +110,7 @@ export default function OAuthSettings(): React.ReactElement {
               className={styles.button}
               clientId={provider.clientId}
               icon={provider.icon}
+              redirect={location}
               redirectUrl="/callback"
               scope={provider.scope}
             >

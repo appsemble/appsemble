@@ -1,4 +1,3 @@
-import type { OpenAPIV3 } from 'openapi-types';
 import * as React from 'react';
 
 import RecursiveJSONSchemaEditor from './components/RecursiveJSONSchemaEditor';
@@ -14,7 +13,7 @@ export default function JSONSchemaEditor({
   schema,
   value,
 }: Pick<
-  CommonJSONSchemaEditorProps<any, OpenAPIV3.SchemaObject>,
+  CommonJSONSchemaEditorProps<any>,
   'disabled' | 'name' | 'onChange' | 'schema' | 'value'
 >): React.ReactElement {
   const handleChange = React.useCallback(

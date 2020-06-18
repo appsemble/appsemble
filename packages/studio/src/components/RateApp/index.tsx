@@ -31,8 +31,7 @@ export default function RateApp({ app, className, onRate }: RateAppProps): React
 
   const onDescriptionChange = (event: React.ChangeEvent<HTMLTextAreaElement>): void =>
     setDescription(event.target.value);
-  const submit = async (event: React.FormEvent<HTMLFormElement>): Promise<void> => {
-    event.preventDefault();
+  const submit = async (): Promise<void> => {
     const { data } = await axios.post(`/api/apps/${app.id}/ratings`, { rating, description });
     onRate(data);
     setRating(0);

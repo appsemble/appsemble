@@ -25,7 +25,9 @@ export default function JSONSchemaArrayEditor({
   onChange,
   schema,
   value = [],
-}: CommonJSONSchemaEditorProps<any[], OpenAPIV3.ArraySchemaObject>): React.ReactElement {
+}: CommonJSONSchemaEditorProps<any[]>): React.ReactElement {
+  const items = (schema as OpenAPIV3.ArraySchemaObject).items as OpenAPIV3.SchemaObject;
+
   const onPropertyChange = React.useCallback(
     ({ target }: NamedEvent, val) => {
       const index = Number(target.name.slice(name.length + 1));
@@ -52,14 +54,13 @@ export default function JSONSchemaArrayEditor({
     ({ currentTarget }: React.MouseEvent<HTMLButtonElement>) => {
       const addedName = currentTarget.name;
       const index = addedName ? Number(addedName.slice(addedName.length + 1)) + 1 : 0;
-      const items = schema.items as OpenAPIV3.SchemaObject;
       onChange({ target: { name } }, [
         ...value.slice(0, index),
         items.default ?? defaults[items.type],
         ...value.slice(index, value.length),
       ]);
     },
-    [onChange, name, value, schema],
+    [items, onChange, name, value],
   );
 
   return (
@@ -76,7 +77,7 @@ export default function JSONSchemaArrayEditor({
             name={`${name}.${index}`}
             onChange={onPropertyChange}
             prefix={prefix}
-            schema={schema.items as OpenAPIV3.ArraySchemaObject}
+            schema={items}
             value={val}
           />
           <div className="is-pulled-right">

@@ -22,6 +22,6 @@
     "test": "jest"
   },
   "dependencies": {
-    "type-fest": "^0.15.0"
+    "type-fest": "^0.15.1"
   }
 }

@@ -1,4 +1,4 @@
-import { Button, Dropdown, Icon, useQuery } from '@appsemble/react-components';
+import { Button, Dropdown, Icon, useLocationString, useQuery } from '@appsemble/react-components';
 import * as React from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link, useLocation } from 'react-router-dom';
@@ -11,6 +11,7 @@ export default function ProfileDropdown(): React.ReactElement {
   const intl = useIntl();
   const { logout, userInfo } = useUser();
   const location = useLocation();
+  const redirect = useLocationString();
   const qs = useQuery();
   let search: URLSearchParams;
 
@@ -20,7 +21,7 @@ export default function ProfileDropdown(): React.ReactElement {
     }
 
     search = new URLSearchParams(qs);
-    search.set('redirect', `${location.pathname}${location.search}${location.hash}`);
+    search.set('redirect', redirect);
   }
 
   return (

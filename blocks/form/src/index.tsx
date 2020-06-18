@@ -36,6 +36,10 @@ const validators: { [name: string]: Validator } = {
       return true;
     }
 
+    if (value === null) {
+      return false;
+    }
+
     if (field.accept) {
       if (field.repeated) {
         return (

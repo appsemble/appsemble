@@ -161,6 +161,7 @@ describe('authorization_code', () => {
       UserId: user.id,
       expires,
       redirectUri: 'http://foo.bar.localhost:9999/',
+      scope: 'openid',
     });
     const response = await request.post(
       '/oauth2/token',
@@ -169,7 +170,6 @@ describe('authorization_code', () => {
         code: '123',
         grant_type: 'authorization_code',
         redirect_uri: 'http://foo.bar.localhost:9999/',
-        scope: 'openid',
       }),
       { headers: { referer: 'http://foo.bar.localhost:9999/' } },
     );
@@ -199,6 +199,7 @@ describe('authorization_code', () => {
       UserId: user.id,
       expires,
       redirectUri: 'http://foo.bar.localhost:9999/',
+      scope: 'openid',
     });
     const response = await request.post(
       '/oauth2/token',
@@ -207,7 +208,6 @@ describe('authorization_code', () => {
         code: '123',
         grant_type: 'authorization_code',
         redirect_uri: 'http://foo.bar.localhost:9999/',
-        scope: 'openid',
       }),
       { headers: { referer: 'http://foo.bar.localhost:9999/' } },
     );

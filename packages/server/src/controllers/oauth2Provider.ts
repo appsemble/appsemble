@@ -52,7 +52,7 @@ export async function getUserInfo(ctx: KoaContext<Params>): Promise<void> {
 }
 
 export async function createAuthorizationCode(ctx: KoaContext<Params>): Promise<void> {
-  const { appId, redirectUri } = ctx.request.body;
+  const { appId, redirectUri, scope } = ctx.request.body;
   const { host } = ctx.argv;
   const { id } = ctx.user;
 
@@ -73,6 +73,7 @@ export async function createAuthorizationCode(ctx: KoaContext<Params>): Promise<
     code: crypto.randomBytes(12).toString('hex'),
     expires: addMinutes(new Date(), 10),
     redirectUri,
+    scope,
     UserId: id,
   });
   ctx.body = {

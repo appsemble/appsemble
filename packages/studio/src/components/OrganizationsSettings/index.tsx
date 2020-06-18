@@ -308,6 +308,7 @@ export default function OrganizationsSettings(): React.ReactElement {
 
   const organization = organizations.find((o) => o.id === selectedOrganization);
   const { role } = organization?.members.find((u) => u.id === userInfo.sub) || {};
+  const canInviteMembers = role && checkRole(role, Permission.InviteMember);
   const canManageMembers = role && checkRole(role, Permission.ManageMembers);
   const canManageRoles = role && checkRole(role, Permission.ManageRoles);
 
@@ -384,7 +385,7 @@ export default function OrganizationsSettings(): React.ReactElement {
               ))}
             </Select>
 
-            {canManageMembers && (
+            {canInviteMembers && (
               <SimpleForm defaultValues={{ email: '' }} onSubmit={onInviteMember}>
                 <SimpleInput
                   iconLeft="envelope"
@@ -487,7 +488,7 @@ export default function OrganizationsSettings(): React.ReactElement {
                 <tr key={invite.email}>
                   <td>{invite.email}</td>
                   <td className="has-text-right">
-                    {canManageMembers ? (
+                    {canInviteMembers ? (
                       <div className={`field is-grouped ${styles.tags}`}>
                         <p className={`control ${styles.memberButton}`}>
                           <Button

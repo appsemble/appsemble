@@ -6,7 +6,9 @@ module.exports = {
     collect: {
       chromePath: puppeteer.executablePath(),
       settings: {
-        chromeFlags: ['--headless', 'CI' in process.env && '--no-sandbox'].filter(Boolean),
+        chromeFlags: ['--headless', 'CI' in process.env && '--no-sandbox']
+          .filter(Boolean)
+          .join(' '),
       },
       url: fs
         .readdirSync('apps')

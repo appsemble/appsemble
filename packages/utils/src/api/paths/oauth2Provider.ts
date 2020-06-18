@@ -63,6 +63,7 @@ export default {
               properties: {
                 appId: { type: 'number' },
                 redirectUri: { type: 'string', format: 'uri' },
+                scope: { type: 'string' },
               },
             },
           },

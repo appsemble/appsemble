@@ -31,6 +31,9 @@ export default function ParameterTable({ parameters }: ParameterTableProps): Rea
             <FormattedMessage {...messages.type} />
           </th>
           <th>
+            <FormattedMessage {...messages.default} />
+          </th>
+          <th>
             <FormattedMessage {...messages.description} />
           </th>
         </tr>
