@@ -7,6 +7,7 @@ import { Redirect, Route, Switch, useRouteMatch } from 'react-router-dom';
 
 import useOrganizations from '../../hooks/useOrganizations';
 import AppDetails from '../AppDetails';
+import AppSecrets from '../AppSecrets';
 import AppSettings from '../AppSettings';
 import AppSideMenu from '../AppSideMenu';
 import Assets from '../Assets';
@@ -115,6 +116,14 @@ export default function AppContext(): React.ReactElement {
               permission={Permission.PushNotifications}
             >
               <Notifications />
+            </ProtectedRoute>
+            <ProtectedRoute
+              exact
+              organization={organization}
+              path={`${match.path}/secrets`}
+              permission={Permission.EditApps}
+            >
+              <AppSecrets />
             </ProtectedRoute>
             <Redirect to={match.path} />
           </Switch>

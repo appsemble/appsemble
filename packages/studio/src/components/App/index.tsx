@@ -12,8 +12,9 @@ import BlockDetails from '../BlockDetails';
 import BlockList from '../BlockList';
 import EditPassword from '../EditPassword';
 import ErrorFallback from '../ErrorFallback';
+import ForwardOAuth2Login from '../ForwardOAuth2Login';
 import Login from '../Login';
-import OAuth2Connect from '../OAuth2Connect';
+import OAuth2Callback from '../OAuth2Callback';
 import OpenIDLogin from '../OpenIDLogin';
 import OrganizationInvite from '../OrganizationInvite';
 import OrganizationProvider from '../OrganizationProvider';
@@ -52,6 +53,9 @@ export default function App(): React.ReactElement {
                     <ProtectedRoute exact path="/connect/authorize">
                       <OpenIDLogin />
                     </ProtectedRoute>
+                    <Route exact path="/connect/authorize/:id">
+                      <ForwardOAuth2Login />
+                    </Route>
                     <Route path="/apps/:id(\d+)">
                       <AppContext />
                     </Route>
@@ -65,7 +69,7 @@ export default function App(): React.ReactElement {
                       <VerifyEmail />
                     </Route>
                     <Route exact path="/callback">
-                      <OAuth2Connect />
+                      <OAuth2Callback />
                     </Route>
                     <AnonymousRoute exact path="/login">
                       <Login />

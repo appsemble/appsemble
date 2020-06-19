@@ -1,4 +1,5 @@
 import appId from './appId';
+import appOAuth2SecretId from './appOAuth2SecretId';
 import assetId from './assetId';
 import blockId from './blockId';
 import blockVersion from './blockVersion';
@@ -9,6 +10,7 @@ import resourceType from './resourceType';
 
 export default {
   appId,
+  appOAuth2SecretId,
   assetId,
   blockId,
   blockVersion,

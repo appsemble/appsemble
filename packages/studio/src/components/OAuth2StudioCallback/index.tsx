@@ -1,5 +1,6 @@
 import {
   Button,
+  Content,
   Loader,
   Message,
   Title,
@@ -7,7 +8,7 @@ import {
   useQuery,
 } from '@appsemble/react-components';
 import type { TokenResponse, UserInfo } from '@appsemble/types';
-import { appendOAuth2State, clearOAuth2State, loadOAuth2State } from '@appsemble/web-utils';
+import { appendOAuth2State, clearOAuth2State } from '@appsemble/web-utils';
 import axios from 'axios';
 import classNames from 'classnames';
 import * as React from 'react';
@@ -15,12 +16,13 @@ import { FormattedMessage, MessageDescriptor } from 'react-intl';
 import { Link, useHistory } from 'react-router-dom';
 
 import useUser from '../../hooks/useUser';
+import type { ExtendedOAuth2State } from '../../types';
 import settings from '../../utils/settings';
 import styles from './index.css';
 import messages from './messages';
 
-interface ExtendedOAuth2State {
-  userinfo?: UserInfo;
+interface OAuth2StudioCallbackProps {
+  session: ExtendedOAuth2State;
 }
 
 /**
@@ -32,7 +34,9 @@ interface ExtendedOAuth2State {
  * - If the user has logged in using an unknown account, they are prompted if they want to link the
  *   OAuth2 account to a new or an existing Appsemble account.
  */
-export default function OAuth2Connect(): React.ReactElement {
+export default function OAuth2StudioCallback({
+  session,
+}: OAuth2StudioCallbackProps): React.ReactElement {
   const history = useHistory();
   const redirect = useLocationString();
   const qs = useQuery();
@@ -40,7 +44,6 @@ export default function OAuth2Connect(): React.ReactElement {
 
   const code = qs.get('code');
   const state = qs.get('state');
-  const session = React.useMemo(() => loadOAuth2State<ExtendedOAuth2State>(), []);
   const provider = settings.logins.find((p) => p.authorizationUrl === session?.authorizationUrl);
 
   const [profile, setProfile] = React.useState(session?.userinfo);
@@ -124,7 +127,7 @@ export default function OAuth2Connect(): React.ReactElement {
   }
 
   return (
-    <div className={styles.root}>
+    <Content padding>
       <div className={styles.section}>
         <header className={styles.header}>
           <a href={profile.profile} rel="noopener noreferrer" target="_blank">
@@ -202,6 +205,6 @@ export default function OAuth2Connect(): React.ReactElement {
           </p>
         </>
       )}
-    </div>
+    </Content>
   );
 }

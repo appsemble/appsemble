@@ -30,6 +30,7 @@ export { default as SimpleFormError } from './SimpleFormError';
 export { default as SimpleInput } from './SimpleInput';
 export { default as SimpleSubmit } from './SimpleSubmit';
 export { default as Table } from './Table';
+export { default as TagsInput } from './TagsInput';
 export { default as TextArea } from './Textarea';
 export { default as Title } from './Title';
 export { default as Subtitle } from './Subtitle';

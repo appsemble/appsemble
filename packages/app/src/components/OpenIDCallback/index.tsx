@@ -19,7 +19,7 @@ export default function OpenIDCallback(): React.ReactElement {
   const errorMessage = query.get('error');
   const state = query.get('state');
 
-  const session = React.useMemo(() => loadOAuth2State<{}>(), []);
+  const session = React.useMemo(() => loadOAuth2State(), []);
   const { authorizationCodeLogin, isLoggedIn } = useUser();
   const { definition } = useAppDefinition();
 

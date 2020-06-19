@@ -2,5 +2,11 @@
   align-items: center;
   display: flex;
   flex: 1 1 auto;
+  flex-flow: column;
   justify-content: center;
+}
+
+.button {
+  margin: 10px 0;
+  width: 100%;
 }
