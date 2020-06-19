@@ -159,7 +159,7 @@ export default function AppSettings(): React.ReactElement {
         <FormattedMessage {...messages.settings} />
       </TitleBar>
       <div className={styles.root}>
-        {(definition.notifications !== undefined || Object.keys(subscriptions).length) && (
+        {(definition.notifications !== undefined || Object.keys(subscriptions).length > 0) && (
           <>
             <FormComponent label={<FormattedMessage {...messages.notifications} />} required>
               <div className={styles.setting}>

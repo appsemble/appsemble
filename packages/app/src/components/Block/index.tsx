@@ -232,12 +232,19 @@ export default function Block({
 
   switch (manifest.layout) {
     case 'float':
-      return ReactDOM.createPortal(<div ref={ref} className={className} />, document.body);
+      return ReactDOM.createPortal(
+        <div ref={ref} className={className} data-block={blockName} data-path={prefix} />,
+        document.body,
+      );
     case 'hidden':
       return null;
     default:
       return (
-        <div className={`${className} ${styles.blockRoot}`}>
+        <div
+          className={`${className} ${styles.blockRoot}`}
+          data-block={blockName}
+          data-path={prefix}
+        >
           {header}
           <div ref={ref} />
         </div>

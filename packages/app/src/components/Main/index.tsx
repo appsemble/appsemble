@@ -1,6 +1,6 @@
 import { normalize } from '@appsemble/utils';
 import React from 'react';
-import { Redirect, Route, Switch } from 'react-router-dom';
+import { Redirect, Route, Switch, useLocation, useRouteMatch } from 'react-router-dom';
 
 import { useAppDefinition } from '../AppDefinitionProvider';
 import AppSettings from '../AppSettings';
@@ -16,6 +16,7 @@ import styles from './index.css';
  */
 export default function Main(): React.ReactElement {
   const { definition } = useAppDefinition();
+  const location = useLocation();
 
   if (definition == null) {
     return null;
@@ -32,6 +33,7 @@ export default function Main(): React.ReactElement {
     if (page.name === definition.defaultPage) {
       defaultPath = path;
     }
+
     return (
       <Route key={path} exact path={path}>
         <Page page={page} prefix={`pages.${index}`} />
@@ -39,8 +41,13 @@ export default function Main(): React.ReactElement {
     );
   });
 
+  const [currentPageName] = location.pathname.slice(1).split('/');
+  const currentPage = definition.pages.find((p) => normalize(p.name) === currentPageName);
+  const currentPageIndex = currentPageName && definition.pages.indexOf(currentPage);
+  const path = currentPageIndex === -1 ? currentPageName : `pages.${currentPageIndex}`;
+
   return (
-    <main className={styles.root}>
+    <main className={styles.root} data-path={path}>
       <Switch>
         <Route exact path="/Settings" sensitive>
           <AppSettings />
