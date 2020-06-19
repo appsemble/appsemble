@@ -44,8 +44,8 @@ export default function StringInput({
       iconLeft={icon}
       id={name}
       label={label}
-      maxLength={Number.isFinite(maxLength) ? maxLength : null}
-      minLength={Number.isFinite(minLength) ? minLength : null}
+      {...(Number.isFinite(maxLength) && { maxLength })}
+      {...(Number.isFinite(minLength) && { minLength })}
       name={name}
       onInput={(event) => onInput(event, (event.target as HTMLInputElement).value)}
       placeholder={placeholder ?? label ?? name}
