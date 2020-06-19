@@ -19,7 +19,6 @@ export default function Stepper({
 }: StepperProps): React.ReactElement {
   const [step, setStep] = React.useState(0);
   const childArray = React.Children.toArray(children);
-  const childIsArray = Array.isArray(children);
 
   const back = React.useCallback(() => {
     if (step === 0) {
@@ -30,16 +29,12 @@ export default function Stepper({
   }, [step, onCancel]);
 
   const next = React.useCallback(() => {
-    if (childIsArray) {
-      if (step >= (children as React.ReactElement[]).length - 1) {
-        onFinish();
-      } else {
-        setStep(step + 1);
-      }
-    } else {
+    if (step >= childArray.length - 1) {
       onFinish();
+    } else {
+      setStep(step + 1);
     }
-  }, [children, step, onFinish, childIsArray]);
+  }, [step, onFinish, childArray]);
 
   const context = React.useMemo(() => ({ children, onFinish, onCancel }), [
     onFinish,
@@ -59,7 +54,7 @@ export default function Stepper({
           )}
         </Button>
         <Button type="submit">
-          {step === (children as React.ReactElement[]).length - 1 || !childIsArray ? (
+          {step === childArray.length - 1 ? (
             <FormattedMessage {...messages.finish} />
           ) : (
             <FormattedMessage {...messages.next} />
