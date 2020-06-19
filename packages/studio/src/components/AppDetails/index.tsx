@@ -2,72 +2,41 @@ import {
   Button,
   CardFooterButton,
   Checkbox,
-  Loader,
+  Message,
   Modal,
   Select,
   SimpleForm,
   SimpleInput,
+  Subtitle,
   Title,
-  useMessages,
+  useData,
+  useToggle,
 } from '@appsemble/react-components';
-import type { Organization, Rating } from '@appsemble/types';
+import type { Organization } from '@appsemble/types';
 import { Permission } from '@appsemble/utils';
 import axios from 'axios';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useHistory } from 'react-router-dom';
 
 import useOrganizations from '../../hooks/useOrganizations';
-import useUser from '../../hooks/useUser';
 import checkRole from '../../utils/checkRole';
 import { useApp } from '../AppContext';
-import RateApp from '../RateApp';
-import StarRating from '../Rating';
+import AppRatings from '../AppRatings';
 import styles from './index.css';
 import messages from './messages';
 
 export default function AppDetails(): React.ReactElement {
   const { app } = useApp();
-  const [organization, setOrganization] = useState<Organization>(undefined);
-  const [ratings, setRatings] = useState<Rating[]>([]);
-  const [showCloneDialog, setShowCloneDialog] = useState(false);
+  const { data: organization, error, loading } = useData<Organization>(
+    `/api/organizations/${app.OrganizationId}`,
+  );
+  const cloneDialog = useToggle();
   const history = useHistory();
   const intl = useIntl();
 
   const organizations = useOrganizations();
-  const push = useMessages();
-  const { userInfo } = useUser();
 
-  useEffect(() => {
-    const fetchOrganization = async (): Promise<void> => {
-      const { data } = await axios.get<Organization>(`/api/organizations/${app.OrganizationId}`);
-      setOrganization(data);
-    };
-    fetchOrganization();
-  }, [app.OrganizationId]);
-
-  useEffect(() => {
-    const fetchRatings = async (): Promise<void> => {
-      const { data } = await axios.get<Rating[]>(`/api/apps/${app.id}/ratings`);
-      setRatings(data);
-    };
-
-    fetchRatings();
-  }, [app.OrganizationId, app.id]);
-
-  const onRate = (rating: Rating): void => {
-    const existingRating = ratings.find((r) => r.UserId === rating.UserId);
-
-    if (existingRating) {
-      setRatings(ratings.map((r) => (r.UserId === rating.UserId ? rating : r)));
-    } else {
-      setRatings([rating, ...ratings]);
-    }
-    push({ color: 'success', body: intl.formatMessage(messages.ratingSuccessful) });
-  };
-
-  const closeDialog = (): void => setShowCloneDialog(false);
-  const showDialog = (): void => setShowCloneDialog(true);
   const cloneApp = React.useCallback(
     async ({ description, name, private: isPrivate, selectedOrganization }) => {
       const { data: clone } = await axios.post('/api/templates', {
@@ -81,32 +50,32 @@ export default function AppDetails(): React.ReactElement {
 
       history.push(`/apps/${clone.id}/edit`);
     },
-    [app.id, history, organizations],
+    [app, history, organizations],
   );
 
-  if (!organization) {
-    return <Loader />;
-  }
-
   const createOrganizations =
-    organizations?.filter((org) => checkRole(org.role, Permission.CreateApps)) || [];
+    organizations.filter((org) => checkRole(org.role, Permission.CreateApps)) || [];
 
   return (
     <>
-      <div className="content">
+      <div>
         <div className={styles.titleContainer}>
-          <div className={styles.title}>
-            <figure className="image is-64x64 is-marginless">
+          <header className={styles.title}>
+            <figure className="image is-96x96 is-marginless">
               <img alt={intl.formatMessage(messages.appLogo)} src={`/api/apps/${app.id}/icon`} />
             </figure>
-            <div className="is-block">
-              <h1 className="is-marginless">{app.definition.name}</h1>
-              <h3 className="is-marginless">{organization.name}</h3>
+            <div>
+              <Title className="is-marginless" level={1}>
+                {app.definition.name}
+              </Title>
+              <Subtitle className="is-marginless" level={3}>
+                {loading || error ? `@${app.OrganizationId}` : organization.name}
+              </Subtitle>
             </div>
-          </div>
+          </header>
           <div>
             {createOrganizations.length ? (
-              <Button className={`${styles.cloneButton}`} onClick={showDialog}>
+              <Button className={styles.cloneButton} onClick={cloneDialog.enable}>
                 <FormattedMessage {...messages.clone} />
               </Button>
             ) : null}
@@ -124,35 +93,9 @@ export default function AppDetails(): React.ReactElement {
             </a>
           </div>
         </div>
-        {app.definition.description && (
-          <blockquote className={styles.description}>{app.definition.description}</blockquote>
-        )}
-        <Title>
-          <FormattedMessage {...messages.ratings} />
-        </Title>
+        {app.definition.description && <Message>{app.definition.description}</Message>}
       </div>
-      {userInfo && <RateApp app={app} className={styles.ratingButton} onRate={onRate} />}
-      <div className="content">
-        {ratings.map((rating) => (
-          <div key={rating.$created} className={styles.rating}>
-            <span className="is-block has-text-weight-bold">
-              {rating.name || <FormattedMessage {...messages.anonymous} />}
-              {userInfo && rating.UserId === userInfo.sub && (
-                <span className={`tag is-success ${styles.tag}`}>
-                  <FormattedMessage {...messages.you} />
-                </span>
-              )}
-            </span>
-            <StarRating className="is-inline" value={rating.rating} />
-            <span className="is-inline has-text-grey-light is-size-7">
-              {new Date(rating.$updated).toLocaleString()}
-            </span>
-            {rating.description && (
-              <blockquote className={styles.description}>{rating.description}</blockquote>
-            )}
-          </div>
-        ))}
-      </div>
+      <AppRatings />
       {createOrganizations.length ? (
         <Modal
           component={SimpleForm}
@@ -164,7 +107,7 @@ export default function AppDetails(): React.ReactElement {
           }}
           footer={
             <>
-              <CardFooterButton onClick={closeDialog}>
+              <CardFooterButton onClick={cloneDialog.disable}>
                 <FormattedMessage {...messages.cancel} />
               </CardFooterButton>
               <CardFooterButton color="primary" type="submit">
@@ -172,8 +115,8 @@ export default function AppDetails(): React.ReactElement {
               </CardFooterButton>
             </>
           }
-          isActive={showCloneDialog}
-          onClose={closeDialog}
+          isActive={cloneDialog.enabled}
+          onClose={cloneDialog.disable}
           onSubmit={cloneApp}
           title={<FormattedMessage {...messages.clone} />}
         >

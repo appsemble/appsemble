@@ -7,6 +7,8 @@ import {
   SimpleForm,
   SimpleFormError,
   SimpleInput,
+  useData,
+  useToggle,
 } from '@appsemble/react-components';
 import axios, { AxiosError } from 'axios';
 import classNames from 'classnames';
@@ -26,21 +28,13 @@ interface Template {
 }
 
 export default function CreateAppCard(): React.ReactElement {
-  const [modalOpen, setModalOpen] = React.useState(false);
-  const [templates, setTemplates] = React.useState<Template[]>(null);
+  const modal = useToggle();
+  const { data: templates } = useData<Template[]>('/api/templates');
   const [selectedTemplate, setSelectedTemplate] = React.useState(0);
 
   const history = useHistory();
   const match = useRouteMatch();
   const organizations = useOrganizations();
-
-  const closeModal = React.useCallback(() => {
-    setModalOpen(false);
-  }, []);
-
-  const openModal = React.useCallback(() => {
-    setModalOpen(true);
-  }, []);
 
   const onCreate = React.useCallback(
     async ({ description, includeResources, isPrivate, name, selectedOrganization }) => {
@@ -59,15 +53,9 @@ export default function CreateAppCard(): React.ReactElement {
     [history, match.url, organizations, selectedTemplate, templates],
   );
 
-  React.useEffect(() => {
-    axios.get('/api/templates').then(({ data }) => {
-      setTemplates(data);
-    });
-  }, []);
-
   const onKeyDown = (event: React.KeyboardEvent): void => {
     if (event.key === 'Escape') {
-      setModalOpen(false);
+      modal.disable();
     }
   };
 
@@ -79,7 +67,7 @@ export default function CreateAppCard(): React.ReactElement {
     <div className={styles.createAppCardContainer}>
       <div
         className={classNames('card', styles.createAppCard)}
-        onClick={openModal}
+        onClick={modal.enable}
         onKeyDown={onKeyDown}
         role="button"
         tabIndex={0}
@@ -100,7 +88,7 @@ export default function CreateAppCard(): React.ReactElement {
         }}
         footer={
           <>
-            <CardFooterButton onClick={closeModal}>
+            <CardFooterButton onClick={modal.disable}>
               <FormattedMessage {...messages.cancel} />
             </CardFooterButton>
             <CardFooterButton color="primary" type="submit">
@@ -108,8 +96,8 @@ export default function CreateAppCard(): React.ReactElement {
             </CardFooterButton>
           </>
         }
-        isActive={modalOpen}
-        onClose={closeModal}
+        isActive={modal.enabled}
+        onClose={modal.disable}
         onSubmit={onCreate}
         title={<FormattedMessage {...messages.createAppTitle} />}
       >

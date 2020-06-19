@@ -13,7 +13,7 @@ import {
 } from '@appsemble/react-components';
 import { normalize } from '@appsemble/utils';
 import axios from 'axios';
-import React, { FormEvent, ReactText, useState } from 'react';
+import React, { ReactText, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useHistory } from 'react-router-dom';
 
@@ -31,8 +31,7 @@ export default function AppSettings(): React.ReactElement {
   const iconUrl = useObjectURL(icon || app.iconUrl);
   const history = useHistory();
 
-  const onSubmit = async (event: FormEvent): Promise<void> => {
-    event.preventDefault();
+  const onSubmit = async (): Promise<void> => {
     const data = new FormData();
 
     if (app.domain !== inputs.domain) {

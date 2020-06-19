@@ -17,14 +17,15 @@ import messages from './messages';
 
 interface RegistrationFormValues {
   email: string;
+  name: string;
   password: string;
 }
 
 export default function Register(): React.ReactElement {
   const { login } = useUser();
   const register = React.useCallback(
-    async ({ email, password }: RegistrationFormValues) => {
-      const { data } = await axios.post('/api/email', { email, password });
+    async (values: RegistrationFormValues) => {
+      const { data } = await axios.post('/api/email', values);
       login(data);
     },
     [login],
@@ -33,7 +34,7 @@ export default function Register(): React.ReactElement {
   return (
     <Content padding>
       <HelmetIntl title={messages.title} />
-      <SimpleForm defaultValues={{ email: '', password: '' }} onSubmit={register}>
+      <SimpleForm defaultValues={{ email: '', name: '', password: '' }} onSubmit={register}>
         <SimpleFormError>
           {({ error }: { error: AxiosError }) =>
             error.response && error.response.status === 409 ? (
@@ -43,6 +44,13 @@ export default function Register(): React.ReactElement {
             )
           }
         </SimpleFormError>
+        <SimpleInput
+          autoComplete="name"
+          help={<FormattedMessage {...messages.nameHelp} />}
+          iconLeft="user"
+          label={<FormattedMessage {...messages.nameLabel} />}
+          name="name"
+        />
         <SimpleInput
           autoComplete="email"
           iconLeft="envelope"

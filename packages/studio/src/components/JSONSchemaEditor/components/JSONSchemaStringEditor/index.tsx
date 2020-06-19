@@ -1,4 +1,4 @@
-import { Input } from '@appsemble/react-components';
+import { Input, MarkdownContent } from '@appsemble/react-components';
 import type { OpenAPIV3 } from 'openapi-types';
 import * as React from 'react';
 
@@ -31,7 +31,7 @@ export default function JSONSchemaStringEditor({
   return (
     <Input
       disabled={disabled}
-      help={schema.description}
+      help={<MarkdownContent content={schema.description} />}
       label={<JSONSchemaLabel name={name} prefix={prefix} schema={schema} />}
       max={schema.maximum}
       maxLength={schema.maxLength}

@@ -34,7 +34,6 @@
     "js-yaml": "^3.14.0",
     "jwt-decode": "^2.2.0",
     "lodash": "^4.17.15",
-    "marked": "^1.1.0",
     "mime-types": "^2.1.27",
     "monaco-editor": "^0.20.0",
     "monaco-yaml": "^2.4.0",

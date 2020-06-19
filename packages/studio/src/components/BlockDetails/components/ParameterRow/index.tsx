@@ -1,10 +1,8 @@
-import { Icon, Join } from '@appsemble/react-components';
+import { Icon, Join, MarkdownContent } from '@appsemble/react-components';
 import type { OpenAPIV3 } from 'openapi-types';
 import React from 'react';
 import { useRouteMatch } from 'react-router-dom';
 import type { Definition } from 'typescript-json-schema';
-
-import MarkdownContent from '../../../MarkdownContent';
 
 interface ParameterRowProps {
   /**
@@ -166,6 +164,13 @@ export default function ParameterRow({
               <React.Fragment key={t}>{t}</React.Fragment>
             ))}
           </Join>
+        )}
+      </td>
+      <td>
+        {value.default !== undefined && (
+          <code>
+            {typeof value.default === 'string' ? value.default : JSON.stringify(value.default)}
+          </code>
         )}
       </td>
       <td>

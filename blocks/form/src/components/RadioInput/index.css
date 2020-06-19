@@ -1,0 +1,3 @@
+.choice:not(:last-child) {
+  padding-bottom: 5px;
+}
