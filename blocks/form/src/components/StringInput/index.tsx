@@ -11,32 +11,31 @@ type StringInputProps = InputProps<string, StringField>;
 export default function StringInput({
   disabled,
   error,
-  field: { format, icon, label, multiline, name, placeholder, readOnly, required, requirements },
+  field: {
+    format,
+    icon,
+    label,
+    multiline,
+    name,
+    placeholder,
+    readOnly,
+    required,
+    requirements = [],
+  },
   onInput,
   value = '',
 }: StringInputProps): VNode {
-  const requirementAttributes: { minLength?: number; maxLength?: number } = {};
-  if (requirements?.length) {
-    const maxLength = Math.max(
-      ...requirements
-        .map((requirement) => 'maxLength' in requirement && requirement.maxLength)
-        .filter(Number.isFinite),
-    );
+  const maxLength = Math.max(
+    ...requirements
+      ?.map((requirement) => 'maxLength' in requirement && requirement.maxLength)
+      .filter(Number.isFinite),
+  );
 
-    const minLength = Math.min(
-      ...requirements
-        .map((requirement) => 'minLength' in requirement && requirement.minLength)
-        .filter(Number.isFinite),
-    );
-
-    if (Number.isFinite(maxLength)) {
-      requirementAttributes.maxLength = maxLength;
-    }
-
-    if (Number.isFinite(minLength)) {
-      requirementAttributes.minLength = minLength;
-    }
-  }
+  const minLength = Math.min(
+    ...requirements
+      ?.map((requirement) => 'minLength' in requirement && requirement.minLength)
+      .filter(Number.isFinite),
+  );
 
   return (
     <Input
@@ -45,6 +44,8 @@ export default function StringInput({
       iconLeft={icon}
       id={name}
       label={label}
+      maxLength={Number.isFinite(maxLength) ? maxLength : null}
+      minLength={Number.isFinite(minLength) ? minLength : null}
       name={name}
       onInput={(event) => onInput(event, (event.target as HTMLInputElement).value)}
       placeholder={placeholder ?? label ?? name}
@@ -52,7 +53,6 @@ export default function StringInput({
       required={required}
       type={multiline ? 'textarea' : format || 'text'}
       value={value}
-      {...requirementAttributes}
     />
   );
 }
