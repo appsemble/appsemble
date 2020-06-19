@@ -19,7 +19,6 @@ export default function Stepper({
 }: StepperProps): React.ReactElement {
   const [step, setStep] = React.useState(0);
   const childArray = React.Children.toArray(children);
-  const childIsArray = Array.isArray(children);
 
   const back = React.useCallback(() => {
     if (step === 0) {
