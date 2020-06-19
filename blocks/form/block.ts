@@ -43,6 +43,8 @@ interface LengthRequirement extends BaseRequirement {
 
   /**
    * The maximum length.
+   *
+   * @minimum 0
    */
   maxLength?: number;
 }
