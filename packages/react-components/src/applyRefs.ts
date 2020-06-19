@@ -12,7 +12,7 @@ export default function applyRefs<T>(value: T, ...refs: MutableRef<T>[]): void {
   refs.forEach((ref) => {
     if (ref instanceof Function) {
       ref(value);
-    } else {
+    } else if (ref) {
       // eslint-disable-next-line no-param-reassign
       ref.current = value;
     }
