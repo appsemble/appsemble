@@ -59,6 +59,12 @@ export default React.forwardRef<editor.IStandaloneCodeEditor, MonacoEditorProps>
     saveRef.current = onSave;
 
     const nodeRef = React.useCallback((node: HTMLDivElement) => {
+      if (!node) {
+        return () => {
+          applyRefs(null, ref);
+        };
+      }
+
       const ed = editor.create(node, options);
       // eslint-disable-next-line no-bitwise
       ed.addCommand(KeyMod.CtrlCmd | KeyCode.KEY_S, () => saveRef.current?.());
@@ -97,7 +103,7 @@ export default React.forwardRef<editor.IStandaloneCodeEditor, MonacoEditorProps>
     }, [monaco, value]);
 
     React.useEffect(() => {
-      if (!monaco) {
+      if (!monaco || !onChange) {
         return undefined;
       }
       const model = monaco.getModel();
