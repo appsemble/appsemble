@@ -1,4 +1,3 @@
-import { FormattedMessage } from '@appsemble/preact';
 import { Input } from '@appsemble/preact-components';
 import { h, VNode } from 'preact';
 
@@ -12,18 +11,41 @@ type StringInputProps = InputProps<string, StringField>;
 export default function StringInput({
   disabled,
   error,
-  field: { format, icon, label, maxLength, multiline, name, placeholder, readOnly, required },
+  field: {
+    format,
+    icon,
+    label,
+    multiline,
+    name,
+    placeholder,
+    readOnly,
+    required,
+    requirements = [],
+  },
   onInput,
   value = '',
 }: StringInputProps): VNode {
+  const maxLength = Math.max(
+    ...requirements
+      ?.map((requirement) => 'maxLength' in requirement && requirement.maxLength)
+      .filter(Number.isFinite),
+  );
+
+  const minLength = Math.min(
+    ...requirements
+      ?.map((requirement) => 'minLength' in requirement && requirement.minLength)
+      .filter(Number.isFinite),
+  );
+
   return (
     <Input
       disabled={disabled}
-      error={error && <FormattedMessage id="invalid" />}
+      error={error}
       iconLeft={icon}
       id={name}
       label={label}
-      maxLength={maxLength}
+      maxLength={Number.isFinite(maxLength) ? maxLength : null}
+      minLength={Number.isFinite(minLength) ? minLength : null}
       name={name}
       onInput={(event) => onInput(event, (event.target as HTMLInputElement).value)}
       placeholder={placeholder ?? label ?? name}

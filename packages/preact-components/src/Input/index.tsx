@@ -93,6 +93,7 @@ export interface StringInputProps
     | undefined
   > {
   maxLength?: number;
+  minLength?: number;
 }
 
 export type InputProps = BooleanInputProps | NumberInputProps | StringInputProps;
