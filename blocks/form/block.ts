@@ -5,6 +5,9 @@ import type { IconName } from '@fortawesome/fontawesome-common-types';
  * Properties that are shared between all requirements.
  */
 interface BaseRequirement {
+  /**
+   * The error message that is displayed when the requirement is not met.
+   */
   errorMessage?: Remapper;
 }
 
@@ -28,7 +31,7 @@ interface RegexRequirement extends BaseRequirement {
 }
 
 /**
- * A requirement used to enforce
+ * A requirement used to enforce the length of the input.
  */
 interface LengthRequirement extends BaseRequirement {
   /**
@@ -45,7 +48,7 @@ interface LengthRequirement extends BaseRequirement {
 type Requirement = RegexRequirement | LengthRequirement;
 
 /**
- * An option that is displayed in a dropdown menu.
+ * An option that is displayed in a dropdown menu or radio button field.
  */
 interface Choice {
   /**
@@ -56,7 +59,7 @@ interface Choice {
   /**
    * The value to use when selecting the option.
    */
-  value: string;
+  value: any;
 }
 
 interface AbstractField {
@@ -110,6 +113,20 @@ export interface BooleanField extends AbstractField {
    * The type of the field.
    */
   type: 'boolean';
+}
+
+export interface RadioField extends AbstractField {
+  /**
+   * The default value of the field.
+   */
+  defaultValue?: any;
+
+  /**
+   * The list of options the user can select from.
+   */
+  options?: Choice[];
+
+  type: 'radio';
 }
 
 /**
@@ -287,7 +304,8 @@ export type Field =
   | GeoCoordinatesField
   | HiddenField
   | NumberField
-  | StringField;
+  | StringField
+  | RadioField;
 
 export interface InputProps<T, F extends Field> {
   /**
