@@ -1,6 +1,5 @@
 import { FormattedMessage } from '@appsemble/preact';
-import { FormComponent, RadioButton } from '@appsemble/preact-components/src';
-import classNames from 'classnames';
+import { RadioButton, RadioGroup } from '@appsemble/preact-components';
 import { h, VNode } from 'preact';
 
 import type { InputProps, RadioField } from '../../../block';
@@ -19,27 +18,20 @@ export default function RadioInput({
   value,
 }: RadioInputProps): VNode {
   return (
-    <FormComponent label={field.label} required={field.required}>
-      {field.options.map((option, index) => (
-        <RadioButton
-          checked={value === option.value}
-          disabled={disabled}
-          help={option.labelText ?? option.value}
-          id={`${field.name}${index}`}
-          name={`${field.name}`}
-          onChange={(event, v) => {
-            onInput(event, v);
-          }}
-          readOnly={field.readOnly}
-          value={option.value}
-          wrapperClassName={styles.choice}
-        />
+    <RadioGroup
+      disabled={disabled}
+      error={error && <FormattedMessage id="invalid" />}
+      label={field.label}
+      name={field.name}
+      onChange={onInput}
+      required={field.required}
+      value={value}
+    >
+      {field.options.map((option) => (
+        <RadioButton value={option.value} wrapperClassName={styles.choice}>
+          {option.label ?? option.value}
+        </RadioButton>
       ))}
-      {error && (
-        <p className={classNames('help', { 'is-danger': error })}>
-          <FormattedMessage id="invalid" />
-        </p>
-      )}
-    </FormComponent>
+    </RadioGroup>
   );
 }

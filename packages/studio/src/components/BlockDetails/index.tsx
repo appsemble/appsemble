@@ -1,13 +1,20 @@
-import { Content, Loader, Message, Select, Subtitle, Title } from '@appsemble/react-components';
+import {
+  Content,
+  Loader,
+  MarkdownContent,
+  Message,
+  Select,
+  Subtitle,
+  Title,
+  useData,
+} from '@appsemble/react-components';
 import type { BlockManifest } from '@appsemble/types';
-import axios from 'axios';
 import React from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Redirect, useHistory, useRouteMatch } from 'react-router-dom';
 import type { Definition } from 'typescript-json-schema';
 
 import HelmetIntl from '../HelmetIntl';
-import MarkdownContent from '../MarkdownContent';
 import ActionTable from './components/ActionTable';
 import EventTable from './components/EventTable';
 import ParameterTable from './components/ParameterTable';
@@ -36,24 +43,14 @@ interface BlockDetailsRoutesMatch {
  * Render documentation for blocks.
  */
 export default function BlockDetails(): React.ReactElement {
-  const [blockVersions, setBlockVersions] = React.useState<BlockManifest[]>();
-  const [loading, setLoading] = React.useState(true);
-  const [error, setError] = React.useState(false);
-
   const intl = useIntl();
   const match = useRouteMatch<BlockDetailsRoutesMatch>();
   const history = useHistory();
   const { blockName, organization, version: urlVersion } = match.params;
 
-  React.useEffect(() => {
-    axios
-      .get<BlockManifest[]>(`/api/blocks/@${organization}/${blockName}/versions`)
-      .then(async (result) => {
-        setBlockVersions(result.data);
-      })
-      .catch(() => setError(true))
-      .finally(() => setLoading(false));
-  }, [blockName, history, match.url, organization, urlVersion]);
+  const { data: blockVersions, error, loading } = useData<BlockManifest[]>(
+    `/api/blocks/@${organization}/${blockName}/versions`,
+  );
 
   const onSelectedVersionChange = React.useCallback(
     async (_: React.ChangeEvent<HTMLSelectElement>, value: string) => {
@@ -162,11 +159,7 @@ export default function BlockDetails(): React.ReactElement {
                       {key}
                     </a>
                   </Title>
-                  {definition.description && (
-                    <Title level={6}>
-                      <MarkdownContent content={definition.description} />
-                    </Title>
-                  )}
+                  {definition.description && <MarkdownContent content={definition.description} />}
                   {definition.type === 'object' || definition.type === 'array' ? (
                     <ParameterTable parameters={definition} />
                   ) : (

@@ -1,7 +1,7 @@
 import { defineMessages } from 'react-intl';
 
 export default defineMessages({
-  invalidCallback: 'Invalid redirect',
+  accessDenied: 'Access was denied',
   error: 'An unexpected error occurred while logging in',
-  retry: 'Retry',
+  retry: 'Back to login',
 });

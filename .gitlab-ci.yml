@@ -1,4 +1,4 @@
-image: node:12-slim
+image: node:14-slim
 
 stages:
   - test
@@ -90,8 +90,9 @@ stylelint:
     # https://github.com/stylelint/stylelint/issues/4203
     - yarn stylelint .
 
-# Test the code using unit tests.
-test:
+# Run unittests using NodeJS 12.
+test node 12:
+  image: node:12-slim
   services:
     - name: postgres:11
   variables:
@@ -103,6 +104,22 @@ test:
     - yarn --frozen-lockfile
     - yarn jest --coverage --reporters default --reporters jest-junit
     - yarn codecov
+  artifacts:
+    reports:
+      junit: junit.xml
+
+# Run unittests using NodeJS 14.
+test node 14:
+  services:
+    - name: postgres:11
+  variables:
+    POSTGRES_DB: testAppsemble
+    POSTGRES_USER: admin
+    POSTGRES_PASSWORD: password
+    DATABASE_URL: 'postgres://admin:password@postgres:5432/testAppsemble'
+  script:
+    - yarn --frozen-lockfile
+    - yarn jest --reporters default --reporters jest-junit
   artifacts:
     reports:
       junit: junit.xml

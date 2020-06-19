@@ -41,7 +41,7 @@ type CheckboxProps = Omit<typeof FormComponent, 'children'> &
     /**
      * Whether the label should be displayed to the right of the checkbox or to the left.
      *
-     * By default (false), the label will be rendered after the checkbox.
+     * @default false
      */
     rtl?: boolean;
 
@@ -89,7 +89,7 @@ export default function Checkbox({
       <label className={classNames({ 'is-danger': error })} htmlFor={id}>
         {help}
       </label>
-      {error && <p className={classNames('help', { 'is-danger': error })}>{error}</p>}
+      {error && <p className="help is-danger">{error}</p>}
     </FormComponent>
   );
 }

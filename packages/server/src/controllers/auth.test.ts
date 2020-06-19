@@ -33,6 +33,21 @@ describe('registerEmail', () => {
     expect(bcrypt.compareSync(data.password, user.password)).toBe(true);
   });
 
+  it('should accept a display name', async () => {
+    const data = { email: 'test@example.com', name: 'Me', password: 'password' };
+    const response = await request.post('/api/email', data);
+
+    expect(response).toMatchObject({
+      status: 201,
+      data: {},
+    });
+
+    const email = await EmailAuthorization.findByPk('test@example.com');
+    const user = await User.findByPk(email.UserId);
+
+    expect(user.name).toBe('Me');
+  });
+
   it('should not register invalid email addresses', async () => {
     const response = await request.post('/api/email', { email: 'foo', password: 'bar' });
 

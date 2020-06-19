@@ -13,13 +13,14 @@ type OAuth2LoginButtonProps = React.ComponentPropsWithoutRef<typeof Button> & OA
 export default function OAuth2LoginButton({
   authorizationUrl,
   clientId,
+  redirect,
   redirectUrl,
   scope,
   ...props
 }: OAuth2LoginButtonProps): React.ReactElement {
   const onClick = React.useCallback(() => {
-    startOAuth2Login({ authorizationUrl, clientId, redirectUrl, scope });
-  }, [authorizationUrl, clientId, redirectUrl, scope]);
+    startOAuth2Login({ authorizationUrl, clientId, redirect, redirectUrl, scope });
+  }, [authorizationUrl, clientId, redirect, redirectUrl, scope]);
 
   return <Button {...props} onClick={onClick} />;
 }

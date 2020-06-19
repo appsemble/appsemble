@@ -1,11 +1,9 @@
 import type { OpenAPIV3 } from 'openapi-types';
+import type { Definition } from 'typescript-json-schema';
 
 import type { NamedEvent } from '../../types';
 
-export interface CommonJSONSchemaEditorProps<
-  T = never,
-  S extends OpenAPIV3.BaseSchemaObject = OpenAPIV3.NonArraySchemaObject
-> {
+export interface CommonJSONSchemaEditorProps<T = never> {
   /**
    * Whether or not the editor is disabled.
    *
@@ -45,7 +43,7 @@ export interface CommonJSONSchemaEditorProps<
   /**
    * The schema used to render the form elements.
    */
-  schema: S;
+  schema: OpenAPIV3.SchemaObject | Definition;
 
   /**
    * The value used to populate the editor.

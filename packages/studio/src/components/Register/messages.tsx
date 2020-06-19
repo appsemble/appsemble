@@ -6,6 +6,8 @@ export default defineMessages({
   registerFailed: 'Register failed',
   registerSuccess:
     'Successfully registered! Please check your email for instructions on verifying your account.',
+  nameLabel: 'Display name',
+  nameHelp: 'This is used to personalize communication',
   passwordLabel: 'Password',
   passwordRequired: 'A password is required',
   emailLabel: 'Email',

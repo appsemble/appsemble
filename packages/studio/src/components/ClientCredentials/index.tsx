@@ -3,14 +3,18 @@ import {
   Calendar,
   CardFooterButton,
   Checkbox,
+  Content,
   Input,
   Join,
+  Loader,
+  Message,
   Modal,
   SimpleForm,
   SimpleInput,
   Table,
   Title,
   useConfirmation,
+  useData,
   useToggle,
 } from '@appsemble/react-components';
 import { scopes as knownScopes } from '@appsemble/utils';
@@ -25,7 +29,9 @@ import messages from './messages';
 
 export default function ClientCredentials(): React.ReactElement {
   const intl = useIntl();
-  const [clients, setClients] = React.useState<OAuth2ClientCredentials[]>([]);
+  const { data: clients, error, loading, refresh, setData: setClients } = useData<
+    OAuth2ClientCredentials[]
+  >('/api/oauth2/client-credentials');
   const [newClientCredentials, setNewClientCredentials] = React.useState<string>(null);
   const modal = useToggle();
 
@@ -42,7 +48,7 @@ export default function ClientCredentials(): React.ReactElement {
       setNewClientCredentials(`${data.id}:${data.secret}`);
       setClients([...clients, data]);
     },
-    [clients],
+    [clients, setClients],
   );
 
   const onDelete = useConfirmation({
@@ -56,12 +62,24 @@ export default function ClientCredentials(): React.ReactElement {
     },
   });
 
-  React.useEffect(() => {
-    (async () => {
-      const { data } = await axios.get('/api/oauth2/client-credentials');
-      setClients(data);
-    })();
-  }, [setClients]);
+  if (error) {
+    return (
+      <Content padding>
+        <Message color="danger">
+          <p>
+            <FormattedMessage {...messages.loadError} />
+          </p>
+          <Button color="danger" onClick={refresh}>
+            <FormattedMessage {...messages.retry} />
+          </Button>
+        </Message>
+      </Content>
+    );
+  }
+
+  if (loading) {
+    return <Loader />;
+  }
 
   return (
     <>

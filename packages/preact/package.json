@@ -22,7 +22,7 @@
     "test": "jest"
   },
   "dependencies": {
-    "intl-messageformat": "^8.3.18"
+    "intl-messageformat": "^8.3.23"
   },
   "peerDependencies": {
     "@appsemble/sdk": "0.13.3",

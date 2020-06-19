@@ -1,10 +1,60 @@
+import type { Remapper } from '@appsemble/sdk';
 import type { IconName } from '@fortawesome/fontawesome-common-types';
+
+/**
+ * Properties that are shared between all requirements.
+ */
+interface BaseRequirement {
+  /**
+   * The error message that is displayed when the requirement is not met.
+   */
+  errorMessage?: Remapper;
+}
+
+/**
+ * Requirement that matches using a given regex.
+ */
+interface RegexRequirement extends BaseRequirement {
+  /**
+   * The regex to match with. Must be a valid JavaScript regex.
+   */
+  regex: string;
+
+  /**
+   * The flags to use for the regex.
+   *
+   * Supported values: `g`, `m`, `i`, `y`, `u`, `s`
+   * @TJS-pattern ^[gimsuy]+$
+   * @default 'g'
+   */
+  flags?: string;
+}
+
+/**
+ * A requirement used to enforce the length of the input.
+ */
+interface LengthRequirement extends BaseRequirement {
+  /**
+   * The minimum length.
+   *
+   * @minimum 0
+   */
+  minLength?: number;
+
+  /**
+   * The maximum length.
+   *
+   * @minimum 0
+   */
+  maxLength?: number;
+}
+
+type Requirement = RegexRequirement | LengthRequirement;
 
 /**
  * An option that is displayed in a dropdown menu or radio button field.
  */
 interface Choice {
-  labelText: any;
   /**
    * The label used to display the option.
    */
@@ -129,8 +179,10 @@ export interface FileField extends AbstractField {
 
   /**
    * Boolean value representing whether to accept one file or multiple files.
+   *
+   * @default false
    */
-  repeated?: true;
+  repeated?: boolean;
 
   /**
    * The quality modifier to use when uploading images, in percentages.
@@ -202,18 +254,51 @@ export interface NumberField extends AbstractField {
   type: 'integer' | 'number';
 }
 
+/**
+ * Fields with the type of [`string`](#StringField) support requirements. This is an array of
+ * requirements that are used to validate the value the user inputs. Each requirement can be
+ * provided with its own custom error message, allowing for better feedback towards users.
+ *
+ * For example, the [`regex`](#RegexRequirement) requirement type allows you to validate a field
+ * using [Regular Expressions](https://learnxinyminutes.com/docs/pcre/). So for example if you want
+ * a string field that requires a field to be an email address that ends with “@appsemble.com”,
+ * you could enforce this like so:
+ *
+ * ```yaml
+ * type: string
+ * requirements:
+ *   - regex: \w+@appsemble\.com
+ *     errorMessage: Value does not end with “@appsemble.com”
+ * ```
+ */
 export interface StringField extends AbstractField {
   /**
    * The default value of the field.
    */
   defaultValue?: string;
+
+  /**
+   * The format to use for validation.
+   */
   format?: 'email' | 'url';
-  maxLength?: number;
+
+  /**
+   * Whether the string field should be multiline or not.
+   *
+   * @default false
+   */
   multiline?: boolean;
   /**
    * The type of the field.
    */
   type: 'string';
+
+  /**
+   * The requirements that are used to validate the field with.
+   *
+   * These are evaluated in the order they are defined in.
+   */
+  requirements?: Requirement[];
 }
 
 export type Field =

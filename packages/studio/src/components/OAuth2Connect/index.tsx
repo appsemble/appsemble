@@ -1,11 +1,18 @@
-import { Button, Loader, Message, Title, useQuery } from '@appsemble/react-components';
+import {
+  Button,
+  Loader,
+  Message,
+  Title,
+  useLocationString,
+  useQuery,
+} from '@appsemble/react-components';
 import type { TokenResponse, UserInfo } from '@appsemble/types';
 import { appendOAuth2State, clearOAuth2State, loadOAuth2State } from '@appsemble/web-utils';
 import axios from 'axios';
 import classNames from 'classnames';
 import * as React from 'react';
 import { FormattedMessage, MessageDescriptor } from 'react-intl';
-import { Link, useHistory, useLocation } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 
 import useUser from '../../hooks/useUser';
 import settings from '../../utils/settings';
@@ -27,7 +34,7 @@ interface ExtendedOAuth2State {
  */
 export default function OAuth2Connect(): React.ReactElement {
   const history = useHistory();
-  const location = useLocation();
+  const redirect = useLocationString();
   const qs = useQuery();
   const { login, userInfo } = useUser();
 
@@ -42,6 +49,15 @@ export default function OAuth2Connect(): React.ReactElement {
   const [error, setError] = React.useState<MessageDescriptor>();
   const [isSubmitting, setSubmitting] = React.useState(false);
 
+  const finalizeLogin = React.useCallback(
+    (response: TokenResponse) => {
+      login(response);
+      clearOAuth2State();
+      history.replace(session.redirect || '/');
+    },
+    [history, login, session],
+  );
+
   React.useEffect(() => {
     async function connect(): Promise<void> {
       try {
@@ -53,9 +69,7 @@ export default function OAuth2Connect(): React.ReactElement {
           },
         );
         if ('access_token' in data) {
-          login(data);
-          clearOAuth2State();
-          history.replace('/');
+          finalizeLogin(data);
           return;
         }
         // Prevent the user from calling the oauth2 registration API twice.
@@ -76,7 +90,7 @@ export default function OAuth2Connect(): React.ReactElement {
       // The user refreshed the page.
       setLoading(false);
     }
-  }, [code, history, login, profile, qs, session, state]);
+  }, [code, finalizeLogin, profile, session, state]);
 
   const submit = React.useCallback(async () => {
     setSubmitting(true);
@@ -85,9 +99,7 @@ export default function OAuth2Connect(): React.ReactElement {
         code,
         authorizationUrl: session.authorizationUrl,
       });
-      login(data);
-      clearOAuth2State();
-      history.replace('/');
+      finalizeLogin(data);
     } catch (err) {
       if (err?.response?.status === 409) {
         setLinkError(true);
@@ -97,7 +109,7 @@ export default function OAuth2Connect(): React.ReactElement {
     } finally {
       setSubmitting(false);
     }
-  }, [code, history, login, session]);
+  }, [code, finalizeLogin, session]);
 
   if (isLoading) {
     return <Loader />;
@@ -179,9 +191,7 @@ export default function OAuth2Connect(): React.ReactElement {
                     <Link
                       to={{
                         pathname: '/login',
-                        search: `?${new URLSearchParams({
-                          redirect: `${location.pathname}${location.search}${location.hash}`,
-                        })}`,
+                        search: `?${new URLSearchParams({ redirect })}`,
                       }}
                     >
                       {text}
