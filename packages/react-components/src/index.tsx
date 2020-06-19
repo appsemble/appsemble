@@ -36,6 +36,7 @@ export { default as Subtitle } from './Subtitle';
 export { default as useClickOutside } from './hooks/useClickOutside';
 export { default as useMessages, MessagesContext } from './hooks/useMessages';
 export { default as useObjectURL } from './hooks/useObjectURL';
+export { default as useData } from './hooks/useData';
 export { default as useQuery } from './hooks/useQuery';
 export { default as useToggle } from './hooks/useToggle';
 export { default as useLocationString } from './hooks/useLocationString';

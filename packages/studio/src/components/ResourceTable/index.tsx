@@ -8,6 +8,7 @@ import {
   Table,
   Title,
   useConfirmation,
+  useData,
   useMessages,
 } from '@appsemble/react-components';
 import axios from 'axios';
@@ -43,12 +44,13 @@ export default function ResourceTable(): React.ReactElement {
   const match = useRouteMatch<RouteParams>();
   const push = useMessages();
 
-  const [resources, setResources] = React.useState<Resource[]>();
   const [editingResource, setEditingResource] = React.useState<Resource>();
-  const [loading, setLoading] = React.useState(true);
-  const [error, setError] = React.useState(false);
 
   const { id: appId, mode, resourceId, resourceName } = match.params;
+
+  const { data: resources, error, loading, setData: setResources } = useData<Resource[]>(
+    `/api/apps/${appId}/resources/${resourceName}`,
+  );
 
   const closeModal = React.useCallback(() => {
     history.push(match.url.replace(`/${mode}${mode === 'edit' ? `/${resourceId}` : ''}`, ''));
@@ -100,7 +102,18 @@ export default function ResourceTable(): React.ReactElement {
         push(intl.formatMessage(messages.createError));
       }
     },
-    [appId, editingResource, history, intl, match.url, mode, push, resourceName, resources],
+    [
+      appId,
+      editingResource,
+      history,
+      intl,
+      match,
+      mode,
+      push,
+      resourceName,
+      resources,
+      setResources,
+    ],
   );
 
   const submitEdit = React.useCallback(async () => {
@@ -131,12 +144,13 @@ export default function ResourceTable(): React.ReactElement {
     editingResource,
     history,
     intl,
-    match.url,
+    match,
     mode,
     push,
     resourceId,
     resourceName,
     resources,
+    setResources,
   ]);
 
   const downloadCsv = React.useCallback(async () => {
@@ -145,21 +159,6 @@ export default function ResourceTable(): React.ReactElement {
       `${resourceName}.csv`,
       'text/csv',
     );
-  }, [app, resourceName]);
-
-  React.useEffect(() => {
-    if (app.definition.resources[resourceName]?.schema) {
-      setLoading(true);
-      setError(false);
-      axios
-        .get<Resource[]>(`/api/apps/${app.id}/resources/${resourceName}`)
-        .then(({ data }) => setResources(data))
-        .catch(() => setError(true))
-        .finally(() => setLoading(false));
-    } else {
-      setLoading(false);
-      setResources(undefined);
-    }
   }, [app, resourceName]);
 
   React.useEffect(() => {
