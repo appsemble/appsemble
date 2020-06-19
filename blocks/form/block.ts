@@ -24,7 +24,7 @@ interface RegexRequirement extends BaseRequirement {
    * The flags to use for the regex.
    *
    * Supported values: `g`, `m`, `i`, `y`, `u`, `s`
-   *
+   * @TJS-pattern ^[gimsuy]+$
    * @default 'g'
    */
   flags?: string;
