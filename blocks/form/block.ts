@@ -36,6 +36,8 @@ interface RegexRequirement extends BaseRequirement {
 interface LengthRequirement extends BaseRequirement {
   /**
    * The minimum length.
+   *
+   * @minimum 0
    */
   minLength?: number;
 
