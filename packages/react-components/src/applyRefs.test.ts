@@ -14,6 +14,10 @@ it('should apply object refs', () => {
   expect(ref.current).toBe('current value');
 });
 
+it('should ignore null refs', () => {
+  expect(() => applyRefs('current value', null)).not.toThrow();
+});
+
 it('should apply multiple refs', () => {
   const spy = jest.fn();
   const ref = createRef();

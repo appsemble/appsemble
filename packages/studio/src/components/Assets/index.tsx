@@ -10,6 +10,7 @@ import {
   Table,
   Title,
   useConfirmation,
+  useData,
   useMessages,
 } from '@appsemble/react-components';
 import axios from 'axios';
@@ -35,9 +36,9 @@ export default function Assets(): React.ReactElement {
   const intl = useIntl();
   const push = useMessages();
 
-  const [assets, setAssets] = React.useState<Asset[]>([]);
-  const [loading, setLoading] = React.useState(true);
-  const [error, setError] = React.useState(false);
+  const { data: assets, error, loading, setData: setAssets } = useData<Asset[]>(
+    `/api/apps/${app.id}/assets`,
+  );
   const [selectedAssets, setSelectedAssets] = React.useState<string[]>([]);
   const [dialog, setDialog] = React.useState<'upload' | 'preview'>(null);
   const [previewedAsset, setPreviewedAsset] = React.useState<Asset>(null);
@@ -64,7 +65,7 @@ export default function Assets(): React.ReactElement {
     setAssets([...assets, data]);
     setFile(null);
     onClose();
-  }, [app, assets, file, intl, onClose, push]);
+  }, [app, assets, file, intl, onClose, push, setAssets]);
 
   const onFileChange = React.useCallback((e: React.ChangeEvent<HTMLInputElement>): void => {
     setFile(e.target.files[0]);
@@ -129,17 +130,6 @@ export default function Assets(): React.ReactElement {
     },
     [selectedAssets],
   );
-
-  React.useEffect(() => {
-    try {
-      axios.get<Asset[]>(`/api/apps/${app.id}/assets`).then((result) => {
-        setAssets(result.data);
-        setLoading(false);
-      });
-    } catch (e) {
-      setError(true);
-    }
-  }, [app]);
 
   if (error) {
     return (

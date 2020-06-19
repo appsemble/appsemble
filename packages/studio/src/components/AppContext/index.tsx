@@ -1,9 +1,8 @@
-import { Loader, Message } from '@appsemble/react-components';
+import { Loader, Message, useData } from '@appsemble/react-components';
 import type { App } from '@appsemble/types';
 import { Permission } from '@appsemble/utils';
-import axios, { AxiosError } from 'axios';
 import React from 'react';
-import { FormattedMessage, MessageDescriptor } from 'react-intl';
+import { FormattedMessage } from 'react-intl';
 import { Redirect, Route, Switch, useRouteMatch } from 'react-router-dom';
 
 import useOrganizations from '../../hooks/useOrganizations';
@@ -39,36 +38,24 @@ const Context = React.createContext<AppValueContext>(null);
 export default function AppContext(): React.ReactElement {
   const match = useRouteMatch<{ id: string }>();
   const organizations = useOrganizations();
-  const [app, setApp] = React.useState<App>();
-  const [error, setError] = React.useState<MessageDescriptor>();
-  const value = React.useMemo(() => ({ app, setApp }), [app]);
-
-  React.useEffect(() => {
-    const getApp = async (): Promise<void> => {
-      setApp(undefined);
-      try {
-        const { data } = await axios.get<App>(`/api/apps/${match.params.id}`);
-        setApp(data);
-      } catch (err) {
-        setError(
-          (err as AxiosError)?.response?.status === 404
-            ? messages.notFound
-            : messages.uncaughtError,
-        );
-      }
-    };
-    getApp();
-  }, [match]);
+  const { data: app, error, loading, setData: setApp } = useData<App>(
+    `/api/apps/${match.params.id}`,
+  );
+  const value = React.useMemo(() => ({ app, setApp }), [app, setApp]);
 
   if (error) {
     return (
       <Message color="danger">
-        <FormattedMessage {...error} />
+        {error.response?.status === 404 ? (
+          <FormattedMessage {...messages.notFound} />
+        ) : (
+          <FormattedMessage {...messages.uncaughtError} />
+        )}
       </Message>
     );
   }
 
-  if (!organizations || !app) {
+  if (!organizations || loading) {
     return <Loader />;
   }
 
