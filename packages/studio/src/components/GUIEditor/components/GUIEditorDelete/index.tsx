@@ -6,6 +6,7 @@ import React from 'react';
 import { FormattedMessage } from 'react-intl';
 
 import type { EditLocation } from '../../types';
+import applyMonacoEdits from '../../utils/applyMonacoEdits';
 import messages from './messages';
 
 interface GUIEditorDeleteProps {
@@ -89,15 +90,15 @@ export default function GUIEditorDelete({
       range = editLocation.editRange;
     }
 
-    monacoEditor.updateOptions({ readOnly: false });
-    monacoEditor.executeEdits('GUIEditor', [
+    const edits: editor.IIdentifiedSingleEditOperation[] = [
       {
         range,
         text: null,
         forceMoveMarkers: true,
       },
-    ]);
-    monacoEditor.updateOptions({ readOnly: true });
+    ];
+
+    applyMonacoEdits(monacoEditor, edits);
   }, [monacoEditor, editLocation, getDeleteWarningType]);
 
   const messageBody = React.useCallback((): React.ReactElement => {

@@ -12,6 +12,7 @@ import GUIEditorNavBar from './components/GUIEditorNavBar';
 import GUIEditorSelect from './components/GUIEditorSelect';
 import GUIEditorToolbox from './components/GUIEditorToolbox';
 import { EditLocation, GuiEditorStep } from './types';
+import applyMonacoEdits from './utils/applyMonacoEdits';
 
 interface GUIEditorProps {
   app: App;
@@ -58,15 +59,16 @@ export default function GUIEditor({
       blockParent.indent + 1,
     );
 
-    monacoEditor.updateOptions({ readOnly: false });
-    monacoEditor.executeEdits('GUIEditor-saveBlock', [
+    const edits: editor.IIdentifiedSingleEditOperation[] = [
       {
         range,
         text,
         forceMoveMarkers: true,
       },
-    ]);
-    monacoEditor.updateOptions({ readOnly: true });
+    ];
+
+    applyMonacoEdits(monacoEditor, edits);
+
     setEditorStep(GuiEditorStep.SELECT);
   };
 
