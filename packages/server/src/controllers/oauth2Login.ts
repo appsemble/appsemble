@@ -1,6 +1,5 @@
 import Boom from '@hapi/boom';
 import crypto from 'crypto';
-import { URL } from 'url';
 
 import { EmailAuthorization, OAuthAuthorization, transactional, User } from '../models';
 import type { KoaContext } from '../types';
@@ -8,14 +7,13 @@ import createJWTResponse from '../utils/createJWTResponse';
 import type { Recipient } from '../utils/email/Mailer';
 import { getAccessToken, getUserInfo } from '../utils/oauth2';
 import { githubPreset, gitlabPreset, googlePreset, presets } from '../utils/OAuth2Presets';
+import trimUrl from '../utils/trimUrl';
 
 export async function registerOAuth2Connection(ctx: KoaContext): Promise<void> {
   const { argv } = ctx;
   const { authorizationUrl, code } = ctx.request.body;
-  let referer: URL;
-  try {
-    referer = new URL(ctx.request.headers.referer);
-  } catch (err) {
+  const referer = trimUrl(ctx.request.headers.referer);
+  if (!referer) {
     throw Boom.badRequest('The referer header is invalid');
   }
 
@@ -43,13 +41,7 @@ export async function registerOAuth2Connection(ctx: KoaContext): Promise<void> {
     access_token: accessToken,
     id_token: idToken,
     refresh_token: refreshToken,
-  } = await getAccessToken(
-    preset.tokenUrl,
-    code,
-    `${referer.origin}${referer.pathname}`,
-    clientId,
-    clientSecret,
-  );
+  } = await getAccessToken(preset.tokenUrl, code, referer, clientId, clientSecret);
 
   const { sub, ...userInfo } = await getUserInfo(
     accessToken,
