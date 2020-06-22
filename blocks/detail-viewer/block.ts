@@ -81,6 +81,11 @@ export type Field = FileField | GeoCoordinatesField | StringField;
 
 export interface RendererProps<F extends Field> extends Partial<BlockProps> {
   /**
+   * The class names to apply to the component.
+   */
+  className?: string;
+
+  /**
    * Structure used to define the field.
    */
   field: F;

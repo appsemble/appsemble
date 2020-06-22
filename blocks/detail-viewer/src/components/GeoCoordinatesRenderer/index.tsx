@@ -15,6 +15,7 @@ export default function GeoCoordinatesRenderer({
   data,
   field,
   theme,
+  ...props
 }: RendererProps<GeoCoordinatesField>): VNode {
   const { utils } = useBlock();
 
@@ -24,7 +25,7 @@ export default function GeoCoordinatesRenderer({
   const lng = field.longitude ? utils.remap(field.longitude, value ?? data) : value.lng;
 
   return (
-    <div className={styles.root}>
+    <div className={styles.root} {...props}>
       {label && <h1 className="label">{label}</h1>}
 
       <Location

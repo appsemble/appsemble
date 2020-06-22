@@ -18,11 +18,12 @@ bootstrap(({ actions, data: defaultData, events, parameters: { buttons }, ready,
 
   return (
     <div className="buttons is-centered">
-      {buttons.map((button) => (
+      {buttons.map((button, index) => (
         <Button
           action={button.onClick ? actions[button.onClick] : actions.onClick}
           button={button}
           data={data}
+          data-index={index}
           utils={utils}
         />
       ))}

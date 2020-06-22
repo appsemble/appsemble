@@ -11,6 +11,7 @@ type RadioInputProps = InputProps<any, RadioField>;
  * An input element for a radio button.
  */
 export default function RadioInput({
+  className,
   disabled,
   error,
   field,
@@ -19,6 +20,7 @@ export default function RadioInput({
 }: RadioInputProps): VNode {
   return (
     <RadioGroup
+      className={className}
       disabled={disabled}
       error={error && <FormattedMessage id="invalid" />}
       label={field.label}

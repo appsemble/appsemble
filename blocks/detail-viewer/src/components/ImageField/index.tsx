@@ -13,7 +13,7 @@ interface ImageFieldProps {
   src: string | Blob;
 }
 
-export default function ImageField({ label, name, src }: ImageFieldProps): VNode {
+export default function ImageField({ label, name, src, ...props }: ImageFieldProps): VNode {
   const { parameters, utils } = useBlock();
   const obj = typeof src === 'string' && parameters?.fileBase ? src : utils.asset(src as string);
   const url = useObjectURL(obj);
@@ -21,7 +21,7 @@ export default function ImageField({ label, name, src }: ImageFieldProps): VNode
   const alt = utils.remap(label, src) || name;
 
   return (
-    <figure className={classNames('image', styles.root)}>
+    <figure className={classNames('image', styles.root)} {...props}>
       <img alt={alt} className={styles.img} src={url} />
     </figure>
   );

@@ -10,6 +10,7 @@ import styles from './index.css';
 type FileInputProps = InputProps<string | Blob | (string | Blob)[], FileField>;
 
 export default function FileInput({
+  className,
   disabled,
   error,
   field,
@@ -31,7 +32,12 @@ export default function FileInput({
   );
 
   return (
-    <FormComponent iconLeft={field.icon} label={field.label} required={field.required}>
+    <FormComponent
+      className={className}
+      iconLeft={field.icon}
+      label={field.label}
+      required={field.required}
+    >
       {field.repeated ? (
         <div className={classNames(styles.repeatedContainer, { [styles.noLabel]: !field.label })}>
           <FileEntry

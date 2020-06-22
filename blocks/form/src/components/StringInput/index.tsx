@@ -11,6 +11,7 @@ type StringInputProps = InputProps<string, StringField>;
 export default function StringInput({
   disabled,
   error,
+  className,
   field: {
     format,
     icon,
@@ -39,6 +40,7 @@ export default function StringInput({
 
   return (
     <Input
+      className={className}
       disabled={disabled}
       error={error}
       iconLeft={icon}

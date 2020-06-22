@@ -254,12 +254,14 @@ bootstrap(({ actions, data, events, parameters, ready, utils: { remap } }) => {
   return (
     <form className={styles.root} noValidate onSubmit={onSubmit}>
       {disabled && <progress className="progress is-small is-primary" />}
-      {parameters.fields.map((field) => {
+      {parameters.fields.map((field, index) => {
         const Comp = inputs[field.type];
         return (
           <Comp
             // @ts-expect-error
             key={field.name}
+            // @ts-expect-error
+            className={`${field.type} field${index}`}
             // @ts-expect-error
             disabled={disabled}
             // @ts-expect-error

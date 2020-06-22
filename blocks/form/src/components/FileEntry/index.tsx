@@ -12,7 +12,13 @@ interface FileEntryProps extends InputProps<string | Blob, FileField> {
   name: string;
 }
 
-export default function FileEntry({ field, name, onInput, value }: FileEntryProps): VNode {
+export default function FileEntry({
+  className,
+  field,
+  name,
+  onInput,
+  value,
+}: FileEntryProps): VNode {
   const url = useObjectURL(value);
 
   const onSelect = useCallback(
@@ -42,7 +48,7 @@ export default function FileEntry({ field, name, onInput, value }: FileEntryProp
   const title = field.label ?? field.name;
 
   return (
-    <div className={classNames('file', styles.root)}>
+    <div className={classNames('file', styles.root, className)}>
       <label className="file-label" htmlFor={field.name}>
         <input
           className={classNames('file-input', styles.input)}
