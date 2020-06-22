@@ -588,7 +588,7 @@ export async function createResource(ctx: KoaContext<Params>): Promise<void> {
   const {
     params: { appId, resourceType },
     request: {
-      body: { id: __, ...resource },
+      body: { id: _, ...resource },
     },
     user,
   } = ctx;
