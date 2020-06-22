@@ -14,7 +14,6 @@ interface GUIEditorDeleteProps {
   editLocation: EditLocation;
   monacoEditor: editor.IStandaloneCodeEditor;
   setApp: (app: App) => void;
-  setRecipe: (value: string) => void;
   disabled: boolean;
 }
 
@@ -30,7 +29,6 @@ export default function GUIEditorDelete({
   editLocation,
   monacoEditor,
   setApp,
-  setRecipe,
 }: GUIEditorDeleteProps): React.ReactElement {
   const getDeleteWarningType = React.useCallback((): deleteWarnings => {
     if (
@@ -106,8 +104,7 @@ export default function GUIEditorDelete({
 
     const definition = safeLoad(monacoEditor.getValue());
     setApp({ ...app, yaml: monacoEditor.getValue(), definition });
-    setRecipe(monacoEditor.getValue());
-  }, [app, monacoEditor, editLocation, getDeleteWarningType, setApp, setRecipe]);
+  }, [app, monacoEditor, editLocation, getDeleteWarningType, setApp]);
 
   const messageBody = React.useCallback((): React.ReactElement => {
     switch (getDeleteWarningType()) {

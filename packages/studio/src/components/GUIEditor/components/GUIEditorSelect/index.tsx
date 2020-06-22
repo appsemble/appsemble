@@ -6,11 +6,6 @@ import styles from './index.css';
 
 interface GUIEditorSelectProps {
   /**
-   * The current value of the editor.
-   */
-  value?: string;
-
-  /**
    * Set edit location for use in GUIEditor parent
    */
   setEditLocation: (value: EditLocation) => void;
@@ -21,13 +16,19 @@ interface GUIEditorSelectProps {
   monacoEditor: editor.IStandaloneCodeEditor;
 }
 
+const emptyDecorator = [
+  {
+    range: new Range(0, 0, 0, 0),
+    options: { isWholeLine: false },
+  },
+];
+
 export default function GUIEditorSelect({
   monacoEditor,
   setEditLocation,
-  value = '',
 }: GUIEditorSelectProps): React.ReactElement {
   const [decorators, setDecorators] = React.useState<any>();
-  const [decorator, setDecorator] = React.useState<string[]>();
+  const [decorator, setDecorator] = React.useState<string[]>([]);
 
   const setEditorDecorators = React.useCallback(
     (range: Range, options: editor.IModelDecorationOptions): void => {
@@ -165,33 +166,15 @@ export default function GUIEditorSelect({
 
   React.useEffect(() => {
     if (monacoEditor) {
-      monacoEditor.updateOptions({ readOnly: true });
+      setDecorator(monacoEditor.deltaDecorations([], emptyDecorator));
     }
   }, [monacoEditor]);
-
-  React.useEffect(() => {
-    if (monacoEditor && monacoEditor.getModel().getValue() !== value) {
-      monacoEditor.getModel().setValue(value);
-    }
-  }, [monacoEditor, value]);
 
   React.useEffect(() => {
     if (monacoEditor) {
       monacoEditor.onDidChangeCursorSelection(() => {
         getEditLocation(monacoEditor.getModel(), monacoEditor.getPosition());
       });
-
-      setDecorator(
-        monacoEditor.deltaDecorations(
-          [],
-          [
-            {
-              range: new Range(0, 0, 0, 0),
-              options: { isWholeLine: false },
-            },
-          ],
-        ),
-      );
     }
   }, [monacoEditor, getEditLocation]);
 

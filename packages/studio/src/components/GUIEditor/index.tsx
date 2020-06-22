@@ -18,7 +18,6 @@ interface GUIEditorProps {
   editorStep: GuiEditorStep;
   setEditor?: (value: editor.IStandaloneCodeEditor) => void;
   setEditorStep: (step: GuiEditorStep) => void;
-  setRecipe: (value: string) => void;
   value?: string;
   monacoEditor: editor.IStandaloneCodeEditor;
 }
@@ -28,7 +27,6 @@ export default function GUIEditor({
   editorStep,
   monacoEditor,
   setEditorStep,
-  setRecipe,
 }: GUIEditorProps): React.ReactElement {
   const [selectedBlock, setSelectedBlock] = React.useState<BlockManifest>(undefined);
   const [appClone, setAppClone] = React.useState<App>(app);
@@ -71,7 +69,6 @@ export default function GUIEditor({
     ]);
     monacoEditor.updateOptions({ readOnly: true });
     const recipe = monacoEditor.getValue();
-    setRecipe(recipe);
     setEditorStep(GuiEditorStep.SELECT);
     const definition = safeLoad(monacoEditor.getValue());
     setAppClone({ ...app, yaml: recipe, definition });
@@ -89,13 +86,8 @@ export default function GUIEditor({
             monacoEditor={monacoEditor}
             setApp={setAppClone}
             setEditorStep={setEditorStep}
-            setRecipe={setRecipe}
           />
-          <GUIEditorSelect
-            monacoEditor={monacoEditor}
-            setEditLocation={setEditLocation}
-            value={appClone.yaml}
-          />
+          <GUIEditorSelect monacoEditor={monacoEditor} setEditLocation={setEditLocation} />
         </>
       );
 

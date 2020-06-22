@@ -39,12 +39,7 @@ interface MonacoEditorProps {
   options?: Options;
 }
 
-const defaultOptions: Options = {
-  insertSpaces: true,
-  tabSize: 2,
-  minimap: { enabled: false },
-  readOnly: false,
-};
+const defaultOptions: Options = {};
 
 /**
  * Render a Monaco standalone editor instance.

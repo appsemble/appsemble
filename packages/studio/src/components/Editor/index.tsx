@@ -27,6 +27,8 @@ import EditorNavBar from './components/EditorNavBar';
 import styles from './index.css';
 import messages from './messages';
 
+type Options = editor.IEditorOptions & editor.IGlobalEditorOptions;
+
 const openApiDocumentPromise = RefParser.dereference(api('', { host: window.location.origin }));
 
 export default function Editor(): React.ReactElement {
@@ -269,6 +271,18 @@ export default function Editor(): React.ReactElement {
       language = 'yaml';
   }
 
+  const monacoDefaultOptions: Options = {
+    insertSpaces: true,
+    tabSize: 2,
+    minimap: { enabled: false },
+    readOnly: false,
+  };
+
+  const monacoGuiOptions: Options = {
+    ...monacoDefaultOptions,
+    readOnly: true,
+  };
+
   return (
     <div className={styles.root}>
       <HelmetIntl title={messages.title} titleValues={{ name: appName }} />
@@ -283,15 +297,14 @@ export default function Editor(): React.ReactElement {
             valid={valid}
           />
         </Form>
-        {editorStep !== GuiEditorStep.YAML ? (
+        {editorStep !== GuiEditorStep.YAML && (
           <GUIEditor
             app={app}
             editorStep={editorStep}
             monacoEditor={monacoEditor}
             setEditorStep={setEditorStep}
-            setRecipe={setRecipe}
           />
-        ) : null}
+        )}
         <div
           className={
             editorStep === GuiEditorStep.YAML || editorStep === GuiEditorStep.SELECT
@@ -304,6 +317,7 @@ export default function Editor(): React.ReactElement {
             language={language}
             onChange={onValueChange}
             onSave={onSave}
+            options={editorStep === GuiEditorStep.YAML ? monacoDefaultOptions : monacoGuiOptions}
             value={value}
           />
         </div>
