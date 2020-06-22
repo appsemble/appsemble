@@ -16,12 +16,14 @@ interface GUIEditorEditBlockProps {
   setSelectedBlock: (value: BlockManifest) => void;
   setBlockValue: (value: BlockDefinition) => void;
   blockValue: BlockDefinition;
+  onError: () => void;
 }
 
 export default function GUIEditorEditBlock({
   app,
   blockValue,
   editLocation,
+  onError,
   selectedBlock,
   setBlockValue,
   setSelectedBlock,
@@ -63,8 +65,9 @@ export default function GUIEditorEditBlock({
   React.useEffect(() => {
     if (error) {
       push(error.message);
+      onError();
     }
-  }, [error, push]);
+  }, [error, push, onError]);
 
   if (loading || !selectedBlock) {
     return <Loader />;

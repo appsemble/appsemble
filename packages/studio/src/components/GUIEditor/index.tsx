@@ -102,6 +102,7 @@ export default function GUIEditor({
             app={app}
             blockValue={editedBlockValues}
             editLocation={editLocation}
+            onError={onCancel}
             selectedBlock={selectedBlock}
             setBlockValue={setEditedBlockValues}
             setSelectedBlock={setSelectedBlock}
@@ -116,6 +117,7 @@ export default function GUIEditor({
             app={app}
             blockValue={editedBlockValues}
             editLocation={editLocation}
+            onError={onCancel}
             selectedBlock={selectedBlock}
             setBlockValue={setEditedBlockValues}
             setSelectedBlock={setSelectedBlock}
