@@ -70,6 +70,12 @@ export default function GUIEditor({
     applyMonacoEdits(monacoEditor, edits);
 
     setEditorStep(GuiEditorStep.SELECT);
+    setSelectedBlock(null);
+  };
+
+  const onCancel = (): void => {
+    setEditorStep(GuiEditorStep.SELECT);
+    setSelectedBlock(null);
   };
 
   switch (editorStep) {
@@ -90,7 +96,7 @@ export default function GUIEditor({
 
     case GuiEditorStep.ADD:
       return (
-        <Stepper onCancel={() => setEditorStep(GuiEditorStep.SELECT)} onFinish={() => save(false)}>
+        <Stepper onCancel={onCancel} onFinish={() => save(false)}>
           <GUIEditorToolbox selectedBlock={selectedBlock} setSelectedBlock={setSelectedBlock} />
           <GUIEditorEditBlock
             app={app}
@@ -105,7 +111,7 @@ export default function GUIEditor({
 
     case GuiEditorStep.EDIT:
       return (
-        <Stepper onCancel={() => setEditorStep(GuiEditorStep.SELECT)} onFinish={() => save(true)}>
+        <Stepper onCancel={onCancel} onFinish={() => save(true)}>
           <GUIEditorEditBlock
             app={app}
             blockValue={editedBlockValues}

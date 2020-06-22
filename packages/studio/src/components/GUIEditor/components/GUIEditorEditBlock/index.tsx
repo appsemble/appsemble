@@ -1,7 +1,6 @@
-import { Loader, Title } from '@appsemble/react-components';
+import { Loader, Title, useData, useMessages } from '@appsemble/react-components';
 import type { App, BasicPageDefinition, BlockDefinition, BlockManifest } from '@appsemble/types';
 import { normalizeBlockName, stripBlockName } from '@appsemble/utils';
-import axios from 'axios';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 
@@ -11,7 +10,7 @@ import styles from './index.css';
 import messages from './messages';
 
 interface GUIEditorEditBlockProps {
-  selectedBlock: BlockManifest;
+  selectedBlock?: BlockManifest;
   app: App;
   editLocation: EditLocation;
   setSelectedBlock: (value: BlockManifest) => void;
@@ -27,6 +26,8 @@ export default function GUIEditorEditBlock({
   setBlockValue,
   setSelectedBlock,
 }: GUIEditorEditBlockProps): React.ReactElement {
+  const push = useMessages();
+
   const onChange = React.useCallback(
     (_event: any, value: any) => {
       setBlockValue({ ...blockValue, parameters: { ...value } });
@@ -34,48 +35,38 @@ export default function GUIEditorEditBlock({
     [blockValue, setBlockValue],
   );
 
+  const { data: edittingBlock, error, loading } = useData<BlockManifest>(
+    `/api/blocks/${normalizeBlockName(editLocation.blockName)}`,
+  );
+
   const initBlockParameters = React.useCallback(() => {
-    if (selectedBlock) {
-      return;
-    }
     app.definition.pages.forEach((page: BasicPageDefinition) => {
       if (!page.name.includes(editLocation.pageName)) {
         return;
       }
       page.blocks.forEach((block: BlockDefinition) => {
-        if (!block.type.includes(editLocation.blockName) || blockValue) {
+        if (!block.type.includes(editLocation.blockName)) {
           return;
         }
-        let blockValues: BlockDefinition;
-
-        if (block.events) {
-          blockValues = { ...blockValues, events: block.events };
-        }
-        if (block.actions) {
-          blockValues = { ...blockValues, actions: block.actions };
-        }
-        if (block.parameters) {
-          blockValues = { ...blockValues, parameters: block.parameters };
-        }
-
-        setBlockValue(blockValues);
+        setBlockValue(block);
       });
     });
-  }, [selectedBlock, setBlockValue, blockValue, editLocation, app]);
+  }, [setBlockValue, editLocation, app]);
 
   React.useEffect(() => {
-    const getBlocks = async (): Promise<void> => {
-      const normalizedBlockName = normalizeBlockName(editLocation.blockName);
-      const { data } = await axios.get(`/api/blocks/${normalizedBlockName}`);
-      setSelectedBlock(data);
-    };
-    if (selectedBlock === undefined) {
-      getBlocks();
+    if (!loading && !selectedBlock) {
+      setSelectedBlock(edittingBlock);
+      initBlockParameters();
     }
-  }, [editLocation, selectedBlock, setSelectedBlock]);
+  }, [loading, initBlockParameters, setSelectedBlock, edittingBlock, selectedBlock]);
 
-  if (selectedBlock === undefined) {
-    initBlockParameters();
+  React.useEffect(() => {
+    if (error) {
+      push(error.message);
+    }
+  }, [error, push]);
+
+  if (loading || !selectedBlock) {
     return <Loader />;
   }
 
