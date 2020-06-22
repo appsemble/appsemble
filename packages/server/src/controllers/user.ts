@@ -57,8 +57,12 @@ export async function getUserOrganizations(ctx: KoaContext): Promise<void> {
 }
 
 export async function updateUser(ctx: KoaContext): Promise<void> {
-  const { user } = ctx;
-  const { email, name } = ctx.request.body;
+  const {
+    request: {
+      body: { email, name },
+    },
+    user,
+  } = ctx;
 
   const dbUser = await User.findOne({
     where: { id: user.id },
@@ -105,8 +109,13 @@ export async function listEmails(ctx: KoaContext): Promise<void> {
 }
 
 export async function addEmail(ctx: KoaContext): Promise<void> {
-  const { mailer, user } = ctx;
-  const { email } = ctx.request.body;
+  const {
+    mailer,
+    request: {
+      body: { email },
+    },
+    user,
+  } = ctx;
 
   const dbEmail = await EmailAuthorization.findOne({
     where: { email },
@@ -140,8 +149,12 @@ export async function addEmail(ctx: KoaContext): Promise<void> {
 }
 
 export async function removeEmail(ctx: KoaContext): Promise<void> {
-  const { user } = ctx;
-  const { email } = ctx.request.body;
+  const {
+    request: {
+      body: { email },
+    },
+    user,
+  } = ctx;
 
   const dbUser = await User.findOne({
     where: { id: user.id },
@@ -179,9 +192,11 @@ export async function emailLogin(ctx: KoaContext): Promise<void> {
 }
 
 export async function refreshToken(ctx: KoaContext): Promise<void> {
-  const { argv } = ctx;
-  const token = ctx.request.body.refresh_token;
-  const { sub } = verify(token, argv.secret, { audience: argv.host }) as JwtPayload;
+  const {
+    argv,
+    request: { body },
+  } = ctx;
+  const { sub } = verify(body.token, argv.secret, { audience: argv.host }) as JwtPayload;
 
   ctx.body = createJWTResponse(sub, argv);
 }

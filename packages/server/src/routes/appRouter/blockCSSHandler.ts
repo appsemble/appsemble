@@ -9,7 +9,9 @@ interface Params {
 }
 
 export default async function blockCSSHandler(ctx: KoaContext<Params>): Promise<void> {
-  const { name } = ctx.params;
+  const {
+    params: { name },
+  } = ctx;
 
   const app = await getApp(ctx, {
     attributes: [],

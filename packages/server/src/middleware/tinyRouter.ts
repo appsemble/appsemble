@@ -15,7 +15,7 @@ type Route = {
  * A tiny dynamic router middleware for GET requests.
  */
 export default (routes: Route[]): KoaMiddleware => async (ctx, next) => {
-  const { path } = ctx;
+  const { method, path } = ctx;
 
   let match: RegExpMatchArray;
   const result = routes.find(({ route }) => {
@@ -28,13 +28,13 @@ export default (routes: Route[]): KoaMiddleware => async (ctx, next) => {
   if (!result) {
     return next();
   }
-  let method = ctx.method.toLowerCase();
-  if (!Object.prototype.hasOwnProperty.call(result, method)) {
+  let m = method.toLowerCase();
+  if (!Object.prototype.hasOwnProperty.call(result, m)) {
     if (!Object.prototype.hasOwnProperty.call(result, 'any')) {
       throw Boom.methodNotAllowed();
     }
-    method = 'any';
+    m = 'any';
   }
   ctx.params = match?.groups ? { ...match.groups } : null;
-  return result[method as HttpMethod](ctx, next);
+  return result[m as HttpMethod](ctx, next);
 };
