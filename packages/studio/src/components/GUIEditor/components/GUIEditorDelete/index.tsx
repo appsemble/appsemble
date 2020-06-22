@@ -16,80 +16,58 @@ interface GUIEditorDeleteProps {
   disabled: boolean;
 }
 
-enum deleteWarnings {
-  'DELETEPAGE',
-  'DELETESUBBLOCKS',
-  'DELETEBLOCK',
-}
-
 export default function GUIEditorDelete({
   app,
   disabled,
   editLocation,
   monacoEditor,
 }: GUIEditorDeleteProps): React.ReactElement {
-  const getDeleteWarningType = React.useCallback((): deleteWarnings => {
-    if (
-      app.definition === undefined ||
-      app.definition?.pages === null ||
-      app.definition?.pages?.length === 0
-    ) {
-      return null;
+  const [range, body] = React.useMemo<[Range, React.ReactNode]>(() => {
+    if (!app.definition?.pages?.length || !editLocation) {
+      return [null, null];
     }
+    const { blockName, editRange, pageName, parents } = editLocation;
 
     const blocks = getAppBlocks(app.definition);
-
     let blocksInPage = 0;
     let subBlockSelected = false;
-    const selectedPageId = app.definition.pages
-      .findIndex((page) => page.name === editLocation.pageName)
-      .toString();
+    const selectedPageId = String(app.definition.pages.findIndex((page) => page.name === pageName));
 
-    Object.keys(blocks).map((key) => {
-      const splitKey = key.split('.');
-      const pageId = splitKey[1];
-      if (selectedPageId === pageId) {
-        blocksInPage += 1;
-        if (splitKey.indexOf('blocks') !== splitKey.lastIndexOf('blocks')) {
-          blocksInPage -= 1;
-          if (blocks[key].type === editLocation.blockName) {
-            subBlockSelected = true;
-          }
-        }
+    Object.keys(blocks).forEach((key) => {
+      const [, pageId, ...splitKey] = key.split('.');
+      if (selectedPageId !== pageId) {
+        return;
       }
-      return pageId;
+      if (splitKey.indexOf('blocks') === splitKey.lastIndexOf('blocks')) {
+        blocksInPage += 1;
+        return;
+      }
+      if (blocks[key].type === blockName) {
+        subBlockSelected = true;
+      }
     });
 
-    if (blocksInPage === 1 && subBlockSelected === false) {
-      return deleteWarnings.DELETEPAGE;
+    if (blocksInPage === 1 && !subBlockSelected) {
+      return [
+        new Range(parents[parents.length - 2].line, 1, editRange.endLineNumber, 1),
+        <FormattedMessage {...messages.deletePageWarning} values={{ blockName, pageName }} />,
+      ];
     }
+
     if (subBlockSelected) {
-      return deleteWarnings.DELETESUBBLOCKS;
+      return [
+        new Range(editRange.startLineNumber - 1, 1, editRange.endLineNumber, 1),
+        <FormattedMessage {...messages.deleteSubBlockWarning} values={{ blockName }} />,
+      ];
     }
-    return deleteWarnings.DELETEBLOCK;
+
+    return [
+      editRange,
+      <FormattedMessage {...messages.deleteWarning} values={{ blockName, pageName }} />,
+    ];
   }, [app, editLocation]);
 
-  const remove = React.useCallback((): void => {
-    const warningType = getDeleteWarningType();
-    let range: Range;
-    if (warningType === deleteWarnings.DELETEPAGE) {
-      range = new Range(
-        editLocation.parents[editLocation.parents.length - 2].line,
-        1,
-        editLocation.editRange.endLineNumber,
-        1,
-      );
-    } else if (warningType === deleteWarnings.DELETESUBBLOCKS) {
-      range = new Range(
-        editLocation.editRange.startLineNumber - 1,
-        1,
-        editLocation.editRange.endLineNumber,
-        1,
-      );
-    } else {
-      range = editLocation.editRange;
-    }
-
+  const action = React.useCallback((): void => {
     const edits: editor.IIdentifiedSingleEditOperation[] = [
       {
         range,
@@ -99,42 +77,16 @@ export default function GUIEditorDelete({
     ];
 
     applyMonacoEdits(monacoEditor, edits);
-  }, [monacoEditor, editLocation, getDeleteWarningType]);
-
-  const messageBody = React.useCallback((): React.ReactElement => {
-    switch (getDeleteWarningType()) {
-      case deleteWarnings.DELETESUBBLOCKS:
-        return (
-          <FormattedMessage
-            {...messages.deleteSubBlockWarning}
-            values={{ blockname: editLocation.blockName }}
-          />
-        );
-      case deleteWarnings.DELETEPAGE:
-        return (
-          <FormattedMessage
-            {...messages.deletePageWarning}
-            values={{ blockname: editLocation.blockName, pagename: editLocation.pageName }}
-          />
-        );
-      default:
-        return (
-          <FormattedMessage
-            {...messages.deleteWarning}
-            values={{ blockname: editLocation.blockName, pagename: editLocation.pageName }}
-          />
-        );
-    }
-  }, [editLocation, getDeleteWarningType]);
+  }, [monacoEditor, range]);
 
   const onClick = useConfirmation({
     title: <FormattedMessage {...messages.deleteWarningTitle} />,
-    body: editLocation?.blockName && editLocation?.pageName ? messageBody() : 'error',
+    body,
     cancelLabel: <FormattedMessage {...messages.cancel} />,
     confirmLabel: (
-      <FormattedMessage {...messages.deleteBlock} values={{ name: editLocation?.blockName }} />
+      <FormattedMessage {...messages.deleteBlock} values={{ blockName: editLocation?.blockName }} />
     ),
-    action: remove,
+    action,
   });
 
   if (editLocation?.blockName === undefined || editLocation?.pageName === undefined) {
@@ -147,7 +99,7 @@ export default function GUIEditorDelete({
 
   return (
     <Button color="danger" disabled={disabled} icon="trash-alt" onClick={onClick}>
-      <FormattedMessage {...messages.deleteBlock} values={{ name: editLocation.blockName }} />
+      <FormattedMessage {...messages.deleteBlock} values={{ blockName: editLocation?.blockName }} />
     </Button>
   );
 }
