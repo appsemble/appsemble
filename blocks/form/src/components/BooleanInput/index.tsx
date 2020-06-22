@@ -11,6 +11,7 @@ type BooleanInputProps = InputProps<boolean, BooleanField>;
  * An input element for a boolean value.
  */
 export default function BooleanInput({
+  className,
   disabled,
   error,
   field,
@@ -20,7 +21,7 @@ export default function BooleanInput({
   return (
     <Checkbox
       checked={!!value}
-      className={classNames({ 'is-danger': error })}
+      className={classNames(className, { 'is-danger': error })}
       disabled={disabled}
       error={error && <FormattedMessage id="invalid" />}
       help={field.labelText ?? field.label ?? null}

@@ -13,6 +13,7 @@ export default function FileRenderer({
   className,
   data,
   field,
+  theme: _,
   ...props
 }: RendererProps<FileField>): VNode {
   const { utils } = useBlock();

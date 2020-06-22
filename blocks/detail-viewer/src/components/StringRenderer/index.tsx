@@ -9,6 +9,7 @@ import type { RendererProps, StringField } from '../../../block';
 export default function StringRenderer({
   data,
   field,
+  theme: _,
   ...props
 }: RendererProps<StringField>): VNode {
   const { utils } = useBlock();

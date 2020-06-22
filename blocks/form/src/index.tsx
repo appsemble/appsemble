@@ -261,7 +261,7 @@ bootstrap(({ actions, data, events, parameters, ready, utils: { remap } }) => {
             // @ts-expect-error
             key={field.name}
             // @ts-expect-error
-            className={`${field.type} field${index}`}
+            className={`appsemble-${field.type} appsemble-field-${index}`}
             // @ts-expect-error
             disabled={disabled}
             // @ts-expect-error

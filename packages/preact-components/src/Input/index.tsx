@@ -102,6 +102,7 @@ export type InputProps = BooleanInputProps | NumberInputProps | StringInputProps
  * A Bulma styled form input element.
  */
 export default function Input({
+  className,
   disabled,
   error,
   iconLeft,
@@ -132,7 +133,13 @@ export default function Input({
   const Comp = type === 'textarea' ? 'textarea' : 'input';
 
   return (
-    <FormComponent iconLeft={iconLeft} id={id} label={label} required={required}>
+    <FormComponent
+      className={className}
+      iconLeft={iconLeft}
+      id={id}
+      label={label}
+      required={required}
+    >
       <Comp
         checked={type === 'checkbox' ? (value as boolean) : undefined}
         className={classNames(type === 'textarea' ? 'textarea' : 'input', { 'is-danger': error })}

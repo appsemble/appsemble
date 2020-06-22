@@ -30,6 +30,7 @@ interface RadioGroupProps
 
 export default function RadioGroup({
   children,
+  className,
   disabled,
   error,
   label,
@@ -47,7 +48,7 @@ export default function RadioGroup({
   );
 
   return (
-    <FormComponent id={name} label={label} required={required}>
+    <FormComponent className={className} id={name} label={label} required={required}>
       {children.map((child, index) =>
         cloneElement(child, {
           checked: child.props.value === value,
