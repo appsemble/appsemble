@@ -1,14 +1,12 @@
-import type { TokenResponse } from '@appsemble/types';
 import Boom from '@hapi/boom';
-import axios from 'axios';
 import crypto from 'crypto';
-import { URL, URLSearchParams } from 'url';
+import { URL } from 'url';
 
 import { EmailAuthorization, OAuthAuthorization, transactional, User } from '../models';
 import type { KoaContext } from '../types';
 import createJWTResponse from '../utils/createJWTResponse';
 import type { Recipient } from '../utils/email/Mailer';
-import getUserInfo from '../utils/getUserInfo';
+import { getAccessToken, getUserInfo } from '../utils/oauth2';
 import { githubPreset, gitlabPreset, googlePreset, presets } from '../utils/OAuth2Presets';
 
 export async function registerOAuth2Connection(ctx: KoaContext): Promise<void> {
@@ -42,28 +40,23 @@ export async function registerOAuth2Connection(ctx: KoaContext): Promise<void> {
 
   // Exchange the authorization code for an access token and refresh token.
   const {
-    data: { access_token: accessToken, id_token: idToken, refresh_token: refreshToken },
-  } = await axios.post<TokenResponse>(
+    access_token: accessToken,
+    id_token: idToken,
+    refresh_token: refreshToken,
+  } = await getAccessToken(
     preset.tokenUrl,
-    new URLSearchParams({
-      grant_type: 'authorization_code',
-      // Some providers only support client credentials in the request body,
-      client_id: clientId,
-      client_secret: clientSecret,
-      code,
-      redirect_uri: `${referer.origin}${referer.pathname}`,
-    }),
-    {
-      headers: {
-        // Explicitly request JSON. Otherwise, some services, e.g. GitHub, give a bad response.
-        accept: 'application/json',
-        // Some providers only support basic auth,
-        authorization: `Basic ${Buffer.from(`${clientId}:${clientSecret}`).toString('base64')}`,
-      },
-    },
+    code,
+    `${referer.origin}${referer.pathname}`,
+    clientId,
+    clientSecret,
   );
 
-  const { sub, ...userInfo } = await getUserInfo(preset, accessToken, idToken);
+  const { sub, ...userInfo } = await getUserInfo(
+    accessToken,
+    idToken,
+    preset.userInfoUrl,
+    preset.remapper,
+  );
 
   const authorization = await OAuthAuthorization.findOne({
     where: { authorizationUrl, sub },
@@ -123,7 +116,12 @@ export async function connectPendingOAuth2Profile(ctx: KoaContext): Promise<void
   // The user is not yet logged in, so they are trying to register a new account using this OAuth2
   // provider.
   else {
-    const userInfo = await getUserInfo(preset, authorization.accessToken);
+    const userInfo = await getUserInfo(
+      authorization.accessToken,
+      null,
+      preset.userInfoUrl,
+      preset.remapper,
+    );
     await transactional(async (transaction) => {
       user = await User.create(
         { name: userInfo.name, primaryEmail: userInfo.email },

@@ -1,10 +1,49 @@
-import { AppsembleError } from '@appsemble/node-utils';
-import type { UserInfo } from '@appsemble/types';
+import { AppsembleError, basicAuth } from '@appsemble/node-utils';
+import type { Remapper, TokenResponse, UserInfo } from '@appsemble/types';
 import { remap } from '@appsemble/utils';
 import axios from 'axios';
 import { decode } from 'jsonwebtoken';
+import { URLSearchParams } from 'url';
 
-import type { OAuth2Preset } from './OAuth2Presets';
+/**
+ * Fetch an access token as part of the authorization code OAuth2 flow.
+ *
+ * @param tokenUrl The URL from which to request the access token.
+ * @param code The authorization code to exchange for an access token.
+ * @param redirectUri The redirect URI used to get the authorization code.
+ * @param clientId The OAuth2 client id.
+ * @param clientSecret The OAuth2 client secret.
+ * @returns The data from an access token response.
+ */
+export async function getAccessToken(
+  tokenUrl: string,
+  code: string,
+  redirectUri: string,
+  clientId: string,
+  clientSecret: string,
+): Promise<TokenResponse> {
+  // Exchange the authorization code for an access token and refresh token.
+  const { data } = await axios.post<TokenResponse>(
+    tokenUrl,
+    new URLSearchParams({
+      grant_type: 'authorization_code',
+      // Some providers only support client credentials in the request body,
+      client_id: clientId,
+      client_secret: clientSecret,
+      code,
+      redirect_uri: redirectUri,
+    }),
+    {
+      headers: {
+        // Explicitly request JSON. Otherwise, some services, e.g. GitHub, give a bad response.
+        accept: 'application/json',
+        // Some providers only support basic auth,
+        authorization: basicAuth(clientId, clientSecret),
+      },
+    },
+  );
+  return data;
+}
 
 /**
  * Get user info given an OAuth2 provider preset and a token response.
@@ -13,15 +52,18 @@ import type { OAuth2Preset } from './OAuth2Presets';
  * 2. If the information is still incomplete, extract information from the access token.
  * 3. If the information is still incomplete, fetch information from the userinfo endpoint.
  *
- * @param provider The provider which defines the userinfo endpoint.
  * @param accessToken The access token from which to extract user data. or to request user info
  *                    with.
  * @param idToken The ID token from which to extract user data.
+ * @param userInfoUrl The URL from which to request userinfo, if needed.
+ * @param remapper An optional remapper to apply onto the response from the user infoendpoint.
+ * @returns A user info object constructed from the access token, id token, and userinfo endpoint.
  */
-export default async function getUserInfo(
-  provider: OAuth2Preset,
+export async function getUserInfo(
   accessToken: string,
   idToken?: string,
+  userInfoUrl?: string,
+  remapper?: Remapper,
 ): Promise<Partial<UserInfo>> {
   let email: string;
   let emailVerified: boolean;
@@ -62,11 +104,11 @@ export default async function getUserInfo(
     }
   }
 
-  if (shouldTryNext() && provider.userInfoUrl) {
-    const { data } = await axios.get(provider.userInfoUrl, {
+  if (shouldTryNext() && userInfoUrl) {
+    const { data } = await axios.get(userInfoUrl, {
       headers: { authorization: `Bearer ${accessToken}` },
     });
-    assign(provider.remapper ? remap(provider.remapper, data) : data);
+    assign(remapper ? remap(remapper, data) : data);
   }
 
   // Sub is very important. All other information is optional.
