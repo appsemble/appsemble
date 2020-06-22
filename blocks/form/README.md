@@ -1,5 +1,16 @@
 A block used for inputting and submitting sets of data.
 
+For styling purposes, each block has a `appsemble-{type}` class that can be used to target fields of
+specific types easier using CSS.
+
+For example:
+
+```css
+.appsemble-string {
+  background-color: red;
+}
+```
+
 ### Images
 
 ![Form screenshot](https://gitlab.com/appsemble/appsemble/-/raw/0.13.3/docs/images/form.png)
