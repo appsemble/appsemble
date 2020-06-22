@@ -48,11 +48,7 @@ export default function GUIEditorToolbox({
         <div className={styles.marginBottom}>
           <Title level={4}>{stripBlockName(selectedBlock.name)}</Title>
           {selectedBlock.description}
-          <a
-            href={`https://appsemble.dev/blocks/${stripBlockName(selectedBlock.name)}`}
-            rel="noopener noreferrer"
-            target="_blank"
-          >
+          <a href={`./blocks/${selectedBlock.name}`} rel="noopener noreferrer" target="_blank">
             <FormattedMessage {...messages.moreInfo} />
           </a>
         </div>
