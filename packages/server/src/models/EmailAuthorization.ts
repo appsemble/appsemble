@@ -12,7 +12,7 @@ import {
   UpdatedAt,
 } from 'sequelize-typescript';
 
-import User from './User';
+import { User } from '.';
 
 @Table({ tableName: 'EmailAuthorization' })
 export default class EmailAuthorization extends Model<EmailAuthorization> {

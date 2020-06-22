@@ -14,15 +14,17 @@ import {
   UpdatedAt,
 } from 'sequelize-typescript';
 
-import App from './App';
-import AppMember from './AppMember';
-import Asset from './Asset';
-import EmailAuthorization from './EmailAuthorization';
-import Member from './Member';
-import OAuth2AuthorizationCode from './OAuth2AuthorizationCode';
-import OAuthAuthorization from './OAuthAuthorization';
-import Organization from './Organization';
-import ResetPasswordToken from './ResetPasswordToken';
+import {
+  App,
+  AppMember,
+  Asset,
+  EmailAuthorization,
+  Member,
+  OAuth2AuthorizationCode,
+  OAuthAuthorization,
+  Organization,
+  ResetPasswordToken,
+} from '.';
 
 @Table({ tableName: 'User', paranoid: true })
 export default class User extends Model<User> {
