@@ -12,10 +12,10 @@ import styles from './index.css';
  * https://schema.org/GeoCoordinates
  */
 export default function GeoCoordinatesRenderer({
+  className,
   data,
   field,
   theme,
-  ...props
 }: RendererProps<GeoCoordinatesField>): VNode {
   const { utils } = useBlock();
 
@@ -25,7 +25,7 @@ export default function GeoCoordinatesRenderer({
   const lng = field.longitude ? utils.remap(field.longitude, value ?? data) : value.lng;
 
   return (
-    <div className={styles.root} {...props}>
+    <div className={`${styles.root} ${className}`}>
       {label && <h1 className="label">{label}</h1>}
 
       <Location

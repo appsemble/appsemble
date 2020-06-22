@@ -40,8 +40,8 @@ bootstrap(({ data: blockData, events, parameters, ready, theme }) => {
         return (
           <Comp
             key={field.name || field.label || `${field.type}.${index}`}
+            className={`appsemble-${field.type}`}
             data={data}
-            data-type={field.type}
             // @ts-expect-error
             field={field}
             theme={theme}

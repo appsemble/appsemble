@@ -10,10 +10,14 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ### Added
 
 - App: Add `data-path` and `data-type` attributes to pages and blocks on pages.
+- Block(`detail`): Add `appsemble-` type classes to the containers of fields to make it easier to
+  style them. For example: `appsemble-file` for file type fields.
 - Block(`form`): Add `submitLabel` property for customizing the label on the submit button.
 - Block(`form`): Add support for `requirements` in string fields. Please consult the block
   documentation for further details.
 - Block(`form`): Add support for `radio` type fields.
+- Block(`form`): Add `appsemble-` type classes to the containers of fields to make it easier to
+  style them. For example: `appsemble-file` for file type fields.
 - Studio: Add new `InviteMember` permission to the maintainer role within an organization. They are
   allowed to invite members, resend invitations and delete pending invitations.
 - Studio: Add `Default` column to block documentation.

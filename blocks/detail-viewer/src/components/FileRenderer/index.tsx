@@ -9,18 +9,12 @@ import styles from './index.css';
 /**
  * Renders a file as an image.
  */
-export default function FileRenderer({
-  className,
-  data,
-  field,
-  theme: _,
-  ...props
-}: RendererProps<FileField>): VNode {
+export default function FileRenderer({ className, data, field }: RendererProps<FileField>): VNode {
   const { utils } = useBlock();
   const value = utils.remap(field.name, data);
 
   return (
-    <div {...props}>
+    <div className={className}>
       {field.label && <h6 className="title is-6">{field.label}</h6>}
       {field.repeated ? (
         <div className={classNames('container', styles.repeated)}>
