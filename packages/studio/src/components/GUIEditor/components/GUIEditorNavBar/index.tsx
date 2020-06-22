@@ -17,7 +17,6 @@ interface GUIEditorNavBarProps {
   editLocation: EditLocation;
   app: App;
   monacoEditor: editor.IStandaloneCodeEditor;
-  setApp: (app: App) => void;
 }
 
 export default function GUIEditorNavBar({
@@ -25,7 +24,6 @@ export default function GUIEditorNavBar({
   editLocation,
   editorStep,
   monacoEditor,
-  setApp,
   setEditorStep,
 }: GUIEditorNavBarProps): React.ReactElement {
   const location = useLocation();
@@ -71,7 +69,6 @@ export default function GUIEditorNavBar({
             disabled={editLocation?.blockName === undefined}
             editLocation={editLocation}
             monacoEditor={monacoEditor}
-            setApp={setApp}
           />
         </li>
       </ul>

@@ -2,7 +2,7 @@ import { Stepper } from '@appsemble/react-components';
 import type { App, BlockDefinition, BlockManifest } from '@appsemble/types';
 import { stripBlockName } from '@appsemble/utils';
 import indentString from 'indent-string';
-import yaml, { safeLoad } from 'js-yaml';
+import yaml from 'js-yaml';
 import type { editor } from 'monaco-editor';
 import { Range } from 'monaco-editor';
 import React from 'react';
@@ -29,7 +29,6 @@ export default function GUIEditor({
   setEditorStep,
 }: GUIEditorProps): React.ReactElement {
   const [selectedBlock, setSelectedBlock] = React.useState<BlockManifest>(undefined);
-  const [appClone, setAppClone] = React.useState<App>(app);
   const [editLocation, setEditLocation] = React.useState<EditLocation>(undefined);
   const [editedBlockValues, setEditedBlockValues] = React.useState<BlockDefinition>(undefined);
 
@@ -68,10 +67,7 @@ export default function GUIEditor({
       },
     ]);
     monacoEditor.updateOptions({ readOnly: true });
-    const recipe = monacoEditor.getValue();
     setEditorStep(GuiEditorStep.SELECT);
-    const definition = safeLoad(monacoEditor.getValue());
-    setAppClone({ ...app, yaml: recipe, definition });
   };
 
   switch (editorStep) {
@@ -80,11 +76,10 @@ export default function GUIEditor({
       return (
         <>
           <GUIEditorNavBar
-            app={appClone}
+            app={app}
             editLocation={editLocation}
             editorStep={editorStep}
             monacoEditor={monacoEditor}
-            setApp={setAppClone}
             setEditorStep={setEditorStep}
           />
           <GUIEditorSelect monacoEditor={monacoEditor} setEditLocation={setEditLocation} />
@@ -96,7 +91,7 @@ export default function GUIEditor({
         <Stepper onCancel={() => setEditorStep(GuiEditorStep.SELECT)} onFinish={() => save(false)}>
           <GUIEditorToolbox selectedBlock={selectedBlock} setSelectedBlock={setSelectedBlock} />
           <GUIEditorEditBlock
-            app={appClone}
+            app={app}
             blockValue={editedBlockValues}
             editLocation={editLocation}
             selectedBlock={selectedBlock}
@@ -110,7 +105,7 @@ export default function GUIEditor({
       return (
         <Stepper onCancel={() => setEditorStep(GuiEditorStep.SELECT)} onFinish={() => save(true)}>
           <GUIEditorEditBlock
-            app={appClone}
+            app={app}
             blockValue={editedBlockValues}
             editLocation={editLocation}
             selectedBlock={selectedBlock}

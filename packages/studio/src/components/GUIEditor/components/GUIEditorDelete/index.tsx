@@ -1,7 +1,6 @@
 import { Button, useConfirmation } from '@appsemble/react-components';
 import type { App } from '@appsemble/types';
 import { getAppBlocks } from '@appsemble/utils';
-import { safeLoad } from 'js-yaml';
 import { editor, Range } from 'monaco-editor';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
@@ -13,7 +12,6 @@ interface GUIEditorDeleteProps {
   app: App;
   editLocation: EditLocation;
   monacoEditor: editor.IStandaloneCodeEditor;
-  setApp: (app: App) => void;
   disabled: boolean;
 }
 
@@ -28,7 +26,6 @@ export default function GUIEditorDelete({
   disabled,
   editLocation,
   monacoEditor,
-  setApp,
 }: GUIEditorDeleteProps): React.ReactElement {
   const getDeleteWarningType = React.useCallback((): deleteWarnings => {
     if (
@@ -101,10 +98,7 @@ export default function GUIEditorDelete({
       },
     ]);
     monacoEditor.updateOptions({ readOnly: true });
-
-    const definition = safeLoad(monacoEditor.getValue());
-    setApp({ ...app, yaml: monacoEditor.getValue(), definition });
-  }, [app, monacoEditor, editLocation, getDeleteWarningType, setApp]);
+  }, [monacoEditor, editLocation, getDeleteWarningType]);
 
   const messageBody = React.useCallback((): React.ReactElement => {
     switch (getDeleteWarningType()) {
