@@ -30,7 +30,6 @@ interface ButtonProps extends React.ComponentPropsWithoutRef<'button'> {
    * Set to true to indicate the button is in a loading state.
    */
   loading?: boolean;
-  iconRight?: boolean;
 }
 
 /**
@@ -44,7 +43,6 @@ export default function Button({
   color,
   icon,
   iconPrefix,
-  iconRight = false,
   inverted,
   loading,
   ...props
@@ -61,9 +59,8 @@ export default function Button({
     >
       {icon ? (
         <>
-          {iconRight ? null : <Icon icon={icon} prefix={iconPrefix} />}
+          <Icon icon={icon} prefix={iconPrefix} />
           {children && <span>{children}</span>}
-          {iconRight ? <Icon icon={icon} prefix={iconPrefix} /> : null}
         </>
       ) : (
         children
