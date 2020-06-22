@@ -27,20 +27,8 @@ export default function GUIEditorSelect({
   monacoEditor,
   setEditLocation,
 }: GUIEditorSelectProps): React.ReactElement {
-  const [decorators, setDecorators] = React.useState<any>();
-  const [decorator, setDecorator] = React.useState<string[]>([]);
-
-  const setEditorDecorators = React.useCallback(
-    (range: Range, options: editor.IModelDecorationOptions): void => {
-      setDecorators([
-        {
-          range,
-          options,
-        },
-      ]);
-    },
-    [setDecorators],
-  );
+  const [newDecoration, setNewDecoration] = React.useState<editor.IModelDeltaDecoration[]>();
+  const [decorationList, setDecorationList] = React.useState<string[]>();
 
   const getBlockName = React.useCallback(
     (parents: EditLocation['parents'], position: any): string => {
@@ -67,9 +55,7 @@ export default function GUIEditorSelect({
   const getEditLocation = React.useCallback(
     (model: editor.ITextModel, position: Position): void => {
       let editLocation: EditLocation;
-
       const lines = model.getValue().split(/\r?\n/g);
-
       let topParentLine = position.lineNumber;
       let isTopParent = false;
 
@@ -153,20 +139,26 @@ export default function GUIEditorSelect({
       });
 
       if (editLocation) {
-        setEditorDecorators(editLocation.editRange, {
-          className: styles.selectionDecoration,
-        });
+        const newDecorations: editor.IModelDeltaDecoration[] = [
+          {
+            range: editLocation.editRange,
+            options: {
+              className: styles.selectionDecoration,
+            },
+          },
+        ];
+        setNewDecoration(newDecorations);
         setEditLocation(editLocation);
       } else {
         setEditLocation(null);
       }
     },
-    [getBlockName, setEditLocation, setEditorDecorators],
+    [getBlockName, setEditLocation],
   );
 
   React.useEffect(() => {
     if (monacoEditor) {
-      setDecorator(monacoEditor.deltaDecorations([], emptyDecorator));
+      setDecorationList(monacoEditor.deltaDecorations([], emptyDecorator));
     }
   }, [monacoEditor]);
 
@@ -179,10 +171,10 @@ export default function GUIEditorSelect({
   }, [monacoEditor, getEditLocation]);
 
   React.useEffect(() => {
-    if (monacoEditor && decorators !== undefined && decorator !== undefined) {
-      monacoEditor.deltaDecorations(decorator, decorators);
+    if (monacoEditor && newDecoration !== undefined && decorationList !== undefined) {
+      monacoEditor.getModel().deltaDecorations(decorationList, newDecoration);
     }
-  }, [monacoEditor, decorators, decorator]);
+  }, [monacoEditor, newDecoration, decorationList]);
 
   return null;
 }
