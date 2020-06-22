@@ -13,9 +13,7 @@ import {
   UpdatedAt,
 } from 'sequelize-typescript';
 
-import App from './App';
-import ResourceSubscription from './ResourceSubscription';
-import User from './User';
+import { App, ResourceSubscription, User } from '.';
 
 @Table({ tableName: 'Resource', paranoid: true })
 export default class Resource extends Model<Resource> {

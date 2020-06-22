@@ -12,8 +12,7 @@ import {
   UpdatedAt,
 } from 'sequelize-typescript';
 
-import App from './App';
-import Organization from './Organization';
+import { App, Organization } from '.';
 
 @Table({ tableName: 'OrganizationBlockStyle', paranoid: true })
 export default class OrganizationBlockStyle extends Model<OrganizationBlockStyle> {

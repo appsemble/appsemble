@@ -13,11 +13,7 @@ import {
   UpdatedAt,
 } from 'sequelize-typescript';
 
-import App from './App';
-import Member from './Member';
-import OrganizationBlockStyle from './OrganizationBlockStyle';
-import OrganizationInvite from './OrganizationInvite';
-import User from './User';
+import { App, Member, OrganizationBlockStyle, OrganizationInvite, User } from '.';
 
 @Table({ tableName: 'Organization', paranoid: true })
 export default class Organization extends Model<Organization> {
