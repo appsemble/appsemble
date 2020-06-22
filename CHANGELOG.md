@@ -9,6 +9,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
+- App: Add `data-path` and `data-type` attributes to pages and blocks on pages.
 - Block(`form`): Add `submitLabel` property for customizing the label on the submit button.
 - Block(`form`): Add support for `requirements` in string fields. Please consult the block
   documentation for further details.
