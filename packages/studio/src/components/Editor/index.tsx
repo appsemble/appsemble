@@ -43,6 +43,7 @@ export default function Editor(): React.ReactElement {
   const [openApiDocument, setOpenApiDocument] = React.useState<OpenAPIV3.Document>();
 
   const [editorStep, setEditorStep] = React.useState<GuiEditorStep>(GuiEditorStep.SELECT);
+  const [monacoEditor, setMonacoEditor] = React.useState<editor.IStandaloneCodeEditor>();
 
   const frame = React.useRef<HTMLIFrameElement>();
   const history = useHistory();
@@ -272,43 +273,40 @@ export default function Editor(): React.ReactElement {
     <div className={styles.root}>
       <HelmetIntl title={messages.title} titleValues={{ name: appName }} />
       <div className={styles.leftPanel}>
-        {editorStep === GuiEditorStep.YAML ? (
-          <Form className={styles.editorForm} onSubmit={onSave}>
-            <EditorNavBar
-              appUrl={appUrl}
-              dirty={dirty}
-              editorStep={editorStep}
-              onUpload={onUpload}
-              setEditorStep={setEditorStep}
-              valid={valid}
-            />
-            <MonacoEditor
-              language={language}
-              onChange={onValueChange}
-              onSave={onSave}
-              value={value}
-            />
-          </Form>
-        ) : (
-          <div className={styles.editorForm}>
-            <Form onSubmit={onSave}>
-              <EditorNavBar
-                appUrl={appUrl}
-                dirty={dirty}
-                editorStep={editorStep}
-                onUpload={onUpload}
-                setEditorStep={setEditorStep}
-                valid={valid}
-              />
-            </Form>
-            <GUIEditor
-              app={app}
-              editorStep={editorStep}
-              setEditorStep={setEditorStep}
-              setRecipe={setRecipe}
-            />
-          </div>
-        )}
+        <Form onSubmit={onSave}>
+          <EditorNavBar
+            appUrl={appUrl}
+            dirty={dirty}
+            editorStep={editorStep}
+            onUpload={onUpload}
+            setEditorStep={setEditorStep}
+            valid={valid}
+          />
+        </Form>
+        {editorStep !== GuiEditorStep.YAML ? (
+          <GUIEditor
+            app={app}
+            editorStep={editorStep}
+            monacoEditor={monacoEditor}
+            setEditorStep={setEditorStep}
+            setRecipe={setRecipe}
+          />
+        ) : null}
+        <div
+          className={
+            editorStep === GuiEditorStep.YAML || editorStep === GuiEditorStep.SELECT
+              ? styles.editorForm
+              : 'is-hidden'
+          }
+        >
+          <MonacoEditor
+            ref={setMonacoEditor}
+            language={language}
+            onChange={onValueChange}
+            onSave={onSave}
+            value={value}
+          />
+        </div>
       </div>
 
       <div className={styles.rightPanel}>

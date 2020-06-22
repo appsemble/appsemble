@@ -43,6 +43,7 @@ const defaultOptions: Options = {
   insertSpaces: true,
   tabSize: 2,
   minimap: { enabled: false },
+  readOnly: false,
 };
 
 /**

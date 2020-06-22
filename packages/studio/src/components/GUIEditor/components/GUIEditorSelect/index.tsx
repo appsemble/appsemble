@@ -1,11 +1,8 @@
 import { editor, Position, Range } from 'monaco-editor';
 import * as React from 'react';
 
-import MonacoEditor from '../../../MonacoEditor';
 import type { EditLocation } from '../../types';
 import styles from './index.css';
-
-type Options = editor.IEditorOptions & editor.IGlobalEditorOptions;
 
 interface GUIEditorSelectProps {
   /**
@@ -14,29 +11,23 @@ interface GUIEditorSelectProps {
   value?: string;
 
   /**
-   * Editor options to set.
-   */
-  options?: Options;
-
-  /**
    * Set edit location for use in GUIEditor parent
    */
   setEditLocation: (value: EditLocation) => void;
 
   /**
-   * Set editor for use in GUIEditor parent
+   * Set edit location for use in GUIEditor parent
    */
-  setEditor?: (value: editor.IStandaloneCodeEditor) => void;
+  monacoEditor: editor.IStandaloneCodeEditor;
 }
 
 export default function GUIEditorSelect({
+  monacoEditor,
   setEditLocation,
-  setEditor,
   value = '',
 }: GUIEditorSelectProps): React.ReactElement {
   const [decorators, setDecorators] = React.useState<any>();
   const [decorator, setDecorator] = React.useState<string[]>();
-  const editorRef = React.useRef<editor.IStandaloneCodeEditor>();
 
   const setEditorDecorators = React.useCallback(
     (range: Range, options: editor.IModelDecorationOptions): void => {
@@ -173,26 +164,25 @@ export default function GUIEditorSelect({
   );
 
   React.useEffect(() => {
-    setEditor(editorRef.current);
-    editorRef.current.updateOptions({ readOnly: true });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [editorRef.current, setEditor]);
-
-  React.useEffect(() => {
-    if (editorRef.current && editorRef.current.getModel().getValue() !== value) {
-      editorRef.current.getModel().setValue(value);
+    if (monacoEditor) {
+      monacoEditor.updateOptions({ readOnly: true });
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [editorRef.current, value]);
+  }, [monacoEditor]);
 
   React.useEffect(() => {
-    if (editorRef.current) {
-      editorRef.current.onDidChangeCursorSelection(() => {
-        getEditLocation(editorRef.current.getModel(), editorRef.current.getPosition());
+    if (monacoEditor && monacoEditor.getModel().getValue() !== value) {
+      monacoEditor.getModel().setValue(value);
+    }
+  }, [monacoEditor, value]);
+
+  React.useEffect(() => {
+    if (monacoEditor) {
+      monacoEditor.onDidChangeCursorSelection(() => {
+        getEditLocation(monacoEditor.getModel(), monacoEditor.getPosition());
       });
 
       setDecorator(
-        editorRef.current.deltaDecorations(
+        monacoEditor.deltaDecorations(
           [],
           [
             {
@@ -203,15 +193,13 @@ export default function GUIEditorSelect({
         ),
       );
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [editorRef.current, getEditLocation]);
+  }, [monacoEditor, getEditLocation]);
 
   React.useEffect(() => {
-    if (editorRef.current && decorators !== undefined && decorator !== undefined) {
-      editorRef.current.deltaDecorations(decorator, decorators);
+    if (monacoEditor && decorators !== undefined && decorator !== undefined) {
+      monacoEditor.deltaDecorations(decorator, decorators);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [editorRef.current, decorators, decorator]);
+  }, [monacoEditor, decorators, decorator]);
 
-  return <MonacoEditor ref={editorRef} language="yaml" />;
+  return null;
 }
