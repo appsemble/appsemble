@@ -43,7 +43,7 @@ interface BlockDetailsRoutesMatch {
  * Render documentation for blocks.
  */
 export default function BlockDetails(): React.ReactElement {
-  const intl = useIntl();
+  const { formatMessage } = useIntl();
   const match = useRouteMatch<BlockDetailsRoutesMatch>();
   const history = useHistory();
   const { blockName, organization, version: urlVersion } = match.params;
@@ -84,7 +84,7 @@ export default function BlockDetails(): React.ReactElement {
         <div>
           <figure className={`image is-inline-block is-marginless is-64x64 ${styles.logo}`}>
             <img
-              alt={intl.formatMessage(messages.blockIcon)}
+              alt={formatMessage(messages.blockIcon)}
               src={`/api/blocks/@${organization}/${blockName}/versions/${urlVersion}/icon`}
             />
           </figure>

@@ -8,6 +8,6 @@ interface HelmIntlProps {
 }
 
 export default function HelmetIntl({ title, titleValues = {} }: HelmIntlProps): React.ReactElement {
-  const intl = useIntl();
-  return <Helmet title={intl.formatMessage(title, titleValues)} />;
+  const { formatMessage } = useIntl();
+  return <Helmet title={formatMessage(title, titleValues)} />;
 }

@@ -30,7 +30,7 @@ interface ConnectedAccount {
  * Managed OAuth2 accounts linked to the current user.
  */
 export default function OAuthSettings(): React.ReactElement {
-  const intl = useIntl();
+  const { formatMessage } = useIntl();
   const push = useMessages();
   const location = useLocationString();
 
@@ -43,11 +43,11 @@ export default function OAuthSettings(): React.ReactElement {
       try {
         await axios.delete('/api/oauth2/connected', { params: { authorizationUrl } });
       } catch (err) {
-        push(intl.formatMessage(messages.disconnectError, { name }));
+        push(formatMessage(messages.disconnectError, { name }));
         return;
       }
       push({
-        body: intl.formatMessage(messages.disconnectSuccess, { name }),
+        body: formatMessage(messages.disconnectSuccess, { name }),
         color: 'success',
       });
       setAccounts({
@@ -55,7 +55,7 @@ export default function OAuthSettings(): React.ReactElement {
         [authorizationUrl]: false,
       });
     },
-    [accounts, intl, push],
+    [accounts, formatMessage, push],
   );
 
   React.useEffect(() => {

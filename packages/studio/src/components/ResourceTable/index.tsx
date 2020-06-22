@@ -40,7 +40,7 @@ export default function ResourceTable(): React.ReactElement {
   const { app } = useApp();
 
   const history = useHistory();
-  const intl = useIntl();
+  const { formatMessage } = useIntl();
   const match = useRouteMatch<RouteParams>();
   const push = useMessages();
 
@@ -65,12 +65,12 @@ export default function ResourceTable(): React.ReactElement {
       try {
         await axios.delete(`/api/apps/${appId}/resources/${resourceName}/${deletingResource.id}`);
         push({
-          body: intl.formatMessage(messages.deleteSuccess, { id: deletingResource.id }),
+          body: formatMessage(messages.deleteSuccess, { id: deletingResource.id }),
           color: 'primary',
         });
         setResources(resources.filter((resource) => resource.id !== deletingResource.id));
       } catch (e) {
-        push(intl.formatMessage(messages.deleteError));
+        push(formatMessage(messages.deleteError));
       }
     },
   });
@@ -95,18 +95,18 @@ export default function ResourceTable(): React.ReactElement {
         history.push(match.url.replace(`/${mode}`, ''));
 
         push({
-          body: intl.formatMessage(messages.createSuccess, { id: data.id }),
+          body: formatMessage(messages.createSuccess, { id: data.id }),
           color: 'primary',
         });
       } catch (e) {
-        push(intl.formatMessage(messages.createError));
+        push(formatMessage(messages.createError));
       }
     },
     [
       appId,
       editingResource,
+      formatMessage,
       history,
-      intl,
       match,
       mode,
       push,
@@ -133,17 +133,17 @@ export default function ResourceTable(): React.ReactElement {
       history.push(match.url.replace(`/${mode}/${resourceId}`, ''));
 
       push({
-        body: intl.formatMessage(messages.updateSuccess, { id: resourceId }),
+        body: formatMessage(messages.updateSuccess, { id: resourceId }),
         color: 'primary',
       });
     } catch (e) {
-      push(intl.formatMessage(messages.updateError));
+      push(formatMessage(messages.updateError));
     }
   }, [
     appId,
     editingResource,
+    formatMessage,
     history,
-    intl,
     match,
     mode,
     push,

@@ -49,7 +49,7 @@ export default function Editor(): React.ReactElement {
 
   const frame = React.useRef<HTMLIFrameElement>();
   const history = useHistory();
-  const intl = useIntl();
+  const { formatMessage } = useIntl();
   const location = useLocation();
   const params = useParams<{ id: string }>();
   const push = useMessages();
@@ -76,9 +76,9 @@ export default function Editor(): React.ReactElement {
         setSharedStyle(sharedStyleData);
       } catch (error) {
         if (error.response && (error.response.status === 404 || error.response.status === 401)) {
-          push(intl.formatMessage(messages.appNotFound));
+          push(formatMessage(messages.appNotFound));
         } else {
-          push(intl.formatMessage(messages.error));
+          push(formatMessage(messages.error));
         }
       }
     };
@@ -91,14 +91,14 @@ export default function Editor(): React.ReactElement {
 
     if (!yamlRecipe) {
       yamlRecipe = safeDump(definition);
-      push({ body: intl.formatMessage(messages.yamlNotFound), color: 'info' });
+      push({ body: formatMessage(messages.yamlNotFound), color: 'info' });
     }
 
     setAppName(definition.name);
     setRecipe(yamlRecipe);
     setInitialRecipe(yamlRecipe);
     setPath(p);
-  }, [app, history, intl, location.hash, params, push]);
+  }, [app, history, formatMessage, location.hash, params, push]);
 
   const onSave = React.useCallback(async () => {
     let definition: AppDefinition;
@@ -106,7 +106,7 @@ export default function Editor(): React.ReactElement {
     try {
       definition = safeLoad(recipe);
     } catch (error) {
-      push(intl.formatMessage(messages.invalidYaml));
+      push(formatMessage(messages.invalidYaml));
       setValid(false);
       setDirty(false);
       return;
@@ -116,7 +116,7 @@ export default function Editor(): React.ReactElement {
       validateStyle(style);
       validateStyle(sharedStyle);
     } catch (error) {
-      push(intl.formatMessage(messages.invalidStyle));
+      push(formatMessage(messages.invalidStyle));
       setValid(false);
       setDirty(false);
       return;
@@ -153,18 +153,18 @@ export default function Editor(): React.ReactElement {
       if (error instanceof SchemaValidationError) {
         const errors = error.data;
         push({
-          body: intl.formatMessage(messages.schemaValidationFailed, {
+          body: formatMessage(messages.schemaValidationFailed, {
             properties: Object.keys(errors).join(', '),
           }),
         });
       } else {
-        push(intl.formatMessage(messages.unexpected));
+        push(formatMessage(messages.unexpected));
       }
 
       setValid(false);
     }
     setDirty(false);
-  }, [appUrl, intl, openApiDocument, push, recipe, sharedStyle, style]);
+  }, [appUrl, formatMessage, openApiDocument, push, recipe, sharedStyle, style]);
 
   const uploadApp = React.useCallback(async () => {
     if (!valid) {
@@ -185,15 +185,15 @@ export default function Editor(): React.ReactElement {
 
       const { data } = await axios.patch(`/api/apps/${id}`, formData);
       setPath(data.path);
-      push({ body: intl.formatMessage(messages.updateSuccess), color: 'success' });
+      push({ body: formatMessage(messages.updateSuccess), color: 'success' });
 
       // update App State
       setApp(data);
     } catch (e) {
       if (e.response && e.response.status === 403) {
-        push(intl.formatMessage(messages.forbidden));
+        push(formatMessage(messages.forbidden));
       } else {
-        push(intl.formatMessage(messages.errorUpdate));
+        push(formatMessage(messages.errorUpdate));
       }
 
       return;
@@ -202,7 +202,7 @@ export default function Editor(): React.ReactElement {
     setAppName(definition.name);
     setDirty(true);
     setInitialRecipe(recipe);
-  }, [intl, params, push, recipe, sharedStyle, style, setApp, valid]);
+  }, [formatMessage, params, push, recipe, sharedStyle, style, setApp, valid]);
 
   const promptUpdateApp = useConfirmation({
     title: <FormattedMessage {...messages.resourceWarningTitle} />,
@@ -349,7 +349,7 @@ export default function Editor(): React.ReactElement {
             ref={frame}
             className={styles.appFrame}
             src={appUrl}
-            title={intl.formatMessage(messages.iframeTitle)}
+            title={formatMessage(messages.iframeTitle)}
           />
         )}
       </div>

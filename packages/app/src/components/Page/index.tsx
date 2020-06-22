@@ -29,7 +29,7 @@ interface PageProps {
 export default function Page({ page, prefix }: PageProps): React.ReactElement {
   const { definition } = useAppDefinition();
   const history = useHistory();
-  const intl = useIntl();
+  const { formatMessage } = useIntl();
   const push = useMessages();
   const redirect = useLocationString();
   const { isLoggedIn, logout, role } = useUser();
@@ -92,7 +92,7 @@ export default function Page({ page, prefix }: PageProps): React.ReactElement {
         // Show message that explains the app is inaccessible with the current permissions.
         if (!redirectPage) {
           push({
-            body: intl.formatMessage(messages.permissionLogout),
+            body: formatMessage(messages.permissionLogout),
             color: 'danger',
             dismissable: true,
           });
@@ -102,7 +102,17 @@ export default function Page({ page, prefix }: PageProps): React.ReactElement {
         }
       }
     }
-  }, [checkPagePermissions, definition, history, intl, isLoggedIn, logout, page, push, redirect]);
+  }, [
+    checkPagePermissions,
+    definition,
+    formatMessage,
+    history,
+    isLoggedIn,
+    logout,
+    page,
+    push,
+    redirect,
+  ]);
 
   const showDialog = React.useCallback((d: ShowDialogParams) => {
     setDialog(d);

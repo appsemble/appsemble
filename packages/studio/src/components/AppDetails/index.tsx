@@ -33,7 +33,7 @@ export default function AppDetails(): React.ReactElement {
   );
   const cloneDialog = useToggle();
   const history = useHistory();
-  const intl = useIntl();
+  const { formatMessage } = useIntl();
 
   const organizations = useOrganizations();
 
@@ -62,7 +62,7 @@ export default function AppDetails(): React.ReactElement {
         <div className={styles.titleContainer}>
           <header className={styles.title}>
             <figure className="image is-96x96 is-marginless">
-              <img alt={intl.formatMessage(messages.appLogo)} src={`/api/apps/${app.id}/icon`} />
+              <img alt={formatMessage(messages.appLogo)} src={`/api/apps/${app.id}/icon`} />
             </figure>
             <div>
               <Title className="is-marginless" level={1}>
