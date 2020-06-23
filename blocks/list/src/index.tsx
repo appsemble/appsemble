@@ -71,7 +71,7 @@ export default bootstrap(({ data: blockData, events, parameters: { base }, ready
   }
 
   return (
-    <ul className={styles.container}>
+    <ul className="py-4 px-5">
       {data.map((item, index) => (
         <li key={item.id ?? index}>
           <ListItem item={item} />

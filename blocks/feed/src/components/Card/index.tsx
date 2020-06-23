@@ -208,7 +208,7 @@ class Card extends Component<BlockProps & CardProps, CardState> {
             />
           )}
         </div>
-        <div className={`card-content ${styles.content}`}>
+        <div className="card-content px-4 py-4">
           {description && <p className="content">{description}</p>}
           {actions.onButtonClick.type !== 'noop' && (
             <button

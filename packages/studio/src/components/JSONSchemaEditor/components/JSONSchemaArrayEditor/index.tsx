@@ -64,7 +64,7 @@ export default function JSONSchemaArrayEditor({
   );
 
   return (
-    <div className={styles.root}>
+    <div className={`${styles.root} px-3 py-3 my-2 mx-0`}>
       <Button className="is-pulled-right" color="success" icon="plus" onClick={onItemAdded} />
       <Title className={styles.title} level={5}>
         <JSONSchemaLabel name={name} prefix={prefix} schema={schema} />

@@ -325,7 +325,11 @@ export default class FilterBlock extends React.Component<BlockProps, FilterBlock
         {newData.length > 0 && (
           <article className={`message ${styles.newDataBar}`}>
             <div className="message-header">
-              <button className={styles.newDataButton} onClick={this.onMergeRefresh} type="button">
+              <button
+                className={`${styles.newDataButton} is-paddingless`}
+                onClick={this.onMergeRefresh}
+                type="button"
+              >
                 <FormattedMessage {...messages.refreshData} values={{ amount: newData.length }} />
               </button>
               <button
