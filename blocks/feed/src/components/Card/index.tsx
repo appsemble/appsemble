@@ -153,7 +153,7 @@ class Card extends Component<BlockProps & CardProps, CardState> {
     }
 
     return (
-      <article className={`card ${styles.root}`}>
+      <article className="card mx-2 my-2">
         <div className="card-content">
           <div className={`media ${styles.media}`}>
             <AvatarWrapper action={actions.onAvatarClick} onAvatarClick={this.onAvatarClick}>
@@ -181,9 +181,9 @@ class Card extends Component<BlockProps & CardProps, CardState> {
             </figure>
           )}
           {content?.fotos && content?.fotos.length > 1 && (
-            <div className={styles.images}>
+            <div className={`${styles.images} px-1 py-1`}>
               {content?.fotos.map((p) => (
-                <figure key={p} className={`image is-64x64 ${styles.figure}`}>
+                <figure key={p} className={`image is-64x64 mx-1 my-1 ${styles.figure}`}>
                   <img
                     alt={title || subtitle || heading || description}
                     src={`${p ? `${utils.asset(p)}` : ''}`}
@@ -212,7 +212,7 @@ class Card extends Component<BlockProps & CardProps, CardState> {
           {description && <p className="content">{description}</p>}
           {actions.onButtonClick.type !== 'noop' && (
             <button
-              className={`button ${styles.button}`}
+              className={`button ${styles.button} mb-4`}
               onClick={this.onButtonClick}
               type="button"
             >
@@ -236,7 +236,7 @@ class Card extends Component<BlockProps & CardProps, CardState> {
                   );
                 })}
               </div>
-              <form className={styles.replyForm} noValidate onSubmit={this.onSubmit}>
+              <form className="is-flex py-2 px-0" noValidate onSubmit={this.onSubmit}>
                 <input
                   className="input"
                   onChange={this.onChange}
@@ -247,7 +247,7 @@ class Card extends Component<BlockProps & CardProps, CardState> {
                 {/* onSubmit is not used because of buggy interactions with ShadowDOM, React.
                 See: https://github.com/spring-media/react-shadow-dom-retarget-events/issues/13 */}
                 <button
-                  className={`button ${styles.replyButton}`}
+                  className={`button ${styles.replyButton} ml-1`}
                   disabled={!valid}
                   onClick={this.onClick}
                   type="button"

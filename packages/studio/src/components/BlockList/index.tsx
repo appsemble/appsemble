@@ -36,12 +36,12 @@ export default function BlockList(): React.ReactElement {
   return (
     <>
       <HelmetIntl title={messages.title} />
-      <div className={styles.blockList}>
+      <div className={`${styles.blockList} px-2 py-2`}>
         {appsembleBlocks.map((block) => (
-          <BlockCard key={block.name} block={block} />
+          <BlockCard key={block.name} block={block} className="mx-2 my-2" />
         ))}
         {thirdPartyBlocks.map((block) => (
-          <BlockCard key={block.name} block={block} />
+          <BlockCard key={block.name} block={block} className="mx-2 my-2" />
         ))}
       </div>
     </>

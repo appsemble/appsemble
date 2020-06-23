@@ -190,7 +190,7 @@ export default function Assets(): React.ReactElement {
                   checked={selectedAssets.includes(asset.id)}
                   name={`asset${asset.id}`}
                   onChange={onAssetCheckboxClick}
-                  wrapperClassName={`is-inline-block ${styles.assetCheckbox}`}
+                  wrapperClassName="is-inline-block mt-2"
                 />
                 <Button color="primary" icon="download" onClick={() => downloadAsset(asset)} />
               </td>
@@ -223,10 +223,10 @@ export default function Assets(): React.ReactElement {
       >
         <Content>
           <FileUpload
-            className={styles.filePicker}
+            className={`${styles.filePicker} has-text-centered`}
             fileButtonLabel={<FormattedMessage {...messages.chooseFile} />}
             fileLabel={file?.name || <FormattedMessage {...messages.noFile} />}
-            formComponentClassName={styles.filePicker}
+            formComponentClassName="has-text-centered"
             label={<FormattedMessage {...messages.file} />}
             name="file"
             onChange={onFileChange}

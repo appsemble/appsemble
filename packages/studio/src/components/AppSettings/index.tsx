@@ -106,7 +106,7 @@ export default function AppSettings(): React.ReactElement {
             name="icon"
             onChange={onIconChange}
             preview={
-              <figure className={`image is-128x128 ${styles.iconContainer}`}>
+              <figure className="image is-128x128 mb-2">
                 <img
                   alt={intl.formatMessage(messages.icon)}
                   className={styles.icon}
@@ -115,7 +115,7 @@ export default function AppSettings(): React.ReactElement {
               </figure>
             }
           />
-          <div className={styles.private}>
+          <div className="mb-3">
             <Checkbox
               className="is-marginless"
               help={<FormattedMessage {...messages.private} />}
@@ -123,6 +123,7 @@ export default function AppSettings(): React.ReactElement {
               name="private"
               onChange={onChange}
               value={inputs.private}
+              wrapperClassName="mb-0"
             />
             <p className="help">
               <FormattedMessage {...messages.privateDescription} />

@@ -59,18 +59,18 @@ export default function AppRatings(): React.ReactElement {
   }
 
   return (
-    <Content padding>
+    <Content className="ml-0 mt-2" padding>
       <Title>
         <FormattedMessage {...messages.ratings} />
       </Title>
-      {userInfo && <RateApp app={app} className={styles.ratingButton} onRate={onRate} />}
+      {userInfo && <RateApp app={app} className="mb-4" onRate={onRate} />}
       <div className="content">
         {ratings.map((rating) => (
-          <div key={rating.$created} className={styles.rating}>
+          <div key={rating.$created} className="mb-4">
             <span className="is-block has-text-weight-bold">
               {rating.name || <FormattedMessage {...messages.anonymous} />}
               {userInfo && rating.UserId === userInfo.sub && (
-                <span className={`tag is-success ${styles.tag}`}>
+                <span className="tag is-success ml-2">
                   <FormattedMessage {...messages.you} />
                 </span>
               )}

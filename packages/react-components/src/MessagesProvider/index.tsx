@@ -63,7 +63,7 @@ export default function MessagesProvider({ children }: MessagesProviderProps): R
   return (
     <MessagesContext.Provider value={push}>
       {children}
-      <div className={styles.root}>
+      <div className={`${styles.root} mx-3`}>
         <TransitionGroup>
           {messages.current.map((message) => (
             <CSSTransition

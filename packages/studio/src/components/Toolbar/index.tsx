@@ -14,16 +14,12 @@ export default function Toolbar(): React.ReactElement {
       <div className="navbar-brand">
         <Link to="/">
           <header className="navbar-item">
-            <img
-              alt={intl.formatMessage(messages.iconAlt)}
-              className={styles.icon}
-              src="/icon-64.png"
-            />
+            <img alt={intl.formatMessage(messages.iconAlt)} className="mr-2" src="/icon-64.png" />
             <h4 className="has-text-white title">Appsemble</h4>
           </header>
         </Link>
         <a
-          className={`is-rounded is-warning tag ${styles.tag}`}
+          className={`is-rounded is-warning tag mx-1 my-1 ${styles.tag}`}
           href={`https://gitlab.com/appsemble/appsemble/-/releases/${process.env.APPSEMBLE_VERSION}`}
           rel="noopener noreferrer"
           target="_blank"

@@ -56,7 +56,7 @@ export default bootstrap(({ data: blockData, events, parameters: { base }, ready
 
   if (error) {
     return (
-      <Message className={styles.message} color="danger">
+      <Message className="mt-4 mr-6 mb-4 ml-5" color="danger">
         <FormattedMessage id="error" />
       </Message>
     );
@@ -64,7 +64,7 @@ export default bootstrap(({ data: blockData, events, parameters: { base }, ready
 
   if (!data.length) {
     return (
-      <Message className={styles.message}>
+      <Message className="mt-4 mr-6 mb-4 ml-5">
         <FormattedMessage id="noData" />
       </Message>
     );

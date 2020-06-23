@@ -12,18 +12,23 @@ interface BlockCardProps {
    * The block to display.
    */
   block: BlockManifest;
+
+  /**
+   * The class to apply to the component.
+   */
+  className?: string;
 }
 
 /**
  * Display a card that contains basic information of a block and a link to further documentation.
  */
-export default function BlockCard({ block }: BlockCardProps): React.ReactElement {
+export default function BlockCard({ block, className }: BlockCardProps): React.ReactElement {
   const match = useRouteMatch();
   const intl = useIntl();
   const [org, ...name] = block.name.split('/');
 
   return (
-    <div key={block.name} className="card">
+    <div key={block.name} className={`card ${className}`}>
       <header className="card-header">
         <div className="card-header-title">
           <article className="media">
@@ -47,7 +52,7 @@ export default function BlockCard({ block }: BlockCardProps): React.ReactElement
       </header>
       <div className={styles.cardBody}>
         <div className="card-content">
-          <div className={`content ${styles.description}`}>
+          <div className="content mb-3">
             {block.description ?? (
               <span className="has-text-grey-light">
                 <FormattedMessage {...messages.noDescription} />

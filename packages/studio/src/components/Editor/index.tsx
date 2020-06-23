@@ -272,10 +272,10 @@ export default function Editor(): React.ReactElement {
   }
 
   return (
-    <div className={styles.root}>
+    <div className={`${styles.root} is-flex`}>
       <HelmetIntl title={messages.title} titleValues={{ name: appName }} />
       <div className={styles.leftPanel}>
-        <Form className={styles.editorForm} onSubmit={onSave}>
+        <Form className={`${styles.editorForm} mb-0 is-flex`} onSubmit={onSave}>
           <nav className="navbar">
             <div className="navbar-brand">
               <span className="navbar-item">
@@ -303,7 +303,7 @@ export default function Editor(): React.ReactElement {
               </span>
             </div>
           </nav>
-          <div className={classNames('tabs', 'is-boxed', styles.editorTabs)}>
+          <div className="tabs is-boxed mb-0">
             <ul>
               <li
                 className={classNames({ 'is-active': location.hash === '#editor' })}
@@ -343,7 +343,7 @@ export default function Editor(): React.ReactElement {
         </Form>
       </div>
 
-      <div className={styles.rightPanel}>
+      <div className={`${styles.rightPanel} is-flex ml-1 px-5 py-5`}>
         {path && (
           <iframe
             ref={frame}

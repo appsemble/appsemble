@@ -426,7 +426,7 @@ export default function OrganizationsSettings(): React.ReactElement {
                 <tr key={member.id}>
                   <td>
                     <span>{member.name || member.primaryEmail || member.id}</span>
-                    <div className={`tags ${styles.tags}`}>
+                    <div className="tags is-inline ml-2">
                       {member.id === userInfo.sub && (
                         <span className="tag is-success">
                           <FormattedMessage {...messages.you} />
@@ -437,7 +437,7 @@ export default function OrganizationsSettings(): React.ReactElement {
                   <td className="has-text-right">
                     {canManageRoles ? (
                       <Select
-                        className={styles.roleSelect}
+                        className="is-inline"
                         defaultValue={member.role}
                         disabled={member.id === userInfo.sub || submittingRole === member.id}
                         fullwidth={false}
@@ -462,7 +462,7 @@ export default function OrganizationsSettings(): React.ReactElement {
                         organization.members.some((m) =>
                           checkRole(m.role, Permission.ManageRoles),
                         ) && (
-                          <p className={`control ${styles.memberButton}`}>
+                          <p className="control is-inline-flex">
                             <Button
                               color="danger"
                               icon="sign-out-alt"

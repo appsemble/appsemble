@@ -52,7 +52,7 @@ export default function ProfileDropdown(): React.ReactElement {
       {showSettings && showLogin && <hr className="dropdown-divider" />}
       {showLogin && (
         <Button
-          className={`dropdown-item ${styles.logoutButton}`}
+          className={`dropdown-item pl-5 ${styles.logoutButton}`}
           icon="sign-out-alt"
           onClick={logout}
         >

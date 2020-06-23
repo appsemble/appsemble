@@ -2,11 +2,6 @@
   max-width: 480px;
 }
 
-.tags {
-  display: inline;
-  margin-left: 0.5rem;
-}
-
 .buttonGroup > button:not(:first-child) {
   margin-left: 0.75rem;
 }

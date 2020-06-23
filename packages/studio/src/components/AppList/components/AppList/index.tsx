@@ -59,14 +59,14 @@ export default function AppList(): React.ReactElement {
           <Icon className="is-left" icon="search" size="small" />
         </p>
       </div>
-      <div className={styles.appList}>
+      <div className={`${styles.appList} px-3 py-3`}>
         {filteredApps.map((app) => (
           <AppCard key={app.id} app={app} />
         ))}
         {createOrganizations.length >= 1 && <CreateAppCard />}
       </div>
       {userInfo && createOrganizations.length === 0 && apps.length === 0 && (
-        <div className={styles.noApps}>
+        <div className={`${styles.noApps} px-4 py-4 has-text-centered`}>
           <span>
             <i className={`fas fa-folder-open ${styles.noAppsIcon}`} />
           </span>

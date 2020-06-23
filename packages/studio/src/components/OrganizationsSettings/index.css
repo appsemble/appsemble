@@ -1,20 +1,3 @@
-.tags {
-  display: inline !important;
-  margin-left: 0.5rem;
-}
-
-.memberButton {
-  display: inline-flex;
-}
-
 .field {
   max-width: 480px;
-}
-
-.roleSelect {
-  display: inline;
-
-  & :global(.control) {
-    display: inline;
-  }
 }
