@@ -28,7 +28,7 @@ export default function MarkdownContent({
   sanitize = true,
 }: MarkdownContentProps): React.ReactElement {
   return content ? (
-    <div
+    <span
       className={classNames('content', className)}
       // eslint-disable-next-line react/no-danger
       dangerouslySetInnerHTML={{ __html: marked(content, { sanitize }) }}

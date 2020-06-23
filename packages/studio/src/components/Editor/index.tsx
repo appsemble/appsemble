@@ -244,6 +244,10 @@ export default function Editor(): React.ReactElement {
       switch (location.hash) {
         case '#editor':
           setRecipe(value);
+          if (editorStep !== GuiEditorStep.YAML) {
+            const definition = safeLoad(value);
+            setApp({ ...app, yaml: value, definition });
+          }
           break;
         case '#style-core':
           setStyle(value);
@@ -257,7 +261,7 @@ export default function Editor(): React.ReactElement {
 
       setDirty(true);
     },
-    [location.hash],
+    [location.hash, app, editorStep, setApp],
   );
 
   if (recipe == null) {
