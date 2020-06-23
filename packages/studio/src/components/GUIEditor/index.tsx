@@ -17,9 +17,7 @@ import applyMonacoEdits from './utils/applyMonacoEdits';
 interface GUIEditorProps {
   app: App;
   editorStep: GuiEditorStep;
-  setEditor?: (value: editor.IStandaloneCodeEditor) => void;
   setEditorStep: (step: GuiEditorStep) => void;
-  value?: string;
   monacoEditor: editor.IStandaloneCodeEditor;
 }
 
@@ -74,13 +72,41 @@ export default function GUIEditor({
     setSelectedBlock(null);
   };
 
-  const onCancel = (): void => {
+  const onCancel = React.useCallback((): void => {
     setEditorStep(GuiEditorStep.SELECT);
     setSelectedBlock(null);
-  };
+  }, [setEditorStep]);
 
   switch (editorStep) {
-    case GuiEditorStep.SELECT:
+    case GuiEditorStep.ADD:
+      return (
+        <Stepper onCancel={onCancel} onFinish={() => save(false)}>
+          <GUIEditorToolbox selectedBlock={selectedBlock} setSelectedBlock={setSelectedBlock} />
+          <GUIEditorEditBlock
+            app={app}
+            blockValue={editedBlockValues}
+            editLocation={editLocation}
+            selectedBlock={selectedBlock}
+            setBlockValue={setEditedBlockValues}
+            setSelectedBlock={setSelectedBlock}
+          />
+        </Stepper>
+      );
+
+    case GuiEditorStep.EDIT:
+      return (
+        <Stepper onCancel={onCancel} onFinish={() => save(true)}>
+          <GUIEditorEditBlock
+            app={app}
+            blockValue={editedBlockValues}
+            editLocation={editLocation}
+            selectedBlock={selectedBlock}
+            setBlockValue={setEditedBlockValues}
+            setSelectedBlock={setSelectedBlock}
+          />
+        </Stepper>
+      );
+
     default:
       return (
         <>
@@ -98,37 +124,6 @@ export default function GUIEditor({
             setEditLocation={setEditLocation}
           />
         </>
-      );
-
-    case GuiEditorStep.ADD:
-      return (
-        <Stepper onCancel={onCancel} onFinish={() => save(false)}>
-          <GUIEditorToolbox selectedBlock={selectedBlock} setSelectedBlock={setSelectedBlock} />
-          <GUIEditorEditBlock
-            app={app}
-            blockValue={editedBlockValues}
-            editLocation={editLocation}
-            onError={onCancel}
-            selectedBlock={selectedBlock}
-            setBlockValue={setEditedBlockValues}
-            setSelectedBlock={setSelectedBlock}
-          />
-        </Stepper>
-      );
-
-    case GuiEditorStep.EDIT:
-      return (
-        <Stepper onCancel={onCancel} onFinish={() => save(true)}>
-          <GUIEditorEditBlock
-            app={app}
-            blockValue={editedBlockValues}
-            editLocation={editLocation}
-            onError={onCancel}
-            selectedBlock={selectedBlock}
-            setBlockValue={setEditedBlockValues}
-            setSelectedBlock={setSelectedBlock}
-          />
-        </Stepper>
       );
   }
 }

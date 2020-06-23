@@ -1,7 +1,6 @@
-import { Loader, Title } from '@appsemble/react-components';
+import { Content, Loader, Message, Title, useData } from '@appsemble/react-components';
 import type { BlockManifest } from '@appsemble/types';
 import { stripBlockName } from '@appsemble/utils';
-import axios from 'axios';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 
@@ -18,17 +17,26 @@ export default function GUIEditorToolbox({
   selectedBlock,
   setSelectedBlock,
 }: GUIEditorToolboxProps): React.ReactElement {
-  const [blocks, setBlocks] = React.useState<BlockManifest[]>(undefined);
+  const { data: blocks, error, loading } = useData<BlockManifest[]>('/api/blocks');
 
-  React.useEffect(() => {
-    const getBlocks = async (): Promise<void> => {
-      const { data } = await axios.get('/api/blocks');
-      setBlocks(data);
-    };
-    getBlocks();
-  }, []);
+  const onChange = React.useCallback(
+    (_event: React.ChangeEvent, block: BlockManifest): void => {
+      setSelectedBlock(block);
+    },
+    [setSelectedBlock],
+  );
 
-  if (blocks === undefined) {
+  if (error) {
+    return (
+      <Content padding>
+        <Message color="danger">
+          <FormattedMessage {...messages.error} />
+        </Message>
+      </Content>
+    );
+  }
+
+  if (loading) {
     return <Loader />;
   }
 
@@ -40,8 +48,9 @@ export default function GUIEditorToolbox({
       <div className={styles.maxHeight}>
         <GUIEditorToolboxBlock
           blocks={blocks}
-          selectedBlock={selectedBlock}
-          setSelectedBlock={setSelectedBlock}
+          name={selectedBlock?.name}
+          onChange={onChange}
+          value={selectedBlock}
         />
       </div>
       {selectedBlock && (

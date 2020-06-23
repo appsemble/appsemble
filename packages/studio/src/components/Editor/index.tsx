@@ -31,6 +31,18 @@ type Options = editor.IEditorOptions & editor.IGlobalEditorOptions;
 
 const openApiDocumentPromise = RefParser.dereference(api('', { host: window.location.origin }));
 
+const monacoDefaultOptions: Options = {
+  insertSpaces: true,
+  tabSize: 2,
+  minimap: { enabled: false },
+  readOnly: false,
+};
+
+const monacoGuiOptions: Options = {
+  ...monacoDefaultOptions,
+  readOnly: true,
+};
+
 export default function Editor(): React.ReactElement {
   const { app, setApp } = useApp();
 
@@ -270,18 +282,6 @@ export default function Editor(): React.ReactElement {
       value = recipe;
       language = 'yaml';
   }
-
-  const monacoDefaultOptions: Options = {
-    insertSpaces: true,
-    tabSize: 2,
-    minimap: { enabled: false },
-    readOnly: false,
-  };
-
-  const monacoGuiOptions: Options = {
-    ...monacoDefaultOptions,
-    readOnly: true,
-  };
 
   return (
     <div className={styles.root}>

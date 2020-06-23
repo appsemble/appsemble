@@ -5,4 +5,5 @@ export default defineMessages({
   back: 'Back',
   save: 'Save',
   noParameters: '{name} has no editable parameters',
+  error: 'There was a problem loading block: "{blockName}"',
 });

@@ -1,9 +1,10 @@
-import { Loader, Title, useData, useMessages } from '@appsemble/react-components';
+import { Content, Loader, Message, Title, useData } from '@appsemble/react-components';
 import type { App, BasicPageDefinition, BlockDefinition, BlockManifest } from '@appsemble/types';
 import { normalizeBlockName, stripBlockName } from '@appsemble/utils';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 
+// import type { NamedEvent } from '../../../../types';
 import JSONSchemaEditor from '../../../JSONSchemaEditor';
 import type { EditLocation } from '../../types';
 import styles from './index.css';
@@ -16,20 +17,16 @@ interface GUIEditorEditBlockProps {
   setSelectedBlock: (value: BlockManifest) => void;
   setBlockValue: (value: BlockDefinition) => void;
   blockValue: BlockDefinition;
-  onError: () => void;
 }
 
 export default function GUIEditorEditBlock({
   app,
   blockValue,
   editLocation,
-  onError,
   selectedBlock,
   setBlockValue,
   setSelectedBlock,
 }: GUIEditorEditBlockProps): React.ReactElement {
-  const push = useMessages();
-
   const onChange = React.useCallback(
     (_event: any, value: any) => {
       setBlockValue({ ...blockValue, parameters: { ...value } });
@@ -62,12 +59,18 @@ export default function GUIEditorEditBlock({
     }
   }, [loading, initBlockParameters, setSelectedBlock, edittingBlock, selectedBlock]);
 
-  React.useEffect(() => {
-    if (error) {
-      push(error.message);
-      onError();
-    }
-  }, [error, push, onError]);
+  if (error && !selectedBlock) {
+    return (
+      <Content padding>
+        <Message color="danger">
+          <FormattedMessage
+            {...messages.error}
+            values={{ blockName: normalizeBlockName(editLocation.blockName) }}
+          />
+        </Message>
+      </Content>
+    );
+  }
 
   if (loading || !selectedBlock) {
     return <Loader />;

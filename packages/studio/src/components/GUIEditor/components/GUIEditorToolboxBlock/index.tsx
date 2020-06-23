@@ -8,44 +8,38 @@ import styles from './index.css';
 
 interface GUIEditorToolboxBlockProps {
   blocks: BlockManifest[];
-  setSelectedBlock: (block: BlockManifest) => void;
-  selectedBlock: BlockManifest;
+  name: string;
+  onChange: (event: React.ChangeEvent<HTMLInputElement>, block: BlockManifest) => void;
+  value: BlockManifest;
 }
+
 export default function GUIEditorToolboxBlock({
   blocks,
-  selectedBlock,
-  setSelectedBlock,
+  name,
+  onChange,
+  value,
 }: GUIEditorToolboxBlockProps): React.ReactElement {
-  const onChange = React.useCallback(
-    (_event: React.ChangeEvent, block: BlockManifest): void => {
-      setSelectedBlock(block);
-    },
-    [setSelectedBlock],
-  );
-
   return (
     <div className={styles.main}>
-      {blocks.map(
-        (block: BlockManifest): React.ReactElement => (
-          <label
-            key={block.name}
-            className={classNames(styles.blockFrame, {
-              [styles.selected]: selectedBlock === block,
-            })}
-          >
-            <Icon icon="box" size="large" />
-            <span className={styles.subtext}>{stripBlockName(block.name)}</span>
-            <input
-              checked={selectedBlock ? selectedBlock.name === block.name : false}
-              hidden
-              name={block.name}
-              onChange={(event) => onChange(event, block)}
-              type="radio"
-              value={block.name}
-            />
-          </label>
-        ),
-      )}
+      {blocks.map((block) => (
+        <label
+          key={block.name}
+          className={classNames(styles.blockFrame, {
+            [styles.selected]: value === block,
+          })}
+        >
+          <Icon icon="box" size="large" />
+          <span className={styles.subtext}>{stripBlockName(block.name)}</span>
+          <input
+            checked={value ? value.name === block.name : false}
+            hidden
+            name="type"
+            onChange={(event) => onChange(event, block)}
+            type="radio"
+            value={name}
+          />
+        </label>
+      ))}
     </div>
   );
 }
