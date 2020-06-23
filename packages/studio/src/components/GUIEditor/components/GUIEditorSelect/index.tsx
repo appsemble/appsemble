@@ -158,9 +158,11 @@ export default function GUIEditorSelect({
 
   React.useEffect(() => {
     if (monacoEditor) {
-      setDecorationList(monacoEditor.deltaDecorations([], emptyDecorator));
+      if (decorationList === undefined) {
+        setDecorationList(monacoEditor.deltaDecorations([], emptyDecorator));
+      }
     }
-  }, [monacoEditor]);
+  }, [monacoEditor, decorationList]);
 
   React.useEffect(() => {
     if (monacoEditor) {
@@ -171,10 +173,10 @@ export default function GUIEditorSelect({
   }, [monacoEditor, getEditLocation]);
 
   React.useEffect(() => {
-    if (monacoEditor && newDecoration !== undefined && decorationList !== undefined) {
-      monacoEditor.getModel().deltaDecorations(decorationList, newDecoration);
+    if (monacoEditor && newDecoration !== undefined) {
+      setDecorationList((d) => monacoEditor.deltaDecorations(d, newDecoration));
     }
-  }, [monacoEditor, newDecoration, decorationList]);
+  }, [monacoEditor, newDecoration]);
 
   return null;
 }
