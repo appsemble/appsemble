@@ -8,8 +8,7 @@ import {
   UpdatedAt,
 } from 'sequelize-typescript';
 
-import App from './App';
-import User from './User';
+import { App, User } from '.';
 
 @Table({ tableName: 'AppMember' })
 export default class AppMember extends Model<AppMember> {
