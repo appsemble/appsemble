@@ -32,6 +32,7 @@ export default function GUIEditor({
   const [selectedBlock, setSelectedBlock] = React.useState<BlockManifest>(undefined);
   const [editLocation, setEditLocation] = React.useState<EditLocation>(undefined);
   const [editedBlockValues, setEditedBlockValues] = React.useState<BlockDefinition>(undefined);
+  const [decorationList, setDecorationList] = React.useState<string[]>([]);
 
   const save = (editExistingBlock: boolean): void => {
     const blockParent = editLocation.parents
@@ -90,7 +91,12 @@ export default function GUIEditor({
             monacoEditor={monacoEditor}
             setEditorStep={setEditorStep}
           />
-          <GUIEditorSelect monacoEditor={monacoEditor} setEditLocation={setEditLocation} />
+          <GUIEditorSelect
+            decorationList={decorationList}
+            monacoEditor={monacoEditor}
+            setDecorationList={setDecorationList}
+            setEditLocation={setEditLocation}
+          />
         </>
       );
 

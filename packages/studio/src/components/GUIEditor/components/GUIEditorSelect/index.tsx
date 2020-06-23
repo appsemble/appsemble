@@ -14,21 +14,21 @@ interface GUIEditorSelectProps {
    * Set edit location for use in GUIEditor parent
    */
   monacoEditor: editor.IStandaloneCodeEditor;
+
+  /**
+   * Save decorations even when editor is disposed
+   */
+  decorationList: string[];
+  setDecorationList: (value: string[]) => void;
 }
 
-const emptyDecorator = [
-  {
-    range: new Range(0, 0, 0, 0),
-    options: { isWholeLine: false },
-  },
-];
-
 export default function GUIEditorSelect({
+  decorationList,
   monacoEditor,
+  setDecorationList,
   setEditLocation,
 }: GUIEditorSelectProps): React.ReactElement {
   const [newDecoration, setNewDecoration] = React.useState<editor.IModelDeltaDecoration[]>();
-  const [decorationList, setDecorationList] = React.useState<string[]>();
 
   const getBlockName = React.useCallback(
     (parents: EditLocation['parents'], position: any): string => {
@@ -143,7 +143,7 @@ export default function GUIEditorSelect({
           {
             range: editLocation.editRange,
             options: {
-              className: styles.selectionDecoration,
+              inlineClassName: styles.selectionDecoration,
             },
           },
         ];
@@ -158,14 +158,6 @@ export default function GUIEditorSelect({
 
   React.useEffect(() => {
     if (monacoEditor) {
-      if (decorationList === undefined) {
-        setDecorationList(monacoEditor.deltaDecorations([], emptyDecorator));
-      }
-    }
-  }, [monacoEditor, decorationList]);
-
-  React.useEffect(() => {
-    if (monacoEditor) {
       monacoEditor.onDidChangeCursorSelection(() => {
         getEditLocation(monacoEditor.getModel(), monacoEditor.getPosition());
       });
@@ -174,8 +166,9 @@ export default function GUIEditorSelect({
 
   React.useEffect(() => {
     if (monacoEditor && newDecoration !== undefined) {
-      setDecorationList((d) => monacoEditor.deltaDecorations(d, newDecoration));
+      setDecorationList(monacoEditor.getModel().deltaDecorations(decorationList, newDecoration));
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [monacoEditor, newDecoration]);
 
   return null;

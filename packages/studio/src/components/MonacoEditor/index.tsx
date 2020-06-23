@@ -83,6 +83,15 @@ export default React.forwardRef<editor.IStandaloneCodeEditor, MonacoEditorProps>
     React.useEffect(() => {
       if (monaco) {
         monaco.updateOptions(options);
+
+        const decorations = document.getElementsByClassName(
+          'packages-studio-src-components-GUIEditor-components-GUIEditorSelect-index_selectionDecoration',
+        );
+        while (decorations.length) {
+          decorations[0].classList.remove(
+            'packages-studio-src-components-GUIEditor-components-GUIEditorSelect-index_selectionDecoration',
+          );
+        }
       }
     }, [monaco, options]);
 
