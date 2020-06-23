@@ -1,14 +1,8 @@
 .blockFrame {
-  align-items: center;
-  background: hsl(0, 0%, 96%);
   display: flex;
-  flex-direction: column;
   float: left;
-  margin-bottom: 12px;
-  margin-left: 12px;
-  overflow: hidden !important;
-  text-overflow: ellipsis;
-  width: 120px;
+  margin-bottom: 18px;
+  margin-left: 18px;
 
   &.selected {
     background: hsl(204, 86%, 53%);
@@ -17,17 +11,4 @@
   &:hover {
     cursor: pointer;
   }
-}
-
-.subtext {
-  display: inline-block;
-  overflow: hidden !important;
-  text-align: center;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  width: 120px;
-}
-
-.main {
-  flex: 1;
 }

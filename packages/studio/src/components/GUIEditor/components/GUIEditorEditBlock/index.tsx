@@ -80,23 +80,21 @@ export default function GUIEditorEditBlock({
   return (
     <div className={styles.root}>
       <Title level={2}>{stripBlockName(selectedBlock.name)}</Title>
-      <div className={styles.main}>
-        {selectedBlock?.parameters ? (
-          <JSONSchemaEditor
-            name={stripBlockName(selectedBlock.name)}
-            onChange={onChange}
-            schema={selectedBlock?.parameters}
-            value={blockValue?.parameters}
+      {selectedBlock?.parameters ? (
+        <JSONSchemaEditor
+          name={stripBlockName(selectedBlock.name)}
+          onChange={onChange}
+          schema={selectedBlock?.parameters}
+          value={blockValue?.parameters}
+        />
+      ) : (
+        <div>
+          <FormattedMessage
+            {...messages.noParameters}
+            values={{ name: stripBlockName(selectedBlock.name) }}
           />
-        ) : (
-          <div>
-            <FormattedMessage
-              {...messages.noParameters}
-              values={{ name: stripBlockName(selectedBlock.name) }}
-            />
-          </div>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 }

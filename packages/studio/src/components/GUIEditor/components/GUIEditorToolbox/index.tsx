@@ -1,6 +1,7 @@
 import { Content, Loader, Message, Title, useData } from '@appsemble/react-components';
 import type { BlockManifest } from '@appsemble/types';
 import { stripBlockName } from '@appsemble/utils';
+import classNames from 'classnames';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 
@@ -41,25 +42,29 @@ export default function GUIEditorToolbox({
   }
 
   return (
-    <div className={styles.flexContainer}>
+    <div className={styles.root}>
       <Title>
         <FormattedMessage {...messages.title} />
       </Title>
-      <div className={styles.maxHeight}>
-        <GUIEditorToolboxBlock
-          blocks={blocks}
-          name={selectedBlock?.name}
-          onChange={onChange}
-          value={selectedBlock}
-        />
-      </div>
+      <GUIEditorToolboxBlock
+        blocks={blocks}
+        name={selectedBlock?.name}
+        onChange={onChange}
+        value={selectedBlock}
+      />
       {selectedBlock && (
-        <div className={styles.marginBottom}>
-          <Title level={4}>{stripBlockName(selectedBlock.name)}</Title>
-          {selectedBlock.description}
-          <a href={`./blocks/${selectedBlock.name}`} rel="noopener noreferrer" target="_blank">
-            <FormattedMessage {...messages.moreInfo} />
-          </a>
+        <div className={classNames('container is-fluid notification', styles.marginBottom)}>
+          <article className="media">
+            <div className="media-content">
+              <Title level={4}>{stripBlockName(selectedBlock.name)}</Title>
+              {selectedBlock.description}
+            </div>
+            <div className="media-right">
+              <a href={`./blocks/${selectedBlock.name}`} rel="noopener noreferrer" target="_blank">
+                <FormattedMessage {...messages.moreInfo} />
+              </a>
+            </div>
+          </article>
         </div>
       )}
     </div>
