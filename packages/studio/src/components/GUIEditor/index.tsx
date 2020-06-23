@@ -17,7 +17,7 @@ import applyMonacoEdits from './utils/applyMonacoEdits';
 interface GUIEditorProps {
   app: App;
   editorStep: GuiEditorStep;
-  setEditorStep: (step: GuiEditorStep) => void;
+  onChangeEditorStep: (step: GuiEditorStep) => void;
   monacoEditor: editor.IStandaloneCodeEditor;
 }
 
@@ -25,7 +25,7 @@ export default function GUIEditor({
   app,
   editorStep,
   monacoEditor,
-  setEditorStep,
+  onChangeEditorStep,
 }: GUIEditorProps): React.ReactElement {
   const [selectedBlock, setSelectedBlock] = React.useState<BlockManifest>(undefined);
   const [editLocation, setEditLocation] = React.useState<EditLocation>(undefined);
@@ -33,10 +33,10 @@ export default function GUIEditor({
   const [decorationList, setDecorationList] = React.useState<string[]>([]);
 
   const onCancel = React.useCallback((): void => {
-    setEditorStep(GuiEditorStep.SELECT);
+    onChangeEditorStep(GuiEditorStep.SELECT);
     setSelectedBlock(null);
     setEditedBlockValues(undefined);
-  }, [setEditorStep]);
+  }, [onChangeEditorStep]);
 
   const save = React.useCallback(
     (editExistingBlock: boolean): void => {
@@ -113,7 +113,7 @@ export default function GUIEditor({
             editLocation={editLocation}
             editorStep={editorStep}
             monacoEditor={monacoEditor}
-            onChangeEditorStep={setEditorStep}
+            onChangeEditorStep={onChangeEditorStep}
           />
           <GUIEditorSelect
             decorationList={decorationList}

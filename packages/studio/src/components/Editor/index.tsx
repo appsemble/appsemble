@@ -306,7 +306,7 @@ export default function Editor(): React.ReactElement {
             app={app}
             editorStep={editorStep}
             monacoEditor={monacoEditor}
-            setEditorStep={setEditorStep}
+            onChangeEditorStep={setEditorStep}
           />
         )}
         <div
