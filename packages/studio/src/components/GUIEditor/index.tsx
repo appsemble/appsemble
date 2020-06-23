@@ -32,50 +32,48 @@ export default function GUIEditor({
   const [editedBlockValues, setEditedBlockValues] = React.useState<BlockDefinition>(undefined);
   const [decorationList, setDecorationList] = React.useState<string[]>([]);
 
-  const save = (editExistingBlock: boolean): void => {
-    const blockParent = editLocation.parents
-      .slice()
-      .reverse()
-      .find((x) => x.name === 'blocks:');
-
-    const range = editExistingBlock
-      ? editLocation.editRange
-      : new Range(blockParent.line + 1, 1, blockParent.line + 1, 1);
-
-    const text = indentString(
-      yaml.safeDump(
-        [
-          {
-            type: stripBlockName(selectedBlock.name),
-            version: selectedBlock.version,
-            parameters: editedBlockValues.parameters,
-            actions: editedBlockValues.actions,
-            events: editedBlockValues.events,
-          },
-        ],
-        { skipInvalid: true },
-      ),
-      blockParent.indent + 1,
-    );
-
-    const edits: editor.IIdentifiedSingleEditOperation[] = [
-      {
-        range,
-        text,
-        forceMoveMarkers: true,
-      },
-    ];
-
-    applyMonacoEdits(monacoEditor, edits);
-
-    setEditorStep(GuiEditorStep.SELECT);
-    setSelectedBlock(null);
-  };
-
   const onCancel = React.useCallback((): void => {
     setEditorStep(GuiEditorStep.SELECT);
     setSelectedBlock(null);
+    setEditedBlockValues(undefined);
   }, [setEditorStep]);
+
+  const save = React.useCallback(
+    (editExistingBlock: boolean): void => {
+      const blockParent = editLocation.parents
+        .slice()
+        .reverse()
+        .find((x) => x.name === 'blocks:');
+      const range = editExistingBlock
+        ? editLocation.editRange
+        : new Range(blockParent.line + 1, 1, blockParent.line + 1, 1);
+      const text = indentString(
+        yaml.safeDump(
+          [
+            {
+              type: stripBlockName(selectedBlock.name),
+              version: selectedBlock.version,
+              parameters: editedBlockValues.parameters,
+              actions: editedBlockValues.actions,
+              events: editedBlockValues.events,
+            },
+          ],
+          { skipInvalid: true },
+        ),
+        blockParent.indent + 1,
+      );
+      const edits: editor.IIdentifiedSingleEditOperation[] = [
+        {
+          range,
+          text,
+          forceMoveMarkers: true,
+        },
+      ];
+      applyMonacoEdits(monacoEditor, edits);
+      onCancel();
+    },
+    [editLocation, monacoEditor, selectedBlock, editedBlockValues, onCancel],
+  );
 
   switch (editorStep) {
     case GuiEditorStep.ADD:

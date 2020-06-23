@@ -22,7 +22,7 @@ export default function GUIEditorToolboxBlock({
   onChange,
   value,
 }: GUIEditorToolboxBlockProps): React.ReactElement {
-  const [searchValue, setSearchValue] = React.useState<string>();
+  const [searchValue, setSearchValue] = React.useState<string>('');
   const [filterBlocks, setFilterBlocks] = React.useState<BlockManifest[]>(blocks);
 
   const intl = useIntl();
