@@ -8,7 +8,7 @@ interface GUIEditorSelectProps {
   /**
    * Set edit location for use in GUIEditor parent
    */
-  setEditLocation: (value: EditLocation) => void;
+  onChangeEditLocation: (value: EditLocation) => void;
 
   /**
    * Set edit location for use in GUIEditor parent
@@ -19,23 +19,23 @@ interface GUIEditorSelectProps {
    * Save decorations even when editor is disposed
    */
   decorationList: string[];
-  setDecorationList: (value: string[]) => void;
+  onChangeDecorationList: (value: string[]) => void;
 }
 
 export default function GUIEditorSelect({
   decorationList,
   monacoEditor,
-  setDecorationList,
-  setEditLocation,
+  onChangeDecorationList,
+  onChangeEditLocation,
 }: GUIEditorSelectProps): React.ReactElement {
   const [newDecoration, setNewDecoration] = React.useState<editor.IModelDeltaDecoration[]>();
 
   const getBlockName = React.useCallback(
-    (parents: EditLocation['parents'], position: any): string => {
+    (parents: EditLocation['parents'], position: Position): string => {
       let blockName: string;
 
       if (parents !== undefined) {
-        parents.some((parent: any): string => {
+        parents.some((parent): string => {
           if (parent.name.includes('- type:') && position.lineNumber >= parent.line) {
             // number 8 matches "- type: " length
             blockName = parent.name.slice(8);
@@ -148,12 +148,12 @@ export default function GUIEditorSelect({
           },
         ];
         setNewDecoration(newDecorations);
-        setEditLocation(editLocation);
+        onChangeEditLocation(editLocation);
       } else {
-        setEditLocation(null);
+        onChangeEditLocation(null);
       }
     },
-    [getBlockName, setEditLocation],
+    [getBlockName, onChangeEditLocation],
   );
 
   React.useEffect(() => {
@@ -166,7 +166,9 @@ export default function GUIEditorSelect({
 
   React.useEffect(() => {
     if (monacoEditor && newDecoration !== undefined) {
-      setDecorationList(monacoEditor.getModel().deltaDecorations(decorationList, newDecoration));
+      onChangeDecorationList(
+        monacoEditor.getModel().deltaDecorations(decorationList, newDecoration),
+      );
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [monacoEditor, newDecoration]);

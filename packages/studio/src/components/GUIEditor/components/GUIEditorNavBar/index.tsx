@@ -13,7 +13,7 @@ import messages from './messages';
 
 interface GUIEditorNavBarProps {
   editorStep: GuiEditorStep;
-  setEditorStep: (value: GuiEditorStep) => void;
+  onChangeEditorStep: (value: GuiEditorStep) => void;
   editLocation: EditLocation;
   app: App;
   monacoEditor: editor.IStandaloneCodeEditor;
@@ -24,7 +24,7 @@ export default function GUIEditorNavBar({
   editLocation,
   editorStep,
   monacoEditor,
-  setEditorStep,
+  onChangeEditorStep,
 }: GUIEditorNavBarProps): React.ReactElement {
   const location = useLocation();
 
@@ -46,7 +46,7 @@ export default function GUIEditorNavBar({
             color="success"
             disabled={editLocation?.blockName === undefined}
             icon="plus"
-            onClick={() => setEditorStep(GuiEditorStep.ADD)}
+            onClick={() => onChangeEditorStep(GuiEditorStep.ADD)}
           >
             <FormattedMessage {...messages.addBlock} />
           </Button>
@@ -57,7 +57,7 @@ export default function GUIEditorNavBar({
             color="warning"
             disabled={editLocation?.blockName === undefined}
             icon="edit"
-            onClick={() => setEditorStep(GuiEditorStep.EDIT)}
+            onClick={() => onChangeEditorStep(GuiEditorStep.EDIT)}
           >
             <FormattedMessage {...messages.editBlock} />
             {editLocation?.blockName ? editLocation.blockName : ''}

@@ -86,9 +86,9 @@ export default function GUIEditor({
             app={app}
             blockValue={editedBlockValues}
             editLocation={editLocation}
+            onChangeBlockValue={setEditedBlockValues}
+            onChangeSelectedBlock={setSelectedBlock}
             selectedBlock={selectedBlock}
-            setBlockValue={setEditedBlockValues}
-            setSelectedBlock={setSelectedBlock}
           />
         </Stepper>
       );
@@ -100,9 +100,9 @@ export default function GUIEditor({
             app={app}
             blockValue={editedBlockValues}
             editLocation={editLocation}
+            onChangeBlockValue={setEditedBlockValues}
+            onChangeSelectedBlock={setSelectedBlock}
             selectedBlock={selectedBlock}
-            setBlockValue={setEditedBlockValues}
-            setSelectedBlock={setSelectedBlock}
           />
         </Stepper>
       );
@@ -115,13 +115,13 @@ export default function GUIEditor({
             editLocation={editLocation}
             editorStep={editorStep}
             monacoEditor={monacoEditor}
-            setEditorStep={setEditorStep}
+            onChangeEditorStep={setEditorStep}
           />
           <GUIEditorSelect
             decorationList={decorationList}
             monacoEditor={monacoEditor}
-            setDecorationList={setDecorationList}
-            setEditLocation={setEditLocation}
+            onChangeDecorationList={setDecorationList}
+            onChangeEditLocation={setEditLocation}
           />
         </>
       );

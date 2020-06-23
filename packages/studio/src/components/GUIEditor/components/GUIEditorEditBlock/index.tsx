@@ -3,8 +3,9 @@ import type { App, BasicPageDefinition, BlockDefinition, BlockManifest } from '@
 import { normalizeBlockName, stripBlockName } from '@appsemble/utils';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
+import type { JsonObject } from 'type-fest';
 
-// import type { NamedEvent } from '../../../../types';
+import type { NamedEvent } from '../../../../types';
 import JSONSchemaEditor from '../../../JSONSchemaEditor';
 import type { EditLocation } from '../../types';
 import styles from './index.css';
@@ -14,8 +15,8 @@ interface GUIEditorEditBlockProps {
   selectedBlock?: BlockManifest;
   app: App;
   editLocation: EditLocation;
-  setSelectedBlock: (value: BlockManifest) => void;
-  setBlockValue: (value: BlockDefinition) => void;
+  onChangeSelectedBlock: (value: BlockManifest) => void;
+  onChangeBlockValue: (value: BlockDefinition) => void;
   blockValue: BlockDefinition;
 }
 
@@ -23,15 +24,15 @@ export default function GUIEditorEditBlock({
   app,
   blockValue,
   editLocation,
+  onChangeBlockValue,
+  onChangeSelectedBlock,
   selectedBlock,
-  setBlockValue,
-  setSelectedBlock,
 }: GUIEditorEditBlockProps): React.ReactElement {
   const onChange = React.useCallback(
-    (_event: any, value: any) => {
-      setBlockValue({ ...blockValue, parameters: { ...value } });
+    (_event: NamedEvent, parameters: JsonObject) => {
+      onChangeBlockValue({ ...blockValue, parameters });
     },
-    [blockValue, setBlockValue],
+    [blockValue, onChangeBlockValue],
   );
 
   const { data: edittingBlock, error, loading } = useData<BlockManifest>(
@@ -47,17 +48,17 @@ export default function GUIEditorEditBlock({
         if (!block.type.includes(editLocation.blockName)) {
           return;
         }
-        setBlockValue(block);
+        onChangeBlockValue(block);
       });
     });
-  }, [setBlockValue, editLocation, app]);
+  }, [onChangeBlockValue, editLocation, app]);
 
   React.useEffect(() => {
     if (!loading && !selectedBlock) {
-      setSelectedBlock(edittingBlock);
+      onChangeSelectedBlock(edittingBlock);
       initBlockParameters();
     }
-  }, [loading, initBlockParameters, setSelectedBlock, edittingBlock, selectedBlock]);
+  }, [loading, initBlockParameters, onChangeSelectedBlock, edittingBlock, selectedBlock]);
 
   if (error && !selectedBlock) {
     return (
