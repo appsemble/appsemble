@@ -19,18 +19,24 @@ interface GUIEditorProps {
   editorStep: GuiEditorStep;
   onChangeEditorStep: (step: GuiEditorStep) => void;
   monacoEditor: editor.IStandaloneCodeEditor;
-}
 
+  /**
+   * Save decorations even when editor is disposed
+   */
+  decorationList: string[];
+  onChangeDecorationList: (value: string[]) => void;
+}
 export default function GUIEditor({
   app,
+  decorationList,
   editorStep,
   monacoEditor,
+  onChangeDecorationList,
   onChangeEditorStep,
 }: GUIEditorProps): React.ReactElement {
   const [selectedBlock, setSelectedBlock] = React.useState<BlockManifest>(undefined);
   const [editLocation, setEditLocation] = React.useState<EditLocation>(undefined);
   const [editedBlockValues, setEditedBlockValues] = React.useState<BlockDefinition>(undefined);
-  const [decorationList, setDecorationList] = React.useState<string[]>([]);
 
   const onCancel = React.useCallback((): void => {
     onChangeEditorStep(GuiEditorStep.SELECT);
@@ -118,7 +124,7 @@ export default function GUIEditor({
           <GUIEditorSelect
             decorationList={decorationList}
             monacoEditor={monacoEditor}
-            onChangeDecorationList={setDecorationList}
+            onChangeDecorationList={onChangeDecorationList}
             onChangeEditLocation={setEditLocation}
           />
         </>

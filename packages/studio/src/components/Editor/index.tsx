@@ -58,6 +58,7 @@ export default function Editor(): React.ReactElement {
 
   const [editorStep, setEditorStep] = React.useState<GuiEditorStep>(GuiEditorStep.SELECT);
   const [monacoEditor, setMonacoEditor] = React.useState<editor.IStandaloneCodeEditor>();
+  const [decorationList, setDecorationList] = React.useState<string[]>([]);
 
   const frame = React.useRef<HTMLIFrameElement>();
   const history = useHistory();
@@ -304,8 +305,10 @@ export default function Editor(): React.ReactElement {
         {editorStep !== GuiEditorStep.YAML && (
           <GUIEditor
             app={app}
+            decorationList={decorationList}
             editorStep={editorStep}
             monacoEditor={monacoEditor}
+            onChangeDecorationList={setDecorationList}
             onChangeEditorStep={setEditorStep}
           />
         )}
@@ -318,8 +321,10 @@ export default function Editor(): React.ReactElement {
         >
           <MonacoEditor
             ref={setMonacoEditor}
+            decorationList={decorationList}
             language={language}
             onChange={onValueChange}
+            onChangeDecorationList={setDecorationList}
             onSave={onSave}
             options={editorStep === GuiEditorStep.YAML ? monacoDefaultOptions : monacoGuiOptions}
             value={value}

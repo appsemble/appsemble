@@ -1,5 +1,5 @@
 import { applyRefs } from '@appsemble/react-components';
-import { editor, KeyCode, KeyMod } from 'monaco-editor';
+import { editor, KeyCode, KeyMod, Range } from 'monaco-editor';
 import * as React from 'react';
 import ResizeObserver from 'resize-observer-polyfill';
 
@@ -37,9 +37,22 @@ interface MonacoEditorProps {
    * Editor options to set.
    */
   options?: Options;
+
+  /**
+   * Save decorations even when editor is disposed
+   */
+  decorationList?: string[];
+  onChangeDecorationList?: (value: string[]) => void;
 }
 
 const defaultOptions: Options = {};
+
+const emptyDecoration: editor.IModelDeltaDecoration[] = [
+  {
+    range: new Range(0, 0, 0, 0),
+    options: {},
+  },
+];
 
 /**
  * Render a Monaco standalone editor instance.
@@ -48,7 +61,18 @@ const defaultOptions: Options = {};
  * object, it is recommended to use a state setter function.
  */
 export default React.forwardRef<editor.IStandaloneCodeEditor, MonacoEditorProps>(
-  ({ language, onChange, onSave, options = defaultOptions, value = '' }, ref) => {
+  (
+    {
+      language,
+      onChange,
+      decorationList,
+      onChangeDecorationList,
+      onSave,
+      options = defaultOptions,
+      value = '',
+    },
+    ref,
+  ) => {
     const [monaco, setMonaco] = React.useState<editor.IStandaloneCodeEditor>();
 
     const saveRef = React.useRef(onSave);
@@ -84,15 +108,13 @@ export default React.forwardRef<editor.IStandaloneCodeEditor, MonacoEditorProps>
       if (monaco) {
         monaco.updateOptions(options);
 
-        const decorations = document.getElementsByClassName(
-          'packages-studio-src-components-GUIEditor-components-GUIEditorSelect-index_selectionDecoration',
-        );
-        while (decorations.length) {
-          decorations[0].classList.remove(
-            'packages-studio-src-components-GUIEditor-components-GUIEditorSelect-index_selectionDecoration',
+        if (decorationList && onChangeDecorationList) {
+          onChangeDecorationList(
+            monaco.getModel().deltaDecorations(decorationList, emptyDecoration),
           );
         }
       }
+      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [monaco, options]);
 
     React.useEffect(() => {
