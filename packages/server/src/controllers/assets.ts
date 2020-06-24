@@ -11,7 +11,10 @@ interface Params {
 }
 
 export async function getAssets(ctx: KoaContext<Params>): Promise<void> {
-  const { appId } = ctx.params;
+  const {
+    params: { appId },
+  } = ctx;
+
   const app = await App.findByPk(appId, {
     attributes: [],
     include: [{ model: Asset, attributes: ['id', 'mime', 'filename'], required: false }],
@@ -29,7 +32,9 @@ export async function getAssets(ctx: KoaContext<Params>): Promise<void> {
 }
 
 export async function getAssetById(ctx: KoaContext<Params>): Promise<void> {
-  const { appId, assetId } = ctx.params;
+  const {
+    params: { appId, assetId },
+  } = ctx;
 
   const app = await App.findByPk(appId, {
     include: [{ model: Asset, where: { id: assetId }, required: false }],
@@ -50,9 +55,11 @@ export async function getAssetById(ctx: KoaContext<Params>): Promise<void> {
 }
 
 export async function createAsset(ctx: KoaContext<Params>): Promise<void> {
-  const { request, user } = ctx;
-  const { appId } = ctx.params;
-  const { body, type } = request;
+  const {
+    params: { appId },
+    request: { body, type },
+    user,
+  } = ctx;
 
   const app = await App.findByPk(appId);
 
@@ -70,7 +77,9 @@ export async function createAsset(ctx: KoaContext<Params>): Promise<void> {
 }
 
 export async function deleteAsset(ctx: KoaContext<Params>): Promise<void> {
-  const { appId, assetId } = ctx.params;
+  const {
+    params: { appId, assetId },
+  } = ctx;
 
   const app = await App.findByPk(appId, {
     attributes: ['OrganizationId'],

@@ -13,8 +13,10 @@ interface Params {
 }
 
 export async function getSubscription(ctx: KoaContext<Params>): Promise<void> {
-  const { appId } = ctx.params;
-  const { endpoint } = ctx.query;
+  const {
+    params: { appId },
+    query: { endpoint },
+  } = ctx;
 
   const app = await App.findByPk(appId, {
     attributes: ['definition'],
@@ -74,9 +76,13 @@ export async function getSubscription(ctx: KoaContext<Params>): Promise<void> {
 }
 
 export async function addSubscription(ctx: KoaContext<Params>): Promise<void> {
-  const { appId } = ctx.params;
-  const { user } = ctx;
-  const { endpoint, keys } = ctx.request.body;
+  const {
+    params: { appId },
+    request: {
+      body: { endpoint, keys },
+    },
+    user,
+  } = ctx;
 
   const app = await App.findByPk(appId, { include: [AppSubscription] });
 
@@ -94,9 +100,13 @@ export async function addSubscription(ctx: KoaContext<Params>): Promise<void> {
 }
 
 export async function updateSubscription(ctx: KoaContext<Params>): Promise<void> {
-  const { appId } = ctx.params;
-  const { user } = ctx;
-  const { action, endpoint, resource, resourceId, value } = ctx.request.body;
+  const {
+    params: { appId },
+    request: {
+      body: { action, endpoint, resource, resourceId, value },
+    },
+    user,
+  } = ctx;
 
   const app = await App.findByPk(appId, {
     attributes: [],
@@ -176,8 +186,12 @@ export async function updateSubscription(ctx: KoaContext<Params>): Promise<void>
 }
 
 export async function broadcast(ctx: KoaContext<Params>): Promise<void> {
-  const { appId } = ctx.params;
-  const { body, title } = ctx.request.body;
+  const {
+    params: { appId },
+    request: {
+      body: { body, title },
+    },
+  } = ctx;
 
   const app = await App.findByPk(appId, {
     include: [{ model: AppSubscription, attributes: ['id', 'auth', 'p256dh', 'endpoint'] }],

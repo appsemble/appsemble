@@ -19,18 +19,18 @@ import messages from './messages';
 export default function Notifications(): React.ReactElement {
   const { app } = useApp();
 
-  const intl = useIntl();
+  const { formatMessage } = useIntl();
   const push = useMessages();
   const submit = React.useCallback(
     async ({ body, title }: { title: string; body: string }): Promise<void> => {
       try {
         await axios.post(`/api/apps/${app.id}/broadcast`, { title, body });
-        push({ body: intl.formatMessage(messages.submitSuccess), color: 'success' });
+        push({ body: formatMessage(messages.submitSuccess), color: 'success' });
       } catch (error) {
-        push({ body: intl.formatMessage(messages.submitError), color: 'danger' });
+        push({ body: formatMessage(messages.submitError), color: 'danger' });
       }
     },
-    [app.id, intl, push],
+    [app.id, formatMessage, push],
   );
 
   const { notifications } = app.definition;

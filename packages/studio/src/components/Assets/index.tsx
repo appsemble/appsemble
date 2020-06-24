@@ -33,7 +33,7 @@ export interface Asset {
 
 export default function Assets(): React.ReactElement {
   const { app } = useApp();
-  const intl = useIntl();
+  const { formatMessage } = useIntl();
   const push = useMessages();
 
   const { data: assets, error, loading, setData: setAssets } = useData<Asset[]>(
@@ -60,12 +60,12 @@ export default function Assets(): React.ReactElement {
       headers: { 'content-type': file.type },
     });
 
-    push({ color: 'success', body: intl.formatMessage(messages.uploadSuccess, { id: data.id }) });
+    push({ color: 'success', body: formatMessage(messages.uploadSuccess, { id: data.id }) });
 
     setAssets([...assets, data]);
     setFile(null);
     onClose();
-  }, [app, assets, file, intl, onClose, push, setAssets]);
+  }, [app, assets, file, formatMessage, onClose, push, setAssets]);
 
   const onFileChange = React.useCallback((e: React.ChangeEvent<HTMLInputElement>): void => {
     setFile(e.target.files[0]);
@@ -89,7 +89,7 @@ export default function Assets(): React.ReactElement {
       );
 
       push(
-        intl.formatMessage(messages.deleteSuccess, {
+        formatMessage(messages.deleteSuccess, {
           amount: selectedAssets.length,
           assets: selectedAssets.sort().join(', '),
         }),
@@ -112,10 +112,10 @@ export default function Assets(): React.ReactElement {
 
         await download(`/api/apps/${app.id}/assets/${id}`, filename || mime ? `${id}.${mime}` : id);
       } catch (e) {
-        push(intl.formatMessage(messages.downloadError));
+        push(formatMessage(messages.downloadError));
       }
     },
-    [app, push, intl],
+    [app, formatMessage, push],
   );
 
   const onAssetCheckboxClick = React.useCallback(

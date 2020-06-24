@@ -13,7 +13,9 @@ interface Params {
  * Serve a block asset.
  */
 export default async function blockAssetHandler(ctx: KoaContext<Params>): Promise<void> {
-  const { filename, name, version } = ctx.params;
+  const {
+    params: { filename, name, version },
+  } = ctx;
   const [org, blockId] = name.split('/');
 
   const blockAsset = await BlockAsset.findOne({

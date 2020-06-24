@@ -24,7 +24,7 @@ interface BlockCardProps {
  */
 export default function BlockCard({ block, className }: BlockCardProps): React.ReactElement {
   const match = useRouteMatch();
-  const intl = useIntl();
+  const { formatMessage } = useIntl();
   const [org, ...name] = block.name.split('/');
 
   return (
@@ -35,7 +35,7 @@ export default function BlockCard({ block, className }: BlockCardProps): React.R
             <figure className="media-left">
               <p className="image is-64x64">
                 <img
-                  alt={intl.formatMessage(messages.blockLogo, { name: `@${org}${name}` })}
+                  alt={formatMessage(messages.blockLogo, { name: `@${org}${name}` })}
                   src={`/api/blocks/${org}/${name}/versions/${block.version}/icon`}
                 />
               </p>

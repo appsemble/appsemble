@@ -25,7 +25,7 @@ interface UniqueMessage extends Msg {
  * Render messages that may be pushed using {@link useMessages}.
  */
 export default function MessagesProvider({ children }: MessagesProviderProps): React.ReactElement {
-  const intl = useIntl();
+  const { formatMessage } = useIntl();
   const forceUpdate = useForceUpdate();
 
   // The counter is used as a key of messages.
@@ -80,7 +80,7 @@ export default function MessagesProvider({ children }: MessagesProviderProps): R
                 <span>{message?.body}</span>
                 {message.dismissable && (
                   <button
-                    aria-label={intl.formatMessage(msgs.dismiss)}
+                    aria-label={formatMessage(msgs.dismiss)}
                     className={`delete ${styles.deleteButton}`}
                     onClick={message.dismiss}
                     type="button"

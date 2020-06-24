@@ -116,9 +116,9 @@ export default React.forwardRef<HTMLInputElement, InputProps>(
         {iconLeft && <Icon className="is-left" icon={iconLeft} />}
         {control && React.cloneElement(control, { className: 'is-right' })}
         <div className={`${styles.help} is-flex`}>
-          <p className={classNames('help', { 'is-danger': error })}>
+          <span className={classNames('help', { 'is-danger': error })}>
             {React.isValidElement(error) ? error : help}
-          </p>
+          </span>
           {maxLength ? (
             <span className={`help ml-1 ${styles.counter}`}>
               {value == null ? 0 : `${value}`.length} / {maxLength}

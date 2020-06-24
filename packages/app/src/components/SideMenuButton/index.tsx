@@ -15,7 +15,7 @@ import messages from './messages';
 export default function SideMenuButton(): React.ReactElement {
   const { definition } = useAppDefinition();
   const location = useLocation();
-  const intl = useIntl();
+  const { formatMessage } = useIntl();
   const { enable: openMenu, enabled: isOpen } = useMenu();
 
   if (!definition) {
@@ -33,7 +33,7 @@ export default function SideMenuButton(): React.ReactElement {
 
   return (
     <button
-      aria-label={intl.formatMessage(messages.label)}
+      aria-label={formatMessage(messages.label)}
       className={classNames('navbar-burger', { 'is-active': isOpen }, styles.root)}
       onClick={openMenu}
       type="button"

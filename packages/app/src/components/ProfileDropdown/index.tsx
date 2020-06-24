@@ -9,7 +9,7 @@ import styles from './index.css';
 import messages from './messages';
 
 export default function ProfileDropdown(): React.ReactElement {
-  const intl = useIntl();
+  const { formatMessage } = useIntl();
   const { definition } = useAppDefinition();
   const { isLoggedIn, logout, userInfo } = useUser();
 
@@ -34,7 +34,7 @@ export default function ProfileDropdown(): React.ReactElement {
       label={
         <figure className="image is-32x32">
           <img
-            alt={intl.formatMessage(messages.pfp)}
+            alt={formatMessage(messages.pfp)}
             className={`is-rounded ${styles.gravatar}`}
             src={userInfo?.picture}
           />
