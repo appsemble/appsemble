@@ -112,7 +112,7 @@ export default function OpenIDLogin(): React.ReactElement {
         </ul>
       </div>
       <div className="has-text-centered">
-        <Button className={styles.button} disabled={generating} onClick={onDeny}>
+        <Button className={`mx-3 my-3 ${styles.button}`} disabled={generating} onClick={onDeny}>
           <FormattedMessage {...messages.deny} />
         </Button>
         <Button
