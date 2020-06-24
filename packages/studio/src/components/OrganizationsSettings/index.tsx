@@ -56,7 +56,7 @@ function calculateOrganizationId(
 }
 
 export default function OrganizationsSettings(): React.ReactElement {
-  const intl = useIntl();
+  const { formatMessage } = useIntl();
   const push = useMessages();
   const { userInfo } = useUser();
 
@@ -93,20 +93,20 @@ export default function OrganizationsSettings(): React.ReactElement {
         setOrganizations([...organizations, organization]);
 
         push({
-          body: intl.formatMessage(messages.createOrganizationSuccess, {
+          body: formatMessage(messages.createOrganizationSuccess, {
             organization: organization.name,
           }),
           color: 'success',
         });
       } catch (exception) {
         if (exception?.response?.status === 409) {
-          push(intl.formatMessage(messages.createOrganizationConflict));
+          push(formatMessage(messages.createOrganizationConflict));
         } else {
-          push(intl.formatMessage(messages.createOrganizationError));
+          push(formatMessage(messages.createOrganizationError));
         }
       }
     },
-    [intl, organizations, push],
+    [formatMessage, organizations, push],
   );
 
   const onInviteMember = React.useCallback(
@@ -115,7 +115,7 @@ export default function OrganizationsSettings(): React.ReactElement {
 
       if (organization.members.some((m) => m.primaryEmail === email)) {
         push({
-          body: intl.formatMessage(messages.existingMemberWarning),
+          body: formatMessage(messages.existingMemberWarning),
           color: 'warning',
         });
         return;
@@ -132,26 +132,26 @@ export default function OrganizationsSettings(): React.ReactElement {
         );
 
         push({
-          body: intl.formatMessage(messages.inviteMemberSuccess, { email }),
+          body: formatMessage(messages.inviteMemberSuccess, { email }),
           color: 'success',
         });
       } catch (exception) {
         switch (exception.response && exception.response.status) {
           case 404:
-            push(intl.formatMessage(messages.inviteMemberNotFound));
+            push(formatMessage(messages.inviteMemberNotFound));
             break;
           case 406:
-            push(intl.formatMessage(messages.inviteMemberNotVerified));
+            push(formatMessage(messages.inviteMemberNotVerified));
             break;
           case 409:
-            push(intl.formatMessage(messages.inviteMemberConflict));
+            push(formatMessage(messages.inviteMemberConflict));
             break;
           default:
-            push(intl.formatMessage(messages.inviteMemberError));
+            push(formatMessage(messages.inviteMemberError));
         }
       }
     },
-    [intl, organizations, push, selectedOrganization],
+    [formatMessage, organizations, push, selectedOrganization],
   );
 
   const resendInvitation = React.useCallback(
@@ -159,9 +159,9 @@ export default function OrganizationsSettings(): React.ReactElement {
       await axios.post(`/api/organizations/${selectedOrganization}/invites/resend`, {
         email: invite.email,
       });
-      push({ body: intl.formatMessage(messages.resendInvitationSent), color: 'info' });
+      push({ body: formatMessage(messages.resendInvitationSent), color: 'info' });
     },
-    [intl, push, selectedOrganization],
+    [formatMessage, push, selectedOrganization],
   );
 
   const onChangeRole = React.useCallback(
@@ -192,17 +192,17 @@ export default function OrganizationsSettings(): React.ReactElement {
           .members.find((m) => m.id === userId);
         push({
           color: 'success',
-          body: intl.formatMessage(messages.changeRoleSuccess, {
+          body: formatMessage(messages.changeRoleSuccess, {
             name: member.name || member.primaryEmail || member.id,
             role,
           }),
         });
       } catch (error) {
-        push({ body: intl.formatMessage(messages.changeRoleError) });
+        push({ body: formatMessage(messages.changeRoleError) });
         setSubmittingRole(null);
       }
     },
-    [intl, organizations, push, selectedOrganization],
+    [formatMessage, organizations, push, selectedOrganization],
   );
 
   const onRemoveMemberClick = React.useCallback(async (memberId: string) => {
@@ -224,12 +224,12 @@ export default function OrganizationsSettings(): React.ReactElement {
     setOrganizations(newOrganizations);
 
     push({
-      body: intl.formatMessage(messages.leaveOrganizationSuccess, {
+      body: formatMessage(messages.leaveOrganizationSuccess, {
         organization: organization.id,
       }),
       color: 'info',
     });
-  }, [intl, organizations, push, selectedOrganization, userInfo.sub]);
+  }, [formatMessage, organizations, push, selectedOrganization, userInfo.sub]);
 
   const onRemoveMember = React.useCallback(async () => {
     await axios.delete(`/api/organizations/${selectedOrganization}/members/${removingMember}`);
@@ -247,11 +247,11 @@ export default function OrganizationsSettings(): React.ReactElement {
     push({
       body:
         removingMember === userInfo.sub
-          ? intl.formatMessage(messages.leaveOrganizationSuccess, { organization: organization.id })
-          : intl.formatMessage(messages.removeMemberSuccess),
+          ? formatMessage(messages.leaveOrganizationSuccess, { organization: organization.id })
+          : formatMessage(messages.removeMemberSuccess),
       color: 'info',
     });
-  }, [intl, organizations, push, removingMember, selectedOrganization, userInfo.sub]);
+  }, [formatMessage, organizations, push, removingMember, selectedOrganization, userInfo.sub]);
 
   const onRemoveInvite = React.useCallback(async () => {
     const organization = organizations.find((o) => o.id === selectedOrganization);
@@ -269,10 +269,10 @@ export default function OrganizationsSettings(): React.ReactElement {
     );
 
     push({
-      body: intl.formatMessage(messages.removeInviteSuccess),
+      body: formatMessage(messages.removeInviteSuccess),
       color: 'info',
     });
-  }, [intl, organizations, push, removingInvite, selectedOrganization]);
+  }, [formatMessage, organizations, push, removingInvite, selectedOrganization]);
 
   const onCloseDeleteDialog = React.useCallback(() => {
     setRemovingMember(null);
@@ -344,7 +344,7 @@ export default function OrganizationsSettings(): React.ReactElement {
             iconLeft="briefcase"
             label={<FormattedMessage {...messages.organizationName} />}
             name="name"
-            placeholder={intl.formatMessage(messages.organizationName)}
+            placeholder={formatMessage(messages.organizationName)}
           />
           <SimpleInput
             disabled={!userInfo.email_verified}
@@ -352,7 +352,7 @@ export default function OrganizationsSettings(): React.ReactElement {
             label={<FormattedMessage {...messages.organizationId} />}
             maxLength={30}
             name="id"
-            placeholder={intl.formatMessage(messages.organizationId)}
+            placeholder={formatMessage(messages.organizationId)}
             preprocess={(value) => normalize(value, false)}
             required
           />
@@ -391,7 +391,7 @@ export default function OrganizationsSettings(): React.ReactElement {
                   iconLeft="envelope"
                   label={<FormattedMessage {...messages.addMemberEmail} />}
                   name="email"
-                  placeholder={intl.formatMessage(messages.email)}
+                  placeholder={formatMessage(messages.email)}
                   required
                   type="email"
                 />
@@ -449,7 +449,7 @@ export default function OrganizationsSettings(): React.ReactElement {
                       >
                         {Object.keys(roles).map((r: Role) => (
                           <option key={r} value={r}>
-                            {intl.formatMessage(messages[r])}
+                            {formatMessage(messages[r])}
                           </option>
                         ))}
                       </Select>

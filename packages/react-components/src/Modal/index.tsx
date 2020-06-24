@@ -63,7 +63,7 @@ export default function Modal<T extends React.ElementType = 'div'>({
   ...props
 }: ModalProps<T> &
   Omit<React.ComponentPropsWithoutRef<T>, keyof ModalProps<T>>): React.ReactElement {
-  const intl = useIntl();
+  const { formatMessage } = useIntl();
 
   const onKeyDown = React.useCallback(
     (event) => {
@@ -100,7 +100,7 @@ export default function Modal<T extends React.ElementType = 'div'>({
             <p className="modal-card-title">{title}</p>
             {closable && (
               <button
-                aria-label={intl.formatMessage(messages.closeDialog)}
+                aria-label={formatMessage(messages.closeDialog)}
                 className="delete is-large"
                 onClick={onClose}
                 type="button"

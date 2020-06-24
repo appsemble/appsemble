@@ -23,7 +23,7 @@ import messages from './messages';
 
 export default function AppSettings(): React.ReactElement {
   const { app } = useApp();
-  const intl = useIntl();
+  const { formatMessage } = useIntl();
   const [icon, setIcon] = useState<File>();
   const [inputs, setInputs] = useState(app);
 
@@ -52,9 +52,9 @@ export default function AppSettings(): React.ReactElement {
 
     try {
       await axios.patch(`/api/apps/${app.id}`, data);
-      push({ color: 'success', body: intl.formatMessage(messages.updateSuccess) });
+      push({ color: 'success', body: formatMessage(messages.updateSuccess) });
     } catch (ex) {
-      push({ color: 'danger', body: intl.formatMessage(messages.updateError) });
+      push({ color: 'danger', body: formatMessage(messages.updateError) });
     }
   };
 
@@ -81,14 +81,14 @@ export default function AppSettings(): React.ReactElement {
       try {
         await axios.delete(`/api/apps/${id}`);
         push({
-          body: intl.formatMessage(messages.deleteSuccess, {
+          body: formatMessage(messages.deleteSuccess, {
             name: `@${OrganizationId}/${path}`,
           }),
           color: 'info',
         });
         history.push('/apps');
       } catch (e) {
-        push(intl.formatMessage(messages.errorDelete));
+        push(formatMessage(messages.errorDelete));
       }
     },
   });
@@ -107,11 +107,7 @@ export default function AppSettings(): React.ReactElement {
             onChange={onIconChange}
             preview={
               <figure className={`image is-128x128 ${styles.iconContainer}`}>
-                <img
-                  alt={intl.formatMessage(messages.icon)}
-                  className={styles.icon}
-                  src={iconUrl}
-                />
+                <img alt={formatMessage(messages.icon)} className={styles.icon} src={iconUrl} />
               </figure>
             }
           />

@@ -17,7 +17,7 @@ import messages from './messages';
 export default function AppList(): React.ReactElement {
   const [filter, setFilter] = React.useState('');
   const organizations = useOrganizations();
-  const intl = useIntl();
+  const { formatMessage } = useIntl();
   const { userInfo } = useUser();
   const { data: apps, error, loading } = useData<App[]>(userInfo ? '/api/apps/me' : '/api/apps');
 
@@ -53,7 +53,7 @@ export default function AppList(): React.ReactElement {
           <input
             className="input"
             onChange={onFilterChange}
-            placeholder={intl.formatMessage(messages.search)}
+            placeholder={formatMessage(messages.search)}
             value={filter}
           />
           <Icon className="is-left" icon="search" size="small" />

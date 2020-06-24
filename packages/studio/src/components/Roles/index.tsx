@@ -18,7 +18,7 @@ export interface Member {
 }
 
 export default function Roles(): React.ReactElement {
-  const intl = useIntl();
+  const { formatMessage } = useIntl();
   const push = useMessages();
   const { userInfo } = useUser();
   const { app } = useApp();
@@ -65,13 +65,13 @@ export default function Roles(): React.ReactElement {
 
       push({
         color: 'success',
-        body: intl.formatMessage(messages.changeRoleSuccess, {
+        body: formatMessage(messages.changeRoleSuccess, {
           name: member.name || member.primaryEmail || member.id,
           role,
         }),
       });
     } catch (error) {
-      push({ body: intl.formatMessage(messages.changeRoleError) });
+      push({ body: formatMessage(messages.changeRoleError) });
     }
 
     setSubmittingMemberRoleId(undefined);
