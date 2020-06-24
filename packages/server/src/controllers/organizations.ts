@@ -177,11 +177,11 @@ export async function respondInvitation(ctx: KoaContext<Params>): Promise<void> 
 
 export async function inviteMember(ctx: KoaContext<Params>): Promise<void> {
   const {
-    body: {
-      request: { email },
-    },
     mailer,
     params: { organizationId },
+    request: {
+      body: { email },
+    },
     user,
   } = ctx;
 
