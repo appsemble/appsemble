@@ -5,7 +5,6 @@ import { useCallback, useEffect, useState } from 'preact/hooks';
 
 import type { Item } from '../block';
 import ListItem from './components/ListItem';
-import styles from './index.css';
 
 const messages = {
   error: 'An error occurred when fetching the data.',
