@@ -17,6 +17,7 @@ import React, { ReactText, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useHistory } from 'react-router-dom';
 
+import getAppUrl from '../../utils/getAppUrl';
 import { useApp } from '../AppContext';
 import styles from './index.css';
 import messages from './messages';
@@ -129,7 +130,7 @@ export default function AppSettings(): React.ReactElement {
               <>
                 <FormattedMessage {...messages.pathDescription} />
                 <br />
-                {`${window.location.protocol}//${inputs.path}.${app.OrganizationId}.${window.location.host}`}
+                {getAppUrl(app.OrganizationId, inputs.path)}
               </>
             }
             label={<FormattedMessage {...messages.path} />}

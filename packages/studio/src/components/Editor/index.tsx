@@ -18,6 +18,7 @@ import React from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useHistory, useLocation, useParams } from 'react-router-dom';
 
+import getAppUrl from '../../utils/getAppUrl';
 import { useApp } from '../AppContext';
 import GUIEditor from '../GUIEditor';
 import { GuiEditorStep } from '../GUIEditor/types';
@@ -66,8 +67,6 @@ export default function Editor(): React.ReactElement {
   const location = useLocation();
   const params = useParams<{ id: string }>();
   const push = useMessages();
-
-  const appUrl = `${window.location.protocol}//${app.path}.${app.OrganizationId}.${window.location.host}`;
 
   React.useEffect(() => {
     openApiDocumentPromise.then(setOpenApiDocument);
@@ -160,7 +159,7 @@ export default function Editor(): React.ReactElement {
       // YAML and schema appear to be valid, send it to the app preview iframe
       frame.current.contentWindow.postMessage(
         { type: 'editor/EDIT_SUCCESS', definition, blockManifests, style, sharedStyle },
-        appUrl,
+        getAppUrl(app.OrganizationId, app.path),
       );
     } catch (error) {
       if (error instanceof SchemaValidationError) {
@@ -177,7 +176,7 @@ export default function Editor(): React.ReactElement {
       setValid(false);
     }
     setDirty(false);
-  }, [appUrl, formatMessage, openApiDocument, push, recipe, sharedStyle, style]);
+  }, [app, formatMessage, openApiDocument, push, recipe, sharedStyle, style]);
 
   const uploadApp = React.useCallback(async () => {
     if (!valid) {
@@ -294,7 +293,6 @@ export default function Editor(): React.ReactElement {
       <div className={styles.leftPanel}>
         <Form onSubmit={onSave}>
           <EditorNavBar
-            appUrl={appUrl}
             dirty={dirty}
             editorStep={editorStep}
             onUpload={onUpload}
@@ -337,7 +335,7 @@ export default function Editor(): React.ReactElement {
           <iframe
             ref={frame}
             className={styles.appFrame}
-            src={appUrl}
+            src={getAppUrl(app.OrganizationId, app.path)}
             title={formatMessage(messages.iframeTitle)}
           />
         )}

@@ -4,6 +4,7 @@ import React from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link, useRouteMatch } from 'react-router-dom';
 
+import getAppUrl from '../../../../utils/getAppUrl';
 import Rating from '../../../Rating';
 import styles from './index.css';
 import messages from './messages';
@@ -41,11 +42,7 @@ export default function AppCard({ app }: AppCardProps): React.ReactElement {
       <footer className={classNames('card-footer', styles.appCardFooter)}>
         <a
           className="card-footer-item"
-          href={
-            app.domain
-              ? `//${app.domain}${window.location.port && `:${window.location.port}`}`
-              : `//${app.path}.${app.OrganizationId}.${window.location.host}`
-          }
+          href={getAppUrl(app.OrganizationId, app.path, app.domain)}
           rel="noopener noreferrer"
           target="_blank"
         >

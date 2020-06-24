@@ -21,6 +21,7 @@ import { useHistory } from 'react-router-dom';
 
 import useOrganizations from '../../hooks/useOrganizations';
 import checkRole from '../../utils/checkRole';
+import getAppUrl from '../../utils/getAppUrl';
 import { useApp } from '../AppContext';
 import AppRatings from '../AppRatings';
 import styles from './index.css';
@@ -81,11 +82,7 @@ export default function AppDetails(): React.ReactElement {
             ) : null}
             <a
               className="button is-primary"
-              href={
-                app.domain
-                  ? `//${app.domain}${window.location.port && `:${window.location.port}`}`
-                  : `//${app.path}.${app.OrganizationId}.${window.location.host}`
-              }
+              href={getAppUrl(app.OrganizationId, app.path, app.domain)}
               rel="noopener noreferrer"
               target="_blank"
             >
