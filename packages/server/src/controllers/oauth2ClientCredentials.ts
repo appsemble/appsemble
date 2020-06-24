@@ -11,8 +11,10 @@ interface Params {
 }
 
 export async function registerOAuth2ClientCredentials(ctx: KoaContext): Promise<void> {
-  const { body } = ctx.request;
-  const { user } = ctx;
+  const {
+    request: { body },
+    user,
+  } = ctx;
 
   let expires;
   if (body.expires) {
@@ -63,8 +65,10 @@ export async function listOAuth2ClientCredentials(ctx: KoaContext): Promise<void
 }
 
 export async function deleteOAuth2ClientCredentials(ctx: KoaContext<Params>): Promise<void> {
-  const { clientId } = ctx.params;
-  const { user } = ctx;
+  const {
+    params: { clientId },
+    user,
+  } = ctx;
 
   const affectedRows = await OAuth2ClientCredentials.destroy({
     where: {

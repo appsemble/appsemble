@@ -10,9 +10,14 @@ import { githubPreset, gitlabPreset, googlePreset, presets } from '../utils/OAut
 import trimUrl from '../utils/trimUrl';
 
 export async function registerOAuth2Connection(ctx: KoaContext): Promise<void> {
-  const { argv } = ctx;
-  const { authorizationUrl, code } = ctx.request.body;
-  const referer = trimUrl(ctx.request.headers.referer);
+  const {
+    argv,
+    request: {
+      body: { authorizationUrl, code },
+      headers,
+    },
+  } = ctx;
+  const referer = trimUrl(headers.referer);
   if (!referer) {
     throw Boom.badRequest('The referer header is invalid');
   }
@@ -77,8 +82,13 @@ export async function registerOAuth2Connection(ctx: KoaContext): Promise<void> {
 }
 
 export async function connectPendingOAuth2Profile(ctx: KoaContext): Promise<void> {
-  const { argv, mailer } = ctx;
-  const { authorizationUrl, code } = ctx.request.body;
+  const {
+    argv,
+    mailer,
+    request: {
+      body: { authorizationUrl, code },
+    },
+  } = ctx;
   let { user } = ctx;
   const preset = presets.find((p) => p.authorizationUrl === authorizationUrl);
 
@@ -161,8 +171,10 @@ export async function getConnectedAccounts(ctx: KoaContext): Promise<void> {
 }
 
 export async function unlinkConnectedAccount(ctx: KoaContext): Promise<void> {
-  const { user } = ctx;
-  const { authorizationUrl } = ctx.query;
+  const {
+    query: { authorizationUrl },
+    user,
+  } = ctx;
 
   const rows = await OAuthAuthorization.destroy({ where: { UserId: user.id, authorizationUrl } });
 

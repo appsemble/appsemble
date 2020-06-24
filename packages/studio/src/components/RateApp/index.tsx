@@ -25,7 +25,7 @@ export default function RateApp({ app, className, onRate }: RateAppProps): React
   const [isOpen, setIsOpen] = React.useState(false);
   const [rating, setRating] = React.useState(0);
   const [description, setDescription] = React.useState('');
-  const intl = useIntl();
+  const { formatMessage } = useIntl();
   const openDialog = (): void => setIsOpen(true);
   const closeDialog = (): void => setIsOpen(false);
 
@@ -60,7 +60,7 @@ export default function RateApp({ app, className, onRate }: RateAppProps): React
               maxLength={500}
               name="description"
               onChange={onDescriptionChange}
-              placeholder={intl.formatMessage(messages.descriptionPlaceholder)}
+              placeholder={formatMessage(messages.descriptionPlaceholder)}
               value={description}
             />
           </div>

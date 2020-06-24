@@ -30,7 +30,7 @@ export default function MarkdownContent({
 }: MarkdownContentProps): React.ReactElement {
   const location = useLocation();
   return content ? (
-    <div
+    <span
       className={classNames('content', className)}
       // eslint-disable-next-line react/no-danger
       dangerouslySetInnerHTML={{

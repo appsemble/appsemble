@@ -23,7 +23,7 @@ export default function AppRatings(): React.ReactElement {
   const { data: ratings, error, loading, refresh, setData: setRatings } = useData<Rating[]>(
     `/api/apps/${app.id}/ratings`,
   );
-  const intl = useIntl();
+  const { formatMessage } = useIntl();
 
   const push = useMessages();
   const { userInfo } = useUser();
@@ -36,7 +36,7 @@ export default function AppRatings(): React.ReactElement {
     } else {
       setRatings([rating, ...ratings]);
     }
-    push({ color: 'success', body: intl.formatMessage(messages.ratingSuccessful) });
+    push({ color: 'success', body: formatMessage(messages.ratingSuccessful) });
   };
 
   if (error) {

@@ -2,8 +2,10 @@ import type { BlockDefinition } from '@appsemble/types';
 
 export type IdentifiableBlock = Pick<BlockDefinition, 'type' | 'version'>;
 
+const prefix = '@appsemble/';
+
 /**
- * Normalize a block name by prefixing it with `@appsemble` is necessary.
+ * Normalize a block name by prefixing it with `@appsemble` if necessary.
  *
  * @param name The input block name.
  * @returns The normalized block name.
@@ -12,7 +14,20 @@ export function normalizeBlockName(name: string): string {
   if (name.startsWith('@')) {
     return name;
   }
-  return `@appsemble/${name}`;
+  return `${prefix}${name}`;
+}
+
+/**
+ * Return a block name without the organization prefix.
+ *
+ * @param name The input block name.
+ * @returns The prettified block name.
+ */
+export function stripBlockName(name: string): string {
+  if (name.startsWith(prefix)) {
+    return name.substr(prefix.length);
+  }
+  return name;
 }
 
 /**

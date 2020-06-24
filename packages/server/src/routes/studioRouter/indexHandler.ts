@@ -11,32 +11,33 @@ import sentryDsnToReportUri from '../../utils/sentryDsnToReportUri';
  * Serve `index.html` for editor related routes.
  */
 export default async function indexHandler(ctx: KoaContext): Promise<void> {
-  const { render } = ctx.state;
-  const { argv } = ctx;
-  const { disableRegistration, host, sentryDsn } = argv;
+  const {
+    argv: { disableRegistration, githubClientId, gitlabClientId, googleClientId, host, sentryDsn },
+    state: { render },
+  } = ctx;
   const logins = [];
-  if (argv.githubClientId) {
+  if (githubClientId) {
     logins.push({
       authorizationUrl: githubPreset.authorizationUrl,
-      clientId: argv.githubClientId,
+      clientId: githubClientId,
       icon: githubPreset.icon,
       name: githubPreset.name,
       scope: githubPreset.scope,
     });
   }
-  if (argv.gitlabClientId) {
+  if (gitlabClientId) {
     logins.push({
       authorizationUrl: gitlabPreset.authorizationUrl,
-      clientId: argv.gitlabClientId,
+      clientId: gitlabClientId,
       icon: gitlabPreset.icon,
       name: gitlabPreset.name,
       scope: gitlabPreset.scope,
     });
   }
-  if (argv.googleClientId) {
+  if (googleClientId) {
     logins.push({
       authorizationUrl: googlePreset.authorizationUrl,
-      clientId: argv.googleClientId,
+      clientId: googleClientId,
       icon: googlePreset.icon,
       name: googlePreset.name,
       scope: googlePreset.scope,

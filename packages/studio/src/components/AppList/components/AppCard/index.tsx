@@ -13,7 +13,7 @@ interface AppCardProps {
 }
 
 export default function AppCard({ app }: AppCardProps): React.ReactElement {
-  const intl = useIntl();
+  const { formatMessage } = useIntl();
   const match = useRouteMatch();
 
   return (
@@ -24,7 +24,7 @@ export default function AppCard({ app }: AppCardProps): React.ReactElement {
       <div className={classNames('card-content', styles.appCardContent)}>
         <div className="media">
           <figure className={classNames('image', 'is-64x64', styles.image)}>
-            <img alt={intl.formatMessage(messages.icon)} src={`/api/apps/${app.id}/icon`} />
+            <img alt={formatMessage(messages.icon)} src={`/api/apps/${app.id}/icon`} />
           </figure>
         </div>
         {app.definition.description && (
