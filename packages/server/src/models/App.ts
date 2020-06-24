@@ -18,14 +18,16 @@ import {
   UpdatedAt,
 } from 'sequelize-typescript';
 
-import AppBlockStyle from './AppBlockStyle';
-import AppMember from './AppMember';
-import AppRating from './AppRating';
-import AppSubscription from './AppSubscription';
-import Asset from './Asset';
-import Organization from './Organization';
-import Resource from './Resource';
-import User from './User';
+import {
+  AppBlockStyle,
+  AppMember,
+  AppRating,
+  AppSubscription,
+  Asset,
+  Organization,
+  Resource,
+  User,
+} from '.';
 
 @Table({ tableName: 'App', paranoid: true })
 export default class App extends Model<App> {
