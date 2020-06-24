@@ -4,6 +4,7 @@ import { stripBlockName } from '@appsemble/utils';
 import classNames from 'classnames';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
+import { Link } from 'react-router-dom';
 
 import GUIEditorToolboxBlock from '../GUIEditorToolboxBlock';
 import styles from './index.css';
@@ -60,9 +61,9 @@ export default function GUIEditorToolbox({
               {selectedBlock.description}
             </div>
             <div className="media-right">
-              <a href={`./blocks/${selectedBlock.name}`} rel="noopener noreferrer" target="_blank">
+              <Link rel="noopener noreferrer" target="_blank" to={`/blocks/${selectedBlock.name}`}>
                 <FormattedMessage {...messages.moreInfo} />
-              </a>
+              </Link>
             </div>
           </article>
         </div>
